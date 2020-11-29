@@ -1,0 +1,130 @@
+﻿using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+
+namespace Circuit.Elements {
+    class ResistorElm : CircuitElm {
+        public double resistance { get; private set; }
+        Point ps3;
+        Point ps4;
+
+        public ResistorElm(int xx, int yy) : base(xx, yy) {
+            resistance = 1000;
+        }
+
+        public ResistorElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+            resistance = st.nextTokenDouble();
+        }
+
+        double getResistance() { return resistance; }
+
+        void setResistance(double r) { resistance = r; }
+
+        public override DUMP_ID getDumpType() { return DUMP_ID.RESISTOR; }
+
+        public override string dump() {
+            return base.dump() + " " + resistance;
+        }
+
+        public override void setPoints() {
+            base.setPoints();
+            calcLeads(32);
+            ps3 = new Point();
+            ps4 = new Point();
+        }
+
+        public override void draw(Graphics g) {
+            var len = (float)distance(lead1, lead2);
+            if (0 == len) {
+                return;
+            }
+
+            int hs = sim.chkAnsiResistorCheckItem.Checked ? 6 : 5;
+            setBbox(point1, point2, hs);
+
+            draw2Leads(g);
+
+            int segments = 12;
+            double segf = 1.0 / segments;
+            double v1 = volts[0];
+            double v2 = volts[1];
+
+            if (sim.chkAnsiResistorCheckItem.Checked) {
+                /* draw zigzag */
+                int oy = 0;
+                int ny;
+                for (int i = 0; i != segments; i++) {
+                    switch (i & 3) {
+                    case 0: ny = hs; break;
+                    case 2: ny = -hs; break;
+                    default: ny = 0; break;
+                    }
+                    interpPoint(lead1, lead2, ref ps1, i * segf, oy);
+                    interpPoint(lead1, lead2, ref ps2, (i + 1) * segf, ny);
+                    double v = v1 + (v2 - v1) * i / segments;
+                    drawThickLine(g, getVoltageColor(v), ps1, ps2);
+                    oy = ny;
+                }
+            } else {
+                /* draw rectangle */
+                PEN_THICK_LINE.Color = getVoltageColor(v1);
+                interpPoint(lead1, lead2, ref ps1, ref ps2, 0, hs);
+                drawThickLine(g, ps1, ps2);
+                for (int i = 0; i != segments; i++) {
+                    double v = v1 + (v2 - v1) * i / segments;
+                    interpPoint(lead1, lead2, ref ps1, ref ps2, i * segf, hs);
+                    interpPoint(lead1, lead2, ref ps3, ref ps4, (i + 1) * segf, hs);
+                    PEN_THICK_LINE.Color = getVoltageColor(v);
+                    drawThickLine(g, ps1, ps3);
+                    drawThickLine(g, ps2, ps4);
+                }
+                interpPoint(lead1, lead2, ref ps1, ref ps2, 1, hs);
+                drawThickLine(g, ps1, ps2);
+            }
+
+            if (sim.chkShowValuesCheckItem.Checked) {
+                var s = getShortUnitText(resistance, "");
+                drawValues(g, s, hs + 2);
+            }
+
+            doDots(g);
+            drawPosts(g);
+        }
+
+        public override void calculateCurrent() {
+            current = (volts[0] - volts[1]) / resistance;
+            /*Console.WriteLine(this + " res current set to " + current + "\n");*/
+        }
+
+        public override void stamp() {
+            cir.stampResistor(nodes[0], nodes[1], resistance);
+        }
+
+        public override void getInfo(string[] arr) {
+            arr[0] = "resistor";
+            getBasicInfo(arr);
+            arr[3] = "R = " + getUnitText(resistance, CirSim.ohmString);
+            arr[4] = "P = " + getUnitText(getPower(), "W");
+        }
+
+        public override string getScopeText(int v) {
+            return "resistor, " + getUnitText(resistance, CirSim.ohmString);
+        }
+
+        public override EditInfo getEditInfo(int n) {
+            /* ohmString doesn't work here on linux */
+            if (n == 0) {
+                return new EditInfo("Resistance (ohms)", resistance, 0, 0);
+            }
+            return null;
+        }
+
+        public override void setEditValue(int n, EditInfo ei) {
+            if (ei.value > 0) {
+                resistance = ei.value;
+            }
+        }
+
+        public override DUMP_ID getShortcut() { return DUMP_ID.RESISTOR; }
+    }
+}
