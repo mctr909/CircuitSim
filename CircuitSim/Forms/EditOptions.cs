@@ -13,21 +13,12 @@ namespace Circuit {
                 return new EditInfo("Time step size (s)", sim.timeStep, 0, 0);
             }
             if (n == 1) {
-                return new EditInfo("Range for voltage color (V)", CircuitElm.voltageRange, 0, 0);
+                return new EditInfo("Range for voltage color (V)", CircuitElm.VoltageRange, 0, 0);
             }
             if (n == 2) {
                 var ei = new EditInfo("Change Language", 0, -1, -1);
-                ei.choice = new ComboBox();
-                ei.choice.Items.Add("(no change)");
-                //ei.choice.Items.Add("Dansk");
-                //ei.choice.Items.Add("Deutsch");
-                //ei.choice.Items.Add("English");
-                //ei.choice.Items.Add("Español");
-                //ei.choice.Items.Add("Français");
-                //ei.choice.Items.Add("Italiano");
-                //ei.choice.Items.Add("Polski");
-                //ei.choice.Items.Add("Português");
-                //ei.choice.Items.Add("\u0420\u0443\u0441\u0441\u043a\u0438\u0439"); // Russian 
+                ei.Choice = new ComboBox();
+                ei.Choice.Items.Add("(no change)");
                 return ei;
             }
 
@@ -35,17 +26,17 @@ namespace Circuit {
         }
 
         public void setEditValue(int n, EditInfo ei) {
-            if (n == 0 && ei.value > 0) {
-                sim.timeStep = ei.value;
+            if (n == 0 && ei.Value > 0) {
+                sim.timeStep = ei.Value;
                 /* if timestep changed manually, prompt before changing it again */
                 // TODO: setEditValue
                 //AudioOutputElm.okToChangeTimeStep = false;
             }
-            if (n == 1 && ei.value > 0) {
-                CircuitElm.voltageRange = ei.value;
+            if (n == 1 && ei.Value > 0) {
+                CircuitElm.VoltageRange = ei.Value;
             }
             if (n == 2) {
-                int lang = ei.choice.SelectedIndex;
+                int lang = ei.Choice.SelectedIndex;
                 if (lang == 0) {
                     return;
                 }

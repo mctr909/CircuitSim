@@ -10,13 +10,13 @@ namespace Circuit.Elements {
         double loV;
 
         public LogicInputElm(int xx, int yy) : base(xx, yy, false) {
-            numHandles = 1;
+            mNumHandles = 1;
             hiV = 5;
             loV = 0;
         }
 
         public LogicInputElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) {
-            numHandles = 1;
+            mNumHandles = 1;
             try {
                 hiV = st.nextTokenDouble();
                 loV = st.nextTokenDouble();
@@ -53,7 +53,7 @@ namespace Circuit.Elements {
             }
             setBbox(mPoint1, mLead1, 0);
             drawCenteredText(g, s, X2, Y2, true);
-            PEN_THICK_LINE.Color = getVoltageColor(Volts[0]);
+            PenThickLine.Color = getVoltageColor(Volts[0]);
             drawThickLine(g, mPoint1, mLead1);
             updateDotCount();
             drawDots(g, mPoint1, mLead1, mCurCount);
@@ -71,7 +71,7 @@ namespace Circuit.Elements {
             if (isTernary()) {
                 v = position * 2.5;
             }
-            cir.StampVoltageSource(0, Nodes[0], mVoltSource, v);
+            Cir.StampVoltageSource(0, Nodes[0], mVoltSource, v);
         }
 
         public override int getVoltageSourceCount() { return 1; }
@@ -93,7 +93,7 @@ namespace Circuit.Elements {
         public override EditInfo getEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo("", 0, 0, 0);
-                ei.checkbox = new CheckBox() {
+                ei.CheckBox = new CheckBox() {
                     Text = "Momentary Switch",
                     Checked = momentary
                 };
@@ -107,7 +107,7 @@ namespace Circuit.Elements {
             }
             if (n == 3) {
                 var ei = new EditInfo("", 0, 0, 0);
-                ei.checkbox = new CheckBox() {
+                ei.CheckBox = new CheckBox() {
                     Text = "Numeric",
                     Checked = isNumeric()
                 };
@@ -115,7 +115,7 @@ namespace Circuit.Elements {
             }
             if (n == 4) {
                 var ei = new EditInfo("", 0, 0, 0);
-                ei.checkbox = new CheckBox() {
+                ei.CheckBox = new CheckBox() {
                     Text = "Ternary",
                     Checked = isTernary()
                 };
@@ -126,23 +126,23 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
-                momentary = ei.checkbox.Checked;
+                momentary = ei.CheckBox.Checked;
             }
             if (n == 1) {
-                hiV = ei.value;
+                hiV = ei.Value;
             }
             if (n == 2) {
-                loV = ei.value;
+                loV = ei.Value;
             }
             if (n == 3) {
-                if (ei.checkbox.Checked) {
+                if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_NUMERIC;
                 } else {
                     mFlags &= ~FLAG_NUMERIC;
                 }
             }
             if (n == 4) {
-                if (ei.checkbox.Checked) {
+                if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_TERNARY;
                 } else {
                     mFlags &= ~FLAG_TERNARY;

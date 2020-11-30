@@ -64,7 +64,7 @@ namespace Circuit.Elements {
 
         public override void stamp() {
             if (needsPullDown()) {
-                cir.StampResistor(Nodes[0], 0, 1e6);
+                Cir.StampResistor(Nodes[0], 0, 1e6);
             }
         }
 
@@ -85,17 +85,17 @@ namespace Circuit.Elements {
             }
             if (n == 1) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox() { Text = "Current Required", Checked = needsPullDown() };
+                ei.CheckBox = new CheckBox() { Text = "Current Required", Checked = needsPullDown() };
                 return ei;
             }
             if (n == 2) {
                 var ei = new EditInfo("", 0, 0, 0);
-                ei.checkbox = new CheckBox() { Text = "Numeric", Checked = isNumeric() };
+                ei.CheckBox = new CheckBox() { Text = "Numeric", Checked = isNumeric() };
                 return ei;
             }
             if (n == 3) {
                 var ei = new EditInfo("", 0, 0, 0);
-                ei.checkbox = new CheckBox() { Text = "Ternary", Checked = isTernary() };
+                ei.CheckBox = new CheckBox() { Text = "Ternary", Checked = isTernary() };
                 return ei;
             }
             return null;
@@ -103,23 +103,23 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0)
-                threshold = ei.value;
+                threshold = ei.Value;
             if (n == 1) {
-                if (ei.checkbox.Checked) {
+                if (ei.CheckBox.Checked) {
                     mFlags = FLAG_PULLDOWN;
                 } else {
                     mFlags &= ~FLAG_PULLDOWN;
                 }
             }
             if (n == 2) {
-                if (ei.checkbox.Checked) {
+                if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_NUMERIC;
                 } else {
                     mFlags &= ~FLAG_NUMERIC;
                 }
             }
             if (n == 3) {
-                if (ei.checkbox.Checked) {
+                if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_TERNARY;
                 } else {
                     mFlags &= ~FLAG_TERNARY;

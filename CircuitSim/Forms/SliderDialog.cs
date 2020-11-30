@@ -72,39 +72,39 @@ namespace Circuit {
                     break;
                 }
                 var ei = einfos[i];
-                if (!ei.canCreateAdjustable()) {
+                if (!ei.CanCreateAdjustable()) {
                     continue;
                 }
                 var adj = findAdjustable(i);
-                string name = ei.name;
+                string name = ei.Name;
                 idx = vp.Controls.IndexOf(hp);
 
                 /* remove HTML */
                 var rg = new Regex("<[^>]*>");
                 name = rg.Replace(name, "");
-                ei.checkbox = new CheckBox() {
+                ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = name,
                     Checked = adj != null
                 };
-                ctrlInsert(vp, ei.checkbox, idx++);
-                ei.checkbox.CheckedChanged += new EventHandler((sender, e) => { itemStateChanged(sender); });
+                ctrlInsert(vp, ei.CheckBox, idx++);
+                ei.CheckBox.CheckedChanged += new EventHandler((sender, e) => { itemStateChanged(sender); });
                 if (adj != null) {
                     ctrlInsert(vp, new Label() { Text = "Min Value" }, idx++);
-                    ei.minBox = new TextBox() {
+                    ei.MinBox = new TextBox() {
                         Text = EditDialog.unitString(ei, adj.minValue)
                     };
-                    ctrlInsert(vp, ei.minBox, idx++);
+                    ctrlInsert(vp, ei.MinBox, idx++);
                     ctrlInsert(vp, new Label() { Text = "Max Value" }, idx++);
-                    ei.maxBox = new TextBox() {
+                    ei.MaxBox = new TextBox() {
                         Text = EditDialog.unitString(ei, adj.maxValue)
                     };
-                    ctrlInsert(vp, ei.maxBox, idx++);
+                    ctrlInsert(vp, ei.MaxBox, idx++);
                     ctrlInsert(vp, new Label() { Text = "Label" }, idx++);
-                    ei.labelBox = new TextBox() {
+                    ei.LabelBox = new TextBox() {
                         Text = adj.sliderText
                     };
-                    ctrlInsert(vp, ei.labelBox, idx++);
+                    ctrlInsert(vp, ei.LabelBox, idx++);
                 }
             }
             vp.ResumeLayout(false);
@@ -127,13 +127,13 @@ namespace Circuit {
                     continue;
                 }*/
                 try {
-                    adj.sliderText = ei.labelBox.Text;
+                    adj.sliderText = ei.LabelBox.Text;
                     adj.label.Text = adj.sliderText;
-                    double d = EditDialog.parseUnits(ei.minBox.Text);
+                    double d = EditDialog.parseUnits(ei.MinBox.Text);
                     adj.minValue = d;
-                    d = EditDialog.parseUnits(ei.maxBox.Text);
+                    d = EditDialog.parseUnits(ei.MaxBox.Text);
                     adj.maxValue = d;
-                    adj.setSliderValue(ei.value);
+                    adj.setSliderValue(ei.Value);
                 } catch { }
             }
         }
@@ -143,13 +143,13 @@ namespace Circuit {
             bool changed = false;
             for (i = 0; i != einfocount; i++) {
                 var ei = einfos[i];
-                if (ei.checkbox == sender) {
+                if (ei.CheckBox == sender) {
                     apply();
-                    if (ei.checkbox.Checked) {
+                    if (ei.CheckBox.Checked) {
                         var adj = new Adjustable(elm, i);
                         var rg = new Regex(" \\(.*\\)$");
-                        adj.sliderText = rg.Replace(ei.name, "");
-                        adj.createSlider(sim, ei.value);
+                        adj.sliderText = rg.Replace(ei.Name, "");
+                        adj.createSlider(sim, ei.Value);
                         sim.adjustables.Add(adj);
                     } else {
                         var adj = findAdjustable(i);

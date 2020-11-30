@@ -24,13 +24,13 @@ namespace Circuit.Elements {
 
         public DiodeElm(int xx, int yy) : base(xx, yy) {
             modelName = lastModelName;
-            diode = new Diode(sim, cir);
+            diode = new Diode(Sim, Cir);
             setup();
         }
 
         public DiodeElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
             const double defaultdrop = .805904783;
-            diode = new Diode(sim, cir);
+            diode = new Diode(Sim, Cir);
             double fwdrop = defaultdrop;
             double zvoltage = 0;
             if ((f & FLAG_MODEL) != 0) {
@@ -127,7 +127,7 @@ namespace Circuit.Elements {
                 /* create diode from node 0 to internal node */
                 diode.stamp(Nodes[0], Nodes[2]);
                 /* create resistor from internal node to node 1 */
-                cir.StampResistor(Nodes[1], Nodes[2], model.seriesResistance);
+                Cir.StampResistor(Nodes[1], Nodes[2], model.seriesResistance);
             } else {
                 /* don't need any internal nodes if no series resistance */
                 diode.stamp(Nodes[0], Nodes[1]);
@@ -160,20 +160,20 @@ namespace Circuit.Elements {
             if (!customModelUI && n == 0) {
                 var ei = new EditInfo("Model", 0, -1, -1);
                 models = DiodeModel.getModelList(typeof(ZenerElm) == GetType());
-                ei.choice = new ComboBox();
+                ei.Choice = new ComboBox();
                 for (int i = 0; i != models.Count; i++) {
                     var dm = models[i];
-                    ei.choice.Items.Add(dm.getDescription());
+                    ei.Choice.Items.Add(dm.getDescription());
                     if (dm == model) {
-                        ei.choice.SelectedIndex = i;
+                        ei.Choice.SelectedIndex = i;
                     }
                 }
-                ei.choice.Items.Add("Custom");
+                ei.Choice.Items.Add("Custom");
                 return ei;
             }
             if (n == 0) {
                 var ei = new EditInfo("Model Name", 0, -1, -1);
-                ei.text = modelName;
+                ei.Text = modelName;
                 return ei;
             }
             if (n == 1) {
@@ -181,12 +181,12 @@ namespace Circuit.Elements {
                     return null;
                 }
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.button = new Button() { Text = "Edit Model" };
+                ei.Button = new Button() { Text = "Edit Model" };
                 return ei;
             }
             if (n == 2) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.button = new Button() { Text = "Create Simple Model" };
+                ei.Button = new Button() { Text = "Create Simple Model" };
                 return ei;
             }
             return base.getEditInfo(n);
@@ -194,24 +194,24 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (!customModelUI && n == 0) {
-                int ix = ei.choice.SelectedIndex;
+                int ix = ei.Choice.SelectedIndex;
                 if (ix >= models.Count) {
                     models = null;
                     customModelUI = true;
-                    ei.newDialog = true;
+                    ei.NewDialog = true;
                     return;
                 }
-                model = models[ei.choice.SelectedIndex];
+                model = models[ei.Choice.SelectedIndex];
                 modelName = model.name;
                 setup();
                 return;
             }
             if (n == 0) {
                 /* the text field may not have been created yet, check to avoid exception */
-                if (ei.textf == null) {
+                if (ei.Textf == null) {
                     return;
                 }
-                modelName = ei.textf.Text;
+                modelName = ei.Textf.Text;
                 setLastModelName(modelName);
                 model = DiodeModel.getModelWithNameOrCopy(modelName, model);
                 setup();
@@ -222,9 +222,7 @@ namespace Circuit.Elements {
                     MessageBox.Show("This model cannot be modified.\r\nChange the model name to allow customization.");
                     return;
                 }
-                var editDialog = new EditDialog(model, sim);
-                CirSim.diodeModelEditDialog = editDialog;
-                editDialog.Show();
+                CirSim.diodeModelEditDialog = new EditDialog(model, Sim, 0, 0);
                 return;
             }
             if (n == 2) {
@@ -234,7 +232,7 @@ namespace Circuit.Elements {
                     if (fwdrop > 0) {
                         model = DiodeModel.getModelWithVoltageDrop(fwdrop);
                         modelName = model.name;
-                        ei.newDialog = true;
+                        ei.NewDialog = true;
                         return;
                     }
                 }
@@ -251,7 +249,7 @@ namespace Circuit.Elements {
         public override void stepFinished() {
             /* stop for huge currents that make simulator act weird */
             if (Math.Abs(mCurrent) > 1e12) {
-                cir.Stop("max current exceeded", this);
+                Cir.Stop("max current exceeded", this);
             }
         }
     }

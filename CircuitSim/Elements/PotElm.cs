@@ -66,9 +66,9 @@ namespace Circuit.Elements {
         }
 
         void createSlider() {
-            sim.addWidgetToVerticalPanel(label = new Label() { Text = sliderText });
+            Sim.addWidgetToVerticalPanel(label = new Label() { Text = sliderText });
             int value = (int)(position * 100);
-            sim.addWidgetToVerticalPanel(slider = new TrackBar() {
+            Sim.addWidgetToVerticalPanel(slider = new TrackBar() {
                 Minimum = 0,
                 Maximum = 101,
                 SmallChange = 1,
@@ -81,13 +81,13 @@ namespace Circuit.Elements {
         }
 
         public void execute() {
-            sim.analyzeFlag = true;
+            Sim.analyzeFlag = true;
             setPoints();
         }
 
         public override void delete() {
-            sim.removeWidgetFromVerticalPanel(label);
-            sim.removeWidgetFromVerticalPanel(slider);
+            Sim.removeWidgetFromVerticalPanel(label);
+            Sim.removeWidgetFromVerticalPanel(slider);
             base.delete();
         }
 
@@ -96,12 +96,12 @@ namespace Circuit.Elements {
             int offset = 0;
             int myLen = 0;
             if (Math.Abs(mDx) > Math.Abs(mDy)) {
-                myLen = 2 * sim.gridSize * Math.Sign(mDx) * (((Math.Abs(mDx)) + 2 * sim.gridSize - 1) / (2 * sim.gridSize));
+                myLen = 2 * Sim.gridSize * Math.Sign(mDx) * (((Math.Abs(mDx)) + 2 * Sim.gridSize - 1) / (2 * Sim.gridSize));
                 mPoint2.X = mPoint1.X + myLen;
                 offset = (mDx < 0) ? mDy : -mDy;
                 mPoint2.Y = mPoint1.Y;
             } else {
-                myLen = 2 * sim.gridSize * Math.Sign(mDy) * (((Math.Abs(mDy)) + 2 * sim.gridSize - 1) / (2 * sim.gridSize));
+                myLen = 2 * Sim.gridSize * Math.Sign(mDy) * (((Math.Abs(mDy)) + 2 * Sim.gridSize - 1) / (2 * Sim.gridSize));
                 if (mDy != 0) {
                     mPoint2.Y = mPoint1.Y + myLen;
                     offset = (mDy > 0) ? mDx : -mDx;
@@ -109,7 +109,7 @@ namespace Circuit.Elements {
                 }
             }
             if (offset == 0) {
-                offset = sim.gridSize;
+                offset = Sim.gridSize;
             }
             mElmLen = distance(mPoint1, mPoint2);
             int bodyLen = 32;
@@ -131,7 +131,7 @@ namespace Circuit.Elements {
         public override void draw(Graphics g) {
             int segments = 12;
             int i;
-            int hs = sim.chkAnsiResistorCheckItem.Checked ? 6 : 5;
+            int hs = Sim.chkAnsiResistorCheckItem.Checked ? 6 : 5;
             double v1 = Volts[0];
             double v2 = Volts[1];
             double v3 = Volts[2];
@@ -141,7 +141,7 @@ namespace Circuit.Elements {
             double segf = 1.0 / segments;
             int divide = (int)(segments * position);
 
-            if (sim.chkAnsiResistorCheckItem.Checked) {
+            if (Sim.chkAnsiResistorCheckItem.Checked) {
                 /* draw zigzag */
                 int oy = 0;
                 int ny;
@@ -162,7 +162,7 @@ namespace Circuit.Elements {
                 }
             } else {
                 /* draw rectangle */
-                PEN_THICK_LINE.Color = getVoltageColor(v1);
+                PenThickLine.Color = getVoltageColor(v1);
                 interpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, hs);
                 drawThickLine(g, ps1, ps2);
                 for (i = 0; i != segments; i++) {
@@ -172,7 +172,7 @@ namespace Circuit.Elements {
                     }
                     interpPoint(mLead1, mLead2, ref ps1, ref ps2, i * segf, hs);
                     interpPoint(mLead1, mLead2, ref ps3, ref ps4, (i + 1) * segf, hs);
-                    PEN_THICK_LINE.Color = getVoltageColor(v);
+                    PenThickLine.Color = getVoltageColor(v);
                     drawThickLine(g, ps1, ps3);
                     drawThickLine(g, ps2, ps4);
                 }
@@ -180,7 +180,7 @@ namespace Circuit.Elements {
                 drawThickLine(g, ps1, ps2);
             }
 
-            PEN_THICK_LINE.Color = getVoltageColor(v3);
+            PenThickLine.Color = getVoltageColor(v3);
             drawThickLine(g, post3, corner2);
             drawThickLine(g, corner2, arrowPoint);
             drawThickLine(g, arrow1, arrowPoint);
@@ -188,7 +188,7 @@ namespace Circuit.Elements {
             curcount1 = updateDotCount(current1, curcount1);
             curcount2 = updateDotCount(current2, curcount2);
             curcount3 = updateDotCount(current3, curcount3);
-            if (sim.dragElm != this) {
+            if (Sim.dragElm != this) {
                 drawDots(g, mPoint1, midpoint, curcount1);
                 drawDots(g, mPoint2, midpoint, curcount2);
                 drawDots(g, post3, corner2, curcount3);
@@ -196,7 +196,7 @@ namespace Circuit.Elements {
             }
             drawPosts(g);
 
-            if (sim.chkShowValuesCheckItem.Checked && resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
+            if (Sim.chkShowValuesCheckItem.Checked && resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
                 /* check for vertical pot with 3rd terminal on left */
                 bool reverseY = (post3.X < mLead1.X && mLead1.X == mLead2.X);
                 /* check for horizontal pot with 3rd terminal on top */
@@ -277,8 +277,8 @@ namespace Circuit.Elements {
         public override void stamp() {
             resistance1 = maxResistance * position;
             resistance2 = maxResistance * (1 - position);
-            cir.StampResistor(Nodes[0], Nodes[2], resistance1);
-            cir.StampResistor(Nodes[2], Nodes[1], resistance2);
+            Cir.StampResistor(Nodes[0], Nodes[2], resistance1);
+            Cir.StampResistor(Nodes[2], Nodes[1], resistance2);
         }
 
         public override void getInfo(string[] arr) {
@@ -297,14 +297,14 @@ namespace Circuit.Elements {
             }
             if (n == 1) {
                 var ei = new EditInfo("Slider Text", 0, -1, -1);
-                ei.text = sliderText;
+                ei.Text = sliderText;
                 return ei;
             }
             if (n == 2) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox();
-                ei.checkbox.Text = "Show Values";
-                ei.checkbox.Checked = (mFlags & FLAG_SHOW_VALUES) != 0;
+                ei.CheckBox = new CheckBox();
+                ei.CheckBox.Text = "Show Values";
+                ei.CheckBox.Checked = (mFlags & FLAG_SHOW_VALUES) != 0;
                 return ei;
             }
             return null;
@@ -312,15 +312,15 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
-                maxResistance = ei.value;
+                maxResistance = ei.Value;
             }
             if (n == 1) {
-                sliderText = ei.textf.Text;
+                sliderText = ei.Textf.Text;
                 label.Text = sliderText;
-                sim.setiFrameHeight();
+                Sim.setiFrameHeight();
             }
             if (n == 2) {
-                mFlags = ei.changeFlag(mFlags, FLAG_SHOW_VALUES);
+                mFlags = ei.ChangeFlag(mFlags, FLAG_SHOW_VALUES);
             }
         }
 

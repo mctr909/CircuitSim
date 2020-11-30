@@ -85,7 +85,7 @@ namespace Circuit.Elements {
                 } else {
                     vnew = vt * Math.Log(vnew / vt);
                 }
-                cir.Converged = false;
+                Cir.Converged = false;
                 /*Console.WriteLine(vnew + " " + oo + " " + vold);*/
             }
             return vnew;
@@ -131,7 +131,7 @@ namespace Circuit.Elements {
             /* draw base rectangle */
             fillPolygon(g, getVoltageColor(Volts[0]), rectPoly);
 
-            if ((needsHighlight() || sim.dragElm == this) && mDy == 0) {
+            if ((needsHighlight() || Sim.dragElm == this) && mDy == 0) {
                 /* IES */
                 int ds = Math.Sign(mDx);
                 g.DrawString("B", FONT_TERM_NAME, BRUSH_TERM_NAME, tbase.X - 10 * ds, tbase.Y - 5);
@@ -189,9 +189,9 @@ namespace Circuit.Elements {
         }
 
         public override void stamp() {
-            cir.StampNonLinear(Nodes[0]);
-            cir.StampNonLinear(Nodes[1]);
-            cir.StampNonLinear(Nodes[2]);
+            Cir.StampNonLinear(Nodes[0]);
+            Cir.StampNonLinear(Nodes[1]);
+            Cir.StampNonLinear(Nodes[2]);
         }
 
         public override void doStep() {
@@ -199,15 +199,15 @@ namespace Circuit.Elements {
             double vbe = Volts[0] - Volts[2]; /* typically positive */
             if (Math.Abs(vbc - lastvbc) > .01 || /* .01 */
                 Math.Abs(vbe - lastvbe) > .01) {
-                cir.Converged = false;
+                Cir.Converged = false;
             }
             /* To prevent a possible singular matrix,
              * put a tiny conductance in parallel with each P-N junction. */
             gmin = leakage * 0.01;
-            if (cir.SubIterations > 100) {
+            if (Cir.SubIterations > 100) {
                 /* if we have trouble converging, put a conductance in parallel with all P-N junctions.
                  * Gradually increase the conductance value for each iteration. */
-                gmin = Math.Exp(-9 * Math.Log(10) * (1 - cir.SubIterations / 300.0));
+                gmin = Math.Exp(-9 * Math.Log(10) * (1 - Cir.SubIterations / 300.0));
                 if (gmin > .1) {
                     gmin = .1;
                 }
@@ -244,22 +244,22 @@ namespace Circuit.Elements {
              * node 0 is the base,
              * node 1 the collector,
              * node 2 the emitter. */
-            cir.StampMatrix(Nodes[0], Nodes[0], -gee - gec - gce - gcc);
-            cir.StampMatrix(Nodes[0], Nodes[1], gec + gcc);
-            cir.StampMatrix(Nodes[0], Nodes[2], gee + gce);
-            cir.StampMatrix(Nodes[1], Nodes[0], gce + gcc);
-            cir.StampMatrix(Nodes[1], Nodes[1], -gcc);
-            cir.StampMatrix(Nodes[1], Nodes[2], -gce);
-            cir.StampMatrix(Nodes[2], Nodes[0], gee + gec);
-            cir.StampMatrix(Nodes[2], Nodes[1], -gec);
-            cir.StampMatrix(Nodes[2], Nodes[2], -gee);
+            Cir.StampMatrix(Nodes[0], Nodes[0], -gee - gec - gce - gcc);
+            Cir.StampMatrix(Nodes[0], Nodes[1], gec + gcc);
+            Cir.StampMatrix(Nodes[0], Nodes[2], gee + gce);
+            Cir.StampMatrix(Nodes[1], Nodes[0], gce + gcc);
+            Cir.StampMatrix(Nodes[1], Nodes[1], -gcc);
+            Cir.StampMatrix(Nodes[1], Nodes[2], -gce);
+            Cir.StampMatrix(Nodes[2], Nodes[0], gee + gec);
+            Cir.StampMatrix(Nodes[2], Nodes[1], -gec);
+            Cir.StampMatrix(Nodes[2], Nodes[2], -gee);
 
             /* we are solving for v(k+1), not delta v, so we use formula
              * 10.5.13 (from Pillage), multiplying J by v(k) */
 
-            cir.StampRightSide(Nodes[0], -ib - (gec + gcc) * vbc - (gee + gce) * vbe);
-            cir.StampRightSide(Nodes[1], -ic + gce * vbe + gcc * vbc);
-            cir.StampRightSide(Nodes[2], -ie + gee * vbe + gec * vbc);
+            Cir.StampRightSide(Nodes[0], -ib - (gec + gcc) * vbc - (gee + gce) * vbe);
+            Cir.StampRightSide(Nodes[1], -ic + gce * vbe + gcc * vbc);
+            Cir.StampRightSide(Nodes[2], -ie + gee * vbe + gec * vbc);
         }
 
         public override string getScopeText(int x) {
@@ -320,13 +320,13 @@ namespace Circuit.Elements {
 
         public override EditInfo getEditInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Beta/hFE", beta, 10, 1000).setDimensionless();
+                return new EditInfo("Beta/hFE", beta, 10, 1000).SetDimensionless();
             }
             if (n == 1) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox();
-                ei.checkbox.Text = "Swap E/C";
-                ei.checkbox.Checked = (mFlags & FLAG_FLIP) != 0;
+                ei.CheckBox = new CheckBox();
+                ei.CheckBox.Text = "Swap E/C";
+                ei.CheckBox.Checked = (mFlags & FLAG_FLIP) != 0;
                 return ei;
             }
             return null;
@@ -334,11 +334,11 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
-                beta = ei.value;
+                beta = ei.Value;
                 setup();
             }
             if (n == 1) {
-                if (ei.checkbox.Checked) {
+                if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_FLIP;
                 } else {
                     mFlags &= ~FLAG_FLIP;
@@ -350,7 +350,7 @@ namespace Circuit.Elements {
         public override void stepFinished() {
             /* stop for huge currents that make simulator act weird */
             if (Math.Abs(ic) > 1e12 || Math.Abs(ib) > 1e12) {
-                cir.Stop("max current exceeded", this);
+                Cir.Stop("max current exceeded", this);
             }
         }
 

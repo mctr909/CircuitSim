@@ -28,14 +28,14 @@ namespace Circuit {
             var g = backcontext;
 
             Pen pen;
-            CircuitElm.selectColor = Color.Cyan;
+            CircuitElm.SelectColor = Color.Cyan;
             if (chkPrintableCheckItem.Checked) {
-                CircuitElm.whiteColor = Color.Black;
-                CircuitElm.lightGrayColor = Color.Black;
+                CircuitElm.WhiteColor = Color.Black;
+                CircuitElm.LightGrayColor = Color.Black;
                 pen = new Pen(Color.White, 1.0f);
             } else {
-                CircuitElm.whiteColor = Color.White;
-                CircuitElm.lightGrayColor = Color.LightGray;
+                CircuitElm.WhiteColor = Color.White;
+                CircuitElm.LightGrayColor = Color.LightGray;
                 pen = new Pen(Color.Black, 1.0f);
             }
             g.FillRectangle(pen.Brush, 0, 0, backcv.Width, backcv.Height);
@@ -55,9 +55,9 @@ namespace Circuit {
             if (simRunning) {
                 if (lastTime != 0) {
                     int inc = (int)(sysTime - lastTime);
-                    double c = ctrlCurrentBar.Value;
+                    double c = trbCurrentBar.Value;
                     c = Math.Exp(c / 3.5 - 14.2);
-                    CircuitElm.currentMult = 1.7 * inc * c;
+                    CircuitElm.CurrentMult = 1.7 * inc * c;
                 }
                 lastTime = sysTime;
             } else {
@@ -125,7 +125,7 @@ namespace Circuit {
             }
 
             if (0 < selectedArea.Width) {
-                var penSelect = new Pen(CircuitElm.selectColor, 1.0f);
+                var penSelect = new Pen(CircuitElm.SelectColor, 1.0f);
                 g.DrawRectangle(penSelect, selectedArea.X, selectedArea.Y, selectedArea.Width, selectedArea.Height);
             }
 
@@ -258,7 +258,7 @@ namespace Circuit {
 
             /* Check if we don't need to run simulation (for very slow simulation speeds).
             /* If the circuit changed, do at least one iteration to make sure everything is consistent. */
-            if (10000 >= steprate * (tm - lastIterTime) && !didAnalyze) {
+            if (12500 >= steprate * (tm - lastIterTime) && !didAnalyze) {
                 return;
             }
 
@@ -298,7 +298,7 @@ namespace Circuit {
                 lit = tm;
                 /* Check whether enough time has elapsed to perform an *additional* iteration after
                 /* those we have already completed. */
-                if ((iter + 1) * 1000 >= steprate * (tm - lastIterTime) || (tm - lastFrameTime > 500)) {
+                if ((iter + 1) * 1000 >= steprate * (tm - lastIterTime) || (tm - lastFrameTime > 250000)) {
                     break;
                 }
                 if (!simRunning) {
@@ -327,10 +327,10 @@ namespace Circuit {
                     i--;
                     continue;
                 }
-                if (scopes[i].position > pos + 1) {
-                    scopes[i].position = pos + 1;
+                if (scopes[i].Position > pos + 1) {
+                    scopes[i].Position = pos + 1;
                 }
-                pos = scopes[i].position;
+                pos = scopes[i].Position;
             }
 
             while (scopeCount > 0 && scopes[scopeCount - 1].getElm() == null) {
@@ -343,8 +343,8 @@ namespace Circuit {
                 scopeColCount[i] = 0;
             }
             for (int i = 0; i != scopeCount; i++) {
-                pos = Math.Max(scopes[i].position, pos);
-                scopeColCount[scopes[i].position]++;
+                pos = Math.Max(scopes[i].Position, pos);
+                scopeColCount[scopes[i].Position]++;
             }
             int colct = pos + 1;
             int iw = infoWidth;
@@ -363,20 +363,20 @@ namespace Circuit {
             int speed = 0;
             for (int i = 0; i != scopeCount; i++) {
                 var s = scopes[i];
-                if (s.position > pos) {
-                    pos = s.position;
+                if (s.Position > pos) {
+                    pos = s.Position;
                     colh = h / scopeColCount[pos];
                     row = 0;
-                    speed = s.speed;
+                    speed = s.Speed;
                 }
-                s.stackCount = scopeColCount[pos];
-                if (s.speed != speed) {
-                    s.speed = speed;
+                s.StackCount = scopeColCount[pos];
+                if (s.Speed != speed) {
+                    s.Speed = speed;
                     s.resetGraph();
                 }
                 var r = new Rectangle(pos * w, backcv.Height - h + colh * row, w - marg, colh);
                 row++;
-                if (!r.Equals(s.rect)) {
+                if (!r.Equals(s.BoundingBox)) {
                     s.setRect(r);
                 }
             }
@@ -384,10 +384,10 @@ namespace Circuit {
 
         public double getIterCount() {
             /* IES - remove interaction */
-            if (ctrlSpeedBar.Value == 0) {
+            if (trbSpeedBar.Value == 0) {
                 return 0;
             }
-            return 1.0 * ctrlSpeedBar.Value / ctrlSpeedBar.Maximum;
+            return 1.0 * trbSpeedBar.Value / trbSpeedBar.Maximum;
         }
 
         /* we need to calculate wire currents for every iteration if someone is viewing a wire in the

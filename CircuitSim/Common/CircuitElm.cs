@@ -9,20 +9,22 @@ namespace Circuit.Elements {
         protected const int SCALE_M = 2;
         protected const int SCALE_MU = 3;
 
-        protected const double pi = Math.PI;
+        protected const double PI = Math.PI;
+        protected const double PI2 = Math.PI * 2;
+        protected const double TO_DEG = 180 / Math.PI;
+        protected const double TO_RAD = Math.PI / 180;
         #endregion
 
         #region static variable
-        public static CirSim sim;
-        protected static Circuit cir;
+        public static CirSim Sim { get; private set; }
+        protected static Circuit Cir { get; private set; }
+        public static double CurrentMult { get; set; }
 
         /* scratch points for convenience */
         protected static Point ps1;
         protected static Point ps2;
 
         static CircuitElm mMouseElmRef = null;
-
-        public static double currentMult;
         #endregion
 
         #region property
@@ -55,8 +57,8 @@ namespace Circuit.Elements {
         protected int mDy;
         protected int mDsign;
 
-        int lastHandleGrabbed = -1;
-        protected int numHandles = 2;
+        int mLastHandleGrabbed = -1;
+        protected int mNumHandles = 2;
 
         /* length of element */
         protected double mElmLen;
@@ -80,12 +82,12 @@ namespace Circuit.Elements {
         #endregion
 
         public static void initClass(CirSim s, Circuit c) {
-            sim = s;
-            cir = c;
+            Sim = s;
+            Cir = c;
             ps1 = new Point();
             ps2 = new Point();
             mMouseElmRef = null;
-            currentMult = 0;
+            CurrentMult = 0;
         }
 
         /// <summary>
@@ -190,8 +192,8 @@ namespace Circuit.Elements {
             if (mMouseElmRef == this) {
                 mMouseElmRef = null;
             }
-            if (null != sim) {
-                sim.deleteSliders(this);
+            if (null != Sim) {
+                Sim.deleteSliders(this);
             }
         }
 
@@ -263,8 +265,8 @@ namespace Circuit.Elements {
         /// <param name="xx"></param>
         /// <param name="yy"></param>
         public virtual void drag(int xx, int yy) {
-            xx = sim.snapGrid(xx);
-            yy = sim.snapGrid(yy);
+            xx = Sim.snapGrid(xx);
+            yy = Sim.snapGrid(yy);
             if (mNoDiagonal) {
                 if (Math.Abs(X1 - xx) < Math.Abs(Y1 - yy)) {
                     xx = X1;
@@ -321,8 +323,8 @@ namespace Circuit.Elements {
             int nx2 = X2 + dx;
             int ny2 = Y2 + dy;
             int i;
-            for (i = 0; i != sim.elmList.Count; i++) {
-                CircuitElm ce = sim.getElm(i);
+            for (i = 0; i != Sim.elmList.Count; i++) {
+                CircuitElm ce = Sim.getElm(i);
                 if (ce.X1 == nx && ce.Y1 == ny && ce.X2 == nx2 && ce.Y2 == ny2) {
                     return false;
                 }
@@ -355,7 +357,7 @@ namespace Circuit.Elements {
         }
 
         public int getHandleGrabbedClose(int xtest, int ytest, int deltaSq, int minSize) {
-            lastHandleGrabbed = -1;
+            mLastHandleGrabbed = -1;
             var x12 = X2 - X1;
             var y12 = Y2 - Y1;
             if (Math.Sqrt(x12 * x12 + y12 * y12) >= minSize) {
@@ -364,12 +366,12 @@ namespace Circuit.Elements {
                 var x2t = xtest - X2;
                 var y2t = ytest - Y2;
                 if (Math.Sqrt(x1t * x1t + y1t * y1t) <= deltaSq) {
-                    lastHandleGrabbed = 0;
+                    mLastHandleGrabbed = 0;
                 } else if (Math.Sqrt(x2t * x2t + y2t * y2t) <= deltaSq) {
-                    lastHandleGrabbed = 1;
+                    mLastHandleGrabbed = 1;
                 }
             }
-            return lastHandleGrabbed;
+            return mLastHandleGrabbed;
         }
 
         /// <summary>
@@ -520,10 +522,10 @@ namespace Circuit.Elements {
         /// <param name="cc"></param>
         /// <returns></returns>
         protected double updateDotCount(double cur, double cc) {
-            if (!sim.simIsRunning()) {
+            if (!Sim.simIsRunning()) {
                 return cc;
             }
-            double cadd = cur * currentMult;
+            double cadd = cur * CurrentMult;
             cadd %= 8;
             return cc + cadd;
         }
@@ -534,7 +536,7 @@ namespace Circuit.Elements {
         /// <param name="g"></param>
         protected void doDots(Graphics g) {
             updateDotCount();
-            if (sim.dragElm != this) {
+            if (Sim.dragElm != this) {
                 drawDots(g, mPoint1, mPoint2, mCurCount);
             }
         }
@@ -563,17 +565,17 @@ namespace Circuit.Elements {
 
         protected Color getVoltageColor(double volts) {
             if (needsHighlight()) {
-                return selectColor;
+                return SelectColor;
             }
-            if (!sim.chkVoltsCheckItem.Checked) {
-                return whiteColor;
+            if (!Sim.chkVoltsCheckItem.Checked) {
+                return WhiteColor;
             }
-            int c = (int)((volts + voltageRange) * (colorScaleCount - 1) / (voltageRange * 2));
+            int c = (int)((volts + VoltageRange) * (COLOR_SCALE_COUNT - 1) / (VoltageRange * 2));
             if (c < 0) {
                 c = 0;
             }
-            if (c >= colorScaleCount) {
-                c = colorScaleCount - 1;
+            if (c >= COLOR_SCALE_COUNT) {
+                c = COLOR_SCALE_COUNT - 1;
             }
             return mColorScale[c];
         }
@@ -637,12 +639,12 @@ namespace Circuit.Elements {
         }
 
         protected bool needsHighlight() {
-            if (null == mMouseElmRef || null == sim.plotYElm) {
+            if (null == mMouseElmRef || null == Sim.plotYElm) {
                 return false;
             }
             /* Test if the current mouseElm is a ScopeElm and, if so, does it belong to this elm */
             var isScopeElm = (mMouseElmRef is ScopeElm) && ((ScopeElm)mMouseElmRef).elmScope.getElm().Equals(this);
-            return mMouseElmRef.Equals(this) || IsSelected || sim.plotYElm.Equals(this) || isScopeElm;
+            return mMouseElmRef.Equals(this) || IsSelected || Sim.plotYElm.Equals(this) || isScopeElm;
         }
 
         public virtual bool canShowValueInScope(int v) { return false; }

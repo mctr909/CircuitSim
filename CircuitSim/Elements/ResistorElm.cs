@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
+﻿using System.Drawing;
 
 namespace Circuit.Elements {
     class ResistorElm : CircuitElm {
@@ -39,7 +37,7 @@ namespace Circuit.Elements {
                 return;
             }
 
-            int hs = sim.chkAnsiResistorCheckItem.Checked ? 6 : 5;
+            int hs = Sim.chkAnsiResistorCheckItem.Checked ? 6 : 5;
             setBbox(mPoint1, mPoint2, hs);
 
             draw2Leads(g);
@@ -49,7 +47,7 @@ namespace Circuit.Elements {
             double v1 = Volts[0];
             double v2 = Volts[1];
 
-            if (sim.chkAnsiResistorCheckItem.Checked) {
+            if (Sim.chkAnsiResistorCheckItem.Checked) {
                 /* draw zigzag */
                 int oy = 0;
                 int ny;
@@ -67,14 +65,14 @@ namespace Circuit.Elements {
                 }
             } else {
                 /* draw rectangle */
-                PEN_THICK_LINE.Color = getVoltageColor(v1);
+                PenThickLine.Color = getVoltageColor(v1);
                 interpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, hs);
                 drawThickLine(g, ps1, ps2);
                 for (int i = 0; i != segments; i++) {
                     double v = v1 + (v2 - v1) * i / segments;
                     interpPoint(mLead1, mLead2, ref ps1, ref ps2, i * segf, hs);
                     interpPoint(mLead1, mLead2, ref ps3, ref ps4, (i + 1) * segf, hs);
-                    PEN_THICK_LINE.Color = getVoltageColor(v);
+                    PenThickLine.Color = getVoltageColor(v);
                     drawThickLine(g, ps1, ps3);
                     drawThickLine(g, ps2, ps4);
                 }
@@ -82,7 +80,7 @@ namespace Circuit.Elements {
                 drawThickLine(g, ps1, ps2);
             }
 
-            if (sim.chkShowValuesCheckItem.Checked) {
+            if (Sim.chkShowValuesCheckItem.Checked) {
                 var s = getShortUnitText(resistance, "");
                 drawValues(g, s, hs + 2);
             }
@@ -97,7 +95,7 @@ namespace Circuit.Elements {
         }
 
         public override void stamp() {
-            cir.StampResistor(Nodes[0], Nodes[1], resistance);
+            Cir.StampResistor(Nodes[0], Nodes[1], resistance);
         }
 
         public override void getInfo(string[] arr) {
@@ -120,8 +118,8 @@ namespace Circuit.Elements {
         }
 
         public override void setEditValue(int n, EditInfo ei) {
-            if (ei.value > 0) {
-                resistance = ei.value;
+            if (ei.Value > 0) {
+                resistance = ei.Value;
             }
         }
 

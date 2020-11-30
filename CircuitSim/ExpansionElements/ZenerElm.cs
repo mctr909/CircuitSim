@@ -50,7 +50,7 @@ namespace Circuit.Elements {
             /* draw arrow thingy */
             fillPolygon(g, getVoltageColor(v1), poly);
             /* draw thing arrow is pointing to */
-            PEN_THICK_LINE.Color = getVoltageColor(v2);
+            PenThickLine.Color = getVoltageColor(v2);
             drawThickLine(g, cathode[0], cathode[1]);
             /* draw wings on cathode */
             drawThickLine(g, wing[0], cathode[0]);
@@ -81,7 +81,7 @@ namespace Circuit.Elements {
                     if (zvoltage > 0) {
                         model = DiodeModel.getZenerModel(zvoltage);
                         modelName = model.name;
-                        ei.newDialog = true;
+                        ei.NewDialog = true;
                         return;
                     }
                 } catch { }

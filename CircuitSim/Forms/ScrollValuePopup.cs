@@ -103,7 +103,7 @@ namespace Circuit {
             nvalues = ptr;
             values[nvalues] = 1E99;
             inf = myElm.getEditInfo(0);
-            double currentvalue = inf.value;
+            double currentvalue = inf.Value;
             for (int i = 0; i < nvalues + 1; i++) {
                 if (CircuitElm.getShortUnitText(currentvalue, "") == CircuitElm.getShortUnitText(values[i], "")) { /* match to an existing value */
                     values[i] = currentvalue; /* Just in case it isn't 100% identical */
@@ -120,7 +120,7 @@ namespace Circuit {
                     break;
                 }
             }
-            name = inf.name;
+            name = inf.Name;
             lastidx = currentidx;
             /*for (int i = 0; i < nvalues; i++) {
                 Console.WriteLine("i=" + i + " values=" + values[i] + " current? " + (i == currentidx));
@@ -170,7 +170,7 @@ namespace Circuit {
         public void setElmValue(TrackBar tr) {
             lastidx = currentidx;
             currentidx = tr.Value;
-            inf.value = values[currentidx];
+            inf.Value = values[currentidx];
             myElm.setEditValue(0, inf);
             sim.needAnalyze();
             int thissel = getSelIdx();
@@ -181,7 +181,7 @@ namespace Circuit {
             if (i != lastidx) {
                 trbValue.Value = i;
                 lastidx = i;
-                inf.value = values[i];
+                inf.Value = values[i];
                 myElm.setEditValue(0, inf);
                 sim.needAnalyze();
             }

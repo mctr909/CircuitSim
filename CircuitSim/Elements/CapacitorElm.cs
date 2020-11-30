@@ -72,11 +72,11 @@ namespace Circuit.Elements {
             setBbox(mPoint1, mPoint2, hs);
 
             /* draw first lead and plate */
-            PEN_THICK_LINE.Color = getVoltageColor(Volts[0]);
+            PenThickLine.Color = getVoltageColor(Volts[0]);
             drawThickLine(g, mPoint1, mLead1);
             drawThickLine(g, plate1[0], plate1[1]);
             /* draw second lead and plate */
-            PEN_THICK_LINE.Color = getVoltageColor(Volts[1]);
+            PenThickLine.Color = getVoltageColor(Volts[1]);
             drawThickLine(g, mPoint2, mLead2);
             drawThickLine(g, plate2[0], plate2[1]);
 
@@ -89,21 +89,21 @@ namespace Circuit.Elements {
             }
 
             updateDotCount();
-            if (sim.dragElm != this) {
+            if (Sim.dragElm != this) {
                 drawDots(g, mPoint1, mLead1, mCurCount);
                 drawDots(g, mPoint2, mLead2, -mCurCount);
             }
             drawPosts(g);
-            if (sim.chkShowValuesCheckItem.Checked) {
+            if (Sim.chkShowValuesCheckItem.Checked) {
                 var s = getShortUnitText(capacitance, "F");
                 drawValues(g, s, hs);
             }
         }
 
         public override void stamp() {
-            if (sim.dcAnalysisFlag) {
+            if (Sim.dcAnalysisFlag) {
                 /* when finding DC operating point, replace cap with a 100M resistor */
-                cir.StampResistor(Nodes[0], Nodes[1], 1e8);
+                Cir.StampResistor(Nodes[0], Nodes[1], 1e8);
                 curSourceValue = 0;
                 return;
             }
@@ -114,13 +114,13 @@ namespace Circuit.Elements {
              * than backward euler but can cause oscillatory behavior
              * if RC is small relative to the timestep. */
             if (isTrapezoidal()) {
-                compResistance = sim.timeStep / (2 * capacitance);
+                compResistance = Sim.timeStep / (2 * capacitance);
             } else {
-                compResistance = sim.timeStep / capacitance;
+                compResistance = Sim.timeStep / capacitance;
             }
-            cir.StampResistor(Nodes[0], Nodes[1], compResistance);
-            cir.StampRightSide(Nodes[0]);
-            cir.StampRightSide(Nodes[1]);
+            Cir.StampResistor(Nodes[0], Nodes[1], compResistance);
+            Cir.StampRightSide(Nodes[0]);
+            Cir.StampRightSide(Nodes[1]);
         }
 
         public override void startIteration() {
@@ -133,7 +133,7 @@ namespace Circuit.Elements {
 
         public override void calculateCurrent() {
             double voltdiff = Volts[0] - Volts[1];
-            if (sim.dcAnalysisFlag) {
+            if (Sim.dcAnalysisFlag) {
                 mCurrent = voltdiff / 1e8;
                 return;
             }
@@ -146,10 +146,10 @@ namespace Circuit.Elements {
         }
 
         public override void doStep() {
-            if (sim.dcAnalysisFlag) {
+            if (Sim.dcAnalysisFlag) {
                 return;
             }
-            cir.StampCurrentSource(Nodes[0], Nodes[1], curSourceValue);
+            Cir.StampCurrentSource(Nodes[0], Nodes[1], curSourceValue);
         }
 
         public override void getInfo(string[] arr) {
@@ -170,20 +170,20 @@ namespace Circuit.Elements {
             }
             if (n == 1) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox();
-                ei.checkbox.Text = "Trapezoidal Approximation";
-                ei.checkbox.Checked = isTrapezoidal();
+                ei.CheckBox = new CheckBox();
+                ei.CheckBox.Text = "Trapezoidal Approximation";
+                ei.CheckBox.Checked = isTrapezoidal();
                 return ei;
             }
             return null;
         }
 
         public override void setEditValue(int n, EditInfo ei) {
-            if (n == 0 && ei.value > 0) {
-                capacitance = ei.value;
+            if (n == 0 && ei.Value > 0) {
+                capacitance = ei.Value;
             }
             if (n == 1) {
-                if (ei.checkbox.Checked) {
+                if (ei.CheckBox.Checked) {
                     mFlags &= ~FLAG_BACK_EULER;
                 } else {
                     mFlags |= FLAG_BACK_EULER;

@@ -41,14 +41,14 @@ namespace Circuit.Elements {
             int cr = 32;
             draw2Leads(g);
 
-            PEN_THICK_LINE.Color = getVoltageColor((Volts[0] + Volts[1]) / 2);
+            PenThickLine.Color = getVoltageColor((Volts[0] + Volts[1]) / 2);
             drawThickCircle(g, center.X, center.Y, cr);
             drawThickLine(g, ashaft1, ashaft2);
-            fillPolygon(g, PEN_THICK_LINE.Color, arrow);
+            fillPolygon(g, PenThickLine.Color, arrow);
 
             setBbox(mPoint1, mPoint2, cr);
             doDots(g);
-            if (sim.chkShowValuesCheckItem.Checked) {
+            if (Sim.chkShowValuesCheckItem.Checked) {
                 string s = getShortUnitText(currentValue, "A");
                 if (mDx == 0 || mDy == 0) {
                     drawValues(g, s, cr);
@@ -61,11 +61,11 @@ namespace Circuit.Elements {
         public void stampCurrentSource(bool broken) {
             if (broken) {
                 /* no current path; stamping a current source would cause a matrix error. */
-                cir.StampResistor(Nodes[0], Nodes[1], 1e8);
+                Cir.StampResistor(Nodes[0], Nodes[1], 1e8);
                 mCurrent = 0;
             } else {
                 /* ok to stamp a current source */
-                cir.StampCurrentSource(Nodes[0], Nodes[1], currentValue);
+                Cir.StampCurrentSource(Nodes[0], Nodes[1], currentValue);
                 mCurrent = currentValue;
             }
         }
@@ -78,7 +78,7 @@ namespace Circuit.Elements {
         }
 
         public override void setEditValue(int n, EditInfo ei) {
-            currentValue = ei.value;
+            currentValue = ei.Value;
         }
 
         public override void getInfo(string[] arr) {

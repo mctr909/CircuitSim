@@ -264,7 +264,7 @@ namespace Circuit.Elements {
                 return new EditInfo("Series Resistance", seriesResistance, -1, -1);
             }
             if (n == 2) {
-                return new EditInfo(EditInfo.makeLink("diodecalc.html", "Emission Coefficient"), emissionCoefficient, -1, -1);
+                return new EditInfo(EditInfo.MakeLink("diodecalc.html", "Emission Coefficient"), emissionCoefficient, -1, -1);
             }
             if (n == 3) {
                 return new EditInfo("Breakdown Voltage", breakdownVoltage, -1, -1);
@@ -274,16 +274,16 @@ namespace Circuit.Elements {
 
         public void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
-                saturationCurrent = ei.value;
+                saturationCurrent = ei.Value;
             }
             if (n == 1) {
-                seriesResistance = ei.value;
+                seriesResistance = ei.Value;
             }
             if (n == 2) {
-                emissionCoefficient = ei.value;
+                emissionCoefficient = ei.Value;
             }
             if (n == 3) {
-                breakdownVoltage = Math.Abs(ei.value);
+                breakdownVoltage = Math.Abs(ei.Value);
             }
             updateModel();
             CirSim.theSim.updateModels();

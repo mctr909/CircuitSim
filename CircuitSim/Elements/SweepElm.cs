@@ -53,7 +53,7 @@ namespace Circuit.Elements {
 
         public override void setPoints() {
             base.setPoints();
-            mLead1 = interpPoint(mPoint1, mPoint2, 1 - circleSize / mElmLen);
+            mLead1 = interpPoint(mPoint1, mPoint2, 1 - 0.5 * circleSize / mElmLen);
         }
 
         public override void draw(Graphics g) {
@@ -61,7 +61,7 @@ namespace Circuit.Elements {
 
             drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
 
-            PEN_THICK_LINE.Color = needsHighlight() ? selectColor : Color.Gray;
+            PenThickLine.Color = needsHighlight() ? SelectColor : Color.Gray;
 
             int xc = mPoint2.X;
             int yc = mPoint2.Y;
@@ -77,15 +77,15 @@ namespace Circuit.Elements {
                 tm = 2000 - tm;
             }
             double w = 1 + tm * .002;
-            if (sim.simIsRunning()) {
-                w = 1 + 2 * (frequency - minF) / (maxF - minF);
+            if (Sim.simIsRunning()) {
+                w = 1 + 3 * (frequency - minF) / (maxF - minF);
             }
 
             int x0 = 0;
             float y0 = 0;
-            PEN_LINE.Color = Color.YellowGreen;
+            PenLine.Color = Color.YellowGreen;
             for (int i = -xl; i <= xl; i++) {
-                float yy = yc + (float)(.95 * Math.Sin(i * pi * w / xl) * wl);
+                float yy = yc + (float)(.95 * Math.Sin(i * PI * w / xl) * wl);
                 if (i == -xl) {
                     x0 = xc + i;
                     y0 = yy;
@@ -96,7 +96,7 @@ namespace Circuit.Elements {
                 }
             }
 
-            if (sim.chkShowValuesCheckItem.Checked) {
+            if (Sim.chkShowValuesCheckItem.Checked) {
                 string s = getShortUnitText(frequency, "Hz");
                 if (mDx == 0 || mDy == 0) {
                     drawValues(g, s, circleSize);
@@ -105,13 +105,13 @@ namespace Circuit.Elements {
 
             drawPosts(g);
             mCurCount = updateDotCount(-mCurrent, mCurCount);
-            if (sim.dragElm != this) {
+            if (Sim.dragElm != this) {
                 drawDots(g, mPoint1, mLead1, mCurCount);
             }
         }
 
         public override void stamp() {
-            cir.StampVoltageSource(0, Nodes[0], mVoltSource);
+            Cir.StampVoltageSource(0, Nodes[0], mVoltSource);
         }
 
         void setParams() {
@@ -121,13 +121,13 @@ namespace Circuit.Elements {
                 dir = 1;
             }
             if ((mFlags & FLAG_LOG) == 0) {
-                fadd = dir * sim.timeStep * (maxF - minF) / sweepTime;
+                fadd = dir * Sim.timeStep * (maxF - minF) / sweepTime;
                 fmul = 1;
             } else {
                 fadd = 0;
-                fmul = Math.Pow(maxF / minF, dir * sim.timeStep / sweepTime);
+                fmul = Math.Pow(maxF / minF, dir * Sim.timeStep / sweepTime);
             }
-            savedTimeStep = sim.timeStep;
+            savedTimeStep = Sim.timeStep;
         }
 
         public override void reset() {
@@ -139,11 +139,11 @@ namespace Circuit.Elements {
 
         public override void startIteration() {
             // has timestep been changed?
-            if (sim.timeStep != savedTimeStep) {
+            if (Sim.timeStep != savedTimeStep) {
                 setParams();
             }
             v = Math.Sin(freqTime) * maxV;
-            freqTime += frequency * 2 * pi * sim.timeStep;
+            freqTime += frequency * PI2 * Sim.timeStep;
             frequency = frequency * fmul + fadd;
             if (frequency >= maxF && dir == 1) {
                 if ((mFlags & FLAG_BIDIR) != 0) {
@@ -162,7 +162,7 @@ namespace Circuit.Elements {
         }
 
         public override void doStep() {
-            cir.UpdateVoltageSource(0, Nodes[0], mVoltSource, v);
+            Cir.UpdateVoltageSource(0, Nodes[0], mVoltSource, v);
         }
 
         public override double getVoltageDiff() { return Volts[0]; }
@@ -192,7 +192,7 @@ namespace Circuit.Elements {
             }
             if (n == 3) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox() {
+                ei.CheckBox = new CheckBox() {
                     Text = "Logarithmic",
                     Checked = (mFlags & FLAG_LOG) != 0
                 };
@@ -203,7 +203,7 @@ namespace Circuit.Elements {
             }
             if (n == 5) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox() {
+                ei.CheckBox = new CheckBox() {
                     Text = "Bidirectional",
                     Checked = (mFlags & FLAG_BIDIR) != 0
                 };
@@ -213,33 +213,33 @@ namespace Circuit.Elements {
         }
 
         public override void setEditValue(int n, EditInfo ei) {
-            double maxfreq = 1 / (8 * sim.timeStep);
+            double maxfreq = 1 / (8 * Sim.timeStep);
             if (n == 0) {
-                minF = ei.value;
+                minF = ei.Value;
                 if (minF > maxfreq) {
                     minF = maxfreq;
                 }
             }
             if (n == 1) {
-                maxF = ei.value;
+                maxF = ei.Value;
                 if (maxF > maxfreq) {
                     maxF = maxfreq;
                 }
             }
             if (n == 2) {
-                sweepTime = ei.value;
+                sweepTime = ei.Value;
             }
             if (n == 3) {
                 mFlags &= ~FLAG_LOG;
-                if (ei.checkbox.Checked) {
+                if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_LOG;
                 }
             }
             if (n == 4)
-                maxV = ei.value;
+                maxV = ei.Value;
             if (n == 5) {
                 mFlags &= ~FLAG_BIDIR;
-                if (ei.checkbox.Checked) {
+                if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_BIDIR;
                 }
             }

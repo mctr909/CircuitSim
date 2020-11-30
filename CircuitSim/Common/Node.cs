@@ -5,16 +5,13 @@ using Circuit.Elements;
 
 namespace Circuit {
     class CircuitNodeLink {
-        public int num;
-        public CircuitElm elm;
+        public int Num;
+        public CircuitElm Elm;
     }
 
     class CircuitNode {
-        public List<CircuitNodeLink> links;
-        public bool _internal;
-        public CircuitNode() {
-            links = new List<CircuitNodeLink>();
-        }
+        public List<CircuitNodeLink> Links = new List<CircuitNodeLink>();
+        public bool Internal;
     }
 
     class FindPathInfo {
@@ -30,7 +27,8 @@ namespace Circuit {
         bool[] mVisited;
 
         /* State object to help find loops in circuit subject to various conditions (depending on type)
-        /* elm = source and destination element.  dest = destination node. */
+         * elm = source and destination element.
+         * dest = destination node. */
         public FindPathInfo(int type, CircuitElm elm, int dest, List<CircuitElm> elmList, int nodeCount) {
             mDest = dest;
             mType = type;
@@ -39,16 +37,9 @@ namespace Circuit {
             mVisited = new bool[nodeCount];
         }
 
-        CircuitElm getElm(int n) {
-            if (n >= mElmList.Count) {
-                return null;
-            }
-            return mElmList[n];
-        }
-
-        /* look through circuit for loop starting at node n1 of firstElm, for a path back to
-        /* dest node of firstElm */
-        public bool findPath(int n1) {
+        /* look through circuit for loop starting at node n1 of firstElm,
+         * for a path back to dest node of firstElm */
+        public bool FindPath(int n1) {
             if (n1 == mDest) {
                 return true;
             }
@@ -59,9 +50,8 @@ namespace Circuit {
             }
 
             mVisited[n1] = true;
-            int i;
-            for (i = 0; i != mElmList.Count; i++) {
-                CircuitElm ce = getElm(i);
+            for (int i = 0; i != mElmList.Count; i++) {
+                var ce = mElmList[i];
                 if (ce == mFirstElm) {
                     continue;
                 }
@@ -91,7 +81,7 @@ namespace Circuit {
                     /* look for posts which have a ground connection;
                     /* our path can go through ground */
                     for (int j = 0; j != ce.getConnectionNodeCount(); j++) {
-                        if (ce.hasGroundConnection(j) && findPath(ce.getConnectionNode(j))) {
+                        if (ce.hasGroundConnection(j) && FindPath(ce.getConnectionNode(j))) {
                             return true;
                         }
                     }
@@ -106,7 +96,7 @@ namespace Circuit {
                 if (nodeA == ce.getConnectionNodeCount()) {
                     continue;
                 }
-                if (ce.hasGroundConnection(nodeA) && findPath(0)) {
+                if (ce.hasGroundConnection(nodeA) && FindPath(0)) {
                     return true;
                 }
 
@@ -121,12 +111,11 @@ namespace Circuit {
                     }
                 }
 
-                int nodeB;
-                for (nodeB = 0; nodeB != ce.getConnectionNodeCount(); nodeB++) {
+                for (int nodeB = 0; nodeB != ce.getConnectionNodeCount(); nodeB++) {
                     if (nodeA == nodeB) {
                         continue;
                     }
-                    if (ce.getConnection(nodeA, nodeB) && findPath(ce.getConnectionNode(nodeB))) {
+                    if (ce.getConnection(nodeA, nodeB) && FindPath(ce.getConnectionNode(nodeB))) {
                         /*Console.WriteLine("got findpath " + n1); */
                         return true;
                     }

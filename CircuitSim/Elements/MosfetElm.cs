@@ -77,10 +77,10 @@ namespace Circuit.Elements {
         /* set up body diodes */
         void setupDiodes() {
             /* diode from node 1 to body terminal */
-            diodeB1 = new Diode(sim, cir);
+            diodeB1 = new Diode(Sim, Cir);
             diodeB1.setupForDefaultModel();
             /* diode from node 2 to body terminal */
-            diodeB2 = new Diode(sim, cir);
+            diodeB2 = new Diode(Sim, Cir);
             diodeB2.setupForDefaultModel();
         }
 
@@ -141,7 +141,7 @@ namespace Circuit.Elements {
                     continue;
                 }
                 double v = Volts[1] + (Volts[2] - Volts[1]) * i / segments;
-                PEN_THICK_LINE.Color = getVoltageColor(v);
+                PenThickLine.Color = getVoltageColor(v);
                 interpPoint(src[1], drn[1], ref ps1, i * segf);
                 interpPoint(src[1], drn[1], ref ps2, (i + 1) * segf);
                 drawThickLine(g, ps1, ps2);
@@ -153,7 +153,7 @@ namespace Circuit.Elements {
 
             /* draw bulk connection */
             if (showBulk()) {
-                PEN_THICK_LINE.Color = getVoltageColor(Volts[bodyTerminal]);
+                PenThickLine.Color = getVoltageColor(Volts[bodyTerminal]);
                 if (!hasBodyTerminal()) {
                     drawThickLine(g, pnp == -1 ? drn[0] : src[0], body[0]);
                 }
@@ -165,7 +165,7 @@ namespace Circuit.Elements {
                 fillPolygon(g, getVoltageColor(Volts[bodyTerminal]), arrowPoly);
             }
 
-            PEN_THICK_LINE.Color = getVoltageColor(Volts[0]);
+            PenThickLine.Color = getVoltageColor(Volts[0]);
 
             /* draw gate */
             drawThickLine(g, mPoint1, gate[1]);
@@ -191,7 +191,7 @@ namespace Circuit.Elements {
             }
 
             /* label pins when highlighted */
-            if (needsHighlight() || sim.dragElm == this) {
+            if (needsHighlight() || Sim.dragElm == this) {
                 /* make fiddly adjustments to pin label locations depending on orientation */
                 int dsx = Math.Sign(mDx);
                 int dsy = Math.Sign(mDy);
@@ -277,8 +277,8 @@ namespace Circuit.Elements {
         }
 
         public override void stamp() {
-            cir.StampNonLinear(Nodes[1]);
-            cir.StampNonLinear(Nodes[2]);
+            Cir.StampNonLinear(Nodes[1]);
+            Cir.StampNonLinear(Nodes[2]);
 
             if (hasBodyTerminal()) {
                 bodyTerminal = 3;
@@ -313,11 +313,11 @@ namespace Circuit.Elements {
                 return false;
             }
             /* larger differences are fine if value is large */
-            if (cir.SubIterations > 10 && diff < Math.Abs(now) * .001) {
+            if (Cir.SubIterations > 10 && diff < Math.Abs(now) * .001) {
                 return false;
             }
             /* if we're having trouble converging, get more lenient */
-            if (cir.SubIterations > 100 && diff < .01 + (cir.SubIterations - 100) * .0001) {
+            if (Cir.SubIterations > 100 && diff < .01 + (Cir.SubIterations - 100) * .0001) {
                 return false;
             }
             return true;
@@ -378,7 +378,7 @@ namespace Circuit.Elements {
             double vgs = vs[gate] - vs[source];
             double vds = vs[drain] - vs[source];
             if (!finished && (nonConvergence(lastv1, vs[1]) || nonConvergence(lastv2, vs[2]) || nonConvergence(lastv0, vs[0]))) {
-                cir.Converged = false;
+                Cir.Converged = false;
             }
             lastv0 = vs[0];
             lastv1 = vs[1];
@@ -432,16 +432,16 @@ namespace Circuit.Elements {
             }
 
             double rs = -pnp * ids0 + Gds * realvds + gm * realvgs;
-            cir.StampMatrix(Nodes[drain], Nodes[drain], Gds);
-            cir.StampMatrix(Nodes[drain], Nodes[source], -Gds - gm);
-            cir.StampMatrix(Nodes[drain], Nodes[gate], gm);
+            Cir.StampMatrix(Nodes[drain], Nodes[drain], Gds);
+            Cir.StampMatrix(Nodes[drain], Nodes[source], -Gds - gm);
+            Cir.StampMatrix(Nodes[drain], Nodes[gate], gm);
 
-            cir.StampMatrix(Nodes[source], Nodes[drain], -Gds);
-            cir.StampMatrix(Nodes[source], Nodes[source], Gds + gm);
-            cir.StampMatrix(Nodes[source], Nodes[gate], -gm);
+            Cir.StampMatrix(Nodes[source], Nodes[drain], -Gds);
+            Cir.StampMatrix(Nodes[source], Nodes[source], Gds + gm);
+            Cir.StampMatrix(Nodes[source], Nodes[gate], -gm);
 
-            cir.StampRightSide(Nodes[drain], rs);
-            cir.StampRightSide(Nodes[source], -rs);
+            Cir.StampRightSide(Nodes[drain], rs);
+            Cir.StampRightSide(Nodes[source], -rs);
         }
 
         void getFetInfo(string[] arr, string n) {
@@ -480,11 +480,11 @@ namespace Circuit.Elements {
                 return new EditInfo("Threshold Voltage", pnp * vt, .01, 5);
             }
             if (n == 1) {
-                return new EditInfo(EditInfo.makeLink("mosfet-beta.html", "Beta"), beta, .01, 5);
+                return new EditInfo(EditInfo.MakeLink("mosfet-beta.html", "Beta"), beta, .01, 5);
             }
             if (n == 2) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox() {
+                ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = "Show Bulk",
                     Checked = showBulk()
@@ -493,7 +493,7 @@ namespace Circuit.Elements {
             }
             if (n == 3) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox() {
+                ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = "Swap D/S",
                     Checked = (mFlags & FLAG_FLIP) != 0
@@ -502,7 +502,7 @@ namespace Circuit.Elements {
             }
             if (n == 4 && !showBulk()) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox() {
+                ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = "Digital Symbol",
                     Checked = drawDigital()
@@ -511,7 +511,7 @@ namespace Circuit.Elements {
             }
             if (n == 4 && showBulk()) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox() {
+                ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = "Simulate Body Diode",
                     Checked = (mFlags & FLAG_BODY_DIODE) != 0
@@ -520,7 +520,7 @@ namespace Circuit.Elements {
             }
             if (n == 5 && doBodyDiode()) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox() {
+                ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = "Body Terminal",
                     Checked = (mFlags & FLAG_BODY_TERMINAL) != 0
@@ -533,33 +533,33 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
-                vt = pnp * ei.value;
+                vt = pnp * ei.Value;
             }
-            if (n == 1 && ei.value > 0) {
-                beta = lastBeta = ei.value;
+            if (n == 1 && ei.Value > 0) {
+                beta = lastBeta = ei.Value;
             }
             if (n == 2) {
-                globalFlags = (!ei.checkbox.Checked)
+                globalFlags = (!ei.CheckBox.Checked)
                     ? (globalFlags | FLAG_HIDE_BULK) : (globalFlags & ~(FLAG_HIDE_BULK | FLAG_DIGITAL));
                 setPoints();
-                ei.newDialog = true;
+                ei.NewDialog = true;
             }
             if (n == 3) {
-                mFlags = ei.checkbox.Checked
+                mFlags = ei.CheckBox.Checked
                     ? (mFlags | FLAG_FLIP) : (mFlags & ~FLAG_FLIP);
                 setPoints();
             }
             if (n == 4 && !showBulk()) {
-                globalFlags = ei.checkbox.Checked
+                globalFlags = ei.CheckBox.Checked
                     ? (globalFlags | FLAG_DIGITAL) : (globalFlags & ~FLAG_DIGITAL);
                 setPoints();
             }
             if (n == 4 && showBulk()) {
-                mFlags = ei.changeFlag(mFlags, FLAG_BODY_DIODE);
-                ei.newDialog = true;
+                mFlags = ei.ChangeFlag(mFlags, FLAG_BODY_DIODE);
+                ei.NewDialog = true;
             }
             if (n == 5) {
-                mFlags = ei.changeFlag(mFlags, FLAG_BODY_TERMINAL);
+                mFlags = ei.ChangeFlag(mFlags, FLAG_BODY_TERMINAL);
                 allocNodes();
                 setPoints();
             }

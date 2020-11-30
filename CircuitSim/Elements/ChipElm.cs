@@ -135,7 +135,7 @@ namespace Circuit.Elements {
             }
             mNoDiagonal = true;
             setupPins();
-            setSize(sim.chkSmallGridCheckItem.Checked ? 1 : 2);
+            setSize(Sim.chkSmallGridCheckItem.Checked ? 1 : 2);
         }
 
         public ChipElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
@@ -184,12 +184,12 @@ namespace Circuit.Elements {
                 p.curcount = updateDotCount(p.current, p.curcount);
                 drawDots(g, b, a, p.curcount);
                 if (p.bubble) {
-                    PEN_THICK_LINE.Color = sim.chkPrintableCheckItem.Checked ? Color.White : Color.Black;
+                    PenThickLine.Color = Sim.chkPrintableCheckItem.Checked ? Color.White : Color.Black;
                     drawThickCircle(g, p.bubbleX, p.bubbleY, 1);
-                    PEN_THICK_LINE.Color = lightGrayColor;
+                    PenThickLine.Color = LightGrayColor;
                     drawThickCircle(g, p.bubbleX, p.bubbleY, 3);
                 }
-                PEN_THICK_LINE.Color  = p.selected ? selectColor : whiteColor;
+                PenThickLine.Color  = p.selected ? SelectColor : WhiteColor;
                 int fsz = 10 * csize;
                 while (true) {
                     int sw = (int)g.MeasureString(p.text, FONT_TEXT).Width;
@@ -208,7 +208,7 @@ namespace Circuit.Elements {
                     break;
                 }
             }
-            PEN_THICK_LINE.Color = needsHighlight() ? selectColor : lightGrayColor;
+            PenThickLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
             drawThickPolygon(g, rectPoints);
             if (clockPoints != null) {
                 drawThickPolygon(g, clockPoints);
@@ -217,20 +217,20 @@ namespace Circuit.Elements {
         }
 
         public override void drag(int xx, int yy) {
-            yy = sim.snapGrid(yy);
+            yy = Sim.snapGrid(yy);
             if (xx < X1) {
                 xx = X1;
                 yy = Y1;
             } else {
                 Y1 = Y2 = yy;
-                X2 = sim.snapGrid(xx);
+                X2 = Sim.snapGrid(xx);
             }
             setPoints();
         }
 
         public override void setPoints() {
             clockPoints = null;
-            if (X2 - X1 > sizeX * cspc2 && this == sim.dragElm) {
+            if (X2 - X1 > sizeX * cspc2 && this == Sim.dragElm) {
                 setSize(2);
             }
             int hs = cspc;
@@ -325,7 +325,7 @@ namespace Circuit.Elements {
             for (int i = 0; i != getPostCount(); i++) {
                 var p = pins[i];
                 if (p.output) {
-                    cir.StampVoltageSource(0, Nodes[i], p.voltSource);
+                    Cir.StampVoltageSource(0, Nodes[i], p.voltSource);
                 }
             }
         }
@@ -344,7 +344,7 @@ namespace Circuit.Elements {
             for (i = 0; i != getPostCount(); i++) {
                 var p = pins[i];
                 if (p.output) {
-                    cir.UpdateVoltageSource(0, Nodes[i], p.voltSource, p.value ? 5 : 0);
+                    Cir.UpdateVoltageSource(0, Nodes[i], p.voltSource, p.value ? 5 : 0);
                 }
             }
         }
@@ -418,16 +418,16 @@ namespace Circuit.Elements {
         public override EditInfo getEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox();
-                ei.checkbox.Text = "Flip X";
-                ei.checkbox.Checked = (mFlags & FLAG_FLIP_X) != 0;
+                ei.CheckBox = new CheckBox();
+                ei.CheckBox.Text = "Flip X";
+                ei.CheckBox.Checked = (mFlags & FLAG_FLIP_X) != 0;
                 return ei;
             }
             if (n == 1) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox();
-                ei.checkbox.Text = "Flip Y";
-                ei.checkbox.Checked = (mFlags & FLAG_FLIP_Y) != 0;
+                ei.CheckBox = new CheckBox();
+                ei.CheckBox.Text = "Flip Y";
+                ei.CheckBox.Checked = (mFlags & FLAG_FLIP_Y) != 0;
                 return ei;
             }
             return null;
@@ -435,7 +435,7 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
-                if (ei.checkbox.Checked) {
+                if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_FLIP_X;
                 } else {
                     mFlags &= ~FLAG_FLIP_X;
@@ -443,7 +443,7 @@ namespace Circuit.Elements {
                 setPoints();
             }
             if (n == 1) {
-                if (ei.checkbox.Checked) {
+                if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_FLIP_Y;
                 } else {
                     mFlags &= ~FLAG_FLIP_Y;

@@ -29,9 +29,9 @@ namespace Circuit.Elements {
 
         void createSlider() {
             waveform = WF_VAR;
-            sim.addWidgetToVerticalPanel(label = new Label() { Text = sliderText });
+            Sim.addWidgetToVerticalPanel(label = new Label() { Text = sliderText });
             int value = (int)((frequency - bias) * 100 / (maxVoltage - bias));
-            sim.addWidgetToVerticalPanel(slider = new TrackBar() {
+            Sim.addWidgetToVerticalPanel(slider = new TrackBar() {
                 Minimum = 0,
                 Maximum = 101,
                 SmallChange = 1,
@@ -46,8 +46,8 @@ namespace Circuit.Elements {
         }
 
         public override void delete() {
-            sim.removeWidgetFromVerticalPanel(label);
-            sim.removeWidgetFromVerticalPanel(slider);
+            Sim.removeWidgetFromVerticalPanel(label);
+            Sim.removeWidgetFromVerticalPanel(slider);
             base.delete();
         }
 
@@ -60,7 +60,7 @@ namespace Circuit.Elements {
             }
             if (n == 2) {
                 var ei = new EditInfo("Slider Text", 0, -1, -1);
-                ei.text = sliderText;
+                ei.Text = sliderText;
                 return ei;
             }
             return null;
@@ -68,15 +68,15 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
-                bias = ei.value;
+                bias = ei.Value;
             }
             if (n == 1) {
-                maxVoltage = ei.value;
+                maxVoltage = ei.Value;
             }
             if (n == 2) {
-                sliderText = ei.textf.Text;
+                sliderText = ei.Textf.Text;
                 label.Text = sliderText;
-                sim.setiFrameHeight();
+                Sim.setiFrameHeight();
             }
         }
 

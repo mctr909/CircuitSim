@@ -59,16 +59,16 @@ namespace Circuit.Elements {
         public override EditInfo getEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox();
-                ei.checkbox.Text = "Show Current";
-                ei.checkbox.Checked = mustShowCurrent();
+                ei.CheckBox = new CheckBox();
+                ei.CheckBox.Text = "Show Current";
+                ei.CheckBox.Checked = mustShowCurrent();
                 return ei;
             }
             if (n == 1) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox();
-                ei.checkbox.Text = "Show Voltage";
-                ei.checkbox.Checked = mustShowVoltage();
+                ei.CheckBox = new CheckBox();
+                ei.CheckBox.Text = "Show Voltage";
+                ei.CheckBox.Checked = mustShowVoltage();
                 return ei;
             }
             return null;
@@ -76,14 +76,14 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
-                if (ei.checkbox.Checked) {
+                if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_SHOWCURRENT;
                 } else {
                     mFlags &= ~FLAG_SHOWCURRENT;
                 }
             }
             if (n == 1) {
-                if (ei.checkbox.Checked) {
+                if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_SHOWVOLTAGE;
                 } else {
                     mFlags &= ~FLAG_SHOWVOLTAGE;

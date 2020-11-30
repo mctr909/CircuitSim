@@ -7,13 +7,13 @@ namespace Circuit.Elements {
         public double inductance { get; private set; }
 
         public InductorElm(int xx, int yy) : base(xx, yy) {
-            ind = new Inductor(sim, cir);
+            ind = new Inductor(Sim, Cir);
             inductance = 0.001;
             ind.setup(inductance, mCurrent, mFlags);
         }
 
         public InductorElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
-            ind = new Inductor(sim, cir);
+            ind = new Inductor(Sim, Cir);
             inductance = st.nextTokenDouble();
             mCurrent = st.nextTokenDouble();
             ind.setup(inductance, mCurrent, mFlags);
@@ -46,7 +46,7 @@ namespace Circuit.Elements {
             draw2Leads(g);
             drawCoil(g, 8, mLead1, mLead2, v1, v2);
 
-            if (sim.chkShowValuesCheckItem.Checked) {
+            if (Sim.chkShowValuesCheckItem.Checked) {
                 var s = getShortUnitText(inductance, "H");
                 drawValues(g, s, hs);
             }
@@ -90,20 +90,20 @@ namespace Circuit.Elements {
             }
             if (n == 1) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox();
-                ei.checkbox.Text = "Trapezoidal Approximation";
-                ei.checkbox.Checked = ind.isTrapezoidal();
+                ei.CheckBox = new CheckBox();
+                ei.CheckBox.Text = "Trapezoidal Approximation";
+                ei.CheckBox.Checked = ind.isTrapezoidal();
                 return ei;
             }
             return null;
         }
 
         public override void setEditValue(int n, EditInfo ei) {
-            if (n == 0 && ei.value > 0) {
-                inductance = ei.value;
+            if (n == 0 && ei.Value > 0) {
+                inductance = ei.Value;
             }
             if (n == 1) {
-                if (ei.checkbox.Checked) {
+                if (ei.CheckBox.Checked) {
                     mFlags &= ~Inductor.FLAG_BACK_EULER;
                 } else {
                     mFlags |= Inductor.FLAG_BACK_EULER;

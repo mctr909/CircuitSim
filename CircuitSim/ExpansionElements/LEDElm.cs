@@ -48,7 +48,7 @@ namespace Circuit.Elements {
         }
 
         public override void draw(Graphics g) {
-            if (needsHighlight() || this == sim.dragElm) {
+            if (needsHighlight() || this == Sim.dragElm) {
                 base.draw(g);
                 return;
             }
@@ -56,7 +56,7 @@ namespace Circuit.Elements {
             drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, ledLead1);
             drawThickLine(g, getVoltageColor(Volts[1]), ledLead2, mPoint2);
 
-            PEN_THICK_LINE.Color = Color.Gray;
+            PenThickLine.Color = Color.Gray;
 
             int cr = 12;
             drawThickCircle(g, ledCenter.X, ledCenter.Y, cr);
@@ -72,8 +72,8 @@ namespace Circuit.Elements {
                 w = 0;
             }
 
-            PEN_THICK_LINE.Color = Color.FromArgb((int)(colorR * w), (int)(colorG * w), (int)(colorB * w));
-            g.FillPie(PEN_THICK_LINE.Brush, ledCenter.X - cr, ledCenter.Y - cr, cr * 2, cr * 2, 0, 360);
+            PenThickLine.Color = Color.FromArgb((int)(colorR * w), (int)(colorG * w), (int)(colorB * w));
+            g.FillPie(PenThickLine.Brush, ledCenter.X - cr, ledCenter.Y - cr, cr * 2, cr * 2, 0, 360);
             setBbox(mPoint1, mPoint2, cr);
             updateDotCount();
             drawDots(g, mPoint1, ledLead1, mCurCount);
@@ -92,13 +92,13 @@ namespace Circuit.Elements {
 
         public override EditInfo getEditInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Red Value (0-1)", colorR, 0, 1).setDimensionless();
+                return new EditInfo("Red Value (0-1)", colorR, 0, 1).SetDimensionless();
             }
             if (n == 1) {
-                return new EditInfo("Green Value (0-1)", colorG, 0, 1).setDimensionless();
+                return new EditInfo("Green Value (0-1)", colorG, 0, 1).SetDimensionless();
             }
             if (n == 2) {
-                return new EditInfo("Blue Value (0-1)", colorB, 0, 1).setDimensionless();
+                return new EditInfo("Blue Value (0-1)", colorB, 0, 1).SetDimensionless();
             }
             if (n == 3) {
                 return new EditInfo("Max Brightness Current (A)", maxBrightnessCurrent, 0, .1);
@@ -108,16 +108,16 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
-                colorR = ei.value;
+                colorR = ei.Value;
             }
             if (n == 1) {
-                colorG = ei.value;
+                colorG = ei.Value;
             }
             if (n == 2) {
-                colorB = ei.value;
+                colorB = ei.Value;
             }
             if (n == 3) {
-                maxBrightnessCurrent = ei.value;
+                maxBrightnessCurrent = ei.Value;
             }
             base.setEditValue(n - 4, ei);
         }

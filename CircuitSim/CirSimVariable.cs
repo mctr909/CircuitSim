@@ -49,8 +49,8 @@ namespace Circuit {
         Button resetButton;
         Button runStopButton;
 
-        TrackBar ctrlSpeedBar;
-        TrackBar ctrlCurrentBar;
+        TrackBar trbSpeedBar;
+        TrackBar trbCurrentBar;
 
         public CheckBox chkVoltsCheckItem;
         public CheckBox chkDotsCheckItem;

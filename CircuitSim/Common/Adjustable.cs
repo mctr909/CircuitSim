@@ -36,7 +36,7 @@ namespace Circuit {
         }
 
         public void createSlider(CirSim sim) {
-            double value = elm.getEditInfo(editItem).value;
+            double value = elm.getEditInfo(editItem).Value;
             createSlider(sim, value);
         }
 
@@ -61,14 +61,14 @@ namespace Circuit {
         }
 
         public void execute() {
-            CircuitElm.sim.analyzeFlag = true;
+            CircuitElm.Sim.analyzeFlag = true;
             if (settingValue) {
                 return;
             }
             var ei = elm.getEditInfo(editItem);
-            ei.value = getSliderValue();
+            ei.Value = getSliderValue();
             elm.setEditValue(editItem, ei);
-            CircuitElm.sim.repaint();
+            CircuitElm.Sim.repaint();
         }
 
         double getSliderValue() {
@@ -81,7 +81,7 @@ namespace Circuit {
         }
 
         public string dump() {
-            return CircuitElm.sim.locateElm(elm)
+            return CircuitElm.Sim.locateElm(elm)
                 + " " + editItem
                 + " " + minValue
                 + " " + maxValue

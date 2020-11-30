@@ -2,24 +2,24 @@
 
 namespace Circuit {
     class FFT {
-        private int size;
+        public int Size { get; private set; }
         private int bits;
         private double[] cosTable;
         private double[] sinTable;
 
         public FFT(int n) {
-            size = n;
-            bits = (int)(Math.Log(size) / Math.Log(2));
-            cosTable = new double[size / 2];
-            sinTable = new double[size / 2];
-            double dtheta = -2 * Math.PI / size;
+            Size = n;
+            bits = (int)(Math.Log(Size) / Math.Log(2));
+            cosTable = new double[Size / 2];
+            sinTable = new double[Size / 2];
+            double dtheta = -2 * Math.PI / Size;
             for (int i = 0; i < cosTable.Length; i++) {
                 cosTable[i] = Math.Cos(dtheta * i);
                 sinTable[i] = Math.Sin(dtheta * i);
             }
         }
 
-        public void fft(double[] real, double[] imag) {
+        public void Exec(double[] real, double[] imag) {
             int j = 0;
             int n2 = real.Length / 2;
             for (int i = 1; i < real.Length - 1; i++) {
@@ -60,10 +60,8 @@ namespace Circuit {
             }
         }
 
-        public int getSize() { return size; }
-
-        public double magnitude(double real, double imag) {
-            return Math.Sqrt(real * real + imag * imag) / size;
+        public double Magnitude(double real, double imag) {
+            return Math.Sqrt(real * real + imag * imag) / Size;
         }
     }
 }

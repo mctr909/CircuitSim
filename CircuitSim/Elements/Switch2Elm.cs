@@ -68,7 +68,7 @@ namespace Circuit.Elements {
             }
             /* draw switch */
             if (!needsHighlight()) {
-                PEN_THICK_LINE.Color = whiteColor;
+                PenThickLine.Color = WhiteColor;
             }
             drawThickLine(g, mLead1, swpoles[position]);
 
@@ -113,7 +113,7 @@ namespace Circuit.Elements {
             if (position == 2 && hasCenterOff()) { /* in center? */
                 return;
             }
-            cir.StampVoltageSource(Nodes[0], Nodes[position + 1], mVoltSource, 0);
+            Cir.StampVoltageSource(Nodes[0], Nodes[position + 1], mVoltSource, 0);
         }
 
         public override int getVoltageSourceCount() {
@@ -124,8 +124,8 @@ namespace Circuit.Elements {
             base.toggle();
             if (link != 0) {
                 int i;
-                for (i = 0; i != sim.elmList.Count; i++) {
-                    var o = sim.elmList[i];
+                for (i = 0; i != Sim.elmList.Count; i++) {
+                    var o = Sim.elmList[i];
                     if (o is Switch2Elm) {
                         var s2 = (Switch2Elm)o;
                         if (s2.link == link) {
@@ -158,10 +158,10 @@ namespace Circuit.Elements {
                 return ei;
             }*/
             if (n == 1) {
-                return new EditInfo("Switch Group", link, 0, 100).setDimensionless();
+                return new EditInfo("Switch Group", link, 0, 100).SetDimensionless();
             }
             if (n == 2) {
-                return new EditInfo("# of Throws", throwCount, 2, 10).setDimensionless();
+                return new EditInfo("# of Throws", throwCount, 2, 10).SetDimensionless();
             }
             return base.getEditInfo(n);
         }
@@ -176,10 +176,10 @@ namespace Circuit.Elements {
                 setPoints();
             } else*/
             if (n == 1) {
-                link = (int)ei.value;
+                link = (int)ei.Value;
             } else if (n == 2) {
-                if (ei.value >= 2) {
-                    throwCount = (int)ei.value;
+                if (ei.Value >= 2) {
+                    throwCount = (int)ei.Value;
                 }
                 if (throwCount > 2) {
                     momentary = false;

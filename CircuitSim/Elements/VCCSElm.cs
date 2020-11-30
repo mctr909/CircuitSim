@@ -49,8 +49,8 @@ namespace Circuit.Elements {
         public override bool nonLinear() { return true; }
 
         public override void stamp() {
-            cir.StampNonLinear(Nodes[inputCount]);
-            cir.StampNonLinear(Nodes[inputCount + 1]);
+            Cir.StampNonLinear(Nodes[inputCount]);
+            Cir.StampNonLinear(Nodes[inputCount + 1]);
         }
 
         double sign(double a, double b) {
@@ -60,16 +60,16 @@ namespace Circuit.Elements {
         double getLimitStep() {
             /* get limit on changes in voltage per step.
              * be more lenient the more iterations we do */
-            if (cir.SubIterations < 4) {
+            if (Cir.SubIterations < 4) {
                 return 10;
             }
-            if (cir.SubIterations < 10) {
+            if (Cir.SubIterations < 10) {
                 return 1;
             }
-            if (cir.SubIterations < 20) {
+            if (Cir.SubIterations < 20) {
                 return .1;
             }
-            if (cir.SubIterations < 40) {
+            if (Cir.SubIterations < 40) {
                 return .01;
             }
             return .001;
@@ -78,10 +78,10 @@ namespace Circuit.Elements {
         double getConvergeLimit() {
             /* get maximum change in voltage per step when testing for convergence.
              * be more lenient over time */
-            if (cir.SubIterations < 10) {
+            if (Cir.SubIterations < 10) {
                 return .001;
             }
-            if (cir.SubIterations < 200) {
+            if (Cir.SubIterations < 200) {
                 return .01;
             }
             return .1;
@@ -101,7 +101,7 @@ namespace Circuit.Elements {
                 pins[inputCount].current = 0;
                 pins[inputCount + 1].current = 0;
                 /* avoid singular matrix errors */
-                cir.StampResistor(Nodes[inputCount], Nodes[inputCount + 1], 1e8);
+                Cir.StampResistor(Nodes[inputCount], Nodes[inputCount + 1], 1e8);
                 return;
             }
 
@@ -110,7 +110,7 @@ namespace Circuit.Elements {
             double convergeLimit = getConvergeLimit();
             for (i = 0; i != inputCount; i++) {
                 if (Math.Abs(Volts[i] - lastVolts[i]) > convergeLimit) {
-                    cir.Converged = false;
+                    Cir.Converged = false;
                 }
                 if (double.IsNaN(Volts[i])) {
                     Volts[i] = 0;
@@ -125,7 +125,7 @@ namespace Circuit.Elements {
                 for (i = 0; i != inputCount; i++) {
                     exprState.values[i] = Volts[i];
                 }
-                exprState.t = sim.t;
+                exprState.t = Sim.t;
                 double v0 = -expr.eval(exprState);
                 /*if (Math.Abs(volts[inputCount] - v0) > Math.Abs(v0) * .01 && cir.SubIterations < 100) {
                     cir.Converged = false;
@@ -143,14 +143,14 @@ namespace Circuit.Elements {
                     if (Math.Abs(dx) < 1e-6) {
                         dx = sign(dx, 1e-6);
                     }
-                    cir.StampVCCurrentSource(Nodes[inputCount], Nodes[inputCount + 1], Nodes[i], 0, dx);
+                    Cir.StampVCCurrentSource(Nodes[inputCount], Nodes[inputCount + 1], Nodes[i], 0, dx);
                     /*Console.WriteLine("ccedx " + i + " " + dx); */
                     /* adjust right side */
                     rs -= dx * Volts[i];
                     exprState.values[i] = Volts[i];
                 }
                 /*Console.WriteLine("ccers " + rs);*/
-                cir.StampCurrentSource(Nodes[inputCount], Nodes[inputCount + 1], rs);
+                Cir.StampCurrentSource(Nodes[inputCount], Nodes[inputCount + 1], rs);
                 pins[inputCount].current = -v0;
                 pins[inputCount + 1].current = v0;
             }
@@ -180,28 +180,28 @@ namespace Circuit.Elements {
 
         public override EditInfo getEditInfo(int n) {
             if (n == 0) {
-                var ei = new EditInfo(EditInfo.makeLink("customfunction.html", "Output Function"), 0, -1, -1);
-                ei.text = exprString;
-                ei.disallowSliders();
+                var ei = new EditInfo(EditInfo.MakeLink("customfunction.html", "Output Function"), 0, -1, -1);
+                ei.Text = exprString;
+                ei.DisallowSliders();
                 return ei;
             }
             if (n == 1) {
-                return new EditInfo("# of Inputs", inputCount, 1, 8).setDimensionless();
+                return new EditInfo("# of Inputs", inputCount, 1, 8).SetDimensionless();
             }
             return null;
         }
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
-                exprString = ei.textf.Text;
+                exprString = ei.Textf.Text;
                 parseExpr();
                 return;
             }
             if (n == 1) {
-                if (ei.value < 0 || ei.value > 8) {
+                if (ei.Value < 0 || ei.Value > 8) {
                     return;
                 }
-                inputCount = (int)ei.value;
+                inputCount = (int)ei.Value;
                 setupPins();
                 allocNodes();
                 setPoints();

@@ -88,7 +88,7 @@ namespace Circuit.Elements {
 
         public override void draw(Graphics g) {
             drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
-            PEN_THICK_LINE.Color = needsHighlight() ? selectColor : whiteColor;
+            PenThickLine.Color = needsHighlight() ? SelectColor : WhiteColor;
 
             string str = text;
             bool lineOver = false;
@@ -101,7 +101,7 @@ namespace Circuit.Elements {
             if (lineOver) {
                 int ya = Y2 - FONT_TEXT.Height;
                 int sw = (int)g.MeasureString(str, FONT_TEXT).Width;
-                g.DrawLine(PEN_THICK_LINE, X2 - sw / 2, ya, X2 + sw / 2, ya);
+                g.DrawLine(PenThickLine, X2 - sw / 2, ya, X2 + sw / 2, ya);
             }
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(g, mPoint1, mLead1, mCurCount);
@@ -115,7 +115,7 @@ namespace Circuit.Elements {
         public override void setCurrent(int x, double c) { mCurrent = -c; }
 
         public override void stamp() {
-            cir.StampVoltageSource(nodeNumber, Nodes[0], mVoltSource, 0);
+            Cir.StampVoltageSource(nodeNumber, Nodes[0], mVoltSource, 0);
         }
 
         public override double getVoltageDiff() { return Volts[0]; }
@@ -131,14 +131,14 @@ namespace Circuit.Elements {
         public override EditInfo getEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo("Text", 0, -1, -1);
-                ei.text = text;
+                ei.Text = text;
                 return ei;
             }
             if (n == 1) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox();
-                ei.checkbox.Text = "Internal Node";
-                ei.checkbox.Checked = isInternal();
+                ei.CheckBox = new CheckBox();
+                ei.CheckBox.Text = "Internal Node";
+                ei.CheckBox.Checked = isInternal();
                 return ei;
             }
             return null;
@@ -146,10 +146,10 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
-                text = ei.textf.Text;
+                text = ei.Textf.Text;
             }
             if (n == 1) {
-                mFlags = ei.changeFlag(mFlags, FLAG_INTERNAL);
+                mFlags = ei.ChangeFlag(mFlags, FLAG_INTERNAL);
             }
         }
     }

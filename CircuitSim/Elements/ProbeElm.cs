@@ -101,27 +101,27 @@ namespace Circuit.Elements {
             int hs = 8;
             setBbox(mPoint1, mPoint2, hs);
             bool selected = needsHighlight();
-            double len = (selected || sim.dragElm == this || mustShowVoltage()) ? 16 : mElmLen - 32;
+            double len = (selected || Sim.dragElm == this || mustShowVoltage()) ? 16 : mElmLen - 32;
             calcLeads((int)len);
 
             if (selected) {
-                PEN_THICK_LINE.Color = selectColor;
+                PenThickLine.Color = SelectColor;
             } else {
-                PEN_THICK_LINE.Color = getVoltageColor(Volts[0]);
+                PenThickLine.Color = getVoltageColor(Volts[0]);
             }
             drawThickLine(g, mPoint1, mLead1);
 
             if (selected) {
-                PEN_THICK_LINE.Color = selectColor;
+                PenThickLine.Color = SelectColor;
             } else {
-                PEN_THICK_LINE.Color = getVoltageColor(Volts[1]);
+                PenThickLine.Color = getVoltageColor(Volts[1]);
             }
             drawThickLine(g, mLead2, mPoint2);
 
-            if (this == sim.plotXElm) {
+            if (this == Sim.plotXElm) {
                 drawCenteredText(g, "X", center.X, center.Y, true);
             }
-            if (this == sim.plotYElm) {
+            if (this == Sim.plotYElm) {
                 drawCenteredText(g, "Y", center.X, center.Y, true);
             }
 
@@ -150,7 +150,7 @@ namespace Circuit.Elements {
                     s = getUnitText(frequency, "Hz");
                     break;
                 case TP_PER:
-                    s = "percent:" + period + " " + sim.timeStep + " " + sim.t + " " + sim.getIterCount();
+                    s = "percent:" + period + " " + Sim.timeStep + " " + Sim.t + " " + Sim.getIterCount();
                     break;
                 case TP_PWI:
                     s = getUnitText(pulseWidth, "S");
@@ -170,8 +170,8 @@ namespace Circuit.Elements {
                 plusPoint.Y += 3;
             }
 
-            int w = (int)g.MeasureString("+", unitsFont).Width;
-            g.DrawString("+", unitsFont, BRUSH_TEXT, plusPoint.X - w / 2, plusPoint.Y);
+            int w = (int)g.MeasureString("+", FONT_UNITS).Width;
+            g.DrawString("+", FONT_UNITS, BRUSH_TEXT, plusPoint.X - w / 2, plusPoint.Y);
             drawPosts(g);
         }
 
@@ -267,35 +267,35 @@ namespace Circuit.Elements {
         public override EditInfo getEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox();
-                ei.checkbox.Text = "Show Value";
-                ei.checkbox.Checked = mustShowVoltage();
+                ei.CheckBox = new CheckBox();
+                ei.CheckBox.Text = "Show Value";
+                ei.CheckBox.Checked = mustShowVoltage();
                 return ei;
             }
             if (n == 1) {
                 var ei = new EditInfo("Value", selectedValue, -1, -1);
-                ei.choice = new ComboBox();
-                ei.choice.Items.Add("Voltage");
-                ei.choice.Items.Add("RMS Voltage");
-                ei.choice.Items.Add("Max Voltage");
-                ei.choice.Items.Add("Min Voltage");
-                ei.choice.Items.Add("P2P Voltage");
-                ei.choice.Items.Add("Binary Value");
+                ei.Choice = new ComboBox();
+                ei.Choice.Items.Add("Voltage");
+                ei.Choice.Items.Add("RMS Voltage");
+                ei.Choice.Items.Add("Max Voltage");
+                ei.Choice.Items.Add("Min Voltage");
+                ei.Choice.Items.Add("P2P Voltage");
+                ei.Choice.Items.Add("Binary Value");
                 /*ei.choice.Items.Add("Frequency");
                 ei.choice.Items.Add("Period");
                 ei.choice.Items.Add("Pulse Width");
                 ei.choice.Items.Add("Duty Cycle"); */
-                ei.choice.SelectedIndex = meter;
+                ei.Choice.SelectedIndex = meter;
                 return ei;
             }
             if (n == 2) {
                 var ei = new EditInfo("Scale", 0);
-                ei.choice = new ComboBox();
-                ei.choice.Items.Add("Auto");
-                ei.choice.Items.Add("V");
-                ei.choice.Items.Add("mV");
-                ei.choice.Items.Add(CirSim.muString + "V");
-                ei.choice.SelectedIndex = scale;
+                ei.Choice = new ComboBox();
+                ei.Choice.Items.Add("Auto");
+                ei.Choice.Items.Add("V");
+                ei.Choice.Items.Add("mV");
+                ei.Choice.Items.Add(CirSim.muString + "V");
+                ei.Choice.SelectedIndex = scale;
                 return ei;
             }
 
@@ -304,17 +304,17 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
-                if (ei.checkbox.Checked) {
+                if (ei.CheckBox.Checked) {
                     mFlags = FLAG_SHOWVOLTAGE;
                 } else {
                     mFlags &= ~FLAG_SHOWVOLTAGE;
                 }
             }
             if (n == 1) {
-                meter = ei.choice.SelectedIndex;
+                meter = ei.Choice.SelectedIndex;
             }
             if (n == 2) {
-                scale = ei.choice.SelectedIndex;
+                scale = ei.Choice.SelectedIndex;
             }
         }
     }

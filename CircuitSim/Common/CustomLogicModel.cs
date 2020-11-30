@@ -111,24 +111,24 @@ namespace Circuit {
         public EditInfo getEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo("Inputs", 0, -1, -1);
-                ei.text = arrayToList(inputs);
+                ei.Text = arrayToList(inputs);
                 return ei;
             }
             if (n == 1) {
                 var ei = new EditInfo("Outputs", 0, -1, -1);
-                ei.text = arrayToList(outputs);
+                ei.Text = arrayToList(outputs);
                 return ei;
             }
             if (n == 2) {
                 var ei = new EditInfo("Info Text", 0, -1, -1);
-                ei.text = infoText;
+                ei.Text = infoText;
                 return ei;
             }
             if (n == 3) {
-                var ei = new EditInfo(EditInfo.makeLink("customlogic.html", "Definition"), 0, -1, -1);
-                ei.textArea = new TextBox();
-                ei.textArea.Multiline = true;
-                ei.textArea.Text = rules;
+                var ei = new EditInfo(EditInfo.MakeLink("customlogic.html", "Definition"), 0, -1, -1);
+                ei.TextArea = new TextBox();
+                ei.TextArea.Multiline = true;
+                ei.TextArea.Text = rules;
                 return ei;
             }
             /*
@@ -144,20 +144,20 @@ namespace Circuit {
 
         public void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
-                inputs = listToArray(ei.textf.Text);
+                inputs = listToArray(ei.Textf.Text);
             }
             if (n == 1) {
-                outputs = listToArray(ei.textf.Text);
+                outputs = listToArray(ei.Textf.Text);
             }
             if (n == 2) {
-                infoText = ei.textf.Text;
+                infoText = ei.Textf.Text;
             }
             if (n == 3) {
-                rules = ei.textArea.Text;
+                rules = ei.TextArea.Text;
                 parseRules();
             }
             if (n == 4) {
-                if (ei.checkbox.Checked) {
+                if (ei.CheckBox.Checked) {
                     flags |= FLAG_SCHMITT;
                 } else {
                     flags &= ~FLAG_SCHMITT;

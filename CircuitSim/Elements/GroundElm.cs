@@ -11,7 +11,7 @@ namespace Circuit.Elements {
         public override int getPostCount() { return 1; }
 
         public override void draw(Graphics g) {
-            PEN_THICK_LINE.Color = getVoltageColor(0);
+            PenThickLine.Color = getVoltageColor(0);
             drawThickLine(g, mPoint1, mPoint2);
             for (int i = 0; i != 3; i++) {
                 int a = 10 - i * 4;
@@ -28,7 +28,7 @@ namespace Circuit.Elements {
         public override void setCurrent(int x, double c) { mCurrent = -c; }
 
         public override void stamp() {
-            cir.StampVoltageSource(0, Nodes[0], mVoltSource, 0);
+            Cir.StampVoltageSource(0, Nodes[0], mVoltSource, 0);
         }
 
         public override double getVoltageDiff() { return 0; }

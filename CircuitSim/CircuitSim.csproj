@@ -112,18 +112,18 @@
     <Compile Include="Elements\GraphicElm.cs" />
     <Compile Include="Elements\GroundElm.cs" />
     <Compile Include="Elements\LabeledNodeElm.cs" />
-    <Compile Include="ExpansionElements\LogicInputElm.cs" />
-    <Compile Include="ExpansionElements\LogicOutputElm.cs" />
+    <Compile Include="Elements\LogicInputElm.cs" />
+    <Compile Include="Elements\LogicOutputElm.cs" />
     <Compile Include="Elements\OutputElm.cs" />
     <Compile Include="Elements\PotElm.cs" />
     <Compile Include="Elements\ProbeElm.cs" />
-    <Compile Include="ExpansionElements\RailElm.cs" />
+    <Compile Include="Elements\RailElm.cs" />
     <Compile Include="ExpansionElements\_RingCounterElm.cs" />
-    <Compile Include="ExpansionElements\Switch2Elm.cs" />
+    <Compile Include="Elements\Switch2Elm.cs" />
     <Compile Include="Elements\SwitchElm.cs" />
     <Compile Include="Elements\TransistorElm.cs" />
     <Compile Include="ExpansionElements\VarRailElm.cs" />
-    <Compile Include="ExpansionElements\VCCSElm.cs" />
+    <Compile Include="Elements\VCCSElm.cs" />
     <Compile Include="Elements\VoltageElm.cs" />
     <Compile Include="Elements\WireElm.cs" />
     <Compile Include="CircuitSim.cs">
@@ -155,10 +155,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="ClassDiagram2.cd" />
-    <None Include="ClassDiagram3.cd" />
-    <None Include="ClassDiagram4.cd" />
-    <None Include="ClassDiagram5.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

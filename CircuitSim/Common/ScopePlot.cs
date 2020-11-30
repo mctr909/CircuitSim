@@ -4,7 +4,7 @@ using Circuit.Elements;
 
 namespace Circuit {
     class ScopePlot {
-        static readonly Color[] colors = {
+        static readonly Color[] COLORS = {
             Color.FromArgb(0xFF, 0x00, 0x00),
             Color.FromArgb(0xFF, 0x80, 0x00),
             Color.FromArgb(0xFF, 0x00, 0xFF),
@@ -15,83 +15,83 @@ namespace Circuit {
             Color.FromArgb(0x00, 0xFF, 0xFF)
         };
 
-        public CircuitElm elm;
+        public CircuitElm Elm;
 
-        public double[] minValues { get; private set; }
-        public double[] maxValues { get; private set; }
+        public double[] MinValues { get; private set; }
+        public double[] MaxValues { get; private set; }
         public int ptr { get; private set; }
-        public int value { get; private set; }
-        public int speed { get; private set; }
-        public int units;
-        public double lastValue { get; private set; }
-        public Color color { get; private set; }
+        public int Value { get; private set; }
+        public int Speed { get; private set; }
+        public int Units { get; set; }
+        public double LastValue { get; private set; }
+        public Color Color { get; private set; }
 
-        int scopePointCount;
-        int ctr;
+        int mScopePointCount;
+        int mCounter;
 
         public ScopePlot(CircuitElm e, int u) {
-            elm = e;
-            units = u;
+            Elm = e;
+            Units = u;
         }
 
         public ScopePlot(CircuitElm e, int u, int v) {
-            elm = e;
-            units = u;
-            value = v;
+            Elm = e;
+            Units = u;
+            Value = v;
         }
 
-        public int startIndex(int w) {
-            return ptr + scopePointCount - w;
+        public int StartIndex(int w) {
+            return ptr + mScopePointCount - w;
         }
 
-        public void reset(int spc, int sp, bool full) {
-            int oldSpc = scopePointCount;
-            scopePointCount = spc;
-            if (speed != sp) {
+        public void Reset(int spc, int sp, bool full) {
+            int oldSpc = mScopePointCount;
+            mScopePointCount = spc;
+            if (Speed != sp) {
                 oldSpc = 0; /* throw away old data */
             }
-            speed = sp;
-            var oldMin = minValues;
-            var oldMax = maxValues;
-            minValues = new double[scopePointCount];
-            maxValues = new double[scopePointCount];
+            Speed = sp;
+            var oldMin = MinValues;
+            var oldMax = MaxValues;
+            MinValues = new double[mScopePointCount];
+            MaxValues = new double[mScopePointCount];
             if (oldMin != null && !full) {
                 /* preserve old data if possible */
                 int i;
-                for (i = 0; i != scopePointCount && i != oldSpc; i++) {
-                    int i1 = (-i) & (scopePointCount - 1);
+                for (i = 0; i != mScopePointCount && i != oldSpc; i++) {
+                    int i1 = (-i) & (mScopePointCount - 1);
                     int i2 = (ptr - i) & (oldSpc - 1);
-                    minValues[i1] = oldMin[i2];
-                    maxValues[i1] = oldMax[i2];
+                    MinValues[i1] = oldMin[i2];
+                    MaxValues[i1] = oldMax[i2];
                 }
             } else {
-                ctr = 0;
+                mCounter = 0;
             }
             ptr = 0;
         }
 
-        public void timeStep() {
-            if (elm == null) {
+        public void TimeStep() {
+            if (Elm == null) {
                 return;
             }
-            double v = elm.getScopeValue(value);
-            if (v < minValues[ptr]) {
-                minValues[ptr] = v;
+            double v = Elm.getScopeValue(Value);
+            if (v < MinValues[ptr]) {
+                MinValues[ptr] = v;
             }
-            if (v > maxValues[ptr]) {
-                maxValues[ptr] = v;
+            if (v > MaxValues[ptr]) {
+                MaxValues[ptr] = v;
             }
-            lastValue = v;
-            ctr++;
-            if (ctr >= speed) {
-                ptr = (ptr + 1) & (scopePointCount - 1);
-                minValues[ptr] = maxValues[ptr] = v;
-                ctr = 0;
+            LastValue = v;
+            mCounter++;
+            if (mCounter >= Speed) {
+                ptr = (ptr + 1) & (mScopePointCount - 1);
+                MinValues[ptr] = MaxValues[ptr] = v;
+                mCounter = 0;
             }
         }
 
-        public string getUnitText(double v) {
-            switch (units) {
+        public string GetUnitText(double v) {
+            switch (Units) {
             case Scope.UNITS_V:
                 return CircuitElm.getVoltageText(v);
             case Scope.UNITS_A:
@@ -104,20 +104,20 @@ namespace Circuit {
             return null;
         }
 
-        public void assignColor(int count) {
+        public void AssignColor(int count) {
             if (count > 0) {
-                color = colors[(count - 1) % 8];
+                Color = COLORS[(count - 1) % 8];
                 return;
             }
-            switch (units) {
+            switch (Units) {
             case Scope.UNITS_V:
-                color = Color.FromArgb(0x00, 0xFF, 0x00);
+                Color = Color.FromArgb(0x00, 0xFF, 0x00);
                 break;
             case Scope.UNITS_A:
-                color = Color.FromArgb(0xFF, 0xFF, 0x00);
+                Color = Color.FromArgb(0xFF, 0xFF, 0x00);
                 break;
             default:
-                color = CirSim.theSim.chkPrintableCheckItem.Checked ? Color.FromArgb(0, 0, 0) : Color.FromArgb(255, 255, 255);
+                Color = CirSim.theSim.chkPrintableCheckItem.Checked ? Color.FromArgb(0, 0, 0) : Color.FromArgb(255, 255, 255);
                 break;
             }
         }

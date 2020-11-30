@@ -225,7 +225,7 @@ namespace Circuit {
                 });
                 labelTextBox = new TextBox();
                 addItemToGrid(grbShowInfo, labelTextBox);
-                string labelText = scope.getText();
+                string labelText = scope.Text;
                 if (labelText != null) {
                     labelTextBox.Text = labelText;
                 }
@@ -290,29 +290,29 @@ namespace Circuit {
 
         void scrollbarChanged() {
             int newsp = (int)Math.Pow(2, 10 - speedBar.Value);
-            Console.WriteLine("changed " + scope.speed + " " + newsp + " " + speedBar.Value);
-            if (scope.speed != newsp) {
+            Console.WriteLine("changed " + scope.Speed + " " + newsp + " " + speedBar.Value);
+            if (scope.Speed != newsp) {
                 scope.setSpeed(newsp);
             }
             setScopeSpeedLabel();
         }
 
         void updateUI() {
-            speedBar.Value = (10 - (int)Math.Round(Math.Log(scope.speed) / Math.Log(2)));
+            speedBar.Value = (10 - (int)Math.Round(Math.Log(scope.Speed) / Math.Log(2)));
             if (voltageBox != null) {
-                voltageBox.Checked = scope.showV && !scope.showingValue(Scope.VAL_POWER);
-                currentBox.Checked = scope.showI && !scope.showingValue(Scope.VAL_POWER);
+                voltageBox.Checked = scope.ShowV && !scope.showingValue(Scope.VAL_POWER);
+                currentBox.Checked = scope.ShowI && !scope.showingValue(Scope.VAL_POWER);
                 powerBox.Checked = scope.showingValue(Scope.VAL_POWER);
             }
-            scaleBox.Checked = scope.showScale;
-            peakBox.Checked = scope.showMax;
-            negPeakBox.Checked = scope.showMin;
-            freqBox.Checked = scope.showFreq;
-            spectrumBox.Checked = scope._showFFT;
-            rmsBox.Checked = scope.showRMS;
+            scaleBox.Checked = scope.ShowScale;
+            peakBox.Checked = scope.ShowMax;
+            negPeakBox.Checked = scope.ShowMin;
+            freqBox.Checked = scope.ShowFreq;
+            spectrumBox.Checked = scope.ShowFFT;
+            rmsBox.Checked = scope.ShowRMS;
             rmsBox.Text = scope.canShowRMS() ? "Show RMS Average" : "Show Average";
-            viBox.Checked = scope.plot2d && !scope.plotXY;
-            xyBox.Checked = scope.plotXY;
+            viBox.Checked = scope.Plot2d && !scope.PlotXY;
+            xyBox.Checked = scope.PlotXY;
             resistanceBox.Checked = scope.showingValue(Scope.VAL_R);
             resistanceBox.Enabled = scope.canShowResistance();
             if (vbeBox != null) {
@@ -326,9 +326,9 @@ namespace Circuit {
             }
             manualScaleLabel.Text = "Scale (Max Value)" + " (" + scope.getScaleUnitsText() + ")";
             manualScaleTextBox.Text = EditDialog.unitString(null, scope.getScaleValue());
-            manualScaleBox.Checked = scope.lockScale;
-            manualScaleTextBox.Enabled = scope.lockScale;
-            logSpectrumBox.Checked = scope.logSpectrum;
+            manualScaleBox.Checked = scope.LockScale;
+            manualScaleTextBox.Enabled = scope.LockScale;
+            logSpectrumBox.Checked = scope.LogSpectrum;
             setScopeSpeedLabel();
 
             /* if you add more here, make sure it still works with transistor scopes */
@@ -344,7 +344,7 @@ namespace Circuit {
             if (label.Length == 0) {
                 label = null;
             }
-            scope.setText(label);
+            scope.Text = label;
             try {
                 double d = EditDialog.parseUnits(manualScaleTextBox.Text);
                 scope.setManualScaleValue(d);

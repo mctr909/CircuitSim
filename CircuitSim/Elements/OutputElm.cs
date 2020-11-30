@@ -37,21 +37,21 @@ namespace Circuit.Elements {
         public override void draw(Graphics g) {
             bool selected = needsHighlight();
             var font = selected ? fontBold : fontRegular;
-            PEN_THICK_LINE.Color = selected ? selectColor : whiteColor;
+            PenThickLine.Color = selected ? SelectColor : WhiteColor;
 
             string txt = (mFlags & FLAG_VALUE) != 0 ? getUnitTextWithScale(Volts[0], "V", scale) : "out";
-            if (this == sim.plotXElm) {
+            if (this == Sim.plotXElm) {
                 txt = "X";
             }
-            if (this == sim.plotYElm) {
+            if (this == Sim.plotYElm) {
                 txt = "Y";
             }
             interpPoint(mPoint1, mPoint2, ref mLead1, 1 - ((int)g.MeasureString(txt, font).Width / 2 + 8) / mElmLen);
             setBbox(mPoint1, mLead1, 0);
             drawCenteredText(g, txt, X2, Y2, true);
-            PEN_THICK_LINE.Color = getVoltageColor(Volts[0]);
+            PenThickLine.Color = getVoltageColor(Volts[0]);
             if (selected) {
-                PEN_THICK_LINE.Color = selectColor;
+                PenThickLine.Color = SelectColor;
             }
             drawThickLine(g, mPoint1, mLead1);
             drawPosts(g);
@@ -67,19 +67,19 @@ namespace Circuit.Elements {
         public override EditInfo getEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox();
-                ei.checkbox.Text = "Show Voltage";
-                ei.checkbox.Checked = (mFlags & FLAG_VALUE) != 0;
+                ei.CheckBox = new CheckBox();
+                ei.CheckBox.Text = "Show Voltage";
+                ei.CheckBox.Checked = (mFlags & FLAG_VALUE) != 0;
                 return ei;
             }
             if (n == 1) {
                 var ei = new EditInfo("Scale", 0);
-                ei.choice = new ComboBox();
-                ei.choice.Items.Add("Auto");
-                ei.choice.Items.Add("V");
-                ei.choice.Items.Add("mV");
-                ei.choice.Items.Add(CirSim.muString + "V");
-                ei.choice.SelectedIndex = scale;
+                ei.Choice = new ComboBox();
+                ei.Choice.Items.Add("Auto");
+                ei.Choice.Items.Add("V");
+                ei.Choice.Items.Add("mV");
+                ei.Choice.Items.Add(CirSim.muString + "V");
+                ei.Choice.SelectedIndex = scale;
                 return ei;
             }
             return null;
@@ -87,10 +87,10 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
-                mFlags = ei.checkbox.Checked ? (mFlags | FLAG_VALUE) : (mFlags & ~FLAG_VALUE);
+                mFlags = ei.CheckBox.Checked ? (mFlags | FLAG_VALUE) : (mFlags & ~FLAG_VALUE);
             }
             if (n == 1) {
-                scale = ei.choice.SelectedIndex;
+                scale = ei.Choice.SelectedIndex;
             }
         }
     }

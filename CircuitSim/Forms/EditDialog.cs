@@ -29,7 +29,7 @@ namespace Circuit {
         Panel hp;
         bool closeOnEnter = true;
 
-        public EditDialog(Editable ce, CirSim f) : base() {
+        public EditDialog(Editable ce, CirSim f, int x, int y) : base() {
             Text = "Edit Component";
             cframe = f;
             elm = ce;
@@ -73,6 +73,8 @@ namespace Circuit {
 
             ResumeLayout(false);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            Show();
+            Location = new Point(x - Width / 2, y + Height / 2);
         }
 
         void buildDialog() {
@@ -86,41 +88,41 @@ namespace Circuit {
                 var ei = einfos[i];
                 idx = vp.Controls.IndexOf(hp);
                 insertCtrl(vp, new Label() {
-                    Text = ei.name,
+                    Text = ei.Name,
                     AutoSize = true,
                     TextAlign = ContentAlignment.BottomLeft
                 }, idx);
                 idx = vp.Controls.IndexOf(hp);
-                if (ei.choice != null) {
-                    ei.choice.AutoSize = true;
-                    ei.choice.SelectedValueChanged += new EventHandler((s, e) => {
+                if (ei.Choice != null) {
+                    ei.Choice.AutoSize = true;
+                    ei.Choice.SelectedValueChanged += new EventHandler((s, e) => {
                         itemStateChanged(s);
                     });
-                    insertCtrl(vp, ei.choice, idx);
-                } else if (ei.checkbox != null) {
-                    ei.checkbox.AutoSize = true;
-                    ei.checkbox.CheckedChanged += new EventHandler((s, e) => {
+                    insertCtrl(vp, ei.Choice, idx);
+                } else if (ei.CheckBox != null) {
+                    ei.CheckBox.AutoSize = true;
+                    ei.CheckBox.CheckedChanged += new EventHandler((s, e) => {
                         itemStateChanged(s);
                     });
-                    insertCtrl(vp, ei.checkbox, idx);
-                } else if (ei.button != null) {
-                    ei.button.AutoSize = true;
-                    ei.button.Click += new EventHandler((s, e) => {
+                    insertCtrl(vp, ei.CheckBox, idx);
+                } else if (ei.Button != null) {
+                    ei.Button.AutoSize = true;
+                    ei.Button.Click += new EventHandler((s, e) => {
                         itemStateChanged(s);
                     });
-                    insertCtrl(vp, ei.button, idx);
-                } else if (ei.textArea != null) {
-                    insertCtrl(vp, ei.textArea, idx);
+                    insertCtrl(vp, ei.Button, idx);
+                } else if (ei.TextArea != null) {
+                    insertCtrl(vp, ei.TextArea, idx);
                     closeOnEnter = false;
                 } else if (ei.widget != null) {
                     insertCtrl(vp, ei.widget, idx);
                 } else {
-                    insertCtrl(vp, ei.textf = new TextBox(), idx);
-                    if (ei.text != null) {
-                        ei.textf.Text = ei.text;
+                    insertCtrl(vp, ei.Textf = new TextBox(), idx);
+                    if (ei.Text != null) {
+                        ei.Textf.Text = ei.Text;
                     }
-                    if (ei.text == null) {
-                        ei.textf.Text = unitString(ei);
+                    if (ei.Text == null) {
+                        ei.Textf.Text = unitString(ei);
                     }
                 }
             }
@@ -165,16 +167,16 @@ namespace Circuit {
         public string unitString(EditInfo ei) {
             /* for voltage elements, express values in rms if that would be shorter */
             if (elm != null && (elm is VoltageElm)
-                && Math.Abs(ei.value) > 1e-4
-                && diffFromInteger(ei.value * 1e4) > diffFromInteger(ei.value * 1e4 / ROOT2)) {
-                return unitString(ei, ei.value / ROOT2) + "rms";
+                && Math.Abs(ei.Value) > 1e-4
+                && diffFromInteger(ei.Value * 1e4) > diffFromInteger(ei.Value * 1e4 / ROOT2)) {
+                return unitString(ei, ei.Value / ROOT2) + "rms";
             }
-            return unitString(ei, ei.value);
+            return unitString(ei, ei.Value);
         }
 
         public static string unitString(EditInfo ei, double v) {
             double va = Math.Abs(v);
-            if (ei != null && ei.dimensionless) {
+            if (ei != null && ei.Dimensionless) {
                 return (v).ToString();
             }
             if (v == 0) {
@@ -205,7 +207,7 @@ namespace Circuit {
         }
 
         double parseUnits(EditInfo ei) {
-            string s = ei.textf.Text;
+            string s = ei.Textf.Text;
             return parseUnits(s);
         }
 
@@ -242,17 +244,17 @@ namespace Circuit {
             int i;
             for (i = 0; i != einfocount; i++) {
                 var ei = einfos[i];
-                if (ei.textf != null && ei.text == null) {
+                if (ei.Textf != null && ei.Text == null) {
                     try {
                         double d = parseUnits(ei);
-                        ei.value = d;
+                        ei.Value = d;
                     } catch (FormatException ex) {
                         MessageBox.Show(ex.Message);
                     } catch (Exception ex) {
                         throw ex;
                     }
                 }
-                if (ei.button != null) {
+                if (ei.Button != null) {
                     continue;
                 }
                 elm.setEditValue(i, ei);
@@ -261,7 +263,7 @@ namespace Circuit {
                 if (elm is CircuitElm) {
                     var adj = cframe.findAdjustable((CircuitElm)elm, i);
                     if (adj != null) {
-                        adj.setSliderValue(ei.value);
+                        adj.setSliderValue(ei.Value);
                     }
                 }
             }
@@ -274,14 +276,14 @@ namespace Circuit {
             bool applied = false;
             for (i = 0; i != einfocount; i++) {
                 var ei = einfos[i];
-                if (ei.choice == sender || ei.checkbox == sender || ei.button == sender) {
+                if (ei.Choice == sender || ei.CheckBox == sender || ei.Button == sender) {
                     /* if we're pressing a button, make sure to apply changes first */
-                    if (ei.button == sender && !ei.newDialog) {
+                    if (ei.Button == sender && !ei.NewDialog) {
                         apply();
                         applied = true;
                     }
                     elm.setEditValue(i, ei);
-                    if (ei.newDialog) {
+                    if (ei.NewDialog) {
                         changed = true;
                     }
                     cframe.needAnalyze();

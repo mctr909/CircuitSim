@@ -9,7 +9,7 @@ namespace Circuit.Elements {
             mNoDiagonal = false;
             X2 = X1 + 128;
             Y2 = Y1 + 64;
-            elmScope = new Scope(sim);
+            elmScope = new Scope(Sim);
             setPoints();
         }
 
@@ -17,7 +17,7 @@ namespace Circuit.Elements {
             mNoDiagonal = false;
             string sStr = st.nextToken();
             var sst = new StringTokenizer(sStr, "_");
-            elmScope = new Scope(sim);
+            elmScope = new Scope(Sim);
             elmScope.undump(sst);
             setPoints();
             elmScope.resetGraph();
@@ -29,12 +29,12 @@ namespace Circuit.Elements {
         }
 
         public void setScopeRect() {
-            int i1 = sim.transformX(Math.Min(X1, X2));
-            int i2 = sim.transformX(Math.Max(X1, X2));
-            int j1 = sim.transformY(Math.Min(Y1, Y2));
-            int j2 = sim.transformY(Math.Max(Y1, Y2));
+            int i1 = Sim.transformX(Math.Min(X1, X2));
+            int i2 = Sim.transformX(Math.Max(X1, X2));
+            int j1 = Sim.transformY(Math.Min(Y1, Y2));
+            int j2 = Sim.transformY(Math.Max(Y1, Y2));
             var r = new Rectangle(i1, j1, i2 - i1, j2 - j1);
-            if (!r.Equals(elmScope.rect)) {
+            if (!r.Equals(elmScope.BoundingBox)) {
                 elmScope.setRect(r);
             }
         }
@@ -73,7 +73,7 @@ namespace Circuit.Elements {
         }
 
         public override void draw(Graphics g) {
-            var color = needsHighlight() ? selectColor : whiteColor;
+            var color = needsHighlight() ? SelectColor : WhiteColor;
             setScopeRect();
             elmScope.draw(g);
             setBbox(mPoint1, mPoint2, 0);

@@ -2,58 +2,58 @@
 
 namespace Circuit {
     class EditInfo {
-        public string name { get; private set; }
-        public string text;
-        public double value;
-        public bool dimensionless;
-        public bool noSliders;
-        public bool newDialog;
+        public string Name { get; private set; }
+        public string Text { get; set; }
+        public double Value { get; set; }
+        public bool Dimensionless { get; private set; }
+        public bool NoSliders { get; private set; }
+        public bool NewDialog { get; set; }
 
         public Form widget;
-        public ComboBox choice;
-        public CheckBox checkbox;
-        public Button button;
-        public TextBox textArea;
-        public TextBox textf;
+        public ComboBox Choice;
+        public CheckBox CheckBox;
+        public Button Button;
+        public TextBox TextArea;
+        public TextBox Textf;
 
         /* for slider dialog */
-        public TextBox minBox;
-        public TextBox maxBox;
-        public TextBox labelBox;
+        public TextBox MinBox;
+        public TextBox MaxBox;
+        public TextBox LabelBox;
 
         public EditInfo(string n, double val, double mn, double mx) {
-            name = n;
-            value = val;
-            dimensionless = false;
+            Name = n;
+            Value = val;
+            Dimensionless = false;
         }
 
         public EditInfo(string n, double val) {
-            name = n;
-            value = val;
-            dimensionless = false;
+            Name = n;
+            Value = val;
+            Dimensionless = false;
         }
 
-        public EditInfo setDimensionless() { dimensionless = true; return this; }
+        public EditInfo SetDimensionless() { Dimensionless = true; return this; }
 
-        public EditInfo disallowSliders() { noSliders = true; return this; }
+        public EditInfo DisallowSliders() { NoSliders = true; return this; }
 
-        public int changeFlag(int flags, int bit) {
-            if (checkbox.Checked) {
+        public int ChangeFlag(int flags, int bit) {
+            if (CheckBox.Checked) {
                 return flags | bit;
             }
             return flags & ~bit;
         }
 
-        public bool canCreateAdjustable() {
-            return choice == null &&
-                checkbox == null &&
-                button == null &&
-                textArea == null &&
-                widget == null &&
-                !noSliders;
+        public bool CanCreateAdjustable() {
+            return Choice == null
+                && CheckBox == null
+                && Button == null
+                && TextArea == null
+                && widget == null
+                && !NoSliders;
         }
 
-        public static string makeLink(string file, string text) {
+        public static string MakeLink(string file, string text) {
             return "<a href=\"" + file + "\" target=\"_blank\">" + text + "</a>";
         }
     }

@@ -59,7 +59,7 @@ namespace Circuit.Elements {
                 doDots(g);
             }
             if (!needsHighlight()) {
-                PEN_THICK_LINE.Color = whiteColor;
+                PenThickLine.Color = WhiteColor;
             }
             interpPoint(mLead1, mLead2, ref ps, 0, hs1);
             interpPoint(mLead1, mLead2, ref ps2, 1, hs2);
@@ -83,7 +83,7 @@ namespace Circuit.Elements {
 
         public override void stamp() {
             if (position == 0) {
-                cir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
+                Cir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
             }
         }
 
@@ -123,9 +123,9 @@ namespace Circuit.Elements {
         public override EditInfo getEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo("", 0, -1, -1);
-                ei.checkbox = new CheckBox();
-                ei.checkbox.Text = "Momentary Switch";
-                ei.checkbox.Checked = momentary;
+                ei.CheckBox = new CheckBox();
+                ei.CheckBox.Text = "Momentary Switch";
+                ei.CheckBox.Checked = momentary;
                 return ei;
             }
             return null;
@@ -133,7 +133,7 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
-                momentary = ei.checkbox.Checked;
+                momentary = ei.CheckBox.Checked;
             }
         }
 

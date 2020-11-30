@@ -6,13 +6,13 @@ namespace Circuit.Elements {
         protected const int FLAG_CLOCK = 1;
 
         public RailElm(int xx, int yy) : base(xx, yy, WF_DC) {
-            numHandles = 1;
+            mNumHandles = 1;
         }
 
         public RailElm(int xx, int yy, int wf) : base(xx, yy, wf) { }
 
         public RailElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st): base(xa, ya, xb, yb, f, st) {
-            numHandles = 1;
+            mNumHandles = 1;
         }
 
         public override DUMP_ID getDumpType() { return DUMP_ID.RAIL; }
@@ -30,7 +30,7 @@ namespace Circuit.Elements {
 
         public override void draw(Graphics g) {
             var rt = getRailText();
-            double w = rt == null ? circleSize : g.MeasureString(rt, FONT_TERM_NAME).Width / 2;
+            double w = rt == null ? (circleSize * 0.5) : g.MeasureString(rt, FONT_TERM_NAME).Width / 2;
             if (w > mElmLen * .8) {
                 w = mElmLen * .8;
             }
@@ -41,7 +41,7 @@ namespace Circuit.Elements {
             drawRail(g);
             drawPosts(g);
             mCurCount = updateDotCount(-mCurrent, mCurCount);
-            if (sim.dragElm != this) {
+            if (Sim.dragElm != this) {
                 drawDots(g, mPoint1, mLead1, mCurCount);
             }
         }
@@ -50,7 +50,7 @@ namespace Circuit.Elements {
             if (waveform == WF_SQUARE && (mFlags & FLAG_CLOCK) != 0) {
                 drawRailText(g, "CLK");
             } else if (waveform == WF_DC || waveform == WF_VAR) {
-                var color = needsHighlight() ? selectColor : whiteColor;
+                var color = needsHighlight() ? SelectColor : WhiteColor;
                 double v = getVoltage();
                 string s;
                 if (Math.Abs(v) < 1) {
@@ -75,15 +75,15 @@ namespace Circuit.Elements {
 
         public override void stamp() {
             if (waveform == WF_DC) {
-                cir.StampVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
+                Cir.StampVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
             } else {
-                cir.StampVoltageSource(0, Nodes[0], mVoltSource);
+                Cir.StampVoltageSource(0, Nodes[0], mVoltSource);
             }
         }
 
         public override void doStep() {
             if (waveform != WF_DC) {
-                cir.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
+                Cir.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
             }
         }
 

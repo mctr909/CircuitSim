@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -58,7 +59,7 @@ namespace Circuit {
                 var lbl = new Label() { Left = 4, Top = ofsY, AutoSize = true, Text = "Simulation Speed" };
                 verticalPanel.Controls.Add(lbl);
                 ofsY += lbl.Height;
-                ctrlSpeedBar = new TrackBar() {
+                trbSpeedBar = new TrackBar() {
                     Left = 4,
                     Top = ofsY,
                     Minimum = 0,
@@ -70,14 +71,14 @@ namespace Circuit {
                     Value = 10,
                     Width = 200
                 };
-                verticalPanel.Controls.Add(ctrlSpeedBar);
-                ofsY += ctrlSpeedBar.Height + 4;
+                verticalPanel.Controls.Add(trbSpeedBar);
+                ofsY += trbSpeedBar.Height + 4;
 
                 /* Current Speed */
                 lbl = new Label() { Left = 4, Top = ofsY, AutoSize = true, Text = "Current Speed" };
                 verticalPanel.Controls.Add(lbl);
                 ofsY += lbl.Height;
-                ctrlCurrentBar = new TrackBar() {
+                trbCurrentBar = new TrackBar() {
                     Left = 4,
                     Top = ofsY,
                     Minimum = 1,
@@ -89,8 +90,8 @@ namespace Circuit {
                     Value = 50,
                     Width = 200
                 };
-                verticalPanel.Controls.Add(ctrlCurrentBar);
-                ofsY += ctrlCurrentBar.Height + 4;
+                verticalPanel.Controls.Add(trbCurrentBar);
+                ofsY += trbCurrentBar.Height + 4;
 
                 /* Show Voltage */
                 chkVoltsCheckItem = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "電圧を表示" };
@@ -125,7 +126,7 @@ namespace Circuit {
                 chkPrintableCheckItem = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "背景色を白にする" };
                 chkPrintableCheckItem.CheckedChanged += new EventHandler((s, e) => {
                     for (int i = 0; i < scopeCount; i++) {
-                        scopes[i].setRect(scopes[i].rect);
+                        scopes[i].setRect(scopes[i].BoundingBox);
                     }
                     setOptionInStorage("whiteBackground", chkPrintableCheckItem.Checked);
                 });
@@ -148,7 +149,7 @@ namespace Circuit {
                 verticalPanel.Controls.Add(debugMsg);
 
                 /* */
-                verticalPanel.Width = ctrlSpeedBar.Width + 12;
+                verticalPanel.Width = trbSpeedBar.Width + 12;
                 verticalPanel.Height = ofsY;
             }
 
@@ -494,9 +495,6 @@ namespace Circuit {
             timer.Tick += new EventHandler((s, e) => {
                 if (simRunning) {
                     updateCircuit();
-                    updateCircuit();
-                    updateCircuit();
-                    updateCircuit();
                     needsRepaint = false;
                 }
             });
@@ -677,29 +675,11 @@ namespace Circuit {
         }
 
         public void menuPerformed(MENU_CATEGORY cat, MENU_ITEM item, string option = "") {
-            if (item == MENU_ITEM.ImportFromLocalFile) {
-                pushUndo();
-                // TODO: menuPerformed
-                //loadFileInput.click();
+            if (item == MENU_ITEM.OPEN_FILE) {
+                doOpenFile();
             }
-            if (item == MENU_ITEM.importfromtext) {
-                // TODO: menuPerformed
-                //dialogShowing = new ImportFromTextDialog(this);
-            }
-            if (item == MENU_ITEM.importfromdropbox) {
-                // TODO: menuPerformed
-                //importFromDropboxDialog = new ImportFromDropboxDialog(this);
-            }
-            if (item == MENU_ITEM.exportasurl) {
-                doExportAsUrl();
-                unsavedChanges = false;
-            }
-            if (item == MENU_ITEM.ExportAsLocalFile) {
-                doExportAsLocalFile();
-                unsavedChanges = false;
-            }
-            if (item == MENU_ITEM.exportastext) {
-                doExportAsText();
+            if (item == MENU_ITEM.SAVE_FILE) {
+                doSaveFile();
                 unsavedChanges = false;
             }
             if (item == MENU_ITEM.exportasimage) {
@@ -828,11 +808,11 @@ namespace Circuit {
                     }
                     scopeCount++;
                     scopes[i] = new Scope(this);
-                    scopes[i].position = i;
+                    scopes[i].Position = i;
                 }
                 scopes[i].setElm(menuElm);
                 if (i > 0) {
-                    scopes[i].speed = scopes[i - 1].speed;
+                    scopes[i].Speed = scopes[i - 1].Speed;
                 }
             }
 
@@ -861,7 +841,7 @@ namespace Circuit {
                     }
                     scopes[scopeCount] = ((ScopeElm)mouseElm).elmScope;
                     ((ScopeElm)mouseElm).clearElmScope();
-                    scopes[scopeCount].position = scopeCount;
+                    scopes[scopeCount].Position = scopeCount;
                     scopeCount++;
                     doDelete(false);
                 }
@@ -945,12 +925,12 @@ namespace Circuit {
                 }
                 s = 1;
             }
-            if (scopes[s].position == scopes[s - 1].position) {
+            if (scopes[s].Position == scopes[s - 1].Position) {
                 return;
             }
-            scopes[s].position = scopes[s - 1].position;
+            scopes[s].Position = scopes[s - 1].Position;
             for (s++; s < scopeCount; s++) {
-                scopes[s].position--;
+                scopes[s].Position--;
             }
         }
 
@@ -961,11 +941,11 @@ namespace Circuit {
                 }
                 s = 1;
             }
-            if (scopes[s].position != scopes[s - 1].position) {
+            if (scopes[s].Position != scopes[s - 1].Position) {
                 return;
             }
             for (; s < scopeCount; s++) {
-                scopes[s].position++;
+                scopes[s].Position++;
             }
         }
 
@@ -982,16 +962,16 @@ namespace Circuit {
 
         void stackAll() {
             for (int i = 0; i != scopeCount; i++) {
-                scopes[i].position = 0;
-                scopes[i].showMax = false;
-                scopes[i].showMin = false;
+                scopes[i].Position = 0;
+                scopes[i].ShowMax = false;
+                scopes[i].ShowMin = false;
             }
         }
 
         void unstackAll() {
             for (int i = 0; i != scopeCount; i++) {
-                scopes[i].position = i;
-                scopes[i].showMax = true;
+                scopes[i].Position = i;
+                scopes[i].ShowMax = true;
             }
         }
 
@@ -1019,11 +999,10 @@ namespace Circuit {
                 editDialog.closeDialog();
                 editDialog = null;
             }
-            editDialog = new EditDialog(eable, this);
-            editDialog.Show();
-            editDialog.Location = new Point(
+            editDialog = new EditDialog(eable, this,
                 mouseCursorX + mParent.Location.X,
-                mouseCursorY + mParent.Location.Y);
+                mouseCursorY + mParent.Location.Y
+            );
         }
 
         void doSliders(CircuitElm ce) {
@@ -1035,20 +1014,6 @@ namespace Circuit {
             }
             sliderDialog = new SliderDialog(ce, this);
             sliderDialog.Show();
-        }
-
-        void doExportAsUrl() {
-            // TODO: doExportAsUrl
-            //string dump = dumpCircuit();
-            //dialogShowing = new ExportAsUrlDialog(dump);
-            //dialogShowing.show();
-        }
-
-        void doExportAsText() {
-            // TODO: doExportAsText
-            //string dump = dumpCircuit();
-            //dialogShowing = new ExportAsTextDialog(this, dump);
-            //dialogShowing.show();
         }
 
         void doExportAsImage() {
@@ -1067,11 +1032,33 @@ namespace Circuit {
             dialogShowing.Show();
         }
 
-        void doExportAsLocalFile() {
-            // TODO: doExportAsLocalFile
-            //string dump = dumpCircuit();
-            //dialogShowing = new ExportAsLocalFileDialog(dump);
-            //dialogShowing.show();
+        void doOpenFile() {
+            var open = new OpenFileDialog();
+            open.Filter = "テキストファイル(*.txt)|*.txt";
+            open.ShowDialog();
+            if (string.IsNullOrEmpty(open.FileName) || !Directory.Exists(Path.GetDirectoryName(open.FileName))) {
+                return;
+            }
+            pushUndo();
+            var fs = new StreamReader(open.FileName);
+            var data = fs.ReadToEnd();
+            fs.Close();
+            fs.Dispose();
+            readCircuit(data);
+        }
+
+        void doSaveFile() {
+            var save = new SaveFileDialog();
+            save.Filter = "テキストファイル(*.txt)|*.txt";
+            save.ShowDialog();
+            if (string.IsNullOrEmpty(save.FileName) || !Directory.Exists(Path.GetDirectoryName(save.FileName))) {
+                return;
+            }
+            string dump = dumpCircuit();
+            var fs = new StreamWriter(save.FileName);
+            fs.Write(dump);
+            fs.Close();
+            fs.Dispose();
         }
 
         string dumpCircuit() {
@@ -1088,8 +1075,8 @@ namespace Circuit {
             string dump = "$ " + f
                 + " " + timeStep
                 + " " + getIterCount()
-                + " " + ctrlCurrentBar.Value
-                + " " + CircuitElm.voltageRange + "\n";
+                + " " + trbCurrentBar.Value
+                + " " + CircuitElm.VoltageRange + "\n";
 
             int i;
             for (i = 0; i != elmList.Count; i++) {
@@ -1208,21 +1195,10 @@ namespace Circuit {
 
         void readCircuit(string text, int flags) {
             readCircuit(Encoding.ASCII.GetBytes(text), flags);
-            // TODO: readCircuit
-            //titleLabel.Text = null;
         }
 
         void readCircuit(string text) {
             readCircuit(Encoding.ASCII.GetBytes(text), 0);
-            // TODO: readCircuit
-            //titleLabel.Text == null;
-        }
-
-        void setCircuitTitle(string s) {
-            if (s != null) {
-                // TODO: setCircuitTitle
-                //titleLabel.Text = s;
-            }
         }
 
         void readSetupFile(string str, string title) {
@@ -1278,9 +1254,9 @@ namespace Circuit {
                 chkVoltsCheckItem.Checked = true;
                 chkShowValuesCheckItem.Checked = true;
                 setGrid();
-                ctrlSpeedBar.Value = 57;
-                ctrlCurrentBar.Value = 50;
-                CircuitElm.voltageRange = 5;
+                trbSpeedBar.Value = 57;
+                trbCurrentBar.Value = 50;
+                CircuitElm.VoltageRange = 5;
                 scopeCount = 0;
                 lastIterTime = 0;
             }
@@ -1311,7 +1287,7 @@ namespace Circuit {
                         }
                         if (tint == 'o') {
                             var sc = new Scope(this);
-                            sc.position = scopeCount;
+                            sc.Position = scopeCount;
                             sc.undump(st);
                             scopes[scopeCount++] = sc;
                             break;
@@ -1422,9 +1398,9 @@ namespace Circuit {
             timeStep = st.nextTokenDouble();
             double sp = st.nextTokenDouble();
             int sp2 = (int)(Math.Log(10 * sp) * 24 + 61.5);
-            ctrlSpeedBar.Value = sp2;
-            ctrlCurrentBar.Value = st.nextTokenInt();
-            CircuitElm.voltageRange = st.nextTokenDouble();
+            trbSpeedBar.Value = sp2;
+            trbCurrentBar.Value = st.nextTokenInt();
+            CircuitElm.VoltageRange = st.nextTokenDouble();
 
             setGrid();
         }
@@ -1830,9 +1806,9 @@ namespace Circuit {
             if (newMouseElm == null) {
                 for (i = 0; i != scopeCount; i++) {
                     var s = scopes[i];
-                    if (s.rect.Contains(mx, my)) {
+                    if (s.BoundingBox.Contains(mx, my)) {
                         newMouseElm = s.getElm();
-                        if (s.plotXY) {
+                        if (s.PlotXY) {
                             plotXElm = s.getXElm();
                             plotYElm = s.getYElm();
                         }
@@ -1887,7 +1863,7 @@ namespace Circuit {
             if (scopeSelected != -1) {
                 if (scopes[scopeSelected].canMenu()) {
                     menuScope = scopeSelected;
-                    menuPlot = scopes[scopeSelected].selectedPlot;
+                    menuPlot = scopes[scopeSelected].SelectedPlot;
                     scopePopupMenu.doScopePopupChecks(false, scopes[scopeSelected]);
                     contextPanel = new ContextMenuStrip();
                     contextPanel.Items.AddRange(scopePopupMenu.getMenuBar());
@@ -1910,7 +1886,7 @@ namespace Circuit {
                 } else {
                     var s = (ScopeElm)mouseElm;
                     if (s.elmScope.canMenu()) {
-                        menuPlot = s.elmScope.selectedPlot;
+                        menuPlot = s.elmScope.SelectedPlot;
                         scopePopupMenu.doScopePopupChecks(true, s.elmScope);
                         contextPanel = new ContextMenuStrip();
                         contextPanel.Items.AddRange(scopePopupMenu.getMenuBar());
@@ -1952,7 +1928,7 @@ namespace Circuit {
                 if (ei == null) {
                     return false;
                 }
-                if (ei.canCreateAdjustable()) {
+                if (ei.CanCreateAdjustable()) {
                     return true;
                 }
             }

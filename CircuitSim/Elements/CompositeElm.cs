@@ -76,15 +76,15 @@ namespace Circuit.Elements {
                 while (stModel.hasMoreTokens()) {
                     int nodeOfThisPost = stModel.nextTokenInt();
                     cnLink = new CircuitNodeLink();
-                    cnLink.num = thisPost;
-                    cnLink.elm = newce;
+                    cnLink.Num = thisPost;
+                    cnLink.Elm = newce;
                     if (!compNodeHash.ContainsKey(nodeOfThisPost)) {
                         cn = new CircuitNode();
-                        cn.links.Add(cnLink);
+                        cn.Links.Add(cnLink);
                         compNodeHash.Add(nodeOfThisPost, cn);
                     } else {
                         cn = compNodeHash[nodeOfThisPost];
-                        cn.links.Add(cnLink);
+                        cn.Links.Add(cnLink);
                     }
                     thisPost++;
                 }
@@ -112,10 +112,10 @@ namespace Circuit.Elements {
                 int inodes = ce.getInternalNodeCount();
                 for (int j = 0; j != inodes; j++) {
                     cnLink = new CircuitNodeLink();
-                    cnLink.num = j + ce.getPostCount();
-                    cnLink.elm = ce;
+                    cnLink.Num = j + ce.getPostCount();
+                    cnLink.Elm = ce;
                     cn = new CircuitNode();
-                    cn.links.Add(cnLink);
+                    cn.Links.Add(cnLink);
                     compNodeList.Add(cn);
                 }
             }
@@ -189,15 +189,15 @@ namespace Circuit.Elements {
 
         /* are n1 and n2 connected internally somehow? */
         public override bool getConnection(int n1, int n2) {
-            var cnLinks1 = compNodeList[n1].links;
-            var cnLinks2 = compNodeList[n2].links;
+            var cnLinks1 = compNodeList[n1].Links;
+            var cnLinks2 = compNodeList[n2].Links;
 
             /* see if any elements are connected to both n1 and n2, then call getConnection() on those */
             for (int i = 0; i < cnLinks1.Count; i++) {
                 CircuitNodeLink link1 = cnLinks1[i];
                 for (int j = 0; j < cnLinks2.Count; j++) {
                     CircuitNodeLink link2 = cnLinks2[j];
-                    if (link1.elm == link2.elm && link1.elm.getConnection(link1.num, link2.num)) {
+                    if (link1.Elm == link2.Elm && link1.Elm.getConnection(link1.Num, link2.Num)) {
                         return true;
                     }
                 }
@@ -208,9 +208,9 @@ namespace Circuit.Elements {
         /* is n1 connected to ground somehow? */
         public override bool hasGroundConnection(int n1) {
             List<CircuitNodeLink> cnLinks;
-            cnLinks = compNodeList[n1].links;
+            cnLinks = compNodeList[n1].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
-                if (cnLinks[i].elm.hasGroundConnection(cnLinks[i].num)) {
+                if (cnLinks[i].Elm.hasGroundConnection(cnLinks[i].Num)) {
                     return true;
                 }
             }
@@ -285,17 +285,17 @@ namespace Circuit.Elements {
 
         public override void setNode(int p, int n) {
             base.setNode(p, n);
-            var cnLinks = compNodeList[p].links;
+            var cnLinks = compNodeList[p].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
-                cnLinks[i].elm.setNode(cnLinks[i].num, n);
+                cnLinks[i].Elm.setNode(cnLinks[i].Num, n);
             }
         }
 
         public override void setNodeVoltage(int n, double c) {
             base.setNodeVoltage(n, c);
-            var cnLinks = compNodeList[n].links;
+            var cnLinks = compNodeList[n].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
-                cnLinks[i].elm.setNodeVoltage(cnLinks[i].num, c);
+                cnLinks[i].Elm.setNodeVoltage(cnLinks[i].Num, c);
             }
             Volts[n] = c;
         }
@@ -334,9 +334,9 @@ namespace Circuit.Elements {
 
         public override double getCurrentIntoNode(int n) {
             double c = 0;
-            var cnLinks = compNodeList[n].links;
+            var cnLinks = compNodeList[n].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
-                c += cnLinks[i].elm.getCurrentIntoNode(cnLinks[i].num);
+                c += cnLinks[i].Elm.getCurrentIntoNode(cnLinks[i].Num);
             }
             return c;
         }

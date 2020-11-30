@@ -108,12 +108,8 @@ namespace Circuit {
         INVALID,
 
         #region [File]
-        ImportFromLocalFile,
-        ExportAsLocalFile,
-        importfromtext,
-        importfromdropbox,
-        exportasurl,
-        exportastext,
+        OPEN_FILE,
+        SAVE_FILE,
         exportasimage,
         createsubcircuit,
         dcanalysis,
@@ -481,9 +477,9 @@ namespace Circuit {
             var fileMenuBar = new ToolStripMenuItem();
             fileMenuBar.Text = "ファイル(F)";
             fileMenuBar.Font = menuFont;
-            addMenuItem(fileMenuBar, "開く(O)", MENU_ITEM.ImportFromLocalFile, new SHORTCUT(Keys.O));
-            addMenuItem(fileMenuBar, "上書き保存(S)", MENU_ITEM.ExportAsLocalFile, new SHORTCUT(Keys.S));
-            addMenuItem(fileMenuBar, "名前を付けて保存(A)", MENU_ITEM.ExportAsLocalFile, new SHORTCUT(Keys.None));
+            addMenuItem(fileMenuBar, "開く(O)", MENU_ITEM.OPEN_FILE, new SHORTCUT(Keys.O));
+            addMenuItem(fileMenuBar, "上書き保存(S)", MENU_ITEM.SAVE_FILE, new SHORTCUT(Keys.S));
+            addMenuItem(fileMenuBar, "名前を付けて保存(A)", MENU_ITEM.SAVE_FILE, new SHORTCUT(Keys.None));
             mainMenuBar.Items.Add(fileMenuBar);
             #endregion
 
@@ -595,7 +591,7 @@ namespace Circuit {
             addElementItem(inputMenuBar, "スイープ", MENU_ITEM.SweepElm);
             addElementItem(inputMenuBar, "AM発信器", MENU_ITEM.AMElm);
             addElementItem(inputMenuBar, "FM発信器", MENU_ITEM.FMElm);
-            addElementItem(inputMenuBar, "Add Variable Voltage", MENU_ITEM.VarRailElm);
+            addElementItem(inputMenuBar, "電圧スライダ", MENU_ITEM.VarRailElm);
             //addMenuItem(inputMenuBar, "Add Square Wave Source (1-terminal)", ITEM.SquareRailElm);
             //addMenuItem(inputMenuBar, "Add Antenna", ITEM.AntennaElm);
             //addMenuItem(inputMenuBar, "Add Noise Generator", ITEM.NoiseElm);
@@ -888,7 +884,7 @@ namespace Circuit {
             case MENU_ITEM.OptocouplerElm:
                 return null; //(CircuitElm)new OptocouplerElm(x1, y1);
             case MENU_ITEM.CustomCompositeElm:
-                return null; //(CircuitElm)new CustomCompositeElm(x1, y1);
+                return new CustomCompositeElm(x1, y1);
             #endregion
 
             #region Logic Gates
