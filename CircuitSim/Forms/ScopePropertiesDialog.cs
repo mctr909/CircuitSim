@@ -17,7 +17,6 @@ namespace Circuit {
         CheckBox maxScaleBox;
         CheckBox voltageBox;
         CheckBox currentBox;
-        CheckBox powerBox;
         CheckBox peakBox;
         CheckBox negPeakBox;
         CheckBox freqBox;
@@ -137,10 +136,6 @@ namespace Circuit {
                     currentBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
                     addItemToGrid(grbPlots, currentBox);
                 }
-                /* Show Power Consumed */
-                powerBox = new ScopeCheckBox("Show Power Consumed", SCOPE_MENU.showpower);
-                powerBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                addItemToGrid(grbPlots, powerBox);
                 /* Show Resistance */
                 resistanceBox = new ScopeCheckBox("Show Resistance", SCOPE_MENU.showresistance);
                 resistanceBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
@@ -261,7 +256,7 @@ namespace Circuit {
                 pnl.Controls.Add(saveAsDefaultButton);
                 /* */
                 pnl.Left = grbShowInfo.Left;
-                pnl.Top = grbShowInfo.Bottom + 8;
+                pnl.Top = grbShowInfo.Bottom;
                 pnl.Width = saveAsDefaultButton.Right + 4;
                 pnl.Height = saveAsDefaultButton.Bottom + 8;
                 Controls.Add(pnl);
@@ -271,7 +266,7 @@ namespace Circuit {
             ResumeLayout(false);
 
             Width = pnl.Right + 18;
-            Height = grbPlots.Bottom + 42;
+            Height = pnl.Bottom + 36;
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
             StartPosition = FormStartPosition.CenterParent;
             Show();
@@ -302,7 +297,6 @@ namespace Circuit {
             if (voltageBox != null) {
                 voltageBox.Checked = scope.ShowV && !scope.showingValue(Scope.VAL_POWER);
                 currentBox.Checked = scope.ShowI && !scope.showingValue(Scope.VAL_POWER);
-                powerBox.Checked = scope.showingValue(Scope.VAL_POWER);
             }
             scaleBox.Checked = scope.ShowScale;
             peakBox.Checked = scope.ShowMax;

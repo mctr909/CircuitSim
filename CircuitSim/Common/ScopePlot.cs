@@ -19,7 +19,7 @@ namespace Circuit {
 
         public double[] MinValues { get; private set; }
         public double[] MaxValues { get; private set; }
-        public int ptr { get; private set; }
+        public int Pointer { get; private set; }
         public int Value { get; private set; }
         public int Speed { get; private set; }
         public int Units { get; set; }
@@ -41,7 +41,7 @@ namespace Circuit {
         }
 
         public int StartIndex(int w) {
-            return ptr + mScopePointCount - w;
+            return Pointer + mScopePointCount - w;
         }
 
         public void Reset(int spc, int sp, bool full) {
@@ -60,14 +60,14 @@ namespace Circuit {
                 int i;
                 for (i = 0; i != mScopePointCount && i != oldSpc; i++) {
                     int i1 = (-i) & (mScopePointCount - 1);
-                    int i2 = (ptr - i) & (oldSpc - 1);
+                    int i2 = (Pointer - i) & (oldSpc - 1);
                     MinValues[i1] = oldMin[i2];
                     MaxValues[i1] = oldMax[i2];
                 }
             } else {
                 mCounter = 0;
             }
-            ptr = 0;
+            Pointer = 0;
         }
 
         public void TimeStep() {
@@ -75,17 +75,17 @@ namespace Circuit {
                 return;
             }
             double v = Elm.getScopeValue(Value);
-            if (v < MinValues[ptr]) {
-                MinValues[ptr] = v;
+            if (v < MinValues[Pointer]) {
+                MinValues[Pointer] = v;
             }
-            if (v > MaxValues[ptr]) {
-                MaxValues[ptr] = v;
+            if (v > MaxValues[Pointer]) {
+                MaxValues[Pointer] = v;
             }
             LastValue = v;
             mCounter++;
             if (mCounter >= Speed) {
-                ptr = (ptr + 1) & (mScopePointCount - 1);
-                MinValues[ptr] = MaxValues[ptr] = v;
+                Pointer = (Pointer + 1) & (mScopePointCount - 1);
+                MinValues[Pointer] = MaxValues[Pointer] = v;
                 mCounter = 0;
             }
         }

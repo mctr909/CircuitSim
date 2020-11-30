@@ -580,7 +580,7 @@ namespace Circuit {
 
             g.Transform = new Matrix(1, 0, 0, 1, 0, 0);
 
-            if (mPlots[0].ptr > 5 && !LockScale) {
+            if (mPlots[0].Pointer > 5 && !LockScale) {
                 for (int i = 0; i != UNITS_COUNT; i++) {
                     if (mScale[i] > 1e-4 && mReduceRange[i]) {
                         mScale[i] /= 2;
@@ -725,8 +725,9 @@ namespace Circuit {
             resetGraph();
         }
 
-        public void properties() {
+        public void properties(int x, int y) {
             CirSim.dialogShowing = new ScopePropertiesDialog(mSim, this);
+            CirSim.dialogShowing.Location = new Point(x, y);
         }
 
         public void speedUp() {
@@ -1378,7 +1379,7 @@ namespace Circuit {
             var plot = (mVisiblePlots.Count == 0) ? mPlots[0] : mVisiblePlots[0];
             var maxV = plot.MaxValues;
             var minV = plot.MinValues;
-            int ptr = plot.ptr;
+            int ptr = plot.Pointer;
             for (int i = 0; i < mScopePointCount; i++) {
                 int ii = (ptr - i + mScopePointCount) & (mScopePointCount - 1);
                 /* need to average max and min or else it could cause average of function to be > 0, which
@@ -1519,7 +1520,7 @@ namespace Circuit {
             var plot = mVisiblePlots[0];
             int i;
             double avg = 0;
-            int ipa = plot.ptr + mScopePointCount - BoundingBox.Width;
+            int ipa = plot.Pointer + mScopePointCount - BoundingBox.Width;
             var maxV = plot.MaxValues;
             var minV = plot.MinValues;
             double mid = (mMaxValue + mMinValue) / 2;
@@ -1583,7 +1584,7 @@ namespace Circuit {
             var plot = mVisiblePlots[0];
             int i;
             double avg = 0;
-            int ipa = plot.ptr + mScopePointCount - BoundingBox.Width;
+            int ipa = plot.Pointer + mScopePointCount - BoundingBox.Width;
             var maxV = plot.MaxValues;
             var minV = plot.MinValues;
             double mid = (mMaxValue + mMinValue) / 2;
@@ -1645,7 +1646,7 @@ namespace Circuit {
         void drawDutyCycle(Graphics g) {
             var plot = mVisiblePlots[0];
             int i;
-            int ipa = plot.ptr + mScopePointCount - BoundingBox.Width;
+            int ipa = plot.Pointer + mScopePointCount - BoundingBox.Width;
             var maxV = plot.MaxValues;
             var minV = plot.MinValues;
             double mid = (mMaxValue + mMinValue) / 2;
@@ -1710,7 +1711,7 @@ namespace Circuit {
             double avg = 0;
             int i;
             var plot = mVisiblePlots[0];
-            int ipa = plot.ptr + mScopePointCount - BoundingBox.Width;
+            int ipa = plot.Pointer + mScopePointCount - BoundingBox.Width;
             var minV = plot.MinValues;
             var maxV = plot.MaxValues;
             for (i = 0; i != BoundingBox.Width; i++) {

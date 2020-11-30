@@ -366,7 +366,7 @@ namespace Circuit {
                 } else {
                     s = ((ScopeElm)mouseElm).elmScope;
                 }
-                s.properties();
+                s.properties(mParent.Location.X, mParent.Location.Y);
                 clearSelection();
                 mouseDragging = false;
                 return;
@@ -887,7 +887,7 @@ namespace Circuit {
                         s.resetGraph(true);
                     }
                     if (item == MENU_ITEM.properties) {
-                        s.properties();
+                        s.properties(mParent.Location.X, mParent.Location.Y);
                     }
                 }
                 deleteUnusedScopeElms();
