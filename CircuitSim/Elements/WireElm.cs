@@ -14,15 +14,15 @@ namespace Circuit.Elements {
         public WireElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) { }
 
         public override void draw(Graphics g) {
-            drawThickLine(g, getVoltageColor(volts[0]), point1, point2);
+            drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mPoint2);
             doDots(g);
-            setBbox(point1, point2, 3);
+            setBbox(mPoint1, mPoint2, 3);
             string s = "";
             if (mustShowCurrent()) {
                 s = getShortUnitText(Math.Abs(getCurrent()), "A");
             }
             if (mustShowVoltage()) {
-                s = (s.Length > 0 ? s + " " : "") + getShortUnitText(volts[0], "V");
+                s = (s.Length > 0 ? s + " " : "") + getShortUnitText(Volts[0], "V");
             }
             drawValues(g, s, 4);
             drawPosts(g);
@@ -33,11 +33,11 @@ namespace Circuit.Elements {
         }
 
         bool mustShowCurrent() {
-            return (flags & FLAG_SHOWCURRENT) != 0;
+            return (mFlags & FLAG_SHOWCURRENT) != 0;
         }
 
         bool mustShowVoltage() {
-            return (flags & FLAG_SHOWVOLTAGE) != 0;
+            return (mFlags & FLAG_SHOWVOLTAGE) != 0;
         }
 
         /*public override int getVoltageSourceCount() { return 1; } */
@@ -45,14 +45,14 @@ namespace Circuit.Elements {
         public override void getInfo(string[] arr) {
             arr[0] = "wire";
             arr[1] = "I = " + getCurrentDText(getCurrent());
-            arr[2] = "V = " + getVoltageText(volts[0]);
+            arr[2] = "V = " + getVoltageText(Volts[0]);
         }
 
         public override DUMP_ID getDumpType() { return DUMP_ID.WIRE; }
 
         public override  double getPower() { return 0; }
 
-        public override double getVoltageDiff() { return volts[0]; }
+        public override double getVoltageDiff() { return Volts[0]; }
 
         public override bool isWire() { return true; }
 
@@ -77,16 +77,16 @@ namespace Circuit.Elements {
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 if (ei.checkbox.Checked) {
-                    flags |= FLAG_SHOWCURRENT;
+                    mFlags |= FLAG_SHOWCURRENT;
                 } else {
-                    flags &= ~FLAG_SHOWCURRENT;
+                    mFlags &= ~FLAG_SHOWCURRENT;
                 }
             }
             if (n == 1) {
                 if (ei.checkbox.Checked) {
-                    flags |= FLAG_SHOWVOLTAGE;
+                    mFlags |= FLAG_SHOWVOLTAGE;
                 } else {
-                    flags &= ~FLAG_SHOWVOLTAGE;
+                    mFlags &= ~FLAG_SHOWVOLTAGE;
                 }
             }
         }

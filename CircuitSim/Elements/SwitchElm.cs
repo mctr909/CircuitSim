@@ -53,7 +53,7 @@ namespace Circuit.Elements {
         public override void draw(Graphics g) {
             int hs1 = (position == 1) ? 0 : 2;
             int hs2 = (position == 1) ? openhs : 2;
-            setBbox(point1, point2, openhs);
+            setBbox(mPoint1, mPoint2, openhs);
             draw2Leads(g);
             if (position == 0) {
                 doDots(g);
@@ -61,29 +61,29 @@ namespace Circuit.Elements {
             if (!needsHighlight()) {
                 PEN_THICK_LINE.Color = whiteColor;
             }
-            interpPoint(lead1, lead2, ref ps, 0, hs1);
-            interpPoint(lead1, lead2, ref ps2, 1, hs2);
+            interpPoint(mLead1, mLead2, ref ps, 0, hs1);
+            interpPoint(mLead1, mLead2, ref ps2, 1, hs2);
             drawThickLine(g, ps, ps2);
             drawPosts(g);
         }
 
         public virtual Rectangle getSwitchRect() {
-            interpPoint(lead1, lead2, ref ps, 0, openhs);
-            var l1 = new Rectangle(lead1.X, lead1.Y, 0, 0);
-            var l2 = new Rectangle(lead2.X, lead2.Y, 0, 0);
+            interpPoint(mLead1, mLead2, ref ps, 0, openhs);
+            var l1 = new Rectangle(mLead1.X, mLead1.Y, 0, 0);
+            var l2 = new Rectangle(mLead2.X, mLead2.Y, 0, 0);
             var p = new Rectangle(ps.X, ps.Y, 0, 0);
             return Rectangle.Union(l1, Rectangle.Union(l2, p));
         }
 
         public override void calculateCurrent() {
             if (position == 1) {
-                current = 0;
+                mCurrent = 0;
             }
         }
 
         public override void stamp() {
             if (position == 0) {
-                cir.stampVoltageSource(nodes[0], nodes[1], voltSource, 0);
+                cir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
             }
         }
 
@@ -111,7 +111,7 @@ namespace Circuit.Elements {
                 arr[2] = "Vd = " + getVoltageDText(getVoltageDiff());
             } else {
                 arr[1] = "closed";
-                arr[2] = "V = " + getVoltageText(volts[0]);
+                arr[2] = "V = " + getVoltageText(Volts[0]);
                 arr[3] = "I = " + getCurrentDText(getCurrent());
             }
         }

@@ -50,9 +50,9 @@ namespace Circuit.Elements {
             try {
                 lastvbe = st.nextTokenDouble();
                 lastvbc = st.nextTokenDouble();
-                volts[0] = 0;
-                volts[1] = -lastvbe;
-                volts[2] = -lastvbc;
+                Volts[0] = 0;
+                Volts[1] = -lastvbe;
+                Volts[2] = -lastvbc;
                 beta = st.nextTokenDouble();
             } catch { }
             setup();
@@ -67,7 +67,7 @@ namespace Circuit.Elements {
             vcrit = vt * Math.Log(vt / (Math.Sqrt(2) * leakage));
             fgain = beta / (beta + 1);
             inv_fgain = 1 / fgain;
-            noDiagonal = true;
+            mNoDiagonal = true;
         }
 
         double limitStep(double vnew, double vold) {
@@ -94,7 +94,7 @@ namespace Circuit.Elements {
         public override bool nonLinear() { return true; }
 
         public override void reset() {
-            volts[0] = volts[1] = volts[2] = 0;
+            Volts[0] = Volts[1] = Volts[2] = 0;
             lastvbc = lastvbe = curcount_c = curcount_e = curcount_b = 0;
         }
 
@@ -103,37 +103,37 @@ namespace Circuit.Elements {
         public override string dump() {
             return base.dump()
                 + " " + pnp
-                + " " + (volts[0] - volts[1])
-                + " " + (volts[0] - volts[2])
+                + " " + (Volts[0] - Volts[1])
+                + " " + (Volts[0] - Volts[2])
                 + " " + beta;
         }
 
         public override void draw(Graphics g) {
-            setBbox(point1, point2, 16);
+            setBbox(mPoint1, mPoint2, 16);
 
             /* draw collector */
-            drawThickLine(g, getVoltageColor(volts[1]), coll[0], coll[1]);
+            drawThickLine(g, getVoltageColor(Volts[1]), coll[0], coll[1]);
             /* draw emitter */
-            drawThickLine(g, getVoltageColor(volts[2]), emit[0], emit[1]);
+            drawThickLine(g, getVoltageColor(Volts[2]), emit[0], emit[1]);
             /* draw arrow */
-            fillPolygon(g, getVoltageColor(volts[2]), arrowPoly);
+            fillPolygon(g, getVoltageColor(Volts[2]), arrowPoly);
             /* draw base */
-            drawThickLine(g, getVoltageColor(volts[0]), point1, tbase);
+            drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, tbase);
 
             /* draw dots */
             curcount_b = updateDotCount(-ib, curcount_b);
-            drawDots(g, tbase, point1, curcount_b);
+            drawDots(g, tbase, mPoint1, curcount_b);
             curcount_c = updateDotCount(-ic, curcount_c);
             drawDots(g, coll[1], coll[0], curcount_c);
             curcount_e = updateDotCount(-ie, curcount_e);
             drawDots(g, emit[1], emit[0], curcount_e);
 
             /* draw base rectangle */
-            fillPolygon(g, getVoltageColor(volts[0]), rectPoly);
+            fillPolygon(g, getVoltageColor(Volts[0]), rectPoly);
 
-            if ((needsHighlight() || sim.dragElm == this) && dy == 0) {
+            if ((needsHighlight() || sim.dragElm == this) && mDy == 0) {
                 /* IES */
-                int ds = Math.Sign(dx);
+                int ds = Math.Sign(mDx);
                 g.DrawString("B", FONT_TERM_NAME, BRUSH_TERM_NAME, tbase.X - 10 * ds, tbase.Y - 5);
                 g.DrawString("C", FONT_TERM_NAME, BRUSH_TERM_NAME, coll[0].X - 3 + 9 * ds, coll[0].Y + 4); /* x+6 if ds=1, -12 if -1 */
                 g.DrawString("E", FONT_TERM_NAME, BRUSH_TERM_NAME, emit[0].X - 3 + 9 * ds, emit[0].Y + 4);
@@ -142,39 +142,39 @@ namespace Circuit.Elements {
         }
 
         public override Point getPost(int n) {
-            return (n == 0) ? point1 : (n == 1) ? coll[0] : emit[0];
+            return (n == 0) ? mPoint1 : (n == 1) ? coll[0] : emit[0];
         }
 
         public override int getPostCount() { return 3; }
 
         public override double getPower() {
-            return (volts[0] - volts[2]) * ib + (volts[1] - volts[2]) * ic;
+            return (Volts[0] - Volts[2]) * ib + (Volts[1] - Volts[2]) * ic;
         }
 
         public override void setPoints() {
             base.setPoints();
             int hs = 16;
-            if ((flags & FLAG_FLIP) != 0) {
-                dsign = -dsign;
+            if ((mFlags & FLAG_FLIP) != 0) {
+                mDsign = -mDsign;
             }
-            int hs2 = hs * dsign * pnp;
+            int hs2 = hs * mDsign * pnp;
 
             /* calc collector, emitter posts */
             coll = newPointArray(2);
             emit = newPointArray(2);
-            interpPoint(point1, point2, ref coll[0], ref emit[0], 1, hs2);
+            interpPoint(mPoint1, mPoint2, ref coll[0], ref emit[0], 1, hs2);
 
             /* calc rectangle edges */
             rect = newPointArray(4);
-            interpPoint(point1, point2, ref rect[0], ref rect[1], 1 - 16 / dn, hs);
-            interpPoint(point1, point2, ref rect[2], ref rect[3], 1 - 13 / dn, hs);
+            interpPoint(mPoint1, mPoint2, ref rect[0], ref rect[1], 1 - 16 / mElmLen, hs);
+            interpPoint(mPoint1, mPoint2, ref rect[2], ref rect[3], 1 - 13 / mElmLen, hs);
 
             /* calc points where collector/emitter leads contact rectangle */
-            interpPoint(point1, point2, ref coll[1], ref emit[1], 1 - 13 / dn, 6 * dsign * pnp);
+            interpPoint(mPoint1, mPoint2, ref coll[1], ref emit[1], 1 - 13 / mElmLen, 6 * mDsign * pnp);
 
             /* calc point where base lead contacts rectangle */
             tbase = new Point();
-            interpPoint(point1, point2, ref tbase, 1 - 16 / dn);
+            interpPoint(mPoint1, mPoint2, ref tbase, 1 - 16 / mElmLen);
 
             /* rectangle */
             rectPoly = createPolygon(rect[0], rect[2], rect[3], rect[1]).ToArray();
@@ -183,20 +183,20 @@ namespace Circuit.Elements {
             if (pnp == 1) {
                 arrowPoly = calcArrow(emit[1], emit[0], 8, 4).ToArray();
             } else {
-                var pt = interpPoint(point1, point2, 1 - 11 / dn, -5 * dsign * pnp);
+                var pt = interpPoint(mPoint1, mPoint2, 1 - 11 / mElmLen, -5 * mDsign * pnp);
                 arrowPoly = calcArrow(emit[0], pt, 8, 4).ToArray();
             }
         }
 
         public override void stamp() {
-            cir.stampNonLinear(nodes[0]);
-            cir.stampNonLinear(nodes[1]);
-            cir.stampNonLinear(nodes[2]);
+            cir.StampNonLinear(Nodes[0]);
+            cir.StampNonLinear(Nodes[1]);
+            cir.StampNonLinear(Nodes[2]);
         }
 
         public override void doStep() {
-            double vbc = volts[0] - volts[1]; /* typically negative */
-            double vbe = volts[0] - volts[2]; /* typically positive */
+            double vbc = Volts[0] - Volts[1]; /* typically negative */
+            double vbe = Volts[0] - Volts[2]; /* typically positive */
             if (Math.Abs(vbc - lastvbc) > .01 || /* .01 */
                 Math.Abs(vbe - lastvbe) > .01) {
                 cir.Converged = false;
@@ -244,22 +244,22 @@ namespace Circuit.Elements {
              * node 0 is the base,
              * node 1 the collector,
              * node 2 the emitter. */
-            cir.stampMatrix(nodes[0], nodes[0], -gee - gec - gce - gcc);
-            cir.stampMatrix(nodes[0], nodes[1], gec + gcc);
-            cir.stampMatrix(nodes[0], nodes[2], gee + gce);
-            cir.stampMatrix(nodes[1], nodes[0], gce + gcc);
-            cir.stampMatrix(nodes[1], nodes[1], -gcc);
-            cir.stampMatrix(nodes[1], nodes[2], -gce);
-            cir.stampMatrix(nodes[2], nodes[0], gee + gec);
-            cir.stampMatrix(nodes[2], nodes[1], -gec);
-            cir.stampMatrix(nodes[2], nodes[2], -gee);
+            cir.StampMatrix(Nodes[0], Nodes[0], -gee - gec - gce - gcc);
+            cir.StampMatrix(Nodes[0], Nodes[1], gec + gcc);
+            cir.StampMatrix(Nodes[0], Nodes[2], gee + gce);
+            cir.StampMatrix(Nodes[1], Nodes[0], gce + gcc);
+            cir.StampMatrix(Nodes[1], Nodes[1], -gcc);
+            cir.StampMatrix(Nodes[1], Nodes[2], -gce);
+            cir.StampMatrix(Nodes[2], Nodes[0], gee + gec);
+            cir.StampMatrix(Nodes[2], Nodes[1], -gec);
+            cir.StampMatrix(Nodes[2], Nodes[2], -gee);
 
             /* we are solving for v(k+1), not delta v, so we use formula
              * 10.5.13 (from Pillage), multiplying J by v(k) */
 
-            cir.stampRightSide(nodes[0], -ib - (gec + gcc) * vbc - (gee + gce) * vbe);
-            cir.stampRightSide(nodes[1], -ic + gce * vbe + gcc * vbc);
-            cir.stampRightSide(nodes[2], -ie + gee * vbe + gec * vbc);
+            cir.StampRightSide(Nodes[0], -ib - (gec + gcc) * vbc - (gee + gce) * vbe);
+            cir.StampRightSide(Nodes[1], -ic + gce * vbe + gcc * vbc);
+            cir.StampRightSide(Nodes[2], -ie + gee * vbe + gec * vbc);
         }
 
         public override string getScopeText(int x) {
@@ -278,9 +278,9 @@ namespace Circuit.Elements {
 
         public override void getInfo(string[] arr) {
             arr[0] = "transistor (" + ((pnp == -1) ? "PNP)" : "NPN)") + " β=" + beta.ToString("0.000");
-            double vbc = volts[0] - volts[1];
-            double vbe = volts[0] - volts[2];
-            double vce = volts[1] - volts[2];
+            double vbc = Volts[0] - Volts[1];
+            double vbe = Volts[0] - Volts[2];
+            double vce = Volts[1] - Volts[2];
             if (vbc * pnp > .2) {
                 arr[1] = vbe * pnp > .2 ? "saturation" : "reverse active";
             } else {
@@ -300,9 +300,9 @@ namespace Circuit.Elements {
             case Scope.VAL_IB: return ib;
             case Scope.VAL_IC: return ic;
             case Scope.VAL_IE: return ie;
-            case Scope.VAL_VBE: return volts[0] - volts[2];
-            case Scope.VAL_VBC: return volts[0] - volts[1];
-            case Scope.VAL_VCE: return volts[1] - volts[2];
+            case Scope.VAL_VBE: return Volts[0] - Volts[2];
+            case Scope.VAL_VBC: return Volts[0] - Volts[1];
+            case Scope.VAL_VCE: return Volts[1] - Volts[2];
             case Scope.VAL_POWER: return getPower();
             }
             return 0;
@@ -326,7 +326,7 @@ namespace Circuit.Elements {
                 var ei = new EditInfo("", 0, -1, -1);
                 ei.checkbox = new CheckBox();
                 ei.checkbox.Text = "Swap E/C";
-                ei.checkbox.Checked = (flags & FLAG_FLIP) != 0;
+                ei.checkbox.Checked = (mFlags & FLAG_FLIP) != 0;
                 return ei;
             }
             return null;
@@ -339,9 +339,9 @@ namespace Circuit.Elements {
             }
             if (n == 1) {
                 if (ei.checkbox.Checked) {
-                    flags |= FLAG_FLIP;
+                    mFlags |= FLAG_FLIP;
                 } else {
-                    flags &= ~FLAG_FLIP;
+                    mFlags &= ~FLAG_FLIP;
                 }
                 setPoints();
             }
@@ -350,7 +350,7 @@ namespace Circuit.Elements {
         public override void stepFinished() {
             /* stop for huge currents that make simulator act weird */
             if (Math.Abs(ic) > 1e12 || Math.Abs(ib) > 1e12) {
-                cir.stop("max current exceeded", this);
+                cir.Stop("max current exceeded", this);
             }
         }
 

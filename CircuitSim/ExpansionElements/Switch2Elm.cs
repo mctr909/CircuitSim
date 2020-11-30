@@ -12,13 +12,13 @@ namespace Circuit.Elements {
         Point[] swpoles;
 
         public Switch2Elm(int xx, int yy) : base(xx, yy, false) {
-            noDiagonal = true;
+            mNoDiagonal = true;
             throwCount = 2;
             allocNodes();
         }
 
         Switch2Elm(int xx, int yy, bool mm) : base(xx, yy, mm) {
-            noDiagonal = true;
+            mNoDiagonal = true;
             throwCount = 2;
             allocNodes();
         }
@@ -29,7 +29,7 @@ namespace Circuit.Elements {
             try {
                 throwCount = st.nextTokenInt();
             } catch { }
-            noDiagonal = true;
+            mNoDiagonal = true;
         }
 
         public override DUMP_ID getDumpType() { return DUMP_ID.SWITCH2; }
@@ -49,63 +49,63 @@ namespace Circuit.Elements {
                 if (throwCount == 2 && i == 0) {
                     hs = openhs;
                 }
-                interpPoint(lead1, lead2, ref swpoles[i], 1, hs);
-                interpPoint(point1, point2, ref swposts[i], 1, hs);
+                interpPoint(mLead1, mLead2, ref swpoles[i], 1, hs);
+                interpPoint(mPoint1, mPoint2, ref swposts[i], 1, hs);
             }
-            swpoles[i] = lead2; /* for center off */
+            swpoles[i] = mLead2; /* for center off */
             posCount = hasCenterOff() ? 3 : throwCount;
         }
 
         public override void draw(Graphics g) {
-            setBbox(point1, point2, openhs);
+            setBbox(mPoint1, mPoint2, openhs);
             adjustBbox(swposts[0], swposts[throwCount - 1]);
 
             /* draw first lead */
-            drawThickLine(g, getVoltageColor(volts[0]), point1, lead1);
+            drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
             /* draw other leads */
             for (int i = 0; i < throwCount; i++) {
-                drawThickLine(g, getVoltageColor(volts[i + 1]), swpoles[i], swposts[i]);
+                drawThickLine(g, getVoltageColor(Volts[i + 1]), swpoles[i], swposts[i]);
             }
             /* draw switch */
             if (!needsHighlight()) {
                 PEN_THICK_LINE.Color = whiteColor;
             }
-            drawThickLine(g, lead1, swpoles[position]);
+            drawThickLine(g, mLead1, swpoles[position]);
 
             updateDotCount();
-            drawDots(g, point1, lead1, curcount);
+            drawDots(g, mPoint1, mLead1, mCurCount);
             if (position != 2) {
-                drawDots(g, swpoles[position], swposts[position], curcount);
+                drawDots(g, swpoles[position], swposts[position], mCurCount);
             }
             drawPosts(g);
         }
 
         public override double getCurrentIntoNode(int n) {
             if (n == 0) {
-                return -current;
+                return -mCurrent;
             }
             if (n == position + 1) {
-                return current;
+                return mCurrent;
             }
             return 0;
         }
 
         public override Rectangle getSwitchRect() {
-            var l1 = new Rectangle(lead1.X, lead1.Y, 0, 0);
+            var l1 = new Rectangle(mLead1.X, mLead1.Y, 0, 0);
             var s0 = new Rectangle(swpoles[0].X, swpoles[0].Y, 0, 0);
             var s1 = new Rectangle(swpoles[throwCount - 1].X, swpoles[throwCount - 1].Y, 0, 0);
             return Rectangle.Union(l1, Rectangle.Union(s0, s1));
         }
 
         public override Point getPost(int n) {
-            return (n == 0) ? point1 : swposts[n - 1];
+            return (n == 0) ? mPoint1 : swposts[n - 1];
         }
 
         public override int getPostCount() { return 1 + throwCount; }
 
         public override void calculateCurrent() {
             if (position == 2 && hasCenterOff()) {
-                current = 0;
+                mCurrent = 0;
             }
         }
 
@@ -113,7 +113,7 @@ namespace Circuit.Elements {
             if (position == 2 && hasCenterOff()) { /* in center? */
                 return;
             }
-            cir.stampVoltageSource(nodes[0], nodes[position + 1], voltSource, 0);
+            cir.StampVoltageSource(Nodes[0], Nodes[position + 1], mVoltSource, 0);
         }
 
         public override int getVoltageSourceCount() {
@@ -195,6 +195,6 @@ namespace Circuit.Elements {
 
         /* this is for backwards compatibility only.
          * we only support it if throwCount = 2 */
-        bool hasCenterOff() { return (flags & FLAG_CENTER_OFF) != 0 && throwCount == 2; }
+        bool hasCenterOff() { return (mFlags & FLAG_CENTER_OFF) != 0 && throwCount == 2; }
     }
 }

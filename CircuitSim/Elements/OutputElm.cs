@@ -31,7 +31,7 @@ namespace Circuit.Elements {
 
         public override void setPoints() {
             base.setPoints();
-            lead1 = new Point();
+            mLead1 = new Point();
         }
 
         public override void draw(Graphics g) {
@@ -39,29 +39,29 @@ namespace Circuit.Elements {
             var font = selected ? fontBold : fontRegular;
             PEN_THICK_LINE.Color = selected ? selectColor : whiteColor;
 
-            string txt = (flags & FLAG_VALUE) != 0 ? getUnitTextWithScale(volts[0], "V", scale) : "out";
+            string txt = (mFlags & FLAG_VALUE) != 0 ? getUnitTextWithScale(Volts[0], "V", scale) : "out";
             if (this == sim.plotXElm) {
                 txt = "X";
             }
             if (this == sim.plotYElm) {
                 txt = "Y";
             }
-            interpPoint(point1, point2, ref lead1, 1 - ((int)g.MeasureString(txt, font).Width / 2 + 8) / dn);
-            setBbox(point1, lead1, 0);
-            drawCenteredText(g, txt, x2, y2, true);
-            PEN_THICK_LINE.Color = getVoltageColor(volts[0]);
+            interpPoint(mPoint1, mPoint2, ref mLead1, 1 - ((int)g.MeasureString(txt, font).Width / 2 + 8) / mElmLen);
+            setBbox(mPoint1, mLead1, 0);
+            drawCenteredText(g, txt, X2, Y2, true);
+            PEN_THICK_LINE.Color = getVoltageColor(Volts[0]);
             if (selected) {
                 PEN_THICK_LINE.Color = selectColor;
             }
-            drawThickLine(g, point1, lead1);
+            drawThickLine(g, mPoint1, mLead1);
             drawPosts(g);
         }
 
-        public override double getVoltageDiff() { return volts[0]; }
+        public override double getVoltageDiff() { return Volts[0]; }
 
         public override void getInfo(string[] arr) {
             arr[0] = "output";
-            arr[1] = "V = " + getVoltageText(volts[0]);
+            arr[1] = "V = " + getVoltageText(Volts[0]);
         }
 
         public override EditInfo getEditInfo(int n) {
@@ -69,7 +69,7 @@ namespace Circuit.Elements {
                 var ei = new EditInfo("", 0, -1, -1);
                 ei.checkbox = new CheckBox();
                 ei.checkbox.Text = "Show Voltage";
-                ei.checkbox.Checked = (flags & FLAG_VALUE) != 0;
+                ei.checkbox.Checked = (mFlags & FLAG_VALUE) != 0;
                 return ei;
             }
             if (n == 1) {
@@ -87,7 +87,7 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
-                flags = ei.checkbox.Checked ? (flags | FLAG_VALUE) : (flags & ~FLAG_VALUE);
+                mFlags = ei.checkbox.Checked ? (mFlags | FLAG_VALUE) : (mFlags & ~FLAG_VALUE);
             }
             if (n == 1) {
                 scale = ei.choice.SelectedIndex;

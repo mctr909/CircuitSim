@@ -16,65 +16,67 @@ namespace Circuit.Elements {
         public static CirSim sim;
         protected static Circuit cir;
 
-        static CircuitElm mMouseElmRef = null;
-
         /* scratch points for convenience */
         protected static Point ps1;
         protected static Point ps2;
 
-        public static double voltageRange = 5;
+        static CircuitElm mMouseElmRef = null;
 
         public static double currentMult;
         #endregion
 
-        #region dynamic variable
+        #region property
         /* initial point where user created element.
          * For simple two-terminal elements, this is the first node/post. */
-        public int x1;
-        public int y1;
+        public int X1 { get; set; }
+        public int Y1 { get; set; }
 
         /* point to which user dragged out element.
          * For simple two-terminal elements, this is the second node/post */
-        public int x2;
-        public int y2;
+        public int X2 { get; set; }
+        public int Y2 { get; set; }
 
-        protected int flags;
-        protected int voltSource;
-        public int[] nodes { get; protected set; }
+        public bool IsSelected { get; set; }
+
+        public int[] Nodes { get; protected set; }
+
+        /* voltages at each node */
+        public double[] Volts { get; protected set; }
+        #endregion
+
+        #region dynamic variable
+        public Rectangle BoundingBox;
+
+        protected int mFlags;
+        protected int mVoltSource;
 
         /* length along x and y axes, and sign of difference */
-        protected int dx;
-        protected int dy;
-        protected int dsign;
+        protected int mDx;
+        protected int mDy;
+        protected int mDsign;
 
         int lastHandleGrabbed = -1;
         protected int numHandles = 2;
 
         /* length of element */
-        protected double dn;
+        protected double mElmLen;
 
-        double dpx1;
-        double dpy1;
+        protected double mUnitPx1;
+        protected double mUnitPy1;
 
         /* (x,y) and (x2,y2) as Point objects */
-        protected Point point1;
-        protected Point point2;
+        protected Point mPoint1;
+        protected Point mPoint2;
 
         /* lead points (ends of wire stubs for simple two-terminal elements) */
-        protected Point lead1;
-        protected Point lead2;
+        protected Point mLead1;
+        protected Point mLead2;
 
-        /* voltages at each node */
-        public double[] volts { get; protected set; }
-
-        protected double current;
-        protected double curcount;
-        public Rectangle boundingBox;
+        protected double mCurrent;
+        protected double mCurCount;
 
         /* if subclasses set this to true, element will be horizontal or vertical only */
-        protected bool noDiagonal;
-
-        public bool selected;
+        protected bool mNoDiagonal;
         #endregion
 
         public static void initClass(CirSim s, Circuit c) {
@@ -82,16 +84,17 @@ namespace Circuit.Elements {
             cir = c;
             ps1 = new Point();
             ps2 = new Point();
-            colorScale = new Color[colorScaleCount];
+            mMouseElmRef = null;
+            currentMult = 0;
         }
 
         /// <summary>
         /// create new element with one post at xx,yy, to be dragged out by user
         /// </summary>
         protected CircuitElm(int xx, int yy) {
-            x1 = x2 = xx;
-            y1 = y2 = yy;
-            flags = getDefaultFlags();
+            X1 = X2 = xx;
+            Y1 = Y2 = yy;
+            mFlags = getDefaultFlags();
             allocNodes();
             initBoundingBox();
         }
@@ -100,11 +103,11 @@ namespace Circuit.Elements {
         /// create element between xa,ya and xb,yb from undump
         /// </summary>
         protected CircuitElm(int xa, int ya, int xb, int yb, int f) {
-            x1 = xa;
-            y1 = ya;
-            x2 = xb;
-            y2 = yb;
-            flags = f;
+            X1 = xa;
+            Y1 = ya;
+            X2 = xb;
+            Y2 = yb;
+            mFlags = f;
             allocNodes();
             initBoundingBox();
         }
@@ -122,7 +125,7 @@ namespace Circuit.Elements {
         public virtual int getDefaultFlags() { return 0; }
 
         void initBoundingBox() {
-            boundingBox = new Rectangle(Math.Min(x1, x2), Math.Min(y1, y2), Math.Abs(x2 - x1) + 1, Math.Abs(y2 - y1) + 1);
+            BoundingBox = new Rectangle(Math.Min(X1, X2), Math.Min(Y1, Y2), Math.Abs(X2 - X1) + 1, Math.Abs(Y2 - Y1) + 1);
         }
 
         /// <summary>
@@ -131,9 +134,9 @@ namespace Circuit.Elements {
         protected void allocNodes() {
             int n = getPostCount() + getInternalNodeCount();
             /* preserve voltages if possible */
-            if (nodes == null || nodes.Length != n) {
-                nodes = new int[n];
-                volts = new double[n];
+            if (Nodes == null || Nodes.Length != n) {
+                Nodes = new int[n];
+                Volts = new double[n];
             }
         }
 
@@ -142,7 +145,7 @@ namespace Circuit.Elements {
         /// </summary>
         public virtual string dump() {
             var type = getDumpType();
-            return string.Format("{0} {1} {2} {3} {4} {5}", type, x1, y1, x2, y2, flags);
+            return string.Format("{0} {1} {2} {3} {4} {5}", type, X1, Y1, X2, Y2, mFlags);
         }
 
         /// <summary>
@@ -150,9 +153,9 @@ namespace Circuit.Elements {
         /// </summary>
         public virtual void reset() {
             for (int i = 0; i != getPostCount() + getInternalNodeCount(); i++) {
-                volts[i] = 0;
+                Volts[i] = 0;
             }
-            curcount = 0;
+            mCurCount = 0;
         }
 
         public virtual void draw(Graphics g) { }
@@ -163,13 +166,13 @@ namespace Circuit.Elements {
         /// </summary>
         /// <param name="vn"></param>
         /// <param name="c"></param>
-        public virtual void setCurrent(int vn, double c) { current = c; }
+        public virtual void setCurrent(int vn, double c) { mCurrent = c; }
 
         /// <summary>
         /// get current for one- or two-terminal elements
         /// </summary>
         /// <returns></returns>
-        public virtual double getCurrent() { return current; }
+        public virtual double getCurrent() { return mCurrent; }
 
         /// <summary>
         /// stamp matrix values for linear elements.
@@ -199,11 +202,11 @@ namespace Circuit.Elements {
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
-        public double getPostVoltage(int x) { return volts[x]; }
+        public double getPostVoltage(int x) { return Volts[x]; }
 
         public string dispPostVoltage(int x) {
-            if (x < volts.Length) {
-                return getUnitText(volts[x], "V");
+            if (x < Volts.Length) {
+                return getUnitText(Volts[x], "V");
             } else {
                 return "";
             }
@@ -215,7 +218,7 @@ namespace Circuit.Elements {
         /// <param name="n"></param>
         /// <param name="c"></param>
         public virtual void setNodeVoltage(int n, double c) {
-            volts[n] = c;
+            Volts[n] = c;
             calculateCurrent();
         }
 
@@ -229,14 +232,14 @@ namespace Circuit.Elements {
         /// Called when element is moved
         /// </summary>
         public virtual void setPoints() {
-            dx = x2 - x1;
-            dy = y2 - y1;
-            dn = Math.Sqrt(dx * dx + dy * dy);
-            dpx1 = dy / dn;
-            dpy1 = -dx / dn;
-            dsign = (dy == 0) ? Math.Sign(dx) : Math.Sign(dy);
-            point1 = new Point(x1, y1);
-            point2 = new Point(x2, y2);
+            mDx = X2 - X1;
+            mDy = Y2 - Y1;
+            mElmLen = Math.Sqrt(mDx * mDx + mDy * mDy);
+            mUnitPx1 = mDy / mElmLen;
+            mUnitPy1 = -mDx / mElmLen;
+            mDsign = (mDy == 0) ? Math.Sign(mDx) : Math.Sign(mDy);
+            mPoint1 = new Point(X1, Y1);
+            mPoint2 = new Point(X2, Y2);
         }
 
         /// <summary>
@@ -245,13 +248,13 @@ namespace Circuit.Elements {
         /// </summary>
         /// <param name="len"></param>
         protected void calcLeads(int len) {
-            if (dn < len || len == 0) {
-                lead1 = point1;
-                lead2 = point2;
+            if (mElmLen < len || len == 0) {
+                mLead1 = mPoint1;
+                mLead2 = mPoint2;
                 return;
             }
-            lead1 = interpPoint(point1, point2, (dn - len) / (2 * dn));
-            lead2 = interpPoint(point1, point2, (dn + len) / (2 * dn));
+            mLead1 = interpPoint(mPoint1, mPoint2, (mElmLen - len) / (2 * mElmLen));
+            mLead2 = interpPoint(mPoint1, mPoint2, (mElmLen + len) / (2 * mElmLen));
         }
 
         /// <summary>
@@ -262,24 +265,24 @@ namespace Circuit.Elements {
         public virtual void drag(int xx, int yy) {
             xx = sim.snapGrid(xx);
             yy = sim.snapGrid(yy);
-            if (noDiagonal) {
-                if (Math.Abs(x1 - xx) < Math.Abs(y1 - yy)) {
-                    xx = x1;
+            if (mNoDiagonal) {
+                if (Math.Abs(X1 - xx) < Math.Abs(Y1 - yy)) {
+                    xx = X1;
                 } else {
-                    yy = y1;
+                    yy = Y1;
                 }
             }
-            x2 = xx; y2 = yy;
+            X2 = xx; Y2 = yy;
             setPoints();
         }
 
         public void move(int dx, int dy) {
-            x1 += dx;
-            y1 += dy;
-            x2 += dx;
-            y2 += dy;
-            boundingBox.X += dx;
-            boundingBox.Y += dy;
+            X1 += dx;
+            Y1 += dy;
+            X2 += dx;
+            Y2 += dy;
+            BoundingBox.X += dx;
+            BoundingBox.Y += dy;
             setPoints();
         }
 
@@ -288,7 +291,7 @@ namespace Circuit.Elements {
         /// </summary>
         /// <returns>returns true if it's zero size and should be deleted</returns>
         public bool creationFailed() {
-            return x1 == x2 && y1 == y2;
+            return X1 == X2 && Y1 == Y2;
         }
 
         /// <summary>
@@ -299,10 +302,10 @@ namespace Circuit.Elements {
         /// <param name="bx"></param>
         /// <param name="by"></param>
         void setPosition(int ax, int ay, int bx, int by) {
-            x1 = ax;
-            y1 = ay;
-            x2 = bx;
-            y2 = by;
+            X1 = ax;
+            Y1 = ay;
+            X2 = bx;
+            Y2 = by;
             setPoints();
         }
 
@@ -313,17 +316,17 @@ namespace Circuit.Elements {
         /// <param name="dy"></param>
         /// <returns></returns>
         public bool allowMove(int dx, int dy) {
-            int nx = x1 + dx;
-            int ny = y1 + dy;
-            int nx2 = x2 + dx;
-            int ny2 = y2 + dy;
+            int nx = X1 + dx;
+            int ny = Y1 + dy;
+            int nx2 = X2 + dx;
+            int ny2 = Y2 + dy;
             int i;
             for (i = 0; i != sim.elmList.Count; i++) {
                 CircuitElm ce = sim.getElm(i);
-                if (ce.x1 == nx && ce.y1 == ny && ce.x2 == nx2 && ce.y2 == ny2) {
+                if (ce.X1 == nx && ce.Y1 == ny && ce.X2 == nx2 && ce.Y2 == ny2) {
                     return false;
                 }
-                if (ce.x1 == nx2 && ce.y1 == ny2 && ce.x2 == nx && ce.y2 == ny) {
+                if (ce.X1 == nx2 && ce.Y1 == ny2 && ce.X2 == nx && ce.Y2 == ny) {
                     return false;
                 }
             }
@@ -333,33 +336,33 @@ namespace Circuit.Elements {
         public void movePoint(int n, int dx, int dy) {
             /* modified by IES to prevent the user dragging points to create zero sized nodes
             /* that then render improperly */
-            int oldx = x1;
-            int oldy = y1;
-            int oldx2 = x2;
-            int oldy2 = y2;
+            int oldx = X1;
+            int oldy = Y1;
+            int oldx2 = X2;
+            int oldy2 = Y2;
             if (n == 0) {
-                x1 += dx; y1 += dy;
+                X1 += dx; Y1 += dy;
             } else {
-                x2 += dx; y2 += dy;
+                X2 += dx; Y2 += dy;
             }
-            if (x1 == x2 && y1 == y2) {
-                x1 = oldx;
-                y1 = oldy;
-                x2 = oldx2;
-                y2 = oldy2;
+            if (X1 == X2 && Y1 == Y2) {
+                X1 = oldx;
+                Y1 = oldy;
+                X2 = oldx2;
+                Y2 = oldy2;
             }
             setPoints();
         }
 
         public int getHandleGrabbedClose(int xtest, int ytest, int deltaSq, int minSize) {
             lastHandleGrabbed = -1;
-            var x12 = x2 - x1;
-            var y12 = y2 - y1;
+            var x12 = X2 - X1;
+            var y12 = Y2 - Y1;
             if (Math.Sqrt(x12 * x12 + y12 * y12) >= minSize) {
-                var x1t = xtest - x1;
-                var y1t = ytest - y1;
-                var x2t = xtest - x2;
-                var y2t = ytest - y2;
+                var x1t = xtest - X1;
+                var y1t = ytest - Y1;
+                var x2t = xtest - X2;
+                var y2t = ytest - Y2;
                 if (Math.Sqrt(x1t * x1t + y1t * y1t) <= deltaSq) {
                     lastHandleGrabbed = 0;
                 } else if (Math.Sqrt(x2t * x2t + y2t * y2t) <= deltaSq) {
@@ -388,8 +391,8 @@ namespace Circuit.Elements {
         /// <param name="p"></param>
         /// <param name="n"></param>
         public virtual void setNode(int p, int n) {
-            if (p < nodes.Length) {
-                nodes[p] = n;
+            if (p < Nodes.Length) {
+                Nodes[p] = n;
             }
         }
 
@@ -403,11 +406,11 @@ namespace Circuit.Elements {
         public virtual void setVoltageSource(int n, int v) {
             /* default implementation only makes sense for subclasses with one voltage source.
              * If we have 0 this isn't used, if we have >1 this won't work */
-            voltSource = v;
+            mVoltSource = v;
         }
 
         public virtual double getVoltageDiff() {
-            return volts[0] - volts[1];
+            return Volts[0] - Volts[1];
         }
 
         public virtual bool nonLinear() { return false; }
@@ -419,7 +422,7 @@ namespace Circuit.Elements {
         /// </summary>
         /// <param name="n"></param>
         /// <returns></returns>
-        public int getNode(int n) { return nodes[n]; }
+        public int getNode(int n) { return Nodes[n]; }
 
         /// <summary>
         /// get position of nth node
@@ -427,12 +430,12 @@ namespace Circuit.Elements {
         /// <param name="n"></param>
         /// <returns></returns>
         public virtual Point getPost(int n) {
-            return (n == 0) ? point1 : (n == 1) ? point2 : new Point();
+            return (n == 0) ? mPoint1 : (n == 1) ? mPoint2 : new Point();
         }
 
         public int getNodeAtPoint(int xp, int yp) {
             if (getPostCount() == 2) {
-                return (x1 == xp && y1 == yp) ? 0 : 1;
+                return (X1 == xp && Y1 == yp) ? 0 : 1;
             }
             for (int i = 0; i != getPostCount(); i++) {
                 var p = getPost(i);
@@ -454,10 +457,10 @@ namespace Circuit.Elements {
         protected void setBbox(int x1, int y1, int x2, int y2) {
             if (x1 > x2) { int q = x1; x1 = x2; x2 = q; }
             if (y1 > y2) { int q = y1; y1 = y2; y2 = q; }
-            boundingBox.X = x1;
-            boundingBox.Y = y1;
-            boundingBox.Width = x2 - x1 + 1;
-            boundingBox.Height = y2 - y1 + 1;
+            BoundingBox.X = x1;
+            BoundingBox.Y = y1;
+            BoundingBox.Width = x2 - x1 + 1;
+            BoundingBox.Height = y2 - y1 + 1;
         }
 
         /// <summary>
@@ -468,8 +471,8 @@ namespace Circuit.Elements {
         /// <param name="w"></param>
         protected void setBbox(Point p1, Point p2, double w) {
             setBbox(p1.X, p1.Y, p2.X, p2.Y);
-            int dpx = (int)(dpx1 * w);
-            int dpy = (int)(dpy1 * w);
+            int dpx = (int)(mUnitPx1 * w);
+            int dpy = (int)(mUnitPy1 * w);
             adjustBbox(p1.X + dpx, p1.Y + dpy, p1.X - dpx, p1.Y - dpy);
         }
 
@@ -483,14 +486,14 @@ namespace Circuit.Elements {
         protected void adjustBbox(int x1, int y1, int x2, int y2) {
             if (x1 > x2) { int q = x1; x1 = x2; x2 = q; }
             if (y1 > y2) { int q = y1; y1 = y2; y2 = q; }
-            x1 = Math.Min(boundingBox.X, x1);
-            y1 = Math.Min(boundingBox.Y, y1);
-            x2 = Math.Max(boundingBox.X + boundingBox.Width, x2);
-            y2 = Math.Max(boundingBox.Y + boundingBox.Height, y2);
-            boundingBox.X = x1;
-            boundingBox.Y = y1;
-            boundingBox.Width = x2 - x1;
-            boundingBox.Height = y2 - y1;
+            x1 = Math.Min(BoundingBox.X, x1);
+            y1 = Math.Min(BoundingBox.Y, y1);
+            x2 = Math.Max(BoundingBox.X + BoundingBox.Width, x2);
+            y2 = Math.Max(BoundingBox.Y + BoundingBox.Height, y2);
+            BoundingBox.X = x1;
+            BoundingBox.Y = y1;
+            BoundingBox.Width = x2 - x1;
+            BoundingBox.Height = y2 - y1;
         }
 
         protected void adjustBbox(Point p1, Point p2) {
@@ -507,7 +510,7 @@ namespace Circuit.Elements {
         /// update dot positions (curcount) for drawing current (simple case for single current)
         /// </summary>
         protected void updateDotCount() {
-            curcount = updateDotCount(current, curcount);
+            mCurCount = updateDotCount(mCurrent, mCurCount);
         }
 
         /// <summary>
@@ -532,7 +535,7 @@ namespace Circuit.Elements {
         protected void doDots(Graphics g) {
             updateDotCount();
             if (sim.dragElm != this) {
-                drawDots(g, point1, point2, curcount);
+                drawDots(g, mPoint1, mPoint2, mCurCount);
             }
         }
 
@@ -572,10 +575,10 @@ namespace Circuit.Elements {
             if (c >= colorScaleCount) {
                 c = colorScaleCount - 1;
             }
-            return colorScale[c];
+            return mColorScale[c];
         }
 
-        public virtual double getPower() { return getVoltageDiff() * current; }
+        public virtual double getPower() { return getVoltageDiff() * mCurrent; }
 
         public virtual double getScopeValue(int x) {
             return (x == Scope.VAL_CURRENT) ? getCurrent() :
@@ -639,20 +642,16 @@ namespace Circuit.Elements {
             }
             /* Test if the current mouseElm is a ScopeElm and, if so, does it belong to this elm */
             var isScopeElm = (mMouseElmRef is ScopeElm) && ((ScopeElm)mMouseElmRef).elmScope.getElm().Equals(this);
-            return mMouseElmRef.Equals(this) || selected || sim.plotYElm.Equals(this) || isScopeElm;
+            return mMouseElmRef.Equals(this) || IsSelected || sim.plotYElm.Equals(this) || isScopeElm;
         }
-
-        public bool isSelected() { return selected; }
 
         public virtual bool canShowValueInScope(int v) { return false; }
 
-        public void setSelected(bool x) { selected = x; }
-
         public void selectRect(Rectangle r) {
-            selected = r.IntersectsWith(boundingBox);
+            IsSelected = r.IntersectsWith(BoundingBox);
         }
 
-        public Rectangle getBoundingBox() { return boundingBox; }
+        public Rectangle getBoundingBox() { return BoundingBox; }
 
         public bool needsShortcut() { return getShortcut() > 0 && (int)getShortcut() <= 127; }
 
@@ -686,19 +685,19 @@ namespace Circuit.Elements {
         public virtual double getCurrentIntoNode(int n) {
             /* if we take out the getPostCount() == 2 it gives the wrong value for rails */
             if (n == 0 && getPostCount() == 2) {
-                return -current;
+                return -mCurrent;
             } else {
-                return current;
+                return mCurrent;
             }
         }
 
         public void flipPosts() {
-            int oldx = x1;
-            int oldy = y1;
-            x1 = x2;
-            y1 = y2;
-            x2 = oldx;
-            y2 = oldy;
+            int oldx = X1;
+            int oldy = Y1;
+            X1 = X2;
+            Y1 = Y2;
+            X2 = oldx;
+            Y2 = oldy;
             setPoints();
         }
     }

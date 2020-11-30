@@ -6,15 +6,15 @@ namespace Circuit.Elements {
         public Scope elmScope;
 
         public ScopeElm(int xx, int yy) : base(xx, yy) {
-            noDiagonal = false;
-            x2 = x1 + 128;
-            y2 = y1 + 64;
+            mNoDiagonal = false;
+            X2 = X1 + 128;
+            Y2 = Y1 + 64;
             elmScope = new Scope(sim);
             setPoints();
         }
 
         public ScopeElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
-            noDiagonal = false;
+            mNoDiagonal = false;
             string sStr = st.nextToken();
             var sst = new StringTokenizer(sStr, "_");
             elmScope = new Scope(sim);
@@ -29,10 +29,10 @@ namespace Circuit.Elements {
         }
 
         public void setScopeRect() {
-            int i1 = sim.transformX(Math.Min(x1, x2));
-            int i2 = sim.transformX(Math.Max(x1, x2));
-            int j1 = sim.transformY(Math.Min(y1, y2));
-            int j2 = sim.transformY(Math.Max(y1, y2));
+            int i1 = sim.transformX(Math.Min(X1, X2));
+            int i2 = sim.transformX(Math.Max(X1, X2));
+            int j1 = sim.transformY(Math.Min(Y1, Y2));
+            int j2 = sim.transformY(Math.Max(Y1, Y2));
             var r = new Rectangle(i1, j1, i2 - i1, j2 - j1);
             if (!r.Equals(elmScope.rect)) {
                 elmScope.setRect(r);
@@ -76,7 +76,7 @@ namespace Circuit.Elements {
             var color = needsHighlight() ? selectColor : whiteColor;
             setScopeRect();
             elmScope.draw(g);
-            setBbox(point1, point2, 0);
+            setBbox(mPoint1, mPoint2, 0);
             drawPosts(g);
         }
 

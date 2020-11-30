@@ -25,7 +25,7 @@ namespace Circuit.Elements {
             voltdiff = st.nextTokenDouble();
         }
 
-        public bool isTrapezoidal() { return (flags & FLAG_BACK_EULER) == 0; }
+        public bool isTrapezoidal() { return (mFlags & FLAG_BACK_EULER) == 0; }
 
         public double getCapacitance() { return capacitance; }
 
@@ -33,19 +33,19 @@ namespace Circuit.Elements {
 
         public override void setNodeVoltage(int n, double c) {
             base.setNodeVoltage(n, c);
-            voltdiff = volts[0] - volts[1];
+            voltdiff = Volts[0] - Volts[1];
         }
 
         public override void reset() {
             base.reset();
-            current = curcount = curSourceValue = 0;
+            mCurrent = mCurCount = curSourceValue = 0;
             /* put small charge on caps when reset to start oscillators */
             voltdiff = 1e-3;
         }
 
         public void shorted() {
             base.reset();
-            voltdiff = current = curcount = curSourceValue = 0;
+            voltdiff = mCurrent = mCurCount = curSourceValue = 0;
         }
 
         public override DUMP_ID getDumpType() { return DUMP_ID.CAPACITOR; }
@@ -56,28 +56,28 @@ namespace Circuit.Elements {
 
         public override void setPoints() {
             base.setPoints();
-            double f = (dn / 2 - 4) / dn;
+            double f = (mElmLen / 2 - 4) / mElmLen;
             /* calc leads */
-            lead1 = interpPoint(point1, point2, f);
-            lead2 = interpPoint(point1, point2, 1 - f);
+            mLead1 = interpPoint(mPoint1, mPoint2, f);
+            mLead2 = interpPoint(mPoint1, mPoint2, 1 - f);
             /* calc plates */
             plate1 = newPointArray(2);
             plate2 = newPointArray(2);
-            interpPoint(point1, point2, ref plate1[0], ref plate1[1], f, 10);
-            interpPoint(point1, point2, ref plate2[0], ref plate2[1], 1 - f, 10);
+            interpPoint(mPoint1, mPoint2, ref plate1[0], ref plate1[1], f, 10);
+            interpPoint(mPoint1, mPoint2, ref plate2[0], ref plate2[1], 1 - f, 10);
         }
 
         public override void draw(Graphics g) {
             int hs = 8;
-            setBbox(point1, point2, hs);
+            setBbox(mPoint1, mPoint2, hs);
 
             /* draw first lead and plate */
-            PEN_THICK_LINE.Color = getVoltageColor(volts[0]);
-            drawThickLine(g, point1, lead1);
+            PEN_THICK_LINE.Color = getVoltageColor(Volts[0]);
+            drawThickLine(g, mPoint1, mLead1);
             drawThickLine(g, plate1[0], plate1[1]);
             /* draw second lead and plate */
-            PEN_THICK_LINE.Color = getVoltageColor(volts[1]);
-            drawThickLine(g, point2, lead2);
+            PEN_THICK_LINE.Color = getVoltageColor(Volts[1]);
+            drawThickLine(g, mPoint2, mLead2);
             drawThickLine(g, plate2[0], plate2[1]);
 
             if (platePoints == null) {
@@ -90,8 +90,8 @@ namespace Circuit.Elements {
 
             updateDotCount();
             if (sim.dragElm != this) {
-                drawDots(g, point1, lead1, curcount);
-                drawDots(g, point2, lead2, -curcount);
+                drawDots(g, mPoint1, mLead1, mCurCount);
+                drawDots(g, mPoint2, mLead2, -mCurCount);
             }
             drawPosts(g);
             if (sim.chkShowValuesCheckItem.Checked) {
@@ -103,7 +103,7 @@ namespace Circuit.Elements {
         public override void stamp() {
             if (sim.dcAnalysisFlag) {
                 /* when finding DC operating point, replace cap with a 100M resistor */
-                cir.stampResistor(nodes[0], nodes[1], 1e8);
+                cir.StampResistor(Nodes[0], Nodes[1], 1e8);
                 curSourceValue = 0;
                 return;
             }
@@ -118,30 +118,30 @@ namespace Circuit.Elements {
             } else {
                 compResistance = sim.timeStep / capacitance;
             }
-            cir.stampResistor(nodes[0], nodes[1], compResistance);
-            cir.stampRightSide(nodes[0]);
-            cir.stampRightSide(nodes[1]);
+            cir.StampResistor(Nodes[0], Nodes[1], compResistance);
+            cir.StampRightSide(Nodes[0]);
+            cir.StampRightSide(Nodes[1]);
         }
 
         public override void startIteration() {
             if (isTrapezoidal()) {
-                curSourceValue = -voltdiff / compResistance - current;
+                curSourceValue = -voltdiff / compResistance - mCurrent;
             } else {
                 curSourceValue = -voltdiff / compResistance;
             }
         }
 
         public override void calculateCurrent() {
-            double voltdiff = volts[0] - volts[1];
+            double voltdiff = Volts[0] - Volts[1];
             if (sim.dcAnalysisFlag) {
-                current = voltdiff / 1e8;
+                mCurrent = voltdiff / 1e8;
                 return;
             }
             /* we check compResistance because this might get called
              * before stamp(), which sets compResistance, causing
              * infinite current */
             if (compResistance > 0) {
-                current = voltdiff / compResistance + curSourceValue;
+                mCurrent = voltdiff / compResistance + curSourceValue;
             }
         }
 
@@ -149,7 +149,7 @@ namespace Circuit.Elements {
             if (sim.dcAnalysisFlag) {
                 return;
             }
-            cir.stampCurrentSource(nodes[0], nodes[1], curSourceValue);
+            cir.StampCurrentSource(Nodes[0], Nodes[1], curSourceValue);
         }
 
         public override void getInfo(string[] arr) {
@@ -184,9 +184,9 @@ namespace Circuit.Elements {
             }
             if (n == 1) {
                 if (ei.checkbox.Checked) {
-                    flags &= ~FLAG_BACK_EULER;
+                    mFlags &= ~FLAG_BACK_EULER;
                 } else {
-                    flags |= FLAG_BACK_EULER;
+                    mFlags |= FLAG_BACK_EULER;
                 }
             }
         }

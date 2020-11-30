@@ -600,11 +600,11 @@ namespace Circuit {
                 /* centered text causes problems when trying to center the circuit, */
                 /* so we special-case it here */
                 if (!ce.isCenteredText()) {
-                    minx = Math.Min(ce.x1, Math.Min(ce.x2, minx));
-                    maxx = Math.Max(ce.x1, Math.Max(ce.x2, maxx));
+                    minx = Math.Min(ce.X1, Math.Min(ce.X2, minx));
+                    maxx = Math.Max(ce.X1, Math.Max(ce.X2, maxx));
                 }
-                miny = Math.Min(ce.y1, Math.Min(ce.y2, miny));
-                maxy = Math.Max(ce.y1, Math.Max(ce.y2, maxy));
+                miny = Math.Min(ce.Y1, Math.Min(ce.Y2, miny));
+                maxy = Math.Max(ce.Y1, Math.Max(ce.Y2, maxy));
             }
             if (minx > maxx) {
                 return new Rectangle();
@@ -837,7 +837,7 @@ namespace Circuit {
             }
 
             if (item == MENU_ITEM.VIEW_IN_FLOAT_SCOPE && menuElm != null) {
-                var newScope = new ScopeElm(snapGrid(menuElm.x1 + 50), snapGrid(menuElm.y1 + 50));
+                var newScope = new ScopeElm(snapGrid(menuElm.X1 + 50), snapGrid(menuElm.Y1 + 50));
                 elmList.Add(newScope);
                 newScope.setScopeElm(menuElm);
             }
@@ -866,7 +866,7 @@ namespace Circuit {
                     doDelete(false);
                 }
                 if (item == MENU_ITEM.undock && 0 <= menuScope) {
-                    var newScope = new ScopeElm(snapGrid(menuElm.x1 + 50), snapGrid(menuElm.y1 + 50));
+                    var newScope = new ScopeElm(snapGrid(menuElm.X1 + 50), snapGrid(menuElm.Y1 + 50));
                     elmList.Add(newScope);
                     newScope.setElmScope(scopes[menuScope]);
                     /* remove scope from list.  setupScopes() will fix the positions */
@@ -1566,10 +1566,10 @@ namespace Circuit {
             }
             for (int i = 0; i != elmList.Count; i++) {
                 var ce = getElm(i);
-                if (ce.y1 == dragGridY) {
+                if (ce.Y1 == dragGridY) {
                     ce.movePoint(0, 0, dy);
                 }
-                if (ce.y2 == dragGridY) {
+                if (ce.Y2 == dragGridY) {
                     ce.movePoint(1, 0, dy);
                 }
             }
@@ -1583,10 +1583,10 @@ namespace Circuit {
             }
             for (int i = 0; i != elmList.Count; i++) {
                 var ce = getElm(i);
-                if (ce.x1 == dragGridX) {
+                if (ce.X1 == dragGridX) {
                     ce.movePoint(0, dx, 0);
                 }
-                if (ce.x2 == dragGridX) {
+                if (ce.X2 == dragGridX) {
                     ce.movePoint(1, dx, 0);
                 }
             }
@@ -1599,7 +1599,7 @@ namespace Circuit {
             }
             for (int i = 0; i != elmList.Count; i++) {
                 var ce = getElm(i);
-                if (ce.isSelected() && !(ce is GraphicElm)) {
+                if (ce.IsSelected && !(ce is GraphicElm)) {
                     return false;
                 }
             }
@@ -1609,8 +1609,8 @@ namespace Circuit {
         bool dragSelected(int x, int y) {
             bool me = false;
             int i;
-            if (mouseElm != null && !mouseElm.isSelected()) {
-                mouseElm.setSelected(me = true);
+            if (mouseElm != null && !mouseElm.IsSelected) {
+                mouseElm.IsSelected = me = true;
             }
             if (!onlyGraphicsElmsSelected()) {
                 Console.WriteLine("Snapping x and y");
@@ -1622,7 +1622,7 @@ namespace Circuit {
             if (dx == 0 && dy == 0) {
                 /* don't leave mouseElm selected if we selected it above */
                 if (me) {
-                    mouseElm.setSelected(false);
+                    mouseElm.IsSelected = false;
                 }
                 return false;
             }
@@ -1630,14 +1630,14 @@ namespace Circuit {
             bool allowed = true;
             for (i = 0; allowed && i != elmList.Count; i++) {
                 var ce = getElm(i);
-                if (ce.isSelected() && !ce.allowMove(dx, dy)) {
+                if (ce.IsSelected && !ce.allowMove(dx, dy)) {
                     allowed = false;
                 }
             }
             if (allowed) {
                 for (i = 0; i != elmList.Count; i++) {
                     var ce = getElm(i);
-                    if (ce.isSelected()) {
+                    if (ce.IsSelected) {
                         ce.move(dx, dy);
                     }
                 }
@@ -1645,7 +1645,7 @@ namespace Circuit {
             }
             /* don't leave mouseElm selected if we selected it above */
             if (me) {
-                mouseElm.setSelected(false);
+                mouseElm.IsSelected = false;
             }
 
             return allowed;
@@ -1654,8 +1654,8 @@ namespace Circuit {
         void dragPost(int x, int y) {
             if (draggingPost == -1) {
                 draggingPost
-                    = (CircuitElm.distance(mouseElm.x1, mouseElm.y1, x, y)
-                    > CircuitElm.distance(mouseElm.x2, mouseElm.y2, x, y))
+                    = (CircuitElm.distance(mouseElm.X1, mouseElm.Y1, x, y)
+                    > CircuitElm.distance(mouseElm.X2, mouseElm.Y2, x, y))
                     ? 1 : 0;
             }
             int dx = x - dragGridX;
@@ -1678,17 +1678,17 @@ namespace Circuit {
             if (ce == null || !(ce is WireElm)) {
                 return;
             }
-            if (ce.x1 == ce.x2) {
-                x = ce.x1;
+            if (ce.X1 == ce.X2) {
+                x = ce.X1;
             } else {
-                y = ce.y1;
+                y = ce.Y1;
             }
             /* don't create zero-length wire */
-            if (x == ce.x1 && y == ce.y1 || x == ce.x2 && y == ce.y2) {
+            if (x == ce.X1 && y == ce.Y1 || x == ce.X2 && y == ce.Y2) {
                 return;
             }
             var newWire = new WireElm(x, y);
-            newWire.drag(ce.x2, ce.y2);
+            newWire.drag(ce.X2, ce.Y2);
             ce.drag(x, y);
             elmList.Add(newWire);
             needAnalyze();
@@ -1721,7 +1721,7 @@ namespace Circuit {
         void removeZeroLengthElements() {
             for (int i = elmList.Count - 1; i >= 0; i--) {
                 var ce = getElm(i);
-                if (ce.x1 == ce.x2 && ce.y1 == ce.y2) {
+                if (ce.X1 == ce.X2 && ce.Y1 == ce.Y2) {
                     elmList.RemoveAt(i);
                     /*Console.WriteLine("delete element: {0} {1}\t{2} {3}\t{4}", ce.GetType(), ce.x1, ce.y1, ce.x2, ce.y2); */
                     ce.delete();
@@ -1796,9 +1796,9 @@ namespace Circuit {
                 int bestArea = 100000;
                 for (i = 0; i != elmList.Count; i++) {
                     var ce = getElm(i);
-                    if (ce.boundingBox.Contains(gx, gy)) {
+                    if (ce.BoundingBox.Contains(gx, gy)) {
                         int j;
-                        int area = ce.boundingBox.Width * ce.boundingBox.Height;
+                        int area = ce.BoundingBox.Width * ce.BoundingBox.Height;
                         int jn = ce.getPostCount();
                         if (jn > 2) {
                             jn = 2;
@@ -1935,7 +1935,7 @@ namespace Circuit {
                 return false;
             }
             var we = (WireElm)ce;
-            if (we.x1 == we.x2 || we.y1 == we.y2) {
+            if (we.X1 == we.X2 || we.Y1 == we.Y2) {
                 return true;
             }
             return false;
@@ -2073,11 +2073,11 @@ namespace Circuit {
 
         void setMenuSelection() {
             if (menuElm != null) {
-                if (menuElm.selected) {
+                if (menuElm.IsSelected) {
                     return;
                 }
                 clearSelection();
-                menuElm.setSelected(true);
+                menuElm.IsSelected = true;
             }
         }
 
@@ -2178,7 +2178,7 @@ namespace Circuit {
             /* to the user experience.
             /*
             /* BTW, the old logic could also leave mouseElm pointing to a deleted element. */
-            return ce.isSelected() || ce.isMouseElm();
+            return ce.IsSelected || ce.isMouseElm();
         }
 
         string copyOfSelectedElms() {
@@ -2193,7 +2193,7 @@ namespace Circuit {
                     r += m + "\n";
                 }
                 /* See notes on do cut why we don't copy ScopeElms. */
-                if (ce.isSelected() && !(ce is ScopeElm)) {
+                if (ce.IsSelected && !(ce is ScopeElm)) {
                     r += ce.dump() + "\n";
                 }
             }
@@ -2202,7 +2202,7 @@ namespace Circuit {
 
         void doCopy() {
             /* clear selection when we're done if we're copying a single element using the context menu */
-            bool clearSel = (menuElm != null && !menuElm.selected);
+            bool clearSel = (menuElm != null && !menuElm.IsSelected);
 
             setMenuSelection();
             clipboard = copyOfSelectedElms();
@@ -2257,7 +2257,7 @@ namespace Circuit {
             var newbb = new Rectangle();
             for (i = oldsz; i != elmList.Count; i++) {
                 var ce = getElm(i);
-                ce.setSelected(true);
+                ce.IsSelected = true;
                 var bb = ce.getBoundingBox();
                 if (0 == i) {
                     newbb = bb;
@@ -2307,20 +2307,20 @@ namespace Circuit {
         void clearSelection() {
             for (int i = 0; i != elmList.Count; i++) {
                 var ce = getElm(i);
-                ce.setSelected(false);
+                ce.IsSelected = false;
             }
         }
 
         void doSelectAll() {
             for (int i = 0; i != elmList.Count; i++) {
                 var ce = getElm(i);
-                ce.setSelected(true);
+                ce.IsSelected = true;
             }
         }
 
         bool anySelectedButMouse() {
             for (int i = 0; i != elmList.Count; i++) {
-                if (getElm(i) != mouseElm && getElm(i).selected) {
+                if (getElm(i) != mouseElm && getElm(i).IsSelected) {
                     return true;
                 }
             }
@@ -2503,7 +2503,7 @@ namespace Circuit {
                 }
                 s = cs;
                 for (j = 0; j < e.getPostCount(); j++) {
-                    s = s + " " + e.nodes[j];
+                    s = s + " " + e.Nodes[j];
                 }
                 Console.WriteLine(s);
             }
@@ -2591,7 +2591,7 @@ namespace Circuit {
 
         bool isSelection() {
             for (int i = 0; i != elmList.Count; i++) {
-                if (getElm(i).isSelected()) {
+                if (getElm(i).IsSelected) {
                     return true;
                 }
             }
@@ -2620,7 +2620,7 @@ namespace Circuit {
             // find all the labeled nodes, get a list of them, and create a node number map
             for (i = 0; i != elmList.Count; i++) {
                 var ce = getElm(i);
-                if (sel && !ce.isSelected()) {
+                if (sel && !ce.IsSelected) {
                     continue;
                 }
                 if (typeof(LabeledNodeElm) == ce.GetType()) {
@@ -2655,7 +2655,7 @@ namespace Circuit {
             // output all the elements
             for (i = 0; i != elmList.Count; i++) {
                 var ce = getElm(i);
-                if (sel && !ce.isSelected()) {
+                if (sel && !ce.IsSelected) {
                     continue;
                 }
                 // don't need these elements dumped
@@ -2678,23 +2678,23 @@ namespace Circuit {
                 }
 
                 // save positions
-                int x1 = ce.x1;
-                int y1 = ce.y1;
-                int x2 = ce.x2;
-                int y2 = ce.y2;
+                int x1 = ce.X1;
+                int y1 = ce.Y1;
+                int x2 = ce.X2;
+                int y2 = ce.Y2;
 
                 // set them to 0 so they're easy to remove
-                ce.x1 = ce.y1 = ce.x2 = ce.y2 = 0;
+                ce.X1 = ce.Y1 = ce.X2 = ce.Y2 = 0;
 
                 string tstring = ce.dump();
                 var rg = new Regex("[A-Za-z0-9]+ 0 0 0 0 ");
                 tstring = rg.Replace(tstring, "", 1); // remove unused tint_x1 y1 x2 y2 coords for internal components
 
                 // restore positions
-                ce.x1 = x1;
-                ce.y1 = y1;
-                ce.x2 = x2;
-                ce.y2 = y2;
+                ce.X1 = x1;
+                ce.Y1 = y1;
+                ce.X2 = x2;
+                ce.Y2 = y2;
                 if (dump.Length > 0) {
                     dump += " ";
                 }

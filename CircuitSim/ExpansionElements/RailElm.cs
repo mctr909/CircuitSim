@@ -21,7 +21,7 @@ namespace Circuit.Elements {
 
         public override void setPoints() {
             base.setPoints();
-            lead1 = interpPoint(point1, point2, 1 - circleSize / dn);
+            mLead1 = interpPoint(mPoint1, mPoint2, 1 - circleSize / mElmLen);
         }
 
         public string getRailText() {
@@ -31,23 +31,23 @@ namespace Circuit.Elements {
         public override void draw(Graphics g) {
             var rt = getRailText();
             double w = rt == null ? circleSize : g.MeasureString(rt, FONT_TERM_NAME).Width / 2;
-            if (w > dn * .8) {
-                w = dn * .8;
+            if (w > mElmLen * .8) {
+                w = mElmLen * .8;
             }
-            lead1 = interpPoint(point1, point2, 1 - w / dn);
-            setBbox(point1, point2, circleSize);
+            mLead1 = interpPoint(mPoint1, mPoint2, 1 - w / mElmLen);
+            setBbox(mPoint1, mPoint2, circleSize);
             
-            drawThickLine(g, getVoltageColor(volts[0]), point1, lead1);
+            drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
             drawRail(g);
             drawPosts(g);
-            curcount = updateDotCount(-current, curcount);
+            mCurCount = updateDotCount(-mCurrent, mCurCount);
             if (sim.dragElm != this) {
-                drawDots(g, point1, lead1, curcount);
+                drawDots(g, mPoint1, mLead1, mCurCount);
             }
         }
 
         void drawRail(Graphics g) {
-            if (waveform == WF_SQUARE && (flags & FLAG_CLOCK) != 0) {
+            if (waveform == WF_SQUARE && (mFlags & FLAG_CLOCK) != 0) {
                 drawRailText(g, "CLK");
             } else if (waveform == WF_DC || waveform == WF_VAR) {
                 var color = needsHighlight() ? selectColor : whiteColor;
@@ -61,29 +61,29 @@ namespace Circuit.Elements {
                 if (getVoltage() > 0) {
                     s = "+" + s;
                 }
-                drawCenteredText(g, s, x2, y2, true);
+                drawCenteredText(g, s, X2, Y2, true);
             } else {
-                drawWaveform(g, point2);
+                drawWaveform(g, mPoint2);
             }
         }
 
         void drawRailText(Graphics g, string s) {
-            drawCenteredText(g, s, x2, y2, true);
+            drawCenteredText(g, s, X2, Y2, true);
         }
 
-        public override double getVoltageDiff() { return volts[0]; }
+        public override double getVoltageDiff() { return Volts[0]; }
 
         public override void stamp() {
             if (waveform == WF_DC) {
-                cir.stampVoltageSource(0, nodes[0], voltSource, getVoltage());
+                cir.StampVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
             } else {
-                cir.stampVoltageSource(0, nodes[0], voltSource);
+                cir.StampVoltageSource(0, Nodes[0], mVoltSource);
             }
         }
 
         public override void doStep() {
             if (waveform != WF_DC) {
-                cir.updateVoltageSource(0, nodes[0], voltSource, getVoltage());
+                cir.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
             }
         }
 

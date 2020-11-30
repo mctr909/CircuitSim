@@ -42,9 +42,9 @@ namespace Circuit.Elements {
         public override void setPoints() {
             base.setPoints();
             int cr = 12;
-            ledLead1 = interpPoint(point1, point2, .5 - cr / dn);
-            ledLead2 = interpPoint(point1, point2, .5 + cr / dn);
-            ledCenter = interpPoint(point1, point2, .5);
+            ledLead1 = interpPoint(mPoint1, mPoint2, .5 - cr / mElmLen);
+            ledLead2 = interpPoint(mPoint1, mPoint2, .5 + cr / mElmLen);
+            ledCenter = interpPoint(mPoint1, mPoint2, .5);
         }
 
         public override void draw(Graphics g) {
@@ -53,15 +53,15 @@ namespace Circuit.Elements {
                 return;
             }
             
-            drawThickLine(g, getVoltageColor(volts[0]), point1, ledLead1);
-            drawThickLine(g, getVoltageColor(volts[1]), ledLead2, point2);
+            drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, ledLead1);
+            drawThickLine(g, getVoltageColor(Volts[1]), ledLead2, mPoint2);
 
             PEN_THICK_LINE.Color = Color.Gray;
 
             int cr = 12;
             drawThickCircle(g, ledCenter.X, ledCenter.Y, cr);
             cr -= 4;
-            double w = current / maxBrightnessCurrent;
+            double w = mCurrent / maxBrightnessCurrent;
             if (w > 0) {
                 w = 255 * (1 + .2 * Math.Log(w));
             }
@@ -74,10 +74,10 @@ namespace Circuit.Elements {
 
             PEN_THICK_LINE.Color = Color.FromArgb((int)(colorR * w), (int)(colorG * w), (int)(colorB * w));
             g.FillPie(PEN_THICK_LINE.Brush, ledCenter.X - cr, ledCenter.Y - cr, cr * 2, cr * 2, 0, 360);
-            setBbox(point1, point2, cr);
+            setBbox(mPoint1, mPoint2, cr);
             updateDotCount();
-            drawDots(g, point1, ledLead1, curcount);
-            drawDots(g, point2, ledLead2, -curcount);
+            drawDots(g, mPoint1, ledLead1, mCurCount);
+            drawDots(g, mPoint2, ledLead2, -mCurCount);
             drawPosts(g);
         }
 

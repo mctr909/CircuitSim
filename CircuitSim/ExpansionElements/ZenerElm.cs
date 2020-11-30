@@ -32,18 +32,18 @@ namespace Circuit.Elements {
             cathode = newPointArray(2);
             wing = newPointArray(2);
             var pa = newPointArray(2);
-            interpPoint(lead1, lead2, ref pa[0], ref pa[1], 0, hs);
-            interpPoint(lead1, lead2, ref cathode[0], ref cathode[1], 1, hs);
+            interpPoint(mLead1, mLead2, ref pa[0], ref pa[1], 0, hs);
+            interpPoint(mLead1, mLead2, ref cathode[0], ref cathode[1], 1, hs);
             interpPoint(cathode[0], cathode[1], ref wing[0], -0.2, -hs);
             interpPoint(cathode[1], cathode[0], ref wing[1], -0.2, -hs);
-            poly = createPolygon(pa[0], pa[1], lead2).ToArray();
+            poly = createPolygon(pa[0], pa[1], mLead2).ToArray();
         }
 
         public override void draw(Graphics g) {
-            setBbox(point1, point2, hs);
+            setBbox(mPoint1, mPoint2, hs);
 
-            double v1 = volts[0];
-            double v2 = volts[1];
+            double v1 = Volts[0];
+            double v2 = Volts[1];
 
             draw2Leads(g);
 

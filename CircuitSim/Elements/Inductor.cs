@@ -44,9 +44,9 @@
             } else { /* backward euler */
                 compResistance = inductance / sim.timeStep;
             }
-            cir.stampResistor(nodes[0], nodes[1], compResistance);
-            cir.stampRightSide(nodes[0]);
-            cir.stampRightSide(nodes[1]);
+            cir.StampResistor(nodes[0], nodes[1], compResistance);
+            cir.StampRightSide(nodes[0]);
+            cir.StampRightSide(nodes[1]);
         }
 
         public virtual bool nonLinear() { return false; }
@@ -72,7 +72,7 @@
         }
 
         public void doStep(double voltdiff) {
-            cir.stampCurrentSource(nodes[0], nodes[1], curSourceValue);
+            cir.StampCurrentSource(nodes[0], nodes[1], curSourceValue);
         }
     }
 }

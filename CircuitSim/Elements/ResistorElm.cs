@@ -34,20 +34,20 @@ namespace Circuit.Elements {
         }
 
         public override void draw(Graphics g) {
-            var len = (float)distance(lead1, lead2);
+            var len = (float)distance(mLead1, mLead2);
             if (0 == len) {
                 return;
             }
 
             int hs = sim.chkAnsiResistorCheckItem.Checked ? 6 : 5;
-            setBbox(point1, point2, hs);
+            setBbox(mPoint1, mPoint2, hs);
 
             draw2Leads(g);
 
             int segments = 12;
             double segf = 1.0 / segments;
-            double v1 = volts[0];
-            double v2 = volts[1];
+            double v1 = Volts[0];
+            double v2 = Volts[1];
 
             if (sim.chkAnsiResistorCheckItem.Checked) {
                 /* draw zigzag */
@@ -59,8 +59,8 @@ namespace Circuit.Elements {
                     case 2: ny = -hs; break;
                     default: ny = 0; break;
                     }
-                    interpPoint(lead1, lead2, ref ps1, i * segf, oy);
-                    interpPoint(lead1, lead2, ref ps2, (i + 1) * segf, ny);
+                    interpPoint(mLead1, mLead2, ref ps1, i * segf, oy);
+                    interpPoint(mLead1, mLead2, ref ps2, (i + 1) * segf, ny);
                     double v = v1 + (v2 - v1) * i / segments;
                     drawThickLine(g, getVoltageColor(v), ps1, ps2);
                     oy = ny;
@@ -68,17 +68,17 @@ namespace Circuit.Elements {
             } else {
                 /* draw rectangle */
                 PEN_THICK_LINE.Color = getVoltageColor(v1);
-                interpPoint(lead1, lead2, ref ps1, ref ps2, 0, hs);
+                interpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, hs);
                 drawThickLine(g, ps1, ps2);
                 for (int i = 0; i != segments; i++) {
                     double v = v1 + (v2 - v1) * i / segments;
-                    interpPoint(lead1, lead2, ref ps1, ref ps2, i * segf, hs);
-                    interpPoint(lead1, lead2, ref ps3, ref ps4, (i + 1) * segf, hs);
+                    interpPoint(mLead1, mLead2, ref ps1, ref ps2, i * segf, hs);
+                    interpPoint(mLead1, mLead2, ref ps3, ref ps4, (i + 1) * segf, hs);
                     PEN_THICK_LINE.Color = getVoltageColor(v);
                     drawThickLine(g, ps1, ps3);
                     drawThickLine(g, ps2, ps4);
                 }
-                interpPoint(lead1, lead2, ref ps1, ref ps2, 1, hs);
+                interpPoint(mLead1, mLead2, ref ps1, ref ps2, 1, hs);
                 drawThickLine(g, ps1, ps2);
             }
 
@@ -92,12 +92,12 @@ namespace Circuit.Elements {
         }
 
         public override void calculateCurrent() {
-            current = (volts[0] - volts[1]) / resistance;
+            mCurrent = (Volts[0] - Volts[1]) / resistance;
             /*Console.WriteLine(this + " res current set to " + current + "\n");*/
         }
 
         public override void stamp() {
-            cir.stampResistor(nodes[0], nodes[1], resistance);
+            cir.StampResistor(Nodes[0], Nodes[1], resistance);
         }
 
         public override void getInfo(string[] arr) {

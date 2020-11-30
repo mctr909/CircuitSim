@@ -125,8 +125,8 @@ namespace Circuit {
             vp.Controls.Add(canvas);
 
             chip = new CustomCompositeChipElm(50, 50);
-            chip.x2 = 200;
-            chip.y2 = 50;
+            chip.X2 = 200;
+            chip.Y2 = 50;
             createPinsFromModel();
 
             if (model.name == null) {
@@ -223,7 +223,7 @@ namespace Circuit {
             for (int i = 0; i != postCount; i++) {
                 var pin = model.extList[i];
                 chip.setPin(i, pin.pos, pin.side, pin.name);
-                chip.volts[i] = 0;
+                chip.Volts[i] = 0;
                 if (i == selectedPin) {
                     chip.pins[i].selected = true;
                 }
@@ -233,8 +233,8 @@ namespace Circuit {
 
         void drawChip() {
             var g = Graphics.FromImage(context);
-            double scalew = context.Width / (double)(chip.boundingBox.Width + chip.boundingBox.X * 2);
-            double scaleh = context.Height / (double)(chip.boundingBox.Height + chip.boundingBox.Y * 2);
+            double scalew = context.Width / (double)(chip.BoundingBox.Width + chip.BoundingBox.X * 2);
+            double scaleh = context.Height / (double)(chip.BoundingBox.Height + chip.BoundingBox.Y * 2);
             scale = 1 / Math.Min(scalew, scaleh);
             g.Clear(CirSim.theSim.getBackgroundColor());
             g.FillRectangle(Brushes.Blue, 0, 0, context.Width, context.Height);

@@ -19,7 +19,7 @@ namespace Circuit.Elements {
              * use default otherwise, to avoid infinite recursion when creating nested subcircuits. */
             modelName = (xx == 0 && yy == 0) ? "default" : lastModelName;
 
-            flags |= FLAG_ESCAPE;
+            mFlags |= FLAG_ESCAPE;
             updateModels();
         }
 
@@ -64,18 +64,18 @@ namespace Circuit.Elements {
 
         public override void draw(Graphics g) {
             for (int i = 0; i != postCount; i++) {
-                chip.volts[i] = volts[i];
+                chip.Volts[i] = Volts[i];
                 chip.pins[i].current = getCurrentIntoNode(i);
             }
-            chip.setSelected(needsHighlight());
+            chip.IsSelected = needsHighlight();
             chip.draw(g);
-            boundingBox = chip.boundingBox;
+            BoundingBox = chip.BoundingBox;
         }
 
         public override void setPoints() {
-            chip = new CustomCompositeChipElm(x1, y1);
-            chip.x2 = x2;
-            chip.y2 = y2;
+            chip = new CustomCompositeChipElm(X1, Y1);
+            chip.X2 = X2;
+            chip.Y2 = Y2;
 
             chip.sizeX = model.sizeX;
             chip.sizeY = model.sizeY;

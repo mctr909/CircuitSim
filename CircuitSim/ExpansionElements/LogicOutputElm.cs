@@ -30,53 +30,53 @@ namespace Circuit.Elements {
 
         public override int getPostCount() { return 1; }
 
-        bool isTernary() { return (flags & FLAG_TERNARY) != 0; }
+        bool isTernary() { return (mFlags & FLAG_TERNARY) != 0; }
 
-        bool isNumeric() { return (flags & (FLAG_TERNARY | FLAG_NUMERIC)) != 0; }
+        bool isNumeric() { return (mFlags & (FLAG_TERNARY | FLAG_NUMERIC)) != 0; }
 
-        bool needsPullDown() { return (flags & FLAG_PULLDOWN) != 0; }
+        bool needsPullDown() { return (mFlags & FLAG_PULLDOWN) != 0; }
 
         public override void setPoints() {
             base.setPoints();
-            lead1 = interpPoint(point1, point2, 1 - 12 / dn);
+            mLead1 = interpPoint(mPoint1, mPoint2, 1 - 12 / mElmLen);
         }
 
         public override void draw(Graphics g) {
-            string s = (volts[0] < threshold) ? "L" : "H";
+            string s = (Volts[0] < threshold) ? "L" : "H";
             if (isTernary()) {
-                if (volts[0] > 3.75) {
+                if (Volts[0] > 3.75) {
                     s = "2";
-                } else if (volts[0] > 1.25) {
+                } else if (Volts[0] > 1.25) {
                     s = "1";
                 } else {
                     s = "0";
                 }
             } else if (isNumeric()) {
-                s = (volts[0] < threshold) ? "0" : "1";
+                s = (Volts[0] < threshold) ? "0" : "1";
             }
             value = s;
-            setBbox(point1, lead1, 0);
-            drawCenteredText(g, s, x2, y2, true);
-            getVoltageColor(volts[0]);
-            drawThickLine(g, point1, lead1);
+            setBbox(mPoint1, mLead1, 0);
+            drawCenteredText(g, s, X2, Y2, true);
+            getVoltageColor(Volts[0]);
+            drawThickLine(g, mPoint1, mLead1);
             drawPosts(g);
         }
 
         public override void stamp() {
             if (needsPullDown()) {
-                cir.stampResistor(nodes[0], 0, 1e6);
+                cir.StampResistor(Nodes[0], 0, 1e6);
             }
         }
 
-        public override double getVoltageDiff() { return volts[0]; }
+        public override double getVoltageDiff() { return Volts[0]; }
 
         public override void getInfo(string[] arr) {
             arr[0] = "logic output";
-            arr[1] = (volts[0] < threshold) ? "low" : "high";
+            arr[1] = (Volts[0] < threshold) ? "low" : "high";
             if (isNumeric()) {
                 arr[1] = value;
             }
-            arr[2] = "V = " + getVoltageText(volts[0]);
+            arr[2] = "V = " + getVoltageText(Volts[0]);
         }
 
         public override EditInfo getEditInfo(int n) {
@@ -106,23 +106,23 @@ namespace Circuit.Elements {
                 threshold = ei.value;
             if (n == 1) {
                 if (ei.checkbox.Checked) {
-                    flags = FLAG_PULLDOWN;
+                    mFlags = FLAG_PULLDOWN;
                 } else {
-                    flags &= ~FLAG_PULLDOWN;
+                    mFlags &= ~FLAG_PULLDOWN;
                 }
             }
             if (n == 2) {
                 if (ei.checkbox.Checked) {
-                    flags |= FLAG_NUMERIC;
+                    mFlags |= FLAG_NUMERIC;
                 } else {
-                    flags &= ~FLAG_NUMERIC;
+                    mFlags &= ~FLAG_NUMERIC;
                 }
             }
             if (n == 3) {
                 if (ei.checkbox.Checked) {
-                    flags |= FLAG_TERNARY;
+                    mFlags |= FLAG_TERNARY;
                 } else {
-                    flags &= ~FLAG_TERNARY;
+                    mFlags &= ~FLAG_TERNARY;
                 }
             }
         }

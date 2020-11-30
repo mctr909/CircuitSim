@@ -5,7 +5,7 @@ namespace Circuit.Elements {
             maxVoltage = 2.5;
             bias = 2.5;
             frequency = 100;
-            flags |= FLAG_CLOCK;
+            mFlags |= FLAG_CLOCK;
         }
     }
 }

@@ -52,9 +52,9 @@ namespace Circuit.Elements {
 
         public MosfetElm(int xx, int yy, bool pnpflag) : base(xx, yy) {
             pnp = pnpflag ? -1 : 1;
-            flags = pnpflag ? FLAG_PNP : 0;
-            flags |= FLAG_BODY_DIODE;
-            noDiagonal = true;
+            mFlags = pnpflag ? FLAG_PNP : 0;
+            mFlags |= FLAG_BODY_DIODE;
+            mNoDiagonal = true;
             setupDiodes();
             beta = getDefaultBeta();
             vt = getDefaultThreshold();
@@ -62,7 +62,7 @@ namespace Circuit.Elements {
 
         public MosfetElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
             pnp = ((f & FLAG_PNP) != 0) ? -1 : 1;
-            noDiagonal = true;
+            mNoDiagonal = true;
             setupDiodes();
             vt = getDefaultThreshold();
             beta = getBackwardCompatibilityBeta();
@@ -70,7 +70,7 @@ namespace Circuit.Elements {
                 vt = st.nextTokenDouble();
                 beta = st.nextTokenDouble();
             } catch { }
-            globalFlags = flags & (FLAGS_GLOBAL);
+            globalFlags = mFlags & (FLAGS_GLOBAL);
             allocNodes(); /* make sure volts[] has the right number of elements when hasBodyTerminal() is true */
         }
 
@@ -99,16 +99,16 @@ namespace Circuit.Elements {
 
         public override bool nonLinear() { return true; }
 
-        bool drawDigital() { return (flags & FLAG_DIGITAL) != 0; }
+        bool drawDigital() { return (mFlags & FLAG_DIGITAL) != 0; }
 
-        bool showBulk() { return (flags & (FLAG_DIGITAL | FLAG_HIDE_BULK)) == 0; }
+        bool showBulk() { return (mFlags & (FLAG_DIGITAL | FLAG_HIDE_BULK)) == 0; }
 
-        bool hasBodyTerminal() { return (flags & FLAG_BODY_TERMINAL) != 0; }
+        bool hasBodyTerminal() { return (mFlags & FLAG_BODY_TERMINAL) != 0; }
 
-        bool doBodyDiode() { return (flags & FLAG_BODY_DIODE) != 0 && showBulk(); }
+        bool doBodyDiode() { return (mFlags & FLAG_BODY_DIODE) != 0 && showBulk(); }
 
         public override void reset() {
-            lastv1 = lastv2 = volts[0] = volts[1] = volts[2] = curcount = 0;
+            lastv1 = lastv2 = Volts[0] = Volts[1] = Volts[2] = mCurCount = 0;
             diodeB1.reset();
             diodeB2.reset();
         }
@@ -121,15 +121,15 @@ namespace Circuit.Elements {
 
         public override void draw(Graphics g) {
             /* pick up global flags changes */
-            if ((flags & FLAGS_GLOBAL) != globalFlags) {
+            if ((mFlags & FLAGS_GLOBAL) != globalFlags) {
                 setPoints();
             }
 
-            setBbox(point1, point2, hs);
+            setBbox(mPoint1, mPoint2, hs);
 
             /* draw source/drain terminals */
-            drawThickLine(g, getVoltageColor(volts[1]), src[0], src[1]);
-            drawThickLine(g, getVoltageColor(volts[2]), drn[0], drn[1]);
+            drawThickLine(g, getVoltageColor(Volts[1]), src[0], src[1]);
+            drawThickLine(g, getVoltageColor(Volts[2]), drn[0], drn[1]);
 
             /* draw line connecting source and drain */
             int segments = 6;
@@ -140,7 +140,7 @@ namespace Circuit.Elements {
                 if ((i == 1 || i == 4) && enhancement) {
                     continue;
                 }
-                double v = volts[1] + (volts[2] - volts[1]) * i / segments;
+                double v = Volts[1] + (Volts[2] - Volts[1]) * i / segments;
                 PEN_THICK_LINE.Color = getVoltageColor(v);
                 interpPoint(src[1], drn[1], ref ps1, i * segf);
                 interpPoint(src[1], drn[1], ref ps2, (i + 1) * segf);
@@ -148,12 +148,12 @@ namespace Circuit.Elements {
             }
 
             /* draw little extensions of that line */
-            drawThickLine(g, getVoltageColor(volts[1]), src[1], src[2]);
-            drawThickLine(g, getVoltageColor(volts[2]), drn[1], drn[2]);
+            drawThickLine(g, getVoltageColor(Volts[1]), src[1], src[2]);
+            drawThickLine(g, getVoltageColor(Volts[2]), drn[1], drn[2]);
 
             /* draw bulk connection */
             if (showBulk()) {
-                PEN_THICK_LINE.Color = getVoltageColor(volts[bodyTerminal]);
+                PEN_THICK_LINE.Color = getVoltageColor(Volts[bodyTerminal]);
                 if (!hasBodyTerminal()) {
                     drawThickLine(g, pnp == -1 ? drn[0] : src[0], body[0]);
                 }
@@ -162,26 +162,26 @@ namespace Circuit.Elements {
 
             /* draw arrow */
             if (!drawDigital()) {
-                fillPolygon(g, getVoltageColor(volts[bodyTerminal]), arrowPoly);
+                fillPolygon(g, getVoltageColor(Volts[bodyTerminal]), arrowPoly);
             }
 
-            PEN_THICK_LINE.Color = getVoltageColor(volts[0]);
+            PEN_THICK_LINE.Color = getVoltageColor(Volts[0]);
 
             /* draw gate */
-            drawThickLine(g, point1, gate[1]);
+            drawThickLine(g, mPoint1, gate[1]);
             drawThickLine(g, gate[0], gate[2]);
             if (drawDigital() && pnp == -1) {
                 drawThickCircle(g, pcircle.X, pcircle.Y, pcircler);
             }
 
-            if ((flags & FLAG_SHOWVT) != 0) {
+            if ((mFlags & FLAG_SHOWVT) != 0) {
                 string s = "" + (vt * pnp);
-                drawCenteredText(g, s, x2 + 2, y2, false);
+                drawCenteredText(g, s, X2 + 2, Y2, false);
             }
-            curcount = updateDotCount(-ids, curcount);
-            drawDots(g, src[0], src[1], curcount);
-            drawDots(g, src[1], drn[1], curcount);
-            drawDots(g, drn[1], drn[0], curcount);
+            mCurCount = updateDotCount(-ids, mCurCount);
+            drawDots(g, src[0], src[1], mCurCount);
+            drawDots(g, src[1], drn[1], mCurCount);
+            drawDots(g, drn[1], drn[0], mCurCount);
 
             if (showBulk()) {
                 curcount_body1 = updateDotCount(diodeCurrent1, curcount_body1);
@@ -193,10 +193,10 @@ namespace Circuit.Elements {
             /* label pins when highlighted */
             if (needsHighlight() || sim.dragElm == this) {
                 /* make fiddly adjustments to pin label locations depending on orientation */
-                int dsx = Math.Sign(dx);
-                int dsy = Math.Sign(dy);
-                int dsyn = dy == 0 ? 0 : 1;
-                g.DrawString("G", FONT_TEXT, BRUSH_TEXT, gate[1].X - (dx < 0 ? -2 : 12), gate[1].Y + ((dy > 0) ? -5 : 12));
+                int dsx = Math.Sign(mDx);
+                int dsy = Math.Sign(mDy);
+                int dsyn = mDy == 0 ? 0 : 1;
+                g.DrawString("G", FONT_TEXT, BRUSH_TEXT, gate[1].X - (mDx < 0 ? -2 : 12), gate[1].Y + ((mDy > 0) ? -5 : 12));
                 g.DrawString(pnp == -1 ? "D" : "S", FONT_TEXT, BRUSH_TEXT, src[0].X - 3 + 9 * (dsx - dsyn * pnp), src[0].Y + 4);
                 g.DrawString(pnp == -1 ? "S" : "D", FONT_TEXT, BRUSH_TEXT, drn[0].X - 3 + 9 * (dsx - dsyn * pnp), drn[0].Y + 4);
                 if (hasBodyTerminal()) {
@@ -213,15 +213,15 @@ namespace Circuit.Elements {
          * 3 = body (if present)
          * for PNP, 1 is drain, 2 is source */
         public override Point getPost(int n) {
-            return (n == 0) ? point1 : (n == 1) ? src[0] : (n == 2) ? drn[0] : body[0];
+            return (n == 0) ? mPoint1 : (n == 1) ? src[0] : (n == 2) ? drn[0] : body[0];
         }
 
         public override double getCurrent() { return ids; }
 
         public override double getPower() {
-            return ids * (volts[2] - volts[1])
-                - diodeCurrent1 * (volts[1] - volts[bodyTerminal])
-                - diodeCurrent2 * (volts[2] - volts[bodyTerminal]);
+            return ids * (Volts[2] - Volts[1])
+                - diodeCurrent1 * (Volts[1] - Volts[bodyTerminal])
+                - diodeCurrent2 * (Volts[2] - Volts[bodyTerminal]);
         }
 
         public override int getPostCount() { return hasBodyTerminal() ? 4 : 3; }
@@ -230,22 +230,22 @@ namespace Circuit.Elements {
             base.setPoints();
 
             /* these two flags apply to all mosfets */
-            flags &= ~FLAGS_GLOBAL;
-            flags |= globalFlags;
+            mFlags &= ~FLAGS_GLOBAL;
+            mFlags |= globalFlags;
 
             /* find the coordinates of the various points we need to draw the MOSFET. */
-            int hs2 = hs * dsign;
-            if ((flags & FLAG_FLIP) != 0) {
+            int hs2 = hs * mDsign;
+            if ((mFlags & FLAG_FLIP) != 0) {
                 hs2 = -hs2;
             }
             src = newPointArray(3);
             drn = newPointArray(3);
-            interpPoint(point1, point2, ref src[0], ref drn[0], 1, -hs2);
-            interpPoint(point1, point2, ref src[1], ref drn[1], 1 - 22 / dn, -hs2);
-            interpPoint(point1, point2, ref src[2], ref drn[2], 1 - 22 / dn, -hs2 * 4 / 3);
+            interpPoint(mPoint1, mPoint2, ref src[0], ref drn[0], 1, -hs2);
+            interpPoint(mPoint1, mPoint2, ref src[1], ref drn[1], 1 - 22 / mElmLen, -hs2);
+            interpPoint(mPoint1, mPoint2, ref src[2], ref drn[2], 1 - 22 / mElmLen, -hs2 * 4 / 3);
 
             gate = newPointArray(3);
-            interpPoint(point1, point2, ref gate[0], ref gate[2], 1 - 28 / dn, hs2 / 2); /* was 1-20/dn */
+            interpPoint(mPoint1, mPoint2, ref gate[0], ref gate[2], 1 - 28 / mElmLen, hs2 / 2); /* was 1-20/dn */
             interpPoint(gate[0], gate[2], ref gate[1], .5);
 
             if (showBulk()) {
@@ -269,16 +269,16 @@ namespace Circuit.Elements {
                     }
                 }
             } else if (pnp == -1) {
-                interpPoint(point1, point2, ref gate[1], 1 - 36 / dn);
-                int dist = (dsign < 0) ? 32 : 31;
-                pcircle = interpPoint(point1, point2, 1 - dist / dn);
+                interpPoint(mPoint1, mPoint2, ref gate[1], 1 - 36 / mElmLen);
+                int dist = (mDsign < 0) ? 32 : 31;
+                pcircle = interpPoint(mPoint1, mPoint2, 1 - dist / mElmLen);
                 pcircler = 3;
             }
         }
 
         public override void stamp() {
-            cir.stampNonLinear(nodes[1]);
-            cir.stampNonLinear(nodes[2]);
+            cir.StampNonLinear(Nodes[1]);
+            cir.StampNonLinear(Nodes[2]);
 
             if (hasBodyTerminal()) {
                 bodyTerminal = 3;
@@ -289,12 +289,12 @@ namespace Circuit.Elements {
             if (doBodyDiode()) {
                 if (pnp == -1) {
                     /* pnp: diodes conduct when S or D are higher than body */
-                    diodeB1.stamp(nodes[1], nodes[bodyTerminal]);
-                    diodeB2.stamp(nodes[2], nodes[bodyTerminal]);
+                    diodeB1.stamp(Nodes[1], Nodes[bodyTerminal]);
+                    diodeB2.stamp(Nodes[2], Nodes[bodyTerminal]);
                 } else {
                     /* npn: diodes conduct when body is higher than S or D */
-                    diodeB1.stamp(nodes[bodyTerminal], nodes[1]);
-                    diodeB2.stamp(nodes[bodyTerminal], nodes[2]);
+                    diodeB1.stamp(Nodes[bodyTerminal], Nodes[1]);
+                    diodeB2.stamp(Nodes[bodyTerminal], Nodes[2]);
                 }
             }
         }
@@ -344,13 +344,13 @@ namespace Circuit.Elements {
         void calculate(bool finished) {
             double[] vs;
             if (finished) {
-                vs = volts;
+                vs = Volts;
             } else {
                 /* limit voltage changes to .5V */
                 vs = new double[3];
-                vs[0] = volts[0];
-                vs[1] = volts[1];
-                vs[2] = volts[2];
+                vs[0] = Volts[0];
+                vs[1] = Volts[1];
+                vs[2] = Volts[2];
                 if (vs[1] > lastv1 + .5) {
                     vs[1] = lastv1 + .5;
                 }
@@ -412,10 +412,10 @@ namespace Circuit.Elements {
             }
 
             if (doBodyDiode()) {
-                diodeB1.doStep(pnp * (volts[bodyTerminal] - volts[1]));
-                diodeCurrent1 = diodeB1.calculateCurrent(pnp * (volts[bodyTerminal] - volts[1])) * pnp;
-                diodeB2.doStep(pnp * (volts[bodyTerminal] - volts[2]));
-                diodeCurrent2 = diodeB2.calculateCurrent(pnp * (volts[bodyTerminal] - volts[2])) * pnp;
+                diodeB1.doStep(pnp * (Volts[bodyTerminal] - Volts[1]));
+                diodeCurrent1 = diodeB1.calculateCurrent(pnp * (Volts[bodyTerminal] - Volts[1])) * pnp;
+                diodeB2.doStep(pnp * (Volts[bodyTerminal] - Volts[2]));
+                diodeCurrent2 = diodeB2.calculateCurrent(pnp * (Volts[bodyTerminal] - Volts[2])) * pnp;
             } else {
                 diodeCurrent1 = diodeCurrent2 = 0;
             }
@@ -432,16 +432,16 @@ namespace Circuit.Elements {
             }
 
             double rs = -pnp * ids0 + Gds * realvds + gm * realvgs;
-            cir.stampMatrix(nodes[drain], nodes[drain], Gds);
-            cir.stampMatrix(nodes[drain], nodes[source], -Gds - gm);
-            cir.stampMatrix(nodes[drain], nodes[gate], gm);
+            cir.StampMatrix(Nodes[drain], Nodes[drain], Gds);
+            cir.StampMatrix(Nodes[drain], Nodes[source], -Gds - gm);
+            cir.StampMatrix(Nodes[drain], Nodes[gate], gm);
 
-            cir.stampMatrix(nodes[source], nodes[drain], -Gds);
-            cir.stampMatrix(nodes[source], nodes[source], Gds + gm);
-            cir.stampMatrix(nodes[source], nodes[gate], -gm);
+            cir.StampMatrix(Nodes[source], Nodes[drain], -Gds);
+            cir.StampMatrix(Nodes[source], Nodes[source], Gds + gm);
+            cir.StampMatrix(Nodes[source], Nodes[gate], -gm);
 
-            cir.stampRightSide(nodes[drain], rs);
-            cir.stampRightSide(nodes[source], -rs);
+            cir.StampRightSide(Nodes[drain], rs);
+            cir.StampRightSide(Nodes[source], -rs);
         }
 
         void getFetInfo(string[] arr, string n) {
@@ -449,8 +449,8 @@ namespace Circuit.Elements {
             arr[0] += " (Vt=" + getVoltageText(pnp * vt);
             arr[0] += ", \u03b2=" + beta + ")";
             arr[1] = ((pnp == 1) ? "Ids = " : "Isd = ") + getCurrentText(ids);
-            arr[2] = "Vgs = " + getVoltageText(volts[0] - volts[pnp == -1 ? 2 : 1]);
-            arr[3] = ((pnp == 1) ? "Vds = " : "Vsd = ") + getVoltageText(volts[2] - volts[1]);
+            arr[2] = "Vgs = " + getVoltageText(Volts[0] - Volts[pnp == -1 ? 2 : 1]);
+            arr[3] = ((pnp == 1) ? "Vds = " : "Vsd = ") + getVoltageText(Volts[2] - Volts[1]);
             arr[4] = (mode == 0) ? "off" : (mode == 1) ? "linear" : "saturation";
             arr[5] = "gm = " + getUnitText(gm, "A/V");
             arr[6] = "P = " + getUnitText(getPower(), "W");
@@ -469,7 +469,7 @@ namespace Circuit.Elements {
 
         public override bool canViewInScope() { return true; }
 
-        public override double getVoltageDiff() { return volts[2] - volts[1]; }
+        public override double getVoltageDiff() { return Volts[2] - Volts[1]; }
 
         public override bool getConnection(int n1, int n2) {
             return !(n1 == 0 || n2 == 0);
@@ -496,7 +496,7 @@ namespace Circuit.Elements {
                 ei.checkbox = new CheckBox() {
                     AutoSize = true,
                     Text = "Swap D/S",
-                    Checked = (flags & FLAG_FLIP) != 0
+                    Checked = (mFlags & FLAG_FLIP) != 0
                 };
                 return ei;
             }
@@ -514,7 +514,7 @@ namespace Circuit.Elements {
                 ei.checkbox = new CheckBox() {
                     AutoSize = true,
                     Text = "Simulate Body Diode",
-                    Checked = (flags & FLAG_BODY_DIODE) != 0
+                    Checked = (mFlags & FLAG_BODY_DIODE) != 0
                 };
                 return ei;
             }
@@ -523,7 +523,7 @@ namespace Circuit.Elements {
                 ei.checkbox = new CheckBox() {
                     AutoSize = true,
                     Text = "Body Terminal",
-                    Checked = (flags & FLAG_BODY_TERMINAL) != 0
+                    Checked = (mFlags & FLAG_BODY_TERMINAL) != 0
                 };
                 return ei;
             }
@@ -545,8 +545,8 @@ namespace Circuit.Elements {
                 ei.newDialog = true;
             }
             if (n == 3) {
-                flags = ei.checkbox.Checked
-                    ? (flags | FLAG_FLIP) : (flags & ~FLAG_FLIP);
+                mFlags = ei.checkbox.Checked
+                    ? (mFlags | FLAG_FLIP) : (mFlags & ~FLAG_FLIP);
                 setPoints();
             }
             if (n == 4 && !showBulk()) {
@@ -555,11 +555,11 @@ namespace Circuit.Elements {
                 setPoints();
             }
             if (n == 4 && showBulk()) {
-                flags = ei.changeFlag(flags, FLAG_BODY_DIODE);
+                mFlags = ei.changeFlag(mFlags, FLAG_BODY_DIODE);
                 ei.newDialog = true;
             }
             if (n == 5) {
-                flags = ei.changeFlag(flags, FLAG_BODY_TERMINAL);
+                mFlags = ei.changeFlag(mFlags, FLAG_BODY_TERMINAL);
                 allocNodes();
                 setPoints();
             }

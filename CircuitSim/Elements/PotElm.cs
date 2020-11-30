@@ -34,7 +34,7 @@ namespace Circuit.Elements {
             maxResistance = 1000;
             position = .5;
             sliderText = "Resistance";
-            flags = FLAG_SHOW_VALUES;
+            mFlags = FLAG_SHOW_VALUES;
             createSlider();
         }
 
@@ -55,7 +55,7 @@ namespace Circuit.Elements {
         public override DUMP_ID getDumpType() { return DUMP_ID.POT; }
 
         public override Point getPost(int n) {
-            return (n == 0) ? point1 : (n == 1) ? point2 : post3;
+            return (n == 0) ? mPoint1 : (n == 1) ? mPoint2 : post3;
         }
 
         public override string dump() {
@@ -95,31 +95,31 @@ namespace Circuit.Elements {
             base.setPoints();
             int offset = 0;
             int myLen = 0;
-            if (Math.Abs(dx) > Math.Abs(dy)) {
-                myLen = 2 * sim.gridSize * Math.Sign(dx) * (((Math.Abs(dx)) + 2 * sim.gridSize - 1) / (2 * sim.gridSize));
-                point2.X = point1.X + myLen;
-                offset = (dx < 0) ? dy : -dy;
-                point2.Y = point1.Y;
+            if (Math.Abs(mDx) > Math.Abs(mDy)) {
+                myLen = 2 * sim.gridSize * Math.Sign(mDx) * (((Math.Abs(mDx)) + 2 * sim.gridSize - 1) / (2 * sim.gridSize));
+                mPoint2.X = mPoint1.X + myLen;
+                offset = (mDx < 0) ? mDy : -mDy;
+                mPoint2.Y = mPoint1.Y;
             } else {
-                myLen = 2 * sim.gridSize * Math.Sign(dy) * (((Math.Abs(dy)) + 2 * sim.gridSize - 1) / (2 * sim.gridSize));
-                if (dy != 0) {
-                    point2.Y = point1.Y + myLen;
-                    offset = (dy > 0) ? dx : -dx;
-                    point2.X = point1.X;
+                myLen = 2 * sim.gridSize * Math.Sign(mDy) * (((Math.Abs(mDy)) + 2 * sim.gridSize - 1) / (2 * sim.gridSize));
+                if (mDy != 0) {
+                    mPoint2.Y = mPoint1.Y + myLen;
+                    offset = (mDy > 0) ? mDx : -mDx;
+                    mPoint2.X = mPoint1.X;
                 }
             }
             if (offset == 0) {
                 offset = sim.gridSize;
             }
-            dn = distance(point1, point2);
+            mElmLen = distance(mPoint1, mPoint2);
             int bodyLen = 32;
             calcLeads(bodyLen);
             position = slider.Value * .0099 + .005;
             int soff = (int)((position - .5) * bodyLen);
-            post3 = interpPoint(point1, point2, .5, offset);
-            corner2 = interpPoint(point1, point2, soff / dn + .5, offset);
-            arrowPoint = interpPoint(point1, point2, soff / dn + .5, 8 * Math.Sign(offset));
-            midpoint = interpPoint(point1, point2, soff / dn + .5);
+            post3 = interpPoint(mPoint1, mPoint2, .5, offset);
+            corner2 = interpPoint(mPoint1, mPoint2, soff / mElmLen + .5, offset);
+            arrowPoint = interpPoint(mPoint1, mPoint2, soff / mElmLen + .5, 8 * Math.Sign(offset));
+            midpoint = interpPoint(mPoint1, mPoint2, soff / mElmLen + .5);
             arrow1 = new Point();
             arrow2 = new Point();
             double clen = Math.Abs(offset) - 8;
@@ -132,10 +132,10 @@ namespace Circuit.Elements {
             int segments = 12;
             int i;
             int hs = sim.chkAnsiResistorCheckItem.Checked ? 6 : 5;
-            double v1 = volts[0];
-            double v2 = volts[1];
-            double v3 = volts[2];
-            setBbox(point1, point2, hs);
+            double v1 = Volts[0];
+            double v2 = Volts[1];
+            double v3 = Volts[2];
+            setBbox(mPoint1, mPoint2, hs);
             draw2Leads(g);
 
             double segf = 1.0 / segments;
@@ -155,28 +155,28 @@ namespace Circuit.Elements {
                     if (i >= divide) {
                         v = v3 + (v2 - v3) * (i - divide) / (segments - divide);
                     }
-                    interpPoint(lead1, lead2, ref ps1, i * segf, oy);
-                    interpPoint(lead1, lead2, ref ps2, (i + 1) * segf, ny);
+                    interpPoint(mLead1, mLead2, ref ps1, i * segf, oy);
+                    interpPoint(mLead1, mLead2, ref ps2, (i + 1) * segf, ny);
                     drawThickLine(g, getVoltageColor(v), ps1, ps2);
                     oy = ny;
                 }
             } else {
                 /* draw rectangle */
                 PEN_THICK_LINE.Color = getVoltageColor(v1);
-                interpPoint(lead1, lead2, ref ps1, ref ps2, 0, hs);
+                interpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, hs);
                 drawThickLine(g, ps1, ps2);
                 for (i = 0; i != segments; i++) {
                     double v = v1 + (v3 - v1) * i / divide;
                     if (i >= divide) {
                         v = v3 + (v2 - v3) * (i - divide) / (segments - divide);
                     }
-                    interpPoint(lead1, lead2, ref ps1, ref ps2, i * segf, hs);
-                    interpPoint(lead1, lead2, ref ps3, ref ps4, (i + 1) * segf, hs);
+                    interpPoint(mLead1, mLead2, ref ps1, ref ps2, i * segf, hs);
+                    interpPoint(mLead1, mLead2, ref ps3, ref ps4, (i + 1) * segf, hs);
                     PEN_THICK_LINE.Color = getVoltageColor(v);
                     drawThickLine(g, ps1, ps3);
                     drawThickLine(g, ps2, ps4);
                 }
-                interpPoint(lead1, lead2, ref ps1, ref ps2, 1, hs);
+                interpPoint(mLead1, mLead2, ref ps1, ref ps2, 1, hs);
                 drawThickLine(g, ps1, ps2);
             }
 
@@ -189,20 +189,20 @@ namespace Circuit.Elements {
             curcount2 = updateDotCount(current2, curcount2);
             curcount3 = updateDotCount(current3, curcount3);
             if (sim.dragElm != this) {
-                drawDots(g, point1, midpoint, curcount1);
-                drawDots(g, point2, midpoint, curcount2);
+                drawDots(g, mPoint1, midpoint, curcount1);
+                drawDots(g, mPoint2, midpoint, curcount2);
                 drawDots(g, post3, corner2, curcount3);
                 drawDots(g, corner2, midpoint, curcount3 + distance(post3, corner2));
             }
             drawPosts(g);
 
-            if (sim.chkShowValuesCheckItem.Checked && resistance1 > 0 && (flags & FLAG_SHOW_VALUES) != 0) {
+            if (sim.chkShowValuesCheckItem.Checked && resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
                 /* check for vertical pot with 3rd terminal on left */
-                bool reverseY = (post3.X < lead1.X && lead1.X == lead2.X);
+                bool reverseY = (post3.X < mLead1.X && mLead1.X == mLead2.X);
                 /* check for horizontal pot with 3rd terminal on top */
-                bool reverseX = (post3.Y < lead1.Y && lead1.X != lead2.X);
+                bool reverseX = (post3.Y < mLead1.Y && mLead1.X != mLead2.X);
                 /* check if we need to swap texts (if leads are reversed, e.g. drawn right to left) */
-                bool rev = (lead1.X == lead2.X && lead1.Y < lead2.Y) || (lead1.Y == lead2.Y && lead1.X > lead2.X);
+                bool rev = (mLead1.X == mLead2.X && mLead1.Y < mLead2.Y) || (mLead1.Y == mLead2.Y && mLead1.X > mLead2.X);
 
                 /* draw units */
                 string s1 = getShortUnitText(rev ? resistance2 : resistance1, "");
@@ -211,14 +211,14 @@ namespace Circuit.Elements {
                 int w = (int)g.MeasureString(s1, FONT_TEXT).Width;
 
                 /* vertical? */
-                if (lead1.X == lead2.X) {
+                if (mLead1.X == mLead2.X) {
                     g.DrawString(s1, FONT_TEXT, BRUSH_TEXT, !reverseY ? arrowPoint.X + 2 : arrowPoint.X - 2 - w, Math.Max(arrow1.Y, arrow2.Y) + 5 + ya);
                 } else {
                     g.DrawString(s1, FONT_TEXT, BRUSH_TEXT, Math.Min(arrow1.X, arrow2.X) - 2 - w, !reverseX ? arrowPoint.Y + 4 + ya : arrowPoint.Y - 4);
                 }
 
                 w = (int)g.MeasureString(s2, FONT_TEXT).Width;
-                if (lead1.X == lead2.X) {
+                if (mLead1.X == mLead2.X) {
                     g.DrawString(s2, FONT_TEXT, BRUSH_TEXT, !reverseY ? arrowPoint.X + 2 : arrowPoint.X - 2 - w, Math.Min(arrow1.Y, arrow2.Y) - 3);
                 } else {
                     g.DrawString(s2, FONT_TEXT, BRUSH_TEXT, Math.Max(arrow1.X, arrow2.X) + 2, !reverseX ? arrowPoint.Y + 4 + ya : arrowPoint.Y - 4);
@@ -237,7 +237,7 @@ namespace Circuit.Elements {
             int yc = pt.Y;
             int dpx = hs;
             int dpy = 0;
-            if (lead1.X != lead2.X) {
+            if (mLead1.X != mLead2.X) {
                 dpx = 0;
                 dpy = -hs;
             }
@@ -259,8 +259,8 @@ namespace Circuit.Elements {
             if (resistance1 == 0) {
                 return; /* avoid NaN */
             }
-            current1 = (volts[0] - volts[2]) / resistance1;
-            current2 = (volts[1] - volts[2]) / resistance2;
+            current1 = (Volts[0] - Volts[2]) / resistance1;
+            current2 = (Volts[1] - Volts[2]) / resistance2;
             current3 = -current1 - current2;
         }
 
@@ -277,8 +277,8 @@ namespace Circuit.Elements {
         public override void stamp() {
             resistance1 = maxResistance * position;
             resistance2 = maxResistance * (1 - position);
-            cir.stampResistor(nodes[0], nodes[2], resistance1);
-            cir.stampResistor(nodes[2], nodes[1], resistance2);
+            cir.StampResistor(Nodes[0], Nodes[2], resistance1);
+            cir.StampResistor(Nodes[2], Nodes[1], resistance2);
         }
 
         public override void getInfo(string[] arr) {
@@ -304,7 +304,7 @@ namespace Circuit.Elements {
                 var ei = new EditInfo("", 0, -1, -1);
                 ei.checkbox = new CheckBox();
                 ei.checkbox.Text = "Show Values";
-                ei.checkbox.Checked = (flags & FLAG_SHOW_VALUES) != 0;
+                ei.checkbox.Checked = (mFlags & FLAG_SHOW_VALUES) != 0;
                 return ei;
             }
             return null;
@@ -320,7 +320,7 @@ namespace Circuit.Elements {
                 sim.setiFrameHeight();
             }
             if (n == 2) {
-                flags = ei.changeFlag(flags, FLAG_SHOW_VALUES);
+                mFlags = ei.changeFlag(mFlags, FLAG_SHOW_VALUES);
             }
         }
 

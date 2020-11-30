@@ -57,13 +57,13 @@ namespace Circuit.Elements {
             }
 
             public void setPoint(int px, int py, int dx, int dy, int dax, int day, int sx, int sy) {
-                if ((mElm.flags & FLAG_FLIP_X) != 0) {
+                if ((mElm.mFlags & FLAG_FLIP_X) != 0) {
                     dx = -dx;
                     dax = -dax;
                     px += mElm.cspc2 * (mElm.sizeX - 1);
                     sx = -sx;
                 }
-                if ((mElm.flags & FLAG_FLIP_Y) != 0) {
+                if ((mElm.mFlags & FLAG_FLIP_Y) != 0) {
                     dy = -dy;
                     day = -day;
                     py += mElm.cspc2 * (mElm.sizeY - 1);
@@ -133,7 +133,7 @@ namespace Circuit.Elements {
             if (needsBits()) {
                 bits = (typeof(_RingCounterElm) == GetType()) ? 10 : 4;
             }
-            noDiagonal = true;
+            mNoDiagonal = true;
             setupPins();
             setSize(sim.chkSmallGridCheckItem.Checked ? 1 : 2);
         }
@@ -142,16 +142,16 @@ namespace Circuit.Elements {
             if (needsBits()) {
                 bits = st.nextTokenInt();
             }
-            noDiagonal = true;
+            mNoDiagonal = true;
             setupPins();
             setSize((f & FLAG_SMALL) != 0 ? 1 : 2);
             int i;
             for (i = 0; i != getPostCount(); i++) {
                 if (pins == null) {
-                    volts[i] = st.nextTokenDouble();
+                    Volts[i] = st.nextTokenDouble();
                 } else if (pins[i].state) {
-                    volts[i] = st.nextTokenDouble();
-                    pins[i].value = volts[i] > 2.5;
+                    Volts[i] = st.nextTokenDouble();
+                    pins[i].value = Volts[i] > 2.5;
                 }
             }
         }
@@ -162,8 +162,8 @@ namespace Circuit.Elements {
             csize = s;
             cspc = 8 * s;
             cspc2 = cspc * 2;
-            flags &= ~FLAG_SMALL;
-            flags |= (s == 1) ? FLAG_SMALL : 0;
+            mFlags &= ~FLAG_SMALL;
+            mFlags |= (s == 1) ? FLAG_SMALL : 0;
         }
 
         public virtual void setupPins() { }
@@ -177,7 +177,7 @@ namespace Circuit.Elements {
             //	    FontMetrics fm = g.getFontMetrics();
             for (i = 0; i != getPostCount(); i++) {
                 var p = pins[i];
-                getVoltageColor(volts[i]);
+                getVoltageColor(Volts[i]);
                 var a = p.post;
                 var b = p.stub;
                 drawThickLine(g, a, b);
@@ -218,23 +218,23 @@ namespace Circuit.Elements {
 
         public override void drag(int xx, int yy) {
             yy = sim.snapGrid(yy);
-            if (xx < x1) {
-                xx = x1;
-                yy = y1;
+            if (xx < X1) {
+                xx = X1;
+                yy = Y1;
             } else {
-                y1 = y2 = yy;
-                x2 = sim.snapGrid(xx);
+                Y1 = Y2 = yy;
+                X2 = sim.snapGrid(xx);
             }
             setPoints();
         }
 
         public override void setPoints() {
             clockPoints = null;
-            if (x2 - x1 > sizeX * cspc2 && this == sim.dragElm) {
+            if (X2 - X1 > sizeX * cspc2 && this == sim.dragElm) {
                 setSize(2);
             }
             int hs = cspc;
-            int x0 = x1 + cspc2; int y0 = y1;
+            int x0 = X1 + cspc2; int y0 = Y1;
             int xr = x0 - cspc;
             int yr = y0 - cspc;
             int xs = sizeX * cspc2;
@@ -264,7 +264,7 @@ namespace Circuit.Elements {
 
         /* see if we can move pin to position xp, yp, and return the new position */
         public bool getPinPos(int xp, int yp, int pin, int[] pos) {
-            int x0 = x1 + cspc2; int y0 = y1;
+            int x0 = X1 + cspc2; int y0 = Y1;
             int xr = x0 - cspc;
             int yr = y0 - cspc;
             double xd = (xp - xr) / (double)cspc2 - .5;
@@ -325,7 +325,7 @@ namespace Circuit.Elements {
             for (int i = 0; i != getPostCount(); i++) {
                 var p = pins[i];
                 if (p.output) {
-                    cir.stampVoltageSource(0, nodes[i], p.voltSource);
+                    cir.StampVoltageSource(0, Nodes[i], p.voltSource);
                 }
             }
         }
@@ -337,14 +337,14 @@ namespace Circuit.Elements {
             for (i = 0; i != getPostCount(); i++) {
                 var p = pins[i];
                 if (!p.output) {
-                    p.value = volts[i] > 2.5;
+                    p.value = Volts[i] > 2.5;
                 }
             }
             execute();
             for (i = 0; i != getPostCount(); i++) {
                 var p = pins[i];
                 if (p.output) {
-                    cir.updateVoltageSource(0, nodes[i], p.voltSource, p.value ? 5 : 0);
+                    cir.UpdateVoltageSource(0, Nodes[i], p.voltSource, p.value ? 5 : 0);
                 }
             }
         }
@@ -353,7 +353,7 @@ namespace Circuit.Elements {
             for (int i = 0; i != getPostCount(); i++) {
                 pins[i].value = false;
                 pins[i].curcount = 0;
-                volts[i] = 0;
+                Volts[i] = 0;
             }
             lastClock = false;
         }
@@ -365,7 +365,7 @@ namespace Circuit.Elements {
             }
             for (int i = 0; i != getPostCount(); i++) {
                 if (pins[i].state) {
-                    s += " " + volts[i];
+                    s += " " + Volts[i];
                 }
             }
             return s;
@@ -388,7 +388,7 @@ namespace Circuit.Elements {
                 if (p.clock) {
                     t = "Clk";
                 }
-                arr[a] += t + " = " + getVoltageText(volts[i]);
+                arr[a] += t + " = " + getVoltageText(Volts[i]);
                 if (i % 2 == 1) {
                     a++;
                 }
@@ -420,14 +420,14 @@ namespace Circuit.Elements {
                 var ei = new EditInfo("", 0, -1, -1);
                 ei.checkbox = new CheckBox();
                 ei.checkbox.Text = "Flip X";
-                ei.checkbox.Checked = (flags & FLAG_FLIP_X) != 0;
+                ei.checkbox.Checked = (mFlags & FLAG_FLIP_X) != 0;
                 return ei;
             }
             if (n == 1) {
                 var ei = new EditInfo("", 0, -1, -1);
                 ei.checkbox = new CheckBox();
                 ei.checkbox.Text = "Flip Y";
-                ei.checkbox.Checked = (flags & FLAG_FLIP_Y) != 0;
+                ei.checkbox.Checked = (mFlags & FLAG_FLIP_Y) != 0;
                 return ei;
             }
             return null;
@@ -436,17 +436,17 @@ namespace Circuit.Elements {
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 if (ei.checkbox.Checked) {
-                    flags |= FLAG_FLIP_X;
+                    mFlags |= FLAG_FLIP_X;
                 } else {
-                    flags &= ~FLAG_FLIP_X;
+                    mFlags &= ~FLAG_FLIP_X;
                 }
                 setPoints();
             }
             if (n == 1) {
                 if (ei.checkbox.Checked) {
-                    flags |= FLAG_FLIP_Y;
+                    mFlags |= FLAG_FLIP_Y;
                 } else {
-                    flags &= ~FLAG_FLIP_Y;
+                    mFlags &= ~FLAG_FLIP_Y;
                 }
                 setPoints();
             }

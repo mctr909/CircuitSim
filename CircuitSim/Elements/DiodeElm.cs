@@ -69,7 +69,7 @@ namespace Circuit.Elements {
         public override DUMP_ID getDumpType() { return DUMP_ID.DIODE; }
 
         public override string dump() {
-            flags |= FLAG_MODEL;
+            mFlags |= FLAG_MODEL;
             /*if (modelName == null) {
                 Console.WriteLine("model name is null??");
                 modelName = "default";
@@ -89,9 +89,9 @@ namespace Circuit.Elements {
             calcLeads(16);
             cathode = newPointArray(2);
             var pa = newPointArray(2);
-            interpPoint(lead1, lead2, ref pa[0], ref pa[1], 0, hs);
-            interpPoint(lead1, lead2, ref cathode[0], ref cathode[1], 1, hs);
-            poly = createPolygon(pa[0], pa[1], lead2).ToArray();
+            interpPoint(mLead1, mLead2, ref pa[0], ref pa[1], 0, hs);
+            interpPoint(mLead1, mLead2, ref cathode[0], ref cathode[1], 1, hs);
+            poly = createPolygon(pa[0], pa[1], mLead2).ToArray();
         }
 
         public override void draw(Graphics g) {
@@ -102,17 +102,17 @@ namespace Circuit.Elements {
 
         public override void reset() {
             diode.reset();
-            volts[0] = volts[1] = curcount = 0;
+            Volts[0] = Volts[1] = mCurCount = 0;
             if (hasResistance) {
-                volts[2] = 0;
+                Volts[2] = 0;
             }
         }
 
         void drawDiode(Graphics g) {
-            setBbox(point1, point2, hs);
+            setBbox(mPoint1, mPoint2, hs);
 
-            double v1 = volts[0];
-            double v2 = volts[1];
+            double v1 = Volts[0];
+            double v2 = Volts[1];
 
             draw2Leads(g);
 
@@ -125,21 +125,21 @@ namespace Circuit.Elements {
         public override void stamp() {
             if (hasResistance) {
                 /* create diode from node 0 to internal node */
-                diode.stamp(nodes[0], nodes[2]);
+                diode.stamp(Nodes[0], Nodes[2]);
                 /* create resistor from internal node to node 1 */
-                cir.stampResistor(nodes[1], nodes[2], model.seriesResistance);
+                cir.StampResistor(Nodes[1], Nodes[2], model.seriesResistance);
             } else {
                 /* don't need any internal nodes if no series resistance */
-                diode.stamp(nodes[0], nodes[1]);
+                diode.stamp(Nodes[0], Nodes[1]);
             }
         }
 
         public override void doStep() {
-            diode.doStep(volts[0] - volts[diodeEndNode]);
+            diode.doStep(Volts[0] - Volts[diodeEndNode]);
         }
 
         public override void calculateCurrent() {
-            current = diode.calculateCurrent(volts[0] - volts[diodeEndNode]);
+            mCurrent = diode.calculateCurrent(Volts[0] - Volts[diodeEndNode]);
         }
 
         public override void getInfo(string[] arr) {
@@ -250,8 +250,8 @@ namespace Circuit.Elements {
 
         public override void stepFinished() {
             /* stop for huge currents that make simulator act weird */
-            if (Math.Abs(current) > 1e12) {
-                cir.stop("max current exceeded", this);
+            if (Math.Abs(mCurrent) > 1e12) {
+                cir.Stop("max current exceeded", this);
             }
         }
     }

@@ -29,9 +29,9 @@ namespace Circuit.Elements {
             }
         }
 
-        bool isTernary() { return (flags & FLAG_TERNARY) != 0; }
+        bool isTernary() { return (mFlags & FLAG_TERNARY) != 0; }
 
-        bool isNumeric() { return (flags & (FLAG_TERNARY | FLAG_NUMERIC)) != 0; }
+        bool isNumeric() { return (mFlags & (FLAG_TERNARY | FLAG_NUMERIC)) != 0; }
 
         public override DUMP_ID getDumpType() { return DUMP_ID.LOGIC_I; }
 
@@ -43,7 +43,7 @@ namespace Circuit.Elements {
 
         public override void setPoints() {
             base.setPoints();
-            lead1 = interpPoint(point1, point2, 1 - 12 / dn);
+            mLead1 = interpPoint(mPoint1, mPoint2, 1 - 12 / mElmLen);
         }
 
         public override void draw(Graphics g) {
@@ -51,32 +51,32 @@ namespace Circuit.Elements {
             if (isNumeric()) {
                 s = "" + position;
             }
-            setBbox(point1, lead1, 0);
-            drawCenteredText(g, s, x2, y2, true);
-            PEN_THICK_LINE.Color = getVoltageColor(volts[0]);
-            drawThickLine(g, point1, lead1);
+            setBbox(mPoint1, mLead1, 0);
+            drawCenteredText(g, s, X2, Y2, true);
+            PEN_THICK_LINE.Color = getVoltageColor(Volts[0]);
+            drawThickLine(g, mPoint1, mLead1);
             updateDotCount();
-            drawDots(g, point1, lead1, curcount);
+            drawDots(g, mPoint1, mLead1, mCurCount);
             drawPosts(g);
         }
 
         public override Rectangle getSwitchRect() {
-            return new Rectangle(x2 - 10, y2 - 10, 20, 20);
+            return new Rectangle(X2 - 10, Y2 - 10, 20, 20);
         }
 
-        public override void setCurrent(int vs, double c) { current = -c; }
+        public override void setCurrent(int vs, double c) { mCurrent = -c; }
 
         public override void stamp() {
             double v = (position == 0) ? loV : hiV;
             if (isTernary()) {
                 v = position * 2.5;
             }
-            cir.stampVoltageSource(0, nodes[0], voltSource, v);
+            cir.StampVoltageSource(0, Nodes[0], mVoltSource, v);
         }
 
         public override int getVoltageSourceCount() { return 1; }
 
-        public override double getVoltageDiff() { return volts[0]; }
+        public override double getVoltageDiff() { return Volts[0]; }
 
         public override void getInfo(string[] arr) {
             arr[0] = "logic input";
@@ -84,7 +84,7 @@ namespace Circuit.Elements {
             if (isNumeric()) {
                 arr[1] = "" + position;
             }
-            arr[1] += " (" + getVoltageText(volts[0]) + ")";
+            arr[1] += " (" + getVoltageText(Volts[0]) + ")";
             arr[2] = "I = " + getCurrentText(getCurrent());
         }
 
@@ -136,16 +136,16 @@ namespace Circuit.Elements {
             }
             if (n == 3) {
                 if (ei.checkbox.Checked) {
-                    flags |= FLAG_NUMERIC;
+                    mFlags |= FLAG_NUMERIC;
                 } else {
-                    flags &= ~FLAG_NUMERIC;
+                    mFlags &= ~FLAG_NUMERIC;
                 }
             }
             if (n == 4) {
                 if (ei.checkbox.Checked) {
-                    flags |= FLAG_TERNARY;
+                    mFlags |= FLAG_TERNARY;
                 } else {
-                    flags &= ~FLAG_TERNARY;
+                    mFlags &= ~FLAG_TERNARY;
                 }
                 posCount = (isTernary()) ? 3 : 2;
             }
@@ -154,7 +154,7 @@ namespace Circuit.Elements {
         public override DUMP_ID getShortcut() { return DUMP_ID.LOGIC_I; }
 
         public override double getCurrentIntoNode(int n) {
-            return -current;
+            return -mCurrent;
         }
     }
 }

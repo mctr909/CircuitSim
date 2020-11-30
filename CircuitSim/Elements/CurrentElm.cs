@@ -30,10 +30,10 @@ namespace Circuit.Elements {
         public override void setPoints() {
             base.setPoints();
             calcLeads(36);
-            ashaft1 = interpPoint(lead1, lead2, .25);
-            ashaft2 = interpPoint(lead1, lead2, .6);
-            center = interpPoint(lead1, lead2, .5);
-            var p2 = interpPoint(lead1, lead2, .8);
+            ashaft1 = interpPoint(mLead1, mLead2, .25);
+            ashaft2 = interpPoint(mLead1, mLead2, .6);
+            center = interpPoint(mLead1, mLead2, .5);
+            var p2 = interpPoint(mLead1, mLead2, .8);
             arrow = calcArrow(center, p2, 8, 6).ToArray();
         }
 
@@ -41,16 +41,16 @@ namespace Circuit.Elements {
             int cr = 32;
             draw2Leads(g);
 
-            PEN_THICK_LINE.Color = getVoltageColor((volts[0] + volts[1]) / 2);
+            PEN_THICK_LINE.Color = getVoltageColor((Volts[0] + Volts[1]) / 2);
             drawThickCircle(g, center.X, center.Y, cr);
             drawThickLine(g, ashaft1, ashaft2);
             fillPolygon(g, PEN_THICK_LINE.Color, arrow);
 
-            setBbox(point1, point2, cr);
+            setBbox(mPoint1, mPoint2, cr);
             doDots(g);
             if (sim.chkShowValuesCheckItem.Checked) {
                 string s = getShortUnitText(currentValue, "A");
-                if (dx == 0 || dy == 0) {
+                if (mDx == 0 || mDy == 0) {
                     drawValues(g, s, cr);
                 }
             }
@@ -61,12 +61,12 @@ namespace Circuit.Elements {
         public void stampCurrentSource(bool broken) {
             if (broken) {
                 /* no current path; stamping a current source would cause a matrix error. */
-                cir.stampResistor(nodes[0], nodes[1], 1e8);
-                current = 0;
+                cir.StampResistor(Nodes[0], Nodes[1], 1e8);
+                mCurrent = 0;
             } else {
                 /* ok to stamp a current source */
-                cir.stampCurrentSource(nodes[0], nodes[1], currentValue);
-                current = currentValue;
+                cir.StampCurrentSource(Nodes[0], Nodes[1], currentValue);
+                mCurrent = currentValue;
             }
         }
 
@@ -87,9 +87,9 @@ namespace Circuit.Elements {
         }
 
         public override double getVoltageDiff() {
-            return volts[1] - volts[0];
+            return Volts[1] - Volts[0];
         }
 
-        public override double getPower() { return -getVoltageDiff() * current; }
+        public override double getPower() { return -getVoltageDiff() * mCurrent; }
     }
 }

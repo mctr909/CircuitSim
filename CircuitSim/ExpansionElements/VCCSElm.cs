@@ -49,8 +49,8 @@ namespace Circuit.Elements {
         public override bool nonLinear() { return true; }
 
         public override void stamp() {
-            cir.stampNonLinear(nodes[inputCount]);
-            cir.stampNonLinear(nodes[inputCount + 1]);
+            cir.StampNonLinear(Nodes[inputCount]);
+            cir.StampNonLinear(Nodes[inputCount + 1]);
         }
 
         double sign(double a, double b) {
@@ -90,7 +90,7 @@ namespace Circuit.Elements {
         public bool hasCurrentOutput() { return true; }
 
         public int getOutputNode(int n) {
-            return nodes[n + inputCount];
+            return Nodes[n + inputCount];
         }
 
         public override void doStep() {
@@ -101,7 +101,7 @@ namespace Circuit.Elements {
                 pins[inputCount].current = 0;
                 pins[inputCount + 1].current = 0;
                 /* avoid singular matrix errors */
-                cir.stampResistor(nodes[inputCount], nodes[inputCount + 1], 1e8);
+                cir.StampResistor(Nodes[inputCount], Nodes[inputCount + 1], 1e8);
                 return;
             }
 
@@ -109,21 +109,21 @@ namespace Circuit.Elements {
             double limitStep = getLimitStep();
             double convergeLimit = getConvergeLimit();
             for (i = 0; i != inputCount; i++) {
-                if (Math.Abs(volts[i] - lastVolts[i]) > convergeLimit) {
+                if (Math.Abs(Volts[i] - lastVolts[i]) > convergeLimit) {
                     cir.Converged = false;
                 }
-                if (double.IsNaN(volts[i])) {
-                    volts[i] = 0;
+                if (double.IsNaN(Volts[i])) {
+                    Volts[i] = 0;
                 }
-                if (Math.Abs(volts[i] - lastVolts[i]) > limitStep) {
-                    volts[i] = lastVolts[i] + sign(volts[i] - lastVolts[i], limitStep);
+                if (Math.Abs(Volts[i] - lastVolts[i]) > limitStep) {
+                    Volts[i] = lastVolts[i] + sign(Volts[i] - lastVolts[i], limitStep);
                 }
             }
 
             if (expr != null) {
                 /* calculate output */
                 for (i = 0; i != inputCount; i++) {
-                    exprState.values[i] = volts[i];
+                    exprState.values[i] = Volts[i];
                 }
                 exprState.t = sim.t;
                 double v0 = -expr.eval(exprState);
@@ -135,28 +135,28 @@ namespace Circuit.Elements {
                 /* calculate and stamp output derivatives */
                 for (i = 0; i != inputCount; i++) {
                     double dv = 1e-6;
-                    exprState.values[i] = volts[i] + dv;
+                    exprState.values[i] = Volts[i] + dv;
                     double v = -expr.eval(exprState);
-                    exprState.values[i] = volts[i] - dv;
+                    exprState.values[i] = Volts[i] - dv;
                     double v2 = -expr.eval(exprState);
                     double dx = (v - v2) / (dv * 2);
                     if (Math.Abs(dx) < 1e-6) {
                         dx = sign(dx, 1e-6);
                     }
-                    cir.stampVCCurrentSource(nodes[inputCount], nodes[inputCount + 1], nodes[i], 0, dx);
+                    cir.StampVCCurrentSource(Nodes[inputCount], Nodes[inputCount + 1], Nodes[i], 0, dx);
                     /*Console.WriteLine("ccedx " + i + " " + dx); */
                     /* adjust right side */
-                    rs -= dx * volts[i];
-                    exprState.values[i] = volts[i];
+                    rs -= dx * Volts[i];
+                    exprState.values[i] = Volts[i];
                 }
                 /*Console.WriteLine("ccers " + rs);*/
-                cir.stampCurrentSource(nodes[inputCount], nodes[inputCount + 1], rs);
+                cir.StampCurrentSource(Nodes[inputCount], Nodes[inputCount + 1], rs);
                 pins[inputCount].current = -v0;
                 pins[inputCount + 1].current = v0;
             }
 
             for (i = 0; i != inputCount; i++) {
-                lastVolts[i] = volts[i];
+                lastVolts[i] = Volts[i];
             }
         }
 

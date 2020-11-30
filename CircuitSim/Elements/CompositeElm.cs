@@ -40,7 +40,7 @@ namespace Circuit.Elements {
             allocNodes();
         }
 
-        bool useEscape() { return (flags & FLAG_ESCAPE) != 0; }
+        bool useEscape() { return (mFlags & FLAG_ESCAPE) != 0; }
 
         public void loadComposite(StringTokenizer stIn, string model, int[] externalNodes) {
             var compNodeHash = new Dictionary<int, CircuitNode>();
@@ -141,7 +141,7 @@ namespace Circuit.Elements {
             }
 
             /* dump new circuits with escape() */
-            flags |= FLAG_ESCAPE;
+            mFlags |= FLAG_ESCAPE;
         }
 
         public override bool nonLinear() {
@@ -297,7 +297,7 @@ namespace Circuit.Elements {
             for (int i = 0; i < cnLinks.Count; i++) {
                 cnLinks[i].elm.setNodeVoltage(cnLinks[i].num, c);
             }
-            volts[n] = c;
+            Volts[n] = c;
         }
 
         public override bool canViewInScope() {

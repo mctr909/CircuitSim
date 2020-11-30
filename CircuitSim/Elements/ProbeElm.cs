@@ -45,7 +45,7 @@ namespace Circuit.Elements {
             meter = TP_VOL;
 
             /* default for new elements */
-            flags = FLAG_SHOWVOLTAGE;
+            mFlags = FLAG_SHOWVOLTAGE;
             scale = SCALE_AUTO;
         }
 
@@ -94,29 +94,29 @@ namespace Circuit.Elements {
 
         public override void setPoints() {
             base.setPoints();
-            center = interpPoint(point1, point2, .5);
+            center = interpPoint(mPoint1, mPoint2, .5);
         }
 
         public override void draw(Graphics g) {
             int hs = 8;
-            setBbox(point1, point2, hs);
+            setBbox(mPoint1, mPoint2, hs);
             bool selected = needsHighlight();
-            double len = (selected || sim.dragElm == this || mustShowVoltage()) ? 16 : dn - 32;
+            double len = (selected || sim.dragElm == this || mustShowVoltage()) ? 16 : mElmLen - 32;
             calcLeads((int)len);
 
             if (selected) {
                 PEN_THICK_LINE.Color = selectColor;
             } else {
-                PEN_THICK_LINE.Color = getVoltageColor(volts[0]);
+                PEN_THICK_LINE.Color = getVoltageColor(Volts[0]);
             }
-            drawThickLine(g, point1, lead1);
+            drawThickLine(g, mPoint1, mLead1);
 
             if (selected) {
                 PEN_THICK_LINE.Color = selectColor;
             } else {
-                PEN_THICK_LINE.Color = getVoltageColor(volts[1]);
+                PEN_THICK_LINE.Color = getVoltageColor(Volts[1]);
             }
-            drawThickLine(g, lead2, point2);
+            drawThickLine(g, mLead2, mPoint2);
 
             if (this == sim.plotXElm) {
                 drawCenteredText(g, "X", center.X, center.Y, true);
@@ -162,11 +162,11 @@ namespace Circuit.Elements {
                 drawValues(g, s, 4);
             }
 
-            var plusPoint = interpPoint(point1, point2, (dn / 2 - len / 2 - 4) / dn, -10 * dsign);
-            if (y2 > y1) {
+            var plusPoint = interpPoint(mPoint1, mPoint2, (mElmLen / 2 - len / 2 - 4) / mElmLen, -10 * mDsign);
+            if (Y2 > Y1) {
                 plusPoint.Y += 4;
             }
-            if (y1 > y2) {
+            if (Y1 > Y2) {
                 plusPoint.Y += 3;
             }
 
@@ -176,7 +176,7 @@ namespace Circuit.Elements {
         }
 
         bool mustShowVoltage() {
-            return (flags & FLAG_SHOWVOLTAGE) != 0;
+            return (mFlags & FLAG_SHOWVOLTAGE) != 0;
         }
 
         public override void stepFinished() {
@@ -305,9 +305,9 @@ namespace Circuit.Elements {
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 if (ei.checkbox.Checked) {
-                    flags = FLAG_SHOWVOLTAGE;
+                    mFlags = FLAG_SHOWVOLTAGE;
                 } else {
-                    flags &= ~FLAG_SHOWVOLTAGE;
+                    mFlags &= ~FLAG_SHOWVOLTAGE;
                 }
             }
             if (n == 1) {

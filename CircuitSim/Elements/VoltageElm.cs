@@ -52,13 +52,13 @@ namespace Circuit.Elements {
                 dutyCycle = st.nextTokenDouble();
             } catch { }
 
-            if ((flags & FLAG_COS) != 0) {
-                flags &= ~FLAG_COS;
+            if ((mFlags & FLAG_COS) != 0) {
+                mFlags &= ~FLAG_COS;
                 phaseShift = pi / 2;
             }
 
             /* old circuit files have the wrong duty cycle for pulse waveforms (wasn't configurable in the past) */
-            if ((flags & FLAG_PULSE_DUTY) == 0 && waveform == WF_PULSE) {
+            if ((mFlags & FLAG_PULSE_DUTY) == 0 && waveform == WF_PULSE) {
                 dutyCycle = defaultPulseDuty;
             }
 
@@ -70,9 +70,9 @@ namespace Circuit.Elements {
         public override string dump() {
             /* set flag so we know if duty cycle is correct for pulse waveforms */
             if (waveform == WF_PULSE) {
-                flags |= FLAG_PULSE_DUTY;
+                mFlags |= FLAG_PULSE_DUTY;
             } else {
-                flags &= ~FLAG_PULSE_DUTY;
+                mFlags &= ~FLAG_PULSE_DUTY;
             }
 
             return base.dump()
@@ -86,7 +86,7 @@ namespace Circuit.Elements {
         }
 
         public override void reset() {
-            curcount = 0;
+            mCurCount = 0;
         }
 
         double triangleFunc(double x) {
@@ -98,15 +98,15 @@ namespace Circuit.Elements {
 
         public override void stamp() {
             if (waveform == WF_DC) {
-                cir.stampVoltageSource(nodes[0], nodes[1], voltSource, getVoltage());
+                cir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
             } else {
-                cir.stampVoltageSource(nodes[0], nodes[1], voltSource);
+                cir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource);
             }
         }
 
         public override void doStep() {
             if (waveform != WF_DC) {
-                cir.updateVoltageSource(nodes[0], nodes[1], voltSource, getVoltage());
+                cir.UpdateVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
             }
         }
 
@@ -147,19 +147,19 @@ namespace Circuit.Elements {
         }
 
         public override void draw(Graphics g) {
-            setBbox(x1, y1, x2, y2);
+            setBbox(X1, Y1, X2, Y2);
             draw2Leads(g);
             if (waveform == WF_DC) {
-                interpPoint(lead1, lead2, ref ps1, ref ps2, 0, 10);
-                drawThickLine(g, getVoltageColor(volts[0]), ps1, ps2);
+                interpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, 10);
+                drawThickLine(g, getVoltageColor(Volts[0]), ps1, ps2);
 
                 int hs = 16;
-                setBbox(point1, point2, hs);
-                interpPoint(lead1, lead2, ref ps1, ref ps2, 1, hs);
-                drawThickLine(g, getVoltageColor(volts[1]), ps1, ps2);
+                setBbox(mPoint1, mPoint2, hs);
+                interpPoint(mLead1, mLead2, ref ps1, ref ps2, 1, hs);
+                drawThickLine(g, getVoltageColor(Volts[1]), ps1, ps2);
             } else {
-                setBbox(point1, point2, circleSize);
-                interpPoint(lead1, lead2, ref ps1, .5);
+                setBbox(mPoint1, mPoint2, circleSize);
+                interpPoint(mLead1, mLead2, ref ps1, .5);
                 drawWaveform(g, ps1);
                 string inds;
                 if (bias > 0 || (bias == 0 && waveform == WF_PULSE)) {
@@ -168,7 +168,7 @@ namespace Circuit.Elements {
                     inds = "*";
                 }
 
-                var plusPoint = interpPoint(point1, point2, (dn / 2 + circleSize + 4) / dn, 10 * dsign);
+                var plusPoint = interpPoint(mPoint1, mPoint2, (mElmLen / 2 + circleSize + 4) / mElmLen, 10 * mDsign);
                 plusPoint.Y += 4;
                 var w = (int)g.MeasureString(inds, FONT_TERM_NAME).Width;
                 g.DrawString(inds, FONT_TERM_NAME, BRUSH_TERM_NAME, plusPoint.X - w / 2, plusPoint.Y);
@@ -178,10 +178,10 @@ namespace Circuit.Elements {
 
             if (sim.dragElm != this) {
                 if (waveform == WF_DC) {
-                    drawDots(g, point1, point2, curcount);
+                    drawDots(g, mPoint1, mPoint2, mCurCount);
                 } else {
-                    drawDots(g, point1, lead1, curcount);
-                    drawDots(g, point2, lead2, -curcount);
+                    drawDots(g, mPoint1, mLead1, mCurCount);
+                    drawDots(g, mPoint2, mLead2, -mCurCount);
                 }
             }
             drawPosts(g);
@@ -284,9 +284,9 @@ namespace Circuit.Elements {
             return 1;
         }
 
-        public override double getPower() { return -getVoltageDiff() * current; }
+        public override double getPower() { return -getVoltageDiff() * mCurrent; }
 
-        public override double getVoltageDiff() { return volts[1] - volts[0]; }
+        public override double getVoltageDiff() { return Volts[1] - Volts[0]; }
 
         public override void getInfo(string[] arr) {
             switch (waveform) {
@@ -322,8 +322,8 @@ namespace Circuit.Elements {
                     arr[i++] = "wavelength = " + getUnitText(2.9979e8 / frequency, "m");
                 }
             }
-            if (waveform == WF_DC && current != 0 && cir.ShowResistanceInVoltageSources) {
-                arr[i++] = "(R = " + getUnitText(maxVoltage / current, CirSim.ohmString) + ")";
+            if (waveform == WF_DC && mCurrent != 0 && cir.ShowResistanceInVoltageSources) {
+                arr[i++] = "(R = " + getUnitText(maxVoltage / mCurrent, CirSim.ohmString) + ")";
             }
             arr[i++] = "P = " + getUnitText(getPower(), "W");
         }

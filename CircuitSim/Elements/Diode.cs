@@ -118,8 +118,8 @@ namespace Circuit.Elements {
         public void stamp(int n0, int n1) {
             nodes[0] = n0;
             nodes[1] = n1;
-            cir.stampNonLinear(nodes[0]);
-            cir.stampNonLinear(nodes[1]);
+            cir.StampNonLinear(nodes[0]);
+            cir.StampNonLinear(nodes[1]);
         }
 
         public void doStep(double voltdiff) {
@@ -147,8 +147,8 @@ namespace Circuit.Elements {
                 double eval = Math.Exp(voltdiff * vdcoef);
                 double geq = vdcoef * leakage * eval + gmin;
                 double nc = (eval - 1) * leakage - geq * voltdiff;
-                cir.stampConductance(nodes[0], nodes[1], geq);
-                cir.stampCurrentSource(nodes[0], nodes[1], nc);
+                cir.StampConductance(nodes[0], nodes[1], geq);
+                cir.StampCurrentSource(nodes[0], nodes[1], nc);
             } else {
                 /* Zener diode */
 
@@ -174,8 +174,8 @@ namespace Circuit.Elements {
                     - 1
                 ) + geq * (-voltdiff);
 
-                cir.stampConductance(nodes[0], nodes[1], geq);
-                cir.stampCurrentSource(nodes[0], nodes[1], nc);
+                cir.StampConductance(nodes[0], nodes[1], geq);
+                cir.StampCurrentSource(nodes[0], nodes[1], nc);
             }
         }
 

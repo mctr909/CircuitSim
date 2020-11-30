@@ -16,7 +16,7 @@ namespace Circuit {
             long mystarttime = DateTime.Now.ToFileTimeUtc();
             bool didAnalyze = analyzeFlag;
             if (analyzeFlag || dcAnalysisFlag) {
-                mCir.analyzeCircuit();
+                mCir.AnalyzeCircuit();
                 analyzeFlag = false;
             }
 
@@ -96,11 +96,11 @@ namespace Circuit {
                 || tempMouseMode == MOUSE_MODE.DRAG_SELECTED) {
                 for (int i = 0; i != elmList.Count; i++) {
                     var ce = getElm(i);
-                    CircuitElm.drawPost(g, ce.x1 , ce.y1 );
-                    CircuitElm.drawPost(g, ce.x2, ce.y2);
+                    CircuitElm.drawPost(g, ce.X1 , ce.Y1 );
+                    CircuitElm.drawPost(g, ce.X2, ce.Y2);
                     if (ce != mouseElm || tempMouseMode != MOUSE_MODE.DRAG_POST) {
-                        g.FillPie(Brushes.Gray, ce.x1 - 3, ce.y1 - 3, 7, 7, 0, 360);
-                        g.FillPie(Brushes.Gray, ce.x2 - 3, ce.y2 - 3, 7, 7, 0, 360);
+                        g.FillPie(Brushes.Gray, ce.X1 - 3, ce.Y1 - 3, 7, 7, 0, 360);
+                        g.FillPie(Brushes.Gray, ce.X2 - 3, ce.Y2 - 3, 7, 7, 0, 360);
                     } else {
                         ce.drawHandles(g);
                     }
@@ -113,7 +113,7 @@ namespace Circuit {
             }
 
             /* draw handles for elm we're dragging */
-            if (dragElm != null && (dragElm.x1 != dragElm.x2 || dragElm.y1 != dragElm.y2)) {
+            if (dragElm != null && (dragElm.X1 != dragElm.X2 || dragElm.Y1 != dragElm.Y2)) {
                 dragElm.draw(g);
                 dragElm.drawHandles(g);
             }
@@ -274,7 +274,7 @@ namespace Circuit {
                 }
                 steps++;
 
-                if (!mCir.run(debugprint)) {
+                if (!mCir.Run(debugprint)) {
                     break;
                 }
 
@@ -283,7 +283,7 @@ namespace Circuit {
                     getElm(i).stepFinished();
                 }
                 if (!delayWireProcessing) {
-                    mCir.calcWireCurrents();
+                    mCir.CalcWireCurrents();
                 }
                 for (i = 0; i != scopeCount; i++) {
                     scopes[i].timeStep();
@@ -308,7 +308,7 @@ namespace Circuit {
 
             lastIterTime = lit;
             if (delayWireProcessing) {
-                mCir.calcWireCurrents();
+                mCir.CalcWireCurrents();
             }
             /* Console.WriteLine((DateTime.Now.ToFileTimeUtc() - lastFrameTime) / (double)iter); */
         }

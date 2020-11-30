@@ -9,27 +9,27 @@ namespace Circuit.Elements {
         public InductorElm(int xx, int yy) : base(xx, yy) {
             ind = new Inductor(sim, cir);
             inductance = 0.001;
-            ind.setup(inductance, current, flags);
+            ind.setup(inductance, mCurrent, mFlags);
         }
 
         public InductorElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
             ind = new Inductor(sim, cir);
             inductance = st.nextTokenDouble();
-            current = st.nextTokenDouble();
-            ind.setup(inductance, current, flags);
+            mCurrent = st.nextTokenDouble();
+            ind.setup(inductance, mCurrent, mFlags);
         }
 
         public double getInductance() { return inductance; }
 
         public void setInductance(double l) {
             inductance = l;
-            ind.setup(inductance, current, flags);
+            ind.setup(inductance, mCurrent, mFlags);
         }
 
         public override DUMP_ID getDumpType() { return DUMP_ID.INDUCTOR; }
 
         public override string dump() {
-            return base.dump() + " " + inductance + " " + current;
+            return base.dump() + " " + inductance + " " + mCurrent;
         }
 
         public override void setPoints() {
@@ -38,13 +38,13 @@ namespace Circuit.Elements {
         }
 
         public override void draw(Graphics g) {
-            double v1 = volts[0];
-            double v2 = volts[1];
+            double v1 = Volts[0];
+            double v2 = Volts[1];
             int hs = 8;
-            setBbox(point1, point2, hs);
+            setBbox(mPoint1, mPoint2, hs);
 
             draw2Leads(g);
-            drawCoil(g, 8, lead1, lead2, v1, v2);
+            drawCoil(g, 8, mLead1, mLead2, v1, v2);
 
             if (sim.chkShowValuesCheckItem.Checked) {
                 var s = getShortUnitText(inductance, "H");
@@ -55,25 +55,25 @@ namespace Circuit.Elements {
         }
 
         public override void reset() {
-            current = volts[0] = volts[1] = curcount = 0;
+            mCurrent = Volts[0] = Volts[1] = mCurCount = 0;
             ind.reset();
         }
 
-        public override void stamp() { ind.stamp(nodes[0], nodes[1]); }
+        public override void stamp() { ind.stamp(Nodes[0], Nodes[1]); }
 
         public override void startIteration() {
-            ind.startIteration(volts[0] - volts[1]);
+            ind.startIteration(Volts[0] - Volts[1]);
         }
 
         public override bool nonLinear() { return ind.nonLinear(); }
 
         public override void calculateCurrent() {
-            double voltdiff = volts[0] - volts[1];
-            current = ind.calculateCurrent(voltdiff);
+            double voltdiff = Volts[0] - Volts[1];
+            mCurrent = ind.calculateCurrent(voltdiff);
         }
 
         public override void doStep() {
-            double voltdiff = volts[0] - volts[1];
+            double voltdiff = Volts[0] - Volts[1];
             ind.doStep(voltdiff);
         }
 
@@ -104,12 +104,12 @@ namespace Circuit.Elements {
             }
             if (n == 1) {
                 if (ei.checkbox.Checked) {
-                    flags &= ~Inductor.FLAG_BACK_EULER;
+                    mFlags &= ~Inductor.FLAG_BACK_EULER;
                 } else {
-                    flags |= Inductor.FLAG_BACK_EULER;
+                    mFlags |= Inductor.FLAG_BACK_EULER;
                 }
             }
-            ind.setup(inductance, current, flags);
+            ind.setup(inductance, mCurrent, mFlags);
         }
 
         public override DUMP_ID getShortcut() { return DUMP_ID.INDUCTOR; }

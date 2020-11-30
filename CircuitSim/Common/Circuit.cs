@@ -6,36 +6,34 @@ using Circuit.Elements;
 
 namespace Circuit {
     class RowInfo {
-        public const int ROW_NORMAL = 0;  /* ordinary value */
+        public const int ROW_NORMAL = 0; /* ordinary value */
         public const int ROW_CONST = 1;  /* value is constant */
-        public int type;
-        public int mapCol;
-        public int mapRow;
-        public double value;
-        public bool rsChanges; /* row's right side changes */
-        public bool lsChanges; /* row's left side changes */
-        public bool dropRow;   /* row is not needed in matrix */
-        public RowInfo() { type = ROW_NORMAL; }
+        public int Type = ROW_NORMAL;
+        public int MapCol;
+        public int MapRow;
+        public double Value;
+        public bool RightChanges; /* row's right side changes */
+        public bool LeftChanges;  /* row's left side changes */
+        public bool DropRow;      /* row is not needed in matrix */
     }
 
     class WireInfo {
-        public WireElm wire;
-        public List<CircuitElm> neighbors;
-        public int post;
-        public WireInfo(WireElm w) { wire = w; }
+        public WireElm Wire;
+        public List<CircuitElm> Neighbors;
+        public int Post;
+        public WireInfo(WireElm w) { Wire = w; }
     }
 
     class NodeMapEntry {
-        public int node;
-        public NodeMapEntry() { node = -1; }
-        public NodeMapEntry(int n) { node = n; }
+        public int Node;
+        public NodeMapEntry() { Node = -1; }
+        public NodeMapEntry(int n) { Node = n; }
     }
 
     class Circuit {
         #region private varidate
         CirSim mSim;
 
-        public List<CircuitNode> NodeList;
         Dictionary<Point, NodeMapEntry> mNodeMap;
         Dictionary<Point, int> mPostCountMap;
 
@@ -53,14 +51,15 @@ namespace Circuit {
         RowInfo[] mRowInfo;
         #endregion
 
-        #region public variable
-        public string StopMessage;
-        public CircuitElm StopElm;
+        #region property
+        public CircuitElm StopElm { get; set; }
+        public string StopMessage { get; set; }
 
         public List<Point> PostDrawList { get; private set; } = new List<Point>();
         public List<Point> BadConnectionList { get; private set; } = new List<Point>();
 
-        public double[,] Matrix;
+        public List<CircuitNode> NodeList { get; private set; }
+        public double[,] Matrix { get; set; }
 
         public int VoltageSourceCount { get; private set; }
         public CircuitElm[] VoltageSources { get; private set; }
@@ -69,7 +68,7 @@ namespace Circuit {
 
         public bool ShowResistanceInVoltageSources { get; private set; }
 
-        public bool Converged;
+        public bool Converged { get; set; }
         public int SubIterations { get; private set; }
         #endregion
 
@@ -81,14 +80,12 @@ namespace Circuit {
         /* gaussian elimination.  On entry, a[0..n-1][0..n-1] is the
         /* matrix to be factored.  ipvt[] returns an integer vector of pivot
         /* indices, used in the lu_solve() routine. */
-        static bool lu_factor(double[,] a, int n, int[] ipvt) {
-            int i, j, k;
-
+        static bool luFactor(double[,] a, int n, int[] ipvt) {
             /* check for a possible singular matrix by scanning for rows that
             /* are all zeroes */
-            for (i = 0; i != n; i++) {
+            for (int i = 0; i != n; i++) {
                 bool row_all_zeros = true;
-                for (j = 0; j != n; j++) {
+                for (int j = 0; j != n; j++) {
                     if (a[i, j] != 0) {
                         row_all_zeros = false;
                         break;
@@ -101,11 +98,11 @@ namespace Circuit {
             }
 
             /* use Crout's method; loop through the columns */
-            for (j = 0; j != n; j++) {
+            for (int j = 0; j != n; j++) {
                 /* calculate upper triangular elements for this column */
-                for (i = 0; i != j; i++) {
+                for (int i = 0; i != j; i++) {
                     double q = a[i, j];
-                    for (k = 0; k != i; k++) {
+                    for (int k = 0; k != i; k++) {
                         q -= a[i, k] * a[k, j];
                     }
                     a[i, j] = q;
@@ -113,9 +110,9 @@ namespace Circuit {
                 /* calculate lower triangular elements for this column */
                 double largest = 0;
                 int largestRow = -1;
-                for (i = j; i != n; i++) {
+                for (int i = j; i != n; i++) {
                     double q = a[i, j];
-                    for (k = 0; k != j; k++) {
+                    for (int k = 0; k != j; k++) {
                         q -= a[i, k] * a[k, j];
                     }
                     a[i, j] = q;
@@ -128,7 +125,7 @@ namespace Circuit {
                 /* pivoting */
                 if (j != largestRow) {
                     double x;
-                    for (k = 0; k != n; k++) {
+                    for (int k = 0; k != n; k++) {
                         x = a[largestRow, k];
                         a[largestRow, k] = a[j, k];
                         a[j, k] = x;
@@ -143,7 +140,7 @@ namespace Circuit {
                 }
                 if (j != n - 1) {
                     double mult = 1.0 / a[j, j];
-                    for (i = j + 1; i != n; i++) {
+                    for (int i = j + 1; i != n; i++) {
                         a[i, j] *= mult;
                     }
                 }
@@ -154,7 +151,7 @@ namespace Circuit {
         /* Solves the set of n linear equations using a LU factorization
         /* previously performed by lu_factor.  On input, b[0..n-1] is the right
         /* hand side of the equations, and on output, contains the solution. */
-        static void lu_solve(double[,] a, int n, int[] ipvt, double[] b) {
+        static void luSolve(double[,] a, int n, int[] ipvt, double[] b) {
             int i;
 
             /* find first nonzero b element */
@@ -171,11 +168,10 @@ namespace Circuit {
             int bi = i++;
             for (; i < n; i++) {
                 int row = ipvt[i];
-                int j;
                 double tot = b[row];
                 b[row] = b[i];
                 /* forward substitution using the lower triangular matrix */
-                for (j = bi; j < i; j++) {
+                for (int j = bi; j < i; j++) {
                     tot -= a[i, j] * b[j];
                 }
                 b[i] = tot;
@@ -183,8 +179,7 @@ namespace Circuit {
             for (i = n - 1; i >= 0; i--) {
                 double tot = b[i];
                 /* back-substitution using the upper triangular matrix */
-                int j;
-                for (j = i + 1; j != n; j++) {
+                for (int j = i + 1; j != n; j++) {
                     tot -= a[i, j] * b[j];
                 }
                 b[i] = tot / a[i, i];
@@ -200,7 +195,7 @@ namespace Circuit {
                 double qv = 0;
                 var re = mRowInfo[i];
                 /*Console.WriteLine("row " + i + " " + re.lsChanges + " " + re.rsChanges + " " + re.dropRow);*/
-                if (re.lsChanges || re.dropRow || re.rsChanges) {
+                if (re.LeftChanges || re.DropRow || re.RightChanges) {
                     continue;
                 }
                 double rsadd = 0;
@@ -208,10 +203,10 @@ namespace Circuit {
                 /* look for rows that can be removed */
                 for (j = 0; j != matrixSize; j++) {
                     double q = Matrix[i, j];
-                    if (mRowInfo[j].type == RowInfo.ROW_CONST) {
+                    if (mRowInfo[j].Type == RowInfo.ROW_CONST) {
                         /* keep a running total of const values that have been
                         /* removed already */
-                        rsadd -= mRowInfo[j].value * q;
+                        rsadd -= mRowInfo[j].Value * q;
                         continue;
                     }
                     /* ignore zeroes */
@@ -230,20 +225,20 @@ namespace Circuit {
                 if (j == matrixSize) {
                     if (qp == -1) {
                         /* probably a singular matrix, try disabling matrix simplification above to check this */
-                        stop("Matrix error", null);
+                        Stop("Matrix error", null);
                         return false;
                     }
                     var elt = mRowInfo[qp];
                     /* we found a row with only one nonzero nonconst entry; that value
                     /* is a constant */
-                    if (elt.type != RowInfo.ROW_NORMAL) {
-                        Console.WriteLine("type already " + elt.type + " for " + qp + "!");
+                    if (elt.Type != RowInfo.ROW_NORMAL) {
+                        Console.WriteLine("type already " + elt.Type + " for " + qp + "!");
                         continue;
                     }
-                    elt.type = RowInfo.ROW_CONST;
+                    elt.Type = RowInfo.ROW_CONST;
                     /*Console.WriteLine("ROW_CONST " + i + " " + rsadd);*/
-                    elt.value = (mRightSide[i] + rsadd) / qv;
-                    mRowInfo[i].dropRow = true;
+                    elt.Value = (mRightSide[i] + rsadd) / qv;
+                    mRowInfo[i].DropRow = true;
                     i = -1; /* start over from scratch */
                 }
             }
@@ -253,13 +248,13 @@ namespace Circuit {
             int nn = 0;
             for (i = 0; i != matrixSize; i++) {
                 RowInfo elt = mRowInfo[i];
-                if (elt.type == RowInfo.ROW_NORMAL) {
-                    elt.mapCol = nn++;
+                if (elt.Type == RowInfo.ROW_NORMAL) {
+                    elt.MapCol = nn++;
                     /*Console.WriteLine("col " + i + " maps to " + elt.mapCol);*/
                     continue;
                 }
-                if (elt.type == RowInfo.ROW_CONST) {
-                    elt.mapCol = -1;
+                if (elt.Type == RowInfo.ROW_CONST) {
+                    elt.MapCol = -1;
                 }
             }
 
@@ -270,19 +265,19 @@ namespace Circuit {
             int ii = 0;
             for (i = 0; i != matrixSize; i++) {
                 RowInfo rri = mRowInfo[i];
-                if (rri.dropRow) {
-                    rri.mapRow = -1;
+                if (rri.DropRow) {
+                    rri.MapRow = -1;
                     continue;
                 }
                 newrs[ii] = mRightSide[i];
-                rri.mapRow = ii;
+                rri.MapRow = ii;
                 /*Console.WriteLine("Row " + i + " maps to " + ii); */
                 for (j = 0; j != matrixSize; j++) {
                     var ri = mRowInfo[j];
-                    if (ri.type == RowInfo.ROW_CONST) {
-                        newrs[ii] -= ri.value * Matrix[i, j];
+                    if (ri.Type == RowInfo.ROW_CONST) {
+                        newrs[ii] -= ri.Value * Matrix[i, j];
                     } else {
-                        newmatx[ii, ri.mapCol] += Matrix[i, j];
+                        newmatx[ii, ri.MapCol] += Matrix[i, j];
                     }
                 }
                 ii++;
@@ -371,7 +366,7 @@ namespace Circuit {
             int moved = 0;
             for (i = 0; i != mWireInfoList.Count; i++) {
                 var wi = mWireInfoList[i];
-                var wire = wi.wire;
+                var wire = wi.Wire;
                 var cn1 = NodeList[wire.getNode(0)];  /* both ends of wire have same node # */
                 int j;
 
@@ -395,12 +390,12 @@ namespace Circuit {
                     bool notReady = (ce is WireElm) && !((WireElm)ce).hasWireInfo;
 
                     /* which post does this element connect to, if any? */
-                    if (pt.X == wire.x1 && pt.Y == wire.y1) {
+                    if (pt.X == wire.X1 && pt.Y == wire.Y1) {
                         neighbors0.Add(ce);
                         if (notReady) {
                             isReady0 = false;
                         }
-                    } else if (pt.X == wire.x2 && pt.Y == wire.y2) {
+                    } else if (pt.X == wire.X2 && pt.Y == wire.Y2) {
                         neighbors1.Add(ce);
                         if (notReady) {
                             isReady1 = false;
@@ -410,13 +405,13 @@ namespace Circuit {
 
                 /* does one of the posts have all information necessary to calculate current */
                 if (isReady0) {
-                    wi.neighbors = neighbors0;
-                    wi.post = 0;
+                    wi.Neighbors = neighbors0;
+                    wi.Post = 0;
                     wire.hasWireInfo = true;
                     moved = 0;
                 } else if (isReady1) {
-                    wi.neighbors = neighbors1;
-                    wi.post = 1;
+                    wi.Neighbors = neighbors1;
+                    wi.Post = 1;
                     wire.hasWireInfo = true;
                     moved = 0;
                 } else {
@@ -426,7 +421,7 @@ namespace Circuit {
                     mWireInfoList.Add(tmp);
                     moved++;
                     if (moved > mWireInfoList.Count * 2) {
-                        stop("wire loop detected", wire);
+                        Stop("wire loop detected", wire);
                         return false;
                     }
                 }
@@ -448,20 +443,19 @@ namespace Circuit {
                 /* look for bad connections, posts not connected to other elements which intersect
                 /* other elements' bounding boxes */
                 if (entry.Value == 1) {
-                    int j;
                     bool bad = false;
                     var cn = entry.Key;
-                    for (j = 0; j != mSim.elmList.Count && !bad; j++) {
+                    for (int j = 0; j != mSim.elmList.Count && !bad; j++) {
                         var ce = mSim.getElm(j);
                         if (ce is GraphicElm) {
                             continue;
                         }
                         /* does this post intersect elm's bounding box? */
-                        if (!ce.boundingBox.Contains(cn.X, cn.Y)) {
+                        if (!ce.BoundingBox.Contains(cn.X, cn.Y)) {
                             continue;
                         }
-                        int k;
                         /* does this post belong to the elm? */
+                        int k;
                         int pc = ce.getPostCount();
                         for (k = 0; k != pc; k++) {
                             if (ce.getPost(k).Equals(cn)) {
@@ -487,94 +481,89 @@ namespace Circuit {
             return NodeList[n];
         }
 
-        public void stop(string s, CircuitElm ce) {
-            StopMessage = s;
-            Matrix = null;  /* causes an exception */
-            StopElm = ce;
-            mSim.setSimRunning(false);
-            mSim.analyzeFlag = false;
-        }
-
         /* stamp independent voltage source #vs, from n1 to n2, amount v */
-        public void stampVoltageSource(int n1, int n2, int vs, double v) {
+        public void StampVoltageSource(int n1, int n2, int vs, double v) {
             int vn = NodeList.Count + vs;
-            stampMatrix(vn, n1, -1);
-            stampMatrix(vn, n2, 1);
-            stampRightSide(vn, v);
-            stampMatrix(n1, vn, 1);
-            stampMatrix(n2, vn, -1);
+            StampMatrix(vn, n1, -1);
+            StampMatrix(vn, n2, 1);
+            StampRightSide(vn, v);
+            StampMatrix(n1, vn, 1);
+            StampMatrix(n2, vn, -1);
         }
 
         /* use this if the amount of voltage is going to be updated in doStep(), by updateVoltageSource() */
-        public void stampVoltageSource(int n1, int n2, int vs) {
+        public void StampVoltageSource(int n1, int n2, int vs) {
             int vn = NodeList.Count + vs;
-            stampMatrix(vn, n1, -1);
-            stampMatrix(vn, n2, 1);
-            stampRightSide(vn);
-            stampMatrix(n1, vn, 1);
-            stampMatrix(n2, vn, -1);
+            StampMatrix(vn, n1, -1);
+            StampMatrix(vn, n2, 1);
+            StampRightSide(vn);
+            StampMatrix(n1, vn, 1);
+            StampMatrix(n2, vn, -1);
         }
 
         /* update voltage source in doStep() */
-        public void updateVoltageSource(int n1, int n2, int vs, double v) {
+        public void UpdateVoltageSource(int n1, int n2, int vs, double v) {
             int vn = NodeList.Count + vs;
-            stampRightSide(vn, v);
+            StampRightSide(vn, v);
         }
 
-        public void stampResistor(int n1, int n2, double r) {
+        public void StampResistor(int n1, int n2, double r) {
             double r0 = 1 / r;
             if (double.IsNaN(r0) || double.IsInfinity(r0)) {
                 Console.WriteLine("bad resistance " + r + " " + r0 + "\n");
-                int a = 0;
-                a /= a;
+                throw new Exception("bad resistance " + r + " " + r0);
             }
-            stampMatrix(n1, n1, r0);
-            stampMatrix(n2, n2, r0);
-            stampMatrix(n1, n2, -r0);
-            stampMatrix(n2, n1, -r0);
+            StampMatrix(n1, n1, r0);
+            StampMatrix(n2, n2, r0);
+            StampMatrix(n1, n2, -r0);
+            StampMatrix(n2, n1, -r0);
         }
 
-        public void stampConductance(int n1, int n2, double r0) {
-            stampMatrix(n1, n1, r0);
-            stampMatrix(n2, n2, r0);
-            stampMatrix(n1, n2, -r0);
-            stampMatrix(n2, n1, -r0);
+        public void StampConductance(int n1, int n2, double r0) {
+            StampMatrix(n1, n1, r0);
+            StampMatrix(n2, n2, r0);
+            StampMatrix(n1, n2, -r0);
+            StampMatrix(n2, n1, -r0);
         }
 
         /* current from cn1 to cn2 is equal to voltage from vn1 to 2, divided by g */
-        public void stampVCCurrentSource(int cn1, int cn2, int vn1, int vn2, double g) {
-            stampMatrix(cn1, vn1, g);
-            stampMatrix(cn2, vn2, g);
-            stampMatrix(cn1, vn2, -g);
-            stampMatrix(cn2, vn1, -g);
+        public void StampVCCurrentSource(int cn1, int cn2, int vn1, int vn2, double g) {
+            StampMatrix(cn1, vn1, g);
+            StampMatrix(cn2, vn2, g);
+            StampMatrix(cn1, vn2, -g);
+            StampMatrix(cn2, vn1, -g);
         }
 
-        public void stampCurrentSource(int n1, int n2, double i) {
-            stampRightSide(n1, -i);
-            stampRightSide(n2, i);
+        public void StampCurrentSource(int n1, int n2, double i) {
+            StampRightSide(n1, -i);
+            StampRightSide(n2, i);
         }
 
         /* stamp a current source from n1 to n2 depending on current through vs */
-        public void stampCCCS(int n1, int n2, int vs, double gain) {
+        public void StampCCCS(int n1, int n2, int vs, double gain) {
             int vn = NodeList.Count + vs;
-            stampMatrix(n1, vn, gain);
-            stampMatrix(n2, vn, -gain);
+            StampMatrix(n1, vn, gain);
+            StampMatrix(n2, vn, -gain);
         }
 
-        /* stamp value x in row i, column j, meaning that a voltage change
-        /* of dv in node j will increase the current into node i by x dv.
-        /* (Unless i or j is a voltage source node.) */
-        public void stampMatrix(int i, int j, double x) {
+        /// <summary>
+        /// <para>meaning that a voltage change of dv in node j will increase the current into node i by x dv.</para>
+        /// <para>(Unless i or j is a voltage source node.)</para>
+        /// </summary>
+        /// <param name="i">row</param>
+        /// <param name="j">column</param>
+        /// <param name="x">stamp value in row, column</param>
+        public void StampMatrix(int i, int j, double x) {
             if (i > 0 && j > 0) {
                 if (mCircuitNeedsMap) {
-                    i = mRowInfo[i - 1].mapRow;
+                    i = mRowInfo[i - 1].MapRow;
                     var ri = mRowInfo[j - 1];
-                    if (ri.type == RowInfo.ROW_CONST) {
+                    if (ri.Type == RowInfo.ROW_CONST) {
                         /*Console.WriteLine("Stamping constant " + i + " " + j + " " + x);*/
-                        mRightSide[i] -= x * ri.value;
+                        mRightSide[i] -= x * ri.Value;
                         return;
                     }
-                    j = ri.mapCol;
+                    j = ri.MapCol;
                     /*Console.WriteLine("stamping " + i + " " + j + " " + x);*/
                 } else {
                     i--;
@@ -586,10 +575,10 @@ namespace Circuit {
 
         /* stamp value x on the right side of row i, representing an
         /* independent current source flowing into node i */
-        public void stampRightSide(int i, double x) {
+        public void StampRightSide(int i, double x) {
             if (i > 0) {
                 if (mCircuitNeedsMap) {
-                    i = mRowInfo[i - 1].mapRow;
+                    i = mRowInfo[i - 1].MapRow;
                     /*Console.WriteLine("stamping " + i + " " + x);*/
                 } else {
                     i--;
@@ -599,23 +588,23 @@ namespace Circuit {
         }
 
         /* indicate that the value on the right side of row i changes in doStep() */
-        public void stampRightSide(int i) {
+        public void StampRightSide(int i) {
             /*Console.WriteLine("rschanges true " + (i-1)); */
             if (i > 0) {
-                mRowInfo[i - 1].rsChanges = true;
+                mRowInfo[i - 1].RightChanges = true;
             }
         }
 
         /* indicate that the values on the left side of row i change in doStep() */
-        public void stampNonLinear(int i) {
+        public void StampNonLinear(int i) {
             if (i > 0) {
-                mRowInfo[i - 1].lsChanges = true;
+                mRowInfo[i - 1].LeftChanges = true;
             }
         }
 
         /* we removed wires from the matrix to speed things up.  in order to display wire currents,
         /* we need to calculate them now. */
-        public void calcWireCurrents() {
+        public void CalcWireCurrents() {
             /* for debugging */
             /*for (int i = 0; i != mWireInfoList.Count; i++) {
                 mWireInfoList[i].wire.setCurrent(-1, 1.23);
@@ -623,21 +612,21 @@ namespace Circuit {
             for (int i = 0; i != mWireInfoList.Count; i++) {
                 var wi = mWireInfoList[i];
                 double cur = 0;
-                var p = wi.wire.getPost(wi.post);
-                for (int j = 0; j != wi.neighbors.Count; j++) {
-                    var ce = wi.neighbors[j];
+                var p = wi.Wire.getPost(wi.Post);
+                for (int j = 0; j != wi.Neighbors.Count; j++) {
+                    var ce = wi.Neighbors[j];
                     int n = ce.getNodeAtPoint(p.X, p.Y);
                     cur += ce.getCurrentIntoNode(n);
                 }
-                if (wi.post == 0) {
-                    wi.wire.setCurrent(-1, cur);
+                if (wi.Post == 0) {
+                    wi.Wire.setCurrent(-1, cur);
                 } else {
-                    wi.wire.setCurrent(-1, -cur);
+                    wi.Wire.setCurrent(-1, -cur);
                 }
             }
         }
 
-        public void analyzeCircuit() {
+        public void AnalyzeCircuit() {
             bool debug = false;
             var elmList = mSim.elmList;
             if (elmList.Count == 0) {
@@ -683,7 +672,7 @@ namespace Circuit {
                 NodeList.Add(cn);
                 /* update node map */
                 if (mNodeMap.ContainsKey(pt)) {
-                    mNodeMap[pt].node = 0;
+                    mNodeMap[pt].Node = 0;
                 } else {
                     mNodeMap.Add(pt, new NodeMapEntry(0));
                 }
@@ -722,7 +711,7 @@ namespace Circuit {
                     /* (we don't allocate nodes before this because changing the allocation order
                     /* of nodes changes circuit behavior and breaks backward compatibility;
                     /* the code below to connect unconnected nodes may connect a different node to ground) */
-                    if (!ccln || cln.node == -1) {
+                    if (!ccln || cln.Node == -1) {
                         var cn = new CircuitNode();
                         var cnl = new CircuitNodeLink();
                         cnl.num = j;
@@ -730,13 +719,13 @@ namespace Circuit {
                         cn.links.Add(cnl);
                         ce.setNode(j, NodeList.Count);
                         if (ccln) {
-                            cln.node = NodeList.Count;
+                            cln.Node = NodeList.Count;
                         } else {
                             mNodeMap.Add(pt, new NodeMapEntry(NodeList.Count));
                         }
                         NodeList.Add(cn);
                     } else {
-                        int n = cln.node;
+                        int n = cln.Node;
                         var cnl = new CircuitNodeLink();
                         cnl.num = j;
                         cnl.elm = ce;
@@ -848,7 +837,7 @@ namespace Circuit {
                 for (i = 0; i != NodeList.Count; i++) {
                     if (!closure[i] && !getCircuitNode(i)._internal) {
                         Console.WriteLine("node " + i + " unconnected");
-                        stampResistor(0, i, 1e8);
+                        StampResistor(0, i, 1e8);
                         closure[i] = true;
                         changed = true;
                         break;
@@ -896,7 +885,7 @@ namespace Circuit {
                     if ((ce is VoltageElm) || (ce.isWire() && !(ce is WireElm))) {
                         var fpi = new FindPathInfo(FindPathInfo.VOLTAGE, ce, ce.getNode(1), elmList, NodeList.Count);
                         if (fpi.findPath(ce.getNode(0))) {
-                            stop("Voltage source/wire loop with no resistance!", ce);
+                            Stop("Voltage source/wire loop with no resistance!", ce);
                             return;
                         }
                     }
@@ -905,7 +894,7 @@ namespace Circuit {
                     var fpi = new FindPathInfo(FindPathInfo.VOLTAGE, ce, ce.getNode(0), elmList, NodeList.Count);
                     for (j = 1; j < ce.getPostCount(); j++) {
                         if (ce.getConnection(0, j) && fpi.findPath(ce.getNode(j))) {
-                            stop("Voltage source/wire loop with no resistance!", ce);
+                            Stop("Voltage source/wire loop with no resistance!", ce);
                             return;
                         }
                     }
@@ -915,7 +904,7 @@ namespace Circuit {
                 if ((ce is RailElm) || (ce is LogicInputElm)) {
                     var fpi = new FindPathInfo(FindPathInfo.VOLTAGE, ce, ce.getNode(0), elmList, NodeList.Count);
                     if (fpi.findPath(0)) {
-                        stop("Path to ground with no resistance!", ce);
+                        Stop("Path to ground with no resistance!", ce);
                         return;
                     }
                 }
@@ -934,7 +923,7 @@ namespace Circuit {
                         /* give an error. */
                         fpi = new FindPathInfo(FindPathInfo.CAP_V, ce, ce.getNode(1), elmList, NodeList.Count);
                         if (fpi.findPath(ce.getNode(0))) {
-                            stop("Capacitor loop with no resistance!", ce);
+                            Stop("Capacitor loop with no resistance!", ce);
                             return;
                         }
                     }
@@ -964,8 +953,8 @@ namespace Circuit {
             /* if a matrix is linear, we can do the lu_factor here instead of
             /* needing to do it every frame */
             if (!CircuitNonLinear) {
-                if (!lu_factor(Matrix, mMatrixSize, mPermute)) {
-                    stop("Singular matrix!", null);
+                if (!luFactor(Matrix, mMatrixSize, mPermute)) {
+                    Stop("Singular matrix!", null);
                     return;
                 }
             }
@@ -985,7 +974,7 @@ namespace Circuit {
             }
         }
 
-        public bool run(bool debugprint) {
+        public bool Run(bool debugprint) {
             const int subiterCount = 5000;
             int i, j, k, subiter;
 
@@ -1016,7 +1005,7 @@ namespace Circuit {
                     for (i = 0; i != mMatrixSize; i++) {
                         double x = Matrix[i, j];
                         if (double.IsNaN(x) || double.IsInfinity(x)) {
-                            stop("nan/infinite matrix!", null);
+                            Stop("nan/infinite matrix!", null);
                             return false;
                         }
                     }
@@ -1036,20 +1025,20 @@ namespace Circuit {
                     if (Converged && subiter > 0) {
                         break;
                     }
-                    if (!lu_factor(Matrix, mMatrixSize, mPermute)) {
-                        stop("Singular matrix!", null);
+                    if (!luFactor(Matrix, mMatrixSize, mPermute)) {
+                        Stop("Singular matrix!", null);
                         return false;
                     }
                 }
-                lu_solve(Matrix, mMatrixSize, mPermute, mRightSide);
+                luSolve(Matrix, mMatrixSize, mPermute, mRightSide);
 
                 for (j = 0; j != mMatrixFullSize; j++) {
                     var ri = mRowInfo[j];
                     double res = 0;
-                    if (ri.type == RowInfo.ROW_CONST) {
-                        res = ri.value;
+                    if (ri.Type == RowInfo.ROW_CONST) {
+                        res = ri.Value;
                     } else {
-                        res = mRightSide[ri.mapCol];
+                        res = mRightSide[ri.MapCol];
                     }
                     /*Console.WriteLine(j + " " + res + " " + ri.type + " " + ri.mapCol);*/
                     if (double.IsNaN(res)) {
@@ -1079,11 +1068,19 @@ namespace Circuit {
             }
 
             if (subiter == subiterCount) {
-                stop("Convergence failed!", null);
+                Stop("Convergence failed!", null);
                 return false;
             }
 
             return true;
+        }
+
+        public void Stop(string s, CircuitElm ce) {
+            StopMessage = s;
+            Matrix = null;  /* causes an exception */
+            StopElm = ce;
+            mSim.setSimRunning(false);
+            mSim.analyzeFlag = false;
         }
     }
 }

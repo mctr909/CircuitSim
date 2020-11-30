@@ -17,46 +17,42 @@ namespace Circuit.Elements {
         static readonly Pen PEN_HANDLE = new Pen(Color.Cyan, 1.0f);
 
         const int colorScaleCount = 64;
-        static Color[] colorScale;
         #endregion
 
-        #region static variable
-        public static Color whiteColor;
-        public static Color selectColor;
-        public static Color lightGrayColor;
-
-        public static Pen PEN_LINE = new Pen(Color.White, 1.0f) {
+        #region property
+        public static double voltageRange { get; set; } = 5;
+        public static Color whiteColor { get; set; }
+        public static Color selectColor { get; set; }
+        public static Color lightGrayColor { get; set; }
+        protected static Pen PEN_LINE { get; set; } = new Pen(Color.White, 1.0f) {
             StartCap = LineCap.Triangle,
             EndCap = LineCap.Triangle
         };
-
-        public static Pen PEN_THICK_LINE = new Pen(Color.White, 2.0f) {
+        protected static Pen PEN_THICK_LINE { get; set; } = new Pen(Color.White, 2.0f) {
             StartCap = LineCap.Triangle,
             EndCap = LineCap.Triangle
         };
+        #endregion
+
+        static Color[] mColorScale;
 
         static Pen mPenLine = new Pen(Color.White, 2.0f) {
             StartCap = LineCap.Triangle,
             EndCap = LineCap.Triangle
         };
 
-        static Pen mGradLine = new Pen(Color.White, 2.0f) {
-            StartCap = LineCap.Triangle,
-            EndCap = LineCap.Triangle
-        };
-        #endregion
-
         public static void setColorScale() {
+            mColorScale = new Color[colorScaleCount];
             for (int i = 0; i != colorScaleCount; i++) {
                 double v = i * 2.0 / colorScaleCount - 1;
                 if (v < 0) {
                     int n1 = (int)(128 * -v) + 127;
                     int n2 = (int)(127 * (1 + v));
-                    colorScale[i] = Color.FromArgb(n1, n2, n2);
+                    mColorScale[i] = Color.FromArgb(n1, n2, n2);
                 } else {
                     int n1 = (int)(128 * v) + 127;
                     int n2 = (int)(127 * (1 - v));
-                    colorScale[i] = Color.FromArgb(n2, n1, n2);
+                    mColorScale[i] = Color.FromArgb(n2, n1, n2);
                 }
             }
         }
@@ -71,15 +67,15 @@ namespace Circuit.Elements {
 
         public void drawHandles(Graphics g) {
             if (lastHandleGrabbed == -1) {
-                g.FillRectangle(PEN_HANDLE.Brush, x1 - 3, y1 - 3, 7, 7);
+                g.FillRectangle(PEN_HANDLE.Brush, X1 - 3, Y1 - 3, 7, 7);
             } else if (lastHandleGrabbed == 0) {
-                g.FillRectangle(PEN_HANDLE.Brush, x1 - 4, y1 - 4, 9, 9);
+                g.FillRectangle(PEN_HANDLE.Brush, X1 - 4, Y1 - 4, 9, 9);
             }
             if (numHandles == 2) {
                 if (lastHandleGrabbed == -1) {
-                    g.FillRectangle(PEN_HANDLE.Brush, x2 - 3, y2 - 3, 7, 7);
+                    g.FillRectangle(PEN_HANDLE.Brush, X2 - 3, Y2 - 3, 7, 7);
                 } else if (lastHandleGrabbed == 1) {
-                    g.FillRectangle(PEN_HANDLE.Brush, x2 - 4, y2 - 4, 9, 9);
+                    g.FillRectangle(PEN_HANDLE.Brush, X2 - 4, Y2 - 4, 9, 9);
                 }
             }
         }
@@ -167,9 +163,9 @@ namespace Circuit.Elements {
 
         protected void draw2Leads(Graphics g) {
             /* draw first lead */
-            drawThickLine(g, getVoltageColor(volts[0]), point1, lead1);
+            drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
             /* draw second lead */
-            drawThickLine(g, getVoltageColor(volts[1]), lead2, point2);
+            drawThickLine(g, getVoltageColor(Volts[1]), mLead2, mPoint2);
         }
 
         /// <summary>
@@ -226,19 +222,19 @@ namespace Circuit.Elements {
             int ya = (int)textSize.Width;
             int xc, yc;
             if (typeof(RailElm) == GetType() || typeof(SweepElm) == GetType()) {
-                xc = x2;
-                yc = y2;
+                xc = X2;
+                yc = Y2;
             } else {
-                xc = (x2 + x1) / 2;
-                yc = (y2 + y1) / 2;
+                xc = (X2 + X1) / 2;
+                yc = (Y2 + Y1) / 2;
             }
-            int dpx = (int)(dpx1 * hs);
-            int dpy = (int)(dpy1 * hs);
+            int dpx = (int)(mUnitPx1 * hs);
+            int dpy = (int)(mUnitPy1 * hs);
             if (dpx == 0) {
                 g.DrawString(s, unitsFont, BRUSH_TEXT, xc - ya / 2, yc - Math.Abs(dpy) - 2 - ya);
             } else {
                 int xx = xc + Math.Abs(dpx) + 2;
-                if (typeof(VoltageElm) == GetType() || (x1 < x2 && y1 > y2)) {
+                if (typeof(VoltageElm) == GetType() || (X1 < X2 && Y1 > Y2)) {
                     xx = xc - (int)(textSize.Width + Math.Abs(dpx) + 2);
                 }
                 g.DrawString(s, unitsFont, BRUSH_TEXT, xx, yc + dpy);
@@ -256,12 +252,12 @@ namespace Circuit.Elements {
             float h = w * 1.2f;
             float wh = w * 0.5f;
             float hh = h * 0.5f;
-            float th = (float)(theta(lead1, lead2) * 180 / pi);
+            float th = (float)(theta(mLead1, mLead2) * 180 / pi);
             for (int loop = 0; loop != loopCt; loop++) {
-                interpPoint(lead1, lead2, ref ps1, (loop + 0.5) / loopCt, 0);
+                interpPoint(mLead1, mLead2, ref ps1, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
-                mGradLine.Color = getVoltageColor(v);
-                g.DrawArc(mGradLine, ps1.X - wh, ps1.Y - hh, w, h, th, -180);
+                mPenLine.Color = getVoltageColor(v);
+                g.DrawArc(mPenLine, ps1.X - wh, ps1.Y - hh, w, h, th, -180);
             }
         }
 

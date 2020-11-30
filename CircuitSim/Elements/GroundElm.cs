@@ -12,23 +12,23 @@ namespace Circuit.Elements {
 
         public override void draw(Graphics g) {
             PEN_THICK_LINE.Color = getVoltageColor(0);
-            drawThickLine(g, point1, point2);
+            drawThickLine(g, mPoint1, mPoint2);
             for (int i = 0; i != 3; i++) {
                 int a = 10 - i * 4;
                 int b = i * 5; /* -10; */
-                interpPoint(point1, point2, ref ps1, ref ps2, 1 + b / dn, a);
+                interpPoint(mPoint1, mPoint2, ref ps1, ref ps2, 1 + b / mElmLen, a);
                 drawThickLine(g, ps1, ps2);
             }
             doDots(g);
-            interpPoint(point1, point2, ref ps2, 1 + 11.0 / dn);
-            setBbox(point1, ps2, 11);
+            interpPoint(mPoint1, mPoint2, ref ps2, 1 + 11.0 / mElmLen);
+            setBbox(mPoint1, ps2, 11);
             drawPosts(g);
         }
 
-        public override void setCurrent(int x, double c) { current = -c; }
+        public override void setCurrent(int x, double c) { mCurrent = -c; }
 
         public override void stamp() {
-            cir.stampVoltageSource(0, nodes[0], voltSource, 0);
+            cir.StampVoltageSource(0, Nodes[0], mVoltSource, 0);
         }
 
         public override double getVoltageDiff() { return 0; }
@@ -44,6 +44,6 @@ namespace Circuit.Elements {
 
         public override DUMP_ID getShortcut() { return DUMP_ID.GROUND; }
 
-        public override double getCurrentIntoNode(int n) { return -current; }
+        public override double getCurrentIntoNode(int n) { return -mCurrent; }
     }
 }
