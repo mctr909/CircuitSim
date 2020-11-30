@@ -1316,8 +1316,10 @@ namespace Circuit {
 
             mPenLine.Color = color;
 
-            int ox = -1, oy = -1;
+            int ox = -1;
+            int oy = -1;
             for (i = 0; i != BoundingBox.Width; i++) {
+                int nx = x + i;
                 int ip = (i + ipa) & (mScopePointCount - 1);
                 int minvy = (int)(gridMult * (minV[ip] - gridMid));
                 int maxvy = (int)(gridMult * (maxV[ip] - gridMid));
@@ -1332,19 +1334,19 @@ namespace Circuit {
                         if (minvy == oy && maxvy == oy) {
                             continue;
                         }
-                        g.DrawLine(mPenLine, ox, y - oy, x + i - 1, y - oy);
+                        g.DrawLine(mPenLine, ox, y - oy, nx, y - oy);
                         ox = oy = -1;
                     }
                     if (minvy == maxvy) {
-                        ox = x + i;
+                        ox = nx;
                         oy = minvy;
                         continue;
                     }
-                    g.DrawLine(mPenLine, x + i, y - minvy, x + i, y - maxvy - 1);
+                    g.DrawLine(mPenLine, nx, y - minvy, nx, y - maxvy);
                 }
             } /* for (i=0...) */
             if (ox != -1) {
-                g.DrawLine(mPenLine, ox, y - oy, x + i - 1, y - oy); /* Horizontal */
+                g.DrawLine(mPenLine, ox, y - oy, x + i, y - oy); /* Horizontal */
             }
         }
 
