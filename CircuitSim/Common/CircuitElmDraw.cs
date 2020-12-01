@@ -114,6 +114,10 @@ namespace Circuit.Elements {
             g.DrawPolygon(PenThickLine, p);
         }
 
+        protected static void drawPolygon(Graphics g, Point[] p) {
+            g.DrawPolygon(PenLine, p);
+        }
+
         protected static void fillPolygon(Graphics g, Point[] p) {
             g.FillPolygon(PenThickLine.Brush, p);
         }
@@ -259,6 +263,21 @@ namespace Circuit.Elements {
                 mPenLine.Color = getVoltageColor(v);
                 g.DrawArc(mPenLine, ps1.X - wh, ps1.Y - hh, w, h, th, -180);
             }
+        }
+
+        protected List<Point> getSchmittPolygon(float gsize, float ctr) {
+            var pts = new Point[6];
+            float hs = 3 * gsize;
+            float h1 = 3 * gsize;
+            float h2 = h1 * 2;
+            double len = distance(mLead1, mLead2);
+            pts[0] = interpPoint(mLead1, mLead2, ctr - h2 / len, hs);
+            pts[1] = interpPoint(mLead1, mLead2, ctr + h1 / len, hs);
+            pts[2] = interpPoint(mLead1, mLead2, ctr + h1 / len, -hs);
+            pts[3] = interpPoint(mLead1, mLead2, ctr + h2 / len, -hs);
+            pts[4] = interpPoint(mLead1, mLead2, ctr - h1 / len, -hs);
+            pts[5] = interpPoint(mLead1, mLead2, ctr - h1 / len, hs);
+            return createPolygon(pts);
         }
 
         #region Math utils

@@ -34,11 +34,11 @@ namespace Circuit {
     }
 
     class ScopeCheckBox : CheckBox {
-        public SCOPE_MENU menuCmd;
+        public SCOPE_MENU Menu;
         public ScopeCheckBox(string text, SCOPE_MENU menu) : base() {
             AutoSize = true;
             Text = text;
-            menuCmd = menu;
+            Menu = menu;
         }
     }
 

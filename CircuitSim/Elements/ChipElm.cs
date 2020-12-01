@@ -16,14 +16,14 @@ namespace Circuit.Elements {
         int csize;
         int cspc;
         int cspc2;
-        int bits;
+        protected int bits;
 
         Point[] rectPoints;
         Point[] clockPoints;
         public Pin[] pins;
         public int sizeX;
         public int sizeY;
-        bool lastClock;
+        protected bool lastClock;
 
         public class Pin {
             ChipElm mElm;
@@ -131,7 +131,7 @@ namespace Circuit.Elements {
 
         public ChipElm(int xx, int yy) : base(xx, yy) {
             if (needsBits()) {
-                bits = (typeof(_RingCounterElm) == GetType()) ? 10 : 4;
+                bits = (this is RingCounterElm) ? 10 : 4;
             }
             mNoDiagonal = true;
             setupPins();
@@ -189,21 +189,21 @@ namespace Circuit.Elements {
                     PenThickLine.Color = LightGrayColor;
                     drawThickCircle(g, p.bubbleX, p.bubbleY, 3);
                 }
-                PenThickLine.Color  = p.selected ? SelectColor : WhiteColor;
-                int fsz = 10 * csize;
+                PenThickLine.Color  = p.selected ? SelectColor : LightGrayColor;
+                int fsz = 12 * csize;
+                var font = FONT_TEXT;
                 while (true) {
-                    int sw = (int)g.MeasureString(p.text, FONT_TEXT).Width;
+                    int sw = (int)g.MeasureString(p.text, font).Width;
                     // scale font down if it's too big
-                    Font f2;
-                    if (sw > 10 * csize) {
-                        fsz -= 2;
-                        f2 = new Font("SansSerif", fsz);
+                    if (sw > 12 * csize) {
+                        fsz--;
+                        font = new Font(FONT_TEXT.Name, fsz);
                         continue;
                     }
-                    g.DrawString(p.text, FONT_TEXT, BRUSH_TEXT, p.textloc.X - sw / 2, p.textloc.Y);
+                    g.DrawString(p.text, font, BRUSH_TEXT, p.textloc.X - sw / 2, p.textloc.Y);
                     if (p.lineOver) {
                         int ya = p.textloc.Y;
-                        drawLine(g, p.textloc.X - sw / 2, ya, p.textloc.X + sw / 2, ya);
+                        drawThickLine(g, p.textloc.X - sw / 2, ya, p.textloc.X + sw / 2, ya);
                     }
                     break;
                 }
@@ -330,7 +330,7 @@ namespace Circuit.Elements {
             }
         }
 
-        void execute() { }
+        protected virtual void execute() { }
 
         public override void doStep() {
             int i;

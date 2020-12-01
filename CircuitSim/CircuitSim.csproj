@@ -50,12 +50,18 @@
     <Compile Include="CirSimMain.cs" />
     <Compile Include="CirSimVariable.cs" />
     <Compile Include="Common\CircuitElmDraw.cs" />
+    <Compile Include="Elements\GateElm.cs" />
     <Compile Include="Elements\SweepElm.cs" />
     <Compile Include="ExpansionElements\ACRailElm.cs" />
     <Compile Include="ExpansionElements\ACVoltageElm.cs" />
+    <Compile Include="ExpansionElements\AndGateElm.cs" />
     <Compile Include="ExpansionElements\ClockElm.cs" />
     <Compile Include="ExpansionElements\DCVoltageElm.cs" />
+    <Compile Include="ExpansionElements\NandGateElm.cs" />
+    <Compile Include="ExpansionElements\NorGateElm.cs" />
+    <Compile Include="ExpansionElements\OrGateElm.cs" />
     <Compile Include="ExpansionElements\PushSwitchElm.cs" />
+    <Compile Include="ExpansionElements\XorGateElm.cs" />
     <Compile Include="Forms\EditCompositeModelDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -99,7 +105,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Common\StringTokenizer.cs" />
-    <Compile Include="ExpansionElements\_AudioOutputElm.cs" />
+    <Compile Include="Elements\AudioOutputElm.cs" />
     <Compile Include="Elements\CapacitorElm.cs" />
     <Compile Include="Common\CircuitElm.cs" />
     <Compile Include="CirSimForm.cs" />
@@ -118,7 +124,7 @@
     <Compile Include="Elements\PotElm.cs" />
     <Compile Include="Elements\ProbeElm.cs" />
     <Compile Include="Elements\RailElm.cs" />
-    <Compile Include="ExpansionElements\_RingCounterElm.cs" />
+    <Compile Include="Elements\RingCounterElm.cs" />
     <Compile Include="Elements\Switch2Elm.cs" />
     <Compile Include="Elements\SwitchElm.cs" />
     <Compile Include="Elements\TransistorElm.cs" />

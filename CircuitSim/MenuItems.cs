@@ -341,7 +341,13 @@ namespace Circuit {
         PROBE = '>',
         LOGIC_I = 'L',
         LOGIC_O = 'M',
+        AND_GATE = 150,
+        NAND_GATE = 151,
+        OR_GATE = 152,
+        NOR_GATE = 153,
+        XOR_GATE = 154,
         LED = 162,
+        RING_COUNTER = 163,
         SWEEP = 170,
         VAR_RAIL = 172,
         POT = 174,
@@ -646,23 +652,24 @@ namespace Circuit {
 
             #region Logic Gates
             var gateMenuBar = new ToolStripMenuItem();
-            gateMenuBar.Text = "Logic Gates(L)";
+            gateMenuBar.Text = "論理回路(L)";
             gateMenuBar.Font = menuFont;
-            addElementItem(gateMenuBar, "Add Logic Input", MENU_ITEM.LogicInputElm);
-            addElementItem(gateMenuBar, "Add Logic Output", MENU_ITEM.LogicOutputElm);
             //addElementItem(gateMenuBar, "Add Inverter", ITEM.InverterElm);
-            //addElementItem(gateMenuBar, "Add NAND Gate", ITEM.NandGateElm);
-            //addElementItem(gateMenuBar, "Add NOR Gate", ITEM.NorGateElm);
-            //addElementItem(gateMenuBar, "Add AND Gate", ITEM.AndGateElm);
-            //addElementItem(gateMenuBar, "Add OR Gate", ITEM.OrGateElm);
-            //addElementItem(gateMenuBar, "Add XOR Gate", ITEM.XorGateElm);
+            addElementItem(gateMenuBar, "AND", MENU_ITEM.AndGateElm);
+            addElementItem(gateMenuBar, "NAND", MENU_ITEM.NandGateElm);
+            addElementItem(gateMenuBar, "OR", MENU_ITEM.OrGateElm);
+            addElementItem(gateMenuBar, "NOR", MENU_ITEM.NorGateElm);
+            addElementItem(gateMenuBar, "ExOR", MENU_ITEM.XorGateElm);
+            gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(gateMenuBar, "入力", MENU_ITEM.LogicInputElm);
+            addElementItem(gateMenuBar, "出力", MENU_ITEM.LogicOutputElm);
             mainMenuBar.Items.Add(gateMenuBar);
             #endregion
 
             #region Digital Chips
-            //var chipMenuBar = new ToolStripMenuItem();
-            //chipMenuBar.Text = "Digital Chips(D)";
-            //chipMenuBar.Font = menuFont;
+            var chipMenuBar = new ToolStripMenuItem();
+            chipMenuBar.Text = "Digital Chips(D)";
+            chipMenuBar.Font = menuFont;
             //addMenuItem(chipMenuBar, "Add D Flip-Flop", ITEM.DFlipFlopElm);
             //addMenuItem(chipMenuBar, "Add JK Flip-Flop", ITEM.JKFlipFlopElm);
             //addMenuItem(chipMenuBar, "Add T Flip-Flop", ITEM.TFlipFlopElm);
@@ -673,14 +680,14 @@ namespace Circuit {
             //addMenuItem(chipMenuBar, "Add SIPO shift register", ITEM.SipoShiftElm);
             //addMenuItem(chipMenuBar, "Add PISO shift register", ITEM.PisoShiftElm);
             //addMenuItem(chipMenuBar, "Add Counter", ITEM.CounterElm);
-            //addMenuItem(chipMenuBar, "Add Ring Counter", ITEM.DecadeElm);
+            addElementItem(chipMenuBar, "Add Ring Counter", MENU_ITEM.DecadeElm);
             //addMenuItem(chipMenuBar, "Add Latch", ITEM.LatchElm);
             //addMenuItem(chipMenuBar, "Add Sequence generator", ITEM.SeqGenElm);
             //addMenuItem(chipMenuBar, "Add Full Adder", ITEM.FullAdderElm);
             //addMenuItem(chipMenuBar, "Add Half Adder", ITEM.HalfAdderElm);
             //addMenuItem(chipMenuBar, "Add Custom Logic", ITEM.UserDefinedLogicElm); // don't change this, it will break people's saved shortcuts
             //addMenuItem(chipMenuBar, "Add Static RAM", ITEM.SRAMElm);
-            //mainMenuBar.Items.Add(chipMenuBar);
+            mainMenuBar.Items.Add(chipMenuBar);
             #endregion
 
             #region Analog and Hybrid Chips
@@ -894,16 +901,16 @@ namespace Circuit {
                 return new LogicOutputElm(x1, y1);
             case MENU_ITEM.InverterElm:
                 return null; //(CircuitElm)new InverterElm(x1, y1);
-            case MENU_ITEM.NandGateElm:
-                return null; //(CircuitElm)new NandGateElm(x1, y1);
-            case MENU_ITEM.NorGateElm:
-                return null; //(CircuitElm)new NorGateElm(x1, y1);
             case MENU_ITEM.AndGateElm:
-                return null; //(CircuitElm)new AndGateElm(x1, y1);
+                return new AndGateElm(x1, y1);
+            case MENU_ITEM.NandGateElm:
+                return new NandGateElm(x1, y1);
             case MENU_ITEM.OrGateElm:
-                return null; //(CircuitElm)new OrGateElm(x1, y1);
+                return new OrGateElm(x1, y1);
+            case MENU_ITEM.NorGateElm:
+                return new NorGateElm(x1, y1);
             case MENU_ITEM.XorGateElm:
-                return null; //(CircuitElm)new XorGateElm(x1, y1);
+                return new XorGateElm(x1, y1);
             #endregion
 
             #region Digital Chips
@@ -931,7 +938,7 @@ namespace Circuit {
             /* if you take out RingCounterElm, it will break subcircuits */
             case MENU_ITEM.DecadeElm:
             case MENU_ITEM.RingCounterElm:
-                return null; //(CircuitElm)new RingCounterElm(x1, y1);
+                return new RingCounterElm(x1, y1);
             case MENU_ITEM.LatchElm:
                 return null; //(CircuitElm)new LatchElm(x1, y1);
             case MENU_ITEM.SeqGenElm:
@@ -997,11 +1004,11 @@ namespace Circuit {
             case DUMP_ID.WIRE: return new WireElm(x1, y1, x2, y2, f, st);
             //case 'x': return new TextElm(x1, y1, x2, y2, f, st);
             //case 'z': return new ZenerElm(x1, y1, x2, y2, f, st);
-            //case 150: return new AndGateElm(x1, y1, x2, y2, f, st);
-            //case 151: return new NandGateElm(x1, y1, x2, y2, f, st);
-            //case 152: return new OrGateElm(x1, y1, x2, y2, f, st);
-            //case 153: return new NorGateElm(x1, y1, x2, y2, f, st);
-            //case 154: return new XorGateElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.AND_GATE: return new AndGateElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.NAND_GATE: return new NandGateElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.OR_GATE: return new OrGateElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.NOR_GATE: return new NorGateElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.XOR_GATE: return new XorGateElm(x1, y1, x2, y2, f, st);
             //case 155: return new DFlipFlopElm(x1, y1, x2, y2, f, st);
             //case 156: return new JKFlipFlopElm(x1, y1, x2, y2, f, st);
             //case 157: return new SevenSegElm(x1, y1, x2, y2, f, st);
@@ -1010,7 +1017,7 @@ namespace Circuit {
             //case 160: return new AnalogSwitch2Elm(x1, y1, x2, y2, f, st);
             //case 161: return new PhaseCompElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.LED: return new LEDElm(x1, y1, x2, y2, f, st);
-            //case 163: return new RingCounterElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.RING_COUNTER: return new RingCounterElm(x1, y1, x2, y2, f, st);
             //case 164: return new CounterElm(x1, y1, x2, y2, f, st);
             //case 165: return new TimerElm(x1, y1, x2, y2, f, st);
             //case 166: return new DACElm(x1, y1, x2, y2, f, st);

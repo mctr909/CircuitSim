@@ -347,7 +347,7 @@ namespace Circuit {
 
         void onValueChange(object sender) {
             var cb = (ScopeCheckBox)sender;
-            scope.handleMenu(cb.menuCmd, cb.Checked);
+            scope.handleMenu(cb.Menu, cb.Checked);
             updateUI();
         }
     }
