@@ -38,7 +38,7 @@ namespace Circuit.Elements {
 
         public override void setPoints() {
             base.setPoints();
-            mLead1 = interpPoint(mPoint1, mPoint2, 1 - 12 / mElmLen);
+            mLead1 = interpPoint(mPoint1, mPoint2, 1 - 12 / mLen);
         }
 
         public override void draw(Graphics g) {

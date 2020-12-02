@@ -10,7 +10,7 @@ namespace Circuit.Elements {
         public CircuitElm elm;
     }
 
-    class CompositeElm : CircuitElm {
+    abstract class CompositeElm : CircuitElm {
         /* need to use escape() instead of converting spaces to _'s so composite elements can be nested */
         protected const int FLAG_ESCAPE = 1;
 
@@ -44,7 +44,7 @@ namespace Circuit.Elements {
             return dumpElements();
         }
 
-        protected override DUMP_ID getDumpType() { return DUMP_ID.INVALID; }
+        protected override abstract DUMP_ID getDumpType();
 
         protected string dumpElements() {
             string dumpStr = "";

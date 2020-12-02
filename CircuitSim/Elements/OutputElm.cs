@@ -45,7 +45,7 @@ namespace Circuit.Elements {
             if (this == Sim.plotYElm) {
                 txt = "Y";
             }
-            interpPoint(mPoint1, mPoint2, ref mLead1, 1 - ((int)g.MeasureString(txt, font).Width / 2 + 8) / mElmLen);
+            interpPoint(mPoint1, mPoint2, ref mLead1, 1 - ((int)g.MeasureString(txt, font).Width / 2 + 8) / mLen);
             setBbox(mPoint1, mLead1, 0);
             drawCenteredText(g, txt, X2, Y2, true);
             PenThickLine.Color = getVoltageColor(Volts[0]);

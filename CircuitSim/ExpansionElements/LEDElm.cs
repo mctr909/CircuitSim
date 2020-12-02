@@ -42,8 +42,8 @@ namespace Circuit.Elements {
         public override void setPoints() {
             base.setPoints();
             int cr = 12;
-            ledLead1 = interpPoint(mPoint1, mPoint2, .5 - cr / mElmLen);
-            ledLead2 = interpPoint(mPoint1, mPoint2, .5 + cr / mElmLen);
+            ledLead1 = interpPoint(mPoint1, mPoint2, .5 - cr / mLen);
+            ledLead2 = interpPoint(mPoint1, mPoint2, .5 + cr / mLen);
             ledCenter = interpPoint(mPoint1, mPoint2, .5);
         }
 

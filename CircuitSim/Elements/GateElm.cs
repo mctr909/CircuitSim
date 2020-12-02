@@ -78,17 +78,17 @@ namespace Circuit.Elements {
         public override void setPoints() {
             base.setPoints();
             inputStates = new bool[inputCount];
-            if (mElmLen > 150 && this == Sim.dragElm) {
+            if (mLen > 150 && this == Sim.dragElm) {
                 setSize(2);
             }
             int hs = gheight;
             int i;
             ww = gwidth2;
-            if (ww > mElmLen / 2) {
-                ww = (int)(mElmLen / 2);
+            if (ww > mLen / 2) {
+                ww = (int)(mLen / 2);
             }
-            if (isInverting() && ww + 8 > mElmLen / 2) {
-                ww = (int)(mElmLen / 2 - 8);
+            if (isInverting() && ww + 8 > mLen / 2) {
+                ww = (int)(mLen / 2 - 8);
             }
             calcLeads(ww * 2);
             inPosts = new Point[inputCount];

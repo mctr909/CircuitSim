@@ -111,15 +111,15 @@ namespace Circuit.Elements {
             if (offset == 0) {
                 offset = Sim.gridSize;
             }
-            mElmLen = distance(mPoint1, mPoint2);
+            mLen = distance(mPoint1, mPoint2);
             int bodyLen = 32;
             calcLeads(bodyLen);
             position = slider.Value * .0099 + .005;
             int soff = (int)((position - .5) * bodyLen);
             post3 = interpPoint(mPoint1, mPoint2, .5, offset);
-            corner2 = interpPoint(mPoint1, mPoint2, soff / mElmLen + .5, offset);
-            arrowPoint = interpPoint(mPoint1, mPoint2, soff / mElmLen + .5, 8 * Math.Sign(offset));
-            midpoint = interpPoint(mPoint1, mPoint2, soff / mElmLen + .5);
+            corner2 = interpPoint(mPoint1, mPoint2, soff / mLen + .5, offset);
+            arrowPoint = interpPoint(mPoint1, mPoint2, soff / mLen + .5, 8 * Math.Sign(offset));
+            midpoint = interpPoint(mPoint1, mPoint2, soff / mLen + .5);
             double clen = Math.Abs(offset) - 8;
             interpPoint(corner2, arrowPoint, ref arrow1, ref arrow2, (clen - 8) / clen, 8);
         }

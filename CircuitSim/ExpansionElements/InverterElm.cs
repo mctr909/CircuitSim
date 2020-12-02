@@ -53,20 +53,20 @@ namespace Circuit.Elements {
             base.setPoints();
             int hs = 16;
             int ww = 16;
-            if (ww > mElmLen / 2) {
-                ww = (int)(mElmLen / 2);
+            if (ww > mLen / 2) {
+                ww = (int)(mLen / 2);
             }
-            mLead1 = interpPoint(mPoint1, mPoint2, .5 - ww / mElmLen);
-            mLead2 = interpPoint(mPoint1, mPoint2, .5 + (ww + 2) / mElmLen);
-            pcircle = interpPoint(mPoint1, mPoint2, .5 + (ww - 2) / mElmLen);
+            mLead1 = interpPoint(mPoint1, mPoint2, .5 - ww / mLen);
+            mLead2 = interpPoint(mPoint1, mPoint2, .5 + (ww + 2) / mLen);
+            pcircle = interpPoint(mPoint1, mPoint2, .5 + (ww - 2) / mLen);
 
             var triPoints = new Point[3];
             interpPoint(mLead1, mLead2, ref triPoints[0], ref triPoints[1], 0, hs);
-            triPoints[2] = interpPoint(mPoint1, mPoint2, .5 + (ww - 5) / mElmLen);
+            triPoints[2] = interpPoint(mPoint1, mPoint2, .5 + (ww - 5) / mLen);
             gatePolyAnsi = createPolygon(triPoints).ToArray();
 
             var pts = new Point[4];
-            var l2 = interpPoint(mPoint1, mPoint2, .5 + (ww - 5) / mElmLen); /* make room for circle */
+            var l2 = interpPoint(mPoint1, mPoint2, .5 + (ww - 5) / mLen); /* make room for circle */
             interpPoint(mLead1, l2, ref pts[0], ref pts[1], 0, hs);
             interpPoint(mLead1, l2, ref pts[3], ref pts[2], 1, hs);
             gatePolyEuro = createPolygon(pts).ToArray();

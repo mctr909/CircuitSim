@@ -46,7 +46,7 @@ namespace Circuit.Elements {
 
         public override void setPoints() {
             base.setPoints();
-            mLead1 = interpPoint(mPoint1, mPoint2, 1 - circleSize / mElmLen);
+            mLead1 = interpPoint(mPoint1, mPoint2, 1 - circleSize / mLen);
         }
 
         public override void setNode(int p, int n) {
@@ -107,7 +107,7 @@ namespace Circuit.Elements {
             }
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(g, mPoint1, mLead1, mCurCount);
-            interpPoint(mPoint1, mPoint2, ref ps2, 1 + 11.0 / mElmLen);
+            interpPoint(mPoint1, mPoint2, ref ps2, 1 + 11.0 / mLen);
             setBbox(mPoint1, ps2, circleSize);
             drawPosts(g);
         }

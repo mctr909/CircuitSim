@@ -101,7 +101,7 @@ namespace Circuit.Elements {
             int hs = 8;
             setBbox(mPoint1, mPoint2, hs);
             bool selected = needsHighlight();
-            double len = (selected || Sim.dragElm == this || mustShowVoltage()) ? 16 : mElmLen - 32;
+            double len = (selected || Sim.dragElm == this || mustShowVoltage()) ? 16 : mLen - 32;
             calcLeads((int)len);
 
             if (selected) {
@@ -162,7 +162,7 @@ namespace Circuit.Elements {
                 drawValues(g, s, 4);
             }
 
-            var plusPoint = interpPoint(mPoint1, mPoint2, (mElmLen / 2 - len / 2 - 4) / mElmLen, -10 * mDsign);
+            var plusPoint = interpPoint(mPoint1, mPoint2, (mLen / 2 - len / 2 - 4) / mLen, -10 * mDsign);
             if (Y2 > Y1) {
                 plusPoint.Y += 4;
             }

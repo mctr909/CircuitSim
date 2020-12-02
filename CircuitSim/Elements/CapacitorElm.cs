@@ -56,7 +56,7 @@ namespace Circuit.Elements {
 
         public override void setPoints() {
             base.setPoints();
-            double f = (mElmLen / 2 - 4) / mElmLen;
+            double f = (mLen / 2 - 4) / mLen;
             /* calc leads */
             mLead1 = interpPoint(mPoint1, mPoint2, f);
             mLead2 = interpPoint(mPoint1, mPoint2, 1 - f);

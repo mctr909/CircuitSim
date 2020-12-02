@@ -230,11 +230,11 @@ namespace Circuit.Elements {
             src = newPointArray(3);
             drn = newPointArray(3);
             interpPoint(mPoint1, mPoint2, ref src[0], ref drn[0], 1, -hs2);
-            interpPoint(mPoint1, mPoint2, ref src[1], ref drn[1], 1 - 22 / mElmLen, -hs2);
-            interpPoint(mPoint1, mPoint2, ref src[2], ref drn[2], 1 - 22 / mElmLen, -hs2 * 4 / 3);
+            interpPoint(mPoint1, mPoint2, ref src[1], ref drn[1], 1 - 22 / mLen, -hs2);
+            interpPoint(mPoint1, mPoint2, ref src[2], ref drn[2], 1 - 22 / mLen, -hs2 * 4 / 3);
 
             gate = newPointArray(3);
-            interpPoint(mPoint1, mPoint2, ref gate[0], ref gate[2], 1 - 28 / mElmLen, hs2 / 2); /* was 1-20/dn */
+            interpPoint(mPoint1, mPoint2, ref gate[0], ref gate[2], 1 - 28 / mLen, hs2 / 2); /* was 1-20/dn */
             interpPoint(gate[0], gate[2], ref gate[1], .5);
 
             if (showBulk()) {
@@ -258,9 +258,9 @@ namespace Circuit.Elements {
                     }
                 }
             } else if (pnp == -1) {
-                interpPoint(mPoint1, mPoint2, ref gate[1], 1 - 36 / mElmLen);
+                interpPoint(mPoint1, mPoint2, ref gate[1], 1 - 36 / mLen);
                 int dist = (mDsign < 0) ? 32 : 31;
-                pcircle = interpPoint(mPoint1, mPoint2, 1 - dist / mElmLen);
+                pcircle = interpPoint(mPoint1, mPoint2, 1 - dist / mLen);
                 pcircler = 3;
             }
         }

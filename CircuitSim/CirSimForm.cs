@@ -597,7 +597,7 @@ namespace Circuit {
                 var ce = getElm(i);
                 /* centered text causes problems when trying to center the circuit, */
                 /* so we special-case it here */
-                if (!ce.isCenteredText()) {
+                if (!ce.IsCenteredText) {
                     minx = Math.Min(ce.X1, Math.Min(ce.X2, minx));
                     maxx = Math.Max(ce.X1, Math.Max(ce.X2, maxx));
                 }

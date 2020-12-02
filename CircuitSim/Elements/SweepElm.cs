@@ -7,7 +7,7 @@ namespace Circuit.Elements {
         const int FLAG_LOG = 1;
         const int FLAG_BIDIR = 2;
 
-        const int circleSize = 30;
+        const int circleSize = 36;
 
         double maxV;
         double maxF;
@@ -52,7 +52,7 @@ namespace Circuit.Elements {
 
         public override void setPoints() {
             base.setPoints();
-            mLead1 = interpPoint(mPoint1, mPoint2, 1 - 0.5 * circleSize / mElmLen);
+            mLead1 = interpPoint(mPoint1, mPoint2, 1 - 0.5 * circleSize / mLen);
         }
 
         public override void draw(Graphics g) {
@@ -68,7 +68,7 @@ namespace Circuit.Elements {
 
             adjustBbox(xc - circleSize, yc - circleSize, xc + circleSize, yc + circleSize);
 
-            int wl = 10;
+            int wl = 11;
             int xl = 10;
             long tm = DateTime.Now.ToFileTimeUtc();
             tm %= 2000;
@@ -82,7 +82,7 @@ namespace Circuit.Elements {
 
             int x0 = 0;
             float y0 = 0;
-            PenLine.Color = Color.YellowGreen;
+            PenLine.Color = LightGrayColor;
             for (int i = -xl; i <= xl; i++) {
                 float yy = yc + (float)(.95 * Math.Sin(i * PI * w / xl) * wl);
                 if (i == -xl) {

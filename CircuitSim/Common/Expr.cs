@@ -14,39 +14,41 @@ namespace Circuit {
         }
     }
 
-    class Expr {
-        public const int E_ADD = 1;
-        public const int E_SUB = 2;
-        public const int E_T = 3;
-        public const int E_VAL = 6;
-        public const int E_MUL = 7;
-        public const int E_DIV = 8;
-        public const int E_POW = 9;
-        public const int E_UMINUS = 10;
-        public const int E_SIN = 11;
-        public const int E_COS = 12;
-        public const int E_ABS = 13;
-        public const int E_EXP = 14;
-        public const int E_LOG = 15;
-        public const int E_SQRT = 16;
-        public const int E_TAN = 17;
-        public const int E_R = 18;
-        public const int E_MAX = 19;
-        public const int E_MIN = 20;
-        public const int E_CLAMP = 21;
-        public const int E_PWL = 22;
-        public const int E_TRIANGLE = 23;
-        public const int E_SAWTOOTH = 24;
-        public const int E_MOD = 25;
-        public const int E_STEP = 26;
-        public const int E_SELECT = 27;
-        public const int E_A = 28; /* should be at end */
+    enum EXPR_TYPE {
+        E_ADD = 1,
+        E_SUB = 2,
+        E_T = 3,
+        E_VAL = 6,
+        E_MUL = 7,
+        E_DIV = 8,
+        E_POW = 9,
+        E_UMINUS = 10,
+        E_SIN = 11,
+        E_COS = 12,
+        E_ABS = 13,
+        E_EXP = 14,
+        E_LOG = 15,
+        E_SQRT = 16,
+        E_TAN = 17,
+        E_R = 18,
+        E_MAX = 19,
+        E_MIN = 20,
+        E_CLAMP = 21,
+        E_PWL = 22,
+        E_TRIANGLE = 23,
+        E_SAWTOOTH = 24,
+        E_MOD = 25,
+        E_STEP = 26,
+        E_SELECT = 27,
+        E_A = 28, /* should be at end */
+    }
 
+    class Expr {
         public List<Expr> children;
         double value;
-        int type;
+        EXPR_TYPE type;
 
-        public Expr(Expr e1, Expr e2, int v) {
+        public Expr(Expr e1, Expr e2, EXPR_TYPE v) {
             children = new List<Expr>();
             children.Add(e1);
             if (e2 != null) {
@@ -55,12 +57,12 @@ namespace Circuit {
             type = v;
         }
 
-        public Expr(int v, double vv) {
+        public Expr(EXPR_TYPE v, double vv) {
             type = v;
             value = vv;
         }
 
-        public Expr(int v) {
+        public Expr(EXPR_TYPE v) {
             type = v;
         }
 
@@ -74,37 +76,37 @@ namespace Circuit {
                 }
             }
             switch (type) {
-            case E_ADD:
+            case EXPR_TYPE.E_ADD:
                 return left.eval(es) + right.eval(es);
-            case E_SUB:
+            case EXPR_TYPE.E_SUB:
                 return left.eval(es) - right.eval(es);
-            case E_MUL:
+            case EXPR_TYPE.E_MUL:
                 return left.eval(es) * right.eval(es);
-            case E_DIV:
+            case EXPR_TYPE.E_DIV:
                 return left.eval(es) / right.eval(es);
-            case E_POW:
+            case EXPR_TYPE.E_POW:
                 return Math.Pow(left.eval(es), right.eval(es));
-            case E_UMINUS:
+            case EXPR_TYPE.E_UMINUS:
                 return -left.eval(es);
-            case E_VAL:
+            case EXPR_TYPE.E_VAL:
                 return value;
-            case E_T:
+            case EXPR_TYPE.E_T:
                 return es.t;
-            case E_SIN:
+            case EXPR_TYPE.E_SIN:
                 return Math.Sin(left.eval(es));
-            case E_COS:
+            case EXPR_TYPE.E_COS:
                 return Math.Cos(left.eval(es));
-            case E_ABS:
+            case EXPR_TYPE.E_ABS:
                 return Math.Abs(left.eval(es));
-            case E_EXP:
+            case EXPR_TYPE.E_EXP:
                 return Math.Exp(left.eval(es));
-            case E_LOG:
+            case EXPR_TYPE.E_LOG:
                 return Math.Log(left.eval(es));
-            case E_SQRT:
+            case EXPR_TYPE.E_SQRT:
                 return Math.Sqrt(left.eval(es));
-            case E_TAN:
+            case EXPR_TYPE.E_TAN:
                 return Math.Tan(left.eval(es));
-            case E_MIN: {
+            case EXPR_TYPE.E_MIN: {
                 int i;
                 double x = left.eval(es);
                 for (i = 1; i < children.Count; i++) {
@@ -112,7 +114,7 @@ namespace Circuit {
                 }
                 return x;
             }
-            case E_MAX: {
+            case EXPR_TYPE.E_MAX: {
                 int i;
                 double x = left.eval(es);
                 for (i = 1; i < children.Count; i++) {
@@ -120,34 +122,34 @@ namespace Circuit {
                 }
                 return x;
             }
-            case E_CLAMP:
+            case EXPR_TYPE.E_CLAMP:
                 return Math.Min(Math.Max(left.eval(es), children[1].eval(es)), children[2].eval(es));
-            case E_STEP: {
+            case EXPR_TYPE.E_STEP: {
                 double x = left.eval(es);
                 if (right == null) {
                     return (x < 0) ? 0 : 1;
                 }
                 return (x > right.eval(es)) ? 0 : (x < 0) ? 0 : 1;
             }
-            case E_SELECT: {
+            case EXPR_TYPE.E_SELECT: {
                 double x = left.eval(es);
                 return children[x > 0 ? 2 : 1].eval(es);
             }
-            case E_TRIANGLE: {
+            case EXPR_TYPE.E_TRIANGLE: {
                 double x = posmod(left.eval(es), Math.PI * 2) / Math.PI;
                 return (x < 1) ? -1 + x * 2 : 3 - x * 2;
             }
-            case E_SAWTOOTH: {
+            case EXPR_TYPE.E_SAWTOOTH: {
                 double x = posmod(left.eval(es), Math.PI * 2) / Math.PI;
                 return x - 1;
             }
-            case E_MOD:
+            case EXPR_TYPE.E_MOD:
                 return left.eval(es) % right.eval(es);
-            case E_PWL:
+            case EXPR_TYPE.E_PWL:
                 return pwl(es, children);
             default:
-                if (type >= E_A) {
-                    return es.values[type - E_A];
+                if (type >= EXPR_TYPE.E_A) {
+                    return es.values[type - EXPR_TYPE.E_A];
                 }
                 Console.WriteLine("unknown\n");
                 break;
@@ -195,7 +197,7 @@ namespace Circuit {
         bool err;
 
         public ExprParser(string s) {
-            text = s.ToLower();
+            text = s.ToLower().Replace(" ", "").Replace("\r", "").Replace("\n", "");
             tlen = text.Length;
             pos = 0;
             err = false;
@@ -235,7 +237,7 @@ namespace Circuit {
             } else {
                 i++;
             }
-            token = text.Substring(pos, i);
+            token = text.Substring(pos, i - pos);
             pos = i;
         }
 
@@ -255,7 +257,7 @@ namespace Circuit {
 
         public Expr parseExpression() {
             if (token.Length == 0) {
-                return new Expr(Expr.E_VAL, 0.0);
+                return new Expr(EXPR_TYPE.E_VAL, 0.0);
             }
             var e = parse();
             if (token.Length > 0) {
@@ -268,9 +270,9 @@ namespace Circuit {
             var e = parseMult();
             while (true) {
                 if (skip("+")) {
-                    e = new Expr(e, parseMult(), Expr.E_ADD);
+                    e = new Expr(e, parseMult(), EXPR_TYPE.E_ADD);
                 } else if (skip("-")) {
-                    e = new Expr(e, parseMult(), Expr.E_SUB);
+                    e = new Expr(e, parseMult(), EXPR_TYPE.E_SUB);
                 } else {
                     break;
                 }
@@ -282,9 +284,9 @@ namespace Circuit {
             var e = parseUminus();
             while (true) {
                 if (skip("*")) {
-                    e = new Expr(e, parseUminus(), Expr.E_MUL);
+                    e = new Expr(e, parseUminus(), EXPR_TYPE.E_MUL);
                 } else if (skip("/")) {
-                    e = new Expr(e, parseUminus(), Expr.E_DIV);
+                    e = new Expr(e, parseUminus(), EXPR_TYPE.E_DIV);
                 } else {
                     break;
                 }
@@ -295,7 +297,7 @@ namespace Circuit {
         Expr parseUminus() {
             skip("+");
             if (skip("-")) {
-                return new Expr(parsePow(), null, Expr.E_UMINUS);
+                return new Expr(parsePow(), null, EXPR_TYPE.E_UMINUS);
             }
             return parsePow();
         }
@@ -304,7 +306,7 @@ namespace Circuit {
             var e = parseTerm();
             while (true) {
                 if (skip("^")) {
-                    e = new Expr(e, parseTerm(), Expr.E_POW);
+                    e = new Expr(e, parseTerm(), EXPR_TYPE.E_POW);
                 } else {
                     break;
                 }
@@ -312,14 +314,14 @@ namespace Circuit {
             return e;
         }
 
-        Expr parseFunc(int t) {
+        Expr parseFunc(EXPR_TYPE t) {
             skipOrError("(");
             var e = parse();
             skipOrError(")");
             return new Expr(e, null, t);
         }
 
-        Expr parseFuncMulti(int t, int minArgs, int maxArgs) {
+        Expr parseFuncMulti(EXPR_TYPE t, int minArgs, int maxArgs) {
             int args = 1;
             skipOrError("(");
             var e1 = parse();
@@ -343,62 +345,64 @@ namespace Circuit {
                 return e;
             }
             if (skip("t")) {
-                return new Expr(Expr.E_T);
+                return new Expr(EXPR_TYPE.E_T);
             }
             if (token.Length == 1) {
                 char c = token.ElementAt(0);
                 if (c >= 'a' && c <= 'i') {
                     getToken();
-                    return new Expr(Expr.E_A + (c - 'a'));
+                    return new Expr(EXPR_TYPE.E_A + (c - 'a'));
                 }
             }
             if (skip("pi"))
-                return new Expr(Expr.E_VAL, 3.14159265358979323846);
+                return new Expr(EXPR_TYPE.E_VAL, 3.14159265358979323846);
             /*if (skip("e"))
-                return new Expr(Expr.E_VAL, 2.7182818284590452354);*/
+                return new Expr(EXPR_TYPE.E_VAL, 2.7182818284590452354);*/
             if (skip("sin"))
-                return parseFunc(Expr.E_SIN);
+                return parseFunc(EXPR_TYPE.E_SIN);
             if (skip("cos"))
-                return parseFunc(Expr.E_COS);
+                return parseFunc(EXPR_TYPE.E_COS);
             if (skip("abs"))
-                return parseFunc(Expr.E_ABS);
+                return parseFunc(EXPR_TYPE.E_ABS);
             if (skip("exp"))
-                return parseFunc(Expr.E_EXP);
+                return parseFunc(EXPR_TYPE.E_EXP);
             if (skip("log"))
-                return parseFunc(Expr.E_LOG);
+                return parseFunc(EXPR_TYPE.E_LOG);
             if (skip("sqrt"))
-                return parseFunc(Expr.E_SQRT);
+                return parseFunc(EXPR_TYPE.E_SQRT);
             if (skip("tan"))
-                return parseFunc(Expr.E_TAN);
+                return parseFunc(EXPR_TYPE.E_TAN);
             if (skip("tri"))
-                return parseFunc(Expr.E_TRIANGLE);
+                return parseFunc(EXPR_TYPE.E_TRIANGLE);
             if (skip("saw"))
-                return parseFunc(Expr.E_SAWTOOTH);
+                return parseFunc(EXPR_TYPE.E_SAWTOOTH);
             if (skip("min"))
-                return parseFuncMulti(Expr.E_MIN, 2, 1000);
+                return parseFuncMulti(EXPR_TYPE.E_MIN, 2, 1000);
             if (skip("max"))
-                return parseFuncMulti(Expr.E_MAX, 2, 1000);
+                return parseFuncMulti(EXPR_TYPE.E_MAX, 2, 1000);
             if (skip("pwl"))
-                return parseFuncMulti(Expr.E_PWL, 2, 1000);
+                return parseFuncMulti(EXPR_TYPE.E_PWL, 2, 1000);
             if (skip("mod"))
-                return parseFuncMulti(Expr.E_MOD, 2, 2);
+                return parseFuncMulti(EXPR_TYPE.E_MOD, 2, 2);
             if (skip("step"))
-                return parseFuncMulti(Expr.E_STEP, 1, 2);
+                return parseFuncMulti(EXPR_TYPE.E_STEP, 1, 2);
             if (skip("select"))
-                return parseFuncMulti(Expr.E_SELECT, 3, 3);
+                return parseFuncMulti(EXPR_TYPE.E_SELECT, 3, 3);
             if (skip("clamp"))
-                return parseFuncMulti(Expr.E_CLAMP, 3, 3);
-            try {
-                var e = new Expr(Expr.E_VAL, double.Parse(token));
+                return parseFuncMulti(EXPR_TYPE.E_CLAMP, 3, 3);
+            //try {
+            {
+                var e = new Expr(EXPR_TYPE.E_VAL, double.Parse(token));
                 getToken();
                 return e;
-            } catch (Exception e) {
+            }
+            /*} catch (Exception e) {
                 err = true;
                 Console.WriteLine("unrecognized token: " + token + "\n");
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
                 return new Expr(Expr.E_VAL, 0);
-            }
+            }*/
         }
     }
 }

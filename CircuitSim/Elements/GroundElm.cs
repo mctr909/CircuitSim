@@ -21,11 +21,11 @@ namespace Circuit.Elements {
             for (int i = 0; i != 3; i++) {
                 int a = 10 - i * 4;
                 int b = i * 5; /* -10; */
-                interpPoint(mPoint1, mPoint2, ref ps1, ref ps2, 1 + b / mElmLen, a);
+                interpPoint(mPoint1, mPoint2, ref ps1, ref ps2, 1 + b / mLen, a);
                 drawThickLine(g, ps1, ps2);
             }
             doDots(g);
-            interpPoint(mPoint1, mPoint2, ref ps2, 1 + 11.0 / mElmLen);
+            interpPoint(mPoint1, mPoint2, ref ps2, 1 + 11.0 / mLen);
             setBbox(mPoint1, ps2, 11);
             drawPosts(g);
         }

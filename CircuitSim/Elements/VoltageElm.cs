@@ -18,7 +18,7 @@ namespace Circuit.Elements {
         protected const int WF_NOISE = 6;
         protected const int WF_VAR = 7;
 
-        protected const int circleSize = 32;
+        protected const int circleSize = 36;
 
         protected double frequency;
         protected double maxVoltage;
@@ -170,7 +170,7 @@ namespace Circuit.Elements {
                     inds = "*";
                 }
 
-                var plusPoint = interpPoint(mPoint1, mPoint2, (mElmLen / 2 + circleSize + 4) / mElmLen, 10 * mDsign);
+                var plusPoint = interpPoint(mPoint1, mPoint2, (mLen / 2 + circleSize + 4) / mLen, 10 * mDsign);
                 plusPoint.Y += 4;
                 var w = (int)g.MeasureString(inds, FONT_TERM_NAME).Width;
                 g.DrawString(inds, FONT_TERM_NAME, BrushTermName, plusPoint.X - w / 2, plusPoint.Y);
@@ -200,11 +200,11 @@ namespace Circuit.Elements {
 
             adjustBbox(x - circleSize, y - circleSize, x + circleSize, y + circleSize);
 
-            float h = 10;
+            float h = 11;
             float xd = (float)(h * 2 * dutyCycle - h + x);
             xd = Math.Max(x - h + 1, Math.Min(x + h - 1, xd));
 
-            PenLine.Color = needsHighlight() ? SelectColor : Color.YellowGreen;
+            PenLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
 
             switch (waveform) {
             case WF_DC: {
@@ -276,7 +276,7 @@ namespace Circuit.Elements {
             if (Sim.chkShowValuesCheckItem.Checked && waveform != WF_NOISE) {
                 var s = getShortUnitText(maxVoltage, "V ");
                 s += getShortUnitText(bias, "V\r\n");
-                s += getShortUnitText(frequency, "Hz\r\n");
+                s += getShortUnitText(frequency, "Hz ");
                 s += getShortUnitText(phaseShift * TO_DEG, "°");
                 drawValues(g, s, 0);
             }

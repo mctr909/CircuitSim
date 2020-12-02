@@ -250,8 +250,8 @@ namespace Circuit.Elements {
                 xc = (X2 + X1) / 2;
                 yc = (Y2 + Y1) / 2;
             }
-            int dpx = (int)(mUnitPx1 * hs);
-            int dpy = (int)(mUnitPy1 * hs);
+            int dpx = (int)(mDirX * hs);
+            int dpy = (int)(mDirY * hs);
             if (dpx == 0) {
                 g.DrawString(s, FONT_UNITS, BrushText, xc - ya / 2, yc - Math.Abs(dpy) - 2 - ya);
             } else {

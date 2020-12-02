@@ -6,10 +6,10 @@ namespace Circuit.Elements {
         public bool broken;
 
         double gain;
-        int inputCount;
-        Expr expr;
-        ExprState exprState;
-        string exprString;
+        protected int inputCount;
+        protected Expr expr;
+        protected ExprState exprState;
+        protected string exprString;
         double[] lastVolts;
         double lastvd;
 
@@ -55,7 +55,7 @@ namespace Circuit.Elements {
             Cir.StampNonLinear(Nodes[inputCount + 1]);
         }
 
-        double sign(double a, double b) {
+        protected double sign(double a, double b) {
             return a > 0 ? b : -b;
         }
 
@@ -77,7 +77,7 @@ namespace Circuit.Elements {
             return .001;
         }
 
-        double getConvergeLimit() {
+        protected double getConvergeLimit() {
             /* get maximum change in voltage per step when testing for convergence.
              * be more lenient over time */
             if (Cir.SubIterations < 10) {
@@ -89,7 +89,7 @@ namespace Circuit.Elements {
             return .1;
         }
 
-        public bool hasCurrentOutput() { return true; }
+        public virtual bool hasCurrentOutput() { return true; }
 
         public int getOutputNode(int n) {
             return Nodes[n + inputCount];
@@ -193,7 +193,7 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0) {
-                exprString = ei.Textf.Text;
+                exprString = ei.Textf.Text.Replace(" ", "").Replace("\r", "").Replace("\n", "");
                 parseExpr();
                 return;
             }
@@ -208,12 +208,12 @@ namespace Circuit.Elements {
             }
         }
 
-        void setExpr(string expr) {
-            exprString = expr;
+        public void setExpr(string expr) {
+            exprString = expr.Replace(" ", "").Replace("\r", "").Replace("\n", "");
             parseExpr();
         }
 
-        void parseExpr() {
+        protected void parseExpr() {
             var parser = new ExprParser(exprString);
             expr = parser.parseExpression();
         }

@@ -54,6 +54,14 @@ namespace Circuit.Elements {
                 return string.Format("{0} {1} {2} {3} {4} {5} {6}", type, X1, Y1, X2, Y2, mFlags, dump());
             }
         }
+
+        /// <summary>
+        /// needed for calculating circuit bounds (need to special-case centered text elements)
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool IsCenteredText { get { return false; } }
+
+        public virtual int DefaultFlags { get { return 0; } }
         #endregion
 
         #region dynamic variable
@@ -71,10 +79,11 @@ namespace Circuit.Elements {
         protected int mNumHandles = 2;
 
         /* length of element */
-        protected double mElmLen;
+        protected double mLen;
 
-        protected double mUnitPx1;
-        protected double mUnitPy1;
+        /* direction of element */
+        protected double mDirX;
+        protected double mDirY;
 
         /* (x,y) and (x2,y2) as Point objects */
         protected Point mPoint1;
@@ -104,7 +113,7 @@ namespace Circuit.Elements {
         protected CircuitElm(int xx, int yy) {
             X1 = X2 = xx;
             Y1 = Y2 = yy;
-            mFlags = getDefaultFlags();
+            mFlags = DefaultFlags;
             allocNodes();
             initBoundingBox();
         }
@@ -130,21 +139,6 @@ namespace Circuit.Elements {
             BoundingBox = new Rectangle(Math.Min(X1, X2), Math.Min(Y1, Y2), Math.Abs(X2 - X1) + 1, Math.Abs(Y2 - Y1) + 1);
         }
 
-        /// <summary>
-        /// this is used to set the position of an internal element so we can draw it inside the parent
-        /// </summary>
-        /// <param name="ax"></param>
-        /// <param name="ay"></param>
-        /// <param name="bx"></param>
-        /// <param name="by"></param>
-        void setPosition(int ax, int ay, int bx, int by) {
-            X1 = ax;
-            Y1 = ay;
-            X2 = bx;
-            Y2 = by;
-            setPoints();
-        }
-
         #region [protected method]
         /// <summary>
         /// allocate nodes/volts arrays we need
@@ -164,13 +158,13 @@ namespace Circuit.Elements {
         /// </summary>
         /// <param name="len"></param>
         protected void calcLeads(int len) {
-            if (mElmLen < len || len == 0) {
+            if (mLen < len || len == 0) {
                 mLead1 = mPoint1;
                 mLead2 = mPoint2;
                 return;
             }
-            mLead1 = interpPoint(mPoint1, mPoint2, (mElmLen - len) / (2 * mElmLen));
-            mLead2 = interpPoint(mPoint1, mPoint2, (mElmLen + len) / (2 * mElmLen));
+            mLead1 = interpPoint(mPoint1, mPoint2, (mLen - len) / (2 * mLen));
+            mLead2 = interpPoint(mPoint1, mPoint2, (mLen + len) / (2 * mLen));
         }
 
         /// <summary>
@@ -198,8 +192,8 @@ namespace Circuit.Elements {
         /// <param name="w"></param>
         protected void setBbox(Point p1, Point p2, double w) {
             setBbox(p1.X, p1.Y, p2.X, p2.Y);
-            int dpx = (int)(mUnitPx1 * w);
-            int dpy = (int)(mUnitPy1 * w);
+            int dpx = (int)(mDirX * w);
+            int dpy = (int)(mDirY * w);
             adjustBbox(p1.X + dpx, p1.Y + dpy, p1.X - dpx, p1.Y - dpy);
         }
 
@@ -324,6 +318,21 @@ namespace Circuit.Elements {
         }
 
         /// <summary>
+        /// this is used to set the position of an internal element so we can draw it inside the parent
+        /// </summary>
+        /// <param name="ax"></param>
+        /// <param name="ay"></param>
+        /// <param name="bx"></param>
+        /// <param name="by"></param>
+        public void setPosition(int ax, int ay, int bx, int by) {
+            X1 = ax;
+            Y1 = ay;
+            X2 = bx;
+            Y2 = by;
+            setPoints();
+        }
+
+        /// <summary>
         /// called when an element is done being dragged out;
         /// </summary>
         /// <returns>returns true if it's zero size and should be deleted</returns>
@@ -441,14 +450,6 @@ namespace Circuit.Elements {
 
         #region [virtual method]
         /// <summary>
-        /// needed for calculating circuit bounds (need to special-case centered text elements)
-        /// </summary>
-        /// <returns></returns>
-        public virtual bool isCenteredText() { return false; }
-
-        public virtual int getDefaultFlags() { return 0; }
-
-        /// <summary>
         /// handle reset button
         /// </summary>
         public virtual void reset() {
@@ -459,6 +460,21 @@ namespace Circuit.Elements {
         }
 
         public virtual void draw(Graphics g) { }
+
+        /// <summary>
+        /// calculate post locations and other convenience values used for drawing.
+        /// Called when element is moved
+        /// </summary>
+        public virtual void setPoints() {
+            mDx = X2 - X1;
+            mDy = Y2 - Y1;
+            mLen = Math.Sqrt(mDx * mDx + mDy * mDy);
+            mDirX = mDy / mLen;
+            mDirY = -mDx / mLen;
+            mDsign = (mDy == 0) ? Math.Sign(mDx) : Math.Sign(mDy);
+            mPoint1 = new Point(X1, Y1);
+            mPoint2 = new Point(X2, Y2);
+        }
 
         /// <summary>
         /// set current for voltage source vn to c.
@@ -511,21 +527,6 @@ namespace Circuit.Elements {
         /// calculate current in response to node voltages changing
         /// </summary>
         public virtual void calculateCurrent() { }
-
-        /// <summary>
-        /// calculate post locations and other convenience values used for drawing.
-        /// Called when element is moved
-        /// </summary>
-        public virtual void setPoints() {
-            mDx = X2 - X1;
-            mDy = Y2 - Y1;
-            mElmLen = Math.Sqrt(mDx * mDx + mDy * mDy);
-            mUnitPx1 = mDy / mElmLen;
-            mUnitPy1 = -mDx / mElmLen;
-            mDsign = (mDy == 0) ? Math.Sign(mDx) : Math.Sign(mDy);
-            mPoint1 = new Point(X1, Y1);
-            mPoint2 = new Point(X2, Y2);
-        }
 
         /// <summary>
         /// draw second point to xx, yy

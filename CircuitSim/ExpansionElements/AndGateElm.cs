@@ -34,8 +34,8 @@ namespace Circuit.Elements {
             gatePolyAnsi = createPolygon(triPoints).ToArray();
 
             if (isInverting()) {
-                pcircle = interpPoint(mPoint1, mPoint2, .5 + (ww + 4) / mElmLen);
-                mLead2 = interpPoint(mPoint1, mPoint2, .5 + (ww + 8) / mElmLen);
+                pcircle = interpPoint(mPoint1, mPoint2, .5 + (ww + 4) / mLen);
+                mLead2 = interpPoint(mPoint1, mPoint2, .5 + (ww + 8) / mLen);
             }
         }
 

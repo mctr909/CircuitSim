@@ -359,8 +359,10 @@ namespace Circuit {
         POT = 174,
         LABELED_NODE = 207,
         VCCS = 213,
+        CCCS = 215,
         COMPARATOR = 401,
         SCOPE = 403,
+        OPTO_COUPLER = 407,
         CUSTOM_COMPOSITE = 410
     }
 
@@ -592,8 +594,8 @@ namespace Circuit {
             activeMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(activeMenuBar, "オペアンプ(-側が上)", MENU_ITEM.OpAmpElm);
             addElementItem(activeMenuBar, "オペアンプ(+側が上)", MENU_ITEM.OpAmpSwapElm);
-            //addElementItem(activeMenuBar, "コンパレータ(-側が上)", MENU_ITEM.ComparatorElm);
-            //addElementItem(activeMenuBar, "コンパレータ(+側が上)", MENU_ITEM.ComparatorSwapElm);
+            activeMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(activeMenuBar, "フォトカプラ", MENU_ITEM.OptocouplerElm);
             mainMenuBar.Items.Add(activeMenuBar);
             #endregion
 
@@ -655,7 +657,6 @@ namespace Circuit {
             //addMenuItem(activeBlocMenuBar, "Add Voltage-Controlled Current Source", ITEM.VCCSElm);
             //addMenuItem(activeBlocMenuBar, "Add Current-Controlled Voltage Source", ITEM.CCVSElm);
             //addMenuItem(activeBlocMenuBar, "Add Current-Controlled Current Source", ITEM.CCCSElm);
-            //addMenuItem(activeBlocMenuBar, "Add Optocoupler", ITEM.OptocouplerElm);
             //addMenuItem(activeBlocMenuBar, "Add Subcircuit Instance", ITEM.CustomCompositeElm);
             //mainMenuBar.Items.Add(activeBlocMenuBar);
             #endregion
@@ -899,9 +900,9 @@ namespace Circuit {
             case MENU_ITEM.CCVSElm:
                 return null; //(CircuitElm)new CCVSElm(x1, y1);
             case MENU_ITEM.CCCSElm:
-                return null; //(CircuitElm)new CCCSElm(x1, y1);
+                return new CCCSElm(x1, y1);
             case MENU_ITEM.OptocouplerElm:
-                return null; //(CircuitElm)new OptocouplerElm(x1, y1);
+                return new OptocouplerElm(x1, y1);
             case MENU_ITEM.CustomCompositeElm:
                 return new CustomCompositeElm(x1, y1);
             #endregion
@@ -1073,7 +1074,7 @@ namespace Circuit {
             //case 212: return new VCVSElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.VCCS: return new VCCSElm(x1, y1, x2, y2, f, st);
             //case 214: return new CCVSElm(x1, y1, x2, y2, f, st);
-            //case 215: return new CCCSElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.CCCS: return new CCCSElm(x1, y1, x2, y2, f, st);
             //case 216: return new OhmMeterElm(x1, y1, x2, y2, f, st);
             //case 368: return new TestPointElm(x1, y1, x2, y2, f, st);
             //case 370: return new AmmeterElm(x1, y1, x2, y2, f, st);
@@ -1084,7 +1085,7 @@ namespace Circuit {
             //case 404: return new FuseElm(x1, y1, x2, y2, f, st);
             //case 405: return new LEDArrayElm(x1, y1, x2, y2, f, st);
             //case 406: return new CustomTransformerElm(x1, y1, x2, y2, f, st);
-            //case 407: return new OptocouplerElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.OPTO_COUPLER: return new OptocouplerElm(x1, y1, x2, y2, f, st);
             //case 408: return new StopTriggerElm(x1, y1, x2, y2, f, st);
             //case 409: return new OpAmpRealElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.CUSTOM_COMPOSITE: return new CustomCompositeElm(x1, y1, x2, y2, f, st);

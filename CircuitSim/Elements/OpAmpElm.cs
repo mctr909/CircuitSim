@@ -106,12 +106,12 @@ namespace Circuit.Elements {
 
         public override void setPoints() {
             base.setPoints();
-            if (mElmLen > 150 && this == Sim.dragElm) {
+            if (mLen > 150 && this == Sim.dragElm) {
                 setSize(2);
             }
             int ww = opwidth;
-            if (ww > mElmLen / 2) {
-                ww = (int)(mElmLen / 2);
+            if (ww > mLen / 2) {
+                ww = (int)(mLen / 2);
             }
             calcLeads(ww * 2);
             int hs = opheight * mDsign;

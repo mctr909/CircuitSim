@@ -30,7 +30,7 @@ namespace Circuit.Elements {
                     ref triPoints[i], ref triPoints[32 - i],
                     .5 + a / 2, b * hs2);
             }
-            double ww2 = (ww == 0) ? mElmLen * 2 : ww * 2;
+            double ww2 = (ww == 0) ? mLen * 2 : ww * 2;
             for (int i = 0; i != 7; i++) {
                 double a = (i - 3) / 3.0;
                 double b = 6 * (1 - a * a) - 3;
@@ -43,8 +43,8 @@ namespace Circuit.Elements {
             gatePolyAnsi = createPolygon(triPoints).ToArray();
 
             if (isInverting()) {
-                pcircle = interpPoint(mPoint1, mPoint2, .5 + (ww + 4) / mElmLen);
-                mLead2 = interpPoint(mPoint1, mPoint2, .5 + (ww + 8) / mElmLen);
+                pcircle = interpPoint(mPoint1, mPoint2, .5 + (ww + 4) / mLen);
+                mLead2 = interpPoint(mPoint1, mPoint2, .5 + (ww + 8) / mLen);
             }
         }
 

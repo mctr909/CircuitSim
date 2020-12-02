@@ -21,7 +21,7 @@ namespace Circuit.Elements {
 
         public override void setPoints() {
             base.setPoints();
-            mLead1 = interpPoint(mPoint1, mPoint2, 1 - circleSize / mElmLen);
+            mLead1 = interpPoint(mPoint1, mPoint2, 1 - circleSize / mLen);
         }
 
         public string getRailText() {
@@ -31,10 +31,10 @@ namespace Circuit.Elements {
         public override void draw(Graphics g) {
             var rt = getRailText();
             double w = rt == null ? (circleSize * 0.5) : g.MeasureString(rt, FONT_TERM_NAME).Width / 2;
-            if (w > mElmLen * .8) {
-                w = mElmLen * .8;
+            if (w > mLen * .8) {
+                w = mLen * .8;
             }
-            mLead1 = interpPoint(mPoint1, mPoint2, 1 - w / mElmLen);
+            mLead1 = interpPoint(mPoint1, mPoint2, 1 - w / mLen);
             setBbox(mPoint1, mPoint2, circleSize);
             
             drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
