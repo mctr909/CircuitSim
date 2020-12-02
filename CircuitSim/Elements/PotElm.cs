@@ -24,7 +24,10 @@ namespace Circuit.Elements {
         Point midpoint;
         Point arrow1;
         Point arrow2;
-        Point ps3, ps4;
+        Point ps1;
+        Point ps2;
+        Point ps3;
+        Point ps4;
         int bodyLen;
 
         string sliderText;
@@ -48,21 +51,18 @@ namespace Circuit.Elements {
             createSlider();
         }
 
+        protected override string dump() {
+            return maxResistance + " " + position + " " + sliderText;
+        }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.POT; }
+
         void setup() { }
 
         public override int getPostCount() { return 3; }
 
-        public override DUMP_ID getDumpType() { return DUMP_ID.POT; }
-
         public override Point getPost(int n) {
             return (n == 0) ? mPoint1 : (n == 1) ? mPoint2 : post3;
-        }
-
-        public override string dump() {
-            return base.dump()
-                + " " + maxResistance
-                + " " + position
-                + " " + sliderText;
         }
 
         void createSlider() {
@@ -120,12 +120,8 @@ namespace Circuit.Elements {
             corner2 = interpPoint(mPoint1, mPoint2, soff / mElmLen + .5, offset);
             arrowPoint = interpPoint(mPoint1, mPoint2, soff / mElmLen + .5, 8 * Math.Sign(offset));
             midpoint = interpPoint(mPoint1, mPoint2, soff / mElmLen + .5);
-            arrow1 = new Point();
-            arrow2 = new Point();
             double clen = Math.Abs(offset) - 8;
             interpPoint(corner2, arrowPoint, ref arrow1, ref arrow2, (clen - 8) / clen, 8);
-            ps3 = new Point();
-            ps4 = new Point();
         }
 
         public override void draw(Graphics g) {
@@ -212,16 +208,16 @@ namespace Circuit.Elements {
 
                 /* vertical? */
                 if (mLead1.X == mLead2.X) {
-                    g.DrawString(s1, FONT_TEXT, BRUSH_TEXT, !reverseY ? arrowPoint.X + 2 : arrowPoint.X - 2 - w, Math.Max(arrow1.Y, arrow2.Y) + 5 + ya);
+                    g.DrawString(s1, FONT_TEXT, BrushText, !reverseY ? arrowPoint.X + 2 : arrowPoint.X - 2 - w, Math.Max(arrow1.Y, arrow2.Y) + 5 + ya);
                 } else {
-                    g.DrawString(s1, FONT_TEXT, BRUSH_TEXT, Math.Min(arrow1.X, arrow2.X) - 2 - w, !reverseX ? arrowPoint.Y + 4 + ya : arrowPoint.Y - 4);
+                    g.DrawString(s1, FONT_TEXT, BrushText, Math.Min(arrow1.X, arrow2.X) - 2 - w, !reverseX ? arrowPoint.Y + 4 + ya : arrowPoint.Y - 4);
                 }
 
                 w = (int)g.MeasureString(s2, FONT_TEXT).Width;
                 if (mLead1.X == mLead2.X) {
-                    g.DrawString(s2, FONT_TEXT, BRUSH_TEXT, !reverseY ? arrowPoint.X + 2 : arrowPoint.X - 2 - w, Math.Min(arrow1.Y, arrow2.Y) - 3);
+                    g.DrawString(s2, FONT_TEXT, BrushText, !reverseY ? arrowPoint.X + 2 : arrowPoint.X - 2 - w, Math.Min(arrow1.Y, arrow2.Y) - 3);
                 } else {
-                    g.DrawString(s2, FONT_TEXT, BRUSH_TEXT, Math.Max(arrow1.X, arrow2.X) + 2, !reverseX ? arrowPoint.Y + 4 + ya : arrowPoint.Y - 4);
+                    g.DrawString(s2, FONT_TEXT, BrushText, Math.Max(arrow1.X, arrow2.X) + 2, !reverseX ? arrowPoint.Y + 4 + ya : arrowPoint.Y - 4);
                 }
             }
         }
@@ -243,10 +239,10 @@ namespace Circuit.Elements {
             }
             Console.WriteLine("dv " + dpx + " " + w);
             if (dpx == 0) {
-                g.DrawString(s, FONT_TEXT, BRUSH_TEXT, xc - w / 2, yc - Math.Abs(dpy) - 2);
+                g.DrawString(s, FONT_TEXT, BrushText, xc - w / 2, yc - Math.Abs(dpy) - 2);
             } else {
                 int xx = xc + Math.Abs(dpx) + 2;
-                g.DrawString(s, FONT_TEXT, BRUSH_TEXT, xx, yc + dpy + ya);
+                g.DrawString(s, FONT_TEXT, BrushText, xx, yc + dpy + ya);
             }
         }
 

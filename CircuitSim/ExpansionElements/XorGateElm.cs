@@ -4,9 +4,11 @@
 
         public XorGateElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) { }
 
+        protected override DUMP_ID getDumpType() { return DUMP_ID.XOR_GATE; }
+
         protected override string getGateName() { return "XOR gate"; }
 
-        string getGateText() { return "=1"; }
+        protected override string getGateText() { return "=1"; }
 
         protected override bool calcFunction() {
             bool f = false;
@@ -15,8 +17,6 @@
             }
             return f;
         }
-
-        public override DUMP_ID getDumpType() { return DUMP_ID.XOR_GATE; }
 
         public override DUMP_ID getShortcut() { return DUMP_ID.XOR_GATE; }
     }

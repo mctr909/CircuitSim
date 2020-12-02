@@ -15,7 +15,7 @@ namespace Circuit.Elements {
             mNumHandles = 1;
         }
 
-        public override DUMP_ID getDumpType() { return DUMP_ID.RAIL; }
+        protected override DUMP_ID getDumpType() { return DUMP_ID.RAIL; }
 
         public override int getPostCount() { return 1; }
 

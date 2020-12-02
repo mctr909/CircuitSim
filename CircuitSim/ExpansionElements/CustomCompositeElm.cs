@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -28,13 +27,15 @@ namespace Circuit.Elements {
             updateModels(st);
         }
 
-        public override string dump() {
+        protected override string dump() {
             /* insert model name before the elements */
             string s = dumpWithMask(0);
             s += " " + CustomLogicModel.escape(modelName);
             s += dumpElements();
             return s;
         }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.CUSTOM_COMPOSITE; }
 
         public override string dumpModel() {
             string modelStr = "";
@@ -161,8 +162,5 @@ namespace Circuit.Elements {
                 return;
             }
         }
-
-        public override DUMP_ID getDumpType() { return DUMP_ID.CUSTOM_COMPOSITE; }
-
     }
 }

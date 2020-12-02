@@ -114,8 +114,8 @@ namespace Circuit {
                 verticalPanel.Controls.Add(chkSmallGridCheckItem);
                 ofsY += chkSmallGridCheckItem.Height + 4;
 
-                /* ANSI Resistors */
-                chkAnsiResistorCheckItem = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "ANSI Resistors" };
+                /* ANSI */
+                chkAnsiResistorCheckItem = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "ANSI" };
                 chkAnsiResistorCheckItem.CheckedChanged += new EventHandler((s, e) => {
                     setOptionInStorage("ansiResistors", chkAnsiResistorCheckItem.Checked);
                 });
@@ -1085,7 +1085,7 @@ namespace Circuit {
                 if (!string.IsNullOrEmpty(m)) {
                     dump += m + "\n";
                 }
-                dump += ce.dump() + "\n";
+                dump += ce.Dump + "\n";
             }
             for (i = 0; i != scopeCount; i++) {
                 string d = scopes[i].dump();
@@ -2068,7 +2068,7 @@ namespace Circuit {
                 /* elm by number get's messed up in the dump. For now we will just ignore them
                 /* until I can be bothered to come up with something better */
                 if (willDelete(ce) && !(ce is ScopeElm)) {
-                    clipboard += ce.dump() + "\n";
+                    clipboard += ce.Dump + "\n";
                 }
             }
             writeClipboardToStorage();
@@ -2170,7 +2170,7 @@ namespace Circuit {
                 }
                 /* See notes on do cut why we don't copy ScopeElms. */
                 if (ce.IsSelected && !(ce is ScopeElm)) {
-                    r += ce.dump() + "\n";
+                    r += ce.Dump + "\n";
                 }
             }
             return r;
@@ -2461,7 +2461,7 @@ namespace Circuit {
             Console.WriteLine("Elm list Dump");
             for (i = 0; i < elmList.Count; i++) {
                 e = elmList[i];
-                cs = e.getDumpClass().ToString();
+                cs = e.ToString();
                 int p = cs.LastIndexOf('.');
                 cs = cs.Substring(p + 1);
                 if (cs == "WireElm") {
@@ -2662,7 +2662,7 @@ namespace Circuit {
                 // set them to 0 so they're easy to remove
                 ce.X1 = ce.Y1 = ce.X2 = ce.Y2 = 0;
 
-                string tstring = ce.dump();
+                string tstring = ce.Dump;
                 var rg = new Regex("[A-Za-z0-9]+ 0 0 0 0 ");
                 tstring = rg.Replace(tstring, "", 1); // remove unused tint_x1 y1 x2 y2 coords for internal components
 

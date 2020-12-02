@@ -32,10 +32,14 @@ namespace Circuit {
             if (chkPrintableCheckItem.Checked) {
                 CircuitElm.WhiteColor = Color.Black;
                 CircuitElm.LightGrayColor = Color.Black;
+                CircuitElm.BrushText = Brushes.Black;
+                CircuitElm.BrushTermName = Brushes.Black;
                 pen = new Pen(Color.White, 1.0f);
             } else {
                 CircuitElm.WhiteColor = Color.White;
-                CircuitElm.LightGrayColor = Color.LightGray;
+                CircuitElm.LightGrayColor = Color.Gray;
+                CircuitElm.BrushText = Brushes.White;
+                CircuitElm.BrushTermName = Brushes.SkyBlue;
                 pen = new Pen(Color.Black, 1.0f);
             }
             g.FillRectangle(pen.Brush, 0, 0, backcv.Width, backcv.Height);

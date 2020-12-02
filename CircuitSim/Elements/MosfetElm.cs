@@ -43,6 +43,9 @@ namespace Circuit.Elements {
         Point pcircle;
         Point[] arrowPoly;
 
+        Point ps1;
+        Point ps2;
+
         double lastv0;
         double lastv1;
         double lastv2;
@@ -73,6 +76,12 @@ namespace Circuit.Elements {
             globalFlags = mFlags & (FLAGS_GLOBAL);
             allocNodes(); /* make sure volts[] has the right number of elements when hasBodyTerminal() is true */
         }
+
+        protected override string dump() {
+            return vt + " " + beta;
+        }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.MOSFET; }
 
         /* set up body diodes */
         void setupDiodes() {
@@ -112,12 +121,6 @@ namespace Circuit.Elements {
             diodeB1.reset();
             diodeB2.reset();
         }
-
-        public override string dump() {
-            return base.dump() + " " + vt + " " + beta;
-        }
-
-        public override DUMP_ID getDumpType() { return  DUMP_ID.MOSFET; }
 
         public override void draw(Graphics g) {
             /* pick up global flags changes */
@@ -188,20 +191,6 @@ namespace Circuit.Elements {
                 curcount_body2 = updateDotCount(diodeCurrent2, curcount_body2);
                 drawDots(g, src[0], body[0], -curcount_body1);
                 drawDots(g, body[0], drn[0], curcount_body2);
-            }
-
-            /* label pins when highlighted */
-            if (needsHighlight() || Sim.dragElm == this) {
-                /* make fiddly adjustments to pin label locations depending on orientation */
-                int dsx = Math.Sign(mDx);
-                int dsy = Math.Sign(mDy);
-                int dsyn = mDy == 0 ? 0 : 1;
-                g.DrawString("G", FONT_TEXT, BRUSH_TEXT, gate[1].X - (mDx < 0 ? -2 : 12), gate[1].Y + ((mDy > 0) ? -5 : 12));
-                g.DrawString(pnp == -1 ? "D" : "S", FONT_TEXT, BRUSH_TEXT, src[0].X - 3 + 9 * (dsx - dsyn * pnp), src[0].Y + 4);
-                g.DrawString(pnp == -1 ? "S" : "D", FONT_TEXT, BRUSH_TEXT, drn[0].X - 3 + 9 * (dsx - dsyn * pnp), drn[0].Y + 4);
-                if (hasBodyTerminal()) {
-                    g.DrawString("B", FONT_TEXT, BRUSH_TEXT, body[0].X - 3 + 9 * (dsx - dsyn * pnp), body[0].Y + 4);
-                }
             }
 
             drawPosts(g);

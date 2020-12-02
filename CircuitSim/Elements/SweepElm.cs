@@ -39,17 +39,16 @@ namespace Circuit.Elements {
             reset();
         }
 
-        public override DUMP_ID getDumpType() { return DUMP_ID.SWEEP; }
-
-        public override int getPostCount() { return 1; }
-
-        public override string dump() {
-            return base.dump()
-                + " " + minF
+        protected override string dump() {
+            return minF
                 + " " + maxF
                 + " " + maxV
                 + " " + sweepTime;
         }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.SWEEP; }
+
+        public override int getPostCount() { return 1; }
 
         public override void setPoints() {
             base.setPoints();
@@ -61,7 +60,7 @@ namespace Circuit.Elements {
 
             drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
 
-            PenThickLine.Color = needsHighlight() ? SelectColor : Color.Gray;
+            PenThickLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
 
             int xc = mPoint2.X;
             int yc = mPoint2.Y;
@@ -138,7 +137,7 @@ namespace Circuit.Elements {
         }
 
         public override void startIteration() {
-            // has timestep been changed?
+            /* has timestep been changed? */
             if (Sim.timeStep != savedTimeStep) {
                 setParams();
             }

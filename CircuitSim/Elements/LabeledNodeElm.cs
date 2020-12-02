@@ -12,6 +12,8 @@ namespace Circuit.Elements {
         public string text { get; private set; }
         int nodeNumber;
 
+        Point ps2;
+
         public LabeledNodeElm(int xx, int yy) : base(xx, yy) {
             text = "label";
         }
@@ -29,10 +31,12 @@ namespace Circuit.Elements {
             }
         }
 
-        public override string dump() {
+        protected override string dump() {
             mFlags |= FLAG_ESCAPE;
-            return base.dump() + " " + CustomLogicModel.escape(text);
+            return CustomLogicModel.escape(text);
         }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.LABELED_NODE; }
 
         public bool isInternal() { return (mFlags & FLAG_INTERNAL) != 0; }
 
@@ -53,8 +57,6 @@ namespace Circuit.Elements {
                 nodeNumber = n;
             }
         }
-
-        public override DUMP_ID getDumpType() { return DUMP_ID.LABELED_NODE; }
 
         public override int getPostCount() { return 1; }
 

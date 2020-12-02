@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace Circuit.Elements {
     class Switch2Elm : SwitchElm {
@@ -30,13 +29,14 @@ namespace Circuit.Elements {
                 throwCount = st.nextTokenInt();
             } catch { }
             mNoDiagonal = true;
+            allocNodes();
         }
 
-        public override DUMP_ID getDumpType() { return DUMP_ID.SWITCH2; }
-
-        public override string dump() {
+        protected override string dump() {
             return base.dump() + " " + link + " " + throwCount;
         }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.SWITCH2; }
 
         public override void setPoints() {
             base.setPoints();

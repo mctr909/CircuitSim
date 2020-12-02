@@ -21,16 +21,11 @@ namespace Circuit {
         int selectedPin;
         bool dragging;
 
-        void onMouseOver(EventArgs e) {
-            // TODO Auto-generated method stub
-        }
+        void onMouseOver(EventArgs e) { }
 
-        void onMouseOut(EventArgs e) {
-            // TODO Auto-generated method stub
-        }
+        void onMouseOut(EventArgs e) { }
 
         void onMouseUp(MouseEventArgs e) {
-            // TODO Auto-generated method stub
             dragging = false;
         }
 
@@ -70,7 +65,6 @@ namespace Circuit {
         }
 
         void onMouseDown(MouseEventArgs e) {
-            // TODO Auto-generated method stub
             dragging = true;
         }
 
@@ -171,14 +165,14 @@ namespace Circuit {
                     adjustChipSize(0, -1);
                 });
                 hp1.Controls.Add(bhm);
-                //
+                /* */
                 vp.Controls.Add(hp1);
             }
 
             var hp2 = new Panel();
             {
                 hp2.AutoSize = true;
-                // OK
+                /* OK */
                 var okButton = new Button() { Text = "OK" };
                 okButton.Click += new EventHandler((s, e) => {
                     if (modelNameTextBox != null) {
@@ -190,11 +184,11 @@ namespace Circuit {
                         model.setName(CustomCompositeElm.lastModelName = name);
                     }
                     CirSim.theSim.updateModels();
-                    CirSim.theSim.needAnalyze(); // will get singular matrix if we don't do this
+                    CirSim.theSim.needAnalyze(); /* will get singular matrix if we don't do this */
                     closeDialog();
                 });
                 hp2.Controls.Add(okButton);
-                // Cancel
+                /* Cancel */
                 if (model.name == null) {
                     var cancelButton = new Button() { Left = okButton.Right + 4, Text = "Cancel" };
                     cancelButton.Click += new EventHandler((s, e) => {
@@ -202,7 +196,7 @@ namespace Circuit {
                     });
                     hp2.Controls.Add(cancelButton);
                 }
-                //
+                /* */
                 vp.Controls.Add(hp2);
             }
 

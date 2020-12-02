@@ -20,7 +20,7 @@ namespace Circuit.Elements {
             try {
                 hiV = st.nextTokenDouble();
                 loV = st.nextTokenDouble();
-            } catch (Exception e) {
+            } catch {
                 hiV = 5;
                 loV = 0;
             }
@@ -29,15 +29,15 @@ namespace Circuit.Elements {
             }
         }
 
+        protected override string dump() {
+            return base.dump() + " " + hiV + " " + loV;
+        }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.LOGIC_I; }
+
         bool isTernary() { return (mFlags & FLAG_TERNARY) != 0; }
 
         bool isNumeric() { return (mFlags & (FLAG_TERNARY | FLAG_NUMERIC)) != 0; }
-
-        public override DUMP_ID getDumpType() { return DUMP_ID.LOGIC_I; }
-
-        public override string dump() {
-            return base.dump() + " " + hiV + " " + loV;
-        }
 
         public override int getPostCount() { return 1; }
 

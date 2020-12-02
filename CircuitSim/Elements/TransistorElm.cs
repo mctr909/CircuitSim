@@ -58,6 +58,15 @@ namespace Circuit.Elements {
             setup();
         }
 
+        protected override string dump() {
+            return pnp
+                + " " + (Volts[0] - Volts[1])
+                + " " + (Volts[0] - Volts[2])
+                + " " + beta;
+        }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.TRANSISTOR; }
+
         public void setBeta(double b) {
             beta = b;
             setup();
@@ -98,16 +107,6 @@ namespace Circuit.Elements {
             lastvbc = lastvbe = curcount_c = curcount_e = curcount_b = 0;
         }
 
-        public override DUMP_ID getDumpType() { return DUMP_ID.TRANSISTOR; }
-
-        public override string dump() {
-            return base.dump()
-                + " " + pnp
-                + " " + (Volts[0] - Volts[1])
-                + " " + (Volts[0] - Volts[2])
-                + " " + beta;
-        }
-
         public override void draw(Graphics g) {
             setBbox(mPoint1, mPoint2, 16);
 
@@ -131,13 +130,6 @@ namespace Circuit.Elements {
             /* draw base rectangle */
             fillPolygon(g, getVoltageColor(Volts[0]), rectPoly);
 
-            if ((needsHighlight() || Sim.dragElm == this) && mDy == 0) {
-                /* IES */
-                int ds = Math.Sign(mDx);
-                g.DrawString("B", FONT_TERM_NAME, BRUSH_TERM_NAME, tbase.X - 10 * ds, tbase.Y - 5);
-                g.DrawString("C", FONT_TERM_NAME, BRUSH_TERM_NAME, coll[0].X - 3 + 9 * ds, coll[0].Y + 4); /* x+6 if ds=1, -12 if -1 */
-                g.DrawString("E", FONT_TERM_NAME, BRUSH_TERM_NAME, emit[0].X - 3 + 9 * ds, emit[0].Y + 4);
-            }
             drawPosts(g);
         }
 
@@ -173,7 +165,6 @@ namespace Circuit.Elements {
             interpPoint(mPoint1, mPoint2, ref coll[1], ref emit[1], 1 - 13 / mElmLen, 6 * mDsign * pnp);
 
             /* calc point where base lead contacts rectangle */
-            tbase = new Point();
             interpPoint(mPoint1, mPoint2, ref tbase, 1 - 16 / mElmLen);
 
             /* rectangle */

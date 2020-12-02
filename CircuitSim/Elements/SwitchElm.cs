@@ -10,7 +10,8 @@ namespace Circuit.Elements {
          * position 1 == open */
         public int position { get; protected set; }
         public int posCount { get; protected set; }
-        Point ps;
+        Point ps1;
+        Point ps2;
 
         public SwitchElm(int xx, int yy) : base(xx, yy) {
             momentary = false;
@@ -37,17 +38,15 @@ namespace Circuit.Elements {
             posCount = 2;
         }
 
-        public override DUMP_ID getDumpType() { return DUMP_ID.SWITCH; }
-
-        public override string dump() {
-            return base.dump() + " " + position + " " + momentary;
+        protected override string dump() {
+            return position + " " + momentary;
         }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.SWITCH; }
 
         public override void setPoints() {
             base.setPoints();
             calcLeads(32);
-            ps = new Point();
-            ps2 = new Point();
         }
 
         public override void draw(Graphics g) {
@@ -61,17 +60,17 @@ namespace Circuit.Elements {
             if (!needsHighlight()) {
                 PenThickLine.Color = WhiteColor;
             }
-            interpPoint(mLead1, mLead2, ref ps, 0, hs1);
+            interpPoint(mLead1, mLead2, ref ps1, 0, hs1);
             interpPoint(mLead1, mLead2, ref ps2, 1, hs2);
-            drawThickLine(g, ps, ps2);
+            drawThickLine(g, ps1, ps2);
             drawPosts(g);
         }
 
         public virtual Rectangle getSwitchRect() {
-            interpPoint(mLead1, mLead2, ref ps, 0, openhs);
+            interpPoint(mLead1, mLead2, ref ps1, 0, openhs);
             var l1 = new Rectangle(mLead1.X, mLead1.Y, 0, 0);
             var l2 = new Rectangle(mLead2.X, mLead2.Y, 0, 0);
-            var p = new Rectangle(ps.X, ps.Y, 0, 0);
+            var p = new Rectangle(ps1.X, ps1.Y, 0, 0);
             return Rectangle.Union(l1, Rectangle.Union(l2, p));
         }
 

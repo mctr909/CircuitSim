@@ -8,8 +8,6 @@ namespace Circuit {
     class ScopePropertiesDialog : Form {
         CirSim mSim;
 
-        GroupBox gb;
-
         //RichTextArea textBox;
 
         TextBox textArea;

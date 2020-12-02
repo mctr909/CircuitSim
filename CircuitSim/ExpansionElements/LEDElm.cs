@@ -37,7 +37,7 @@ namespace Circuit.Elements {
             } catch { }
         }
 
-        public override DUMP_ID getDumpType() { return DUMP_ID.LED; }
+        protected override DUMP_ID getDumpType() { return DUMP_ID.LED; }
 
         public override void setPoints() {
             base.setPoints();
@@ -56,7 +56,7 @@ namespace Circuit.Elements {
             drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, ledLead1);
             drawThickLine(g, getVoltageColor(Volts[1]), ledLead2, mPoint2);
 
-            PenThickLine.Color = Color.Gray;
+            PenThickLine.Color = LightGrayColor;
 
             int cr = 12;
             drawThickCircle(g, ledCenter.X, ledCenter.Y, cr);

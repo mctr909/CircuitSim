@@ -13,6 +13,10 @@ namespace Circuit.Elements {
 
         public WireElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) { }
 
+        protected override string dump() { return ""; }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.WIRE; }
+
         public override void draw(Graphics g) {
             drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mPoint2);
             doDots(g);
@@ -47,8 +51,6 @@ namespace Circuit.Elements {
             arr[1] = "I = " + getCurrentDText(getCurrent());
             arr[2] = "V = " + getVoltageText(Volts[0]);
         }
-
-        public override DUMP_ID getDumpType() { return DUMP_ID.WIRE; }
 
         public override  double getPower() { return 0; }
 

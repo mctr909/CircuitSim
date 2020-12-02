@@ -2,11 +2,16 @@
 
 namespace Circuit.Elements {
     class GroundElm : CircuitElm {
+        Point ps1;
+        Point ps2;
+
         public GroundElm(int xx, int yy) : base(xx, yy) { }
 
         public GroundElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) { }
 
-        public override DUMP_ID getDumpType() { return DUMP_ID.GROUND; }
+        protected override string dump() { return ""; }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.GROUND; }
 
         public override int getPostCount() { return 1; }
 

@@ -27,9 +27,11 @@ namespace Circuit.Elements {
             setupPins();
         }
 
-        public override string dump() {
+        protected override string dump() {
             return base.dump() + " " + inputCount + " " + CustomLogicModel.escape(exprString);
         }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.VCCS; }
 
         public override void setupPins() {
             sizeX = 2;
@@ -167,8 +169,6 @@ namespace Circuit.Elements {
         public override int getPostCount() { return inputCount + 2; }
 
         public override int getVoltageSourceCount() { return 0; }
-
-        public override DUMP_ID getDumpType() { return DUMP_ID.VCCS; }
 
         public override bool getConnection(int n1, int n2) {
             return comparePair(inputCount, inputCount + 1, n1, n2);

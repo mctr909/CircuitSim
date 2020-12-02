@@ -8,6 +8,8 @@
             mJustLoaded = true;
         }
 
+        protected override DUMP_ID getDumpType() { return DUMP_ID.RING_COUNTER; }
+
         string getChipName() { return "ring counter"; }
 
         bool needsBits() { return true; }
@@ -85,7 +87,5 @@
                 setPoints();
             }
         }
-
-        public override DUMP_ID getDumpType() { return DUMP_ID.RING_COUNTER; }
     }
 }

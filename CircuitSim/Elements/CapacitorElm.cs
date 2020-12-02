@@ -25,6 +25,12 @@ namespace Circuit.Elements {
             voltdiff = st.nextTokenDouble();
         }
 
+        protected override string dump() {
+            return capacitance + " " + voltdiff;
+        }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.CAPACITOR; }
+
         public bool isTrapezoidal() { return (mFlags & FLAG_BACK_EULER) == 0; }
 
         public double getCapacitance() { return capacitance; }
@@ -46,12 +52,6 @@ namespace Circuit.Elements {
         public void shorted() {
             base.reset();
             voltdiff = mCurrent = mCurCount = curSourceValue = 0;
-        }
-
-        public override DUMP_ID getDumpType() { return DUMP_ID.CAPACITOR; }
-
-        public override string dump() {
-            return base.dump() + " " + capacitance + " " + voltdiff;
         }
 
         public override void setPoints() {

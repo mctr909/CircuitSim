@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit.Elements {
@@ -27,7 +26,9 @@ namespace Circuit.Elements {
 
         protected int ww;
 
-        protected Point[] gatePoly;
+        protected Point[] gatePolyEuro;
+        protected Point[] gatePolyAnsi;
+
         Point[] schmittPoly;
 
         protected Point pcircle;
@@ -50,10 +51,11 @@ namespace Circuit.Elements {
             inputCount = st.nextTokenInt();
             double lastOutputVoltage = st.nextTokenDouble();
             mNoDiagonal = true;
-            highVoltage = 5;
             try {
                 highVoltage = st.nextTokenDouble();
-            } catch (Exception e) { }
+            } catch {
+                highVoltage = 5;
+            }
             lastOutput = lastOutputVoltage > highVoltage * .5;
             setSize((f & FLAG_SMALL) != 0 ? 1 : 2);
         }
@@ -69,8 +71,8 @@ namespace Circuit.Elements {
             mFlags |= (s == 1) ? FLAG_SMALL : 0;
         }
 
-        public override string dump() {
-            return base.dump() + " " + inputCount + " " + Volts[inputCount] + " " + highVoltage;
+        protected override string dump() {
+            return inputCount + " " + Volts[inputCount] + " " + highVoltage;
         }
 
         public override void setPoints() {
@@ -81,7 +83,7 @@ namespace Circuit.Elements {
             }
             int hs = gheight;
             int i;
-            ww = gwidth2; // was 24
+            ww = gwidth2;
             if (ww > mElmLen / 2) {
                 ww = (int)(mElmLen / 2);
             }
@@ -112,12 +114,12 @@ namespace Circuit.Elements {
             var pts = new Point[4];
             interpPoint(mLead1, mLead2, ref pts[0], ref pts[1], 0, hs2);
             interpPoint(mLead1, mLead2, ref pts[3], ref pts[2], 1, hs2);
-            gatePoly = createPolygon(pts).ToArray();
+            gatePolyEuro = createPolygon(pts).ToArray();
         }
 
-        string getGateText() { return null; }
+        protected virtual string getGateText() { return null; }
 
-        protected static bool useEuroGates() { return !Sim.chkAnsiResistorCheckItem.Checked; }
+        public static bool useAnsiGates() { return Sim.chkAnsiResistorCheckItem.Checked; }
 
         public override void draw(Graphics g) {
             int i;
@@ -126,8 +128,10 @@ namespace Circuit.Elements {
             }
             drawThickLine(g, getVoltageColor(Volts[inputCount]), mLead2, mPoint2);
             PenThickLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
-            drawThickPolygon(g, gatePoly);
-            if (useEuroGates()) {
+            if (useAnsiGates()) {
+                drawThickPolygon(g, gatePolyAnsi);
+            } else {
+                drawThickPolygon(g, gatePolyEuro);
                 var center = interpPoint(mPoint1, mPoint2, .5);
                 drawCenteredText(g, getGateText(), center.X, center.Y - 6 * gsize, true);
             }
@@ -135,12 +139,13 @@ namespace Circuit.Elements {
                 PenLine.Color = WhiteColor;
                 drawPolygon(g, schmittPoly);
             }
-            if (linePoints != null)
+            if (linePoints != null && useAnsiGates()) {
                 for (i = 0; i != linePoints.Length - 1; i++) {
                     drawThickLine(g, linePoints[i], linePoints[i + 1]);
                 }
+            }
             if (isInverting()) {
-                drawThickCircle(g, pcircle.X, pcircle.Y, 3);
+                drawThickCircle(g, pcircle.X, pcircle.Y, 9);
             }
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(g, mLead2, mPoint2, mCurCount);
@@ -189,10 +194,10 @@ namespace Circuit.Elements {
                 f = !f;
             }
 
-            // detect oscillation (using same strategy as Atanua)
+            /* detect oscillation (using same strategy as Atanua) */
             if (lastOutput == !f) {
                 if (oscillationCount++ > 50) {
-                    // output is oscillating too much, randomly leave output the same
+                    /* output is oscillating too much, randomly leave output the same */
                     oscillationCount = 0;
                     if (CirSim.random.Next(10) > 5) {
                         f = lastOutput;
@@ -243,8 +248,8 @@ namespace Circuit.Elements {
             }
         }
 
-        // there is no current path through the gate inputs, but there
-        // is an indirect path through the output to ground.
+        /* there is no current path through the gate inputs,
+         * but there is an indirect path through the output to ground. */
         public override bool getConnection(int n1, int n2) { return false; }
 
         public override bool hasGroundConnection(int n1) {

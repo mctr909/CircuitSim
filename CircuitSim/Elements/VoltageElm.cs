@@ -27,6 +27,9 @@ namespace Circuit.Elements {
         double dutyCycle;
         double noiseValue;
 
+        Point ps1;
+        Point ps2;
+
         const double defaultPulseDuty = 1 / PI2;
 
         protected VoltageElm(int xx, int yy, int wf) : base(xx, yy) {
@@ -65,9 +68,7 @@ namespace Circuit.Elements {
             reset();
         }
 
-        public override DUMP_ID getDumpType() { return DUMP_ID.VOLTAGE; }
-
-        public override string dump() {
+        protected override string dump() {
             /* set flag so we know if duty cycle is correct for pulse waveforms */
             if (waveform == WF_PULSE) {
                 mFlags |= FLAG_PULSE_DUTY;
@@ -75,8 +76,7 @@ namespace Circuit.Elements {
                 mFlags &= ~FLAG_PULSE_DUTY;
             }
 
-            return base.dump()
-                + " " + waveform
+            return waveform
                 + " " + frequency
                 + " " + maxVoltage
                 + " " + bias
@@ -84,6 +84,8 @@ namespace Circuit.Elements {
                 + " " + dutyCycle;
             /* VarRailElm adds text at the end */
         }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.VOLTAGE; }
 
         public override void reset() {
             mCurCount = 0;
@@ -171,7 +173,7 @@ namespace Circuit.Elements {
                 var plusPoint = interpPoint(mPoint1, mPoint2, (mElmLen / 2 + circleSize + 4) / mElmLen, 10 * mDsign);
                 plusPoint.Y += 4;
                 var w = (int)g.MeasureString(inds, FONT_TERM_NAME).Width;
-                g.DrawString(inds, FONT_TERM_NAME, BRUSH_TERM_NAME, plusPoint.X - w / 2, plusPoint.Y);
+                g.DrawString(inds, FONT_TERM_NAME, BrushTermName, plusPoint.X - w / 2, plusPoint.Y);
             }
 
             updateDotCount();
@@ -192,7 +194,7 @@ namespace Circuit.Elements {
             int y = center.Y;
 
             if (waveform != WF_NOISE) {
-                PenThickLine.Color = needsHighlight() ? SelectColor : Color.Gray;
+                PenThickLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
                 drawThickCircle(g, x, y, circleSize);
             }
 

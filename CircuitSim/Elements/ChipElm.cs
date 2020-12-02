@@ -156,6 +156,21 @@ namespace Circuit.Elements {
             }
         }
 
+        protected override string dump() {
+            string s = "";
+            if (needsBits()) {
+                s = string.Join(" ", s, bits);
+            }
+            for (int i = 0; i != getPostCount(); i++) {
+                if (pins[i].state) {
+                    s = string.Join(" ", s, Volts[i]);
+                }
+            }
+            return s;
+        }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.INVALID; }
+
         bool needsBits() { return false; }
 
         protected void setSize(int s) {
@@ -174,7 +189,6 @@ namespace Circuit.Elements {
 
         public void drawChip(Graphics g) {
             int i;
-            //	    FontMetrics fm = g.getFontMetrics();
             for (i = 0; i != getPostCount(); i++) {
                 var p = pins[i];
                 getVoltageColor(Volts[i]);
@@ -194,13 +208,13 @@ namespace Circuit.Elements {
                 var font = FONT_TEXT;
                 while (true) {
                     int sw = (int)g.MeasureString(p.text, font).Width;
-                    // scale font down if it's too big
+                    /* scale font down if it's too big */
                     if (sw > 12 * csize) {
                         fsz--;
                         font = new Font(FONT_TEXT.Name, fsz);
                         continue;
                     }
-                    g.DrawString(p.text, font, BRUSH_TEXT, p.textloc.X - sw / 2, p.textloc.Y);
+                    g.DrawString(p.text, font, BrushText, p.textloc.X - sw / 2, p.textloc.Y);
                     if (p.lineOver) {
                         int ya = p.textloc.Y;
                         drawThickLine(g, p.textloc.X - sw / 2, ya, p.textloc.X + sw / 2, ya);
@@ -356,19 +370,6 @@ namespace Circuit.Elements {
                 Volts[i] = 0;
             }
             lastClock = false;
-        }
-
-        public override string dump() {
-            string s = base.dump();
-            if (needsBits()) {
-                s += " " + bits;
-            }
-            for (int i = 0; i != getPostCount(); i++) {
-                if (pins[i].state) {
-                    s += " " + Volts[i];
-                }
-            }
-            return s;
         }
 
         public override void getInfo(string[] arr) {

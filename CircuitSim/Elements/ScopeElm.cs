@@ -23,6 +23,14 @@ namespace Circuit.Elements {
             elmScope.resetGraph();
         }
 
+        protected override string dump() {
+            string sStr = elmScope.dump().Replace(' ', '_');
+            sStr = sStr.Replace("o_", ""); /* remove unused prefix for embedded Scope */
+            return sStr;
+        }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.SCOPE; }
+
         public void setScopeElm(CircuitElm e) {
             elmScope.setElm(e);
             elmScope.resetGraph();
@@ -62,15 +70,6 @@ namespace Circuit.Elements {
         }
 
         public override bool canViewInScope() { return false; }
-
-        public override DUMP_ID getDumpType() { return DUMP_ID.SCOPE; }
-
-        public override string dump() {
-            string dumpStr = base.dump();
-            string sStr = elmScope.dump().Replace(' ', '_');
-            sStr = sStr.Replace("o_", ""); /* remove unused prefix for embedded Scope */
-            return dumpStr + " " + sStr;
-        }
 
         public override void draw(Graphics g) {
             var color = needsHighlight() ? SelectColor : WhiteColor;

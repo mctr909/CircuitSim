@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace Circuit.Elements {
     class CurrentElm : CircuitElm {
@@ -21,11 +20,11 @@ namespace Circuit.Elements {
             }
         }
 
-        public override string dump() {
-            return base.dump() + " " + currentValue;
+        protected override string dump() {
+            return currentValue.ToString();
         }
 
-        public override DUMP_ID getDumpType() { return DUMP_ID.CURRENT; }
+        protected override DUMP_ID getDumpType() { return DUMP_ID.CURRENT; }
 
         public override void setPoints() {
             base.setPoints();

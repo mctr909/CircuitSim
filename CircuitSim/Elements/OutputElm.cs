@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit.Elements {
@@ -21,11 +20,11 @@ namespace Circuit.Elements {
             } catch { }
         }
 
-        public override string dump() {
-            return base.dump() + " " + scale;
+        protected override string dump() {
+            return scale.ToString();
         }
 
-        public override DUMP_ID getDumpType() { return DUMP_ID.OUTPUT; }
+        protected override DUMP_ID getDumpType() { return DUMP_ID.OUTPUT; }
 
         public override int getPostCount() { return 1; }
 

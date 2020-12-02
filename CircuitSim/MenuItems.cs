@@ -264,6 +264,7 @@ namespace Circuit {
         CC2Elm,
         CC2NegElm,
         ComparatorElm,
+        ComparatorSwapElm,
         OTAElm,
         VCVSElm,
         VCCSElm,
@@ -320,32 +321,37 @@ namespace Circuit {
 
     enum DUMP_ID {
         INVALID = 0,
-        GROUND = 'g',
-        WIRE = 'w',
-        RESISTOR = 'r',
-        INDUCTOR = 'l',
+        OPAMP = 'a',
         CAPACITOR = 'c',
         DIODE = 'd',
-        TRANSISTOR = 't',
+        MOSFET = 'f',
+        GROUND = 'g',
+        CURRENT = 'i',
+        INDUCTOR = 'l',
         BIPOLER_NPN = 'n',
         BIPOLER_PNP = 'p',
-        MOSFET = 'f',
-        NMOS = 'N',
-        PMOS = 'P',
-        SWITCH = 's',
-        SWITCH2 = 'S',
+        TRANSISTOR = 't',
         VOLTAGE = 'v',
-        CURRENT = 'i',
-        OUTPUT = 'O',
-        RAIL = 'R',
-        PROBE = '>',
+        WIRE = 'w',
+        RESISTOR = 'r',
+        GRAPHIC = 'G',
+        INVERT = 'I',
         LOGIC_I = 'L',
         LOGIC_O = 'M',
+        NMOS = 'N',
+        OUTPUT = 'O',
+        PMOS = 'P',
+        RAIL = 'R',
+        SWITCH = 's',
+        SWITCH2 = 'S',
+        TRANSFORMER = 'T',
+        PROBE = '>',
         AND_GATE = 150,
         NAND_GATE = 151,
         OR_GATE = 152,
         NOR_GATE = 153,
         XOR_GATE = 154,
+        ANALOG_SW = 159,
         LED = 162,
         RING_COUNTER = 163,
         SWEEP = 170,
@@ -353,6 +359,7 @@ namespace Circuit {
         POT = 174,
         LABELED_NODE = 207,
         VCCS = 213,
+        COMPARATOR = 401,
         SCOPE = 403,
         CUSTOM_COMPOSITE = 410
     }
@@ -544,8 +551,9 @@ namespace Circuit {
             addElementItem(passMenuBar, "スイッチ(S)", MENU_ITEM.SwitchElm);
             addElementItem(passMenuBar, "プッシュスイッチ", MENU_ITEM.PushSwitchElm);
             addElementItem(passMenuBar, "切り替えスイッチ(T)", MENU_ITEM.Switch2Elm);
+            passMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(passMenuBar, "可変抵抗(V)", MENU_ITEM.PotElm);
-            //addMenuItem(passMenuBar, "Add Transformer", ITEM.TransformerElm);
+            addElementItem(passMenuBar, "トランス", MENU_ITEM.TransformerElm);
             //addMenuItem(passMenuBar, "Add Tapped Transformer", ITEM.TappedTransformerElm);
             //addMenuItem(passMenuBar, "Add Transmission Line", ITEM.TransLineElm);
             //addMenuItem(passMenuBar, "Add Relay", ITEM.RelayElm);
@@ -581,6 +589,11 @@ namespace Circuit {
             //addMenuItem(activeMenuBar, "Add Triode", ITEM.TriodeElm);
             ////addMenuItem(activeMenuBar, "Add Photoresistor", MENU_ITEM.PhotoResistorElm);
             ////addMenuItem(activeMenuBar, "Add Thermistor", MENU_ITEM.ThermistorElm);
+            activeMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(activeMenuBar, "オペアンプ(-側が上)", MENU_ITEM.OpAmpElm);
+            addElementItem(activeMenuBar, "オペアンプ(+側が上)", MENU_ITEM.OpAmpSwapElm);
+            //addElementItem(activeMenuBar, "コンパレータ(-側が上)", MENU_ITEM.ComparatorElm);
+            //addElementItem(activeMenuBar, "コンパレータ(+側が上)", MENU_ITEM.ComparatorSwapElm);
             mainMenuBar.Items.Add(activeMenuBar);
             #endregion
 
@@ -629,8 +642,6 @@ namespace Circuit {
             //var activeBlocMenuBar = new ToolStripMenuItem();
             //activeBlocMenuBar.Text = "Active Building Blocks(C)";
             //activeBlocMenuBar.Font = menuFont;
-            //addMenuItem(activeBlocMenuBar, "Add Op Amp (ideal, - on top)", ITEM.OpAmpElm);
-            //addMenuItem(activeBlocMenuBar, "Add Op Amp (ideal, + on top)", ITEM.OpAmpSwapElm);
             //addMenuItem(activeBlocMenuBar, "Add Op Amp (real)", ITEM.OpAmpRealElm);
             //addMenuItem(activeBlocMenuBar, "Add Analog Switch (SPST)", ITEM.AnalogSwitchElm);
             //addMenuItem(activeBlocMenuBar, "Add Analog Switch (SPDT)", ITEM.AnalogSwitch2Elm);
@@ -639,7 +650,6 @@ namespace Circuit {
             //addMenuItem(activeBlocMenuBar, "Add Schmitt Trigger (Inverting)", ITEM.InvertingSchmittElm);
             //addMenuItem(activeBlocMenuBar, "Add CCII+", ITEM.CC2Elm);
             //addMenuItem(activeBlocMenuBar, "Add CCII-", ITEM.CC2NegElm);
-            //addMenuItem(activeBlocMenuBar, "Add Comparator (Hi-Z/GND output)", ITEM.ComparatorElm);
             //addMenuItem(activeBlocMenuBar, "Add OTA (LM13700 style)", ITEM.OTAElm);
             //addMenuItem(activeBlocMenuBar, "Add Voltage-Controlled Voltage Source", ITEM.VCVSElm);
             //addMenuItem(activeBlocMenuBar, "Add Voltage-Controlled Current Source", ITEM.VCCSElm);
@@ -654,12 +664,12 @@ namespace Circuit {
             var gateMenuBar = new ToolStripMenuItem();
             gateMenuBar.Text = "論理回路(L)";
             gateMenuBar.Font = menuFont;
-            //addElementItem(gateMenuBar, "Add Inverter", ITEM.InverterElm);
             addElementItem(gateMenuBar, "AND", MENU_ITEM.AndGateElm);
-            addElementItem(gateMenuBar, "NAND", MENU_ITEM.NandGateElm);
             addElementItem(gateMenuBar, "OR", MENU_ITEM.OrGateElm);
+            addElementItem(gateMenuBar, "XOR", MENU_ITEM.XorGateElm);
+            addElementItem(gateMenuBar, "NOT", MENU_ITEM.InverterElm);
+            addElementItem(gateMenuBar, "NAND", MENU_ITEM.NandGateElm);
             addElementItem(gateMenuBar, "NOR", MENU_ITEM.NorGateElm);
-            addElementItem(gateMenuBar, "ExOR", MENU_ITEM.XorGateElm);
             gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(gateMenuBar, "入力", MENU_ITEM.LogicInputElm);
             addElementItem(gateMenuBar, "出力", MENU_ITEM.LogicOutputElm);
@@ -734,7 +744,7 @@ namespace Circuit {
             case MENU_ITEM.PotElm:
                 return new PotElm(x1, y1);
             case MENU_ITEM.TransformerElm:
-                return null; //(CircuitElm)new TransformerElm(x1, y1);
+                return new TransformerElm(x1, y1);
             case MENU_ITEM.TappedTransformerElm:
                 return null; //(CircuitElm)new TappedTransformerElm(x1, y1);
             case MENU_ITEM.TransLineElm:
@@ -857,13 +867,13 @@ namespace Circuit {
 
             #region Active Building Blocks
             case MENU_ITEM.OpAmpElm:
-                return null; //(CircuitElm)new OpAmpElm(x1, y1);
+                return new OpAmpElm(x1, y1);
             case MENU_ITEM.OpAmpSwapElm:
-                return null; //(CircuitElm)new OpAmpSwapElm(x1, y1);
+                return new OpAmpSwapElm(x1, y1);
             case MENU_ITEM.OpAmpRealElm:
                 return null; //(CircuitElm)new OpAmpRealElm(x1, y1);
             case MENU_ITEM.AnalogSwitchElm:
-                return null; //(CircuitElm)new AnalogSwitchElm(x1, y1);
+                return new AnalogSwitchElm(x1, y1);
             case MENU_ITEM.AnalogSwitch2Elm:
                 return null; //(CircuitElm)new AnalogSwitch2Elm(x1, y1);
             case MENU_ITEM.TriStateElm:
@@ -877,7 +887,9 @@ namespace Circuit {
             case MENU_ITEM.CC2NegElm:
                 return null; //(CircuitElm)new CC2NegElm(x1, y1);
             case MENU_ITEM.ComparatorElm:
-                return null; //(CircuitElm)new ComparatorElm(x1, y1);
+                return null; //new ComparatorElm(x1, y1);
+            case MENU_ITEM.ComparatorSwapElm:
+                return null; //new ComparatorSwapElm(x1, y1);
             case MENU_ITEM.OTAElm:
                 return null; //(CircuitElm)new OTAElm(x1, y1);
             case MENU_ITEM.VCVSElm:
@@ -900,7 +912,7 @@ namespace Circuit {
             case MENU_ITEM.LogicOutputElm:
                 return new LogicOutputElm(x1, y1);
             case MENU_ITEM.InverterElm:
-                return null; //(CircuitElm)new InverterElm(x1, y1);
+                return new InverterElm(x1, y1);
             case MENU_ITEM.AndGateElm:
                 return new AndGateElm(x1, y1);
             case MENU_ITEM.NandGateElm:
@@ -978,14 +990,14 @@ namespace Circuit {
         public static CircuitElm createCe(DUMP_ID tint, int x1, int y1, int x2, int y2, int f, StringTokenizer st) {
             switch (tint) {
             //case 'A': return new AntennaElm(x1, y1, x2, y2, f, st);
-            //case 'I': return new InverterElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.INVERT: return new InverterElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.LOGIC_I: return new LogicInputElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.LOGIC_O: return new LogicOutputElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.OUTPUT: return new OutputElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.RAIL: return new RailElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.SWITCH2: return new Switch2Elm(x1, y1, x2, y2, f, st);
-            //case 'T': return new TransformerElm(x1, y1, x2, y2, f, st);
-            //case 'a': return new OpAmpElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.TRANSFORMER: return new TransformerElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.OPAMP: return new OpAmpElm(x1, y1, x2, y2, f, st);
             //case 'b': return new BoxElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.CAPACITOR: return new CapacitorElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.DIODE: return new DiodeElm(x1, y1, x2, y2, f, st);
@@ -1013,7 +1025,7 @@ namespace Circuit {
             //case 156: return new JKFlipFlopElm(x1, y1, x2, y2, f, st);
             //case 157: return new SevenSegElm(x1, y1, x2, y2, f, st);
             //case 158: return new VCOElm(x1, y1, x2, y2, f, st);
-            //case 159: return new AnalogSwitchElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.ANALOG_SW: return new AnalogSwitchElm(x1, y1, x2, y2, f, st);
             //case 160: return new AnalogSwitch2Elm(x1, y1, x2, y2, f, st);
             //case 161: return new PhaseCompElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.LED: return new LEDElm(x1, y1, x2, y2, f, st);
@@ -1066,7 +1078,7 @@ namespace Circuit {
             //case 368: return new TestPointElm(x1, y1, x2, y2, f, st);
             //case 370: return new AmmeterElm(x1, y1, x2, y2, f, st);
             //case 400: return new DarlingtonElm(x1, y1, x2, y2, f, st);
-            //case 401: return new ComparatorElm(x1, y1, x2, y2, f, st);
+            //case DUMP_ID.COMPARATOR: return new ComparatorElm(x1, y1, x2, y2, f, st);
             //case 402: return new OTAElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.SCOPE: return new ScopeElm(x1, y1, x2, y2, f, st);
             //case 404: return new FuseElm(x1, y1, x2, y2, f, st);

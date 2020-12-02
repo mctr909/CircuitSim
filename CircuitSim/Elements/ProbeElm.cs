@@ -58,13 +58,13 @@ namespace Circuit.Elements {
             } catch { }
         }
 
-        public override DUMP_ID getDumpType() { return DUMP_ID.PROBE; }
+        protected override string dump() {
+            return meter + " " + scale;
+        }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.PROBE; }
 
         public override DUMP_ID getShortcut() { return DUMP_ID.PROBE; }
-
-        public override string dump() {
-            return base.dump() + " " + meter + " " + scale;
-        }
 
         string getMeter() {
             switch (meter) {
@@ -171,7 +171,7 @@ namespace Circuit.Elements {
             }
 
             int w = (int)g.MeasureString("+", FONT_UNITS).Width;
-            g.DrawString("+", FONT_UNITS, BRUSH_TEXT, plusPoint.X - w / 2, plusPoint.Y);
+            g.DrawString("+", FONT_UNITS, BrushText, plusPoint.X - w / 2, plusPoint.Y);
             drawPosts(g);
         }
 

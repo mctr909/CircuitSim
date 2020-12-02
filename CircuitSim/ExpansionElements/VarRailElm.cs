@@ -21,11 +21,11 @@ namespace Circuit.Elements {
             createSlider();
         }
 
-        public override string dump() {
+        protected override string dump() {
             return base.dump() + " " + sliderText.Replace("\\+", "%2B");
         }
 
-        public override DUMP_ID getDumpType() { return DUMP_ID.VAR_RAIL; }
+        protected override DUMP_ID getDumpType() { return DUMP_ID.VAR_RAIL; }
 
         void createSlider() {
             waveform = WF_VAR;
@@ -37,7 +37,7 @@ namespace Circuit.Elements {
                 SmallChange = 1,
                 Value = value
             });
-            //	    sim.verticalPanel.validate();
+            //sim.verticalPanel.validate();
         }
 
         public override double getVoltage() {

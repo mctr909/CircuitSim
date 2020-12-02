@@ -3,6 +3,9 @@
 namespace Circuit.Elements {
     class ResistorElm : CircuitElm {
         public double resistance { get; private set; }
+
+        Point ps1;
+        Point ps2;
         Point ps3;
         Point ps4;
 
@@ -18,17 +21,15 @@ namespace Circuit.Elements {
 
         void setResistance(double r) { resistance = r; }
 
-        public override DUMP_ID getDumpType() { return DUMP_ID.RESISTOR; }
-
-        public override string dump() {
-            return base.dump() + " " + resistance;
+        protected override string dump() {
+            return resistance.ToString();
         }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.RESISTOR; }
 
         public override void setPoints() {
             base.setPoints();
             calcLeads(32);
-            ps3 = new Point();
-            ps4 = new Point();
         }
 
         public override void draw(Graphics g) {

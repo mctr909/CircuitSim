@@ -29,15 +29,52 @@ namespace Circuit.Elements {
 
         public CompositeElm(int xa, int ya, int xb, int yb, int f) : base(xa, ya, xb, yb, f) { }
 
-        CompositeElm(int xx, int yy, string s, int[] externalNodes) : base(xx, yy) {
+        public CompositeElm(int xx, int yy, string s, int[] externalNodes) : base(xx, yy) {
             loadComposite(null, s, externalNodes);
             allocNodes();
         }
 
-        public CompositeElm(int xa, int ya, int xb, int yb, int f,
+        public CompositeElm(int xa, int ya, int xb, int yb, int f, 
             StringTokenizer st, string s, int[] externalNodes) : base(xa, ya, xb, yb, f) {
             loadComposite(st, s, externalNodes);
             allocNodes();
+        }
+
+        protected override string dump() {
+            return dumpElements();
+        }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.INVALID; }
+
+        protected string dumpElements() {
+            string dumpStr = "";
+            for (int i = 0; i < compElmList.Count; i++) {
+                string tstring = compElmList[i].Dump;
+                var rg = new Regex("[A-Za-z0-9]+ 0 0 0 0 ");
+                tstring = rg.Replace(tstring, "", 1); /* remove unused tint x1 y1 x2 y2 coords for internal components */
+                dumpStr = string.Join(" ", dumpStr, CustomLogicModel.escape(tstring));
+            }
+            return dumpStr;
+        }
+
+        /* dump subset of elements
+         * (some of them may not have any state, and/or may be very long, so we avoid dumping them for brevity) */
+        protected string dumpWithMask(int mask) {
+            return dumpElements(mask);
+        }
+
+        protected string dumpElements(int mask) {
+            string dumpStr = "";
+            for (int i = 0; i < compElmList.Count; i++) {
+                if ((mask & (1 << i)) == 0) {
+                    continue;
+                }
+                string tstring = compElmList[i].Dump;
+                var rg = new Regex("[A-Za-z0-9]+ 0 0 0 0 ");
+                tstring = rg.Replace(tstring, "", 1); /* remove unused tint x1 y1 x2 y2 coords for internal components */
+                dumpStr += " " + CustomLogicModel.escape(tstring);
+            }
+            return dumpStr;
         }
 
         bool useEscape() { return (mFlags & FLAG_ESCAPE) != 0; }
@@ -61,7 +98,7 @@ namespace Circuit.Elements {
                 var ceType = MenuItems.getItemFromString(stModel.nextToken());
                 var newce = MenuItems.constructElement(ceType, 0, 0);
                 if (stIn != null) {
-                    var tint = newce.getDumpType();
+                    var tint = newce.DumpType;
                     string dumpedCe = stIn.nextToken();
                     if (useEscape()) {
                         dumpedCe = CustomLogicModel.unescape(dumpedCe);
@@ -147,44 +184,6 @@ namespace Circuit.Elements {
         public override bool nonLinear() {
             return true; /* Lets assume that any useful composite elements are
                          /* non-linear */
-        }
-
-        public override string dump() {
-            string dumpStr = base.dump();
-            dumpStr += dumpElements();
-            return dumpStr;
-        }
-
-        public string dumpElements() {
-            string dumpStr = "";
-            for (int i = 0; i < compElmList.Count; i++) {
-                string tstring = compElmList[i].dump();
-                var rg = new Regex("[A-Za-z0-9]+ 0 0 0 0 ");
-                tstring = rg.Replace(tstring, "", 1); /* remove unused tint x1 y1 x2 y2 coords for internal components */
-                dumpStr += " " + CustomLogicModel.escape(tstring);
-            }
-            return dumpStr;
-        }
-
-        /* dump subset of elements
-         * (some of them may not have any state, and/or may be very long, so we avoid dumping them for brevity) */
-        public string dumpWithMask(int mask) {
-            string dumpStr = base.dump();
-            return dumpStr + dumpElements(mask);
-        }
-
-        public string dumpElements(int mask) {
-            string dumpStr = "";
-            for (int i = 0; i < compElmList.Count; i++) {
-                if ((mask & (1 << i)) == 0) {
-                    continue;
-                }
-                string tstring = compElmList[i].dump();
-                var rg = new Regex("[A-Za-z0-9]+ 0 0 0 0 ");
-                tstring = rg.Replace(tstring, "", 1); /* remove unused tint x1 y1 x2 y2 coords for internal components */
-                dumpStr += " " + CustomLogicModel.escape(tstring);
-            }
-            return dumpStr;
         }
 
         /* are n1 and n2 connected internally somehow? */

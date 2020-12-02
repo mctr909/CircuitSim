@@ -14,9 +14,11 @@ namespace Circuit.Elements {
         protected static readonly Font FONT_TERM_NAME = new Font("Meiryo UI", 14.0f);
         protected static readonly Font FONT_TEXT = new Font("Meiryo UI", 9.0f);
         protected static readonly Font FONT_UNITS = new Font("Meiryo UI", 9.0f);
-        protected static readonly Brush BRUSH_TERM_NAME = Brushes.White;
-        protected static readonly Brush BRUSH_TEXT = Brushes.White;
         protected static readonly StringFormat TEXT_RIGHT = new StringFormat() { Alignment = StringAlignment.Far };
+        protected static readonly StringFormat TEXT_CENTER = new StringFormat() {
+            Alignment = StringAlignment.Center,
+            LineAlignment = StringAlignment.Center
+        };
         #endregion
 
         #region property
@@ -24,6 +26,8 @@ namespace Circuit.Elements {
         public static Color WhiteColor { get; set; }
         public static Color SelectColor { get; set; }
         public static Color LightGrayColor { get; set; }
+        public static Brush BrushTermName { get; set; }
+        public static Brush BrushText { get; set; }
         protected static Pen PenLine { get; set; } = new Pen(Color.White, 1.0f) {
             StartCap = LineCap.Triangle,
             EndCap = LineCap.Triangle
@@ -40,6 +44,8 @@ namespace Circuit.Elements {
             StartCap = LineCap.Triangle,
             EndCap = LineCap.Triangle
         };
+
+        Point ps1;
 
         public static void setColorScale() {
             mColorScale = new Color[COLOR_SCALE_COUNT];
@@ -208,8 +214,20 @@ namespace Circuit.Elements {
             } else {
                 adjustBbox(x, y - h2, x + w, y + h2);
             }
+            g.DrawString(s, FONT_TERM_NAME, BrushText, x, y, TEXT_CENTER);
+        }
 
-            g.DrawString(s, FONT_TEXT, BRUSH_TEXT, x, y);
+        protected void drawCenteredText(Graphics g, Font font, string s, int x, int y, bool cx) {
+            var fs = g.MeasureString(s, font);
+            int w = (int)fs.Width;
+            int h2 = (int)fs.Height / 2;
+            if (cx) {
+                adjustBbox(x - w / 2, y - h2, x + w / 2, y + h2);
+            } else {
+                adjustBbox(x, y - h2, x + w, y + h2);
+            }
+
+            g.DrawString(s, font, BrushText, x, y, TEXT_CENTER);
         }
 
         /// <summary>
@@ -235,13 +253,13 @@ namespace Circuit.Elements {
             int dpx = (int)(mUnitPx1 * hs);
             int dpy = (int)(mUnitPy1 * hs);
             if (dpx == 0) {
-                g.DrawString(s, FONT_UNITS, BRUSH_TEXT, xc - ya / 2, yc - Math.Abs(dpy) - 2 - ya);
+                g.DrawString(s, FONT_UNITS, BrushText, xc - ya / 2, yc - Math.Abs(dpy) - 2 - ya);
             } else {
                 int xx = xc + Math.Abs(dpx) + 2;
                 if (typeof(VoltageElm) == GetType() || (X1 < X2 && Y1 > Y2)) {
                     xx = xc - (int)(textSize.Width + Math.Abs(dpx) + 2);
                 }
-                g.DrawString(s, FONT_UNITS, BRUSH_TEXT, xx, yc + dpy);
+                g.DrawString(s, FONT_UNITS, BrushText, xx, yc + dpy);
             }
         }
 
@@ -259,6 +277,28 @@ namespace Circuit.Elements {
             float th = (float)(theta(mLead1, mLead2) * TO_DEG);
             for (int loop = 0; loop != loopCt; loop++) {
                 interpPoint(mLead1, mLead2, ref ps1, (loop + 0.5) / loopCt, 0);
+                double v = v1 + (v2 - v1) * loop / loopCt;
+                mPenLine.Color = getVoltageColor(v);
+                g.DrawArc(mPenLine, ps1.X - wh, ps1.Y - hh, w, h, th, -180);
+            }
+        }
+
+        protected void drawCoilTerm(Graphics g, int hs, Point p1, Point p2, double v1, double v2) {
+            var coilLen = (float)distance(p1, p2);
+            if (0 == coilLen) {
+                return;
+            }
+            /* draw more loops for a longer coil */
+            int loopCt = (int)Math.Ceiling(coilLen / 12);
+            float w = 0.92f * coilLen / loopCt;
+            float h = w * 1.2f;
+            float wh = w * 0.5f;
+            float hh = h * 0.5f;
+            var pc1 = new Point(X1, Y1);
+            var pc2 = new Point(X2, Y2);
+            float th = (float)(theta(pc1, pc2) * TO_DEG);
+            for (int loop = 0; loop != loopCt; loop++) {
+                interpPoint(pc1, pc2, ref ps1, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
                 mPenLine.Color = getVoltageColor(v);
                 g.DrawArc(mPenLine, ps1.X - wh, ps1.Y - hh, w, h, th, -180);

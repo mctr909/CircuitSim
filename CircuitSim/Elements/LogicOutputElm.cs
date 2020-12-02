@@ -17,16 +17,16 @@ namespace Circuit.Elements {
         public LogicOutputElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
             try {
                 threshold = st.nextTokenDouble();
-            } catch (Exception e) {
+            } catch {
                 threshold = 2.5;
             }
         }
 
-        public override string dump() {
-            return base.dump() + " " + threshold;
+        protected override string dump() {
+            return threshold.ToString();
         }
 
-        public override DUMP_ID getDumpType() { return DUMP_ID.LOGIC_O ; }
+        protected override DUMP_ID getDumpType() { return DUMP_ID.LOGIC_O ; }
 
         public override int getPostCount() { return 1; }
 

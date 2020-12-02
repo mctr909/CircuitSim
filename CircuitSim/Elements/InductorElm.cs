@@ -19,17 +19,17 @@ namespace Circuit.Elements {
             ind.setup(inductance, mCurrent, mFlags);
         }
 
+        protected override string dump() {
+            return inductance + " " + mCurrent;
+        }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.INDUCTOR; }
+
         public double getInductance() { return inductance; }
 
         public void setInductance(double l) {
             inductance = l;
             ind.setup(inductance, mCurrent, mFlags);
-        }
-
-        public override DUMP_ID getDumpType() { return DUMP_ID.INDUCTOR; }
-
-        public override string dump() {
-            return base.dump() + " " + inductance + " " + mCurrent;
         }
 
         public override void setPoints() {

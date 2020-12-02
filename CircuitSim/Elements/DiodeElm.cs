@@ -48,6 +48,17 @@ namespace Circuit.Elements {
             setup();
         }
 
+        protected override string dump() {
+            mFlags |= FLAG_MODEL;
+            /*if (modelName == null) {
+                Console.WriteLine("model name is null??");
+                modelName = "default";
+            }*/
+            return CustomLogicModel.escape(modelName);
+        }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.DIODE; }
+
         public override bool nonLinear() { return true; }
 
         protected void setup() {
@@ -64,17 +75,6 @@ namespace Circuit.Elements {
 
         public override void updateModels() {
             setup();
-        }
-
-        public override DUMP_ID getDumpType() { return DUMP_ID.DIODE; }
-
-        public override string dump() {
-            mFlags |= FLAG_MODEL;
-            /*if (modelName == null) {
-                Console.WriteLine("model name is null??");
-                modelName = "default";
-            }*/
-            return base.dump() + " " + CustomLogicModel.escape(modelName);
         }
 
         public override string dumpModel() {
