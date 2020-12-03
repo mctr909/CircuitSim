@@ -38,7 +38,7 @@ namespace Circuit.Elements {
                 return;
             }
 
-            int hs = Sim.chkAnsiResistorCheckItem.Checked ? 6 : 5;
+            const int hs = 5;
             setBbox(mPoint1, mPoint2, hs);
 
             draw2Leads(g);

@@ -282,12 +282,12 @@ namespace Circuit.Elements {
         }
 
         protected bool needsHighlight() {
-            if (null == mMouseElmRef || null == Sim.plotYElm) {
+            if (null == mMouseElmRef) {
                 return false;
             }
             /* Test if the current mouseElm is a ScopeElm and, if so, does it belong to this elm */
             var isScopeElm = (mMouseElmRef is ScopeElm) && ((ScopeElm)mMouseElmRef).elmScope.getElm().Equals(this);
-            return mMouseElmRef.Equals(this) || IsSelected || Sim.plotYElm.Equals(this) || isScopeElm;
+            return mMouseElmRef.Equals(this) || IsSelected || isScopeElm;
         }
         #endregion
 

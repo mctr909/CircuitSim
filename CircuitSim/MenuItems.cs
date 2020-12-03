@@ -543,11 +543,11 @@ namespace Circuit {
             passMenuBar.Text = "受動素子(P)";
             passMenuBar.Font = menuFont;
             //addMenuItem(passMenuBar, "Add Capacitor (polarized)", ITEM.PolarCapacitorElm);
-            addElementItem(passMenuBar, "スイッチ(S)", MENU_ITEM.SwitchElm);
+            addElementItem(passMenuBar, "スイッチ", MENU_ITEM.SwitchElm);
             addElementItem(passMenuBar, "プッシュスイッチ", MENU_ITEM.PushSwitchElm);
-            addElementItem(passMenuBar, "切り替えスイッチ(T)", MENU_ITEM.Switch2Elm);
+            addElementItem(passMenuBar, "切り替えスイッチ", MENU_ITEM.Switch2Elm);
             passMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(passMenuBar, "可変抵抗(V)", MENU_ITEM.PotElm);
+            addElementItem(passMenuBar, "可変抵抗", MENU_ITEM.PotElm);
             addElementItem(passMenuBar, "トランス", MENU_ITEM.TransformerElm);
             //addMenuItem(passMenuBar, "Add Tapped Transformer", ITEM.TappedTransformerElm);
             //addMenuItem(passMenuBar, "Add Transmission Line", ITEM.TransLineElm);

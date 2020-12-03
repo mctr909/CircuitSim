@@ -121,13 +121,13 @@ namespace Circuit.Elements {
             arrowPoint = interpPoint(mPoint1, mPoint2, soff / mLen + .5, 8 * Math.Sign(offset));
             midpoint = interpPoint(mPoint1, mPoint2, soff / mLen + .5);
             double clen = Math.Abs(offset) - 8;
-            interpPoint(corner2, arrowPoint, ref arrow1, ref arrow2, (clen - 8) / clen, 8);
+            interpPoint(corner2, arrowPoint, ref arrow1, ref arrow2, (clen - 8) / clen, 4);
         }
 
         public override void draw(Graphics g) {
-            int segments = 12;
+            const int segments = 12;
+            const int hs = 5;
             int i;
-            int hs = Sim.chkAnsiResistorCheckItem.Checked ? 6 : 5;
             double v1 = Volts[0];
             double v2 = Volts[1];
             double v3 = Volts[2];
