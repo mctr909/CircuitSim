@@ -263,7 +263,7 @@ namespace Circuit.Elements {
             }
         }
 
-        protected void drawCoil(Graphics g, int hs, Point p1, Point p2, double v1, double v2) {
+        protected void drawCoilLead(Graphics g, Point p1, Point p2, double v1, double v2) {
             var coilLen = (float)distance(p1, p2);
             if (0 == coilLen) {
                 return;
@@ -280,6 +280,27 @@ namespace Circuit.Elements {
                 double v = v1 + (v2 - v1) * loop / loopCt;
                 mPenLine.Color = getVoltageColor(v);
                 g.DrawArc(mPenLine, ps1.X - wh, ps1.Y - hh, w, h, th, -180);
+            }
+        }
+
+        protected void drawCoil(Graphics g, int hs, Point p1, Point p2, double v1, double v2) {
+            var coilLen = (float)distance(p1, p2);
+            if (0 == coilLen) {
+                return;
+            }
+            /* draw more loops for a longer coil */
+            int loopCt = (int)Math.Ceiling(coilLen / 12);
+            float w = 0.92f * coilLen / loopCt;
+            float wh = w * 0.5f;
+            hs *= mDsign;
+            if (theta(p1, p2) < 0) {
+                hs = -hs;
+            }
+            for (int loop = 0; loop != loopCt; loop++) {
+                interpPoint(p1, p2, ref ps1, (loop + 0.5) / loopCt, 0);
+                double v = v1 + (v2 - v1) * loop / loopCt;
+                mPenLine.Color = getVoltageColor(v);
+                g.DrawArc(mPenLine, ps1.X - wh, ps1.Y - wh, w, w, hs, -180);
             }
         }
 

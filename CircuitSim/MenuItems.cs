@@ -81,14 +81,6 @@ namespace Circuit {
                 return create(Keys.N, true, true, false);
             case DUMP_ID.PMOS:
                 return create(Keys.P, true, true, false);
-            case DUMP_ID.VOLTAGE:
-                return create(Keys.V, true, true, false);
-            case DUMP_ID.CURRENT:
-                return create(Keys.I, true, true, false);
-            case DUMP_ID.OUTPUT:
-                return create(Keys.O, true, true, false);
-            case DUMP_ID.PROBE:
-                return create(Keys.P, false, false, true);
             default:
                 return create();
             }
@@ -360,6 +352,7 @@ namespace Circuit {
         LABELED_NODE = 207,
         VCCS = 213,
         CCCS = 215,
+        AMMETER = 370,
         COMPARATOR = 401,
         SCOPE = 403,
         OPTO_COUPLER = 407,
@@ -574,6 +567,7 @@ namespace Circuit {
             addElementItem(activeMenuBar, "ダイオード", MENU_ITEM.DiodeElm);
             addElementItem(activeMenuBar, "ツェナーダイオード", MENU_ITEM.ZenerElm);
             addElementItem(activeMenuBar, "LED", MENU_ITEM.LEDElm);
+            //addElementItem(activeMenuBar, "LED Array", MENU_ITEM.LEDArrayElm);
             activeMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(activeMenuBar, "NPNトランジスタ", MENU_ITEM.NTransistorElm);
             addElementItem(activeMenuBar, "PNPトランジスタ", MENU_ITEM.PTransistorElm);
@@ -605,14 +599,16 @@ namespace Circuit {
             inputMenuBar.Font = menuFont;
             addElementItem(inputMenuBar, "直流電圧源(2端子)", MENU_ITEM.DCVoltageElm);
             addElementItem(inputMenuBar, "交流電圧源(2端子)", MENU_ITEM.ACVoltageElm);
+            addElementItem(inputMenuBar, "電流源", MENU_ITEM.CurrentElm);
+            inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(inputMenuBar, "直流電圧源(1端子)", MENU_ITEM.RailElm);
             addElementItem(inputMenuBar, "交流電圧源(1端子)", MENU_ITEM.ACRailElm);
-            addElementItem(inputMenuBar, "電流源", MENU_ITEM.CurrentElm);
             addElementItem(inputMenuBar, "クロック", MENU_ITEM.ClockElm);
             addElementItem(inputMenuBar, "スイープ", MENU_ITEM.SweepElm);
+            inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(inputMenuBar, "AM発信器", MENU_ITEM.AMElm);
             addElementItem(inputMenuBar, "FM発信器", MENU_ITEM.FMElm);
-            addElementItem(inputMenuBar, "電圧スライダ", MENU_ITEM.VarRailElm);
+            //addElementItem(inputMenuBar, "電圧スライダ", MENU_ITEM.VarRailElm);
             //addMenuItem(inputMenuBar, "Add Square Wave Source (1-terminal)", ITEM.SquareRailElm);
             //addMenuItem(inputMenuBar, "Add Antenna", ITEM.AntennaElm);
             //addMenuItem(inputMenuBar, "Add Noise Generator", ITEM.NoiseElm);
@@ -622,21 +618,22 @@ namespace Circuit {
 
             #region Outputs and Labels
             var outputMenuBar = new ToolStripMenuItem();
-            outputMenuBar.Text = "Outputs and Labels(O)";
+            outputMenuBar.Text = "計測器/出力(O)";
             outputMenuBar.Font = menuFont;
-            addElementItem(outputMenuBar, "Add Analog Output", MENU_ITEM.OutputElm);
-            addElementItem(outputMenuBar, "Add Lamp", MENU_ITEM.LampElm);
-            addElementItem(outputMenuBar, "Add Text", MENU_ITEM.TextElm);
-            addElementItem(outputMenuBar, "Add Box", MENU_ITEM.BoxElm);
-            addElementItem(outputMenuBar, "Add Voltmeter/Scobe Probe", MENU_ITEM.ProbeElm);
-            addElementItem(outputMenuBar, "Add Ohmmeter", MENU_ITEM.OhmMeterElm);
-            addElementItem(outputMenuBar, "Add Labeled Node", MENU_ITEM.LabeledNodeElm);
-            addElementItem(outputMenuBar, "Add Test Point", MENU_ITEM.TestPointElm);
-            addElementItem(outputMenuBar, "Add Ammeter", MENU_ITEM.AmmeterElm);
-            addElementItem(outputMenuBar, "Add Data Export", MENU_ITEM.DataRecorderElm);
-            addElementItem(outputMenuBar, "Add Audio Output", MENU_ITEM.AudioOutputElm);
-            addElementItem(outputMenuBar, "Add LED Array", MENU_ITEM.LEDArrayElm);
-            addElementItem(outputMenuBar, "Add Stop Trigger", MENU_ITEM.StopTriggerElm);
+            addElementItem(outputMenuBar, "電圧計", MENU_ITEM.ProbeElm);
+            addElementItem(outputMenuBar, "電流計", MENU_ITEM.AmmeterElm);
+            //addElementItem(outputMenuBar, "Add Ohmmeter", MENU_ITEM.OhmMeterElm);
+            //outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            //addElementItem(outputMenuBar, "Add Analog Output", MENU_ITEM.OutputElm);
+            //addElementItem(outputMenuBar, "Add Audio Output", MENU_ITEM.AudioOutputElm);
+            //addElementItem(outputMenuBar, "Add Data Export", MENU_ITEM.DataRecorderElm);
+            //outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            //addElementItem(outputMenuBar, "Add Lamp", MENU_ITEM.LampElm);
+            //addElementItem(outputMenuBar, "Add Text", MENU_ITEM.TextElm);
+            //addElementItem(outputMenuBar, "Add Box", MENU_ITEM.BoxElm);
+            //addElementItem(outputMenuBar, "Add Labeled Node", MENU_ITEM.LabeledNodeElm);
+            //addElementItem(outputMenuBar, "Add Test Point", MENU_ITEM.TestPointElm);
+            //addElementItem(outputMenuBar, "Add Stop Trigger", MENU_ITEM.StopTriggerElm);
             mainMenuBar.Items.Add(outputMenuBar);
             #endregion
 
@@ -855,7 +852,7 @@ namespace Circuit {
             case MENU_ITEM.TestPointElm:
                 return null; //new TestPointElm(x1, y1);
             case MENU_ITEM.AmmeterElm:
-                return null; //new AmmeterElm(x1, y1);
+                return new AmmeterElm(x1, y1);
             case MENU_ITEM.DataRecorderElm:
                 return null; //(CircuitElm)new DataRecorderElm(x1, y1);
             case MENU_ITEM.AudioOutputElm:
@@ -1077,7 +1074,7 @@ namespace Circuit {
             case DUMP_ID.CCCS: return new CCCSElm(x1, y1, x2, y2, f, st);
             //case 216: return new OhmMeterElm(x1, y1, x2, y2, f, st);
             //case 368: return new TestPointElm(x1, y1, x2, y2, f, st);
-            //case 370: return new AmmeterElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.AMMETER: return new AmmeterElm(x1, y1, x2, y2, f, st);
             //case 400: return new DarlingtonElm(x1, y1, x2, y2, f, st);
             //case DUMP_ID.COMPARATOR: return new ComparatorElm(x1, y1, x2, y2, f, st);
             //case 402: return new OTAElm(x1, y1, x2, y2, f, st);

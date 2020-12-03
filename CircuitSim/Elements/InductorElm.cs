@@ -4,32 +4,31 @@ using System.Drawing;
 namespace Circuit.Elements {
     class InductorElm : CircuitElm {
         Inductor ind;
-        public double inductance { get; private set; }
+
+        public double Inductance { get; private set; }
 
         public InductorElm(int xx, int yy) : base(xx, yy) {
             ind = new Inductor(Sim, Cir);
-            inductance = 0.001;
-            ind.setup(inductance, mCurrent, mFlags);
+            Inductance = 0.001;
+            ind.setup(Inductance, mCurrent, mFlags);
         }
 
         public InductorElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
             ind = new Inductor(Sim, Cir);
-            inductance = st.nextTokenDouble();
+            Inductance = st.nextTokenDouble();
             mCurrent = st.nextTokenDouble();
-            ind.setup(inductance, mCurrent, mFlags);
+            ind.setup(Inductance, mCurrent, mFlags);
         }
 
         protected override string dump() {
-            return inductance + " " + mCurrent;
+            return Inductance + " " + mCurrent;
         }
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.INDUCTOR; }
 
-        public double getInductance() { return inductance; }
-
         public void setInductance(double l) {
-            inductance = l;
-            ind.setup(inductance, mCurrent, mFlags);
+            Inductance = l;
+            ind.setup(Inductance, mCurrent, mFlags);
         }
 
         public override void setPoints() {
@@ -44,10 +43,10 @@ namespace Circuit.Elements {
             setBbox(mPoint1, mPoint2, hs);
 
             draw2Leads(g);
-            drawCoil(g, 8, mLead1, mLead2, v1, v2);
+            drawCoilLead(g, mLead1, mLead2, v1, v2);
 
             if (Sim.chkShowValuesCheckItem.Checked) {
-                var s = getShortUnitText(inductance, "H");
+                var s = getShortUnitText(Inductance, "H");
                 drawValues(g, s, hs);
             }
             doDots(g);
@@ -80,19 +79,19 @@ namespace Circuit.Elements {
         public override void getInfo(string[] arr) {
             arr[0] = "inductor";
             getBasicInfo(arr);
-            arr[3] = "L = " + getUnitText(inductance, "H");
+            arr[3] = "L = " + getUnitText(Inductance, "H");
             arr[4] = "P = " + getUnitText(getPower(), "W");
         }
 
         public override EditInfo getEditInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Inductance (H)", inductance, 0, 0);
+                return new EditInfo("Inductance (H)", Inductance, 0, 0);
             }
             if (n == 1) {
                 var ei = new EditInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "Trapezoidal Approximation";
-                ei.CheckBox.Checked = ind.isTrapezoidal();
+                ei.CheckBox.Checked = ind.IsTrapezoidal;
                 return ei;
             }
             return null;
@@ -100,7 +99,7 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0 && ei.Value > 0) {
-                inductance = ei.Value;
+                Inductance = ei.Value;
             }
             if (n == 1) {
                 if (ei.CheckBox.Checked) {
@@ -109,7 +108,7 @@ namespace Circuit.Elements {
                     mFlags |= Inductor.FLAG_BACK_EULER;
                 }
             }
-            ind.setup(inductance, mCurrent, mFlags);
+            ind.setup(Inductance, mCurrent, mFlags);
         }
 
         public override DUMP_ID getShortcut() { return DUMP_ID.INDUCTOR; }

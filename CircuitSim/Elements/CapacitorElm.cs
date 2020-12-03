@@ -3,7 +3,8 @@ using System.Drawing;
 
 namespace Circuit.Elements {
     class CapacitorElm : CircuitElm {
-        public double capacitance { get; private set; }
+        public static readonly int FLAG_BACK_EULER = 2;
+
         double compResistance;
         double voltdiff;
         double curSourceValue;
@@ -14,28 +15,26 @@ namespace Circuit.Elements {
         /* used for PolarCapacitorElm */
         Point[] platePoints;
 
-        public static readonly int FLAG_BACK_EULER = 2;
+        public double Capacitance { get; private set; }
+
+        public bool IsTrapezoidal { get { return (mFlags & FLAG_BACK_EULER) == 0; } }
 
         public CapacitorElm(int xx, int yy) : base(xx, yy) {
-            capacitance = 1e-5;
+            Capacitance = 1e-5;
         }
 
         public CapacitorElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
-            capacitance = st.nextTokenDouble();
+            Capacitance = st.nextTokenDouble();
             voltdiff = st.nextTokenDouble();
         }
 
         protected override string dump() {
-            return capacitance + " " + voltdiff;
+            return Capacitance + " " + voltdiff;
         }
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.CAPACITOR; }
 
-        public bool isTrapezoidal() { return (mFlags & FLAG_BACK_EULER) == 0; }
-
-        public double getCapacitance() { return capacitance; }
-
-        public void setCapacitance(double c) { capacitance = c; }
+        public void setCapacitance(double c) { Capacitance = c; }
 
         public override void setNodeVoltage(int n, double c) {
             base.setNodeVoltage(n, c);
@@ -95,7 +94,7 @@ namespace Circuit.Elements {
             }
             drawPosts(g);
             if (Sim.chkShowValuesCheckItem.Checked) {
-                var s = getShortUnitText(capacitance, "F");
+                var s = getShortUnitText(Capacitance, "F");
                 drawValues(g, s, hs);
             }
         }
@@ -113,10 +112,10 @@ namespace Circuit.Elements {
              * parallel with a resistor.  Trapezoidal is more accurate
              * than backward euler but can cause oscillatory behavior
              * if RC is small relative to the timestep. */
-            if (isTrapezoidal()) {
-                compResistance = Sim.timeStep / (2 * capacitance);
+            if (IsTrapezoidal) {
+                compResistance = Sim.timeStep / (2 * Capacitance);
             } else {
-                compResistance = Sim.timeStep / capacitance;
+                compResistance = Sim.timeStep / Capacitance;
             }
             Cir.StampResistor(Nodes[0], Nodes[1], compResistance);
             Cir.StampRightSide(Nodes[0]);
@@ -124,7 +123,7 @@ namespace Circuit.Elements {
         }
 
         public override void startIteration() {
-            if (isTrapezoidal()) {
+            if (IsTrapezoidal) {
                 curSourceValue = -voltdiff / compResistance - mCurrent;
             } else {
                 curSourceValue = -voltdiff / compResistance;
@@ -155,24 +154,24 @@ namespace Circuit.Elements {
         public override void getInfo(string[] arr) {
             arr[0] = "capacitor";
             getBasicInfo(arr);
-            arr[3] = "C = " + getUnitText(capacitance, "F");
+            arr[3] = "C = " + getUnitText(Capacitance, "F");
             arr[4] = "P = " + getUnitText(getPower(), "W");
         }
 
         public override string getScopeText(int v) {
             base.getScopeText(v);
-            return "capacitor, " + getUnitText(capacitance, "F");
+            return "capacitor, " + getUnitText(Capacitance, "F");
         }
 
         public override EditInfo getEditInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Capacitance (F)", capacitance, 0, 0);
+                return new EditInfo("Capacitance (F)", Capacitance, 0, 0);
             }
             if (n == 1) {
                 var ei = new EditInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "Trapezoidal Approximation";
-                ei.CheckBox.Checked = isTrapezoidal();
+                ei.CheckBox.Checked = IsTrapezoidal;
                 return ei;
             }
             return null;
@@ -180,7 +179,7 @@ namespace Circuit.Elements {
 
         public override void setEditValue(int n, EditInfo ei) {
             if (n == 0 && ei.Value > 0) {
-                capacitance = ei.Value;
+                Capacitance = ei.Value;
             }
             if (n == 1) {
                 if (ei.CheckBox.Checked) {

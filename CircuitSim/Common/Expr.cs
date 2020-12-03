@@ -197,7 +197,7 @@ namespace Circuit {
         bool err;
 
         public ExprParser(string s) {
-            text = s.ToLower().Replace(" ", "").Replace("\r", "").Replace("\n", "");
+            text = s.ToLower().Replace(" ", "").Replace("{", "(").Replace("}", ")").Replace("\r", "").Replace("\n", "");
             tlen = text.Length;
             pos = 0;
             err = false;

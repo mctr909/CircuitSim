@@ -50,6 +50,7 @@
     <Compile Include="CirSimMain.cs" />
     <Compile Include="CirSimVariable.cs" />
     <Compile Include="Common\CircuitElmDraw.cs" />
+    <Compile Include="Elements\AmmeterElm.cs" />
     <Compile Include="Elements\AnalogSwitchElm.cs" />
     <Compile Include="Elements\CCCSElm.cs" />
     <Compile Include="Elements\GateElm.cs" />

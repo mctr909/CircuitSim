@@ -12,6 +12,8 @@
         double current;
         double curSourceValue;
 
+        public bool IsTrapezoidal { get { return (flags & FLAG_BACK_EULER) == 0; } }
+
         public Inductor(CirSim s, Circuit c) {
             sim = s;
             cir = c;
@@ -39,7 +41,7 @@
              * The oscillation is a real problem in circuits with switches. */
             nodes[0] = n0;
             nodes[1] = n1;
-            if (isTrapezoidal()) {
+            if (IsTrapezoidal) {
                 compResistance = 2 * inductance / sim.timeStep;
             } else { /* backward euler */
                 compResistance = inductance / sim.timeStep;
@@ -51,10 +53,8 @@
 
         public virtual bool nonLinear() { return false; }
 
-        public bool isTrapezoidal() { return (flags & FLAG_BACK_EULER) == 0; }
-
         public void startIteration(double voltdiff) {
-            if (isTrapezoidal()) {
+            if (IsTrapezoidal) {
                 curSourceValue = voltdiff / compResistance + current;
             } else { /* backward euler */
                 curSourceValue = current;
