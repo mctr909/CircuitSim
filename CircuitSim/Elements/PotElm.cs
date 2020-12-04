@@ -5,6 +5,11 @@ using System.Drawing;
 namespace Circuit.Elements {
     class PotElm : CircuitElm {
         const int FLAG_SHOW_VALUES = 1;
+
+        const int V_L = 0;
+        const int V_R = 1;
+        const int V_S = 2;
+
         double position;
         double maxResistance;
         double resistance1;
@@ -51,6 +56,8 @@ namespace Circuit.Elements {
             createSlider();
         }
 
+        public override int PostCount { get { return 3; } }
+
         protected override string dump() {
             return maxResistance + " " + position + " " + sliderText;
         }
@@ -58,8 +65,6 @@ namespace Circuit.Elements {
         protected override DUMP_ID getDumpType() { return DUMP_ID.POT; }
 
         void setup() { }
-
-        public override int getPostCount() { return 3; }
 
         public override Point getPost(int n) {
             return (n == 0) ? mPoint1 : (n == 1) ? mPoint2 : post3;
@@ -128,9 +133,9 @@ namespace Circuit.Elements {
             const int segments = 12;
             const int hs = 5;
             int i;
-            double v1 = Volts[0];
-            double v2 = Volts[1];
-            double v3 = Volts[2];
+            double vl = Volts[V_L];
+            double vr = Volts[V_R];
+            double vs = Volts[V_S];
             setBbox(mPoint1, mPoint2, hs);
             draw2Leads(g);
 
@@ -147,9 +152,9 @@ namespace Circuit.Elements {
                     case 2: ny = -hs; break;
                     default: ny = 0; break;
                     }
-                    double v = v1 + (v3 - v1) * i / divide;
+                    double v = vl + (vs - vl) * i / divide;
                     if (i >= divide) {
-                        v = v3 + (v2 - v3) * (i - divide) / (segments - divide);
+                        v = vs + (vr - vs) * (i - divide) / (segments - divide);
                     }
                     interpPoint(mLead1, mLead2, ref ps1, i * segf, oy);
                     interpPoint(mLead1, mLead2, ref ps2, (i + 1) * segf, ny);
@@ -158,13 +163,13 @@ namespace Circuit.Elements {
                 }
             } else {
                 /* draw rectangle */
-                PenThickLine.Color = getVoltageColor(v1);
+                PenThickLine.Color = getVoltageColor(vl);
                 interpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, hs);
                 drawThickLine(g, ps1, ps2);
                 for (i = 0; i != segments; i++) {
-                    double v = v1 + (v3 - v1) * i / divide;
+                    double v = vl + (vs - vl) * i / divide;
                     if (i >= divide) {
-                        v = v3 + (v2 - v3) * (i - divide) / (segments - divide);
+                        v = vs + (vr - vs) * (i - divide) / (segments - divide);
                     }
                     interpPoint(mLead1, mLead2, ref ps1, ref ps2, i * segf, hs);
                     interpPoint(mLead1, mLead2, ref ps3, ref ps4, (i + 1) * segf, hs);
@@ -176,7 +181,7 @@ namespace Circuit.Elements {
                 drawThickLine(g, ps1, ps2);
             }
 
-            PenThickLine.Color = getVoltageColor(v3);
+            PenThickLine.Color = getVoltageColor(vs);
             drawThickLine(g, post3, corner2);
             drawThickLine(g, corner2, arrowPoint);
             drawThickLine(g, arrow1, arrowPoint);
@@ -203,21 +208,21 @@ namespace Circuit.Elements {
                 /* draw units */
                 string s1 = getShortUnitText(rev ? resistance2 : resistance1, "");
                 string s2 = getShortUnitText(rev ? resistance1 : resistance2, "");
-                int ya = FONT_TEXT.Height / 2;
-                int w = (int)g.MeasureString(s1, FONT_TEXT).Width;
+                int txtHeightH = FONT_TEXT.Height / 2;
+                int txtWidth = (int)g.MeasureString(s1, FONT_TEXT).Width;
 
                 /* vertical? */
                 if (mLead1.X == mLead2.X) {
-                    g.DrawString(s1, FONT_TEXT, BrushText, !reverseY ? arrowPoint.X + 2 : arrowPoint.X - 2 - w, Math.Max(arrow1.Y, arrow2.Y) + 5 + ya);
+                    drawText(g, s1, !reverseY ? arrowPoint.X : arrowPoint.X - txtWidth, Math.Max(arrow1.Y, arrow2.Y) - txtHeightH);
                 } else {
-                    g.DrawString(s1, FONT_TEXT, BrushText, Math.Min(arrow1.X, arrow2.X) - 2 - w, !reverseX ? arrowPoint.Y + 4 + ya : arrowPoint.Y - 4);
+                    drawText(g, s1, Math.Min(arrow1.X, arrow2.X) - txtWidth, !reverseX ? (arrowPoint.Y + txtHeightH + 4) : arrowPoint.Y);
                 }
 
-                w = (int)g.MeasureString(s2, FONT_TEXT).Width;
+                txtWidth = (int)g.MeasureString(s2, FONT_TEXT).Width;
                 if (mLead1.X == mLead2.X) {
-                    g.DrawString(s2, FONT_TEXT, BrushText, !reverseY ? arrowPoint.X + 2 : arrowPoint.X - 2 - w, Math.Min(arrow1.Y, arrow2.Y) - 3);
+                    drawText(g, s2, !reverseY ? arrowPoint.X : arrowPoint.X - txtWidth, Math.Min(arrow1.Y, arrow2.Y) + 3 * txtHeightH);
                 } else {
-                    g.DrawString(s2, FONT_TEXT, BrushText, Math.Max(arrow1.X, arrow2.X) + 2, !reverseX ? arrowPoint.Y + 4 + ya : arrowPoint.Y - 4);
+                    drawText(g, s2, Math.Max(arrow1.X, arrow2.X), !reverseX ? (arrowPoint.Y + txtHeightH + 4) : arrowPoint.Y);
                 }
             }
         }
@@ -255,8 +260,8 @@ namespace Circuit.Elements {
             if (resistance1 == 0) {
                 return; /* avoid NaN */
             }
-            current1 = (Volts[0] - Volts[2]) / resistance1;
-            current2 = (Volts[1] - Volts[2]) / resistance2;
+            current1 = (Volts[V_L] - Volts[V_S]) / resistance1;
+            current2 = (Volts[V_R] - Volts[V_S]) / resistance2;
             current3 = -current1 - current2;
         }
 
@@ -279,7 +284,7 @@ namespace Circuit.Elements {
 
         public override void getInfo(string[] arr) {
             arr[0] = "potentiometer";
-            arr[1] = "Vd = " + getVoltageDText(getVoltageDiff());
+            arr[1] = "Vd = " + getVoltageDText(VoltageDiff);
             arr[2] = "R1 = " + getUnitText(resistance1, CirSim.ohmString);
             arr[3] = "R2 = " + getUnitText(resistance2, CirSim.ohmString);
             arr[4] = "I1 = " + getCurrentDText(current1);

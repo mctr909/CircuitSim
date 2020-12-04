@@ -20,6 +20,10 @@ namespace Circuit.Elements {
             ind.setup(Inductance, mCurrent, mFlags);
         }
 
+        public override DUMP_ID Shortcut { get { return DUMP_ID.INDUCTOR; } }
+
+        public override bool NonLinear { get { return ind.nonLinear(); } }
+
         protected override string dump() {
             return Inductance + " " + mCurrent;
         }
@@ -47,7 +51,7 @@ namespace Circuit.Elements {
 
             if (Sim.chkShowValuesCheckItem.Checked) {
                 var s = getShortUnitText(Inductance, "H");
-                drawValues(g, s, hs);
+                drawValues(g, s, hs * mDirX);
             }
             doDots(g);
             drawPosts(g);
@@ -64,8 +68,6 @@ namespace Circuit.Elements {
             ind.startIteration(Volts[0] - Volts[1]);
         }
 
-        public override bool nonLinear() { return ind.nonLinear(); }
-
         public override void calculateCurrent() {
             double voltdiff = Volts[0] - Volts[1];
             mCurrent = ind.calculateCurrent(voltdiff);
@@ -80,7 +82,7 @@ namespace Circuit.Elements {
             arr[0] = "inductor";
             getBasicInfo(arr);
             arr[3] = "L = " + getUnitText(Inductance, "H");
-            arr[4] = "P = " + getUnitText(getPower(), "W");
+            arr[4] = "P = " + getUnitText(Power, "W");
         }
 
         public override EditInfo getEditInfo(int n) {
@@ -110,7 +112,5 @@ namespace Circuit.Elements {
             }
             ind.setup(Inductance, mCurrent, mFlags);
         }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.INDUCTOR; }
     }
 }

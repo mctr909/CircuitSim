@@ -16,10 +16,9 @@ namespace Circuit.Elements {
         #endregion
 
         #region static variable
+        public static double CurrentMult { get; set; }
         public static CirSim Sim { get; private set; }
         protected static Circuit Cir { get; private set; }
-        public static double CurrentMult { get; set; }
-
         static CircuitElm mMouseElmRef = null;
         #endregion
 
@@ -43,8 +42,6 @@ namespace Circuit.Elements {
         /// </summary>
         public double[] Volts { get; protected set; }
 
-        public DUMP_ID DumpType { get { return getDumpType(); } }
-
         /// <summary>
         /// dump component state for export/undo
         /// </summary>
@@ -55,11 +52,57 @@ namespace Circuit.Elements {
             }
         }
 
+        public DUMP_ID DumpType { get { return getDumpType(); } }
+
+        public bool NeedsShortcut { get { return Shortcut > 0 && (int)Shortcut <= 127; } }
+        #endregion
+
+        #region virtual property
+        public virtual DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }
+
+        /// <summary>
+        /// is this a wire or equivalent to a wire?
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool IsWire { get { return false; } }
+
+        public virtual bool IsGraphicElmt { get { return false; } }
+
         /// <summary>
         /// needed for calculating circuit bounds (need to special-case centered text elements)
         /// </summary>
         /// <returns></returns>
         public virtual bool IsCenteredText { get { return false; } }
+
+        public virtual bool CanViewInScope { get { return PostCount <= 2; } }
+
+        public virtual double Current { get { return mCurrent; } }
+
+        public virtual double VoltageDiff { get { return Volts[0] - Volts[1]; } }
+
+        public virtual double Power { get { return VoltageDiff * mCurrent; } }
+
+        /// <summary>
+        /// number of voltage sources this element needs
+        /// </summary>
+        /// <returns></returns>
+        public virtual int VoltageSourceCount { get { return 0; } }
+
+        /// <summary>
+        /// number of internal nodes (nodes not visible in UI that are needed for implementation)
+        /// </summary>
+        /// <returns></returns>
+        public virtual int InternalNodeCount { get { return 0; } }
+
+        public virtual bool NonLinear { get { return false; } }
+
+        public virtual int PostCount { get { return 2; } }
+
+        /// <summary>
+        /// get number of nodes that can be retrieved by ConnectionNode
+        /// </summary>
+        /// <returns></returns>
+        public virtual int ConnectionNodeCount { get { return PostCount; } }
 
         public virtual int DefaultFlags { get { return 0; } }
         #endregion
@@ -144,7 +187,7 @@ namespace Circuit.Elements {
         /// allocate nodes/volts arrays we need
         /// </summary>
         protected void allocNodes() {
-            int n = getPostCount() + getInternalNodeCount();
+            int n = PostCount + InternalNodeCount;
             /* preserve voltages if possible */
             if (Nodes == null || Nodes.Length != n) {
                 Nodes = new int[n];
@@ -255,8 +298,8 @@ namespace Circuit.Elements {
         }
 
         protected int getBasicInfo(string[] arr) {
-            arr[1] = "I = " + getCurrentDText(getCurrent());
-            arr[2] = "Vd = " + getVoltageDText(getVoltageDiff());
+            arr[1] = "I = " + getCurrentDText(mCurrent);
+            arr[2] = "Vd = " + getVoltageDText(VoltageDiff);
             return 3;
         }
 
@@ -410,10 +453,10 @@ namespace Circuit.Elements {
         public int getNode(int n) { return Nodes[n]; }
 
         public int getNodeAtPoint(int xp, int yp) {
-            if (getPostCount() == 2) {
+            if (PostCount == 2) {
                 return (X1 == xp && Y1 == yp) ? 0 : 1;
             }
-            for (int i = 0; i != getPostCount(); i++) {
+            for (int i = 0; i != PostCount; i++) {
                 var p = getPost(i);
                 if (p.X == xp && p.Y == yp) {
                     return i;
@@ -427,8 +470,6 @@ namespace Circuit.Elements {
         }
 
         public Rectangle getBoundingBox() { return BoundingBox; }
-
-        public bool needsShortcut() { return getShortcut() > 0 && (int)getShortcut() <= 127; }
 
         public bool isMouseElm() {
             if (null == mMouseElmRef) {
@@ -453,7 +494,7 @@ namespace Circuit.Elements {
         /// handle reset button
         /// </summary>
         public virtual void reset() {
-            for (int i = 0; i != getPostCount() + getInternalNodeCount(); i++) {
+            for (int i = 0; i != PostCount + InternalNodeCount; i++) {
                 Volts[i] = 0;
             }
             mCurCount = 0;
@@ -469,8 +510,16 @@ namespace Circuit.Elements {
             mDx = X2 - X1;
             mDy = Y2 - Y1;
             mLen = Math.Sqrt(mDx * mDx + mDy * mDy);
-            mDirX = mDy / mLen;
-            mDirY = -mDx / mLen;
+            var sx = mPoint2.X - mPoint1.X;
+            var sy = mPoint2.Y - mPoint1.Y;
+            var r = Math.Sqrt(sx * sx + sy * sy);
+            if (r == 0) {
+                mDirX = 0;
+                mDirY = 0;
+            } else {
+                mDirX = sy / r;
+                mDirY = -sx / r;
+            }
             mDsign = (mDy == 0) ? Math.Sign(mDx) : Math.Sign(mDy);
             mPoint1 = new Point(X1, Y1);
             mPoint2 = new Point(X2, Y2);
@@ -483,12 +532,6 @@ namespace Circuit.Elements {
         /// <param name="vn"></param>
         /// <param name="c"></param>
         public virtual void setCurrent(int vn, double c) { mCurrent = c; }
-
-        /// <summary>
-        /// get current for one- or two-terminal elements
-        /// </summary>
-        /// <returns></returns>
-        public virtual double getCurrent() { return mCurrent; }
 
         /// <summary>
         /// stamp matrix values for linear elements.
@@ -548,18 +591,6 @@ namespace Circuit.Elements {
         }
 
         /// <summary>
-        /// number of voltage sources this element needs
-        /// </summary>
-        /// <returns></returns>
-        public virtual int getVoltageSourceCount() { return 0; }
-
-        /// <summary>
-        /// number of internal nodes (nodes not visible in UI that are needed for implementation)
-        /// </summary>
-        /// <returns></returns>
-        public virtual int getInternalNodeCount() { return 0; }
-
-        /// <summary>
         /// notify this element that its pth node is n.
         /// This value n can be passed to stampMatrix()
         /// </summary>
@@ -583,14 +614,6 @@ namespace Circuit.Elements {
              * If we have 0 this isn't used, if we have >1 this won't work */
             mVoltSource = v;
         }
-
-        public virtual double getVoltageDiff() {
-            return Volts[0] - Volts[1];
-        }
-
-        public virtual bool nonLinear() { return false; }
-
-        public virtual int getPostCount() { return 2; }
 
         /// <summary>
         /// get position of nth node
@@ -617,11 +640,8 @@ namespace Circuit.Elements {
             return info[0];
         }
 
-        public virtual double getPower() { return getVoltageDiff() * mCurrent; }
-
         public virtual double getScopeValue(int x) {
-            return (x == Scope.VAL_CURRENT) ? getCurrent() :
-                (x == Scope.VAL_POWER) ? getPower() : getVoltageDiff();
+            return (x == Scope.VAL_CURRENT) ? mCurrent : (x == Scope.VAL_POWER) ? Power : VoltageDiff;
         }
 
         public virtual int getScopeUnits(int x) {
@@ -632,12 +652,6 @@ namespace Circuit.Elements {
         public virtual EditInfo getEditInfo(int n) { return null; }
 
         public virtual void setEditValue(int n, EditInfo ei) { }
-
-        /// <summary>
-        /// get number of nodes that can be retrieved by getConnectionNode()
-        /// </summary>
-        /// <returns></returns>
-        public virtual int getConnectionNodeCount() { return getPostCount(); }
 
         /// <summary>
         /// get nodes that can be passed to getConnection(), to test if this element connects
@@ -663,19 +677,7 @@ namespace Circuit.Elements {
         /// <returns></returns>
         public virtual bool hasGroundConnection(int n1) { return false; }
 
-        /// <summary>
-        /// is this a wire or equivalent to a wire?
-        /// </summary>
-        /// <returns></returns>
-        public virtual bool isWire() { return false; }
-
-        public virtual bool canViewInScope() { return getPostCount() <= 2; }
-
         public virtual bool canShowValueInScope(int v) { return false; }
-
-        public virtual DUMP_ID getShortcut() { return DUMP_ID.INVALID; }
-
-        public virtual bool isGraphicElmt() { return false; }
 
         public virtual void setMouseElm(bool v) {
             if (v) {
@@ -695,7 +697,7 @@ namespace Circuit.Elements {
 
         public virtual double getCurrentIntoNode(int n) {
             /* if we take out the getPostCount() == 2 it gives the wrong value for rails */
-            if (n == 0 && getPostCount() == 2) {
+            if (n == 0 && PostCount == 2) {
                 return -mCurrent;
             } else {
                 return mCurrent;

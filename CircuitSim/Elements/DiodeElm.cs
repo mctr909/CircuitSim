@@ -47,6 +47,12 @@ namespace Circuit.Elements {
             setup();
         }
 
+        public override DUMP_ID Shortcut { get { return DUMP_ID.DIODE; } }
+
+        public override int InternalNodeCount { get { return hasResistance ? 1 : 0; } }
+
+        public override bool NonLinear { get { return true; } }
+
         protected override string dump() {
             mFlags |= FLAG_MODEL;
             /*if (modelName == null) {
@@ -58,8 +64,6 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.DIODE; }
 
-        public override bool nonLinear() { return true; }
-
         protected void setup() {
             /*Console.WriteLine("setting up for model " + modelName + " " + model); */
             model = DiodeModel.getModelWithNameOrCopy(modelName, model);
@@ -69,8 +73,6 @@ namespace Circuit.Elements {
             diodeEndNode = (hasResistance) ? 2 : 1;
             allocNodes();
         }
-
-        public override int getInternalNodeCount() { return hasResistance ? 1 : 0; }
 
         public override void updateModels() {
             setup();
@@ -147,9 +149,9 @@ namespace Circuit.Elements {
             } else {
                 arr[0] = "diode (" + modelName + ")";
             }
-            arr[1] = "I = " + getCurrentText(getCurrent());
-            arr[2] = "Vd = " + getVoltageText(getVoltageDiff());
-            arr[3] = "P = " + getUnitText(getPower(), "W");
+            arr[1] = "I = " + getCurrentText(mCurrent);
+            arr[2] = "Vd = " + getVoltageText(VoltageDiff);
+            arr[3] = "P = " + getUnitText(Power, "W");
             if (model.oldStyle) {
                 arr[4] = "Vf = " + getVoltageText(model.fwdrop);
             }
@@ -238,8 +240,6 @@ namespace Circuit.Elements {
             }
             base.setEditValue(n, ei);
         }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.DIODE; }
 
         void setLastModelName(string n) {
             lastModelName = n;

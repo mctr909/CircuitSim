@@ -2,7 +2,7 @@
 
 namespace Circuit.Elements {
     class ResistorElm : CircuitElm {
-        public double resistance { get; private set; }
+        public double Resistance { get; private set; }
 
         Point ps1;
         Point ps2;
@@ -10,19 +10,17 @@ namespace Circuit.Elements {
         Point ps4;
 
         public ResistorElm(int xx, int yy) : base(xx, yy) {
-            resistance = 1000;
+            Resistance = 1000;
         }
 
         public ResistorElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
-            resistance = st.nextTokenDouble();
+            Resistance = st.nextTokenDouble();
         }
 
-        double getResistance() { return resistance; }
-
-        void setResistance(double r) { resistance = r; }
+        public override DUMP_ID Shortcut { get { return DUMP_ID.RESISTOR; } }
 
         protected override string dump() {
-            return resistance.ToString();
+            return Resistance.ToString();
         }
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.RESISTOR; }
@@ -82,7 +80,7 @@ namespace Circuit.Elements {
             }
 
             if (Sim.chkShowValuesCheckItem.Checked) {
-                var s = getShortUnitText(resistance, "");
+                var s = getShortUnitText(Resistance, "");
                 drawValues(g, s, hs + 2);
             }
 
@@ -91,39 +89,37 @@ namespace Circuit.Elements {
         }
 
         public override void calculateCurrent() {
-            mCurrent = (Volts[0] - Volts[1]) / resistance;
+            mCurrent = (Volts[0] - Volts[1]) / Resistance;
             /*Console.WriteLine(this + " res current set to " + current + "\n");*/
         }
 
         public override void stamp() {
-            Cir.StampResistor(Nodes[0], Nodes[1], resistance);
+            Cir.StampResistor(Nodes[0], Nodes[1], Resistance);
         }
 
         public override void getInfo(string[] arr) {
             arr[0] = "resistor";
             getBasicInfo(arr);
-            arr[3] = "R = " + getUnitText(resistance, CirSim.ohmString);
-            arr[4] = "P = " + getUnitText(getPower(), "W");
+            arr[3] = "R = " + getUnitText(Resistance, CirSim.ohmString);
+            arr[4] = "P = " + getUnitText(Power, "W");
         }
 
         public override string getScopeText(int v) {
-            return "resistor, " + getUnitText(resistance, CirSim.ohmString);
+            return "resistor, " + getUnitText(Resistance, CirSim.ohmString);
         }
 
         public override EditInfo getEditInfo(int n) {
             /* ohmString doesn't work here on linux */
             if (n == 0) {
-                return new EditInfo("Resistance (ohms)", resistance, 0, 0);
+                return new EditInfo("Resistance (ohms)", Resistance, 0, 0);
             }
             return null;
         }
 
         public override void setEditValue(int n, EditInfo ei) {
             if (ei.Value > 0) {
-                resistance = ei.Value;
+                Resistance = ei.Value;
             }
         }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.RESISTOR; }
     }
 }

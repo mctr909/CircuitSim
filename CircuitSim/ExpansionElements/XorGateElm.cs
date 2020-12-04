@@ -17,7 +17,5 @@
             }
             return f;
         }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.XOR_GATE; }
     }
 }

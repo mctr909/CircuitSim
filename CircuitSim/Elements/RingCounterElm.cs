@@ -8,6 +8,10 @@
             mJustLoaded = true;
         }
 
+        public override int VoltageSourceCount { get { return bits; } }
+
+        public override int PostCount { get { return bits + 2; } }
+
         protected override DUMP_ID getDumpType() { return DUMP_ID.RING_COUNTER; }
 
         string getChipName() { return "ring counter"; }
@@ -17,7 +21,7 @@
         public override void setupPins() {
             sizeX = bits > 2 ? bits : 2;
             sizeY = 2;
-            pins = new Pin[getPostCount()];
+            pins = new Pin[PostCount];
             pins[0] = new Pin(this, 1, SIDE_W, "");
             pins[0].clock = true;
             pins[1] = new Pin(this, sizeX - 1, SIDE_S, "R");
@@ -30,10 +34,6 @@
             }
             allocNodes();
         }
-
-        public override int getPostCount() { return bits + 2; }
-
-        public override int getVoltageSourceCount() { return bits; }
 
         protected override void execute() {
             int i;

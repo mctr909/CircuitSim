@@ -9,11 +9,17 @@ namespace Circuit.Elements {
 
         public GroundElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) { }
 
+        public override DUMP_ID Shortcut { get { return DUMP_ID.GROUND; } }
+
+        public override double VoltageDiff { get { return 0; } }
+
+        public override int VoltageSourceCount { get { return 1; } }
+
+        public override int PostCount { get { return 1; } }
+
         protected override string dump() { return ""; }
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.GROUND; }
-
-        public override int getPostCount() { return 1; }
 
         public override void draw(Graphics g) {
             PenThickLine.Color = getVoltageColor(0);
@@ -36,18 +42,12 @@ namespace Circuit.Elements {
             Cir.StampVoltageSource(0, Nodes[0], mVoltSource, 0);
         }
 
-        public override double getVoltageDiff() { return 0; }
-
-        public override int getVoltageSourceCount() { return 1; }
-
         public override void getInfo(string[] arr) {
             arr[0] = "ground";
-            arr[1] = "I = " + getCurrentText(getCurrent());
+            arr[1] = "I = " + getCurrentText(mCurrent);
         }
 
         public override bool hasGroundConnection(int n1) { return true; }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.GROUND; }
 
         public override double getCurrentIntoNode(int n) { return -mCurrent; }
     }

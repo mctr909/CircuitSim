@@ -27,6 +27,12 @@ namespace Circuit.Elements {
             setupPins();
         }
 
+        public override int VoltageSourceCount { get { return 0; } }
+
+        public override bool NonLinear { get { return true; } }
+
+        public override int PostCount { get { return inputCount + 2; } }
+
         protected override string dump() {
             return base.dump() + " " + inputCount + " " + CustomLogicModel.escape(exprString);
         }
@@ -47,8 +53,6 @@ namespace Circuit.Elements {
         }
 
         string getChipName() { return "VCCS~"; } /* ~ is for localization */
-
-        public override bool nonLinear() { return true; }
 
         public override void stamp() {
             Cir.StampNonLinear(Nodes[inputCount]);
@@ -165,10 +169,6 @@ namespace Circuit.Elements {
         public override void draw(Graphics g) {
             drawChip(g);
         }
-
-        public override int getPostCount() { return inputCount + 2; }
-
-        public override int getVoltageSourceCount() { return 0; }
 
         public override bool getConnection(int n1, int n2) {
             return comparePair(inputCount, inputCount + 1, n1, n2);

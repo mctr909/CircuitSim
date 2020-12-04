@@ -38,6 +38,12 @@ namespace Circuit.Elements {
             posCount = 2;
         }
 
+        public override bool IsWire { get { return position == 0; } }
+
+        public override int VoltageSourceCount { get { return (1 == position) ? 0 : 1; } }
+
+        public override DUMP_ID Shortcut { get { return DUMP_ID.SWITCH; } }
+
         protected override string dump() {
             return position + " " + momentary;
         }
@@ -57,11 +63,9 @@ namespace Circuit.Elements {
             if (position == 0) {
                 doDots(g);
             }
-            if (!needsHighlight()) {
-                PenThickLine.Color = WhiteColor;
-            }
             interpPoint(mLead1, mLead2, ref ps1, 0, hs1);
             interpPoint(mLead1, mLead2, ref ps2, 1, hs2);
+            PenThickLine.Color = needsHighlight() ? SelectColor : WhiteColor;
             drawThickLine(g, ps1, ps2);
             drawPosts(g);
         }
@@ -86,10 +90,6 @@ namespace Circuit.Elements {
             }
         }
 
-        public override int getVoltageSourceCount() {
-            return (position == 1) ? 0 : 1;
-        }
-
         public void mouseUp() {
             if (momentary) {
                 toggle();
@@ -107,17 +107,15 @@ namespace Circuit.Elements {
             arr[0] = (momentary) ? "push switch (SPST)" : "switch (SPST)";
             if (position == 1) {
                 arr[1] = "open";
-                arr[2] = "Vd = " + getVoltageDText(getVoltageDiff());
+                arr[2] = "Vd = " + getVoltageDText(VoltageDiff);
             } else {
                 arr[1] = "closed";
                 arr[2] = "V = " + getVoltageText(Volts[0]);
-                arr[3] = "I = " + getCurrentDText(getCurrent());
+                arr[3] = "I = " + getCurrentDText(mCurrent);
             }
         }
 
         public override bool getConnection(int n1, int n2) { return position == 0; }
-
-        public override bool isWire() { return position == 0; }
 
         public override EditInfo getEditInfo(int n) {
             if (n == 0) {
@@ -135,7 +133,5 @@ namespace Circuit.Elements {
                 momentary = ei.CheckBox.Checked;
             }
         }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.SWITCH; }
     }
 }

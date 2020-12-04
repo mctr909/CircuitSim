@@ -31,6 +31,33 @@ namespace Circuit.Elements {
             }
         }
 
+        /* this is basically a wire, since it just connects two nodes together */
+        public override bool IsWire { get { return true; } }
+
+        public override double VoltageDiff { get { return Volts[0]; } }
+
+        public override int VoltageSourceCount { get { return 1; } }
+
+        public override int InternalNodeCount {
+            get {
+                /* this can happen at startup */
+                if (nodeList == null || string.IsNullOrEmpty(text)) {
+                    return 0;
+                }
+                /* node assigned already? */
+                if (nodeList.ContainsKey(text)) {
+                    nodeNumber = nodeList[text];
+                    return 0;
+                }
+                /* allocate a new one */
+                return 1;
+            }
+        }
+
+        public override int PostCount { get { return 1; } }
+
+        public override int ConnectionNodeCount { get { return 2; } }
+
         protected override string dump() {
             mFlags |= FLAG_ESCAPE;
             return CustomLogicModel.escape(text);
@@ -58,11 +85,6 @@ namespace Circuit.Elements {
             }
         }
 
-        public override int getPostCount() { return 1; }
-
-        /* this is basically a wire, since it just connects two nodes together */
-        public override bool isWire() { return true; }
-
         /* get connection node (which is the same as regular nodes for all elements but this one).
          * node 0 is the terminal, node 1 is the internal node shared by all nodes with same name */
         public override int getConnectionNode(int n) {
@@ -70,22 +92,6 @@ namespace Circuit.Elements {
                 return Nodes[0];
             }
             return nodeNumber;
-        }
-
-        public override int getConnectionNodeCount() { return 2; }
-
-        public override int getInternalNodeCount() {
-            /* this can happen at startup */
-            if (nodeList == null || string.IsNullOrEmpty(text)) {
-                return 0;
-            }
-            /* node assigned already? */
-            if (nodeList.ContainsKey(text)) {
-                nodeNumber = nodeList[text];
-                return 0;
-            }
-            /* allocate a new one */
-            return 1;
         }
 
         public override void draw(Graphics g) {
@@ -120,13 +126,9 @@ namespace Circuit.Elements {
             Cir.StampVoltageSource(nodeNumber, Nodes[0], mVoltSource, 0);
         }
 
-        public override double getVoltageDiff() { return Volts[0]; }
-
-        public override int getVoltageSourceCount() { return 1; }
-
         public override void getInfo(string[] arr) {
             arr[0] = text;
-            arr[1] = "I = " + getCurrentText(getCurrent());
+            arr[1] = "I = " + getCurrentText(mCurrent);
             arr[2] = "V = " + getVoltageText(Volts[0]);
         }
 

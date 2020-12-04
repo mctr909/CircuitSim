@@ -62,6 +62,16 @@ namespace Circuit.Elements {
             setup();
         }
 
+        public override bool CanViewInScope { get { return true; } }
+
+        public override double Power {
+            get { return (Volts[V_B] - Volts[V_E]) * ib + (Volts[V_C] - Volts[V_E]) * ic; }
+        }
+
+        public override bool NonLinear { get { return true; } }
+
+        public override int PostCount { get { return 3; } }
+
         protected override string dump() {
             return pnp
                 + " " + (Volts[V_B] - Volts[V_C])
@@ -104,8 +114,6 @@ namespace Circuit.Elements {
             return vnew;
         }
 
-        public override bool nonLinear() { return true; }
-
         public override void reset() {
             Volts[V_B] = Volts[V_C] = Volts[V_E] = 0;
             lastvbc = lastvbe = curcount_c = curcount_e = curcount_b = 0;
@@ -139,12 +147,6 @@ namespace Circuit.Elements {
 
         public override Point getPost(int n) {
             return (n == 0) ? mPoint1 : (n == 1) ? coll[0] : emit[0];
-        }
-
-        public override int getPostCount() { return 3; }
-
-        public override double getPower() {
-            return (Volts[V_B] - Volts[V_E]) * ib + (Volts[V_C] - Volts[V_E]) * ic;
         }
 
         public override void setPoints() {
@@ -287,7 +289,7 @@ namespace Circuit.Elements {
             arr[4] = "Vbe = " + getVoltageText(vbe);
             arr[5] = "Vbc = " + getVoltageText(vbc);
             arr[6] = "Vce = " + getVoltageText(vce);
-            arr[7] = "P = " + getUnitText(getPower(), "W");
+            arr[7] = "P = " + getUnitText(Power, "W");
         }
 
         public override double getScopeValue(int x) {
@@ -298,7 +300,7 @@ namespace Circuit.Elements {
             case Scope.VAL_VBE: return Volts[V_B] - Volts[V_E];
             case Scope.VAL_VBC: return Volts[V_B] - Volts[V_C];
             case Scope.VAL_VCE: return Volts[V_C] - Volts[V_E];
-            case Scope.VAL_POWER: return getPower();
+            case Scope.VAL_POWER: return Power;
             }
             return 0;
         }
@@ -348,8 +350,6 @@ namespace Circuit.Elements {
                 Cir.Stop("max current exceeded", this);
             }
         }
-
-        public override bool canViewInScope() { return true; }
 
         public override double getCurrentIntoNode(int n) {
             if (n == 0) {

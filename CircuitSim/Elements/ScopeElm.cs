@@ -23,6 +23,10 @@ namespace Circuit.Elements {
             elmScope.resetGraph();
         }
 
+        public override bool CanViewInScope { get { return false; } }
+
+        public override int PostCount { get { return 0; } }
+
         protected override string dump() {
             string sStr = elmScope.dump().Replace(' ', '_');
             sStr = sStr.Replace("o_", ""); /* remove unused prefix for embedded Scope */
@@ -69,8 +73,6 @@ namespace Circuit.Elements {
             elmScope = null;
         }
 
-        public override bool canViewInScope() { return false; }
-
         public override void draw(Graphics g) {
             var color = needsHighlight() ? SelectColor : WhiteColor;
             setScopeRect();
@@ -78,7 +80,5 @@ namespace Circuit.Elements {
             setBbox(mPoint1, mPoint2, 0);
             drawPosts(g);
         }
-
-        public override int getPostCount() { return 0; }
     }
 }

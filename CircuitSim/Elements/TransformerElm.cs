@@ -6,6 +6,11 @@ namespace Circuit.Elements {
     class TransformerElm : CircuitElm {
         public const int FLAG_REVERSE = 4;
 
+        const int PRI_T = 0;
+        const int PRI_B = 2;
+        const int SEC_T = 1;
+        const int SEC_B = 3;
+
         double inductance;
         double ratio;
         double couplingCoef;
@@ -56,6 +61,8 @@ namespace Circuit.Elements {
             polarity = ((mFlags & FLAG_REVERSE) != 0) ? -1 : 1;
         }
 
+        public override int PostCount { get { return 4; } }
+
         protected override string dump() {
             return inductance
                 + " " + ratio
@@ -65,8 +72,6 @@ namespace Circuit.Elements {
         }
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.TRANSFORMER; }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.TRANSFORMER; }
 
         public override void drag(int xx, int yy) {
             xx = Sim.snapGrid(xx);
@@ -81,13 +86,13 @@ namespace Circuit.Elements {
         }
 
         public override void draw(Graphics g) {
-            drawThickLine(g, getVoltageColor(Volts[0]), ptEnds[0], ptCoil[0]);
-            drawThickLine(g, getVoltageColor(Volts[1]), ptEnds[1], ptCoil[1]);
-            drawThickLine(g, getVoltageColor(Volts[2]), ptEnds[2], ptCoil[2]);
-            drawThickLine(g, getVoltageColor(Volts[3]), ptEnds[3], ptCoil[3]);
+            drawThickLine(g, getVoltageColor(Volts[PRI_T]), ptEnds[0], ptCoil[0]);
+            drawThickLine(g, getVoltageColor(Volts[SEC_T]), ptEnds[1], ptCoil[1]);
+            drawThickLine(g, getVoltageColor(Volts[PRI_B]), ptEnds[2], ptCoil[2]);
+            drawThickLine(g, getVoltageColor(Volts[SEC_B]), ptEnds[3], ptCoil[3]);
 
-            drawCoil(g,  90, ptCoil[0], ptCoil[2], Volts[0], Volts[2]);
-            drawCoil(g, -90 * polarity, ptCoil[1], ptCoil[3], Volts[1], Volts[3]);
+            drawCoil(g,  90,            ptCoil[0], ptCoil[2], Volts[PRI_T], Volts[PRI_B]);
+            drawCoil(g, -90 * polarity, ptCoil[1], ptCoil[3], Volts[SEC_T], Volts[SEC_B]);
 
             PenLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
             PenThickLine.Color = PenLine.Color;
@@ -145,14 +150,13 @@ namespace Circuit.Elements {
             return ptEnds[n];
         }
 
-        public override int getPostCount() { return 4; }
-
         public override void reset() {
             // need to set current-source values here in case one of the nodes is node 0.  In that case
             // calculateCurrent() may get called (from setNodeVoltage()) when analyzing circuit, before
             // startIteration() gets called
             current[0] = current[1] = 0;
-            Volts[0] = Volts[1] = Volts[2] = Volts[3] = 0;
+            Volts[PRI_T] = Volts[PRI_B] = 0;
+            Volts[SEC_T] = Volts[SEC_B] = 0;
             curcount[0] = curcount[1] = 0;
             curSourceValue1 = curSourceValue2 = 0;
         }
@@ -206,8 +210,8 @@ namespace Circuit.Elements {
         }
 
         public override void startIteration() {
-            double voltdiff1 = Volts[0] - Volts[2];
-            double voltdiff2 = Volts[1] - Volts[3];
+            double voltdiff1 = Volts[PRI_T] - Volts[PRI_B];
+            double voltdiff2 = Volts[SEC_T] - Volts[SEC_B];
             if (IsTrapezoidal) {
                 curSourceValue1 = voltdiff1 * a1 + voltdiff2 * a2 + current[0];
                 curSourceValue2 = voltdiff1 * a3 + voltdiff2 * a4 + current[1];
@@ -223,8 +227,8 @@ namespace Circuit.Elements {
         }
 
         public override void calculateCurrent() {
-            double voltdiff1 = Volts[0] - Volts[2];
-            double voltdiff2 = Volts[1] - Volts[3];
+            double voltdiff1 = Volts[PRI_T] - Volts[PRI_B];
+            double voltdiff2 = Volts[SEC_T] - Volts[SEC_B];
             current[0] = voltdiff1 * a1 + voltdiff2 * a2 + curSourceValue1;
             current[1] = voltdiff1 * a3 + voltdiff2 * a4 + curSourceValue2;
         }
@@ -240,8 +244,8 @@ namespace Circuit.Elements {
             arr[0] = "transformer";
             arr[1] = "L = " + getUnitText(inductance, "H");
             arr[2] = "Ratio = 1:" + ratio;
-            arr[3] = "Vd1 = " + getVoltageText(Volts[0] - Volts[2]);
-            arr[4] = "Vd2 = " + getVoltageText(Volts[1] - Volts[3]);
+            arr[3] = "Vd1 = " + getVoltageText(Volts[PRI_T] - Volts[PRI_B]);
+            arr[4] = "Vd2 = " + getVoltageText(Volts[SEC_T] - Volts[SEC_B]);
             arr[5] = "I1 = " + getCurrentText(current[0]);
             arr[6] = "I2 = " + getCurrentText(current[1]);
         }

@@ -20,6 +20,10 @@ namespace Circuit.Elements {
             }
         }
 
+        public override double VoltageDiff { get { return Volts[1] - Volts[0]; } }
+
+        public override double Power { get { return -VoltageDiff * mCurrent; } }
+
         protected override string dump() {
             return currentValue.ToString();
         }
@@ -84,11 +88,5 @@ namespace Circuit.Elements {
             arr[0] = "current source";
             getBasicInfo(arr);
         }
-
-        public override double getVoltageDiff() {
-            return Volts[1] - Volts[0];
-        }
-
-        public override double getPower() { return -getVoltageDiff() * mCurrent; }
     }
 }

@@ -27,6 +27,8 @@ namespace Circuit.Elements {
             updateModels(st);
         }
 
+        public override int PostCount { get { return postCount; } }
+
         protected override string dump() {
             /* insert model name before the elements */
             string s = dumpWithMask(0);
@@ -88,7 +90,7 @@ namespace Circuit.Elements {
             }
 
             chip.setPoints();
-            for (i = 0; i != getPostCount(); i++) {
+            for (i = 0; i != PostCount; i++) {
                 setPost(i, chip.getPost(i));
             }
         }
@@ -115,8 +117,6 @@ namespace Circuit.Elements {
             allocNodes();
             setPoints();
         }
-
-        public override int getPostCount() { return postCount; }
 
         public override EditInfo getEditInfo(int n) {
             if (n == 0) {

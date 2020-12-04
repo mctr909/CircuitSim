@@ -15,9 +15,11 @@ namespace Circuit.Elements {
             mNumHandles = 1;
         }
 
-        protected override DUMP_ID getDumpType() { return DUMP_ID.RAIL; }
+        public override double VoltageDiff { get { return Volts[0]; } }
 
-        public override int getPostCount() { return 1; }
+        public override int PostCount { get { return 1; } }
+
+        protected override DUMP_ID getDumpType() { return DUMP_ID.RAIL; }
 
         public override void setPoints() {
             base.setPoints();
@@ -71,8 +73,6 @@ namespace Circuit.Elements {
             drawCenteredText(g, s, X2, Y2, true);
         }
 
-        public override double getVoltageDiff() { return Volts[0]; }
-
         public override void stamp() {
             if (waveform == WF_DC) {
                 Cir.StampVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
@@ -88,7 +88,5 @@ namespace Circuit.Elements {
         }
 
         public override bool hasGroundConnection(int n1) { return true; }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.RAIL; }
     }
 }

@@ -14,6 +14,10 @@ namespace Circuit.Elements {
             parseExpr();
         }
 
+        public override int VoltageSourceCount { get { return 1; } }
+
+        public override int PostCount { get { return 4; } }
+
         protected override DUMP_ID getDumpType() { return DUMP_ID.CCCS; }
 
         public override void setupPins() {
@@ -86,10 +90,6 @@ namespace Circuit.Elements {
 
             lastCurrent = cur;
         }
-
-        public override int getPostCount() { return 4; }
-
-        public override int getVoltageSourceCount() { return 1; }
 
         public override bool getConnection(int n1, int n2) {
             if (comparePair(0, 1, n1, n2)) {

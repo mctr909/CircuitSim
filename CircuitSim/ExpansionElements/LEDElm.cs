@@ -37,6 +37,8 @@ namespace Circuit.Elements {
             } catch { }
         }
 
+        public override DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }
+
         protected override DUMP_ID getDumpType() { return DUMP_ID.LED; }
 
         public override void setPoints() {
@@ -121,8 +123,6 @@ namespace Circuit.Elements {
             }
             base.setEditValue(n - 4, ei);
         }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.INVALID; }
 
         void setLastModelName(string n) {
             lastLEDModelName = n;

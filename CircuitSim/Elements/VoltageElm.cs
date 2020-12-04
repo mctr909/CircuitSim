@@ -68,6 +68,12 @@ namespace Circuit.Elements {
             reset();
         }
 
+        public override double VoltageDiff { get { return Volts[1] - Volts[0]; } }
+
+        public override double Power { get { return -VoltageDiff * mCurrent; } }
+
+        public override int VoltageSourceCount { get { return 1; } }
+
         protected override string dump() {
             /* set flag so we know if duty cycle is correct for pulse waveforms */
             if (waveform == WF_PULSE) {
@@ -282,14 +288,6 @@ namespace Circuit.Elements {
             }
         }
 
-        public override int getVoltageSourceCount() {
-            return 1;
-        }
-
-        public override double getPower() { return -getVoltageDiff() * mCurrent; }
-
-        public override double getVoltageDiff() { return Volts[1] - Volts[0]; }
-
         public override void getInfo(string[] arr) {
             switch (waveform) {
             case WF_DC:
@@ -309,8 +307,8 @@ namespace Circuit.Elements {
                 arr[0] = "noise gen"; break;
             }
 
-            arr[1] = "I = " + getCurrentText(getCurrent());
-            arr[2] = (typeof(RailElm) == GetType() ? "V = " : "Vd = ") + getVoltageText(getVoltageDiff());
+            arr[1] = "I = " + getCurrentText(mCurrent);
+            arr[2] = (typeof(RailElm) == GetType() ? "V = " : "Vd = ") + getVoltageText(VoltageDiff);
             int i = 3;
             if (waveform != WF_DC && waveform != WF_VAR && waveform != WF_NOISE) {
                 arr[i++] = "f = " + getUnitText(frequency, "Hz");
@@ -327,7 +325,7 @@ namespace Circuit.Elements {
             if (waveform == WF_DC && mCurrent != 0 && Cir.ShowResistanceInVoltageSources) {
                 arr[i++] = "(R = " + getUnitText(maxVoltage / mCurrent, CirSim.ohmString) + ")";
             }
-            arr[i++] = "P = " + getUnitText(getPower(), "W");
+            arr[i++] = "P = " + getUnitText(Power, "W");
         }
 
         public override EditInfo getEditInfo(int n) {

@@ -13,6 +13,10 @@ namespace Circuit.Elements {
         const int FLAG_BODY_TERMINAL = 64;
         const int FLAGS_GLOBAL = (FLAG_HIDE_BULK | FLAG_DIGITAL);
 
+        const int V_G = 0;
+        const int V_S = 1;
+        const int V_D = 2;
+
         const int hs = 16;
 
         int pnp;
@@ -77,6 +81,24 @@ namespace Circuit.Elements {
             allocNodes(); /* make sure volts[] has the right number of elements when hasBodyTerminal() is true */
         }
 
+        public override double Current { get { return ids; } }
+
+        public override double VoltageDiff { get { return Volts[V_D] - Volts[V_S]; } }
+
+        public override double Power {
+            get {
+                return ids * (Volts[V_D] - Volts[V_S])
+                    - diodeCurrent1 * (Volts[V_S] - Volts[bodyTerminal])
+                    - diodeCurrent2 * (Volts[V_D] - Volts[bodyTerminal]);
+            }
+        }
+
+        public override bool CanViewInScope { get { return true; } }
+
+        public override bool NonLinear { get { return true; } }
+
+        public override int PostCount { get { return hasBodyTerminal() ? 4 : 3; } }
+
         protected override string dump() {
             return vt + " " + beta;
         }
@@ -106,8 +128,6 @@ namespace Circuit.Elements {
          * Power MOSFETs have much higher betas (like 80 or more) */
         double getBackwardCompatibilityBeta() { return .02; }
 
-        public override bool nonLinear() { return true; }
-
         bool drawDigital() { return (mFlags & FLAG_DIGITAL) != 0; }
 
         bool showBulk() { return (mFlags & (FLAG_DIGITAL | FLAG_HIDE_BULK)) == 0; }
@@ -117,7 +137,9 @@ namespace Circuit.Elements {
         bool doBodyDiode() { return (mFlags & FLAG_BODY_DIODE) != 0 && showBulk(); }
 
         public override void reset() {
-            lastv1 = lastv2 = Volts[0] = Volts[1] = Volts[2] = mCurCount = 0;
+            lastv1 = lastv2 = 0;
+            Volts[V_G] = Volts[V_S] = Volts[V_D] = 0;
+            mCurCount = 0;
             diodeB1.reset();
             diodeB2.reset();
         }
@@ -131,8 +153,8 @@ namespace Circuit.Elements {
             setBbox(mPoint1, mPoint2, hs);
 
             /* draw source/drain terminals */
-            drawThickLine(g, getVoltageColor(Volts[1]), src[0], src[1]);
-            drawThickLine(g, getVoltageColor(Volts[2]), drn[0], drn[1]);
+            drawThickLine(g, getVoltageColor(Volts[V_S]), src[0], src[1]);
+            drawThickLine(g, getVoltageColor(Volts[V_D]), drn[0], drn[1]);
 
             /* draw line connecting source and drain */
             int segments = 6;
@@ -143,7 +165,7 @@ namespace Circuit.Elements {
                 if ((i == 1 || i == 4) && enhancement) {
                     continue;
                 }
-                double v = Volts[1] + (Volts[2] - Volts[1]) * i / segments;
+                double v = Volts[V_S] + (Volts[V_D] - Volts[V_S]) * i / segments;
                 PenThickLine.Color = getVoltageColor(v);
                 interpPoint(src[1], drn[1], ref ps1, i * segf);
                 interpPoint(src[1], drn[1], ref ps2, (i + 1) * segf);
@@ -151,8 +173,8 @@ namespace Circuit.Elements {
             }
 
             /* draw little extensions of that line */
-            drawThickLine(g, getVoltageColor(Volts[1]), src[1], src[2]);
-            drawThickLine(g, getVoltageColor(Volts[2]), drn[1], drn[2]);
+            drawThickLine(g, getVoltageColor(Volts[V_S]), src[1], src[2]);
+            drawThickLine(g, getVoltageColor(Volts[V_D]), drn[1], drn[2]);
 
             /* draw bulk connection */
             if (showBulk()) {
@@ -168,9 +190,8 @@ namespace Circuit.Elements {
                 fillPolygon(g, getVoltageColor(Volts[bodyTerminal]), arrowPoly);
             }
 
-            PenThickLine.Color = getVoltageColor(Volts[0]);
-
             /* draw gate */
+            PenThickLine.Color = getVoltageColor(Volts[V_G]);
             drawThickLine(g, mPoint1, gate[1]);
             drawThickLine(g, gate[0], gate[2]);
             if (drawDigital() && pnp == -1) {
@@ -204,16 +225,6 @@ namespace Circuit.Elements {
         public override Point getPost(int n) {
             return (n == 0) ? mPoint1 : (n == 1) ? src[0] : (n == 2) ? drn[0] : body[0];
         }
-
-        public override double getCurrent() { return ids; }
-
-        public override double getPower() {
-            return ids * (Volts[2] - Volts[1])
-                - diodeCurrent1 * (Volts[1] - Volts[bodyTerminal])
-                - diodeCurrent2 * (Volts[2] - Volts[bodyTerminal]);
-        }
-
-        public override int getPostCount() { return hasBodyTerminal() ? 4 : 3; }
 
         public override void setPoints() {
             base.setPoints();
@@ -337,9 +348,9 @@ namespace Circuit.Elements {
             } else {
                 /* limit voltage changes to .5V */
                 vs = new double[3];
-                vs[0] = Volts[0];
-                vs[1] = Volts[1];
-                vs[2] = Volts[2];
+                vs[0] = Volts[V_G];
+                vs[1] = Volts[V_S];
+                vs[2] = Volts[V_D];
                 if (vs[1] > lastv1 + .5) {
                     vs[1] = lastv1 + .5;
                 }
@@ -401,10 +412,10 @@ namespace Circuit.Elements {
             }
 
             if (doBodyDiode()) {
-                diodeB1.doStep(pnp * (Volts[bodyTerminal] - Volts[1]));
-                diodeCurrent1 = diodeB1.calculateCurrent(pnp * (Volts[bodyTerminal] - Volts[1])) * pnp;
-                diodeB2.doStep(pnp * (Volts[bodyTerminal] - Volts[2]));
-                diodeCurrent2 = diodeB2.calculateCurrent(pnp * (Volts[bodyTerminal] - Volts[2])) * pnp;
+                diodeB1.doStep(pnp * (Volts[bodyTerminal] - Volts[V_S]));
+                diodeCurrent1 = diodeB1.calculateCurrent(pnp * (Volts[bodyTerminal] - Volts[V_S])) * pnp;
+                diodeB2.doStep(pnp * (Volts[bodyTerminal] - Volts[V_D]));
+                diodeCurrent2 = diodeB2.calculateCurrent(pnp * (Volts[bodyTerminal] - Volts[V_D])) * pnp;
             } else {
                 diodeCurrent1 = diodeCurrent2 = 0;
             }
@@ -438,11 +449,11 @@ namespace Circuit.Elements {
             arr[0] += " (Vt=" + getVoltageText(pnp * vt);
             arr[0] += ", \u03b2=" + beta + ")";
             arr[1] = ((pnp == 1) ? "Ids = " : "Isd = ") + getCurrentText(ids);
-            arr[2] = "Vgs = " + getVoltageText(Volts[0] - Volts[pnp == -1 ? 2 : 1]);
-            arr[3] = ((pnp == 1) ? "Vds = " : "Vsd = ") + getVoltageText(Volts[2] - Volts[1]);
+            arr[2] = "Vgs = " + getVoltageText(Volts[V_G] - Volts[pnp == -1 ? V_D : V_S]);
+            arr[3] = ((pnp == 1) ? "Vds = " : "Vsd = ") + getVoltageText(Volts[V_D] - Volts[V_S]);
             arr[4] = (mode == 0) ? "off" : (mode == 1) ? "linear" : "saturation";
             arr[5] = "gm = " + getUnitText(gm, "A/V");
-            arr[6] = "P = " + getUnitText(getPower(), "W");
+            arr[6] = "P = " + getUnitText(Power, "W");
             if (showBulk()) {
                 arr[7] = "Ib = " + getUnitText(bodyTerminal == 1 ? -diodeCurrent1 : bodyTerminal == 2 ? diodeCurrent2 : -pnp * (diodeCurrent1 + diodeCurrent2), "A");
             }
@@ -455,10 +466,6 @@ namespace Circuit.Elements {
         public override string getScopeText(int v) {
             return ((pnp == -1) ? "p-" : "n-") + "MOSFET";
         }
-
-        public override bool canViewInScope() { return true; }
-
-        public override double getVoltageDiff() { return Volts[2] - Volts[1]; }
 
         public override bool getConnection(int n1, int n2) {
             return !(n1 == 0 || n2 == 0);

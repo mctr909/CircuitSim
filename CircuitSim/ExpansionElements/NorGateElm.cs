@@ -9,7 +9,5 @@
         protected override string getGateName() { return "NOR gate"; }
 
         protected override bool isInverting() { return true; }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.NOR_GATE; }
     }
 }

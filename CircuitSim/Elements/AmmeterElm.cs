@@ -42,6 +42,14 @@ namespace Circuit.Elements {
             }
         }
 
+        public override bool IsWire { get { return true; } }
+
+        public override double VoltageDiff { get { return Volts[0]; } }
+
+        public override double Power { get { return 0; } }
+
+        public override int VoltageSourceCount { get { return 1; } }
+
         protected override string dump() {
             return meter + " " + scale;
         }
@@ -147,7 +155,7 @@ namespace Circuit.Elements {
             string s = "A";
             switch (meter) {
             case AM_VOL:
-                s = getUnitTextWithScale(getCurrent(), "A", scale);
+                s = getUnitTextWithScale(mCurrent, "A", scale);
                 break;
             case AM_RMS:
                 s = getUnitTextWithScale(rmsI, "A(rms)", scale);
@@ -166,8 +174,6 @@ namespace Circuit.Elements {
             return (mFlags & FLAG_SHOWCURRENT) != 0;
         }
 
-        public override int getVoltageSourceCount() { return 1; }
-
         public override void getInfo(string[] arr) {
             arr[0] = "Ammeter";
             switch (meter) {
@@ -179,12 +185,6 @@ namespace Circuit.Elements {
                 break;
             }
         }
-
-        public override double getPower() { return 0; }
-
-        public override double getVoltageDiff() { return Volts[0]; }
-
-        public override bool isWire() { return true; }
 
         public override EditInfo getEditInfo(int n) {
             if (n == 0) {

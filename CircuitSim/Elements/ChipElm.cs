@@ -146,7 +146,7 @@ namespace Circuit.Elements {
             setupPins();
             setSize((f & FLAG_SMALL) != 0 ? 1 : 2);
             int i;
-            for (i = 0; i != getPostCount(); i++) {
+            for (i = 0; i != PostCount; i++) {
                 if (pins == null) {
                     Volts[i] = st.nextTokenDouble();
                 } else if (pins[i].state) {
@@ -161,7 +161,7 @@ namespace Circuit.Elements {
             if (needsBits()) {
                 s = string.Join(" ", s, bits);
             }
-            for (int i = 0; i != getPostCount(); i++) {
+            for (int i = 0; i != PostCount; i++) {
                 if (pins[i].state) {
                     s = string.Join(" ", s, Volts[i]);
                 }
@@ -189,7 +189,7 @@ namespace Circuit.Elements {
 
         public void drawChip(Graphics g) {
             int i;
-            for (i = 0; i != getPostCount(); i++) {
+            for (i = 0; i != PostCount; i++) {
                 var p = pins[i];
                 getVoltageColor(Volts[i]);
                 var a = p.post;
@@ -261,7 +261,7 @@ namespace Circuit.Elements {
             };
             setBbox(xr, yr, rectPoints[2].X, rectPoints[2].Y);
             int i;
-            for (i = 0; i != getPostCount(); i++) {
+            for (i = 0; i != PostCount; i++) {
                 var p = pins[i];
                 switch (p.side) {
                 case SIDE_N:
@@ -309,7 +309,7 @@ namespace Circuit.Elements {
                 return false;
             }
 
-            for (int i = 0; i != getPostCount(); i++) {
+            for (int i = 0; i != PostCount; i++) {
                 if (pin == i) {
                     continue;
                 }
@@ -325,7 +325,7 @@ namespace Circuit.Elements {
         }
 
         public override void setVoltageSource(int j, int vs) {
-            for (int i = 0; i != getPostCount(); i++) {
+            for (int i = 0; i != PostCount; i++) {
                 var p = pins[i];
                 if (p.output && j-- == 0) {
                     p.voltSource = vs;
@@ -336,7 +336,7 @@ namespace Circuit.Elements {
         }
 
         public override void stamp() {
-            for (int i = 0; i != getPostCount(); i++) {
+            for (int i = 0; i != PostCount; i++) {
                 var p = pins[i];
                 if (p.output) {
                     Cir.StampVoltageSource(0, Nodes[i], p.voltSource);
@@ -348,14 +348,14 @@ namespace Circuit.Elements {
 
         public override void doStep() {
             int i;
-            for (i = 0; i != getPostCount(); i++) {
+            for (i = 0; i != PostCount; i++) {
                 var p = pins[i];
                 if (!p.output) {
                     p.value = Volts[i] > 2.5;
                 }
             }
             execute();
-            for (i = 0; i != getPostCount(); i++) {
+            for (i = 0; i != PostCount; i++) {
                 var p = pins[i];
                 if (p.output) {
                     Cir.UpdateVoltageSource(0, Nodes[i], p.voltSource, p.value ? 5 : 0);
@@ -364,7 +364,7 @@ namespace Circuit.Elements {
         }
 
         public override void reset() {
-            for (int i = 0; i != getPostCount(); i++) {
+            for (int i = 0; i != PostCount; i++) {
                 pins[i].value = false;
                 pins[i].curcount = 0;
                 Volts[i] = 0;
@@ -375,7 +375,7 @@ namespace Circuit.Elements {
         public override void getInfo(string[] arr) {
             arr[0] = getChipName();
             int a = 1;
-            for (int i = 0; i != getPostCount(); i++) {
+            for (int i = 0; i != PostCount; i++) {
                 var p = pins[i];
                 if (arr[a] != null) {
                     arr[a] += "; ";
@@ -397,7 +397,7 @@ namespace Circuit.Elements {
         }
 
         public override void setCurrent(int x, double c) {
-            for (int i = 0; i != getPostCount(); i++) {
+            for (int i = 0; i != PostCount; i++) {
                 if (pins[i].output && pins[i].voltSource == x) {
                     pins[i].current = c;
                 }

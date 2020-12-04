@@ -39,6 +39,14 @@ namespace Circuit.Elements {
             reset();
         }
 
+        public override double VoltageDiff { get { return Volts[0]; } }
+
+        public override double Power { get { return -VoltageDiff * mCurrent; } }
+
+        public override int VoltageSourceCount { get { return 1; } }
+
+        public override int PostCount { get { return 1; } }
+
         protected override string dump() {
             return minF
                 + " " + maxF
@@ -47,8 +55,6 @@ namespace Circuit.Elements {
         }
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.SWEEP; }
-
-        public override int getPostCount() { return 1; }
 
         public override void setPoints() {
             base.setPoints();
@@ -164,15 +170,11 @@ namespace Circuit.Elements {
             Cir.UpdateVoltageSource(0, Nodes[0], mVoltSource, v);
         }
 
-        public override double getVoltageDiff() { return Volts[0]; }
-
-        public override int getVoltageSourceCount() { return 1; }
-
         public override bool hasGroundConnection(int n1) { return true; }
 
         public override void getInfo(string[] arr) {
             arr[0] = "sweep " + (((mFlags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
-            arr[1] = "I = " + getCurrentDText(getCurrent());
+            arr[1] = "I = " + getCurrentDText(mCurrent);
             arr[2] = "V = " + getVoltageText(Volts[0]);
             arr[3] = "f = " + getUnitText(frequency, "Hz");
             arr[4] = "range = " + getUnitText(minF, "Hz") + " .. " + getUnitText(maxF, "Hz");
@@ -244,7 +246,5 @@ namespace Circuit.Elements {
             }
             setParams();
         }
-
-        public override double getPower() { return -getVoltageDiff() * mCurrent; }
     }
 }

@@ -14,6 +14,11 @@ namespace Circuit.Elements {
         protected static readonly Font FONT_TERM_NAME = new Font("Meiryo UI", 14.0f);
         protected static readonly Font FONT_TEXT = new Font("Meiryo UI", 9.0f);
         protected static readonly Font FONT_UNITS = new Font("Meiryo UI", 9.0f);
+        protected static readonly StringFormat TEXT_LEFT = new StringFormat() { Alignment = StringAlignment.Near };
+        protected static readonly StringFormat TEXT_LEFT_BOTTOM = new StringFormat() {
+            Alignment = StringAlignment.Near,
+            LineAlignment = StringAlignment.Far
+        };
         protected static readonly StringFormat TEXT_RIGHT = new StringFormat() { Alignment = StringAlignment.Far };
         protected static readonly StringFormat TEXT_CENTER = new StringFormat() {
             Alignment = StringAlignment.Center,
@@ -165,7 +170,7 @@ namespace Circuit.Elements {
             if (Sim.mouseMode == CirSim.MOUSE_MODE.DRAG_ROW || Sim.mouseMode == CirSim.MOUSE_MODE.DRAG_COLUMN) {
                 return;
             }
-            for (int i = 0; i != getPostCount(); i++) {
+            for (int i = 0; i != PostCount; i++) {
                 var p = getPost(i);
                 drawPost(g, p);
             }
@@ -203,6 +208,10 @@ namespace Circuit.Elements {
                 var y0 = (float)(a.Y + di * dy / dn);
                 g.FillRectangle(Brushes.Yellow, x0 - 2, y0 - 2, 4, 4);
             }
+        }
+
+        protected void drawText(Graphics g, string s, int x, int y) {
+            g.DrawString(s, FONT_TEXT, BrushText, x, y, TEXT_LEFT_BOTTOM);
         }
 
         protected void drawCenteredText(Graphics g, string s, int x, int y, bool cx) {
@@ -259,7 +268,7 @@ namespace Circuit.Elements {
                 if (typeof(VoltageElm) == GetType() || (X1 < X2 && Y1 > Y2)) {
                     xx = xc - (int)(textSize.Width + Math.Abs(dpx) + 2);
                 }
-                g.DrawString(s, FONT_UNITS, BrushText, xx, yc + dpy);
+                g.DrawString(s, FONT_UNITS, BrushText, xx, yc + dpy, TEXT_LEFT);
             }
         }
 

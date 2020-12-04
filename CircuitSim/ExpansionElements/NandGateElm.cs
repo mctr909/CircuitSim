@@ -9,7 +9,5 @@
         protected override bool isInverting() { return true; }
 
         protected override string getGateName() { return "NAND gate"; }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.NAND_GATE; }
     }
 }

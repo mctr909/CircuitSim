@@ -30,6 +30,11 @@ namespace Circuit.Elements {
             }
         }
 
+        /* we need this to be able to change the matrix for each step */
+        public override bool NonLinear { get { return true; } }
+
+        public override int PostCount { get { return 3; } }
+
         protected override string dump() {
             return r_on + " " + r_off;
         }
@@ -66,9 +71,6 @@ namespace Circuit.Elements {
             mCurrent = (Volts[0] - Volts[1]) / resistance;
         }
 
-        /* we need this to be able to change the matrix for each step */
-        public override bool nonLinear() { return true; }
-
         public override void stamp() {
             Cir.StampNonLinear(Nodes[0]);
             Cir.StampNonLinear(Nodes[1]);
@@ -100,8 +102,6 @@ namespace Circuit.Elements {
             setPoints();
         }
 
-        public override int getPostCount() { return 3; }
-
         public override Point getPost(int n) {
             return (n == 0) ? mPoint1 : (n == 1) ? mPoint2 : point3;
         }
@@ -109,8 +109,8 @@ namespace Circuit.Elements {
         public override void getInfo(string[] arr) {
             arr[0] = "analog switch";
             arr[1] = open ? "open" : "closed";
-            arr[2] = "Vd = " + getVoltageDText(getVoltageDiff());
-            arr[3] = "I = " + getCurrentDText(getCurrent());
+            arr[2] = "Vd = " + getVoltageDText(VoltageDiff);
+            arr[3] = "I = " + getCurrentDText(mCurrent);
             arr[4] = "Vc = " + getVoltageText(Volts[2]);
         }
 

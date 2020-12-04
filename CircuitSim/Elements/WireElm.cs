@@ -13,6 +13,14 @@ namespace Circuit.Elements {
 
         public WireElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) { }
 
+        public override DUMP_ID Shortcut { get { return DUMP_ID.WIRE; } }
+
+        public override bool IsWire { get { return true; } }
+
+        public override double VoltageDiff { get { return Volts[0]; } }
+
+        public override double Power { get { return 0; } }
+
         protected override string dump() { return ""; }
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.WIRE; }
@@ -23,7 +31,7 @@ namespace Circuit.Elements {
             setBbox(mPoint1, mPoint2, 3);
             string s = "";
             if (mustShowCurrent()) {
-                s = getShortUnitText(Math.Abs(getCurrent()), "A");
+                s = getShortUnitText(Math.Abs(mCurrent), "A");
             }
             if (mustShowVoltage()) {
                 s = (s.Length > 0 ? s + " " : "") + getShortUnitText(Volts[0], "V");
@@ -48,15 +56,9 @@ namespace Circuit.Elements {
 
         public override void getInfo(string[] arr) {
             arr[0] = "wire";
-            arr[1] = "I = " + getCurrentDText(getCurrent());
+            arr[1] = "I = " + getCurrentDText(mCurrent);
             arr[2] = "V = " + getVoltageText(Volts[0]);
         }
-
-        public override  double getPower() { return 0; }
-
-        public override double getVoltageDiff() { return Volts[0]; }
-
-        public override bool isWire() { return true; }
 
         public override EditInfo getEditInfo(int n) {
             if (n == 0) {
@@ -92,7 +94,5 @@ namespace Circuit.Elements {
                 }
             }
         }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.WIRE; }
     }
 }

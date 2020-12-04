@@ -455,7 +455,7 @@ namespace Circuit {
                         }
                         /* does this post belong to the elm? */
                         int k;
-                        int pc = ce.getPostCount();
+                        int pc = ce.PostCount;
                         for (k = 0; k != pc; k++) {
                             if (ce.getPost(k).Equals(cn)) {
                                 break;
@@ -686,9 +686,9 @@ namespace Circuit {
             LabeledNodeElm.resetNodeList();
             for (int i = 0; i != elmList.Count; i++) {
                 var ce = mSim.getElm(i);
-                int inodes = ce.getInternalNodeCount();
-                int ivs = ce.getVoltageSourceCount();
-                int posts = ce.getPostCount();
+                int inodes = ce.InternalNodeCount;
+                int ivs = ce.VoltageSourceCount;
+                int posts = ce.PostCount;
 
                 /* allocate a node for each post and match posts to nodes */
                 for (int j = 0; j != posts; j++) {
@@ -764,10 +764,10 @@ namespace Circuit {
             /* determine if circuit is nonlinear */
             for (int i = 0; i != elmList.Count; i++) {
                 var ce = mSim.getElm(i);
-                if (ce.nonLinear()) {
+                if (ce.NonLinear) {
                     CircuitNonLinear = true;
                 }
-                int ivs = ce.getVoltageSourceCount();
+                int ivs = ce.VoltageSourceCount;
                 for (int j = 0; j != ivs; j++) {
                     VoltageSources[vscount] = ce;
                     ce.setVoltageSource(j, vscount++);
@@ -808,7 +808,7 @@ namespace Circuit {
                     }
                     /* loop through all ce's nodes to see if they are connected
                     /* to other nodes not in closure */
-                    for (int j = 0; j < ce.getConnectionNodeCount(); j++) {
+                    for (int j = 0; j < ce.ConnectionNodeCount; j++) {
                         if (!closure[ce.getConnectionNode(j)]) {
                             if (ce.hasGroundConnection(j)) {
                                 closure[ce.getConnectionNode(j)] = changed = true;
@@ -816,7 +816,7 @@ namespace Circuit {
                             continue;
                         }
                         int k;
-                        for (k = 0; k != ce.getConnectionNodeCount(); k++) {
+                        for (k = 0; k != ce.ConnectionNodeCount; k++) {
                             if (j == k) {
                                 continue;
                             }
@@ -880,8 +880,8 @@ namespace Circuit {
 
                 /* look for voltage source or wire loops.  we do this for voltage sources or wire-like elements (not actual wires
                 /* because those are optimized out, so the findPath won't work) */
-                if (ce.getPostCount() == 2) {
-                    if ((ce is VoltageElm) || (ce.isWire() && !(ce is WireElm))) {
+                if (2 == ce.PostCount) {
+                    if ((ce is VoltageElm) || (ce.IsWire && !(ce is WireElm))) {
                         var fpi = new FindPathInfo(FindPathInfo.VOLTAGE, ce, ce.getNode(1), elmList, NodeList.Count);
                         if (fpi.FindPath(ce.getNode(0))) {
                             Stop("Voltage source/wire loop with no resistance!", ce);
@@ -891,7 +891,7 @@ namespace Circuit {
                 } else if (ce is Switch2Elm) {
                     /* for Switch2Elms we need to do extra work to look for wire loops */
                     var fpi = new FindPathInfo(FindPathInfo.VOLTAGE, ce, ce.getNode(0), elmList, NodeList.Count);
-                    for (int j = 1; j < ce.getPostCount(); j++) {
+                    for (int j = 1; j < ce.PostCount; j++) {
                         if (ce.getConnection(0, j) && fpi.FindPath(ce.getNode(j))) {
                             Stop("Voltage source/wire loop with no resistance!", ce);
                             return;

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit.Elements {
@@ -29,6 +28,12 @@ namespace Circuit.Elements {
             }
         }
 
+        public override double VoltageDiff { get { return Volts[0]; } }
+
+        public override int VoltageSourceCount { get { return 1; } }
+
+        public override int PostCount { get { return 1; } }
+
         protected override string dump() {
             return base.dump() + " " + hiV + " " + loV;
         }
@@ -38,8 +43,6 @@ namespace Circuit.Elements {
         bool isTernary() { return (mFlags & FLAG_TERNARY) != 0; }
 
         bool isNumeric() { return (mFlags & (FLAG_TERNARY | FLAG_NUMERIC)) != 0; }
-
-        public override int getPostCount() { return 1; }
 
         public override void setPoints() {
             base.setPoints();
@@ -74,10 +77,6 @@ namespace Circuit.Elements {
             Cir.StampVoltageSource(0, Nodes[0], mVoltSource, v);
         }
 
-        public override int getVoltageSourceCount() { return 1; }
-
-        public override double getVoltageDiff() { return Volts[0]; }
-
         public override void getInfo(string[] arr) {
             arr[0] = "logic input";
             arr[1] = (position == 0) ? "low" : "high";
@@ -85,7 +84,7 @@ namespace Circuit.Elements {
                 arr[1] = "" + position;
             }
             arr[1] += " (" + getVoltageText(Volts[0]) + ")";
-            arr[2] = "I = " + getCurrentText(getCurrent());
+            arr[2] = "I = " + getCurrentText(mCurrent);
         }
 
         public override bool hasGroundConnection(int n1) { return true; }
@@ -150,8 +149,6 @@ namespace Circuit.Elements {
                 posCount = (isTernary()) ? 3 : 2;
             }
         }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.LOGIC_I; }
 
         public override double getCurrentIntoNode(int n) {
             return -mCurrent;

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit.Elements {
@@ -22,13 +21,15 @@ namespace Circuit.Elements {
             }
         }
 
+        public override double VoltageDiff { get { return Volts[0]; } }
+
+        public override int PostCount { get { return 1; } }
+
         protected override string dump() {
             return threshold.ToString();
         }
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.LOGIC_O ; }
-
-        public override int getPostCount() { return 1; }
 
         bool isTernary() { return (mFlags & FLAG_TERNARY) != 0; }
 
@@ -67,8 +68,6 @@ namespace Circuit.Elements {
                 Cir.StampResistor(Nodes[0], 0, 1e6);
             }
         }
-
-        public override double getVoltageDiff() { return Volts[0]; }
 
         public override void getInfo(string[] arr) {
             arr[0] = "logic output";
@@ -126,7 +125,5 @@ namespace Circuit.Elements {
                 }
             }
         }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.LOGIC_O; }
     }
 }

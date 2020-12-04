@@ -1780,7 +1780,7 @@ namespace Circuit {
                     if (ce.BoundingBox.Contains(gx, gy)) {
                         int j;
                         int area = ce.BoundingBox.Width * ce.BoundingBox.Height;
-                        int jn = ce.getPostCount();
+                        int jn = ce.PostCount;
                         if (jn > 2) {
                             jn = 2;
                         }
@@ -1800,7 +1800,7 @@ namespace Circuit {
                         }
                         /* prefer selecting elements that have small bounding box area (for
                         /* elements with no posts) */
-                        if (ce.getPostCount() == 0 && area <= bestArea) {
+                        if (ce.PostCount == 0 && area <= bestArea) {
                             newMouseElm = ce;
                             bestArea = area;
                         }
@@ -1831,7 +1831,7 @@ namespace Circuit {
                         }
                     }
                     int j;
-                    int jn = ce.getPostCount();
+                    int jn = ce.PostCount;
                     for (j = 0; j != jn; j++) {
                         var pt = ce.getPost(j);
                         if (CircuitElm.distance(pt.X, pt.Y, gx, gy) < 26) {
@@ -1844,7 +1844,7 @@ namespace Circuit {
             } else {
                 mousePost = -1;
                 /* look for post close to the mouse pointer */
-                for (i = 0; i != newMouseElm.getPostCount(); i++) {
+                for (i = 0; i != newMouseElm.PostCount; i++) {
                     var pt = newMouseElm.getPost(i);
                     if (CircuitElm.distance(pt.X, pt.Y, gx, gy) < 26) {
                         mousePost = i;
@@ -1878,10 +1878,10 @@ namespace Circuit {
                 }
             } else if (mouseElm != null) {
                 if (!(mouseElm is ScopeElm)) {
-                    elmScopeMenuItem.Enabled = mouseElm.canViewInScope();
-                    elmFloatScopeMenuItem.Enabled = mouseElm.canViewInScope();
+                    elmScopeMenuItem.Enabled = mouseElm.CanViewInScope;
+                    elmFloatScopeMenuItem.Enabled = mouseElm.CanViewInScope;
                     elmEditMenuItem.Enabled = mouseElm.getEditInfo(0) != null;
-                    elmFlipMenuItem.Enabled = mouseElm.getPostCount() == 2;
+                    elmFlipMenuItem.Enabled = 2 == mouseElm.PostCount;
                     elmSplitMenuItem.Enabled = canSplit(mouseElm);
                     elmSliderMenuItem.Enabled = sliderItemEnabled(mouseElm);
                     contextPanel = new ContextMenuStrip();
@@ -2483,7 +2483,7 @@ namespace Circuit {
                     }
                 }
                 s = cs;
-                for (j = 0; j < e.getPostCount(); j++) {
+                for (j = 0; j < e.PostCount; j++) {
                     s = s + " " + e.Nodes[j];
                 }
                 Console.WriteLine(s);
@@ -2651,7 +2651,7 @@ namespace Circuit {
                     nodeDump += "\r";
                 }
                 nodeDump += ce.GetType().ToString();
-                for (j = 0; j != ce.getPostCount(); j++) {
+                for (j = 0; j != ce.PostCount; j++) {
                     int n = ce.getNode(j);
                     int n0 = nodeNumberHash.ContainsKey(n) ? nodeNumberHash[n] : n;
                     used[n0] = true;

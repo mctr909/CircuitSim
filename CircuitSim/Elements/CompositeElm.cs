@@ -40,6 +40,32 @@ namespace Circuit.Elements {
             allocNodes();
         }
 
+        public override bool CanViewInScope { get { return false; } }
+
+        public override double Power {
+            get {
+                double power = 0.0;
+                for (int i = 0; i < compElmList.Count; i++) {
+                    power += compElmList[i].Power;
+                }
+                return power;
+            }
+        }
+
+        public override int VoltageSourceCount { get { return voltageSources.Count; } }
+
+        public override int InternalNodeCount { get { return numNodes - numPosts; } }
+
+        public override bool NonLinear {
+            get {
+                /* Lets assume that any useful composite elements are
+                 * non-linear */
+                return true;
+            }
+        }
+
+        public override int PostCount { get { return numPosts; } }
+
         protected override string dump() {
             return dumpElements();
         }
@@ -146,10 +172,10 @@ namespace Circuit.Elements {
             /* allocate more nodes for sub-elements' internal nodes */
             for (int i = 0; i != compElmList.Count; i++) {
                 var ce = compElmList[i];
-                int inodes = ce.getInternalNodeCount();
+                int inodes = ce.InternalNodeCount;
                 for (int j = 0; j != inodes; j++) {
                     cnLink = new CircuitNodeLink();
-                    cnLink.Num = j + ce.getPostCount();
+                    cnLink.Num = j + ce.PostCount;
                     cnLink.Elm = ce;
                     cn = new CircuitNode();
                     cn.Links.Add(cnLink);
@@ -168,7 +194,7 @@ namespace Circuit.Elements {
 
             /* Enumerate voltage sources */
             for (int i = 0; i < compElmList.Count; i++) {
-                int cnt = compElmList[i].getVoltageSourceCount();
+                int cnt = compElmList[i].VoltageSourceCount;
                 for (int j = 0; j < cnt; j++) {
                     vsRecord = new VoltageSourceRecord();
                     vsRecord.elm = compElmList[i];
@@ -179,11 +205,6 @@ namespace Circuit.Elements {
 
             /* dump new circuits with escape() */
             mFlags |= FLAG_ESCAPE;
-        }
-
-        public override bool nonLinear() {
-            return true; /* Lets assume that any useful composite elements are
-                         /* non-linear */
         }
 
         /* are n1 and n2 connected internally somehow? */
@@ -222,14 +243,6 @@ namespace Circuit.Elements {
             }
         }
 
-        public override int getPostCount() {
-            return numPosts;
-        }
-
-        public override int getInternalNodeCount() {
-            return numNodes - numPosts;
-        }
-
         public override Point getPost(int n) {
             return posts[n];
         }
@@ -241,15 +254,6 @@ namespace Circuit.Elements {
         void setPost(int n, int x, int y) {
             posts[n].X = x;
             posts[n].Y = y;
-        }
-
-        public override double getPower() {
-            double power;
-            power = 0;
-            for (int i = 0; i < compElmList.Count; i++) {
-                power += compElmList[i].getPower();
-            }
-            return power;
         }
 
         public override void stamp() {
@@ -299,19 +303,11 @@ namespace Circuit.Elements {
             Volts[n] = c;
         }
 
-        public override bool canViewInScope() {
-            return false;
-        }
-
         public override void delete() {
             for (int i = 0; i < compElmList.Count; i++) {
                 compElmList[i].delete();
             }
             base.delete();
-        }
-
-        public override int getVoltageSourceCount() {
-            return voltageSources.Count;
         }
 
         /* Find the component with the nth voltage

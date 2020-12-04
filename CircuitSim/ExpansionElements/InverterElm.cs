@@ -30,6 +30,10 @@ namespace Circuit.Elements {
             }
         }
 
+        public override double VoltageDiff { get { return Volts[0]; } }
+
+        public override int VoltageSourceCount { get { return 1; } }
+
         protected override string dump() { return ""; }
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.INVERT; }
@@ -75,8 +79,6 @@ namespace Circuit.Elements {
             setBbox(mPoint1, mPoint2, hs);
         }
 
-        public override int getVoltageSourceCount() { return 1; }
-
         public override void stamp() {
             Cir.StampVoltageSource(0, Nodes[1], mVoltSource);
         }
@@ -91,8 +93,6 @@ namespace Circuit.Elements {
             v = Math.Max(Math.Min(lastOutputVoltage + maxStep, v), lastOutputVoltage - maxStep);
             Cir.UpdateVoltageSource(0, Nodes[1], mVoltSource, v);
         }
-
-        public override double getVoltageDiff() { return Volts[0]; }
 
         public override void getInfo(string[] arr) {
             arr[0] = "inverter";
@@ -124,8 +124,6 @@ namespace Circuit.Elements {
         public override bool getConnection(int n1, int n2) { return false; }
 
         public override bool hasGroundConnection(int n1) { return n1 == 1; }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.INVERT; }
 
         public override double getCurrentIntoNode(int n) {
             if (n == 1) {

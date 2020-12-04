@@ -20,13 +20,15 @@ namespace Circuit.Elements {
             } catch { }
         }
 
+        public override double VoltageDiff { get { return Volts[0]; } }
+
+        public override int PostCount { get { return 1; } }
+
         protected override string dump() {
             return scale.ToString();
         }
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.OUTPUT; }
-
-        public override int getPostCount() { return 1; }
 
         public override void setPoints() {
             base.setPoints();
@@ -55,8 +57,6 @@ namespace Circuit.Elements {
             drawThickLine(g, mPoint1, mLead1);
             drawPosts(g);
         }
-
-        public override double getVoltageDiff() { return Volts[0]; }
 
         public override void getInfo(string[] arr) {
             arr[0] = "output";

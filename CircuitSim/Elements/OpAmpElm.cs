@@ -8,6 +8,10 @@ namespace Circuit.Elements {
         protected const int FLAG_LOWGAIN = 4;
         protected const int FLAG_GAIN = 8;
 
+        const int V_N = 0;
+        const int V_P = 1;
+        const int V_O = 2;
+
         int opsize;
         int opheight;
         int opwidth;
@@ -42,8 +46,8 @@ namespace Circuit.Elements {
                 maxOut = st.nextTokenDouble();
                 minOut = st.nextTokenDouble();
                 gbw = st.nextTokenDouble();
-                Volts[0] = st.nextTokenDouble();
-                Volts[1] = st.nextTokenDouble();
+                Volts[V_N] = st.nextTokenDouble();
+                Volts[V_P] = st.nextTokenDouble();
                 gain = st.nextTokenDouble();
             } catch {
                 maxOut = 15;
@@ -55,13 +59,23 @@ namespace Circuit.Elements {
             setGain();
         }
 
+        public override double VoltageDiff { get { return Volts[V_O] - Volts[V_P]; } }
+
+        public override double Power { get { return Volts[V_O] * mCurrent; } }
+
+        public override int VoltageSourceCount { get { return 1; } }
+
+        public override bool NonLinear { get { return true; } }
+
+        public override int PostCount { get { return 3; } }
+
         protected override string dump() {
             mFlags |= FLAG_GAIN;
             return maxOut
                 + " " + minOut
                 + " " + gbw
-                + " " + Volts[0]
-                + " " + Volts[1]
+                + " " + Volts[V_N]
+                + " " + Volts[V_P]
                 + " " + gain;
         }
 
@@ -76,14 +90,12 @@ namespace Circuit.Elements {
             gain = ((mFlags & FLAG_LOWGAIN) != 0) ? 1000 : 100000;
         }
 
-        public override bool nonLinear() { return true; }
-
         public override void draw(Graphics g) {
             setBbox(mPoint1, mPoint2, opheight * 2);
 
-            drawThickLine(g, getVoltageColor(Volts[0]), in1p[0], in1p[1]);
-            drawThickLine(g, getVoltageColor(Volts[1]), in2p[0], in2p[1]);
-            drawThickLine(g, getVoltageColor(Volts[2]), mLead2, mPoint2);
+            drawThickLine(g, getVoltageColor(Volts[V_N]), in1p[0], in1p[1]);
+            drawThickLine(g, getVoltageColor(Volts[V_P]), in2p[0], in2p[1]);
+            drawThickLine(g, getVoltageColor(Volts[V_O]), mLead2, mPoint2);
 
             PenThickLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
             drawThickPolygon(g, triangle);
@@ -94,8 +106,6 @@ namespace Circuit.Elements {
             drawDots(g, mPoint2, mLead2, mCurCount);
             drawPosts(g);
         }
-
-        public override double getPower() { return Volts[2] * mCurrent; }
 
         void setSize(int s) {
             opsize = s;
@@ -130,21 +140,17 @@ namespace Circuit.Elements {
             plusFont = new Font("Meiryo UI", opsize == 2 ? 14 : 10);
         }
 
-        public override int getPostCount() { return 3; }
-
         public override Point getPost(int n) {
             return (n == 0) ? in1p[0] : (n == 1) ? in2p[0] : mPoint2;
         }
 
-        public override int getVoltageSourceCount() { return 1; }
-
         public override void getInfo(string[] arr) {
             arr[0] = "op-amp";
-            arr[1] = "V+ = " + getVoltageText(Volts[1]);
-            arr[2] = "V- = " + getVoltageText(Volts[0]);
+            arr[1] = "V+ = " + getVoltageText(Volts[V_P]);
+            arr[2] = "V- = " + getVoltageText(Volts[V_N]);
             /* sometimes the voltage goes slightly outside range,
              * to make convergence easier.  so we hide that here. */
-            double vo = Math.Max(Math.Min(Volts[2], maxOut), minOut);
+            double vo = Math.Max(Math.Min(Volts[V_O], maxOut), minOut);
             arr[3] = "Vout = " + getVoltageText(vo);
             arr[4] = "Iout = " + getCurrentText(-mCurrent);
             arr[5] = "range = " + getVoltageText(minOut) + " to " +
@@ -158,10 +164,10 @@ namespace Circuit.Elements {
         }
 
         public override void doStep() {
-            double vd = Volts[1] - Volts[0];
+            double vd = Volts[V_P] - Volts[V_N];
             if (Math.Abs(lastvd - vd) > .1) {
                 Cir.Converged = false;
-            } else if (Volts[2] > maxOut + .1 || Volts[2] < minOut - .1) {
+            } else if (Volts[V_O] > maxOut + .1 || Volts[V_O] < minOut - .1) {
                 Cir.Converged = false;
             }
             double x = 0;
@@ -176,7 +182,7 @@ namespace Circuit.Elements {
             } else {
                 dx = gain;
             }
-            /*Console.WriteLine("opamp " + vd + " " + Volts[2] + " " + dx + " "  + x + " " + lastvd + " " + Cir.Converged);*/
+            /*Console.WriteLine("opamp " + vd + " " + Volts[V_O] + " " + dx + " "  + x + " " + lastvd + " " + Cir.Converged);*/
 
             /* newton-raphson */
             Cir.StampMatrix(vn, Nodes[0], dx);
@@ -192,8 +198,6 @@ namespace Circuit.Elements {
         public override bool getConnection(int n1, int n2) { return false; }
 
         public override bool hasGroundConnection(int n1) { return n1 == 2; }
-
-        public override double getVoltageDiff() { return Volts[2] - Volts[1]; }
 
         public override EditInfo getEditInfo(int n) {
             if (n == 0) {
@@ -219,8 +223,6 @@ namespace Circuit.Elements {
                 gain = ei.Value;
             }
         }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.OPAMP; }
 
         public override double getCurrentIntoNode(int n) {
             if (n == 2) {

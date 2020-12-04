@@ -2,6 +2,6 @@
     class NMosfetElm : MosfetElm {
         public NMosfetElm(int xx, int yy) : base(xx, yy, false) { }
 
-        public override DUMP_ID getShortcut() { return DUMP_ID.NMOS; }
+        public override DUMP_ID Shortcut { get { return DUMP_ID.NMOS; } }
     }
 }

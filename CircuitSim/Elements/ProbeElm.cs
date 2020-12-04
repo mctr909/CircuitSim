@@ -58,13 +58,13 @@ namespace Circuit.Elements {
             } catch { }
         }
 
+        public override DUMP_ID Shortcut { get { return DUMP_ID.PROBE; } }
+
         protected override string dump() {
             return meter + " " + scale;
         }
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.PROBE; }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.PROBE; }
 
         string getMeter() {
             switch (meter) {
@@ -129,7 +129,7 @@ namespace Circuit.Elements {
                 string s = "";
                 switch (meter) {
                 case TP_VOL:
-                    s = getUnitTextWithScale(getVoltageDiff(), "V", scale);
+                    s = getUnitTextWithScale(VoltageDiff, "V", scale);
                     break;
                 case TP_RMS:
                     s = getUnitTextWithScale(rmsV, "V(rms)", scale);
@@ -181,7 +181,7 @@ namespace Circuit.Elements {
 
         public override void stepFinished() {
             count++; /*how many counts are in a cycle */
-            double v = getVoltageDiff();
+            double v = VoltageDiff;
             total += v * v;
 
             if (v < 2.5) {
@@ -259,7 +259,7 @@ namespace Circuit.Elements {
 
         public override void getInfo(string[] arr) {
             arr[0] = "voltmeter";
-            arr[1] = "Vd = " + getVoltageText(getVoltageDiff());
+            arr[1] = "Vd = " + getVoltageText(VoltageDiff);
         }
 
         public override bool getConnection(int n1, int n2) { return false; }

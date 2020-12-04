@@ -4,11 +4,13 @@
             setSize(2);
         }
 
+        public override int VoltageSourceCount { get { return 0; } }
+
+        public override int PostCount { get { return null == pins ? 1 : pins.Length; } }
+
         bool needsBits() { return false; }
 
         public override void setupPins() { }
-
-        public override int getVoltageSourceCount() { return 0; }
 
         void setPins(Pin[] p) {
             pins = p;
@@ -22,7 +24,5 @@
             pins[n] = new Pin(this, p, s, t);
             pins[n].fixName();
         }
-
-        public override int getPostCount() { return pins == null ? 1 : pins.Length; }
     }
 }

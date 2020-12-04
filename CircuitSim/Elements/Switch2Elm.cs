@@ -32,6 +32,12 @@ namespace Circuit.Elements {
             allocNodes();
         }
 
+        public override bool IsWire { get { return true; } }
+
+        public override int VoltageSourceCount { get { return (2 == position && hasCenterOff()) ? 0 : 1; } }
+
+        public override int PostCount { get { return 1 + throwCount; } }
+
         protected override string dump() {
             return base.dump() + " " + link + " " + throwCount;
         }
@@ -67,9 +73,7 @@ namespace Circuit.Elements {
                 drawThickLine(g, getVoltageColor(Volts[i + 1]), swpoles[i], swposts[i]);
             }
             /* draw switch */
-            if (!needsHighlight()) {
-                PenThickLine.Color = WhiteColor;
-            }
+            PenThickLine.Color = needsHighlight() ? SelectColor : WhiteColor;
             drawThickLine(g, mLead1, swpoles[position]);
 
             updateDotCount();
@@ -101,8 +105,6 @@ namespace Circuit.Elements {
             return (n == 0) ? mPoint1 : swposts[n - 1];
         }
 
-        public override int getPostCount() { return 1 + throwCount; }
-
         public override void calculateCurrent() {
             if (position == 2 && hasCenterOff()) {
                 mCurrent = 0;
@@ -114,10 +116,6 @@ namespace Circuit.Elements {
                 return;
             }
             Cir.StampVoltageSource(Nodes[0], Nodes[position + 1], mVoltSource, 0);
-        }
-
-        public override int getVoltageSourceCount() {
-            return (position == 2 && hasCenterOff()) ? 0 : 1;
         }
 
         public override void toggle() {
@@ -143,12 +141,10 @@ namespace Circuit.Elements {
             return comparePair(n1, n2, 0, 1 + position);
         }
 
-        public override bool isWire() { return true; }
-
         public override void getInfo(string[] arr) {
             arr[0] = "switch (" + (link == 0 ? "S" : "D")
                 + "P" + ((throwCount > 2) ? throwCount + "T)" : "DT)");
-            arr[1] = "I = " + getCurrentDText(getCurrent());
+            arr[1] = "I = " + getCurrentDText(mCurrent);
         }
 
         public override EditInfo getEditInfo(int n) {
@@ -190,8 +186,6 @@ namespace Circuit.Elements {
                 base.setEditValue(n, ei);
             }
         }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.SWITCH2; }
 
         /* this is for backwards compatibility only.
          * we only support it if throwCount = 2 */

@@ -26,6 +26,8 @@ namespace Circuit.Elements {
             setup();
         }
 
+        public override DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }
+
         public override void setPoints() {
             base.setPoints();
             calcLeads(16);
@@ -65,8 +67,6 @@ namespace Circuit.Elements {
             arr[0] = "Zener diode";
             arr[5] = "Vz = " + getVoltageText(model.breakdownVoltage);
         }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.INVALID; }
 
         void setLastModelName(string n) {
             lastZenerModelName = n;

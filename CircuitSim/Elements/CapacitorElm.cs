@@ -28,6 +28,8 @@ namespace Circuit.Elements {
             voltdiff = st.nextTokenDouble();
         }
 
+        public override DUMP_ID Shortcut { get { return DUMP_ID.CAPACITOR; } }
+
         protected override string dump() {
             return Capacitance + " " + voltdiff;
         }
@@ -95,7 +97,7 @@ namespace Circuit.Elements {
             drawPosts(g);
             if (Sim.chkShowValuesCheckItem.Checked) {
                 var s = getShortUnitText(Capacitance, "F");
-                drawValues(g, s, hs);
+                drawValues(g, s, hs * mDirX);
             }
         }
 
@@ -155,7 +157,7 @@ namespace Circuit.Elements {
             arr[0] = "capacitor";
             getBasicInfo(arr);
             arr[3] = "C = " + getUnitText(Capacitance, "F");
-            arr[4] = "P = " + getUnitText(getPower(), "W");
+            arr[4] = "P = " + getUnitText(Power, "W");
         }
 
         public override string getScopeText(int v) {
@@ -189,7 +191,5 @@ namespace Circuit.Elements {
                 }
             }
         }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.CAPACITOR; }
     }
 }

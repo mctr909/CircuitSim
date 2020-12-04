@@ -409,9 +409,9 @@ namespace Circuit {
             var shortcut = DUMP_ID.INVALID;
             var elm = constructElement(item, 0, 0);
             if (elm != null) {
-                if (elm.needsShortcut()) {
-                    shortcut = elm.getShortcut();
-                    shortcuts[(int)elm.getShortcut()] = item;
+                if (elm.NeedsShortcut) {
+                    shortcut = elm.Shortcut;
+                    shortcuts[(int)elm.Shortcut] = item;
                 }
                 elm.delete();
             }
@@ -419,7 +419,7 @@ namespace Circuit {
             if (shortcut == DUMP_ID.INVALID) {
                 mi = new ToolStripMenuItem();
             } else {
-                var sc = SHORTCUT.fromDumpId(elm.getShortcut());
+                var sc = SHORTCUT.fromDumpId(elm.Shortcut);
                 if (sc.Key == Keys.None) {
                     mi = new ToolStripMenuItem();
                 } else {

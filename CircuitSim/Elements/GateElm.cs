@@ -60,6 +60,10 @@ namespace Circuit.Elements {
             setSize((f & FLAG_SMALL) != 0 ? 1 : 2);
         }
 
+        public override int VoltageSourceCount { get { return 1; } }
+
+        public override int PostCount { get { return inputCount + 1; } }
+
         protected virtual bool isInverting() { return false; }
 
         void setSize(int s) {
@@ -152,8 +156,6 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public override int getPostCount() { return inputCount + 1; }
-
         public override Point getPost(int n) {
             if (n == inputCount) {
                 return mPoint2;
@@ -161,14 +163,12 @@ namespace Circuit.Elements {
             return inPosts[n];
         }
 
-        public override int getVoltageSourceCount() { return 1; }
-
         protected abstract string getGateName();
 
         public override void getInfo(string[] arr) {
             arr[0] = getGateName();
             arr[1] = "Vout = " + getVoltageText(Volts[inputCount]);
-            arr[2] = "Iout = " + getCurrentText(getCurrent());
+            arr[2] = "Iout = " + getCurrentText(mCurrent);
         }
 
         public override void stamp() {

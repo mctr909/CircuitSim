@@ -48,7 +48,5 @@ namespace Circuit.Elements {
             }
             return f;
         }
-
-        public override DUMP_ID getShortcut() { return DUMP_ID.AND_GATE; }
     }
 }
