@@ -90,7 +90,7 @@ namespace Circuit.Elements {
             gain = ((mFlags & FLAG_LOWGAIN) != 0) ? 1000 : 100000;
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             setBbox(mPoint1, mPoint2, opheight * 2);
 
             drawThickLine(g, getVoltageColor(Volts[V_N]), in1p[0], in1p[1]);
@@ -114,8 +114,8 @@ namespace Circuit.Elements {
             mFlags = (mFlags & ~FLAG_SMALL) | ((s == 1) ? FLAG_SMALL : 0);
         }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             if (mLen > 150 && this == Sim.dragElm) {
                 setSize(2);
             }
@@ -140,11 +140,11 @@ namespace Circuit.Elements {
             plusFont = new Font("Meiryo UI", opsize == 2 ? 14 : 10);
         }
 
-        public override Point getPost(int n) {
+        public override Point GetPost(int n) {
             return (n == 0) ? in1p[0] : (n == 1) ? in2p[0] : mPoint2;
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "op-amp";
             arr[1] = "V+ = " + getVoltageText(Volts[V_P]);
             arr[2] = "V- = " + getVoltageText(Volts[V_N]);
@@ -157,13 +157,13 @@ namespace Circuit.Elements {
             getVoltageText(maxOut);
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             int vn = Cir.NodeList.Count + mVoltSource;
             Cir.StampNonLinear(vn);
             Cir.StampMatrix(Nodes[2], vn, 1);
         }
 
-        public override void doStep() {
+        public override void DoStep() {
             double vd = Volts[V_P] - Volts[V_N];
             if (Math.Abs(lastvd - vd) > .1) {
                 Cir.Converged = false;
@@ -195,11 +195,11 @@ namespace Circuit.Elements {
 
         /* there is no current path through the op-amp inputs,
          * but there is an indirect path through the output to ground. */
-        public override bool getConnection(int n1, int n2) { return false; }
+        public override bool GetConnection(int n1, int n2) { return false; }
 
-        public override bool hasGroundConnection(int n1) { return n1 == 2; }
+        public override bool HasGroundConnection(int n1) { return n1 == 2; }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 return new EditInfo("Max Output (V)", maxOut, 1, 20);
             }
@@ -212,7 +212,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 maxOut = ei.Value;
             }
@@ -224,7 +224,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override double getCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 2) {
                 return -mCurrent;
             }

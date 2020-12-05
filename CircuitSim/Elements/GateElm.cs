@@ -79,8 +79,8 @@ namespace Circuit.Elements {
             return inputCount + " " + Volts[inputCount] + " " + highVoltage;
         }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             inputStates = new bool[inputCount];
             if (mLen > 150 && this == Sim.dragElm) {
                 setSize(2);
@@ -125,7 +125,7 @@ namespace Circuit.Elements {
 
         public static bool useAnsiGates() { return Sim.chkAnsiResistorCheckItem.Checked; }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             int i;
             for (i = 0; i != inputCount; i++) {
                 drawThickLine(g, getVoltageColor(Volts[i]), inPosts[i], inGates[i]);
@@ -156,7 +156,7 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public override Point getPost(int n) {
+        public override Point GetPost(int n) {
             if (n == inputCount) {
                 return mPoint2;
             }
@@ -165,13 +165,13 @@ namespace Circuit.Elements {
 
         protected abstract string getGateName();
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = getGateName();
             arr[1] = "Vout = " + getVoltageText(Volts[inputCount]);
             arr[2] = "Iout = " + getCurrentText(mCurrent);
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             Cir.StampVoltageSource(0, Nodes[inputCount], mVoltSource);
         }
 
@@ -188,7 +188,7 @@ namespace Circuit.Elements {
 
         protected abstract bool calcFunction();
 
-        public override void doStep() {
+        public override void DoStep() {
             bool f = calcFunction();
             if (isInverting()) {
                 f = !f;
@@ -211,7 +211,7 @@ namespace Circuit.Elements {
             Cir.UpdateVoltageSource(0, Nodes[inputCount], mVoltSource, res);
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 return new EditInfo("# of Inputs", inputCount, 1, 8).SetDimensionless();
             }
@@ -229,10 +229,10 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0 && ei.Value >= 1) {
                 inputCount = (int)ei.Value;
-                setPoints();
+                SetPoints();
             }
             if (n == 1) {
                 highVoltage = lastHighVoltage = ei.Value;
@@ -244,19 +244,19 @@ namespace Circuit.Elements {
                     mFlags &= ~FLAG_SCHMITT;
                 }
                 lastSchmitt = hasSchmittInputs();
-                setPoints();
+                SetPoints();
             }
         }
 
         /* there is no current path through the gate inputs,
          * but there is an indirect path through the output to ground. */
-        public override bool getConnection(int n1, int n2) { return false; }
+        public override bool GetConnection(int n1, int n2) { return false; }
 
-        public override bool hasGroundConnection(int n1) {
+        public override bool HasGroundConnection(int n1) {
             return (n1 == inputCount);
         }
 
-        public override double getCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == inputCount) {
                 return mCurrent;
             }

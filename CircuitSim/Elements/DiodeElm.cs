@@ -74,19 +74,19 @@ namespace Circuit.Elements {
             allocNodes();
         }
 
-        public override void updateModels() {
+        public override void UpdateModels() {
             setup();
         }
 
-        public override string dumpModel() {
+        public override string DumpModel() {
             if (model.builtIn || model.dumped) {
                 return null;
             }
             return model.dump();
         }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             calcLeads(16);
             cathode = newPointArray(2);
             var pa = newPointArray(2);
@@ -95,13 +95,13 @@ namespace Circuit.Elements {
             poly = createPolygon(pa[0], pa[1], mLead2).ToArray();
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             drawDiode(g);
             doDots(g);
             drawPosts(g);
         }
 
-        public override void reset() {
+        public override void Reset() {
             diode.reset();
             Volts[0] = Volts[1] = mCurCount = 0;
             if (hasResistance) {
@@ -123,7 +123,7 @@ namespace Circuit.Elements {
             drawThickLine(g, getVoltageColor(v2), cathode[0], cathode[1]);
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             if (hasResistance) {
                 /* create diode from node 0 to internal node */
                 diode.stamp(Nodes[0], Nodes[2]);
@@ -135,15 +135,15 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void doStep() {
+        public override void DoStep() {
             diode.doStep(Volts[0] - Volts[diodeEndNode]);
         }
 
-        public override void calculateCurrent() {
+        protected override void calculateCurrent() {
             mCurrent = diode.calculateCurrent(Volts[0] - Volts[diodeEndNode]);
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             if (model.oldStyle) {
                 arr[0] = "diode";
             } else {
@@ -157,7 +157,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (!customModelUI && n == 0) {
                 var ei = new EditInfo("Model", 0, -1, -1);
                 models = DiodeModel.getModelList(typeof(ZenerElm) == GetType());
@@ -190,10 +190,10 @@ namespace Circuit.Elements {
                 ei.Button = new Button() { Text = "Create Simple Model" };
                 return ei;
             }
-            return base.getEditInfo(n);
+            return base.GetEditInfo(n);
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (!customModelUI && n == 0) {
                 int ix = ei.Choice.SelectedIndex;
                 if (ix >= models.Count) {
@@ -238,14 +238,14 @@ namespace Circuit.Elements {
                     }
                 }
             }
-            base.setEditValue(n, ei);
+            base.SetEditValue(n, ei);
         }
 
         void setLastModelName(string n) {
             lastModelName = n;
         }
 
-        public override void stepFinished() {
+        public override void StepFinished() {
             /* stop for huge currents that make simulator act weird */
             if (Math.Abs(mCurrent) > 1e12) {
                 Cir.Stop("max current exceeded", this);

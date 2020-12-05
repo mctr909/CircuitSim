@@ -183,7 +183,7 @@ namespace Circuit.Elements {
 
         public virtual void setupPins() { }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             drawChip(g);
         }
 
@@ -230,7 +230,7 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public override void drag(int xx, int yy) {
+        public override void Drag(int xx, int yy) {
             yy = Sim.snapGrid(yy);
             if (xx < X1) {
                 xx = X1;
@@ -239,10 +239,10 @@ namespace Circuit.Elements {
                 Y1 = Y2 = yy;
                 X2 = Sim.snapGrid(xx);
             }
-            setPoints();
+            SetPoints();
         }
 
-        public override void setPoints() {
+        public override void SetPoints() {
             clockPoints = null;
             if (X2 - X1 > sizeX * cspc2 && this == Sim.dragElm) {
                 setSize(2);
@@ -320,11 +320,11 @@ namespace Circuit.Elements {
             return true;
         }
 
-        public override Point getPost(int n) {
+        public override Point GetPost(int n) {
             return pins[n].post;
         }
 
-        public override void setVoltageSource(int j, int vs) {
+        public override void SetVoltageSource(int j, int vs) {
             for (int i = 0; i != PostCount; i++) {
                 var p = pins[i];
                 if (p.output && j-- == 0) {
@@ -335,7 +335,7 @@ namespace Circuit.Elements {
             Console.WriteLine("setVoltageSource failed for " + this);
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             for (int i = 0; i != PostCount; i++) {
                 var p = pins[i];
                 if (p.output) {
@@ -346,7 +346,7 @@ namespace Circuit.Elements {
 
         protected virtual void execute() { }
 
-        public override void doStep() {
+        public override void DoStep() {
             int i;
             for (i = 0; i != PostCount; i++) {
                 var p = pins[i];
@@ -363,7 +363,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void reset() {
+        public override void Reset() {
             for (int i = 0; i != PostCount; i++) {
                 pins[i].value = false;
                 pins[i].curcount = 0;
@@ -372,7 +372,7 @@ namespace Circuit.Elements {
             lastClock = false;
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = getChipName();
             int a = 1;
             for (int i = 0; i != PostCount; i++) {
@@ -396,7 +396,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void setCurrent(int x, double c) {
+        public override void SetCurrent(int x, double c) {
             for (int i = 0; i != PostCount; i++) {
                 if (pins[i].output && pins[i].voltSource == x) {
                     pins[i].current = c;
@@ -406,17 +406,17 @@ namespace Circuit.Elements {
 
         string getChipName() { return "chip"; }
 
-        public override bool getConnection(int n1, int n2) { return false; }
+        public override bool GetConnection(int n1, int n2) { return false; }
 
-        public override bool hasGroundConnection(int n1) {
+        public override bool HasGroundConnection(int n1) {
             return pins[n1].output;
         }
 
-        public override double getCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             return pins[n].current;
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
@@ -434,14 +434,14 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_FLIP_X;
                 } else {
                     mFlags &= ~FLAG_FLIP_X;
                 }
-                setPoints();
+                SetPoints();
             }
             if (n == 1) {
                 if (ei.CheckBox.Checked) {
@@ -449,7 +449,7 @@ namespace Circuit.Elements {
                 } else {
                     mFlags &= ~FLAG_FLIP_Y;
                 }
-                setPoints();
+                SetPoints();
             }
         }
     }

@@ -10,8 +10,8 @@ namespace Circuit.Elements {
 
         protected override string getGateName() { return "OR gate"; }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
 
             createEuroGatePolygon();
 

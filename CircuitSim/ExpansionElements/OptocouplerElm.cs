@@ -55,16 +55,16 @@ namespace Circuit.Elements {
             curCounts = new double[4];
         }
 
-        public override void reset() {
-            base.reset();
+        public override void Reset() {
+            base.Reset();
             curCounts = new double[4];
         }
 
-        public override bool getConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             return n1 / 2 == n2 / 2;
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             PenThickLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
             drawThickPolygon(g, rectPoints);
 
@@ -73,12 +73,12 @@ namespace Circuit.Elements {
                 var a = posts[i];
                 var b = stubs[i];
                 drawThickLine(g, getVoltageColor(Volts[i]), a, b);
-                curCounts[i] = updateDotCount(-getCurrentIntoNode(i), curCounts[i]);
+                curCounts[i] = updateDotCount(-GetCurrentIntoNode(i), curCounts[i]);
                 drawDots(g, a, b, curCounts[i]);
             }
 
-            diode.draw(g);
-            transistor.draw(g);
+            diode.Draw(g);
+            transistor.Draw(g);
 
             drawPosts(g);
 
@@ -97,8 +97,8 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
 
             // adapted from ChipElm
             int hs = cspc;
@@ -127,14 +127,14 @@ namespace Circuit.Elements {
             setPin(1, x0, y0, 0, 1, -1, 0, 0, 0);
             setPin(2, x0, y0, 0, 1, 1, 0, xs - cspc2, 0);
             setPin(3, x0, y0, 0, 1, 1, 0, xs - cspc2, 0);
-            diode.setPosition(posts[0].X + 32, posts[0].Y, posts[1].X + 32, posts[1].Y);
-            stubs[0] = diode.getPost(0);
-            stubs[1] = diode.getPost(1);
+            diode.SetPosition(posts[0].X + 32, posts[0].Y, posts[1].X + 32, posts[1].Y);
+            stubs[0] = diode.GetPost(0);
+            stubs[1] = diode.GetPost(1);
 
             int midp = (posts[2].Y + posts[3].Y) / 2;
-            transistor.setPosition(posts[2].X - 40, midp, posts[2].X - 24, midp);
-            stubs[2] = transistor.getPost(1);
-            stubs[3] = transistor.getPost(2);
+            transistor.SetPosition(posts[2].X - 40, midp, posts[2].X - 24, midp);
+            stubs[2] = transistor.GetPost(1);
+            stubs[3] = transistor.GetPost(2);
         }
 
         void setPin(int n, int px, int py, int dx, int dy, int dax, int day, int sx, int sy) {
@@ -146,10 +146,10 @@ namespace Circuit.Elements {
             stubs[n] = new Point(xa + dax * cspc, ya + day * cspc);
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "optocoupler";
-            arr[1] = "Iin = " + getCurrentText(getCurrentIntoNode(0));
-            arr[2] = "Iout = " + getCurrentText(getCurrentIntoNode(2));
+            arr[1] = "Iin = " + getCurrentText(GetCurrentIntoNode(0));
+            arr[2] = "Iout = " + getCurrentText(GetCurrentIntoNode(2));
         }
     }
 }

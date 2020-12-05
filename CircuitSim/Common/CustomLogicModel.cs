@@ -108,7 +108,7 @@ namespace Circuit {
             return arr.Split(',');
         }
 
-        public EditInfo getEditInfo(int n) {
+        public EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo("Inputs", 0, -1, -1);
                 ei.Text = arrayToList(inputs);
@@ -142,7 +142,7 @@ namespace Circuit {
             return null;
         }
 
-        public void setEditValue(int n, EditInfo ei) {
+        public void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 inputs = listToArray(ei.Textf.Text);
             }

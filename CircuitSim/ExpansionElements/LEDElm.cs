@@ -41,17 +41,17 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.LED; }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             int cr = 12;
             ledLead1 = interpPoint(mPoint1, mPoint2, .5 - cr / mLen);
             ledLead2 = interpPoint(mPoint1, mPoint2, .5 + cr / mLen);
             ledCenter = interpPoint(mPoint1, mPoint2, .5);
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             if (needsHighlight() || this == Sim.dragElm) {
-                base.draw(g);
+                base.Draw(g);
                 return;
             }
             
@@ -83,8 +83,8 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public override void getInfo(string[] arr) {
-            base.getInfo(arr);
+        public override void GetInfo(string[] arr) {
+            base.GetInfo(arr);
             if (model.oldStyle) {
                 arr[0] = "LED";
             } else {
@@ -92,7 +92,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 return new EditInfo("Red Value (0-1)", colorR, 0, 1).SetDimensionless();
             }
@@ -105,10 +105,10 @@ namespace Circuit.Elements {
             if (n == 3) {
                 return new EditInfo("Max Brightness Current (A)", maxBrightnessCurrent, 0, .1);
             }
-            return base.getEditInfo(n - 4);
+            return base.GetEditInfo(n - 4);
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 colorR = ei.Value;
             }
@@ -121,7 +121,7 @@ namespace Circuit.Elements {
             if (n == 3) {
                 maxBrightnessCurrent = ei.Value;
             }
-            base.setEditValue(n - 4, ei);
+            base.SetEditValue(n - 4, ei);
         }
 
         void setLastModelName(string n) {

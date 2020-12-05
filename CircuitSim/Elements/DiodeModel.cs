@@ -256,7 +256,7 @@ namespace Circuit.Elements {
             updateModel();
         }
 
-        public EditInfo getEditInfo(int n) {
+        public EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 return new EditInfo("Saturation Current", saturationCurrent, -1, -1);
             }
@@ -272,7 +272,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public void setEditValue(int n, EditInfo ei) {
+        public void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 saturationCurrent = ei.Value;
             }

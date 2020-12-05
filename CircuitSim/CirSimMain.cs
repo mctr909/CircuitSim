@@ -21,7 +21,7 @@ namespace Circuit {
             }
 
             if (mCir.StopElm != null && mCir.StopElm != mouseElm) {
-                mCir.StopElm.setMouseElm(true);
+                mCir.StopElm.SetMouseElm(true);
             }
             setupScopes();
 
@@ -81,7 +81,7 @@ namespace Circuit {
             /* draw elements */
             g.Transform = new Matrix(transform[0], transform[1], transform[2], transform[3], transform[4], transform[5]);
             for (int i = 0; i != elmList.Count; i++) {
-                getElm(i).draw(g);
+                getElm(i).Draw(g);
             }
             mydrawtime += DateTime.Now.ToFileTimeUtc() - mydrawstarttime;
 
@@ -118,7 +118,7 @@ namespace Circuit {
 
             /* draw handles for elm we're dragging */
             if (dragElm != null && (dragElm.X1 != dragElm.X2 || dragElm.Y1 != dragElm.Y2)) {
-                dragElm.draw(g);
+                dragElm.Draw(g);
                 dragElm.drawHandles(g);
             }
 
@@ -169,9 +169,9 @@ namespace Circuit {
                 var info = new string[10];
                 if (mouseElm != null) {
                     if (mousePost == -1) {
-                        mouseElm.getInfo(info);
+                        mouseElm.GetInfo(info);
                     } else {
-                        info[0] = "V = " + mouseElm.dispPostVoltage(mousePost);
+                        info[0] = "V = " + mouseElm.DispPostVoltage(mousePost);
                     }
                 } else {
                     info[0] = "t = " + CircuitElm.getTimeText(t);
@@ -209,7 +209,7 @@ namespace Circuit {
             }
 
             if (mCir.StopElm != null && mCir.StopElm != mouseElm) {
-                mCir.StopElm.setMouseElm(false);
+                mCir.StopElm.SetMouseElm(false);
             }
             frames++;
 
@@ -274,7 +274,7 @@ namespace Circuit {
 
                 for (i = 0; i != elmList.Count; i++) {
                     var ce = getElm(i);
-                    ce.startIteration();
+                    ce.StartIteration();
                 }
                 steps++;
 
@@ -284,7 +284,7 @@ namespace Circuit {
 
                 t += timeStep;
                 for (i = 0; i != elmList.Count; i++) {
-                    getElm(i).stepFinished();
+                    getElm(i).StepFinished();
                 }
                 if (!delayWireProcessing) {
                     mCir.CalcWireCurrents();

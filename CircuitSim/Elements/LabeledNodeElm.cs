@@ -71,13 +71,13 @@ namespace Circuit.Elements {
             nodeList = new Dictionary<string, int>();
         }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             mLead1 = interpPoint(mPoint1, mPoint2, 1 - circleSize / mLen);
         }
 
-        public override void setNode(int p, int n) {
-            base.setNode(p, n);
+        public override void SetNode(int p, int n) {
+            base.SetNode(p, n);
             if (p == 1) {
                 /* assign new node */
                 nodeList.Add(text, n);
@@ -87,14 +87,14 @@ namespace Circuit.Elements {
 
         /* get connection node (which is the same as regular nodes for all elements but this one).
          * node 0 is the terminal, node 1 is the internal node shared by all nodes with same name */
-        public override int getConnectionNode(int n) {
+        public override int GetConnectionNode(int n) {
             if (n == 0) {
                 return Nodes[0];
             }
             return nodeNumber;
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
             PenThickLine.Color = needsHighlight() ? SelectColor : WhiteColor;
 
@@ -118,21 +118,21 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public override double getCurrentIntoNode(int n) { return -mCurrent; }
+        public override double GetCurrentIntoNode(int n) { return -mCurrent; }
 
-        public override void setCurrent(int x, double c) { mCurrent = -c; }
+        public override void SetCurrent(int x, double c) { mCurrent = -c; }
 
-        public override void stamp() {
+        public override void Stamp() {
             Cir.StampVoltageSource(nodeNumber, Nodes[0], mVoltSource, 0);
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = text;
             arr[1] = "I = " + getCurrentText(mCurrent);
             arr[2] = "V = " + getVoltageText(Volts[0]);
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo("Text", 0, -1, -1);
                 ei.Text = text;
@@ -148,7 +148,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 text = ei.Textf.Text;
             }

@@ -10,7 +10,7 @@ namespace Circuit.Elements {
             X2 = X1 + 128;
             Y2 = Y1 + 64;
             elmScope = new Scope(Sim);
-            setPoints();
+            SetPoints();
         }
 
         public ScopeElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
@@ -19,7 +19,7 @@ namespace Circuit.Elements {
             var sst = new StringTokenizer(sStr, "_");
             elmScope = new Scope(Sim);
             elmScope.undump(sst);
-            setPoints();
+            SetPoints();
             elmScope.resetGraph();
         }
 
@@ -51,8 +51,8 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             setScopeRect();
         }
 
@@ -64,8 +64,8 @@ namespace Circuit.Elements {
             elmScope.timeStep();
         }
 
-        public override void reset() {
-            base.reset();
+        public override void Reset() {
+            base.Reset();
             elmScope.resetGraph(true);
         }
 
@@ -73,7 +73,7 @@ namespace Circuit.Elements {
             elmScope = null;
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             var color = needsHighlight() ? SelectColor : WhiteColor;
             setScopeRect();
             elmScope.draw(g);

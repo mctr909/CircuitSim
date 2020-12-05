@@ -67,7 +67,7 @@ namespace Circuit {
             int idx;
             vp.SuspendLayout();
             for (i = 0; ; i++) {
-                einfos[i] = elm.getEditInfo(i);
+                einfos[i] = elm.GetEditInfo(i);
                 if (einfos[i] == null) {
                     break;
                 }

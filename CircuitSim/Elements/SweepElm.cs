@@ -28,7 +28,7 @@ namespace Circuit.Elements {
             maxV = 5;
             sweepTime = .1;
             mFlags = FLAG_BIDIR;
-            reset();
+            Reset();
         }
 
         public SweepElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
@@ -36,7 +36,7 @@ namespace Circuit.Elements {
             maxF = st.nextTokenDouble();
             maxV = st.nextTokenDouble();
             sweepTime = st.nextTokenDouble();
-            reset();
+            Reset();
         }
 
         public override double VoltageDiff { get { return Volts[0]; } }
@@ -56,12 +56,12 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.SWEEP; }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             mLead1 = interpPoint(mPoint1, mPoint2, 1 - 0.5 * circleSize / mLen);
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             setBbox(mPoint1, mPoint2, circleSize);
 
             drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
@@ -115,7 +115,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             Cir.StampVoltageSource(0, Nodes[0], mVoltSource);
         }
 
@@ -135,14 +135,14 @@ namespace Circuit.Elements {
             savedTimeStep = Sim.timeStep;
         }
 
-        public override void reset() {
+        public override void Reset() {
             frequency = minF;
             freqTime = 0;
             dir = 1;
             setParams();
         }
 
-        public override void startIteration() {
+        public override void StartIteration() {
             /* has timestep been changed? */
             if (Sim.timeStep != savedTimeStep) {
                 setParams();
@@ -166,13 +166,13 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void doStep() {
+        public override void DoStep() {
             Cir.UpdateVoltageSource(0, Nodes[0], mVoltSource, v);
         }
 
-        public override bool hasGroundConnection(int n1) { return true; }
+        public override bool HasGroundConnection(int n1) { return true; }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "sweep " + (((mFlags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
             arr[1] = "I = " + getCurrentDText(mCurrent);
             arr[2] = "V = " + getVoltageText(Volts[0]);
@@ -181,7 +181,7 @@ namespace Circuit.Elements {
             arr[5] = "time = " + getUnitText(sweepTime, "s");
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 return new EditInfo("Min Frequency (Hz)", minF, 0, 0);
             }
@@ -213,7 +213,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             double maxfreq = 1 / (8 * Sim.timeStep);
             if (n == 0) {
                 minF = ei.Value;

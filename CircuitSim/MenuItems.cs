@@ -413,7 +413,7 @@ namespace Circuit {
                     shortcut = elm.Shortcut;
                     shortcuts[(int)elm.Shortcut] = item;
                 }
-                elm.delete();
+                elm.Delete();
             }
             ToolStripMenuItem mi;
             if (shortcut == DUMP_ID.INVALID) {

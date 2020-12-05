@@ -41,15 +41,15 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.ANALOG_SW; }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             calcLeads(32);
             int openhs = 16;
             point3 = interpPoint(mPoint1, mPoint2, .5, -openhs);
             lead3 = interpPoint(mPoint1, mPoint2, .5, -openhs / 2);
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             int openhs = 16;
             int hs = (open) ? openhs : 0;
             setBbox(mPoint1, mPoint2, openhs);
@@ -67,16 +67,16 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public override void calculateCurrent() {
+        protected override void calculateCurrent() {
             mCurrent = (Volts[0] - Volts[1]) / resistance;
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             Cir.StampNonLinear(Nodes[0]);
             Cir.StampNonLinear(Nodes[1]);
         }
 
-        public override void doStep() {
+        public override void DoStep() {
             open = (Volts[2] < 2.5);
             if ((mFlags & FLAG_INVERT) != 0) {
                 open = !open;
@@ -85,7 +85,7 @@ namespace Circuit.Elements {
             Cir.StampResistor(Nodes[0], Nodes[1], resistance);
         }
 
-        public override void drag(int xx, int yy) {
+        public override void Drag(int xx, int yy) {
             xx = Sim.snapGrid(xx);
             yy = Sim.snapGrid(yy);
             if (Math.Abs(X1 - xx) < Math.Abs(Y1 - yy)) {
@@ -99,14 +99,14 @@ namespace Circuit.Elements {
                 return;
             }
             X2 = xx; X2 = yy;
-            setPoints();
+            SetPoints();
         }
 
-        public override Point getPost(int n) {
+        public override Point GetPost(int n) {
             return (n == 0) ? mPoint1 : (n == 1) ? mPoint2 : point3;
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "analog switch";
             arr[1] = open ? "open" : "closed";
             arr[2] = "Vd = " + getVoltageDText(VoltageDiff);
@@ -116,14 +116,14 @@ namespace Circuit.Elements {
 
         /* we have to just assume current will flow either way,
          * even though that might cause singular matrix errors */
-        public override bool getConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             if (n1 == 2 || n2 == 2) {
                 return false;
             }
             return true;
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
@@ -141,7 +141,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 mFlags = (ei.CheckBox.Checked) ? (mFlags | FLAG_INVERT) : (mFlags & ~FLAG_INVERT);
             }
@@ -153,7 +153,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override double getCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 2) {
                 return 0;
             }

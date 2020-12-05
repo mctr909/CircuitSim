@@ -66,13 +66,13 @@ namespace Circuit.Elements {
             return "";
         }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             mid = interpPoint(mPoint1, mPoint2, 0.6);
             arrowPoly = calcArrow(mPoint1, mid, 14, 7).ToArray();
         }
 
-        public override void stepFinished() {
+        public override void StepFinished() {
             count++; /*how many counts are in a cycle */
             total += mCurrent * mCurrent; /* sum of squares */
             if (mCurrent > maxI && increasingI) {
@@ -145,8 +145,8 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void draw(Graphics g) {
-            base.draw(g); /* BC required for highlighting */
+        public override void Draw(Graphics g) {
+            base.Draw(g); /* BC required for highlighting */
             PenThickLine.Color = getVoltageColor(Volts[0]);
             drawThickLine(g, mPoint1, mPoint2);
             fillPolygon(g, arrowPoly);
@@ -166,7 +166,7 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             Cir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
         }
 
@@ -174,7 +174,7 @@ namespace Circuit.Elements {
             return (mFlags & FLAG_SHOWCURRENT) != 0;
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "Ammeter";
             switch (meter) {
             case AM_VOL:
@@ -186,7 +186,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo("Value", selectedValue, -1, -1);
                 ei.Choice = new ComboBox();
@@ -208,7 +208,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 meter = ei.Choice.SelectedIndex;
             }

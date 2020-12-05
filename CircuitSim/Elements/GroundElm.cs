@@ -21,7 +21,7 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.GROUND; }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             PenThickLine.Color = getVoltageColor(0);
             drawThickLine(g, mPoint1, mPoint2);
             for (int i = 0; i != 3; i++) {
@@ -36,19 +36,19 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public override void setCurrent(int x, double c) { mCurrent = -c; }
+        public override void SetCurrent(int x, double c) { mCurrent = -c; }
 
-        public override void stamp() {
+        public override void Stamp() {
             Cir.StampVoltageSource(0, Nodes[0], mVoltSource, 0);
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "ground";
             arr[1] = "I = " + getCurrentText(mCurrent);
         }
 
-        public override bool hasGroundConnection(int n1) { return true; }
+        public override bool HasGroundConnection(int n1) { return true; }
 
-        public override double getCurrentIntoNode(int n) { return -mCurrent; }
+        public override double GetCurrentIntoNode(int n) { return -mCurrent; }
     }
 }

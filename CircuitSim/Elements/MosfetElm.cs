@@ -136,7 +136,7 @@ namespace Circuit.Elements {
 
         bool doBodyDiode() { return (mFlags & FLAG_BODY_DIODE) != 0 && showBulk(); }
 
-        public override void reset() {
+        public override void Reset() {
             lastv1 = lastv2 = 0;
             Volts[V_G] = Volts[V_S] = Volts[V_D] = 0;
             mCurCount = 0;
@@ -144,10 +144,10 @@ namespace Circuit.Elements {
             diodeB2.reset();
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             /* pick up global flags changes */
             if ((mFlags & FLAGS_GLOBAL) != globalFlags) {
-                setPoints();
+                SetPoints();
             }
 
             setBbox(mPoint1, mPoint2, hs);
@@ -222,12 +222,12 @@ namespace Circuit.Elements {
          * 2 = drain for NPN,
          * 3 = body (if present)
          * for PNP, 1 is drain, 2 is source */
-        public override Point getPost(int n) {
+        public override Point GetPost(int n) {
             return (n == 0) ? mPoint1 : (n == 1) ? src[0] : (n == 2) ? drn[0] : body[0];
         }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
 
             /* these two flags apply to all mosfets */
             mFlags &= ~FLAGS_GLOBAL;
@@ -276,7 +276,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             Cir.StampNonLinear(Nodes[1]);
             Cir.StampNonLinear(Nodes[2]);
 
@@ -323,7 +323,7 @@ namespace Circuit.Elements {
             return true;
         }
 
-        public override void stepFinished() {
+        public override void StepFinished() {
             calculate(true);
 
             /* fix current if body is connected to source or drain */
@@ -335,7 +335,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void doStep() {
+        public override void DoStep() {
             calculate(false);
         }
 
@@ -459,19 +459,19 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             getFetInfo(arr, "MOSFET");
         }
 
-        public override string getScopeText(int v) {
+        public override string GetScopeText(int v) {
             return ((pnp == -1) ? "p-" : "n-") + "MOSFET";
         }
 
-        public override bool getConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             return !(n1 == 0 || n2 == 0);
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 return new EditInfo("Threshold Voltage", pnp * vt, .01, 5);
             }
@@ -527,7 +527,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 vt = pnp * ei.Value;
             }
@@ -537,18 +537,18 @@ namespace Circuit.Elements {
             if (n == 2) {
                 globalFlags = (!ei.CheckBox.Checked)
                     ? (globalFlags | FLAG_HIDE_BULK) : (globalFlags & ~(FLAG_HIDE_BULK | FLAG_DIGITAL));
-                setPoints();
+                SetPoints();
                 ei.NewDialog = true;
             }
             if (n == 3) {
                 mFlags = ei.CheckBox.Checked
                     ? (mFlags | FLAG_FLIP) : (mFlags & ~FLAG_FLIP);
-                setPoints();
+                SetPoints();
             }
             if (n == 4 && !showBulk()) {
                 globalFlags = ei.CheckBox.Checked
                     ? (globalFlags | FLAG_DIGITAL) : (globalFlags & ~FLAG_DIGITAL);
-                setPoints();
+                SetPoints();
             }
             if (n == 4 && showBulk()) {
                 mFlags = ei.ChangeFlag(mFlags, FLAG_BODY_DIODE);
@@ -557,11 +557,11 @@ namespace Circuit.Elements {
             if (n == 5) {
                 mFlags = ei.ChangeFlag(mFlags, FLAG_BODY_TERMINAL);
                 allocNodes();
-                setPoints();
+                SetPoints();
             }
         }
 
-        public override double getCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
                 return 0;
             }

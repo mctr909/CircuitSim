@@ -38,25 +38,25 @@ namespace Circuit.Elements {
 
         public void setCapacitance(double c) { Capacitance = c; }
 
-        public override void setNodeVoltage(int n, double c) {
-            base.setNodeVoltage(n, c);
+        public override void SetNodeVoltage(int n, double c) {
+            base.SetNodeVoltage(n, c);
             voltdiff = Volts[0] - Volts[1];
         }
 
-        public override void reset() {
-            base.reset();
+        public override void Reset() {
+            base.Reset();
             mCurrent = mCurCount = curSourceValue = 0;
             /* put small charge on caps when reset to start oscillators */
             voltdiff = 1e-3;
         }
 
         public void shorted() {
-            base.reset();
+            base.Reset();
             voltdiff = mCurrent = mCurCount = curSourceValue = 0;
         }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             double f = (mLen / 2 - 4) / mLen;
             /* calc leads */
             mLead1 = interpPoint(mPoint1, mPoint2, f);
@@ -68,7 +68,7 @@ namespace Circuit.Elements {
             interpPoint(mPoint1, mPoint2, ref plate2[0], ref plate2[1], 1 - f, 10);
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             int hs = 8;
             setBbox(mPoint1, mPoint2, hs);
 
@@ -101,7 +101,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             if (Sim.dcAnalysisFlag) {
                 /* when finding DC operating point, replace cap with a 100M resistor */
                 Cir.StampResistor(Nodes[0], Nodes[1], 1e8);
@@ -124,7 +124,7 @@ namespace Circuit.Elements {
             Cir.StampRightSide(Nodes[1]);
         }
 
-        public override void startIteration() {
+        public override void StartIteration() {
             if (IsTrapezoidal) {
                 curSourceValue = -voltdiff / compResistance - mCurrent;
             } else {
@@ -132,7 +132,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void calculateCurrent() {
+        protected override void calculateCurrent() {
             double voltdiff = Volts[0] - Volts[1];
             if (Sim.dcAnalysisFlag) {
                 mCurrent = voltdiff / 1e8;
@@ -146,26 +146,26 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void doStep() {
+        public override void DoStep() {
             if (Sim.dcAnalysisFlag) {
                 return;
             }
             Cir.StampCurrentSource(Nodes[0], Nodes[1], curSourceValue);
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "capacitor";
             getBasicInfo(arr);
             arr[3] = "C = " + getUnitText(Capacitance, "F");
             arr[4] = "P = " + getUnitText(Power, "W");
         }
 
-        public override string getScopeText(int v) {
-            base.getScopeText(v);
+        public override string GetScopeText(int v) {
+            base.GetScopeText(v);
             return "capacitor, " + getUnitText(Capacitance, "F");
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 return new EditInfo("Capacitance (F)", Capacitance, 0, 0);
             }
@@ -179,7 +179,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0 && ei.Value > 0) {
                 Capacitance = ei.Value;
             }

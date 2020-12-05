@@ -36,7 +36,7 @@ namespace Circuit {
         }
 
         public void createSlider(CirSim sim) {
-            double value = elm.getEditInfo(editItem).Value;
+            double value = elm.GetEditInfo(editItem).Value;
             createSlider(sim, value);
         }
 
@@ -65,9 +65,9 @@ namespace Circuit {
             if (settingValue) {
                 return;
             }
-            var ei = elm.getEditInfo(editItem);
+            var ei = elm.GetEditInfo(editItem);
             ei.Value = getSliderValue();
-            elm.setEditValue(editItem, ei);
+            elm.SetEditValue(editItem, ei);
             CircuitElm.Sim.repaint();
         }
 

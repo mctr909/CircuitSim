@@ -102,7 +102,7 @@ namespace Circuit {
             }
             nvalues = ptr;
             values[nvalues] = 1E99;
-            inf = myElm.getEditInfo(0);
+            inf = myElm.GetEditInfo(0);
             double currentvalue = inf.Value;
             for (int i = 0; i < nvalues + 1; i++) {
                 if (CircuitElm.getShortUnitText(currentvalue, "") == CircuitElm.getShortUnitText(values[i], "")) { /* match to an existing value */
@@ -171,7 +171,7 @@ namespace Circuit {
             lastidx = currentidx;
             currentidx = tr.Value;
             inf.Value = values[currentidx];
-            myElm.setEditValue(0, inf);
+            myElm.SetEditValue(0, inf);
             sim.needAnalyze();
             int thissel = getSelIdx();
             labels.Text = CircuitElm.getShortUnitText(values[thissel], unit);
@@ -182,7 +182,7 @@ namespace Circuit {
                 trbValue.Value = i;
                 lastidx = i;
                 inf.Value = values[i];
-                myElm.setEditValue(0, inf);
+                myElm.SetEditValue(0, inf);
                 sim.needAnalyze();
             }
         }

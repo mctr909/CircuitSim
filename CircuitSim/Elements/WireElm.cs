@@ -25,7 +25,7 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.WIRE; }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mPoint2);
             doDots(g);
             setBbox(mPoint1, mPoint2, 3);
@@ -40,7 +40,7 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             /*cir.stampVoltageSource(nodes[0], nodes[1], voltSource, 0);*/
         }
 
@@ -54,13 +54,13 @@ namespace Circuit.Elements {
 
         /*public override int getVoltageSourceCount() { return 1; } */
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "wire";
             arr[1] = "I = " + getCurrentDText(mCurrent);
             arr[2] = "V = " + getVoltageText(Volts[0]);
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
@@ -78,7 +78,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_SHOWCURRENT;

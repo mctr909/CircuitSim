@@ -322,7 +322,7 @@ namespace Circuit {
                     mPlots.Add(new ScopePlot(ce, UNITS_A, VAL_CURRENT));
                 }
             } else {
-                int u = ce.getScopeUnits(val);
+                int u = ce.GetScopeUnits(val);
                 mPlots.Add(new ScopePlot(ce, u, val));
                 if (u == UNITS_V) {
                     ShowV = true;
@@ -338,14 +338,14 @@ namespace Circuit {
         void setValues(int val, int ival, CircuitElm ce, CircuitElm yelm) {
             if (ival > 0) {
                 mPlots = new List<ScopePlot>();
-                mPlots.Add(new ScopePlot(ce, ce.getScopeUnits(val), val));
-                mPlots.Add(new ScopePlot(ce, ce.getScopeUnits(ival), ival));
+                mPlots.Add(new ScopePlot(ce, ce.GetScopeUnits(val), val));
+                mPlots.Add(new ScopePlot(ce, ce.GetScopeUnits(ival), ival));
                 return;
             }
             if (yelm != null) {
                 mPlots = new List<ScopePlot>();
-                mPlots.Add(new ScopePlot(ce, ce.getScopeUnits(val), 0));
-                mPlots.Add(new ScopePlot(yelm, ce.getScopeUnits(ival), 0));
+                mPlots.Add(new ScopePlot(ce, ce.GetScopeUnits(val), 0));
+                mPlots.Add(new ScopePlot(yelm, ce.GetScopeUnits(ival), 0));
                 return;
             }
             setValue(val);
@@ -528,7 +528,7 @@ namespace Circuit {
             for (int si = 0; si != mVisiblePlots.Count; si++) {
                 var plot = mVisiblePlots[si];
                 calcPlotScale(plot);
-                if (mSim.scopeSelected == -1 && plot.Elm != null && plot.Elm.isMouseElm()) {
+                if (mSim.scopeSelected == -1 && plot.Elm != null && plot.Elm.IsMouseElm) {
                     mSomethingSelected = true;
                 }
                 mReduceRange[plot.Units] = true;
@@ -710,7 +710,7 @@ namespace Circuit {
             if (plot.Elm == null) {
                 return "";
             } else {
-                return plot.Elm.getScopeText(plot.Value);
+                return plot.Elm.GetScopeText(plot.Value);
             }
         }
 
@@ -761,7 +761,7 @@ namespace Circuit {
 
         public bool canShowResistance() {
             var elm = getSingleElm();
-            return elm != null && elm.canShowValueInScope(VAL_R);
+            return elm != null && elm.CanShowValueInScope(VAL_R);
         }
 
         public bool isShowingVceAndIc() {
@@ -880,7 +880,7 @@ namespace Circuit {
                         int val = st.nextTokenInt();
 
                         var elm = mSim.getElm(ne);
-                        u = elm.getScopeUnits(val);
+                        u = elm.GetScopeUnits(val);
                         if (u > UNITS_A) {
                             mScale[u] = st.nextTokenDouble();
                         }
@@ -1218,7 +1218,7 @@ namespace Circuit {
             int y = maxy;
 
             var color = (mSomethingSelected) ? Color.FromArgb(0xA0, 0xA0, 0xA0) : plot.Color;
-            if (mSim.scopeSelected == -1 && plot.Elm.isMouseElm()) {
+            if (mSim.scopeSelected == -1 && plot.Elm.IsMouseElm) {
                 color = Color.FromArgb(0x00, 0xFF, 0xFF);
             } else if (selected) {
                 color = plot.Color;

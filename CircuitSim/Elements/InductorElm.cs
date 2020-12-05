@@ -35,12 +35,12 @@ namespace Circuit.Elements {
             ind.setup(Inductance, mCurrent, mFlags);
         }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             calcLeads(40);
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             double v1 = Volts[0];
             double v2 = Volts[1];
             int hs = 8;
@@ -57,35 +57,35 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public override void reset() {
+        public override void Reset() {
             mCurrent = Volts[0] = Volts[1] = mCurCount = 0;
             ind.reset();
         }
 
-        public override void stamp() { ind.stamp(Nodes[0], Nodes[1]); }
+        public override void Stamp() { ind.stamp(Nodes[0], Nodes[1]); }
 
-        public override void startIteration() {
+        public override void StartIteration() {
             ind.startIteration(Volts[0] - Volts[1]);
         }
 
-        public override void calculateCurrent() {
+        protected override void calculateCurrent() {
             double voltdiff = Volts[0] - Volts[1];
             mCurrent = ind.calculateCurrent(voltdiff);
         }
 
-        public override void doStep() {
+        public override void DoStep() {
             double voltdiff = Volts[0] - Volts[1];
             ind.doStep(voltdiff);
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "inductor";
             getBasicInfo(arr);
             arr[3] = "L = " + getUnitText(Inductance, "H");
             arr[4] = "P = " + getUnitText(Power, "W");
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 return new EditInfo("Inductance (H)", Inductance, 0, 0);
             }
@@ -99,7 +99,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0 && ei.Value > 0) {
                 Inductance = ei.Value;
             }

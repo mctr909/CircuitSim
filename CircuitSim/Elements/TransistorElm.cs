@@ -114,12 +114,12 @@ namespace Circuit.Elements {
             return vnew;
         }
 
-        public override void reset() {
+        public override void Reset() {
             Volts[V_B] = Volts[V_C] = Volts[V_E] = 0;
             lastvbc = lastvbe = curcount_c = curcount_e = curcount_b = 0;
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             setBbox(mPoint1, mPoint2, 16);
            
             /* draw collector */
@@ -145,12 +145,12 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public override Point getPost(int n) {
+        public override Point GetPost(int n) {
             return (n == 0) ? mPoint1 : (n == 1) ? coll[0] : emit[0];
         }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             int hs = 16;
             if ((mFlags & FLAG_FLIP) != 0) {
                 mDsign = -mDsign;
@@ -185,13 +185,13 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             Cir.StampNonLinear(Nodes[V_B]);
             Cir.StampNonLinear(Nodes[V_C]);
             Cir.StampNonLinear(Nodes[V_E]);
         }
 
-        public override void doStep() {
+        public override void DoStep() {
             double vbc = Volts[V_B] - Volts[V_C]; /* typically negative */
             double vbe = Volts[V_B] - Volts[V_E]; /* typically positive */
             if (Math.Abs(vbc - lastvbc) > .01 || /* .01 */
@@ -259,7 +259,7 @@ namespace Circuit.Elements {
             Cir.StampRightSide(Nodes[V_E], -ie + gee * vbe + gec * vbc);
         }
 
-        public override string getScopeText(int x) {
+        public override string GetScopeText(int x) {
             string t = "";
             switch (x) {
             case Scope.VAL_IB: t = "Ib"; break;
@@ -273,7 +273,7 @@ namespace Circuit.Elements {
             return "transistor, " + t;
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "transistor (" + ((pnp == -1) ? "PNP)" : "NPN)") + " β=" + beta.ToString("0.000");
             double vbc = Volts[V_B] - Volts[V_C];
             double vbe = Volts[V_B] - Volts[V_E];
@@ -292,7 +292,7 @@ namespace Circuit.Elements {
             arr[7] = "P = " + getUnitText(Power, "W");
         }
 
-        public override double getScopeValue(int x) {
+        public override double GetScopeValue(int x) {
             switch (x) {
             case Scope.VAL_IB: return ib;
             case Scope.VAL_IC: return ic;
@@ -305,7 +305,7 @@ namespace Circuit.Elements {
             return 0;
         }
 
-        public override int getScopeUnits(int x) {
+        public override int GetScopeUnits(int x) {
             switch (x) {
             case Scope.VAL_IB:
             case Scope.VAL_IC:
@@ -315,7 +315,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 return new EditInfo("Beta/hFE", beta, 10, 1000).SetDimensionless();
             }
@@ -329,7 +329,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 beta = ei.Value;
                 setup();
@@ -340,18 +340,18 @@ namespace Circuit.Elements {
                 } else {
                     mFlags &= ~FLAG_FLIP;
                 }
-                setPoints();
+                SetPoints();
             }
         }
 
-        public override void stepFinished() {
+        public override void StepFinished() {
             /* stop for huge currents that make simulator act weird */
             if (Math.Abs(ic) > 1e12 || Math.Abs(ib) > 1e12) {
                 Cir.Stop("max current exceeded", this);
             }
         }
 
-        public override double getCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
                 return -ib;
             }

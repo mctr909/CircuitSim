@@ -35,7 +35,7 @@ namespace Circuit.Elements {
 
         string getChipName() { return "CCCS"; }
 
-        public override void stamp() {
+        public override void Stamp() {
             /* voltage source (0V) between C+ and C- so we can measure current */
             int vn1 = pins[1].voltSource;
             Cir.StampVoltageSource(Nodes[0], Nodes[1], vn1, 0);
@@ -44,7 +44,7 @@ namespace Circuit.Elements {
             Cir.StampNonLinear(Nodes[3]);
         }
 
-        public override void doStep() {
+        public override void DoStep() {
             /* no current path?  give up */
             if (broken) {
                 pins[inputCount].current = 0;
@@ -91,7 +91,7 @@ namespace Circuit.Elements {
             lastCurrent = cur;
         }
 
-        public override bool getConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             if (comparePair(0, 1, n1, n2)) {
                 return true;
             }
@@ -103,19 +103,19 @@ namespace Circuit.Elements {
 
         public override bool hasCurrentOutput() { return true; }
 
-        public override void setCurrent(int vn, double c) {
+        public override void SetCurrent(int vn, double c) {
             if (pins[1].voltSource == vn) {
                 pins[0].current = -c;
                 pins[1].current = c;
             }
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             /* can't set number of inputs */
             if (n == 1) {
                 return null;
             }
-            return base.getEditInfo(n);
+            return base.GetEditInfo(n);
         }
     }
 }

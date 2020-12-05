@@ -30,8 +30,8 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.CURRENT; }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             calcLeads(36);
             ashaft1 = interpPoint(mLead1, mLead2, .25);
             ashaft2 = interpPoint(mLead1, mLead2, .6);
@@ -40,7 +40,7 @@ namespace Circuit.Elements {
             arrow = calcArrow(center, p2, 8, 6).ToArray();
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             int cr = 32;
             draw2Leads(g);
 
@@ -73,18 +73,18 @@ namespace Circuit.Elements {
             }
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 return new EditInfo("Current (A)", currentValue, 0, .1);
             }
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             currentValue = ei.Value;
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "current source";
             getBasicInfo(arr);
         }

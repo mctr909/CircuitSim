@@ -38,7 +38,7 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.INVERT; }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             drawPosts(g);
             draw2Leads(g);
             PenThickLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
@@ -53,8 +53,8 @@ namespace Circuit.Elements {
             drawDots(g, mLead2, mPoint2, mCurCount);
         }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             int hs = 16;
             int ww = 16;
             if (ww > mLen / 2) {
@@ -79,28 +79,28 @@ namespace Circuit.Elements {
             setBbox(mPoint1, mPoint2, hs);
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             Cir.StampVoltageSource(0, Nodes[1], mVoltSource);
         }
 
-        public override void startIteration() {
+        public override void StartIteration() {
             lastOutputVoltage = Volts[1];
         }
 
-        public override void doStep() {
+        public override void DoStep() {
             double v = Volts[0] > highVoltage * .5 ? 0 : highVoltage;
             double maxStep = slewRate * Sim.timeStep * 1e9;
             v = Math.Max(Math.Min(lastOutputVoltage + maxStep, v), lastOutputVoltage - maxStep);
             Cir.UpdateVoltageSource(0, Nodes[1], mVoltSource, v);
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "inverter";
             arr[1] = "Vi = " + getVoltageText(Volts[0]);
             arr[2] = "Vo = " + getVoltageText(Volts[1]);
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 return new EditInfo("Slew Rate (V/ns)", slewRate, 0, 0);
             }
@@ -110,7 +110,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 slewRate = ei.Value;
             }
@@ -121,11 +121,11 @@ namespace Circuit.Elements {
 
         /* there is no current path through the inverter input,
          * but there is an indirect path through the output to ground. */
-        public override bool getConnection(int n1, int n2) { return false; }
+        public override bool GetConnection(int n1, int n2) { return false; }
 
-        public override bool hasGroundConnection(int n1) { return n1 == 1; }
+        public override bool HasGroundConnection(int n1) { return n1 == 1; }
 
-        public override double getCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 1) {
                 return mCurrent;
             }

@@ -73,7 +73,7 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.TRANSFORMER; }
 
-        public override void drag(int xx, int yy) {
+        public override void Drag(int xx, int yy) {
             xx = Sim.snapGrid(xx);
             yy = Sim.snapGrid(yy);
             width = Math.Max(32, Math.Abs(yy - Y1));
@@ -82,10 +82,10 @@ namespace Circuit.Elements {
             }
             X2 = xx;
             Y2 = yy;
-            setPoints();
+            SetPoints();
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             drawThickLine(g, getVoltageColor(Volts[PRI_T]), ptEnds[0], ptCoil[0]);
             drawThickLine(g, getVoltageColor(Volts[SEC_T]), ptEnds[1], ptCoil[1]);
             drawThickLine(g, getVoltageColor(Volts[PRI_B]), ptEnds[2], ptCoil[2]);
@@ -115,8 +115,8 @@ namespace Circuit.Elements {
             setBbox(ptEnds[0], ptEnds[polarity == 1 ? 3 : 1], 0);
         }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             mPoint2.Y = mPoint1.Y;
             ptEnds = newPointArray(4);
             ptCoil = newPointArray(4);
@@ -146,11 +146,11 @@ namespace Circuit.Elements {
             }
         }
 
-        public override Point getPost(int n) {
+        public override Point GetPost(int n) {
             return ptEnds[n];
         }
 
-        public override void reset() {
+        public override void Reset() {
             // need to set current-source values here in case one of the nodes is node 0.  In that case
             // calculateCurrent() may get called (from setNodeVoltage()) when analyzing circuit, before
             // startIteration() gets called
@@ -161,7 +161,7 @@ namespace Circuit.Elements {
             curSourceValue1 = curSourceValue2 = 0;
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             // equations for transformer:
             //   v1 = L1 di1/dt + M  di2/dt
             //   v2 = M  di1/dt + L2 di2/dt
@@ -209,7 +209,7 @@ namespace Circuit.Elements {
             Cir.StampRightSide(Nodes[3]);
         }
 
-        public override void startIteration() {
+        public override void StartIteration() {
             double voltdiff1 = Volts[PRI_T] - Volts[PRI_B];
             double voltdiff2 = Volts[SEC_T] - Volts[SEC_B];
             if (IsTrapezoidal) {
@@ -221,26 +221,26 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void doStep() {
+        public override void DoStep() {
             Cir.StampCurrentSource(Nodes[0], Nodes[2], curSourceValue1);
             Cir.StampCurrentSource(Nodes[1], Nodes[3], curSourceValue2);
         }
 
-        public override void calculateCurrent() {
+        protected override void calculateCurrent() {
             double voltdiff1 = Volts[PRI_T] - Volts[PRI_B];
             double voltdiff2 = Volts[SEC_T] - Volts[SEC_B];
             current[0] = voltdiff1 * a1 + voltdiff2 * a2 + curSourceValue1;
             current[1] = voltdiff1 * a3 + voltdiff2 * a4 + curSourceValue2;
         }
 
-        public override double getCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n < 2) {
                 return -current[n];
             }
             return current[n - 2];
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "transformer";
             arr[1] = "L = " + getUnitText(inductance, "H");
             arr[2] = "Ratio = 1:" + ratio;
@@ -250,7 +250,7 @@ namespace Circuit.Elements {
             arr[6] = "I2 = " + getCurrentText(current[1]);
         }
 
-        public override bool getConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             if (comparePair(n1, n2, 0, 2)) {
                 return true;
             }
@@ -260,7 +260,7 @@ namespace Circuit.Elements {
             return false;
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 return new EditInfo("Primary Inductance (H)", inductance, .01, 5);
             }
@@ -289,7 +289,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0 && ei.Value > 0) {
                 inductance = ei.Value;
             }
@@ -313,7 +313,7 @@ namespace Circuit.Elements {
                 } else {
                     mFlags &= ~FLAG_REVERSE;
                 }
-                setPoints();
+                SetPoints();
             }
         }
     }

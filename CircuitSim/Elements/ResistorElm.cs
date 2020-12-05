@@ -25,12 +25,12 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.RESISTOR; }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             calcLeads(32);
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             var len = (float)distance(mLead1, mLead2);
             if (0 == len) {
                 return;
@@ -88,27 +88,27 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public override void calculateCurrent() {
+        protected override void calculateCurrent() {
             mCurrent = (Volts[0] - Volts[1]) / Resistance;
             /*Console.WriteLine(this + " res current set to " + current + "\n");*/
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             Cir.StampResistor(Nodes[0], Nodes[1], Resistance);
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "resistor";
             getBasicInfo(arr);
             arr[3] = "R = " + getUnitText(Resistance, CirSim.ohmString);
             arr[4] = "P = " + getUnitText(Power, "W");
         }
 
-        public override string getScopeText(int v) {
+        public override string GetScopeText(int v) {
             return "resistor, " + getUnitText(Resistance, CirSim.ohmString);
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             /* ohmString doesn't work here on linux */
             if (n == 0) {
                 return new EditInfo("Resistance (ohms)", Resistance, 0, 0);
@@ -116,7 +116,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (ei.Value > 0) {
                 Resistance = ei.Value;
             }

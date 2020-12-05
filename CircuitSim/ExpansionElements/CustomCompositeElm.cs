@@ -19,7 +19,7 @@ namespace Circuit.Elements {
             modelName = (xx == 0 && yy == 0) ? "default" : lastModelName;
 
             mFlags |= FLAG_ESCAPE;
-            updateModels();
+            UpdateModels();
         }
 
         public CustomCompositeElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
@@ -39,13 +39,13 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.CUSTOM_COMPOSITE; }
 
-        public override string dumpModel() {
+        public override string DumpModel() {
             string modelStr = "";
 
             /* dump models of all children */
             for (int i = 0; i < compElmList.Count; i++) {
                 var ce = compElmList[i];
-                string m = ce.dumpModel();
+                string m = ce.DumpModel();
                 if (string.IsNullOrEmpty(m)) {
                     if (string.IsNullOrEmpty(modelStr)) {
                         modelStr += "\n";
@@ -65,17 +65,17 @@ namespace Circuit.Elements {
             return modelStr;
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             for (int i = 0; i != postCount; i++) {
                 chip.Volts[i] = Volts[i];
-                chip.pins[i].current = getCurrentIntoNode(i);
+                chip.pins[i].current = GetCurrentIntoNode(i);
             }
             chip.IsSelected = needsHighlight();
-            chip.draw(g);
+            chip.Draw(g);
             BoundingBox = chip.BoundingBox;
         }
 
-        public override void setPoints() {
+        public override void SetPoints() {
             chip = new CustomCompositeChipElm(X1, Y1);
             chip.X2 = X2;
             chip.Y2 = Y2;
@@ -89,13 +89,13 @@ namespace Circuit.Elements {
                 chip.setPin(i, pin.pos, pin.side, pin.name);
             }
 
-            chip.setPoints();
+            chip.SetPoints();
             for (i = 0; i != PostCount; i++) {
-                setPost(i, chip.getPost(i));
+                setPost(i, chip.GetPost(i));
             }
         }
 
-        public override void updateModels() {
+        public override void UpdateModels() {
             updateModels(null);
         }
 
@@ -115,10 +115,10 @@ namespace Circuit.Elements {
             }
             loadComposite(st, model.nodeList, externalNodes);
             allocNodes();
-            setPoints();
+            SetPoints();
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo(EditInfo.MakeLink("subcircuits.html", "Model Name"), 0, -1, -1);
                 models = CustomCompositeModel.getModelList();
@@ -141,12 +141,12 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 model = models[ei.Choice.SelectedIndex];
                 lastModelName = modelName = model.name;
-                updateModels();
-                setPoints();
+                UpdateModels();
+                SetPoints();
                 return;
             }
             if (n == 1) {

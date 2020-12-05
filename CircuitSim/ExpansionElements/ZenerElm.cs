@@ -28,8 +28,8 @@ namespace Circuit.Elements {
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             calcLeads(16);
             cathode = newPointArray(2);
             wing = newPointArray(2);
@@ -41,7 +41,7 @@ namespace Circuit.Elements {
             poly = createPolygon(pa[0], pa[1], mLead2).ToArray();
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             setBbox(mPoint1, mPoint2, hs);
 
             double v1 = Volts[0];
@@ -62,8 +62,8 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public override void getInfo(string[] arr) {
-            base.getInfo(arr);
+        public override void GetInfo(string[] arr) {
+            base.GetInfo(arr);
             arr[0] = "Zener diode";
             arr[5] = "Vz = " + getVoltageText(model.breakdownVoltage);
         }
@@ -72,7 +72,7 @@ namespace Circuit.Elements {
             lastZenerModelName = n;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 2) {
                 var val = new InputDialog("Breakdown Voltage", "5.6");
                 try {
@@ -86,7 +86,7 @@ namespace Circuit.Elements {
                     }
                 } catch { }
             }
-            base.setEditValue(n, ei);
+            base.SetEditValue(n, ei);
         }
     }
 }

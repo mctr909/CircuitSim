@@ -37,12 +37,12 @@ namespace Circuit.Elements {
 
         bool needsPullDown() { return (mFlags & FLAG_PULLDOWN) != 0; }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             mLead1 = interpPoint(mPoint1, mPoint2, 1 - 12 / mLen);
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             string s = (Volts[0] < threshold) ? "L" : "H";
             if (isTernary()) {
                 if (Volts[0] > 3.75) {
@@ -63,13 +63,13 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             if (needsPullDown()) {
                 Cir.StampResistor(Nodes[0], 0, 1e6);
             }
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "logic output";
             arr[1] = (Volts[0] < threshold) ? "low" : "high";
             if (isNumeric()) {
@@ -78,7 +78,7 @@ namespace Circuit.Elements {
             arr[2] = "V = " + getVoltageText(Volts[0]);
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 return new EditInfo("Threshold", threshold, 10, -10);
             }
@@ -100,7 +100,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0)
                 threshold = ei.Value;
             if (n == 1) {

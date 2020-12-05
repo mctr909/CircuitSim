@@ -35,6 +35,21 @@ namespace Circuit.Elements {
 
         public bool IsSelected { get; set; }
 
+        public bool IsMouseElm {
+            get {
+                if (null == mMouseElmRef) {
+                    return false;
+                }
+                return mMouseElmRef.Equals(this);
+            }
+        }
+
+        /// <summary>
+        /// called when an element is done being dragged out;
+        /// </summary>
+        /// <returns>returns true if it's zero size and should be deleted</returns>
+        public bool IsCreationFailed { get { return X1 == X2 && Y1 == Y2; } }
+
         public int[] Nodes { get; protected set; }
 
         /// <summary>
@@ -335,29 +350,12 @@ namespace Circuit.Elements {
         #endregion
 
         #region [public method]
-        /// <summary>
-        /// get voltage of x'th node
-        /// </summary>
-        /// <param name="x"></param>
-        /// <returns></returns>
-        public double getPostVoltage(int x) { return Volts[x]; }
-
-        public string dispPostVoltage(int x) {
+        public string DispPostVoltage(int x) {
             if (x < Volts.Length) {
                 return getUnitText(Volts[x], "V");
             } else {
                 return "";
             }
-        }
-
-        public void move(int dx, int dy) {
-            X1 += dx;
-            Y1 += dy;
-            X2 += dx;
-            Y2 += dy;
-            BoundingBox.X += dx;
-            BoundingBox.Y += dy;
-            setPoints();
         }
 
         /// <summary>
@@ -367,20 +365,22 @@ namespace Circuit.Elements {
         /// <param name="ay"></param>
         /// <param name="bx"></param>
         /// <param name="by"></param>
-        public void setPosition(int ax, int ay, int bx, int by) {
+        public void SetPosition(int ax, int ay, int bx, int by) {
             X1 = ax;
             Y1 = ay;
             X2 = bx;
             Y2 = by;
-            setPoints();
+            SetPoints();
         }
 
-        /// <summary>
-        /// called when an element is done being dragged out;
-        /// </summary>
-        /// <returns>returns true if it's zero size and should be deleted</returns>
-        public bool creationFailed() {
-            return X1 == X2 && Y1 == Y2;
+        public void Move(int dx, int dy) {
+            X1 += dx;
+            Y1 += dy;
+            X2 += dx;
+            Y2 += dy;
+            BoundingBox.X += dx;
+            BoundingBox.Y += dy;
+            SetPoints();
         }
 
         /// <summary>
@@ -389,7 +389,7 @@ namespace Circuit.Elements {
         /// <param name="dx"></param>
         /// <param name="dy"></param>
         /// <returns></returns>
-        public bool allowMove(int dx, int dy) {
+        public bool AllowMove(int dx, int dy) {
             int nx = X1 + dx;
             int ny = Y1 + dy;
             int nx2 = X2 + dx;
@@ -406,7 +406,7 @@ namespace Circuit.Elements {
             return true;
         }
 
-        public void movePoint(int n, int dx, int dy) {
+        public void MovePoint(int n, int dx, int dy) {
             /* modified by IES to prevent the user dragging points to create zero sized nodes
             /* that then render improperly */
             int oldx = X1;
@@ -424,10 +424,24 @@ namespace Circuit.Elements {
                 X2 = oldx2;
                 Y2 = oldy2;
             }
-            setPoints();
+            SetPoints();
         }
 
-        public int getHandleGrabbedClose(int xtest, int ytest, int deltaSq, int minSize) {
+        public void FlipPosts() {
+            int oldx = X1;
+            int oldy = Y1;
+            X1 = X2;
+            Y1 = Y2;
+            X2 = oldx;
+            Y2 = oldy;
+            SetPoints();
+        }
+
+        public void SelectRect(Rectangle r) {
+            IsSelected = r.IntersectsWith(BoundingBox);
+        }
+
+        public int GetHandleGrabbedClose(int xtest, int ytest, int deltaSq, int minSize) {
             mLastHandleGrabbed = -1;
             var x12 = X2 - X1;
             var y12 = Y2 - Y1;
@@ -445,47 +459,17 @@ namespace Circuit.Elements {
             return mLastHandleGrabbed;
         }
 
-        /// <summary>
-        /// get (global) node number of nth node
-        /// </summary>
-        /// <param name="n"></param>
-        /// <returns></returns>
-        public int getNode(int n) { return Nodes[n]; }
-
-        public int getNodeAtPoint(int xp, int yp) {
+        public int GetNodeAtPoint(int xp, int yp) {
             if (PostCount == 2) {
                 return (X1 == xp && Y1 == yp) ? 0 : 1;
             }
             for (int i = 0; i != PostCount; i++) {
-                var p = getPost(i);
+                var p = GetPost(i);
                 if (p.X == xp && p.Y == yp) {
                     return i;
                 }
             }
             return 0;
-        }
-
-        public void selectRect(Rectangle r) {
-            IsSelected = r.IntersectsWith(BoundingBox);
-        }
-
-        public Rectangle getBoundingBox() { return BoundingBox; }
-
-        public bool isMouseElm() {
-            if (null == mMouseElmRef) {
-                return false;
-            }
-            return mMouseElmRef.Equals(this);
-        }
-
-        public void flipPosts() {
-            int oldx = X1;
-            int oldy = Y1;
-            X1 = X2;
-            Y1 = Y2;
-            X2 = oldx;
-            Y2 = oldy;
-            setPoints();
         }
         #endregion
 
@@ -493,20 +477,66 @@ namespace Circuit.Elements {
         /// <summary>
         /// handle reset button
         /// </summary>
-        public virtual void reset() {
+        public virtual void Reset() {
             for (int i = 0; i != PostCount + InternalNodeCount; i++) {
                 Volts[i] = 0;
             }
             mCurCount = 0;
         }
 
-        public virtual void draw(Graphics g) { }
+        public virtual void Delete() {
+            if (mMouseElmRef == this) {
+                mMouseElmRef = null;
+            }
+            if (null != Sim) {
+                Sim.deleteSliders(this);
+            }
+        }
+
+        /// <summary>
+        /// stamp matrix values for linear elements.
+        /// for non-linear elements, use this to stamp values that don't change each iteration,
+        /// and call stampRightSide() or stampNonLinear() as needed
+        /// </summary>
+        public virtual void Stamp() { }
+
+        /// <summary>
+        /// stamp matrix values for non-linear elements
+        /// </summary>
+        public virtual void DoStep() { }
+
+        public virtual void StartIteration() { }
+
+        public virtual void StepFinished() { }
+
+        public virtual void Draw(Graphics g) { }
+
+        /// <summary>
+        /// draw second point to xx, yy
+        /// </summary>
+        /// <param name="xx"></param>
+        /// <param name="yy"></param>
+        public virtual void Drag(int xx, int yy) {
+            xx = Sim.snapGrid(xx);
+            yy = Sim.snapGrid(yy);
+            if (mNoDiagonal) {
+                if (Math.Abs(X1 - xx) < Math.Abs(Y1 - yy)) {
+                    xx = X1;
+                } else {
+                    yy = Y1;
+                }
+            }
+            X2 = xx; Y2 = yy;
+            SetPoints();
+        }
+
+        public virtual void DraggingDone() { }
 
         /// <summary>
         /// calculate post locations and other convenience values used for drawing.
         /// Called when element is moved
         /// </summary>
-        public virtual void setPoints() {
+        public virtual void SetPoints() {
             mDx = X2 - X1;
             mDy = Y2 - Y1;
             mLen = Math.Sqrt(mDx * mDx + mDy * mDy);
@@ -525,70 +555,21 @@ namespace Circuit.Elements {
             mPoint2 = new Point(X2, Y2);
         }
 
+        public virtual void SetMouseElm(bool v) {
+            if (v) {
+                mMouseElmRef = this;
+            } else if (mMouseElmRef == this) {
+                mMouseElmRef = null;
+            }
+        }
+
         /// <summary>
         /// set current for voltage source vn to c.
         /// vn will be the same value as in a previous call to setVoltageSource(n, vn)
         /// </summary>
         /// <param name="vn"></param>
         /// <param name="c"></param>
-        public virtual void setCurrent(int vn, double c) { mCurrent = c; }
-
-        /// <summary>
-        /// stamp matrix values for linear elements.
-        /// for non-linear elements, use this to stamp values that don't change each iteration,
-        /// and call stampRightSide() or stampNonLinear() as needed
-        /// </summary>
-        public virtual void stamp() { }
-
-        /// <summary>
-        /// stamp matrix values for non-linear elements
-        /// </summary>
-        public virtual void doStep() { }
-
-        public virtual void delete() {
-            if (mMouseElmRef == this) {
-                mMouseElmRef = null;
-            }
-            if (null != Sim) {
-                Sim.deleteSliders(this);
-            }
-        }
-
-        public virtual void startIteration() { }
-
-        /// <summary>
-        /// set voltage of x'th node, called by simulator logic
-        /// </summary>
-        /// <param name="n"></param>
-        /// <param name="c"></param>
-        public virtual void setNodeVoltage(int n, double c) {
-            Volts[n] = c;
-            calculateCurrent();
-        }
-
-        /// <summary>
-        /// calculate current in response to node voltages changing
-        /// </summary>
-        public virtual void calculateCurrent() { }
-
-        /// <summary>
-        /// draw second point to xx, yy
-        /// </summary>
-        /// <param name="xx"></param>
-        /// <param name="yy"></param>
-        public virtual void drag(int xx, int yy) {
-            xx = Sim.snapGrid(xx);
-            yy = Sim.snapGrid(yy);
-            if (mNoDiagonal) {
-                if (Math.Abs(X1 - xx) < Math.Abs(Y1 - yy)) {
-                    xx = X1;
-                } else {
-                    yy = Y1;
-                }
-            }
-            X2 = xx; Y2 = yy;
-            setPoints();
-        }
+        public virtual void SetCurrent(int vn, double c) { mCurrent = c; }
 
         /// <summary>
         /// notify this element that its pth node is n.
@@ -596,7 +577,7 @@ namespace Circuit.Elements {
         /// </summary>
         /// <param name="p"></param>
         /// <param name="n"></param>
-        public virtual void setNode(int p, int n) {
+        public virtual void SetNode(int p, int n) {
             if (p < Nodes.Length) {
                 Nodes[p] = n;
             }
@@ -609,49 +590,35 @@ namespace Circuit.Elements {
         /// </summary>
         /// <param name="n"></param>
         /// <param name="v"></param>
-        public virtual void setVoltageSource(int n, int v) {
+        public virtual void SetVoltageSource(int n, int v) {
             /* default implementation only makes sense for subclasses with one voltage source.
              * If we have 0 this isn't used, if we have >1 this won't work */
             mVoltSource = v;
         }
 
         /// <summary>
-        /// get position of nth node
+        /// set voltage of x'th node, called by simulator logic
         /// </summary>
         /// <param name="n"></param>
-        /// <returns></returns>
-        public virtual Point getPost(int n) {
-            return (n == 0) ? mPoint1 : (n == 1) ? mPoint2 : new Point();
+        /// <param name="c"></param>
+        public virtual void SetNodeVoltage(int n, double c) {
+            Volts[n] = c;
+            calculateCurrent();
         }
-
-        public virtual void doAdjust() { }
-
-        public virtual void setupAdjust() { }
 
         /// <summary>
-        /// get component info for display in lower right
+        /// calculate current in response to node voltages changing
         /// </summary>
-        /// <param name="arr"></param>
-        public virtual void getInfo(string[] arr) { }
+        protected virtual void calculateCurrent() { }
 
-        public virtual string getScopeText(int v) {
-            var info = new string[10];
-            getInfo(info);
-            return info[0];
+        public virtual double GetCurrentIntoNode(int n) {
+            /* if we take out the getPostCount() == 2 it gives the wrong value for rails */
+            if (n == 0 && PostCount == 2) {
+                return -mCurrent;
+            } else {
+                return mCurrent;
+            }
         }
-
-        public virtual double getScopeValue(int x) {
-            return (x == Scope.VAL_CURRENT) ? mCurrent : (x == Scope.VAL_POWER) ? Power : VoltageDiff;
-        }
-
-        public virtual int getScopeUnits(int x) {
-            return (x == Scope.VAL_CURRENT) ? Scope.UNITS_A :
-                (x == Scope.VAL_POWER) ? Scope.UNITS_W : Scope.UNITS_V;
-        }
-
-        public virtual EditInfo getEditInfo(int n) { return null; }
-
-        public virtual void setEditValue(int n, EditInfo ei) { }
 
         /// <summary>
         /// get nodes that can be passed to getConnection(), to test if this element connects
@@ -659,7 +626,7 @@ namespace Circuit.Elements {
         /// </summary>
         /// <param name="n"></param>
         /// <returns></returns>
-        public virtual int getConnectionNode(int n) { return getNode(n); }
+        public virtual int GetConnectionNode(int n) { return Nodes[n]; }
 
         /// <summary>
         /// are n1 and n2 connected by this element?  this is used to determine
@@ -668,41 +635,54 @@ namespace Circuit.Elements {
         /// <param name="n1"></param>
         /// <param name="n2"></param>
         /// <returns></returns>
-        public virtual bool getConnection(int n1, int n2) { return true; }
+        public virtual bool GetConnection(int n1, int n2) { return true; }
 
         /// <summary>
         /// is n1 connected to ground somehow?
         /// </summary>
         /// <param name="n1"></param>
         /// <returns></returns>
-        public virtual bool hasGroundConnection(int n1) { return false; }
+        public virtual bool HasGroundConnection(int n1) { return false; }
 
-        public virtual bool canShowValueInScope(int v) { return false; }
-
-        public virtual void setMouseElm(bool v) {
-            if (v) {
-                mMouseElmRef = this;
-            } else if (mMouseElmRef == this) {
-                mMouseElmRef = null;
-            }
+        /// <summary>
+        /// get position of nth node
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public virtual Point GetPost(int n) {
+            return (n == 0) ? mPoint1 : (n == 1) ? mPoint2 : new Point();
         }
 
-        public virtual void draggingDone() { }
+        /// <summary>
+        /// get component info for display in lower right
+        /// </summary>
+        /// <param name="arr"></param>
+        public virtual void GetInfo(string[] arr) { }
 
-        public virtual string dumpModel() { return null; }
+        public virtual bool CanShowValueInScope(int v) { return false; }
 
-        public virtual void updateModels() { }
-
-        public virtual void stepFinished() { }
-
-        public virtual double getCurrentIntoNode(int n) {
-            /* if we take out the getPostCount() == 2 it gives the wrong value for rails */
-            if (n == 0 && PostCount == 2) {
-                return -mCurrent;
-            } else {
-                return mCurrent;
-            }
+        public virtual string GetScopeText(int v) {
+            var info = new string[10];
+            GetInfo(info);
+            return info[0];
         }
+
+        public virtual double GetScopeValue(int x) {
+            return (x == Scope.VAL_CURRENT) ? mCurrent : (x == Scope.VAL_POWER) ? Power : VoltageDiff;
+        }
+
+        public virtual int GetScopeUnits(int x) {
+            return (x == Scope.VAL_CURRENT) ? Scope.UNITS_A :
+                (x == Scope.VAL_POWER) ? Scope.UNITS_W : Scope.UNITS_V;
+        }
+
+        public virtual EditInfo GetEditInfo(int n) { return null; }
+
+        public virtual void SetEditValue(int n, EditInfo ei) { }
+
+        public virtual string DumpModel() { return null; }
+
+        public virtual void UpdateModels() { }
         #endregion
     }
 }

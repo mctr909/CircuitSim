@@ -66,9 +66,9 @@
             lastClock = pins[0].value;
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n < 2) {
-                return base.getEditInfo(n);
+                return base.GetEditInfo(n);
             }
             if (n == 2) {
                 return new EditInfo("# of Bits", bits, 1, 1).SetDimensionless();
@@ -76,15 +76,15 @@
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n < 2) {
-                base.setEditValue(n, ei);
+                base.SetEditValue(n, ei);
                 return;
             }
             if (n == 2 && ei.Value >= 2) {
                 bits = (int)ei.Value;
                 setupPins();
-                setPoints();
+                SetPoints();
             }
         }
     }

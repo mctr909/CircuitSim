@@ -66,7 +66,7 @@ namespace Circuit.Elements {
 
         void setup() { }
 
-        public override Point getPost(int n) {
+        public override Point GetPost(int n) {
             return (n == 0) ? mPoint1 : (n == 1) ? mPoint2 : post3;
         }
 
@@ -87,17 +87,17 @@ namespace Circuit.Elements {
 
         public void execute() {
             Sim.analyzeFlag = true;
-            setPoints();
+            SetPoints();
         }
 
-        public override void delete() {
+        public override void Delete() {
             Sim.removeWidgetFromVerticalPanel(label);
             Sim.removeWidgetFromVerticalPanel(slider);
-            base.delete();
+            base.Delete();
         }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             int offset = 0;
             int myLen = 0;
             if (Math.Abs(mDx) > Math.Abs(mDy)) {
@@ -129,7 +129,7 @@ namespace Circuit.Elements {
             interpPoint(corner2, arrowPoint, ref arrow1, ref arrow2, (clen - 8) / clen, 4);
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             const int segments = 12;
             const int hs = 5;
             int i;
@@ -251,12 +251,12 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void reset() {
+        public override void Reset() {
             curcount1 = curcount2 = curcount3 = 0;
-            base.reset();
+            base.Reset();
         }
 
-        public override void calculateCurrent() {
+        protected override void calculateCurrent() {
             if (resistance1 == 0) {
                 return; /* avoid NaN */
             }
@@ -265,7 +265,7 @@ namespace Circuit.Elements {
             current3 = -current1 - current2;
         }
 
-        public override double getCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
                 return -current1;
             }
@@ -275,14 +275,14 @@ namespace Circuit.Elements {
             return -current3;
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             resistance1 = maxResistance * position;
             resistance2 = maxResistance * (1 - position);
             Cir.StampResistor(Nodes[0], Nodes[2], resistance1);
             Cir.StampResistor(Nodes[2], Nodes[1], resistance2);
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "potentiometer";
             arr[1] = "Vd = " + getVoltageDText(VoltageDiff);
             arr[2] = "R1 = " + getUnitText(resistance1, CirSim.ohmString);
@@ -291,7 +291,7 @@ namespace Circuit.Elements {
             arr[5] = "I2 = " + getCurrentDText(current2);
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             /* ohmString doesn't work here on linux */
             if (n == 0) {
                 return new EditInfo("Resistance (ohms)", maxResistance, 0, 0);
@@ -311,7 +311,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 maxResistance = ei.Value;
             }
@@ -325,8 +325,8 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void setMouseElm(bool v) {
-            base.setMouseElm(v);
+        public override void SetMouseElm(bool v) {
+            base.SetMouseElm(v);
         }
 
         public virtual void onMouseWheel(object s, MouseEventArgs e) { }

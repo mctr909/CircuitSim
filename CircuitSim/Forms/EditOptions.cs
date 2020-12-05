@@ -8,7 +8,7 @@ namespace Circuit {
 
         public EditOptions(CirSim s) { sim = s; }
 
-        public EditInfo getEditInfo(int n) {
+        public EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 return new EditInfo("Time step size (s)", sim.timeStep, 0, 0);
             }
@@ -25,7 +25,7 @@ namespace Circuit {
             return null;
         }
 
-        public void setEditValue(int n, EditInfo ei) {
+        public void SetEditValue(int n, EditInfo ei) {
             if (n == 0 && ei.Value > 0) {
                 sim.timeStep = ei.Value;
                 /* if timestep changed manually, prompt before changing it again */

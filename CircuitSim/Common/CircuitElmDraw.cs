@@ -171,7 +171,7 @@ namespace Circuit.Elements {
                 return;
             }
             for (int i = 0; i != PostCount; i++) {
-                var p = getPost(i);
+                var p = GetPost(i);
                 drawPost(g, p);
             }
         }

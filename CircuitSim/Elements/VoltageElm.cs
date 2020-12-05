@@ -37,7 +37,7 @@ namespace Circuit.Elements {
             maxVoltage = 5;
             frequency = 40;
             dutyCycle = .5;
-            reset();
+            Reset();
         }
 
         public VoltageElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
@@ -65,7 +65,7 @@ namespace Circuit.Elements {
                 dutyCycle = defaultPulseDuty;
             }
 
-            reset();
+            Reset();
         }
 
         public override double VoltageDiff { get { return Volts[1] - Volts[0]; } }
@@ -93,7 +93,7 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.VOLTAGE; }
 
-        public override void reset() {
+        public override void Reset() {
             mCurCount = 0;
         }
 
@@ -104,7 +104,7 @@ namespace Circuit.Elements {
             return 1 - (x - PI) * (2 / PI);
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             if (waveform == WF_DC) {
                 Cir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
             } else {
@@ -112,13 +112,13 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void doStep() {
+        public override void DoStep() {
             if (waveform != WF_DC) {
                 Cir.UpdateVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
             }
         }
 
-        public override void stepFinished() {
+        public override void StepFinished() {
             if (waveform == WF_NOISE) {
                 noiseValue = (CirSim.random.NextDouble() * 2 - 1) * maxVoltage + bias;
             }
@@ -149,12 +149,12 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             calcLeads((waveform == WF_DC || waveform == WF_VAR) ? 8 : circleSize);
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             setBbox(X1, Y1, X2, Y2);
             draw2Leads(g);
             if (waveform == WF_DC) {
@@ -288,7 +288,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             switch (waveform) {
             case WF_DC:
             case WF_VAR:
@@ -328,7 +328,7 @@ namespace Circuit.Elements {
             arr[i++] = "P = " + getUnitText(Power, "W");
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 return new EditInfo(waveform == WF_DC ? "Voltage" : "Max Voltage", maxVoltage, -20, 20);
             }
@@ -363,7 +363,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 maxVoltage = ei.Value;
             }
@@ -402,7 +402,7 @@ namespace Circuit.Elements {
                     dutyCycle = .5;
                 }
 
-                setPoints();
+                SetPoints();
             }
             if (n == 4) {
                 phaseShift = ei.Value * TO_RAD;

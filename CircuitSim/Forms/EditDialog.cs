@@ -9,8 +9,8 @@ using Circuit.Elements;
 
 namespace Circuit {
     interface Editable {
-        EditInfo getEditInfo(int n);
-        void setEditValue(int n, EditInfo ei);
+        EditInfo GetEditInfo(int n);
+        void SetEditValue(int n, EditInfo ei);
     }
 
     class EditDialog : Form {
@@ -81,7 +81,7 @@ namespace Circuit {
             int i;
             int idx;
             for (i = 0; ; i++) {
-                einfos[i] = elm.getEditInfo(i);
+                einfos[i] = elm.GetEditInfo(i);
                 if (einfos[i] == null) {
                     break;
                 }
@@ -257,7 +257,7 @@ namespace Circuit {
                 if (ei.Button != null) {
                     continue;
                 }
-                elm.setEditValue(i, ei);
+                elm.SetEditValue(i, ei);
 
                 /* update slider if any */
                 if (elm is CircuitElm) {
@@ -282,7 +282,7 @@ namespace Circuit {
                         apply();
                         applied = true;
                     }
-                    elm.setEditValue(i, ei);
+                    elm.SetEditValue(i, ei);
                     if (ei.NewDialog) {
                         changed = true;
                     }

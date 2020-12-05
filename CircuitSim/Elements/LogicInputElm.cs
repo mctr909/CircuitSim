@@ -44,12 +44,12 @@ namespace Circuit.Elements {
 
         bool isNumeric() { return (mFlags & (FLAG_TERNARY | FLAG_NUMERIC)) != 0; }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             mLead1 = interpPoint(mPoint1, mPoint2, 1 - 12 / mLen);
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             string s = position == 0 ? "L" : "H";
             if (isNumeric()) {
                 s = "" + position;
@@ -67,9 +67,9 @@ namespace Circuit.Elements {
             return new Rectangle(X2 - 10, Y2 - 10, 20, 20);
         }
 
-        public override void setCurrent(int vs, double c) { mCurrent = -c; }
+        public override void SetCurrent(int vs, double c) { mCurrent = -c; }
 
-        public override void stamp() {
+        public override void Stamp() {
             double v = (position == 0) ? loV : hiV;
             if (isTernary()) {
                 v = position * 2.5;
@@ -77,7 +77,7 @@ namespace Circuit.Elements {
             Cir.StampVoltageSource(0, Nodes[0], mVoltSource, v);
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "logic input";
             arr[1] = (position == 0) ? "low" : "high";
             if (isNumeric()) {
@@ -87,9 +87,9 @@ namespace Circuit.Elements {
             arr[2] = "I = " + getCurrentText(mCurrent);
         }
 
-        public override bool hasGroundConnection(int n1) { return true; }
+        public override bool HasGroundConnection(int n1) { return true; }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo("", 0, 0, 0);
                 ei.CheckBox = new CheckBox() {
@@ -123,7 +123,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 momentary = ei.CheckBox.Checked;
             }
@@ -150,7 +150,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override double getCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             return -mCurrent;
         }
     }

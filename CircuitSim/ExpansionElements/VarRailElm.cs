@@ -45,13 +45,13 @@ namespace Circuit.Elements {
             return frequency;
         }
 
-        public override void delete() {
+        public override void Delete() {
             Sim.removeWidgetFromVerticalPanel(label);
             Sim.removeWidgetFromVerticalPanel(slider);
-            base.delete();
+            base.Delete();
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 return new EditInfo("Min Voltage", bias, -20, 20);
             }
@@ -66,7 +66,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 bias = ei.Value;
             }
@@ -80,8 +80,8 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void setMouseElm(bool v) {
-            base.setMouseElm(v);
+        public override void SetMouseElm(bool v) {
+            base.SetMouseElm(v);
         }
     }
 }

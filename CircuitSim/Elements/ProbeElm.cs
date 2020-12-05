@@ -92,12 +92,12 @@ namespace Circuit.Elements {
             return "";
         }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             center = interpPoint(mPoint1, mPoint2, .5);
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             int hs = 8;
             setBbox(mPoint1, mPoint2, hs);
             bool selected = needsHighlight();
@@ -179,7 +179,7 @@ namespace Circuit.Elements {
             return (mFlags & FLAG_SHOWVOLTAGE) != 0;
         }
 
-        public override void stepFinished() {
+        public override void StepFinished() {
             count++; /*how many counts are in a cycle */
             double v = VoltageDiff;
             total += v * v;
@@ -257,14 +257,14 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "voltmeter";
             arr[1] = "Vd = " + getVoltageText(VoltageDiff);
         }
 
-        public override bool getConnection(int n1, int n2) { return false; }
+        public override bool GetConnection(int n1, int n2) { return false; }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
@@ -302,7 +302,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 if (ei.CheckBox.Checked) {
                     mFlags = FLAG_SHOWVOLTAGE;

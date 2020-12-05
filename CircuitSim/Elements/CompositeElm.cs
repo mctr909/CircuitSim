@@ -208,7 +208,7 @@ namespace Circuit.Elements {
         }
 
         /* are n1 and n2 connected internally somehow? */
-        public override bool getConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             var cnLinks1 = compNodeList[n1].Links;
             var cnLinks2 = compNodeList[n2].Links;
 
@@ -217,7 +217,7 @@ namespace Circuit.Elements {
                 CircuitNodeLink link1 = cnLinks1[i];
                 for (int j = 0; j < cnLinks2.Count; j++) {
                     CircuitNodeLink link2 = cnLinks2[j];
-                    if (link1.Elm == link2.Elm && link1.Elm.getConnection(link1.Num, link2.Num)) {
+                    if (link1.Elm == link2.Elm && link1.Elm.GetConnection(link1.Num, link2.Num)) {
                         return true;
                     }
                 }
@@ -226,24 +226,24 @@ namespace Circuit.Elements {
         }
 
         /* is n1 connected to ground somehow? */
-        public override bool hasGroundConnection(int n1) {
+        public override bool HasGroundConnection(int n1) {
             List<CircuitNodeLink> cnLinks;
             cnLinks = compNodeList[n1].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
-                if (cnLinks[i].Elm.hasGroundConnection(cnLinks[i].Num)) {
+                if (cnLinks[i].Elm.HasGroundConnection(cnLinks[i].Num)) {
                     return true;
                 }
             }
             return false;
         }
 
-        public override void reset() {
+        public override void Reset() {
             for (int i = 0; i < compElmList.Count; i++) {
-                compElmList[i].reset();
+                compElmList[i].Reset();
             }
         }
 
-        public override Point getPost(int n) {
+        public override Point GetPost(int n) {
             return posts[n];
         }
 
@@ -256,82 +256,82 @@ namespace Circuit.Elements {
             posts[n].Y = y;
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             for (int i = 0; i < compElmList.Count; i++) {
                 var ce = compElmList[i];
                 /* current sources need special stamp method */
                 if (ce is CurrentElm) {
                     ((CurrentElm)ce).stampCurrentSource(false);
                 } else {
-                    ce.stamp();
+                    ce.Stamp();
                 }
             }
         }
 
-        public override void startIteration() {
+        public override void StartIteration() {
             for (int i = 0; i < compElmList.Count; i++) {
-                compElmList[i].startIteration();
+                compElmList[i].StartIteration();
             }
         }
 
-        public override void doStep() {
+        public override void DoStep() {
             for (int i = 0; i < compElmList.Count; i++) {
-                compElmList[i].doStep();
+                compElmList[i].DoStep();
             }
         }
 
-        public override void stepFinished() {
+        public override void StepFinished() {
             for (int i = 0; i < compElmList.Count; i++) {
-                compElmList[i].stepFinished();
+                compElmList[i].StepFinished();
             }
         }
 
-        public override void setNode(int p, int n) {
-            base.setNode(p, n);
+        public override void SetNode(int p, int n) {
+            base.SetNode(p, n);
             var cnLinks = compNodeList[p].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
-                cnLinks[i].Elm.setNode(cnLinks[i].Num, n);
+                cnLinks[i].Elm.SetNode(cnLinks[i].Num, n);
             }
         }
 
-        public override void setNodeVoltage(int n, double c) {
-            base.setNodeVoltage(n, c);
+        public override void SetNodeVoltage(int n, double c) {
+            base.SetNodeVoltage(n, c);
             var cnLinks = compNodeList[n].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
-                cnLinks[i].Elm.setNodeVoltage(cnLinks[i].Num, c);
+                cnLinks[i].Elm.SetNodeVoltage(cnLinks[i].Num, c);
             }
             Volts[n] = c;
         }
 
-        public override void delete() {
+        public override void Delete() {
             for (int i = 0; i < compElmList.Count; i++) {
-                compElmList[i].delete();
+                compElmList[i].Delete();
             }
-            base.delete();
+            base.Delete();
         }
 
         /* Find the component with the nth voltage
          * and set the
          * appropriate source in that component */
-        public override void setVoltageSource(int n, int v) {
+        public override void SetVoltageSource(int n, int v) {
             var vsr = voltageSources[n];
-            vsr.elm.setVoltageSource(vsr.vsNumForElement, v);
+            vsr.elm.SetVoltageSource(vsr.vsNumForElement, v);
             vsr.vsNode = v;
         }
 
-        public override void setCurrent(int vsn, double c) {
+        public override void SetCurrent(int vsn, double c) {
             for (int i = 0; i < voltageSources.Count; i++) {
                 if (voltageSources[i].vsNode == vsn) {
-                    voltageSources[i].elm.setCurrent(vsn, c);
+                    voltageSources[i].elm.SetCurrent(vsn, c);
                 }
             }
         }
 
-        public override double getCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             double c = 0;
             var cnLinks = compNodeList[n].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
-                c += cnLinks[i].Elm.getCurrentIntoNode(cnLinks[i].Num);
+                c += cnLinks[i].Elm.GetCurrentIntoNode(cnLinks[i].Num);
             }
             return c;
         }

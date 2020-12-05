@@ -222,7 +222,7 @@ namespace Circuit {
                     chip.pins[i].selected = true;
                 }
             }
-            chip.setPoints();
+            chip.SetPoints();
         }
 
         void drawChip() {
@@ -233,7 +233,7 @@ namespace Circuit {
             g.Clear(CirSim.theSim.getBackgroundColor());
             g.FillRectangle(Brushes.Blue, 0, 0, context.Width, context.Height);
             g.Transform = new Matrix((float)(1 / scale), 0, 0, (float)(1 / scale), 0, 0);
-            chip.draw(g);
+            chip.Draw(g);
             if (null != canvas.Image) {
                 canvas.Image.Dispose();
                 canvas.Image = null;

@@ -50,12 +50,12 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.SWITCH; }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             calcLeads(32);
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             int hs1 = (position == 1) ? 0 : 2;
             int hs2 = (position == 1) ? openhs : 2;
             setBbox(mPoint1, mPoint2, openhs);
@@ -78,13 +78,13 @@ namespace Circuit.Elements {
             return Rectangle.Union(l1, Rectangle.Union(l2, p));
         }
 
-        public override void calculateCurrent() {
+        protected override void calculateCurrent() {
             if (position == 1) {
                 mCurrent = 0;
             }
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             if (position == 0) {
                 Cir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
             }
@@ -103,7 +103,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = (momentary) ? "push switch (SPST)" : "switch (SPST)";
             if (position == 1) {
                 arr[1] = "open";
@@ -115,9 +115,9 @@ namespace Circuit.Elements {
             }
         }
 
-        public override bool getConnection(int n1, int n2) { return position == 0; }
+        public override bool GetConnection(int n1, int n2) { return position == 0; }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
@@ -128,7 +128,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 momentary = ei.CheckBox.Checked;
             }

@@ -21,8 +21,8 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.RAIL; }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             mLead1 = interpPoint(mPoint1, mPoint2, 1 - circleSize / mLen);
         }
 
@@ -30,7 +30,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             var rt = getRailText();
             double w = rt == null ? (circleSize * 0.5) : g.MeasureString(rt, FONT_TERM_NAME).Width / 2;
             if (w > mLen * .8) {
@@ -73,7 +73,7 @@ namespace Circuit.Elements {
             drawCenteredText(g, s, X2, Y2, true);
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             if (waveform == WF_DC) {
                 Cir.StampVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
             } else {
@@ -81,12 +81,12 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void doStep() {
+        public override void DoStep() {
             if (waveform != WF_DC) {
                 Cir.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
             }
         }
 
-        public override bool hasGroundConnection(int n1) { return true; }
+        public override bool HasGroundConnection(int n1) { return true; }
     }
 }

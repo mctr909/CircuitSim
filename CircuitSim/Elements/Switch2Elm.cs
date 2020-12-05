@@ -44,8 +44,8 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.SWITCH2; }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
             calcLeads(32);
             swposts = newPointArray(throwCount);
             swpoles = newPointArray(2 + throwCount);
@@ -62,7 +62,7 @@ namespace Circuit.Elements {
             posCount = hasCenterOff() ? 3 : throwCount;
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             setBbox(mPoint1, mPoint2, openhs);
             adjustBbox(swposts[0], swposts[throwCount - 1]);
 
@@ -84,7 +84,7 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public override double getCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
                 return -mCurrent;
             }
@@ -101,17 +101,17 @@ namespace Circuit.Elements {
             return Rectangle.Union(l1, Rectangle.Union(s0, s1));
         }
 
-        public override Point getPost(int n) {
+        public override Point GetPost(int n) {
             return (n == 0) ? mPoint1 : swposts[n - 1];
         }
 
-        public override void calculateCurrent() {
+        protected override void calculateCurrent() {
             if (position == 2 && hasCenterOff()) {
                 mCurrent = 0;
             }
         }
 
-        public override void stamp() {
+        public override void Stamp() {
             if (position == 2 && hasCenterOff()) { /* in center? */
                 return;
             }
@@ -134,20 +134,20 @@ namespace Circuit.Elements {
             }
         }
 
-        public override bool getConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             if (position == 2 && hasCenterOff()) {
                 return false;
             }
             return comparePair(n1, n2, 0, 1 + position);
         }
 
-        public override void getInfo(string[] arr) {
+        public override void GetInfo(string[] arr) {
             arr[0] = "switch (" + (link == 0 ? "S" : "D")
                 + "P" + ((throwCount > 2) ? throwCount + "T)" : "DT)");
             arr[1] = "I = " + getCurrentDText(mCurrent);
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             /*if (n == 1) {
                 EditInfo ei = new EditInfo("", 0, -1, -1);
                 ei.checkbox = new Checkbox("Center Off", hasCenterOff());
@@ -159,10 +159,10 @@ namespace Circuit.Elements {
             if (n == 2) {
                 return new EditInfo("# of Throws", throwCount, 2, 10).SetDimensionless();
             }
-            return base.getEditInfo(n);
+            return base.GetEditInfo(n);
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             /*if (n == 1) {
                 flags &= ~FLAG_CENTER_OFF;
                 if (ei.checkbox.getState())
@@ -181,9 +181,9 @@ namespace Circuit.Elements {
                     momentary = false;
                 }
                 allocNodes();
-                setPoints();
+                SetPoints();
             } else {
-                base.setEditValue(n, ei);
+                base.SetEditValue(n, ei);
             }
         }
 

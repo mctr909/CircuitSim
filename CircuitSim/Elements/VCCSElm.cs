@@ -54,7 +54,7 @@ namespace Circuit.Elements {
 
         string getChipName() { return "VCCS~"; } /* ~ is for localization */
 
-        public override void stamp() {
+        public override void Stamp() {
             Cir.StampNonLinear(Nodes[inputCount]);
             Cir.StampNonLinear(Nodes[inputCount + 1]);
         }
@@ -99,7 +99,7 @@ namespace Circuit.Elements {
             return Nodes[n + inputCount];
         }
 
-        public override void doStep() {
+        public override void DoStep() {
             int i;
 
             /* no current path?  give up */
@@ -166,19 +166,19 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void draw(Graphics g) {
+        public override void Draw(Graphics g) {
             drawChip(g);
         }
 
-        public override bool getConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             return comparePair(inputCount, inputCount + 1, n1, n2);
         }
 
-        public override bool hasGroundConnection(int n1) {
+        public override bool HasGroundConnection(int n1) {
             return false;
         }
 
-        public override EditInfo getEditInfo(int n) {
+        public override EditInfo GetEditInfo(int n) {
             if (n == 0) {
                 var ei = new EditInfo(EditInfo.MakeLink("customfunction.html", "Output Function"), 0, -1, -1);
                 ei.Text = exprString;
@@ -191,7 +191,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void setEditValue(int n, EditInfo ei) {
+        public override void SetEditValue(int n, EditInfo ei) {
             if (n == 0) {
                 exprString = ei.Textf.Text.Replace(" ", "").Replace("\r", "").Replace("\n", "");
                 parseExpr();
@@ -204,7 +204,7 @@ namespace Circuit.Elements {
                 inputCount = (int)ei.Value;
                 setupPins();
                 allocNodes();
-                setPoints();
+                SetPoints();
             }
         }
 
@@ -218,8 +218,8 @@ namespace Circuit.Elements {
             expr = parser.parseExpression();
         }
 
-        public override void getInfo(string[] arr) {
-            base.getInfo(arr);
+        public override void GetInfo(string[] arr) {
+            base.GetInfo(arr);
             int i;
             for (i = 0; arr[i] != null; i++) ;
             arr[i] = "I = " + getCurrentText(pins[inputCount].current);

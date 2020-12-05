@@ -11,8 +11,8 @@ namespace Circuit.Elements {
 
         protected override string getGateText() { return "&"; }
 
-        public override void setPoints() {
-            base.setPoints();
+        public override void SetPoints() {
+            base.SetPoints();
 
             createEuroGatePolygon();
 
