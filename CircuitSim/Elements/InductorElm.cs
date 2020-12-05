@@ -4,6 +4,7 @@ using System.Drawing;
 namespace Circuit.Elements {
     class InductorElm : CircuitElm {
         Inductor ind;
+        Point textPos;
 
         public double Inductance { get; private set; }
 
@@ -38,6 +39,11 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(40);
+            if (mPoint1.Y == mPoint2.Y) {
+                textPos = interpPoint(mPoint1, mPoint2, 0.5 + 15 * mDsign / mLen, 12 * mDsign);
+            } else {
+                textPos = interpPoint(mPoint1, mPoint2, 0.5, -12 * mDsign);
+            }
         }
 
         public override void Draw(Graphics g) {
@@ -50,8 +56,8 @@ namespace Circuit.Elements {
             drawCoilLead(g, mLead1, mLead2, v1, v2);
 
             if (Sim.chkShowValuesCheckItem.Checked) {
-                var s = getShortUnitText(Inductance, "H");
-                drawValues(g, s, hs * mDirX);
+                var s = getShortUnitText(Inductance, "");
+                drawRightText(g, s, textPos.X, textPos.Y);
             }
             doDots(g);
             drawPosts(g);

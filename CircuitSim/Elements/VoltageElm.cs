@@ -29,6 +29,7 @@ namespace Circuit.Elements {
 
         Point ps1;
         Point ps2;
+        Point textPos;
 
         const double defaultPulseDuty = 1 / PI2;
 
@@ -152,11 +153,24 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads((waveform == WF_DC || waveform == WF_VAR) ? 8 : circleSize);
+
+            int sign;
+            if (mPoint1.Y == mPoint2.Y) {
+                sign = -mDsign;
+            } else {
+                sign = mDsign;
+            }
+            if(waveform == WF_DC || waveform == WF_VAR) {
+                textPos = interpPoint(mPoint1, mPoint2, 0.5, -16 * sign);
+            } else {
+                textPos = interpPoint(mPoint1, mPoint2, (mLen / 2 + 0.7 * circleSize) / mLen, 10 * sign);
+            }
         }
 
         public override void Draw(Graphics g) {
             setBbox(X1, Y1, X2, Y2);
             draw2Leads(g);
+
             if (waveform == WF_DC) {
                 interpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, 10);
                 drawThickLine(g, getVoltageColor(Volts[0]), ps1, ps2);
@@ -165,6 +179,8 @@ namespace Circuit.Elements {
                 setBbox(mPoint1, mPoint2, hs);
                 interpPoint(mLead1, mLead2, ref ps1, ref ps2, 1, hs);
                 drawThickLine(g, getVoltageColor(Volts[1]), ps1, ps2);
+                string s = getShortUnitText(maxVoltage, "V");
+                drawRightText(g, s, textPos.X, textPos.Y);
             } else {
                 setBbox(mPoint1, mPoint2, circleSize);
                 interpPoint(mLead1, mLead2, ref ps1, .5);
@@ -175,11 +191,7 @@ namespace Circuit.Elements {
                 } else {
                     inds = "*";
                 }
-
-                var plusPoint = interpPoint(mPoint1, mPoint2, (mLen / 2 + circleSize + 4) / mLen, 10 * mDsign);
-                plusPoint.Y += 4;
-                var w = (int)g.MeasureString(inds, FONT_TERM_NAME).Width;
-                g.DrawString(inds, FONT_TERM_NAME, BrushTermName, plusPoint.X - w / 2, plusPoint.Y);
+                drawCenteredLText(g, inds, textPos.X, textPos.Y, true);
             }
 
             updateDotCount();
@@ -280,9 +292,8 @@ namespace Circuit.Elements {
             }
 
             if (Sim.chkShowValuesCheckItem.Checked && waveform != WF_NOISE) {
-                var s = getShortUnitText(maxVoltage, "V ");
-                s += getShortUnitText(bias, "V\r\n");
-                s += getShortUnitText(frequency, "Hz ");
+                var s = getShortUnitText(maxVoltage, "V\r\n");
+                s += getShortUnitText(frequency, "Hz\r\n");
                 s += getShortUnitText(phaseShift * TO_DEG, "°");
                 drawValues(g, s, 0);
             }

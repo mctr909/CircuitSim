@@ -6,9 +6,6 @@ namespace Circuit.Elements {
         const int FLAG_VALUE = 1;
         int scale;
 
-        Font fontRegular = new Font("Meiryo UI", 14, FontStyle.Regular);
-        Font fontBold = new Font("Meiryo UI", 14, FontStyle.Bold);
-
         public OutputElm(int xx, int yy) : base(xx, yy) {
             scale = SCALE_AUTO;
         }
@@ -37,7 +34,6 @@ namespace Circuit.Elements {
 
         public override void Draw(Graphics g) {
             bool selected = needsHighlight();
-            var font = selected ? fontBold : fontRegular;
             PenThickLine.Color = selected ? SelectColor : WhiteColor;
 
             string txt = (mFlags & FLAG_VALUE) != 0 ? getUnitTextWithScale(Volts[0], "V", scale) : "out";
@@ -47,9 +43,9 @@ namespace Circuit.Elements {
             if (this == Sim.plotYElm) {
                 txt = "Y";
             }
-            interpPoint(mPoint1, mPoint2, ref mLead1, 1 - ((int)g.MeasureString(txt, font).Width / 2 + 8) / mLen);
+            interpPoint(mPoint1, mPoint2, ref mLead1, 1 - ((int)g.MeasureString(txt, FONT_TEXT).Width / 2 + 8) / mLen);
             setBbox(mPoint1, mLead1, 0);
-            drawCenteredText(g, txt, X2, Y2, true);
+            drawCenteredLText(g, txt, X2, Y2, true);
             PenThickLine.Color = getVoltageColor(Volts[0]);
             if (selected) {
                 PenThickLine.Color = SelectColor;

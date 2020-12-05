@@ -104,7 +104,7 @@ namespace Circuit.Elements {
                 lineOver = true;
                 str = str.Substring(1);
             }
-            drawCenteredText(g, str, X2, Y2, true);
+            drawCenteredLText(g, str, X2, Y2, true);
 
             if (lineOver) {
                 int ya = Y2 - FONT_TEXT.Height;

@@ -137,7 +137,7 @@ namespace Circuit.Elements {
             } else {
                 drawThickPolygon(g, gatePolyEuro);
                 var center = interpPoint(mPoint1, mPoint2, .5);
-                drawCenteredText(g, getGateText(), center.X, center.Y - 6 * gsize, true);
+                drawCenteredLText(g, getGateText(), center.X, center.Y - 6 * gsize, true);
             }
             if (hasSchmittInputs()) {
                 PenLine.Color = WhiteColor;

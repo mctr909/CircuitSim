@@ -32,7 +32,7 @@ namespace Circuit.Elements {
 
         public override void Draw(Graphics g) {
             var rt = getRailText();
-            double w = rt == null ? (circleSize * 0.5) : g.MeasureString(rt, FONT_TERM_NAME).Width / 2;
+            double w = rt == null ? (circleSize * 0.5) : g.MeasureString(rt, FONT_TEXT).Width / 2;
             if (w > mLen * .8) {
                 w = mLen * .8;
             }
@@ -50,7 +50,7 @@ namespace Circuit.Elements {
 
         void drawRail(Graphics g) {
             if (waveform == WF_SQUARE && (mFlags & FLAG_CLOCK) != 0) {
-                drawRailText(g, "CLK");
+                drawCenteredText(g, "CLK", X2, Y2, true);
             } else if (waveform == WF_DC || waveform == WF_VAR) {
                 var color = needsHighlight() ? SelectColor : WhiteColor;
                 double v = getVoltage();
@@ -67,10 +67,6 @@ namespace Circuit.Elements {
             } else {
                 drawWaveform(g, mPoint2);
             }
-        }
-
-        void drawRailText(Graphics g, string s) {
-            drawCenteredText(g, s, X2, Y2, true);
         }
 
         public override void Stamp() {

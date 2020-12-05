@@ -213,16 +213,16 @@ namespace Circuit.Elements {
 
                 /* vertical? */
                 if (mLead1.X == mLead2.X) {
-                    drawText(g, s1, !reverseY ? arrowPoint.X : arrowPoint.X - txtWidth, Math.Max(arrow1.Y, arrow2.Y) - txtHeightH);
+                    drawLeftText(g, s1, !reverseY ? arrowPoint.X : arrowPoint.X - txtWidth, Math.Max(arrow1.Y, arrow2.Y) - txtHeightH);
                 } else {
-                    drawText(g, s1, Math.Min(arrow1.X, arrow2.X) - txtWidth, !reverseX ? (arrowPoint.Y + txtHeightH + 4) : arrowPoint.Y);
+                    drawLeftText(g, s1, Math.Min(arrow1.X, arrow2.X) - txtWidth, !reverseX ? (arrowPoint.Y + txtHeightH + 4) : arrowPoint.Y);
                 }
 
                 txtWidth = (int)g.MeasureString(s2, FONT_TEXT).Width;
                 if (mLead1.X == mLead2.X) {
-                    drawText(g, s2, !reverseY ? arrowPoint.X : arrowPoint.X - txtWidth, Math.Min(arrow1.Y, arrow2.Y) + 3 * txtHeightH);
+                    drawLeftText(g, s2, !reverseY ? arrowPoint.X : arrowPoint.X - txtWidth, Math.Min(arrow1.Y, arrow2.Y) + 3 * txtHeightH);
                 } else {
-                    drawText(g, s2, Math.Max(arrow1.X, arrow2.X), !reverseX ? (arrowPoint.Y + txtHeightH + 4) : arrowPoint.Y);
+                    drawLeftText(g, s2, Math.Max(arrow1.X, arrow2.X), !reverseX ? (arrowPoint.Y + txtHeightH + 4) : arrowPoint.Y);
                 }
             }
         }

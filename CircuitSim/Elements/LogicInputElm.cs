@@ -55,9 +55,8 @@ namespace Circuit.Elements {
                 s = "" + position;
             }
             setBbox(mPoint1, mLead1, 0);
-            drawCenteredText(g, s, X2, Y2, true);
-            PenThickLine.Color = getVoltageColor(Volts[0]);
-            drawThickLine(g, mPoint1, mLead1);
+            drawCenteredLText(g, s, X2, Y2, true);
+            drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
             updateDotCount();
             drawDots(g, mPoint1, mLead1, mCurCount);
             drawPosts(g);

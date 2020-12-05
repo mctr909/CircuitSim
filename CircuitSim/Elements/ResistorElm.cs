@@ -8,6 +8,7 @@ namespace Circuit.Elements {
         Point ps2;
         Point ps3;
         Point ps4;
+        Point textPos;
 
         public ResistorElm(int xx, int yy) : base(xx, yy) {
             Resistance = 1000;
@@ -28,6 +29,11 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(32);
+            if (mPoint1.Y == mPoint2.Y) {
+                textPos = interpPoint(mPoint1, mPoint2, 0.5 + 12 * mDsign / mLen, 12 * mDsign);
+            } else {
+                textPos = interpPoint(mPoint1, mPoint2, 0.5, -12 * mDsign);
+            }
         }
 
         public override void Draw(Graphics g) {
@@ -81,7 +87,7 @@ namespace Circuit.Elements {
 
             if (Sim.chkShowValuesCheckItem.Checked) {
                 var s = getShortUnitText(Resistance, "");
-                drawValues(g, s, hs + 2);
+                drawRightText(g, s, textPos.X, textPos.Y);
             }
 
             doDots(g);

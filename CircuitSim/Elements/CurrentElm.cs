@@ -6,6 +6,7 @@ namespace Circuit.Elements {
         Point ashaft1;
         Point ashaft2;
         Point center;
+        Point textPos;
         double currentValue;
 
         public CurrentElm(int xx, int yy) : base(xx, yy) {
@@ -36,6 +37,13 @@ namespace Circuit.Elements {
             ashaft1 = interpPoint(mLead1, mLead2, .25);
             ashaft2 = interpPoint(mLead1, mLead2, .6);
             center = interpPoint(mLead1, mLead2, .5);
+            int sign;
+            if (mPoint1.Y == mPoint2.Y) {
+                sign = mDsign;
+            } else {
+                sign = -mDsign;
+            }
+            textPos = interpPoint(mPoint1, mPoint2, 0.5, 20 * sign);
             var p2 = interpPoint(mLead1, mLead2, .8);
             arrow = calcArrow(center, p2, 8, 6).ToArray();
         }
@@ -53,9 +61,7 @@ namespace Circuit.Elements {
             doDots(g);
             if (Sim.chkShowValuesCheckItem.Checked) {
                 string s = getShortUnitText(currentValue, "A");
-                if (mDx == 0 || mDy == 0) {
-                    drawValues(g, s, cr);
-                }
+                drawRightText(g, s, textPos.X, textPos.Y);
             }
             drawPosts(g);
         }

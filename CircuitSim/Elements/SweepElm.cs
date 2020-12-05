@@ -22,6 +22,8 @@ namespace Circuit.Elements {
         double v;
         int dir = 1;
 
+        Point textPos;
+
         public SweepElm(int xx, int yy) : base(xx, yy) {
             minF = 20;
             maxF = 4000;
@@ -59,6 +61,7 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             mLead1 = interpPoint(mPoint1, mPoint2, 1 - 0.5 * circleSize / mLen);
+            textPos = interpPoint(mPoint1, mPoint2, 1.0 + 0.66 * circleSize / distance(mPoint1, mPoint2), 24 * mDsign);
         }
 
         public override void Draw(Graphics g) {
@@ -103,9 +106,7 @@ namespace Circuit.Elements {
 
             if (Sim.chkShowValuesCheckItem.Checked) {
                 string s = getShortUnitText(frequency, "Hz");
-                if (mDx == 0 || mDy == 0) {
-                    drawValues(g, s, circleSize);
-                }
+                drawRightText(g, s, textPos.X, textPos.Y);
             }
 
             drawPosts(g);

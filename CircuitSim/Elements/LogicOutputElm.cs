@@ -57,9 +57,8 @@ namespace Circuit.Elements {
             }
             value = s;
             setBbox(mPoint1, mLead1, 0);
-            drawCenteredText(g, s, X2, Y2, true);
-            getVoltageColor(Volts[0]);
-            drawThickLine(g, mPoint1, mLead1);
+            drawCenteredLText(g, s, X2, Y2, true);
+            drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
             drawPosts(g);
         }
 

@@ -599,7 +599,7 @@ namespace Circuit {
             inputMenuBar.Font = menuFont;
             addElementItem(inputMenuBar, "直流電圧源(2端子)", MENU_ITEM.DCVoltageElm);
             addElementItem(inputMenuBar, "交流電圧源(2端子)", MENU_ITEM.ACVoltageElm);
-            addElementItem(inputMenuBar, "電流源", MENU_ITEM.CurrentElm);
+            addElementItem(inputMenuBar, "定電流源", MENU_ITEM.CurrentElm);
             inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(inputMenuBar, "直流電圧源(1端子)", MENU_ITEM.RailElm);
             addElementItem(inputMenuBar, "交流電圧源(1端子)", MENU_ITEM.ACRailElm);

@@ -27,6 +27,7 @@ namespace Circuit.Elements {
 
         Point mid;
         Point[] arrowPoly;
+        Point textPos;
 
         public AmmeterElm(int xx, int yy) : base(xx, yy) {
             mFlags = FLAG_SHOWCURRENT;
@@ -68,8 +69,15 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            mid = interpPoint(mPoint1, mPoint2, 0.6);
+            mid = interpPoint(mPoint1, mPoint2, 0.5 + 8 / mLen);
             arrowPoly = calcArrow(mPoint1, mid, 14, 7).ToArray();
+            int sign;
+            if (mPoint1.Y == mPoint2.Y) {
+                sign = mDsign;
+            } else {
+                sign = -mDsign;
+            }
+            textPos = interpPoint(mPoint1, mPoint2, 0.5 + 8 * sign / mLen, 12 * sign);
         }
 
         public override void StepFinished() {
@@ -161,8 +169,7 @@ namespace Circuit.Elements {
                 s = getUnitTextWithScale(rmsI, "A(rms)", scale);
                 break;
             }
-
-            drawValues(g, s, 4);
+            drawRightText(g, s, textPos.X, textPos.Y);
             drawPosts(g);
         }
 

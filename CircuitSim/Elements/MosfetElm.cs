@@ -200,7 +200,7 @@ namespace Circuit.Elements {
 
             if ((mFlags & FLAG_SHOWVT) != 0) {
                 string s = "" + (vt * pnp);
-                drawCenteredText(g, s, X2 + 2, Y2, false);
+                drawCenteredLText(g, s, X2 + 2, Y2, false);
             }
             mCurCount = updateDotCount(-ids, mCurCount);
             drawDots(g, src[0], src[1], mCurCount);

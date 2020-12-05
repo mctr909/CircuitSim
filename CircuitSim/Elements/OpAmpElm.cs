@@ -25,7 +25,6 @@ namespace Circuit.Elements {
         Point[] in2p;
         Point[] textp;
         Point[] triangle;
-        Font plusFont;
 
         double lastvd;
 
@@ -100,8 +99,8 @@ namespace Circuit.Elements {
             PenThickLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
             drawThickPolygon(g, triangle);
 
-            drawCenteredText(g, plusFont, "-", textp[0].X, textp[0].Y - 2, true);
-            drawCenteredText(g, plusFont, "+", textp[1].X, textp[1].Y, true);
+            drawCenteredLText(g, "-", textp[0].X, textp[0].Y - 2, true);
+            drawCenteredLText(g, "+", textp[1].X, textp[1].Y, true);
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(g, mPoint2, mLead2, mCurCount);
             drawPosts(g);
@@ -137,7 +136,6 @@ namespace Circuit.Elements {
             var tris = new Point[2];
             interpPoint(mLead1, mLead2, ref tris[0], ref tris[1], 0, hs * 2);
             triangle = createPolygon(tris[0], tris[1], mLead2).ToArray();
-            plusFont = new Font("Meiryo UI", opsize == 2 ? 14 : 10);
         }
 
         public override Point GetPost(int n) {

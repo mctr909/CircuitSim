@@ -483,7 +483,7 @@ namespace Circuit {
         void onMouseMove(MouseEventArgs e) {
             mouseCursorX = e.X;
             mouseCursorY = e.Y;
-            if (10 < (DateTime.Now - mLastMouseMove).Milliseconds) {
+            if (33 < (DateTime.Now - mLastMouseMove).Milliseconds) {
                 mLastMouseMove = DateTime.Now;
             } else {
                 return;

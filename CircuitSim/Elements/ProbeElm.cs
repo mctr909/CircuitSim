@@ -40,6 +40,7 @@ namespace Circuit.Elements {
         long pulseStart;
 
         Point center;
+        Point plusPoint;
 
         public ProbeElm(int xx, int yy) : base(xx, yy) {
             meter = TP_VOL;
@@ -94,7 +95,8 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            center = interpPoint(mPoint1, mPoint2, .5);
+            center = interpPoint(mPoint1, mPoint2, .5, 8 * mDsign);
+            plusPoint = interpPoint(mPoint1, mPoint2, (mLen / 2 - 20) / mLen, 16 * mDsign);
         }
 
         public override void Draw(Graphics g) {
@@ -119,10 +121,10 @@ namespace Circuit.Elements {
             drawThickLine(g, mLead2, mPoint2);
 
             if (this == Sim.plotXElm) {
-                drawCenteredText(g, "X", center.X, center.Y, true);
+                drawCenteredLText(g, "X", center.X, center.Y, true);
             }
             if (this == Sim.plotYElm) {
-                drawCenteredText(g, "Y", center.X, center.Y, true);
+                drawCenteredLText(g, "Y", center.X, center.Y, true);
             }
 
             if (mustShowVoltage()) {
@@ -159,19 +161,9 @@ namespace Circuit.Elements {
                     s = dutyCycle.ToString("0.000");
                     break;
                 }
-                drawValues(g, s, 4);
+                drawCenteredText(g, s, center.X, center.Y, true);
             }
-
-            var plusPoint = interpPoint(mPoint1, mPoint2, (mLen / 2 - len / 2 - 4) / mLen, -10 * mDsign);
-            if (Y2 > Y1) {
-                plusPoint.Y += 4;
-            }
-            if (Y1 > Y2) {
-                plusPoint.Y += 3;
-            }
-
-            int w = (int)g.MeasureString("+", FONT_UNITS).Width;
-            g.DrawString("+", FONT_UNITS, BrushText, plusPoint.X - w / 2, plusPoint.Y);
+            drawCenteredLText(g, "+", plusPoint.X, plusPoint.Y, true);
             drawPosts(g);
         }
 

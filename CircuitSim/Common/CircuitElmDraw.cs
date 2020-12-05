@@ -11,19 +11,27 @@ namespace Circuit.Elements {
         static readonly Pen PEN_POST = new Pen(Color.Red, 7.0f);
         static readonly Pen PEN_HANDLE = new Pen(Color.Cyan, 3.0f);
 
-        protected static readonly Font FONT_TERM_NAME = new Font("Meiryo UI", 14.0f);
-        protected static readonly Font FONT_TEXT = new Font("Meiryo UI", 9.0f);
-        protected static readonly Font FONT_UNITS = new Font("Meiryo UI", 9.0f);
-        protected static readonly StringFormat TEXT_LEFT = new StringFormat() { Alignment = StringAlignment.Near };
-        protected static readonly StringFormat TEXT_LEFT_BOTTOM = new StringFormat() {
+        static readonly StringFormat TEXT_LEFT = new StringFormat() {
+            Alignment = StringAlignment.Near,
+            LineAlignment = StringAlignment.Center
+        };
+        static readonly StringFormat TEXT_LEFT_BOTTOM = new StringFormat() {
             Alignment = StringAlignment.Near,
             LineAlignment = StringAlignment.Far
         };
-        protected static readonly StringFormat TEXT_RIGHT = new StringFormat() { Alignment = StringAlignment.Far };
-        protected static readonly StringFormat TEXT_CENTER = new StringFormat() {
+        static readonly StringFormat TEXT_RIGHT = new StringFormat() {
+            Alignment = StringAlignment.Far,
+            LineAlignment = StringAlignment.Center
+        };
+        static readonly StringFormat TEXT_CENTER = new StringFormat() {
             Alignment = StringAlignment.Center,
             LineAlignment = StringAlignment.Center
         };
+
+        static readonly Font FONT_LTEXT = new Font("Meiryo UI", 14.0f);
+        static readonly Font FONT_UNITS = new Font("Meiryo UI", 9.0f);
+
+        protected static readonly Font FONT_TEXT = new Font("Meiryo UI", 9.0f);
         #endregion
 
         #region property
@@ -210,12 +218,16 @@ namespace Circuit.Elements {
             }
         }
 
-        protected void drawText(Graphics g, string s, int x, int y) {
+        protected void drawRightText(Graphics g, string s, int x, int y) {
+            g.DrawString(s, FONT_TEXT, BrushText, x, y, TEXT_RIGHT);
+        }
+
+        protected void drawLeftText(Graphics g, string s, int x, int y) {
             g.DrawString(s, FONT_TEXT, BrushText, x, y, TEXT_LEFT_BOTTOM);
         }
 
         protected void drawCenteredText(Graphics g, string s, int x, int y, bool cx) {
-            var fs = g.MeasureString(s, FONT_TERM_NAME);
+            var fs = g.MeasureString(s, FONT_TEXT);
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
             if (cx) {
@@ -223,11 +235,12 @@ namespace Circuit.Elements {
             } else {
                 adjustBbox(x, y - h2, x + w, y + h2);
             }
-            g.DrawString(s, FONT_TERM_NAME, BrushText, x, y, TEXT_CENTER);
+
+            g.DrawString(s, FONT_TEXT, BrushText, x, y, TEXT_CENTER);
         }
 
-        protected void drawCenteredText(Graphics g, Font font, string s, int x, int y, bool cx) {
-            var fs = g.MeasureString(s, font);
+        protected void drawCenteredLText(Graphics g, string s, int x, int y, bool cx) {
+            var fs = g.MeasureString(s, FONT_LTEXT);
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
             if (cx) {
@@ -235,8 +248,7 @@ namespace Circuit.Elements {
             } else {
                 adjustBbox(x, y - h2, x + w, y + h2);
             }
-
-            g.DrawString(s, font, BrushText, x, y, TEXT_CENTER);
+            g.DrawString(s, FONT_LTEXT, BrushText, x, y, TEXT_CENTER);
         }
 
         /// <summary>
@@ -250,7 +262,7 @@ namespace Circuit.Elements {
                 return;
             }
             var textSize = g.MeasureString(s, FONT_UNITS);
-            int ya = (int)textSize.Width;
+            int ya = (int)textSize.Height;
             int xc, yc;
             if (typeof(RailElm) == GetType() || typeof(SweepElm) == GetType()) {
                 xc = X2;
@@ -262,13 +274,13 @@ namespace Circuit.Elements {
             int dpx = (int)(mDirX * hs);
             int dpy = (int)(mDirY * hs);
             if (dpx == 0) {
-                g.DrawString(s, FONT_UNITS, BrushText, xc - ya / 2, yc - Math.Abs(dpy) - 2 - ya);
+                g.DrawString(s, FONT_UNITS, BrushText, xc, yc - Math.Abs(dpy) - ya, TEXT_RIGHT);
             } else {
                 int xx = xc + Math.Abs(dpx) + 2;
                 if (typeof(VoltageElm) == GetType() || (X1 < X2 && Y1 > Y2)) {
                     xx = xc - (int)(textSize.Width + Math.Abs(dpx) + 2);
                 }
-                g.DrawString(s, FONT_UNITS, BrushText, xx, yc + dpy, TEXT_LEFT);
+                g.DrawString(s, FONT_UNITS, BrushText, xx, yc + dpy, TEXT_RIGHT);
             }
         }
 

@@ -11,6 +11,7 @@ namespace Circuit.Elements {
 
         Point[] plate1;
         Point[] plate2;
+        Point textPos;
 
         /* used for PolarCapacitorElm */
         Point[] platePoints;
@@ -66,6 +67,11 @@ namespace Circuit.Elements {
             plate2 = newPointArray(2);
             interpPoint(mPoint1, mPoint2, ref plate1[0], ref plate1[1], f, 10);
             interpPoint(mPoint1, mPoint2, ref plate2[0], ref plate2[1], 1 - f, 10);
+            if (mPoint1.Y == mPoint2.Y) {
+                textPos = interpPoint(mPoint1, mPoint2, 0.5 + 15 * mDsign / mLen, 16 * mDsign);
+            } else {
+                textPos = interpPoint(mPoint1, mPoint2, 0.5, -12 * mDsign);
+            }
         }
 
         public override void Draw(Graphics g) {
@@ -96,8 +102,8 @@ namespace Circuit.Elements {
             }
             drawPosts(g);
             if (Sim.chkShowValuesCheckItem.Checked) {
-                var s = getShortUnitText(Capacitance, "F");
-                drawValues(g, s, hs * mDirX);
+                var s = getShortUnitText(Capacitance, "");
+                drawRightText(g, s, textPos.X, textPos.Y);
             }
         }
 
