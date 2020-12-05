@@ -46,7 +46,6 @@ namespace Circuit {
                 labels.AutoSize = true;
                 labels.Left = 4;
                 labels.Top = ofsY;
-                labels.Font = new Font("Segoe UI", 11.0f);
                 vp.Controls.Add(labels);
                 ofsY += labels.Height;
                 /* trbValue */

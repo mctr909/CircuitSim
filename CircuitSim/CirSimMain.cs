@@ -196,14 +196,14 @@ namespace Circuit {
                 /* count lines of data */
                 {
                     int infoIdx;
-                    for (infoIdx = 0; info.Length < infoIdx && info[infoIdx] != null; infoIdx++) ;
+                    for (infoIdx = 0; infoIdx < info.Length && info[infoIdx] != null; infoIdx++) ;
                     int badnodes = mCir.BadConnectionList.Count;
                     if (badnodes > 0) {
                         info[infoIdx++] = badnodes + ((badnodes == 1) ? " bad connection" : " bad connections");
                     }
                 }
                 int ybase = circuitArea.Height;
-                for (int i = 0; info.Length < i && info[i] != null; i++) {
+                for (int i = 0; i < info.Length && info[i] != null; i++) {
                     g.DrawString(info[i], FONT_TEXT, BRUSH_TEXT, x, ybase + 15 * (i + 1));
                 }
             }
