@@ -253,9 +253,6 @@ namespace Circuit {
                 if (mCir.StopMessage == null && startCircuitLink != null) {
                     readCircuit("");
                     getSetupList(false);
-                    // TODO: init
-                    //ImportFromDropboxDialog.setSim(this);
-                    //ImportFromDropboxDialog.doImportDropboxLink(startCircuitLink, false);
                 } else {
                     readCircuit("");
                     if (mCir.StopMessage == null && startCircuit != null) {
@@ -662,7 +659,6 @@ namespace Circuit {
             for (int i = 0; i != scopeCount; i++) {
                 scopes[i].resetGraph(true);
             }
-            // TODO: Will need to do IE bug fix here?
             analyzeFlag = true;
             if (t == 0) {
                 setSimRunning(true);
@@ -1890,15 +1886,6 @@ namespace Circuit {
                         contextPanel.Location = new Point(menuClientX, menuClientY);
                     }
                 }
-            } else {
-                // TODO: doPopupMenu
-                //doMainMenuChecks();
-                //contextPanel = new Form();
-                //contextPanel.Controls.Add(mainMenuBar);
-                //x = Math.Max(0, Math.Min(menuClientX, cv.Width - 400));
-                //y = Math.Max(0, Math.Min(menuClientY, cv.Height - 450));
-                //contextPanel.Location = new Point(x, y);
-                //contextPanel.Show();
             }
         }
 
@@ -2317,9 +2304,6 @@ namespace Circuit {
             // TODO: dialogIsShowing
             //if (aboutBox != null && aboutBox.isShowing())
             //    return true;
-            // TODO: dialogIsShowing
-            //if (importFromDropboxDialog != null && importFromDropboxDialog.isShowing())
-            //    return true;
             return false;
         }
 
@@ -2378,18 +2362,6 @@ namespace Circuit {
                 mouseModeStr = MENU_ITEM.SELECT;
                 tempMouseMode = mouseMode;
             }
-        }
-
-        void createNewLoadFile() {
-            // TODO: createNewLoadFile
-            //// This is a hack to fix what IMHO is a bug in the <INPUT FILE element
-            //// reloading the same file doesn't create a change event so importing the same file twice
-            //// doesn't work unless you destroy the original input element and replace it with a new one
-            //int idx = verticalPanel.Controls.IndexOf(loadFileInput);
-            //var newlf = new LoadFile(this);
-            //verticalPanel.insert(newlf, idx);
-            //verticalPanel.remove(idx + 1);
-            //loadFileInput = newlf;
         }
 
         public void addWidgetToVerticalPanel(Control ctrl) {
@@ -2464,75 +2436,6 @@ namespace Circuit {
         void doDCAnalysis() {
             dcAnalysisFlag = true;
             resetAction();
-        }
-
-        Bitmap getCircuitAsCanvas(bool print) {
-            // TODO: getCircuitAsCanvas
-            // create canvas to draw circuit into
-            //var bounds = getCircuitBounds();
-
-            //// add some space on edges because bounds calculation is not perfect
-            //int wmargin = 140;
-            //int hmargin = 100;
-            //int w = (bounds.Width + wmargin);
-            //int h = (bounds.Height + hmargin);
-            //cv.setCoordinateSpaceWidth(w);
-            //cv.setCoordinateSpaceHeight(h);
-            //var oldTransform = new float[6];
-            //Array.Copy(transform, oldTransform, 6);
-
-            //Context2d context = cv.getContext2d();
-            //Graphics g = new Graphics(context);
-            //context.setTransform(1, 0, 0, 1, 0, 0);
-
-            //double scale = 1;
-
-            //// turn on white background, turn off current display
-            //bool p = ctrlPrintableCheckItem.Checked;
-            //bool c = ctrlDotsCheckItem.Checked;
-            //if (print) {
-            //    ctrlPrintableCheckItem.Checked = true;
-            //}
-            //if (ctrlPrintableCheckItem.Checked) {
-            //    CircuitElm.whiteColor = Color.Black;
-            //    CircuitElm.lightGrayColor = Color.Black;
-            //    g.setColor(Color.White);
-            //} else {
-            //    CircuitElm.whiteColor = Color.White;
-            //    CircuitElm.lightGrayColor = Color.LightGray;
-            //    g.setColor(Color.Black);
-            //    g.FillRect(0, 0, g.context.getCanvas().getWidth(), g.context.getCanvas().getHeight());
-            //}
-            //ctrlDotsCheckItem.Checked = false;
-
-            //if (bounds != null) {
-            //    scale = Math.Min(w / (double)(bounds.Width + wmargin),
-            //                     h / (double)(bounds.Height + hmargin));
-            //}
-            //scale = Math.Min(scale, 1.5); // Limit scale so we don't create enormous circuits in big windows
-
-            //// ScopeElms need the transform array to be updated
-            //transform[0] = transform[3] = (float)scale;
-            //transform[4] = -(bounds.X - wmargin / 2);
-            //transform[5] = -(bounds.Y - hmargin / 2);
-            //context.scale(scale, scale);
-            //context.translate(transform[4], transform[5]);
-
-            //// draw elements
-            //int i;
-            //for (i = 0; i != elmList.Count; i++) {
-            //    getElm(i).draw(g);
-            //}
-            //for (i = 0; i != postDrawList.size(); i++) {
-            //    CircuitElm.drawPost(g, postDrawList.get(i));
-            //}
-
-            //// restore everything
-            //ctrlPrintableCheckItem.Checked = p;
-            //ctrlDotsCheckItem.Checked = c;
-            //transform = oldTransform;
-            //return cv;
-            return null;
         }
 
         bool isSelection() {

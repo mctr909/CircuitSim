@@ -91,24 +91,13 @@ namespace Circuit {
         }
 
         public void Print() {
-            var antiAlias = g.SmoothingMode == SmoothingMode.AntiAlias;
-            if (!antiAlias) {
-                g.SmoothingMode = SmoothingMode.AntiAlias;
-                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-            }
-
             var p = new PrintDocument();
+            p.DefaultPageSettings.Landscape = true;
             p.PrintPage += new PrintPageEventHandler((s, e) => {
-                e.PageSettings.Landscape = true;
                 e.Graphics.DrawImage(mImage, 0, 0, mImage.Width, mImage.Height);
                 e.HasMorePages = false;
             });
             p.Print();
-
-            if (!antiAlias) {
-                g.SmoothingMode = SmoothingMode.None;
-                g.PixelOffsetMode = PixelOffsetMode.None;
-            }
         }
 
         public static CustomGraphics FromImage(Bitmap image) {

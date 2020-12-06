@@ -434,14 +434,16 @@ namespace Circuit {
             mi.Text = title;
             mi.Click += new EventHandler((sender, e) => {
                 mSim.menuPerformed(MENU_CATEGORY.MAIN, item);
-                for (int i = 0; i < mainMenuItems.Count; i++) {
-                    if (mainMenuItems[i].Checked) {
-                        mainMenuItems[i].Checked = false;
-                        mainMenuItems[i].OwnerItem.BackColor = Color.Transparent;
+                if (null != mi.OwnerItem) {
+                    for (int i = 0; i < mainMenuItems.Count; i++) {
+                        if (mainMenuItems[i].Checked) {
+                            mainMenuItems[i].Checked = false;
+                            mainMenuItems[i].OwnerItem.BackColor = Color.Transparent;
+                        }
                     }
+                    mi.Checked = true;
+                    mi.OwnerItem.BackColor = Color.LightGray;
                 }
-                mi.Checked = true;
-                mi.OwnerItem.BackColor = Color.LightGray;
             });
             mainMenuItems.Add(mi);
             mainMenuItemNames.Add(item);
