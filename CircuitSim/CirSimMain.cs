@@ -25,22 +25,23 @@ namespace Circuit {
             }
             setupScopes();
 
-            var g = backcontext;
+            var g = backContext;
 
-            CircuitElm.TextColor = Color.Red;
-            g.TextColor = Color.Red;
-            CircuitElm.SelectColor = Color.Cyan;
             if (chkPrintableCheckItem.Checked) {
                 CircuitElm.WhiteColor = Color.Black;
-                CircuitElm.LightGrayColor = Color.Black;
-                g.LineColor = Color.White;
+                CircuitElm.GrayColor = Color.Black;
+                CircuitElm.TextColor = Color.Black;
+                g.PostColor = Color.Black;
+                g.Clear(Color.White);
             } else {
                 CircuitElm.WhiteColor = Color.White;
-                CircuitElm.LightGrayColor = Color.Gray;
-                g.LineColor = Color.Black;
+                CircuitElm.GrayColor = Color.Gray;
+                CircuitElm.TextColor = Color.Red;
+                g.PostColor = Color.Red;
+                g.Clear(Color.Black);
             }
 
-            g.FillRectangle(0, 0, backcv.Width, backcv.Height);
+            g.TextColor = CircuitElm.TextColor;
 
             long myrunstarttime = DateTime.Now.ToFileTimeUtc();
             if (simRunning) {
@@ -148,7 +149,7 @@ namespace Circuit {
             } else {
                 bCircuitArea = Color.Black;
             }
-            g.FillRectangle(bCircuitArea, 0, circuitArea.Height, circuitArea.Width, backcv.Height - circuitArea.Height);
+            g.FillRectangle(bCircuitArea, 0, circuitArea.Height, circuitArea.Width, g.Height - circuitArea.Height);
 
             int ct = scopeCount;
             if (mCir.StopMessage != null) {
@@ -190,7 +191,7 @@ namespace Circuit {
                 if (ct != 0) {
                     x = scopes[ct - 1].rightEdge() + 20;
                 }
-                x = Math.Max(x, backcv.Width * 2 / 3);
+                x = Math.Max(x, g.Width * 2 / 3);
 
                 /* count lines of data */
                 {
@@ -216,20 +217,19 @@ namespace Circuit {
                 picCir.Image.Dispose();
                 picCir.Image = null;
             }
-            if (null != cv || null != cvcontext) {
-                if (null == cvcontext) {
+            if (null != cv || null != context) {
+                if (null == context) {
                     cv.Dispose();
                     cv = null;
                 } else {
-                    cvcontext.Dispose();
-                    cvcontext = null;
+                    context.Dispose();
+                    context = null;
                 }
             }
 
-            g.FillCircle(Color.White, mouseCursorX, mouseCursorY, 2);
-            cv = new Bitmap(backcv.Width, backcv.Height);
-            cvcontext = Graphics.FromImage(cv);
-            cvcontext.DrawImage(backcv, 0, 0);
+            cv = new Bitmap(g.Width, g.Height);
+            context = Graphics.FromImage(cv);
+            backContext.CopyTo(context);
             picCir.Image = cv;
 
             /* if we did DC analysis, we need to re-analyze the circuit with that flag cleared. */
@@ -340,7 +340,7 @@ namespace Circuit {
                 scopeCount--;
             }
 
-            int h = backcv.Height - circuitArea.Height;
+            int h = backContext.Height - circuitArea.Height;
             pos = 0;
             for (int i = 0; i != scopeCount; i++) {
                 scopeColCount[i] = 0;
@@ -354,7 +354,7 @@ namespace Circuit {
             if (colct <= 2) {
                 iw = iw * 3 / 2;
             }
-            int w = (backcv.Width - iw) / colct;
+            int w = (backContext.Width - iw) / colct;
             int marg = 10;
             if (w < marg * 2) {
                 w = marg * 2;
@@ -377,7 +377,7 @@ namespace Circuit {
                     s.Speed = speed;
                     s.resetGraph();
                 }
-                var r = new Rectangle(pos * w, backcv.Height - h + colh * row, w - marg, colh);
+                var r = new Rectangle(pos * w, backContext.Height - h + colh * row, w - marg, colh);
                 row++;
                 if (!r.Equals(s.BoundingBox)) {
                     s.setRect(r);

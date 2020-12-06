@@ -57,7 +57,7 @@ namespace Circuit.Elements {
             draw2Leads(g);
 
             interpPoint(mLead1, mLead2, ref ps, 1, hs);
-            g.DrawThickLine(LightGrayColor, mLead1, ps);
+            g.DrawThickLine(GrayColor, mLead1, ps);
 
             g.DrawThickLine(getVoltageColor(Volts[2]), point3, lead3);
 

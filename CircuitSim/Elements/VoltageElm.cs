@@ -212,7 +212,7 @@ namespace Circuit.Elements {
             int y = center.Y;
 
             if (waveform != WF_NOISE) {
-                g.ThickLineColor = NeedsHighlight ? SelectColor : LightGrayColor;
+                g.ThickLineColor = NeedsHighlight ? SelectColor : GrayColor;
                 g.DrawThickCircle(x, y, circleSize);
             }
 
@@ -222,7 +222,7 @@ namespace Circuit.Elements {
             float xd = (float)(h * 2 * dutyCycle - h + x);
             xd = Math.Max(x - h + 1, Math.Min(x + h - 1, xd));
 
-            g.LineColor = NeedsHighlight ? SelectColor : LightGrayColor;
+            g.LineColor = NeedsHighlight ? SelectColor : GrayColor;
 
             switch (waveform) {
             case WF_DC: {

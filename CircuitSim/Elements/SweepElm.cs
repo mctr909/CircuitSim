@@ -69,7 +69,7 @@ namespace Circuit.Elements {
 
             g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
 
-            g.ThickLineColor = NeedsHighlight ? SelectColor : LightGrayColor;
+            g.ThickLineColor = NeedsHighlight ? SelectColor : GrayColor;
 
             int xc = mPoint2.X;
             int yc = mPoint2.Y;
@@ -91,7 +91,7 @@ namespace Circuit.Elements {
 
             int x0 = 0;
             float y0 = 0;
-            g.LineColor = LightGrayColor;
+            g.LineColor = GrayColor;
             for (int i = -xl; i <= xl; i++) {
                 float yy = yc + (float)(.95 * Math.Sin(i * Pi * w / xl) * wl);
                 if (i == -xl) {

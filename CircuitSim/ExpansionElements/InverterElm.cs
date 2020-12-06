@@ -41,7 +41,7 @@ namespace Circuit.Elements {
         public override void Draw(CustomGraphics g) {
             drawPosts(g);
             draw2Leads(g);
-            g.ThickLineColor = NeedsHighlight ? SelectColor : LightGrayColor;
+            g.ThickLineColor = NeedsHighlight ? SelectColor : GrayColor;
             if (GateElm.useAnsiGates()) {
                 g.DrawThickPolygon(gatePolyAnsi);
             } else {

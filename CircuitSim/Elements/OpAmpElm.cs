@@ -96,7 +96,7 @@ namespace Circuit.Elements {
             g.DrawThickLine(getVoltageColor(Volts[V_P]), in2p[0], in2p[1]);
             g.DrawThickLine(getVoltageColor(Volts[V_O]), mLead2, mPoint2);
 
-            g.ThickLineColor = NeedsHighlight ? SelectColor : LightGrayColor;
+            g.ThickLineColor = NeedsHighlight ? SelectColor : GrayColor;
             g.DrawThickPolygon(triangle);
 
             drawCenteredLText(g, "-", textp[0].X, textp[0].Y - 2, true);

@@ -123,7 +123,7 @@ namespace Circuit {
                 ofsY += chkAnsiResistorCheckItem.Height + 4;
 
                 /* White Background */
-                chkPrintableCheckItem = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "背景色を白にする" };
+                chkPrintableCheckItem = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "白黒表示" };
                 chkPrintableCheckItem.CheckedChanged += new EventHandler((s, e) => {
                     for (int i = 0; i < scopeCount; i++) {
                         scopes[i].setRect(scopes[i].BoundingBox);
@@ -523,15 +523,10 @@ namespace Circuit {
 
             picCir.Width = width;
             picCir.Height = height;
-            if (backcv != null) {
-                if (backcontext == null) {
-                    backcv.Dispose();
-                } else {
-                    backcontext.Dispose();
-                }
+            if (backContext != null) {
+                backContext.Dispose();
             }
-            backcv = new Bitmap(width, height);
-            backcontext = CustomGraphics.FromImage(backcv);
+            backContext = CustomGraphics.FromImage(width, height);
             setCircuitArea();
             setSimRunning(isRunning);
         }
@@ -694,7 +689,7 @@ namespace Circuit {
                 doDCAnalysis();
             }
             if (item == MENU_ITEM.print) {
-                doPrint();
+                backContext.Print();
             }
             if (item == MENU_ITEM.recover) {
                 doRecover();
@@ -2469,12 +2464,6 @@ namespace Circuit {
         void doDCAnalysis() {
             dcAnalysisFlag = true;
             resetAction();
-        }
-
-        void doPrint() {
-            var cv = getCircuitAsCanvas(true);
-            // TODO: doPrint
-            //printCanvas(cv.getCanvasElement());
         }
 
         Bitmap getCircuitAsCanvas(bool print) {

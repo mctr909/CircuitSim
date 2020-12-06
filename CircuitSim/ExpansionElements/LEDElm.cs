@@ -58,7 +58,7 @@ namespace Circuit.Elements {
             g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, ledLead1);
             g.DrawThickLine(getVoltageColor(Volts[1]), ledLead2, mPoint2);
 
-            g.ThickLineColor = LightGrayColor;
+            g.ThickLineColor = GrayColor;
 
             int cr = 12;
             g.DrawThickCircle(ledCenter.X, ledCenter.Y, cr);

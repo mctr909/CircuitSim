@@ -180,7 +180,7 @@ namespace Circuit.Elements {
             if (pnp == 1) {
                 arrowPoly = calcArrow(emit[1], emit[0], 8, 4).ToArray();
             } else {
-                var pt = interpPoint(mPoint1, mPoint2, 1 - 11 / mLen, -5 * mDsign * pnp);
+                var pt = interpPoint(mPoint1, mPoint2, 1 - 14 / mLen, -5 * mDsign * pnp);
                 arrowPoly = calcArrow(emit[0], pt, 8, 4).ToArray();
             }
         }

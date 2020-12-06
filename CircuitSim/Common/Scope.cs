@@ -75,7 +75,6 @@ namespace Circuit {
         CirSim mSim;
         FFT mFft;
 
-        Bitmap mCanvas;
         CustomGraphics mContext;
 
         List<ScopePlot> mPlots;
@@ -1133,9 +1132,8 @@ namespace Circuit {
 
         #region Draw Utils
         void allocImage() {
-            if (mCanvas == null) {
-                mCanvas = new Bitmap(BoundingBox.Width, BoundingBox.Height);
-                mContext = CustomGraphics.FromImage(mCanvas);
+            if (mContext == null) {
+                mContext = CustomGraphics.FromImage(BoundingBox.Width, BoundingBox.Height);
             }
             clear2dView();
         }

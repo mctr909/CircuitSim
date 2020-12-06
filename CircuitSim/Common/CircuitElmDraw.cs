@@ -7,12 +7,12 @@ namespace Circuit.Elements {
         const int ColorScaleCount = 64;
         static readonly Pen PenHandle = new Pen(Color.Cyan, 3.0f);
 
-        public static double VoltageRange { get; set; } = 5;
-
+        public static readonly Color SelectColor = Color.Cyan;
         public static Color TextColor { get; set; }
         public static Color WhiteColor { get; set; }
-        public static Color SelectColor { get; set; }
-        public static Color LightGrayColor { get; set; }
+        public static Color GrayColor { get; set; }
+
+        public static double VoltageRange { get; set; } = 5;
 
         static Color[] mColorScale;
 
@@ -23,7 +23,7 @@ namespace Circuit.Elements {
                 if (v < 0) {
                     int n1 = (int)(128 * -v) + 127;
                     int n2 = (int)(127 * (1 + v));
-                    mColorScale[i] = Color.FromArgb(n1, n2, n2);
+                    mColorScale[i] = Color.FromArgb(n2, n2, n1);
                 } else {
                     int n1 = (int)(128 * v) + 127;
                     int n2 = (int)(127 * (1 - v));
@@ -74,10 +74,15 @@ namespace Circuit.Elements {
                 pos += ds;
             }
             double di = 0;
+            if (Sim.chkPrintableCheckItem.Checked) {
+                g.LineColor = GrayColor;
+            } else {
+                g.LineColor = Color.Yellow;
+            }
             for (di = pos; di < dn; di += ds) {
                 var x0 = (float)(a.X + di * dx / dn);
                 var y0 = (float)(a.Y + di * dy / dn);
-                g.FillRectangle(Color.Yellow, x0 - 2, y0 - 2, 4, 4);
+                g.FillCircle(x0, y0, 2);
             }
         }
 
@@ -102,6 +107,9 @@ namespace Circuit.Elements {
             }
             if (!Sim.chkVoltsCheckItem.Checked) {
                 return WhiteColor;
+            }
+            if (Sim.chkPrintableCheckItem.Checked) {
+                return GrayColor;
             }
             int c = (int)((volts + VoltageRange) * (ColorScaleCount - 1) / (VoltageRange * 2));
             if (c < 0) {
@@ -181,14 +189,14 @@ namespace Circuit.Elements {
             g.DrawRightText(s, xc + offsetX, yc - textSize.Height + offsetY);
         }
 
-        protected void drawCoilLead(CustomGraphics g, Point p1, Point p2, double v1, double v2) {
+        protected void drawCoil(CustomGraphics g, Point p1, Point p2, double v1, double v2) {
             var coilLen = (float)distance(p1, p2);
             if (0 == coilLen) {
                 return;
             }
             /* draw more loops for a longer coil */
             int loopCt = (int)Math.Ceiling(coilLen / 12);
-            float w = 0.92f * coilLen / loopCt;
+            float w = coilLen / loopCt;
             float h = w * 1.2f;
             float wh = w * 0.5f;
             float hh = h * 0.5f;
@@ -202,14 +210,14 @@ namespace Circuit.Elements {
             }
         }
 
-        protected void drawCoil(CustomGraphics g, int hs, Point p1, Point p2, double v1, double v2) {
+        protected void drawCoil(CustomGraphics g, float hs, Point p1, Point p2, double v1, double v2) {
             var coilLen = (float)distance(p1, p2);
             if (0 == coilLen) {
                 return;
             }
             /* draw more loops for a longer coil */
             int loopCt = (int)Math.Ceiling(coilLen / 12);
-            float w = 0.92f * coilLen / loopCt;
+            float w = coilLen / loopCt;
             float wh = w * 0.5f;
             hs *= mDsign;
             if (theta(p1, p2) < 0) {
@@ -279,8 +287,8 @@ namespace Circuit.Elements {
         /// <param name="ret"></param>
         /// <param name="f"></param>
         public static void interpPoint(Point a, Point b, ref Point ret, double f) {
-            ret.X = (int)Math.Floor(a.X * (1 - f) + b.X * f + .48);
-            ret.Y = (int)Math.Floor(a.Y * (1 - f) + b.Y * f + .48);
+            ret.X = (int)Math.Floor(a.X * (1 - f) + b.X * f + 0.48);
+            ret.Y = (int)Math.Floor(a.Y * (1 - f) + b.Y * f + 0.48);
         }
 
         /// <summary>
@@ -295,8 +303,8 @@ namespace Circuit.Elements {
             int gx = b.Y - a.Y;
             int gy = a.X - b.X;
             g /= Math.Sqrt(gx * gx + gy * gy);
-            ret.X = (int)Math.Floor(a.X * (1 - f) + b.X * f + g * gx + .48);
-            ret.Y = (int)Math.Floor(a.Y * (1 - f) + b.Y * f + g * gy + .48);
+            ret.X = (int)Math.Floor(a.X * (1 - f) + b.X * f + g * gx + 0.48);
+            ret.Y = (int)Math.Floor(a.Y * (1 - f) + b.Y * f + g * gy + 0.48);
         }
 
         /// <summary>
@@ -326,10 +334,10 @@ namespace Circuit.Elements {
             int gx = b.Y - a.Y;
             int gy = a.X - b.X;
             g /= Math.Sqrt(gx * gx + gy * gy);
-            ret1.X = (int)(a.X * (1 - f) + b.X * f + g * gx);
-            ret1.Y = (int)(a.Y * (1 - f) + b.Y * f + g * gy);
-            ret2.X = (int)(a.X * (1 - f) + b.X * f - g * gx);
-            ret2.Y = (int)(a.Y * (1 - f) + b.Y * f - g * gy);
+            ret1.X = (int)(a.X * (1 - f) + b.X * f + g * gx + 0.48);
+            ret1.Y = (int)(a.Y * (1 - f) + b.Y * f + g * gy + 0.48);
+            ret2.X = (int)(a.X * (1 - f) + b.X * f - g * gx + 0.48);
+            ret2.Y = (int)(a.Y * (1 - f) + b.Y * f - g * gy + 0.48);
         }
         #endregion
 

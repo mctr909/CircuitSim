@@ -32,7 +32,7 @@ namespace Circuit.Elements {
             if (mPoint1.Y == mPoint2.Y) {
                 textPos = interpPoint(mPoint1, mPoint2, 0.5 + 12 * mDsign / mLen, 12 * mDsign);
             } else {
-                textPos = interpPoint(mPoint1, mPoint2, 0.5, -12 * mDsign);
+                textPos = interpPoint(mPoint1, mPoint2, 0.5, -10 * mDsign);
             }
         }
 

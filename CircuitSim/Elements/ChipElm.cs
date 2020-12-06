@@ -200,10 +200,10 @@ namespace Circuit.Elements {
                 if (p.bubble) {
                     g.ThickLineColor = Sim.chkPrintableCheckItem.Checked ? Color.White : Color.Black;
                     g.DrawThickCircle(p.bubbleX, p.bubbleY, 1);
-                    g.ThickLineColor = LightGrayColor;
+                    g.ThickLineColor = GrayColor;
                     g.DrawThickCircle(p.bubbleX, p.bubbleY, 3);
                 }
-                g.ThickLineColor = p.selected ? SelectColor : LightGrayColor;
+                g.ThickLineColor = p.selected ? SelectColor : GrayColor;
                 int fsz = 12 * csize;
                 var font = CustomGraphics.FontText;
                 while (true) {
@@ -222,7 +222,7 @@ namespace Circuit.Elements {
                     break;
                 }
             }
-            g.ThickLineColor = NeedsHighlight ? SelectColor : LightGrayColor;
+            g.ThickLineColor = NeedsHighlight ? SelectColor : GrayColor;
             g.DrawThickPolygon(rectPoints);
             if (clockPoints != null) {
                 g.DrawThickPolygon(clockPoints);

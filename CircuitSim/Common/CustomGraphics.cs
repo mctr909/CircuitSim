@@ -1,13 +1,11 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Printing;
 
 namespace Circuit {
     class CustomGraphics {
-        public static readonly Font FontText = new Font("Meiryo UI", 9.0f);
-
-        static readonly Font mFontLText = new Font("Meiryo UI", 14.0f);
-        static readonly Pen mPenPost = new Pen(Color.Red, 5.0f);
-
+        public static readonly Font FontText = new Font("Segoe UI", 9.0f);
+        static readonly Font mFontLText = new Font("Segoe UI", 14.0f);
         static readonly StringFormat mTextLeft = new StringFormat() {
             Alignment = StringAlignment.Near,
             LineAlignment = StringAlignment.Center
@@ -25,11 +23,12 @@ namespace Circuit {
             LineAlignment = StringAlignment.Center
         };
 
-        Image mImage;
+        Bitmap mImage;
         Graphics g;
         Brush mBrushText;
 
-        Pen mPenColor = new Pen(Color.White, 2.0f) {
+        Pen mPenPost = new Pen(Color.Red, 5.0f);
+        Pen mPenColor = new Pen(Color.White, 1.0f) {
             StartCap = LineCap.Triangle,
             EndCap = LineCap.Triangle
         };
@@ -37,7 +36,7 @@ namespace Circuit {
             StartCap = LineCap.Triangle,
             EndCap = LineCap.Triangle
         };
-        Pen mPenThickLine = new Pen(Color.White, 2.0f) {
+        Pen mPenThickLine = new Pen(Color.White, 1.0f) {
             StartCap = LineCap.Triangle,
             EndCap = LineCap.Triangle
         };
@@ -48,6 +47,10 @@ namespace Circuit {
                 mBrushText = p.Brush;
             }
         }
+        public Color PostColor {
+            get { return mPenPost.Color; }
+            set { mPenPost.Color = value; }
+        }
         public Color LineColor {
             get { return mPenLine.Color; }
             set { mPenLine.Color = value; }
@@ -57,10 +60,25 @@ namespace Circuit {
             set { mPenThickLine.Color = value; }
         }
 
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+
         CustomGraphics() { }
-        CustomGraphics(Image image) {
+        CustomGraphics(Bitmap image) {
+            Width = image.Width;
+            Height = image.Height;
             mImage = image;
             g = Graphics.FromImage(mImage);
+        }
+        CustomGraphics(int width, int height) {
+            Width = width;
+            Height = height;
+            mImage = new Bitmap(Width, Height);
+            g = Graphics.FromImage(mImage);
+        }
+
+        public void CopyTo(Graphics g) {
+            g.DrawImage(mImage, 0, 0);
         }
 
         public void Dispose() {
@@ -72,8 +90,33 @@ namespace Circuit {
             }
         }
 
-        public static CustomGraphics FromImage(Image image) {
+        public void Print() {
+            var antiAlias = g.SmoothingMode == SmoothingMode.AntiAlias;
+            if (!antiAlias) {
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            }
+
+            var p = new PrintDocument();
+            p.PrintPage += new PrintPageEventHandler((s, e) => {
+                e.PageSettings.Landscape = true;
+                e.Graphics.DrawImage(mImage, 0, 0, mImage.Width, mImage.Height);
+                e.HasMorePages = false;
+            });
+            p.Print();
+
+            if (!antiAlias) {
+                g.SmoothingMode = SmoothingMode.None;
+                g.PixelOffsetMode = PixelOffsetMode.None;
+            }
+        }
+
+        public static CustomGraphics FromImage(Bitmap image) {
             return new CustomGraphics(image);
+        }
+
+        public static CustomGraphics FromImage(int width, int height) {
+            return new CustomGraphics(width, height);
         }
 
         public void DrawPost(Point p) {

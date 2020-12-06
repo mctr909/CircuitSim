@@ -76,9 +76,8 @@ namespace Circuit {
 
         PictureBox picCir;
         Bitmap cv = null;
-        Bitmap backcv = null;
-        Graphics cvcontext;
-        CustomGraphics backcontext;
+        Graphics context;
+        CustomGraphics backContext;
 
         MenuItem recoverItem;
         MenuItem undoItem;

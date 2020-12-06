@@ -130,7 +130,7 @@ namespace Circuit.Elements {
                 g.DrawThickLine(getVoltageColor(Volts[i]), inPosts[i], inGates[i]);
             }
             g.DrawThickLine(getVoltageColor(Volts[inputCount]), mLead2, mPoint2);
-            g.ThickLineColor = NeedsHighlight ? SelectColor : LightGrayColor;
+            g.ThickLineColor = NeedsHighlight ? SelectColor : GrayColor;
             if (useAnsiGates()) {
                 g.DrawThickPolygon(gatePolyAnsi);
             } else {

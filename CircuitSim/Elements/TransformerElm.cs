@@ -94,7 +94,7 @@ namespace Circuit.Elements {
             drawCoil(g,  90,            ptCoil[0], ptCoil[2], Volts[PRI_T], Volts[PRI_B]);
             drawCoil(g, -90 * polarity, ptCoil[1], ptCoil[3], Volts[SEC_T], Volts[SEC_B]);
 
-            var c = NeedsHighlight ? SelectColor : LightGrayColor;
+            var c = NeedsHighlight ? SelectColor : GrayColor;
             g.LineColor = c;
             g.ThickLineColor = c;
             g.DrawThickLine(ptCore[0], ptCore[2]);
