@@ -38,17 +38,17 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.INVERT; }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             drawPosts(g);
             draw2Leads(g);
-            PenThickLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
+            g.ThickLineColor = NeedsHighlight ? SelectColor : LightGrayColor;
             if (GateElm.useAnsiGates()) {
-                drawThickPolygon(g, gatePolyAnsi);
+                g.DrawThickPolygon(gatePolyAnsi);
             } else {
-                drawThickPolygon(g, gatePolyEuro);
+                g.DrawThickPolygon(gatePolyEuro);
                 drawCenteredLText(g, "1", center.X, center.Y - 6, true);
             }
-            drawThickCircle(g, pcircle.X, pcircle.Y, 7);
+            g.DrawThickCircle(pcircle.X, pcircle.Y, 7);
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(g, mLead2, mPoint2, mCurCount);
         }
@@ -64,16 +64,14 @@ namespace Circuit.Elements {
             mLead2 = interpPoint(mPoint1, mPoint2, .5 + (ww + 2) / mLen);
             pcircle = interpPoint(mPoint1, mPoint2, .5 + (ww - 2) / mLen);
 
-            var triPoints = new Point[3];
-            interpPoint(mLead1, mLead2, ref triPoints[0], ref triPoints[1], 0, hs);
-            triPoints[2] = interpPoint(mPoint1, mPoint2, .5 + (ww - 5) / mLen);
-            gatePolyAnsi = createPolygon(triPoints).ToArray();
+            gatePolyAnsi = new Point[3];
+            interpPoint(mLead1, mLead2, ref gatePolyAnsi[0], ref gatePolyAnsi[1], 0, hs);
+            gatePolyAnsi[2] = interpPoint(mPoint1, mPoint2, .5 + (ww - 5) / mLen);
 
-            var pts = new Point[4];
+            gatePolyEuro = new Point[4];
             var l2 = interpPoint(mPoint1, mPoint2, .5 + (ww - 5) / mLen); /* make room for circle */
-            interpPoint(mLead1, l2, ref pts[0], ref pts[1], 0, hs);
-            interpPoint(mLead1, l2, ref pts[3], ref pts[2], 1, hs);
-            gatePolyEuro = createPolygon(pts).ToArray();
+            interpPoint(mLead1, l2, ref gatePolyEuro[0], ref gatePolyEuro[1], 0, hs);
+            interpPoint(mLead1, l2, ref gatePolyEuro[3], ref gatePolyEuro[2], 1, hs);
             center = interpPoint(mLead1, l2, .5);
 
             setBbox(mPoint1, mPoint2, hs);

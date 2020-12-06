@@ -64,15 +64,15 @@ namespace Circuit.Elements {
             return n1 / 2 == n2 / 2;
         }
 
-        public override void Draw(Graphics g) {
-            PenThickLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
-            drawThickPolygon(g, rectPoints);
+        public override void Draw(CustomGraphics g) {
+            g.ThickLineColor = NeedsHighlight ? SelectColor : LightGrayColor;
+            g.DrawThickPolygon(rectPoints);
 
             /* draw stubs */
             for (int i = 0; i != 4; i++) {
                 var a = posts[i];
                 var b = stubs[i];
-                drawThickLine(g, getVoltageColor(Volts[i]), a, b);
+                g.DrawThickLine(getVoltageColor(Volts[i]), a, b);
                 curCounts[i] = updateDotCount(-GetCurrentIntoNode(i), curCounts[i]);
                 drawDots(g, a, b, curCounts[i]);
             }
@@ -83,8 +83,8 @@ namespace Circuit.Elements {
             drawPosts(g);
 
             /* draw little arrows */
-            PenLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
-            PenThickLine.Color = PenLine.Color;
+            var c = NeedsHighlight ? SelectColor : LightGrayColor;
+            g.LineColor = c;
             int sx = stubs[0].X + 2;
             int sy = (stubs[0].Y + stubs[1].Y) / 2;
             for (int i = 0; i != 2; i++) {
@@ -92,8 +92,8 @@ namespace Circuit.Elements {
                 var p1 = new Point(sx, y);
                 var p2 = new Point(sx + 20, y);
                 var p = calcArrow(p1, p2, 5, 2).ToArray();
-                fillPolygon(g, p);
-                drawLine(g, sx + 10, y, sx + 15, y);
+                g.FillPolygon(c, p);
+                g.DrawLine(sx + 10, y, sx + 15, y);
             }
         }
 

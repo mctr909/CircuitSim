@@ -49,7 +49,7 @@ namespace Circuit.Elements {
             lead3 = interpPoint(mPoint1, mPoint2, .5, -openhs / 2);
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             int openhs = 16;
             int hs = (open) ? openhs : 0;
             setBbox(mPoint1, mPoint2, openhs);
@@ -57,9 +57,9 @@ namespace Circuit.Elements {
             draw2Leads(g);
 
             interpPoint(mLead1, mLead2, ref ps, 1, hs);
-            drawThickLine(g, LightGrayColor, mLead1, ps);
+            g.DrawThickLine(LightGrayColor, mLead1, ps);
 
-            drawThickLine(g, getVoltageColor(Volts[2]), point3, lead3);
+            g.DrawThickLine(getVoltageColor(Volts[2]), point3, lead3);
 
             if (!open) {
                 doDots(g);

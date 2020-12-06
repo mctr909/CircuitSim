@@ -32,10 +32,7 @@ namespace Circuit.Elements {
             mLead1 = new Point();
         }
 
-        public override void Draw(Graphics g) {
-            bool selected = needsHighlight();
-            PenThickLine.Color = selected ? SelectColor : WhiteColor;
-
+        public override void Draw(CustomGraphics g) {
             string txt = (mFlags & FLAG_VALUE) != 0 ? getUnitTextWithScale(Volts[0], "V", scale) : "out";
             if (this == Sim.plotXElm) {
                 txt = "X";
@@ -43,14 +40,20 @@ namespace Circuit.Elements {
             if (this == Sim.plotYElm) {
                 txt = "Y";
             }
-            interpPoint(mPoint1, mPoint2, ref mLead1, 1 - ((int)g.MeasureString(txt, FONT_TEXT).Width / 2 + 8) / mLen);
+
+            interpPoint(mPoint1, mPoint2, ref mLead1, 1 - ((int)g.GetLTextSize(txt).Width / 2 + 8) / mLen);
             setBbox(mPoint1, mLead1, 0);
+
+            bool selected = NeedsHighlight;
+            g.TextColor = selected ? SelectColor : TextColor;
             drawCenteredLText(g, txt, X2, Y2, true);
-            PenThickLine.Color = getVoltageColor(Volts[0]);
+
             if (selected) {
-                PenThickLine.Color = SelectColor;
+                g.ThickLineColor = SelectColor;
+            } else {
+                g.ThickLineColor = getVoltageColor(Volts[0]);
             }
-            drawThickLine(g, mPoint1, mLead1);
+            g.DrawThickLine(mPoint1, mLead1);
             drawPosts(g);
         }
 

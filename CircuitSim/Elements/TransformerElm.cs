@@ -85,22 +85,23 @@ namespace Circuit.Elements {
             SetPoints();
         }
 
-        public override void Draw(Graphics g) {
-            drawThickLine(g, getVoltageColor(Volts[PRI_T]), ptEnds[0], ptCoil[0]);
-            drawThickLine(g, getVoltageColor(Volts[SEC_T]), ptEnds[1], ptCoil[1]);
-            drawThickLine(g, getVoltageColor(Volts[PRI_B]), ptEnds[2], ptCoil[2]);
-            drawThickLine(g, getVoltageColor(Volts[SEC_B]), ptEnds[3], ptCoil[3]);
+        public override void Draw(CustomGraphics g) {
+            g.DrawThickLine(getVoltageColor(Volts[PRI_T]), ptEnds[0], ptCoil[0]);
+            g.DrawThickLine(getVoltageColor(Volts[SEC_T]), ptEnds[1], ptCoil[1]);
+            g.DrawThickLine(getVoltageColor(Volts[PRI_B]), ptEnds[2], ptCoil[2]);
+            g.DrawThickLine(getVoltageColor(Volts[SEC_B]), ptEnds[3], ptCoil[3]);
 
             drawCoil(g,  90,            ptCoil[0], ptCoil[2], Volts[PRI_T], Volts[PRI_B]);
             drawCoil(g, -90 * polarity, ptCoil[1], ptCoil[3], Volts[SEC_T], Volts[SEC_B]);
 
-            PenLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
-            PenThickLine.Color = PenLine.Color;
-            drawThickLine(g, ptCore[0], ptCore[2]);
-            drawThickLine(g, ptCore[1], ptCore[3]);
+            var c = NeedsHighlight ? SelectColor : LightGrayColor;
+            g.LineColor = c;
+            g.ThickLineColor = c;
+            g.DrawThickLine(ptCore[0], ptCore[2]);
+            g.DrawThickLine(ptCore[1], ptCore[3]);
             if (dots != null) {
-                g.DrawArc(PenLine, dots[0].X - 2, dots[0].Y - 2, 5, 5, 0, 360);
-                g.DrawArc(PenLine, dots[1].X - 2, dots[1].Y - 2, 5, 5, 0, 360);
+                g.DrawCircle(dots[0].X, dots[0].Y, 2.5f);
+                g.DrawCircle(dots[1].X, dots[1].Y, 2.5f);
             }
 
             curcount[0] = updateDotCount(current[0], curcount[0]);

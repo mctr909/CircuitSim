@@ -1,69 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 
 namespace Circuit.Elements {
     partial class CircuitElm : Editable {
-        #region CONST
-        const int COLOR_SCALE_COUNT = 64;
+        const int ColorScaleCount = 64;
+        static readonly Pen PenHandle = new Pen(Color.Cyan, 3.0f);
 
-        static readonly Pen PEN_POST = new Pen(Color.Red, 7.0f);
-        static readonly Pen PEN_HANDLE = new Pen(Color.Cyan, 3.0f);
-
-        static readonly StringFormat TEXT_LEFT = new StringFormat() {
-            Alignment = StringAlignment.Near,
-            LineAlignment = StringAlignment.Center
-        };
-        static readonly StringFormat TEXT_LEFT_BOTTOM = new StringFormat() {
-            Alignment = StringAlignment.Near,
-            LineAlignment = StringAlignment.Far
-        };
-        static readonly StringFormat TEXT_RIGHT = new StringFormat() {
-            Alignment = StringAlignment.Far,
-            LineAlignment = StringAlignment.Center
-        };
-        static readonly StringFormat TEXT_CENTER = new StringFormat() {
-            Alignment = StringAlignment.Center,
-            LineAlignment = StringAlignment.Center
-        };
-
-        static readonly Font FONT_LTEXT = new Font("Meiryo UI", 14.0f);
-        static readonly Font FONT_UNITS = new Font("Meiryo UI", 9.0f);
-
-        protected static readonly Font FONT_TEXT = new Font("Meiryo UI", 9.0f);
-        #endregion
-
-        #region property
         public static double VoltageRange { get; set; } = 5;
+
+        public static Color TextColor { get; set; }
         public static Color WhiteColor { get; set; }
         public static Color SelectColor { get; set; }
         public static Color LightGrayColor { get; set; }
-        public static Brush BrushTermName { get; set; }
-        public static Brush BrushText { get; set; }
-        protected static Pen PenLine { get; set; } = new Pen(Color.White, 1.0f) {
-            StartCap = LineCap.Triangle,
-            EndCap = LineCap.Triangle
-        };
-        protected static Pen PenThickLine { get; set; } = new Pen(Color.White, 2.0f) {
-            StartCap = LineCap.Triangle,
-            EndCap = LineCap.Triangle
-        };
-        #endregion
 
         static Color[] mColorScale;
 
-        static Pen mPenLine = new Pen(Color.White, 2.0f) {
-            StartCap = LineCap.Triangle,
-            EndCap = LineCap.Triangle
-        };
-
-        Point ps1;
-
         public static void setColorScale() {
-            mColorScale = new Color[COLOR_SCALE_COUNT];
-            for (int i = 0; i != COLOR_SCALE_COUNT; i++) {
-                double v = i * 2.0 / COLOR_SCALE_COUNT - 1;
+            mColorScale = new Color[ColorScaleCount];
+            for (int i = 0; i != ColorScaleCount; i++) {
+                double v = i * 2.0 / ColorScaleCount - 1;
                 if (v < 0) {
                     int n1 = (int)(128 * -v) + 127;
                     int n2 = (int)(127 * (1 + v));
@@ -84,68 +40,6 @@ namespace Circuit.Elements {
             return a;
         }
 
-        public void drawHandles(Graphics g) {
-            if (mLastHandleGrabbed == -1) {
-                g.FillRectangle(PEN_HANDLE.Brush, X1 - 3, Y1 - 3, 7, 7);
-            } else if (mLastHandleGrabbed == 0) {
-                g.FillRectangle(PEN_HANDLE.Brush, X1 - 4, Y1 - 4, 9, 9);
-            }
-            if (mNumHandles == 2) {
-                if (mLastHandleGrabbed == -1) {
-                    g.FillRectangle(PEN_HANDLE.Brush, X2 - 3, Y2 - 3, 7, 7);
-                } else if (mLastHandleGrabbed == 1) {
-                    g.FillRectangle(PEN_HANDLE.Brush, X2 - 4, Y2 - 4, 9, 9);
-                }
-            }
-        }
-
-        public static void drawPost(Graphics g, Point p) {
-            g.FillPie(PEN_POST.Brush, p.X - PEN_POST.Width / 2, p.Y - PEN_POST.Width / 2, PEN_POST.Width, PEN_POST.Width, 0, 360);
-        }
-
-        public static void drawPost(Graphics g, float x, float y) {
-            g.FillPie(PEN_POST.Brush, x - PEN_POST.Width / 2, y - PEN_POST.Width / 2, PEN_POST.Width, PEN_POST.Width, 0, 360);
-        }
-
-        protected static void drawThickCircle(Graphics g, float centerX, float centerY, int diameter) {
-            var md = diameter * .98f;
-            g.DrawArc(PenThickLine, centerX - md / 2, centerY - md / 2, md, md, 0, 360);
-        }
-
-        protected static void drawLine(Graphics g, float ax, float ay, float bx, float by) {
-            g.DrawLine(PenLine, ax, ay, bx, by);
-        }
-
-        protected static void drawThickLine(Graphics g, float ax, float ay, float bx, float by) {
-            g.DrawLine(PenThickLine, ax, ay, bx, by);
-        }
-
-        protected static void drawThickLine(Graphics g, Point a, Point b) {
-            g.DrawLine(PenThickLine, a.X, a.Y, b.X, b.Y);
-        }
-
-        protected static void drawThickLine(Graphics g, Color c, Point a, Point b) {
-            mPenLine.Color = c;
-            g.DrawLine(mPenLine, a.X, a.Y, b.X, b.Y);
-        }
-
-        protected static void drawThickPolygon(Graphics g, Point[] p) {
-            g.DrawPolygon(PenThickLine, p);
-        }
-
-        protected static void drawPolygon(Graphics g, Point[] p) {
-            g.DrawPolygon(PenLine, p);
-        }
-
-        protected static void fillPolygon(Graphics g, Point[] p) {
-            g.FillPolygon(PenThickLine.Brush, p);
-        }
-
-        protected static void fillPolygon(Graphics g, Color c, Point[] p) {
-            mPenLine.Color = c;
-            g.FillPolygon(mPenLine.Brush, p);
-        }
-
         protected static List<Point> calcArrow(Point a, Point b, double al, double aw) {
             var poly = new List<Point>();
             poly.Add(new Point(b.X, b.Y));
@@ -160,37 +54,6 @@ namespace Circuit.Elements {
             return poly;
         }
 
-        protected static List<Point> createPolygon(params Point[] p) {
-            var ret = new List<Point>();
-            for (int i = 0; i != p.Length; i++) {
-                ret.Add(new Point(p[i].X, p[i].Y));
-            }
-            return ret;
-        }
-
-        protected void drawPosts(Graphics g) {
-            /* we normally do this in updateCircuit() now because the logic is more complicated.
-             * we only handle the case where we have to draw all the posts.  That happens when
-             * this element is selected or is being created */
-            if (Sim.dragElm == null && !needsHighlight()) {
-                return;
-            }
-            if (Sim.mouseMode == CirSim.MOUSE_MODE.DRAG_ROW || Sim.mouseMode == CirSim.MOUSE_MODE.DRAG_COLUMN) {
-                return;
-            }
-            for (int i = 0; i != PostCount; i++) {
-                var p = GetPost(i);
-                drawPost(g, p);
-            }
-        }
-
-        protected void draw2Leads(Graphics g) {
-            /* draw first lead */
-            drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
-            /* draw second lead */
-            drawThickLine(g, getVoltageColor(Volts[1]), mLead2, mPoint2);
-        }
-
         /// <summary>
         /// draw current dots from point a to b
         /// </summary>
@@ -198,7 +61,7 @@ namespace Circuit.Elements {
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <param name="pos"></param>
-        protected void drawDots(Graphics g, Point a, Point b, double pos) {
+        protected static void drawDots(CustomGraphics g, Point a, Point b, double pos) {
             if ((!Sim.simIsRunning()) || pos == 0 || !Sim.chkDotsCheckItem.Checked) {
                 return;
             }
@@ -214,20 +77,67 @@ namespace Circuit.Elements {
             for (di = pos; di < dn; di += ds) {
                 var x0 = (float)(a.X + di * dx / dn);
                 var y0 = (float)(a.Y + di * dy / dn);
-                g.FillRectangle(Brushes.Yellow, x0 - 2, y0 - 2, 4, 4);
+                g.FillRectangle(Color.Yellow, x0 - 2, y0 - 2, 4, 4);
             }
         }
 
-        protected void drawRightText(Graphics g, string s, int x, int y) {
-            g.DrawString(s, FONT_TEXT, BrushText, x, y, TEXT_RIGHT);
+        public void DrawHandles(CustomGraphics g) {
+            if (mLastHandleGrabbed == -1) {
+                g.FillRectangle(PenHandle.Color, X1 - 3, Y1 - 3, 7, 7);
+            } else if (mLastHandleGrabbed == 0) {
+                g.FillRectangle(PenHandle.Color, X1 - 4, Y1 - 4, 9, 9);
+            }
+            if (mNumHandles == 2) {
+                if (mLastHandleGrabbed == -1) {
+                    g.FillRectangle(PenHandle.Color, X2 - 3, Y2 - 3, 7, 7);
+                } else if (mLastHandleGrabbed == 1) {
+                    g.FillRectangle(PenHandle.Color, X2 - 4, Y2 - 4, 9, 9);
+                }
+            }
         }
 
-        protected void drawLeftText(Graphics g, string s, int x, int y) {
-            g.DrawString(s, FONT_TEXT, BrushText, x, y, TEXT_LEFT_BOTTOM);
+        protected Color getVoltageColor(double volts) {
+            if (NeedsHighlight) {
+                return SelectColor;
+            }
+            if (!Sim.chkVoltsCheckItem.Checked) {
+                return WhiteColor;
+            }
+            int c = (int)((volts + VoltageRange) * (ColorScaleCount - 1) / (VoltageRange * 2));
+            if (c < 0) {
+                c = 0;
+            }
+            if (c >= ColorScaleCount) {
+                c = ColorScaleCount - 1;
+            }
+            return mColorScale[c];
         }
 
-        protected void drawCenteredText(Graphics g, string s, int x, int y, bool cx) {
-            var fs = g.MeasureString(s, FONT_TEXT);
+        protected void drawPosts(CustomGraphics g) {
+            /* we normally do this in updateCircuit() now because the logic is more complicated.
+             * we only handle the case where we have to draw all the posts.  That happens when
+             * this element is selected or is being created */
+            if (Sim.dragElm == null && !NeedsHighlight) {
+                return;
+            }
+            if (Sim.mouseMode == CirSim.MOUSE_MODE.DRAG_ROW || Sim.mouseMode == CirSim.MOUSE_MODE.DRAG_COLUMN) {
+                return;
+            }
+            for (int i = 0; i != PostCount; i++) {
+                var p = GetPost(i);
+                g.DrawPost(p);
+            }
+        }
+
+        protected void draw2Leads(CustomGraphics g) {
+            /* draw first lead */
+            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
+            /* draw second lead */
+            g.DrawThickLine(getVoltageColor(Volts[1]), mLead2, mPoint2);
+        }
+
+        protected void drawCenteredText(CustomGraphics g, string s, int x, int y, bool cx) {
+            var fs = g.GetTextSize(s);
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
             if (cx) {
@@ -235,12 +145,11 @@ namespace Circuit.Elements {
             } else {
                 adjustBbox(x, y - h2, x + w, y + h2);
             }
-
-            g.DrawString(s, FONT_TEXT, BrushText, x, y, TEXT_CENTER);
+            g.DrawCenteredText(s, x, y);
         }
 
-        protected void drawCenteredLText(Graphics g, string s, int x, int y, bool cx) {
-            var fs = g.MeasureString(s, FONT_LTEXT);
+        protected void drawCenteredLText(CustomGraphics g, string s, int x, int y, bool cx) {
+            var fs = g.GetLTextSize(s);
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
             if (cx) {
@@ -248,7 +157,7 @@ namespace Circuit.Elements {
             } else {
                 adjustBbox(x, y - h2, x + w, y + h2);
             }
-            g.DrawString(s, FONT_LTEXT, BrushText, x, y, TEXT_CENTER);
+            g.DrawCenteredLText(s, x, y);
         }
 
         /// <summary>
@@ -256,35 +165,23 @@ namespace Circuit.Elements {
         /// </summary>
         /// <param name="g"></param>
         /// <param name="s"></param>
-        /// <param name="hs">hs = offset</param>
-        protected void drawValues(Graphics g, string s, double hs) {
+        protected void drawValues(CustomGraphics g, string s, int offsetX = 0, int offsetY = 0) {
             if (s == null) {
                 return;
             }
-            var textSize = g.MeasureString(s, FONT_UNITS);
-            int ya = (int)textSize.Height;
+            var textSize = g.GetTextSize(s);
             int xc, yc;
-            if (typeof(RailElm) == GetType() || typeof(SweepElm) == GetType()) {
+            if ((this is RailElm) || (this is SweepElm)) {
                 xc = X2;
                 yc = Y2;
             } else {
                 xc = (X2 + X1) / 2;
                 yc = (Y2 + Y1) / 2;
             }
-            int dpx = (int)(mDirX * hs);
-            int dpy = (int)(mDirY * hs);
-            if (dpx == 0) {
-                g.DrawString(s, FONT_UNITS, BrushText, xc, yc - Math.Abs(dpy) - ya, TEXT_RIGHT);
-            } else {
-                int xx = xc + Math.Abs(dpx) + 2;
-                if (typeof(VoltageElm) == GetType() || (X1 < X2 && Y1 > Y2)) {
-                    xx = xc - (int)(textSize.Width + Math.Abs(dpx) + 2);
-                }
-                g.DrawString(s, FONT_UNITS, BrushText, xx, yc + dpy, TEXT_RIGHT);
-            }
+            g.DrawRightText(s, xc + offsetX, yc - textSize.Height + offsetY);
         }
 
-        protected void drawCoilLead(Graphics g, Point p1, Point p2, double v1, double v2) {
+        protected void drawCoilLead(CustomGraphics g, Point p1, Point p2, double v1, double v2) {
             var coilLen = (float)distance(p1, p2);
             if (0 == coilLen) {
                 return;
@@ -295,16 +192,17 @@ namespace Circuit.Elements {
             float h = w * 1.2f;
             float wh = w * 0.5f;
             float hh = h * 0.5f;
-            float th = (float)(theta(mLead1, mLead2) * TO_DEG);
+            float th = (float)(theta(mLead1, mLead2) * ToDeg);
+            var pos = new Point();
             for (int loop = 0; loop != loopCt; loop++) {
-                interpPoint(mLead1, mLead2, ref ps1, (loop + 0.5) / loopCt, 0);
+                interpPoint(mLead1, mLead2, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
-                mPenLine.Color = getVoltageColor(v);
-                g.DrawArc(mPenLine, ps1.X - wh, ps1.Y - hh, w, h, th, -180);
+                g.ThickLineColor = getVoltageColor(v);
+                g.DrawThickArc(pos.X, pos.Y, w, th, -180);
             }
         }
 
-        protected void drawCoil(Graphics g, int hs, Point p1, Point p2, double v1, double v2) {
+        protected void drawCoil(CustomGraphics g, int hs, Point p1, Point p2, double v1, double v2) {
             var coilLen = (float)distance(p1, p2);
             if (0 == coilLen) {
                 return;
@@ -317,37 +215,16 @@ namespace Circuit.Elements {
             if (theta(p1, p2) < 0) {
                 hs = -hs;
             }
+            var pos = new Point();
             for (int loop = 0; loop != loopCt; loop++) {
-                interpPoint(p1, p2, ref ps1, (loop + 0.5) / loopCt, 0);
+                interpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
-                mPenLine.Color = getVoltageColor(v);
-                g.DrawArc(mPenLine, ps1.X - wh, ps1.Y - wh, w, w, hs, -180);
+                g.ThickLineColor = getVoltageColor(v);
+                g.DrawThickArc(pos.X, pos.Y, w, hs, -180);
             }
         }
 
-        protected void drawCoilTerm(Graphics g, int hs, Point p1, Point p2, double v1, double v2) {
-            var coilLen = (float)distance(p1, p2);
-            if (0 == coilLen) {
-                return;
-            }
-            /* draw more loops for a longer coil */
-            int loopCt = (int)Math.Ceiling(coilLen / 12);
-            float w = 0.92f * coilLen / loopCt;
-            float h = w * 1.2f;
-            float wh = w * 0.5f;
-            float hh = h * 0.5f;
-            var pc1 = new Point(X1, Y1);
-            var pc2 = new Point(X2, Y2);
-            float th = (float)(theta(pc1, pc2) * TO_DEG);
-            for (int loop = 0; loop != loopCt; loop++) {
-                interpPoint(pc1, pc2, ref ps1, (loop + 0.5) / loopCt, 0);
-                double v = v1 + (v2 - v1) * loop / loopCt;
-                mPenLine.Color = getVoltageColor(v);
-                g.DrawArc(mPenLine, ps1.X - wh, ps1.Y - hh, w, h, th, -180);
-            }
-        }
-
-        protected List<Point> getSchmittPolygon(float gsize, float ctr) {
+        protected Point[] getSchmittPolygon(float gsize, float ctr) {
             var pts = new Point[6];
             float hs = 3 * gsize;
             float h1 = 3 * gsize;
@@ -359,7 +236,7 @@ namespace Circuit.Elements {
             pts[3] = interpPoint(mLead1, mLead2, ctr + h2 / len, -hs);
             pts[4] = interpPoint(mLead1, mLead2, ctr - h1 / len, -hs);
             pts[5] = interpPoint(mLead1, mLead2, ctr - h1 / len, hs);
-            return createPolygon(pts);
+            return pts;
         }
 
         #region Math utils

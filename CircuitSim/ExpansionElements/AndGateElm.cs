@@ -21,17 +21,16 @@ namespace Circuit.Elements {
              * 11   = right,
              * 12-21= bottom curve,
              * 22   = bottom left */
-            var triPoints = new Point[23];
-            interpPoint(mLead1, mLead2, ref triPoints[0], ref triPoints[22], 0, hs2);
+            gatePolyAnsi = new Point[23];
+            interpPoint(mLead1, mLead2, ref gatePolyAnsi[0], ref gatePolyAnsi[22], 0, hs2);
             for (int i = 0; i != 10; i++) {
                 double a = i * .1;
                 double b = Math.Sqrt(1 - a * a);
                 interpPoint(mLead1, mLead2,
-                    ref triPoints[i + 1], ref triPoints[21 - i],
+                    ref gatePolyAnsi[i + 1], ref gatePolyAnsi[21 - i],
                     .5 + a / 2, b * hs2);
             }
-            triPoints[11] = mLead2;
-            gatePolyAnsi = createPolygon(triPoints).ToArray();
+            gatePolyAnsi[11] = mLead2;
 
             if (isInverting()) {
                 pcircle = interpPoint(mPoint1, mPoint2, .5 + (ww + 4) / mLen);

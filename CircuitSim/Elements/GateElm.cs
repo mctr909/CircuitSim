@@ -110,46 +110,45 @@ namespace Circuit.Elements {
             hs2 = gwidth * (inputCount / 2 + 1);
             setBbox(mPoint1, mPoint2, hs2);
             if (hasSchmittInputs()) {
-                schmittPoly = getSchmittPolygon(gsize, .47f).ToArray();
+                schmittPoly = getSchmittPolygon(gsize, .47f);
             }
         }
 
         protected void createEuroGatePolygon() {
-            var pts = new Point[4];
-            interpPoint(mLead1, mLead2, ref pts[0], ref pts[1], 0, hs2);
-            interpPoint(mLead1, mLead2, ref pts[3], ref pts[2], 1, hs2);
-            gatePolyEuro = createPolygon(pts).ToArray();
+            gatePolyEuro = new Point[4];
+            interpPoint(mLead1, mLead2, ref gatePolyEuro[0], ref gatePolyEuro[1], 0, hs2);
+            interpPoint(mLead1, mLead2, ref gatePolyEuro[3], ref gatePolyEuro[2], 1, hs2);
         }
 
         protected virtual string getGateText() { return null; }
 
         public static bool useAnsiGates() { return Sim.chkAnsiResistorCheckItem.Checked; }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             int i;
             for (i = 0; i != inputCount; i++) {
-                drawThickLine(g, getVoltageColor(Volts[i]), inPosts[i], inGates[i]);
+                g.DrawThickLine(getVoltageColor(Volts[i]), inPosts[i], inGates[i]);
             }
-            drawThickLine(g, getVoltageColor(Volts[inputCount]), mLead2, mPoint2);
-            PenThickLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
+            g.DrawThickLine(getVoltageColor(Volts[inputCount]), mLead2, mPoint2);
+            g.ThickLineColor = NeedsHighlight ? SelectColor : LightGrayColor;
             if (useAnsiGates()) {
-                drawThickPolygon(g, gatePolyAnsi);
+                g.DrawThickPolygon(gatePolyAnsi);
             } else {
-                drawThickPolygon(g, gatePolyEuro);
+                g.DrawThickPolygon(gatePolyEuro);
                 var center = interpPoint(mPoint1, mPoint2, .5);
                 drawCenteredLText(g, getGateText(), center.X, center.Y - 6 * gsize, true);
             }
             if (hasSchmittInputs()) {
-                PenLine.Color = WhiteColor;
-                drawPolygon(g, schmittPoly);
+                g.LineColor = WhiteColor;
+                g.DrawPolygon(schmittPoly);
             }
             if (linePoints != null && useAnsiGates()) {
                 for (i = 0; i != linePoints.Length - 1; i++) {
-                    drawThickLine(g, linePoints[i], linePoints[i + 1]);
+                    g.DrawThickLine(linePoints[i], linePoints[i + 1]);
                 }
             }
             if (isInverting()) {
-                drawThickCircle(g, pcircle.X, pcircle.Y, 9);
+                g.DrawThickCircle(pcircle.X, pcircle.Y, 9);
             }
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(g, mLead2, mPoint2, mCurCount);

@@ -2,7 +2,7 @@
 
 namespace Circuit.Elements {
     class ResistorElm : CircuitElm {
-        public double Resistance { get; private set; }
+        public double Resistance { get; set; }
 
         Point ps1;
         Point ps2;
@@ -36,7 +36,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             var len = (float)distance(mLead1, mLead2);
             if (0 == len) {
                 return;
@@ -65,29 +65,29 @@ namespace Circuit.Elements {
                     interpPoint(mLead1, mLead2, ref ps1, i * segf, oy);
                     interpPoint(mLead1, mLead2, ref ps2, (i + 1) * segf, ny);
                     double v = v1 + (v2 - v1) * i / segments;
-                    drawThickLine(g, getVoltageColor(v), ps1, ps2);
+                    g.DrawThickLine(getVoltageColor(v), ps1, ps2);
                     oy = ny;
                 }
             } else {
                 /* draw rectangle */
-                PenThickLine.Color = getVoltageColor(v1);
                 interpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, hs);
-                drawThickLine(g, ps1, ps2);
+                g.ThickLineColor = getVoltageColor(v1);
+                g.DrawThickLine(ps1, ps2);
                 for (int i = 0; i != segments; i++) {
                     double v = v1 + (v2 - v1) * i / segments;
                     interpPoint(mLead1, mLead2, ref ps1, ref ps2, i * segf, hs);
                     interpPoint(mLead1, mLead2, ref ps3, ref ps4, (i + 1) * segf, hs);
-                    PenThickLine.Color = getVoltageColor(v);
-                    drawThickLine(g, ps1, ps3);
-                    drawThickLine(g, ps2, ps4);
+                    g.ThickLineColor = getVoltageColor(v);
+                    g.DrawThickLine(ps1, ps3);
+                    g.DrawThickLine(ps2, ps4);
                 }
                 interpPoint(mLead1, mLead2, ref ps1, ref ps2, 1, hs);
-                drawThickLine(g, ps1, ps2);
+                g.DrawThickLine(ps1, ps2);
             }
 
             if (Sim.chkShowValuesCheckItem.Checked) {
                 var s = getShortUnitText(Resistance, "");
-                drawRightText(g, s, textPos.X, textPos.Y);
+                g.DrawRightText(s, textPos.X, textPos.Y);
             }
 
             doDots(g);

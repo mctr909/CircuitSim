@@ -92,10 +92,10 @@ namespace Circuit.Elements {
             var pa = newPointArray(2);
             interpPoint(mLead1, mLead2, ref pa[0], ref pa[1], 0, hs);
             interpPoint(mLead1, mLead2, ref cathode[0], ref cathode[1], 1, hs);
-            poly = createPolygon(pa[0], pa[1], mLead2).ToArray();
+            poly = new Point[] { pa[0], pa[1], mLead2 };
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             drawDiode(g);
             doDots(g);
             drawPosts(g);
@@ -109,7 +109,7 @@ namespace Circuit.Elements {
             }
         }
 
-        void drawDiode(Graphics g) {
+        void drawDiode(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, hs);
 
             double v1 = Volts[0];
@@ -118,9 +118,9 @@ namespace Circuit.Elements {
             draw2Leads(g);
 
             /* draw arrow thingy */
-            fillPolygon(g, getVoltageColor(v1), poly);
+            g.FillPolygon(getVoltageColor(v1), poly);
             /* draw thing arrow is pointing to */
-            drawThickLine(g, getVoltageColor(v2), cathode[0], cathode[1]);
+            g.DrawThickLine(getVoltageColor(v2), cathode[0], cathode[1]);
         }
 
         public override void Stamp() {
@@ -160,7 +160,7 @@ namespace Circuit.Elements {
         public override EditInfo GetEditInfo(int n) {
             if (!customModelUI && n == 0) {
                 var ei = new EditInfo("Model", 0, -1, -1);
-                models = DiodeModel.getModelList(typeof(ZenerElm) == GetType());
+                models = DiodeModel.getModelList(this is ZenerElm);
                 ei.Choice = new ComboBox();
                 for (int i = 0; i != models.Count; i++) {
                     var dm = models[i];
@@ -223,7 +223,8 @@ namespace Circuit.Elements {
                     MessageBox.Show("This model cannot be modified.\r\nChange the model name to allow customization.");
                     return;
                 }
-                CirSim.diodeModelEditDialog = new EditDialog(model, Sim, 0, 0);
+                CirSim.diodeModelEditDialog = new EditDialog(model, Sim);
+                CirSim.diodeModelEditDialog.Show();
                 return;
             }
             if (n == 2) {

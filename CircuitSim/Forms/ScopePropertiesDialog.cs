@@ -265,9 +265,15 @@ namespace Circuit {
 
             Width = pnl.Right + 18;
             Height = pnl.Bottom + 36;
+        }
+
+        public void Show(int x, int y) {
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
-            StartPosition = FormStartPosition.CenterParent;
+            Visible = false;
             Show();
+            Left = x;
+            Top = y;
+            Visible = true;
         }
 
         void setScopeSpeedLabel() {

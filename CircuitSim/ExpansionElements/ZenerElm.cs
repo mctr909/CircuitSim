@@ -38,10 +38,10 @@ namespace Circuit.Elements {
             interpPoint(mLead1, mLead2, ref cathode[0], ref cathode[1], 1, hs);
             interpPoint(cathode[0], cathode[1], ref wing[0], -0.2, -hs);
             interpPoint(cathode[1], cathode[0], ref wing[1], -0.2, -hs);
-            poly = createPolygon(pa[0], pa[1], mLead2).ToArray();
+            poly = new Point[] { pa[0], pa[1], mLead2 };
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, hs);
 
             double v1 = Volts[0];
@@ -50,13 +50,13 @@ namespace Circuit.Elements {
             draw2Leads(g);
 
             /* draw arrow thingy */
-            fillPolygon(g, getVoltageColor(v1), poly);
+            g.FillPolygon(getVoltageColor(v1), poly);
             /* draw thing arrow is pointing to */
-            PenThickLine.Color = getVoltageColor(v2);
-            drawThickLine(g, cathode[0], cathode[1]);
+            g.ThickLineColor = getVoltageColor(v2);
+            g.DrawThickLine(cathode[0], cathode[1]);
             /* draw wings on cathode */
-            drawThickLine(g, wing[0], cathode[0]);
-            drawThickLine(g, wing[1], cathode[1]);
+            g.DrawThickLine(wing[0], cathode[0]);
+            g.DrawThickLine(wing[1], cathode[1]);
 
             doDots(g);
             drawPosts(g);

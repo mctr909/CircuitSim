@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -25,7 +26,6 @@ namespace Circuit {
             elm = ce;
 
             vp = new Panel();
-            vp.AutoScroll = true;
 
             einfos = new EditInfo[10];
             hp = new Panel();
@@ -56,10 +56,18 @@ namespace Circuit {
             vp.Top = 4;
             Controls.Add(vp);
             /* */
+            buildDialog();
             Width = vp.Width + 24;
             Height = vp.Height + 64;
-            buildDialog();
-            StartPosition = FormStartPosition.CenterParent;
+            Visible = false;
+        }
+
+        public void Show(int x, int y) {
+            FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            Show();
+            Left = x - Width / 2;
+            Top = y - Height / 2;
+            Visible = true;
         }
 
         void buildDialog() {
@@ -90,17 +98,17 @@ namespace Circuit {
                 ctrlInsert(vp, ei.CheckBox, idx++);
                 ei.CheckBox.CheckedChanged += new EventHandler((sender, e) => { itemStateChanged(sender); });
                 if (adj != null) {
-                    ctrlInsert(vp, new Label() { Text = "Min Value" }, idx++);
+                    ctrlInsert(vp, new Label() { TextAlign = ContentAlignment.BottomLeft, Text = "Min Value" }, idx++);
                     ei.MinBox = new TextBox() {
                         Text = EditDialog.unitString(ei, adj.minValue)
                     };
                     ctrlInsert(vp, ei.MinBox, idx++);
-                    ctrlInsert(vp, new Label() { Text = "Max Value" }, idx++);
+                    ctrlInsert(vp, new Label() { TextAlign = ContentAlignment.BottomLeft, Text = "Max Value" }, idx++);
                     ei.MaxBox = new TextBox() {
                         Text = EditDialog.unitString(ei, adj.maxValue)
                     };
                     ctrlInsert(vp, ei.MaxBox, idx++);
-                    ctrlInsert(vp, new Label() { Text = "Label" }, idx++);
+                    ctrlInsert(vp, new Label() { TextAlign = ContentAlignment.BottomLeft, Text = "Label" }, idx++);
                     ei.LabelBox = new TextBox() {
                         Text = adj.sliderText
                     };
@@ -164,6 +172,8 @@ namespace Circuit {
                 apply();
                 clearDialog();
                 buildDialog();
+                Width = vp.Width + 24;
+                Height = vp.Height + 64;
             }
         }
 
@@ -180,12 +190,18 @@ namespace Circuit {
 
         void ctrlInsert(Panel p, Control ctrl) {
             var ofsY = 4;
+            var width = 0;
             for (int i = 0; i < p.Controls.Count; i++) {
-                ofsY += p.Controls[i].Height + 4;
+                ofsY += p.Controls[i].Height;
+                if (width < p.Controls[i].Width) {
+                    width = p.Controls[i].Width;
+                }
             }
             ctrl.Left = 4;
             ctrl.Top = ofsY;
             p.Controls.Add(ctrl);
+            p.Width = width + 4;
+            p.Height = ofsY + 4;
         }
 
         void ctrlInsert(Panel p, Control ctrl, int idx) {
@@ -199,12 +215,18 @@ namespace Circuit {
             }
             p.Controls.Clear();
             var ofsY = 4;
-            for(int i=0; i<tmp.Count; i++) {
+            var width = 0;
+            for (int i=0; i<tmp.Count; i++) {
                 tmp[i].Left = 4;
                 tmp[i].Top = ofsY;
                 p.Controls.Add(tmp[i]);
-                ofsY += tmp[i].Height + 4;
+                ofsY += tmp[i].Height;
+                if (width < tmp[i].Width) {
+                    width = tmp[i].Width;
+                }
             }
+            p.Width = width + 4;
+            p.Height = ofsY + 4;
             tmp.Clear();
         }
     }

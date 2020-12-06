@@ -6,7 +6,7 @@ namespace Circuit.Elements {
         Inductor ind;
         Point textPos;
 
-        public double Inductance { get; private set; }
+        public double Inductance { get; set; }
 
         public InductorElm(int xx, int yy) : base(xx, yy) {
             ind = new Inductor(Sim, Cir);
@@ -46,7 +46,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             double v1 = Volts[0];
             double v2 = Volts[1];
             int hs = 8;
@@ -57,7 +57,7 @@ namespace Circuit.Elements {
 
             if (Sim.chkShowValuesCheckItem.Checked) {
                 var s = getShortUnitText(Inductance, "");
-                drawRightText(g, s, textPos.X, textPos.Y);
+                g.DrawRightText(s, textPos.X, textPos.Y);
             }
             doDots(g);
             drawPosts(g);

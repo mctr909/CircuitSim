@@ -49,19 +49,19 @@ namespace Circuit.Elements {
             ledCenter = interpPoint(mPoint1, mPoint2, .5);
         }
 
-        public override void Draw(Graphics g) {
-            if (needsHighlight() || this == Sim.dragElm) {
+        public override void Draw(CustomGraphics g) {
+            if (NeedsHighlight || this == Sim.dragElm) {
                 base.Draw(g);
                 return;
             }
             
-            drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, ledLead1);
-            drawThickLine(g, getVoltageColor(Volts[1]), ledLead2, mPoint2);
+            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, ledLead1);
+            g.DrawThickLine(getVoltageColor(Volts[1]), ledLead2, mPoint2);
 
-            PenThickLine.Color = LightGrayColor;
+            g.ThickLineColor = LightGrayColor;
 
             int cr = 12;
-            drawThickCircle(g, ledCenter.X, ledCenter.Y, cr);
+            g.DrawThickCircle(ledCenter.X, ledCenter.Y, cr);
             cr -= 4;
             double w = mCurrent / maxBrightnessCurrent;
             if (w > 0) {
@@ -74,8 +74,8 @@ namespace Circuit.Elements {
                 w = 0;
             }
 
-            PenThickLine.Color = Color.FromArgb((int)(colorR * w), (int)(colorG * w), (int)(colorB * w));
-            g.FillPie(PenThickLine.Brush, ledCenter.X - cr, ledCenter.Y - cr, cr * 2, cr * 2, 0, 360);
+            g.LineColor = Color.FromArgb((int)(colorR * w), (int)(colorG * w), (int)(colorB * w));
+            g.FillCircle(ledCenter.X, ledCenter.Y, cr);
             setBbox(mPoint1, mPoint2, cr);
             updateDotCount();
             drawDots(g, mPoint1, ledLead1, mCurCount);

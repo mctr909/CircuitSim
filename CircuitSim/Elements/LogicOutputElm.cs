@@ -42,7 +42,7 @@ namespace Circuit.Elements {
             mLead1 = interpPoint(mPoint1, mPoint2, 1 - 12 / mLen);
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             string s = (Volts[0] < threshold) ? "L" : "H";
             if (isTernary()) {
                 if (Volts[0] > 3.75) {
@@ -58,7 +58,7 @@ namespace Circuit.Elements {
             value = s;
             setBbox(mPoint1, mLead1, 0);
             drawCenteredLText(g, s, X2, Y2, true);
-            drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
+            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
             drawPosts(g);
         }
 

@@ -21,14 +21,14 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.GROUND; }
 
-        public override void Draw(Graphics g) {
-            PenThickLine.Color = getVoltageColor(0);
-            drawThickLine(g, mPoint1, mPoint2);
+        public override void Draw(CustomGraphics g) {
+            g.ThickLineColor = getVoltageColor(0);
+            g.DrawThickLine(mPoint1, mPoint2);
             for (int i = 0; i != 3; i++) {
                 int a = 10 - i * 4;
                 int b = i * 5; /* -10; */
                 interpPoint(mPoint1, mPoint2, ref ps1, ref ps2, 1 + b / mLen, a);
-                drawThickLine(g, ps1, ps2);
+                g.DrawThickLine(ps1, ps2);
             }
             doDots(g);
             interpPoint(mPoint1, mPoint2, ref ps2, 1 + 11.0 / mLen);

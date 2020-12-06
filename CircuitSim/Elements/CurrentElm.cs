@@ -48,20 +48,21 @@ namespace Circuit.Elements {
             arrow = calcArrow(center, p2, 8, 6).ToArray();
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             int cr = 32;
             draw2Leads(g);
 
-            PenThickLine.Color = getVoltageColor((Volts[0] + Volts[1]) / 2);
-            drawThickCircle(g, center.X, center.Y, cr);
-            drawThickLine(g, ashaft1, ashaft2);
-            fillPolygon(g, PenThickLine.Color, arrow);
+            var c = getVoltageColor((Volts[0] + Volts[1]) / 2);
+            g.ThickLineColor = c;
+            g.DrawThickCircle(center.X, center.Y, cr);
+            g.DrawThickLine(ashaft1, ashaft2);
+            g.FillPolygon(c, arrow);
 
             setBbox(mPoint1, mPoint2, cr);
             doDots(g);
             if (Sim.chkShowValuesCheckItem.Checked) {
                 string s = getShortUnitText(currentValue, "A");
-                drawRightText(g, s, textPos.X, textPos.Y);
+                g.DrawRightText(s, textPos.X, textPos.Y);
             }
             drawPosts(g);
         }

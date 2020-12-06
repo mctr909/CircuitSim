@@ -153,11 +153,12 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             base.Draw(g); /* BC required for highlighting */
-            PenThickLine.Color = getVoltageColor(Volts[0]);
-            drawThickLine(g, mPoint1, mPoint2);
-            fillPolygon(g, arrowPoly);
+            var c = getVoltageColor(Volts[0]);
+            g.ThickLineColor = c;
+            g.DrawThickLine(mPoint1, mPoint2);
+            g.FillPolygon(c, arrowPoly);
             doDots(g);
             setBbox(mPoint1, mPoint2, 3);
             string s = "A";
@@ -169,7 +170,7 @@ namespace Circuit.Elements {
                 s = getUnitTextWithScale(rmsI, "A(rms)", scale);
                 break;
             }
-            drawRightText(g, s, textPos.X, textPos.Y);
+            g.DrawRightText(s, textPos.X, textPos.Y);
             drawPosts(g);
         }
 

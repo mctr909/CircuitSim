@@ -28,9 +28,9 @@ namespace Circuit.Elements {
         public SwitchElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
             string str = st.nextToken();
             if (str.CompareTo("true") == 0) {
-                position = (typeof(LogicInputElm) == GetType()) ? 0 : 1;
+                position = (this is LogicInputElm) ? 0 : 1;
             } else if (str.CompareTo("false") == 0) {
-                position = (typeof(LogicInputElm) == GetType()) ? 1 : 0;
+                position = (this is LogicInputElm) ? 1 : 0;
             } else {
                 position = int.Parse(str);
             }
@@ -55,7 +55,7 @@ namespace Circuit.Elements {
             calcLeads(32);
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             int hs1 = (position == 1) ? 0 : 2;
             int hs2 = (position == 1) ? openhs : 2;
             setBbox(mPoint1, mPoint2, openhs);
@@ -65,8 +65,8 @@ namespace Circuit.Elements {
             }
             interpPoint(mLead1, mLead2, ref ps1, 0, hs1);
             interpPoint(mLead1, mLead2, ref ps2, 1, hs2);
-            PenThickLine.Color = needsHighlight() ? SelectColor : WhiteColor;
-            drawThickLine(g, ps1, ps2);
+            g.ThickLineColor = NeedsHighlight ? SelectColor : WhiteColor;
+            g.DrawThickLine(ps1, ps2);
             drawPosts(g);
         }
 

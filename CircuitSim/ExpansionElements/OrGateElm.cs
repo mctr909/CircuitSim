@@ -19,7 +19,7 @@ namespace Circuit.Elements {
              * 16    = right,
              * 17-32 = bottom curve,
              * 33-39 = left curve */
-            var triPoints = new Point[40];
+            gatePolyAnsi = new Point[40];
             if (this is XorGateElm) {
                 linePoints = new Point[7];
             }
@@ -27,20 +27,19 @@ namespace Circuit.Elements {
                 double a = i / 16.0;
                 double b = 1 - a * a;
                 interpPoint(mLead1, mLead2,
-                    ref triPoints[i], ref triPoints[32 - i],
+                    ref gatePolyAnsi[i], ref gatePolyAnsi[32 - i],
                     .5 + a / 2, b * hs2);
             }
             double ww2 = (ww == 0) ? mLen * 2 : ww * 2;
             for (int i = 0; i != 7; i++) {
                 double a = (i - 3) / 3.0;
                 double b = 6 * (1 - a * a) - 3;
-                interpPoint(mLead1, mLead2, ref triPoints[33 + i], b / ww2, a * hs2);
+                interpPoint(mLead1, mLead2, ref gatePolyAnsi[33 + i], b / ww2, a * hs2);
                 if (this is XorGateElm) {
                     linePoints[i] = interpPoint(mLead1, mLead2, (b - 7) / ww2, a * hs2);
                 }
             }
-            triPoints[16] = mLead2;
-            gatePolyAnsi = createPolygon(triPoints).ToArray();
+            gatePolyAnsi[16] = mLead2;
 
             if (isInverting()) {
                 pcircle = interpPoint(mPoint1, mPoint2, .5 + (ww + 4) / mLen);

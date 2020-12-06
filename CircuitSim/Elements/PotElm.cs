@@ -71,23 +71,26 @@ namespace Circuit.Elements {
         }
 
         void createSlider() {
-            Sim.addWidgetToVerticalPanel(label = new Label() { Text = sliderText });
+            Sim.addWidgetToVerticalPanel(label = new Label() {
+                TextAlign = ContentAlignment.BottomLeft,
+                Text = sliderText
+            });
             int value = (int)(position * 100);
             Sim.addWidgetToVerticalPanel(slider = new TrackBar() {
                 Minimum = 0,
-                Maximum = 101,
+                Maximum = 100,
                 SmallChange = 1,
                 LargeChange = 5,
                 TickFrequency = 10,
                 Value = value,
-                Width = 100
+                Width = 175
             });
-            slider.MouseWheel += new MouseEventHandler((s, e) => { onMouseWheel(s, e); });
+            slider.ValueChanged += new EventHandler((s, e) => { execute(); });
         }
 
-        public void execute() {
-            Sim.analyzeFlag = true;
+        void execute() {
             SetPoints();
+            Sim.needAnalyze();
         }
 
         public override void Delete() {
@@ -129,7 +132,7 @@ namespace Circuit.Elements {
             interpPoint(corner2, arrowPoint, ref arrow1, ref arrow2, (clen - 8) / clen, 4);
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             const int segments = 12;
             const int hs = 5;
             int i;
@@ -158,14 +161,14 @@ namespace Circuit.Elements {
                     }
                     interpPoint(mLead1, mLead2, ref ps1, i * segf, oy);
                     interpPoint(mLead1, mLead2, ref ps2, (i + 1) * segf, ny);
-                    drawThickLine(g, getVoltageColor(v), ps1, ps2);
+                    g.DrawThickLine(getVoltageColor(v), ps1, ps2);
                     oy = ny;
                 }
             } else {
                 /* draw rectangle */
-                PenThickLine.Color = getVoltageColor(vl);
                 interpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, hs);
-                drawThickLine(g, ps1, ps2);
+                g.ThickLineColor = getVoltageColor(vl);
+                g.DrawThickLine(ps1, ps2);
                 for (i = 0; i != segments; i++) {
                     double v = vl + (vs - vl) * i / divide;
                     if (i >= divide) {
@@ -173,19 +176,19 @@ namespace Circuit.Elements {
                     }
                     interpPoint(mLead1, mLead2, ref ps1, ref ps2, i * segf, hs);
                     interpPoint(mLead1, mLead2, ref ps3, ref ps4, (i + 1) * segf, hs);
-                    PenThickLine.Color = getVoltageColor(v);
-                    drawThickLine(g, ps1, ps3);
-                    drawThickLine(g, ps2, ps4);
+                    g.ThickLineColor = getVoltageColor(v);
+                    g.DrawThickLine(ps1, ps3);
+                    g.DrawThickLine(ps2, ps4);
                 }
                 interpPoint(mLead1, mLead2, ref ps1, ref ps2, 1, hs);
-                drawThickLine(g, ps1, ps2);
+                g.DrawThickLine(ps1, ps2);
             }
 
-            PenThickLine.Color = getVoltageColor(vs);
-            drawThickLine(g, post3, corner2);
-            drawThickLine(g, corner2, arrowPoint);
-            drawThickLine(g, arrow1, arrowPoint);
-            drawThickLine(g, arrow2, arrowPoint);
+            g.ThickLineColor = getVoltageColor(vs);
+            g.DrawThickLine(post3, corner2);
+            g.DrawThickLine(corner2, arrowPoint);
+            g.DrawThickLine(arrow1, arrowPoint);
+            g.DrawThickLine(arrow2, arrowPoint);
             curcount1 = updateDotCount(current1, curcount1);
             curcount2 = updateDotCount(current2, curcount2);
             curcount3 = updateDotCount(current3, curcount3);
@@ -208,32 +211,28 @@ namespace Circuit.Elements {
                 /* draw units */
                 string s1 = getShortUnitText(rev ? resistance2 : resistance1, "");
                 string s2 = getShortUnitText(rev ? resistance1 : resistance2, "");
-                int txtHeightH = FONT_TEXT.Height / 2;
-                int txtWidth = (int)g.MeasureString(s1, FONT_TEXT).Width;
+                int txtHeightH = CustomGraphics.FontText.Height / 2;
+                int txtWidth1 = (int)g.GetTextSize(s1).Width;
+                int txtWidth2 = (int)g.GetTextSize(s2).Width;
 
                 /* vertical? */
                 if (mLead1.X == mLead2.X) {
-                    drawLeftText(g, s1, !reverseY ? arrowPoint.X : arrowPoint.X - txtWidth, Math.Max(arrow1.Y, arrow2.Y) - txtHeightH);
+                    g.DrawLeftTopText(s1, !reverseY ? arrowPoint.X : arrowPoint.X - txtWidth1, Math.Min(arrow1.Y, arrow2.Y) + 3 * txtHeightH);
+                    g.DrawLeftTopText(s2, !reverseY ? arrowPoint.X : arrowPoint.X - txtWidth2, Math.Max(arrow1.Y, arrow2.Y) - txtHeightH);
                 } else {
-                    drawLeftText(g, s1, Math.Min(arrow1.X, arrow2.X) - txtWidth, !reverseX ? (arrowPoint.Y + txtHeightH + 4) : arrowPoint.Y);
-                }
-
-                txtWidth = (int)g.MeasureString(s2, FONT_TEXT).Width;
-                if (mLead1.X == mLead2.X) {
-                    drawLeftText(g, s2, !reverseY ? arrowPoint.X : arrowPoint.X - txtWidth, Math.Min(arrow1.Y, arrow2.Y) + 3 * txtHeightH);
-                } else {
-                    drawLeftText(g, s2, Math.Max(arrow1.X, arrow2.X), !reverseX ? (arrowPoint.Y + txtHeightH + 4) : arrowPoint.Y);
+                    g.DrawLeftTopText(s1, Math.Min(arrow1.X, arrow2.X) - txtWidth1, !reverseX ? (arrowPoint.Y + txtHeightH + 4) : arrowPoint.Y);
+                    g.DrawLeftTopText(s2, Math.Max(arrow1.X, arrow2.X), !reverseX ? (arrowPoint.Y + txtHeightH + 4) : arrowPoint.Y);
                 }
             }
         }
 
         /* draw component values (number of resistor ohms, etc).  hs = offset */
-        void drawValues(Graphics g, string s, Point pt, int hs) {
+        void drawValues(CustomGraphics g, string s, Point pt, int hs) {
             if (s == null) {
                 return;
             }
-            int w = (int)g.MeasureString(s, FONT_TEXT).Width;
-            int ya = FONT_TEXT.Height / 2;
+            int w = (int)g.GetLTextSize(s).Width;
+            int ya = CustomGraphics.FontText.Height / 2;
             int xc = pt.X;
             int yc = pt.Y;
             int dpx = hs;
@@ -244,10 +243,10 @@ namespace Circuit.Elements {
             }
             Console.WriteLine("dv " + dpx + " " + w);
             if (dpx == 0) {
-                g.DrawString(s, FONT_TEXT, BrushText, xc - w / 2, yc - Math.Abs(dpy) - 2);
+                g.DrawLeftText(s, xc - w / 2, yc - Math.Abs(dpy) - 2);
             } else {
                 int xx = xc + Math.Abs(dpx) + 2;
-                g.DrawString(s, FONT_TEXT, BrushText, xx, yc + dpy + ya);
+                g.DrawLeftText(s, xx, yc + dpy + ya);
             }
         }
 
@@ -328,7 +327,5 @@ namespace Circuit.Elements {
         public override void SetMouseElm(bool v) {
             base.SetMouseElm(v);
         }
-
-        public virtual void onMouseWheel(object s, MouseEventArgs e) { }
     }
 }

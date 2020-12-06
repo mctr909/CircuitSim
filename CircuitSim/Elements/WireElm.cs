@@ -7,6 +7,8 @@ namespace Circuit.Elements {
         const int FLAG_SHOWCURRENT = 1;
         const int FLAG_SHOWVOLTAGE = 2;
 
+        Point textPos;
+
         public bool hasWireInfo; /* used in CirSim to calculate wire currents */
 
         public WireElm(int xx, int yy) : base(xx, yy) { }
@@ -25,8 +27,19 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.WIRE; }
 
-        public override void Draw(Graphics g) {
-            drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mPoint2);
+        public override void SetPoints() {
+            base.SetPoints();
+            int sign;
+            if (mPoint1.Y == mPoint2.Y) {
+                sign = mDsign;
+            } else {
+                sign = -mDsign;
+            }
+            textPos = interpPoint(mPoint1, mPoint2, 0.5 + 8 * sign / mLen, 15 * sign);
+        }
+
+        public override void Draw(CustomGraphics g) {
+            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mPoint2);
             doDots(g);
             setBbox(mPoint1, mPoint2, 3);
             string s = "";
@@ -34,9 +47,9 @@ namespace Circuit.Elements {
                 s = getShortUnitText(Math.Abs(mCurrent), "A");
             }
             if (mustShowVoltage()) {
-                s = (s.Length > 0 ? s + " " : "") + getShortUnitText(Volts[0], "V");
+                s = (s.Length > 0 ? s + "\r\n" : "") + getShortUnitText(Volts[0], "V");
             }
-            drawValues(g, s, 4);
+            g.DrawRightText(s, textPos.X, textPos.Y);
             drawPosts(g);
         }
 

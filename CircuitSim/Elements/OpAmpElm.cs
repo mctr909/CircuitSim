@@ -89,15 +89,15 @@ namespace Circuit.Elements {
             gain = ((mFlags & FLAG_LOWGAIN) != 0) ? 1000 : 100000;
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, opheight * 2);
 
-            drawThickLine(g, getVoltageColor(Volts[V_N]), in1p[0], in1p[1]);
-            drawThickLine(g, getVoltageColor(Volts[V_P]), in2p[0], in2p[1]);
-            drawThickLine(g, getVoltageColor(Volts[V_O]), mLead2, mPoint2);
+            g.DrawThickLine(getVoltageColor(Volts[V_N]), in1p[0], in1p[1]);
+            g.DrawThickLine(getVoltageColor(Volts[V_P]), in2p[0], in2p[1]);
+            g.DrawThickLine(getVoltageColor(Volts[V_O]), mLead2, mPoint2);
 
-            PenThickLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
-            drawThickPolygon(g, triangle);
+            g.ThickLineColor = NeedsHighlight ? SelectColor : LightGrayColor;
+            g.DrawThickPolygon(triangle);
 
             drawCenteredLText(g, "-", textp[0].X, textp[0].Y - 2, true);
             drawCenteredLText(g, "+", textp[1].X, textp[1].Y, true);
@@ -135,7 +135,7 @@ namespace Circuit.Elements {
             interpPoint(mLead1, mLead2, ref textp[0], ref textp[1], 0.2, hs);
             var tris = new Point[2];
             interpPoint(mLead1, mLead2, ref tris[0], ref tris[1], 0, hs * 2);
-            triangle = createPolygon(tris[0], tris[1], mLead2).ToArray();
+            triangle = new Point[] { tris[0], tris[1], mLead2 };
         }
 
         public override Point GetPost(int n) {

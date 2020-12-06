@@ -49,14 +49,14 @@ namespace Circuit.Elements {
             mLead1 = interpPoint(mPoint1, mPoint2, 1 - 12 / mLen);
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             string s = position == 0 ? "L" : "H";
             if (isNumeric()) {
                 s = "" + position;
             }
             setBbox(mPoint1, mLead1, 0);
             drawCenteredLText(g, s, X2, Y2, true);
-            drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
+            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
             updateDotCount();
             drawDots(g, mPoint1, mLead1, mCurCount);
             drawPosts(g);

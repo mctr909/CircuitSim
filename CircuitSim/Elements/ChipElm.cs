@@ -183,49 +183,49 @@ namespace Circuit.Elements {
 
         public virtual void setupPins() { }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             drawChip(g);
         }
 
-        public void drawChip(Graphics g) {
+        public void drawChip(CustomGraphics g) {
             int i;
             for (i = 0; i != PostCount; i++) {
                 var p = pins[i];
                 getVoltageColor(Volts[i]);
                 var a = p.post;
                 var b = p.stub;
-                drawThickLine(g, a, b);
+                g.DrawThickLine(a, b);
                 p.curcount = updateDotCount(p.current, p.curcount);
                 drawDots(g, b, a, p.curcount);
                 if (p.bubble) {
-                    PenThickLine.Color = Sim.chkPrintableCheckItem.Checked ? Color.White : Color.Black;
-                    drawThickCircle(g, p.bubbleX, p.bubbleY, 1);
-                    PenThickLine.Color = LightGrayColor;
-                    drawThickCircle(g, p.bubbleX, p.bubbleY, 3);
+                    g.ThickLineColor = Sim.chkPrintableCheckItem.Checked ? Color.White : Color.Black;
+                    g.DrawThickCircle(p.bubbleX, p.bubbleY, 1);
+                    g.ThickLineColor = LightGrayColor;
+                    g.DrawThickCircle(p.bubbleX, p.bubbleY, 3);
                 }
-                PenThickLine.Color  = p.selected ? SelectColor : LightGrayColor;
+                g.ThickLineColor = p.selected ? SelectColor : LightGrayColor;
                 int fsz = 12 * csize;
-                var font = FONT_TEXT;
+                var font = CustomGraphics.FontText;
                 while (true) {
-                    int sw = (int)g.MeasureString(p.text, font).Width;
+                    int sw = (int)g.GetTextSize(p.text, font).Width;
                     /* scale font down if it's too big */
                     if (sw > 12 * csize) {
                         fsz--;
-                        font = new Font(FONT_TEXT.Name, fsz);
+                        font = new Font(CustomGraphics.FontText.Name, fsz);
                         continue;
                     }
-                    g.DrawString(p.text, font, BrushText, p.textloc.X - sw / 2, p.textloc.Y);
+                    g.DrawCenteredText(p.text, p.textloc.X, p.textloc.Y, font);
                     if (p.lineOver) {
                         int ya = p.textloc.Y;
-                        drawThickLine(g, p.textloc.X - sw / 2, ya, p.textloc.X + sw / 2, ya);
+                        g.DrawThickLine(p.textloc.X - sw / 2, ya, p.textloc.X + sw / 2, ya);
                     }
                     break;
                 }
             }
-            PenThickLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
-            drawThickPolygon(g, rectPoints);
+            g.ThickLineColor = NeedsHighlight ? SelectColor : LightGrayColor;
+            g.DrawThickPolygon(rectPoints);
             if (clockPoints != null) {
-                drawThickPolygon(g, clockPoints);
+                g.DrawThickPolygon(clockPoints);
             }
             drawPosts(g);
         }

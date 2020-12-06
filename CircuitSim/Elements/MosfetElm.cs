@@ -144,7 +144,7 @@ namespace Circuit.Elements {
             diodeB2.reset();
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             /* pick up global flags changes */
             if ((mFlags & FLAGS_GLOBAL) != globalFlags) {
                 SetPoints();
@@ -153,8 +153,8 @@ namespace Circuit.Elements {
             setBbox(mPoint1, mPoint2, hs);
 
             /* draw source/drain terminals */
-            drawThickLine(g, getVoltageColor(Volts[V_S]), src[0], src[1]);
-            drawThickLine(g, getVoltageColor(Volts[V_D]), drn[0], drn[1]);
+            g.DrawThickLine(getVoltageColor(Volts[V_S]), src[0], src[1]);
+            g.DrawThickLine(getVoltageColor(Volts[V_D]), drn[0], drn[1]);
 
             /* draw line connecting source and drain */
             int segments = 6;
@@ -165,37 +165,37 @@ namespace Circuit.Elements {
                 if ((i == 1 || i == 4) && enhancement) {
                     continue;
                 }
-                double v = Volts[V_S] + (Volts[V_D] - Volts[V_S]) * i / segments;
-                PenThickLine.Color = getVoltageColor(v);
                 interpPoint(src[1], drn[1], ref ps1, i * segf);
                 interpPoint(src[1], drn[1], ref ps2, (i + 1) * segf);
-                drawThickLine(g, ps1, ps2);
+                double v = Volts[V_S] + (Volts[V_D] - Volts[V_S]) * i / segments;
+                g.ThickLineColor = getVoltageColor(v);
+                g.DrawThickLine(ps1, ps2);
             }
 
             /* draw little extensions of that line */
-            drawThickLine(g, getVoltageColor(Volts[V_S]), src[1], src[2]);
-            drawThickLine(g, getVoltageColor(Volts[V_D]), drn[1], drn[2]);
+            g.DrawThickLine(getVoltageColor(Volts[V_S]), src[1], src[2]);
+            g.DrawThickLine(getVoltageColor(Volts[V_D]), drn[1], drn[2]);
 
             /* draw bulk connection */
             if (showBulk()) {
-                PenThickLine.Color = getVoltageColor(Volts[bodyTerminal]);
+                g.ThickLineColor = getVoltageColor(Volts[bodyTerminal]);
                 if (!hasBodyTerminal()) {
-                    drawThickLine(g, pnp == -1 ? drn[0] : src[0], body[0]);
+                    g.DrawThickLine(pnp == -1 ? drn[0] : src[0], body[0]);
                 }
-                drawThickLine(g, body[0], body[1]);
+                g.DrawThickLine(body[0], body[1]);
             }
 
             /* draw arrow */
             if (!drawDigital()) {
-                fillPolygon(g, getVoltageColor(Volts[bodyTerminal]), arrowPoly);
+                g.FillPolygon(getVoltageColor(Volts[bodyTerminal]), arrowPoly);
             }
 
             /* draw gate */
-            PenThickLine.Color = getVoltageColor(Volts[V_G]);
-            drawThickLine(g, mPoint1, gate[1]);
-            drawThickLine(g, gate[0], gate[2]);
+            g.ThickLineColor = getVoltageColor(Volts[V_G]);
+            g.DrawThickLine(mPoint1, gate[1]);
+            g.DrawThickLine(gate[0], gate[2]);
             if (drawDigital() && pnp == -1) {
-                drawThickCircle(g, pcircle.X, pcircle.Y, pcircler);
+                g.DrawThickCircle(pcircle.X, pcircle.Y, pcircler);
             }
 
             if ((mFlags & FLAG_SHOWVT) != 0) {

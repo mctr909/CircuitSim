@@ -27,22 +27,20 @@ namespace Circuit {
 
             var g = backcontext;
 
-            Pen pen;
+            CircuitElm.TextColor = Color.Red;
+            g.TextColor = Color.Red;
             CircuitElm.SelectColor = Color.Cyan;
             if (chkPrintableCheckItem.Checked) {
                 CircuitElm.WhiteColor = Color.Black;
                 CircuitElm.LightGrayColor = Color.Black;
-                CircuitElm.BrushText = Brushes.Black;
-                CircuitElm.BrushTermName = Brushes.Black;
-                pen = new Pen(Color.White, 1.0f);
+                g.LineColor = Color.White;
             } else {
                 CircuitElm.WhiteColor = Color.White;
                 CircuitElm.LightGrayColor = Color.Gray;
-                CircuitElm.BrushText = Brushes.White;
-                CircuitElm.BrushTermName = Brushes.SkyBlue;
-                pen = new Pen(Color.Black, 1.0f);
+                g.LineColor = Color.Black;
             }
-            g.FillRectangle(pen.Brush, 0, 0, backcv.Width, backcv.Height);
+
+            g.FillRectangle(0, 0, backcv.Width, backcv.Height);
 
             long myrunstarttime = DateTime.Now.ToFileTimeUtc();
             if (simRunning) {
@@ -79,7 +77,7 @@ namespace Circuit {
             long mydrawstarttime = DateTime.Now.ToFileTimeUtc();
 
             /* draw elements */
-            g.Transform = new Matrix(transform[0], transform[1], transform[2], transform[3], transform[4], transform[5]);
+            g.SetTransform(new Matrix(transform[0], transform[1], transform[2], transform[3], transform[4], transform[5]));
             for (int i = 0; i != elmList.Count; i++) {
                 getElm(i).Draw(g);
             }
@@ -88,7 +86,7 @@ namespace Circuit {
             /* draw posts normally */
             if (mouseMode != MOUSE_MODE.DRAG_ROW && mouseMode != MOUSE_MODE.DRAG_COLUMN) {
                 for (int i = 0; i != mCir.PostDrawList.Count; i++) {
-                    CircuitElm.drawPost(g, mCir.PostDrawList[i]);
+                    g.DrawPost(mCir.PostDrawList[i]);
                 }
             }
 
@@ -100,54 +98,55 @@ namespace Circuit {
                 || tempMouseMode == MOUSE_MODE.DRAG_SELECTED) {
                 for (int i = 0; i != elmList.Count; i++) {
                     var ce = getElm(i);
-                    CircuitElm.drawPost(g, ce.X1 , ce.Y1 );
-                    CircuitElm.drawPost(g, ce.X2, ce.Y2);
+                    g.DrawPost(ce.X1, ce.Y1);
+                    g.DrawPost(ce.X2, ce.Y2);
                     if (ce != mouseElm || tempMouseMode != MOUSE_MODE.DRAG_POST) {
-                        g.FillPie(Brushes.Gray, ce.X1 - 3, ce.Y1 - 3, 7, 7, 0, 360);
-                        g.FillPie(Brushes.Gray, ce.X2 - 3, ce.Y2 - 3, 7, 7, 0, 360);
+                        g.FillCircle(Color.Gray, ce.X1, ce.Y1, 3.5f);
+                        g.FillCircle(Color.Gray, ce.X2, ce.Y2, 3.5f);
                     } else {
-                        ce.drawHandles(g);
+                        ce.DrawHandles(g);
                     }
                 }
             }
 
             /* draw handles for elm we're creating */
             if (tempMouseMode == MOUSE_MODE.SELECT && mouseElm != null) {
-                mouseElm.drawHandles(g);
+                mouseElm.DrawHandles(g);
             }
 
             /* draw handles for elm we're dragging */
             if (dragElm != null && (dragElm.X1 != dragElm.X2 || dragElm.Y1 != dragElm.Y2)) {
                 dragElm.Draw(g);
-                dragElm.drawHandles(g);
+                dragElm.DrawHandles(g);
             }
 
             /* draw bad connections.  do this last so they will not be overdrawn. */
             for (int i = 0; i != mCir.BadConnectionList.Count; i++) {
                 var cn = mCir.BadConnectionList[i];
-                g.FillPie(Brushes.Red, cn.X - 3, cn.Y - 3, 7, 7, 0, 360);
+                g.FillCircle(Color.Red, cn.X, cn.Y, 3.5f);
             }
 
             if (0 < selectedArea.Width) {
-                var penSelect = new Pen(CircuitElm.SelectColor, 1.0f);
-                g.DrawRectangle(penSelect, selectedArea.X, selectedArea.Y, selectedArea.Width, selectedArea.Height);
+                g.LineColor = CircuitElm.SelectColor;
+                g.DrawRectangle(selectedArea.X, selectedArea.Y, selectedArea.Width, selectedArea.Height);
             }
 
             if (chkCrossHairCheckItem.Checked && mouseCursorX >= 0
                 && mouseCursorX <= circuitArea.Width && mouseCursorY <= circuitArea.Height) {
                 int x = snapGrid(inverseTransformX(mouseCursorX));
                 int y = snapGrid(inverseTransformY(mouseCursorY));
-                g.DrawLine(Pens.Gray, x, inverseTransformY(0), x, inverseTransformY(circuitArea.Height));
-                g.DrawLine(Pens.Gray, inverseTransformX(0), y, inverseTransformX(circuitArea.Width), y);
+                g.LineColor = Color.Gray;
+                g.DrawLine(x, inverseTransformY(0), x, inverseTransformY(circuitArea.Height));
+                g.DrawLine(inverseTransformX(0), y, inverseTransformX(circuitArea.Width), y);
             }
 
-            g.Transform = new Matrix(1, 0, 0, 1, 0, 0);
+            g.ClearTransform();
 
-            Brush bCircuitArea;
+            Color bCircuitArea;
             if (chkPrintableCheckItem.Checked) {
-                bCircuitArea = Brushes.White;
+                bCircuitArea = Color.White;
             } else {
-                bCircuitArea = Brushes.Black;
+                bCircuitArea = Color.Black;
             }
             g.FillRectangle(bCircuitArea, 0, circuitArea.Height, circuitArea.Width, backcv.Height - circuitArea.Height);
 
@@ -159,12 +158,12 @@ namespace Circuit {
                 scopes[i].draw(g);
             }
             if (mouseWasOverSplitter) {
-                var penSp = new Pen(Color.Cyan, 4.0f);
-                g.DrawLine(penSp, 0, circuitArea.Height - 2, circuitArea.Width, circuitArea.Height - 2);
+                g.LineColor = Color.Cyan;
+                g.DrawLine(0, circuitArea.Height - 2, circuitArea.Width, circuitArea.Height - 2);
             }
 
             if (mCir.StopMessage != null) {
-                g.DrawString(mCir.StopMessage, FONT_TEXT, BRUSH_TEXT, 10, circuitArea.Height - 10);
+                g.DrawLeftText(mCir.StopMessage, 10, circuitArea.Height - 10);
             } else {
                 var info = new string[10];
                 if (mouseElm != null) {
@@ -196,7 +195,7 @@ namespace Circuit {
                 /* count lines of data */
                 {
                     int infoIdx;
-                    for (infoIdx = 0; infoIdx < info.Length && info[infoIdx] != null; infoIdx++) ;
+                    for (infoIdx = 0; infoIdx < info.Length - 1 && info[infoIdx] != null; infoIdx++) ;
                     int badnodes = mCir.BadConnectionList.Count;
                     if (badnodes > 0) {
                         info[infoIdx++] = badnodes + ((badnodes == 1) ? " bad connection" : " bad connections");
@@ -204,7 +203,7 @@ namespace Circuit {
                 }
                 int ybase = circuitArea.Height;
                 for (int i = 0; i < info.Length && info[i] != null; i++) {
-                    g.DrawString(info[i], FONT_TEXT, BRUSH_TEXT, x, ybase + 15 * (i + 1));
+                    g.DrawLeftText(info[i], x, ybase + 15 * (i + 1));
                 }
             }
 
@@ -227,7 +226,7 @@ namespace Circuit {
                 }
             }
 
-            g.FillPie(Brushes.White, mouseCursorX - 2, mouseCursorY - 2, 4, 4, 0, 360);
+            g.FillCircle(Color.White, mouseCursorX, mouseCursorY, 2);
             cv = new Bitmap(backcv.Width, backcv.Height);
             cvcontext = Graphics.FromImage(cv);
             cvcontext.DrawImage(backcv, 0, 0);

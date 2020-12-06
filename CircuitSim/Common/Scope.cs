@@ -53,8 +53,6 @@ namespace Circuit {
 
         readonly double[] MULTA = new double[] { 2.0, 2.5, 2.0 };
 
-        readonly Font LABEL_FONT = new Font("Meiryo UI", 9.0f);
-
         public const int VAL_POWER = 7;
         public const int VAL_POWER_OLD = 1;
         public const int VAL_CURRENT = 3;
@@ -78,9 +76,7 @@ namespace Circuit {
         FFT mFft;
 
         Bitmap mCanvas;
-        Graphics mContext;
-        Pen mPenLine = new Pen(Brushes.Red, 1.0f);
-        Pen mPenLabel = new Pen(Brushes.Red, 1.0f);
+        CustomGraphics mContext;
 
         List<ScopePlot> mPlots;
         List<ScopePlot> mVisiblePlots;
@@ -258,9 +254,8 @@ namespace Circuit {
 
         void calcVisiblePlots() {
             mVisiblePlots = new List<ScopePlot>();
-            int i;
             int vc = 0, ac = 0, oc = 0;
-            for (i = 0; i != mPlots.Count; i++) {
+            for (int i = 0; i != mPlots.Count; i++) {
                 var plot = mPlots[i];
                 if (plot.Units == UNITS_V) {
                     if (ShowV) {
@@ -489,7 +484,7 @@ namespace Circuit {
                 mSim.mouseCursorY <= BoundingBox.Y + BoundingBox.Height;
         }
 
-        public void draw(Graphics g) {
+        public void draw(CustomGraphics g) {
             if (mPlots.Count == 0) {
                 return;
             }
@@ -500,14 +495,14 @@ namespace Circuit {
                 resetGraph();
             }
 
-            g.TranslateTransform(BoundingBox.X, BoundingBox.Y);
+            g.SetTransform(new Matrix(1, 0, 0, 1, BoundingBox.X, BoundingBox.Y));
 
             if (Plot2d) {
                 draw2d(g);
                 return;
             }
 
-            mPenLine.Color = Color.Red;
+            g.LineColor = Color.Red;
 
             drawSettingsWheel(g);
 
@@ -578,7 +573,7 @@ namespace Circuit {
 
             drawCrosshairs(g);
 
-            g.Transform = new Matrix(1, 0, 0, 1, 0, 0);
+            g.ClearTransform();
 
             if (mPlots[0].Pointer > 5 && !LockScale) {
                 for (int i = 0; i != UNITS_COUNT; i++) {
@@ -726,8 +721,9 @@ namespace Circuit {
         }
 
         public void properties(int x, int y) {
-            CirSim.dialogShowing = new ScopePropertiesDialog(mSim, this);
-            CirSim.dialogShowing.Location = new Point(x, y);
+            var fm = new ScopePropertiesDialog(mSim, this);
+            fm.Show(x, y);
+            CirSim.dialogShowing = fm;
         }
 
         public void speedUp() {
@@ -1139,7 +1135,7 @@ namespace Circuit {
         void allocImage() {
             if (mCanvas == null) {
                 mCanvas = new Bitmap(BoundingBox.Width, BoundingBox.Height);
-                mContext = Graphics.FromImage(mCanvas);
+                mContext = CustomGraphics.FromImage(mCanvas);
             }
             clear2dView();
         }
@@ -1151,7 +1147,7 @@ namespace Circuit {
             mDrawOx = mDrawOy = -1;
         }
 
-        void drawCrosshairs(Graphics g) {
+        void drawCrosshairs(CustomGraphics g) {
             if (mSim.dialogIsShowing()) {
                 return;
             }
@@ -1171,8 +1167,8 @@ namespace Circuit {
                 var plot = mVisiblePlots[SelectedPlot];
                 info[ct++] = plot.GetUnitText(plot.MaxValues[ip]);
                 int maxvy = (int)(mMainGridMult * (plot.MaxValues[ip] - mMainGridMid));
-                mPenLine.Color = plot.Color;
-                g.FillPie(mPenLine.Brush, mSim.mouseCursorX - 2, BoundingBox.Y + y - maxvy - 2, 5, 5, 0, 360);
+                g.LineColor = plot.Color;
+                g.FillCircle(mSim.mouseCursorX, BoundingBox.Y + y - maxvy, 2.5f);
             }
             if (ShowFFT) {
                 double maxFrequency = 1 / (mSim.timeStep * Speed * 2);
@@ -1182,32 +1178,34 @@ namespace Circuit {
                 double t = mSim.t - mSim.timeStep * Speed * (BoundingBox.X + BoundingBox.Width - mSim.mouseCursorX);
                 info[ct++] = CircuitElm.getTimeText(t);
             }
+
             int szw = 0, szh = 15 * ct;
-            int i;
-            for (i = 0; i != ct; i++) {
-                int w = (int)g.MeasureString(info[i], LABEL_FONT).Width;
+            for (int i = 0; i != ct; i++) {
+                int w = (int)g.GetTextSize(info[i]).Width;
                 if (w > szw) {
                     szw = w;
                 }
             }
 
-            mPenLine.Color = CircuitElm.WhiteColor;
+            g.LineColor = CircuitElm.WhiteColor;
+            g.DrawLine(mSim.mouseCursorX, BoundingBox.Y, mSim.mouseCursorX, BoundingBox.Y + BoundingBox.Height);
 
-            g.DrawLine(mPenLine, mSim.mouseCursorX, BoundingBox.Y, mSim.mouseCursorX, BoundingBox.Y + BoundingBox.Height);
-            mPenLine.Color = mSim.chkPrintableCheckItem.Checked ? Color.White : Color.Black;
             int bx = mSim.mouseCursorX;
             if (bx < szw / 2) {
                 bx = szw / 2;
             }
-            g.FillRectangle(mPenLine.Brush, bx - szw / 2, BoundingBox.Y - szh, szw, szh);
-            mPenLabel.Color = CircuitElm.WhiteColor;
-            for (i = 0; i != ct; i++) {
-                int w = (int)g.MeasureString(info[i], LABEL_FONT).Width;
-                g.DrawString(info[i], LABEL_FONT, mPenLabel.Brush, bx - w / 2, BoundingBox.Y - 2 - (ct - 1 - i) * 15);
+
+            g.LineColor = mSim.chkPrintableCheckItem.Checked ? Color.White : Color.Black;
+            g.FillRectangle(bx - szw / 2, BoundingBox.Y - szh, szw, szh);
+
+            g.TextColor = CircuitElm.TextColor;
+            for (int i = 0; i != ct; i++) {
+                int w = (int)g.GetTextSize(info[i]).Width;
+                g.DrawLeftText(info[i], bx - w / 2, BoundingBox.Y - 2 - (ct - 1 - i) * 15);
             }
         }
 
-        void drawPlot(Graphics g, ScopePlot plot, bool drawHGridLines, bool selected) {
+        void drawPlot(CustomGraphics g, ScopePlot plot, bool drawHGridLines, bool selected) {
             if (plot.Elm == null) {
                 return;
             }
@@ -1283,8 +1281,8 @@ namespace Circuit {
                     if (yl < 0 || yl >= BoundingBox.Height - 1) {
                         continue;
                     }
-                    mPenLine.Color = ll == 0 ? majorDiv : minorDiv;
-                    g.DrawLine(mPenLine, 0, yl, BoundingBox.Width - 1, yl);
+                    g.LineColor = ll == 0 ? majorDiv : minorDiv;
+                    g.DrawLine(0, yl, BoundingBox.Width - 1, yl);
                 }
 
                 /* vertical gridlines */
@@ -1303,19 +1301,19 @@ namespace Circuit {
                     if (tl < 0) {
                         continue;
                     }
-                    mPenLine.Color = minorDiv;
                     if (((tl + mGridStepX / 4) % (mGridStepX * 10)) < mGridStepX) {
-                        mPenLine.Color = majorDiv;
+                        g.LineColor = majorDiv;
+                    } else {
+                        g.LineColor = minorDiv;
                     }
-                    g.DrawLine(mPenLine, gx, 0, gx, BoundingBox.Height - 1);
+                    g.DrawLine(gx, 0, gx, BoundingBox.Height - 1);
                 }
             }
 
             /* only need gridlines drawn once */
             mDrawGridLines = false;
 
-            mPenLine.Color = color;
-
+            g.LineColor = color;
             int ox = -1;
             int oy = -1;
             for (i = 0; i != BoundingBox.Width; i++) {
@@ -1334,7 +1332,7 @@ namespace Circuit {
                         if (minvy == oy && maxvy == oy) {
                             continue;
                         }
-                        g.DrawLine(mPenLine, ox, y - oy, nx, y - oy);
+                        g.DrawLine(ox, y - oy, nx, y - oy);
                         ox = oy = -1;
                     }
                     if (minvy == maxvy) {
@@ -1342,37 +1340,37 @@ namespace Circuit {
                         oy = minvy;
                         continue;
                     }
-                    g.DrawLine(mPenLine, nx, y - minvy, nx, y - maxvy);
+                    g.DrawLine(nx, y - minvy, nx, y - maxvy);
                 }
             } /* for (i=0...) */
             if (ox != -1) {
-                g.DrawLine(mPenLine, ox, y - oy, x + i, y - oy); /* Horizontal */
+                g.DrawLine(ox, y - oy, x + i, y - oy); /* Horizontal */
             }
         }
 
-        void drawFFTVerticalGridLines(Graphics g) {
+        void drawFFTVerticalGridLines(CustomGraphics g) {
             /* Draw x-grid lines and label the frequencies in the FFT that they point to. */
             int prevEnd = 0;
             int divs = 20;
             double maxFrequency = 1 / (mSim.timeStep * Speed * divs * 2);
+            g.LineColor = Color.FromArgb(0x88, 0x00, 0x00);
+            g.TextColor = CircuitElm.TextColor;
             for (int i = 0; i < divs; i++) {
                 int x = BoundingBox.Width * i / divs;
                 if (x < prevEnd) {
                     continue;
                 }
                 string s = ((int)Math.Round(i * maxFrequency)) + "Hz";
-                int sWidth = (int)Math.Ceiling(g.MeasureString(s, LABEL_FONT).Width);
+                int sWidth = (int)Math.Ceiling(g.GetTextSize(s).Width);
                 prevEnd = x + sWidth + 4;
                 if (i > 0) {
-                    mPenLine.Color = Color.FromArgb(0x88, 0x00, 0x00);
-                    g.DrawLine(mPenLine, x, 0, x, BoundingBox.Height);
+                    g.DrawLine(x, 0, x, BoundingBox.Height);
                 }
-                mPenLabel.Color = Color.FromArgb(0xFF, 0x00, 0x00);
-                g.DrawString(s, LABEL_FONT, mPenLabel.Brush, x + 2, BoundingBox.Height);
+                g.DrawLeftText(s, x + 2, BoundingBox.Height);
             }
         }
 
-        void drawFFT(Graphics g) {
+        void drawFFT(CustomGraphics g) {
             if (mFft == null || mFft.Size != mScopePointCount) {
                 mFft = new FFT(mScopePointCount);
             }
@@ -1398,7 +1396,7 @@ namespace Circuit {
                 }
             }
             int prevX = 0;
-            mPenLine.Color = Color.Red;
+            g.LineColor = Color.Red;
             if (!LogSpectrum) {
                 int prevHeight = 0;
                 int y = (BoundingBox.Height - 1) - 12;
@@ -1409,7 +1407,7 @@ namespace Circuit {
                     double magnitude = mFft.Magnitude(real[i], imag[i]);
                     int height = (int)((magnitude * y) / maxM);
                     if (x != prevX) {
-                        g.DrawLine(mPenLine, prevX, y - prevHeight, x, y - height);
+                        g.DrawLine(prevX, y - prevHeight, x, y - height);
                     }
                     prevHeight = height;
                     prevX = x;
@@ -1430,7 +1428,7 @@ namespace Circuit {
                     double val = Math.Log(mag);
                     int y = y0 - (int)(val * ymult - val0);
                     if (x != prevX) {
-                        g.DrawLine(mPenLine, prevX, prevY, x, y);
+                        g.DrawLine(prevX, prevY, x, y);
                     }
                     prevY = y;
                     prevX = x;
@@ -1438,33 +1436,32 @@ namespace Circuit {
             }
         }
 
-        void drawSettingsWheel(Graphics g) {
+        void drawSettingsWheel(CustomGraphics g) {
             const int outR = 8 * 12 / 8;
             const int inR = 5 * 12 / 8;
             const int inR45 = 4 * 12 / 8;
             const int outR45 = 6 * 12 / 8;
             if (showSettingsWheel()) {
-                Pen pen;
                 if (cursorInSettingsWheel()) {
-                    pen = Pens.Cyan;
+                    g.LineColor = Color.Cyan;
                 } else {
-                    pen = Pens.DarkGray;
+                    g.LineColor = Color.DarkGray;
                 }
-                g.TranslateTransform(BoundingBox.X + 18, BoundingBox.Y + BoundingBox.Height - 18);
-                g.DrawArc(pen, -inR / 2, -inR / 2, inR, inR, 0, 360);
-                g.DrawLine(pen,   -outR,       0,   -inR,      0);
-                g.DrawLine(pen,    outR,       0,    inR,      0);
-                g.DrawLine(pen,       0,   -outR,      0,   -inR);
-                g.DrawLine(pen,       0,    outR,      0,    inR);
-                g.DrawLine(pen, -outR45, -outR45, -inR45, -inR45);
-                g.DrawLine(pen,  outR45, -outR45,  inR45, -inR45);
-                g.DrawLine(pen, -outR45,  outR45, -inR45,  inR45);
-                g.DrawLine(pen,  outR45,  outR45,  inR45,  inR45);
-                g.TranslateTransform(0, 0);
+                g.SetTransform(new Matrix(1, 0, 0, 1, BoundingBox.X + 18, BoundingBox.Y + BoundingBox.Height - 18));
+                g.DrawCircle(0, 0, inR);
+                g.DrawLine(  -outR,       0,   -inR,      0);
+                g.DrawLine(   outR,       0,    inR,      0);
+                g.DrawLine(      0,   -outR,      0,   -inR);
+                g.DrawLine(      0,    outR,      0,    inR);
+                g.DrawLine(-outR45, -outR45, -inR45, -inR45);
+                g.DrawLine( outR45, -outR45,  inR45, -inR45);
+                g.DrawLine(-outR45,  outR45, -inR45,  inR45);
+                g.DrawLine( outR45,  outR45,  inR45,  inR45);
+                g.ClearTransform();
             }
         }
 
-        void draw2d(Graphics g) {
+        void draw2d(CustomGraphics g) {
             if (mContext == null) {
                 return;
             }
@@ -1472,33 +1469,32 @@ namespace Circuit {
             mAlphaDiv++;
             if (mAlphaDiv > 2) {
                 mAlphaDiv = 0;
-                Pen pen;
                 if (mSim.chkPrintableCheckItem.Checked) {
-                    pen = new Pen(Color.FromArgb(0x0F, 0xFF, 0xFF, 0xFF), 1.0f);
+                    g.LineColor = Color.FromArgb(0x0F, 0xFF, 0xFF, 0xFF);
                 } else {
-                    pen = new Pen(Color.FromArgb(0x0F, 0, 0, 0), 1.0f);
+                    g.LineColor = Color.FromArgb(0x0F, 0, 0, 0);
                 }
-                g.FillRectangle(pen.Brush, 0, 0, BoundingBox.Width, BoundingBox.Height);
+                g.FillRectangle(0, 0, BoundingBox.Width, BoundingBox.Height);
             }
 
-            mPenLine.Color = CircuitElm.WhiteColor;
-            g.FillPie(mPenLine.Brush, mDrawOx - 2, mDrawOy - 2, 5, 5, 0, 360);
+            g.LineColor = CircuitElm.WhiteColor;
+            g.FillCircle(mDrawOx, mDrawOy, 2.5f);
             int yt = 10;
             int x = 0;
             if (Text != null && BoundingBox.Height > yt + 5) {
-                mPenLabel.Color = CircuitElm.WhiteColor;
-                g.DrawString(Text, LABEL_FONT, mPenLabel.Brush, x, yt);
+                g.TextColor = CircuitElm.TextColor;
+                g.DrawLeftText(Text, x, yt);
                 yt += 15;
             }
 
-            mPenLine.Color = Color.Green;
-            g.DrawLine(mPenLine, 0, BoundingBox.Height / 2, BoundingBox.Width - 1, BoundingBox.Height / 2);
+            g.LineColor = Color.Green;
+            g.DrawLine(0, BoundingBox.Height / 2, BoundingBox.Width - 1, BoundingBox.Height / 2);
             if (!PlotXY) {
-                mPenLine.Color = Color.Yellow;
+                g.LineColor = Color.Yellow;
             }
-            g.DrawLine(mPenLine, BoundingBox.Width / 2, 0, BoundingBox.Width / 2, BoundingBox.Height - 1);
+            g.DrawLine(BoundingBox.Width / 2, 0, BoundingBox.Width / 2, BoundingBox.Height - 1);
 
-            g.TranslateTransform(0, 0);
+            g.ClearTransform();
             drawSettingsWheel(g);
         }
 
@@ -1507,14 +1503,14 @@ namespace Circuit {
                 mDrawOx = x2;
                 mDrawOy = y2;
             }
-            mPenLine.Color = Color.GreenYellow;
-            mContext.DrawLine(mPenLine, mDrawOx, mDrawOy, x2, y2);
+            mContext.LineColor = Color.GreenYellow;
+            mContext.DrawLine(mDrawOx, mDrawOy, x2, y2);
             mDrawOx = x2;
             mDrawOy = y2;
         }
 
         /* calc RMS and display it */
-        void drawRMS(Graphics g) {
+        void drawRMS(CustomGraphics g) {
             if (!canShowRMS()) {
                 drawAverage(g);
                 return;
@@ -1582,7 +1578,7 @@ namespace Circuit {
             }
         }
 
-        void drawAverage(Graphics g) {
+        void drawAverage(CustomGraphics g) {
             var plot = mVisiblePlots[0];
             int i;
             double avg = 0;
@@ -1645,7 +1641,7 @@ namespace Circuit {
             }
         }
 
-        void drawDutyCycle(Graphics g) {
+        void drawDutyCycle(CustomGraphics g) {
             var plot = mVisiblePlots[0];
             int i;
             int ipa = plot.Pointer + mScopePointCount - BoundingBox.Width;
@@ -1707,7 +1703,7 @@ namespace Circuit {
         }
 
         /* calc frequency if possible and display it */
-        void drawFrequency(Graphics g) {
+        void drawFrequency(CustomGraphics g) {
             /* try to get frequency
              * get average */
             double avg = 0;
@@ -1766,16 +1762,16 @@ namespace Circuit {
             }
         }
 
-        void drawInfoText(Graphics g, string text) {
+        void drawInfoText(CustomGraphics g, string text) {
             if (BoundingBox.Y + BoundingBox.Height <= mTextY + 5) {
                 return;
             }
-            g.DrawString(text, LABEL_FONT, mPenLabel.Brush, 0, mTextY);
+            g.DrawLeftText(text, 0, mTextY);
             mTextY += 15;
         }
 
-        void drawInfoTexts(Graphics g) {
-            mPenLabel.Color = CircuitElm.WhiteColor;
+        void drawInfoTexts(CustomGraphics g) {
+            g.TextColor = CircuitElm.TextColor;
             mTextY = 10;
             var plot = mVisiblePlots[0];
             if (ShowScale) {
@@ -1790,7 +1786,7 @@ namespace Circuit {
             }
             if (ShowMin) {
                 int ym = BoundingBox.Height - 5;
-                g.DrawString(plot.GetUnitText(mMinValue), LABEL_FONT, mPenLabel.Brush, 0, ym);
+                g.DrawLeftText(plot.GetUnitText(mMinValue), 0, ym);
             }
             if (ShowRMS) {
                 drawRMS(g);

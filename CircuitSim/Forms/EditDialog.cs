@@ -29,7 +29,7 @@ namespace Circuit {
         Panel hp;
         bool closeOnEnter = true;
 
-        public EditDialog(Editable ce, CirSim f, int x, int y) : base() {
+        public EditDialog(Editable ce, CirSim f) : base() {
             Text = "Edit Component";
             cframe = f;
             elm = ce;
@@ -72,9 +72,14 @@ namespace Circuit {
             buildDialog();
 
             ResumeLayout(false);
+        }
+
+        public void Show(int x, int y) {
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            Visible = false;
             Show();
             Location = new Point(x - Width / 2, y + Height / 2);
+            Visible = true;
         }
 
         void buildDialog() {

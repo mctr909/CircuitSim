@@ -44,7 +44,7 @@ namespace Circuit {
         MenuStrip menuBar;
         Panel iFrame;
         SplitContainer layoutPanel;
-        public Panel verticalPanel;
+        Panel verticalPanel;
 
         Button resetButton;
         Button runStopButton;
@@ -59,7 +59,6 @@ namespace Circuit {
         public CheckBox chkAnsiResistorCheckItem;
         public CheckBox chkPrintableCheckItem;
         public CheckBox chkCrossHairCheckItem;
-        public Label debugMsg;
 
         ContextMenuStrip contextPanel = null;
         ScopePopupMenu scopePopupMenu;
@@ -79,7 +78,7 @@ namespace Circuit {
         Bitmap cv = null;
         Bitmap backcv = null;
         Graphics cvcontext;
-        Graphics backcontext;
+        CustomGraphics backcontext;
 
         MenuItem recoverItem;
         MenuItem undoItem;

@@ -119,17 +119,17 @@ namespace Circuit.Elements {
             lastvbc = lastvbe = curcount_c = curcount_e = curcount_b = 0;
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, 16);
            
             /* draw collector */
-            drawThickLine(g, getVoltageColor(Volts[V_C]), coll[0], coll[1]);
+            g.DrawThickLine(getVoltageColor(Volts[V_C]), coll[0], coll[1]);
             /* draw emitter */
-            drawThickLine(g, getVoltageColor(Volts[V_E]), emit[0], emit[1]);
+            g.DrawThickLine(getVoltageColor(Volts[V_E]), emit[0], emit[1]);
             /* draw arrow */
-            fillPolygon(g, getVoltageColor(Volts[V_E]), arrowPoly);
+            g.FillPolygon(getVoltageColor(Volts[V_E]), arrowPoly);
             /* draw base */
-            drawThickLine(g, getVoltageColor(Volts[V_B]), mPoint1, tbase);
+            g.DrawThickLine(getVoltageColor(Volts[V_B]), mPoint1, tbase);
 
             /* draw dots */
             curcount_b = updateDotCount(-ib, curcount_b);
@@ -140,7 +140,7 @@ namespace Circuit.Elements {
             drawDots(g, emit[1], emit[0], curcount_e);
 
             /* draw base rectangle */
-            fillPolygon(g, getVoltageColor(Volts[V_B]), rectPoly);
+            g.FillPolygon(getVoltageColor(Volts[V_B]), rectPoly);
 
             drawPosts(g);
         }
@@ -174,7 +174,7 @@ namespace Circuit.Elements {
             interpPoint(mPoint1, mPoint2, ref tbase, 1 - 16 / mLen);
 
             /* rectangle */
-            rectPoly = createPolygon(rect[0], rect[2], rect[3], rect[1]).ToArray();
+            rectPoly = new Point[] { rect[0], rect[2], rect[3], rect[1] };
 
             /* arrow */
             if (pnp == 1) {

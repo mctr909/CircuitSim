@@ -65,12 +65,12 @@ namespace Circuit.Elements {
             return modelStr;
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             for (int i = 0; i != postCount; i++) {
                 chip.Volts[i] = Volts[i];
                 chip.pins[i].current = GetCurrentIntoNode(i);
             }
-            chip.IsSelected = needsHighlight();
+            chip.IsSelected = NeedsHighlight;
             chip.Draw(g);
             BoundingBox = chip.BoundingBox;
         }

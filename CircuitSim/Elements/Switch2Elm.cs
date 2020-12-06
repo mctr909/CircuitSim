@@ -62,19 +62,19 @@ namespace Circuit.Elements {
             posCount = hasCenterOff() ? 3 : throwCount;
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, openhs);
             adjustBbox(swposts[0], swposts[throwCount - 1]);
 
             /* draw first lead */
-            drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
+            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
             /* draw other leads */
             for (int i = 0; i < throwCount; i++) {
-                drawThickLine(g, getVoltageColor(Volts[i + 1]), swpoles[i], swposts[i]);
+                g.DrawThickLine(getVoltageColor(Volts[i + 1]), swpoles[i], swposts[i]);
             }
             /* draw switch */
-            PenThickLine.Color = needsHighlight() ? SelectColor : WhiteColor;
-            drawThickLine(g, mLead1, swpoles[position]);
+            g.ThickLineColor = NeedsHighlight ? SelectColor : WhiteColor;
+            g.DrawThickLine(mLead1, swpoles[position]);
 
             updateDotCount();
             drawDots(g, mPoint1, mLead1, mCurCount);

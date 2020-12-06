@@ -166,7 +166,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             drawChip(g);
         }
 

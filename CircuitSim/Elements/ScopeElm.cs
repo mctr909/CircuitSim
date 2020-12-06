@@ -73,8 +73,8 @@ namespace Circuit.Elements {
             elmScope = null;
         }
 
-        public override void Draw(Graphics g) {
-            var color = needsHighlight() ? SelectColor : WhiteColor;
+        public override void Draw(CustomGraphics g) {
+            var color = NeedsHighlight ? SelectColor : WhiteColor;
             setScopeRect();
             elmScope.draw(g);
             setBbox(mPoint1, mPoint2, 0);

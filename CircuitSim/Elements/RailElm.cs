@@ -30,16 +30,16 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             var rt = getRailText();
-            double w = rt == null ? (circleSize * 0.5) : g.MeasureString(rt, FONT_TEXT).Width / 2;
+            double w = rt == null ? (circleSize * 0.5) : g.GetTextSize(rt).Width / 2;
             if (w > mLen * .8) {
                 w = mLen * .8;
             }
             mLead1 = interpPoint(mPoint1, mPoint2, 1 - w / mLen);
             setBbox(mPoint1, mPoint2, circleSize);
-            
-            drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
+
+            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
             drawRail(g);
             drawPosts(g);
             mCurCount = updateDotCount(-mCurrent, mCurCount);
@@ -48,11 +48,11 @@ namespace Circuit.Elements {
             }
         }
 
-        void drawRail(Graphics g) {
+        void drawRail(CustomGraphics g) {
             if (waveform == WF_SQUARE && (mFlags & FLAG_CLOCK) != 0) {
                 drawCenteredText(g, "CLK", X2, Y2, true);
             } else if (waveform == WF_DC || waveform == WF_VAR) {
-                var color = needsHighlight() ? SelectColor : WhiteColor;
+                var color = NeedsHighlight ? SelectColor : WhiteColor;
                 double v = getVoltage();
                 string s;
                 if (Math.Abs(v) < 1) {

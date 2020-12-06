@@ -141,12 +141,14 @@ namespace Circuit {
                 verticalPanel.Controls.Add(chkCrossHairCheckItem);
                 ofsY += chkCrossHairCheckItem.Height + 4;
 
-                /* Debug message */
-                debugMsg = new Label();
-                debugMsg.AutoSize = true;
-                debugMsg.Left = 4;
-                debugMsg.Top = ofsY;
-                verticalPanel.Controls.Add(debugMsg);
+                /* iFrame */
+                iFrame = new Panel() {
+                    Left = 4,
+                    Top = ofsY,
+                    BorderStyle = BorderStyle.Fixed3D,
+                    AutoScroll = true
+                };
+                verticalPanel.Controls.Add(iFrame);
 
                 /* */
                 verticalPanel.Width = trbSpeedBar.Width + 12;
@@ -169,7 +171,6 @@ namespace Circuit {
             {
                 picCir.MouseDown += new MouseEventHandler((s, e) => { onMouseDown(e); });
                 picCir.MouseMove += new MouseEventHandler((s, e) => { onMouseMove(e); });
-                picCir.MouseLeave += new EventHandler((s, e) => { onMouseOut(e); });
                 picCir.MouseUp += new MouseEventHandler((s, e) => { onMouseUp(e); });
                 picCir.MouseWheel += new MouseEventHandler((s, e) => { onMouseWheel((PictureBox)s, e); });
                 picCir.MouseClick += new MouseEventHandler((s, e) => { onClick((PictureBox)s, e); });
@@ -304,11 +305,6 @@ namespace Circuit {
             }
         }
 
-        void onMouseOut(EventArgs e) {
-            mouseCursorX = -1;
-            mouseCursorY = -1;
-        }
-
         void onMouseDown(MouseEventArgs e) {
             mCir.StopElm = null; /* if stopped, allow user to select other elements to fix circuit */
             menuX = menuClientX = mouseCursorX = e.X;
@@ -366,7 +362,10 @@ namespace Circuit {
                 } else {
                     s = ((ScopeElm)mouseElm).elmScope;
                 }
-                s.properties(mParent.Location.X, mParent.Location.Y);
+                s.properties(
+                    mParent.Location.X + mouseCursorX,
+                    mParent.Location.Y + mouseCursorY
+                );
                 clearSelection();
                 mouseDragging = false;
                 return;
@@ -532,7 +531,7 @@ namespace Circuit {
                 }
             }
             backcv = new Bitmap(width, height);
-            backcontext = Graphics.FromImage(backcv);
+            backcontext = CustomGraphics.FromImage(backcv);
             setCircuitArea();
             setSimRunning(isRunning);
         }
@@ -553,22 +552,20 @@ namespace Circuit {
         }
 
         public void setiFrameHeight() {
-            // TODO: setiFrameHeight
-            //if (iFrame == null) {
-            //    return;
-            //}
-            //int i;
-            //int cumheight = 0;
-            //for (i = 0; i < verticalPanel.Controls.IndexOf(iFrame); i++) {
-            //    if (verticalPanel.Controls[i] != loadFileInput) {
-            //        cumheight = cumheight + verticalPanel.Controls[i].Height;
-            //    }
-            //}
-            //int ih = RootLayoutPanel.get().getOffsetHeight() - MENUBARHEIGHT - cumheight;
-            //if (ih < 0) {
-            //    ih = 0;
-            //}
-            //iFrame.Height = ih;
+            if (iFrame == null) {
+                return;
+            }
+            int height = 0;
+            for (int i = 0; i < iFrame.Controls.Count; i++) {
+                if (height < iFrame.Controls[i].Bottom) {
+                    height = iFrame.Controls[i].Bottom;
+                }
+            }
+            if (mParent.Height < iFrame.Top + height + 55) {
+                height = mParent.Height - iFrame.Top - 55;
+            }
+            iFrame.Height = height + 4;
+            verticalPanel.Height = iFrame.Bottom + 4;
         }
 
         void centreCircuit() {
@@ -1004,7 +1001,8 @@ namespace Circuit {
                 editDialog.closeDialog();
                 editDialog = null;
             }
-            editDialog = new EditDialog(eable, this,
+            editDialog = new EditDialog(eable, this);
+            editDialog.Show(
                 mouseCursorX + mParent.Location.X,
                 mouseCursorY + mParent.Location.Y
             );
@@ -1018,7 +1016,7 @@ namespace Circuit {
                 sliderDialog = null;
             }
             sliderDialog = new SliderDialog(ce, this);
-            sliderDialog.Show();
+            sliderDialog.Show(mParent.Left + mouseCursorX, mParent.Top + mouseCursorY);
         }
 
         void doExportAsImage() {
@@ -1760,8 +1758,6 @@ namespace Circuit {
             draggingPost = -1;
             int i;
 
-            debugMsg.Text = "";
-
             mousePost = -1;
             plotXElm = plotYElm = null;
 
@@ -1978,11 +1974,11 @@ namespace Circuit {
         void scrollValues(int deltay) {
             if (mouseElm != null && !dialogIsShowing() && scopeSelected == -1) {
                 if ((mouseElm is ResistorElm) || (mouseElm is CapacitorElm) || (mouseElm is InductorElm)) {
-                    var x = mParent.Location.X + mouseCursorX;
-                    var y = mParent.Location.Y + mouseCursorY;
                     scrollValuePopup = new ScrollValuePopup(deltay, mouseElm, this);
-                    scrollValuePopup.Show();
-                    scrollValuePopup.Location = new Point(Math.Max(0, x), Math.Max(0, y));
+                    scrollValuePopup.Show(
+                        mParent.Location.X + mouseCursorX,
+                        mParent.Location.Y + mouseCursorY
+                    );
                 }
             }
         }
@@ -2402,53 +2398,33 @@ namespace Circuit {
         }
 
         public void addWidgetToVerticalPanel(Control ctrl) {
-            if (iFrame != null) {
-                var tmp = new List<Control>();
-                {
-                    int insIdx = verticalPanel.Controls.IndexOf(iFrame);
-                    for (int i = 0; i < insIdx; i++) {
-                        tmp.Add(verticalPanel.Controls[i]);
-                    }
-                    tmp.Add(ctrl);
-                    for (int i = insIdx; i < verticalPanel.Controls.Count; i++) {
-                        tmp.Add(verticalPanel.Controls[i]);
-                    }
-                }
-                {
-                    verticalPanel.SuspendLayout();
-                    verticalPanel.Controls.Clear();
-                    int ofsY = 4;
-                    for (int i = 0; i < tmp.Count; i++) {
-                        tmp[i].Top = ofsY;
-                        verticalPanel.Controls.Add(tmp[i]);
-                        ofsY += tmp[i].Height + 4;
-                    }
-                    verticalPanel.ResumeLayout(false);
-                }
-                tmp.Clear();
-                setiFrameHeight();
-            } else {
-                int ofsY = 4;
-                for (int i = 0; i < verticalPanel.Controls.Count; i++) {
-                    ofsY += verticalPanel.Controls[i].Height + 4;
-                }
-                ctrl.Top = ofsY;
-                verticalPanel.Controls.Add(ctrl);
+            if (iFrame == null) {
+                return;
             }
+            var ofsY = 4;
+            for(int i=0; i< iFrame.Controls.Count; i++) {
+                if (ofsY < iFrame.Controls[i].Bottom) {
+                    ofsY = iFrame.Controls[i].Bottom;
+                }
+            }
+            ctrl.Top = ofsY;
+            iFrame.Controls.Add(ctrl);
+            setiFrameHeight();
         }
 
         public void removeWidgetFromVerticalPanel(Control ctrl) {
+            if (iFrame == null) {
+                return;
+            }
             int ofsY = 4;
-            verticalPanel.SuspendLayout();
-            verticalPanel.Controls.Remove(ctrl);
-            for (int i = 0; i < verticalPanel.Controls.Count; i++) {
-                verticalPanel.Controls[i].Top = ofsY;
-                ofsY += verticalPanel.Controls[i].Height + 4;
+            iFrame.SuspendLayout();
+            iFrame.Controls.Remove(ctrl);
+            for (int i = 0; i < iFrame.Controls.Count; i++) {
+                iFrame.Controls[i].Top = ofsY;
+                ofsY += iFrame.Controls[i].Height + 4;
             }
-            verticalPanel.ResumeLayout(false);
-            if (iFrame != null) {
-                setiFrameHeight();
-            }
+            iFrame.ResumeLayout(false);
+            setiFrameHeight();
         }
 
         public void updateModels() {
@@ -2604,7 +2580,7 @@ namespace Circuit {
                 if (sel && !ce.IsSelected) {
                     continue;
                 }
-                if (typeof(LabeledNodeElm) == ce.GetType()) {
+                if (ce is LabeledNodeElm) {
                     var lne = (LabeledNodeElm)ce;
                     string label = lne.text;
 

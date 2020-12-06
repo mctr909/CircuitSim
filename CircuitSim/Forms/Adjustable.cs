@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 using Circuit.Elements;
 
@@ -46,11 +47,34 @@ namespace Circuit {
             sim.addWidgetToVerticalPanel(slider = new TrackBar() {
                 SmallChange = 1,
                 LargeChange = 10,
+                TickFrequency = 10,
                 Minimum = 0,
-                Maximum = 101,
+                Maximum = 100,
                 Value = intValue,
-                Width = 100
+                Width = 175,
+                Height = 23
             });
+            if (elm is ResistorElm) {
+                slider.ValueChanged += new EventHandler((s, e) => {
+                    var trb = (TrackBar)s;
+                    ((ResistorElm)elm).Resistance = minValue + (maxValue - minValue) * trb.Value / trb.Maximum;
+                    CirSim.theSim.needAnalyze();
+                });
+            }
+            if (elm is CapacitorElm) {
+                slider.ValueChanged += new EventHandler((s, e) => {
+                    var trb = (TrackBar)s;
+                    ((CapacitorElm)elm).Capacitance = minValue + (maxValue - minValue) * trb.Value / trb.Maximum;
+                    CirSim.theSim.needAnalyze();
+                });
+            }
+            if (elm is InductorElm) {
+                slider.ValueChanged += new EventHandler((s, e) => {
+                    var trb = (TrackBar)s;
+                    ((InductorElm)elm).Inductance = minValue + (maxValue - minValue) * trb.Value / trb.Maximum;
+                    CirSim.theSim.needAnalyze();
+                });
+            }
         }
 
         public void setSliderValue(double value) {
@@ -61,7 +85,7 @@ namespace Circuit {
         }
 
         public void execute() {
-            CircuitElm.Sim.analyzeFlag = true;
+            CircuitElm.Sim.needAnalyze();
             if (settingValue) {
                 return;
             }

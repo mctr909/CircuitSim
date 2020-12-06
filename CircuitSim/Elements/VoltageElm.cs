@@ -31,7 +31,7 @@ namespace Circuit.Elements {
         Point ps2;
         Point textPos;
 
-        const double defaultPulseDuty = 1 / PI2;
+        const double defaultPulseDuty = 1 / Pi2;
 
         protected VoltageElm(int xx, int yy, int wf) : base(xx, yy) {
             waveform = wf;
@@ -58,7 +58,7 @@ namespace Circuit.Elements {
 
             if ((mFlags & FLAG_COS) != 0) {
                 mFlags &= ~FLAG_COS;
-                phaseShift = PI / 2;
+                phaseShift = Pi / 2;
             }
 
             /* old circuit files have the wrong duty cycle for pulse waveforms (wasn't configurable in the past) */
@@ -99,10 +99,10 @@ namespace Circuit.Elements {
         }
 
         double triangleFunc(double x) {
-            if (x < PI) {
-                return x * (2 / PI) - 1;
+            if (x < Pi) {
+                return x * (2 / Pi) - 1;
             }
-            return 1 - (x - PI) * (2 / PI);
+            return 1 - (x - Pi) * (2 / Pi);
         }
 
         public override void Stamp() {
@@ -130,20 +130,20 @@ namespace Circuit.Elements {
                 return bias;
             }
 
-            double w = PI2 * (Sim.t) * frequency + phaseShift;
+            double w = Pi2 * (Sim.t) * frequency + phaseShift;
             switch (waveform) {
             case WF_DC:
                 return maxVoltage + bias;
             case WF_AC:
                 return Math.Sin(w) * maxVoltage + bias;
             case WF_SQUARE:
-                return bias + ((w % PI2 > (PI2 * dutyCycle)) ? -maxVoltage : maxVoltage);
+                return bias + ((w % Pi2 > (Pi2 * dutyCycle)) ? -maxVoltage : maxVoltage);
             case WF_TRIANGLE:
-                return bias + triangleFunc(w % PI2) * maxVoltage;
+                return bias + triangleFunc(w % Pi2) * maxVoltage;
             case WF_SAWTOOTH:
-                return bias + (w % PI2) * (maxVoltage / PI) - maxVoltage;
+                return bias + (w % Pi2) * (maxVoltage / Pi) - maxVoltage;
             case WF_PULSE:
-                return ((w % PI2) < (PI2 * dutyCycle)) ? maxVoltage + bias : bias;
+                return ((w % Pi2) < (Pi2 * dutyCycle)) ? maxVoltage + bias : bias;
             case WF_NOISE:
                 return noiseValue;
             default: return 0;
@@ -167,20 +167,20 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             setBbox(X1, Y1, X2, Y2);
             draw2Leads(g);
 
             if (waveform == WF_DC) {
                 interpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, 10);
-                drawThickLine(g, getVoltageColor(Volts[0]), ps1, ps2);
+                g.DrawThickLine(getVoltageColor(Volts[0]), ps1, ps2);
 
                 int hs = 16;
                 setBbox(mPoint1, mPoint2, hs);
                 interpPoint(mLead1, mLead2, ref ps1, ref ps2, 1, hs);
-                drawThickLine(g, getVoltageColor(Volts[1]), ps1, ps2);
+                g.DrawThickLine(getVoltageColor(Volts[1]), ps1, ps2);
                 string s = getShortUnitText(maxVoltage, "V");
-                drawRightText(g, s, textPos.X, textPos.Y);
+                g.DrawRightText(s, textPos.X, textPos.Y);
             } else {
                 setBbox(mPoint1, mPoint2, circleSize);
                 interpPoint(mLead1, mLead2, ref ps1, .5);
@@ -207,13 +207,13 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        protected void drawWaveform(Graphics g, Point center) {
+        protected void drawWaveform(CustomGraphics g, Point center) {
             int x = center.X;
             int y = center.Y;
 
             if (waveform != WF_NOISE) {
-                PenThickLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
-                drawThickCircle(g, x, y, circleSize);
+                g.ThickLineColor = NeedsHighlight ? SelectColor : LightGrayColor;
+                g.DrawThickCircle(x, y, circleSize);
             }
 
             adjustBbox(x - circleSize, y - circleSize, x + circleSize, y + circleSize);
@@ -222,7 +222,7 @@ namespace Circuit.Elements {
             float xd = (float)(h * 2 * dutyCycle - h + x);
             xd = Math.Max(x - h + 1, Math.Min(x + h - 1, xd));
 
-            PenLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
+            g.LineColor = NeedsHighlight ? SelectColor : LightGrayColor;
 
             switch (waveform) {
             case WF_DC: {
@@ -230,45 +230,45 @@ namespace Circuit.Elements {
             }
             case WF_SQUARE:
                 if (maxVoltage < 0) {
-                    drawLine(g, x - h, y + h, x - h, y    );
-                    drawLine(g, x - h, y + h, xd   , y + h);
-                    drawLine(g, xd   , y + h, xd   , y - h);
-                    drawLine(g, x + h, y - h, xd   , y - h);
-                    drawLine(g, x + h, y    , x + h, y - h);
+                    g.DrawLine(x - h, y + h, x - h, y    );
+                    g.DrawLine(x - h, y + h, xd   , y + h);
+                    g.DrawLine(xd   , y + h, xd   , y - h);
+                    g.DrawLine(x + h, y - h, xd   , y - h);
+                    g.DrawLine(x + h, y    , x + h, y - h);
                 } else {
-                    drawLine(g, x - h, y - h, x - h, y    );
-                    drawLine(g, x - h, y - h, xd   , y - h);
-                    drawLine(g, xd   , y - h, xd   , y + h);
-                    drawLine(g, x + h, y + h, xd   , y + h);
-                    drawLine(g, x + h, y    , x + h, y + h);
+                    g.DrawLine(x - h, y - h, x - h, y    );
+                    g.DrawLine(x - h, y - h, xd   , y - h);
+                    g.DrawLine(xd   , y - h, xd   , y + h);
+                    g.DrawLine(x + h, y + h, xd   , y + h);
+                    g.DrawLine(x + h, y    , x + h, y + h);
                 }
                 break;
             case WF_PULSE:
                 if (maxVoltage < 0) {
-                    drawLine(g, x + h, y    , x + h, y    );
-                    drawLine(g, x + h, y    , xd   , y    );
-                    drawLine(g, xd   , y + h, xd   , y    );
-                    drawLine(g, x - h, y + h, xd   , y + h);
-                    drawLine(g, x - h, y + h, x - h, y    );
+                    g.DrawLine(x + h, y    , x + h, y    );
+                    g.DrawLine(x + h, y    , xd   , y    );
+                    g.DrawLine(xd   , y + h, xd   , y    );
+                    g.DrawLine(x - h, y + h, xd   , y + h);
+                    g.DrawLine(x - h, y + h, x - h, y    );
                 } else {
-                    drawLine(g, x - h, y - h, x - h, y    );
-                    drawLine(g, x - h, y - h, xd   , y - h);
-                    drawLine(g, xd   , y - h, xd   , y    );
-                    drawLine(g, x + h, y    , xd   , y    );
-                    drawLine(g, x + h, y    , x + h, y    );
+                    g.DrawLine(x - h, y - h, x - h, y    );
+                    g.DrawLine(x - h, y - h, xd   , y - h);
+                    g.DrawLine(xd   , y - h, xd   , y    );
+                    g.DrawLine(x + h, y    , xd   , y    );
+                    g.DrawLine(x + h, y    , x + h, y    );
                 }
                 break;
             case WF_SAWTOOTH:
-                drawLine(g, x, y - h, x - h, y    );
-                drawLine(g, x, y - h, x    , y + h);
-                drawLine(g, x, y + h, x + h, y    );
+                g.DrawLine(x, y - h, x - h, y    );
+                g.DrawLine(x, y - h, x    , y + h);
+                g.DrawLine(x, y + h, x + h, y    );
                 break;
             case WF_TRIANGLE: {
                 int xl = 5;
-                drawLine(g, x - xl * 2, y    , x - xl    , y - h);
-                drawLine(g, x - xl    , y - h, x         , y    );
-                drawLine(g, x         , y    , x + xl    , y + h);
-                drawLine(g, x + xl    , y + h, x + xl * 2, y    );
+                g.DrawLine(x - xl * 2, y    , x - xl    , y - h);
+                g.DrawLine(x - xl    , y - h, x         , y    );
+                g.DrawLine(x         , y    , x + xl    , y + h);
+                g.DrawLine(x + xl    , y + h, x + xl * 2, y    );
                 break;
             }
             case WF_NOISE: {
@@ -280,9 +280,9 @@ namespace Circuit.Elements {
                 int x0 = 0;
                 float y0 = 0;
                 for (int i = -xl; i <= xl; i++) {
-                    var yy = y + (float)(.95 * Math.Sin(i * PI / xl) * h);
+                    var yy = y + (float)(.95 * Math.Sin(i * Pi / xl) * h);
                     if (i != -xl) {
-                        drawLine(g, x0, y0, x + i, yy);
+                        g.DrawLine(x0, y0, x + i, yy);
                     }
                     x0 = x + i;
                     y0 = yy;
@@ -294,8 +294,8 @@ namespace Circuit.Elements {
             if (Sim.chkShowValuesCheckItem.Checked && waveform != WF_NOISE) {
                 var s = getShortUnitText(maxVoltage, "V\r\n");
                 s += getShortUnitText(frequency, "Hz\r\n");
-                s += getShortUnitText(phaseShift * TO_DEG, "°");
-                drawValues(g, s, 0);
+                s += getShortUnitText(phaseShift * ToDeg, "°");
+                drawValues(g, s, 0, 5);
             }
         }
 
@@ -319,7 +319,7 @@ namespace Circuit.Elements {
             }
 
             arr[1] = "I = " + getCurrentText(mCurrent);
-            arr[2] = (typeof(RailElm) == GetType() ? "V = " : "Vd = ") + getVoltageText(VoltageDiff);
+            arr[2] = ((this is RailElm) ? "V = " : "Vd = ") + getVoltageText(VoltageDiff);
             int i = 3;
             if (waveform != WF_DC && waveform != WF_VAR && waveform != WF_NOISE) {
                 arr[i++] = "f = " + getUnitText(frequency, "Hz");
@@ -366,7 +366,7 @@ namespace Circuit.Elements {
                 return new EditInfo("Frequency (Hz)", frequency, 4, 500);
             }
             if (n == 4) {
-                return new EditInfo("Phase Offset (degrees)", phaseShift * TO_DEG, -180, 180).SetDimensionless();
+                return new EditInfo("Phase Offset (degrees)", phaseShift * ToDeg, -180, 180).SetDimensionless();
             }
             if (n == 5 && (waveform == WF_PULSE || waveform == WF_SQUARE)) {
                 return new EditInfo("Duty Cycle", dutyCycle * 100, 0, 100).SetDimensionless();
@@ -416,7 +416,7 @@ namespace Circuit.Elements {
                 SetPoints();
             }
             if (n == 4) {
-                phaseShift = ei.Value * TO_RAD;
+                phaseShift = ei.Value * ToRad;
             }
             if (n == 5) {
                 dutyCycle = ei.Value * .01;

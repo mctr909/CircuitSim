@@ -16,7 +16,7 @@ namespace Circuit.Elements {
         /* used for PolarCapacitorElm */
         Point[] platePoints;
 
-        public double Capacitance { get; private set; }
+        public double Capacitance { get; set; }
 
         public bool IsTrapezoidal { get { return (mFlags & FLAG_BACK_EULER) == 0; } }
 
@@ -74,24 +74,24 @@ namespace Circuit.Elements {
             }
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             int hs = 8;
             setBbox(mPoint1, mPoint2, hs);
 
             /* draw first lead and plate */
-            PenThickLine.Color = getVoltageColor(Volts[0]);
-            drawThickLine(g, mPoint1, mLead1);
-            drawThickLine(g, plate1[0], plate1[1]);
+            g.ThickLineColor = getVoltageColor(Volts[0]);
+            g.DrawThickLine(mPoint1, mLead1);
+            g.DrawThickLine(plate1[0], plate1[1]);
             /* draw second lead and plate */
-            PenThickLine.Color = getVoltageColor(Volts[1]);
-            drawThickLine(g, mPoint2, mLead2);
-            drawThickLine(g, plate2[0], plate2[1]);
+            g.ThickLineColor = getVoltageColor(Volts[1]);
+            g.DrawThickLine(mPoint2, mLead2);
+            g.DrawThickLine(plate2[0], plate2[1]);
 
             if (platePoints == null) {
-                drawThickLine(g, plate2[0], plate2[1]);
+                g.DrawThickLine(plate2[0], plate2[1]);
             } else {
                 for (int i = 0; i != 7; i++) {
-                    drawThickLine(g, platePoints[i], platePoints[i + 1]);
+                    g.DrawThickLine(platePoints[i], platePoints[i + 1]);
                 }
             }
 
@@ -103,7 +103,7 @@ namespace Circuit.Elements {
             drawPosts(g);
             if (Sim.chkShowValuesCheckItem.Checked) {
                 var s = getShortUnitText(Capacitance, "");
-                drawRightText(g, s, textPos.X, textPos.Y);
+                g.DrawRightText(s, textPos.X, textPos.Y);
             }
         }
 

@@ -64,16 +64,16 @@ namespace Circuit.Elements {
             textPos = interpPoint(mPoint1, mPoint2, 1.0 + 0.66 * circleSize / distance(mPoint1, mPoint2), 24 * mDsign);
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, circleSize);
 
-            drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
+            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
 
-            PenThickLine.Color = needsHighlight() ? SelectColor : LightGrayColor;
+            g.ThickLineColor = NeedsHighlight ? SelectColor : LightGrayColor;
 
             int xc = mPoint2.X;
             int yc = mPoint2.Y;
-            drawThickCircle(g, xc, yc, circleSize);
+            g.DrawThickCircle(xc, yc, circleSize);
 
             adjustBbox(xc - circleSize, yc - circleSize, xc + circleSize, yc + circleSize);
 
@@ -91,14 +91,14 @@ namespace Circuit.Elements {
 
             int x0 = 0;
             float y0 = 0;
-            PenLine.Color = LightGrayColor;
+            g.LineColor = LightGrayColor;
             for (int i = -xl; i <= xl; i++) {
-                float yy = yc + (float)(.95 * Math.Sin(i * PI * w / xl) * wl);
+                float yy = yc + (float)(.95 * Math.Sin(i * Pi * w / xl) * wl);
                 if (i == -xl) {
                     x0 = xc + i;
                     y0 = yy;
                 } else {
-                    drawLine(g, x0, y0, xc + i, yy);
+                    g.DrawLine(x0, y0, xc + i, yy);
                     x0 = xc + i;
                     y0 = yy;
                 }
@@ -106,7 +106,7 @@ namespace Circuit.Elements {
 
             if (Sim.chkShowValuesCheckItem.Checked) {
                 string s = getShortUnitText(frequency, "Hz");
-                drawRightText(g, s, textPos.X, textPos.Y);
+                drawValues(g, s, 20, -15);
             }
 
             drawPosts(g);
@@ -149,7 +149,7 @@ namespace Circuit.Elements {
                 setParams();
             }
             v = Math.Sin(freqTime) * maxV;
-            freqTime += frequency * PI2 * Sim.timeStep;
+            freqTime += frequency * Pi2 * Sim.timeStep;
             frequency = frequency * fmul + fadd;
             if (frequency >= maxF && dir == 1) {
                 if ((mFlags & FLAG_BIDIR) != 0) {

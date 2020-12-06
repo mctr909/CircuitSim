@@ -9,10 +9,10 @@ namespace Circuit.Elements {
         protected const int SCALE_M = 2;
         protected const int SCALE_MU = 3;
 
-        protected const double PI = Math.PI;
-        protected const double PI2 = Math.PI * 2;
-        protected const double TO_DEG = 180 / Math.PI;
-        protected const double TO_RAD = Math.PI / 180;
+        protected const double Pi = Math.PI;
+        protected const double Pi2 = Math.PI * 2;
+        protected const double ToDeg = 180 / Math.PI;
+        protected const double ToRad = Math.PI / 180;
         #endregion
 
         #region static variable
@@ -70,6 +70,17 @@ namespace Circuit.Elements {
         public DUMP_ID DumpType { get { return getDumpType(); } }
 
         public bool NeedsShortcut { get { return Shortcut > 0 && (int)Shortcut <= 127; } }
+
+        public bool NeedsHighlight {
+            get {
+                if (null == mMouseElmRef) {
+                    return false;
+                }
+                /* Test if the current mouseElm is a ScopeElm and, if so, does it belong to this elm */
+                var isScopeElm = (mMouseElmRef is ScopeElm) && ((ScopeElm)mMouseElmRef).elmScope.getElm().Equals(this);
+                return mMouseElmRef.Equals(this) || IsSelected || isScopeElm;
+            }
+        }
         #endregion
 
         #region virtual property
@@ -305,7 +316,7 @@ namespace Circuit.Elements {
         /// update and draw current for simple two-terminal element
         /// </summary>
         /// <param name="g"></param>
-        protected void doDots(Graphics g) {
+        protected void doDots(CustomGraphics g) {
             updateDotCount();
             if (Sim.dragElm != this) {
                 drawDots(g, mPoint1, mPoint2, mCurCount);
@@ -318,34 +329,8 @@ namespace Circuit.Elements {
             return 3;
         }
 
-        protected Color getVoltageColor(double volts) {
-            if (needsHighlight()) {
-                return SelectColor;
-            }
-            if (!Sim.chkVoltsCheckItem.Checked) {
-                return WhiteColor;
-            }
-            int c = (int)((volts + VoltageRange) * (COLOR_SCALE_COUNT - 1) / (VoltageRange * 2));
-            if (c < 0) {
-                c = 0;
-            }
-            if (c >= COLOR_SCALE_COUNT) {
-                c = COLOR_SCALE_COUNT - 1;
-            }
-            return mColorScale[c];
-        }
-
         protected bool comparePair(int x1, int x2, int y1, int y2) {
             return (x1 == y1 && x2 == y2) || (x1 == y2 && x2 == y1);
-        }
-
-        protected bool needsHighlight() {
-            if (null == mMouseElmRef) {
-                return false;
-            }
-            /* Test if the current mouseElm is a ScopeElm and, if so, does it belong to this elm */
-            var isScopeElm = (mMouseElmRef is ScopeElm) && ((ScopeElm)mMouseElmRef).elmScope.getElm().Equals(this);
-            return mMouseElmRef.Equals(this) || IsSelected || isScopeElm;
         }
         #endregion
 
@@ -509,7 +494,7 @@ namespace Circuit.Elements {
 
         public virtual void StepFinished() { }
 
-        public virtual void Draw(Graphics g) { }
+        public virtual void Draw(CustomGraphics g) { }
 
         /// <summary>
         /// draw second point to xx, yy

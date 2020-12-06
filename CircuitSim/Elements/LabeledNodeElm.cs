@@ -94,9 +94,10 @@ namespace Circuit.Elements {
             return nodeNumber;
         }
 
-        public override void Draw(Graphics g) {
-            drawThickLine(g, getVoltageColor(Volts[0]), mPoint1, mLead1);
-            PenThickLine.Color = needsHighlight() ? SelectColor : WhiteColor;
+        public override void Draw(CustomGraphics g) {
+            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
+
+            g.ThickLineColor = NeedsHighlight ? SelectColor : WhiteColor;
 
             string str = text;
             bool lineOver = false;
@@ -107,9 +108,9 @@ namespace Circuit.Elements {
             drawCenteredLText(g, str, X2, Y2, true);
 
             if (lineOver) {
-                int ya = Y2 - FONT_TEXT.Height;
-                int sw = (int)g.MeasureString(str, FONT_TEXT).Width;
-                g.DrawLine(PenThickLine, X2 - sw / 2, ya, X2 + sw / 2, ya);
+                int ya = Y2 - CustomGraphics.FontText.Height;
+                int sw = (int)g.GetTextSize(str).Width;
+                g.DrawThickLine(X2 - sw / 2, ya, X2 + sw / 2, ya);
             }
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(g, mPoint1, mLead1, mCurCount);

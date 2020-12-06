@@ -99,26 +99,26 @@ namespace Circuit.Elements {
             plusPoint = interpPoint(mPoint1, mPoint2, (mLen / 2 - 20) / mLen, 16 * mDsign);
         }
 
-        public override void Draw(Graphics g) {
+        public override void Draw(CustomGraphics g) {
             int hs = 8;
             setBbox(mPoint1, mPoint2, hs);
-            bool selected = needsHighlight();
+            bool selected = NeedsHighlight;
             double len = (selected || Sim.dragElm == this || mustShowVoltage()) ? 16 : mLen - 32;
             calcLeads((int)len);
 
             if (selected) {
-                PenThickLine.Color = SelectColor;
+                g.ThickLineColor = SelectColor;
             } else {
-                PenThickLine.Color = getVoltageColor(Volts[0]);
+                g.ThickLineColor = getVoltageColor(Volts[0]);
             }
-            drawThickLine(g, mPoint1, mLead1);
+            g.DrawThickLine(mPoint1, mLead1);
 
             if (selected) {
-                PenThickLine.Color = SelectColor;
+                g.ThickLineColor = SelectColor;
             } else {
-                PenThickLine.Color = getVoltageColor(Volts[1]);
+                g.ThickLineColor = getVoltageColor(Volts[1]);
             }
-            drawThickLine(g, mLead2, mPoint2);
+            g.DrawThickLine(mLead2, mPoint2);
 
             if (this == Sim.plotXElm) {
                 drawCenteredLText(g, "X", center.X, center.Y, true);
