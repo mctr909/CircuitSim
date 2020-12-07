@@ -86,7 +86,7 @@ namespace Circuit.Elements {
 
         public override void Stamp() {
             if (position == 0) {
-                Cir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
+                mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
             }
         }
 

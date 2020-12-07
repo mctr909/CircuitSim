@@ -120,7 +120,7 @@ namespace Circuit.Elements {
         }
 
         public override void Stamp() {
-            Cir.StampVoltageSource(0, Nodes[0], mVoltSource);
+            mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
         }
 
         void setParams() {
@@ -171,7 +171,7 @@ namespace Circuit.Elements {
         }
 
         public override void DoStep() {
-            Cir.UpdateVoltageSource(0, Nodes[0], mVoltSource, v);
+            mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, v);
         }
 
         public override bool HasGroundConnection(int n1) { return true; }

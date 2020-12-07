@@ -9,13 +9,13 @@ namespace Circuit.Elements {
         public double Inductance { get; set; }
 
         public InductorElm(int xx, int yy) : base(xx, yy) {
-            ind = new Inductor(Sim, Cir);
+            ind = new Inductor(Sim, mCir);
             Inductance = 0.001;
             ind.setup(Inductance, mCurrent, mFlags);
         }
 
         public InductorElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
-            ind = new Inductor(Sim, Cir);
+            ind = new Inductor(Sim, mCir);
             Inductance = st.nextTokenDouble();
             mCurrent = st.nextTokenDouble();
             ind.setup(Inductance, mCurrent, mFlags);

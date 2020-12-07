@@ -72,8 +72,8 @@ namespace Circuit.Elements {
         }
 
         public override void Stamp() {
-            Cir.StampNonLinear(Nodes[0]);
-            Cir.StampNonLinear(Nodes[1]);
+            mCir.StampNonLinear(Nodes[0]);
+            mCir.StampNonLinear(Nodes[1]);
         }
 
         public override void DoStep() {
@@ -82,7 +82,7 @@ namespace Circuit.Elements {
                 open = !open;
             }
             resistance = open ? r_off : r_on;
-            Cir.StampResistor(Nodes[0], Nodes[1], resistance);
+            mCir.StampResistor(Nodes[0], Nodes[1], resistance);
         }
 
         public override void Drag(int xx, int yy) {

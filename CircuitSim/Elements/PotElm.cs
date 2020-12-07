@@ -277,8 +277,8 @@ namespace Circuit.Elements {
         public override void Stamp() {
             resistance1 = maxResistance * position;
             resistance2 = maxResistance * (1 - position);
-            Cir.StampResistor(Nodes[0], Nodes[2], resistance1);
-            Cir.StampResistor(Nodes[2], Nodes[1], resistance2);
+            mCir.StampResistor(Nodes[0], Nodes[2], resistance1);
+            mCir.StampResistor(Nodes[2], Nodes[1], resistance2);
         }
 
         public override void GetInfo(string[] arr) {

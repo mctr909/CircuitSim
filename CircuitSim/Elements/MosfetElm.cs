@@ -108,10 +108,10 @@ namespace Circuit.Elements {
         /* set up body diodes */
         void setupDiodes() {
             /* diode from node 1 to body terminal */
-            diodeB1 = new Diode(Sim, Cir);
+            diodeB1 = new Diode(Sim, mCir);
             diodeB1.setupForDefaultModel();
             /* diode from node 2 to body terminal */
-            diodeB2 = new Diode(Sim, Cir);
+            diodeB2 = new Diode(Sim, mCir);
             diodeB2.setupForDefaultModel();
         }
 
@@ -277,8 +277,8 @@ namespace Circuit.Elements {
         }
 
         public override void Stamp() {
-            Cir.StampNonLinear(Nodes[1]);
-            Cir.StampNonLinear(Nodes[2]);
+            mCir.StampNonLinear(Nodes[1]);
+            mCir.StampNonLinear(Nodes[2]);
 
             if (hasBodyTerminal()) {
                 bodyTerminal = 3;
@@ -313,11 +313,11 @@ namespace Circuit.Elements {
                 return false;
             }
             /* larger differences are fine if value is large */
-            if (Cir.SubIterations > 10 && diff < Math.Abs(now) * .001) {
+            if (mCir.SubIterations > 10 && diff < Math.Abs(now) * .001) {
                 return false;
             }
             /* if we're having trouble converging, get more lenient */
-            if (Cir.SubIterations > 100 && diff < .01 + (Cir.SubIterations - 100) * .0001) {
+            if (mCir.SubIterations > 100 && diff < .01 + (mCir.SubIterations - 100) * .0001) {
                 return false;
             }
             return true;
@@ -378,7 +378,7 @@ namespace Circuit.Elements {
             double vgs = vs[gate] - vs[source];
             double vds = vs[drain] - vs[source];
             if (!finished && (nonConvergence(lastv1, vs[1]) || nonConvergence(lastv2, vs[2]) || nonConvergence(lastv0, vs[0]))) {
-                Cir.Converged = false;
+                mCir.Converged = false;
             }
             lastv0 = vs[0];
             lastv1 = vs[1];
@@ -432,16 +432,16 @@ namespace Circuit.Elements {
             }
 
             double rs = -pnp * ids0 + Gds * realvds + gm * realvgs;
-            Cir.StampMatrix(Nodes[drain], Nodes[drain], Gds);
-            Cir.StampMatrix(Nodes[drain], Nodes[source], -Gds - gm);
-            Cir.StampMatrix(Nodes[drain], Nodes[gate], gm);
+            mCir.StampMatrix(Nodes[drain], Nodes[drain], Gds);
+            mCir.StampMatrix(Nodes[drain], Nodes[source], -Gds - gm);
+            mCir.StampMatrix(Nodes[drain], Nodes[gate], gm);
 
-            Cir.StampMatrix(Nodes[source], Nodes[drain], -Gds);
-            Cir.StampMatrix(Nodes[source], Nodes[source], Gds + gm);
-            Cir.StampMatrix(Nodes[source], Nodes[gate], -gm);
+            mCir.StampMatrix(Nodes[source], Nodes[drain], -Gds);
+            mCir.StampMatrix(Nodes[source], Nodes[source], Gds + gm);
+            mCir.StampMatrix(Nodes[source], Nodes[gate], -gm);
 
-            Cir.StampRightSide(Nodes[drain], rs);
-            Cir.StampRightSide(Nodes[source], -rs);
+            mCir.StampRightSide(Nodes[drain], rs);
+            mCir.StampRightSide(Nodes[source], -rs);
         }
 
         void getFetInfo(string[] arr, string n) {

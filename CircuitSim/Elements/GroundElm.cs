@@ -39,7 +39,7 @@ namespace Circuit.Elements {
         public override void SetCurrent(int x, double c) { mCurrent = -c; }
 
         public override void Stamp() {
-            Cir.StampVoltageSource(0, Nodes[0], mVoltSource, 0);
+            mCir.StampVoltageSource(0, Nodes[0], mVoltSource, 0);
         }
 
         public override void GetInfo(string[] arr) {

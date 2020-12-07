@@ -19,7 +19,7 @@ namespace Circuit.Elements {
         public static void setColorScale() {
             mColorScale = new Color[ColorScaleCount];
             for (int i = 0; i != ColorScaleCount; i++) {
-                double v = i * 2.0 / ColorScaleCount - 1;
+                double v = i * 1.0 / ColorScaleCount - 0.5;
                 if (v < 0) {
                     int n1 = (int)(128 * -v) + 127;
                     int n2 = (int)(127 * (1 + v));
@@ -197,7 +197,7 @@ namespace Circuit.Elements {
             float h = w * 1.2f;
             float wh = w * 0.5f;
             float hh = h * 0.5f;
-            float th = (float)(theta(mLead1, mLead2) * ToDeg);
+            float th = (float)(angle(mLead1, mLead2) * ToDeg);
             var pos = new Point();
             for (int loop = 0; loop != loopCt; loop++) {
                 interpPoint(mLead1, mLead2, ref pos, (loop + 0.5) / loopCt, 0);
@@ -217,7 +217,7 @@ namespace Circuit.Elements {
             float w = coilLen / loopCt;
             float wh = w * 0.5f;
             hs *= mDsign;
-            if (theta(p1, p2) < 0) {
+            if (angle(p1, p2) < 0) {
                 hs = -hs;
             }
             var pos = new Point();
@@ -245,7 +245,7 @@ namespace Circuit.Elements {
         }
 
         #region Math utils
-        public static double theta(Point p1, Point p2) {
+        public static double angle(Point p1, Point p2) {
             double x = p2.X - p1.X;
             double y = p2.Y - p1.Y;
             return Math.Atan2(y, x);
@@ -362,7 +362,7 @@ namespace Circuit.Elements {
         }
 
         public static string format(double v, bool sf) {
-            return sf ? v.ToString("0.#") : v.ToString("0.#");
+            return sf ? v.ToString("0.##") : v.ToString("0.##");
         }
 
         public static string getUnitText(double v, string u) {

@@ -71,15 +71,15 @@ namespace Circuit.Elements {
 
         public override void Stamp() {
             if (waveform == WF_DC) {
-                Cir.StampVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
+                mCir.StampVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
             } else {
-                Cir.StampVoltageSource(0, Nodes[0], mVoltSource);
+                mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
             }
         }
 
         public override void DoStep() {
             if (waveform != WF_DC) {
-                Cir.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
+                mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
             }
         }
 

@@ -171,7 +171,7 @@ namespace Circuit.Elements {
         }
 
         public override void Stamp() {
-            Cir.StampVoltageSource(0, Nodes[inputCount], mVoltSource);
+            mCir.StampVoltageSource(0, Nodes[inputCount], mVoltSource);
         }
 
         bool hasSchmittInputs() { return (mFlags & FLAG_SCHMITT) != 0; }
@@ -207,7 +207,7 @@ namespace Circuit.Elements {
             }
             lastOutput = f;
             double res = f ? highVoltage : 0;
-            Cir.UpdateVoltageSource(0, Nodes[inputCount], mVoltSource, res);
+            mCir.UpdateVoltageSource(0, Nodes[inputCount], mVoltSource, res);
         }
 
         public override EditInfo GetEditInfo(int n) {

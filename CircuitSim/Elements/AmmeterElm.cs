@@ -175,7 +175,7 @@ namespace Circuit.Elements {
         }
 
         public override void Stamp() {
-            Cir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
+            mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
         }
 
         bool mustShowCurrent() {

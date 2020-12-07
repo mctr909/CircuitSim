@@ -71,11 +71,11 @@ namespace Circuit.Elements {
         public void stampCurrentSource(bool broken) {
             if (broken) {
                 /* no current path; stamping a current source would cause a matrix error. */
-                Cir.StampResistor(Nodes[0], Nodes[1], 1e8);
+                mCir.StampResistor(Nodes[0], Nodes[1], 1e8);
                 mCurrent = 0;
             } else {
                 /* ok to stamp a current source */
-                Cir.StampCurrentSource(Nodes[0], Nodes[1], currentValue);
+                mCir.StampCurrentSource(Nodes[0], Nodes[1], currentValue);
                 mCurrent = currentValue;
             }
         }

@@ -78,7 +78,7 @@ namespace Circuit.Elements {
         }
 
         public override void Stamp() {
-            Cir.StampVoltageSource(0, Nodes[1], mVoltSource);
+            mCir.StampVoltageSource(0, Nodes[1], mVoltSource);
         }
 
         public override void StartIteration() {
@@ -89,7 +89,7 @@ namespace Circuit.Elements {
             double v = Volts[0] > highVoltage * .5 ? 0 : highVoltage;
             double maxStep = slewRate * Sim.timeStep * 1e9;
             v = Math.Max(Math.Min(lastOutputVoltage + maxStep, v), lastOutputVoltage - maxStep);
-            Cir.UpdateVoltageSource(0, Nodes[1], mVoltSource, v);
+            mCir.UpdateVoltageSource(0, Nodes[1], mVoltSource, v);
         }
 
         public override void GetInfo(string[] arr) {

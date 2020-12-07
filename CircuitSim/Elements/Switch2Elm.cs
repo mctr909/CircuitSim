@@ -115,7 +115,7 @@ namespace Circuit.Elements {
             if (position == 2 && hasCenterOff()) { /* in center? */
                 return;
             }
-            Cir.StampVoltageSource(Nodes[0], Nodes[position + 1], mVoltSource, 0);
+            mCir.StampVoltageSource(Nodes[0], Nodes[position + 1], mVoltSource, 0);
         }
 
         public override void toggle() {

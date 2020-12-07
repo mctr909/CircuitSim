@@ -64,7 +64,7 @@ namespace Circuit.Elements {
 
         public override void Stamp() {
             if (needsPullDown()) {
-                Cir.StampResistor(Nodes[0], 0, 1e6);
+                mCir.StampResistor(Nodes[0], 0, 1e6);
             }
         }
 

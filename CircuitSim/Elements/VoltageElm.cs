@@ -107,15 +107,15 @@ namespace Circuit.Elements {
 
         public override void Stamp() {
             if (waveform == WF_DC) {
-                Cir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
+                mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
             } else {
-                Cir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource);
+                mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource);
             }
         }
 
         public override void DoStep() {
             if (waveform != WF_DC) {
-                Cir.UpdateVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
+                mCir.UpdateVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
             }
         }
 
@@ -336,7 +336,7 @@ namespace Circuit.Elements {
                     arr[i++] = "wavelength = " + getUnitText(2.9979e8 / frequency, "m");
                 }
             }
-            if (waveform == WF_DC && mCurrent != 0 && Cir.ShowResistanceInVoltageSources) {
+            if (waveform == WF_DC && mCurrent != 0 && mCir.ShowResistanceInVoltageSources) {
                 arr[i++] = "(R = " + getUnitText(maxVoltage / mCurrent, CirSim.ohmString) + ")";
             }
             arr[i++] = "P = " + getUnitText(Power, "W");

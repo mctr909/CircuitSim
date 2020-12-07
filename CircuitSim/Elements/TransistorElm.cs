@@ -108,7 +108,7 @@ namespace Circuit.Elements {
                 } else {
                     vnew = vt * Math.Log(vnew / vt);
                 }
-                Cir.Converged = false;
+                mCir.Converged = false;
                 /*Console.WriteLine(vnew + " " + oo + " " + vold);*/
             }
             return vnew;
@@ -186,9 +186,9 @@ namespace Circuit.Elements {
         }
 
         public override void Stamp() {
-            Cir.StampNonLinear(Nodes[V_B]);
-            Cir.StampNonLinear(Nodes[V_C]);
-            Cir.StampNonLinear(Nodes[V_E]);
+            mCir.StampNonLinear(Nodes[V_B]);
+            mCir.StampNonLinear(Nodes[V_C]);
+            mCir.StampNonLinear(Nodes[V_E]);
         }
 
         public override void DoStep() {
@@ -196,15 +196,15 @@ namespace Circuit.Elements {
             double vbe = Volts[V_B] - Volts[V_E]; /* typically positive */
             if (Math.Abs(vbc - lastvbc) > .01 || /* .01 */
                 Math.Abs(vbe - lastvbe) > .01) {
-                Cir.Converged = false;
+                mCir.Converged = false;
             }
             /* To prevent a possible singular matrix,
              * put a tiny conductance in parallel with each P-N junction. */
             gmin = leakage * 0.01;
-            if (Cir.SubIterations > 100) {
+            if (mCir.SubIterations > 100) {
                 /* if we have trouble converging, put a conductance in parallel with all P-N junctions.
                  * Gradually increase the conductance value for each iteration. */
-                gmin = Math.Exp(-9 * Math.Log(10) * (1 - Cir.SubIterations / 300.0));
+                gmin = Math.Exp(-9 * Math.Log(10) * (1 - mCir.SubIterations / 300.0));
                 if (gmin > .1) {
                     gmin = .1;
                 }
@@ -241,22 +241,22 @@ namespace Circuit.Elements {
              * node 0 is the base,
              * node 1 the collector,
              * node 2 the emitter. */
-            Cir.StampMatrix(Nodes[V_B], Nodes[V_B], -gee - gec - gce - gcc);
-            Cir.StampMatrix(Nodes[V_B], Nodes[V_C], gec + gcc);
-            Cir.StampMatrix(Nodes[V_B], Nodes[V_E], gee + gce);
-            Cir.StampMatrix(Nodes[V_C], Nodes[V_B], gce + gcc);
-            Cir.StampMatrix(Nodes[V_C], Nodes[V_C], -gcc);
-            Cir.StampMatrix(Nodes[V_C], Nodes[V_E], -gce);
-            Cir.StampMatrix(Nodes[V_E], Nodes[V_B], gee + gec);
-            Cir.StampMatrix(Nodes[V_E], Nodes[V_C], -gec);
-            Cir.StampMatrix(Nodes[V_E], Nodes[V_E], -gee);
+            mCir.StampMatrix(Nodes[V_B], Nodes[V_B], -gee - gec - gce - gcc);
+            mCir.StampMatrix(Nodes[V_B], Nodes[V_C], gec + gcc);
+            mCir.StampMatrix(Nodes[V_B], Nodes[V_E], gee + gce);
+            mCir.StampMatrix(Nodes[V_C], Nodes[V_B], gce + gcc);
+            mCir.StampMatrix(Nodes[V_C], Nodes[V_C], -gcc);
+            mCir.StampMatrix(Nodes[V_C], Nodes[V_E], -gce);
+            mCir.StampMatrix(Nodes[V_E], Nodes[V_B], gee + gec);
+            mCir.StampMatrix(Nodes[V_E], Nodes[V_C], -gec);
+            mCir.StampMatrix(Nodes[V_E], Nodes[V_E], -gee);
 
             /* we are solving for v(k+1), not delta v, so we use formula
              * 10.5.13 (from Pillage), multiplying J by v(k) */
 
-            Cir.StampRightSide(Nodes[V_B], -ib - (gec + gcc) * vbc - (gee + gce) * vbe);
-            Cir.StampRightSide(Nodes[V_C], -ic + gce * vbe + gcc * vbc);
-            Cir.StampRightSide(Nodes[V_E], -ie + gee * vbe + gec * vbc);
+            mCir.StampRightSide(Nodes[V_B], -ib - (gec + gcc) * vbc - (gee + gce) * vbe);
+            mCir.StampRightSide(Nodes[V_C], -ic + gce * vbe + gcc * vbc);
+            mCir.StampRightSide(Nodes[V_E], -ie + gee * vbe + gec * vbc);
         }
 
         public override string GetScopeText(int x) {
@@ -347,7 +347,7 @@ namespace Circuit.Elements {
         public override void StepFinished() {
             /* stop for huge currents that make simulator act weird */
             if (Math.Abs(ic) > 1e12 || Math.Abs(ib) > 1e12) {
-                Cir.Stop("max current exceeded", this);
+                mCir.Stop("max current exceeded", this);
             }
         }
 

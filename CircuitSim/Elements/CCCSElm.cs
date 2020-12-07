@@ -38,10 +38,10 @@ namespace Circuit.Elements {
         public override void Stamp() {
             /* voltage source (0V) between C+ and C- so we can measure current */
             int vn1 = pins[1].voltSource;
-            Cir.StampVoltageSource(Nodes[0], Nodes[1], vn1, 0);
+            mCir.StampVoltageSource(Nodes[0], Nodes[1], vn1, 0);
 
-            Cir.StampNonLinear(Nodes[2]);
-            Cir.StampNonLinear(Nodes[3]);
+            mCir.StampNonLinear(Nodes[2]);
+            mCir.StampNonLinear(Nodes[3]);
         }
 
         public override void DoStep() {
@@ -50,7 +50,7 @@ namespace Circuit.Elements {
                 pins[inputCount].current = 0;
                 pins[inputCount + 1].current = 0;
                 /* avoid singular matrix errors */
-                Cir.StampResistor(Nodes[inputCount], Nodes[inputCount + 1], 1e8);
+                mCir.StampResistor(Nodes[inputCount], Nodes[inputCount + 1], 1e8);
                 return;
             }
 
@@ -60,9 +60,9 @@ namespace Circuit.Elements {
 
             double cur = pins[1].current;
             if (Math.Abs(cur - lastCurrent) > convergeLimit) {
-                Cir.Converged = false;
+                mCir.Converged = false;
             }
-            int vn1 = pins[1].voltSource + Cir.NodeList.Count;
+            int vn1 = pins[1].voltSource + mCir.NodeList.Count;
             if (expr != null) {
                 /* calculate output */
                 exprState.values[8] = cur;  /* I = current */
@@ -81,11 +81,11 @@ namespace Circuit.Elements {
                 if (Math.Abs(dx) < 1e-6) {
                     dx = sign(dx, 1e-6);
                 }
-                Cir.StampCCCS(Nodes[3], Nodes[2], pins[1].voltSource, dx);
+                mCir.StampCCCS(Nodes[3], Nodes[2], pins[1].voltSource, dx);
                 /* adjust right side */
                 rs -= dx * cur;
                 /*Console.WriteLine("ccedx " + cur + " " + dx + " " + rs); */
-                Cir.StampCurrentSource(Nodes[3], Nodes[2], rs);
+                mCir.StampCurrentSource(Nodes[3], Nodes[2], rs);
             }
 
             lastCurrent = cur;

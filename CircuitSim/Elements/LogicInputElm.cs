@@ -73,7 +73,7 @@ namespace Circuit.Elements {
             if (isTernary()) {
                 v = position * 2.5;
             }
-            Cir.StampVoltageSource(0, Nodes[0], mVoltSource, v);
+            mCir.StampVoltageSource(0, Nodes[0], mVoltSource, v);
         }
 
         public override void GetInfo(string[] arr) {

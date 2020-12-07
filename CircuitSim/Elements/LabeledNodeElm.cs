@@ -124,7 +124,7 @@ namespace Circuit.Elements {
         public override void SetCurrent(int x, double c) { mCurrent = -c; }
 
         public override void Stamp() {
-            Cir.StampVoltageSource(nodeNumber, Nodes[0], mVoltSource, 0);
+            mCir.StampVoltageSource(nodeNumber, Nodes[0], mVoltSource, 0);
         }
 
         public override void GetInfo(string[] arr) {

@@ -23,13 +23,13 @@ namespace Circuit.Elements {
 
         public DiodeElm(int xx, int yy) : base(xx, yy) {
             modelName = lastModelName;
-            diode = new Diode(Sim, Cir);
+            diode = new Diode(Sim, mCir);
             setup();
         }
 
         public DiodeElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
             const double defaultdrop = .805904783;
-            diode = new Diode(Sim, Cir);
+            diode = new Diode(Sim, mCir);
             double fwdrop = defaultdrop;
             double zvoltage = 0;
             if ((f & FLAG_MODEL) != 0) {
@@ -128,7 +128,7 @@ namespace Circuit.Elements {
                 /* create diode from node 0 to internal node */
                 diode.stamp(Nodes[0], Nodes[2]);
                 /* create resistor from internal node to node 1 */
-                Cir.StampResistor(Nodes[1], Nodes[2], model.seriesResistance);
+                mCir.StampResistor(Nodes[1], Nodes[2], model.seriesResistance);
             } else {
                 /* don't need any internal nodes if no series resistance */
                 diode.stamp(Nodes[0], Nodes[1]);
@@ -249,7 +249,7 @@ namespace Circuit.Elements {
         public override void StepFinished() {
             /* stop for huge currents that make simulator act weird */
             if (Math.Abs(mCurrent) > 1e12) {
-                Cir.Stop("max current exceeded", this);
+                mCir.Stop("max current exceeded", this);
             }
         }
     }

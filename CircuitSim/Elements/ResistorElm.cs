@@ -100,7 +100,7 @@ namespace Circuit.Elements {
         }
 
         public override void Stamp() {
-            Cir.StampResistor(Nodes[0], Nodes[1], Resistance);
+            mCir.StampResistor(Nodes[0], Nodes[1], Resistance);
         }
 
         public override void GetInfo(string[] arr) {

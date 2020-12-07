@@ -18,7 +18,7 @@ namespace Circuit.Elements {
         #region static variable
         public static double CurrentMult { get; set; }
         public static CirSim Sim { get; private set; }
-        protected static Circuit Cir { get; private set; }
+        protected static Circuit mCir;
         static CircuitElm mMouseElmRef = null;
         #endregion
 
@@ -171,7 +171,7 @@ namespace Circuit.Elements {
 
         public static void initClass(CirSim s, Circuit c) {
             Sim = s;
-            Cir = c;
+            mCir = c;
             mMouseElmRef = null;
             CurrentMult = 0;
         }
@@ -338,14 +338,6 @@ namespace Circuit.Elements {
         #endregion
 
         #region [public method]
-        public string DispPostVoltage(int x) {
-            if (x < Volts.Length) {
-                return getUnitText(Volts[x], "V");
-            } else {
-                return "";
-            }
-        }
-
         /// <summary>
         /// this is used to set the position of an internal element so we can draw it inside the parent
         /// </summary>
@@ -458,6 +450,14 @@ namespace Circuit.Elements {
                 }
             }
             return 0;
+        }
+
+        public string DispPostVoltage(int x) {
+            if (x < Volts.Length) {
+                return getUnitText(Volts[x], "V");
+            } else {
+                return "";
+            }
         }
         #endregion
 
@@ -664,13 +664,13 @@ namespace Circuit.Elements {
                 (x == Scope.VAL_POWER) ? Scope.UNITS_W : Scope.UNITS_V;
         }
 
-        public virtual EditInfo GetEditInfo(int n) { return null; }
-
-        public virtual void SetEditValue(int n, EditInfo ei) { }
-
         public virtual string DumpModel() { return null; }
 
         public virtual void UpdateModels() { }
+
+        public virtual EditInfo GetEditInfo(int n) { return null; }
+
+        public virtual void SetEditValue(int n, EditInfo ei) { }
         #endregion
     }
 }

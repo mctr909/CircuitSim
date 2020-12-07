@@ -339,7 +339,7 @@ namespace Circuit.Elements {
             for (int i = 0; i != PostCount; i++) {
                 var p = pins[i];
                 if (p.output) {
-                    Cir.StampVoltageSource(0, Nodes[i], p.voltSource);
+                    mCir.StampVoltageSource(0, Nodes[i], p.voltSource);
                 }
             }
         }
@@ -358,7 +358,7 @@ namespace Circuit.Elements {
             for (i = 0; i != PostCount; i++) {
                 var p = pins[i];
                 if (p.output) {
-                    Cir.UpdateVoltageSource(0, Nodes[i], p.voltSource, p.value ? 5 : 0);
+                    mCir.UpdateVoltageSource(0, Nodes[i], p.voltSource, p.value ? 5 : 0);
                 }
             }
         }

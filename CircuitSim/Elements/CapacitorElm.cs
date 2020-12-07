@@ -110,7 +110,7 @@ namespace Circuit.Elements {
         public override void Stamp() {
             if (Sim.dcAnalysisFlag) {
                 /* when finding DC operating point, replace cap with a 100M resistor */
-                Cir.StampResistor(Nodes[0], Nodes[1], 1e8);
+                mCir.StampResistor(Nodes[0], Nodes[1], 1e8);
                 curSourceValue = 0;
                 return;
             }
@@ -125,9 +125,9 @@ namespace Circuit.Elements {
             } else {
                 compResistance = Sim.timeStep / Capacitance;
             }
-            Cir.StampResistor(Nodes[0], Nodes[1], compResistance);
-            Cir.StampRightSide(Nodes[0]);
-            Cir.StampRightSide(Nodes[1]);
+            mCir.StampResistor(Nodes[0], Nodes[1], compResistance);
+            mCir.StampRightSide(Nodes[0]);
+            mCir.StampRightSide(Nodes[1]);
         }
 
         public override void StartIteration() {
@@ -156,7 +156,7 @@ namespace Circuit.Elements {
             if (Sim.dcAnalysisFlag) {
                 return;
             }
-            Cir.StampCurrentSource(Nodes[0], Nodes[1], curSourceValue);
+            mCir.StampCurrentSource(Nodes[0], Nodes[1], curSourceValue);
         }
 
         public override void GetInfo(string[] arr) {
