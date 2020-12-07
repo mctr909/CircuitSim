@@ -127,14 +127,14 @@ namespace Circuit.Elements {
             if ((mFlags & FLAG_SWAP) != 0) {
                 hs = -hs;
             }
-            in1p = newPointArray(2);
-            in2p = newPointArray(2);
-            textp = newPointArray(2);
-            interpPoint(mPoint1, mPoint2, ref in1p[0], ref in2p[0], 0, hs);
-            interpPoint(mLead1, mLead2, ref in1p[1], ref in2p[1], 0, hs);
-            interpPoint(mLead1, mLead2, ref textp[0], ref textp[1], 0.2, hs);
+            in1p = new Point[2];
+            in2p = new Point[2];
+            textp = new Point[2];
+            Utils.InterpPoint(mPoint1, mPoint2, ref in1p[0], ref in2p[0], 0, hs);
+            Utils.InterpPoint(mLead1, mLead2, ref in1p[1], ref in2p[1], 0, hs);
+            Utils.InterpPoint(mLead1, mLead2, ref textp[0], ref textp[1], 0.2, hs);
             var tris = new Point[2];
-            interpPoint(mLead1, mLead2, ref tris[0], ref tris[1], 0, hs * 2);
+            Utils.InterpPoint(mLead1, mLead2, ref tris[0], ref tris[1], 0, hs * 2);
             triangle = new Point[] { tris[0], tris[1], mLead2 };
         }
 
@@ -144,15 +144,15 @@ namespace Circuit.Elements {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "op-amp";
-            arr[1] = "V+ = " + getVoltageText(Volts[V_P]);
-            arr[2] = "V- = " + getVoltageText(Volts[V_N]);
+            arr[1] = "V+ = " + Utils.VoltageText(Volts[V_P]);
+            arr[2] = "V- = " + Utils.VoltageText(Volts[V_N]);
             /* sometimes the voltage goes slightly outside range,
              * to make convergence easier.  so we hide that here. */
             double vo = Math.Max(Math.Min(Volts[V_O], maxOut), minOut);
-            arr[3] = "Vout = " + getVoltageText(vo);
-            arr[4] = "Iout = " + getCurrentText(-mCurrent);
-            arr[5] = "range = " + getVoltageText(minOut) + " to " +
-            getVoltageText(maxOut);
+            arr[3] = "Vout = " + Utils.VoltageText(vo);
+            arr[4] = "Iout = " + Utils.CurrentText(-mCurrent);
+            arr[5] = "range = " + Utils.VoltageText(minOut)
+                + " to " + Utils.VoltageText(maxOut);
         }
 
         public override void Stamp() {

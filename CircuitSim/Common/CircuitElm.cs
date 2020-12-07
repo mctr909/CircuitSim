@@ -3,24 +3,18 @@ using System.Drawing;
 
 namespace Circuit.Elements {
     abstract partial class CircuitElm : Editable {
-        #region CONST
-        protected const int SCALE_AUTO = 0;
-        protected const int SCALE_1 = 1;
-        protected const int SCALE_M = 2;
-        protected const int SCALE_MU = 3;
-
         protected const double Pi = Math.PI;
         protected const double Pi2 = Math.PI * 2;
         protected const double ToDeg = 180 / Math.PI;
         protected const double ToRad = Math.PI / 180;
-        #endregion
 
-        #region static variable
-        public static double CurrentMult { get; set; }
         public static CirSim Sim { get; private set; }
+
+        public static double CurrentMult { get; set; }
+
         protected static Circuit mCir;
+
         static CircuitElm mMouseElmRef = null;
-        #endregion
 
         #region property
         /* initial point where user created element.
@@ -232,8 +226,8 @@ namespace Circuit.Elements {
                 mLead2 = mPoint2;
                 return;
             }
-            mLead1 = interpPoint(mPoint1, mPoint2, (mLen - len) / (2 * mLen));
-            mLead2 = interpPoint(mPoint1, mPoint2, (mLen + len) / (2 * mLen));
+            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, (mLen - len) / (2 * mLen));
+            mLead2 = Utils.InterpPoint(mPoint1, mPoint2, (mLen + len) / (2 * mLen));
         }
 
         /// <summary>
@@ -327,8 +321,8 @@ namespace Circuit.Elements {
         }
 
         protected int getBasicInfo(string[] arr) {
-            arr[1] = "I = " + getCurrentDText(mCurrent);
-            arr[2] = "Vd = " + getVoltageDText(VoltageDiff);
+            arr[1] = "I = " + Utils.CurrentDText(mCurrent);
+            arr[2] = "Vd = " + Utils.VoltageDText(VoltageDiff);
             return 3;
         }
 
@@ -454,7 +448,7 @@ namespace Circuit.Elements {
 
         public string DispPostVoltage(int x) {
             if (x < Volts.Length) {
-                return getUnitText(Volts[x], "V");
+                return Utils.UnitText(Volts[x], "V");
             } else {
                 return "";
             }

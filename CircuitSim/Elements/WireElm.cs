@@ -35,7 +35,7 @@ namespace Circuit.Elements {
             } else {
                 sign = -mDsign;
             }
-            textPos = interpPoint(mPoint1, mPoint2, 0.5 + 8 * sign / mLen, 15 * sign);
+            textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 8 * sign / mLen, 15 * sign);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -44,10 +44,10 @@ namespace Circuit.Elements {
             setBbox(mPoint1, mPoint2, 3);
             string s = "";
             if (mustShowCurrent()) {
-                s = getShortUnitText(Math.Abs(mCurrent), "A");
+                s = Utils.ShortUnitText(Math.Abs(mCurrent), "A");
             }
             if (mustShowVoltage()) {
-                s = (s.Length > 0 ? s + "\r\n" : "") + getShortUnitText(Volts[0], "V");
+                s = (s.Length > 0 ? s + "\r\n" : "") + Utils.ShortUnitText(Volts[0], "V");
             }
             g.DrawRightText(s, textPos.X, textPos.Y);
             drawPosts(g);
@@ -69,8 +69,8 @@ namespace Circuit.Elements {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "wire";
-            arr[1] = "I = " + getCurrentDText(mCurrent);
-            arr[2] = "V = " + getVoltageText(Volts[0]);
+            arr[1] = "I = " + Utils.CurrentDText(mCurrent);
+            arr[2] = "V = " + Utils.VoltageText(Volts[0]);
         }
 
         public override EditInfo GetEditInfo(int n) {

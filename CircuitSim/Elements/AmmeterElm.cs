@@ -9,7 +9,7 @@ namespace Circuit.Elements {
         const int FLAG_SHOWCURRENT = 1;
 
         int meter;
-        int scale;
+        E_SCALE scale;
 
         int zerocount = 0;
         double rmsI = 0;
@@ -31,15 +31,15 @@ namespace Circuit.Elements {
 
         public AmmeterElm(int xx, int yy) : base(xx, yy) {
             mFlags = FLAG_SHOWCURRENT;
-            scale = SCALE_AUTO;
+            scale = E_SCALE.AUTO;
         }
 
         public AmmeterElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
             meter = st.nextTokenInt();
             try {
-                scale = st.nextTokenInt();
+                scale = (E_SCALE)st.nextTokenInt();
             } catch {
-                scale = SCALE_AUTO;
+                scale = E_SCALE.AUTO;
             }
         }
 
@@ -69,15 +69,15 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            mid = interpPoint(mPoint1, mPoint2, 0.5 + 8 / mLen);
-            arrowPoly = calcArrow(mPoint1, mid, 14, 7).ToArray();
+            mid = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 8 / mLen);
+            arrowPoly = Utils.CreateArrow(mPoint1, mid, 14, 7);
             int sign;
             if (mPoint1.Y == mPoint2.Y) {
                 sign = mDsign;
             } else {
                 sign = -mDsign;
             }
-            textPos = interpPoint(mPoint1, mPoint2, 0.5 + 8 * sign / mLen, 12 * sign);
+            textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 8 * sign / mLen, 12 * sign);
         }
 
         public override void StepFinished() {
@@ -164,10 +164,10 @@ namespace Circuit.Elements {
             string s = "A";
             switch (meter) {
             case AM_VOL:
-                s = getUnitTextWithScale(mCurrent, "A", scale);
+                s = Utils.UnitTextWithScale(mCurrent, "A", scale);
                 break;
             case AM_RMS:
-                s = getUnitTextWithScale(rmsI, "A(rms)", scale);
+                s = Utils.UnitTextWithScale(rmsI, "A(rms)", scale);
                 break;
             }
             g.DrawRightText(s, textPos.X, textPos.Y);
@@ -186,10 +186,10 @@ namespace Circuit.Elements {
             arr[0] = "Ammeter";
             switch (meter) {
             case AM_VOL:
-                arr[1] = "I = " + getUnitText(mCurrent, "A");
+                arr[1] = "I = " + Utils.UnitText(mCurrent, "A");
                 break;
             case AM_RMS:
-                arr[1] = "Irms = " + getUnitText(rmsI, "A");
+                arr[1] = "Irms = " + Utils.UnitText(rmsI, "A");
                 break;
             }
         }
@@ -210,7 +210,7 @@ namespace Circuit.Elements {
                 ei.Choice.Items.Add("A");
                 ei.Choice.Items.Add("mA");
                 ei.Choice.Items.Add(CirSim.muString + "A");
-                ei.Choice.SelectedIndex = scale;
+                ei.Choice.SelectedIndex = (int)scale;
                 return ei;
             }
             return null;
@@ -221,7 +221,7 @@ namespace Circuit.Elements {
                 meter = ei.Choice.SelectedIndex;
             }
             if (n == 1) {
-                scale = ei.Choice.SelectedIndex;
+                scale = (E_SCALE)ei.Choice.SelectedIndex;
             }
         }
     }

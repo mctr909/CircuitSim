@@ -60,19 +60,19 @@ namespace Circuit.Elements {
             if (ww > mLen / 2) {
                 ww = (int)(mLen / 2);
             }
-            mLead1 = interpPoint(mPoint1, mPoint2, .5 - ww / mLen);
-            mLead2 = interpPoint(mPoint1, mPoint2, .5 + (ww + 2) / mLen);
-            pcircle = interpPoint(mPoint1, mPoint2, .5 + (ww - 2) / mLen);
+            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, .5 - ww / mLen);
+            mLead2 = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww + 2) / mLen);
+            pcircle = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww - 2) / mLen);
 
             gatePolyAnsi = new Point[3];
-            interpPoint(mLead1, mLead2, ref gatePolyAnsi[0], ref gatePolyAnsi[1], 0, hs);
-            gatePolyAnsi[2] = interpPoint(mPoint1, mPoint2, .5 + (ww - 5) / mLen);
+            Utils.InterpPoint(mLead1, mLead2, ref gatePolyAnsi[0], ref gatePolyAnsi[1], 0, hs);
+            gatePolyAnsi[2] = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww - 5) / mLen);
 
             gatePolyEuro = new Point[4];
-            var l2 = interpPoint(mPoint1, mPoint2, .5 + (ww - 5) / mLen); /* make room for circle */
-            interpPoint(mLead1, l2, ref gatePolyEuro[0], ref gatePolyEuro[1], 0, hs);
-            interpPoint(mLead1, l2, ref gatePolyEuro[3], ref gatePolyEuro[2], 1, hs);
-            center = interpPoint(mLead1, l2, .5);
+            var l2 = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww - 5) / mLen); /* make room for circle */
+            Utils.InterpPoint(mLead1, l2, ref gatePolyEuro[0], ref gatePolyEuro[1], 0, hs);
+            Utils.InterpPoint(mLead1, l2, ref gatePolyEuro[3], ref gatePolyEuro[2], 1, hs);
+            center = Utils.InterpPoint(mLead1, l2, .5);
 
             setBbox(mPoint1, mPoint2, hs);
         }
@@ -94,8 +94,8 @@ namespace Circuit.Elements {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "inverter";
-            arr[1] = "Vi = " + getVoltageText(Volts[0]);
-            arr[2] = "Vo = " + getVoltageText(Volts[1]);
+            arr[1] = "Vi = " + Utils.VoltageText(Volts[0]);
+            arr[2] = "Vo = " + Utils.VoltageText(Volts[1]);
         }
 
         public override EditInfo GetEditInfo(int n) {

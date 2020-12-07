@@ -1170,11 +1170,11 @@ namespace Circuit {
             }
             if (ShowFFT) {
                 double maxFrequency = 1 / (mSim.timeStep * Speed * 2);
-                info[ct++] = CircuitElm.getUnitText(maxFrequency * (mSim.mouseCursorX - BoundingBox.X) / BoundingBox.Width, "Hz");
+                info[ct++] = Utils.UnitText(maxFrequency * (mSim.mouseCursorX - BoundingBox.X) / BoundingBox.Width, "Hz");
             }
             if (mVisiblePlots.Count > 0) {
                 double t = mSim.t - mSim.timeStep * Speed * (BoundingBox.X + BoundingBox.Width - mSim.mouseCursorX);
-                info[ct++] = CircuitElm.getTimeText(t);
+                info[ct++] = Utils.TimeText(t);
             }
 
             int szw = 0, szh = 15 * ct;
@@ -1756,7 +1756,7 @@ namespace Circuit {
             }
             /* Console.WriteLine(freq + " " + periodstd + " " + periodct); */
             if (freq != 0) {
-                drawInfoText(g, CircuitElm.getUnitText(freq, "Hz"));
+                drawInfoText(g, Utils.UnitText(freq, "Hz"));
             }
         }
 
@@ -1777,7 +1777,7 @@ namespace Circuit {
                 if (mGridStepY != 0 && (!(ShowV && ShowI))) {
                     vScaleText = " V=" + plot.GetUnitText(mGridStepY) + "/div";
                 }
-                drawInfoText(g, "H=" + CircuitElm.getUnitText(mGridStepX, "s") + "/div" + vScaleText);
+                drawInfoText(g, "H=" + Utils.UnitText(mGridStepX, "s") + "/div" + vScaleText);
             }
             if (ShowMax) {
                 drawInfoText(g, plot.GetUnitText(mMaxValue));

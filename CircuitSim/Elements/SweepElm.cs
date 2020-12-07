@@ -60,8 +60,8 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            mLead1 = interpPoint(mPoint1, mPoint2, 1 - 0.5 * circleSize / mLen);
-            textPos = interpPoint(mPoint1, mPoint2, 1.0 + 0.66 * circleSize / distance(mPoint1, mPoint2), 24 * mDsign);
+            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - 0.5 * circleSize / mLen);
+            textPos = Utils.InterpPoint(mPoint1, mPoint2, 1.0 + 0.66 * circleSize / Utils.Distance(mPoint1, mPoint2), 24 * mDsign);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -108,7 +108,7 @@ namespace Circuit.Elements {
             }
 
             if (Sim.chkShowValuesCheckItem.Checked) {
-                string s = getShortUnitText(frequency, "Hz");
+                string s = Utils.ShortUnitText(frequency, "Hz");
                 drawValues(g, s, 20, -15);
             }
 
@@ -178,11 +178,11 @@ namespace Circuit.Elements {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "sweep " + (((mFlags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
-            arr[1] = "I = " + getCurrentDText(mCurrent);
-            arr[2] = "V = " + getVoltageText(Volts[0]);
-            arr[3] = "f = " + getUnitText(frequency, "Hz");
-            arr[4] = "range = " + getUnitText(minF, "Hz") + " .. " + getUnitText(maxF, "Hz");
-            arr[5] = "time = " + getUnitText(sweepTime, "s");
+            arr[1] = "I = " + Utils.CurrentDText(mCurrent);
+            arr[2] = "V = " + Utils.VoltageText(Volts[0]);
+            arr[3] = "f = " + Utils.UnitText(frequency, "Hz");
+            arr[4] = "range = " + Utils.UnitText(minF, "Hz") + " .. " + Utils.UnitText(maxF, "Hz");
+            arr[5] = "time = " + Utils.UnitText(sweepTime, "s");
         }
 
         public override EditInfo GetEditInfo(int n) {

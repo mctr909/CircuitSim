@@ -46,7 +46,7 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            mLead1 = interpPoint(mPoint1, mPoint2, 1 - 12 / mLen);
+            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - 12 / mLen);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -82,8 +82,8 @@ namespace Circuit.Elements {
             if (isNumeric()) {
                 arr[1] = "" + position;
             }
-            arr[1] += " (" + getVoltageText(Volts[0]) + ")";
-            arr[2] = "I = " + getCurrentText(mCurrent);
+            arr[1] += " (" + Utils.VoltageText(Volts[0]) + ")";
+            arr[2] = "I = " + Utils.CurrentText(mCurrent);
         }
 
         public override bool HasGroundConnection(int n1) { return true; }

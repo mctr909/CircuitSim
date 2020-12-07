@@ -31,13 +31,13 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(16);
-            cathode = newPointArray(2);
-            wing = newPointArray(2);
-            var pa = newPointArray(2);
-            interpPoint(mLead1, mLead2, ref pa[0], ref pa[1], 0, hs);
-            interpPoint(mLead1, mLead2, ref cathode[0], ref cathode[1], 1, hs);
-            interpPoint(cathode[0], cathode[1], ref wing[0], -0.2, -hs);
-            interpPoint(cathode[1], cathode[0], ref wing[1], -0.2, -hs);
+            cathode = new Point[2];
+            wing = new Point[2];
+            var pa = new Point[2];
+            Utils.InterpPoint(mLead1, mLead2, ref pa[0], ref pa[1], 0, hs);
+            Utils.InterpPoint(mLead1, mLead2, ref cathode[0], ref cathode[1], 1, hs);
+            Utils.InterpPoint(cathode[0], cathode[1], ref wing[0], -0.2, -hs);
+            Utils.InterpPoint(cathode[1], cathode[0], ref wing[1], -0.2, -hs);
             poly = new Point[] { pa[0], pa[1], mLead2 };
         }
 
@@ -65,7 +65,7 @@ namespace Circuit.Elements {
         public override void GetInfo(string[] arr) {
             base.GetInfo(arr);
             arr[0] = "Zener diode";
-            arr[5] = "Vz = " + getVoltageText(model.breakdownVoltage);
+            arr[5] = "Vz = " + Utils.VoltageText(model.breakdownVoltage);
         }
 
         void setLastModelName(string n) {

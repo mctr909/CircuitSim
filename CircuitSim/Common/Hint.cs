@@ -38,7 +38,7 @@ namespace Circuit {
                 }
                 var ie = (InductorElm)c1;
                 var ce = (CapacitorElm)c2;
-                return "res.f = " + CircuitElm.getUnitText(1 / (2 * Math.PI * Math.Sqrt(ie.Inductance * ce.Capacitance)), "Hz");
+                return "res.f = " + Utils.UnitText(1 / (2 * Math.PI * Math.Sqrt(ie.Inductance * ce.Capacitance)), "Hz");
             }
             if (Type == HINT_RC) {
                 if (!(c1 is ResistorElm)) {
@@ -49,7 +49,7 @@ namespace Circuit {
                 }
                 var re = (ResistorElm)c1;
                 var ce = (CapacitorElm)c2;
-                return "RC = " + CircuitElm.getUnitText(re.Resistance * ce.Capacitance, "s");
+                return "RC = " + Utils.UnitText(re.Resistance * ce.Capacitance, "s");
             }
             if (Type == HINT_3DB_C) {
                 if (!(c1 is ResistorElm)) {
@@ -60,7 +60,7 @@ namespace Circuit {
                 }
                 var re = (ResistorElm)c1;
                 var ce = (CapacitorElm)c2;
-                return "f.3db = " + CircuitElm.getUnitText(1 / (2 * Math.PI * re.Resistance * ce.Capacitance), "Hz");
+                return "f.3db = " + Utils.UnitText(1 / (2 * Math.PI * re.Resistance * ce.Capacitance), "Hz");
             }
             if (Type == HINT_3DB_L) {
                 if (!(c1 is ResistorElm)) {
@@ -71,7 +71,7 @@ namespace Circuit {
                 }
                 var re = (ResistorElm)c1;
                 var ie = (InductorElm)c2;
-                return "f.3db = " + CircuitElm.getUnitText(re.Resistance / (2 * Math.PI * ie.Inductance), "Hz");
+                return "f.3db = " + Utils.UnitText(re.Resistance / (2 * Math.PI * ie.Inductance), "Hz");
             }
             if (Type == HINT_TWINT) {
                 if (!(c1 is ResistorElm)) {
@@ -82,7 +82,7 @@ namespace Circuit {
                 }
                 var re = (ResistorElm)c1;
                 var ce = (CapacitorElm)c2;
-                return "fc = " + CircuitElm.getUnitText(1 / (2 * Math.PI * re.Resistance * ce.Capacitance), "Hz");
+                return "fc = " + Utils.UnitText(1 / (2 * Math.PI * re.Resistance * ce.Capacitance), "Hz");
             }
             return null;
         }

@@ -91,7 +91,7 @@ namespace Circuit.Elements {
                 int y = sy + i * 10 - 5;
                 var p1 = new Point(sx, y);
                 var p2 = new Point(sx + 20, y);
-                var p = calcArrow(p1, p2, 5, 2).ToArray();
+                var p = Utils.CreateArrow(p1, p2, 5, 2);
                 g.FillPolygon(c, p);
                 g.DrawLine(sx + 10, y, sx + 15, y);
             }
@@ -148,8 +148,8 @@ namespace Circuit.Elements {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "optocoupler";
-            arr[1] = "Iin = " + getCurrentText(GetCurrentIntoNode(0));
-            arr[2] = "Iout = " + getCurrentText(GetCurrentIntoNode(2));
+            arr[1] = "Iin = " + Utils.CurrentText(GetCurrentIntoNode(0));
+            arr[2] = "Iout = " + Utils.CurrentText(GetCurrentIntoNode(2));
         }
     }
 }

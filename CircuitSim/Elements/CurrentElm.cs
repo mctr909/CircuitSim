@@ -34,18 +34,18 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(36);
-            ashaft1 = interpPoint(mLead1, mLead2, .25);
-            ashaft2 = interpPoint(mLead1, mLead2, .6);
-            center = interpPoint(mLead1, mLead2, .5);
+            ashaft1 = Utils.InterpPoint(mLead1, mLead2, .25);
+            ashaft2 = Utils.InterpPoint(mLead1, mLead2, .6);
+            center = Utils.InterpPoint(mLead1, mLead2, .5);
             int sign;
             if (mPoint1.Y == mPoint2.Y) {
                 sign = mDsign;
             } else {
                 sign = -mDsign;
             }
-            textPos = interpPoint(mPoint1, mPoint2, 0.5, 20 * sign);
-            var p2 = interpPoint(mLead1, mLead2, .8);
-            arrow = calcArrow(center, p2, 8, 6).ToArray();
+            textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, 20 * sign);
+            var p2 = Utils.InterpPoint(mLead1, mLead2, .8);
+            arrow = Utils.CreateArrow(center, p2, 8, 6);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -61,7 +61,7 @@ namespace Circuit.Elements {
             setBbox(mPoint1, mPoint2, cr);
             doDots(g);
             if (Sim.chkShowValuesCheckItem.Checked) {
-                string s = getShortUnitText(currentValue, "A");
+                string s = Utils.ShortUnitText(currentValue, "A");
                 g.DrawRightText(s, textPos.X, textPos.Y);
             }
             drawPosts(g);

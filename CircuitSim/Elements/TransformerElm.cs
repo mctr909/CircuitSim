@@ -91,8 +91,8 @@ namespace Circuit.Elements {
             g.DrawThickLine(getVoltageColor(Volts[PRI_B]), ptEnds[2], ptCoil[2]);
             g.DrawThickLine(getVoltageColor(Volts[SEC_B]), ptEnds[3], ptCoil[3]);
 
-            drawCoil(g,  90,            ptCoil[0], ptCoil[2], Volts[PRI_T], Volts[PRI_B]);
-            drawCoil(g, -90 * polarity, ptCoil[1], ptCoil[3], Volts[SEC_T], Volts[SEC_B]);
+            drawCoil(g, ptCoil[0], ptCoil[2], Volts[PRI_T], Volts[PRI_B], 90 * mDsign);
+            drawCoil(g, ptCoil[1], ptCoil[3], Volts[SEC_T], Volts[SEC_B], -90 * mDsign * polarity);
 
             var c = NeedsHighlight ? SelectColor : GrayColor;
             g.LineColor = c;
@@ -119,27 +119,27 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             mPoint2.Y = mPoint1.Y;
-            ptEnds = newPointArray(4);
-            ptCoil = newPointArray(4);
-            ptCore = newPointArray(4);
+            ptEnds = new Point[4];
+            ptCoil = new Point[4];
+            ptCore = new Point[4];
             ptEnds[0] = mPoint1;
             ptEnds[1] = mPoint2;
-            interpPoint(mPoint1, mPoint2, ref ptEnds[2], 0, -mDsign * width);
-            interpPoint(mPoint1, mPoint2, ref ptEnds[3], 1, -mDsign * width);
+            Utils.InterpPoint(mPoint1, mPoint2, ref ptEnds[2], 0, -mDsign * width);
+            Utils.InterpPoint(mPoint1, mPoint2, ref ptEnds[3], 1, -mDsign * width);
             double ce = .5 - 16 / mLen;
             double cd = .5 - 2 / mLen;
             int i;
             for (i = 0; i != 4; i += 2) {
-                interpPoint(ptEnds[i], ptEnds[i + 1], ref ptCoil[i], ce);
-                interpPoint(ptEnds[i], ptEnds[i + 1], ref ptCoil[i + 1], 1 - ce);
-                interpPoint(ptEnds[i], ptEnds[i + 1], ref ptCore[i], cd);
-                interpPoint(ptEnds[i], ptEnds[i + 1], ref ptCore[i + 1], 1 - cd);
+                Utils.InterpPoint(ptEnds[i], ptEnds[i + 1], ref ptCoil[i], ce);
+                Utils.InterpPoint(ptEnds[i], ptEnds[i + 1], ref ptCoil[i + 1], 1 - ce);
+                Utils.InterpPoint(ptEnds[i], ptEnds[i + 1], ref ptCore[i], cd);
+                Utils.InterpPoint(ptEnds[i], ptEnds[i + 1], ref ptCore[i + 1], 1 - cd);
             }
             if (polarity == -1) {
                 dots = new Point[2];
                 double dotp = Math.Abs(7.0 / width);
-                dots[0] = interpPoint(ptCoil[0], ptCoil[2], dotp, -7 * mDsign);
-                dots[1] = interpPoint(ptCoil[3], ptCoil[1], dotp, -7 * mDsign);
+                dots[0] = Utils.InterpPoint(ptCoil[0], ptCoil[2], dotp, -7 * mDsign);
+                dots[1] = Utils.InterpPoint(ptCoil[3], ptCoil[1], dotp, -7 * mDsign);
                 var x = ptEnds[1]; ptEnds[1] = ptEnds[3]; ptEnds[3] = x;
                 x = ptCoil[1]; ptCoil[1] = ptCoil[3]; ptCoil[3] = x;
             } else {
@@ -243,12 +243,12 @@ namespace Circuit.Elements {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "transformer";
-            arr[1] = "L = " + getUnitText(inductance, "H");
+            arr[1] = "L = " + Utils.UnitText(inductance, "H");
             arr[2] = "Ratio = 1:" + ratio;
-            arr[3] = "Vd1 = " + getVoltageText(Volts[PRI_T] - Volts[PRI_B]);
-            arr[4] = "Vd2 = " + getVoltageText(Volts[SEC_T] - Volts[SEC_B]);
-            arr[5] = "I1 = " + getCurrentText(current[0]);
-            arr[6] = "I2 = " + getCurrentText(current[1]);
+            arr[3] = "Vd1 = " + Utils.VoltageText(Volts[PRI_T] - Volts[PRI_B]);
+            arr[4] = "Vd2 = " + Utils.VoltageText(Volts[SEC_T] - Volts[SEC_B]);
+            arr[5] = "I1 = " + Utils.CurrentText(current[0]);
+            arr[6] = "I2 = " + Utils.CurrentText(current[1]);
         }
 
         public override bool GetConnection(int n1, int n2) {

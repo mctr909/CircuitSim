@@ -24,7 +24,6 @@ namespace Circuit.Elements {
         double curcount_e;
         double curcount_b;
 
-        Point[] rect;
         Point[] coll;
         Point[] emit;
         Point tbase;
@@ -158,30 +157,30 @@ namespace Circuit.Elements {
             int hs2 = hs * mDsign * pnp;
 
             /* calc collector, emitter posts */
-            coll = newPointArray(2);
-            emit = newPointArray(2);
-            interpPoint(mPoint1, mPoint2, ref coll[0], ref emit[0], 1, hs2);
+            coll = new Point[2];
+            emit = new Point[2];
+            Utils.InterpPoint(mPoint1, mPoint2, ref coll[0], ref emit[0], 1, hs2);
 
             /* calc rectangle edges */
-            rect = newPointArray(4);
-            interpPoint(mPoint1, mPoint2, ref rect[0], ref rect[1], 1 - 16 / mLen, hs);
-            interpPoint(mPoint1, mPoint2, ref rect[2], ref rect[3], 1 - 13 / mLen, hs);
+            var rect = new Point[4];
+            Utils.InterpPoint(mPoint1, mPoint2, ref rect[0], ref rect[1], 1 - 16 / mLen, hs);
+            Utils.InterpPoint(mPoint1, mPoint2, ref rect[2], ref rect[3], 1 - 13 / mLen, hs);
 
             /* calc points where collector/emitter leads contact rectangle */
-            interpPoint(mPoint1, mPoint2, ref coll[1], ref emit[1], 1 - 13 / mLen, 6 * mDsign * pnp);
+            Utils.InterpPoint(mPoint1, mPoint2, ref coll[1], ref emit[1], 1 - 13 / mLen, 6 * mDsign * pnp);
 
             /* calc point where base lead contacts rectangle */
-            interpPoint(mPoint1, mPoint2, ref tbase, 1 - 16 / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref tbase, 1 - 16 / mLen);
 
             /* rectangle */
             rectPoly = new Point[] { rect[0], rect[2], rect[3], rect[1] };
 
             /* arrow */
             if (pnp == 1) {
-                arrowPoly = calcArrow(emit[1], emit[0], 8, 4).ToArray();
+                arrowPoly = Utils.CreateArrow(emit[1], emit[0], 8, 3);
             } else {
-                var pt = interpPoint(mPoint1, mPoint2, 1 - 14 / mLen, -5 * mDsign * pnp);
-                arrowPoly = calcArrow(emit[0], pt, 8, 4).ToArray();
+                var pt = Utils.InterpPoint(mPoint1, mPoint2, 1 - 14 / mLen, -5 * mDsign * pnp);
+                arrowPoly = Utils.CreateArrow(emit[0], pt, 8, 3);
             }
         }
 
@@ -284,12 +283,12 @@ namespace Circuit.Elements {
                 arr[1] = vbe * pnp > .2 ? "fwd active" : "cutoff";
             }
             arr[1] = arr[1];
-            arr[2] = "Ic = " + getCurrentText(ic);
-            arr[3] = "Ib = " + getCurrentText(ib);
-            arr[4] = "Vbe = " + getVoltageText(vbe);
-            arr[5] = "Vbc = " + getVoltageText(vbc);
-            arr[6] = "Vce = " + getVoltageText(vce);
-            arr[7] = "P = " + getUnitText(Power, "W");
+            arr[2] = "Ic = " + Utils.CurrentText(ic);
+            arr[3] = "Ib = " + Utils.CurrentText(ib);
+            arr[4] = "Vbe = " + Utils.VoltageText(vbe);
+            arr[5] = "Vbc = " + Utils.VoltageText(vbc);
+            arr[6] = "Vce = " + Utils.VoltageText(vce);
+            arr[7] = "P = " + Utils.UnitText(Power, "W");
         }
 
         public override double GetScopeValue(int x) {

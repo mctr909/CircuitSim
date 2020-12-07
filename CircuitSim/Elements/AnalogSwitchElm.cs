@@ -45,8 +45,8 @@ namespace Circuit.Elements {
             base.SetPoints();
             calcLeads(32);
             int openhs = 16;
-            point3 = interpPoint(mPoint1, mPoint2, .5, -openhs);
-            lead3 = interpPoint(mPoint1, mPoint2, .5, -openhs / 2);
+            point3 = Utils.InterpPoint(mPoint1, mPoint2, .5, -openhs);
+            lead3 = Utils.InterpPoint(mPoint1, mPoint2, .5, -openhs / 2);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -56,7 +56,7 @@ namespace Circuit.Elements {
 
             draw2Leads(g);
 
-            interpPoint(mLead1, mLead2, ref ps, 1, hs);
+            Utils.InterpPoint(mLead1, mLead2, ref ps, 1, hs);
             g.DrawThickLine(GrayColor, mLead1, ps);
 
             g.DrawThickLine(getVoltageColor(Volts[2]), point3, lead3);
@@ -109,9 +109,9 @@ namespace Circuit.Elements {
         public override void GetInfo(string[] arr) {
             arr[0] = "analog switch";
             arr[1] = open ? "open" : "closed";
-            arr[2] = "Vd = " + getVoltageDText(VoltageDiff);
-            arr[3] = "I = " + getCurrentDText(mCurrent);
-            arr[4] = "Vc = " + getVoltageText(Volts[2]);
+            arr[2] = "Vd = " + Utils.VoltageDText(VoltageDiff);
+            arr[3] = "I = " + Utils.CurrentDText(mCurrent);
+            arr[4] = "Vc = " + Utils.VoltageText(Volts[2]);
         }
 
         /* we have to just assume current will flow either way,

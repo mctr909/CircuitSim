@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 
 namespace Circuit.Elements {
@@ -30,28 +29,6 @@ namespace Circuit.Elements {
                     mColorScale[i] = Color.FromArgb(n2, n1, n2);
                 }
             }
-        }
-
-        protected static Point[] newPointArray(int n) {
-            var a = new Point[n];
-            while (n > 0) {
-                a[--n] = new Point();
-            }
-            return a;
-        }
-
-        protected static List<Point> calcArrow(Point a, Point b, double al, double aw) {
-            var poly = new List<Point>();
-            poly.Add(new Point(b.X, b.Y));
-            var p1 = new Point();
-            var p2 = new Point();
-            int adx = b.X - a.X;
-            int ady = b.Y - a.Y;
-            double l = Math.Sqrt(adx * adx + ady * ady);
-            interpPoint(a, b, ref p1, ref p2, 1 - al / l, aw);
-            poly.Add(p1);
-            poly.Add(p2);
-            return poly;
         }
 
         /// <summary>
@@ -187,7 +164,7 @@ namespace Circuit.Elements {
         }
 
         protected void drawCoil(CustomGraphics g, Point p1, Point p2, double v1, double v2) {
-            var coilLen = (float)distance(p1, p2);
+            var coilLen = (float)Utils.Distance(p1, p2);
             if (0 == coilLen) {
                 return;
             }
@@ -197,18 +174,18 @@ namespace Circuit.Elements {
             float h = w * 1.2f;
             float wh = w * 0.5f;
             float hh = h * 0.5f;
-            float th = (float)(angle(mLead1, mLead2) * ToDeg);
+            float th = (float)(Utils.Angle(p1, p2) * ToDeg);
             var pos = new Point();
             for (int loop = 0; loop != loopCt; loop++) {
-                interpPoint(mLead1, mLead2, ref pos, (loop + 0.5) / loopCt, 0);
+                Utils.InterpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
                 g.ThickLineColor = getVoltageColor(v);
                 g.DrawThickArc(pos.X, pos.Y, w, th, -180);
             }
         }
 
-        protected void drawCoil(CustomGraphics g, float hs, Point p1, Point p2, double v1, double v2) {
-            var coilLen = (float)distance(p1, p2);
+        protected void drawCoil(CustomGraphics g, Point p1, Point p2, double v1, double v2, float dir) {
+            var coilLen = (float)Utils.Distance(p1, p2);
             if (0 == coilLen) {
                 return;
             }
@@ -216,16 +193,15 @@ namespace Circuit.Elements {
             int loopCt = (int)Math.Ceiling(coilLen / 12);
             float w = coilLen / loopCt;
             float wh = w * 0.5f;
-            hs *= mDsign;
-            if (angle(p1, p2) < 0) {
-                hs = -hs;
+            if (Utils.Angle(p1, p2) < 0) {
+                dir = -dir;
             }
             var pos = new Point();
             for (int loop = 0; loop != loopCt; loop++) {
-                interpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
+                Utils.InterpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
                 g.ThickLineColor = getVoltageColor(v);
-                g.DrawThickArc(pos.X, pos.Y, w, hs, -180);
+                g.DrawThickArc(pos.X, pos.Y, w, dir, -180);
             }
         }
 
@@ -234,196 +210,14 @@ namespace Circuit.Elements {
             float hs = 3 * gsize;
             float h1 = 3 * gsize;
             float h2 = h1 * 2;
-            double len = distance(mLead1, mLead2);
-            pts[0] = interpPoint(mLead1, mLead2, ctr - h2 / len, hs);
-            pts[1] = interpPoint(mLead1, mLead2, ctr + h1 / len, hs);
-            pts[2] = interpPoint(mLead1, mLead2, ctr + h1 / len, -hs);
-            pts[3] = interpPoint(mLead1, mLead2, ctr + h2 / len, -hs);
-            pts[4] = interpPoint(mLead1, mLead2, ctr - h1 / len, -hs);
-            pts[5] = interpPoint(mLead1, mLead2, ctr - h1 / len, hs);
+            double len = Utils.Distance(mLead1, mLead2);
+            pts[0] = Utils.InterpPoint(mLead1, mLead2, ctr - h2 / len, hs);
+            pts[1] = Utils.InterpPoint(mLead1, mLead2, ctr + h1 / len, hs);
+            pts[2] = Utils.InterpPoint(mLead1, mLead2, ctr + h1 / len, -hs);
+            pts[3] = Utils.InterpPoint(mLead1, mLead2, ctr + h2 / len, -hs);
+            pts[4] = Utils.InterpPoint(mLead1, mLead2, ctr - h1 / len, -hs);
+            pts[5] = Utils.InterpPoint(mLead1, mLead2, ctr - h1 / len, hs);
             return pts;
         }
-
-        #region Math utils
-        public static double angle(Point p1, Point p2) {
-            double x = p2.X - p1.X;
-            double y = p2.Y - p1.Y;
-            return Math.Atan2(y, x);
-        }
-
-        public static double distance(Point p1, Point p2) {
-            double x = p2.X - p1.X;
-            double y = p2.Y - p1.Y;
-            return Math.Sqrt(x * x + y * y);
-        }
-
-        public static double distance(double x1, double y1, double x2, double y2) {
-            double x = x1 - x2;
-            double y = y1 - y2;
-            return Math.Sqrt(x * x + y * y);
-        }
-
-        /// <summary>
-        /// calculate point fraction f between a and b, linearly interpolated
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <param name="f"></param>
-        /// <returns></returns>
-        public static Point interpPoint(Point a, Point b, double f) {
-            var p = new Point();
-            interpPoint(a, b, ref p, f);
-            return p;
-        }
-
-        /// <summary>
-        /// calculate point fraction f between a and b, linearly interpolated, return it in c
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <param name="ret"></param>
-        /// <param name="f"></param>
-        public static void interpPoint(Point a, Point b, ref Point ret, double f) {
-            ret.X = (int)Math.Floor(a.X * (1 - f) + b.X * f + 0.48);
-            ret.Y = (int)Math.Floor(a.Y * (1 - f) + b.Y * f + 0.48);
-        }
-
-        /// <summary>
-        /// Returns a point fraction f along the line between a and b and offset perpendicular by g
-        /// </summary>
-        /// <param name="a">1st Point</param>
-        /// <param name="b">2nd Point</param>
-        /// <param name="ret">Returns interpolated point</param>
-        /// <param name="f">Fraction along line</param>
-        /// <param name="g">Fraction perpendicular to line</param>
-        public static void interpPoint(Point a, Point b, ref Point ret, double f, double g) {
-            int gx = b.Y - a.Y;
-            int gy = a.X - b.X;
-            g /= Math.Sqrt(gx * gx + gy * gy);
-            ret.X = (int)Math.Floor(a.X * (1 - f) + b.X * f + g * gx + 0.48);
-            ret.Y = (int)Math.Floor(a.Y * (1 - f) + b.Y * f + g * gy + 0.48);
-        }
-
-        /// <summary>
-        /// Returns a point fraction f along the line between a and b and offset perpendicular by g
-        /// </summary>
-        /// <param name="a">1st Point</param>
-        /// <param name="b">2nd Point</param>
-        /// <param name="f">Fraction along line</param>
-        /// <param name="g">Fraction perpendicular to line</param>
-        /// <returns>Interpolated point</returns>
-        public static Point interpPoint(Point a, Point b, double f, double g) {
-            var p = new Point();
-            interpPoint(a, b, ref p, f, g);
-            return p;
-        }
-
-        /// <summary>
-        /// Calculates two points fraction f along the line between a and b and offest perpendicular by +/-g
-        /// </summary>
-        /// <param name="a">1st point (In)</param>
-        /// <param name="b">2nd point (In)</param>
-        /// <param name="ret1">1st point (Out)</param>
-        /// <param name="ret2">2nd point (Out)</param>
-        /// <param name="f">Fraction along line</param>
-        /// <param name="g">Fraction perpendicular to line</param>
-        public static void interpPoint(Point a, Point b, ref Point ret1, ref Point ret2, double f, double g) {
-            int gx = b.Y - a.Y;
-            int gy = a.X - b.X;
-            g /= Math.Sqrt(gx * gx + gy * gy);
-            ret1.X = (int)(a.X * (1 - f) + b.X * f + g * gx + 0.48);
-            ret1.Y = (int)(a.Y * (1 - f) + b.Y * f + g * gy + 0.48);
-            ret2.X = (int)(a.X * (1 - f) + b.X * f - g * gx + 0.48);
-            ret2.Y = (int)(a.Y * (1 - f) + b.Y * f - g * gy + 0.48);
-        }
-        #endregion
-
-        #region Text Utils
-        public static string getVoltageDText(double v) {
-            return getUnitText(Math.Abs(v), "V");
-        }
-
-        public static string getVoltageText(double v) {
-            return getUnitText(v, "V");
-        }
-
-        public static string getTimeText(double v) {
-            if (v >= 60) {
-                double h = Math.Floor(v / 3600);
-                v -= 3600 * h;
-                double m = Math.Floor(v / 60);
-                v -= 60 * m;
-                if (h == 0) {
-                    return m + ":" + ((v >= 10) ? "" : "0") + v.ToString("0.#");
-                }
-                return h + ":" + ((m >= 10) ? "" : "0") + m + ":" + ((v >= 10) ? "" : "0") + v.ToString("0.#");
-            }
-            return getUnitText(v, "s");
-        }
-
-        public static string format(double v, bool sf) {
-            return sf ? v.ToString("0.##") : v.ToString("0.##");
-        }
-
-        public static string getUnitText(double v, string u) {
-            return getUnitText(v, u, false);
-        }
-
-        public static string getShortUnitText(double v, string u) {
-            return getUnitText(v, u, true);
-        }
-
-        public static string getUnitText(double v, string u, bool sf) {
-            string sp = sf ? "" : " ";
-            double va = Math.Abs(v);
-            if (va < 1e-14) {
-                /* this used to return null, but then wires would display "null" with 0V */
-                return "0" + sp + u;
-            }
-            if (va < 1e-9) {
-                return format(v * 1e12, sf) + sp + "p" + u;
-            }
-            if (va < 1e-6) {
-                return format(v * 1e9, sf) + sp + "n" + u;
-            }
-            if (va < 1e-3) {
-                return format(v * 1e6, sf) + sp + CirSim.muString + u;
-            }
-            if (va < 1) {
-                return format(v * 1e3, sf) + sp + "m" + u;
-            }
-            if (va < 1e3) {
-                return format(v, sf) + sp + u;
-            }
-            if (va < 1e6) {
-                return format(v * 1e-3, sf) + sp + "k" + u;
-            }
-            if (va < 1e9) {
-                return format(v * 1e-6, sf) + sp + "M" + u;
-            }
-            return format(v * 1e-9, sf) + sp + "G" + u;
-        }
-
-        public static string getCurrentText(double i) {
-            return getUnitText(i, "A");
-        }
-
-        public static string getCurrentDText(double i) {
-            return getUnitText(Math.Abs(i), "A");
-        }
-
-        public static string getUnitTextWithScale(double val, string utext, int scale) {
-            if (scale == SCALE_1) {
-                return val.ToString("0.000") + " " + utext;
-            }
-            if (scale == SCALE_M) {
-                return (1e3 * val).ToString("0.000") + " m" + utext;
-            }
-            if (scale == SCALE_MU) {
-                return (1e6 * val).ToString("0.000") + " " + CirSim.muString + utext;
-            }
-            return getUnitText(val, utext);
-        }
-        #endregion
     }
 }

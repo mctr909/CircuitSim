@@ -93,13 +93,13 @@ namespace Circuit {
         public string GetUnitText(double v) {
             switch (Units) {
             case Scope.UNITS_V:
-                return CircuitElm.getVoltageText(v);
+                return Utils.VoltageText(v);
             case Scope.UNITS_A:
-                return CircuitElm.getCurrentText(v);
+                return Utils.CurrentText(v);
             case Scope.UNITS_OHMS:
-                return CircuitElm.getUnitText(v, CirSim.ohmString);
+                return Utils.UnitText(v, CirSim.ohmString);
             case Scope.UNITS_W:
-                return CircuitElm.getUnitText(v, "W");
+                return Utils.UnitText(v, "W");
             }
             return null;
         }

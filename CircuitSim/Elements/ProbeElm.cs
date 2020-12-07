@@ -19,7 +19,7 @@ namespace Circuit.Elements {
 
         int meter;
         int units;
-        int scale;
+        E_SCALE scale;
 
         double rmsV = 0, total, count;
         double binaryLevel = 0; /*0 or 1 - double because we only pass doubles back to the web page */
@@ -47,15 +47,15 @@ namespace Circuit.Elements {
 
             /* default for new elements */
             mFlags = FLAG_SHOWVOLTAGE;
-            scale = SCALE_AUTO;
+            scale = E_SCALE.AUTO;
         }
 
         public ProbeElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
             meter = TP_VOL;
-            scale = SCALE_AUTO;
+            scale = E_SCALE.AUTO;
             try {
                 meter = st.nextTokenInt(); /* get meter type from saved dump */
-                scale = st.nextTokenInt();
+                scale = (E_SCALE)st.nextTokenInt();
             } catch { }
         }
 
@@ -95,8 +95,8 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            center = interpPoint(mPoint1, mPoint2, .5, 8 * mDsign);
-            plusPoint = interpPoint(mPoint1, mPoint2, (mLen / 2 - 20) / mLen, 16 * mDsign);
+            center = Utils.InterpPoint(mPoint1, mPoint2, .5, 8 * mDsign);
+            plusPoint = Utils.InterpPoint(mPoint1, mPoint2, (mLen / 2 - 20) / mLen, 16 * mDsign);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -131,31 +131,31 @@ namespace Circuit.Elements {
                 string s = "";
                 switch (meter) {
                 case TP_VOL:
-                    s = getUnitTextWithScale(VoltageDiff, "V", scale);
+                    s = Utils.UnitTextWithScale(VoltageDiff, "V", scale);
                     break;
                 case TP_RMS:
-                    s = getUnitTextWithScale(rmsV, "V(rms)", scale);
+                    s = Utils.UnitTextWithScale(rmsV, "V(rms)", scale);
                     break;
                 case TP_MAX:
-                    s = getUnitTextWithScale(lastMaxV, "Vpk", scale);
+                    s = Utils.UnitTextWithScale(lastMaxV, "Vpk", scale);
                     break;
                 case TP_MIN:
-                    s = getUnitTextWithScale(lastMinV, "Vmin", scale);
+                    s = Utils.UnitTextWithScale(lastMinV, "Vmin", scale);
                     break;
                 case TP_P2P:
-                    s = getUnitTextWithScale(lastMaxV - lastMinV, "Vp2p", scale);
+                    s = Utils.UnitTextWithScale(lastMaxV - lastMinV, "Vp2p", scale);
                     break;
                 case TP_BIN:
                     s = binaryLevel + "";
                     break;
                 case TP_FRQ:
-                    s = getUnitText(frequency, "Hz");
+                    s = Utils.UnitText(frequency, "Hz");
                     break;
                 case TP_PER:
                     s = "percent:" + period + " " + Sim.timeStep + " " + Sim.t + " " + Sim.getIterCount();
                     break;
                 case TP_PWI:
-                    s = getUnitText(pulseWidth, "S");
+                    s = Utils.UnitText(pulseWidth, "S");
                     break;
                 case TP_DUT:
                     s = dutyCycle.ToString("0.000");
@@ -251,7 +251,7 @@ namespace Circuit.Elements {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "voltmeter";
-            arr[1] = "Vd = " + getVoltageText(VoltageDiff);
+            arr[1] = "Vd = " + Utils.VoltageText(VoltageDiff);
         }
 
         public override bool GetConnection(int n1, int n2) { return false; }
@@ -287,7 +287,7 @@ namespace Circuit.Elements {
                 ei.Choice.Items.Add("V");
                 ei.Choice.Items.Add("mV");
                 ei.Choice.Items.Add(CirSim.muString + "V");
-                ei.Choice.SelectedIndex = scale;
+                ei.Choice.SelectedIndex = (int)scale;
                 return ei;
             }
 
@@ -306,7 +306,7 @@ namespace Circuit.Elements {
                 meter = ei.Choice.SelectedIndex;
             }
             if (n == 2) {
-                scale = ei.Choice.SelectedIndex;
+                scale = (E_SCALE)ei.Choice.SelectedIndex;
             }
         }
     }

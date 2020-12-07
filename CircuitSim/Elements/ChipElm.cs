@@ -389,7 +389,7 @@ namespace Circuit.Elements {
                 if (p.clock) {
                     t = "Clk";
                 }
-                arr[a] += t + " = " + getVoltageText(Volts[i]);
+                arr[a] += t + " = " + Utils.VoltageText(Volts[i]);
                 if (i % 2 == 1) {
                     a++;
                 }

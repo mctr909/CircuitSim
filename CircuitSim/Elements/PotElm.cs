@@ -119,17 +119,17 @@ namespace Circuit.Elements {
             if (offset == 0) {
                 offset = Sim.gridSize;
             }
-            mLen = distance(mPoint1, mPoint2);
+            mLen = Utils.Distance(mPoint1, mPoint2);
             int bodyLen = 32;
             calcLeads(bodyLen);
             position = slider.Value * .0099 + .005;
             int soff = (int)((position - .5) * bodyLen);
-            post3 = interpPoint(mPoint1, mPoint2, .5, offset);
-            corner2 = interpPoint(mPoint1, mPoint2, soff / mLen + .5, offset);
-            arrowPoint = interpPoint(mPoint1, mPoint2, soff / mLen + .5, 8 * Math.Sign(offset));
-            midpoint = interpPoint(mPoint1, mPoint2, soff / mLen + .5);
+            post3 = Utils.InterpPoint(mPoint1, mPoint2, .5, offset);
+            corner2 = Utils.InterpPoint(mPoint1, mPoint2, soff / mLen + .5, offset);
+            arrowPoint = Utils.InterpPoint(mPoint1, mPoint2, soff / mLen + .5, 8 * Math.Sign(offset));
+            midpoint = Utils.InterpPoint(mPoint1, mPoint2, soff / mLen + .5);
             double clen = Math.Abs(offset) - 8;
-            interpPoint(corner2, arrowPoint, ref arrow1, ref arrow2, (clen - 8) / clen, 4);
+            Utils.InterpPoint(corner2, arrowPoint, ref arrow1, ref arrow2, (clen - 8) / clen, 4);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -159,14 +159,14 @@ namespace Circuit.Elements {
                     if (i >= divide) {
                         v = vs + (vr - vs) * (i - divide) / (segments - divide);
                     }
-                    interpPoint(mLead1, mLead2, ref ps1, i * segf, oy);
-                    interpPoint(mLead1, mLead2, ref ps2, (i + 1) * segf, ny);
+                    Utils.InterpPoint(mLead1, mLead2, ref ps1, i * segf, oy);
+                    Utils.InterpPoint(mLead1, mLead2, ref ps2, (i + 1) * segf, ny);
                     g.DrawThickLine(getVoltageColor(v), ps1, ps2);
                     oy = ny;
                 }
             } else {
                 /* draw rectangle */
-                interpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, hs);
+                Utils.InterpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, hs);
                 g.ThickLineColor = getVoltageColor(vl);
                 g.DrawThickLine(ps1, ps2);
                 for (i = 0; i != segments; i++) {
@@ -174,13 +174,13 @@ namespace Circuit.Elements {
                     if (i >= divide) {
                         v = vs + (vr - vs) * (i - divide) / (segments - divide);
                     }
-                    interpPoint(mLead1, mLead2, ref ps1, ref ps2, i * segf, hs);
-                    interpPoint(mLead1, mLead2, ref ps3, ref ps4, (i + 1) * segf, hs);
+                    Utils.InterpPoint(mLead1, mLead2, ref ps1, ref ps2, i * segf, hs);
+                    Utils.InterpPoint(mLead1, mLead2, ref ps3, ref ps4, (i + 1) * segf, hs);
                     g.ThickLineColor = getVoltageColor(v);
                     g.DrawThickLine(ps1, ps3);
                     g.DrawThickLine(ps2, ps4);
                 }
-                interpPoint(mLead1, mLead2, ref ps1, ref ps2, 1, hs);
+                Utils.InterpPoint(mLead1, mLead2, ref ps1, ref ps2, 1, hs);
                 g.DrawThickLine(ps1, ps2);
             }
 
@@ -196,7 +196,7 @@ namespace Circuit.Elements {
                 drawDots(g, mPoint1, midpoint, curcount1);
                 drawDots(g, mPoint2, midpoint, curcount2);
                 drawDots(g, post3, corner2, curcount3);
-                drawDots(g, corner2, midpoint, curcount3 + distance(post3, corner2));
+                drawDots(g, corner2, midpoint, curcount3 + Utils.Distance(post3, corner2));
             }
             drawPosts(g);
 
@@ -209,19 +209,19 @@ namespace Circuit.Elements {
                 bool rev = (mLead1.X == mLead2.X && mLead1.Y < mLead2.Y) || (mLead1.Y == mLead2.Y && mLead1.X > mLead2.X);
 
                 /* draw units */
-                string s1 = getShortUnitText(rev ? resistance2 : resistance1, "");
-                string s2 = getShortUnitText(rev ? resistance1 : resistance2, "");
+                string s1 = Utils.ShortUnitText(rev ? resistance2 : resistance1, "");
+                string s2 = Utils.ShortUnitText(rev ? resistance1 : resistance2, "");
                 int txtHeightH = CustomGraphics.FontText.Height / 2;
                 int txtWidth1 = (int)g.GetTextSize(s1).Width;
                 int txtWidth2 = (int)g.GetTextSize(s2).Width;
 
                 /* vertical? */
                 if (mLead1.X == mLead2.X) {
-                    g.DrawLeftTopText(s1, !reverseY ? arrowPoint.X : arrowPoint.X - txtWidth1, Math.Min(arrow1.Y, arrow2.Y) + 3 * txtHeightH);
+                    g.DrawLeftTopText(s1, !reverseY ? arrowPoint.X : arrowPoint.X - txtWidth1, Math.Min(arrow1.Y, arrow2.Y) + 4 * txtHeightH);
                     g.DrawLeftTopText(s2, !reverseY ? arrowPoint.X : arrowPoint.X - txtWidth2, Math.Max(arrow1.Y, arrow2.Y) - txtHeightH);
                 } else {
-                    g.DrawLeftTopText(s1, Math.Min(arrow1.X, arrow2.X) - txtWidth1, !reverseX ? (arrowPoint.Y + txtHeightH + 4) : arrowPoint.Y);
-                    g.DrawLeftTopText(s2, Math.Max(arrow1.X, arrow2.X), !reverseX ? (arrowPoint.Y + txtHeightH + 4) : arrowPoint.Y);
+                    g.DrawLeftTopText(s1, Math.Min(arrow1.X, arrow2.X) - txtWidth1, !reverseX ? (arrowPoint.Y + txtHeightH + 10) : arrowPoint.Y);
+                    g.DrawLeftTopText(s2, Math.Max(arrow1.X, arrow2.X), !reverseX ? (arrowPoint.Y + txtHeightH + 10) : arrowPoint.Y);
                 }
             }
         }
@@ -283,11 +283,11 @@ namespace Circuit.Elements {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "potentiometer";
-            arr[1] = "Vd = " + getVoltageDText(VoltageDiff);
-            arr[2] = "R1 = " + getUnitText(resistance1, CirSim.ohmString);
-            arr[3] = "R2 = " + getUnitText(resistance2, CirSim.ohmString);
-            arr[4] = "I1 = " + getCurrentDText(current1);
-            arr[5] = "I2 = " + getCurrentDText(current2);
+            arr[1] = "Vd = " + Utils.VoltageDText(VoltageDiff);
+            arr[2] = "R1 = " + Utils.UnitText(resistance1, CirSim.ohmString);
+            arr[3] = "R2 = " + Utils.UnitText(resistance2, CirSim.ohmString);
+            arr[4] = "I1 = " + Utils.CurrentDText(current1);
+            arr[5] = "I2 = " + Utils.CurrentDText(current2);
         }
 
         public override EditInfo GetEditInfo(int n) {

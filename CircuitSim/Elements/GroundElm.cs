@@ -27,11 +27,11 @@ namespace Circuit.Elements {
             for (int i = 0; i != 3; i++) {
                 int a = 10 - i * 4;
                 int b = i * 5; /* -10; */
-                interpPoint(mPoint1, mPoint2, ref ps1, ref ps2, 1 + b / mLen, a);
+                Utils.InterpPoint(mPoint1, mPoint2, ref ps1, ref ps2, 1 + b / mLen, a);
                 g.DrawThickLine(ps1, ps2);
             }
             doDots(g);
-            interpPoint(mPoint1, mPoint2, ref ps2, 1 + 11.0 / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref ps2, 1 + 11.0 / mLen);
             setBbox(mPoint1, ps2, 11);
             drawPosts(g);
         }
@@ -44,7 +44,7 @@ namespace Circuit.Elements {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "ground";
-            arr[1] = "I = " + getCurrentText(mCurrent);
+            arr[1] = "I = " + Utils.CurrentText(mCurrent);
         }
 
         public override bool HasGroundConnection(int n1) { return true; }

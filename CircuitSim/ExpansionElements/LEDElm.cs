@@ -44,9 +44,9 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             int cr = 12;
-            ledLead1 = interpPoint(mPoint1, mPoint2, .5 - cr / mLen);
-            ledLead2 = interpPoint(mPoint1, mPoint2, .5 + cr / mLen);
-            ledCenter = interpPoint(mPoint1, mPoint2, .5);
+            ledLead1 = Utils.InterpPoint(mPoint1, mPoint2, .5 - cr / mLen);
+            ledLead2 = Utils.InterpPoint(mPoint1, mPoint2, .5 + cr / mLen);
+            ledCenter = Utils.InterpPoint(mPoint1, mPoint2, .5);
         }
 
         public override void Draw(CustomGraphics g) {

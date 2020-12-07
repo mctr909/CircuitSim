@@ -26,7 +26,7 @@ namespace Circuit.Elements {
             for (int i = 0; i != 16; i++) {
                 double a = i / 16.0;
                 double b = 1 - a * a;
-                interpPoint(mLead1, mLead2,
+                Utils.InterpPoint(mLead1, mLead2,
                     ref gatePolyAnsi[i], ref gatePolyAnsi[32 - i],
                     .5 + a / 2, b * hs2);
             }
@@ -34,16 +34,16 @@ namespace Circuit.Elements {
             for (int i = 0; i != 7; i++) {
                 double a = (i - 3) / 3.0;
                 double b = 6 * (1 - a * a) - 3;
-                interpPoint(mLead1, mLead2, ref gatePolyAnsi[33 + i], b / ww2, a * hs2);
+                Utils.InterpPoint(mLead1, mLead2, ref gatePolyAnsi[33 + i], b / ww2, a * hs2);
                 if (this is XorGateElm) {
-                    linePoints[i] = interpPoint(mLead1, mLead2, (b - 7) / ww2, a * hs2);
+                    linePoints[i] = Utils.InterpPoint(mLead1, mLead2, (b - 7) / ww2, a * hs2);
                 }
             }
             gatePolyAnsi[16] = mLead2;
 
             if (isInverting()) {
-                pcircle = interpPoint(mPoint1, mPoint2, .5 + (ww + 4) / mLen);
-                mLead2 = interpPoint(mPoint1, mPoint2, .5 + (ww + 8) / mLen);
+                pcircle = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww + 4) / mLen);
+                mLead2 = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww + 8) / mLen);
             }
         }
 

@@ -110,7 +110,7 @@ namespace Circuit {
             inf = myElm.GetEditInfo(0);
             double currentvalue = inf.Value;
             for (int i = 0; i < nvalues + 1; i++) {
-                if (CircuitElm.getShortUnitText(currentvalue, "") == CircuitElm.getShortUnitText(values[i], "")) { /* match to an existing value */
+                if (Utils.ShortUnitText(currentvalue, "") == Utils.ShortUnitText(values[i], "")) { /* match to an existing value */
                     values[i] = currentvalue; /* Just in case it isn't 100% identical */
                     currentidx = i;
                     break;
@@ -134,7 +134,7 @@ namespace Circuit {
 
         void setupLabels() {
             int thissel = getSelIdx();
-            labels.Text = CircuitElm.getShortUnitText(values[thissel], unit);
+            labels.Text = Utils.ShortUnitText(values[thissel], unit);
             trbValue.Value = thissel;
         }
 
@@ -179,7 +179,7 @@ namespace Circuit {
             inf.Value = values[thissel];
             myElm.SetEditValue(0, inf);
             sim.needAnalyze();
-            labels.Text = CircuitElm.getShortUnitText(values[thissel], unit);
+            labels.Text = Utils.ShortUnitText(values[thissel], unit);
         }
 
         public void setElmValue(int i) {

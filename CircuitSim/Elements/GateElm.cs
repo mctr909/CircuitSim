@@ -103,8 +103,8 @@ namespace Circuit.Elements {
                 if (i0 == 0 && (inputCount & 1) == 0) {
                     i0++;
                 }
-                inPosts[i] = interpPoint(mPoint1, mPoint2, 0, hs * i0);
-                inGates[i] = interpPoint(mLead1, mLead2, 0, hs * i0);
+                inPosts[i] = Utils.InterpPoint(mPoint1, mPoint2, 0, hs * i0);
+                inGates[i] = Utils.InterpPoint(mLead1, mLead2, 0, hs * i0);
                 Volts[i] = (lastOutput ^ isInverting()) ? 5 : 0;
             }
             hs2 = gwidth * (inputCount / 2 + 1);
@@ -116,8 +116,8 @@ namespace Circuit.Elements {
 
         protected void createEuroGatePolygon() {
             gatePolyEuro = new Point[4];
-            interpPoint(mLead1, mLead2, ref gatePolyEuro[0], ref gatePolyEuro[1], 0, hs2);
-            interpPoint(mLead1, mLead2, ref gatePolyEuro[3], ref gatePolyEuro[2], 1, hs2);
+            Utils.InterpPoint(mLead1, mLead2, ref gatePolyEuro[0], ref gatePolyEuro[1], 0, hs2);
+            Utils.InterpPoint(mLead1, mLead2, ref gatePolyEuro[3], ref gatePolyEuro[2], 1, hs2);
         }
 
         protected virtual string getGateText() { return null; }
@@ -135,7 +135,7 @@ namespace Circuit.Elements {
                 g.DrawThickPolygon(gatePolyAnsi);
             } else {
                 g.DrawThickPolygon(gatePolyEuro);
-                var center = interpPoint(mPoint1, mPoint2, .5);
+                var center = Utils.InterpPoint(mPoint1, mPoint2, .5);
                 drawCenteredLText(g, getGateText(), center.X, center.Y - 6 * gsize, true);
             }
             if (hasSchmittInputs()) {
@@ -166,8 +166,8 @@ namespace Circuit.Elements {
 
         public override void GetInfo(string[] arr) {
             arr[0] = getGateName();
-            arr[1] = "Vout = " + getVoltageText(Volts[inputCount]);
-            arr[2] = "Iout = " + getCurrentText(mCurrent);
+            arr[1] = "Vout = " + Utils.VoltageText(Volts[inputCount]);
+            arr[2] = "Iout = " + Utils.CurrentText(mCurrent);
         }
 
         public override void Stamp() {

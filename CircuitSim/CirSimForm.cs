@@ -1624,8 +1624,8 @@ namespace Circuit {
         void dragPost(int x, int y) {
             if (draggingPost == -1) {
                 draggingPost
-                    = (CircuitElm.distance(mouseElm.X1, mouseElm.Y1, x, y)
-                    > CircuitElm.distance(mouseElm.X2, mouseElm.Y2, x, y))
+                    = (Utils.Distance(mouseElm.X1, mouseElm.Y1, x, y)
+                    > Utils.Distance(mouseElm.X2, mouseElm.Y2, x, y))
                     ? 1 : 0;
             }
             int dx = x - dragGridX;
@@ -1773,7 +1773,7 @@ namespace Circuit {
                         }
                         for (j = 0; j != jn; j++) {
                             var pt = ce.GetPost(j);
-                            int dist = (int)CircuitElm.distance(gx, gy, pt.X, pt.Y);
+                            int dist = (int)Utils.Distance(pt, gx, gy);
 
                             /* if multiple elements have overlapping bounding boxes,
                             /* we prefer selecting elements that have posts close
@@ -1821,7 +1821,7 @@ namespace Circuit {
                     int jn = ce.PostCount;
                     for (j = 0; j != jn; j++) {
                         var pt = ce.GetPost(j);
-                        if (CircuitElm.distance(pt.X, pt.Y, gx, gy) < 26) {
+                        if (Utils.Distance(pt, gx, gy) < 26) {
                             newMouseElm = ce;
                             mousePost = j;
                             break;
@@ -1833,7 +1833,7 @@ namespace Circuit {
                 /* look for post close to the mouse pointer */
                 for (i = 0; i != newMouseElm.PostCount; i++) {
                     var pt = newMouseElm.GetPost(i);
-                    if (CircuitElm.distance(pt.X, pt.Y, gx, gy) < 26) {
+                    if (Utils.Distance(pt, gx, gy) < 26) {
                         mousePost = i;
                     }
                 }

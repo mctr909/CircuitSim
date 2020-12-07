@@ -51,6 +51,7 @@
     <Compile Include="CirSimVariable.cs" />
     <Compile Include="Common\CircuitElmDraw.cs" />
     <Compile Include="Common\CustomGraphics.cs" />
+    <Compile Include="Common\Utils.cs" />
     <Compile Include="Elements\AmmeterElm.cs" />
     <Compile Include="Elements\AnalogSwitchElm.cs" />
     <Compile Include="Elements\CCCSElm.cs" />
@@ -170,8 +171,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="ClassDiagram2.cd" />
-    <None Include="ClassDiagram3.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

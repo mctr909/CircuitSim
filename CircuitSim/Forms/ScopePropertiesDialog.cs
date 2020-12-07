@@ -277,7 +277,7 @@ namespace Circuit {
         }
 
         void setScopeSpeedLabel() {
-            scopeSpeedLabel.Text = (CircuitElm.getUnitText(scope.calcGridStepX(), "s") + "/div");
+            scopeSpeedLabel.Text = (Utils.UnitText(scope.calcGridStepX(), "s") + "/div");
         }
 
         void addItemToGrid(GroupBox grb, Control ctrl) {

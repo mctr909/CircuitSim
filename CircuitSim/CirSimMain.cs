@@ -174,8 +174,8 @@ namespace Circuit {
                         info[0] = "V = " + mouseElm.DispPostVoltage(mousePost);
                     }
                 } else {
-                    info[0] = "t = " + CircuitElm.getTimeText(t);
-                    info[1] = "time step = " + CircuitElm.getTimeText(timeStep);
+                    info[0] = "t = " + Utils.TimeText(t);
+                    info[1] = "time step = " + Utils.TimeText(timeStep);
                 }
                 if (Hint.Type != -1) {
                     int infoIdx;

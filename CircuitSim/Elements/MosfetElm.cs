@@ -165,8 +165,8 @@ namespace Circuit.Elements {
                 if ((i == 1 || i == 4) && enhancement) {
                     continue;
                 }
-                interpPoint(src[1], drn[1], ref ps1, i * segf);
-                interpPoint(src[1], drn[1], ref ps2, (i + 1) * segf);
+                Utils.InterpPoint(src[1], drn[1], ref ps1, i * segf);
+                Utils.InterpPoint(src[1], drn[1], ref ps2, (i + 1) * segf);
                 double v = Volts[V_S] + (Volts[V_D] - Volts[V_S]) * i / segments;
                 g.ThickLineColor = getVoltageColor(v);
                 g.DrawThickLine(ps1, ps2);
@@ -238,40 +238,40 @@ namespace Circuit.Elements {
             if ((mFlags & FLAG_FLIP) != 0) {
                 hs2 = -hs2;
             }
-            src = newPointArray(3);
-            drn = newPointArray(3);
-            interpPoint(mPoint1, mPoint2, ref src[0], ref drn[0], 1, -hs2);
-            interpPoint(mPoint1, mPoint2, ref src[1], ref drn[1], 1 - 22 / mLen, -hs2);
-            interpPoint(mPoint1, mPoint2, ref src[2], ref drn[2], 1 - 22 / mLen, -hs2 * 4 / 3);
+            src = new Point[3];
+            drn = new Point[3];
+            Utils.InterpPoint(mPoint1, mPoint2, ref src[0], ref drn[0], 1, -hs2);
+            Utils.InterpPoint(mPoint1, mPoint2, ref src[1], ref drn[1], 1 - 22 / mLen, -hs2);
+            Utils.InterpPoint(mPoint1, mPoint2, ref src[2], ref drn[2], 1 - 22 / mLen, -hs2 * 4 / 3);
 
-            gate = newPointArray(3);
-            interpPoint(mPoint1, mPoint2, ref gate[0], ref gate[2], 1 - 28 / mLen, hs2 / 2); /* was 1-20/dn */
-            interpPoint(gate[0], gate[2], ref gate[1], .5);
+            gate = new Point[3];
+            Utils.InterpPoint(mPoint1, mPoint2, ref gate[0], ref gate[2], 1 - 28 / mLen, hs2 / 2); /* was 1-20/dn */
+            Utils.InterpPoint(gate[0], gate[2], ref gate[1], .5);
 
             if (showBulk()) {
-                body = newPointArray(2);
-                interpPoint(src[0], drn[0], ref body[0], .5);
-                interpPoint(src[1], drn[1], ref body[1], .5);
+                body = new Point[2];
+                Utils.InterpPoint(src[0], drn[0], ref body[0], .5);
+                Utils.InterpPoint(src[1], drn[1], ref body[1], .5);
             }
 
             if (!drawDigital()) {
                 if (pnp == 1) {
                     if (!showBulk()) {
-                        arrowPoly = calcArrow(src[1], src[0], 10, 4).ToArray();
+                        arrowPoly = Utils.CreateArrow(src[1], src[0], 10, 4);
                     } else {
-                        arrowPoly = calcArrow(body[0], body[1], 12, 5).ToArray();
+                        arrowPoly = Utils.CreateArrow(body[0], body[1], 12, 5);
                     }
                 } else {
                     if (!showBulk()) {
-                        arrowPoly = calcArrow(drn[0], drn[1], 12, 5).ToArray();
+                        arrowPoly = Utils.CreateArrow(drn[0], drn[1], 12, 5);
                     } else {
-                        arrowPoly = calcArrow(body[1], body[0], 12, 5).ToArray();
+                        arrowPoly = Utils.CreateArrow(body[1], body[0], 12, 5);
                     }
                 }
             } else if (pnp == -1) {
-                interpPoint(mPoint1, mPoint2, ref gate[1], 1 - 36 / mLen);
+                Utils.InterpPoint(mPoint1, mPoint2, ref gate[1], 1 - 36 / mLen);
                 int dist = (mDsign < 0) ? 32 : 31;
-                pcircle = interpPoint(mPoint1, mPoint2, 1 - dist / mLen);
+                pcircle = Utils.InterpPoint(mPoint1, mPoint2, 1 - dist / mLen);
                 pcircler = 3;
             }
         }
@@ -446,16 +446,16 @@ namespace Circuit.Elements {
 
         void getFetInfo(string[] arr, string n) {
             arr[0] = ((pnp == -1) ? "p-" : "n-") + n;
-            arr[0] += " (Vt=" + getVoltageText(pnp * vt);
+            arr[0] += " (Vt=" + Utils.VoltageText(pnp * vt);
             arr[0] += ", \u03b2=" + beta + ")";
-            arr[1] = ((pnp == 1) ? "Ids = " : "Isd = ") + getCurrentText(ids);
-            arr[2] = "Vgs = " + getVoltageText(Volts[V_G] - Volts[pnp == -1 ? V_D : V_S]);
-            arr[3] = ((pnp == 1) ? "Vds = " : "Vsd = ") + getVoltageText(Volts[V_D] - Volts[V_S]);
+            arr[1] = ((pnp == 1) ? "Ids = " : "Isd = ") + Utils.CurrentText(ids);
+            arr[2] = "Vgs = " + Utils.VoltageText(Volts[V_G] - Volts[pnp == -1 ? V_D : V_S]);
+            arr[3] = ((pnp == 1) ? "Vds = " : "Vsd = ") + Utils.VoltageText(Volts[V_D] - Volts[V_S]);
             arr[4] = (mode == 0) ? "off" : (mode == 1) ? "linear" : "saturation";
-            arr[5] = "gm = " + getUnitText(gm, "A/V");
-            arr[6] = "P = " + getUnitText(Power, "W");
+            arr[5] = "gm = " + Utils.UnitText(gm, "A/V");
+            arr[6] = "P = " + Utils.UnitText(Power, "W");
             if (showBulk()) {
-                arr[7] = "Ib = " + getUnitText(bodyTerminal == 1 ? -diodeCurrent1 : bodyTerminal == 2 ? diodeCurrent2 : -pnp * (diodeCurrent1 + diodeCurrent2), "A");
+                arr[7] = "Ib = " + Utils.UnitText(bodyTerminal == 1 ? -diodeCurrent1 : bodyTerminal == 2 ? diodeCurrent2 : -pnp * (diodeCurrent1 + diodeCurrent2), "A");
             }
         }
 

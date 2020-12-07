@@ -161,9 +161,9 @@ namespace Circuit.Elements {
                 sign = mDsign;
             }
             if(waveform == WF_DC || waveform == WF_VAR) {
-                textPos = interpPoint(mPoint1, mPoint2, 0.5, -16 * sign);
+                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -16 * sign);
             } else {
-                textPos = interpPoint(mPoint1, mPoint2, (mLen / 2 + 0.7 * circleSize) / mLen, 10 * sign);
+                textPos = Utils.InterpPoint(mPoint1, mPoint2, (mLen / 2 + 0.7 * circleSize) / mLen, 10 * sign);
             }
         }
 
@@ -172,18 +172,18 @@ namespace Circuit.Elements {
             draw2Leads(g);
 
             if (waveform == WF_DC) {
-                interpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, 10);
+                Utils.InterpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, 10);
                 g.DrawThickLine(getVoltageColor(Volts[0]), ps1, ps2);
 
                 int hs = 16;
                 setBbox(mPoint1, mPoint2, hs);
-                interpPoint(mLead1, mLead2, ref ps1, ref ps2, 1, hs);
+                Utils.InterpPoint(mLead1, mLead2, ref ps1, ref ps2, 1, hs);
                 g.DrawThickLine(getVoltageColor(Volts[1]), ps1, ps2);
-                string s = getShortUnitText(maxVoltage, "V");
+                string s = Utils.ShortUnitText(maxVoltage, "V");
                 g.DrawRightText(s, textPos.X, textPos.Y);
             } else {
                 setBbox(mPoint1, mPoint2, circleSize);
-                interpPoint(mLead1, mLead2, ref ps1, .5);
+                Utils.InterpPoint(mLead1, mLead2, ref ps1, .5);
                 drawWaveform(g, ps1);
                 string inds;
                 if (bias > 0 || (bias == 0 && waveform == WF_PULSE)) {
@@ -295,9 +295,9 @@ namespace Circuit.Elements {
             }
 
             if (Sim.chkShowValuesCheckItem.Checked && waveform != WF_NOISE) {
-                var s = getShortUnitText(maxVoltage, "V\r\n");
-                s += getShortUnitText(frequency, "Hz\r\n");
-                s += getShortUnitText(phaseShift * ToDeg, "°");
+                var s = Utils.ShortUnitText(maxVoltage, "V\r\n");
+                s += Utils.ShortUnitText(frequency, "Hz\r\n");
+                s += Utils.ShortUnitText(phaseShift * ToDeg, "°");
                 drawValues(g, s, 0, 5);
             }
         }
@@ -321,25 +321,25 @@ namespace Circuit.Elements {
                 arr[0] = "noise gen"; break;
             }
 
-            arr[1] = "I = " + getCurrentText(mCurrent);
-            arr[2] = ((this is RailElm) ? "V = " : "Vd = ") + getVoltageText(VoltageDiff);
+            arr[1] = "I = " + Utils.CurrentText(mCurrent);
+            arr[2] = ((this is RailElm) ? "V = " : "Vd = ") + Utils.VoltageText(VoltageDiff);
             int i = 3;
             if (waveform != WF_DC && waveform != WF_VAR && waveform != WF_NOISE) {
-                arr[i++] = "f = " + getUnitText(frequency, "Hz");
-                arr[i++] = "Vmax = " + getVoltageText(maxVoltage);
+                arr[i++] = "f = " + Utils.UnitText(frequency, "Hz");
+                arr[i++] = "Vmax = " + Utils.VoltageText(maxVoltage);
                 if (waveform == WF_AC && bias == 0) {
-                    arr[i++] = "V(rms) = " + getVoltageText(maxVoltage / 1.41421356);
+                    arr[i++] = "V(rms) = " + Utils.VoltageText(maxVoltage / 1.41421356);
                 }
                 if (bias != 0) {
-                    arr[i++] = "Voff = " + getVoltageText(bias);
+                    arr[i++] = "Voff = " + Utils.VoltageText(bias);
                 } else if (frequency > 500) {
-                    arr[i++] = "wavelength = " + getUnitText(2.9979e8 / frequency, "m");
+                    arr[i++] = "wavelength = " + Utils.UnitText(2.9979e8 / frequency, "m");
                 }
             }
             if (waveform == WF_DC && mCurrent != 0 && mCir.ShowResistanceInVoltageSources) {
-                arr[i++] = "(R = " + getUnitText(maxVoltage / mCurrent, CirSim.ohmString) + ")";
+                arr[i++] = "(R = " + Utils.UnitText(maxVoltage / mCurrent, CirSim.ohmString) + ")";
             }
-            arr[i++] = "P = " + getUnitText(Power, "W");
+            arr[i++] = "P = " + Utils.UnitText(Power, "W");
         }
 
         public override EditInfo GetEditInfo(int n) {

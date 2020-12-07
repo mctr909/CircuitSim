@@ -40,9 +40,9 @@ namespace Circuit.Elements {
             base.SetPoints();
             calcLeads(40);
             if (mPoint1.Y == mPoint2.Y) {
-                textPos = interpPoint(mPoint1, mPoint2, 0.5 + 15 * mDsign / mLen, 12 * mDsign);
+                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 12 * mDsign / mLen, 12 * mDsign);
             } else {
-                textPos = interpPoint(mPoint1, mPoint2, 0.5, -10 * mDsign);
+                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -10 * mDsign);
             }
         }
 
@@ -56,7 +56,7 @@ namespace Circuit.Elements {
             drawCoil(g, mLead1, mLead2, v1, v2);
 
             if (Sim.chkShowValuesCheckItem.Checked) {
-                var s = getShortUnitText(Inductance, "");
+                var s = Utils.ShortUnitText(Inductance, "");
                 g.DrawRightText(s, textPos.X, textPos.Y);
             }
             doDots(g);
@@ -87,8 +87,8 @@ namespace Circuit.Elements {
         public override void GetInfo(string[] arr) {
             arr[0] = "inductor";
             getBasicInfo(arr);
-            arr[3] = "L = " + getUnitText(Inductance, "H");
-            arr[4] = "P = " + getUnitText(Power, "W");
+            arr[3] = "L = " + Utils.UnitText(Inductance, "H");
+            arr[4] = "P = " + Utils.UnitText(Power, "W");
         }
 
         public override EditInfo GetEditInfo(int n) {

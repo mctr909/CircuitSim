@@ -63,15 +63,15 @@ namespace Circuit.Elements {
             if (position == 0) {
                 doDots(g);
             }
-            interpPoint(mLead1, mLead2, ref ps1, 0, hs1);
-            interpPoint(mLead1, mLead2, ref ps2, 1, hs2);
+            Utils.InterpPoint(mLead1, mLead2, ref ps1, 0, hs1);
+            Utils.InterpPoint(mLead1, mLead2, ref ps2, 1, hs2);
             g.ThickLineColor = NeedsHighlight ? SelectColor : WhiteColor;
             g.DrawThickLine(ps1, ps2);
             drawPosts(g);
         }
 
         public virtual Rectangle getSwitchRect() {
-            interpPoint(mLead1, mLead2, ref ps1, 0, openhs);
+            Utils.InterpPoint(mLead1, mLead2, ref ps1, 0, openhs);
             var l1 = new Rectangle(mLead1.X, mLead1.Y, 0, 0);
             var l2 = new Rectangle(mLead2.X, mLead2.Y, 0, 0);
             var p = new Rectangle(ps1.X, ps1.Y, 0, 0);
@@ -107,11 +107,11 @@ namespace Circuit.Elements {
             arr[0] = (momentary) ? "push switch (SPST)" : "switch (SPST)";
             if (position == 1) {
                 arr[1] = "open";
-                arr[2] = "Vd = " + getVoltageDText(VoltageDiff);
+                arr[2] = "Vd = " + Utils.VoltageDText(VoltageDiff);
             } else {
                 arr[1] = "closed";
-                arr[2] = "V = " + getVoltageText(Volts[0]);
-                arr[3] = "I = " + getCurrentDText(mCurrent);
+                arr[2] = "V = " + Utils.VoltageText(Volts[0]);
+                arr[3] = "I = " + Utils.CurrentDText(mCurrent);
             }
         }
 

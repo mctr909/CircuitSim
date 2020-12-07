@@ -88,10 +88,10 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(16);
-            cathode = newPointArray(2);
-            var pa = newPointArray(2);
-            interpPoint(mLead1, mLead2, ref pa[0], ref pa[1], 0, hs);
-            interpPoint(mLead1, mLead2, ref cathode[0], ref cathode[1], 1, hs);
+            cathode = new Point[2];
+            var pa = new Point[2];
+            Utils.InterpPoint(mLead1, mLead2, ref pa[0], ref pa[1], 0, hs);
+            Utils.InterpPoint(mLead1, mLead2, ref cathode[0], ref cathode[1], 1, hs);
             poly = new Point[] { pa[0], pa[1], mLead2 };
         }
 
@@ -149,11 +149,11 @@ namespace Circuit.Elements {
             } else {
                 arr[0] = "diode (" + modelName + ")";
             }
-            arr[1] = "I = " + getCurrentText(mCurrent);
-            arr[2] = "Vd = " + getVoltageText(VoltageDiff);
-            arr[3] = "P = " + getUnitText(Power, "W");
+            arr[1] = "I = " + Utils.CurrentText(mCurrent);
+            arr[2] = "Vd = " + Utils.VoltageText(VoltageDiff);
+            arr[3] = "P = " + Utils.UnitText(Power, "W");
             if (model.oldStyle) {
-                arr[4] = "Vf = " + getVoltageText(model.fwdrop);
+                arr[4] = "Vf = " + Utils.VoltageText(model.fwdrop);
             }
         }
 

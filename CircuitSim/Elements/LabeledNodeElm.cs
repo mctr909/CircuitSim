@@ -73,7 +73,7 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            mLead1 = interpPoint(mPoint1, mPoint2, 1 - circleSize / mLen);
+            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - circleSize / mLen);
         }
 
         public override void SetNode(int p, int n) {
@@ -114,7 +114,7 @@ namespace Circuit.Elements {
             }
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(g, mPoint1, mLead1, mCurCount);
-            interpPoint(mPoint1, mPoint2, ref ps2, 1 + 11.0 / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref ps2, 1 + 11.0 / mLen);
             setBbox(mPoint1, ps2, circleSize);
             drawPosts(g);
         }
@@ -129,8 +129,8 @@ namespace Circuit.Elements {
 
         public override void GetInfo(string[] arr) {
             arr[0] = text;
-            arr[1] = "I = " + getCurrentText(mCurrent);
-            arr[2] = "V = " + getVoltageText(Volts[0]);
+            arr[1] = "I = " + Utils.CurrentText(mCurrent);
+            arr[2] = "V = " + Utils.VoltageText(Volts[0]);
         }
 
         public override EditInfo GetEditInfo(int n) {

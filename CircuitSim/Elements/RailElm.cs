@@ -23,7 +23,7 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            mLead1 = interpPoint(mPoint1, mPoint2, 1 - circleSize / mLen);
+            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - circleSize / mLen);
         }
 
         public string getRailText() {
@@ -36,7 +36,7 @@ namespace Circuit.Elements {
             if (w > mLen * .8) {
                 w = mLen * .8;
             }
-            mLead1 = interpPoint(mPoint1, mPoint2, 1 - w / mLen);
+            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - w / mLen);
             setBbox(mPoint1, mPoint2, circleSize);
 
             g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
@@ -58,7 +58,7 @@ namespace Circuit.Elements {
                 if (Math.Abs(v) < 1) {
                     s = v.ToString("0.000") + " V";
                 } else {
-                    s = getShortUnitText(v, "V");
+                    s = Utils.ShortUnitText(v, "V");
                 }
                 if (getVoltage() > 0) {
                     s = "+" + s;

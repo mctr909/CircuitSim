@@ -60,17 +60,17 @@ namespace Circuit.Elements {
             base.SetPoints();
             double f = (mLen / 2 - 4) / mLen;
             /* calc leads */
-            mLead1 = interpPoint(mPoint1, mPoint2, f);
-            mLead2 = interpPoint(mPoint1, mPoint2, 1 - f);
+            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, f);
+            mLead2 = Utils.InterpPoint(mPoint1, mPoint2, 1 - f);
             /* calc plates */
-            plate1 = newPointArray(2);
-            plate2 = newPointArray(2);
-            interpPoint(mPoint1, mPoint2, ref plate1[0], ref plate1[1], f, 10);
-            interpPoint(mPoint1, mPoint2, ref plate2[0], ref plate2[1], 1 - f, 10);
+            plate1 = new Point[2];
+            plate2 = new Point[2];
+            Utils.InterpPoint(mPoint1, mPoint2, ref plate1[0], ref plate1[1], f, 10);
+            Utils.InterpPoint(mPoint1, mPoint2, ref plate2[0], ref plate2[1], 1 - f, 10);
             if (mPoint1.Y == mPoint2.Y) {
-                textPos = interpPoint(mPoint1, mPoint2, 0.5 + 12 * mDsign / mLen, 16 * mDsign);
+                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 12 * mDsign / mLen, 16 * mDsign);
             } else {
-                textPos = interpPoint(mPoint1, mPoint2, 0.5, -12 * mDsign);
+                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -12 * mDsign);
             }
         }
 
@@ -102,7 +102,7 @@ namespace Circuit.Elements {
             }
             drawPosts(g);
             if (Sim.chkShowValuesCheckItem.Checked) {
-                var s = getShortUnitText(Capacitance, "");
+                var s = Utils.ShortUnitText(Capacitance, "");
                 g.DrawRightText(s, textPos.X, textPos.Y);
             }
         }
@@ -162,13 +162,13 @@ namespace Circuit.Elements {
         public override void GetInfo(string[] arr) {
             arr[0] = "capacitor";
             getBasicInfo(arr);
-            arr[3] = "C = " + getUnitText(Capacitance, "F");
-            arr[4] = "P = " + getUnitText(Power, "W");
+            arr[3] = "C = " + Utils.UnitText(Capacitance, "F");
+            arr[4] = "P = " + Utils.UnitText(Power, "W");
         }
 
         public override string GetScopeText(int v) {
             base.GetScopeText(v);
-            return "capacitor, " + getUnitText(Capacitance, "F");
+            return "capacitor, " + Utils.UnitText(Capacitance, "F");
         }
 
         public override EditInfo GetEditInfo(int n) {

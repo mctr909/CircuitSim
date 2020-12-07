@@ -30,14 +30,14 @@ namespace Circuit.Elements {
             base.SetPoints();
             calcLeads(32);
             if (mPoint1.Y == mPoint2.Y) {
-                textPos = interpPoint(mPoint1, mPoint2, 0.5 + 12 * mDsign / mLen, 12 * mDsign);
+                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 10 * mDsign / mLen, 12 * mDsign);
             } else {
-                textPos = interpPoint(mPoint1, mPoint2, 0.5, -10 * mDsign);
+                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -10 * mDsign);
             }
         }
 
         public override void Draw(CustomGraphics g) {
-            var len = (float)distance(mLead1, mLead2);
+            var len = (float)Utils.Distance(mLead1, mLead2);
             if (0 == len) {
                 return;
             }
@@ -62,31 +62,31 @@ namespace Circuit.Elements {
                     case 2: ny = -hs; break;
                     default: ny = 0; break;
                     }
-                    interpPoint(mLead1, mLead2, ref ps1, i * segf, oy);
-                    interpPoint(mLead1, mLead2, ref ps2, (i + 1) * segf, ny);
+                    Utils.InterpPoint(mLead1, mLead2, ref ps1, i * segf, oy);
+                    Utils.InterpPoint(mLead1, mLead2, ref ps2, (i + 1) * segf, ny);
                     double v = v1 + (v2 - v1) * i / segments;
                     g.DrawThickLine(getVoltageColor(v), ps1, ps2);
                     oy = ny;
                 }
             } else {
                 /* draw rectangle */
-                interpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, hs);
+                Utils.InterpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, hs);
                 g.ThickLineColor = getVoltageColor(v1);
                 g.DrawThickLine(ps1, ps2);
                 for (int i = 0; i != segments; i++) {
                     double v = v1 + (v2 - v1) * i / segments;
-                    interpPoint(mLead1, mLead2, ref ps1, ref ps2, i * segf, hs);
-                    interpPoint(mLead1, mLead2, ref ps3, ref ps4, (i + 1) * segf, hs);
+                    Utils.InterpPoint(mLead1, mLead2, ref ps1, ref ps2, i * segf, hs);
+                    Utils.InterpPoint(mLead1, mLead2, ref ps3, ref ps4, (i + 1) * segf, hs);
                     g.ThickLineColor = getVoltageColor(v);
                     g.DrawThickLine(ps1, ps3);
                     g.DrawThickLine(ps2, ps4);
                 }
-                interpPoint(mLead1, mLead2, ref ps1, ref ps2, 1, hs);
+                Utils.InterpPoint(mLead1, mLead2, ref ps1, ref ps2, 1, hs);
                 g.DrawThickLine(ps1, ps2);
             }
 
             if (Sim.chkShowValuesCheckItem.Checked) {
-                var s = getShortUnitText(Resistance, "");
+                var s = Utils.ShortUnitText(Resistance, "");
                 g.DrawRightText(s, textPos.X, textPos.Y);
             }
 
@@ -106,12 +106,12 @@ namespace Circuit.Elements {
         public override void GetInfo(string[] arr) {
             arr[0] = "resistor";
             getBasicInfo(arr);
-            arr[3] = "R = " + getUnitText(Resistance, CirSim.ohmString);
-            arr[4] = "P = " + getUnitText(Power, "W");
+            arr[3] = "R = " + Utils.UnitText(Resistance, CirSim.ohmString);
+            arr[4] = "P = " + Utils.UnitText(Power, "W");
         }
 
         public override string GetScopeText(int v) {
-            return "resistor, " + getUnitText(Resistance, CirSim.ohmString);
+            return "resistor, " + Utils.UnitText(Resistance, CirSim.ohmString);
         }
 
         public override EditInfo GetEditInfo(int n) {

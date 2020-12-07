@@ -222,7 +222,7 @@ namespace Circuit.Elements {
             base.GetInfo(arr);
             int i;
             for (i = 0; arr[i] != null; i++) ;
-            arr[i] = "I = " + getCurrentText(pins[inputCount].current);
+            arr[i] = "I = " + Utils.CurrentText(pins[inputCount].current);
         }
     }
 }

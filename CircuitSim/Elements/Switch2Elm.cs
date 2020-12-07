@@ -47,16 +47,16 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(32);
-            swposts = newPointArray(throwCount);
-            swpoles = newPointArray(2 + throwCount);
+            swposts = new Point[throwCount];
+            swpoles = new Point[2 + throwCount];
             int i;
             for (i = 0; i != throwCount; i++) {
                 int hs = -openhs * (i - (throwCount - 1) / 2);
                 if (throwCount == 2 && i == 0) {
                     hs = openhs;
                 }
-                interpPoint(mLead1, mLead2, ref swpoles[i], 1, hs);
-                interpPoint(mPoint1, mPoint2, ref swposts[i], 1, hs);
+                Utils.InterpPoint(mLead1, mLead2, ref swpoles[i], 1, hs);
+                Utils.InterpPoint(mPoint1, mPoint2, ref swposts[i], 1, hs);
             }
             swpoles[i] = mLead2; /* for center off */
             posCount = hasCenterOff() ? 3 : throwCount;
@@ -144,7 +144,7 @@ namespace Circuit.Elements {
         public override void GetInfo(string[] arr) {
             arr[0] = "switch (" + (link == 0 ? "S" : "D")
                 + "P" + ((throwCount > 2) ? throwCount + "T)" : "DT)");
-            arr[1] = "I = " + getCurrentDText(mCurrent);
+            arr[1] = "I = " + Utils.CurrentDText(mCurrent);
         }
 
         public override EditInfo GetEditInfo(int n) {
