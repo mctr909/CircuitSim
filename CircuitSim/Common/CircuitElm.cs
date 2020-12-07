@@ -263,7 +263,10 @@ namespace Circuit.Elements {
             setBbox(p1.X, p1.Y, p2.X, p2.Y);
             int dpx = (int)(mDirX * w);
             int dpy = (int)(mDirY * w);
-            adjustBbox(p1.X + dpx, p1.Y + dpy, p1.X - dpx, p1.Y - dpy);
+            adjustBbox(
+                p1.X + dpx, p1.Y + dpy,
+                p1.X - dpx, p1.Y - dpy
+            );
         }
 
         /// <summary>

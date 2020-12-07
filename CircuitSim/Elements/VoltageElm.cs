@@ -216,7 +216,10 @@ namespace Circuit.Elements {
                 g.DrawThickCircle(x, y, circleSize);
             }
 
-            adjustBbox(x - circleSize, y - circleSize, x + circleSize, y + circleSize);
+            adjustBbox(
+                x - circleSize, y - circleSize,
+                x + circleSize, y + circleSize
+            );
 
             float h = 11;
             float xd = (float)(h * 2 * dutyCycle - h + x);

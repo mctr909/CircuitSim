@@ -105,10 +105,7 @@ namespace Circuit.Elements {
             if (NeedsHighlight) {
                 return SelectColor;
             }
-            if (!Sim.chkVoltsCheckItem.Checked) {
-                return WhiteColor;
-            }
-            if (Sim.chkPrintableCheckItem.Checked) {
+            if (!Sim.chkVoltsCheckItem.Checked || Sim.chkPrintableCheckItem.Checked) {
                 return GrayColor;
             }
             int c = (int)((volts + VoltageRange) * (ColorScaleCount - 1) / (VoltageRange * 2));

@@ -36,7 +36,7 @@ namespace Circuit {
             } else {
                 CircuitElm.WhiteColor = Color.White;
                 CircuitElm.GrayColor = Color.Gray;
-                CircuitElm.TextColor = Color.Red;
+                CircuitElm.TextColor = Color.LightGray;
                 g.PostColor = Color.Red;
                 g.Clear(Color.Black);
             }
