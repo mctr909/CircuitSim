@@ -120,7 +120,7 @@ namespace Circuit.Elements {
                 offset = Sim.gridSize;
             }
             mLen = Utils.Distance(mPoint1, mPoint2);
-            int bodyLen = 32;
+            int bodyLen = 38;
             calcLeads(bodyLen);
             position = slider.Value * .0099 + .005;
             int soff = (int)((position - .5) * bodyLen);
@@ -133,7 +133,7 @@ namespace Circuit.Elements {
         }
 
         public override void Draw(CustomGraphics g) {
-            const int segments = 12;
+            const int segments = 16;
             const int hs = 5;
             int i;
             double vl = Volts[V_L];

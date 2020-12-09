@@ -28,11 +28,11 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads(32);
+            calcLeads(25);
             if (mPoint1.Y == mPoint2.Y) {
                 textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 10 * mDsign / mLen, 12 * mDsign);
             } else {
-                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -10 * mDsign);
+                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -6 * mDsign);
             }
         }
 
@@ -42,7 +42,7 @@ namespace Circuit.Elements {
                 return;
             }
 
-            const int hs = 5;
+            int hs = Sim.chkAnsiResistorCheckItem.Checked ? 5 : 4;
             setBbox(mPoint1, mPoint2, hs);
 
             draw2Leads(g);

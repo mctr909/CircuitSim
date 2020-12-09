@@ -58,19 +58,19 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            double f = (mLen / 2 - 4) / mLen;
+            double f = (mLen / 2 - 3) / mLen;
             /* calc leads */
             mLead1 = Utils.InterpPoint(mPoint1, mPoint2, f);
             mLead2 = Utils.InterpPoint(mPoint1, mPoint2, 1 - f);
             /* calc plates */
             plate1 = new Point[2];
             plate2 = new Point[2];
-            Utils.InterpPoint(mPoint1, mPoint2, ref plate1[0], ref plate1[1], f, 10);
-            Utils.InterpPoint(mPoint1, mPoint2, ref plate2[0], ref plate2[1], 1 - f, 10);
+            Utils.InterpPoint(mPoint1, mPoint2, ref plate1[0], ref plate1[1], f, 8);
+            Utils.InterpPoint(mPoint1, mPoint2, ref plate2[0], ref plate2[1], 1 - f, 8);
             if (mPoint1.Y == mPoint2.Y) {
                 textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 12 * mDsign / mLen, 16 * mDsign);
             } else {
-                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -12 * mDsign);
+                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -10 * mDsign);
             }
         }
 
