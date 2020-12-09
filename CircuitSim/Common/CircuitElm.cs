@@ -2,21 +2,31 @@
 using System.Drawing;
 
 namespace Circuit.Elements {
-    abstract partial class CircuitElm : Editable {
+    abstract class CircuitElm : Editable {
+        public static readonly Color SelectColor = Color.Cyan;
+
         protected const double Pi = Math.PI;
         protected const double Pi2 = Math.PI * 2;
-        protected const double ToDeg = 180 / Math.PI;
-        protected const double ToRad = Math.PI / 180;
+        protected const double ToDeg = 180 / Pi;
+        protected const double ToRad = Pi / 180;
 
-        public static CirSim Sim { get; private set; }
-
-        public static double CurrentMult { get; set; }
+        const int ColorScaleCount = 64;
+        static readonly Brush PenHandle = Brushes.Cyan;
 
         protected static Circuit mCir;
-
+        static Color[] mColorScale;
         static CircuitElm mMouseElmRef = null;
 
-        #region property
+        #region static property
+        public static CirSim Sim { get; private set; }
+        public static double VoltageRange { get; set; } = 5;
+        public static double CurrentMult { get; set; }
+        public static Color TextColor { get; set; }
+        public static Color WhiteColor { get; set; }
+        public static Color GrayColor { get; set; }
+        #endregion
+
+        #region dynamic property
         /* initial point where user created element.
          * For simple two-terminal elements, this is the first node/post. */
         public int X1 { get; set; }
@@ -170,6 +180,54 @@ namespace Circuit.Elements {
             CurrentMult = 0;
         }
 
+        public static void setColorScale() {
+            mColorScale = new Color[ColorScaleCount];
+            for (int i = 0; i != ColorScaleCount; i++) {
+                double v = i * 1.0 / ColorScaleCount - 0.5;
+                if (v < 0) {
+                    int n1 = (int)(128 * -v) + 127;
+                    int n2 = (int)(127 * (1 + v));
+                    mColorScale[i] = Color.FromArgb(n2, n2, n1);
+                } else {
+                    int n1 = (int)(128 * v) + 127;
+                    int n2 = (int)(127 * (1 - v));
+                    mColorScale[i] = Color.FromArgb(n2, n1, n2);
+                }
+            }
+        }
+
+        /// <summary>
+        /// draw current dots from point a to b
+        /// </summary>
+        /// <param name="g"></param>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="pos"></param>
+        protected static void drawDots(CustomGraphics g, Point a, Point b, double pos) {
+            if ((!Sim.simIsRunning()) || pos == 0 || !Sim.chkDotsCheckItem.Checked) {
+                return;
+            }
+            int dx = b.X - a.X;
+            int dy = b.Y - a.Y;
+            double dn = Math.Sqrt(dx * dx + dy * dy);
+            int ds = 16;
+            pos %= ds;
+            if (pos < 0) {
+                pos += ds;
+            }
+            double di = 0;
+            if (Sim.chkPrintableCheckItem.Checked) {
+                g.LineColor = GrayColor;
+            } else {
+                g.LineColor = Color.Yellow;
+            }
+            for (di = pos; di < dn; di += ds) {
+                var x0 = (float)(a.X + di * dx / dn);
+                var y0 = (float)(a.Y + di * dy / dn);
+                g.FillCircle(x0, y0, 2);
+            }
+        }
+        
         /// <summary>
         /// create new element with one post at xx,yy, to be dragged out by user
         /// </summary>
@@ -329,9 +387,151 @@ namespace Circuit.Elements {
         protected bool comparePair(int x1, int x2, int y1, int y2) {
             return (x1 == y1 && x2 == y2) || (x1 == y2 && x2 == y1);
         }
+
+        protected Color getVoltageColor(double volts) {
+            if (NeedsHighlight) {
+                return SelectColor;
+            }
+            if (!Sim.chkVoltsCheckItem.Checked || Sim.chkPrintableCheckItem.Checked) {
+                return GrayColor;
+            }
+            int c = (int)((volts + VoltageRange) * (ColorScaleCount - 1) / (VoltageRange * 2));
+            if (c < 0) {
+                c = 0;
+            }
+            if (c >= ColorScaleCount) {
+                c = ColorScaleCount - 1;
+            }
+            return mColorScale[c];
+        }
+
+        protected void drawPosts(CustomGraphics g) {
+            /* we normally do this in updateCircuit() now because the logic is more complicated.
+             * we only handle the case where we have to draw all the posts.  That happens when
+             * this element is selected or is being created */
+            if (Sim.dragElm == null && !NeedsHighlight) {
+                return;
+            }
+            if (Sim.mouseMode == CirSim.MOUSE_MODE.DRAG_ROW || Sim.mouseMode == CirSim.MOUSE_MODE.DRAG_COLUMN) {
+                return;
+            }
+            for (int i = 0; i != PostCount; i++) {
+                var p = GetPost(i);
+                g.DrawPost(p);
+            }
+        }
+
+        protected void draw2Leads(CustomGraphics g) {
+            /* draw first lead */
+            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
+            /* draw second lead */
+            g.DrawThickLine(getVoltageColor(Volts[1]), mLead2, mPoint2);
+        }
+
+        protected void drawCenteredText(CustomGraphics g, string s, int x, int y, bool cx) {
+            var fs = g.GetTextSize(s);
+            int w = (int)fs.Width;
+            int h2 = (int)fs.Height / 2;
+            if (cx) {
+                adjustBbox(x - w / 2, y - h2, x + w / 2, y + h2);
+            } else {
+                adjustBbox(x, y - h2, x + w, y + h2);
+            }
+            g.DrawCenteredText(s, x, y);
+        }
+
+        protected void drawCenteredLText(CustomGraphics g, string s, int x, int y, bool cx) {
+            var fs = g.GetLTextSize(s);
+            int w = (int)fs.Width;
+            int h2 = (int)fs.Height / 2;
+            if (cx) {
+                adjustBbox(x - w / 2, y - h2, x + w / 2, y + h2);
+            } else {
+                adjustBbox(x, y - h2, x + w, y + h2);
+            }
+            g.DrawCenteredLText(s, x, y);
+        }
+
+        /// <summary>
+        /// draw component values (number of resistor ohms, etc).
+        /// </summary>
+        /// <param name="g"></param>
+        /// <param name="s"></param>
+        protected void drawValues(CustomGraphics g, string s, int offsetX = 0, int offsetY = 0) {
+            if (s == null) {
+                return;
+            }
+            var textSize = g.GetTextSize(s);
+            int xc, yc;
+            if ((this is RailElm) || (this is SweepElm)) {
+                xc = X2;
+                yc = Y2;
+            } else {
+                xc = (X2 + X1) / 2;
+                yc = (Y2 + Y1) / 2;
+            }
+            g.DrawRightText(s, xc + offsetX, yc - textSize.Height + offsetY);
+        }
+
+        protected void drawCoil(CustomGraphics g, Point p1, Point p2, double v1, double v2) {
+            var coilLen = (float)Utils.Distance(p1, p2);
+            if (0 == coilLen) {
+                return;
+            }
+            /* draw more loops for a longer coil */
+            int loopCt = (int)Math.Ceiling(coilLen / 12);
+            float w = coilLen / loopCt;
+            float h = w * 1.2f;
+            float wh = w * 0.5f;
+            float hh = h * 0.5f;
+            float th = (float)(Utils.Angle(p1, p2) * ToDeg);
+            var pos = new Point();
+            for (int loop = 0; loop != loopCt; loop++) {
+                Utils.InterpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
+                double v = v1 + (v2 - v1) * loop / loopCt;
+                g.ThickLineColor = getVoltageColor(v);
+                g.DrawThickArc(pos.X, pos.Y, w, th, -180);
+            }
+        }
+
+        protected void drawCoil(CustomGraphics g, Point p1, Point p2, double v1, double v2, float dir) {
+            var coilLen = (float)Utils.Distance(p1, p2);
+            if (0 == coilLen) {
+                return;
+            }
+            /* draw more loops for a longer coil */
+            int loopCt = (int)Math.Ceiling(coilLen / 12);
+            float w = coilLen / loopCt;
+            float wh = w * 0.5f;
+            if (Utils.Angle(p1, p2) < 0) {
+                dir = -dir;
+            }
+            var pos = new Point();
+            for (int loop = 0; loop != loopCt; loop++) {
+                Utils.InterpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
+                double v = v1 + (v2 - v1) * loop / loopCt;
+                g.ThickLineColor = getVoltageColor(v);
+                g.DrawThickArc(pos.X, pos.Y, w, dir, -180);
+            }
+        }
         #endregion
 
         #region [public method]
+        public void DrawHandles(CustomGraphics g) {
+            if (mLastHandleGrabbed == -1) {
+                g.FillRectangle(PenHandle, X1 - 3, Y1 - 3, 7, 7);
+            } else if (mLastHandleGrabbed == 0) {
+                g.FillRectangle(PenHandle, X1 - 4, Y1 - 4, 9, 9);
+            }
+            if (mNumHandles == 2) {
+                if (mLastHandleGrabbed == -1) {
+                    g.FillRectangle(PenHandle, X2 - 3, Y2 - 3, 7, 7);
+                } else if (mLastHandleGrabbed == 1) {
+                    g.FillRectangle(PenHandle, X2 - 4, Y2 - 4, 9, 9);
+                }
+            }
+        }
+
         /// <summary>
         /// this is used to set the position of an internal element so we can draw it inside the parent
         /// </summary>

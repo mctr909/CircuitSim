@@ -102,8 +102,8 @@ namespace Circuit {
                     g.DrawPost(ce.X1, ce.Y1);
                     g.DrawPost(ce.X2, ce.Y2);
                     if (ce != mouseElm || tempMouseMode != MOUSE_MODE.DRAG_POST) {
-                        g.FillCircle(Color.Gray, ce.X1, ce.Y1, 3.5f);
-                        g.FillCircle(Color.Gray, ce.X2, ce.Y2, 3.5f);
+                        g.FillCircle(Brushes.Gray, ce.X1, ce.Y1, 3.5f);
+                        g.FillCircle(Brushes.Gray, ce.X2, ce.Y2, 3.5f);
                     } else {
                         ce.DrawHandles(g);
                     }
@@ -124,7 +124,7 @@ namespace Circuit {
             /* draw bad connections.  do this last so they will not be overdrawn. */
             for (int i = 0; i != mCir.BadConnectionList.Count; i++) {
                 var cn = mCir.BadConnectionList[i];
-                g.FillCircle(Color.Red, cn.X, cn.Y, 3.5f);
+                g.FillCircle(Brushes.Red, cn.X, cn.Y, 3.5f);
             }
 
             if (0 < selectedArea.Width) {
@@ -143,11 +143,11 @@ namespace Circuit {
 
             g.ClearTransform();
 
-            Color bCircuitArea;
+            Brush bCircuitArea;
             if (chkPrintableCheckItem.Checked) {
-                bCircuitArea = Color.White;
+                bCircuitArea = Brushes.White;
             } else {
-                bCircuitArea = Color.Black;
+                bCircuitArea = Brushes.Black;
             }
             g.FillRectangle(bCircuitArea, 0, circuitArea.Height, circuitArea.Width, g.Height - circuitArea.Height);
 

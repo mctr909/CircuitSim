@@ -231,7 +231,7 @@ namespace Circuit {
             double scaleh = g.Height / (double)(chip.BoundingBox.Height + chip.BoundingBox.Y * 2);
             scale = 1 / Math.Min(scalew, scaleh);
             g.Clear(CirSim.theSim.getBackgroundColor());
-            g.FillRectangle(Color.Blue, 0, 0, g.Width, g.Height);
+            g.FillRectangle(Brushes.Blue, 0, 0, g.Width, g.Height);
             g.SetTransform(new Matrix((float)(1 / scale), 0, 0, (float)(1 / scale), 0, 0));
             chip.Draw(g);
             if (null != canvas.Image) {

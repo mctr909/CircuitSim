@@ -4,7 +4,7 @@ using System.Drawing.Printing;
 
 namespace Circuit {
     class CustomGraphics {
-        public static readonly Font FontText = new Font("Segoe UI", 8.0f);
+        public static readonly Font FontText = new Font("Segoe UI", 8.5f);
 
         public Color TextColor {
             set {
@@ -165,7 +165,16 @@ namespace Circuit {
             g.DrawLine(penThickLine, a.X, a.Y, b.X, b.Y);
         }
 
+        public void DrawThickLine(PointF a, PointF b) {
+            g.DrawLine(penThickLine, a.X, a.Y, b.X, b.Y);
+        }
+
         public void DrawThickLine(Color color, Point a, Point b) {
+            penThickLine.Color = color;
+            g.DrawLine(penThickLine, a.X, a.Y, b.X, b.Y);
+        }
+
+        public void DrawThickLine(Color color, PointF a, PointF b) {
             penThickLine.Color = color;
             g.DrawLine(penThickLine, a.X, a.Y, b.X, b.Y);
         }
@@ -188,18 +197,16 @@ namespace Circuit {
             g.FillRectangle(penLine.Brush, x, y, width, height);
         }
 
-        public void FillRectangle(Color color, float x, float y, float width, float height) {
-            penColor.Color = color;
-            g.FillRectangle(penColor.Brush, x, y, width, height);
+        public void FillRectangle(Brush brush, float x, float y, float width, float height) {
+            g.FillRectangle(brush, x, y, width, height);
         }
 
         public void FillCircle(float cx, float cy, float radius) {
             g.FillPie(penLine.Brush, cx - radius, cy - radius, radius * 2, radius * 2, 0, 360);
         }
 
-        public void FillCircle(Color color, float cx, float cy, float radius) {
-            penColor.Color = color;
-            g.FillPie(penColor.Brush, cx - radius, cy - radius, radius * 2, radius * 2, 0, 360);
+        public void FillCircle(Brush brush, float cx, float cy, float radius) {
+            g.FillPie(brush, cx - radius, cy - radius, radius * 2, radius * 2, 0, 360);
         }
 
         public void FillPolygon(Color color, Point[] p) {

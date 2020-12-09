@@ -49,7 +49,6 @@
   <ItemGroup>
     <Compile Include="CirSimMain.cs" />
     <Compile Include="CirSimVariable.cs" />
-    <Compile Include="Common\CircuitElmDraw.cs" />
     <Compile Include="Common\CustomGraphics.cs" />
     <Compile Include="Common\Utils.cs" />
     <Compile Include="Elements\AmmeterElm.cs" />
