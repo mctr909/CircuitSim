@@ -52,9 +52,11 @@
     <Compile Include="Common\CustomGraphics.cs" />
     <Compile Include="Common\Utils.cs" />
     <Compile Include="Elements\AmmeterElm.cs" />
+    <Compile Include="ExpansionElements\AMElm.cs" />
     <Compile Include="ExpansionElements\AnalogSwitchElm.cs" />
     <Compile Include="ExpansionElements\CCCSElm.cs" />
     <Compile Include="Elements\GateElm.cs" />
+    <Compile Include="ExpansionElements\FMElm.cs" />
     <Compile Include="ExpansionElements\OpAmpElm.cs" />
     <Compile Include="Elements\SweepElm.cs" />
     <Compile Include="Elements\TransformerElm.cs" />

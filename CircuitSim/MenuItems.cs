@@ -349,6 +349,8 @@ namespace Circuit {
         SWEEP = 170,
         VAR_RAIL = 172,
         POT = 174,
+        AM = 200,
+        FM = 201,
         LABELED_NODE = 207,
         VCCS = 213,
         CCCS = 215,
@@ -608,9 +610,9 @@ namespace Circuit {
             inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(inputMenuBar, "直流電圧源(1端子)", MENU_ITEM.RailElm);
             addElementItem(inputMenuBar, "交流電圧源(1端子)", MENU_ITEM.ACRailElm);
+            inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(inputMenuBar, "クロック", MENU_ITEM.ClockElm);
             addElementItem(inputMenuBar, "スイープ", MENU_ITEM.SweepElm);
-            inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(inputMenuBar, "AM発信器", MENU_ITEM.AMElm);
             addElementItem(inputMenuBar, "FM発信器", MENU_ITEM.FMElm);
             //addElementItem(inputMenuBar, "電圧スライダ", MENU_ITEM.VarRailElm);
@@ -828,9 +830,9 @@ namespace Circuit {
             case MENU_ITEM.AntennaElm:
                 return null; //(CircuitElm)new AntennaElm(x1, y1);
             case MENU_ITEM.AMElm:
-                return null; //(CircuitElm)new AMElm(x1, y1);
+                return new AMElm(x1, y1);
             case MENU_ITEM.FMElm:
-                return null; //(CircuitElm)new FMElm(x1, y1);
+                return new FMElm(x1, y1);
             case MENU_ITEM.CurrentElm:
                 return new CurrentElm(x1, y1);
             case MENU_ITEM.NoiseElm:
@@ -1064,8 +1066,8 @@ namespace Circuit {
             //case 195: return new HalfAdderElm(x1, y1, x2, y2, f, st);
             //case 196: return new FullAdderElm(x1, y1, x2, y2, f, st);
             //case 197: return new SevenSegDecoderElm(x1, y1, x2, y2, f, st);
-            //case 200: return new AMElm(x1, y1, x2, y2, f, st);
-            //case 201: return new FMElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.AM: return new AMElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.FM: return new FMElm(x1, y1, x2, y2, f, st);
             //case 203: return new DiacElm(x1, y1, x2, y2, f, st);
             //case 206: return new TriacElm(x1, y1, x2, y2, f, st);
             //case 207: return new LabeledNodeElm(x1, y1, x2, y2, f, st);

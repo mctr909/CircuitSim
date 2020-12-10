@@ -1244,9 +1244,10 @@ namespace Circuit {
                 Hint.Type = -1;
                 timeStep = 10e-6;
                 chkShowDots.Checked = false;
-                chkSmallGrid.Checked = false;
+                chkSmallGrid.Checked = true;
                 chkShowVolts.Checked = true;
                 chkShowValues.Checked = true;
+                chkUseAnsiSymbols.Checked = true;
                 setGrid();
                 trbSpeedBar.Value = 57;
                 trbCurrentBar.Value = 50;

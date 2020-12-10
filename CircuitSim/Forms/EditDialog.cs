@@ -78,7 +78,7 @@ namespace Circuit {
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Visible = false;
             Show();
-            Location = new Point(x - Width / 2, y + Height / 2);
+            Location = new Point(x - Width / 2, y);
             Visible = true;
         }
 
