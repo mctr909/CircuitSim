@@ -145,7 +145,7 @@ namespace Circuit.Elements {
             double segf = 1.0 / segments;
             int divide = (int)(segments * position);
 
-            if (Sim.chkAnsiResistorCheckItem.Checked) {
+            if (Sim.chkUseAnsiSymbols.Checked) {
                 /* draw zigzag */
                 int oy = 0;
                 int ny;
@@ -200,7 +200,7 @@ namespace Circuit.Elements {
             }
             drawPosts(g);
 
-            if (Sim.chkShowValuesCheckItem.Checked && resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
+            if (Sim.chkShowValues.Checked && resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
                 /* check for vertical pot with 3rd terminal on left */
                 bool reverseY = (post3.X < mLead1.X && mLead1.X == mLead2.X);
                 /* check for horizontal pot with 3rd terminal on top */

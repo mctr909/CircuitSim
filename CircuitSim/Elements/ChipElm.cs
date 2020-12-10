@@ -16,14 +16,15 @@ namespace Circuit.Elements {
         int csize;
         int cspc;
         int cspc2;
-        protected int bits;
 
         Point[] rectPoints;
         Point[] clockPoints;
         public Pin[] pins;
         public int sizeX;
         public int sizeY;
+
         protected bool lastClock;
+        protected virtual int bits { get; set; } = 4;
 
         public class Pin {
             ChipElm mElm;
@@ -130,12 +131,9 @@ namespace Circuit.Elements {
         }
 
         public ChipElm(int xx, int yy) : base(xx, yy) {
-            if (needsBits()) {
-                bits = (this is RingCounterElm) ? 10 : 4;
-            }
             mNoDiagonal = true;
             setupPins();
-            setSize(Sim.chkSmallGridCheckItem.Checked ? 1 : 2);
+            setSize(Sim.chkSmallGrid.Checked ? 1 : 2);
         }
 
         public ChipElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
@@ -171,7 +169,7 @@ namespace Circuit.Elements {
 
         protected override DUMP_ID getDumpType() { return DUMP_ID.INVALID; }
 
-        bool needsBits() { return false; }
+        protected virtual bool needsBits() { return false; }
 
         protected void setSize(int s) {
             csize = s;
@@ -198,7 +196,7 @@ namespace Circuit.Elements {
                 p.curcount = updateDotCount(p.current, p.curcount);
                 drawDots(g, b, a, p.curcount);
                 if (p.bubble) {
-                    g.ThickLineColor = Sim.chkPrintableCheckItem.Checked ? Color.White : Color.Black;
+                    g.ThickLineColor = Sim.chkPrintable.Checked ? Color.White : Color.Black;
                     g.DrawThickCircle(p.bubbleX, p.bubbleY, 1);
                     g.ThickLineColor = GrayColor;
                     g.DrawThickCircle(p.bubbleX, p.bubbleY, 3);

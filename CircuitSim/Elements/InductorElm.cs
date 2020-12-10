@@ -40,9 +40,11 @@ namespace Circuit.Elements {
             base.SetPoints();
             calcLeads(40);
             if (mPoint1.Y == mPoint2.Y) {
-                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 12 * mDsign / mLen, 12 * mDsign);
+                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 13 * mDsign / mLen, 12 * mDsign);
+            } else if (mPoint1.X == mPoint2.X) {
+                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -3 * mDsign);
             } else {
-                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -5 * mDsign);
+                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -8 * mDsign);
             }
         }
 
@@ -55,7 +57,7 @@ namespace Circuit.Elements {
             draw2Leads(g);
             drawCoil(g, mLead1, mLead2, v1, v2);
 
-            if (Sim.chkShowValuesCheckItem.Checked) {
+            if (Sim.chkShowValues.Checked) {
                 var s = Utils.ShortUnitText(Inductance, "");
                 g.DrawRightText(s, textPos.X, textPos.Y);
             }

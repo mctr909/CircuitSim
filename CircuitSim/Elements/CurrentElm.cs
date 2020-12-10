@@ -33,7 +33,7 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads(36);
+            calcLeads(32);
             ashaft1 = Utils.InterpPoint(mLead1, mLead2, .25);
             ashaft2 = Utils.InterpPoint(mLead1, mLead2, .6);
             center = Utils.InterpPoint(mLead1, mLead2, .5);
@@ -45,7 +45,7 @@ namespace Circuit.Elements {
             }
             textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, 20 * sign);
             var p2 = Utils.InterpPoint(mLead1, mLead2, .8);
-            arrow = Utils.CreateArrow(center, p2, 8, 6);
+            arrow = Utils.CreateArrow(center, p2, 8, 4);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -60,7 +60,7 @@ namespace Circuit.Elements {
 
             setBbox(mPoint1, mPoint2, cr);
             doDots(g);
-            if (Sim.chkShowValuesCheckItem.Checked) {
+            if (Sim.chkShowValues.Checked) {
                 string s = Utils.ShortUnitText(currentValue, "A");
                 g.DrawRightText(s, textPos.X, textPos.Y);
             }

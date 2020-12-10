@@ -94,52 +94,52 @@ namespace Circuit {
                 ofsY += trbCurrentBar.Height + 4;
 
                 /* Show Voltage */
-                chkVoltsCheckItem = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "電圧を表示" };
-                verticalPanel.Controls.Add(chkVoltsCheckItem);
-                ofsY += chkVoltsCheckItem.Height + 4;
+                chkShowVolts = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "電圧を表示" };
+                verticalPanel.Controls.Add(chkShowVolts);
+                ofsY += chkShowVolts.Height + 4;
 
                 /* Show Current */
-                chkDotsCheckItem = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "電流を表示" };
-                verticalPanel.Controls.Add(chkDotsCheckItem);
-                ofsY += chkDotsCheckItem.Height + 4;
+                chkShowDots = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "電流を表示" };
+                verticalPanel.Controls.Add(chkShowDots);
+                ofsY += chkShowDots.Height + 4;
 
                 /* Show Values */
-                chkShowValuesCheckItem = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "値を表示" };
-                verticalPanel.Controls.Add(chkShowValuesCheckItem);
-                ofsY += chkShowValuesCheckItem.Height + 4;
+                chkShowValues = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "値を表示" };
+                verticalPanel.Controls.Add(chkShowValues);
+                ofsY += chkShowValues.Height + 4;
 
                 /* Small Grid */
-                chkSmallGridCheckItem = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "Small Grid" };
-                chkSmallGridCheckItem.CheckedChanged += new EventHandler((s, e) => { setGrid(); });
-                verticalPanel.Controls.Add(chkSmallGridCheckItem);
-                ofsY += chkSmallGridCheckItem.Height + 4;
+                chkSmallGrid = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "Small Grid" };
+                chkSmallGrid.CheckedChanged += new EventHandler((s, e) => { setGrid(); });
+                verticalPanel.Controls.Add(chkSmallGrid);
+                ofsY += chkSmallGrid.Height + 4;
 
                 /* ANSI */
-                chkAnsiResistorCheckItem = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "ANSI" };
-                chkAnsiResistorCheckItem.CheckedChanged += new EventHandler((s, e) => {
-                    setOptionInStorage("ansiResistors", chkAnsiResistorCheckItem.Checked);
+                chkUseAnsiSymbols = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "ANSI" };
+                chkUseAnsiSymbols.CheckedChanged += new EventHandler((s, e) => {
+                    setOptionInStorage("ansiResistors", chkUseAnsiSymbols.Checked);
                 });
-                verticalPanel.Controls.Add(chkAnsiResistorCheckItem);
-                ofsY += chkAnsiResistorCheckItem.Height + 4;
+                verticalPanel.Controls.Add(chkUseAnsiSymbols);
+                ofsY += chkUseAnsiSymbols.Height + 4;
 
                 /* White Background */
-                chkPrintableCheckItem = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "白黒表示" };
-                chkPrintableCheckItem.CheckedChanged += new EventHandler((s, e) => {
+                chkPrintable = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "白黒表示" };
+                chkPrintable.CheckedChanged += new EventHandler((s, e) => {
                     for (int i = 0; i < scopeCount; i++) {
                         scopes[i].setRect(scopes[i].BoundingBox);
                     }
-                    setOptionInStorage("whiteBackground", chkPrintableCheckItem.Checked);
+                    setOptionInStorage("whiteBackground", chkPrintable.Checked);
                 });
-                verticalPanel.Controls.Add(chkPrintableCheckItem);
-                ofsY += chkPrintableCheckItem.Height + 4;
+                verticalPanel.Controls.Add(chkPrintable);
+                ofsY += chkPrintable.Height + 4;
 
                 /* Show Cursor Cross Hairs */
-                chkCrossHairCheckItem = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "ポインターを表示" };
-                chkCrossHairCheckItem.CheckedChanged += new EventHandler((s, e) => {
-                    setOptionInStorage("crossHair", chkCrossHairCheckItem.Checked);
+                chkCrossHair = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "ポインターを表示" };
+                chkCrossHair.CheckedChanged += new EventHandler((s, e) => {
+                    setOptionInStorage("crossHair", chkCrossHair.Checked);
                 });
-                verticalPanel.Controls.Add(chkCrossHairCheckItem);
-                ofsY += chkCrossHairCheckItem.Height + 4;
+                verticalPanel.Controls.Add(chkCrossHair);
+                ofsY += chkCrossHair.Height + 4;
 
                 /* iFrame */
                 iFrame = new Panel() {
@@ -631,7 +631,7 @@ namespace Circuit {
         }
 
         public Color getBackgroundColor() {
-            if (chkPrintableCheckItem.Checked) {
+            if (chkPrintable.Checked) {
                 return Color.White;
             }
             return Color.Black;
@@ -1060,10 +1060,10 @@ namespace Circuit {
             CustomCompositeModel.clearDumpedFlags();
             DiodeModel.clearDumpedFlags();
 
-            int f = chkDotsCheckItem.Checked ? 1 : 0;
-            f |= chkSmallGridCheckItem.Checked ? 2 : 0;
-            f |= chkVoltsCheckItem.Checked ? 0 : 4;
-            f |= chkShowValuesCheckItem.Checked ? 0 : 16;
+            int f = chkShowDots.Checked ? 1 : 0;
+            f |= chkSmallGrid.Checked ? 2 : 0;
+            f |= chkShowVolts.Checked ? 0 : 4;
+            f |= chkShowValues.Checked ? 0 : 16;
 
             /* 32 = linear scale in afilter */
             string dump = "$ " + f
@@ -1243,10 +1243,10 @@ namespace Circuit {
                 elmList.Clear();
                 Hint.Type = -1;
                 timeStep = 10e-6;
-                chkDotsCheckItem.Checked = false;
-                chkSmallGridCheckItem.Checked = false;
-                chkVoltsCheckItem.Checked = true;
-                chkShowValuesCheckItem.Checked = true;
+                chkShowDots.Checked = false;
+                chkSmallGrid.Checked = false;
+                chkShowVolts.Checked = true;
+                chkShowValues.Checked = true;
                 setGrid();
                 trbSpeedBar.Value = 57;
                 trbCurrentBar.Value = 50;
@@ -1384,10 +1384,10 @@ namespace Circuit {
 
         void readOptions(StringTokenizer st) {
             int flags = st.nextTokenInt();
-            chkDotsCheckItem.Checked = (flags & 1) != 0;
-            chkSmallGridCheckItem.Checked = (flags & 2) != 0;
-            chkVoltsCheckItem.Checked = (flags & 4) == 0;
-            chkShowValuesCheckItem.Checked = (flags & 16) == 0;
+            chkShowDots.Checked = (flags & 1) != 0;
+            chkSmallGrid.Checked = (flags & 2) != 0;
+            chkShowVolts.Checked = (flags & 4) == 0;
+            chkShowValues.Checked = (flags & 16) == 0;
 
             timeStep = st.nextTokenDouble();
             double sp = st.nextTokenDouble();
@@ -1968,7 +1968,7 @@ namespace Circuit {
         void enableItems() { }
 
         void setGrid() {
-            gridSize = chkSmallGridCheckItem.Checked ? 8 : 16;
+            gridSize = chkSmallGrid.Checked ? 8 : 16;
             gridMask = ~(gridSize - 1);
             gridRound = gridSize / 2 - 1;
         }

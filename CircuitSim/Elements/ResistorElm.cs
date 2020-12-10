@@ -31,8 +31,10 @@ namespace Circuit.Elements {
             calcLeads(25);
             if (mPoint1.Y == mPoint2.Y) {
                 textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 10 * mDsign / mLen, 12 * mDsign);
+            } else if (mPoint1.X == mPoint2.X) {
+                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -4 * mDsign);
             } else {
-                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -6 * mDsign);
+                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -8 * mDsign);
             }
         }
 
@@ -42,7 +44,7 @@ namespace Circuit.Elements {
                 return;
             }
 
-            int hs = Sim.chkAnsiResistorCheckItem.Checked ? 5 : 4;
+            int hs = Sim.chkUseAnsiSymbols.Checked ? 5 : 4;
             setBbox(mPoint1, mPoint2, hs);
 
             draw2Leads(g);
@@ -52,7 +54,7 @@ namespace Circuit.Elements {
             double v1 = Volts[0];
             double v2 = Volts[1];
 
-            if (Sim.chkAnsiResistorCheckItem.Checked) {
+            if (Sim.chkUseAnsiSymbols.Checked) {
                 /* draw zigzag */
                 int oy = 0;
                 int ny;
@@ -85,7 +87,7 @@ namespace Circuit.Elements {
                 g.DrawThickLine(ps1, ps2);
             }
 
-            if (Sim.chkShowValuesCheckItem.Checked) {
+            if (Sim.chkShowValues.Checked) {
                 var s = Utils.ShortUnitText(Resistance, "");
                 g.DrawRightText(s, textPos.X, textPos.Y);
             }

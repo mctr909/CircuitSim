@@ -27,7 +27,7 @@ namespace Circuit {
 
             var g = backContext;
 
-            if (chkPrintableCheckItem.Checked) {
+            if (chkPrintable.Checked) {
                 CircuitElm.WhiteColor = Color.Black;
                 CircuitElm.GrayColor = Color.Black;
                 CircuitElm.TextColor = Color.Black;
@@ -132,7 +132,7 @@ namespace Circuit {
                 g.DrawRectangle(selectedArea.X, selectedArea.Y, selectedArea.Width, selectedArea.Height);
             }
 
-            if (chkCrossHairCheckItem.Checked && mouseCursorX >= 0
+            if (chkCrossHair.Checked && mouseCursorX >= 0
                 && mouseCursorX <= circuitArea.Width && mouseCursorY <= circuitArea.Height) {
                 int x = snapGrid(inverseTransformX(mouseCursorX));
                 int y = snapGrid(inverseTransformY(mouseCursorY));
@@ -144,7 +144,7 @@ namespace Circuit {
             g.ClearTransform();
 
             Brush bCircuitArea;
-            if (chkPrintableCheckItem.Checked) {
+            if (chkPrintable.Checked) {
                 bCircuitArea = Brushes.White;
             } else {
                 bCircuitArea = Brushes.Black;

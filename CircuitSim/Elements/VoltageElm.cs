@@ -294,7 +294,7 @@ namespace Circuit.Elements {
             }
             }
 
-            if (Sim.chkShowValuesCheckItem.Checked && waveform != WF_NOISE) {
+            if (Sim.chkShowValues.Checked && waveform != WF_NOISE) {
                 var s = Utils.ShortUnitText(maxVoltage, "V\r\n");
                 s += Utils.ShortUnitText(frequency, "Hz\r\n");
                 s += Utils.ShortUnitText(phaseShift * ToDeg, "°");

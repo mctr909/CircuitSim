@@ -183,7 +183,7 @@ namespace Circuit.Elements {
         public static void setColorScale() {
             mColorScale = new Color[ColorScaleCount];
             for (int i = 0; i != ColorScaleCount; i++) {
-                double v = i * 1.0 / ColorScaleCount - 0.5;
+                double v = (i * 2.0 / ColorScaleCount - 1.0) * 0.66;
                 if (v < 0) {
                     int n1 = (int)(128 * -v) + 127;
                     int n2 = (int)(127 * (1 + v));
@@ -204,7 +204,7 @@ namespace Circuit.Elements {
         /// <param name="b"></param>
         /// <param name="pos"></param>
         protected static void drawDots(CustomGraphics g, Point a, Point b, double pos) {
-            if ((!Sim.simIsRunning()) || pos == 0 || !Sim.chkDotsCheckItem.Checked) {
+            if ((!Sim.simIsRunning()) || pos == 0 || !Sim.chkShowDots.Checked) {
                 return;
             }
             int dx = b.X - a.X;
@@ -216,7 +216,7 @@ namespace Circuit.Elements {
                 pos += ds;
             }
             double di = 0;
-            if (Sim.chkPrintableCheckItem.Checked) {
+            if (Sim.chkPrintable.Checked) {
                 g.LineColor = GrayColor;
             } else {
                 g.LineColor = Color.Yellow;
@@ -392,7 +392,7 @@ namespace Circuit.Elements {
             if (NeedsHighlight) {
                 return SelectColor;
             }
-            if (!Sim.chkVoltsCheckItem.Checked || Sim.chkPrintableCheckItem.Checked) {
+            if (!Sim.chkShowVolts.Checked || Sim.chkPrintable.Checked) {
                 return GrayColor;
             }
             int c = (int)((volts + VoltageRange) * (ColorScaleCount - 1) / (VoltageRange * 2));

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 
 namespace Circuit.Elements {
     class VCCSElm : ChipElm {

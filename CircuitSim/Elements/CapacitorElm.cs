@@ -69,6 +69,8 @@ namespace Circuit.Elements {
             Utils.InterpPoint(mPoint1, mPoint2, ref plate2[0], ref plate2[1], 1 - f, 8);
             if (mPoint1.Y == mPoint2.Y) {
                 textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 12 * mDsign / mLen, 16 * mDsign);
+            } else if (mPoint1.X == mPoint2.X) {
+                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -8 * mDsign);
             } else {
                 textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -10 * mDsign);
             }
@@ -101,7 +103,7 @@ namespace Circuit.Elements {
                 drawDots(g, mPoint2, mLead2, -mCurCount);
             }
             drawPosts(g);
-            if (Sim.chkShowValuesCheckItem.Checked) {
+            if (Sim.chkShowValues.Checked) {
                 var s = Utils.ShortUnitText(Capacitance, "");
                 g.DrawRightText(s, textPos.X, textPos.Y);
             }

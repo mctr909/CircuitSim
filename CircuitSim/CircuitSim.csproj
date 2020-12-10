@@ -52,10 +52,10 @@
     <Compile Include="Common\CustomGraphics.cs" />
     <Compile Include="Common\Utils.cs" />
     <Compile Include="Elements\AmmeterElm.cs" />
-    <Compile Include="Elements\AnalogSwitchElm.cs" />
-    <Compile Include="Elements\CCCSElm.cs" />
+    <Compile Include="ExpansionElements\AnalogSwitchElm.cs" />
+    <Compile Include="ExpansionElements\CCCSElm.cs" />
     <Compile Include="Elements\GateElm.cs" />
-    <Compile Include="Elements\OpAmpElm.cs" />
+    <Compile Include="ExpansionElements\OpAmpElm.cs" />
     <Compile Include="Elements\SweepElm.cs" />
     <Compile Include="Elements\TransformerElm.cs" />
     <Compile Include="ExpansionElements\ACRailElm.cs" />
@@ -77,7 +77,7 @@
     <Compile Include="ExpansionElements\CustomCompositeChipElm.cs" />
     <Compile Include="ExpansionElements\CustomCompositeElm.cs" />
     <Compile Include="ExpansionElements\CustomCompositeModel.cs" />
-    <Compile Include="Elements\CompositeElm.cs" />
+    <Compile Include="ExpansionElements\CompositeElm.cs" />
     <Compile Include="Elements\Diode.cs" />
     <Compile Include="Elements\DiodeElm.cs" />
     <Compile Include="Elements\DiodeModel.cs" />
@@ -87,7 +87,7 @@
     <Compile Include="ExpansionElements\NTransistorElm.cs" />
     <Compile Include="ExpansionElements\PMosfetElm.cs" />
     <Compile Include="ExpansionElements\PTransistorElm.cs" />
-    <Compile Include="ExpansionElements\ZenerElm.cs" />
+    <Compile Include="Elements\ZenerElm.cs" />
     <Compile Include="Forms\EditOptions.cs" />
     <Compile Include="Forms\InputDialog.cs">
       <SubType>Form</SubType>
@@ -133,11 +133,11 @@
     <Compile Include="Elements\PotElm.cs" />
     <Compile Include="Elements\ProbeElm.cs" />
     <Compile Include="Elements\RailElm.cs" />
-    <Compile Include="Elements\RingCounterElm.cs" />
+    <Compile Include="ExpansionElements\RingCounterElm.cs" />
     <Compile Include="Elements\Switch2Elm.cs" />
     <Compile Include="Elements\SwitchElm.cs" />
     <Compile Include="Elements\TransistorElm.cs" />
-    <Compile Include="ExpansionElements\VarRailElm.cs" />
+    <Compile Include="Elements\VarRailElm.cs" />
     <Compile Include="Elements\VCCSElm.cs" />
     <Compile Include="Elements\VoltageElm.cs" />
     <Compile Include="Elements\WireElm.cs" />

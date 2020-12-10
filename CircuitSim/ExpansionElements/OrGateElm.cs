@@ -36,14 +36,25 @@ namespace Circuit.Elements {
                 double b = 6 * (1 - a * a) - 3;
                 Utils.InterpPoint(mLead1, mLead2, ref gatePolyAnsi[33 + i], b / ww2, a * hs2);
                 if (this is XorGateElm) {
-                    linePoints[i] = Utils.InterpPoint(mLead1, mLead2, (b - 7) / ww2, a * hs2);
+                    if (Sim.chkSmallGrid.Checked) {
+                        linePoints[i] = Utils.InterpPoint(mLead1, mLead2, (b - 5) / ww2, a * hs2);
+                    } else {
+                        linePoints[i] = Utils.InterpPoint(mLead1, mLead2, (b - 7) / ww2, a * hs2);
+                    }
                 }
             }
             gatePolyAnsi[16] = mLead2;
 
             if (isInverting()) {
-                pcircle = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww + 4) / mLen);
-                mLead2 = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww + 8) / mLen);
+                if (Sim.chkSmallGrid.Checked) {
+                    circleSize = 6;
+                    circlePos = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww + 3) / mLen);
+                    mLead2 = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww + 6) / mLen);
+                } else {
+                    circleSize = 9;
+                    circlePos = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww + 4) / mLen);
+                    mLead2 = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww + 8) / mLen);
+                }
             }
         }
 

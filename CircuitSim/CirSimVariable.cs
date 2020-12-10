@@ -52,13 +52,13 @@ namespace Circuit {
         TrackBar trbSpeedBar;
         TrackBar trbCurrentBar;
 
-        public CheckBox chkVoltsCheckItem;
-        public CheckBox chkDotsCheckItem;
-        public CheckBox chkShowValuesCheckItem;
-        public CheckBox chkSmallGridCheckItem;
-        public CheckBox chkAnsiResistorCheckItem;
-        public CheckBox chkPrintableCheckItem;
-        public CheckBox chkCrossHairCheckItem;
+        public CheckBox chkShowVolts;
+        public CheckBox chkShowDots;
+        public CheckBox chkShowValues;
+        public CheckBox chkSmallGrid;
+        public CheckBox chkUseAnsiSymbols;
+        public CheckBox chkPrintable;
+        public CheckBox chkCrossHair;
 
         ContextMenuStrip contextPanel = null;
         ScopePopupMenu scopePopupMenu;

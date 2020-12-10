@@ -35,7 +35,7 @@ namespace Circuit.Elements {
             gbw = 1e6;
             mFlags = FLAG_GAIN; /* need to do this before setSize() */
             gain = 100000;
-            setSize(Sim.chkSmallGridCheckItem.Checked ? 1 : 2);
+            setSize(Sim.chkSmallGrid.Checked ? 1 : 2);
         }
 
         public OpAmpElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {

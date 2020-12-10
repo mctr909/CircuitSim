@@ -33,8 +33,15 @@ namespace Circuit.Elements {
             gatePolyAnsi[11] = mLead2;
 
             if (isInverting()) {
-                pcircle = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww + 4) / mLen);
-                mLead2 = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww + 8) / mLen);
+                if (Sim.chkSmallGrid.Checked) {
+                    circleSize = 6;
+                    circlePos = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww + 3) / mLen);
+                    mLead2 = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww + 6) / mLen);
+                } else {
+                    circleSize = 9;
+                    circlePos = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww + 4) / mLen);
+                    mLead2 = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww + 8) / mLen);
+                }
             }
         }
 

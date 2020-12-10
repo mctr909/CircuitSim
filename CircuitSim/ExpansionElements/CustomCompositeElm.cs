@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit.Elements {
@@ -9,7 +8,8 @@ namespace Circuit.Elements {
         string modelName;
         CustomCompositeChipElm chip;
         int postCount;
-        int inputCount, outputCount;
+        int inputCount;
+        int outputCount;
         CustomCompositeModel model;
         List<CustomCompositeModel> models;
 

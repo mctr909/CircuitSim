@@ -2,6 +2,8 @@
     class RingCounterElm : ChipElm {
         bool mJustLoaded;
 
+        protected override int bits { get; set; } = 10;
+
         public RingCounterElm(int xx, int yy) : base(xx, yy) { }
 
         public RingCounterElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) {
@@ -16,7 +18,7 @@
 
         string getChipName() { return "ring counter"; }
 
-        bool needsBits() { return true; }
+        protected override bool needsBits() { return true; }
 
         public override void setupPins() {
             sizeX = bits > 2 ? bits : 2;

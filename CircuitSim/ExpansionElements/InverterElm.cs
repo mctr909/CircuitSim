@@ -48,7 +48,7 @@ namespace Circuit.Elements {
                 g.DrawThickPolygon(gatePolyEuro);
                 drawCenteredLText(g, "1", center.X, center.Y - 6, true);
             }
-            g.DrawThickCircle(pcircle.X, pcircle.Y, 7);
+            g.DrawThickCircle(pcircle.X, pcircle.Y, 6);
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(g, mLead2, mPoint2, mCurCount);
         }
