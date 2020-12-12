@@ -25,11 +25,11 @@ namespace Circuit.Elements {
 
         public override bool NonLinear { get { return ind.nonLinear(); } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.INDUCTOR; } }
+
         protected override string dump() {
             return Inductance + " " + mCurrent;
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.INDUCTOR; }
 
         public void setInductance(double l) {
             Inductance = l;

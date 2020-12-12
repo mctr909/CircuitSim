@@ -23,9 +23,9 @@ namespace Circuit.Elements {
 
         public override double Power { get { return 0; } }
 
-        protected override string dump() { return ""; }
+        public override DUMP_ID DumpType { get { return DUMP_ID.WIRE; } }
 
-        protected override DUMP_ID getDumpType() { return DUMP_ID.WIRE; }
+        protected override string dump() { return ""; }
 
         public override void SetPoints() {
             base.SetPoints();

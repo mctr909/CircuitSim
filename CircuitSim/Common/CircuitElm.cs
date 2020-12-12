@@ -66,12 +66,10 @@ namespace Circuit.Elements {
         /// </summary>
         public string Dump {
             get {
-                var type = getDumpType();
+                var type = DumpType;
                 return string.Format("{0} {1} {2} {3} {4} {5} {6}", type, X1, Y1, X2, Y2, mFlags, dump());
             }
         }
-
-        public DUMP_ID DumpType { get { return getDumpType(); } }
 
         public bool NeedsShortcut { get { return Shortcut > 0 && (int)Shortcut <= 127; } }
 
@@ -252,9 +250,9 @@ namespace Circuit.Elements {
             initBoundingBox();
         }
 
-        protected abstract string dump();
+        public abstract DUMP_ID DumpType { get; }
 
-        protected abstract DUMP_ID getDumpType();
+        protected abstract string dump();
 
         void initBoundingBox() {
             BoundingBox = new Rectangle(Math.Min(X1, X2), Math.Min(Y1, Y2), Math.Abs(X2 - X1) + 1, Math.Abs(Y2 - Y1) + 1);

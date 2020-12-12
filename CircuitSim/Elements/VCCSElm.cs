@@ -32,11 +32,11 @@ namespace Circuit.Elements {
 
         public override int PostCount { get { return inputCount + 2; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.VCCS; } }
+
         protected override string dump() {
             return base.dump() + " " + inputCount + " " + CustomLogicModel.escape(exprString);
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.VCCS; }
 
         public override void setupPins() {
             sizeX = 2;

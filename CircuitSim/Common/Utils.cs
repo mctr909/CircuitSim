@@ -171,6 +171,21 @@ namespace Circuit {
             return poly;
         }
 
+        public static Point[] CreateSchmitt(Point a, Point b, double gsize, double ctr) {
+            var pts = new Point[6];
+            var hs = 3 * gsize;
+            var h1 = 3 * gsize;
+            var h2 = h1 * 2;
+            double len = Distance(a, b);
+            pts[0] = InterpPoint(a, b, ctr - h2 / len, hs);
+            pts[1] = InterpPoint(a, b, ctr + h1 / len, hs);
+            pts[2] = InterpPoint(a, b, ctr + h1 / len, -hs);
+            pts[3] = InterpPoint(a, b, ctr + h2 / len, -hs);
+            pts[4] = InterpPoint(a, b, ctr - h1 / len, -hs);
+            pts[5] = InterpPoint(a, b, ctr - h1 / len, hs);
+            return pts;
+        }
+
         public static string VoltageText(double v) {
             return unitText(v, "V", false);
         }

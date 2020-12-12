@@ -18,7 +18,7 @@ namespace Circuit.Elements {
 
         public override int PostCount { get { return 4; } }
 
-        protected override DUMP_ID getDumpType() { return DUMP_ID.CCCS; }
+        public override DUMP_ID DumpType { get { return DUMP_ID.CCCS; } }
 
         public override void setupPins() {
             sizeX = 2;

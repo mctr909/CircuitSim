@@ -58,11 +58,11 @@ namespace Circuit.Elements {
 
         public override int PostCount { get { return 3; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.POT; } }
+
         protected override string dump() {
             return maxResistance + " " + position + " " + sliderText;
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.POT; }
 
         void setup() { }
 

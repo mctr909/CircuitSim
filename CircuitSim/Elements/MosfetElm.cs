@@ -63,16 +63,16 @@ namespace Circuit.Elements {
             mFlags |= FLAG_BODY_DIODE;
             mNoDiagonal = true;
             setupDiodes();
-            beta = getDefaultBeta();
-            vt = getDefaultThreshold();
+            beta = DefaultBeta;
+            vt = DefaultThreshold;
         }
 
         public MosfetElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
             pnp = ((f & FLAG_PNP) != 0) ? -1 : 1;
             mNoDiagonal = true;
             setupDiodes();
-            vt = getDefaultThreshold();
-            beta = getBackwardCompatibilityBeta();
+            vt = DefaultThreshold;
+            beta = BackwardCompatibilityBeta;
             try {
                 vt = st.nextTokenDouble();
                 beta = st.nextTokenDouble();
@@ -97,13 +97,34 @@ namespace Circuit.Elements {
 
         public override bool NonLinear { get { return true; } }
 
-        public override int PostCount { get { return hasBodyTerminal() ? 4 : 3; } }
+        public override int PostCount { get { return HasBodyTerminal ? 4 : 3; } }
+
+        public override DUMP_ID DumpType { get { return DUMP_ID.MOSFET; } }
 
         protected override string dump() {
             return vt + " " + beta;
         }
 
-        protected override DUMP_ID getDumpType() { return DUMP_ID.MOSFET; }
+        double DefaultThreshold { get { return 1.5; } }
+
+        /* default beta for new elements */
+        double DefaultBeta {
+            get { return lastBeta == 0 ? BackwardCompatibilityBeta : lastBeta; }
+        }
+
+        /* default for elements in old files with no configurable beta.
+         * JfetElm overrides this.
+         * Not sure where this value came from, but the ZVP3306A has a beta of about .027.
+         * Power MOSFETs have much higher betas (like 80 or more) */
+        double BackwardCompatibilityBeta { get { return .02; } }
+
+        bool DrawDigital { get { return (mFlags & FLAG_DIGITAL) != 0; } }
+
+        bool ShowBulk { get { return (mFlags & (FLAG_DIGITAL | FLAG_HIDE_BULK)) == 0; } }
+
+        bool HasBodyTerminal { get { return (mFlags & FLAG_BODY_TERMINAL) != 0; } }
+
+        bool DoBodyDiode { get { return (mFlags & FLAG_BODY_DIODE) != 0 && ShowBulk; } }
 
         /* set up body diodes */
         void setupDiodes() {
@@ -114,27 +135,6 @@ namespace Circuit.Elements {
             diodeB2 = new Diode(Sim, mCir);
             diodeB2.setupForDefaultModel();
         }
-
-        double getDefaultThreshold() { return 1.5; }
-
-        /* default beta for new elements */
-        double getDefaultBeta() {
-            return lastBeta == 0 ? getBackwardCompatibilityBeta() : lastBeta;
-        }
-
-        /* default for elements in old files with no configurable beta.
-         * JfetElm overrides this.
-         * Not sure where this value came from, but the ZVP3306A has a beta of about .027.
-         * Power MOSFETs have much higher betas (like 80 or more) */
-        double getBackwardCompatibilityBeta() { return .02; }
-
-        bool drawDigital() { return (mFlags & FLAG_DIGITAL) != 0; }
-
-        bool showBulk() { return (mFlags & (FLAG_DIGITAL | FLAG_HIDE_BULK)) == 0; }
-
-        bool hasBodyTerminal() { return (mFlags & FLAG_BODY_TERMINAL) != 0; }
-
-        bool doBodyDiode() { return (mFlags & FLAG_BODY_DIODE) != 0 && showBulk(); }
 
         public override void Reset() {
             lastv1 = lastv2 = 0;
@@ -160,7 +160,7 @@ namespace Circuit.Elements {
             int segments = 6;
             int i;
             double segf = 1.0/ segments;
-            bool enhancement = vt > 0 && showBulk();
+            bool enhancement = vt > 0 && ShowBulk;
             for (i = 0; i != segments; i++) {
                 if ((i == 1 || i == 4) && enhancement) {
                     continue;
@@ -177,16 +177,16 @@ namespace Circuit.Elements {
             g.DrawThickLine(getVoltageColor(Volts[V_D]), drn[1], drn[2]);
 
             /* draw bulk connection */
-            if (showBulk()) {
+            if (ShowBulk) {
                 g.ThickLineColor = getVoltageColor(Volts[bodyTerminal]);
-                if (!hasBodyTerminal()) {
+                if (!HasBodyTerminal) {
                     g.DrawThickLine(pnp == -1 ? drn[0] : src[0], body[0]);
                 }
                 g.DrawThickLine(body[0], body[1]);
             }
 
             /* draw arrow */
-            if (!drawDigital()) {
+            if (!DrawDigital) {
                 g.FillPolygon(getVoltageColor(Volts[bodyTerminal]), arrowPoly);
             }
 
@@ -194,7 +194,7 @@ namespace Circuit.Elements {
             g.ThickLineColor = getVoltageColor(Volts[V_G]);
             g.DrawThickLine(mPoint1, gate[1]);
             g.DrawThickLine(gate[0], gate[2]);
-            if (drawDigital() && pnp == -1) {
+            if (DrawDigital && pnp == -1) {
                 g.DrawThickCircle(pcircle.X, pcircle.Y, pcircler);
             }
 
@@ -204,10 +204,12 @@ namespace Circuit.Elements {
             }
             mCurCount = updateDotCount(-ids, mCurCount);
             drawDots(g, src[0], src[1], mCurCount);
-            drawDots(g, src[1], drn[1], mCurCount);
+            if (DoBodyDiode) {
+                drawDots(g, src[1], drn[1], mCurCount);
+            }
             drawDots(g, drn[1], drn[0], mCurCount);
 
-            if (showBulk()) {
+            if (ShowBulk) {
                 curcount_body1 = updateDotCount(diodeCurrent1, curcount_body1);
                 curcount_body2 = updateDotCount(diodeCurrent2, curcount_body2);
                 drawDots(g, src[0], body[0], -curcount_body1);
@@ -248,21 +250,21 @@ namespace Circuit.Elements {
             Utils.InterpPoint(mPoint1, mPoint2, ref gate[0], ref gate[2], 1 - 28 / mLen, hs2 / 2); /* was 1-20/dn */
             Utils.InterpPoint(gate[0], gate[2], ref gate[1], .5);
 
-            if (showBulk()) {
+            if (ShowBulk) {
                 body = new Point[2];
                 Utils.InterpPoint(src[0], drn[0], ref body[0], .5);
                 Utils.InterpPoint(src[1], drn[1], ref body[1], .5);
             }
 
-            if (!drawDigital()) {
+            if (!DrawDigital) {
                 if (pnp == 1) {
-                    if (!showBulk()) {
+                    if (!ShowBulk) {
                         arrowPoly = Utils.CreateArrow(src[1], src[0], 10, 4);
                     } else {
                         arrowPoly = Utils.CreateArrow(body[0], body[1], 12, 5);
                     }
                 } else {
-                    if (!showBulk()) {
+                    if (!ShowBulk) {
                         arrowPoly = Utils.CreateArrow(drn[0], drn[1], 12, 5);
                     } else {
                         arrowPoly = Utils.CreateArrow(body[1], body[0], 12, 5);
@@ -280,13 +282,13 @@ namespace Circuit.Elements {
             mCir.StampNonLinear(Nodes[1]);
             mCir.StampNonLinear(Nodes[2]);
 
-            if (hasBodyTerminal()) {
+            if (HasBodyTerminal) {
                 bodyTerminal = 3;
             } else {
                 bodyTerminal = (pnp == -1) ? 2 : 1;
             }
 
-            if (doBodyDiode()) {
+            if (DoBodyDiode) {
                 if (pnp == -1) {
                     /* pnp: diodes conduct when S or D are higher than body */
                     diodeB1.stamp(Nodes[1], Nodes[bodyTerminal]);
@@ -411,7 +413,7 @@ namespace Circuit.Elements {
                 mode = 2;
             }
 
-            if (doBodyDiode()) {
+            if (DoBodyDiode) {
                 diodeB1.doStep(pnp * (Volts[bodyTerminal] - Volts[V_S]));
                 diodeCurrent1 = diodeB1.calculateCurrent(pnp * (Volts[bodyTerminal] - Volts[V_S])) * pnp;
                 diodeB2.doStep(pnp * (Volts[bodyTerminal] - Volts[V_D]));
@@ -454,7 +456,7 @@ namespace Circuit.Elements {
             arr[4] = (mode == 0) ? "off" : (mode == 1) ? "linear" : "saturation";
             arr[5] = "gm = " + Utils.UnitText(gm, "A/V");
             arr[6] = "P = " + Utils.UnitText(Power, "W");
-            if (showBulk()) {
+            if (ShowBulk) {
                 arr[7] = "Ib = " + Utils.UnitText(bodyTerminal == 1 ? -diodeCurrent1 : bodyTerminal == 2 ? diodeCurrent2 : -pnp * (diodeCurrent1 + diodeCurrent2), "A");
             }
         }
@@ -483,7 +485,7 @@ namespace Circuit.Elements {
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = "Show Bulk",
-                    Checked = showBulk()
+                    Checked = ShowBulk
                 };
                 return ei;
             }
@@ -496,16 +498,16 @@ namespace Circuit.Elements {
                 };
                 return ei;
             }
-            if (n == 4 && !showBulk()) {
+            if (n == 4 && !ShowBulk) {
                 var ei = new EditInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = "Digital Symbol",
-                    Checked = drawDigital()
+                    Checked = DrawDigital
                 };
                 return ei;
             }
-            if (n == 4 && showBulk()) {
+            if (n == 4 && ShowBulk) {
                 var ei = new EditInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
@@ -514,7 +516,7 @@ namespace Circuit.Elements {
                 };
                 return ei;
             }
-            if (n == 5 && doBodyDiode()) {
+            if (n == 5 && DoBodyDiode) {
                 var ei = new EditInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
@@ -545,12 +547,12 @@ namespace Circuit.Elements {
                     ? (mFlags | FLAG_FLIP) : (mFlags & ~FLAG_FLIP);
                 SetPoints();
             }
-            if (n == 4 && !showBulk()) {
+            if (n == 4 && !ShowBulk) {
                 globalFlags = ei.CheckBox.Checked
                     ? (globalFlags | FLAG_DIGITAL) : (globalFlags & ~FLAG_DIGITAL);
                 SetPoints();
             }
-            if (n == 4 && showBulk()) {
+            if (n == 4 && ShowBulk) {
                 mFlags = ei.ChangeFlag(mFlags, FLAG_BODY_DIODE);
                 ei.NewDialog = true;
             }

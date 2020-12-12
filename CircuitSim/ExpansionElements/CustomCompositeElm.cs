@@ -29,6 +29,8 @@ namespace Circuit.Elements {
 
         public override int PostCount { get { return postCount; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.CUSTOM_COMPOSITE; } }
+
         protected override string dump() {
             /* insert model name before the elements */
             string s = dumpWithMask(0);
@@ -36,8 +38,6 @@ namespace Circuit.Elements {
             s += dumpElements();
             return s;
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.CUSTOM_COMPOSITE; }
 
         public override string DumpModel() {
             string modelStr = "";

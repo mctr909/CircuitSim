@@ -28,7 +28,7 @@ namespace Circuit.Elements {
             Reset();
         }
 
-        protected override DUMP_ID getDumpType() { return DUMP_ID.AM; }
+        public override DUMP_ID DumpType { get { return DUMP_ID.AM; } }
 
         protected override string dump() {
             return carrierfreq + " " + signalfreq + " " + maxVoltage;

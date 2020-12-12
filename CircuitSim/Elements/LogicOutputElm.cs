@@ -25,11 +25,11 @@ namespace Circuit.Elements {
 
         public override int PostCount { get { return 1; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.LOGIC_O; } }
+
         protected override string dump() {
             return threshold.ToString();
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.LOGIC_O ; }
 
         bool isTernary() { return (mFlags & FLAG_TERNARY) != 0; }
 

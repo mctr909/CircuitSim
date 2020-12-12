@@ -51,11 +51,11 @@ namespace Circuit.Elements {
 
         public override int VoltageSourceCount { get { return 1; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.AMMETER; } }
+
         protected override string dump() {
             return meter + " " + scale;
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.AMMETER; }
 
         string getMeter() {
             switch (meter) {

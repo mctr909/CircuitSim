@@ -20,11 +20,11 @@ namespace Circuit.Elements {
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.RESISTOR; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.RESISTOR; } }
+
         protected override string dump() {
             return Resistance.ToString();
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.RESISTOR; }
 
         public override void SetPoints() {
             base.SetPoints();

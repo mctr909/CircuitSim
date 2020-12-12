@@ -38,11 +38,11 @@ namespace Circuit.Elements {
 
         public override int PostCount { get { return 1 + throwCount; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.SWITCH2; } }
+
         protected override string dump() {
             return base.dump() + " " + link + " " + throwCount;
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.SWITCH2; }
 
         public override void SetPoints() {
             base.SetPoints();

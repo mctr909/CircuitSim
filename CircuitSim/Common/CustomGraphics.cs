@@ -193,6 +193,11 @@ namespace Circuit {
             g.DrawPolygon(penThickLine, p);
         }
 
+        public void DrawThickPolygon(Color color, Point[] p) {
+            penColor.Color = color;
+            g.DrawPolygon(penColor, p);
+        }
+
         public void FillRectangle(float x, float y, float width, float height) {
             g.FillRectangle(penLine.Brush, x, y, width, height);
         }

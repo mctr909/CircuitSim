@@ -17,9 +17,9 @@ namespace Circuit.Elements {
 
         public override int PostCount { get { return 1; } }
 
-        protected override string dump() { return ""; }
+        public override DUMP_ID DumpType { get { return DUMP_ID.GROUND; } }
 
-        protected override DUMP_ID getDumpType() { return DUMP_ID.GROUND; }
+        protected override string dump() { return ""; }
 
         public override void Draw(CustomGraphics g) {
             g.ThickLineColor = getVoltageColor(0);

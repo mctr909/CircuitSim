@@ -154,6 +154,8 @@ namespace Circuit.Elements {
             }
         }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.INVALID; } }
+
         protected override string dump() {
             string s = "";
             if (needsBits()) {
@@ -166,8 +168,6 @@ namespace Circuit.Elements {
             }
             return s;
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.INVALID; }
 
         protected virtual bool needsBits() { return false; }
 

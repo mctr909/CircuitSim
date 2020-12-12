@@ -6,7 +6,7 @@ namespace Circuit.Elements {
 
         public OrGateElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) { }
 
-        protected override DUMP_ID getDumpType() { return DUMP_ID.OR_GATE; }
+        public override DUMP_ID DumpType { get { return DUMP_ID.OR_GATE; } }
 
         protected override string getGateName() { return "OR gate"; }
 

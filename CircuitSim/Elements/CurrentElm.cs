@@ -25,11 +25,11 @@ namespace Circuit.Elements {
 
         public override double Power { get { return -VoltageDiff * mCurrent; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.CURRENT; } }
+
         protected override string dump() {
             return currentValue.ToString();
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.CURRENT; }
 
         public override void SetPoints() {
             base.SetPoints();

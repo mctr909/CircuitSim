@@ -57,6 +57,7 @@
     <Compile Include="ExpansionElements\CCCSElm.cs" />
     <Compile Include="Elements\GateElm.cs" />
     <Compile Include="ExpansionElements\FMElm.cs" />
+    <Compile Include="ExpansionElements\InvertingSchmittElm.cs" />
     <Compile Include="ExpansionElements\OpAmpElm.cs" />
     <Compile Include="Elements\SweepElm.cs" />
     <Compile Include="Elements\TransformerElm.cs" />
@@ -72,6 +73,8 @@
     <Compile Include="ExpansionElements\OptocouplerElm.cs" />
     <Compile Include="ExpansionElements\OrGateElm.cs" />
     <Compile Include="ExpansionElements\PushSwitchElm.cs" />
+    <Compile Include="ExpansionElements\SchmittElm.cs" />
+    <Compile Include="ExpansionElements\TriStateElm.cs" />
     <Compile Include="ExpansionElements\XorGateElm.cs" />
     <Compile Include="Forms\EditCompositeModelDialog.cs">
       <SubType>Form</SubType>

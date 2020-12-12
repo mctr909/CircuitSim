@@ -349,6 +349,9 @@ namespace Circuit {
         SWEEP = 170,
         VAR_RAIL = 172,
         POT = 174,
+        TRISTATE = 180,
+        SCHMITT = 182,
+        INVERT_SCHMITT = 183,
         AM = 200,
         FM = 201,
         LABELED_NODE = 207,
@@ -651,9 +654,6 @@ namespace Circuit {
             //addMenuItem(activeBlocMenuBar, "Add Op Amp (real)", ITEM.OpAmpRealElm);
             //addMenuItem(activeBlocMenuBar, "Add Analog Switch (SPST)", ITEM.AnalogSwitchElm);
             //addMenuItem(activeBlocMenuBar, "Add Analog Switch (SPDT)", ITEM.AnalogSwitch2Elm);
-            //addMenuItem(activeBlocMenuBar, "Add Tristate Buffer", ITEM.TriStateElm);
-            //addMenuItem(activeBlocMenuBar, "Add Schmitt Trigger", ITEM.SchmittElm);
-            //addMenuItem(activeBlocMenuBar, "Add Schmitt Trigger (Inverting)", ITEM.InvertingSchmittElm);
             //addMenuItem(activeBlocMenuBar, "Add CCII+", ITEM.CC2Elm);
             //addMenuItem(activeBlocMenuBar, "Add CCII-", ITEM.CC2NegElm);
             //addMenuItem(activeBlocMenuBar, "Add OTA (LM13700 style)", ITEM.OTAElm);
@@ -678,6 +678,10 @@ namespace Circuit {
             gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(gateMenuBar, "入力", MENU_ITEM.LogicInputElm);
             addElementItem(gateMenuBar, "出力", MENU_ITEM.LogicOutputElm);
+            gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(gateMenuBar, "シュミットトリガ", MENU_ITEM.SchmittElm);
+            addElementItem(gateMenuBar, "シュミットトリガ(NOT)", MENU_ITEM.InvertingSchmittElm);
+            addElementItem(gateMenuBar, "3ステートバッファ", MENU_ITEM.TriStateElm);
             mainMenuBar.Items.Add(gateMenuBar);
             #endregion
 
@@ -881,12 +885,10 @@ namespace Circuit {
                 return new AnalogSwitchElm(x1, y1);
             case MENU_ITEM.AnalogSwitch2Elm:
                 return null; //(CircuitElm)new AnalogSwitch2Elm(x1, y1);
-            case MENU_ITEM.TriStateElm:
-                return null; //(CircuitElm)new TriStateElm(x1, y1);
             case MENU_ITEM.SchmittElm:
-                return null; //(CircuitElm)new SchmittElm(x1, y1);
+                return new SchmittElm(x1, y1);
             case MENU_ITEM.InvertingSchmittElm:
-                return null; //(CircuitElm)new InvertingSchmittElm(x1, y1);
+                return new InvertingSchmittElm(x1, y1);
             case MENU_ITEM.CC2Elm:
                 return null; //(CircuitElm)new CC2Elm(x1, y1);
             case MENU_ITEM.CC2NegElm:
@@ -916,6 +918,8 @@ namespace Circuit {
                 return new LogicInputElm(x1, y1);
             case MENU_ITEM.LogicOutputElm:
                 return new LogicOutputElm(x1, y1);
+            case MENU_ITEM.TriStateElm:
+                return new TriStateElm(x1, y1);
             case MENU_ITEM.InverterElm:
                 return new InverterElm(x1, y1);
             case MENU_ITEM.AndGateElm:
@@ -1051,10 +1055,10 @@ namespace Circuit {
             //case 177: return new SCRElm(x1, y1, x2, y2, f, st);
             //case 178: return new RelayElm(x1, y1, x2, y2, f, st);
             //case 179: return new CC2Elm(x1, y1, x2, y2, f, st);
-            //case 180: return new TriStateElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.TRISTATE: return new TriStateElm(x1, y1, x2, y2, f, st);
             //case 181: return new LampElm(x1, y1, x2, y2, f, st);
-            //case 182: return new SchmittElm(x1, y1, x2, y2, f, st);
-            //case 183: return new InvertingSchmittElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.SCHMITT: return new SchmittElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.INVERT_SCHMITT: return new InvertingSchmittElm(x1, y1, x2, y2, f, st);
             //case 184: return new MultiplexerElm(x1, y1, x2, y2, f, st);
             //case 185: return new DeMultiplexerElm(x1, y1, x2, y2, f, st);
             //case 186: return new PisoShiftElm(x1, y1, x2, y2, f, st);

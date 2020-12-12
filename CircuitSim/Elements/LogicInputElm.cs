@@ -34,11 +34,11 @@ namespace Circuit.Elements {
 
         public override int PostCount { get { return 1; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.LOGIC_I; } }
+
         protected override string dump() {
             return base.dump() + " " + hiV + " " + loV;
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.LOGIC_I; }
 
         bool isTernary() { return (mFlags & FLAG_TERNARY) != 0; }
 

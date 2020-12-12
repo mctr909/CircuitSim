@@ -68,6 +68,8 @@ namespace Circuit.Elements {
 
         public override int PostCount { get { return 3; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.OPAMP; } }
+
         protected override string dump() {
             mFlags |= FLAG_GAIN;
             return maxOut
@@ -77,8 +79,6 @@ namespace Circuit.Elements {
                 + " " + Volts[V_P]
                 + " " + gain;
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.OPAMP; }
 
         void setGain() {
             if ((mFlags & FLAG_GAIN) != 0) {
@@ -109,7 +109,7 @@ namespace Circuit.Elements {
         void setSize(int s) {
             opsize = s;
             opheight = 8 * s;
-            opwidth = 13 * s;
+            opwidth = 16 * s;
             mFlags = (mFlags & ~FLAG_SMALL) | ((s == 1) ? FLAG_SMALL : 0);
         }
 

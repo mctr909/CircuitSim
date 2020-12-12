@@ -31,11 +31,11 @@ namespace Circuit.Elements {
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.CAPACITOR; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.CAPACITOR; } }
+
         protected override string dump() {
             return Capacitance + " " + voltdiff;
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.CAPACITOR; }
 
         public void setCapacitance(double c) { Capacitance = c; }
 

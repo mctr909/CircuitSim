@@ -44,11 +44,11 @@ namespace Circuit.Elements {
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.SWITCH; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.SWITCH; } }
+
         protected override string dump() {
             return position + " " + momentary;
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.SWITCH; }
 
         public override void SetPoints() {
             base.SetPoints();

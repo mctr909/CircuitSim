@@ -6,8 +6,8 @@
 
         public override int PostCount { get { return 0; } }
 
-        protected override string dump() { return ""; }
+        public override DUMP_ID DumpType { get { return DUMP_ID.GRAPHIC; } }
 
-        protected override DUMP_ID getDumpType() { return DUMP_ID.GRAPHIC; }
+        protected override string dump() { return ""; }
     }
 }

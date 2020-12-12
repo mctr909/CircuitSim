@@ -6,7 +6,7 @@ namespace Circuit.Elements {
         static string lastZenerModelName = "default-zener";
         const double default_zvoltage = 5.6;
 
-        const int hs = 8;
+        const int hs = 6;
         Point[] poly;
         Point[] cathode;
         Point[] wing;
@@ -30,7 +30,7 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads(16);
+            calcLeads(12);
             cathode = new Point[2];
             wing = new Point[2];
             var pa = new Point[2];

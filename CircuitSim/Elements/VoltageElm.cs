@@ -75,6 +75,8 @@ namespace Circuit.Elements {
 
         public override int VoltageSourceCount { get { return 1; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.VOLTAGE; } }
+
         protected override string dump() {
             /* set flag so we know if duty cycle is correct for pulse waveforms */
             if (waveform == WF_PULSE) {
@@ -91,8 +93,6 @@ namespace Circuit.Elements {
                 + " " + dutyCycle;
             /* VarRailElm adds text at the end */
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.VOLTAGE; }
 
         public override void Reset() {
             mCurCount = 0;

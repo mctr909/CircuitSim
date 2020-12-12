@@ -14,7 +14,7 @@ namespace Circuit.Elements {
         bool hasResistance;
         int diodeEndNode;
 
-        const int hs = 8;
+        const int hs = 6;
         Point[] poly;
         Point[] cathode;
 
@@ -53,6 +53,8 @@ namespace Circuit.Elements {
 
         public override bool NonLinear { get { return true; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.DIODE; } }
+
         protected override string dump() {
             mFlags |= FLAG_MODEL;
             /*if (modelName == null) {
@@ -61,8 +63,6 @@ namespace Circuit.Elements {
             }*/
             return CustomLogicModel.escape(modelName);
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.DIODE; }
 
         protected void setup() {
             /*Console.WriteLine("setting up for model " + modelName + " " + model); */
@@ -87,7 +87,7 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads(16);
+            calcLeads(12);
             cathode = new Point[2];
             var pa = new Point[2];
             Utils.InterpPoint(mLead1, mLead2, ref pa[0], ref pa[1], 0, hs);

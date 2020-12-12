@@ -111,23 +111,8 @@ namespace Circuit.Elements {
             hs2 = gwidth * (inputCount / 2 + 1);
             setBbox(mPoint1, mPoint2, hs2);
             if (hasSchmittInputs()) {
-                schmittPoly = createSchmittPolygon(mLead1, mLead2, gsize, .47f);
+                schmittPoly = Utils.CreateSchmitt(mLead1, mLead2, gsize, .47f);
             }
-        }
-
-        protected static Point[] createSchmittPolygon(Point a, Point b, float gsize, float ctr) {
-            var pts = new Point[6];
-            float hs = 3 * gsize;
-            float h1 = 3 * gsize;
-            float h2 = h1 * 2;
-            double len = Utils.Distance(a, b);
-            pts[0] = Utils.InterpPoint(a, b, ctr - h2 / len, hs);
-            pts[1] = Utils.InterpPoint(a, b, ctr + h1 / len, hs);
-            pts[2] = Utils.InterpPoint(a, b, ctr + h1 / len, -hs);
-            pts[3] = Utils.InterpPoint(a, b, ctr + h2 / len, -hs);
-            pts[4] = Utils.InterpPoint(a, b, ctr - h1 / len, -hs);
-            pts[5] = Utils.InterpPoint(a, b, ctr - h1 / len, hs);
-            return pts;
         }
 
         protected void createEuroGatePolygon() {

@@ -63,6 +63,8 @@ namespace Circuit.Elements {
 
         public override int PostCount { get { return 4; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.TRANSFORMER; } }
+
         protected override string dump() {
             return inductance
                 + " " + ratio
@@ -70,8 +72,6 @@ namespace Circuit.Elements {
                 + " " + current[1]
                 + " " + couplingCoef;
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.TRANSFORMER; }
 
         public override void Drag(int xx, int yy) {
             xx = Sim.snapGrid(xx);

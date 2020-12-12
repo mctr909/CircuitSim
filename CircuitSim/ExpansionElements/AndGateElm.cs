@@ -7,7 +7,7 @@ namespace Circuit.Elements {
 
         public AndGateElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) { }
 
-        protected override DUMP_ID getDumpType() { return DUMP_ID.AND_GATE; }
+        public override DUMP_ID DumpType { get { return DUMP_ID.AND_GATE; } }
 
         protected override string getGateText() { return "&"; }
 

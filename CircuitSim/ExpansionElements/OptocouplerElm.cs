@@ -26,12 +26,10 @@ namespace Circuit.Elements {
             initOptocoupler();
         }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.OPTO_COUPLER; } }
+
         protected override string dump() {
             return dumpWithMask(0);
-        }
-
-        protected override DUMP_ID getDumpType() {
-            return DUMP_ID.OPTO_COUPLER;
         }
 
         private void initOptocoupler() {
@@ -83,7 +81,7 @@ namespace Circuit.Elements {
             drawPosts(g);
 
             /* draw little arrows */
-            var c = NeedsHighlight ? SelectColor : GrayColor;
+            var c = NeedsHighlight ? SelectColor : getVoltageColor(Volts[0]);
             g.LineColor = c;
             int sx = stubs[0].X + 2;
             int sy = (stubs[0].Y + stubs[1].Y) / 2;

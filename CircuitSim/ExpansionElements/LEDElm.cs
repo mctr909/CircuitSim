@@ -39,7 +39,7 @@ namespace Circuit.Elements {
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }
 
-        protected override DUMP_ID getDumpType() { return DUMP_ID.LED; }
+        public override DUMP_ID DumpType { get { return DUMP_ID.LED; } }
 
         public override void SetPoints() {
             base.SetPoints();

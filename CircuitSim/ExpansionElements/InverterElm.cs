@@ -34,9 +34,9 @@ namespace Circuit.Elements {
 
         public override int VoltageSourceCount { get { return 1; } }
 
-        protected override string dump() { return ""; }
+        public override DUMP_ID DumpType { get { return DUMP_ID.INVERT; } }
 
-        protected override DUMP_ID getDumpType() { return DUMP_ID.INVERT; }
+        protected override string dump() { return ""; }
 
         public override void Draw(CustomGraphics g) {
             drawPosts(g);

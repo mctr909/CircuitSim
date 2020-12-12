@@ -21,11 +21,11 @@ namespace Circuit.Elements {
 
         public override int PostCount { get { return 1; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.OUTPUT; } }
+
         protected override string dump() {
             return scale.ToString();
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.OUTPUT; }
 
         public override void SetPoints() {
             base.SetPoints();

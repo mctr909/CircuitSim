@@ -21,11 +21,11 @@ namespace Circuit.Elements {
             createSlider();
         }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.VAR_RAIL; } }
+
         protected override string dump() {
             return base.dump() + " " + sliderText.Replace("\\+", "%2B");
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.VAR_RAIL; }
 
         void createSlider() {
             waveform = WF_VAR;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 
 namespace Circuit.Elements {
     class RailElm : VoltageElm {
@@ -19,7 +18,7 @@ namespace Circuit.Elements {
 
         public override int PostCount { get { return 1; } }
 
-        protected override DUMP_ID getDumpType() { return DUMP_ID.RAIL; }
+        public override DUMP_ID DumpType { get { return DUMP_ID.RAIL; } }
 
         public override void SetPoints() {
             base.SetPoints();
@@ -36,7 +35,11 @@ namespace Circuit.Elements {
             if (w > mLen * .8) {
                 w = mLen * .8;
             }
-            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - w / mLen);
+            if (waveform == WF_SQUARE && (mFlags & FLAG_CLOCK) != 0 || waveform == WF_DC || waveform == WF_VAR) {
+                mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - (w - 5) / mLen);
+            } else {
+                mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - w / mLen);
+            }
             setBbox(mPoint1, mPoint2, circleSize);
 
             g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);

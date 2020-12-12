@@ -27,13 +27,13 @@ namespace Circuit.Elements {
 
         public override int PostCount { get { return 0; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.SCOPE; } }
+
         protected override string dump() {
             string sStr = elmScope.dump().Replace(' ', '_');
             sStr = sStr.Replace("o_", ""); /* remove unused prefix for embedded Scope */
             return sStr;
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.SCOPE; }
 
         public void setScopeElm(CircuitElm e) {
             elmScope.setElm(e);

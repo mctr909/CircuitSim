@@ -66,11 +66,11 @@ namespace Circuit.Elements {
 
         public override int PostCount { get { return numPosts; } }
 
+        public override abstract DUMP_ID DumpType { get; }
+
         protected override string dump() {
             return dumpElements();
         }
-
-        protected override abstract DUMP_ID getDumpType();
 
         protected string dumpElements() {
             string dumpStr = "";

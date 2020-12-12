@@ -14,7 +14,7 @@
 
         public override int PostCount { get { return bits + 2; } }
 
-        protected override DUMP_ID getDumpType() { return DUMP_ID.RING_COUNTER; }
+        public override DUMP_ID DumpType { get { return DUMP_ID.RING_COUNTER; } }
 
         string getChipName() { return "ring counter"; }
 

@@ -71,14 +71,14 @@ namespace Circuit.Elements {
 
         public override int PostCount { get { return 3; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.TRANSISTOR; } }
+
         protected override string dump() {
             return pnp
                 + " " + (Volts[V_B] - Volts[V_C])
                 + " " + (Volts[V_B] - Volts[V_E])
                 + " " + beta;
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.TRANSISTOR; }
 
         public void setBeta(double b) {
             beta = b;

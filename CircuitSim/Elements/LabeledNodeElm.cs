@@ -58,12 +58,12 @@ namespace Circuit.Elements {
 
         public override int ConnectionNodeCount { get { return 2; } }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.LABELED_NODE; } }
+
         protected override string dump() {
             mFlags |= FLAG_ESCAPE;
             return CustomLogicModel.escape(text);
         }
-
-        protected override DUMP_ID getDumpType() { return DUMP_ID.LABELED_NODE; }
 
         public bool isInternal() { return (mFlags & FLAG_INTERNAL) != 0; }
 
