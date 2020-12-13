@@ -45,7 +45,7 @@ namespace Circuit.Elements {
                 mFlags |= FLAG_SCHMITT;
             }
 
-            setSize(Sim.chkSmallGrid.Checked ? 1 : 2);
+            setSize(1);
         }
 
         public GateElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {

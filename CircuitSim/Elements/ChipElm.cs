@@ -133,7 +133,7 @@ namespace Circuit.Elements {
         public ChipElm(int xx, int yy) : base(xx, yy) {
             mNoDiagonal = true;
             setupPins();
-            setSize(Sim.chkSmallGrid.Checked ? 1 : 2);
+            setSize(1);
         }
 
         public ChipElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {

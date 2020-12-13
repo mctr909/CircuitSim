@@ -108,12 +108,6 @@ namespace Circuit {
                 verticalPanel.Controls.Add(chkShowValues);
                 ofsY += chkShowValues.Height + 4;
 
-                /* Small Grid */
-                chkSmallGrid = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "Small Grid" };
-                chkSmallGrid.CheckedChanged += new EventHandler((s, e) => { setGrid(); });
-                verticalPanel.Controls.Add(chkSmallGrid);
-                ofsY += chkSmallGrid.Height + 4;
-
                 /* ANSI */
                 chkUseAnsiSymbols = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "ANSI" };
                 chkUseAnsiSymbols.CheckedChanged += new EventHandler((s, e) => {
@@ -675,9 +669,6 @@ namespace Circuit {
                 doSaveFile();
                 unsavedChanges = false;
             }
-            if (item == MENU_ITEM.exportasimage) {
-                doExportAsImage();
-            }
             if (item == MENU_ITEM.createsubcircuit) {
                 doCreateSubcircuit();
             }
@@ -693,11 +684,6 @@ namespace Circuit {
 
             if ((cat == MENU_CATEGORY.ELEMENTS || cat == MENU_CATEGORY.SCOPE_POP) && contextPanel != null) {
                 contextPanel.Close();
-            }
-
-            if (cat == MENU_CATEGORY.OPTIONS && item == MENU_ITEM.SHORTCUTS) {
-                dialogShowing = new ShortcutsDialog(this);
-                dialogShowing.Show();
             }
 
             if (cat == MENU_CATEGORY.OPTIONS && item == MENU_ITEM.OTHER) {
@@ -1010,12 +996,6 @@ namespace Circuit {
             sliderDialog.Show(mParent.Left + mouseCursorX, mParent.Top + mouseCursorY);
         }
 
-        void doExportAsImage() {
-            // TODO: doExportAsImage
-            //dialogShowing = new ExportAsImageDialog();
-            //dialogShowing.show();
-        }
-
         void doCreateSubcircuit() {
             var dlg = new EditCompositeModelDialog();
             if (!dlg.createModel()) {
@@ -1061,7 +1041,6 @@ namespace Circuit {
             DiodeModel.clearDumpedFlags();
 
             int f = chkShowDots.Checked ? 1 : 0;
-            f |= chkSmallGrid.Checked ? 2 : 0;
             f |= chkShowVolts.Checked ? 0 : 4;
             f |= chkShowValues.Checked ? 0 : 16;
 
@@ -1207,29 +1186,6 @@ namespace Circuit {
             //unsavedChanges = false;
         }
 
-        void loadFileFromURL(string url) {
-            // TODO: loadFileFromURL
-            //RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
-            //try {
-            //    requestBuilder.sendRequest(null, new RequestCallback() {
-            //        public void onError(Request request, Throwable exception) {
-            //            GWT.log("File Error Response", exception);
-            //        }
-            //        public void onResponseReceived(Request request, Response response) {
-            //            if (response.getStatusCode() == Response.SC_OK) {
-            //                string text = response.getText();
-            //                readCircuit(text);
-            //                unsavedChanges = false;
-            //            } else {
-            //                GWT.log("Bad file server response:" + response.getStatusText());
-            //            }
-            //        }
-            //    });
-            //} catch (RequestException e) {
-            //    GWT.log("failed file reading", e);
-            //}
-        }
-
         void readCircuit(byte[] b, int flags) {
             Console.WriteLine("readCircuit");
             int i;
@@ -1244,7 +1200,6 @@ namespace Circuit {
                 Hint.Type = -1;
                 timeStep = 10e-6;
                 chkShowDots.Checked = false;
-                chkSmallGrid.Checked = true;
                 chkShowVolts.Checked = true;
                 chkShowValues.Checked = true;
                 chkUseAnsiSymbols.Checked = true;
@@ -1386,7 +1341,6 @@ namespace Circuit {
         void readOptions(StringTokenizer st) {
             int flags = st.nextTokenInt();
             chkShowDots.Checked = (flags & 1) != 0;
-            chkSmallGrid.Checked = (flags & 2) != 0;
             chkShowVolts.Checked = (flags & 4) == 0;
             chkShowValues.Checked = (flags & 16) == 0;
 
@@ -1969,7 +1923,7 @@ namespace Circuit {
         void enableItems() { }
 
         void setGrid() {
-            gridSize = chkSmallGrid.Checked ? 8 : 16;
+            gridSize = 8;
             gridMask = ~(gridSize - 1);
             gridRound = gridSize / 2 - 1;
         }
@@ -2452,7 +2406,6 @@ namespace Circuit {
             int i;
             string nodeDump = "";
             string dump = "";
-            string models = "";
             CustomLogicModel.clearDumpedFlags();
             DiodeModel.clearDumpedFlags();
             var extList = new List<ExtListEntry>();

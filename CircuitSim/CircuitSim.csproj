@@ -102,9 +102,6 @@
     <Compile Include="Forms\SliderDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ShortcutsDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Forms\Adjustable.cs" />
     <Compile Include="Common\Circuit.cs" />
     <Compile Include="Common\Expr.cs" />

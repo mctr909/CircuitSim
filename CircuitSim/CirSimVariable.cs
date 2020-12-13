@@ -55,7 +55,6 @@ namespace Circuit {
         public CheckBox chkShowVolts;
         public CheckBox chkShowDots;
         public CheckBox chkShowValues;
-        public CheckBox chkSmallGrid;
         public CheckBox chkUseAnsiSymbols;
         public CheckBox chkPrintable;
         public CheckBox chkCrossHair;

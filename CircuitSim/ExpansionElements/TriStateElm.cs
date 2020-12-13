@@ -28,7 +28,7 @@ namespace Circuit.Elements {
             }
         }
 
-        // we need this to be able to change the matrix for each step
+        /* we need this to be able to change the matrix for each step */
         public override bool NonLinear {
             get { return true; }
         }
@@ -128,8 +128,8 @@ namespace Circuit.Elements {
             arr[4] = "Vc = " + Utils.VoltageText(Volts[2]);
         }
 
-        // there is no current path through the input, but there
-        // is an indirect path through the output to ground.
+        /* there is no current path through the input, but there
+         * is an indirect path through the output to ground. */
         public override bool GetConnection(int n1, int n2) {
             return false;
         }

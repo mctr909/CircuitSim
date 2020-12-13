@@ -152,9 +152,9 @@ namespace Circuit.Elements {
         }
 
         public override void Reset() {
-            // need to set current-source values here in case one of the nodes is node 0.  In that case
-            // calculateCurrent() may get called (from setNodeVoltage()) when analyzing circuit, before
-            // startIteration() gets called
+            /* need to set current-source values here in case one of the nodes is node 0.  In that case
+             * calculateCurrent() may get called (from setNodeVoltage()) when analyzing circuit, before
+             * startIteration() gets called */
             current[0] = current[1] = 0;
             Volts[PRI_T] = Volts[PRI_B] = 0;
             Volts[SEC_T] = Volts[SEC_B] = 0;
@@ -163,40 +163,40 @@ namespace Circuit.Elements {
         }
 
         public override void Stamp() {
-            // equations for transformer:
-            //   v1 = L1 di1/dt + M  di2/dt
-            //   v2 = M  di1/dt + L2 di2/dt
-            // we invert that to get:
-            //   di1/dt = a1 v1 + a2 v2
-            //   di2/dt = a3 v1 + a4 v2
-            // integrate di1/dt using trapezoidal approx and we get:
-            //   i1(t2) = i1(t1) + dt/2 (i1(t1) + i1(t2))
-            //          = i1(t1) + a1 dt/2 v1(t1) + a2 dt/2 v2(t1) +
-            //                     a1 dt/2 v1(t2) + a2 dt/2 v2(t2)
-            // the norton equivalent of this for i1 is:
-            //  a. current source, I = i1(t1) + a1 dt/2 v1(t1) + a2 dt/2 v2(t1)
-            //  b. resistor, G = a1 dt/2
-            //  c. current source controlled by voltage v2, G = a2 dt/2
-            // and for i2:
-            //  a. current source, I = i2(t1) + a3 dt/2 v1(t1) + a4 dt/2 v2(t1)
-            //  b. resistor, G = a3 dt/2
-            //  c. current source controlled by voltage v2, G = a4 dt/2
-            //
-            // For backward euler,
-            //
-            //   i1(t2) = i1(t1) + a1 dt v1(t2) + a2 dt v2(t2)
-            //
-            // So the current source value is just i1(t1) and we use
-            // dt instead of dt/2 for the resistor and VCCS.
-            //
-            // first winding goes from node 0 to 2, second is from 1 to 3
+            /* equations for transformer:
+             *   v1 = L1 di1/dt + M  di2/dt
+             *   v2 = M  di1/dt + L2 di2/dt
+             * we invert that to get:
+             *   di1/dt = a1 v1 + a2 v2
+             *   di2/dt = a3 v1 + a4 v2
+             * integrate di1/dt using trapezoidal approx and we get:
+             *   i1(t2) = i1(t1) + dt/2 (i1(t1) + i1(t2))
+             *          = i1(t1) + a1 dt/2 v1(t1) + a2 dt/2 v2(t1) +
+             *                     a1 dt/2 v1(t2) + a2 dt/2 v2(t2)
+             * the norton equivalent of this for i1 is:
+             *  a. current source, I = i1(t1) + a1 dt/2 v1(t1) + a2 dt/2 v2(t1)
+             *  b. resistor, G = a1 dt/2
+             *  c. current source controlled by voltage v2, G = a2 dt/2
+             * and for i2:
+             *  a. current source, I = i2(t1) + a3 dt/2 v1(t1) + a4 dt/2 v2(t1)
+             *  b. resistor, G = a3 dt/2
+             *  c. current source controlled by voltage v2, G = a4 dt/2
+             *
+             * For backward euler,
+             *
+             *   i1(t2) = i1(t1) + a1 dt v1(t2) + a2 dt v2(t2)
+             *
+             * So the current source value is just i1(t1) and we use
+             * dt instead of dt/2 for the resistor and VCCS.
+             *
+             * first winding goes from node 0 to 2, second is from 1 to 3 */
             double l1 = inductance;
             double l2 = inductance * ratio * ratio;
             double m = couplingCoef * Math.Sqrt(l1 * l2);
-            // build inverted matrix
+            /* build inverted matrix */
             double deti = 1 / (l1 * l2 - m * m);
             double ts = IsTrapezoidal ? Sim.timeStep / 2 : Sim.timeStep;
-            a1 = l2 * deti * ts; // we multiply dt/2 into a1..a4 here
+            a1 = l2 * deti * ts; /* we multiply dt/2 into a1..a4 here */
             a2 = -m * deti * ts;
             a3 = -m * deti * ts;
             a4 = l1 * deti * ts;

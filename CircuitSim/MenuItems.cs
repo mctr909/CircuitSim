@@ -102,7 +102,6 @@ namespace Circuit {
         #region [File]
         OPEN_FILE,
         SAVE_FILE,
-        exportasimage,
         createsubcircuit,
         dcanalysis,
         print,
@@ -111,7 +110,6 @@ namespace Circuit {
 
         #region [Setting]
         SETUP,
-        SHORTCUTS,
         OTHER,
         #endregion
 
@@ -506,7 +504,6 @@ namespace Circuit {
             settingMenuBar.Text = "設定(S)";
             settingMenuBar.Font = menuFont;
             addMenuItem(settingMenuBar, "セットアップ(U)", MENU_CATEGORY.CIRCUITS, MENU_ITEM.SETUP);
-            addMenuItem(settingMenuBar, "ショートカット(S)", MENU_CATEGORY.OPTIONS, MENU_ITEM.SHORTCUTS);
             addMenuItem(settingMenuBar, "その他(O)", MENU_CATEGORY.OPTIONS, MENU_ITEM.OTHER);
             mainMenuBar.Items.Add(settingMenuBar);
             #endregion
