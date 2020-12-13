@@ -1711,11 +1711,11 @@ namespace Circuit {
                 return;
             }
 
-            double minDistance = 10;
+            double minDistance = 5;
             for (int i = 0; i != elmList.Count; i++) {
                 var ce = getElm(i);
                 var distance = ce.Distance(gx, gy);
-                if (distance < minDistance) {
+                if (distance < minDistance || ce.BoundingBox.IntersectsWith(new Rectangle(gx - 1, gy - 1, 2, 2))) {
                     newMouseElm = ce;
                     minDistance = distance;
                 }
