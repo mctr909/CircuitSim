@@ -52,6 +52,23 @@ namespace Circuit {
             return Math.Sqrt(x * x + y * y);
         }
 
+        public static double DistanceOnLine(double ax, double ay, double bx, double by, double px, double py) {
+            var abx = bx - ax;
+            var aby = by - ay;
+            var apx = px - ax;
+            var apy = py - ay;
+            var r = (apx * abx + apy * aby) / (abx * abx + aby * aby);
+            if (1.0 < r) {
+                r = 1.0;
+            }
+            if (r < 0.0) {
+                r = 0.0;
+            }
+            var sx = px - (ax + abx * r);
+            var sy = py - (ay + aby * r);
+            return Math.Sqrt(sx * sx + sy * sy);
+        }
+
         /// <summary>
         /// calculate point fraction f between a and b, linearly interpolated
         /// </summary>

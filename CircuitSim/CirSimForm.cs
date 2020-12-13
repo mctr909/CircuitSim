@@ -458,7 +458,7 @@ namespace Circuit {
                 scrollValues(e.Delta);
             }
             // TODO: onMouseWheel
-            //if (typeof(MouseWheelHandler) == mouseElm.GetType() && !zoomOnly) {
+            //if ((mouseElm is MouseWheelHandler) && !zoomOnly) {
             //    ((MouseWheelHandler)mouseElm).onMouseWheel(e);
             //}
             if (scopeSelected != -1) {
@@ -1702,7 +1702,6 @@ namespace Circuit {
             dragScreenX = mx;
             dragScreenY = my;
             draggingPost = -1;
-            int i;
 
             mousePost = -1;
             plotXElm = plotYElm = null;
@@ -1712,46 +1711,19 @@ namespace Circuit {
                 return;
             }
 
-            if (mouseElm != null && (mouseElm.GetHandleGrabbedClose(gx, gy, POSTGRABSQ, MINPOSTGRABSIZE) >= 0)) {
-                newMouseElm = mouseElm;
-            } else {
-                int bestDist = 100000;
-                int bestArea = 100000;
-                for (i = 0; i != elmList.Count; i++) {
-                    var ce = getElm(i);
-                    if (ce.BoundingBox.Contains(gx, gy)) {
-                        int j;
-                        int area = ce.BoundingBox.Width * ce.BoundingBox.Height;
-                        int jn = ce.PostCount;
-                        if (jn > 2) {
-                            jn = 2;
-                        }
-                        for (j = 0; j != jn; j++) {
-                            var pt = ce.GetPost(j);
-                            int dist = (int)Utils.Distance(pt, gx, gy);
-
-                            /* if multiple elements have overlapping bounding boxes,
-                            /* we prefer selecting elements that have posts close
-                            /* to the mouse pointer and that have a small bounding
-                            /* box area. */
-                            if (dist <= bestDist && area <= bestArea) {
-                                bestDist = dist;
-                                bestArea = area;
-                                newMouseElm = ce;
-                            }
-                        }
-                        /* prefer selecting elements that have small bounding box area (for
-                        /* elements with no posts) */
-                        if (ce.PostCount == 0 && area <= bestArea) {
-                            newMouseElm = ce;
-                            bestArea = area;
-                        }
-                    }
-                } /* for */
+            double minDistance = 10;
+            for (int i = 0; i != elmList.Count; i++) {
+                var ce = getElm(i);
+                var distance = ce.Distance(gx, gy);
+                if (distance < minDistance) {
+                    newMouseElm = ce;
+                    minDistance = distance;
+                }
             }
+
             scopeSelected = -1;
             if (newMouseElm == null) {
-                for (i = 0; i != scopeCount; i++) {
+                for (int i = 0; i != scopeCount; i++) {
                     var s = scopes[i];
                     if (s.BoundingBox.Contains(mx, my)) {
                         newMouseElm = s.getElm();
@@ -1764,7 +1736,7 @@ namespace Circuit {
                 }
                 /* the mouse pointer was not in any of the bounding boxes, but we
                 /* might still be close to a post */
-                for (i = 0; i != elmList.Count; i++) {
+                for (int i = 0; i != elmList.Count; i++) {
                     var ce = getElm(i);
                     if (mouseMode == MOUSE_MODE.DRAG_POST) {
                         if (ce.GetHandleGrabbedClose(gx, gy, POSTGRABSQ, 0) > 0) {
@@ -1772,9 +1744,8 @@ namespace Circuit {
                             break;
                         }
                     }
-                    int j;
                     int jn = ce.PostCount;
-                    for (j = 0; j != jn; j++) {
+                    for (int j = 0; j != jn; j++) {
                         var pt = ce.GetPost(j);
                         if (Utils.Distance(pt, gx, gy) < 26) {
                             newMouseElm = ce;
@@ -1786,7 +1757,7 @@ namespace Circuit {
             } else {
                 mousePost = -1;
                 /* look for post close to the mouse pointer */
-                for (i = 0; i != newMouseElm.PostCount; i++) {
+                for (int i = 0; i != newMouseElm.PostCount; i++) {
                     var pt = newMouseElm.GetPost(i);
                     if (Utils.Distance(pt, gx, gy) < 26) {
                         mousePost = i;

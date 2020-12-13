@@ -515,6 +515,10 @@ namespace Circuit.Elements {
         #endregion
 
         #region [public method]
+        public double Distance(double x, double y) {
+            return Utils.DistanceOnLine(X1, Y1, X2, Y2, x, y);
+        }
+
         public void DrawHandles(CustomGraphics g) {
             if (mLastHandleGrabbed == -1) {
                 g.FillRectangle(PenHandle, X1 - 3, Y1 - 3, 7, 7);
