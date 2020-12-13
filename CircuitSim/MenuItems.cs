@@ -216,7 +216,6 @@ namespace Circuit {
         SquareRailElm,
         ClockElm,
         SweepElm,
-        VarRailElm,
         AntennaElm,
         AMElm,
         FMElm,
@@ -344,7 +343,6 @@ namespace Circuit {
         LED = 162,
         RING_COUNTER = 163,
         SWEEP = 170,
-        VAR_RAIL = 172,
         POT = 174,
         TRISTATE = 180,
         SCHMITT = 182,
@@ -613,7 +611,6 @@ namespace Circuit {
             addElementItem(inputMenuBar, "スイープ", MENU_ITEM.SweepElm);
             addElementItem(inputMenuBar, "AM発信器", MENU_ITEM.AMElm);
             addElementItem(inputMenuBar, "FM発信器", MENU_ITEM.FMElm);
-            //addElementItem(inputMenuBar, "電圧スライダ", MENU_ITEM.VarRailElm);
             //addMenuItem(inputMenuBar, "Add Square Wave Source (1-terminal)", ITEM.SquareRailElm);
             //addMenuItem(inputMenuBar, "Add Antenna", ITEM.AntennaElm);
             //addMenuItem(inputMenuBar, "Add Noise Generator", ITEM.NoiseElm);
@@ -823,8 +820,6 @@ namespace Circuit {
                 return new ClockElm(x1, y1);
             case MENU_ITEM.SweepElm:
                 return new SweepElm(x1, y1);
-            case MENU_ITEM.VarRailElm:
-                return new VarRailElm(x1, y1);
             case MENU_ITEM.AntennaElm:
                 return null; //(CircuitElm)new AntennaElm(x1, y1);
             case MENU_ITEM.AMElm:
@@ -1039,7 +1034,6 @@ namespace Circuit {
             //case 169: return new TappedTransformerElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.SWEEP: return new SweepElm(x1, y1, x2, y2, f, st);
             //case 171: return new TransLineElm(x1, y1, x2, y2, f, st);
-            case DUMP_ID.VAR_RAIL: return new VarRailElm(x1, y1, x2, y2, f, st);
             //case 173: return new TriodeElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.POT: return new PotElm(x1, y1, x2, y2, f, st);
             //case 175: return new TunnelDiodeElm(x1, y1, x2, y2, f, st);

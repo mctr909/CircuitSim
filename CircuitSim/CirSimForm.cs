@@ -1858,7 +1858,7 @@ namespace Circuit {
         /* check if the user can create sliders for this element */
         bool sliderItemEnabled(CircuitElm elm) {
             /* prevent confusion */
-            if ((elm is VarRailElm) || (elm is PotElm)) {
+            if (elm is PotElm) {
                 return false;
             }
             for (int i = 0; ; i++) {
