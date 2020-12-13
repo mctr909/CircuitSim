@@ -195,7 +195,7 @@ namespace Circuit.Elements {
             g.DrawThickLine(mPoint1, gate[1]);
             g.DrawThickLine(gate[0], gate[2]);
             if (DrawDigital && pnp == -1) {
-                g.DrawThickCircle(pcircle.X, pcircle.Y, pcircler);
+                g.DrawThickCircle(pcircle, pcircler);
             }
 
             if ((mFlags & FLAG_SHOWVT) != 0) {
@@ -204,10 +204,8 @@ namespace Circuit.Elements {
             }
             mCurCount = updateDotCount(-ids, mCurCount);
             drawDots(g, src[0], src[1], mCurCount);
-            if (DoBodyDiode) {
-                drawDots(g, src[1], drn[1], mCurCount);
-            }
             drawDots(g, drn[1], drn[0], mCurCount);
+            drawDots(g, src[1], drn[1], mCurCount);
 
             if (ShowBulk) {
                 curcount_body1 = updateDotCount(diodeCurrent1, curcount_body1);
@@ -243,11 +241,11 @@ namespace Circuit.Elements {
             src = new Point[3];
             drn = new Point[3];
             Utils.InterpPoint(mPoint1, mPoint2, ref src[0], ref drn[0], 1, -hs2);
-            Utils.InterpPoint(mPoint1, mPoint2, ref src[1], ref drn[1], 1 - 22 / mLen, -hs2);
-            Utils.InterpPoint(mPoint1, mPoint2, ref src[2], ref drn[2], 1 - 22 / mLen, -hs2 * 4 / 3);
+            Utils.InterpPoint(mPoint1, mPoint2, ref src[1], ref drn[1], 1 - 18 / mLen, -hs2);
+            Utils.InterpPoint(mPoint1, mPoint2, ref src[2], ref drn[2], 1 - 18 / mLen, -hs2 * 4 / 3);
 
             gate = new Point[3];
-            Utils.InterpPoint(mPoint1, mPoint2, ref gate[0], ref gate[2], 1 - 28 / mLen, hs2 / 2); /* was 1-20/dn */
+            Utils.InterpPoint(mPoint1, mPoint2, ref gate[0], ref gate[2], 1 - 24 / mLen, hs2 / 2);
             Utils.InterpPoint(gate[0], gate[2], ref gate[1], .5);
 
             if (ShowBulk) {
@@ -258,16 +256,16 @@ namespace Circuit.Elements {
 
             if (!DrawDigital) {
                 if (pnp == 1) {
-                    if (!ShowBulk) {
-                        arrowPoly = Utils.CreateArrow(src[1], src[0], 10, 4);
+                    if (ShowBulk) {
+                        arrowPoly = Utils.CreateArrow(body[0], body[1], 10, 4);
                     } else {
-                        arrowPoly = Utils.CreateArrow(body[0], body[1], 12, 5);
+                        arrowPoly = Utils.CreateArrow(src[1], src[0], 10, 4);
                     }
                 } else {
-                    if (!ShowBulk) {
-                        arrowPoly = Utils.CreateArrow(drn[0], drn[1], 12, 5);
+                    if (ShowBulk) {
+                        arrowPoly = Utils.CreateArrow(body[1], body[0], 10, 4);
                     } else {
-                        arrowPoly = Utils.CreateArrow(body[1], body[0], 12, 5);
+                        arrowPoly = Utils.CreateArrow(drn[0], drn[1], 10, 4);
                     }
                 }
             } else if (pnp == -1) {

@@ -74,7 +74,7 @@ namespace Circuit.Elements {
             g.ThickLineColor = NeedsHighlight ? SelectColor : GrayColor;
             int xc = center.X;
             int yc = center.Y;
-            g.DrawThickCircle(xc, yc, circleSize);
+            g.DrawThickCircle(center, circleSize);
             adjustBbox(xc - circleSize, yc - circleSize, xc + circleSize, yc + circleSize);
         }
 

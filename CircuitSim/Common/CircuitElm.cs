@@ -488,7 +488,7 @@ namespace Circuit.Elements {
                 Utils.InterpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
                 g.ThickLineColor = getVoltageColor(v);
-                g.DrawThickArc(pos.X, pos.Y, w, th, -180);
+                g.DrawThickArc(pos, w, th, -180);
             }
         }
 
@@ -509,7 +509,7 @@ namespace Circuit.Elements {
                 Utils.InterpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
                 g.ThickLineColor = getVoltageColor(v);
-                g.DrawThickArc(pos.X, pos.Y, w, dir, -180);
+                g.DrawThickArc(pos, w, dir, -180);
             }
         }
         #endregion

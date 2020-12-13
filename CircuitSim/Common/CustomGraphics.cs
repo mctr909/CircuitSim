@@ -179,14 +179,14 @@ namespace Circuit {
             g.DrawLine(penThickLine, a.X, a.Y, b.X, b.Y);
         }
 
-        public void DrawThickCircle(float centerX, float centerY, float diameter) {
+        public void DrawThickCircle(Point p, float diameter) {
             var md = diameter * .98f;
-            g.DrawArc(penThickLine, centerX - md / 2, centerY - md / 2, md, md, 0, 360);
+            g.DrawArc(penThickLine, p.X - md / 2, p.Y - md / 2, md, md, 0, 360);
         }
 
-        public void DrawThickArc(float centerX, float centerY, float diameter, float start, float sweep) {
+        public void DrawThickArc(Point p, float diameter, float start, float sweep) {
             var md = diameter * .98f;
-            g.DrawArc(penThickLine, centerX - md / 2, centerY - md / 2, md, md, start, sweep);
+            g.DrawArc(penThickLine, p.X - md / 2, p.Y - md / 2, md, md, start, sweep);
         }
 
         public void DrawThickPolygon(Point[] p) {

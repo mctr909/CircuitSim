@@ -213,7 +213,7 @@ namespace Circuit.Elements {
 
             if (waveform != WF_NOISE) {
                 g.ThickLineColor = NeedsHighlight ? SelectColor : GrayColor;
-                g.DrawThickCircle(x, y, circleSize);
+                g.DrawThickCircle(center, circleSize);
             }
 
             adjustBbox(

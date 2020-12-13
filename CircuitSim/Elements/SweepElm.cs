@@ -73,7 +73,7 @@ namespace Circuit.Elements {
 
             int xc = mPoint2.X;
             int yc = mPoint2.Y;
-            g.DrawThickCircle(xc, yc, circleSize);
+            g.DrawThickCircle(mPoint2, circleSize);
 
             adjustBbox(
                 xc - circleSize, yc - circleSize,

@@ -54,7 +54,7 @@ namespace Circuit.Elements {
 
             var c = getVoltageColor((Volts[0] + Volts[1]) / 2);
             g.ThickLineColor = c;
-            g.DrawThickCircle(center.X, center.Y, cr);
+            g.DrawThickCircle(center, cr);
             g.DrawThickLine(ashaft1, ashaft2);
             g.FillPolygon(c, arrow);
 

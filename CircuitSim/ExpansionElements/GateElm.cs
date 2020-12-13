@@ -149,7 +149,7 @@ namespace Circuit.Elements {
                 }
             }
             if (isInverting()) {
-                g.DrawThickCircle(circlePos.X, circlePos.Y, circleSize);
+                g.DrawThickCircle(circlePos, circleSize);
             }
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(g, mLead2, mPoint2, mCurCount);

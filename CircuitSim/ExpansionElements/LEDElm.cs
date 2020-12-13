@@ -61,7 +61,7 @@ namespace Circuit.Elements {
             g.ThickLineColor = GrayColor;
 
             int cr = 12;
-            g.DrawThickCircle(ledCenter.X, ledCenter.Y, cr);
+            g.DrawThickCircle(ledCenter, cr);
             cr -= 4;
             double w = mCurrent / maxBrightnessCurrent;
             if (w > 0) {

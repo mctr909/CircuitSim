@@ -37,8 +37,7 @@ namespace Circuit.Elements {
             public Point textloc { get; private set; }
 
             public int voltSource;
-            public int bubbleX;
-            public int bubbleY;
+            public Point bubblePos;
 
             public bool lineOver;
             public bool bubble;
@@ -76,8 +75,7 @@ namespace Circuit.Elements {
                 stub = new Point(xa + dax * mElm.cspc, ya + day * mElm.cspc);
                 textloc = new Point(xa, ya);
                 if (bubble) {
-                    bubbleX = xa + dax * 10 * mElm.csize;
-                    bubbleY = ya + day * 10 * mElm.csize;
+                    bubblePos = new Point(xa + dax * 10 * mElm.csize, ya + day * 10 * mElm.csize);
                 }
                 if (clock) {
                     mElm.clockPoints = new Point [3];
@@ -197,9 +195,9 @@ namespace Circuit.Elements {
                 drawDots(g, b, a, p.curcount);
                 if (p.bubble) {
                     g.ThickLineColor = Sim.chkPrintable.Checked ? Color.White : Color.Black;
-                    g.DrawThickCircle(p.bubbleX, p.bubbleY, 1);
+                    g.DrawThickCircle(p.bubblePos, 1);
                     g.ThickLineColor = GrayColor;
-                    g.DrawThickCircle(p.bubbleX, p.bubbleY, 3);
+                    g.DrawThickCircle(p.bubblePos, 3);
                 }
                 g.ThickLineColor = p.selected ? SelectColor : GrayColor;
                 int fsz = 12 * csize;

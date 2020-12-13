@@ -65,7 +65,7 @@ namespace Circuit.Elements {
             g.ThickLineColor = g.LineColor;
             g.DrawThickPolygon(gatePoly);
             g.DrawPolygon(symbolPoly);
-            g.DrawThickCircle(pcircle.X, pcircle.Y, 6);
+            g.DrawThickCircle(pcircle, 6);
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(g, mLead2, mPoint2, mCurCount);
         }
