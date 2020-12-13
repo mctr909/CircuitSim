@@ -683,7 +683,6 @@ namespace Circuit {
             if (debug) Console.WriteLine("ac2");
 
             /* allocate nodes and voltage sources */
-            LabeledNodeElm.resetNodeList();
             for (int i = 0; i != elmList.Count; i++) {
                 var ce = mSim.getElm(i);
                 int inodes = ce.InternalNodeCount;

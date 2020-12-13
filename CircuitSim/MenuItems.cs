@@ -233,7 +233,6 @@ namespace Circuit {
         BoxElm,
         ProbeElm,
         OhmMeterElm,
-        LabeledNodeElm,
         TestPointElm,
         AmmeterElm,
         DataRecorderElm,
@@ -352,7 +351,6 @@ namespace Circuit {
         INVERT_SCHMITT = 183,
         AM = 200,
         FM = 201,
-        LABELED_NODE = 207,
         VCCS = 213,
         CCCS = 215,
         AMMETER = 370,
@@ -638,7 +636,6 @@ namespace Circuit {
             //addElementItem(outputMenuBar, "Add Lamp", MENU_ITEM.LampElm);
             //addElementItem(outputMenuBar, "Add Text", MENU_ITEM.TextElm);
             //addElementItem(outputMenuBar, "Add Box", MENU_ITEM.BoxElm);
-            //addElementItem(outputMenuBar, "Add Labeled Node", MENU_ITEM.LabeledNodeElm);
             //addElementItem(outputMenuBar, "Add Test Point", MENU_ITEM.TestPointElm);
             //addElementItem(outputMenuBar, "Add Stop Trigger", MENU_ITEM.StopTriggerElm);
             mainMenuBar.Items.Add(outputMenuBar);
@@ -855,8 +852,6 @@ namespace Circuit {
                 return new ProbeElm(x1, y1);
             case MENU_ITEM.OhmMeterElm:
                 return null; //(CircuitElm)new OhmMeterElm(x1, y1);
-            case MENU_ITEM.LabeledNodeElm:
-                return new LabeledNodeElm(x1, y1);
             case MENU_ITEM.TestPointElm:
                 return null; //new TestPointElm(x1, y1);
             case MENU_ITEM.AmmeterElm:
@@ -1071,7 +1066,6 @@ namespace Circuit {
             case DUMP_ID.FM: return new FMElm(x1, y1, x2, y2, f, st);
             //case 203: return new DiacElm(x1, y1, x2, y2, f, st);
             //case 206: return new TriacElm(x1, y1, x2, y2, f, st);
-            //case 207: return new LabeledNodeElm(x1, y1, x2, y2, f, st);
             //case 208: return new CustomLogicElm(x1, y1, x2, y2, f, st);
             //case 209: return new PolarCapacitorElm(x1, y1, x2, y2, f, st);
             //case 210: return new DataRecorderElm(x1, y1, x2, y2, f, st);

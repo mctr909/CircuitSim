@@ -51,16 +51,16 @@
     <Compile Include="CirSimVariable.cs" />
     <Compile Include="Common\CustomGraphics.cs" />
     <Compile Include="Common\Utils.cs" />
-    <Compile Include="Elements\AmmeterElm.cs" />
+    <Compile Include="ExpansionElements\AmmeterElm.cs" />
     <Compile Include="ExpansionElements\AMElm.cs" />
     <Compile Include="ExpansionElements\AnalogSwitchElm.cs" />
     <Compile Include="ExpansionElements\CCCSElm.cs" />
-    <Compile Include="Elements\GateElm.cs" />
+    <Compile Include="ExpansionElements\GateElm.cs" />
     <Compile Include="ExpansionElements\FMElm.cs" />
     <Compile Include="ExpansionElements\InvertingSchmittElm.cs" />
     <Compile Include="ExpansionElements\OpAmpElm.cs" />
     <Compile Include="Elements\SweepElm.cs" />
-    <Compile Include="Elements\TransformerElm.cs" />
+    <Compile Include="ExpansionElements\TransformerElm.cs" />
     <Compile Include="ExpansionElements\ACRailElm.cs" />
     <Compile Include="ExpansionElements\ACVoltageElm.cs" />
     <Compile Include="ExpansionElements\AndGateElm.cs" />
@@ -128,7 +128,6 @@
     <Compile Include="Elements\CurrentElm.cs" />
     <Compile Include="Elements\GraphicElm.cs" />
     <Compile Include="Elements\GroundElm.cs" />
-    <Compile Include="Elements\LabeledNodeElm.cs" />
     <Compile Include="Elements\LogicInputElm.cs" />
     <Compile Include="Elements\LogicOutputElm.cs" />
     <Compile Include="Elements\OutputElm.cs" />

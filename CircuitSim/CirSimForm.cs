@@ -2370,9 +2370,6 @@ namespace Circuit {
                 if (cs == "WireElm") {
                     continue;
                 }
-                if (cs == "LabeledNodeElm") {
-                    cs = cs + " " + ((LabeledNodeElm)e).text;
-                }
                 if (cs == "TransistorElm") {
                     if (((TransistorElm)e).pnp == -1) {
                         cs = "PTransistorElm";
@@ -2420,41 +2417,6 @@ namespace Circuit {
 
             var used = new bool[mCir.NodeList.Count];
 
-            // find all the labeled nodes, get a list of them, and create a node number map
-            for (i = 0; i != elmList.Count; i++) {
-                var ce = getElm(i);
-                if (sel && !ce.IsSelected) {
-                    continue;
-                }
-                if (ce is LabeledNodeElm) {
-                    var lne = (LabeledNodeElm)ce;
-                    string label = lne.text;
-
-                    // this node name already seen?  map the new node number to the old one
-                    if (nodeNameHash.ContainsKey(label)) {
-                        int map = nodeNameHash[label];
-                        if (nodeNumberHash.ContainsKey(lne.Nodes[0])) {
-                            int val = nodeNumberHash[lne.Nodes[0]];
-                            if (val != map) {
-                                MessageBox.Show("Can't have a node with two labels!");
-                                return null;
-                            }
-                        }
-                        nodeNumberHash.Add(lne.Nodes[0], map);
-                        continue;
-                    }
-                    nodeNameHash.Add(label, lne.Nodes[0]);
-                    // put an entry in nodeNumberHash so we can detect if we try to map it to something else later
-                    nodeNumberHash.Add(lne.Nodes[0], lne.Nodes[0]);
-                    if (lne.isInternal()) {
-                        continue;
-                    }
-                    // create ext list entry for external nodes
-                    var ent = new ExtListEntry(label, ce.Nodes[0]);
-                    extList.Add(ent);
-                }
-            }
-
             // output all the elements
             for (i = 0; i != elmList.Count; i++) {
                 var ce = getElm(i);
@@ -2462,7 +2424,7 @@ namespace Circuit {
                     continue;
                 }
                 // don't need these elements dumped
-                if ((ce is WireElm) || (ce is LabeledNodeElm) || (ce is ScopeElm)) {
+                if ((ce is WireElm) || (ce is ScopeElm)) {
                     continue;
                 }
                 if (ce is GraphicElm) {
