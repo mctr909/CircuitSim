@@ -71,12 +71,12 @@ namespace Circuit.Elements {
         }
 
         void createSlider() {
-            Sim.addWidgetToVerticalPanel(label = new Label() {
+            Sim.AddWidgetToVerticalPanel(label = new Label() {
                 TextAlign = ContentAlignment.BottomLeft,
                 Text = sliderText
             });
             int value = (int)(position * 100);
-            Sim.addWidgetToVerticalPanel(slider = new TrackBar() {
+            Sim.AddWidgetToVerticalPanel(slider = new TrackBar() {
                 Minimum = 0,
                 Maximum = 100,
                 SmallChange = 1,
@@ -90,12 +90,12 @@ namespace Circuit.Elements {
 
         void execute() {
             SetPoints();
-            Sim.needAnalyze();
+            Sim.NeedAnalyze();
         }
 
         public override void Delete() {
-            Sim.removeWidgetFromVerticalPanel(label);
-            Sim.removeWidgetFromVerticalPanel(slider);
+            Sim.RemoveWidgetFromVerticalPanel(label);
+            Sim.RemoveWidgetFromVerticalPanel(slider);
             base.Delete();
         }
 
@@ -116,7 +116,7 @@ namespace Circuit.Elements {
                     mPoint2.X = mPoint1.X;
                 }
             }
-            if (offset == 0) {
+            if (offset < Sim.gridSize) {
                 offset = Sim.gridSize;
             }
             mLen = Utils.Distance(mPoint1, mPoint2);
@@ -317,7 +317,7 @@ namespace Circuit.Elements {
             if (n == 1) {
                 sliderText = ei.Textf.Text;
                 label.Text = sliderText;
-                Sim.setiFrameHeight();
+                Sim.SetiFrameHeight();
             }
             if (n == 2) {
                 mFlags = ei.ChangeFlag(mFlags, FLAG_SHOW_VALUES);

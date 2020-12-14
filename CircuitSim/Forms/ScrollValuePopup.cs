@@ -178,7 +178,7 @@ namespace Circuit {
             int thissel = getSelIdx();
             inf.Value = values[thissel];
             myElm.SetEditValue(0, inf);
-            sim.needAnalyze();
+            sim.NeedAnalyze();
             labels.Text = Utils.ShortUnitText(values[thissel], unit);
         }
 
@@ -188,7 +188,7 @@ namespace Circuit {
                 lastidx = i;
                 inf.Value = values[i];
                 myElm.SetEditValue(0, inf);
-                sim.needAnalyze();
+                sim.NeedAnalyze();
             }
         }
 

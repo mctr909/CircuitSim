@@ -88,7 +88,7 @@ namespace Circuit.Elements {
                 tm = 2000 - tm;
             }
             double w = 1 + tm * .002;
-            if (Sim.simIsRunning()) {
+            if (Sim.SimIsRunning()) {
                 w = 1 + 3 * (frequency - minF) / (maxF - minF);
             }
 

@@ -202,7 +202,7 @@ namespace Circuit.Elements {
         /// <param name="b"></param>
         /// <param name="pos"></param>
         protected static void drawDots(CustomGraphics g, Point a, Point b, double pos) {
-            if ((!Sim.simIsRunning()) || pos == 0 || !Sim.chkShowDots.Checked) {
+            if ((!Sim.SimIsRunning()) || pos == 0 || !Sim.chkShowDots.Checked) {
                 return;
             }
             int dx = b.X - a.X;
@@ -357,7 +357,7 @@ namespace Circuit.Elements {
         /// <param name="cc"></param>
         /// <returns></returns>
         protected double updateDotCount(double cur, double cc) {
-            if (!Sim.simIsRunning()) {
+            if (!Sim.SimIsRunning()) {
                 return cc;
             }
             double cadd = cur * CurrentMult;
@@ -673,7 +673,7 @@ namespace Circuit.Elements {
                 mMouseElmRef = null;
             }
             if (null != Sim) {
-                Sim.deleteSliders(this);
+                Sim.DeleteSliders(this);
             }
         }
 

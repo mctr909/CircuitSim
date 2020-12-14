@@ -652,7 +652,7 @@ namespace Circuit {
 
         /* find selected plot */
         void checkForSelection() {
-            if (mSim.dialogIsShowing()) {
+            if (mSim.DialogIsShowing()) {
                 return;
             }
             if (!BoundingBox.Contains(mSim.mouseCursorX, mSim.mouseCursorY)) {
@@ -791,7 +791,7 @@ namespace Circuit {
                 return null;
             }
             int flags = getFlags();
-            int eno = mSim.locateElm(elm);
+            int eno = mSim.LocateElm(elm);
             if (eno < 0) {
                 return null;
             }
@@ -806,7 +806,7 @@ namespace Circuit {
             for (int i = 0; i < mPlots.Count; i++) {
                 var p = mPlots[i];
                 if (i > 0) {
-                    x += " " + mSim.locateElm(p.Elm) + " " + p.Value;
+                    x += " " + mSim.LocateElm(p.Elm) + " " + p.Value;
                 }
                 /* dump scale if units are not V or A */
                 if (p.Units > UNITS_A) {
@@ -1048,7 +1048,7 @@ namespace Circuit {
 
         public void selectY() {
             var yElm = (mPlots.Count == 2) ? mPlots[1].Elm : null;
-            int e = (yElm == null) ? -1 : mSim.locateElm(yElm);
+            int e = (yElm == null) ? -1 : mSim.LocateElm(yElm);
             int firstE = e;
             while (true) {
                 for (e++; e < mSim.elmList.Count; e++) {
@@ -1117,7 +1117,7 @@ namespace Circuit {
             int i;
             for (i = 0; i != mPlots.Count; i++) {
                 var plot = mPlots[i];
-                if (mSim.locateElm(plot.Elm) < 0) {
+                if (mSim.LocateElm(plot.Elm) < 0) {
                     mPlots.RemoveAt(i--);
                     removed = true;
                 } else {
@@ -1146,7 +1146,7 @@ namespace Circuit {
         }
 
         void drawCrosshairs(CustomGraphics g) {
-            if (mSim.dialogIsShowing()) {
+            if (mSim.DialogIsShowing()) {
                 return;
             }
             if (!BoundingBox.Contains(mSim.mouseCursorX, mSim.mouseCursorY)) {

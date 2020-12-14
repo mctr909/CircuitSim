@@ -273,13 +273,13 @@ namespace Circuit {
 
                 /* update slider if any */
                 if (elm is CircuitElm) {
-                    var adj = cframe.findAdjustable((CircuitElm)elm, i);
+                    var adj = cframe.FindAdjustable((CircuitElm)elm, i);
                     if (adj != null) {
                         adj.setSliderValue(ei.Value);
                     }
                 }
             }
-            cframe.needAnalyze();
+            cframe.NeedAnalyze();
         }
 
         void itemStateChanged(object sender) {
@@ -298,7 +298,7 @@ namespace Circuit {
                     if (ei.NewDialog) {
                         changed = true;
                     }
-                    cframe.needAnalyze();
+                    cframe.NeedAnalyze();
                 }
             }
             if (changed) {

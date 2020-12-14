@@ -834,7 +834,7 @@ namespace Circuit {
                 /* connect one of the unconnected nodes to ground with a big resistor, then try again */
                 for (int i = 0; i != NodeList.Count; i++) {
                     if (!closure[i] && !getCircuitNode(i).Internal) {
-                        Console.WriteLine("node " + i + " unconnected");
+                        /* Console.WriteLine("node " + i + " unconnected"); */
                         StampResistor(0, i, 1e8);
                         closure[i] = true;
                         changed = true;
@@ -1077,7 +1077,7 @@ namespace Circuit {
             StopMessage = s;
             Matrix = null;  /* causes an exception */
             StopElm = ce;
-            mSim.setSimRunning(false);
+            mSim.SetSimRunning(false);
             mSim.analyzeFlag = false;
         }
     }

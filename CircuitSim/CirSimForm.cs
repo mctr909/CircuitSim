@@ -41,7 +41,7 @@ namespace Circuit {
                 int ofsY = 0;
                 /* Reset */
                 resetButton = new Button() { AutoSize = true, Text = "Reset" };
-                resetButton.Click += new EventHandler((s, e) => { resetAction(); });
+                resetButton.Click += new EventHandler((s, e) => { resetButton_onClick(); });
                 resetButton.Left = 4;
                 resetButton.Top = ofsY;
                 verticalPanel.Controls.Add(resetButton);
@@ -49,7 +49,7 @@ namespace Circuit {
 
                 /* Run */
                 runStopButton = new Button() { AutoSize = true, Text = "RUN" };
-                runStopButton.Click += new EventHandler((s, e) => { setSimRunning(!simIsRunning()); });
+                runStopButton.Click += new EventHandler((s, e) => { SetSimRunning(!SimIsRunning()); });
                 runStopButton.Left = 4;
                 runStopButton.Top = ofsY;
                 verticalPanel.Controls.Add(runStopButton);
@@ -168,6 +168,7 @@ namespace Circuit {
                 picCir.MouseUp += new MouseEventHandler((s, e) => { onMouseUp(e); });
                 picCir.MouseWheel += new MouseEventHandler((s, e) => { onMouseWheel((PictureBox)s, e); });
                 picCir.MouseClick += new MouseEventHandler((s, e) => { onClick((PictureBox)s, e); });
+                picCir.MouseLeave += new EventHandler((s, e) => { onMouseLeave(); });
                 picCir.DoubleClick += new EventHandler((s, e) => { onDoubleClick(e); });
             }
 
@@ -192,44 +193,44 @@ namespace Circuit {
             {
                 ctxMenuItem.Add(elmEditMenuItem = new ToolStripMenuItem() { Text = "Edit..." });
                 elmEditMenuItem.Click += new EventHandler((s, e) => {
-                    menuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.edit);
+                    MenuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.edit);
                 });
                 ctxMenuItem.Add(elmScopeMenuItem = new ToolStripMenuItem() { Text = "View in Scope" });
                 elmScopeMenuItem.Click += new EventHandler((s, e) => {
-                    menuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.VIEW_IN_SCOPE);
+                    MenuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.VIEW_IN_SCOPE);
                 });
                 ctxMenuItem.Add(elmFloatScopeMenuItem = new ToolStripMenuItem() { Text = "View in Undocked Scope" });
                 elmFloatScopeMenuItem.Click += new EventHandler((s, e) => {
-                    menuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.VIEW_IN_FLOAT_SCOPE);
+                    MenuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.VIEW_IN_FLOAT_SCOPE);
                 });
                 ctxMenuItem.Add(elmCutMenuItem = new ToolStripMenuItem() { Text = "Cut" });
                 elmCutMenuItem.Click += new EventHandler((s, e) => {
-                    menuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.CUT);
+                    MenuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.CUT);
                 });
                 ctxMenuItem.Add(elmCopyMenuItem = new ToolStripMenuItem() { Text = "Copy" });
                 elmCopyMenuItem.Click += new EventHandler((s, e) => {
-                    menuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.COPY);
+                    MenuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.COPY);
                 });
                 ctxMenuItem.Add(elmDeleteMenuItem = new ToolStripMenuItem() { Text = "Delete" });
                 elmDeleteMenuItem.Click += new EventHandler((s, e) => {
-                    menuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.DELETE);
+                    MenuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.DELETE);
                 });
                 var dup = new ToolStripMenuItem() { Text = "Duplicate" };
                 ctxMenuItem.Add(dup);
                 dup.Click += new EventHandler((s, e) => {
-                    menuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.DUPLICATE);
+                    MenuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.DUPLICATE);
                 });
                 ctxMenuItem.Add(elmFlipMenuItem = new ToolStripMenuItem() { Text = "Swap Terminals" });
                 elmFlipMenuItem.Click += new EventHandler((s, e) => {
-                    menuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.flip);
+                    MenuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.flip);
                 });
                 ctxMenuItem.Add(elmSplitMenuItem = new ToolStripMenuItem() { Text = "Split Wire" });
                 elmSplitMenuItem.Click += new EventHandler((s, e) => {
-                    menuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.split);
+                    MenuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.split);
                 });
                 ctxMenuItem.Add(elmSliderMenuItem = new ToolStripMenuItem() { Text = "Sliders..." });
                 elmSliderMenuItem.Click += new EventHandler((s, e) => {
-                    menuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.sliders);
+                    MenuPerformed(MENU_CATEGORY.ELEMENTS, MENU_ITEM.sliders);
                 });
                 /* */
                 elmMenuBar = ctxMenuItem.ToArray();
@@ -260,284 +261,15 @@ namespace Circuit {
 
             enableUndoRedo();
             enablePaste();
-            setiFrameHeight();
+            SetiFrameHeight();
 
             scopePopupMenu = new ScopePopupMenu(this);
 
-            setSimRunning(true);
+            SetSimRunning(true);
         }
 
-        void onKeyDown(object sender, KeyEventArgs e) {
-            isPressShift = e.Shift;
-            isPressCtrl = e.Control;
-            isPressAlt = e.Alt;
-        }
-
-        void onKeyUp(object sender, KeyEventArgs e) {
-            isPressShift = false;
-            isPressCtrl = false;
-            isPressAlt = false;
-            setCursorStyle(Cursors.Arrow);
-            onPreviewNativeEvent(e);
-        }
-
-        void onClick(Control s, MouseEventArgs e) {
-            if (e.Button == MouseButtons.Middle) {
-                scrollValues(0);
-            }
-            if (e.Button == MouseButtons.Right) {
-                onContextMenu(s, e);
-            }
-        }
-
-        void onDoubleClick(EventArgs e) {
-            if (mouseElm != null && !(mouseElm is SwitchElm)) {
-                doEdit(mouseElm);
-            }
-        }
-
-        void onMouseDown(MouseEventArgs e) {
-            mCir.StopElm = null; /* if stopped, allow user to select other elements to fix circuit */
-            menuX = menuClientX = mouseCursorX = e.X;
-            menuY = menuClientY = mouseCursorY = e.Y;
-            mouseButton = e.Button;
-            mouseDownTime = DateTime.Now.ToFileTimeUtc();
-
-            /* maybe someone did copy in another window?  should really do this when */
-            /* window receives focus */
-            enablePaste();
-
-            if (mouseButton != MouseButtons.Left && mouseButton != MouseButtons.Middle) {
-                return;
-            }
-
-            // set mouseElm in case we are on mobile
-            mouseSelect();
-
-            mouseDragging = true;
-            didSwitch = false;
-
-            if (mouseWasOverSplitter) {
-                tempMouseMode = MOUSE_MODE.DRAG_SPLITTER;
-                return;
-            }
-            if (mouseButton == MouseButtons.Left) {
-                /* left mouse */
-                tempMouseMode = mouseMode;
-                if (isPressCtrl && isPressShift) {
-                    tempMouseMode = MOUSE_MODE.DRAG_COLUMN;
-                    setCursorStyle(Cursors.SizeWE);
-                } else if (isPressCtrl && isPressAlt) {
-                    tempMouseMode = MOUSE_MODE.DRAG_ROW;
-                    setCursorStyle(Cursors.SizeNS);
-                } else if (isPressCtrl) {
-                    tempMouseMode = MOUSE_MODE.SELECT;
-                    setCursorStyle(Cursors.Arrow);
-                } else if (isPressShift) {
-                    tempMouseMode = MOUSE_MODE.DRAG_POST;
-                    setCursorStyle(Cursors.SizeAll);
-                } else if (isPressAlt) {
-                    tempMouseMode = MOUSE_MODE.DRAG_ALL;
-                    setCursorStyle(Cursors.NoMove2D);
-                }
-            } else {
-                tempMouseMode = MOUSE_MODE.DRAG_ALL;
-            }
-
-            if ((scopeSelected != -1 && scopes[scopeSelected].cursorInSettingsWheel()) ||
-                (scopeSelected == -1 && mouseElm != null && (mouseElm is ScopeElm) && ((ScopeElm)mouseElm).elmScope.cursorInSettingsWheel())) {
-                Console.WriteLine("Doing something");
-                Scope s;
-                if (scopeSelected != -1) {
-                    s = scopes[scopeSelected];
-                } else {
-                    s = ((ScopeElm)mouseElm).elmScope;
-                }
-                s.properties(
-                    mParent.Location.X + mouseCursorX,
-                    mParent.Location.Y + mouseCursorY
-                );
-                clearSelection();
-                mouseDragging = false;
-                return;
-            }
-
-            int gx = inverseTransformX(e.X);
-            int gy = inverseTransformY(e.Y);
-            if (doSwitch(gx, gy)) {
-                /* do this BEFORE we change the mouse mode to MODE_DRAG_POST!  Or else logic inputs */
-                /* will add dots to the whole circuit when we click on them! */
-                didSwitch = true;
-                return;
-            }
-
-            /* IES - Grab resize handles in select mode if they are far enough apart and you are on top of them */
-            if (tempMouseMode == MOUSE_MODE.SELECT && mouseElm != null
-                && mouseElm.GetHandleGrabbedClose(gx, gy, POSTGRABSQ, MINPOSTGRABSIZE) >= 0
-                && !anySelectedButMouse()) {
-                tempMouseMode = MOUSE_MODE.DRAG_POST;
-            }
-
-            if (tempMouseMode != MOUSE_MODE.SELECT && tempMouseMode != MOUSE_MODE.DRAG_SELECTED) {
-                clearSelection();
-            }
-
-            pushUndo();
-            initDragGridX = gx;
-            initDragGridY = gy;
-            dragging = true;
-            if (tempMouseMode != MOUSE_MODE.ADD_ELM) {
-                return;
-            }
-            /* */
-            int x0 = snapGrid(gx);
-            int y0 = snapGrid(gy);
-            if (!circuitArea.Contains(mouseCursorX, mouseCursorY)) {
-                return;
-            }
-
-            dragElm = MenuItems.constructElement(mouseModeStr, x0, y0);
-        }
-
-        void onMouseUp(MouseEventArgs e) {
-            mouseDragging = false;
-            mouseButton = MouseButtons.None;
-
-            /* click to clear selection */
-            if (tempMouseMode == MOUSE_MODE.SELECT && selectedArea.Width == 0) {
-                clearSelection();
-            }
-
-            /* cmd-click = split wire */
-            if (tempMouseMode == MOUSE_MODE.DRAG_POST && draggingPost == -1) {
-                doSplit(mouseElm);
-            }
-
-            tempMouseMode = mouseMode;
-            selectedArea = new Rectangle();
-            dragging = false;
-            bool circuitChanged = false;
-            if (heldSwitchElm != null) {
-                heldSwitchElm.mouseUp();
-                heldSwitchElm = null;
-                circuitChanged = true;
-            }
-            if (dragElm != null) {
-                /* if the element is zero size then don't create it */
-                /* IES - and disable any previous selection */
-                if (dragElm.IsCreationFailed) {
-                    dragElm.Delete();
-                    if (mouseMode == MOUSE_MODE.SELECT || mouseMode == MOUSE_MODE.DRAG_SELECTED) {
-                        clearSelection();
-                    }
-                } else {
-                    elmList.Add(dragElm);
-                    dragElm.DraggingDone();
-                    circuitChanged = true;
-                    writeRecoveryToStorage();
-                    unsavedChanges = true;
-                }
-                dragElm = null;
-            }
-            if (circuitChanged) {
-                needAnalyze();
-            }
-            if (dragElm != null) {
-                dragElm.Delete();
-            }
-            dragElm = null;
-            repaint();
-        }
-
-        void onMouseWheel(Control sender, MouseEventArgs e) {
-            /* once we start zooming, don't allow other uses of mouse wheel for a while */
-            /* so we don't accidentally edit a resistor value while zooming */
-            bool zoomOnly = DateTime.Now.ToFileTimeUtc() < zoomTime + 1000;
-
-            if (!zoomOnly) {
-                scrollValues(e.Delta);
-            }
-            // TODO: onMouseWheel
-            //if ((mouseElm is MouseWheelHandler) && !zoomOnly) {
-            //    ((MouseWheelHandler)mouseElm).onMouseWheel(e);
-            //}
-            if (scopeSelected != -1) {
-                scopes[scopeSelected].onMouseWheel(e);
-            } else if (!dialogIsShowing()) {
-                zoomCircuit(-e.Delta);
-                zoomTime = DateTime.Now.ToFileTimeUtc();
-            }
-            repaint();
-        }
-
-        void onMouseMove(MouseEventArgs e) {
-            mouseCursorX = e.X;
-            mouseCursorY = e.Y;
-            if (33 < (DateTime.Now - mLastMouseMove).Milliseconds) {
-                mLastMouseMove = DateTime.Now;
-            } else {
-                return;
-            }
-            if (mouseDragging) {
-                mouseDragged();
-                return;
-            }
-            mouseSelect();
-        }
-
-        void setTimer() {
-            timer = new Timer();
-            timer.Tick += new EventHandler((s, e) => {
-                if (simRunning) {
-                    updateCircuit();
-                    needsRepaint = false;
-                }
-            });
-            timer.Interval = 1;
-            timer.Enabled = true;
-            timer.Start();
-        }
-
-        void setCanvasSize() {
-            int width = layoutPanel.Panel1.Width;
-            int height = layoutPanel.Panel1.Height - menuBar.Height;
-            if (width < 1) {
-                width = 1;
-            }
-            if (height < 1) {
-                height = 1;
-            }
-            var isRunning = simIsRunning();
-            if (isRunning) {
-                setSimRunning(false);
-            }
-
-            picCir.Width = width;
-            picCir.Height = height;
-            if (backContext != null) {
-                backContext.Dispose();
-            }
-            backContext = CustomGraphics.FromImage(width, height);
-            setCircuitArea();
-            setSimRunning(isRunning);
-        }
-
-        void setCircuitArea() {
-            int height = picCir.Height;
-            int width = picCir.Width;
-            int h = (int)(height * scopeHeightFraction);
-            circuitArea = new Rectangle(0, 0, width, height - h);
-        }
-
-        void setOptionInStorage(string key, bool val) {
-            var stor = Storage.getLocalStorageIfSupported();
-            if (stor == null) {
-                return;
-            }
-            stor.setItem(key, val ? "true" : "false");
-        }
-
-        public void setiFrameHeight() {
+        #region Public method
+        public void SetiFrameHeight() {
             if (iFrame == null) {
                 return;
             }
@@ -554,51 +286,7 @@ namespace Circuit {
             verticalPanel.Height = iFrame.Bottom + 4;
         }
 
-        void centreCircuit() {
-            var bounds = getCircuitBounds();
-
-            double scale = 1;
-
-            if (0 < bounds.Width) {
-                /* add some space on edges because bounds calculation is not perfect */
-                scale = Math.Min(
-                    circuitArea.Width / (double)(bounds.Width + 140),
-                    circuitArea.Height / (double)(bounds.Height + 100));
-            }
-            scale = Math.Min(scale, 1.5); // Limit scale so we don't create enormous circuits in big windows
-
-            /* calculate transform so circuit fills most of screen */
-            transform[0] = transform[3] = (float)scale;
-            transform[1] = transform[2] = transform[4] = transform[5] = 0;
-            if (0 < bounds.Width) {
-                transform[4] = (float)((circuitArea.Width - bounds.Width * scale) / 2 - bounds.X * scale);
-                transform[5] = (float)((circuitArea.Height - bounds.Height * scale) / 2 - bounds.Y * scale);
-            }
-        }
-
-        /* get circuit bounds.  remember this doesn't use setBbox().  That is calculated when we draw */
-        /* the circuit, but this needs to be ready before we first draw it, so we use this crude method */
-        Rectangle getCircuitBounds() {
-            int i;
-            int minx = 1000, maxx = 0, miny = 1000, maxy = 0;
-            for (i = 0; i != elmList.Count; i++) {
-                var ce = getElm(i);
-                /* centered text causes problems when trying to center the circuit, */
-                /* so we special-case it here */
-                if (!ce.IsCenteredText) {
-                    minx = Math.Min(ce.X1, Math.Min(ce.X2, minx));
-                    maxx = Math.Max(ce.X1, Math.Max(ce.X2, maxx));
-                }
-                miny = Math.Min(ce.Y1, Math.Min(ce.Y2, miny));
-                maxy = Math.Max(ce.Y1, Math.Max(ce.Y2, maxy));
-            }
-            if (minx > maxx) {
-                return new Rectangle();
-            }
-            return new Rectangle(minx, miny, maxx - minx, maxy - miny);
-        }
-
-        public void setSimRunning(bool s) {
+        public void SetSimRunning(bool s) {
             if (s) {
                 if (mCir.StopMessage != null) {
                     return;
@@ -608,15 +296,15 @@ namespace Circuit {
             } else {
                 simRunning = false;
                 runStopButton.Text = "STOP";
-                repaint();
+                Repaint();
             }
         }
 
-        public bool simIsRunning() {
+        public bool SimIsRunning() {
             return simRunning;
         }
 
-        public void repaint() {
+        public void Repaint() {
             if (!needsRepaint) {
                 needsRepaint = true;
                 updateCircuit();
@@ -631,12 +319,12 @@ namespace Circuit {
             return Color.Black;
         }
 
-        public void needAnalyze() {
+        public void NeedAnalyze() {
             analyzeFlag = true;
-            repaint();
+            Repaint();
         }
 
-        public Adjustable findAdjustable(CircuitElm elm, int item) {
+        public Adjustable FindAdjustable(CircuitElm elm, int item) {
             for (int i = 0; i != adjustables.Count; i++) {
                 var a = adjustables[i];
                 if (a.elm == elm && a.editItem == item) {
@@ -646,22 +334,7 @@ namespace Circuit {
             return null;
         }
 
-        void resetAction() {
-            for (int i = 0; i != elmList.Count; i++) {
-                getElm(i).Reset();
-            }
-            for (int i = 0; i != scopeCount; i++) {
-                scopes[i].resetGraph(true);
-            }
-            analyzeFlag = true;
-            if (t == 0) {
-                setSimRunning(true);
-            } else {
-                t = 0;
-            }
-        }
-
-        public void menuPerformed(MENU_CATEGORY cat, MENU_ITEM item, string option = "") {
+        public void MenuPerformed(MENU_CATEGORY cat, MENU_ITEM item, string option = "") {
             if (item == MENU_ITEM.OPEN_FILE) {
                 doOpenFile();
             }
@@ -894,7 +567,437 @@ namespace Circuit {
                 }
                 tempMouseMode = mouseMode;
             }
-            repaint();
+            Repaint();
+        }
+
+        /* delete sliders for an element */
+        public void DeleteSliders(CircuitElm elm) {
+            if (adjustables == null) {
+                return;
+            }
+            for (int i = adjustables.Count - 1; i >= 0; i--) {
+                var adj = adjustables[i];
+                if (adj.elm == elm) {
+                    adj.deleteSlider(this);
+                    adjustables.RemoveAt(i);
+                }
+            }
+        }
+
+        public int LocateElm(CircuitElm elm) {
+            for (int i = 0; i != elmList.Count; i++) {
+                if (elm == elmList[i]) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        public void AddWidgetToVerticalPanel(Control ctrl) {
+            if (iFrame == null) {
+                return;
+            }
+            var ofsY = 4;
+            for (int i = 0; i < iFrame.Controls.Count; i++) {
+                if (ofsY < iFrame.Controls[i].Bottom) {
+                    ofsY = iFrame.Controls[i].Bottom;
+                }
+            }
+            ctrl.Top = ofsY;
+            iFrame.Controls.Add(ctrl);
+            SetiFrameHeight();
+        }
+
+        public void RemoveWidgetFromVerticalPanel(Control ctrl) {
+            if (iFrame == null) {
+                return;
+            }
+            int ofsY = 4;
+            iFrame.SuspendLayout();
+            iFrame.Controls.Remove(ctrl);
+            for (int i = 0; i < iFrame.Controls.Count; i++) {
+                iFrame.Controls[i].Top = ofsY;
+                ofsY += iFrame.Controls[i].Height + 4;
+            }
+            iFrame.ResumeLayout(false);
+            SetiFrameHeight();
+        }
+
+        public bool DialogIsShowing() {
+            if (editDialog != null && editDialog.Visible) {
+                return true;
+            }
+            if (sliderDialog != null && sliderDialog.Visible) {
+                return true;
+            }
+            if (customLogicEditDialog != null && customLogicEditDialog.Visible) {
+                return true;
+            }
+            if (diodeModelEditDialog != null && diodeModelEditDialog.Visible) {
+                return true;
+            }
+            if (dialogShowing != null && dialogShowing.Visible) {
+                return true;
+            }
+            if (contextPanel != null && contextPanel.Visible) {
+                return true;
+            }
+            if (scrollValuePopup != null && scrollValuePopup.Visible) {
+                return true;
+            }
+            // TODO: dialogIsShowing
+            //if (aboutBox != null && aboutBox.isShowing())
+            //    return true;
+            return false;
+        }
+
+        public void UpdateModels() {
+            for (int i = 0; i != elmList.Count; i++) {
+                elmList[i].UpdateModels();
+            }
+        }
+
+        /* convert grid coordinates to screen coordinates */
+        public int TransformX(double x) {
+            return (int)((x * transform[0]) + transform[4]);
+        }
+        public int TransformY(double y) {
+            return (int)((y * transform[3]) + transform[5]);
+        }
+        #endregion
+
+        void onKeyDown(object sender, KeyEventArgs e) {
+            isPressShift = e.Shift;
+            isPressCtrl = e.Control;
+            isPressAlt = e.Alt;
+        }
+
+        void onKeyUp(object sender, KeyEventArgs e) {
+            isPressShift = false;
+            isPressCtrl = false;
+            isPressAlt = false;
+            setCursorStyle(Cursors.Arrow);
+            onPreviewNativeEvent(e);
+        }
+
+        void onClick(Control s, MouseEventArgs e) {
+            if (e.Button == MouseButtons.Middle) {
+                scrollValues(0);
+            }
+            if (e.Button == MouseButtons.Right) {
+                onContextMenu(s, e);
+            }
+        }
+
+        void onDoubleClick(EventArgs e) {
+            if (mouseElm != null && !(mouseElm is SwitchElm)) {
+                doEdit(mouseElm);
+            }
+        }
+
+        void onMouseDown(MouseEventArgs e) {
+            mCir.StopElm = null; /* if stopped, allow user to select other elements to fix circuit */
+            menuX = menuClientX = mouseCursorX = e.X;
+            menuY = menuClientY = mouseCursorY = e.Y;
+            mouseButton = e.Button;
+            mouseDownTime = DateTime.Now.ToFileTimeUtc();
+
+            /* maybe someone did copy in another window?  should really do this when */
+            /* window receives focus */
+            enablePaste();
+
+            if (mouseButton != MouseButtons.Left && mouseButton != MouseButtons.Middle) {
+                return;
+            }
+
+            // set mouseElm in case we are on mobile
+            mouseSelect();
+
+            mouseDragging = true;
+            didSwitch = false;
+
+            if (mouseWasOverSplitter) {
+                tempMouseMode = MOUSE_MODE.DRAG_SPLITTER;
+                return;
+            }
+            if (mouseButton == MouseButtons.Left) {
+                /* left mouse */
+                tempMouseMode = mouseMode;
+                if (isPressCtrl && isPressShift) {
+                    tempMouseMode = MOUSE_MODE.DRAG_COLUMN;
+                    setCursorStyle(Cursors.SizeWE);
+                } else if (isPressCtrl && isPressAlt) {
+                    tempMouseMode = MOUSE_MODE.DRAG_ROW;
+                    setCursorStyle(Cursors.SizeNS);
+                } else if (isPressCtrl) {
+                    tempMouseMode = MOUSE_MODE.SELECT;
+                    setCursorStyle(Cursors.Arrow);
+                } else if (isPressShift) {
+                    tempMouseMode = MOUSE_MODE.DRAG_POST;
+                    setCursorStyle(Cursors.SizeAll);
+                } else if (isPressAlt) {
+                    tempMouseMode = MOUSE_MODE.DRAG_ALL;
+                    setCursorStyle(Cursors.NoMove2D);
+                }
+            } else {
+                tempMouseMode = MOUSE_MODE.DRAG_ALL;
+            }
+
+            if ((scopeSelected != -1 && scopes[scopeSelected].cursorInSettingsWheel()) ||
+                (scopeSelected == -1 && mouseElm != null && (mouseElm is ScopeElm) && ((ScopeElm)mouseElm).elmScope.cursorInSettingsWheel())) {
+                Console.WriteLine("Doing something");
+                Scope s;
+                if (scopeSelected != -1) {
+                    s = scopes[scopeSelected];
+                } else {
+                    s = ((ScopeElm)mouseElm).elmScope;
+                }
+                s.properties(
+                    mParent.Location.X + mouseCursorX,
+                    mParent.Location.Y + mouseCursorY
+                );
+                clearSelection();
+                mouseDragging = false;
+                return;
+            }
+
+            int gx = inverseTransformX(e.X);
+            int gy = inverseTransformY(e.Y);
+            if (doSwitch(gx, gy)) {
+                /* do this BEFORE we change the mouse mode to MODE_DRAG_POST!  Or else logic inputs */
+                /* will add dots to the whole circuit when we click on them! */
+                didSwitch = true;
+                return;
+            }
+
+            /* IES - Grab resize handles in select mode if they are far enough apart and you are on top of them */
+            if (tempMouseMode == MOUSE_MODE.SELECT && mouseElm != null
+                && mouseElm.GetHandleGrabbedClose(gx, gy, POSTGRABSQ, MINPOSTGRABSIZE) >= 0
+                && !anySelectedButMouse()) {
+                tempMouseMode = MOUSE_MODE.DRAG_POST;
+            }
+
+            if (tempMouseMode != MOUSE_MODE.SELECT && tempMouseMode != MOUSE_MODE.DRAG_SELECTED) {
+                clearSelection();
+            }
+
+            pushUndo();
+            initDragGridX = gx;
+            initDragGridY = gy;
+            dragging = true;
+            if (tempMouseMode != MOUSE_MODE.ADD_ELM) {
+                return;
+            }
+            /* */
+            int x0 = snapGrid(gx);
+            int y0 = snapGrid(gy);
+            if (!circuitArea.Contains(mouseCursorX, mouseCursorY)) {
+                return;
+            }
+
+            dragElm = MenuItems.constructElement(mouseModeStr, x0, y0);
+        }
+
+        void onMouseUp(MouseEventArgs e) {
+            mouseDragging = false;
+            mouseButton = MouseButtons.None;
+
+            /* click to clear selection */
+            if (tempMouseMode == MOUSE_MODE.SELECT && selectedArea.Width == 0) {
+                clearSelection();
+            }
+
+            /* cmd-click = split wire */
+            if (tempMouseMode == MOUSE_MODE.DRAG_POST && draggingPost == -1) {
+                doSplit(mouseElm);
+            }
+
+            tempMouseMode = mouseMode;
+            selectedArea = new Rectangle();
+            dragging = false;
+            bool circuitChanged = false;
+            if (heldSwitchElm != null) {
+                heldSwitchElm.mouseUp();
+                heldSwitchElm = null;
+                circuitChanged = true;
+            }
+            if (dragElm != null) {
+                /* if the element is zero size then don't create it */
+                /* IES - and disable any previous selection */
+                if (dragElm.IsCreationFailed) {
+                    dragElm.Delete();
+                    if (mouseMode == MOUSE_MODE.SELECT || mouseMode == MOUSE_MODE.DRAG_SELECTED) {
+                        clearSelection();
+                    }
+                } else {
+                    elmList.Add(dragElm);
+                    dragElm.DraggingDone();
+                    circuitChanged = true;
+                    writeRecoveryToStorage();
+                    unsavedChanges = true;
+                }
+                dragElm = null;
+            }
+            if (circuitChanged) {
+                NeedAnalyze();
+            }
+            if (dragElm != null) {
+                dragElm.Delete();
+            }
+            dragElm = null;
+            Repaint();
+        }
+
+        void onMouseWheel(Control sender, MouseEventArgs e) {
+            /* once we start zooming, don't allow other uses of mouse wheel for a while */
+            /* so we don't accidentally edit a resistor value while zooming */
+            bool zoomOnly = DateTime.Now.ToFileTimeUtc() < zoomTime + 1000;
+
+            if (!zoomOnly) {
+                scrollValues(e.Delta);
+            }
+            // TODO: onMouseWheel
+            //if ((mouseElm is MouseWheelHandler) && !zoomOnly) {
+            //    ((MouseWheelHandler)mouseElm).onMouseWheel(e);
+            //}
+            if (scopeSelected != -1) {
+                scopes[scopeSelected].onMouseWheel(e);
+            } else if (!DialogIsShowing()) {
+                zoomCircuit(-e.Delta);
+                zoomTime = DateTime.Now.ToFileTimeUtc();
+            }
+            Repaint();
+        }
+
+        void onMouseMove(MouseEventArgs e) {
+            mouseCursorX = e.X;
+            mouseCursorY = e.Y;
+            if (33 < (DateTime.Now - mLastMouseMove).Milliseconds) {
+                mLastMouseMove = DateTime.Now;
+            } else {
+                return;
+            }
+            if (mouseDragging) {
+                mouseDragged();
+                return;
+            }
+            mouseSelect();
+        }
+
+        void onMouseLeave() {
+            mouseCursorX = -1;
+            mouseCursorY = -1;
+        }
+
+        void resetButton_onClick() {
+            for (int i = 0; i != elmList.Count; i++) {
+                getElm(i).Reset();
+            }
+            for (int i = 0; i != scopeCount; i++) {
+                scopes[i].resetGraph(true);
+            }
+            analyzeFlag = true;
+            if (t == 0) {
+                SetSimRunning(true);
+            } else {
+                t = 0;
+            }
+        }
+
+        void setTimer() {
+            timer = new Timer();
+            timer.Tick += new EventHandler((s, e) => {
+                if (simRunning) {
+                    updateCircuit();
+                    needsRepaint = false;
+                }
+            });
+            timer.Interval = 1;
+            timer.Enabled = true;
+            timer.Start();
+        }
+
+        void setCanvasSize() {
+            int width = layoutPanel.Panel1.Width;
+            int height = layoutPanel.Panel1.Height - menuBar.Height;
+            if (width < 1) {
+                width = 1;
+            }
+            if (height < 1) {
+                height = 1;
+            }
+            var isRunning = SimIsRunning();
+            if (isRunning) {
+                SetSimRunning(false);
+            }
+
+            picCir.Width = width;
+            picCir.Height = height;
+            if (backContext != null) {
+                backContext.Dispose();
+            }
+            backContext = CustomGraphics.FromImage(width, height);
+            setCircuitArea();
+            SetSimRunning(isRunning);
+        }
+
+        void setCircuitArea() {
+            int height = picCir.Height;
+            int width = picCir.Width;
+            int h = (int)(height * scopeHeightFraction);
+            circuitArea = new Rectangle(0, 0, width, height - h);
+        }
+
+        void setOptionInStorage(string key, bool val) {
+            var stor = Storage.getLocalStorageIfSupported();
+            if (stor == null) {
+                return;
+            }
+            stor.setItem(key, val ? "true" : "false");
+        }
+
+        void centreCircuit() {
+            var bounds = getCircuitBounds();
+
+            double scale = 1;
+
+            if (0 < bounds.Width) {
+                /* add some space on edges because bounds calculation is not perfect */
+                scale = Math.Min(
+                    circuitArea.Width / (double)(bounds.Width + 140),
+                    circuitArea.Height / (double)(bounds.Height + 100));
+            }
+            scale = Math.Min(scale, 1.5); // Limit scale so we don't create enormous circuits in big windows
+
+            /* calculate transform so circuit fills most of screen */
+            transform[0] = transform[3] = (float)scale;
+            transform[1] = transform[2] = transform[4] = transform[5] = 0;
+            if (0 < bounds.Width) {
+                transform[4] = (float)((circuitArea.Width - bounds.Width * scale) / 2 - bounds.X * scale);
+                transform[5] = (float)((circuitArea.Height - bounds.Height * scale) / 2 - bounds.Y * scale);
+            }
+        }
+
+        /* get circuit bounds.  remember this doesn't use setBbox().  That is calculated when we draw */
+        /* the circuit, but this needs to be ready before we first draw it, so we use this crude method */
+        Rectangle getCircuitBounds() {
+            int i;
+            int minx = 1000, maxx = 0, miny = 1000, maxy = 0;
+            for (i = 0; i != elmList.Count; i++) {
+                var ce = getElm(i);
+                /* centered text causes problems when trying to center the circuit, */
+                /* so we special-case it here */
+                if (!ce.IsCenteredText) {
+                    minx = Math.Min(ce.X1, Math.Min(ce.X2, minx));
+                    maxx = Math.Max(ce.X1, Math.Max(ce.X2, maxx));
+                }
+                miny = Math.Min(ce.Y1, Math.Min(ce.Y2, miny));
+                maxy = Math.Max(ce.Y1, Math.Max(ce.Y2, maxy));
+            }
+            if (minx > maxx) {
+                return new Rectangle();
+            }
+            return new Rectangle(minx, miny, maxx - minx, maxy - miny);
         }
 
         void stackScope(int s) {
@@ -1147,7 +1250,7 @@ namespace Circuit {
                             Text = title
                         };
                         item.Click += new EventHandler((sender, e) => {
-                            menuPerformed(MENU_CATEGORY.CIRCUITS, MENU_ITEM.SETUP, file + " " + title);
+                            MenuPerformed(MENU_CATEGORY.CIRCUITS, MENU_ITEM.SETUP, file + " " + title);
                         });
                         ((ToolStripMenuItem)currentMenuBar).DropDownItems.Add(item);
                         if (file == startCircuit && startLabel == null) {
@@ -1307,29 +1410,15 @@ namespace Circuit {
                     adjustables[i].createSlider(this);
                 }
             }
-            needAnalyze();
+            NeedAnalyze();
             if ((flags & RC_NO_CENTER) == 0) {
                 centreCircuit();
             }
             if ((flags & RC_SUBCIRCUITS) != 0) {
-                updateModels();
+                UpdateModels();
             }
             // TODO: readCircuit
             //AudioInputElm.clearCache();  /* to save memory */
-        }
-
-        /* delete sliders for an element */
-        public void deleteSliders(CircuitElm elm) {
-            if (adjustables == null) {
-                return;
-            }
-            for (int i = adjustables.Count - 1; i >= 0; i--) {
-                var adj = adjustables[i];
-                if (adj.elm == elm) {
-                    adj.deleteSlider(this);
-                    adjustables.RemoveAt(i);
-                }
-            }
         }
 
         void readHint(StringTokenizer st) {
@@ -1370,17 +1459,8 @@ namespace Circuit {
             if (se.momentary) {
                 heldSwitchElm = se;
             }
-            needAnalyze();
+            NeedAnalyze();
             return true;
-        }
-
-        public int locateElm(CircuitElm elm) {
-            for (int i = 0; i != elmList.Count; i++) {
-                if (elm == elmList[i]) {
-                    return i;
-                }
-            }
-            return -1;
         }
 
         void mouseDragged() {
@@ -1453,7 +1533,7 @@ namespace Circuit {
             if (changed) {
                 writeRecoveryToStorage();
             }
-            repaint();
+            Repaint();
         }
 
         void dragSplitter(int x, int y) {
@@ -1469,7 +1549,7 @@ namespace Circuit {
                 scopeHeightFraction = 0.9;
             }
             setCircuitArea();
-            repaint();
+            Repaint();
         }
 
         void dragAll(int x, int y) {
@@ -1566,7 +1646,7 @@ namespace Circuit {
                         ce.Move(dx, dy);
                     }
                 }
-                needAnalyze();
+                NeedAnalyze();
             }
             /* don't leave mouseElm selected if we selected it above */
             if (me) {
@@ -1589,12 +1669,12 @@ namespace Circuit {
                 return;
             }
             mouseElm.MovePoint(draggingPost, dx, dy);
-            needAnalyze();
+            NeedAnalyze();
         }
 
         void doFlip() {
             menuElm.FlipPosts();
-            needAnalyze();
+            NeedAnalyze();
         }
 
         void doSplit(CircuitElm ce) {
@@ -1616,7 +1696,7 @@ namespace Circuit {
             newWire.Drag(ce.X2, ce.Y2);
             ce.Drag(x, y);
             elmList.Add(newWire);
-            needAnalyze();
+            NeedAnalyze();
         }
 
         void selectArea(int x, int y) {
@@ -1652,7 +1732,7 @@ namespace Circuit {
                     ce.Delete();
                 }
             }
-            needAnalyze();
+            NeedAnalyze();
         }
 
         bool mouseIsOverSplitter(int x, int y) {
@@ -1677,14 +1757,6 @@ namespace Circuit {
         }
         int inverseTransformY(double y) {
             return (int)((y - transform[5]) / transform[3]);
-        }
-
-        /* convert grid coordinates to screen coordinates */
-        public int transformX(double x) {
-            return (int)((x * transform[0]) + transform[4]);
-        }
-        public int transformY(double y) {
-            return (int)((y * transform[3]) + transform[5]);
         }
 
         /* need to break this out into a separate routine to handle selection, */
@@ -1764,7 +1836,7 @@ namespace Circuit {
                     }
                 }
             }
-            repaint();
+            Repaint();
             setMouseElm(newMouseElm);
         }
 
@@ -1880,7 +1952,7 @@ namespace Circuit {
         }
 
         void scrollValues(int deltay) {
-            if (mouseElm != null && !dialogIsShowing() && scopeSelected == -1) {
+            if (mouseElm != null && !DialogIsShowing() && scopeSelected == -1) {
                 if ((mouseElm is ResistorElm) || (mouseElm is CapacitorElm) || (mouseElm is InductorElm)) {
                     scrollValuePopup = new ScrollValuePopup(deltay, mouseElm, this);
                     scrollValuePopup.Show(
@@ -2050,7 +2122,7 @@ namespace Circuit {
             }
             if (hasDeleted) {
                 deleteUnusedScopeElms();
-                needAnalyze();
+                NeedAnalyze();
                 writeRecoveryToStorage();
             }
         }
@@ -2185,7 +2257,7 @@ namespace Circuit {
                     ce.Move(dx, dy);
                 }
             }
-            needAnalyze();
+            NeedAnalyze();
             writeRecoveryToStorage();
         }
 
@@ -2212,31 +2284,10 @@ namespace Circuit {
             return false;
         }
 
-        public bool dialogIsShowing() {
-            if (editDialog != null && editDialog.Visible)
-                return true;
-            if (sliderDialog != null && sliderDialog.Visible)
-                return true;
-            if (customLogicEditDialog != null && customLogicEditDialog.Visible)
-                return true;
-            if (diodeModelEditDialog != null && diodeModelEditDialog.Visible)
-                return true;
-            if (dialogShowing != null && dialogShowing.Visible)
-                return true;
-            if (contextPanel != null && contextPanel.Visible)
-                return true;
-            if (scrollValuePopup != null && scrollValuePopup.Visible)
-                return true;
-            // TODO: dialogIsShowing
-            //if (aboutBox != null && aboutBox.isShowing())
-            //    return true;
-            return false;
-        }
-
-        public void onPreviewNativeEvent(KeyEventArgs e) {
+        void onPreviewNativeEvent(KeyEventArgs e) {
             var code = e.KeyCode;
 
-            if (dialogIsShowing()) {
+            if (DialogIsShowing()) {
                 if (scrollValuePopup != null && scrollValuePopup.Visible) {
                     if (code == Keys.Escape || code == Keys.Space) {
                         scrollValuePopup.close(false);
@@ -2290,42 +2341,6 @@ namespace Circuit {
             }
         }
 
-        public void addWidgetToVerticalPanel(Control ctrl) {
-            if (iFrame == null) {
-                return;
-            }
-            var ofsY = 4;
-            for(int i=0; i< iFrame.Controls.Count; i++) {
-                if (ofsY < iFrame.Controls[i].Bottom) {
-                    ofsY = iFrame.Controls[i].Bottom;
-                }
-            }
-            ctrl.Top = ofsY;
-            iFrame.Controls.Add(ctrl);
-            setiFrameHeight();
-        }
-
-        public void removeWidgetFromVerticalPanel(Control ctrl) {
-            if (iFrame == null) {
-                return;
-            }
-            int ofsY = 4;
-            iFrame.SuspendLayout();
-            iFrame.Controls.Remove(ctrl);
-            for (int i = 0; i < iFrame.Controls.Count; i++) {
-                iFrame.Controls[i].Top = ofsY;
-                ofsY += iFrame.Controls[i].Height + 4;
-            }
-            iFrame.ResumeLayout(false);
-            setiFrameHeight();
-        }
-
-        public void updateModels() {
-            for (int i = 0; i != elmList.Count; i++) {
-                elmList[i].UpdateModels();
-            }
-        }
-
         /* For debugging */
         void dumpNodelist() {
             CircuitElm e;
@@ -2358,7 +2373,7 @@ namespace Circuit {
 
         void doDCAnalysis() {
             dcAnalysisFlag = true;
-            resetAction();
+            resetButton_onClick();
         }
 
         bool isSelection() {

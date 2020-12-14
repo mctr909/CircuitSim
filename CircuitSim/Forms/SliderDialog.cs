@@ -120,7 +120,7 @@ namespace Circuit {
         }
 
         Adjustable findAdjustable(int item) {
-            return sim.findAdjustable(elm, item);
+            return sim.FindAdjustable(elm, item);
         }
 
         void apply() {

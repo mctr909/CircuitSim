@@ -41,10 +41,10 @@ namespace Circuit.Elements {
         }
 
         public void setScopeRect() {
-            int i1 = Sim.transformX(Math.Min(X1, X2));
-            int i2 = Sim.transformX(Math.Max(X1, X2));
-            int j1 = Sim.transformY(Math.Min(Y1, Y2));
-            int j2 = Sim.transformY(Math.Max(Y1, Y2));
+            int i1 = Sim.TransformX(Math.Min(X1, X2));
+            int i2 = Sim.TransformX(Math.Max(X1, X2));
+            int j1 = Sim.TransformY(Math.Min(Y1, Y2));
+            int j2 = Sim.TransformY(Math.Max(Y1, Y2));
             var r = new Rectangle(i1, j1, i2 - i1, j2 - j1);
             if (!r.Equals(elmScope.BoundingBox)) {
                 elmScope.setRect(r);

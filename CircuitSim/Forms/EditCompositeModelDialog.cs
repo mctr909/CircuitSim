@@ -183,8 +183,8 @@ namespace Circuit {
                         }
                         model.setName(CustomCompositeElm.lastModelName = name);
                     }
-                    CirSim.theSim.updateModels();
-                    CirSim.theSim.needAnalyze(); /* will get singular matrix if we don't do this */
+                    CirSim.theSim.UpdateModels();
+                    CirSim.theSim.NeedAnalyze(); /* will get singular matrix if we don't do this */
                     closeDialog();
                 });
                 hp2.Controls.Add(okButton);
