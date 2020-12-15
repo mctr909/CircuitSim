@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -185,7 +186,6 @@ namespace Circuit.Elements {
         }
 
         void play() {
-            int i;
             int ct = dataPtr;
             int _base = 0;
             if (dataFull) {
@@ -200,7 +200,7 @@ namespace Circuit.Elements {
             /* rescale data to maximize */
             double max = -1e8;
             double min = 1e8;
-            for (i = 0; i != ct; i++) {
+            for (int i = 0; i != ct; i++) {
                 if (data[i] > max) max = data[i];
                 if (data[i] < min) min = data[i];
             }
@@ -213,14 +213,101 @@ namespace Circuit.Elements {
             int fadeOut = ct - fadeLen;
 
             double fadeMult = mult / fadeLen;
-            for (i = 0; i != ct; i++) {
+            var samples = new short[ct];
+            for (int i = 0; i != ct; i++) {
                 double fade = (i < fadeLen) ? i * fadeMult : (i > fadeOut) ? (ct - i) * fadeMult : mult;
-                int s = (int)((data[(i + _base) % dataCount] + adj) * fade);
-                // TODO:
-                //arr.push(s);
+                samples[i] = (short)((data[(i + _base) % dataCount] + adj) * fade);
             }
-            // TODO:
-            //playJS(arr, samplingRate);
+
+            var wav = new Wav(samplingRate);
+            wav.setBuffer(samples);
+            var srclist = new List<short>();
+            while (!wav.eof()) {
+                srclist.AddRange(wav.getBuffer(1000));
+            }
+        }
+
+        class Wav {
+            int _sampleRate;
+            short _channels;
+            short[] _buffer;
+            int _bufferNeedle = 0;
+            int[] _internalBuffer;
+            bool _hasOutputHeader;
+            bool _eof = true;
+
+            public Wav(int sampleRate = 44100, short channels = 1) {
+                _sampleRate = sampleRate;
+                _channels = channels;
+            }
+
+            public void setBuffer(short[] buffer) {
+                _buffer = getWavInt16Array(buffer);
+                _bufferNeedle = 0;
+                _internalBuffer = null;
+                _hasOutputHeader = false;
+                _eof = false;
+            }
+
+            public short[] getBuffer(int len) {
+                short[] rt;
+                if (_bufferNeedle + len >= _buffer.Length) {
+                    rt = new short[_buffer.Length - _bufferNeedle];
+                    _eof = true;
+                } else {
+                    rt = new short[len];
+                }
+                for (var i = 0; i < rt.Length; i++) {
+                    rt[i] = _buffer[i + _bufferNeedle];
+                }
+                _bufferNeedle += rt.Length;
+                return rt;
+            }
+
+            public bool eof() {
+                return _eof;
+            }
+
+            short[] getWavInt16Array(short[] buffer) {
+                var intBuffer = new short[buffer.Length + 23];
+
+                intBuffer[0] = 0x4952; // "RI"
+                intBuffer[1] = 0x4646; // "FF"
+
+                intBuffer[2] = (short)((2 * buffer.Length + 15) & 0x0000ffff); // RIFF size
+                intBuffer[3] = (short)(((2 * buffer.Length + 15) & 0xffff0000) >> 16); // RIFF size
+
+                intBuffer[4] = 0x4157; // "WA"
+                intBuffer[5] = 0x4556; // "VE"
+
+                intBuffer[6] = 0x6d66; // "fm"
+                intBuffer[7] = 0x2074; // "t "
+
+                intBuffer[8] = 0x0012; // fmt chunksize: 18
+                intBuffer[9] = 0x0000; //
+
+                intBuffer[10] = 0x0001; // format tag : 1
+                intBuffer[11] = _channels; // channels: 2
+
+                intBuffer[12] = (short)(_sampleRate & 0x0000ffff); // sample per sec
+                intBuffer[13] = (short)((_sampleRate & 0xffff0000) >> 16); // sample per sec
+
+                intBuffer[14] = (short)((2 * _channels * _sampleRate) & 0x0000ffff); // byte per sec
+                intBuffer[15] = (short)(((2 * _channels * _sampleRate) & 0xffff0000) >> 16); // byte per sec
+
+                intBuffer[16] = 0x0004; // block align
+                intBuffer[17] = 0x0010; // bit per sample
+                intBuffer[18] = 0x0000; // cb size
+                intBuffer[19] = 0x6164; // "da"
+                intBuffer[20] = 0x6174; // "ta"
+                intBuffer[21] = (short)((2 * buffer.Length) & 0x0000ffff); // data size[byte]
+                intBuffer[22] = (short)(((2 * buffer.Length) & 0xffff0000) >> 16); // data size[byte]
+
+                for (int i = 0; i < buffer.Length; i++) {
+                    intBuffer[i + 23] = buffer[i];
+                }
+                return intBuffer;
+            }
         }
 
         public override EditInfo GetEditInfo(int n) {
