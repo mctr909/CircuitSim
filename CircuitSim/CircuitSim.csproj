@@ -60,6 +60,7 @@
     <Compile Include="ExpansionElements\InvertingSchmittElm.cs" />
     <Compile Include="ExpansionElements\OpAmpElm.cs" />
     <Compile Include="Elements\SweepElm.cs" />
+    <Compile Include="ExpansionElements\PolarCapacitorElm.cs" />
     <Compile Include="ExpansionElements\TransformerElm.cs" />
     <Compile Include="ExpansionElements\ACRailElm.cs" />
     <Compile Include="ExpansionElements\ACVoltageElm.cs" />

@@ -312,7 +312,7 @@ namespace Circuit {
             if (val == 0) {
                 mPlots.Add(new ScopePlot(ce, UNITS_V, 0));
                 /* create plot for current if applicable */
-                if (ce != null && !((ce is OutputElm) || (ce is LogicOutputElm) || (ce is _AudioOutputElm) || (ce is ProbeElm))) {
+                if (ce != null && !((ce is OutputElm) || (ce is LogicOutputElm) || (ce is AudioOutputElm) || (ce is ProbeElm))) {
                     mPlots.Add(new ScopePlot(ce, UNITS_A, VAL_CURRENT));
                 }
             } else {

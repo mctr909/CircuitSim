@@ -349,6 +349,8 @@ namespace Circuit {
         INVERT_SCHMITT = 183,
         AM = 200,
         FM = 201,
+        CAPACITOR_POLAR = 209,
+        WAVE_OUT = 211,
         VCCS = 213,
         CCCS = 215,
         AMMETER = 370,
@@ -545,12 +547,12 @@ namespace Circuit {
             var passMenuBar = new ToolStripMenuItem();
             passMenuBar.Text = "受動素子(P)";
             passMenuBar.Font = menuFont;
-            //addMenuItem(passMenuBar, "Add Capacitor (polarized)", ITEM.PolarCapacitorElm);
             addElementItem(passMenuBar, "スイッチ", MENU_ITEM.SwitchElm);
             addElementItem(passMenuBar, "プッシュスイッチ", MENU_ITEM.PushSwitchElm);
             addElementItem(passMenuBar, "切り替えスイッチ", MENU_ITEM.Switch2Elm);
             passMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(passMenuBar, "可変抵抗", MENU_ITEM.PotElm);
+            addElementItem(passMenuBar, "コンデンサ(有極性)", MENU_ITEM.PolarCapacitorElm);
             addElementItem(passMenuBar, "トランス", MENU_ITEM.TransformerElm);
             //addMenuItem(passMenuBar, "Add Tapped Transformer", ITEM.TappedTransformerElm);
             //addMenuItem(passMenuBar, "Add Transmission Line", ITEM.TransLineElm);
@@ -624,10 +626,10 @@ namespace Circuit {
             outputMenuBar.Font = menuFont;
             addElementItem(outputMenuBar, "電圧計", MENU_ITEM.ProbeElm);
             addElementItem(outputMenuBar, "電流計", MENU_ITEM.AmmeterElm);
+            addElementItem(outputMenuBar, "音声ファイル出力", MENU_ITEM.AudioOutputElm);
             //addElementItem(outputMenuBar, "Add Ohmmeter", MENU_ITEM.OhmMeterElm);
             //outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             //addElementItem(outputMenuBar, "Add Analog Output", MENU_ITEM.OutputElm);
-            //addElementItem(outputMenuBar, "Add Audio Output", MENU_ITEM.AudioOutputElm);
             //addElementItem(outputMenuBar, "Add Data Export", MENU_ITEM.DataRecorderElm);
             //outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             //addElementItem(outputMenuBar, "Add Lamp", MENU_ITEM.LampElm);
@@ -733,8 +735,6 @@ namespace Circuit {
             #endregion
 
             #region Passive Components
-            case MENU_ITEM.PolarCapacitorElm:
-                return null; //(CircuitElm)new PolarCapacitorElm(x1, y1);
             case MENU_ITEM.SwitchElm:
                 return new SwitchElm(x1, y1);
             case MENU_ITEM.PushSwitchElm:
@@ -743,6 +743,8 @@ namespace Circuit {
                 return new Switch2Elm(x1, y1);
             case MENU_ITEM.PotElm:
                 return new PotElm(x1, y1);
+            case MENU_ITEM.PolarCapacitorElm:
+                return new PolarCapacitorElm(x1, y1);
             case MENU_ITEM.TransformerElm:
                 return new TransformerElm(x1, y1);
             case MENU_ITEM.TappedTransformerElm:
@@ -854,7 +856,7 @@ namespace Circuit {
             case MENU_ITEM.DataRecorderElm:
                 return null; //(CircuitElm)new DataRecorderElm(x1, y1);
             case MENU_ITEM.AudioOutputElm:
-                return null; //(CircuitElm)new AudioOutputElm(x1, y1);
+                return new AudioOutputElm(x1, y1);
             case MENU_ITEM.LEDArrayElm:
                 return null; //(CircuitElm)new LEDArrayElm(x1, y1);
             case MENU_ITEM.StopTriggerElm:
@@ -1061,9 +1063,9 @@ namespace Circuit {
             //case 203: return new DiacElm(x1, y1, x2, y2, f, st);
             //case 206: return new TriacElm(x1, y1, x2, y2, f, st);
             //case 208: return new CustomLogicElm(x1, y1, x2, y2, f, st);
-            //case 209: return new PolarCapacitorElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.CAPACITOR_POLAR: return new PolarCapacitorElm(x1, y1, x2, y2, f, st);
             //case 210: return new DataRecorderElm(x1, y1, x2, y2, f, st);
-            //case 211: return new AudioOutputElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.WAVE_OUT: return new AudioOutputElm(x1, y1, x2, y2, f, st);
             //case 212: return new VCVSElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.VCCS: return new VCCSElm(x1, y1, x2, y2, f, st);
             //case 214: return new CCVSElm(x1, y1, x2, y2, f, st);

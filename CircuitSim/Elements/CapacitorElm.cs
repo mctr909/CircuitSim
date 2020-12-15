@@ -13,9 +13,6 @@ namespace Circuit.Elements {
         Point[] plate2;
         Point textPos;
 
-        /* used for PolarCapacitorElm */
-        Point[] platePoints;
-
         public double Capacitance { get; set; }
 
         public bool IsTrapezoidal { get { return (mFlags & FLAG_BACK_EULER) == 0; } }
@@ -88,14 +85,6 @@ namespace Circuit.Elements {
             g.ThickLineColor = getVoltageColor(Volts[1]);
             g.DrawThickLine(mPoint2, mLead2);
             g.DrawThickLine(plate2[0], plate2[1]);
-
-            if (platePoints == null) {
-                g.DrawThickLine(plate2[0], plate2[1]);
-            } else {
-                for (int i = 0; i != 7; i++) {
-                    g.DrawThickLine(platePoints[i], platePoints[i + 1]);
-                }
-            }
 
             updateDotCount();
             if (Sim.dragElm != this) {

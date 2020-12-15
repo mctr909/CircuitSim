@@ -4,7 +4,7 @@ using System.Drawing.Printing;
 
 namespace Circuit {
     class CustomGraphics {
-        public static readonly Font FontText = new Font("Segoe UI", 8.5f);
+        public static readonly Font FontText = new Font("Segoe UI", 9.0f);
 
         public Color TextColor {
             set {
