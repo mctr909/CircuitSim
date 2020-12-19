@@ -8,7 +8,7 @@
 
         public override int PostCount { get { return null == pins ? 1 : pins.Length; } }
 
-        bool needsBits() { return false; }
+        protected override bool needsBits() { return false; }
 
         public override void setupPins() { }
 

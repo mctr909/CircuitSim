@@ -349,6 +349,7 @@ namespace Circuit {
         INVERT_SCHMITT = 183,
         AM = 200,
         FM = 201,
+        CUSTOM_LOGIC = 208,
         CAPACITOR_POLAR = 209,
         WAVE_OUT = 211,
         VCCS = 213,
@@ -668,6 +669,7 @@ namespace Circuit {
             addElementItem(gateMenuBar, "NOT", MENU_ITEM.InverterElm);
             addElementItem(gateMenuBar, "NAND", MENU_ITEM.NandGateElm);
             addElementItem(gateMenuBar, "NOR", MENU_ITEM.NorGateElm);
+            addElementItem(gateMenuBar, "カスタムロジック", MENU_ITEM.CustomLogicElm);
             gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(gateMenuBar, "入力", MENU_ITEM.LogicInputElm);
             addElementItem(gateMenuBar, "出力", MENU_ITEM.LogicOutputElm);
@@ -679,9 +681,9 @@ namespace Circuit {
             #endregion
 
             #region Digital Chips
-            var chipMenuBar = new ToolStripMenuItem();
-            chipMenuBar.Text = "Digital Chips(D)";
-            chipMenuBar.Font = menuFont;
+            //var chipMenuBar = new ToolStripMenuItem();
+            //chipMenuBar.Text = "Digital Chips(D)";
+            //chipMenuBar.Font = menuFont;
             //addMenuItem(chipMenuBar, "Add D Flip-Flop", ITEM.DFlipFlopElm);
             //addMenuItem(chipMenuBar, "Add JK Flip-Flop", ITEM.JKFlipFlopElm);
             //addMenuItem(chipMenuBar, "Add T Flip-Flop", ITEM.TFlipFlopElm);
@@ -692,14 +694,13 @@ namespace Circuit {
             //addMenuItem(chipMenuBar, "Add SIPO shift register", ITEM.SipoShiftElm);
             //addMenuItem(chipMenuBar, "Add PISO shift register", ITEM.PisoShiftElm);
             //addMenuItem(chipMenuBar, "Add Counter", ITEM.CounterElm);
-            addElementItem(chipMenuBar, "Add Ring Counter", MENU_ITEM.DecadeElm);
+            //addElementItem(chipMenuBar, "Add Ring Counter", MENU_ITEM.DecadeElm);
             //addMenuItem(chipMenuBar, "Add Latch", ITEM.LatchElm);
             //addMenuItem(chipMenuBar, "Add Sequence generator", ITEM.SeqGenElm);
             //addMenuItem(chipMenuBar, "Add Full Adder", ITEM.FullAdderElm);
             //addMenuItem(chipMenuBar, "Add Half Adder", ITEM.HalfAdderElm);
-            //addMenuItem(chipMenuBar, "Add Custom Logic", ITEM.UserDefinedLogicElm); // don't change this, it will break people's saved shortcuts
             //addMenuItem(chipMenuBar, "Add Static RAM", ITEM.SRAMElm);
-            mainMenuBar.Items.Add(chipMenuBar);
+            //mainMenuBar.Items.Add(chipMenuBar);
             #endregion
 
             #region Analog and Hybrid Chips
@@ -960,7 +961,7 @@ namespace Circuit {
             /* if you take out UserDefinedLogicElm, it will break people's saved shortcuts */
             case MENU_ITEM.CustomLogicElm:
             case MENU_ITEM.UserDefinedLogicElm:
-                return null; //(CircuitElm)new CustomLogicElm(x1, y1);
+                return new CustomLogicElm(x1, y1);
             case MENU_ITEM.SRAMElm:
                 return null; //(CircuitElm)new SRAMElm(x1, y1);
             #endregion
@@ -1062,7 +1063,7 @@ namespace Circuit {
             case DUMP_ID.FM: return new FMElm(x1, y1, x2, y2, f, st);
             //case 203: return new DiacElm(x1, y1, x2, y2, f, st);
             //case 206: return new TriacElm(x1, y1, x2, y2, f, st);
-            //case 208: return new CustomLogicElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.CUSTOM_LOGIC: return new CustomLogicElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.CAPACITOR_POLAR: return new PolarCapacitorElm(x1, y1, x2, y2, f, st);
             //case 210: return new DataRecorderElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.WAVE_OUT: return new AudioOutputElm(x1, y1, x2, y2, f, st);

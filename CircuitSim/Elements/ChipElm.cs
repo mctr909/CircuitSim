@@ -184,13 +184,11 @@ namespace Circuit.Elements {
         }
 
         public void drawChip(CustomGraphics g) {
-            int i;
-            for (i = 0; i != PostCount; i++) {
+            for (int i = 0; i != PostCount; i++) {
                 var p = pins[i];
-                getVoltageColor(Volts[i]);
                 var a = p.post;
                 var b = p.stub;
-                g.DrawThickLine(a, b);
+                g.DrawThickLine(getVoltageColor(Volts[i]), a, b);
                 p.curcount = updateDotCount(p.current, p.curcount);
                 drawDots(g, b, a, p.curcount);
                 if (p.bubble) {

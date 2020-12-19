@@ -84,11 +84,13 @@ namespace Circuit {
         MenuItem pasteItem;
         #endregion
 
+        public Point DisplayLocation { get { return mParent.Location; } }
+
         #region static variable
         public static CirSim theSim = null;
 
         public static EditDialog editDialog;
-        static EditDialog customLogicEditDialog;
+        public static EditDialog customLogicEditDialog;
         public static EditDialog diodeModelEditDialog;
 
         static ScrollValuePopup scrollValuePopup;

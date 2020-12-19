@@ -9,13 +9,14 @@ namespace Circuit {
 
         int flags;
         string name;
-        string[] inputs;
-        string[] outputs;
-        string infoText;
+        public string[] inputs;
+        public string[] outputs;
+        public string infoText;
         string rules;
-        List<string> rulesLeft, rulesRight;
-        bool dumped;
-        bool triState;
+        public List<string> rulesLeft;
+        public List<string>  rulesRight;
+        public bool dumped;
+        public bool triState;
 
         CustomLogicModel() {
             inputs = listToArray("A,B");
@@ -35,30 +36,28 @@ namespace Circuit {
             rulesRight = copy.rulesRight;
         }
 
-        static CustomLogicModel getModelWithName(string name) {
+        public static CustomLogicModel getModelWithName(string name) {
             if (modelMap == null) {
                 modelMap = new Dictionary<string, CustomLogicModel>();
             }
-            CustomLogicModel lm = modelMap[name];
-            if (lm != null) {
-                return lm;
+            if (modelMap.ContainsKey(name)) {
+                return modelMap[name];
             }
-            lm = new CustomLogicModel();
+            var lm = new CustomLogicModel();
             lm.name = name;
             lm.infoText = (name == "default") ? "custom logic" : name;
             modelMap.Add(name, lm);
             return lm;
         }
 
-        static CustomLogicModel getModelWithNameOrCopy(string name, CustomLogicModel oldmodel) {
+        public static CustomLogicModel getModelWithNameOrCopy(string name, CustomLogicModel oldmodel) {
             if (modelMap == null) {
                 modelMap = new Dictionary<string, CustomLogicModel>();
             }
-            CustomLogicModel lm = modelMap[name];
-            if (lm != null) {
-                return lm;
+            if (modelMap.ContainsKey(name)) {
+                return modelMap[name];
             }
-            lm = new CustomLogicModel(oldmodel);
+            var lm = new CustomLogicModel(oldmodel);
             lm.name = name;
             lm.infoText = name;
             modelMap.Add(name, lm);
@@ -76,7 +75,7 @@ namespace Circuit {
 
         public static void undumpModel(StringTokenizer st) {
             string name = unescape(st.nextToken());
-            CustomLogicModel model = getModelWithName(name);
+            var model = getModelWithName(name);
             model.undump(st);
         }
 
@@ -129,6 +128,8 @@ namespace Circuit {
                 ei.TextArea = new TextBox();
                 ei.TextArea.Multiline = true;
                 ei.TextArea.Text = rules;
+                ei.TextArea.Height = 80;
+                ei.TextArea.Width = 120;
                 return ei;
             }
             /*
@@ -167,7 +168,7 @@ namespace Circuit {
         }
 
         void parseRules() {
-            var lines = rules.Split('\n');
+            var lines = rules.Replace("\r", "").Split('\n');
             int i;
             rulesLeft = new List<string>();
             rulesRight = new List<string>();
@@ -225,7 +226,7 @@ namespace Circuit {
             }
         }
 
-        string dump() {
+        public string dump() {
             dumped = true;
             if (rules.Length > 0 && !rules.EndsWith("\n")) {
                 rules += "\n";

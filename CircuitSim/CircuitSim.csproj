@@ -55,6 +55,7 @@
     <Compile Include="ExpansionElements\AMElm.cs" />
     <Compile Include="ExpansionElements\AnalogSwitchElm.cs" />
     <Compile Include="ExpansionElements\CCCSElm.cs" />
+    <Compile Include="ExpansionElements\CustomLogicElm.cs" />
     <Compile Include="ExpansionElements\GateElm.cs" />
     <Compile Include="ExpansionElements\FMElm.cs" />
     <Compile Include="ExpansionElements\InvertingSchmittElm.cs" />

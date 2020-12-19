@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -99,11 +100,35 @@ namespace Circuit {
                 }
                 var ei = einfos[i];
                 idx = vp.Controls.IndexOf(hp);
-                insertCtrl(vp, new Label() {
-                    Text = ei.Name,
-                    AutoSize = true,
-                    TextAlign = ContentAlignment.BottomLeft
-                }, idx);
+                if (0 <= ei.Name.IndexOf("<a")) {
+                    var name = ei.Name.Replace(" ", "");
+                    string title = "";
+                    var title0 = name.IndexOf(">") + ">".Length;
+                    if (0 <= title0) {
+                        var title1 = name.IndexOf("</a>", title0);
+                        title = name.Substring(title0, title1 - title0);
+                    }
+                    var label = new LinkLabel() {
+                        Text = title,
+                        AutoSize = true,
+                        TextAlign = ContentAlignment.BottomLeft
+                    };
+                    var href0 = name.IndexOf("href=\"") + "href=\"".Length;
+                    if (0 <= href0) {
+                        var href1 = name.IndexOf("\"", href0);
+                        var href = name.Substring(href0, href1 - href0);
+                        label.Click += new EventHandler((s, e) => {
+                            Process.Start(href);
+                        });
+                    }
+                    insertCtrl(vp, label, idx);
+                } else {
+                    insertCtrl(vp, new Label() {
+                        Text = ei.Name,
+                        AutoSize = true,
+                        TextAlign = ContentAlignment.BottomLeft
+                    }, idx);
+                }
                 idx = vp.Controls.IndexOf(hp);
                 if (ei.Choice != null) {
                     ei.Choice.AutoSize = true;
