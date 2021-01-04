@@ -151,23 +151,9 @@ namespace Circuit.Elements {
         }
 
         void setTimeStep() {
-            /*
-            // timestep must be smaller than 1/sampleRate
-            if (sim.timeStep > sampleStep)
-            sim.timeStep = sampleStep;
-            else {
-            // make sure sampleStep/timeStep is an integer.  otherwise we get distortion
-    //		int frac = (int)Math.round(sampleStep/sim.timeStep);
-    //		sim.timeStep = sampleStep / frac;
-
-            // actually, just make timestep = 1/sampleRate
-            sim.timeStep = sampleStep;
-            }
-            */
-            //	    int frac = (int)Math.round(Math.max(sampleStep*33000, 1));
             double target = sampleStep / 8;
             if (Sim.timeStep != target) {
-                if (okToChangeTimeStep || MessageBox.Show("Adjust timestep for best audio quality and performance?") == DialogResult.OK) {
+                if (okToChangeTimeStep || MessageBox.Show("Adjust timestep for best audio quality and performance?", "", MessageBoxButtons.OKCancel) == DialogResult.OK) {
                     Sim.timeStep = target;
                     okToChangeTimeStep = true;
                 }

@@ -10,7 +10,7 @@
 
         protected override bool needsBits() { return false; }
 
-        public override void setupPins() { }
+        public override void SetupPins() { }
 
         void setPins(Pin[] p) {
             pins = p;

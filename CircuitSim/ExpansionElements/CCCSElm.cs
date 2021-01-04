@@ -6,7 +6,7 @@ namespace Circuit.Elements {
 
         public CCCSElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) {
             inputCount = 2;
-            setupPins();
+            SetupPins();
         }
 
         public CCCSElm(int xx, int yy) : base(xx, yy) {
@@ -20,7 +20,7 @@ namespace Circuit.Elements {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.CCCS; } }
 
-        public override void setupPins() {
+        public override void SetupPins() {
             sizeX = 2;
             sizeY = 2;
             pins = new Pin[4];

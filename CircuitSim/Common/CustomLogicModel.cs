@@ -57,6 +57,9 @@ namespace Circuit {
             if (modelMap.ContainsKey(name)) {
                 return modelMap[name];
             }
+            if (null == oldmodel) {
+                return getModelWithName(name);
+            }
             var lm = new CustomLogicModel(oldmodel);
             lm.name = name;
             lm.infoText = name;
@@ -257,8 +260,7 @@ namespace Circuit {
             if (s == "\\0") {
                 return "";
             }
-            int i;
-            for (i = 0; i < s.Length; i++) {
+            for (int i = 0; i < s.Length; i++) {
                 if (s.ElementAt(i) == '\\') {
                     char c = s.ElementAt(i + 1);
                     if (c == 'n') {

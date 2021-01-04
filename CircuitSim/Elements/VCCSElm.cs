@@ -16,14 +16,14 @@ namespace Circuit.Elements {
             inputCount = st.nextTokenInt();
             exprString = CustomLogicModel.unescape(st.nextToken());
             parseExpr();
-            setupPins();
+            SetupPins();
         }
 
         public VCCSElm(int xx, int yy) : base(xx, yy) {
             inputCount = 2;
             exprString = ".1*(a-b)";
             parseExpr();
-            setupPins();
+            SetupPins();
         }
 
         public override int VoltageSourceCount { get { return 0; } }
@@ -38,7 +38,7 @@ namespace Circuit.Elements {
             return base.dump() + " " + inputCount + " " + CustomLogicModel.escape(exprString);
         }
 
-        public override void setupPins() {
+        public override void SetupPins() {
             sizeX = 2;
             sizeY = inputCount > 2 ? inputCount : 2;
             pins = new Pin[inputCount + 2];
@@ -201,7 +201,7 @@ namespace Circuit.Elements {
                     return;
                 }
                 inputCount = (int)ei.Value;
-                setupPins();
+                SetupPins();
                 allocNodes();
                 SetPoints();
             }

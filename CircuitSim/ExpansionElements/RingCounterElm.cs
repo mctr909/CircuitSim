@@ -20,7 +20,7 @@
 
         protected override bool needsBits() { return true; }
 
-        public override void setupPins() {
+        public override void SetupPins() {
             sizeX = bits > 2 ? bits : 2;
             sizeY = 2;
             pins = new Pin[PostCount];
@@ -85,7 +85,7 @@
             }
             if (n == 2 && ei.Value >= 2) {
                 bits = (int)ei.Value;
-                setupPins();
+                SetupPins();
                 SetPoints();
             }
         }

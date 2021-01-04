@@ -35,7 +35,11 @@ namespace Circuit {
         }
 
         public double nextTokenDouble() {
-            return double.Parse(mList[mIndex++]);
+            try {
+                return double.Parse(mList[mIndex++]);
+            } catch {
+                return 0;
+            }
         }
 
         public bool hasMoreTokens() {

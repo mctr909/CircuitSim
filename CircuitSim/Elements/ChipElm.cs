@@ -44,7 +44,7 @@ namespace Circuit.Elements {
             public bool clock;
             public bool output;
             public bool value;
-            public bool state;
+            public bool state = true;
             public bool selected;
             public double curcount;
             public double current;
@@ -130,7 +130,7 @@ namespace Circuit.Elements {
 
         public ChipElm(int xx, int yy) : base(xx, yy) {
             mNoDiagonal = true;
-            setupPins();
+            SetupPins();
             setSize(1);
         }
 
@@ -139,8 +139,8 @@ namespace Circuit.Elements {
                 bits = st.nextTokenInt();
             }
             mNoDiagonal = true;
-            setupPins();
-            setSize((f & FLAG_SMALL) != 0 ? 1 : 2);
+            SetupPins();
+            setSize(1);
             int i;
             for (i = 0; i != PostCount; i++) {
                 if (pins == null) {
@@ -177,7 +177,7 @@ namespace Circuit.Elements {
             mFlags |= (s == 1) ? FLAG_SMALL : 0;
         }
 
-        public virtual void setupPins() { }
+        public virtual void SetupPins() { }
 
         public override void Draw(CustomGraphics g) {
             drawChip(g);
@@ -238,9 +238,6 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             clockPoints = null;
-            if (X2 - X1 > sizeX * cspc2 && this == Sim.dragElm) {
-                setSize(2);
-            }
             int hs = cspc;
             int x0 = X1 + cspc2; int y0 = Y1;
             int xr = x0 - cspc;
