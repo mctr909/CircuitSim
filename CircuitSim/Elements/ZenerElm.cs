@@ -72,7 +72,7 @@ namespace Circuit.Elements {
             lastZenerModelName = n;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 2) {
                 var val = new InputDialog("Breakdown Voltage", "5.6");
                 try {
@@ -86,7 +86,7 @@ namespace Circuit.Elements {
                     }
                 } catch { }
             }
-            base.SetEditValue(n, ei);
+            base.SetElementValue(n, ei);
         }
     }
 }

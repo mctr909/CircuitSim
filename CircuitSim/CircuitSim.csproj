@@ -122,10 +122,10 @@
     <Compile Include="Elements\CapacitorElm.cs" />
     <Compile Include="Common\CircuitElm.cs" />
     <Compile Include="CirSimForm.cs" />
-    <Compile Include="Forms\EditDialog.cs">
+    <Compile Include="Forms\ElementInfoDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Common\EditInfo.cs" />
+    <Compile Include="Forms\ElementInfo.cs" />
     <Compile Include="Elements\ChipElm.cs" />
     <Compile Include="Elements\CurrentElm.cs" />
     <Compile Include="Elements\GraphicElm.cs" />

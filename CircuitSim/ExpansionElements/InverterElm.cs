@@ -98,17 +98,17 @@ namespace Circuit.Elements {
             arr[2] = "Vo = " + Utils.VoltageText(Volts[1]);
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Slew Rate (V/ns)", slewRate, 0, 0);
+                return new ElementInfo("Slew Rate (V/ns)", slewRate, 0, 0);
             }
             if (n == 1) {
-                return new EditInfo("High Voltage (V)", highVoltage, 1, 10);
+                return new ElementInfo("High Voltage (V)", highVoltage, 1, 10);
             }
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 slewRate = ei.Value;
             }

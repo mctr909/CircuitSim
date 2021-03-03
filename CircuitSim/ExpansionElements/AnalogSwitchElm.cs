@@ -123,9 +123,9 @@ namespace Circuit.Elements {
             return true;
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     Text = "Normally closed",
                     Checked = (mFlags & FLAG_INVERT) != 0
@@ -133,15 +133,15 @@ namespace Circuit.Elements {
                 return ei;
             }
             if (n == 1) {
-                return new EditInfo("On Resistance (ohms)", r_on, 0, 0);
+                return new ElementInfo("On Resistance (ohms)", r_on, 0, 0);
             }
             if (n == 2) {
-                return new EditInfo("Off Resistance (ohms)", r_off, 0, 0);
+                return new ElementInfo("Off Resistance (ohms)", r_off, 0, 0);
             }
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 mFlags = (ei.CheckBox.Checked) ? (mFlags | FLAG_INVERT) : (mFlags & ~FLAG_INVERT);
             }

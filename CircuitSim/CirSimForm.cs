@@ -149,7 +149,7 @@ namespace Circuit {
                 verticalPanel.Height = ofsY;
             }
 
-            CircuitElm.initClass(this, mCir);
+            CircuitElm.InitClass(this, mCir);
             readRecovery();
 
             menuBar = new MenuStrip();
@@ -238,7 +238,7 @@ namespace Circuit {
 
             setGrid();
 
-            CircuitElm.setColorScale();
+            CircuitElm.SetColorScale(64);
 
             if (startCircuitText != null) {
                 getSetupList(false);
@@ -1081,7 +1081,7 @@ namespace Circuit {
                 editDialog.closeDialog();
                 editDialog = null;
             }
-            editDialog = new EditDialog(eable, this);
+            editDialog = new ElementInfoDialog(eable, this);
             editDialog.Show(
                 mouseCursorX + mParent.Location.X,
                 mouseCursorY + mParent.Location.Y
@@ -1783,7 +1783,7 @@ namespace Circuit {
                 return;
             }
 
-            double minDistance = 5;
+            double minDistance = 8;
             for (int i = 0; i != elmList.Count; i++) {
                 var ce = getElm(i);
                 var distance = ce.Distance(gx, gy);
@@ -1865,7 +1865,7 @@ namespace Circuit {
                 if (!(mouseElm is ScopeElm)) {
                     elmScopeMenuItem.Enabled = mouseElm.CanViewInScope;
                     elmFloatScopeMenuItem.Enabled = mouseElm.CanViewInScope;
-                    elmEditMenuItem.Enabled = mouseElm.GetEditInfo(0) != null;
+                    elmEditMenuItem.Enabled = mouseElm.GetElementInfo(0) != null;
                     elmFlipMenuItem.Enabled = 2 == mouseElm.PostCount;
                     elmSplitMenuItem.Enabled = canSplit(mouseElm);
                     elmSliderMenuItem.Enabled = sliderItemEnabled(mouseElm);
@@ -1905,7 +1905,7 @@ namespace Circuit {
                 return false;
             }
             for (int i = 0; ; i++) {
-                var ei = elm.GetEditInfo(i);
+                var ei = elm.GetElementInfo(i);
                 if (ei == null) {
                     return false;
                 }

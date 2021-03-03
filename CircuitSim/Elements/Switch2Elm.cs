@@ -147,22 +147,22 @@ namespace Circuit.Elements {
             arr[1] = "I = " + Utils.CurrentDText(mCurrent);
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             /*if (n == 1) {
                 EditInfo ei = new EditInfo("", 0, -1, -1);
                 ei.checkbox = new Checkbox("Center Off", hasCenterOff());
                 return ei;
             }*/
             if (n == 1) {
-                return new EditInfo("Switch Group", link, 0, 100).SetDimensionless();
+                return new ElementInfo("Switch Group", link, 0, 100).SetDimensionless();
             }
             if (n == 2) {
-                return new EditInfo("# of Throws", throwCount, 2, 10).SetDimensionless();
+                return new ElementInfo("# of Throws", throwCount, 2, 10).SetDimensionless();
             }
-            return base.GetEditInfo(n);
+            return base.GetElementInfo(n);
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             /*if (n == 1) {
                 flags &= ~FLAG_CENTER_OFF;
                 if (ei.checkbox.getState())
@@ -183,7 +183,7 @@ namespace Circuit.Elements {
                 allocNodes();
                 SetPoints();
             } else {
-                base.SetEditValue(n, ei);
+                base.SetElementValue(n, ei);
             }
         }
 

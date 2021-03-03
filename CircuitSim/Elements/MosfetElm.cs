@@ -471,15 +471,15 @@ namespace Circuit.Elements {
             return !(n1 == 0 || n2 == 0);
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Threshold Voltage", pnp * vt, .01, 5);
+                return new ElementInfo("Threshold Voltage", pnp * vt, .01, 5);
             }
             if (n == 1) {
-                return new EditInfo(EditInfo.MakeLink("mosfet-beta.html", "Beta"), beta, .01, 5);
+                return new ElementInfo(ElementInfo.MakeLink("mosfet-beta.html", "Beta"), beta, .01, 5);
             }
             if (n == 2) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = "Show Bulk",
@@ -488,7 +488,7 @@ namespace Circuit.Elements {
                 return ei;
             }
             if (n == 3) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = "Swap D/S",
@@ -497,7 +497,7 @@ namespace Circuit.Elements {
                 return ei;
             }
             if (n == 4 && !ShowBulk) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = "Digital Symbol",
@@ -506,7 +506,7 @@ namespace Circuit.Elements {
                 return ei;
             }
             if (n == 4 && ShowBulk) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = "Simulate Body Diode",
@@ -515,7 +515,7 @@ namespace Circuit.Elements {
                 return ei;
             }
             if (n == 5 && DoBodyDiode) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = "Body Terminal",
@@ -527,7 +527,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 vt = pnp * ei.Value;
             }

@@ -15,7 +15,7 @@ namespace Circuit {
         Button applyButton;
         Button okButton;
         Button cancelButton;
-        EditInfo[] einfos;
+        ElementInfo[] einfos;
         int einfocount;
         Panel vp;
         Panel hp;
@@ -27,7 +27,7 @@ namespace Circuit {
 
             vp = new Panel();
 
-            einfos = new EditInfo[10];
+            einfos = new ElementInfo[10];
             hp = new Panel();
             {
                 hp.AutoSize = true;
@@ -75,7 +75,7 @@ namespace Circuit {
             int idx;
             vp.SuspendLayout();
             for (i = 0; ; i++) {
-                einfos[i] = elm.GetEditInfo(i);
+                einfos[i] = elm.GetElementInfo(i);
                 if (einfos[i] == null) {
                     break;
                 }
@@ -100,12 +100,12 @@ namespace Circuit {
                 if (adj != null) {
                     ctrlInsert(vp, new Label() { TextAlign = ContentAlignment.BottomLeft, Text = "Min Value" }, idx++);
                     ei.MinBox = new TextBox() {
-                        Text = EditDialog.unitString(ei, adj.minValue)
+                        Text = ElementInfoDialog.unitString(ei, adj.minValue)
                     };
                     ctrlInsert(vp, ei.MinBox, idx++);
                     ctrlInsert(vp, new Label() { TextAlign = ContentAlignment.BottomLeft, Text = "Max Value" }, idx++);
                     ei.MaxBox = new TextBox() {
-                        Text = EditDialog.unitString(ei, adj.maxValue)
+                        Text = ElementInfoDialog.unitString(ei, adj.maxValue)
                     };
                     ctrlInsert(vp, ei.MaxBox, idx++);
                     ctrlInsert(vp, new Label() { TextAlign = ContentAlignment.BottomLeft, Text = "Label" }, idx++);
@@ -131,15 +131,15 @@ namespace Circuit {
                     continue;
                 }
                 var ei = einfos[i];
-                /*if (ei.labelBox == null) {  haven't created UI yet?
+                if (ei.LabelBox == null) {  // haven't created UI yet?
                     continue;
-                }*/
+                }
                 try {
                     adj.sliderText = ei.LabelBox.Text;
                     adj.label.Text = adj.sliderText;
-                    double d = EditDialog.parseUnits(ei.MinBox.Text);
+                    double d = ElementInfoDialog.parseUnits(ei.MinBox.Text);
                     adj.minValue = d;
-                    d = EditDialog.parseUnits(ei.MaxBox.Text);
+                    d = ElementInfoDialog.parseUnits(ei.MaxBox.Text);
                     adj.maxValue = d;
                     adj.setSliderValue(ei.Value);
                 } catch { }

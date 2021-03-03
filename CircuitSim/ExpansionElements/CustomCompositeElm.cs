@@ -118,9 +118,9 @@ namespace Circuit.Elements {
             SetPoints();
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                var ei = new EditInfo(EditInfo.MakeLink("subcircuits.html", "Model Name"), 0, -1, -1);
+                var ei = new ElementInfo(ElementInfo.MakeLink("subcircuits.html", "Model Name"), 0, -1, -1);
                 models = CustomCompositeModel.getModelList();
                 ei.Choice = new ComboBox();
                 int i;
@@ -134,14 +134,14 @@ namespace Circuit.Elements {
                 return ei;
             }
             if (n == 1) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.Button = new Button() { Text = "Edit Model" };
                 return ei;
             }
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 model = models[ei.Choice.SelectedIndex];
                 lastModelName = modelName = model.name;

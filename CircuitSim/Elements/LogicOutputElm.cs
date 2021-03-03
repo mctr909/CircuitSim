@@ -76,29 +76,29 @@ namespace Circuit.Elements {
             arr[2] = "V = " + Utils.VoltageText(Volts[0]);
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Threshold", threshold, 10, -10);
+                return new ElementInfo("Threshold", threshold, 10, -10);
             }
             if (n == 1) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() { Text = "Current Required", Checked = needsPullDown() };
                 return ei;
             }
             if (n == 2) {
-                var ei = new EditInfo("", 0, 0, 0);
+                var ei = new ElementInfo("", 0, 0, 0);
                 ei.CheckBox = new CheckBox() { Text = "Numeric", Checked = isNumeric() };
                 return ei;
             }
             if (n == 3) {
-                var ei = new EditInfo("", 0, 0, 0);
+                var ei = new ElementInfo("", 0, 0, 0);
                 ei.CheckBox = new CheckBox() { Text = "Ternary", Checked = isTernary() };
                 return ei;
             }
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0)
                 threshold = ei.Value;
             if (n == 1) {

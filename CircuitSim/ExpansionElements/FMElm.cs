@@ -110,23 +110,23 @@ namespace Circuit.Elements {
             arr[6] = "Vmax = " + Utils.VoltageText(maxVoltage);
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Max Voltage", maxVoltage, -20, 20);
+                return new ElementInfo("Max Voltage", maxVoltage, -20, 20);
             }
             if (n == 1) {
-                return new EditInfo("Carrier Frequency (Hz)", carrierfreq, 4, 500);
+                return new ElementInfo("Carrier Frequency (Hz)", carrierfreq, 4, 500);
             }
             if (n == 2) {
-                return new EditInfo("Signal Frequency (Hz)", signalfreq, 4, 500);
+                return new ElementInfo("Signal Frequency (Hz)", signalfreq, 4, 500);
             }
             if (n == 3) {
-                return new EditInfo("Deviation (Hz)", deviation, 4, 500);
+                return new ElementInfo("Deviation (Hz)", deviation, 4, 500);
             }
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 maxVoltage = ei.Value;
             }

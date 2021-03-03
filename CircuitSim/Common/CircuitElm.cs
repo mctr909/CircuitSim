@@ -3,24 +3,21 @@ using System.Drawing;
 
 namespace Circuit.Elements {
     abstract class CircuitElm : Editable {
-        public static readonly Color SelectColor = Color.Cyan;
-
         protected const double Pi = Math.PI;
         protected const double Pi2 = Math.PI * 2;
         protected const double ToDeg = 180 / Pi;
         protected const double ToRad = Pi / 180;
 
-        const int ColorScaleCount = 64;
-        static readonly Brush PenHandle = Brushes.Cyan;
-
         protected static Circuit mCir;
-        static Color[] mColorScale;
-        static CircuitElm mMouseElmRef = null;
+        private static Color[] mColorScale;
+        private static CircuitElm mMouseElmRef = null;
 
         #region static property
         public static CirSim Sim { get; private set; }
-        public static double VoltageRange { get; set; } = 5;
+        public static double VoltageRange { get; set; }
         public static double CurrentMult { get; set; }
+        public static Brush PenHandle { get; set; }
+        public static Color SelectColor { get; set; }
         public static Color TextColor { get; set; }
         public static Color WhiteColor { get; set; }
         public static Color GrayColor { get; set; }
@@ -29,15 +26,13 @@ namespace Circuit.Elements {
         #region dynamic property
         /* initial point where user created element.
          * For simple two-terminal elements, this is the first node/post. */
-        public int X1 { get; set; }
-        public int Y1 { get; set; }
+        public int X1, Y1;
 
         /* point to which user dragged out element.
          * For simple two-terminal elements, this is the second node/post */
-        public int X2 { get; set; }
-        public int Y2 { get; set; }
+        public int X2, Y2;
 
-        public bool IsSelected { get; set; }
+        public bool IsSelected;
 
         public bool IsMouseElm {
             get {
@@ -171,61 +166,6 @@ namespace Circuit.Elements {
         protected bool mNoDiagonal;
         #endregion
 
-        public static void initClass(CirSim s, Circuit c) {
-            Sim = s;
-            mCir = c;
-            mMouseElmRef = null;
-            CurrentMult = 0;
-        }
-
-        public static void setColorScale() {
-            mColorScale = new Color[ColorScaleCount];
-            for (int i = 0; i != ColorScaleCount; i++) {
-                double v = (i * 2.0 / ColorScaleCount - 1.0) * 0.66;
-                if (v < 0) {
-                    int n1 = (int)(128 * -v) + 127;
-                    int n2 = (int)(127 * (1 + v));
-                    mColorScale[i] = Color.FromArgb(n2, n2, n1);
-                } else {
-                    int n1 = (int)(128 * v) + 127;
-                    int n2 = (int)(127 * (1 - v));
-                    mColorScale[i] = Color.FromArgb(n2, n1, n2);
-                }
-            }
-        }
-
-        /// <summary>
-        /// draw current dots from point a to b
-        /// </summary>
-        /// <param name="g"></param>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <param name="pos"></param>
-        protected static void drawDots(CustomGraphics g, Point a, Point b, double pos) {
-            if ((!Sim.SimIsRunning()) || pos == 0 || !Sim.chkShowDots.Checked) {
-                return;
-            }
-            int dx = b.X - a.X;
-            int dy = b.Y - a.Y;
-            double dn = Math.Sqrt(dx * dx + dy * dy);
-            int ds = 16;
-            pos %= ds;
-            if (pos < 0) {
-                pos += ds;
-            }
-            double di = 0;
-            if (Sim.chkPrintable.Checked) {
-                g.LineColor = GrayColor;
-            } else {
-                g.LineColor = Color.Yellow;
-            }
-            for (di = pos; di < dn; di += ds) {
-                var x0 = (float)(a.X + di * dx / dn);
-                var y0 = (float)(a.Y + di * dy / dn);
-                g.FillCircle(x0, y0, 2);
-            }
-        }
-        
         /// <summary>
         /// create new element with one post at xx,yy, to be dragged out by user
         /// </summary>
@@ -257,6 +197,64 @@ namespace Circuit.Elements {
         void initBoundingBox() {
             BoundingBox = new Rectangle(Math.Min(X1, X2), Math.Min(Y1, Y2), Math.Abs(X2 - X1) + 1, Math.Abs(Y2 - Y1) + 1);
         }
+
+        #region [static method]
+        public static void InitClass(CirSim s, Circuit c) {
+            Sim = s;
+            VoltageRange = 5;
+            CurrentMult = 0;
+            mCir = c;
+            mMouseElmRef = null;
+        }
+
+        public static void SetColorScale(int colorScaleCount) {
+            mColorScale = new Color[colorScaleCount];
+            for (int i = 0; i != colorScaleCount; i++) {
+                double v = (i * 2.0 / colorScaleCount - 1.0) * 0.66;
+                if (v < 0) {
+                    int n1 = (int)(128 * -v) + 127;
+                    int n2 = (int)(127 * (1 + v));
+                    mColorScale[i] = Color.FromArgb(n2, n2, n1);
+                } else {
+                    int n1 = (int)(128 * v) + 127;
+                    int n2 = (int)(127 * (1 - v));
+                    mColorScale[i] = Color.FromArgb(n2, n1, n2);
+                }
+            }
+        }
+
+        /// <summary>
+        /// draw current dots from point a to b
+        /// </summary>
+        /// <param name="g"></param>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="pos"></param>
+        protected static void drawDots(CustomGraphics g, Point a, Point b, double pos) {
+            if ((!Sim.SimIsRunning()) || pos == 0 || !Sim.chkShowDots.Checked) {
+                return;
+            }
+            int dx = b.X - a.X;
+            int dy = b.Y - a.Y;
+            double dn = Math.Sqrt(dx * dx + dy * dy);
+            int ds = 8;
+            pos %= ds;
+            if (pos < 0) {
+                pos += ds;
+            }
+            double di = 0;
+            if (Sim.chkPrintable.Checked) {
+                g.LineColor = GrayColor;
+            } else {
+                g.LineColor = Color.Yellow;
+            }
+            for (di = pos; di < dn; di += ds) {
+                var x0 = (float)(a.X + di * dx / dn);
+                var y0 = (float)(a.Y + di * dy / dn);
+                g.FillCircle(x0, y0, 1.5f);
+            }
+        }
+        #endregion
 
         #region [protected method]
         /// <summary>
@@ -393,12 +391,12 @@ namespace Circuit.Elements {
             if (!Sim.chkShowVolts.Checked || Sim.chkPrintable.Checked) {
                 return GrayColor;
             }
-            int c = (int)((volts + VoltageRange) * (ColorScaleCount - 1) / (VoltageRange * 2));
+            int c = (int)((volts + VoltageRange) * (mColorScale.Length - 1) / (VoltageRange * 2));
             if (c < 0) {
                 c = 0;
             }
-            if (c >= ColorScaleCount) {
-                c = ColorScaleCount - 1;
+            if (c >= mColorScale.Length) {
+                c = mColorScale.Length - 1;
             }
             return mColorScale[c];
         }
@@ -864,9 +862,9 @@ namespace Circuit.Elements {
 
         public virtual void UpdateModels() { }
 
-        public virtual EditInfo GetEditInfo(int n) { return null; }
+        public virtual ElementInfo GetElementInfo(int n) { return null; }
 
-        public virtual void SetEditValue(int n, EditInfo ei) { }
+        public virtual void SetElementValue(int n, ElementInfo ei) { }
         #endregion
     }
 }

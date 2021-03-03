@@ -28,7 +28,7 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads(25);
+            calcLeads(24);
             if (mPoint1.Y == mPoint2.Y) {
                 textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 10 * mDsign / mLen, 12 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
@@ -116,15 +116,15 @@ namespace Circuit.Elements {
             return "resistor, " + Utils.UnitText(Resistance, CirSim.ohmString);
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             /* ohmString doesn't work here on linux */
             if (n == 0) {
-                return new EditInfo("Resistance (ohms)", Resistance, 0, 0);
+                return new ElementInfo("Resistance (ohms)", Resistance, 0, 0);
             }
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (ei.Value > 0) {
                 Resistance = ei.Value;
             }

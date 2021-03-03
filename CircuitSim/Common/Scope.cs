@@ -494,16 +494,22 @@ namespace Circuit {
                 resetGraph();
             }
 
-            g.SetTransform(new Matrix(1, 0, 0, 1, BoundingBox.X, BoundingBox.Y));
+            drawSettingsWheel(g);
 
             if (Plot2d) {
+                g.SetTransform(new Matrix(1, 0, 0, 1, BoundingBox.X, BoundingBox.Y));
                 draw2d(g);
+                g.SetTransform(new Matrix(
+                    mSim.transform[0], mSim.transform[1],
+                    mSim.transform[2], mSim.transform[3],
+                    mSim.transform[4], mSim.transform[5]
+                ));
                 return;
             }
 
             g.LineColor = Color.Red;
 
-            drawSettingsWheel(g);
+            g.SetTransform(new Matrix(1, 0, 0, 1, BoundingBox.X, BoundingBox.Y));
 
             if (ShowFFT) {
                 drawFFTVerticalGridLines(g);
@@ -564,15 +570,20 @@ namespace Circuit {
             /* draw selection on top.  only works if selection chosen from scope */
             if (SelectedPlot >= 0 && SelectedPlot < mVisiblePlots.Count) {
                 drawPlot(g, mVisiblePlots[SelectedPlot], hGridLines, true);
-            } 
+            }
 
             if (mVisiblePlots.Count > 0) {
                 drawInfoTexts(g);
             }
 
+            g.ClearTransform();
             drawCrosshairs(g);
 
-            g.ClearTransform();
+            g.SetTransform(new Matrix(
+                mSim.transform[0], mSim.transform[1],
+                mSim.transform[2], mSim.transform[3],
+                mSim.transform[4], mSim.transform[5]
+            ));
 
             if (mPlots[0].Pointer > 5 && !LockScale) {
                 for (int i = 0; i != UNITS_COUNT; i++) {
@@ -1364,7 +1375,7 @@ namespace Circuit {
                 if (i > 0) {
                     g.DrawLine(x, 0, x, BoundingBox.Height);
                 }
-                g.DrawLeftText(s, x + 2, BoundingBox.Height);
+                g.DrawLeftText(s, x + 2, BoundingBox.Height - 12);
             }
         }
 
@@ -1445,7 +1456,7 @@ namespace Circuit {
                 } else {
                     g.LineColor = Color.DarkGray;
                 }
-                g.SetTransform(new Matrix(1, 0, 0, 1, BoundingBox.X + 18, BoundingBox.Y + BoundingBox.Height - 18));
+                g.SetTransform(new Matrix(1, 0, 0, 1, BoundingBox.X + 18, BoundingBox.Y + BoundingBox.Height - 24));
                 g.DrawCircle(0, 0, inR);
                 g.DrawLine(  -outR,       0,   -inR,      0);
                 g.DrawLine(   outR,       0,    inR,      0);
@@ -1491,9 +1502,6 @@ namespace Circuit {
                 g.LineColor = Color.Yellow;
             }
             g.DrawLine(BoundingBox.Width / 2, 0, BoundingBox.Width / 2, BoundingBox.Height - 1);
-
-            g.ClearTransform();
-            drawSettingsWheel(g);
         }
 
         void drawTo(int x2, int y2) {

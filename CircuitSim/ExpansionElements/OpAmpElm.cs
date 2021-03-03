@@ -197,20 +197,20 @@ namespace Circuit.Elements {
 
         public override bool HasGroundConnection(int n1) { return n1 == 2; }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Max Output (V)", maxOut, 1, 20);
+                return new ElementInfo("Max Output (V)", maxOut, 1, 20);
             }
             if (n == 1) {
-                return new EditInfo("Min Output (V)", minOut, -20, 0);
+                return new ElementInfo("Min Output (V)", minOut, -20, 0);
             }
             if (n == 2) {
-                return new EditInfo("Gain", gain, 10, 1000000);
+                return new ElementInfo("Gain", gain, 10, 1000000);
             }
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 maxOut = ei.Value;
             }

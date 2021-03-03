@@ -92,23 +92,23 @@ namespace Circuit.Elements {
             }
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Red Value (0-1)", colorR, 0, 1).SetDimensionless();
+                return new ElementInfo("Red Value (0-1)", colorR, 0, 1).SetDimensionless();
             }
             if (n == 1) {
-                return new EditInfo("Green Value (0-1)", colorG, 0, 1).SetDimensionless();
+                return new ElementInfo("Green Value (0-1)", colorG, 0, 1).SetDimensionless();
             }
             if (n == 2) {
-                return new EditInfo("Blue Value (0-1)", colorB, 0, 1).SetDimensionless();
+                return new ElementInfo("Blue Value (0-1)", colorB, 0, 1).SetDimensionless();
             }
             if (n == 3) {
-                return new EditInfo("Max Brightness Current (A)", maxBrightnessCurrent, 0, .1);
+                return new ElementInfo("Max Brightness Current (A)", maxBrightnessCurrent, 0, .1);
             }
-            return base.GetEditInfo(n - 4);
+            return base.GetElementInfo(n - 4);
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 colorR = ei.Value;
             }
@@ -121,7 +121,7 @@ namespace Circuit.Elements {
             if (n == 3) {
                 maxBrightnessCurrent = ei.Value;
             }
-            base.SetEditValue(n - 4, ei);
+            base.SetElementValue(n - 4, ei);
         }
 
         void setLastModelName(string n) {

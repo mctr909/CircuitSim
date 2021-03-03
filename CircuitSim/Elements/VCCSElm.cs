@@ -177,20 +177,20 @@ namespace Circuit.Elements {
             return false;
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                var ei = new EditInfo(EditInfo.MakeLink("customfunction.html", "Output Function"), 0, -1, -1);
+                var ei = new ElementInfo(ElementInfo.MakeLink("customfunction.html", "Output Function"), 0, -1, -1);
                 ei.Text = exprString;
                 ei.DisallowSliders();
                 return ei;
             }
             if (n == 1) {
-                return new EditInfo("# of Inputs", inputCount, 1, 8).SetDimensionless();
+                return new ElementInfo("# of Inputs", inputCount, 1, 8).SetDimensionless();
             }
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 exprString = ei.Textf.Text.Replace(" ", "").Replace("\r", "").Replace("\n", "");
                 parseExpr();

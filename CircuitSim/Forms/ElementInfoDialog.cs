@@ -10,11 +10,11 @@ using Circuit.Elements;
 
 namespace Circuit {
     interface Editable {
-        EditInfo GetEditInfo(int n);
-        void SetEditValue(int n, EditInfo ei);
+        ElementInfo GetElementInfo(int n);
+        void SetElementValue(int n, ElementInfo ei);
     }
 
-    class EditDialog : Form {
+    class ElementInfoDialog : Form {
         const int barmax = 1000;
         const double ROOT2 = 1.41421356237309504880;
 
@@ -22,7 +22,7 @@ namespace Circuit {
         CirSim cframe;
         Button applyButton;
         Button cancelButton;
-        EditInfo[] einfos;
+        ElementInfo[] einfos;
 
         int einfocount;
 
@@ -30,12 +30,12 @@ namespace Circuit {
         Panel hp;
         bool closeOnEnter = true;
 
-        public EditDialog(Editable ce, CirSim f) : base() {
+        public ElementInfoDialog(Editable ce, CirSim f) : base() {
             Text = "Edit Component";
             cframe = f;
             elm = ce;
 
-            einfos = new EditInfo[10];
+            einfos = new ElementInfo[10];
 
             SuspendLayout();
 
@@ -94,7 +94,7 @@ namespace Circuit {
             int i;
             int idx;
             for (i = 0; ; i++) {
-                einfos[i] = elm.GetEditInfo(i);
+                einfos[i] = elm.GetElementInfo(i);
                 if (einfos[i] == null) {
                     break;
                 }
@@ -151,8 +151,8 @@ namespace Circuit {
                 } else if (ei.TextArea != null) {
                     insertCtrl(vp, ei.TextArea, idx);
                     closeOnEnter = false;
-                } else if (ei.widget != null) {
-                    insertCtrl(vp, ei.widget, idx);
+                } else if (ei.Widget != null) {
+                    insertCtrl(vp, ei.Widget, idx);
                 } else {
                     insertCtrl(vp, ei.Textf = new TextBox(), idx);
                     if (ei.Text != null) {
@@ -201,7 +201,7 @@ namespace Circuit {
             return Math.Abs(x - Math.Round(x));
         }
 
-        public string unitString(EditInfo ei) {
+        public string unitString(ElementInfo ei) {
             /* for voltage elements, express values in rms if that would be shorter */
             if (elm != null && (elm is VoltageElm)
                 && Math.Abs(ei.Value) > 1e-4
@@ -211,7 +211,7 @@ namespace Circuit {
             return unitString(ei, ei.Value);
         }
 
-        public static string unitString(EditInfo ei, double v) {
+        public static string unitString(ElementInfo ei, double v) {
             double va = Math.Abs(v);
             if (ei != null && ei.Dimensionless) {
                 return (v).ToString();
@@ -243,7 +243,7 @@ namespace Circuit {
             return (v * 1e-9).ToString("0") + "G";
         }
 
-        double parseUnits(EditInfo ei) {
+        double parseUnits(ElementInfo ei) {
             string s = ei.Textf.Text;
             return parseUnits(s);
         }
@@ -294,7 +294,7 @@ namespace Circuit {
                 if (ei.Button != null) {
                     continue;
                 }
-                elm.SetEditValue(i, ei);
+                elm.SetElementValue(i, ei);
 
                 /* update slider if any */
                 if (elm is CircuitElm) {
@@ -319,7 +319,7 @@ namespace Circuit {
                         apply();
                         applied = true;
                     }
-                    elm.SetEditValue(i, ei);
+                    elm.SetElementValue(i, ei);
                     if (ei.NewDialog) {
                         changed = true;
                     }

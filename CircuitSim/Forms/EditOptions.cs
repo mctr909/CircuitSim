@@ -6,17 +6,17 @@ namespace Circuit {
 
         public EditOptions(CirSim s) { sim = s; }
 
-        public EditInfo GetEditInfo(int n) {
+        public ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Time step size (s)", sim.timeStep, 0, 0);
+                return new ElementInfo("Time step size (s)", sim.timeStep, 0, 0);
             }
             if (n == 1) {
-                return new EditInfo("Range for voltage color (V)", CircuitElm.VoltageRange, 0, 0);
+                return new ElementInfo("Range for voltage color (V)", CircuitElm.VoltageRange, 0, 0);
             }
             return null;
         }
 
-        public void SetEditValue(int n, EditInfo ei) {
+        public void SetElementValue(int n, ElementInfo ei) {
             if (n == 0 && ei.Value > 0) {
                 sim.timeStep = ei.Value;
                 /* if timestep changed manually, prompt before changing it again */

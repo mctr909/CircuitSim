@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
 
 namespace Circuit {
-    class EditInfo {
+    class ElementInfo {
         public string Name { get; private set; }
         public string Text { get; set; }
         public double Value { get; set; }
@@ -9,33 +9,41 @@ namespace Circuit {
         public bool NoSliders { get; private set; }
         public bool NewDialog { get; set; }
 
-        public Form widget;
+        public Form Widget;
         public ComboBox Choice;
         public CheckBox CheckBox;
         public Button Button;
         public TextBox TextArea;
         public TextBox Textf;
 
-        /* for slider dialog */
+        /// <summary>
+        /// for slider dialog 
+        /// </summary>
         public TextBox MinBox;
+        /// <summary>
+        /// for slider dialog 
+        /// </summary>
         public TextBox MaxBox;
+        /// <summary>
+        /// for slider dialog 
+        /// </summary>
         public TextBox LabelBox;
 
-        public EditInfo(string n, double val, double mn, double mx) {
+        public ElementInfo(string n, double val, double mn, double mx) {
             Name = n;
             Value = val;
             Dimensionless = false;
         }
 
-        public EditInfo(string n, double val) {
+        public ElementInfo(string n, double val) {
             Name = n;
             Value = val;
             Dimensionless = false;
         }
 
-        public EditInfo SetDimensionless() { Dimensionless = true; return this; }
+        public ElementInfo SetDimensionless() { Dimensionless = true; return this; }
 
-        public EditInfo DisallowSliders() { NoSliders = true; return this; }
+        public ElementInfo DisallowSliders() { NoSliders = true; return this; }
 
         public int ChangeFlag(int flags, int bit) {
             if (CheckBox.Checked) {
@@ -49,7 +57,7 @@ namespace Circuit {
                 && CheckBox == null
                 && Button == null
                 && TextArea == null
-                && widget == null
+                && Widget == null
                 && !NoSliders;
         }
 

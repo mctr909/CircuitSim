@@ -290,18 +290,18 @@ namespace Circuit.Elements {
             arr[5] = "I2 = " + Utils.CurrentDText(current2);
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             /* ohmString doesn't work here on linux */
             if (n == 0) {
-                return new EditInfo("Resistance (ohms)", maxResistance, 0, 0);
+                return new ElementInfo("Resistance (ohms)", maxResistance, 0, 0);
             }
             if (n == 1) {
-                var ei = new EditInfo("Slider Text", 0, -1, -1);
+                var ei = new ElementInfo("Slider Text", 0, -1, -1);
                 ei.Text = sliderText;
                 return ei;
             }
             if (n == 2) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "Show Values";
                 ei.CheckBox.Checked = (mFlags & FLAG_SHOW_VALUES) != 0;
@@ -310,7 +310,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 maxResistance = ei.Value;
             }

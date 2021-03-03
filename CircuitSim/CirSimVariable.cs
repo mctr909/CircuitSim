@@ -89,9 +89,9 @@ namespace Circuit {
         #region static variable
         public static CirSim theSim = null;
 
-        public static EditDialog editDialog;
-        public static EditDialog customLogicEditDialog;
-        public static EditDialog diodeModelEditDialog;
+        public static ElementInfoDialog editDialog;
+        public static ElementInfoDialog customLogicEditDialog;
+        public static ElementInfoDialog diodeModelEditDialog;
 
         static ScrollValuePopup scrollValuePopup;
         public static SliderDialog sliderDialog;
@@ -171,7 +171,7 @@ namespace Circuit {
         long mouseDownTime;
         long zoomTime;
 
-        float[] transform;
+        public float[] transform;
         Rectangle selectedArea;
         Rectangle circuitArea;
 

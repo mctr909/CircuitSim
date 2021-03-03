@@ -162,12 +162,12 @@ namespace Circuit.Elements {
             return "capacitor, " + Utils.UnitText(Capacitance, "F");
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Capacitance (F)", Capacitance, 0, 0);
+                return new ElementInfo("Capacitance (F)", Capacitance, 0, 0);
             }
             if (n == 1) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "Trapezoidal Approximation";
                 ei.CheckBox.Checked = IsTrapezoidal;
@@ -176,7 +176,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0 && ei.Value > 0) {
                 Capacitance = ei.Value;
             }

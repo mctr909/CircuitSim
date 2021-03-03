@@ -88,9 +88,9 @@ namespace Circuit.Elements {
 
         public override bool HasGroundConnection(int n1) { return true; }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                var ei = new EditInfo("", 0, 0, 0);
+                var ei = new ElementInfo("", 0, 0, 0);
                 ei.CheckBox = new CheckBox() {
                     Text = "Momentary Switch",
                     Checked = momentary
@@ -98,13 +98,13 @@ namespace Circuit.Elements {
                 return ei;
             }
             if (n == 1) {
-                return new EditInfo("High Voltage", hiV, 10, -10);
+                return new ElementInfo("High Voltage", hiV, 10, -10);
             }
             if (n == 2) {
-                return new EditInfo("Low Voltage", loV, 10, -10);
+                return new ElementInfo("Low Voltage", loV, 10, -10);
             }
             if (n == 3) {
-                var ei = new EditInfo("", 0, 0, 0);
+                var ei = new ElementInfo("", 0, 0, 0);
                 ei.CheckBox = new CheckBox() {
                     Text = "Numeric",
                     Checked = isNumeric()
@@ -112,7 +112,7 @@ namespace Circuit.Elements {
                 return ei;
             }
             if (n == 4) {
-                var ei = new EditInfo("", 0, 0, 0);
+                var ei = new ElementInfo("", 0, 0, 0);
                 ei.CheckBox = new CheckBox() {
                     Text = "Ternary",
                     Checked = isTernary()
@@ -122,7 +122,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 momentary = ei.CheckBox.Checked;
             }

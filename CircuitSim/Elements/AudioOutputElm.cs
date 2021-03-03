@@ -296,13 +296,13 @@ namespace Circuit.Elements {
             }
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                var ei = new EditInfo("Duration (s)", duration, 0, 5);
+                var ei = new ElementInfo("Duration (s)", duration, 0, 5);
                 return ei;
             }
             if (n == 1) {
-                var ei = new EditInfo("Sampling Rate", 0, -1, -1);
+                var ei = new ElementInfo("Sampling Rate", 0, -1, -1);
                 ei.Choice = new ComboBox();
                 for (int i = 0; i != samplingRateChoices.Length; i++) {
                     ei.Choice.Items.Add(samplingRateChoices[i] + "");
@@ -315,7 +315,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0 && ei.Value > 0) {
                 duration = ei.Value;
                 setDataCount();

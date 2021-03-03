@@ -110,24 +110,24 @@ namespace Circuit {
             return arr.Split(',');
         }
 
-        public EditInfo GetEditInfo(int n) {
+        public ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                var ei = new EditInfo("Inputs", 0, -1, -1);
+                var ei = new ElementInfo("Inputs", 0, -1, -1);
                 ei.Text = arrayToList(inputs);
                 return ei;
             }
             if (n == 1) {
-                var ei = new EditInfo("Outputs", 0, -1, -1);
+                var ei = new ElementInfo("Outputs", 0, -1, -1);
                 ei.Text = arrayToList(outputs);
                 return ei;
             }
             if (n == 2) {
-                var ei = new EditInfo("Info Text", 0, -1, -1);
+                var ei = new ElementInfo("Info Text", 0, -1, -1);
                 ei.Text = infoText;
                 return ei;
             }
             if (n == 3) {
-                var ei = new EditInfo(EditInfo.MakeLink("customlogic.html", "Definition"), 0, -1, -1);
+                var ei = new ElementInfo(ElementInfo.MakeLink("customlogic.html", "Definition"), 0, -1, -1);
                 ei.TextArea = new TextBox();
                 ei.TextArea.Multiline = true;
                 ei.TextArea.Text = rules;
@@ -146,7 +146,7 @@ namespace Circuit {
             return null;
         }
 
-        public void SetEditValue(int n, EditInfo ei) {
+        public void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 inputs = listToArray(ei.Textf.Text);
             }

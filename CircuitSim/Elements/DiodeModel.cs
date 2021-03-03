@@ -256,23 +256,23 @@ namespace Circuit.Elements {
             updateModel();
         }
 
-        public EditInfo GetEditInfo(int n) {
+        public ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Saturation Current", saturationCurrent, -1, -1);
+                return new ElementInfo("Saturation Current", saturationCurrent, -1, -1);
             }
             if (n == 1) {
-                return new EditInfo("Series Resistance", seriesResistance, -1, -1);
+                return new ElementInfo("Series Resistance", seriesResistance, -1, -1);
             }
             if (n == 2) {
-                return new EditInfo(EditInfo.MakeLink("diodecalc.html", "Emission Coefficient"), emissionCoefficient, -1, -1);
+                return new ElementInfo(ElementInfo.MakeLink("diodecalc.html", "Emission Coefficient"), emissionCoefficient, -1, -1);
             }
             if (n == 3) {
-                return new EditInfo("Breakdown Voltage", breakdownVoltage, -1, -1);
+                return new ElementInfo("Breakdown Voltage", breakdownVoltage, -1, -1);
             }
             return null;
         }
 
-        public void SetEditValue(int n, EditInfo ei) {
+        public void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 saturationCurrent = ei.Value;
             }

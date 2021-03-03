@@ -28,7 +28,7 @@ namespace Circuit {
         public int Width { get; private set; }
         public int Height { get; private set; }
 
-        static readonly Font fontLText = new Font("Segoe UI", 14.0f);
+        static readonly Font fontLText = new Font("MS Gothic", 14.0f);
         static readonly StringFormat textLeft = new StringFormat() {
             Alignment = StringAlignment.Near,
             LineAlignment = StringAlignment.Center
@@ -138,7 +138,7 @@ namespace Circuit {
         }
 
         public void DrawCenteredLText(string s, float x, float y) {
-            g.DrawString(s, fontLText, brushText, x, y, textCenter);
+            g.DrawString(s, fontLText, brushText, x, y + 1, textCenter);
         }
 
         public void DrawLine(float ax, float ay, float bx, float by) {

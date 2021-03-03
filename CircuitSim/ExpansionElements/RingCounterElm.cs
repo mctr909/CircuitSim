@@ -68,19 +68,19 @@
             lastClock = pins[0].value;
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n < 2) {
-                return base.GetEditInfo(n);
+                return base.GetElementInfo(n);
             }
             if (n == 2) {
-                return new EditInfo("# of Bits", bits, 1, 1).SetDimensionless();
+                return new ElementInfo("# of Bits", bits, 1, 1).SetDimensionless();
             }
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n < 2) {
-                base.SetEditValue(n, ei);
+                base.SetElementValue(n, ei);
                 return;
             }
             if (n == 2 && ei.Value >= 2) {

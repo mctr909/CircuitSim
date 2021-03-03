@@ -21,7 +21,7 @@ namespace Circuit {
         TrackBar trbValue;
         int deltaY;
         string name;
-        EditInfo inf;
+        ElementInfo inf;
         CirSim sim;
         string unit;
 
@@ -107,7 +107,7 @@ namespace Circuit {
             }
             nvalues = ptr;
             values[nvalues] = 1E99;
-            inf = myElm.GetEditInfo(0);
+            inf = myElm.GetElementInfo(0);
             double currentvalue = inf.Value;
             for (int i = 0; i < nvalues + 1; i++) {
                 if (Utils.ShortUnitText(currentvalue, "") == Utils.ShortUnitText(values[i], "")) { /* match to an existing value */
@@ -177,7 +177,7 @@ namespace Circuit {
             currentidx = tr.Value;
             int thissel = getSelIdx();
             inf.Value = values[thissel];
-            myElm.SetEditValue(0, inf);
+            myElm.SetElementValue(0, inf);
             sim.NeedAnalyze();
             labels.Text = Utils.ShortUnitText(values[thissel], unit);
         }
@@ -187,7 +187,7 @@ namespace Circuit {
                 trbValue.Value = i;
                 lastidx = i;
                 inf.Value = values[i];
-                myElm.SetEditValue(0, inf);
+                myElm.SetElementValue(0, inf);
                 sim.NeedAnalyze();
             }
         }

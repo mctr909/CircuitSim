@@ -211,15 +211,15 @@ namespace Circuit.Elements {
             mCir.UpdateVoltageSource(0, Nodes[inputCount], mVoltSource, res);
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new EditInfo("# of Inputs", inputCount, 1, 8).SetDimensionless();
+                return new ElementInfo("# of Inputs", inputCount, 1, 8).SetDimensionless();
             }
             if (n == 1) {
-                return new EditInfo("High Voltage (V)", highVoltage, 1, 10);
+                return new ElementInfo("High Voltage (V)", highVoltage, 1, 10);
             }
             if (n == 2) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     Text = "Schmitt Inputs",
                     Checked = hasSchmittInputs()
@@ -229,7 +229,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0 && ei.Value >= 1) {
                 inputCount = (int)ei.Value;
                 SetPoints();

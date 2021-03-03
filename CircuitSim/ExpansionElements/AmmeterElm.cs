@@ -194,9 +194,9 @@ namespace Circuit.Elements {
             }
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                var ei = new EditInfo("Value", selectedValue, -1, -1);
+                var ei = new ElementInfo("Value", selectedValue, -1, -1);
                 ei.Choice = new ComboBox();
                 ei.Choice.Items.Add("Current");
                 ei.Choice.Items.Add("RMS Current");
@@ -204,7 +204,7 @@ namespace Circuit.Elements {
                 return ei;
             }
             if (n == 1) {
-                var ei = new EditInfo("Scale", 0);
+                var ei = new ElementInfo("Scale", 0);
                 ei.Choice = new ComboBox();
                 ei.Choice.Items.Add("Auto");
                 ei.Choice.Items.Add("A");
@@ -216,7 +216,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 meter = ei.Choice.SelectedIndex;
             }

@@ -49,18 +49,18 @@ namespace Circuit.Elements {
             arr[0] = "capacitor (polarized)";
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 2) {
-                return new EditInfo("Max Reverse Voltage", maxNegativeVoltage, 0, 0);
+                return new ElementInfo("Max Reverse Voltage", maxNegativeVoltage, 0, 0);
             }
-            return base.GetEditInfo(n);
+            return base.GetElementInfo(n);
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 2 && ei.Value >= 0) {
                 maxNegativeVoltage = ei.Value;
             }
-            base.SetEditValue(n, ei);
+            base.SetElementValue(n, ei);
         }
 
         public override void StepFinished() {

@@ -323,7 +323,7 @@ namespace Circuit {
                 vceIcBox.Checked = scope.isShowingVceAndIc();
             }
             manualScaleLabel.Text = "Scale (Max Value)" + " (" + scope.getScaleUnitsText() + ")";
-            manualScaleTextBox.Text = EditDialog.unitString(null, scope.getScaleValue());
+            manualScaleTextBox.Text = ElementInfoDialog.unitString(null, scope.getScaleValue());
             manualScaleBox.Checked = scope.LockScale;
             manualScaleTextBox.Enabled = scope.LockScale;
             logSpectrumBox.Checked = scope.LogSpectrum;
@@ -344,7 +344,7 @@ namespace Circuit {
             }
             scope.Text = label;
             try {
-                double d = EditDialog.parseUnits(manualScaleTextBox.Text);
+                double d = ElementInfoDialog.parseUnits(manualScaleTextBox.Text);
                 scope.setManualScaleValue(d);
             } catch { }
         }

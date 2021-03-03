@@ -93,12 +93,12 @@ namespace Circuit.Elements {
             arr[4] = "P = " + Utils.UnitText(Power, "W");
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Inductance (H)", Inductance, 0, 0);
+                return new ElementInfo("Inductance (H)", Inductance, 0, 0);
             }
             if (n == 1) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "Trapezoidal Approximation";
                 ei.CheckBox.Checked = ind.IsTrapezoidal;
@@ -107,7 +107,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0 && ei.Value > 0) {
                 Inductance = ei.Value;
             }

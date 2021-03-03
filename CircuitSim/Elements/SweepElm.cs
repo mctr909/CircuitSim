@@ -185,18 +185,18 @@ namespace Circuit.Elements {
             arr[5] = "time = " + Utils.UnitText(sweepTime, "s");
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Min Frequency (Hz)", minF, 0, 0);
+                return new ElementInfo("Min Frequency (Hz)", minF, 0, 0);
             }
             if (n == 1) {
-                return new EditInfo("Max Frequency (Hz)", maxF, 0, 0);
+                return new ElementInfo("Max Frequency (Hz)", maxF, 0, 0);
             }
             if (n == 2) {
-                return new EditInfo("Sweep Time (s)", sweepTime, 0, 0);
+                return new ElementInfo("Sweep Time (s)", sweepTime, 0, 0);
             }
             if (n == 3) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     Text = "Logarithmic",
                     Checked = (mFlags & FLAG_LOG) != 0
@@ -204,10 +204,10 @@ namespace Circuit.Elements {
                 return ei;
             }
             if (n == 4) {
-                return new EditInfo("Max Voltage", maxV, 0, 0);
+                return new ElementInfo("Max Voltage", maxV, 0, 0);
             }
             if (n == 5) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     Text = "Bidirectional",
                     Checked = (mFlags & FLAG_BIDIR) != 0
@@ -217,7 +217,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             double maxfreq = 1 / (8 * Sim.timeStep);
             if (n == 0) {
                 minF = ei.Value;

@@ -342,12 +342,12 @@ namespace Circuit.Elements {
             arr[i++] = "P = " + Utils.UnitText(Power, "W");
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new EditInfo(waveform == WF_DC ? "Voltage" : "Max Voltage", maxVoltage, -20, 20);
+                return new ElementInfo(waveform == WF_DC ? "Voltage" : "Max Voltage", maxVoltage, -20, 20);
             }
             if (n == 1) {
-                var ei = new EditInfo("Waveform", waveform, -1, -1);
+                var ei = new ElementInfo("Waveform", waveform, -1, -1);
                 ei.Choice = new ComboBox();
                 ei.Choice.Items.Add("D/C");
                 ei.Choice.Items.Add("A/C");
@@ -360,24 +360,24 @@ namespace Circuit.Elements {
                 return ei;
             }
             if (n == 2) {
-                return new EditInfo("DC Offset (V)", bias, -20, 20);
+                return new ElementInfo("DC Offset (V)", bias, -20, 20);
             }
             if (waveform == WF_DC || waveform == WF_NOISE) {
                 return null;
             }
             if (n == 3) {
-                return new EditInfo("Frequency (Hz)", frequency, 4, 500);
+                return new ElementInfo("Frequency (Hz)", frequency, 4, 500);
             }
             if (n == 4) {
-                return new EditInfo("Phase Offset (degrees)", phaseShift * ToDeg, -180, 180).SetDimensionless();
+                return new ElementInfo("Phase Offset (degrees)", phaseShift * ToDeg, -180, 180).SetDimensionless();
             }
             if (n == 5 && (waveform == WF_PULSE || waveform == WF_SQUARE)) {
-                return new EditInfo("Duty Cycle", dutyCycle * 100, 0, 100).SetDimensionless();
+                return new ElementInfo("Duty Cycle", dutyCycle * 100, 0, 100).SetDimensionless();
             }
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 maxVoltage = ei.Value;
             }

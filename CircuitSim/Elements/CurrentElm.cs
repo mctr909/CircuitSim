@@ -80,14 +80,14 @@ namespace Circuit.Elements {
             }
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Current (A)", currentValue, 0, .1);
+                return new ElementInfo("Current (A)", currentValue, 0, .1);
             }
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             currentValue = ei.Value;
         }
 

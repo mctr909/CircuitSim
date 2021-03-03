@@ -157,9 +157,9 @@ namespace Circuit.Elements {
             }
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (!customModelUI && n == 0) {
-                var ei = new EditInfo("Model", 0, -1, -1);
+                var ei = new ElementInfo("Model", 0, -1, -1);
                 models = DiodeModel.getModelList(this is ZenerElm);
                 ei.Choice = new ComboBox();
                 for (int i = 0; i != models.Count; i++) {
@@ -173,7 +173,7 @@ namespace Circuit.Elements {
                 return ei;
             }
             if (n == 0) {
-                var ei = new EditInfo("Model Name", 0, -1, -1);
+                var ei = new ElementInfo("Model Name", 0, -1, -1);
                 ei.Text = modelName;
                 return ei;
             }
@@ -181,19 +181,19 @@ namespace Circuit.Elements {
                 if (model.readOnly && !customModelUI) {
                     return null;
                 }
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.Button = new Button() { Text = "Edit Model" };
                 return ei;
             }
             if (n == 2) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.Button = new Button() { Text = "Create Simple Model" };
                 return ei;
             }
-            return base.GetEditInfo(n);
+            return base.GetElementInfo(n);
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (!customModelUI && n == 0) {
                 int ix = ei.Choice.SelectedIndex;
                 if (ix >= models.Count) {
@@ -223,7 +223,7 @@ namespace Circuit.Elements {
                     MessageBox.Show("This model cannot be modified.\r\nChange the model name to allow customization.");
                     return;
                 }
-                CirSim.diodeModelEditDialog = new EditDialog(model, Sim);
+                CirSim.diodeModelEditDialog = new ElementInfoDialog(model, Sim);
                 CirSim.diodeModelEditDialog.Show();
                 return;
             }
@@ -239,7 +239,7 @@ namespace Circuit.Elements {
                     }
                 }
             }
-            base.SetEditValue(n, ei);
+            base.SetElementValue(n, ei);
         }
 
         void setLastModelName(string n) {

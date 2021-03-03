@@ -117,9 +117,9 @@ namespace Circuit.Elements {
 
         public override bool GetConnection(int n1, int n2) { return position == 0; }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "Momentary Switch";
                 ei.CheckBox.Checked = momentary;
@@ -128,7 +128,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 momentary = ei.CheckBox.Checked;
             }

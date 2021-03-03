@@ -256,16 +256,16 @@ namespace Circuit.Elements {
 
         public override bool GetConnection(int n1, int n2) { return false; }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "Show Value";
                 ei.CheckBox.Checked = mustShowVoltage();
                 return ei;
             }
             if (n == 1) {
-                var ei = new EditInfo("Value", selectedValue, -1, -1);
+                var ei = new ElementInfo("Value", selectedValue, -1, -1);
                 ei.Choice = new ComboBox();
                 ei.Choice.Items.Add("Voltage");
                 ei.Choice.Items.Add("RMS Voltage");
@@ -281,7 +281,7 @@ namespace Circuit.Elements {
                 return ei;
             }
             if (n == 2) {
-                var ei = new EditInfo("Scale", 0);
+                var ei = new ElementInfo("Scale", 0);
                 ei.Choice = new ComboBox();
                 ei.Choice.Items.Add("Auto");
                 ei.Choice.Items.Add("V");
@@ -294,7 +294,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 if (ei.CheckBox.Checked) {
                     mFlags = FLAG_SHOWVOLTAGE;

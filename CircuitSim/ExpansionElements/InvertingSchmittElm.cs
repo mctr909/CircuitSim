@@ -135,28 +135,28 @@ namespace Circuit.Elements {
             return 0;
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
                 dlt = lowerTrigger;
-                return new EditInfo("Lower threshold (V)", lowerTrigger, 0.01, 5);
+                return new ElementInfo("Lower threshold (V)", lowerTrigger, 0.01, 5);
             }
             if (n == 1) {
                 dut = upperTrigger;
-                return new EditInfo("Upper threshold (V)", upperTrigger, 0.01, 5);
+                return new ElementInfo("Upper threshold (V)", upperTrigger, 0.01, 5);
             }
             if (n == 2) {
-                return new EditInfo("Slew Rate (V/ns)", slewRate, 0, 0);
+                return new ElementInfo("Slew Rate (V/ns)", slewRate, 0, 0);
             }
             if (n == 3) {
-                return new EditInfo("High Voltage (V)", logicOnLevel, 0, 0);
+                return new ElementInfo("High Voltage (V)", logicOnLevel, 0, 0);
             }
             if (n == 4) {
-                return new EditInfo("Low Voltage (V)", logicOffLevel, 0, 0);
+                return new ElementInfo("Low Voltage (V)", logicOffLevel, 0, 0);
             }
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 dlt = ei.Value;
             }

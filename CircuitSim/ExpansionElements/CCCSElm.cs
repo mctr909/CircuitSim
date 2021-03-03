@@ -110,12 +110,12 @@ namespace Circuit.Elements {
             }
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             /* can't set number of inputs */
             if (n == 1) {
                 return null;
             }
-            return base.GetEditInfo(n);
+            return base.GetElementInfo(n);
         }
     }
 }

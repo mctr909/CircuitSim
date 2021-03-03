@@ -314,12 +314,12 @@ namespace Circuit.Elements {
             }
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Beta/hFE", beta, 10, 1000).SetDimensionless();
+                return new ElementInfo("Beta/hFE", beta, 10, 1000).SetDimensionless();
             }
             if (n == 1) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "Swap E/C";
                 ei.CheckBox.Checked = (mFlags & FLAG_FLIP) != 0;
@@ -328,7 +328,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 beta = ei.Value;
                 setup();

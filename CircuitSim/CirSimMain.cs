@@ -31,12 +31,16 @@ namespace Circuit {
                 CircuitElm.WhiteColor = Color.Black;
                 CircuitElm.GrayColor = Color.Black;
                 CircuitElm.TextColor = Color.Black;
+                CircuitElm.SelectColor = Color.Red;
+                CircuitElm.PenHandle = Pens.Red.Brush;
                 g.PostColor = Color.Black;
                 g.Clear(Color.White);
             } else {
                 CircuitElm.WhiteColor = Color.White;
                 CircuitElm.GrayColor = Color.Gray;
                 CircuitElm.TextColor = Color.LightGray;
+                CircuitElm.SelectColor = Color.Cyan;
+                CircuitElm.PenHandle = Pens.Cyan.Brush;
                 g.PostColor = Color.Red;
                 g.Clear(Color.Black);
             }

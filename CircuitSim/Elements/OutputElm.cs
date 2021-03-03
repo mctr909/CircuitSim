@@ -62,16 +62,16 @@ namespace Circuit.Elements {
             arr[1] = "V = " + Utils.VoltageText(Volts[0]);
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "Show Voltage";
                 ei.CheckBox.Checked = (mFlags & FLAG_VALUE) != 0;
                 return ei;
             }
             if (n == 1) {
-                var ei = new EditInfo("Scale", 0);
+                var ei = new ElementInfo("Scale", 0);
                 ei.Choice = new ComboBox();
                 ei.Choice.Items.Add("Auto");
                 ei.Choice.Items.Add("V");
@@ -83,7 +83,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 mFlags = ei.CheckBox.Checked ? (mFlags | FLAG_VALUE) : (mFlags & ~FLAG_VALUE);
             }

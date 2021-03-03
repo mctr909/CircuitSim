@@ -261,18 +261,18 @@ namespace Circuit.Elements {
             return false;
         }
 
-        public override EditInfo GetEditInfo(int n) {
+        public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new EditInfo("Primary Inductance (H)", inductance, .01, 5);
+                return new ElementInfo("Primary Inductance (H)", inductance, .01, 5);
             }
             if (n == 1) {
-                return new EditInfo("Ratio", ratio, 1, 10).SetDimensionless();
+                return new ElementInfo("Ratio", ratio, 1, 10).SetDimensionless();
             }
             if (n == 2) {
-                return new EditInfo("Coupling Coefficient", couplingCoef, 0, 1).SetDimensionless();
+                return new ElementInfo("Coupling Coefficient", couplingCoef, 0, 1).SetDimensionless();
             }
             if (n == 3) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     Text = "Trapezoidal Approximation",
                     Checked = IsTrapezoidal
@@ -280,7 +280,7 @@ namespace Circuit.Elements {
                 return ei;
             }
             if (n == 4) {
-                var ei = new EditInfo("", 0, -1, -1);
+                var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     Text = "Swap Secondary Polarity",
                     Checked = polarity == -1
@@ -290,7 +290,7 @@ namespace Circuit.Elements {
             return null;
         }
 
-        public override void SetEditValue(int n, EditInfo ei) {
+        public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0 && ei.Value > 0) {
                 inductance = ei.Value;
             }
