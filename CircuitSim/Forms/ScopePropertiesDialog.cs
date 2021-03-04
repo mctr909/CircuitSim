@@ -25,7 +25,6 @@ namespace Circuit {
         CheckBox dutyBox;
         CheckBox viBox;
         CheckBox xyBox;
-        CheckBox resistanceBox;
         CheckBox ibBox;
         CheckBox icBox;
         CheckBox ieBox;
@@ -49,7 +48,7 @@ namespace Circuit {
             mSim = asim;
             scope = s;
 
-            var elm = scope.getSingleElm();
+            var elm = scope.SingleElm;
             bool transistor = elm != null && (elm is TransistorElm);
 
             SuspendLayout();
@@ -77,6 +76,10 @@ namespace Circuit {
                     AutoSize = true,
                     TextAlign = ContentAlignment.TopLeft
                 });
+                /* Manual Scale */
+                manualScaleBox = new ScopeCheckBox("Manual Scale", SCOPE_MENU.MANUAL_SCALE);
+                manualScaleBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                addItemToGrid(grbSpeed, manualScaleBox);
                 /* manualScaleLabel */
                 addItemToGrid(grbSpeed, manualScaleLabel = new Label() {
                     Text = "Scale",
@@ -95,66 +98,62 @@ namespace Circuit {
                 Controls.Add(grbSpeed);
             }
 
-            var grbPlots = new GroupBox();
+            var pnlPlots = new Panel();
             {
-                grbPlots.Text = "Plots";
+                pnlPlots.Text = "Plots";
+                pnlPlots.BorderStyle = BorderStyle.FixedSingle;
+                pnlPlots.AutoScroll = true;
                 gridY = 12;
                 if (transistor) {
                     /* Show Ib */
-                    ibBox = new ScopeCheckBox("Show Ib", SCOPE_MENU.showib);
+                    ibBox = new ScopeCheckBox("Show Ib", SCOPE_MENU.SHOW_IB);
                     ibBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                    addItemToGrid(grbPlots, ibBox);
+                    addItemToGrid(pnlPlots, ibBox);
                     /* Show Ic */
-                    icBox = new ScopeCheckBox("Show Ic", SCOPE_MENU.showic);
+                    icBox = new ScopeCheckBox("Show Ic", SCOPE_MENU.SHOW_IC);
                     icBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                    addItemToGrid(grbPlots, icBox);
+                    addItemToGrid(pnlPlots, icBox);
                     /* Show Ie */
-                    ieBox = new ScopeCheckBox("Show Ie", SCOPE_MENU.showie);
+                    ieBox = new ScopeCheckBox("Show Ie", SCOPE_MENU.SHOW_IE);
                     ieBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                    addItemToGrid(grbPlots, ieBox);
+                    addItemToGrid(pnlPlots, ieBox);
                     /* Show Vbe */
-                    vbeBox = new ScopeCheckBox("Show Vbe", SCOPE_MENU.showvbe);
+                    vbeBox = new ScopeCheckBox("Show Vbe", SCOPE_MENU.SHOW_VBE);
                     vbeBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                    addItemToGrid(grbPlots, vbeBox);
+                    addItemToGrid(pnlPlots, vbeBox);
                     /* Show Vbc */
-                    vbcBox = new ScopeCheckBox("Show Vbc", SCOPE_MENU.showvbc);
+                    vbcBox = new ScopeCheckBox("Show Vbc", SCOPE_MENU.SHOW_VBC);
                     vbcBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                    addItemToGrid(grbPlots, vbcBox);
+                    addItemToGrid(pnlPlots, vbcBox);
                     /* Show Vce */
-                    vceBox = new ScopeCheckBox("Show Vce", SCOPE_MENU.showvce);
+                    vceBox = new ScopeCheckBox("Show Vce", SCOPE_MENU.SHOW_VCE);
                     vceBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                    addItemToGrid(grbPlots, vceBox);
+                    addItemToGrid(pnlPlots, vceBox);
+                    vceIcBox = new ScopeCheckBox("Show Vce Ic", SCOPE_MENU.SHOW_VCE_IC);
+                    vceIcBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                    addItemToGrid(pnlPlots, vceIcBox);
                 } else {
                     /* Show Voltage */
-                    voltageBox = new ScopeCheckBox("Show Voltage", SCOPE_MENU.showvoltage);
+                    voltageBox = new ScopeCheckBox("Show Voltage", SCOPE_MENU.SHOW_VOLTAGE);
                     voltageBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                    addItemToGrid(grbPlots, voltageBox);
+                    addItemToGrid(pnlPlots, voltageBox);
                     /* Show Current */
-                    currentBox = new ScopeCheckBox("Show Current", SCOPE_MENU.showcurrent);
+                    currentBox = new ScopeCheckBox("Show Current", SCOPE_MENU.SHOW_CURRENT);
                     currentBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                    addItemToGrid(grbPlots, currentBox);
+                    addItemToGrid(pnlPlots, currentBox);
                 }
-                /* Show Resistance */
-                resistanceBox = new ScopeCheckBox("Show Resistance", SCOPE_MENU.showresistance);
-                resistanceBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                addItemToGrid(grbPlots, resistanceBox);
                 /* Show Spectrum */
-                spectrumBox = new ScopeCheckBox("Show Spectrum", SCOPE_MENU.showfft);
+                spectrumBox = new ScopeCheckBox("Show Spectrum", SCOPE_MENU.SHOW_FFT);
                 spectrumBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                addItemToGrid(grbPlots, spectrumBox);
+                addItemToGrid(pnlPlots, spectrumBox);
                 /* Log Spectrum */
-                logSpectrumBox = new ScopeCheckBox("Log Spectrum", SCOPE_MENU.logspectrum);
+                logSpectrumBox = new ScopeCheckBox("Log Spectrum", SCOPE_MENU.LOG_SPECTRUM);
                 logSpectrumBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                addItemToGrid(grbPlots, logSpectrumBox);
-                /* Manual Scale */
-                manualScaleBox = new ScopeCheckBox("Manual Scale", SCOPE_MENU.manualscale);
-                manualScaleBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                addItemToGrid(grbPlots, manualScaleBox);
+                addItemToGrid(pnlPlots, logSpectrumBox);
                 /* */
-                grbPlots.Left = 4;
-                grbPlots.Top = grbSpeed.Bottom + 8;
-                grbPlots.Height = gridY;
-                Controls.Add(grbPlots);
+                pnlPlots.Left = 4;
+                pnlPlots.Top = grbSpeed.Bottom + 8;
+                Controls.Add(pnlPlots);
             }
 
             var grbXY = new GroupBox();
@@ -162,16 +161,16 @@ namespace Circuit {
                 grbXY.Text = "X-Y Plots";
                 gridY = 12;
                 /* Show V vs I */
-                viBox = new ScopeCheckBox("Show V vs I", SCOPE_MENU.showvvsi);
+                viBox = new ScopeCheckBox("Show V vs I", SCOPE_MENU.SHOW_V_I);
                 viBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
                 addItemToGrid(grbXY, viBox);
                 /* Plot X/Y */
-                xyBox = new ScopeCheckBox("Plot X/Y", SCOPE_MENU.plotxy);
+                xyBox = new ScopeCheckBox("Plot X/Y", SCOPE_MENU.PLOT_XY);
                 xyBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
                 addItemToGrid(grbXY, xyBox);
                 if (transistor) {
                     /* Show Vce vs Ic */
-                    vceIcBox = new ScopeCheckBox("Show Vce vs Ic", SCOPE_MENU.showvcevsic);
+                    vceIcBox = new ScopeCheckBox("Show Vce vs Ic", SCOPE_MENU.SHOW_VCE_IC);
                     vceIcBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
                     addItemToGrid(grbXY, vceIcBox);
                 }
@@ -187,27 +186,27 @@ namespace Circuit {
                 grbShowInfo.Text = "Show Info";
                 gridY = 12;
                 /* Show Scale */
-                scaleBox = new ScopeCheckBox("Show Scale", SCOPE_MENU.showscale);
+                scaleBox = new ScopeCheckBox("Show Scale", SCOPE_MENU.SHOW_SCALE);
                 scaleBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
                 addItemToGrid(grbShowInfo, scaleBox);
                 /* Show Peak Value */
-                peakBox = new ScopeCheckBox("Show Peak Value", SCOPE_MENU.showpeak);
+                peakBox = new ScopeCheckBox("Show Peak Value", SCOPE_MENU.SHOW_PEAK);
                 peakBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
                 addItemToGrid(grbShowInfo, peakBox);
                 /* Show Negative Peak Value */
-                negPeakBox = new ScopeCheckBox("Show Negative Peak Value", SCOPE_MENU.shownegpeak);
+                negPeakBox = new ScopeCheckBox("Show Negative Peak Value", SCOPE_MENU.SHOW_NEG_PEAK);
                 negPeakBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
                 addItemToGrid(grbShowInfo, negPeakBox);
                 /* Show Frequency */
-                freqBox = new ScopeCheckBox("Show Frequency", SCOPE_MENU.showfreq);
+                freqBox = new ScopeCheckBox("Show Frequency", SCOPE_MENU.SHOW_FREQ);
                 freqBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
                 addItemToGrid(grbShowInfo, freqBox);
                 /* Show RMS Average */
-                rmsBox = new ScopeCheckBox("Show RMS Average", SCOPE_MENU.showrms);
+                rmsBox = new ScopeCheckBox("Show RMS Average", SCOPE_MENU.SHOW_RMS);
                 rmsBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
                 addItemToGrid(grbShowInfo, rmsBox);
                 /* Show Duty Cycle */
-                dutyBox = new ScopeCheckBox("Show Duty Cycle", SCOPE_MENU.showduty);
+                dutyBox = new ScopeCheckBox("Show Duty Cycle", SCOPE_MENU.SHOW_DUTY);
                 dutyBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
                 addItemToGrid(grbShowInfo, dutyBox);
                 /* Custom Label */
@@ -247,7 +246,7 @@ namespace Circuit {
                 pnl.Controls.Add(applyButton);
                 /* Save as Default */
                 var saveAsDefaultButton = new Button() { Text = "Save as Default" };
-                saveAsDefaultButton.Click += new EventHandler((sender, e) => { scope.saveAsDefault(); });
+                saveAsDefaultButton.Click += new EventHandler((sender, e) => { scope.SaveAsDefault(); });
                 saveAsDefaultButton.Left = applyButton.Right + 4;
                 saveAsDefaultButton.Width = 100;
                 saveAsDefaultButton.Top = 4;
@@ -277,10 +276,10 @@ namespace Circuit {
         }
 
         void setScopeSpeedLabel() {
-            scopeSpeedLabel.Text = (Utils.UnitText(scope.calcGridStepX(), "s") + "/div");
+            scopeSpeedLabel.Text = (Utils.UnitText(scope.CalcGridStepX(), "s") + "/div");
         }
 
-        void addItemToGrid(GroupBox grb, Control ctrl) {
+        void addItemToGrid(Control grb, Control ctrl) {
             ctrl.Left = 8;
             ctrl.Top = gridY;
             grb.Controls.Add(ctrl);
@@ -291,7 +290,7 @@ namespace Circuit {
             int newsp = (int)Math.Pow(2, 10 - speedBar.Value);
             Console.WriteLine("changed " + scope.Speed + " " + newsp + " " + speedBar.Value);
             if (scope.Speed != newsp) {
-                scope.setSpeed(newsp);
+                scope.Speed = newsp;
             }
             setScopeSpeedLabel();
         }
@@ -299,8 +298,8 @@ namespace Circuit {
         void updateUI() {
             speedBar.Value = (10 - (int)Math.Round(Math.Log(scope.Speed) / Math.Log(2)));
             if (voltageBox != null) {
-                voltageBox.Checked = scope.ShowV && !scope.showingValue(Scope.VAL_POWER);
-                currentBox.Checked = scope.ShowI && !scope.showingValue(Scope.VAL_POWER);
+                voltageBox.Checked = scope.ShowV && !scope.ShowingValue(Scope.VAL.POWER);
+                currentBox.Checked = scope.ShowI && !scope.ShowingValue(Scope.VAL.POWER);
             }
             scaleBox.Checked = scope.ShowScale;
             peakBox.Checked = scope.ShowMax;
@@ -308,25 +307,24 @@ namespace Circuit {
             freqBox.Checked = scope.ShowFreq;
             spectrumBox.Checked = scope.ShowFFT;
             rmsBox.Checked = scope.ShowRMS;
-            rmsBox.Text = scope.canShowRMS() ? "Show RMS Average" : "Show Average";
+            rmsBox.Text = scope.CanShowRMS ? "Show RMS Average" : "Show Average";
             viBox.Checked = scope.Plot2d && !scope.PlotXY;
             xyBox.Checked = scope.PlotXY;
-            resistanceBox.Checked = scope.showingValue(Scope.VAL_R);
-            resistanceBox.Enabled = scope.canShowResistance();
             if (vbeBox != null) {
-                ibBox.Checked = scope.showingValue(Scope.VAL_IB);
-                icBox.Checked = scope.showingValue(Scope.VAL_IC);
-                ieBox.Checked = scope.showingValue(Scope.VAL_IE);
-                vbeBox.Checked = scope.showingValue(Scope.VAL_VBE);
-                vbcBox.Checked = scope.showingValue(Scope.VAL_VBC);
-                vceBox.Checked = scope.showingValue(Scope.VAL_VCE);
-                vceIcBox.Checked = scope.isShowingVceAndIc();
+                ibBox.Checked = scope.ShowingValue(Scope.VAL.IB);
+                icBox.Checked = scope.ShowingValue(Scope.VAL.IC);
+                ieBox.Checked = scope.ShowingValue(Scope.VAL.IE);
+                vbeBox.Checked = scope.ShowingValue(Scope.VAL.VBE);
+                vbcBox.Checked = scope.ShowingValue(Scope.VAL.VBC);
+                vceBox.Checked = scope.ShowingValue(Scope.VAL.VCE);
+                vceIcBox.Checked = scope.IsShowingVceAndIc;
             }
-            manualScaleLabel.Text = "Scale (Max Value)" + " (" + scope.getScaleUnitsText() + ")";
-            manualScaleTextBox.Text = ElementInfoDialog.unitString(null, scope.getScaleValue());
+            manualScaleLabel.Text = "Scale (Max Value)" + " (" + scope.GetScaleUnitsText() + ")";
+            manualScaleTextBox.Text = ElementInfoDialog.unitString(null, scope.ScaleValue);
             manualScaleBox.Checked = scope.LockScale;
             manualScaleTextBox.Enabled = scope.LockScale;
             logSpectrumBox.Checked = scope.LogSpectrum;
+            logSpectrumBox.Enabled = scope.ShowFFT;
             setScopeSpeedLabel();
 
             /* if you add more here, make sure it still works with transistor scopes */
@@ -345,13 +343,13 @@ namespace Circuit {
             scope.Text = label;
             try {
                 double d = ElementInfoDialog.parseUnits(manualScaleTextBox.Text);
-                scope.setManualScaleValue(d);
+                scope.SetManualScaleValue(d);
             } catch { }
         }
 
         void onValueChange(object sender) {
             var cb = (ScopeCheckBox)sender;
-            scope.handleMenu(cb.Menu, cb.Checked);
+            scope.HandleMenu(cb.Menu, cb.Checked);
             updateUI();
         }
     }

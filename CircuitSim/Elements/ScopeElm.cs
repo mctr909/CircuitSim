@@ -18,9 +18,9 @@ namespace Circuit.Elements {
             string sStr = st.nextToken();
             var sst = new StringTokenizer(sStr, "_");
             elmScope = new Scope(Sim);
-            elmScope.undump(sst);
+            elmScope.Undump(sst);
             SetPoints();
-            elmScope.resetGraph();
+            elmScope.ResetGraph();
         }
 
         public override bool CanViewInScope { get { return false; } }
@@ -30,14 +30,14 @@ namespace Circuit.Elements {
         public override DUMP_ID DumpType { get { return DUMP_ID.SCOPE; } }
 
         protected override string dump() {
-            string sStr = elmScope.dump().Replace(' ', '_');
+            string sStr = elmScope.Dump().Replace(' ', '_');
             sStr = sStr.Replace("o_", ""); /* remove unused prefix for embedded Scope */
             return sStr;
         }
 
         public void setScopeElm(CircuitElm e) {
-            elmScope.setElm(e);
-            elmScope.resetGraph();
+            elmScope.SetElm(e);
+            elmScope.ResetGraph();
         }
 
         public void setScopeRect() {
@@ -47,7 +47,7 @@ namespace Circuit.Elements {
             int j2 = Sim.TransformY(Math.Max(Y1, Y2));
             var r = new Rectangle(i1, j1, i2 - i1, j2 - j1);
             if (!r.Equals(elmScope.BoundingBox)) {
-                elmScope.setRect(r);
+                elmScope.SetRect(r);
             }
         }
 
@@ -61,12 +61,12 @@ namespace Circuit.Elements {
         }
 
         public void stepScope() {
-            elmScope.timeStep();
+            elmScope.TimeStep();
         }
 
         public override void Reset() {
             base.Reset();
-            elmScope.resetGraph(true);
+            elmScope.ResetGraph(true);
         }
 
         public void clearElmScope() {
@@ -76,7 +76,7 @@ namespace Circuit.Elements {
         public override void Draw(CustomGraphics g) {
             var color = NeedsHighlight ? SelectColor : WhiteColor;
             setScopeRect();
-            elmScope.draw(g);
+            elmScope.Draw(g);
             setBbox(mPoint1, mPoint2, 0);
             drawPosts(g);
         }

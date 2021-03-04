@@ -463,7 +463,7 @@ namespace Circuit.Elements {
             getFetInfo(arr, "MOSFET");
         }
 
-        public override string GetScopeText(int v) {
+        public override string GetScopeText(Scope.VAL v) {
             return ((pnp == -1) ? "p-" : "n-") + "MOSFET";
         }
 

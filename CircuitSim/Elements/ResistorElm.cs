@@ -112,7 +112,7 @@ namespace Circuit.Elements {
             arr[4] = "P = " + Utils.UnitText(Power, "W");
         }
 
-        public override string GetScopeText(int v) {
+        public override string GetScopeText(Scope.VAL v) {
             return "resistor, " + Utils.UnitText(Resistance, CirSim.ohmString);
         }
 

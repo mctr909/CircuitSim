@@ -258,18 +258,51 @@ namespace Circuit.Elements {
             mCir.StampRightSide(Nodes[V_E], -ie + gee * vbe + gec * vbc);
         }
 
-        public override string GetScopeText(int x) {
+        public override string GetScopeText(Scope.VAL x) {
             string t = "";
             switch (x) {
-            case Scope.VAL_IB: t = "Ib"; break;
-            case Scope.VAL_IC: t = "Ic"; break;
-            case Scope.VAL_IE: t = "Ie"; break;
-            case Scope.VAL_VBE: t = "Vbe"; break;
-            case Scope.VAL_VBC: t = "Vbc"; break;
-            case Scope.VAL_VCE: t = "Vce"; break;
-            case Scope.VAL_POWER: t = "P"; break;
+            case Scope.VAL.IB: t = "Ib"; break;
+            case Scope.VAL.IC: t = "Ic"; break;
+            case Scope.VAL.IE: t = "Ie"; break;
+            case Scope.VAL.VBE: t = "Vbe"; break;
+            case Scope.VAL.VBC: t = "Vbc"; break;
+            case Scope.VAL.VCE: t = "Vce"; break;
+            case Scope.VAL.POWER: t = "P"; break;
             }
             return "transistor, " + t;
+        }
+
+        public override double GetScopeValue(Scope.VAL x) {
+            switch (x) {
+            case Scope.VAL.IB:
+                return ib;
+            case Scope.VAL.IC:
+                return ic;
+            case Scope.VAL.IE:
+                return ie;
+            case Scope.VAL.VBE:
+                return Volts[V_B] - Volts[V_E];
+            case Scope.VAL.VBC:
+                return Volts[V_B] - Volts[V_C];
+            case Scope.VAL.VCE:
+                return Volts[V_C] - Volts[V_E];
+            case Scope.VAL.POWER:
+                return Power;
+            }
+            return 0;
+        }
+
+        public override Scope.UNITS GetScopeUnits(Scope.VAL x) {
+            switch (x) {
+            case Scope.VAL.IB:
+            case Scope.VAL.IC:
+            case Scope.VAL.IE:
+                return Scope.UNITS.A;
+            case Scope.VAL.POWER:
+                return Scope.UNITS.W;
+            default:
+                return Scope.UNITS.V;
+            }
         }
 
         public override void GetInfo(string[] arr) {
@@ -289,29 +322,6 @@ namespace Circuit.Elements {
             arr[5] = "Vbc = " + Utils.VoltageText(vbc);
             arr[6] = "Vce = " + Utils.VoltageText(vce);
             arr[7] = "P = " + Utils.UnitText(Power, "W");
-        }
-
-        public override double GetScopeValue(int x) {
-            switch (x) {
-            case Scope.VAL_IB: return ib;
-            case Scope.VAL_IC: return ic;
-            case Scope.VAL_IE: return ie;
-            case Scope.VAL_VBE: return Volts[V_B] - Volts[V_E];
-            case Scope.VAL_VBC: return Volts[V_B] - Volts[V_C];
-            case Scope.VAL_VCE: return Volts[V_C] - Volts[V_E];
-            case Scope.VAL_POWER: return Power;
-            }
-            return 0;
-        }
-
-        public override int GetScopeUnits(int x) {
-            switch (x) {
-            case Scope.VAL_IB:
-            case Scope.VAL_IC:
-            case Scope.VAL_IE: return Scope.UNITS_A;
-            case Scope.VAL_POWER: return Scope.UNITS_W;
-            default: return Scope.UNITS_V;
-            }
         }
 
         public override ElementInfo GetElementInfo(int n) {

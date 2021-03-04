@@ -74,7 +74,7 @@ namespace Circuit.Elements {
                     return false;
                 }
                 /* Test if the current mouseElm is a ScopeElm and, if so, does it belong to this elm */
-                var isScopeElm = (mMouseElmRef is ScopeElm) && ((ScopeElm)mMouseElmRef).elmScope.getElm().Equals(this);
+                var isScopeElm = (mMouseElmRef is ScopeElm) && ((ScopeElm)mMouseElmRef).elmScope.Elm.Equals(this);
                 return mMouseElmRef.Equals(this) || IsSelected || isScopeElm;
             }
         }
@@ -237,7 +237,7 @@ namespace Circuit.Elements {
             int dx = b.X - a.X;
             int dy = b.Y - a.Y;
             double dn = Math.Sqrt(dx * dx + dy * dy);
-            int ds = 8;
+            int ds = 20;
             pos %= ds;
             if (pos < 0) {
                 pos += ds;
@@ -843,19 +843,19 @@ namespace Circuit.Elements {
 
         public virtual bool CanShowValueInScope(int v) { return false; }
 
-        public virtual string GetScopeText(int v) {
+        public virtual string GetScopeText(Scope.VAL v) {
             var info = new string[10];
             GetInfo(info);
             return info[0];
         }
 
-        public virtual double GetScopeValue(int x) {
-            return (x == Scope.VAL_CURRENT) ? mCurrent : (x == Scope.VAL_POWER) ? Power : VoltageDiff;
+        public virtual double GetScopeValue(Scope.VAL x) {
+            return (x == Scope.VAL.CURRENT) ? mCurrent : (x == Scope.VAL.POWER) ? Power : VoltageDiff;
         }
 
-        public virtual int GetScopeUnits(int x) {
-            return (x == Scope.VAL_CURRENT) ? Scope.UNITS_A :
-                (x == Scope.VAL_POWER) ? Scope.UNITS_W : Scope.UNITS_V;
+        public virtual Scope.UNITS GetScopeUnits(Scope.VAL x) {
+            return (x == Scope.VAL.CURRENT) ? Scope.UNITS.A :
+                (x == Scope.VAL.POWER) ? Scope.UNITS.W : Scope.UNITS.V;
         }
 
         public virtual string DumpModel() { return null; }

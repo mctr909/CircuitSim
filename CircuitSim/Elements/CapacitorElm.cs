@@ -157,7 +157,7 @@ namespace Circuit.Elements {
             arr[4] = "P = " + Utils.UnitText(Power, "W");
         }
 
-        public override string GetScopeText(int v) {
+        public override string GetScopeText(Scope.VAL v) {
             base.GetScopeText(v);
             return "capacitor, " + Utils.UnitText(Capacitance, "F");
         }

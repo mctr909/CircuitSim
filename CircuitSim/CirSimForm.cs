@@ -120,7 +120,7 @@ namespace Circuit {
                 chkPrintable = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "白黒表示" };
                 chkPrintable.CheckedChanged += new EventHandler((s, e) => {
                     for (int i = 0; i < scopeCount; i++) {
-                        scopes[i].setRect(scopes[i].BoundingBox);
+                        scopes[i].SetRect(scopes[i].BoundingBox);
                     }
                     setOptionInStorage("whiteBackground", chkPrintable.Checked);
                 });
@@ -450,7 +450,7 @@ namespace Circuit {
             if (item == MENU_ITEM.VIEW_IN_SCOPE && menuElm != null) {
                 int i;
                 for (i = 0; i != scopeCount; i++) {
-                    if (scopes[i].getElm() == null) {
+                    if (scopes[i].Elm == null) {
                         break;
                     }
                 }
@@ -462,7 +462,7 @@ namespace Circuit {
                     scopes[i] = new Scope(this);
                     scopes[i].Position = i;
                 }
-                scopes[i].setElm(menuElm);
+                scopes[i].SetElm(menuElm);
                 if (i > 0) {
                     scopes[i].Speed = scopes[i - 1].Speed;
                 }
@@ -509,19 +509,19 @@ namespace Circuit {
                 }
                 if (null != s) {
                     if (item == MENU_ITEM.remove) {
-                        s.setElm(null);  /* setupScopes() will clean this up */
+                        s.SetElm(null);  /* setupScopes() will clean this up */
                     }
                     if (item == MENU_ITEM.removeplot) {
-                        s.removePlot(menuPlot);
+                        s.RemovePlot(menuPlot);
                     }
                     if (item == MENU_ITEM.speed2) {
-                        s.speedUp();
+                        s.SpeedUp();
                     }
                     if (item == MENU_ITEM.speed1_2) {
-                        s.slowDown();
+                        s.SlowDown();
                     }
                     if (item == MENU_ITEM.maxscale) {
-                        s.maxScale();
+                        s.MaxScale();
                     }
                     if (item == MENU_ITEM.stack) {
                         stackScope(menuScope);
@@ -533,13 +533,13 @@ namespace Circuit {
                         combineScope(menuScope);
                     }
                     if (item == MENU_ITEM.selecty) {
-                        s.selectY();
+                        s.SelectY();
                     }
                     if (item == MENU_ITEM.reset) {
-                        s.resetGraph(true);
+                        s.ResetGraph(true);
                     }
                     if (item == MENU_ITEM.properties) {
-                        s.properties(mParent.Location.X, mParent.Location.Y);
+                        s.Properties(mParent.Location.X, mParent.Location.Y);
                     }
                 }
                 deleteUnusedScopeElms();
@@ -743,8 +743,8 @@ namespace Circuit {
                 tempMouseMode = MOUSE_MODE.DRAG_ALL;
             }
 
-            if ((scopeSelected != -1 && scopes[scopeSelected].cursorInSettingsWheel()) ||
-                (scopeSelected == -1 && mouseElm != null && (mouseElm is ScopeElm) && ((ScopeElm)mouseElm).elmScope.cursorInSettingsWheel())) {
+            if ((scopeSelected != -1 && scopes[scopeSelected].CursorInSettingsWheel()) ||
+                (scopeSelected == -1 && mouseElm != null && (mouseElm is ScopeElm) && ((ScopeElm)mouseElm).elmScope.CursorInSettingsWheel())) {
                 Console.WriteLine("Doing something");
                 Scope s;
                 if (scopeSelected != -1) {
@@ -752,7 +752,7 @@ namespace Circuit {
                 } else {
                     s = ((ScopeElm)mouseElm).elmScope;
                 }
-                s.properties(
+                s.Properties(
                     mParent.Location.X + mouseCursorX,
                     mParent.Location.Y + mouseCursorY
                 );
@@ -894,7 +894,7 @@ namespace Circuit {
                 getElm(i).Reset();
             }
             for (int i = 0; i != scopeCount; i++) {
-                scopes[i].resetGraph(true);
+                scopes[i].ResetGraph(true);
             }
             analyzeFlag = true;
             if (t == 0) {
@@ -1038,8 +1038,8 @@ namespace Circuit {
                 }
                 s = 1;
             }
-            scopes[s - 1].combine(scopes[s]);
-            scopes[s].setElm(null);
+            scopes[s - 1].Combine(scopes[s]);
+            scopes[s].SetElm(null);
         }
 
         void stackAll() {
@@ -1059,8 +1059,8 @@ namespace Circuit {
 
         void combineAll() {
             for (int i = scopeCount - 2; i >= 0; i--) {
-                scopes[i].combine(scopes[i + 1]);
-                scopes[i + 1].setElm(null);
+                scopes[i].Combine(scopes[i + 1]);
+                scopes[i + 1].SetElm(null);
             }
         }
 
@@ -1068,7 +1068,7 @@ namespace Circuit {
             var newscopes = new List<Scope>();
             int ct = 0;
             for (int i = 0; i < scopeCount; i++) {
-                ct = scopes[i].separate(newscopes, ct);
+                ct = scopes[i].Separate(newscopes, ct);
             }
             scopes = newscopes.ToArray();
             scopeCount = ct;
@@ -1164,7 +1164,7 @@ namespace Circuit {
                 dump += ce.Dump + "\n";
             }
             for (i = 0; i != scopeCount; i++) {
-                string d = scopes[i].dump();
+                string d = scopes[i].Dump();
                 if (d != null) {
                     dump += d + "\n";
                 }
@@ -1341,7 +1341,7 @@ namespace Circuit {
                         if (tint == 'o') {
                             var sc = new Scope(this);
                             sc.Position = scopeCount;
-                            sc.undump(st);
+                            sc.Undump(st);
                             scopes[scopeCount++] = sc;
                             break;
                         }
@@ -1798,10 +1798,10 @@ namespace Circuit {
                 for (int i = 0; i != scopeCount; i++) {
                     var s = scopes[i];
                     if (s.BoundingBox.Contains(mx, my)) {
-                        newMouseElm = s.getElm();
+                        newMouseElm = s.Elm;
                         if (s.PlotXY) {
-                            plotXElm = s.getXElm();
-                            plotYElm = s.getYElm();
+                            plotXElm = s.Elm;
+                            plotYElm = s.YElm;
                         }
                         scopeSelected = i;
                     }
@@ -1851,7 +1851,7 @@ namespace Circuit {
             menuScope = -1;
             menuPlot = -1;
             if (scopeSelected != -1) {
-                if (scopes[scopeSelected].canMenu()) {
+                if (scopes[scopeSelected].CanMenu) {
                     menuScope = scopeSelected;
                     menuPlot = scopes[scopeSelected].SelectedPlot;
                     scopePopupMenu.doScopePopupChecks(false, scopes[scopeSelected]);
@@ -1875,7 +1875,7 @@ namespace Circuit {
                     contextPanel.Location = new Point(menuClientX, menuClientY);
                 } else {
                     var s = (ScopeElm)mouseElm;
-                    if (s.elmScope.canMenu()) {
+                    if (s.elmScope.CanMenu) {
                         menuPlot = s.elmScope.SelectedPlot;
                         scopePopupMenu.doScopePopupChecks(true, s.elmScope);
                         contextPanel = new ContextMenuStrip();
@@ -2095,7 +2095,7 @@ namespace Circuit {
             /* Remove any scopeElms for elements that no longer exist */
             for (int i = elmList.Count - 1; i >= 0; i--) {
                 var ce = getElm(i);
-                if ((ce is ScopeElm) && ((ScopeElm)ce).elmScope.needToRemove()) {
+                if ((ce is ScopeElm) && ((ScopeElm)ce).elmScope.NeedToRemove) {
                     ce.Delete();
                     elmList.RemoveAt(i);
                 }
@@ -2308,9 +2308,9 @@ namespace Circuit {
             }
 
             if (code == Keys.Back || code == Keys.Delete) {
-                if (scopeSelected != -1) {
+                if (scopeSelected != -1 && null != scopes[scopeSelected]) {
                     /* Treat DELETE key with scope selected as "remove scope", not delete */
-                    scopes[scopeSelected].setElm(null);
+                    scopes[scopeSelected].SetElm(null);
                     scopeSelected = -1;
                 } else {
                     menuElm = null;

@@ -160,7 +160,7 @@ namespace Circuit {
                 ct = 0;
             }
             for (int i = 0; i != ct; i++) {
-                scopes[i].draw(g);
+                scopes[i].Draw(g);
             }
             if (mouseWasOverSplitter) {
                 g.LineColor = Color.Cyan;
@@ -193,7 +193,7 @@ namespace Circuit {
                 }
                 int x = 0;
                 if (ct != 0) {
-                    x = scopes[ct - 1].rightEdge() + 20;
+                    x = scopes[ct - 1].RightEdge + 20;
                 }
                 x = Math.Max(x, g.Width * 2 / 3);
 
@@ -293,7 +293,7 @@ namespace Circuit {
                     mCir.CalcWireCurrents();
                 }
                 for (i = 0; i != scopeCount; i++) {
-                    scopes[i].timeStep();
+                    scopes[i].TimeStep();
                 }
                 for (i = 0; i != elmList.Count; i++) {
                     if (getElm(i) is ScopeElm) {
@@ -325,7 +325,7 @@ namespace Circuit {
             /* unused scopes/columns */
             int pos = -1;
             for (int i = 0; i < scopeCount; i++) {
-                if (scopes[i].needToRemove()) {
+                if (scopes[i].NeedToRemove) {
                     int j;
                     for (j = i; j != scopeCount; j++) {
                         scopes[j] = scopes[j + 1];
@@ -340,7 +340,7 @@ namespace Circuit {
                 pos = scopes[i].Position;
             }
 
-            while (scopeCount > 0 && scopes[scopeCount - 1].getElm() == null) {
+            while (scopeCount > 0 && scopes[scopeCount - 1].Elm == null) {
                 scopeCount--;
             }
 
@@ -379,12 +379,12 @@ namespace Circuit {
                 s.StackCount = scopeColCount[pos];
                 if (s.Speed != speed) {
                     s.Speed = speed;
-                    s.resetGraph();
+                    s.ResetGraph();
                 }
                 var r = new Rectangle(pos * w, backContext.Height - h + colh * row, w - marg, colh);
                 row++;
                 if (!r.Equals(s.BoundingBox)) {
-                    s.setRect(r);
+                    s.SetRect(r);
                 }
             }
         }
@@ -402,12 +402,12 @@ namespace Circuit {
         bool canDelayWireProcessing() {
             int i;
             for (i = 0; i != scopeCount; i++) {
-                if (scopes[i].viewingWire()) {
+                if (scopes[i].ViewingWire) {
                     return false;
                 }
             }
             for (i = 0; i != elmList.Count; i++) {
-                if ((getElm(i) is ScopeElm) && ((ScopeElm)getElm(i)).elmScope.viewingWire()) {
+                if ((getElm(i) is ScopeElm) && ((ScopeElm)getElm(i)).elmScope.ViewingWire) {
                     return false;
                 }
             }

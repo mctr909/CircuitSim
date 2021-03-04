@@ -20,21 +20,21 @@ namespace Circuit {
         public double[] MinValues { get; private set; }
         public double[] MaxValues { get; private set; }
         public int Pointer { get; private set; }
-        public int Value { get; private set; }
+        public Scope.VAL Value { get; private set; }
         public int Speed { get; private set; }
-        public int Units { get; set; }
+        public Scope.UNITS Units { get; set; }
         public double LastValue { get; private set; }
         public Color Color { get; private set; }
 
         int mScopePointCount;
         int mCounter;
 
-        public ScopePlot(CircuitElm e, int u) {
+        public ScopePlot(CircuitElm e, Scope.UNITS u) {
             Elm = e;
             Units = u;
         }
 
-        public ScopePlot(CircuitElm e, int u, int v) {
+        public ScopePlot(CircuitElm e, Scope.UNITS u, Scope.VAL v) {
             Elm = e;
             Units = u;
             Value = v;
@@ -92,13 +92,13 @@ namespace Circuit {
 
         public string GetUnitText(double v) {
             switch (Units) {
-            case Scope.UNITS_V:
+            case Scope.UNITS.V:
                 return Utils.VoltageText(v);
-            case Scope.UNITS_A:
+            case Scope.UNITS.A:
                 return Utils.CurrentText(v);
-            case Scope.UNITS_OHMS:
+            case Scope.UNITS.OHMS:
                 return Utils.UnitText(v, CirSim.ohmString);
-            case Scope.UNITS_W:
+            case Scope.UNITS.W:
                 return Utils.UnitText(v, "W");
             }
             return null;
@@ -110,10 +110,10 @@ namespace Circuit {
                 return;
             }
             switch (Units) {
-            case Scope.UNITS_V:
+            case Scope.UNITS.V:
                 Color = Color.FromArgb(0x00, 0xFF, 0x00);
                 break;
-            case Scope.UNITS_A:
+            case Scope.UNITS.A:
                 Color = Color.FromArgb(0xFF, 0xFF, 0x00);
                 break;
             default:
