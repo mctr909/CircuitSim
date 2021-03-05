@@ -4,11 +4,11 @@ namespace Circuit.Elements {
     class RailElm : VoltageElm {
         protected const int FLAG_CLOCK = 1;
 
-        public RailElm(int xx, int yy) : base(xx, yy, WF_DC) {
+        public RailElm(int xx, int yy) : base(xx, yy, WAVEFORM.DC) {
             mNumHandles = 1;
         }
 
-        public RailElm(int xx, int yy, int wf) : base(xx, yy, wf) { }
+        public RailElm(int xx, int yy, WAVEFORM wf) : base(xx, yy, wf) { }
 
         public RailElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st): base(xa, ya, xb, yb, f, st) {
             mNumHandles = 1;
@@ -35,7 +35,7 @@ namespace Circuit.Elements {
             if (w > mLen * .8) {
                 w = mLen * .8;
             }
-            if (waveform == WF_SQUARE && (mFlags & FLAG_CLOCK) != 0 || waveform == WF_DC || waveform == WF_VAR) {
+            if (waveform == WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0 || waveform == WAVEFORM.DC) {
                 mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - (w - 5) / mLen);
             } else {
                 mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - w / mLen);
@@ -52,9 +52,9 @@ namespace Circuit.Elements {
         }
 
         void drawRail(CustomGraphics g) {
-            if (waveform == WF_SQUARE && (mFlags & FLAG_CLOCK) != 0) {
+            if (waveform == WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
                 drawCenteredText(g, "CLK", X2, Y2, true);
-            } else if (waveform == WF_DC || waveform == WF_VAR) {
+            } else if (waveform == WAVEFORM.DC) {
                 var color = NeedsHighlight ? SelectColor : WhiteColor;
                 double v = getVoltage();
                 string s;
@@ -73,7 +73,7 @@ namespace Circuit.Elements {
         }
 
         public override void Stamp() {
-            if (waveform == WF_DC) {
+            if (waveform == WAVEFORM.DC) {
                 mCir.StampVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
             } else {
                 mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
@@ -81,7 +81,7 @@ namespace Circuit.Elements {
         }
 
         public override void DoStep() {
-            if (waveform != WF_DC) {
+            if (waveform != WAVEFORM.DC) {
                 mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
             }
         }

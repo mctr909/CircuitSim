@@ -7,16 +7,20 @@ namespace Circuit.Elements {
         const int FLAG_COS = 2;
         const int FLAG_PULSE_DUTY = 4;
 
-        protected int waveform;
+        public enum WAVEFORM {
+            DC,
+            AC,
+            SQUARE,
+            TRIANGLE,
+            SAWTOOTH,
+            PULSE,
+            PWM_BOTH,
+            PWM_HIGH,
+            PWM_LOW,
+            NOISE
+        }
 
-        protected const int WF_DC = 0;
-        protected const int WF_AC = 1;
-        protected const int WF_SQUARE = 2;
-        protected const int WF_TRIANGLE = 3;
-        protected const int WF_SAWTOOTH = 4;
-        protected const int WF_PULSE = 5;
-        protected const int WF_NOISE = 6;
-        protected const int WF_VAR = 7;
+        protected WAVEFORM waveform { get; private set; }
 
         protected const int circleSize = 36;
 
@@ -33,7 +37,7 @@ namespace Circuit.Elements {
 
         const double defaultPulseDuty = 1 / Pi2;
 
-        protected VoltageElm(int xx, int yy, int wf) : base(xx, yy) {
+        protected VoltageElm(int xx, int yy, WAVEFORM wf) : base(xx, yy) {
             waveform = wf;
             maxVoltage = 5;
             frequency = 40;
@@ -44,11 +48,11 @@ namespace Circuit.Elements {
         public VoltageElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
             maxVoltage = 5;
             frequency = 40;
-            waveform = WF_DC;
+            waveform = WAVEFORM.DC;
             dutyCycle = .5;
 
             try {
-                waveform = st.nextTokenInt();
+                waveform = st.nextTokenEnum<WAVEFORM>();
                 frequency = st.nextTokenDouble();
                 maxVoltage = st.nextTokenDouble();
                 bias = st.nextTokenDouble();
@@ -62,7 +66,7 @@ namespace Circuit.Elements {
             }
 
             /* old circuit files have the wrong duty cycle for pulse waveforms (wasn't configurable in the past) */
-            if ((mFlags & FLAG_PULSE_DUTY) == 0 && waveform == WF_PULSE) {
+            if ((mFlags & FLAG_PULSE_DUTY) == 0 && waveform == WAVEFORM.PULSE) {
                 dutyCycle = defaultPulseDuty;
             }
 
@@ -79,7 +83,7 @@ namespace Circuit.Elements {
 
         protected override string dump() {
             /* set flag so we know if duty cycle is correct for pulse waveforms */
-            if (waveform == WF_PULSE) {
+            if (waveform == WAVEFORM.PULSE) {
                 mFlags |= FLAG_PULSE_DUTY;
             } else {
                 mFlags &= ~FLAG_PULSE_DUTY;
@@ -106,7 +110,7 @@ namespace Circuit.Elements {
         }
 
         public override void Stamp() {
-            if (waveform == WF_DC) {
+            if (waveform == WAVEFORM.DC) {
                 mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
             } else {
                 mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource);
@@ -114,37 +118,69 @@ namespace Circuit.Elements {
         }
 
         public override void DoStep() {
-            if (waveform != WF_DC) {
+            if (waveform != WAVEFORM.DC) {
                 mCir.UpdateVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
             }
         }
 
         public override void StepFinished() {
-            if (waveform == WF_NOISE) {
+            if (waveform == WAVEFORM.NOISE) {
                 noiseValue = (CirSim.random.NextDouble() * 2 - 1) * maxVoltage + bias;
             }
         }
 
         public virtual double getVoltage() {
-            if (waveform != WF_DC && Sim.dcAnalysisFlag) {
+            if (waveform != WAVEFORM.DC && Sim.dcAnalysisFlag) {
                 return bias;
             }
 
-            double w = Pi2 * (Sim.t) * frequency + phaseShift;
+            double t = Pi2 * Sim.t;
+            double wt = t * frequency + phaseShift;
+
             switch (waveform) {
-            case WF_DC:
+            case WAVEFORM.DC:
                 return maxVoltage + bias;
-            case WF_AC:
-                return Math.Sin(w) * maxVoltage + bias;
-            case WF_SQUARE:
-                return bias + ((w % Pi2 > (Pi2 * dutyCycle)) ? -maxVoltage : maxVoltage);
-            case WF_TRIANGLE:
-                return bias + triangleFunc(w % Pi2) * maxVoltage;
-            case WF_SAWTOOTH:
-                return bias + (w % Pi2) * (maxVoltage / Pi) - maxVoltage;
-            case WF_PULSE:
-                return ((w % Pi2) < (Pi2 * dutyCycle)) ? maxVoltage + bias : bias;
-            case WF_NOISE:
+            case WAVEFORM.AC:
+                return Math.Sin(wt) * maxVoltage + bias;
+            case WAVEFORM.SQUARE:
+                return bias + ((wt % Pi2 > (Pi2 * dutyCycle)) ? -maxVoltage : maxVoltage);
+            case WAVEFORM.TRIANGLE:
+                return bias + triangleFunc(wt % Pi2) * maxVoltage;
+            case WAVEFORM.SAWTOOTH:
+                return bias + (wt % Pi2) * (maxVoltage / Pi) - maxVoltage;
+            case WAVEFORM.PULSE:
+                return ((wt % Pi2) < (Pi2 * dutyCycle)) ? maxVoltage + bias : bias;
+            case WAVEFORM.PWM_BOTH: {
+                var maxfreq = 1 / (32 * Sim.timeStep);
+                var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % Pi2);
+                var sg = dutyCycle * Math.Sin(wt);
+                if (0.0 <= sg) {
+                    return bias + (cr < sg ? maxVoltage : 0);
+                } else {
+                    return bias - (sg < -cr ? maxVoltage : 0);
+                }
+            }
+            case WAVEFORM.PWM_HIGH: {
+                var maxfreq = 1 / (32 * Sim.timeStep);
+                var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % Pi2);
+                var sg = dutyCycle * Math.Sin(wt);
+                if (0.0 <= sg) {
+                    return bias + (cr < sg ? maxVoltage : 0);
+                } else {
+                    return bias;
+                }
+            }
+            case WAVEFORM.PWM_LOW: {
+                var maxfreq = 1 / (32 * Sim.timeStep);
+                var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % Pi2);
+                var sg = dutyCycle * Math.Sin(wt);
+                if (0.0 <= sg) {
+                    return bias;
+                } else {
+                    return bias + (sg < -cr ? maxVoltage : 0);
+                }
+            }
+            case WAVEFORM.NOISE:
                 return noiseValue;
             default: return 0;
             }
@@ -152,7 +188,7 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads((waveform == WF_DC || waveform == WF_VAR) ? 8 : circleSize);
+            calcLeads((waveform == WAVEFORM.DC) ? 8 : circleSize);
 
             int sign;
             if (mPoint1.Y == mPoint2.Y) {
@@ -160,7 +196,7 @@ namespace Circuit.Elements {
             } else {
                 sign = mDsign;
             }
-            if(waveform == WF_DC || waveform == WF_VAR) {
+            if(waveform == WAVEFORM.DC) {
                 textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -16 * sign);
             } else {
                 textPos = Utils.InterpPoint(mPoint1, mPoint2, (mLen / 2 + 0.7 * circleSize) / mLen, 10 * sign);
@@ -171,7 +207,7 @@ namespace Circuit.Elements {
             setBbox(X1, Y1, X2, Y2);
             draw2Leads(g);
 
-            if (waveform == WF_DC) {
+            if (waveform == WAVEFORM.DC) {
                 Utils.InterpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, 10);
                 g.DrawThickLine(getVoltageColor(Volts[0]), ps1, ps2);
 
@@ -186,7 +222,7 @@ namespace Circuit.Elements {
                 Utils.InterpPoint(mLead1, mLead2, ref ps1, .5);
                 drawWaveform(g, ps1);
                 string inds;
-                if (bias > 0 || (bias == 0 && waveform == WF_PULSE)) {
+                if (bias > 0 || (bias == 0 && waveform == WAVEFORM.PULSE)) {
                     inds = "+";
                 } else {
                     inds = "*";
@@ -197,7 +233,7 @@ namespace Circuit.Elements {
             updateDotCount();
 
             if (Sim.dragElm != this) {
-                if (waveform == WF_DC) {
+                if (waveform == WAVEFORM.DC) {
                     drawDots(g, mPoint1, mPoint2, mCurCount);
                 } else {
                     drawDots(g, mPoint1, mLead1, mCurCount);
@@ -211,7 +247,7 @@ namespace Circuit.Elements {
             int x = center.X;
             int y = center.Y;
 
-            if (waveform != WF_NOISE) {
+            if (waveform != WAVEFORM.NOISE) {
                 g.ThickLineColor = NeedsHighlight ? SelectColor : GrayColor;
                 g.DrawThickCircle(center, circleSize);
             }
@@ -228,10 +264,10 @@ namespace Circuit.Elements {
             g.LineColor = NeedsHighlight ? SelectColor : GrayColor;
 
             switch (waveform) {
-            case WF_DC: {
+            case WAVEFORM.DC: {
                 break;
             }
-            case WF_SQUARE:
+            case WAVEFORM.SQUARE:
                 if (maxVoltage < 0) {
                     g.DrawLine(x - h, y + h, x - h, y    );
                     g.DrawLine(x - h, y + h, xd   , y + h);
@@ -246,7 +282,7 @@ namespace Circuit.Elements {
                     g.DrawLine(x + h, y    , x + h, y + h);
                 }
                 break;
-            case WF_PULSE:
+            case WAVEFORM.PULSE:
                 if (maxVoltage < 0) {
                     g.DrawLine(x + h, y    , x + h, y    );
                     g.DrawLine(x + h, y    , xd   , y    );
@@ -261,12 +297,12 @@ namespace Circuit.Elements {
                     g.DrawLine(x + h, y    , x + h, y    );
                 }
                 break;
-            case WF_SAWTOOTH:
+            case WAVEFORM.SAWTOOTH:
                 g.DrawLine(x, y - h, x - h, y    );
                 g.DrawLine(x, y - h, x    , y + h);
                 g.DrawLine(x, y + h, x + h, y    );
                 break;
-            case WF_TRIANGLE: {
+            case WAVEFORM.TRIANGLE: {
                 int xl = 5;
                 g.DrawLine(x - xl * 2, y    , x - xl    , y - h);
                 g.DrawLine(x - xl    , y - h, x         , y    );
@@ -274,11 +310,11 @@ namespace Circuit.Elements {
                 g.DrawLine(x + xl    , y + h, x + xl * 2, y    );
                 break;
             }
-            case WF_NOISE: {
+            case WAVEFORM.NOISE: {
                 drawCenteredText(g, "Noise", x, y, true);
                 break;
             }
-            case WF_AC: {
+            case WAVEFORM.AC: {
                 int xl = 10;
                 int x0 = 0;
                 float y0 = 0;
@@ -294,7 +330,7 @@ namespace Circuit.Elements {
             }
             }
 
-            if (Sim.chkShowValues.Checked && waveform != WF_NOISE) {
+            if (Sim.chkShowValues.Checked && waveform != WAVEFORM.NOISE) {
                 var s = Utils.ShortUnitText(maxVoltage, "V\r\n");
                 s += Utils.ShortUnitText(frequency, "Hz\r\n");
                 s += Utils.ShortUnitText(phaseShift * ToDeg, "°");
@@ -304,30 +340,24 @@ namespace Circuit.Elements {
 
         public override void GetInfo(string[] arr) {
             switch (waveform) {
-            case WF_DC:
-            case WF_VAR:
-                arr[0] = "voltage source"; break;
-            case WF_AC:
-                arr[0] = "A/C source"; break;
-            case WF_SQUARE:
-                arr[0] = "square wave gen"; break;
-            case WF_PULSE:
-                arr[0] = "pulse gen"; break;
-            case WF_SAWTOOTH:
-                arr[0] = "sawtooth gen"; break;
-            case WF_TRIANGLE:
-                arr[0] = "triangle gen"; break;
-            case WF_NOISE:
-                arr[0] = "noise gen"; break;
+            case WAVEFORM.DC:
+            case WAVEFORM.AC:
+            case WAVEFORM.SQUARE:
+            case WAVEFORM.PULSE:
+            case WAVEFORM.SAWTOOTH:
+            case WAVEFORM.TRIANGLE:
+            case WAVEFORM.NOISE:
+            case WAVEFORM.PWM_BOTH:
+                arr[0] = waveform.ToString(); break;
             }
 
             arr[1] = "I = " + Utils.CurrentText(mCurrent);
             arr[2] = ((this is RailElm) ? "V = " : "Vd = ") + Utils.VoltageText(VoltageDiff);
             int i = 3;
-            if (waveform != WF_DC && waveform != WF_VAR && waveform != WF_NOISE) {
+            if (waveform != WAVEFORM.DC && waveform != WAVEFORM.NOISE) {
                 arr[i++] = "f = " + Utils.UnitText(frequency, "Hz");
                 arr[i++] = "Vmax = " + Utils.VoltageText(maxVoltage);
-                if (waveform == WF_AC && bias == 0) {
+                if (waveform == WAVEFORM.AC && bias == 0) {
                     arr[i++] = "V(rms) = " + Utils.VoltageText(maxVoltage / 1.41421356);
                 }
                 if (bias != 0) {
@@ -336,7 +366,7 @@ namespace Circuit.Elements {
                     arr[i++] = "wavelength = " + Utils.UnitText(2.9979e8 / frequency, "m");
                 }
             }
-            if (waveform == WF_DC && mCurrent != 0 && mCir.ShowResistanceInVoltageSources) {
+            if (waveform == WAVEFORM.DC && mCurrent != 0 && mCir.ShowResistanceInVoltageSources) {
                 arr[i++] = "(R = " + Utils.UnitText(maxVoltage / mCurrent, CirSim.ohmString) + ")";
             }
             arr[i++] = "P = " + Utils.UnitText(Power, "W");
@@ -344,25 +374,28 @@ namespace Circuit.Elements {
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new ElementInfo(waveform == WF_DC ? "Voltage" : "Max Voltage", maxVoltage, -20, 20);
+                return new ElementInfo(waveform == WAVEFORM.DC ? "Voltage" : "Max Voltage", maxVoltage, -20, 20);
             }
             if (n == 1) {
-                var ei = new ElementInfo("Waveform", waveform, -1, -1);
+                var ei = new ElementInfo("Waveform", (int)waveform, -1, -1);
                 ei.Choice = new ComboBox();
-                ei.Choice.Items.Add("D/C");
-                ei.Choice.Items.Add("A/C");
-                ei.Choice.Items.Add("Square Wave");
-                ei.Choice.Items.Add("Triangle");
-                ei.Choice.Items.Add("Sawtooth");
-                ei.Choice.Items.Add("Pulse");
-                ei.Choice.Items.Add("Noise");
-                ei.Choice.SelectedIndex = waveform;
+                ei.Choice.Items.Add(WAVEFORM.DC);
+                ei.Choice.Items.Add(WAVEFORM.AC);
+                ei.Choice.Items.Add(WAVEFORM.SQUARE);
+                ei.Choice.Items.Add(WAVEFORM.TRIANGLE);
+                ei.Choice.Items.Add(WAVEFORM.SAWTOOTH);
+                ei.Choice.Items.Add(WAVEFORM.PULSE);
+                ei.Choice.Items.Add(WAVEFORM.PWM_BOTH);
+                ei.Choice.Items.Add(WAVEFORM.PWM_HIGH);
+                ei.Choice.Items.Add(WAVEFORM.PWM_LOW);
+                ei.Choice.Items.Add(WAVEFORM.NOISE);
+                ei.Choice.SelectedIndex = (int)waveform;
                 return ei;
             }
             if (n == 2) {
                 return new ElementInfo("DC Offset (V)", bias, -20, 20);
             }
-            if (waveform == WF_DC || waveform == WF_NOISE) {
+            if (waveform == WAVEFORM.DC || waveform == WAVEFORM.NOISE) {
                 return null;
             }
             if (n == 3) {
@@ -371,7 +404,8 @@ namespace Circuit.Elements {
             if (n == 4) {
                 return new ElementInfo("Phase Offset (degrees)", phaseShift * ToDeg, -180, 180).SetDimensionless();
             }
-            if (n == 5 && (waveform == WF_PULSE || waveform == WF_SQUARE)) {
+            if (n == 5 && (waveform == WAVEFORM.PULSE || waveform == WAVEFORM.SQUARE
+                || waveform == WAVEFORM.PWM_BOTH || waveform == WAVEFORM.PWM_HIGH || waveform == WAVEFORM.PWM_LOW)) {
                 return new ElementInfo("Duty Cycle", dutyCycle * 100, 0, 100).SetDimensionless();
             }
             return null;
@@ -390,7 +424,7 @@ namespace Circuit.Elements {
                 double oldfreq = frequency;
                 frequency = ei.Value;
                 double maxfreq = 1 / (8 * Sim.timeStep);
-                if (frequency > maxfreq) {
+                if (maxfreq < frequency) {
                     if (MessageBox.Show("Adjust timestep to allow for higher frequencies?", "", MessageBoxButtons.OKCancel) == DialogResult.OK) {
                         Sim.timeStep = 1 / (32 * frequency);
                     } else {
@@ -400,9 +434,9 @@ namespace Circuit.Elements {
                 double adj = frequency - oldfreq;
             }
             if (n == 1) {
-                int ow = waveform;
-                waveform = ei.Choice.SelectedIndex;
-                if (waveform == WF_DC && ow != WF_DC) {
+                var ow = waveform;
+                waveform = (WAVEFORM)ei.Choice.SelectedIndex;
+                if (waveform == WAVEFORM.DC && ow != WAVEFORM.DC) {
                     ei.NewDialog = true;
                     bias = 0;
                 } else if (waveform != ow) {
@@ -410,9 +444,9 @@ namespace Circuit.Elements {
                 }
 
                 /* change duty cycle if we're changing to or from pulse */
-                if (waveform == WF_PULSE && ow != WF_PULSE) {
+                if (waveform == WAVEFORM.PULSE && ow != WAVEFORM.PULSE) {
                     dutyCycle = defaultPulseDuty;
-                } else if (ow == WF_PULSE && waveform != WF_PULSE) {
+                } else if (ow == WAVEFORM.PULSE && waveform != WAVEFORM.PULSE) {
                     dutyCycle = .5;
                 }
 
