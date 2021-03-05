@@ -175,7 +175,7 @@ namespace Circuit {
             layoutPanel = new SplitContainer();
             {
                 layoutPanel.Dock = DockStyle.Fill;
-                layoutPanel.BorderStyle = BorderStyle.Fixed3D;
+                layoutPanel.BorderStyle = BorderStyle.FixedSingle;
                 layoutPanel.IsSplitterFixed = true;
                 layoutPanel.Panel1.Controls.Add(picCir);
                 layoutPanel.Panel2.Controls.Add(verticalPanel);

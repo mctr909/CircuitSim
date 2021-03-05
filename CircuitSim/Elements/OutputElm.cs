@@ -13,7 +13,7 @@ namespace Circuit.Elements {
         public OutputElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
             scale = E_SCALE.AUTO;
             try {
-                scale = (E_SCALE)st.nextTokenInt();
+                scale = st.nextTokenEnum<E_SCALE>();
             } catch { }
         }
 

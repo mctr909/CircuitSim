@@ -55,7 +55,7 @@ namespace Circuit.Elements {
             scale = E_SCALE.AUTO;
             try {
                 meter = st.nextTokenInt(); /* get meter type from saved dump */
-                scale = (E_SCALE)st.nextTokenInt();
+                scale = st.nextTokenEnum<E_SCALE>();
             } catch { }
         }
 

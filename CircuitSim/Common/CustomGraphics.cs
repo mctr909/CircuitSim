@@ -153,6 +153,10 @@ namespace Circuit {
             g.DrawArc(penLine, centerX - radius, centerY - radius, radius * 2, radius * 2, 0, 360);
         }
 
+        public void DrawArc(float centerX, float centerY, float radius, float angle, float sweep) {
+            g.DrawArc(penLine, centerX - radius, centerY - radius, radius * 2, radius * 2, angle, sweep);
+        }
+
         public void DrawPolygon(Point[] p) {
             g.DrawPolygon(penLine, p);
         }

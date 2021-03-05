@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace Circuit {
     class StringTokenizer {
@@ -26,12 +27,16 @@ namespace Circuit {
             return mList[mIndex++];
         }
 
-        public bool nextTokenBool() {
-            return bool.Parse(mList[mIndex++]);
+        public T nextTokenEnum<T>() {
+            return (T)Enum.Parse(typeof(T), mList[mIndex++]);
         }
 
         public int nextTokenInt() {
             return int.Parse(mList[mIndex++]);
+        }
+
+        public bool nextTokenBool() {
+            return bool.Parse(mList[mIndex++]);
         }
 
         public double nextTokenDouble() {

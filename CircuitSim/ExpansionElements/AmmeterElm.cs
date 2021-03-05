@@ -37,7 +37,7 @@ namespace Circuit.Elements {
         public AmmeterElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
             meter = st.nextTokenInt();
             try {
-                scale = (E_SCALE)st.nextTokenInt();
+                scale = st.nextTokenEnum<E_SCALE>();
             } catch {
                 scale = E_SCALE.AUTO;
             }
