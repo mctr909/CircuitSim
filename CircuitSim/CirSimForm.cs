@@ -743,8 +743,8 @@ namespace Circuit {
                 tempMouseMode = MOUSE_MODE.DRAG_ALL;
             }
 
-            if ((scopeSelected != -1 && scopes[scopeSelected].CursorInSettingsWheel()) ||
-                (scopeSelected == -1 && mouseElm != null && (mouseElm is ScopeElm) && ((ScopeElm)mouseElm).elmScope.CursorInSettingsWheel())) {
+            if ((scopeSelected != -1 && scopes[scopeSelected].CursorInSettingsWheel) ||
+                (scopeSelected == -1 && mouseElm != null && (mouseElm is ScopeElm) && ((ScopeElm)mouseElm).elmScope.CursorInSettingsWheel)) {
                 Console.WriteLine("Doing something");
                 Scope s;
                 if (scopeSelected != -1) {

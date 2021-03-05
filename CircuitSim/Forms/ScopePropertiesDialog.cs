@@ -195,6 +195,7 @@ namespace Circuit {
                 /* */
                 pnlPlots.Left = 4;
                 pnlPlots.Top = grbSpeed.Bottom + 8;
+                pnlPlots.Width = grbSpeed.Width;
                 pnlPlots.Height = Math.Min(130, gridY);
                 Controls.Add(pnlPlots);
             }
@@ -364,7 +365,7 @@ namespace Circuit {
                     vceIcBox.Checked = scope.IsShowingVceAndIc;
                 }
             }
-            manualScaleLabel.Text = "Scale (Max Value)" + " (" + scope.GetScaleUnitsText() + ")";
+            manualScaleLabel.Text = "Scale (Max Value)" + " (" + scope.ScaleUnitsText + ")";
             manualScaleTextBox.Text = ElementInfoDialog.unitString(null, scope.ScaleValue);
             manualScaleBox.Checked = scope.LockScale;
             manualScaleTextBox.Enabled = scope.LockScale;
@@ -388,7 +389,7 @@ namespace Circuit {
             scope.Text = label;
             try {
                 double d = ElementInfoDialog.parseUnits(manualScaleTextBox.Text);
-                scope.SetManualScaleValue(d);
+                scope.ScaleValue = d;
             } catch { }
         }
 
