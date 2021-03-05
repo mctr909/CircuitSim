@@ -50,6 +50,7 @@
     <Compile Include="CirSimMain.cs" />
     <Compile Include="CirSimVariable.cs" />
     <Compile Include="Common\CustomGraphics.cs" />
+    <Compile Include="Common\Scope.cs" />
     <Compile Include="Common\Utils.cs" />
     <Compile Include="ExpansionElements\AmmeterElm.cs" />
     <Compile Include="ExpansionElements\AMElm.cs" />
@@ -153,9 +154,6 @@
     <Compile Include="Elements\InductorElm.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Common\Scope.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Elements\ScopeElm.cs" />
     <Compile Include="Common\ScopePlot.cs" />
     <Compile Include="Elements\ResistorElm.cs" />

@@ -5,6 +5,51 @@ using System.Windows.Forms;
 using Circuit.Elements;
 
 namespace Circuit {
+    enum SCOPE_MENU {
+        MAX_SCALE,
+        MANUAL_SCALE,
+
+        SHOW_VOLTAGE,
+        SHOW_CURRENT,
+        SHOW_SCALE,
+        SHOW_PEAK,
+        SHOW_NEG_PEAK,
+        SHOW_FREQ,
+        SHOW_FFT,
+        LOG_SPECTRUM,
+        SHOW_RMS,
+        SHOW_DUTY,
+
+        SHOW_IB,
+        SHOW_IC,
+        SHOW_IE,
+        SHOW_VBE,
+        SHOW_VBC,
+        SHOW_VCE,
+        SHOW_VCE_IC,
+
+        SHOW_V_I,
+        PLOT_XY
+    }
+
+    class ScopeCheckBox : CheckBox {
+        public SCOPE_MENU Menu;
+        public ScopeCheckBox(string text, SCOPE_MENU menu) : base() {
+            AutoSize = true;
+            Text = text;
+            Menu = menu;
+        }
+    }
+
+    class ScopeRadioButton : RadioButton {
+        public SCOPE_MENU Menu;
+        public ScopeRadioButton(string text, SCOPE_MENU menu) : base() {
+            AutoSize = true;
+            Text = text;
+            Menu = menu;
+        }
+    }
+
     class ScopePropertiesDialog : Form {
         CirSim mSim;
 
@@ -12,6 +57,7 @@ namespace Circuit {
 
         TextBox textArea;
         CheckBox scaleBox;
+        CheckBox manualScaleBox;
         CheckBox maxScaleBox;
         CheckBox voltageBox;
         CheckBox currentBox;
@@ -19,20 +65,19 @@ namespace Circuit {
         CheckBox negPeakBox;
         CheckBox freqBox;
         CheckBox spectrumBox;
-        CheckBox manualScaleBox;
+        CheckBox logSpectrumBox;
 
         CheckBox rmsBox;
         CheckBox dutyBox;
         CheckBox viBox;
         CheckBox xyBox;
-        CheckBox ibBox;
-        CheckBox icBox;
-        CheckBox ieBox;
-        CheckBox vbeBox;
-        CheckBox vbcBox;
-        CheckBox vceBox;
+        RadioButton ibBox;
+        RadioButton icBox;
+        RadioButton ieBox;
+        RadioButton vbeBox;
+        RadioButton vbcBox;
+        RadioButton vceBox;
         CheckBox vceIcBox;
-        CheckBox logSpectrumBox;
 
         TextBox labelTextBox;
         TextBox manualScaleTextBox;
@@ -103,35 +148,32 @@ namespace Circuit {
                 pnlPlots.Text = "Plots";
                 pnlPlots.BorderStyle = BorderStyle.FixedSingle;
                 pnlPlots.AutoScroll = true;
-                gridY = 12;
+                gridY = 4;
                 if (transistor) {
                     /* Show Ib */
-                    ibBox = new ScopeCheckBox("Show Ib", SCOPE_MENU.SHOW_IB);
-                    ibBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                    ibBox = new ScopeRadioButton("Show Ib", SCOPE_MENU.SHOW_IB);
+                    ibBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
                     addItemToGrid(pnlPlots, ibBox);
                     /* Show Ic */
-                    icBox = new ScopeCheckBox("Show Ic", SCOPE_MENU.SHOW_IC);
-                    icBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                    icBox = new ScopeRadioButton("Show Ic", SCOPE_MENU.SHOW_IC);
+                    icBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
                     addItemToGrid(pnlPlots, icBox);
                     /* Show Ie */
-                    ieBox = new ScopeCheckBox("Show Ie", SCOPE_MENU.SHOW_IE);
-                    ieBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                    ieBox = new ScopeRadioButton("Show Ie", SCOPE_MENU.SHOW_IE);
+                    ieBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
                     addItemToGrid(pnlPlots, ieBox);
                     /* Show Vbe */
-                    vbeBox = new ScopeCheckBox("Show Vbe", SCOPE_MENU.SHOW_VBE);
-                    vbeBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                    vbeBox = new ScopeRadioButton("Show Vbe", SCOPE_MENU.SHOW_VBE);
+                    vbeBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
                     addItemToGrid(pnlPlots, vbeBox);
                     /* Show Vbc */
-                    vbcBox = new ScopeCheckBox("Show Vbc", SCOPE_MENU.SHOW_VBC);
-                    vbcBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                    vbcBox = new ScopeRadioButton("Show Vbc", SCOPE_MENU.SHOW_VBC);
+                    vbcBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
                     addItemToGrid(pnlPlots, vbcBox);
                     /* Show Vce */
-                    vceBox = new ScopeCheckBox("Show Vce", SCOPE_MENU.SHOW_VCE);
-                    vceBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                    vceBox = new ScopeRadioButton("Show Vce", SCOPE_MENU.SHOW_VCE);
+                    vceBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
                     addItemToGrid(pnlPlots, vceBox);
-                    vceIcBox = new ScopeCheckBox("Show Vce Ic", SCOPE_MENU.SHOW_VCE_IC);
-                    vceIcBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                    addItemToGrid(pnlPlots, vceIcBox);
                 } else {
                     /* Show Voltage */
                     voltageBox = new ScopeCheckBox("Show Voltage", SCOPE_MENU.SHOW_VOLTAGE);
@@ -153,6 +195,7 @@ namespace Circuit {
                 /* */
                 pnlPlots.Left = 4;
                 pnlPlots.Top = grbSpeed.Bottom + 8;
+                pnlPlots.Height = Math.Min(130, gridY);
                 Controls.Add(pnlPlots);
             }
 
@@ -311,13 +354,15 @@ namespace Circuit {
             viBox.Checked = scope.Plot2d && !scope.PlotXY;
             xyBox.Checked = scope.PlotXY;
             if (vbeBox != null) {
-                ibBox.Checked = scope.ShowingValue(Scope.VAL.IB);
-                icBox.Checked = scope.ShowingValue(Scope.VAL.IC);
-                ieBox.Checked = scope.ShowingValue(Scope.VAL.IE);
-                vbeBox.Checked = scope.ShowingValue(Scope.VAL.VBE);
-                vbcBox.Checked = scope.ShowingValue(Scope.VAL.VBC);
-                vceBox.Checked = scope.ShowingValue(Scope.VAL.VCE);
-                vceIcBox.Checked = scope.IsShowingVceAndIc;
+                if (ibBox.Checked) scope.ShowingValue(Scope.VAL.IB);
+                if (icBox.Checked) scope.ShowingValue(Scope.VAL.IC);
+                if (ieBox.Checked) scope.ShowingValue(Scope.VAL.IE);
+                if (vbeBox.Checked) scope.ShowingValue(Scope.VAL.VBE);
+                if (vbcBox.Checked) scope.ShowingValue(Scope.VAL.VBC);
+                if (vceBox.Checked) scope.ShowingValue(Scope.VAL.VCE);
+                if (vceIcBox.Checked) {
+                    vceIcBox.Checked = scope.IsShowingVceAndIc;
+                }
             }
             manualScaleLabel.Text = "Scale (Max Value)" + " (" + scope.GetScaleUnitsText() + ")";
             manualScaleTextBox.Text = ElementInfoDialog.unitString(null, scope.ScaleValue);
@@ -350,6 +395,10 @@ namespace Circuit {
         void onValueChange(object sender) {
             var cb = (ScopeCheckBox)sender;
             scope.HandleMenu(cb.Menu, cb.Checked);
+            updateUI();
+        }
+        void onValueChange(ScopeRadioButton sender) {
+            scope.HandleMenu(sender.Menu, sender.Checked);
             updateUI();
         }
     }

@@ -7,42 +7,6 @@ using System.Drawing.Drawing2D;
 using Circuit.Elements;
 
 namespace Circuit {
-    enum SCOPE_MENU {
-        MAX_SCALE,
-        MANUAL_SCALE,
-
-        SHOW_VOLTAGE,
-        SHOW_CURRENT,
-        SHOW_SCALE,
-        SHOW_PEAK,
-        SHOW_NEG_PEAK,
-        SHOW_FREQ,
-        SHOW_FFT,
-        LOG_SPECTRUM,
-        SHOW_RMS,
-        SHOW_DUTY,
-
-        SHOW_IB,
-        SHOW_IC,
-        SHOW_IE,
-        SHOW_VBE,
-        SHOW_VBC,
-        SHOW_VCE,
-        SHOW_VCE_IC,
-
-        SHOW_V_I,
-        PLOT_XY
-    }
-
-    class ScopeCheckBox : CheckBox {
-        public SCOPE_MENU Menu;
-        public ScopeCheckBox(string text, SCOPE_MENU menu) : base() {
-            AutoSize = true;
-            Text = text;
-            Menu = menu;
-        }
-    }
-
     class Scope {
         #region CONST
         const int FLAG_YELM = 32;
@@ -1421,7 +1385,7 @@ namespace Circuit {
 
         void _drawSettingsWheel(CustomGraphics g) {
             const int outR = 8 * 18 / 16;
-            const int inR = 5 * 18 / 16;
+            const int inR = 6 * 18 / 16;
             const int inR45 = 4 * 18 / 16;
             const int outR45 = 6 * 18 / 16;
             if (mShowSettingsWheel) {
@@ -1432,14 +1396,14 @@ namespace Circuit {
                 }
                 g.SetTransform(new Matrix(1, 0, 0, 1, BoundingBox.X + 12, BoundingBox.Y + BoundingBox.Height - 16));
                 g.DrawCircle(0, 0, inR);
-                g.DrawLine(  -outR,       0,   -inR,      0);
-                g.DrawLine(   outR,       0,    inR,      0);
-                g.DrawLine(      0,   -outR,      0,   -inR);
-                g.DrawLine(      0,    outR,      0,    inR);
+                g.DrawLine(-outR, 0, -inR, 0);
+                g.DrawLine(outR, 0, inR, 0);
+                g.DrawLine(0, -outR, 0, -inR);
+                g.DrawLine(0, outR, 0, inR);
                 g.DrawLine(-outR45, -outR45, -inR45, -inR45);
-                g.DrawLine( outR45, -outR45,  inR45, -inR45);
-                g.DrawLine(-outR45,  outR45, -inR45,  inR45);
-                g.DrawLine( outR45,  outR45,  inR45,  inR45);
+                g.DrawLine(outR45, -outR45, inR45, -inR45);
+                g.DrawLine(-outR45, outR45, -inR45, inR45);
+                g.DrawLine(outR45, outR45, inR45, inR45);
                 g.ClearTransform();
             }
         }
