@@ -15,8 +15,8 @@ namespace Circuit.Elements {
             SAWTOOTH,
             PULSE,
             PWM_BOTH,
-            PWM_HIGH,
-            PWM_LOW,
+            PWM_POSITIVE,
+            PWM_NEGATIVE,
             NOISE
         }
 
@@ -153,27 +153,27 @@ namespace Circuit.Elements {
             case WAVEFORM.PWM_BOTH: {
                 var maxfreq = 1 / (32 * Sim.timeStep);
                 var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % Pi2);
-                var sg = dutyCycle * Math.Sin(wt);
+                var sg = dutyCycle * Math.Sin(wt) + Math.Sin(wt * 3) / 6;
                 if (0.0 <= sg) {
                     return bias + (cr < sg ? maxVoltage : 0);
                 } else {
                     return bias - (sg < -cr ? maxVoltage : 0);
                 }
             }
-            case WAVEFORM.PWM_HIGH: {
+            case WAVEFORM.PWM_POSITIVE: {
                 var maxfreq = 1 / (32 * Sim.timeStep);
                 var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % Pi2);
-                var sg = dutyCycle * Math.Sin(wt);
+                var sg = dutyCycle * Math.Sin(wt) + Math.Sin(wt * 3) / 6;
                 if (0.0 <= sg) {
                     return bias + (cr < sg ? maxVoltage : 0);
                 } else {
                     return bias;
                 }
             }
-            case WAVEFORM.PWM_LOW: {
+            case WAVEFORM.PWM_NEGATIVE: {
                 var maxfreq = 1 / (32 * Sim.timeStep);
                 var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % Pi2);
-                var sg = dutyCycle * Math.Sin(wt);
+                var sg = dutyCycle * Math.Sin(wt) + Math.Sin(wt * 3) / 6;
                 if (0.0 <= sg) {
                     return bias;
                 } else {
@@ -386,8 +386,8 @@ namespace Circuit.Elements {
                 ei.Choice.Items.Add(WAVEFORM.SAWTOOTH);
                 ei.Choice.Items.Add(WAVEFORM.PULSE);
                 ei.Choice.Items.Add(WAVEFORM.PWM_BOTH);
-                ei.Choice.Items.Add(WAVEFORM.PWM_HIGH);
-                ei.Choice.Items.Add(WAVEFORM.PWM_LOW);
+                ei.Choice.Items.Add(WAVEFORM.PWM_POSITIVE);
+                ei.Choice.Items.Add(WAVEFORM.PWM_NEGATIVE);
                 ei.Choice.Items.Add(WAVEFORM.NOISE);
                 ei.Choice.SelectedIndex = (int)waveform;
                 return ei;
@@ -405,7 +405,7 @@ namespace Circuit.Elements {
                 return new ElementInfo("Phase Offset (degrees)", phaseShift * ToDeg, -180, 180).SetDimensionless();
             }
             if (n == 5 && (waveform == WAVEFORM.PULSE || waveform == WAVEFORM.SQUARE
-                || waveform == WAVEFORM.PWM_BOTH || waveform == WAVEFORM.PWM_HIGH || waveform == WAVEFORM.PWM_LOW)) {
+                || waveform == WAVEFORM.PWM_BOTH || waveform == WAVEFORM.PWM_POSITIVE || waveform == WAVEFORM.PWM_NEGATIVE)) {
                 return new ElementInfo("Duty Cycle", dutyCycle * 100, 0, 100).SetDimensionless();
             }
             return null;
