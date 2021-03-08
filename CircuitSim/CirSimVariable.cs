@@ -198,9 +198,9 @@ namespace Circuit {
         bool simRunning;
         bool needsRepaint;
 
-        public int gridSize { get; private set; }
-        int gridMask;
-        int gridRound;
+        public const int GRID_SIZE = 8;
+        const int GRID_MASK = ~(GRID_SIZE - 1);
+        const int GRID_ROUND = GRID_SIZE / 2 - 1;
         #endregion
     }
 }

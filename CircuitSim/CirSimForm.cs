@@ -236,8 +236,6 @@ namespace Circuit {
                 elmMenuBar = ctxMenuItem.ToArray();
             }
 
-            setGrid();
-
             CircuitElm.SetColorScale(64);
 
             if (startCircuitText != null) {
@@ -1306,7 +1304,6 @@ namespace Circuit {
                 chkShowVolts.Checked = true;
                 chkShowValues.Checked = true;
                 chkUseAnsiSymbols.Checked = true;
-                setGrid();
                 trbSpeedBar.Value = 57;
                 trbCurrentBar.Value = 50;
                 CircuitElm.VoltageRange = 5;
@@ -1439,12 +1436,10 @@ namespace Circuit {
             trbSpeedBar.Value = sp2;
             trbCurrentBar.Value = st.nextTokenInt();
             CircuitElm.VoltageRange = st.nextTokenDouble();
-
-            setGrid();
         }
 
         public int snapGrid(int x) {
-            return (x + gridRound) & gridMask;
+            return (x + GRID_ROUND) & GRID_MASK;
         }
 
         bool doSwitch(int x, int y) {
@@ -1965,12 +1960,6 @@ namespace Circuit {
 
         void enableItems() { }
 
-        void setGrid() {
-            gridSize = 8;
-            gridMask = ~(gridSize - 1);
-            gridRound = gridSize / 2 - 1;
-        }
-
         public void pushUndo() {
             redoStack.Clear();
             string s = dumpCircuit();
@@ -2229,9 +2218,9 @@ namespace Circuit {
                 int spacew = circuitArea.Width - oldbb.Width - newbb.Width;
                 int spaceh = circuitArea.Height - oldbb.Height - newbb.Height;
                 if (spacew > spaceh) {
-                    dx = snapGrid(oldbb.X + oldbb.Width - newbb.X + gridSize);
+                    dx = snapGrid(oldbb.X + oldbb.Width - newbb.X + GRID_SIZE);
                 } else {
-                    dy = snapGrid(oldbb.Y + oldbb.Height - newbb.Y + gridSize);
+                    dy = snapGrid(oldbb.Y + oldbb.Height - newbb.Y + GRID_SIZE);
                 }
 
                 /* move new items near the mouse if possible */

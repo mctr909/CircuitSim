@@ -104,20 +104,22 @@ namespace Circuit.Elements {
             int offset = 0;
             int myLen = 0;
             if (Math.Abs(mDx) > Math.Abs(mDy)) {
-                myLen = 2 * Sim.gridSize * Math.Sign(mDx) * (((Math.Abs(mDx)) + 2 * Sim.gridSize - 1) / (2 * Sim.gridSize));
+                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDx) * (
+                    (Math.Abs(mDx) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
                 mPoint2.X = mPoint1.X + myLen;
                 offset = (mDx < 0) ? mDy : -mDy;
                 mPoint2.Y = mPoint1.Y;
             } else {
-                myLen = 2 * Sim.gridSize * Math.Sign(mDy) * (((Math.Abs(mDy)) + 2 * Sim.gridSize - 1) / (2 * Sim.gridSize));
+                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDy) * (
+                    (Math.Abs(mDy) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
                 if (mDy != 0) {
                     mPoint2.Y = mPoint1.Y + myLen;
                     offset = (mDy > 0) ? mDx : -mDx;
                     mPoint2.X = mPoint1.X;
                 }
             }
-            if (offset < Sim.gridSize) {
-                offset = Sim.gridSize;
+            if (offset < CirSim.GRID_SIZE) {
+                offset = CirSim.GRID_SIZE;
             }
             mLen = Utils.Distance(mPoint1, mPoint2);
             int bodyLen = 38;

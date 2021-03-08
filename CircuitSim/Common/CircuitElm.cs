@@ -237,18 +237,17 @@ namespace Circuit.Elements {
             int dx = b.X - a.X;
             int dy = b.Y - a.Y;
             double dn = Math.Sqrt(dx * dx + dy * dy);
-            int ds = 20;
+            int ds = CirSim.GRID_SIZE * 4;
             pos %= ds;
             if (pos < 0) {
                 pos += ds;
             }
-            double di = 0;
             if (Sim.chkPrintable.Checked) {
                 g.LineColor = GrayColor;
             } else {
                 g.LineColor = Color.Yellow;
             }
-            for (di = pos; di < dn; di += ds) {
+            for (var di = pos; di < dn; di += ds) {
                 var x0 = (float)(a.X + di * dx / dn);
                 var y0 = (float)(a.Y + di * dy / dn);
                 g.FillCircle(x0, y0, 1.5f);

@@ -107,7 +107,7 @@ namespace Circuit.Elements {
                 yy = Y1;
             }
             int q1 = Math.Abs(X1 - xx) + Math.Abs(Y1 - yy);
-            int q2 = (q1 / 2) % Sim.gridSize;
+            int q2 = (q1 / 2) % CirSim.GRID_SIZE;
             if (q2 != 0) {
                 return;
             }
