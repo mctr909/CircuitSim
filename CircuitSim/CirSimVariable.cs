@@ -141,7 +141,6 @@ namespace Circuit {
         public int mouseCursorY { get; private set; } = -1;
         MouseButtons mouseButton = MouseButtons.None;
         bool mouseDragging = false;
-        Cursor lastCursorStyle;
         DateTime mLastMouseMove = DateTime.Now;
 
         CircuitElm mouseElm = null;

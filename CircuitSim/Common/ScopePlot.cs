@@ -6,13 +6,9 @@ namespace Circuit {
     class ScopePlot {
         static readonly Color[] COLORS = {
             Color.FromArgb(0xFF, 0x00, 0x00),
-            Color.FromArgb(0xFF, 0x80, 0x00),
-            Color.FromArgb(0xFF, 0x00, 0xFF),
-            Color.FromArgb(0x7F, 0x00, 0xFF),
-            Color.FromArgb(0x00, 0x00, 0xFF),
-            Color.FromArgb(0x00, 0x80, 0xFF),
             Color.FromArgb(0xFF, 0xFF, 0x00),
-            Color.FromArgb(0x00, 0xFF, 0xFF)
+            Color.FromArgb(0x00, 0xFF, 0x00),
+            Color.FromArgb(0x00, 0x00, 0xFF)
         };
 
         public CircuitElm Elm;
@@ -96,17 +92,13 @@ namespace Circuit {
                 return Utils.VoltageText(v);
             case Scope.UNITS.A:
                 return Utils.CurrentText(v);
-            case Scope.UNITS.OHMS:
-                return Utils.UnitText(v, CirSim.ohmString);
-            case Scope.UNITS.W:
-                return Utils.UnitText(v, "W");
             }
             return null;
         }
 
         public void AssignColor(int count) {
             if (count > 0) {
-                Color = COLORS[(count - 1) % 8];
+                Color = COLORS[(count - 1) % COLORS.Length];
                 return;
             }
             switch (Units) {
@@ -114,10 +106,10 @@ namespace Circuit {
                 Color = Color.FromArgb(0x00, 0xFF, 0x00);
                 break;
             case Scope.UNITS.A:
-                Color = Color.FromArgb(0xFF, 0xFF, 0x00);
+                Color = Color.FromArgb(0x7F, 0x7F, 0x7F);
                 break;
             default:
-                Color = CirSim.theSim.chkPrintable.Checked ? Color.FromArgb(0, 0, 0) : Color.FromArgb(255, 255, 255);
+                Color = CirSim.theSim.chkPrintable.Checked ? Color.FromArgb(0, 0, 0) : Color.FromArgb(0xFF, 0xFF, 0xFF);
                 break;
             }
         }

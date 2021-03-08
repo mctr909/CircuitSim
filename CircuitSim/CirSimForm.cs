@@ -537,7 +537,7 @@ namespace Circuit {
                         s.ResetGraph(true);
                     }
                     if (item == MENU_ITEM.properties) {
-                        s.Properties(mParent.Location.X, mParent.Location.Y);
+                        s.Properties(mParent);
                     }
                 }
                 deleteUnusedScopeElms();
@@ -674,7 +674,7 @@ namespace Circuit {
             isPressShift = false;
             isPressCtrl = false;
             isPressAlt = false;
-            setCursorStyle(Cursors.Arrow);
+            mParent.Cursor = Cursors.Arrow;
             onPreviewNativeEvent(e);
         }
 
@@ -723,22 +723,20 @@ namespace Circuit {
                 tempMouseMode = mouseMode;
                 if (isPressCtrl && isPressShift) {
                     tempMouseMode = MOUSE_MODE.DRAG_COLUMN;
-                    setCursorStyle(Cursors.SizeWE);
+                    mParent.Cursor = Cursors.SizeWE;
                 } else if (isPressCtrl && isPressAlt) {
                     tempMouseMode = MOUSE_MODE.DRAG_ROW;
-                    setCursorStyle(Cursors.SizeNS);
+                    mParent.Cursor = Cursors.SizeNS;
                 } else if (isPressCtrl) {
-                    tempMouseMode = MOUSE_MODE.SELECT;
-                    setCursorStyle(Cursors.Arrow);
-                } else if (isPressShift) {
                     tempMouseMode = MOUSE_MODE.DRAG_POST;
-                    setCursorStyle(Cursors.SizeAll);
+                    mParent.Cursor = Cursors.Arrow;
                 } else if (isPressAlt) {
                     tempMouseMode = MOUSE_MODE.DRAG_ALL;
-                    setCursorStyle(Cursors.NoMove2D);
+                    mParent.Cursor = Cursors.NoMove2D;
+                } else {
+                    tempMouseMode = MOUSE_MODE.SELECT;
+                    mParent.Cursor = Cursors.SizeAll;
                 }
-            } else {
-                tempMouseMode = MOUSE_MODE.DRAG_ALL;
             }
 
             if ((scopeSelected != -1 && scopes[scopeSelected].CursorInSettingsWheel) ||
@@ -750,10 +748,7 @@ namespace Circuit {
                 } else {
                     s = ((ScopeElm)mouseElm).elmScope;
                 }
-                s.Properties(
-                    mParent.Location.X + mouseCursorX,
-                    mParent.Location.Y + mouseCursorY
-                );
+                s.Properties(mParent);
                 clearSelection();
                 mouseDragging = false;
                 return;
@@ -1737,7 +1732,7 @@ namespace Circuit {
                 && (y <= circuitArea.Height + 5);
             if (isOverSplitter != mouseWasOverSplitter) {
                 if (isOverSplitter) {
-                    setCursorStyle(Cursors.HSplit);
+                    mParent.Cursor = Cursors.HSplit;
                 } else {
                     setMouseMode(mouseMode);
                 }
@@ -1794,10 +1789,6 @@ namespace Circuit {
                     var s = scopes[i];
                     if (s.BoundingBox.Contains(mx, my)) {
                         newMouseElm = s.Elm;
-                        if (s.PlotXY) {
-                            plotXElm = s.Elm;
-                            plotYElm = s.YElm;
-                        }
                         scopeSelected = i;
                     }
                 }
@@ -2006,15 +1997,10 @@ namespace Circuit {
         void setMouseMode(MOUSE_MODE mode) {
             mouseMode = mode;
             if (mode == MOUSE_MODE.ADD_ELM) {
-                setCursorStyle(Cursors.Cross);
+                mParent.Cursor = Cursors.Cross;
             } else {
-                setCursorStyle(Cursors.Arrow);
+                mParent.Cursor = Cursors.Arrow;
             }
-        }
-
-        void setCursorStyle(Cursor s) {
-            lastCursorStyle = Cursor.Current;
-            mParent.Cursor = s;
         }
 
         void setMenuSelection() {

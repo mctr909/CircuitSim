@@ -25,11 +25,7 @@ namespace Circuit {
         SHOW_IE,
         SHOW_VBE,
         SHOW_VBC,
-        SHOW_VCE,
-        SHOW_VCE_IC,
-
-        SHOW_V_I,
-        PLOT_XY
+        SHOW_VCE
     }
 
     class ScopeCheckBox : CheckBox {
@@ -51,46 +47,41 @@ namespace Circuit {
     }
 
     class ScopePropertiesDialog : Form {
-        CirSim mSim;
+        CheckBox chkScale;
+        CheckBox chkManualScale;
+        CheckBox chkVoltage;
+        CheckBox chkCurrent;
+        CheckBox chkPeak;
+        CheckBox chkNegPeak;
+        CheckBox chkFreq;
+        CheckBox chkSpectrum;
+        CheckBox chkLogSpectrum;
+        CheckBox chkRms;
+        CheckBox chkDuty;
 
-        //RichTextArea textBox;
+        RadioButton rbIb;
+        RadioButton rbIc;
+        RadioButton rbIe;
+        RadioButton rbVbe;
+        RadioButton rbVbc;
+        RadioButton rbVce;
 
-        TextBox textArea;
-        CheckBox scaleBox;
-        CheckBox manualScaleBox;
-        CheckBox maxScaleBox;
-        CheckBox voltageBox;
-        CheckBox currentBox;
-        CheckBox peakBox;
-        CheckBox negPeakBox;
-        CheckBox freqBox;
-        CheckBox spectrumBox;
-        CheckBox logSpectrumBox;
+        TextBox txtLabel;
+        TextBox txtManualScale;
 
-        CheckBox rmsBox;
-        CheckBox dutyBox;
-        CheckBox viBox;
-        CheckBox xyBox;
-        RadioButton ibBox;
-        RadioButton icBox;
-        RadioButton ieBox;
-        RadioButton vbeBox;
-        RadioButton vbcBox;
-        RadioButton vceBox;
-        CheckBox vceIcBox;
+        Label lblScopeSpeed;
+        Label lblManualScale;
 
-        TextBox labelTextBox;
-        TextBox manualScaleTextBox;
+        TrackBar tbSpeed;
 
-        TrackBar speedBar;
+        Button btnOk;
+        Button btnApply;
+        Button btnSaveAsDefault;
+
         Scope scope;
-
         int gridY;
-        Label scopeSpeedLabel;
-        Label manualScaleLabel;
 
-        public ScopePropertiesDialog(CirSim asim, Scope s) : base() {
-            mSim = asim;
+        public ScopePropertiesDialog(Scope s) : base() {
             scope = s;
 
             var elm = scope.SingleElm;
@@ -103,8 +94,8 @@ namespace Circuit {
             {
                 grbSpeed.Text = "Scroll Speed";
                 gridY = 12;
-                /* speedBar */
-                speedBar = new TrackBar() {
+                /* tbSpeed */
+                tbSpeed = new TrackBar() {
                     Minimum = 0,
                     Maximum = 10,
                     SmallChange = 1,
@@ -114,33 +105,81 @@ namespace Circuit {
                     Height = 20,
                     TickStyle = TickStyle.TopLeft
                 };
-                speedBar.ValueChanged += new EventHandler((sender, e) => { scrollbarChanged(); });
-                addItemToGrid(grbSpeed, speedBar);
-                /* scopeSpeedLabel */
-                addItemToGrid(grbSpeed, scopeSpeedLabel = new Label() {
+                tbSpeed.ValueChanged += new EventHandler((sender, e) => { scrollbarChanged(); });
+                addItemToGrid(grbSpeed, tbSpeed);
+                /* lblScopeSpeed */
+                addItemToGrid(grbSpeed, lblScopeSpeed = new Label() {
                     AutoSize = true,
                     TextAlign = ContentAlignment.TopLeft
                 });
-                /* Manual Scale */
-                manualScaleBox = new ScopeCheckBox("Manual Scale", SCOPE_MENU.MANUAL_SCALE);
-                manualScaleBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                addItemToGrid(grbSpeed, manualScaleBox);
-                /* manualScaleLabel */
-                addItemToGrid(grbSpeed, manualScaleLabel = new Label() {
+                /* chkManualScale */
+                chkManualScale = new ScopeCheckBox("Manual Scale", SCOPE_MENU.MANUAL_SCALE);
+                chkManualScale.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                addItemToGrid(grbSpeed, chkManualScale);
+                /* lblManualScale */
+                addItemToGrid(grbSpeed, lblManualScale = new Label() {
                     Text = "Scale",
                     AutoSize = true,
                     TextAlign = ContentAlignment.BottomLeft
                 });
-                /* manualScaleTextBox */
-                addItemToGrid(grbSpeed, manualScaleTextBox = new TextBox() {
+                /* txtManualScale */
+                addItemToGrid(grbSpeed, txtManualScale = new TextBox() {
                     Width = 100, Height = 24
                 });
                 /* */
                 grbSpeed.Left = 4;
                 grbSpeed.Top = 4;
-                grbSpeed.Width = speedBar.Right + 4;
+                grbSpeed.Width = tbSpeed.Right + 4;
                 grbSpeed.Height = gridY;
                 Controls.Add(grbSpeed);
+            }
+
+            var grbShowInfo = new GroupBox();
+            {
+                grbShowInfo.Text = "Show Info";
+                gridY = 12;
+                /* chkScale */
+                chkScale = new ScopeCheckBox("Show Scale", SCOPE_MENU.SHOW_SCALE);
+                chkScale.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                addItemToGrid(grbShowInfo, chkScale);
+                /* chkPeak */
+                chkPeak = new ScopeCheckBox("Show Peak Value", SCOPE_MENU.SHOW_PEAK);
+                chkPeak.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                addItemToGrid(grbShowInfo, chkPeak);
+                /* chkNegPeak */
+                chkNegPeak = new ScopeCheckBox("Show Negative Peak Value", SCOPE_MENU.SHOW_NEG_PEAK);
+                chkNegPeak.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                addItemToGrid(grbShowInfo, chkNegPeak);
+                /* chkFreq */
+                chkFreq = new ScopeCheckBox("Show Frequency", SCOPE_MENU.SHOW_FREQ);
+                chkFreq.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                addItemToGrid(grbShowInfo, chkFreq);
+                /* chkRms */
+                chkRms = new ScopeCheckBox("Show RMS Average", SCOPE_MENU.SHOW_RMS);
+                chkRms.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                addItemToGrid(grbShowInfo, chkRms);
+                /* chkDuty */
+                chkDuty = new ScopeCheckBox("Show Duty Cycle", SCOPE_MENU.SHOW_DUTY);
+                chkDuty.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                addItemToGrid(grbShowInfo, chkDuty);
+                /* txtLabel */
+                addItemToGrid(grbShowInfo, new Label() {
+                    Text = "Custom Label",
+                    AutoSize = true,
+                    TextAlign = ContentAlignment.BottomLeft
+                });
+                txtLabel = new TextBox();
+                addItemToGrid(grbShowInfo, txtLabel);
+                string labelText = scope.Text;
+                if (labelText != null) {
+                    txtLabel.Text = labelText;
+                }
+                /* */
+                grbShowInfo.Left = grbSpeed.Left;
+                grbShowInfo.Top = grbSpeed.Bottom + 8;
+                grbShowInfo.Width = grbSpeed.Width;
+                grbShowInfo.Height = gridY;
+                Controls.Add(grbShowInfo);
             }
 
             var pnlPlots = new Panel();
@@ -150,156 +189,84 @@ namespace Circuit {
                 pnlPlots.AutoScroll = true;
                 gridY = 4;
                 if (transistor) {
-                    /* Show Ib */
-                    ibBox = new ScopeRadioButton("Show Ib", SCOPE_MENU.SHOW_IB);
-                    ibBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
-                    addItemToGrid(pnlPlots, ibBox);
-                    /* Show Ic */
-                    icBox = new ScopeRadioButton("Show Ic", SCOPE_MENU.SHOW_IC);
-                    icBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
-                    addItemToGrid(pnlPlots, icBox);
-                    /* Show Ie */
-                    ieBox = new ScopeRadioButton("Show Ie", SCOPE_MENU.SHOW_IE);
-                    ieBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
-                    addItemToGrid(pnlPlots, ieBox);
-                    /* Show Vbe */
-                    vbeBox = new ScopeRadioButton("Show Vbe", SCOPE_MENU.SHOW_VBE);
-                    vbeBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
-                    addItemToGrid(pnlPlots, vbeBox);
-                    /* Show Vbc */
-                    vbcBox = new ScopeRadioButton("Show Vbc", SCOPE_MENU.SHOW_VBC);
-                    vbcBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
-                    addItemToGrid(pnlPlots, vbcBox);
-                    /* Show Vce */
-                    vceBox = new ScopeRadioButton("Show Vce", SCOPE_MENU.SHOW_VCE);
-                    vceBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
-                    addItemToGrid(pnlPlots, vceBox);
+                    /* rbIb */
+                    rbIb = new ScopeRadioButton("Show Ib", SCOPE_MENU.SHOW_IB);
+                    rbIb.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
+                    addItemToGrid(pnlPlots, rbIb);
+                    /* rbIc */
+                    rbIc = new ScopeRadioButton("Show Ic", SCOPE_MENU.SHOW_IC);
+                    rbIc.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
+                    addItemToGrid(pnlPlots, rbIc);
+                    /* rbIe */
+                    rbIe = new ScopeRadioButton("Show Ie", SCOPE_MENU.SHOW_IE);
+                    rbIe.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
+                    addItemToGrid(pnlPlots, rbIe);
+                    /* rbVbe */
+                    rbVbe = new ScopeRadioButton("Show Vbe", SCOPE_MENU.SHOW_VBE);
+                    rbVbe.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
+                    addItemToGrid(pnlPlots, rbVbe);
+                    /* rbVbc */
+                    rbVbc = new ScopeRadioButton("Show Vbc", SCOPE_MENU.SHOW_VBC);
+                    rbVbc.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
+                    addItemToGrid(pnlPlots, rbVbc);
+                    /* rbVce */
+                    rbVce = new ScopeRadioButton("Show Vce", SCOPE_MENU.SHOW_VCE);
+                    rbVce.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
+                    addItemToGrid(pnlPlots, rbVce);
                 } else {
-                    /* Show Voltage */
-                    voltageBox = new ScopeCheckBox("Show Voltage", SCOPE_MENU.SHOW_VOLTAGE);
-                    voltageBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                    addItemToGrid(pnlPlots, voltageBox);
-                    /* Show Current */
-                    currentBox = new ScopeCheckBox("Show Current", SCOPE_MENU.SHOW_CURRENT);
-                    currentBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                    addItemToGrid(pnlPlots, currentBox);
+                    /* chkVoltage */
+                    chkVoltage = new ScopeCheckBox("Show Voltage", SCOPE_MENU.SHOW_VOLTAGE);
+                    chkVoltage.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                    addItemToGrid(pnlPlots, chkVoltage);
+                    /* chkCurrent */
+                    chkCurrent = new ScopeCheckBox("Show Current", SCOPE_MENU.SHOW_CURRENT);
+                    chkCurrent.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                    addItemToGrid(pnlPlots, chkCurrent);
                 }
-                /* Show Spectrum */
-                spectrumBox = new ScopeCheckBox("Show Spectrum", SCOPE_MENU.SHOW_FFT);
-                spectrumBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                addItemToGrid(pnlPlots, spectrumBox);
-                /* Log Spectrum */
-                logSpectrumBox = new ScopeCheckBox("Log Spectrum", SCOPE_MENU.LOG_SPECTRUM);
-                logSpectrumBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                addItemToGrid(pnlPlots, logSpectrumBox);
+                /* chkSpectrum */
+                chkSpectrum = new ScopeCheckBox("Show Spectrum", SCOPE_MENU.SHOW_FFT);
+                chkSpectrum.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                addItemToGrid(pnlPlots, chkSpectrum);
+                /* chkLogSpectrum */
+                chkLogSpectrum = new ScopeCheckBox("Log Spectrum", SCOPE_MENU.LOG_SPECTRUM);
+                chkLogSpectrum.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
+                addItemToGrid(pnlPlots, chkLogSpectrum);
                 /* */
-                pnlPlots.Left = 4;
-                pnlPlots.Top = grbSpeed.Bottom + 8;
-                pnlPlots.Width = grbSpeed.Width;
-                pnlPlots.Height = Math.Min(130, gridY);
+                pnlPlots.Left = grbShowInfo.Left;
+                pnlPlots.Top = grbShowInfo.Bottom + 8;
+                pnlPlots.Width = grbShowInfo.Width;
+                pnlPlots.Height = Math.Min(100, gridY);
                 Controls.Add(pnlPlots);
-            }
-
-            var grbXY = new GroupBox();
-            {
-                grbXY.Text = "X-Y Plots";
-                gridY = 12;
-                /* Show V vs I */
-                viBox = new ScopeCheckBox("Show V vs I", SCOPE_MENU.SHOW_V_I);
-                viBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                addItemToGrid(grbXY, viBox);
-                /* Plot X/Y */
-                xyBox = new ScopeCheckBox("Plot X/Y", SCOPE_MENU.PLOT_XY);
-                xyBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                addItemToGrid(grbXY, xyBox);
-                if (transistor) {
-                    /* Show Vce vs Ic */
-                    vceIcBox = new ScopeCheckBox("Show Vce vs Ic", SCOPE_MENU.SHOW_VCE_IC);
-                    vceIcBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                    addItemToGrid(grbXY, vceIcBox);
-                }
-                /* */
-                grbXY.Left = grbSpeed.Right + 16;
-                grbXY.Top = grbSpeed.Top;
-                grbXY.Height = gridY;
-                Controls.Add(grbXY);
-            }
-
-            var grbShowInfo = new GroupBox();
-            {
-                grbShowInfo.Text = "Show Info";
-                gridY = 12;
-                /* Show Scale */
-                scaleBox = new ScopeCheckBox("Show Scale", SCOPE_MENU.SHOW_SCALE);
-                scaleBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                addItemToGrid(grbShowInfo, scaleBox);
-                /* Show Peak Value */
-                peakBox = new ScopeCheckBox("Show Peak Value", SCOPE_MENU.SHOW_PEAK);
-                peakBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                addItemToGrid(grbShowInfo, peakBox);
-                /* Show Negative Peak Value */
-                negPeakBox = new ScopeCheckBox("Show Negative Peak Value", SCOPE_MENU.SHOW_NEG_PEAK);
-                negPeakBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                addItemToGrid(grbShowInfo, negPeakBox);
-                /* Show Frequency */
-                freqBox = new ScopeCheckBox("Show Frequency", SCOPE_MENU.SHOW_FREQ);
-                freqBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                addItemToGrid(grbShowInfo, freqBox);
-                /* Show RMS Average */
-                rmsBox = new ScopeCheckBox("Show RMS Average", SCOPE_MENU.SHOW_RMS);
-                rmsBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                addItemToGrid(grbShowInfo, rmsBox);
-                /* Show Duty Cycle */
-                dutyBox = new ScopeCheckBox("Show Duty Cycle", SCOPE_MENU.SHOW_DUTY);
-                dutyBox.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                addItemToGrid(grbShowInfo, dutyBox);
-                /* Custom Label */
-                addItemToGrid(grbShowInfo, new Label() {
-                    Text = "Custom Label",
-                    AutoSize = true,
-                    TextAlign = ContentAlignment.BottomLeft
-                });
-                labelTextBox = new TextBox();
-                addItemToGrid(grbShowInfo, labelTextBox);
-                string labelText = scope.Text;
-                if (labelText != null) {
-                    labelTextBox.Text = labelText;
-                }
-                /* */
-                grbShowInfo.Left = grbXY.Left;
-                grbShowInfo.Top = grbXY.Bottom + 8;
-                grbShowInfo.Height = gridY;
-                Controls.Add(grbShowInfo);
             }
 
             var pnl = new Panel();
             {
                 /* OK */
-                var okButton = new Button() { Text = "OK" };
-                okButton.Click += new EventHandler((sender, e) => { closeDialog(); });
-                okButton.Left = 0;
-                okButton.Width = 50;
-                okButton.Top = 4;
-                pnl.Controls.Add(okButton);
+                btnOk = new Button() { Text = "OK" };
+                btnOk.Click += new EventHandler((sender, e) => { closeDialog(); });
+                btnOk.Left = 0;
+                btnOk.Width = 50;
+                btnOk.Top = 4;
+                pnl.Controls.Add(btnOk);
                 /* Apply */
-                var applyButton = new Button() { Text = "Apply" };
-                applyButton.Click += new EventHandler((sender, e) => { apply(); });
-                applyButton.Left = okButton.Right + 4;
-                applyButton.Width = 50;
-                applyButton.Top = 4;
-                pnl.Controls.Add(applyButton);
+                btnApply = new Button() { Text = "Apply" };
+                btnApply.Click += new EventHandler((sender, e) => { apply(); });
+                btnApply.Left = btnOk.Right + 4;
+                btnApply.Width = 50;
+                btnApply.Top = 4;
+                pnl.Controls.Add(btnApply);
                 /* Save as Default */
-                var saveAsDefaultButton = new Button() { Text = "Save as Default" };
-                saveAsDefaultButton.Click += new EventHandler((sender, e) => { scope.SaveAsDefault(); });
-                saveAsDefaultButton.Left = applyButton.Right + 4;
-                saveAsDefaultButton.Width = 100;
-                saveAsDefaultButton.Top = 4;
-                pnl.Controls.Add(saveAsDefaultButton);
+                btnSaveAsDefault = new Button() { Text = "Save as Default" };
+                btnSaveAsDefault.Click += new EventHandler((sender, e) => { scope.SaveAsDefault(); });
+                btnSaveAsDefault.Left = btnApply.Right + 4;
+                btnSaveAsDefault.Width = 100;
+                btnSaveAsDefault.Top = 4;
+                pnl.Controls.Add(btnSaveAsDefault);
                 /* */
-                pnl.Left = grbShowInfo.Left;
-                pnl.Top = grbShowInfo.Bottom;
-                pnl.Width = saveAsDefaultButton.Right + 4;
-                pnl.Height = saveAsDefaultButton.Bottom + 8;
+                pnl.Left = pnlPlots.Left;
+                pnl.Top = pnlPlots.Bottom;
+                pnl.Width = btnSaveAsDefault.Right + 4;
+                pnl.Height = btnSaveAsDefault.Bottom + 8;
                 Controls.Add(pnl);
             }
 
@@ -310,17 +277,17 @@ namespace Circuit {
             Height = pnl.Bottom + 36;
         }
 
-        public void Show(int x, int y) {
+        public void Show(Form parent) {
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Visible = false;
             Show();
-            Left = x;
-            Top = y;
+            Left = parent.Location.X + parent.Width / 2 - Width / 2;
+            Top = parent.Location.X + parent.Height / 2 - Height / 2;
             Visible = true;
         }
 
         void setScopeSpeedLabel() {
-            scopeSpeedLabel.Text = (Utils.UnitText(scope.CalcGridStepX(), "s") + "/div");
+            lblScopeSpeed.Text = (Utils.UnitText(scope.CalcGridStepX(), "s") + "/div");
         }
 
         void addItemToGrid(Control grb, Control ctrl) {
@@ -331,8 +298,8 @@ namespace Circuit {
         }
 
         void scrollbarChanged() {
-            int newsp = (int)Math.Pow(2, 10 - speedBar.Value);
-            Console.WriteLine("changed " + scope.Speed + " " + newsp + " " + speedBar.Value);
+            int newsp = (int)Math.Pow(2, 10 - tbSpeed.Value);
+            Console.WriteLine("changed " + scope.Speed + " " + newsp + " " + tbSpeed.Value);
             if (scope.Speed != newsp) {
                 scope.Speed = newsp;
             }
@@ -340,37 +307,32 @@ namespace Circuit {
         }
 
         void updateUI() {
-            speedBar.Value = (10 - (int)Math.Round(Math.Log(scope.Speed) / Math.Log(2)));
-            if (voltageBox != null) {
-                voltageBox.Checked = scope.ShowV && !scope.ShowingValue(Scope.VAL.POWER);
-                currentBox.Checked = scope.ShowI && !scope.ShowingValue(Scope.VAL.POWER);
+            tbSpeed.Value = (10 - (int)Math.Round(Math.Log(scope.Speed) / Math.Log(2)));
+            if (chkVoltage != null) {
+                chkVoltage.Checked = scope.ShowV;
+                chkCurrent.Checked = scope.ShowI;
             }
-            scaleBox.Checked = scope.ShowScale;
-            peakBox.Checked = scope.ShowMax;
-            negPeakBox.Checked = scope.ShowMin;
-            freqBox.Checked = scope.ShowFreq;
-            spectrumBox.Checked = scope.ShowFFT;
-            rmsBox.Checked = scope.ShowRMS;
-            rmsBox.Text = scope.CanShowRMS ? "Show RMS Average" : "Show Average";
-            viBox.Checked = scope.Plot2d && !scope.PlotXY;
-            xyBox.Checked = scope.PlotXY;
-            if (vbeBox != null) {
-                if (ibBox.Checked) scope.ShowingValue(Scope.VAL.IB);
-                if (icBox.Checked) scope.ShowingValue(Scope.VAL.IC);
-                if (ieBox.Checked) scope.ShowingValue(Scope.VAL.IE);
-                if (vbeBox.Checked) scope.ShowingValue(Scope.VAL.VBE);
-                if (vbcBox.Checked) scope.ShowingValue(Scope.VAL.VBC);
-                if (vceBox.Checked) scope.ShowingValue(Scope.VAL.VCE);
-                if (vceIcBox.Checked) {
-                    vceIcBox.Checked = scope.IsShowingVceAndIc;
-                }
+            chkScale.Checked = scope.ShowScale;
+            chkPeak.Checked = scope.ShowMax;
+            chkNegPeak.Checked = scope.ShowMin;
+            chkFreq.Checked = scope.ShowFreq;
+            chkSpectrum.Checked = scope.ShowFFT;
+            chkRms.Checked = scope.ShowRMS;
+            chkRms.Text = scope.CanShowRMS ? "Show RMS Average" : "Show Average";
+            if (rbVbe != null) {
+                if (rbIb.Checked) scope.ShowingValue(Scope.VAL.IB);
+                if (rbIc.Checked) scope.ShowingValue(Scope.VAL.IC);
+                if (rbIe.Checked) scope.ShowingValue(Scope.VAL.IE);
+                if (rbVbe.Checked) scope.ShowingValue(Scope.VAL.VBE);
+                if (rbVbc.Checked) scope.ShowingValue(Scope.VAL.VBC);
+                if (rbVce.Checked) scope.ShowingValue(Scope.VAL.VCE);
             }
-            manualScaleLabel.Text = "Scale (Max Value)" + " (" + scope.ScaleUnitsText + ")";
-            manualScaleTextBox.Text = ElementInfoDialog.unitString(null, scope.ScaleValue);
-            manualScaleBox.Checked = scope.LockScale;
-            manualScaleTextBox.Enabled = scope.LockScale;
-            logSpectrumBox.Checked = scope.LogSpectrum;
-            logSpectrumBox.Enabled = scope.ShowFFT;
+            lblManualScale.Text = "Scale (Max Value)" + " (" + scope.ScaleUnitsText + ")";
+            txtManualScale.Text = ElementInfoDialog.unitString(null, scope.ScaleValue);
+            chkManualScale.Checked = scope.LockScale;
+            txtManualScale.Enabled = scope.LockScale;
+            chkLogSpectrum.Checked = scope.LogSpectrum;
+            chkLogSpectrum.Enabled = scope.ShowFFT;
             setScopeSpeedLabel();
 
             /* if you add more here, make sure it still works with transistor scopes */
@@ -382,13 +344,13 @@ namespace Circuit {
         }
 
         void apply() {
-            string label = labelTextBox.Text;
+            string label = txtLabel.Text;
             if (label.Length == 0) {
                 label = null;
             }
             scope.Text = label;
             try {
-                double d = ElementInfoDialog.parseUnits(manualScaleTextBox.Text);
+                double d = ElementInfoDialog.parseUnits(txtManualScale.Text);
                 scope.ScaleValue = d;
             } catch { }
         }

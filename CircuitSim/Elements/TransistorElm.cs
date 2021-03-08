@@ -267,7 +267,6 @@ namespace Circuit.Elements {
             case Scope.VAL.VBE: t = "Vbe"; break;
             case Scope.VAL.VBC: t = "Vbc"; break;
             case Scope.VAL.VCE: t = "Vce"; break;
-            case Scope.VAL.POWER: t = "P"; break;
             }
             return "transistor, " + t;
         }
@@ -286,8 +285,6 @@ namespace Circuit.Elements {
                 return Volts[V_B] - Volts[V_C];
             case Scope.VAL.VCE:
                 return Volts[V_C] - Volts[V_E];
-            case Scope.VAL.POWER:
-                return Power;
             }
             return 0;
         }
@@ -298,8 +295,6 @@ namespace Circuit.Elements {
             case Scope.VAL.IC:
             case Scope.VAL.IE:
                 return Scope.UNITS.A;
-            case Scope.VAL.POWER:
-                return Scope.UNITS.W;
             default:
                 return Scope.UNITS.V;
             }
