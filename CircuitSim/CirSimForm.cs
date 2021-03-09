@@ -530,9 +530,6 @@ namespace Circuit {
                     if (item == MENU_ITEM.combine) {
                         combineScope(menuScope);
                     }
-                    if (item == MENU_ITEM.selecty) {
-                        s.SelectY();
-                    }
                     if (item == MENU_ITEM.reset) {
                         s.ResetGraph(true);
                     }

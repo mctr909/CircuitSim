@@ -43,7 +43,7 @@ namespace Circuit {
         double mScaleA;
         bool mReduceRangeV;
         bool mReduceRangeA;
-        int mScopePointCount = 8;
+        int mScopePointCount;
 
         int mWheelDeltaY;
 
@@ -62,7 +62,6 @@ namespace Circuit {
         bool mSomethingSelected;
         bool mMaxScale;
         bool mShowNegative;
-        bool mShowDutyCycle;
         #endregion
 
         #region [public property]
@@ -153,16 +152,6 @@ namespace Circuit {
         public bool CanMenu {
             get { return mPlots[0].Elm != null; }
         }
-        public bool CanShowRMS {
-            get {
-                if (mVisiblePlots.Count == 0) {
-                    return false;
-                }
-                var plot = mVisiblePlots[0];
-                return plot.Units == UNITS.V || plot.Units == UNITS.A;
-            }
-        }
-
         public bool ViewingWire {
             get {
                 foreach (var plot in mPlots) {
@@ -290,7 +279,6 @@ namespace Circuit {
                 mShowFFT = (value & 1024) != 0;
                 mMaxScale = (value & 8192) != 0;
                 ShowRMS = (value & 16384) != 0;
-                mShowDutyCycle = (value & 32768) != 0;
                 LogSpectrum = (value & 65536) != 0;
             }
             get {
@@ -305,7 +293,6 @@ namespace Circuit {
                     | (ShowFFT ? 1024 : 0)
                     | (mMaxScale ? 8192 : 0)
                     | (ShowRMS ? 16384 : 0)
-                    | (mShowDutyCycle ? 32768 : 0)
                     | (LogSpectrum ? 65536 : 0);
                 return flags | FLAG_PLOTS;
             }
@@ -566,32 +553,6 @@ namespace Circuit {
             Console.WriteLine("saved defaults " + flags);
         }
 
-        public void SelectY() {
-            var yElm = (mPlots.Count == 2) ? mPlots[1].Elm : null;
-            int e = (yElm == null) ? -1 : mSim.LocateElm(yElm);
-            int firstE = e;
-            while (true) {
-                for (e++; e < mSim.elmList.Count; e++) {
-                    var ce = mSim.getElm(e);
-                    if (((ce is OutputElm) || (ce is ProbeElm)) && !ce.Equals(mPlots[0].Elm)) {
-                        yElm = ce;
-                        if (mPlots.Count == 1) {
-                            mPlots.Add(new ScopePlot(yElm, UNITS.V));
-                        } else {
-                            mPlots[1].Elm = yElm;
-                            mPlots[1].Units = UNITS.V;
-                        }
-                        return;
-                    }
-                }
-                if (firstE == -1) {
-                    return;
-                }
-                e = firstE = -1;
-            }
-            /* not reached */
-        }
-
         public void HandleMenu(SCOPE_MENU mi, bool state) {
             switch (mi) {
 
@@ -628,9 +589,6 @@ namespace Circuit {
                 break;
             case SCOPE_MENU.SHOW_RMS:
                 ShowRMS = state;
-                break;
-            case SCOPE_MENU.SHOW_DUTY:
-                mShowDutyCycle = state;
                 break;
 
             case SCOPE_MENU.SHOW_IB:
@@ -1274,10 +1232,6 @@ namespace Circuit {
 
         /* calc RMS and display it */
         void _drawRMS(CustomGraphics g) {
-            if (!CanShowRMS) {
-                _drawAverage(g);
-                return;
-            }
             var plot = mVisiblePlots[0];
             int i;
             double avg = 0;
@@ -1338,130 +1292,6 @@ namespace Circuit {
             if (waveCount > 1) {
                 rms = Math.Sqrt(endAvg / (end - start));
                 _drawInfoText(g, plot.GetUnitText(rms) + "rms");
-            }
-        }
-
-        void _drawAverage(CustomGraphics g) {
-            var plot = mVisiblePlots[0];
-            int i;
-            double avg = 0;
-            int ipa = plot.Pointer + mScopePointCount - BoundingBox.Width;
-            var maxV = plot.MaxValues;
-            var minV = plot.MinValues;
-            double mid = (mMaxValue + mMinValue) / 2;
-            int state = -1;
-
-            /* skip zeroes */
-            for (i = 0; i != BoundingBox.Width; i++) {
-                int ip = (i + ipa) & (mScopePointCount - 1);
-                if (maxV[ip] != 0) {
-                    if (maxV[ip] > mid) {
-                        state = 1;
-                    }
-                    break;
-                }
-            }
-            int firstState = -state;
-            int start = i;
-            int end = 0;
-            int waveCount = 0;
-            double endAvg = 0;
-            for (; i != BoundingBox.Width; i++) {
-                int ip = (i + ipa) & (mScopePointCount - 1);
-                bool sw = false;
-
-                /* switching polarity? */
-                if (state == 1) {
-                    if (maxV[ip] < mid) {
-                        sw = true;
-                    }
-                } else if (minV[ip] > mid) {
-                    sw = true;
-                }
-
-                if (sw) {
-                    state = -state;
-                    /* completed a full cycle? */
-                    if (firstState == state) {
-                        if (waveCount == 0) {
-                            start = i;
-                            firstState = state;
-                            avg = 0;
-                        }
-                        waveCount++;
-                        end = i;
-                        endAvg = avg;
-                    }
-                }
-                if (waveCount > 0) {
-                    double m = (maxV[ip] + minV[ip]) * .5;
-                    avg += m;
-                }
-            }
-            if (waveCount > 1) {
-                avg = (endAvg / (end - start));
-                _drawInfoText(g, plot.GetUnitText(avg) + " average");
-            }
-        }
-
-        void _drawDutyCycle(CustomGraphics g) {
-            var plot = mVisiblePlots[0];
-            int i;
-            int ipa = plot.Pointer + mScopePointCount - BoundingBox.Width;
-            var maxV = plot.MaxValues;
-            var minV = plot.MinValues;
-            double mid = (mMaxValue + mMinValue) / 2;
-            int state = -1;
-
-            /* skip zeroes */
-            for (i = 0; i != BoundingBox.Width; i++) {
-                int ip = (i + ipa) & (mScopePointCount - 1);
-                if (maxV[ip] != 0) {
-                    if (maxV[ip] > mid) {
-                        state = 1;
-                    }
-                    break;
-                }
-            }
-            int firstState = 1;
-            int start = i;
-            int end = 0;
-            int waveCount = 0;
-            int dutyLen = 0;
-            int middle = 0;
-            for (; i != BoundingBox.Width; i++) {
-                int ip = (i + ipa) & (mScopePointCount - 1);
-                bool sw = false;
-
-                /* switching polarity? */
-                if (state == 1) {
-                    if (maxV[ip] < mid) {
-                        sw = true;
-                    }
-                } else if (minV[ip] > mid) {
-                    sw = true;
-                }
-
-                if (sw) {
-                    state = -state;
-
-                    /* completed a full cycle? */
-                    if (firstState == state) {
-                        if (waveCount == 0) {
-                            start = end = i;
-                        } else {
-                            end = start;
-                            start = i;
-                            dutyLen = end - middle;
-                        }
-                        waveCount++;
-                    } else
-                        middle = i;
-                }
-            }
-            if (waveCount > 1) {
-                int duty = 100 * dutyLen / (end - start);
-                _drawInfoText(g, "Duty cycle " + duty + "%");
             }
         }
 
@@ -1553,9 +1383,6 @@ namespace Circuit {
             }
             if (ShowRMS) {
                 _drawRMS(g);
-            }
-            if (mShowDutyCycle) {
-                _drawDutyCycle(g);
             }
             string t = Text;
             if (t == null) {

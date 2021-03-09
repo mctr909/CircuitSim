@@ -18,7 +18,6 @@ namespace Circuit {
         SHOW_FFT,
         LOG_SPECTRUM,
         SHOW_RMS,
-        SHOW_DUTY,
 
         SHOW_IB,
         SHOW_IC,
@@ -57,7 +56,6 @@ namespace Circuit {
         CheckBox chkSpectrum;
         CheckBox chkLogSpectrum;
         CheckBox chkRms;
-        CheckBox chkDuty;
 
         RadioButton rbIb;
         RadioButton rbIc;
@@ -158,10 +156,6 @@ namespace Circuit {
                 chkRms = new ScopeCheckBox("Show RMS Average", SCOPE_MENU.SHOW_RMS);
                 chkRms.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
                 addItemToGrid(grbShowInfo, chkRms);
-                /* chkDuty */
-                chkDuty = new ScopeCheckBox("Show Duty Cycle", SCOPE_MENU.SHOW_DUTY);
-                chkDuty.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                addItemToGrid(grbShowInfo, chkDuty);
                 /* txtLabel */
                 addItemToGrid(grbShowInfo, new Label() {
                     Text = "Custom Label",
@@ -318,7 +312,7 @@ namespace Circuit {
             chkFreq.Checked = scope.ShowFreq;
             chkSpectrum.Checked = scope.ShowFFT;
             chkRms.Checked = scope.ShowRMS;
-            chkRms.Text = scope.CanShowRMS ? "Show RMS Average" : "Show Average";
+            chkRms.Text = "Show RMS Average";
             if (rbVbe != null) {
                 if (rbIb.Checked) scope.ShowingValue(Scope.VAL.IB);
                 if (rbIc.Checked) scope.ShowingValue(Scope.VAL.IC);
