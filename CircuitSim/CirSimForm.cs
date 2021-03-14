@@ -850,9 +850,7 @@ namespace Circuit {
             //if ((mouseElm is MouseWheelHandler) && !zoomOnly) {
             //    ((MouseWheelHandler)mouseElm).onMouseWheel(e);
             //}
-            if (scopeSelected != -1) {
-                scopes[scopeSelected].onMouseWheel(e);
-            } else if (!DialogIsShowing()) {
+            if (!DialogIsShowing()) {
                 zoomCircuit(-e.Delta);
                 zoomTime = DateTime.Now.ToFileTimeUtc();
             }

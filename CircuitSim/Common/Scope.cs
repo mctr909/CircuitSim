@@ -10,7 +10,6 @@ namespace Circuit {
     class Scope {
         #region CONST
         /* bunch of other flags go here, see dump() */
-        const int FLAG_IVALUE = 2048; /* Flag to indicate if IVALUE is included in dump */
         const int FLAG_PLOTS = 4096;  /* new-style dump with multiple plots */
         /* other flags go here too, see dump() */
 
@@ -44,8 +43,6 @@ namespace Circuit {
         bool mReduceRangeV;
         bool mReduceRangeA;
         int mScopePointCount;
-
-        int mWheelDeltaY;
 
         int mSpeed;
 
@@ -306,18 +303,6 @@ namespace Circuit {
 
             _allocImage();
             _initialize();
-        }
-
-        public void onMouseWheel(MouseEventArgs e) {
-            mWheelDeltaY += e.Delta;
-            if (mWheelDeltaY > 5) {
-                SlowDown();
-                mWheelDeltaY = 0;
-            }
-            if (mWheelDeltaY < -5) {
-                SpeedUp();
-                mWheelDeltaY = 0;
-            }
         }
 
         #region [public method]
