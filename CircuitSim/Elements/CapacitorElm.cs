@@ -87,19 +87,19 @@ namespace Circuit.Elements {
             g.DrawThickLine(plate2[0], plate2[1]);
 
             updateDotCount();
-            if (Sim.dragElm != this) {
+            if (Sim.DragElm != this) {
                 drawDots(g, mPoint1, mLead1, mCurCount);
                 drawDots(g, mPoint2, mLead2, -mCurCount);
             }
             drawPosts(g);
-            if (Sim.chkShowValues.Checked) {
+            if (Sim.ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.ShortUnitText(Capacitance, "");
                 g.DrawRightText(s, textPos.X, textPos.Y);
             }
         }
 
         public override void Stamp() {
-            if (Sim.dcAnalysisFlag) {
+            if (Sim.DcAnalysisFlag) {
                 /* when finding DC operating point, replace cap with a 100M resistor */
                 mCir.StampResistor(Nodes[0], Nodes[1], 1e8);
                 curSourceValue = 0;
@@ -112,9 +112,9 @@ namespace Circuit.Elements {
              * than backward euler but can cause oscillatory behavior
              * if RC is small relative to the timestep. */
             if (IsTrapezoidal) {
-                compResistance = Sim.timeStep / (2 * Capacitance);
+                compResistance = ControlPanel.TimeStep / (2 * Capacitance);
             } else {
-                compResistance = Sim.timeStep / Capacitance;
+                compResistance = ControlPanel.TimeStep / Capacitance;
             }
             mCir.StampResistor(Nodes[0], Nodes[1], compResistance);
             mCir.StampRightSide(Nodes[0]);
@@ -131,7 +131,7 @@ namespace Circuit.Elements {
 
         protected override void calculateCurrent() {
             double voltdiff = Volts[0] - Volts[1];
-            if (Sim.dcAnalysisFlag) {
+            if (Sim.DcAnalysisFlag) {
                 mCurrent = voltdiff / 1e8;
                 return;
             }
@@ -144,7 +144,7 @@ namespace Circuit.Elements {
         }
 
         public override void DoStep() {
-            if (Sim.dcAnalysisFlag) {
+            if (Sim.DcAnalysisFlag) {
                 return;
             }
             mCir.StampCurrentSource(Nodes[0], Nodes[1], curSourceValue);

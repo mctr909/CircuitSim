@@ -103,7 +103,7 @@ namespace Circuit.Elements {
             int hs = 8;
             setBbox(mPoint1, mPoint2, hs);
             bool selected = NeedsHighlight;
-            double len = (selected || Sim.dragElm == this || mustShowVoltage()) ? 16 : mLen - 32;
+            double len = (selected || Sim.DragElm == this || mustShowVoltage()) ? 16 : mLen - 32;
             calcLeads((int)len);
 
             if (selected) {
@@ -120,10 +120,10 @@ namespace Circuit.Elements {
             }
             g.DrawThickLine(mLead2, mPoint2);
 
-            if (this == Sim.plotXElm) {
+            if (this == Sim.PlotXElm) {
                 drawCenteredLText(g, "X", center.X, center.Y, true);
             }
-            if (this == Sim.plotYElm) {
+            if (this == Sim.PlotYElm) {
                 drawCenteredLText(g, "Y", center.X, center.Y, true);
             }
 
@@ -152,7 +152,7 @@ namespace Circuit.Elements {
                     s = Utils.UnitText(frequency, "Hz");
                     break;
                 case TP_PER:
-                    s = "percent:" + period + " " + Sim.timeStep + " " + Sim.t + " " + Sim.getIterCount();
+                    s = "percent:" + period + " " + ControlPanel.TimeStep + " " + Sim.Time + " " + Sim.getIterCount();
                     break;
                 case TP_PWI:
                     s = Utils.UnitText(pulseWidth, "S");
@@ -286,7 +286,7 @@ namespace Circuit.Elements {
                 ei.Choice.Items.Add("Auto");
                 ei.Choice.Items.Add("V");
                 ei.Choice.Items.Add("mV");
-                ei.Choice.Items.Add(CirSim.muString + "V");
+                ei.Choice.Items.Add(CirSim.MU_TEXT + "V");
                 ei.Choice.SelectedIndex = (int)scale;
                 return ei;
             }

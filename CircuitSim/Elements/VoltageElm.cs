@@ -125,16 +125,16 @@ namespace Circuit.Elements {
 
         public override void StepFinished() {
             if (waveform == WAVEFORM.NOISE) {
-                noiseValue = (CirSim.random.NextDouble() * 2 - 1) * maxVoltage + bias;
+                noiseValue = (CirSim.Random.NextDouble() * 2 - 1) * maxVoltage + bias;
             }
         }
 
         public virtual double getVoltage() {
-            if (waveform != WAVEFORM.DC && Sim.dcAnalysisFlag) {
+            if (waveform != WAVEFORM.DC && Sim.DcAnalysisFlag) {
                 return bias;
             }
 
-            double t = Pi2 * Sim.t;
+            double t = Pi2 * Sim.Time;
             double wt = t * frequency + phaseShift;
 
             switch (waveform) {
@@ -151,7 +151,7 @@ namespace Circuit.Elements {
             case WAVEFORM.PULSE:
                 return ((wt % Pi2) < (Pi2 * dutyCycle)) ? maxVoltage + bias : bias;
             case WAVEFORM.PWM_BOTH: {
-                var maxfreq = 1 / (32 * Sim.timeStep);
+                var maxfreq = 1 / (32 * ControlPanel.TimeStep);
                 var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % Pi2);
                 var sg = dutyCycle * Math.Sin(wt) + Math.Sin(wt * 3) / 6;
                 if (0.0 <= sg) {
@@ -161,7 +161,7 @@ namespace Circuit.Elements {
                 }
             }
             case WAVEFORM.PWM_POSITIVE: {
-                var maxfreq = 1 / (32 * Sim.timeStep);
+                var maxfreq = 1 / (32 * ControlPanel.TimeStep);
                 var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % Pi2);
                 var sg = dutyCycle * Math.Sin(wt) + Math.Sin(wt * 3) / 6;
                 if (0.0 <= sg) {
@@ -171,7 +171,7 @@ namespace Circuit.Elements {
                 }
             }
             case WAVEFORM.PWM_NEGATIVE: {
-                var maxfreq = 1 / (32 * Sim.timeStep);
+                var maxfreq = 1 / (32 * ControlPanel.TimeStep);
                 var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % Pi2);
                 var sg = dutyCycle * Math.Sin(wt) + Math.Sin(wt * 3) / 6;
                 if (0.0 <= sg) {
@@ -232,7 +232,7 @@ namespace Circuit.Elements {
 
             updateDotCount();
 
-            if (Sim.dragElm != this) {
+            if (Sim.DragElm != this) {
                 if (waveform == WAVEFORM.DC) {
                     drawDots(g, mPoint1, mPoint2, mCurCount);
                 } else {
@@ -330,7 +330,7 @@ namespace Circuit.Elements {
             }
             }
 
-            if (Sim.chkShowValues.Checked && waveform != WAVEFORM.NOISE) {
+            if (Sim.ControlPanel.ChkShowValues.Checked && waveform != WAVEFORM.NOISE) {
                 var s = Utils.ShortUnitText(maxVoltage, "V\r\n");
                 s += Utils.ShortUnitText(frequency, "Hz\r\n");
                 s += Utils.ShortUnitText(phaseShift * ToDeg, "°");
@@ -367,7 +367,7 @@ namespace Circuit.Elements {
                 }
             }
             if (waveform == WAVEFORM.DC && mCurrent != 0 && mCir.ShowResistanceInVoltageSources) {
-                arr[i++] = "(R = " + Utils.UnitText(maxVoltage / mCurrent, CirSim.ohmString) + ")";
+                arr[i++] = "(R = " + Utils.UnitText(maxVoltage / mCurrent, CirSim.OHM_TEXT) + ")";
             }
             arr[i++] = "P = " + Utils.UnitText(Power, "W");
         }
@@ -423,10 +423,10 @@ namespace Circuit.Elements {
                  * even though the frequency has changed. */
                 double oldfreq = frequency;
                 frequency = ei.Value;
-                double maxfreq = 1 / (8 * Sim.timeStep);
+                double maxfreq = 1 / (8 * ControlPanel.TimeStep);
                 if (maxfreq < frequency) {
                     if (MessageBox.Show("Adjust timestep to allow for higher frequencies?", "", MessageBoxButtons.OKCancel) == DialogResult.OK) {
-                        Sim.timeStep = 1 / (32 * frequency);
+                        ControlPanel.TimeStep = 1 / (32 * frequency);
                     } else {
                         frequency = maxfreq;
                     }

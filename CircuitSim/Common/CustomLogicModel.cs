@@ -167,7 +167,7 @@ namespace Circuit {
                     flags &= ~FLAG_SCHMITT;
                 }
             }
-            CirSim.theSim.UpdateModels();
+            CirSim.Sim.UpdateModels();
         }
 
         void parseRules() {

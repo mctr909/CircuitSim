@@ -29,7 +29,7 @@ namespace Circuit {
             myElm = e;
             deltaY = 0;
             sim = s;
-            sim.pushUndo();
+            sim.PushUndo();
             setupValues();
 
             Text = name;

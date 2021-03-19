@@ -71,12 +71,12 @@ namespace Circuit.Elements {
         }
 
         void createSlider() {
-            Sim.AddWidgetToVerticalPanel(label = new Label() {
+            Sim.ControlPanel.AddSlider(label = new Label() {
                 TextAlign = ContentAlignment.BottomLeft,
                 Text = sliderText
             });
             int value = (int)(position * 100);
-            Sim.AddWidgetToVerticalPanel(slider = new TrackBar() {
+            Sim.ControlPanel.AddSlider(slider = new TrackBar() {
                 Minimum = 0,
                 Maximum = 100,
                 SmallChange = 1,
@@ -94,8 +94,8 @@ namespace Circuit.Elements {
         }
 
         public override void Delete() {
-            Sim.RemoveWidgetFromVerticalPanel(label);
-            Sim.RemoveWidgetFromVerticalPanel(slider);
+            Sim.ControlPanel.RemoveSlider(label);
+            Sim.ControlPanel.RemoveSlider(slider);
             base.Delete();
         }
 
@@ -147,7 +147,7 @@ namespace Circuit.Elements {
             double segf = 1.0 / segments;
             int divide = (int)(segments * position);
 
-            if (Sim.chkUseAnsiSymbols.Checked) {
+            if (Sim.ControlPanel.ChkUseAnsiSymbols.Checked) {
                 /* draw zigzag */
                 int oy = 0;
                 int ny;
@@ -194,7 +194,7 @@ namespace Circuit.Elements {
             curcount1 = updateDotCount(current1, curcount1);
             curcount2 = updateDotCount(current2, curcount2);
             curcount3 = updateDotCount(current3, curcount3);
-            if (Sim.dragElm != this) {
+            if (Sim.DragElm != this) {
                 drawDots(g, mPoint1, midpoint, curcount1);
                 drawDots(g, mPoint2, midpoint, curcount2);
                 drawDots(g, post3, corner2, curcount3);
@@ -202,7 +202,7 @@ namespace Circuit.Elements {
             }
             drawPosts(g);
 
-            if (Sim.chkShowValues.Checked && resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
+            if (Sim.ControlPanel.ChkShowValues.Checked && resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
                 /* check for vertical pot with 3rd terminal on left */
                 bool reverseY = (post3.X < mLead1.X && mLead1.X == mLead2.X);
                 /* check for horizontal pot with 3rd terminal on top */
@@ -286,8 +286,8 @@ namespace Circuit.Elements {
         public override void GetInfo(string[] arr) {
             arr[0] = "potentiometer";
             arr[1] = "Vd = " + Utils.VoltageDText(VoltageDiff);
-            arr[2] = "R1 = " + Utils.UnitText(resistance1, CirSim.ohmString);
-            arr[3] = "R2 = " + Utils.UnitText(resistance2, CirSim.ohmString);
+            arr[2] = "R1 = " + Utils.UnitText(resistance1, CirSim.OHM_TEXT);
+            arr[3] = "R2 = " + Utils.UnitText(resistance2, CirSim.OHM_TEXT);
             arr[4] = "I1 = " + Utils.CurrentDText(current1);
             arr[5] = "I2 = " + Utils.CurrentDText(current2);
         }
@@ -319,7 +319,7 @@ namespace Circuit.Elements {
             if (n == 1) {
                 sliderText = ei.Textf.Text;
                 label.Text = sliderText;
-                Sim.SetiFrameHeight();
+                Sim.ControlPanel.SetiFrameHeight();
             }
             if (n == 2) {
                 mFlags = ei.ChangeFlag(mFlags, FLAG_SHOW_VALUES);

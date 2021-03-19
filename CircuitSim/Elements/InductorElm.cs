@@ -57,7 +57,7 @@ namespace Circuit.Elements {
             draw2Leads(g);
             drawCoil(g, mLead1, mLead2, v1, v2);
 
-            if (Sim.chkShowValues.Checked) {
+            if (Sim.ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.ShortUnitText(Inductance, "");
                 g.DrawRightText(s, textPos.X, textPos.Y);
             }

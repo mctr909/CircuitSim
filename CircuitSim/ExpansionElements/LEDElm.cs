@@ -50,7 +50,7 @@ namespace Circuit.Elements {
         }
 
         public override void Draw(CustomGraphics g) {
-            if (NeedsHighlight || this == Sim.dragElm) {
+            if (NeedsHighlight || this == Sim.DragElm) {
                 base.Draw(g);
                 return;
             }

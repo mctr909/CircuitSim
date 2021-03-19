@@ -223,8 +223,8 @@ namespace Circuit.Elements {
                     MessageBox.Show("This model cannot be modified.\r\nChange the model name to allow customization.");
                     return;
                 }
-                CirSim.diodeModelEditDialog = new ElementInfoDialog(model, Sim);
-                CirSim.diodeModelEditDialog.Show();
+                CirSim.DiodeModelEditDialog = new ElementInfoDialog(model, Sim);
+                CirSim.DiodeModelEditDialog.Show();
                 return;
             }
             if (n == 2) {

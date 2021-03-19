@@ -44,7 +44,7 @@ namespace Circuit.Elements {
                 return;
             }
 
-            int hs = Sim.chkUseAnsiSymbols.Checked ? 5 : 4;
+            int hs = Sim.ControlPanel.ChkUseAnsiSymbols.Checked ? 5 : 4;
             setBbox(mPoint1, mPoint2, hs);
 
             draw2Leads(g);
@@ -54,7 +54,7 @@ namespace Circuit.Elements {
             double v1 = Volts[0];
             double v2 = Volts[1];
 
-            if (Sim.chkUseAnsiSymbols.Checked) {
+            if (Sim.ControlPanel.ChkUseAnsiSymbols.Checked) {
                 /* draw zigzag */
                 int oy = 0;
                 int ny;
@@ -87,7 +87,7 @@ namespace Circuit.Elements {
                 g.DrawThickLine(ps1, ps2);
             }
 
-            if (Sim.chkShowValues.Checked) {
+            if (Sim.ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.ShortUnitText(Resistance, "");
                 g.DrawRightText(s, textPos.X, textPos.Y);
             }
@@ -108,12 +108,12 @@ namespace Circuit.Elements {
         public override void GetInfo(string[] arr) {
             arr[0] = "resistor";
             getBasicInfo(arr);
-            arr[3] = "R = " + Utils.UnitText(Resistance, CirSim.ohmString);
+            arr[3] = "R = " + Utils.UnitText(Resistance, CirSim.OHM_TEXT);
             arr[4] = "P = " + Utils.UnitText(Power, "W");
         }
 
         public override string GetScopeText(Scope.VAL v) {
-            return "resistor, " + Utils.UnitText(Resistance, CirSim.ohmString);
+            return "resistor, " + Utils.UnitText(Resistance, CirSim.OHM_TEXT);
         }
 
         public override ElementInfo GetElementInfo(int n) {

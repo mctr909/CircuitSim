@@ -72,7 +72,7 @@ namespace Circuit {
 
         public bool createModel() {
             var nodeSet = new List<int>();
-            model = CirSim.theSim.getCircuitAsComposite();
+            model = CirSim.Sim.getCircuitAsComposite();
             if (model == null) {
                 return false;
             }
@@ -183,8 +183,8 @@ namespace Circuit {
                         }
                         model.setName(CustomCompositeElm.lastModelName = name);
                     }
-                    CirSim.theSim.UpdateModels();
-                    CirSim.theSim.NeedAnalyze(); /* will get singular matrix if we don't do this */
+                    CirSim.Sim.UpdateModels();
+                    CirSim.Sim.NeedAnalyze(); /* will get singular matrix if we don't do this */
                     closeDialog();
                 });
                 hp2.Controls.Add(okButton);
@@ -230,7 +230,7 @@ namespace Circuit {
             double scalew = g.Width / (double)(chip.BoundingBox.Width + chip.BoundingBox.X * 2);
             double scaleh = g.Height / (double)(chip.BoundingBox.Height + chip.BoundingBox.Y * 2);
             scale = 1 / Math.Min(scalew, scaleh);
-            g.Clear(CirSim.theSim.getBackgroundColor());
+            g.Clear(CirSim.Sim.getBackgroundColor());
             g.FillRectangle(Brushes.Blue, 0, 0, g.Width, g.Height);
             g.SetTransform(new Matrix((float)(1 / scale), 0, 0, (float)(1 / scale), 0, 0));
             chip.Draw(g);

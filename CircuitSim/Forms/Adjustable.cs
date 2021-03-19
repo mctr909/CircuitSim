@@ -43,8 +43,8 @@ namespace Circuit {
 
         public void createSlider(CirSim sim, double value) {
             int intValue = (int)((value - minValue) * 100 / (maxValue - minValue));
-            sim.AddWidgetToVerticalPanel(label = new Label() { Text = sliderText });
-            sim.AddWidgetToVerticalPanel(slider = new TrackBar() {
+            sim.ControlPanel.AddSlider(label = new Label() { Text = sliderText });
+            sim.ControlPanel.AddSlider(slider = new TrackBar() {
                 SmallChange = 1,
                 LargeChange = 10,
                 TickFrequency = 10,
@@ -59,21 +59,21 @@ namespace Circuit {
                 slider.ValueChanged += new EventHandler((s, e) => {
                     var trb = (TrackBar)s;
                     ((ResistorElm)elm).Resistance = minValue + (maxValue - minValue) * trb.Value / trb.Maximum;
-                    CirSim.theSim.NeedAnalyze();
+                    CirSim.Sim.NeedAnalyze();
                 });
             }
             if (elm is CapacitorElm) {
                 slider.ValueChanged += new EventHandler((s, e) => {
                     var trb = (TrackBar)s;
                     ((CapacitorElm)elm).Capacitance = minValue + (maxValue - minValue) * trb.Value / trb.Maximum;
-                    CirSim.theSim.NeedAnalyze();
+                    CirSim.Sim.NeedAnalyze();
                 });
             }
             if (elm is InductorElm) {
                 slider.ValueChanged += new EventHandler((s, e) => {
                     var trb = (TrackBar)s;
                     ((InductorElm)elm).Inductance = minValue + (maxValue - minValue) * trb.Value / trb.Maximum;
-                    CirSim.theSim.NeedAnalyze();
+                    CirSim.Sim.NeedAnalyze();
                 });
             }
         }
@@ -101,8 +101,8 @@ namespace Circuit {
         }
 
         public void deleteSlider(CirSim sim) {
-            sim.RemoveWidgetFromVerticalPanel(label);
-            sim.RemoveWidgetFromVerticalPanel(slider);
+            sim.ControlPanel.RemoveSlider(label);
+            sim.ControlPanel.RemoveSlider(slider);
         }
 
         public string dump() {

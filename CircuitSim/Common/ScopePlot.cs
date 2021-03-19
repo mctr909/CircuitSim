@@ -109,7 +109,7 @@ namespace Circuit {
                 Color = Color.FromArgb(0x7F, 0x7F, 0x7F);
                 break;
             default:
-                Color = CirSim.theSim.chkPrintable.Checked ? Color.FromArgb(0, 0, 0) : Color.FromArgb(0xFF, 0xFF, 0xFF);
+                Color = CirSim.Sim.ControlPanel.ChkPrintable.Checked ? Color.FromArgb(0, 0, 0) : Color.FromArgb(0xFF, 0xFF, 0xFF);
                 break;
             }
         }

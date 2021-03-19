@@ -14,7 +14,7 @@ namespace Circuit.Elements {
 
         #region static property
         public static CirSim Sim { get; private set; }
-        public static double VoltageRange { get; set; }
+        
         public static double CurrentMult { get; set; }
         public static Brush PenHandle { get; set; }
         public static Color SelectColor { get; set; }
@@ -201,7 +201,6 @@ namespace Circuit.Elements {
         #region [static method]
         public static void InitClass(CirSim s, Circuit c) {
             Sim = s;
-            VoltageRange = 5;
             CurrentMult = 0;
             mCir = c;
             mMouseElmRef = null;
@@ -231,7 +230,7 @@ namespace Circuit.Elements {
         /// <param name="b"></param>
         /// <param name="pos"></param>
         protected static void drawDots(CustomGraphics g, Point a, Point b, double pos) {
-            if ((!Sim.SimIsRunning()) || pos == 0 || !Sim.chkShowDots.Checked) {
+            if ((!Sim.SimIsRunning()) || pos == 0 || !Sim.ControlPanel.ChkShowDots.Checked) {
                 return;
             }
             int dx = b.X - a.X;
@@ -242,7 +241,7 @@ namespace Circuit.Elements {
             if (pos < 0) {
                 pos += ds;
             }
-            if (Sim.chkPrintable.Checked) {
+            if (Sim.ControlPanel.ChkPrintable.Checked) {
                 g.LineColor = GrayColor;
             } else {
                 g.LineColor = Color.Yellow;
@@ -368,7 +367,7 @@ namespace Circuit.Elements {
         /// <param name="g"></param>
         protected void doDots(CustomGraphics g) {
             updateDotCount();
-            if (Sim.dragElm != this) {
+            if (Sim.DragElm != this) {
                 drawDots(g, mPoint1, mPoint2, mCurCount);
             }
         }
@@ -387,10 +386,10 @@ namespace Circuit.Elements {
             if (NeedsHighlight) {
                 return SelectColor;
             }
-            if (!Sim.chkShowVolts.Checked || Sim.chkPrintable.Checked) {
+            if (!Sim.ControlPanel.ChkShowVolts.Checked || Sim.ControlPanel.ChkPrintable.Checked) {
                 return GrayColor;
             }
-            int c = (int)((volts + VoltageRange) * (mColorScale.Length - 1) / (VoltageRange * 2));
+            int c = (int)((volts + ControlPanel.VoltageRange) * (mColorScale.Length - 1) / (ControlPanel.VoltageRange * 2));
             if (c < 0) {
                 c = 0;
             }
@@ -404,10 +403,10 @@ namespace Circuit.Elements {
             /* we normally do this in updateCircuit() now because the logic is more complicated.
              * we only handle the case where we have to draw all the posts.  That happens when
              * this element is selected or is being created */
-            if (Sim.dragElm == null && !NeedsHighlight) {
+            if (Sim.DragElm == null && !NeedsHighlight) {
                 return;
             }
-            if (Sim.mouseMode == CirSim.MOUSE_MODE.DRAG_ROW || Sim.mouseMode == CirSim.MOUSE_MODE.DRAG_COLUMN) {
+            if (Sim.MouseMode == CirSim.MOUSE_MODE.DRAG_ROW || Sim.MouseMode == CirSim.MOUSE_MODE.DRAG_COLUMN) {
                 return;
             }
             for (int i = 0; i != PostCount; i++) {
@@ -567,7 +566,7 @@ namespace Circuit.Elements {
             int ny = Y1 + dy;
             int nx2 = X2 + dx;
             int ny2 = Y2 + dy;
-            for (int i = 0; i != Sim.elmList.Count; i++) {
+            for (int i = 0; i != Sim.ElmList.Count; i++) {
                 var ce = Sim.getElm(i);
                 if (ce.X1 == nx && ce.Y1 == ny && ce.X2 == nx2 && ce.Y2 == ny2) {
                     return false;

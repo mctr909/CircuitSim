@@ -46,7 +46,7 @@ namespace Circuit.Elements {
             drawRail(g);
             drawPosts(g);
             mCurCount = updateDotCount(-mCurrent, mCurCount);
-            if (Sim.dragElm != this) {
+            if (Sim.DragElm != this) {
                 drawDots(g, mPoint1, mLead1, mCurCount);
             }
         }

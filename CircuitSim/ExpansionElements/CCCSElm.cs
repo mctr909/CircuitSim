@@ -66,7 +66,7 @@ namespace Circuit.Elements {
             if (expr != null) {
                 /* calculate output */
                 exprState.values[8] = cur;  /* I = current */
-                exprState.t = Sim.t;
+                exprState.t = Sim.Time;
                 double v0 = expr.eval(exprState);
                 double rs = v0;
                 pins[2].current = v0;

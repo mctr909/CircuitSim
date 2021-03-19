@@ -181,10 +181,10 @@ namespace Circuit {
         public bool CursorInSettingsWheel {
             get {
                 return mShowSettingsWheel
-                    && BoundingBox.X <= mSim.mouseCursorX
-                    && BoundingBox.Y + BoundingBox.Height - 24 <= mSim.mouseCursorY
-                    && mSim.mouseCursorX <= BoundingBox.X + 24
-                    && mSim.mouseCursorY <= BoundingBox.Y + BoundingBox.Height;
+                    && BoundingBox.X <= mSim.MouseCursorX
+                    && BoundingBox.Y + BoundingBox.Height - 24 <= mSim.MouseCursorY
+                    && mSim.MouseCursorX <= BoundingBox.X + 24
+                    && mSim.MouseCursorY <= BoundingBox.Y + BoundingBox.Height;
             }
         }
         #endregion
@@ -321,7 +321,7 @@ namespace Circuit {
                 mPlots[i].Reset(mScopePointCount, Speed, full);
             }
             _calcVisiblePlots();
-            mScopeTimeStep = mSim.timeStep;
+            mScopeTimeStep = ControlPanel.TimeStep;
             _allocImage();
         }
 
@@ -410,7 +410,7 @@ namespace Circuit {
         public void Properties(Form parent) {
             var fm = new ScopePropertiesDialog(this);
             fm.Show(parent);
-            CirSim.dialogShowing = fm;
+            CirSim.DialogShowing = fm;
         }
 
         public void SpeedUp() {
@@ -519,7 +519,7 @@ namespace Circuit {
         public double CalcGridStepX() {
             int multptr = 0;
             var gsx = 1e-15;
-            var ts = mSim.timeStep * Speed;
+            var ts = ControlPanel.TimeStep * Speed;
             while (gsx < ts * 20) {
                 gsx *= MULTA[(multptr++) % 5];
             }
@@ -603,8 +603,8 @@ namespace Circuit {
             }
 
             /* reset if timestep changed */
-            if (mScopeTimeStep != mSim.timeStep) {
-                mScopeTimeStep = mSim.timeStep;
+            if (mScopeTimeStep != ControlPanel.TimeStep) {
+                mScopeTimeStep = ControlPanel.TimeStep;
                 ResetGraph();
             }
 
@@ -631,7 +631,7 @@ namespace Circuit {
             for (int si = 0; si != mVisiblePlots.Count; si++) {
                 var plot = mVisiblePlots[si];
                 _calcPlotScale(plot);
-                if (mSim.scopeSelected == -1 && plot.Elm != null && plot.Elm.IsMouseElm) {
+                if (mSim.ScopeSelected == -1 && plot.Elm != null && plot.Elm.IsMouseElm) {
                     mSomethingSelected = true;
                 }
                 if (plot.Units == UNITS.V) {
@@ -687,9 +687,9 @@ namespace Circuit {
             _drawCrosshairs(g);
 
             g.SetTransform(new Matrix(
-                mSim.transform[0], mSim.transform[1],
-                mSim.transform[2], mSim.transform[3],
-                mSim.transform[4], mSim.transform[5]
+                mSim.Transform[0], mSim.Transform[1],
+                mSim.Transform[2], mSim.Transform[3],
+                mSim.Transform[4], mSim.Transform[5]
             ));
 
             if (5 < mPlots[0].Pointer && !LockScale) {
@@ -849,12 +849,12 @@ namespace Circuit {
             if (mSim.DialogIsShowing()) {
                 return;
             }
-            if (!BoundingBox.Contains(mSim.mouseCursorX, mSim.mouseCursorY)) {
+            if (!BoundingBox.Contains(mSim.MouseCursorX, mSim.MouseCursorY)) {
                 SelectedPlot = -1;
                 return;
             }
             int ipa = mPlots[0].StartIndex(BoundingBox.Width);
-            int ip = (mSim.mouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
+            int ip = (mSim.MouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
             int maxy = (BoundingBox.Height - 1) / 2;
             int y = maxy;
             int i;
@@ -865,7 +865,7 @@ namespace Circuit {
                 var plot = mVisiblePlots[i];
                 var scale = plot.Units == UNITS.V ? mScaleV : mScaleA;
                 int maxvy = (int)(maxy / scale * plot.MaxValues[ip]);
-                int dist = Math.Abs(mSim.mouseCursorY - (BoundingBox.Y + y - maxvy));
+                int dist = Math.Abs(mSim.MouseCursorY - (BoundingBox.Y + y - maxvy));
                 if (dist < bestdist) {
                     bestdist = dist;
                     best = i;
@@ -901,7 +901,7 @@ namespace Circuit {
             if (mSim.DialogIsShowing()) {
                 return;
             }
-            if (!BoundingBox.Contains(mSim.mouseCursorX, mSim.mouseCursorY)) {
+            if (!BoundingBox.Contains(mSim.MouseCursorX, mSim.MouseCursorY)) {
                 return;
             }
             if (SelectedPlot < 0 && !ShowFFT) {
@@ -909,7 +909,7 @@ namespace Circuit {
             }
             var info = new string[4];
             int ipa = mPlots[0].StartIndex(BoundingBox.Width);
-            int ip = (mSim.mouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
+            int ip = (mSim.MouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
             int ct = 0;
             int maxy = (BoundingBox.Height - 1) / 2;
             int y = maxy;
@@ -918,14 +918,14 @@ namespace Circuit {
                 info[ct++] = plot.GetUnitText(plot.MaxValues[ip]);
                 int maxvy = (int)(mMainGridMult * (plot.MaxValues[ip] - mMainGridMid));
                 g.LineColor = plot.Color;
-                g.FillCircle(mSim.mouseCursorX, BoundingBox.Y + y - maxvy, 2.5f);
+                g.FillCircle(mSim.MouseCursorX, BoundingBox.Y + y - maxvy, 2.5f);
             }
             if (ShowFFT) {
-                double maxFrequency = 1 / (mSim.timeStep * Speed * 2);
-                info[ct++] = Utils.UnitText(maxFrequency * (mSim.mouseCursorX - BoundingBox.X) / BoundingBox.Width, "Hz");
+                double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * 2);
+                info[ct++] = Utils.UnitText(maxFrequency * (mSim.MouseCursorX - BoundingBox.X) / BoundingBox.Width, "Hz");
             }
             if (mVisiblePlots.Count > 0) {
-                double t = mSim.t - mSim.timeStep * Speed * (BoundingBox.X + BoundingBox.Width - mSim.mouseCursorX);
+                double t = mSim.Time - ControlPanel.TimeStep * Speed * (BoundingBox.X + BoundingBox.Width - mSim.MouseCursorX);
                 info[ct++] = Utils.TimeText(t);
             }
 
@@ -938,14 +938,14 @@ namespace Circuit {
             }
 
             g.LineColor = CircuitElm.WhiteColor;
-            g.DrawLine(mSim.mouseCursorX, BoundingBox.Y, mSim.mouseCursorX, BoundingBox.Y + BoundingBox.Height);
+            g.DrawLine(mSim.MouseCursorX, BoundingBox.Y, mSim.MouseCursorX, BoundingBox.Y + BoundingBox.Height);
 
-            int bx = mSim.mouseCursorX;
+            int bx = mSim.MouseCursorX;
             if (bx < szw / 2) {
                 bx = szw / 2;
             }
 
-            g.LineColor = mSim.chkPrintable.Checked ? Color.White : Color.Black;
+            g.LineColor = mSim.ControlPanel.ChkPrintable.Checked ? Color.White : Color.Black;
             g.FillRectangle(bx - szw / 2, BoundingBox.Y - szh, szw, szh);
 
             g.TextColor = CircuitElm.TextColor;
@@ -966,7 +966,7 @@ namespace Circuit {
             int y = maxy;
 
             var color = (mSomethingSelected) ? Color.FromArgb(0xA0, 0xA0, 0xA0) : plot.Color;
-            if (mSim.scopeSelected == -1 && plot.Elm.IsMouseElm) {
+            if (mSim.ScopeSelected == -1 && plot.Elm.IsMouseElm) {
                 color = Color.FromArgb(0x00, 0xFF, 0xFF);
             } else if (selected) {
                 color = plot.Color;
@@ -1009,13 +1009,13 @@ namespace Circuit {
             int ll;
             var minorDiv = Color.FromArgb(0x30, 0x30, 0x30);
             var majorDiv = Color.FromArgb(0xA0, 0xA0, 0xA0);
-            if (mSim.chkPrintable.Checked) {
+            if (mSim.ControlPanel.ChkPrintable.Checked) {
                 minorDiv = Color.FromArgb(0xD0, 0xD0, 0xD0);
                 majorDiv = Color.FromArgb(0x80, 0x80, 0x80);
             }
 
             /* Vertical (T) gridlines */
-            double ts = mSim.timeStep * Speed;
+            double ts = ControlPanel.TimeStep * Speed;
             mGridStepX = CalcGridStepX();
 
             if (mDrawGridLines) {
@@ -1036,8 +1036,8 @@ namespace Circuit {
                 }
 
                 /* vertical gridlines */
-                double tstart = mSim.t - mSim.timeStep * Speed * BoundingBox.Width;
-                double tx = mSim.t - (mSim.t % mGridStepX);
+                double tstart = mSim.Time - ControlPanel.TimeStep * Speed * BoundingBox.Width;
+                double tx = mSim.Time - (mSim.Time % mGridStepX);
 
                 for (ll = 0; ; ll++) {
                     double tl = tx - mGridStepX * ll;
@@ -1106,7 +1106,7 @@ namespace Circuit {
             /* Draw x-grid lines and label the frequencies in the FFT that they point to. */
             int prevEnd = 0;
             int divs = 20;
-            double maxFrequency = 1 / (mSim.timeStep * Speed * divs * 2);
+            double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * divs * 2);
             g.LineColor = Color.FromArgb(0x88, 0x00, 0x00);
             g.TextColor = CircuitElm.TextColor;
             for (int i = 0; i < divs; i++) {
@@ -1329,7 +1329,7 @@ namespace Circuit {
             avperiod /= periodct;
             avperiod2 /= periodct;
             double periodstd = Math.Sqrt(avperiod2 - avperiod * avperiod);
-            double freq = 1 / (avperiod * mSim.timeStep * Speed);
+            double freq = 1 / (avperiod * ControlPanel.TimeStep * Speed);
             /* don't show freq if standard deviation is too great */
             if (periodct < 1 || periodstd > 2) {
                 freq = 0;

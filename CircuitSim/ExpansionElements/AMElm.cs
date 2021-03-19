@@ -50,7 +50,7 @@ namespace Circuit.Elements {
         }
 
         double getVoltage() {
-            double w = 2 * Pi * (Sim.t - freqTimeZero);
+            double w = 2 * Pi * (Sim.Time - freqTimeZero);
             return (Math.Sin(w * signalfreq) + 1) / 2 * Math.Sin(w * carrierfreq) * maxVoltage;
         }
 
@@ -65,7 +65,7 @@ namespace Circuit.Elements {
             drawWaveform(g, mPoint2);
             drawPosts(g);
             mCurCount = updateDotCount(-mCurrent, mCurCount);
-            if (Sim.dragElm != this) {
+            if (Sim.DragElm != this) {
                 drawDots(g, mPoint1, mLead1, mCurCount);
             }
         }

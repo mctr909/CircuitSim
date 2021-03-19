@@ -55,9 +55,9 @@ namespace Circuit.Elements {
         }
 
         double getVoltage() {
-            double deltaT = Sim.t - lasttime;
-            lasttime = Sim.t;
-            double signalamplitude = Math.Sin(2 * Pi * (Sim.t - freqTimeZero) * signalfreq);
+            double deltaT = Sim.Time - lasttime;
+            lasttime = Sim.Time;
+            double signalamplitude = Math.Sin(2 * Pi * (Sim.Time - freqTimeZero) * signalfreq);
             funcx += deltaT * (carrierfreq + (signalamplitude * deviation));
             double w = 2 * Pi * funcx;
             return Math.Sin(w) * maxVoltage;
@@ -74,7 +74,7 @@ namespace Circuit.Elements {
             drawWaveform(g, mPoint2);
             drawPosts(g);
             mCurCount = updateDotCount(-mCurrent, mCurCount);
-            if (Sim.dragElm != this) {
+            if (Sim.DragElm != this) {
                 drawDots(g, mPoint1, mLead1, mCurCount);
             }
         }

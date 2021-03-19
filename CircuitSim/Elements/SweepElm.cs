@@ -107,14 +107,14 @@ namespace Circuit.Elements {
                 }
             }
 
-            if (Sim.chkShowValues.Checked) {
+            if (Sim.ControlPanel.ChkShowValues.Checked) {
                 string s = Utils.ShortUnitText(frequency, "Hz");
                 drawValues(g, s, 20, -15);
             }
 
             drawPosts(g);
             mCurCount = updateDotCount(-mCurrent, mCurCount);
-            if (Sim.dragElm != this) {
+            if (Sim.DragElm != this) {
                 drawDots(g, mPoint1, mLead1, mCurCount);
             }
         }
@@ -130,13 +130,13 @@ namespace Circuit.Elements {
                 dir = 1;
             }
             if ((mFlags & FLAG_LOG) == 0) {
-                fadd = dir * Sim.timeStep * (maxF - minF) / sweepTime;
+                fadd = dir * ControlPanel.TimeStep * (maxF - minF) / sweepTime;
                 fmul = 1;
             } else {
                 fadd = 0;
-                fmul = Math.Pow(maxF / minF, dir * Sim.timeStep / sweepTime);
+                fmul = Math.Pow(maxF / minF, dir * ControlPanel.TimeStep / sweepTime);
             }
-            savedTimeStep = Sim.timeStep;
+            savedTimeStep = ControlPanel.TimeStep;
         }
 
         public override void Reset() {
@@ -148,11 +148,11 @@ namespace Circuit.Elements {
 
         public override void StartIteration() {
             /* has timestep been changed? */
-            if (Sim.timeStep != savedTimeStep) {
+            if (ControlPanel.TimeStep != savedTimeStep) {
                 setParams();
             }
             v = Math.Sin(freqTime) * maxV;
-            freqTime += frequency * Pi2 * Sim.timeStep;
+            freqTime += frequency * Pi2 * ControlPanel.TimeStep;
             frequency = frequency * fmul + fadd;
             if (frequency >= maxF && dir == 1) {
                 if ((mFlags & FLAG_BIDIR) != 0) {
@@ -218,7 +218,7 @@ namespace Circuit.Elements {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            double maxfreq = 1 / (8 * Sim.timeStep);
+            double maxfreq = 1 / (8 * ControlPanel.TimeStep);
             if (n == 0) {
                 minF = ei.Value;
                 if (minF > maxfreq) {

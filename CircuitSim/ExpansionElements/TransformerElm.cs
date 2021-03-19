@@ -195,7 +195,7 @@ namespace Circuit.Elements {
             double m = couplingCoef * Math.Sqrt(l1 * l2);
             /* build inverted matrix */
             double deti = 1 / (l1 * l2 - m * m);
-            double ts = IsTrapezoidal ? Sim.timeStep / 2 : Sim.timeStep;
+            double ts = IsTrapezoidal ? ControlPanel.TimeStep / 2 : ControlPanel.TimeStep;
             a1 = l2 * deti * ts; /* we multiply dt/2 into a1..a4 here */
             a2 = -m * deti * ts;
             a3 = -m * deti * ts;

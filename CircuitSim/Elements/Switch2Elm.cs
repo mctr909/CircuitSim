@@ -122,8 +122,8 @@ namespace Circuit.Elements {
             base.toggle();
             if (link != 0) {
                 int i;
-                for (i = 0; i != Sim.elmList.Count; i++) {
-                    var o = Sim.elmList[i];
+                for (i = 0; i != Sim.ElmList.Count; i++) {
+                    var o = Sim.ElmList[i];
                     if (o is Switch2Elm) {
                         var s2 = (Switch2Elm)o;
                         if (s2.link == link) {

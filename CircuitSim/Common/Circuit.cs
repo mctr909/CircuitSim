@@ -306,7 +306,7 @@ namespace Circuit {
             int mergeCount = 0;
             mNodeMap = new Dictionary<Point, NodeMapEntry>();
             mWireInfoList = new List<WireInfo>();
-            for (int i = 0; i != mSim.elmList.Count; i++) {
+            for (int i = 0; i != mSim.ElmList.Count; i++) {
                 var ce = mSim.getElm(i);
                 if (!(ce is WireElm)) {
                     continue;
@@ -444,7 +444,7 @@ namespace Circuit {
                 if (entry.Value == 1) {
                     bool bad = false;
                     var cn = entry.Key;
-                    for (int j = 0; j != mSim.elmList.Count && !bad; j++) {
+                    for (int j = 0; j != mSim.ElmList.Count && !bad; j++) {
                         var ce = mSim.getElm(j);
                         if (ce is GraphicElm) {
                             continue;
@@ -627,7 +627,7 @@ namespace Circuit {
 
         public void AnalyzeCircuit() {
             bool debug = false;
-            var elmList = mSim.elmList;
+            var elmList = mSim.ElmList;
             if (elmList.Count == 0) {
                 PostDrawList = new List<Point>();
                 BadConnectionList = new List<Point>();
@@ -989,7 +989,7 @@ namespace Circuit {
                         }
                     }
                 }
-                for (i = 0; i != mSim.elmList.Count; i++) {
+                for (i = 0; i != mSim.ElmList.Count; i++) {
                     var ce = mSim.getElm(i);
                     ce.DoStep();
                 }
@@ -1078,7 +1078,6 @@ namespace Circuit {
             Matrix = null;  /* causes an exception */
             StopElm = ce;
             mSim.SetSimRunning(false);
-            mSim.analyzeFlag = false;
         }
     }
 }

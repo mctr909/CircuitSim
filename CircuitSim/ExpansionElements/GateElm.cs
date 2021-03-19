@@ -83,7 +83,7 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             inputStates = new bool[inputCount];
-            if (mLen > 150 && this == Sim.dragElm) {
+            if (mLen > 150 && this == Sim.DragElm) {
                 setSize(2);
             }
             int hs = gheight;
@@ -123,7 +123,7 @@ namespace Circuit.Elements {
 
         protected virtual string getGateText() { return null; }
 
-        public static bool useAnsiGates() { return Sim.chkUseAnsiSymbols.Checked; }
+        public static bool useAnsiGates() { return Sim.ControlPanel.ChkUseAnsiSymbols.Checked; }
 
         public override void Draw(CustomGraphics g) {
             int i;
@@ -199,7 +199,7 @@ namespace Circuit.Elements {
                 if (oscillationCount++ > 50) {
                     /* output is oscillating too much, randomly leave output the same */
                     oscillationCount = 0;
-                    if (CirSim.random.Next(10) > 5) {
+                    if (CirSim.Random.Next(10) > 5) {
                         f = lastOutput;
                     }
                 }

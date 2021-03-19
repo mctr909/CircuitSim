@@ -79,6 +79,7 @@
     <Compile Include="ExpansionElements\SchmittElm.cs" />
     <Compile Include="ExpansionElements\TriStateElm.cs" />
     <Compile Include="ExpansionElements\XorGateElm.cs" />
+    <Compile Include="Forms\ControlPanel.cs" />
     <Compile Include="Forms\EditCompositeModelDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -96,7 +97,7 @@
     <Compile Include="ExpansionElements\PMosfetElm.cs" />
     <Compile Include="ExpansionElements\PTransistorElm.cs" />
     <Compile Include="Elements\ZenerElm.cs" />
-    <Compile Include="Forms\EditOptions.cs" />
+    <Compile Include="Forms\ElementMenu.cs" />
     <Compile Include="Forms\InputDialog.cs">
       <SubType>Form</SubType>
     </Compile>

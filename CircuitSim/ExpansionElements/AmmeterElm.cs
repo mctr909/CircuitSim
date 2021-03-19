@@ -209,7 +209,7 @@ namespace Circuit.Elements {
                 ei.Choice.Items.Add("Auto");
                 ei.Choice.Items.Add("A");
                 ei.Choice.Items.Add("mA");
-                ei.Choice.Items.Add(CirSim.muString + "A");
+                ei.Choice.Items.Add(CirSim.MU_TEXT + "A");
                 ei.Choice.SelectedIndex = (int)scale;
                 return ei;
             }

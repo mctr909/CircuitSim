@@ -34,10 +34,10 @@ namespace Circuit.Elements {
 
         public override void Draw(CustomGraphics g) {
             string txt = (mFlags & FLAG_VALUE) != 0 ? Utils.UnitTextWithScale(Volts[0], "V", scale) : "out";
-            if (this == Sim.plotXElm) {
+            if (this == Sim.PlotXElm) {
                 txt = "X";
             }
-            if (this == Sim.plotYElm) {
+            if (this == Sim.PlotYElm) {
                 txt = "Y";
             }
 
@@ -76,7 +76,7 @@ namespace Circuit.Elements {
                 ei.Choice.Items.Add("Auto");
                 ei.Choice.Items.Add("V");
                 ei.Choice.Items.Add("mV");
-                ei.Choice.Items.Add(CirSim.muString + "V");
+                ei.Choice.Items.Add(CirSim.MU_TEXT + "V");
                 ei.Choice.SelectedIndex = (int)scale;
                 return ei;
             }

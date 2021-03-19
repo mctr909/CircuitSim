@@ -115,7 +115,7 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            if (mLen > 150 && this == Sim.dragElm) {
+            if (mLen > 150 && this == Sim.DragElm) {
                 setSize(2);
             }
             int ww = opwidth;
@@ -171,10 +171,10 @@ namespace Circuit.Elements {
             double x = 0;
             int vn = mCir.NodeList.Count + mVoltSource;
             double dx = 0;
-            if (vd >= maxOut / gain && (lastvd >= 0 || CirSim.random.Next(4) == 1)) {
+            if (vd >= maxOut / gain && (lastvd >= 0 || CirSim.Random.Next(4) == 1)) {
                 dx = 1e-4;
                 x = maxOut - dx * maxOut / gain;
-            } else if (vd <= minOut / gain && (lastvd <= 0 || CirSim.random.Next(4) == 1)) {
+            } else if (vd <= minOut / gain && (lastvd <= 0 || CirSim.Random.Next(4) == 1)) {
                 dx = 1e-4;
                 x = minOut - dx * minOut / gain;
             } else {

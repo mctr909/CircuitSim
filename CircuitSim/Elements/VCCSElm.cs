@@ -130,7 +130,7 @@ namespace Circuit.Elements {
                 for (i = 0; i != inputCount; i++) {
                     exprState.values[i] = Volts[i];
                 }
-                exprState.t = Sim.t;
+                exprState.t = Sim.Time;
                 double v0 = -expr.eval(exprState);
                 /*if (Math.Abs(volts[inputCount] - v0) > Math.Abs(v0) * .01 && cir.SubIterations < 100) {
                     cir.Converged = false;

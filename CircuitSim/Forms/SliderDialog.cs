@@ -158,11 +158,11 @@ namespace Circuit {
                         var rg = new Regex(" \\(.*\\)$");
                         adj.sliderText = rg.Replace(ei.Name, "");
                         adj.createSlider(sim, ei.Value);
-                        sim.adjustables.Add(adj);
+                        sim.Adjustables.Add(adj);
                     } else {
                         var adj = findAdjustable(i);
                         adj.deleteSlider(sim);
-                        sim.adjustables.Remove(adj);
+                        sim.Adjustables.Remove(adj);
                     }
                     changed = true;
                 }
@@ -185,7 +185,7 @@ namespace Circuit {
 
         public void closeDialog() {
             Close();
-            CirSim.sliderDialog = null;
+            CirSim.SliderDialog = null;
         }
 
         void ctrlInsert(Panel p, Control ctrl) {

@@ -87,7 +87,7 @@ namespace Circuit.Elements {
 
         public override void DoStep() {
             double v = Volts[0] > highVoltage * .5 ? 0 : highVoltage;
-            double maxStep = slewRate * Sim.timeStep * 1e9;
+            double maxStep = slewRate * ControlPanel.TimeStep * 1e9;
             v = Math.Max(Math.Min(lastOutputVoltage + maxStep, v), lastOutputVoltage - maxStep);
             mCir.UpdateVoltageSource(0, Nodes[1], mVoltSource, v);
         }

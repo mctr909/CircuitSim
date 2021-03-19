@@ -347,7 +347,7 @@ namespace Circuit {
 
         public void closeDialog() {
             Close();
-            CirSim.editDialog = null;
+            CirSim.EditDialog = null;
         }
 
         public void enterPressed() {

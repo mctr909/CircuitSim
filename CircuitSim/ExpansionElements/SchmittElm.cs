@@ -29,7 +29,7 @@ namespace Circuit.Elements {
                     _out = logicOnLevel;
                 }
             }
-            double maxStep = slewRate * Sim.timeStep * 1e9;
+            double maxStep = slewRate * ControlPanel.TimeStep * 1e9;
             _out = Math.Max(Math.Min(v0 + maxStep, _out), v0 - maxStep);
             mCir.UpdateVoltageSource(0, Nodes[1], mVoltSource, _out);
         }

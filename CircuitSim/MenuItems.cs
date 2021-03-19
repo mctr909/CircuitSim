@@ -108,11 +108,6 @@ namespace Circuit {
         recover,
         #endregion
 
-        #region [Setting]
-        SETUP,
-        OTHER,
-        #endregion
-
         #region [Edit]
         SELECT,
         CUT,
@@ -495,15 +490,6 @@ namespace Circuit {
             fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addMenuItem(fileMenuBar, "印刷(P)", MENU_ITEM.print, new SHORTCUT(Keys.None));
             mainMenuBar.Items.Add(fileMenuBar);
-            #endregion
-
-            #region Setting
-            var settingMenuBar = new ToolStripMenuItem();
-            settingMenuBar.Text = "設定(S)";
-            settingMenuBar.Font = menuFont;
-            addMenuItem(settingMenuBar, "セットアップ(U)", MENU_CATEGORY.CIRCUITS, MENU_ITEM.SETUP);
-            addMenuItem(settingMenuBar, "その他(O)", MENU_CATEGORY.OPTIONS, MENU_ITEM.OTHER);
-            mainMenuBar.Items.Add(settingMenuBar);
             #endregion
 
             #region Edit

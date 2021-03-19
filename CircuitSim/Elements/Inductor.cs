@@ -42,9 +42,9 @@
             nodes[0] = n0;
             nodes[1] = n1;
             if (IsTrapezoidal) {
-                compResistance = 2 * inductance / sim.timeStep;
+                compResistance = 2 * inductance / ControlPanel.TimeStep;
             } else { /* backward euler */
-                compResistance = inductance / sim.timeStep;
+                compResistance = inductance / ControlPanel.TimeStep;
             }
             cir.StampResistor(nodes[0], nodes[1], compResistance);
             cir.StampRightSide(nodes[0]);

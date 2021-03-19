@@ -58,10 +58,10 @@ namespace Circuit.Elements {
         int getNextLabelNum() {
             int i;
             int num = 1;
-            if (Sim.elmList == null) {
+            if (Sim.ElmList == null) {
                 return 0;
             }
-            for (i = 0; i != Sim.elmList.Count; i++) {
+            for (i = 0; i != Sim.ElmList.Count; i++) {
                 var ce = Sim.getElm(i);
                 if (!(ce is AudioOutputElm)) {
                     continue;
@@ -115,7 +115,7 @@ namespace Circuit.Elements {
             arr[1] = "V = " + Utils.VoltageText(Volts[0]);
             int ct = (dataFull ? dataCount : dataPtr);
             double dur = sampleStep * ct;
-            arr[2] = "start = " + Utils.UnitText(dataFull ? Sim.t - duration : dataStart, "s");
+            arr[2] = "start = " + Utils.UnitText(dataFull ? Sim.Time - duration : dataStart, "s");
             arr[3] = "dur = " + Utils.UnitText(dur, "s");
             arr[4] = "samples = " + ct + (dataFull ? "" : "/" + dataCount);
         }
@@ -123,7 +123,7 @@ namespace Circuit.Elements {
         public override void StepFinished() {
             dataSample += Volts[0];
             dataSampleCount++;
-            if (Sim.t >= nextDataSample) {
+            if (Sim.Time >= nextDataSample) {
                 nextDataSample += sampleStep;
                 data[dataPtr++] = dataSample / dataSampleCount;
                 dataSampleCount = 0;
@@ -136,25 +136,25 @@ namespace Circuit.Elements {
         }
 
         public override void Delete() {
-            Sim.RemoveWidgetFromVerticalPanel(button);
+            Sim.ControlPanel.RemoveSlider(button);
             base.Delete();
         }
 
         void setDataCount() {
             dataCount = (int)(samplingRate * duration);
             data = new double[dataCount];
-            dataStart = Sim.t;
+            dataStart = Sim.Time;
             dataPtr = 0;
             dataFull = false;
             sampleStep = 1.0 / samplingRate;
-            nextDataSample = Sim.t + sampleStep;
+            nextDataSample = Sim.Time + sampleStep;
         }
 
         void setTimeStep() {
             double target = sampleStep / 8;
-            if (Sim.timeStep != target) {
+            if (ControlPanel.TimeStep != target) {
                 if (okToChangeTimeStep || MessageBox.Show("Adjust timestep for best audio quality and performance?", "", MessageBoxButtons.OKCancel) == DialogResult.OK) {
-                    Sim.timeStep = target;
+                    ControlPanel.TimeStep = target;
                     okToChangeTimeStep = true;
                 }
             }
@@ -165,7 +165,7 @@ namespace Circuit.Elements {
             if (labelNum > 1) {
                 label += " " + labelNum;
             }
-            Sim.AddWidgetToVerticalPanel(button = new Button() { Text = label });
+            Sim.ControlPanel.AddSlider(button = new Button() { Text = label });
             button.Click += new EventHandler((s, e) => {
                 play();
             });
