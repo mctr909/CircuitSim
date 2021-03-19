@@ -261,9 +261,6 @@ namespace Circuit.Elements {
         public override string GetScopeText(Scope.VAL x) {
             string t = "";
             switch (x) {
-            case Scope.VAL.IB: t = "Ib"; break;
-            case Scope.VAL.IC: t = "Ic"; break;
-            case Scope.VAL.IE: t = "Ie"; break;
             case Scope.VAL.VBE: t = "Vbe"; break;
             case Scope.VAL.VBC: t = "Vbc"; break;
             case Scope.VAL.VCE: t = "Vce"; break;
@@ -273,12 +270,6 @@ namespace Circuit.Elements {
 
         public override double GetScopeValue(Scope.VAL x) {
             switch (x) {
-            case Scope.VAL.IB:
-                return ib;
-            case Scope.VAL.IC:
-                return ic;
-            case Scope.VAL.IE:
-                return ie;
             case Scope.VAL.VBE:
                 return Volts[V_B] - Volts[V_E];
             case Scope.VAL.VBC:
@@ -287,17 +278,6 @@ namespace Circuit.Elements {
                 return Volts[V_C] - Volts[V_E];
             }
             return 0;
-        }
-
-        public override Scope.UNITS GetScopeUnits(Scope.VAL x) {
-            switch (x) {
-            case Scope.VAL.IB:
-            case Scope.VAL.IC:
-            case Scope.VAL.IE:
-                return Scope.UNITS.A;
-            default:
-                return Scope.UNITS.V;
-            }
         }
 
         public override void GetInfo(string[] arr) {

@@ -10,7 +10,6 @@ namespace Circuit {
         MANUAL_SCALE,
 
         SHOW_VOLTAGE,
-        SHOW_CURRENT,
         SHOW_SCALE,
         SHOW_PEAK,
         SHOW_NEG_PEAK,
@@ -19,9 +18,6 @@ namespace Circuit {
         LOG_SPECTRUM,
         SHOW_RMS,
 
-        SHOW_IB,
-        SHOW_IC,
-        SHOW_IE,
         SHOW_VBE,
         SHOW_VBC,
         SHOW_VCE
@@ -49,7 +45,6 @@ namespace Circuit {
         CheckBox chkScale;
         CheckBox chkManualScale;
         CheckBox chkVoltage;
-        CheckBox chkCurrent;
         CheckBox chkPeak;
         CheckBox chkNegPeak;
         CheckBox chkFreq;
@@ -57,9 +52,6 @@ namespace Circuit {
         CheckBox chkLogSpectrum;
         CheckBox chkRms;
 
-        RadioButton rbIb;
-        RadioButton rbIc;
-        RadioButton rbIe;
         RadioButton rbVbe;
         RadioButton rbVbc;
         RadioButton rbVce;
@@ -183,18 +175,6 @@ namespace Circuit {
                 pnlPlots.AutoScroll = true;
                 gridY = 4;
                 if (transistor) {
-                    /* rbIb */
-                    rbIb = new ScopeRadioButton("Show Ib", SCOPE_MENU.SHOW_IB);
-                    rbIb.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
-                    addItemToGrid(pnlPlots, rbIb);
-                    /* rbIc */
-                    rbIc = new ScopeRadioButton("Show Ic", SCOPE_MENU.SHOW_IC);
-                    rbIc.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
-                    addItemToGrid(pnlPlots, rbIc);
-                    /* rbIe */
-                    rbIe = new ScopeRadioButton("Show Ie", SCOPE_MENU.SHOW_IE);
-                    rbIe.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
-                    addItemToGrid(pnlPlots, rbIe);
                     /* rbVbe */
                     rbVbe = new ScopeRadioButton("Show Vbe", SCOPE_MENU.SHOW_VBE);
                     rbVbe.CheckedChanged += new EventHandler((sender, e) => { onValueChange((ScopeRadioButton)sender); });
@@ -212,10 +192,6 @@ namespace Circuit {
                     chkVoltage = new ScopeCheckBox("Show Voltage", SCOPE_MENU.SHOW_VOLTAGE);
                     chkVoltage.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
                     addItemToGrid(pnlPlots, chkVoltage);
-                    /* chkCurrent */
-                    chkCurrent = new ScopeCheckBox("Show Current", SCOPE_MENU.SHOW_CURRENT);
-                    chkCurrent.CheckedChanged += new EventHandler((sender, e) => { onValueChange(sender); });
-                    addItemToGrid(pnlPlots, chkCurrent);
                 }
                 /* chkSpectrum */
                 chkSpectrum = new ScopeCheckBox("Show Spectrum", SCOPE_MENU.SHOW_FFT);
@@ -304,7 +280,6 @@ namespace Circuit {
             tbSpeed.Value = (10 - (int)Math.Round(Math.Log(scope.Speed) / Math.Log(2)));
             if (chkVoltage != null) {
                 chkVoltage.Checked = scope.ShowV;
-                chkCurrent.Checked = scope.ShowI;
             }
             chkScale.Checked = scope.ShowScale;
             chkPeak.Checked = scope.ShowMax;
@@ -314,14 +289,11 @@ namespace Circuit {
             chkRms.Checked = scope.ShowRMS;
             chkRms.Text = "Show RMS Average";
             if (rbVbe != null) {
-                if (rbIb.Checked) scope.ShowingValue(Scope.VAL.IB);
-                if (rbIc.Checked) scope.ShowingValue(Scope.VAL.IC);
-                if (rbIe.Checked) scope.ShowingValue(Scope.VAL.IE);
                 if (rbVbe.Checked) scope.ShowingValue(Scope.VAL.VBE);
                 if (rbVbc.Checked) scope.ShowingValue(Scope.VAL.VBC);
                 if (rbVce.Checked) scope.ShowingValue(Scope.VAL.VCE);
             }
-            lblManualScale.Text = "Scale (Max Value)" + " (" + scope.ScaleUnitsText + ")";
+            lblManualScale.Text = "Scale (Max Value)" + " (V)";
             txtManualScale.Text = ElementInfoDialog.unitString(null, scope.ScaleValue);
             chkManualScale.Checked = scope.LockScale;
             txtManualScale.Enabled = scope.LockScale;

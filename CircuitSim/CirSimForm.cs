@@ -78,17 +78,7 @@ namespace Circuit {
 
             CircuitElm.SetColorScale(64);
 
-            if (mCir.StopMessage == null) {
-                readCircuit("");
-                getSetupList(false);
-            } else {
-                readCircuit("");
-                if (mCir.StopMessage == null && mStartCircuit != null) {
-                    getSetupList(false);
-                } else {
-                    getSetupList(true);
-                }
-            }
+            readCircuit("");
 
             enableUndoRedo();
             enablePaste();
@@ -940,88 +930,6 @@ namespace Circuit {
             }
 
             return dump;
-        }
-
-        void getSetupList(bool openDefault) {
-            // TODO: getSetupList
-            //string url;
-            //url = GWT.getModuleBaseURL() + "setuplist.txt" + "?v=" + random.nextInt();
-            //var requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
-            //try {
-            //    requestBuilder.sendRequest(null, new RequestCallback() {
-            //        public void onError(Request request, Throwable exception) {
-            //            Console.WriteLine("File Error Response", exception);
-            //        }
-
-            //        public void onResponseReceived(Request request, Response response) {
-            //            // processing goes here
-            //            if (response.getStatusCode() == Response.SC_OK) {
-            //                string text = response.getText();
-            //                processSetupList(text.getBytes(), openDefault);
-            //                // end or processing
-            //            } else {
-            //                Console.WriteLine("Bad file server response:" + response.getStatusText());
-            //            }
-            //        }
-            //    });
-            //} catch (Exception e) {
-            //    Console.WriteLine("failed file reading", e);
-            //}
-        }
-
-        void processSetupList(byte[] b, bool openDefault) {
-            int len = b.Length;
-            ToolStripItem currentMenuBar;
-            currentMenuBar = new ToolStripMenuItem() {
-                Text = "Circuits"
-            };
-            mMenuBar.Items.Add(currentMenuBar);
-            var stack = new ToolStripItem[6];
-            int stackptr = 0;
-            stack[stackptr++] = currentMenuBar;
-            int p;
-            for (p = 0; p < len;) {
-                int l;
-                for (l = 0; l != len - p; l++) {
-                    if (b[l + p] == '\n') {
-                        l++;
-                        break;
-                    }
-                }
-                string line = Encoding.ASCII.GetString(b, p, l - 1);
-                if (line.ElementAt(0) == '#') {
-                } else if (line.ElementAt(0) == '+') {
-                    var n = new ToolStripMenuItem() {
-                        Text = line.Substring(1)
-                    };
-                    ((ToolStripMenuItem)currentMenuBar).DropDownItems.Add(n);
-                    currentMenuBar = stack[stackptr++] = n;
-                } else if (line.ElementAt(0) == '-') {
-                    currentMenuBar = stack[--stackptr - 1];
-                } else {
-                    int i = line.IndexOf(' ');
-                    if (i > 0) {
-                        string title = line.Substring(i + 1);
-                        bool first = false;
-                        if (line.ElementAt(0) == '>') {
-                            first = true;
-                        }
-                        string file = line.Substring(first ? 1 : 0, i);
-                        var item = new ToolStripMenuItem() {
-                            Text = title
-                        };
-                        ((ToolStripMenuItem)currentMenuBar).DropDownItems.Add(item);
-                        if (file == mStartCircuit && mStartLabel == null) {
-                            mStartLabel = title;
-                        }
-                        if (first && mStartCircuit == null) {
-                            mStartCircuit = file;
-                            mStartLabel = title;
-                        }
-                    }
-                }
-                p += l;
-            }
         }
 
         void readCircuit(string text, int flags) {

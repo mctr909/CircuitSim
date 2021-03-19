@@ -237,32 +237,32 @@ namespace Circuit {
             text = text.Replace(" ", "");
             if (0 <= text.IndexOf("p")) {
                 var ret = double.TryParse(text.Replace("p", ""), out num);
-                num *= 10e-12;
+                num *= 1e-12;
                 return ret;
             }
             if (0 <= text.IndexOf("n")) {
                 var ret = double.TryParse(text.Replace("n", ""), out num);
-                num *= 10e-9;
+                num *= 1e-9;
                 return ret;
             }
             if (0 <= text.IndexOf(CirSim.MU_TEXT)) {
                 var ret = double.TryParse(text.Replace(CirSim.MU_TEXT, ""), out num);
-                num *= 10e-6;
+                num *= 1e-6;
                 return ret;
             }
             if (0 <= text.IndexOf("m")) {
                 var ret = double.TryParse(text.Replace("m", ""), out num);
-                num *= 10e-3;
+                num *= 1e-3;
                 return ret;
             }
             if (0 <= text.IndexOf("k")) {
                 var ret = double.TryParse(text.Replace("k", ""), out num);
-                num *= 10e+3;
+                num *= 1e+3;
                 return ret;
             }
             if (0 <= text.IndexOf("M")) {
                 var ret = double.TryParse(text.Replace("M", ""), out num);
-                num *= 10e+6;
+                num *= 1e+6;
                 return ret;
             }
             return double.TryParse(text, out num);

@@ -848,11 +848,7 @@ namespace Circuit.Elements {
         }
 
         public virtual double GetScopeValue(Scope.VAL x) {
-            return (x == Scope.VAL.CURRENT) ? mCurrent : VoltageDiff;
-        }
-
-        public virtual Scope.UNITS GetScopeUnits(Scope.VAL x) {
-            return (x == Scope.VAL.CURRENT) ? Scope.UNITS.A : Scope.UNITS.V;
+            return VoltageDiff;
         }
 
         public virtual string DumpModel() { return null; }

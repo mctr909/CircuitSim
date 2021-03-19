@@ -13,17 +13,11 @@ namespace Circuit {
         const int FLAG_PLOTS = 4096;  /* new-style dump with multiple plots */
         /* other flags go here too, see dump() */
 
-        readonly double[] MULTA = new double[] { 1.75, 2.0, 2.25, 2.0, 1.75 };
+        readonly double[] MULTA = new double[] { 1.5, 2.0, 1.5 };
 
         public enum VAL {
             INVALID,
-            IB, IC, IE,
             VBE, VBC, VCE,
-            CURRENT
-        }
-
-        public enum UNITS {
-            V, A
         }
         #endregion
 
@@ -38,10 +32,8 @@ namespace Circuit {
 
         double mScopeTimeStep;
 
-        double mScaleV;
-        double mScaleA;
-        bool mReduceRangeV;
-        bool mReduceRangeA;
+        double mScale;
+        bool mReduceRange;
         int mScopePointCount;
 
         int mSpeed;
@@ -80,43 +72,21 @@ namespace Circuit {
                 if (mVisiblePlots.Count == 0) {
                     return 0;
                 }
-                if (mVisiblePlots[0].Units == UNITS.V) {
-                    return mScaleV;
-                } else {
-                    return mScaleA;
-                }
+                return mScale;
             }
             set {
                 if (mVisiblePlots.Count == 0) {
                     return;
                 }
-                if (mVisiblePlots[0].Units == UNITS.V) {
-                    mScaleV = value;
-                } else {
-                    mScaleA = value;
-                }
+                mScale = Math.Max(1e-4, value);
             }
         }
 
         public string Text { get; set; }
-        public string ScaleUnitsText {
-            get {
-                if (mVisiblePlots.Count == 0) {
-                    return "V";
-                }
-                switch (mVisiblePlots[0].Units) {
-                case UNITS.A:
-                    return "A";
-                default:
-                    return "V";
-                }
-            }
-        }
         public int SelectedPlot { get; private set; }
 
         public bool ShowMax { get; set; }
         public bool ShowMin { get; set; }
-        public bool ShowI { get; private set; }
         public bool ShowV { get; private set; }
         public bool ShowScale { get; private set; }
         public bool ShowFreq { get; private set; }
@@ -195,15 +165,6 @@ namespace Circuit {
                 return 0 < mPlots.Count && mPlots[0].Elm != null;
             }
         }
-        bool mShowCurrent {
-            set {
-                ShowI = value;
-                if (ShowI && !mShowingVoltageAndMaybeCurrent) {
-                    _setValue(0);
-                }
-                _calcVisiblePlots();
-            }
-        }
         bool mShowVoltage {
             set {
                 ShowV = value;
@@ -230,8 +191,6 @@ namespace Circuit {
                 foreach (var plot in mPlots) {
                     if (plot.Value == 0) {
                         gotv = true;
-                    } else if (plot.Value != VAL.CURRENT) {
-                        return false;
                     }
                 }
                 return gotv;
@@ -266,7 +225,6 @@ namespace Circuit {
         }
         int mFlags {
             set {
-                ShowI = (value & 1) != 0;
                 ShowV = (value & 2) != 0;
                 ShowMax = (value & 4) == 0;
                 ShowFreq = (value & 8) != 0;
@@ -280,8 +238,7 @@ namespace Circuit {
             }
             get {
                 int flags
-                    = (ShowI ? 1 : 0)
-                    | (ShowV ? 2 : 0)
+                    = (ShowV ? 2 : 0)
                     | (ShowMax ? 0 : 4)   /* showMax used to be always on */
                     | (ShowFreq ? 8 : 0)
                     | (LockScale ? 16 : 0)
@@ -362,20 +319,15 @@ namespace Circuit {
         /* separate this scope's plots into separate scopes and return them in arr[pos], arr[pos+1], etc.
          * return new length of array. */
         public int Separate(List<Scope> arr, int pos) {
-            ScopePlot lastPlot = null;
             for (int i = 0; i != mVisiblePlots.Count; i++) {
                 if (pos >= arr.Count) {
                     return pos;
                 }
                 var s = new Scope(mSim);
                 var sp = mVisiblePlots[i];
-                if (lastPlot != null && lastPlot.Elm == sp.Elm && lastPlot.Value == 0 && sp.Value == VAL.CURRENT) {
-                    continue;
-                }
                 s._setValue(sp.Value, sp.Elm);
                 s.Position = pos;
                 arr[pos++] = s;
-                lastPlot = sp;
                 s.mFlags = mFlags;
                 s.Speed = Speed;
             }
@@ -443,8 +395,8 @@ namespace Circuit {
                 + " " + vPlot.Speed
                 + " " + vPlot.Value
                 + " " + flags
-                + " " + mScaleV
-                + " " + mScaleA
+                + " " + mScale
+                + " "
                 + " " + Position
                 + " " + mPlots.Count;
             for (int i = 0; i < mPlots.Count; i++) {
@@ -471,14 +423,11 @@ namespace Circuit {
             var value = st.nextTokenEnum<VAL>();
 
             var flags = st.nextTokenInt();
-            mScaleV = st.nextTokenDouble();
-            mScaleA = st.nextTokenDouble();
+            mScale = st.nextTokenDouble();
+            st.nextTokenDouble();
 
-            if (mScaleV == 0) {
-                mScaleV = 0.5;
-            }
-            if (mScaleA == 0) {
-                mScaleA = 1;
+            if (mScale == 0) {
+                mScale = 0.5;
             }
             Text = null;
             if ((flags & FLAG_PLOTS) != 0) {
@@ -496,8 +445,7 @@ namespace Circuit {
                         var eleNum = st.nextTokenInt();
                         var val = st.nextTokenEnum<VAL>();
                         var elm = mSim.getElm(eleNum);
-                        var u = elm.GetScopeUnits(val);
-                        mPlots.Add(new ScopePlot(elm, u, val));
+                        mPlots.Add(new ScopePlot(elm, val));
                     }
                     while (st.hasMoreTokens()) {
                         if (Text == null) {
@@ -521,7 +469,7 @@ namespace Circuit {
             var gsx = 1e-15;
             var ts = ControlPanel.TimeStep * Speed;
             while (gsx < ts * 20) {
-                gsx *= MULTA[(multptr++) % 5];
+                gsx *= MULTA[(multptr++) % 3];
             }
             return gsx;
         }
@@ -551,9 +499,6 @@ namespace Circuit {
             case SCOPE_MENU.SHOW_VOLTAGE:
                 mShowVoltage = state;
                 break;
-            case SCOPE_MENU.SHOW_CURRENT:
-                mShowCurrent = state;
-                break;
             case SCOPE_MENU.SHOW_SCALE:
                 ShowScale = state;
                 break;
@@ -576,15 +521,6 @@ namespace Circuit {
                 ShowRMS = state;
                 break;
 
-            case SCOPE_MENU.SHOW_IB:
-                _setValue(VAL.IB);
-                break;
-            case SCOPE_MENU.SHOW_IC:
-                _setValue(VAL.IC);
-                break;
-            case SCOPE_MENU.SHOW_IE:
-                _setValue(VAL.IE);
-                break;
             case SCOPE_MENU.SHOW_VBE:
                 _setValue(VAL.VBE);
                 break;
@@ -620,12 +556,9 @@ namespace Circuit {
             }
 
             if (mMaxScale) {
-                mScaleV = 1e-4;
-                mScaleA = 1e-4;
+                mScale = 1e-4;
             }
-            mReduceRangeV = false;
-            mReduceRangeA = false;
-
+            mReduceRange = false;
             mSomethingSelected = false;  /* is one of our plots selected? */
 
             for (int si = 0; si != mVisiblePlots.Count; si++) {
@@ -634,11 +567,7 @@ namespace Circuit {
                 if (mSim.ScopeSelected == -1 && plot.Elm != null && plot.Elm.IsMouseElm) {
                     mSomethingSelected = true;
                 }
-                if (plot.Units == UNITS.V) {
-                    mReduceRangeV = true;
-                } else {
-                    mReduceRangeA = true;
-                }
+                mReduceRange = true;
             }
 
             _checkForSelection();
@@ -647,36 +576,21 @@ namespace Circuit {
             }
 
             mDrawGridLines = true;
-            bool hGridLines = true;
-            for (int i = 1; i < mVisiblePlots.Count; i++) {
-                if (mVisiblePlots[i].Units != mVisiblePlots[0].Units) {
-                    hGridLines = false;
-                }
+            if ((ShowMax || ShowMin) && mVisiblePlots.Count > 0) {
+                _calcMaxAndMin();
             }
 
-            if ((hGridLines || ShowMax || ShowMin) && mVisiblePlots.Count > 0) {
-                _calcMaxAndMin(mVisiblePlots[0].Units);
-            }
-
-            /* draw volts on top (last), then current underneath, then everything else */
-            for (int i = 0; i != mVisiblePlots.Count; i++) {
-                if (mVisiblePlots[i].Units > UNITS.A && i != SelectedPlot) {
-                    _drawPlot(g, mVisiblePlots[i], hGridLines, false);
+            if (ShowV) {
+                /* draw volts on top (last), then current underneath, then everything else */
+                for (int i = 0; i != mVisiblePlots.Count; i++) {
+                    if (i != SelectedPlot) {
+                        _drawPlot(g, mVisiblePlots[i], false);
+                    }
                 }
-            }
-            for (int i = 0; i != mVisiblePlots.Count; i++) {
-                if (mVisiblePlots[i].Units == UNITS.A && i != SelectedPlot) {
-                    _drawPlot(g, mVisiblePlots[i], hGridLines, false);
+                /* draw selection on top.  only works if selection chosen from scope */
+                if (SelectedPlot >= 0 && SelectedPlot < mVisiblePlots.Count) {
+                    _drawPlot(g, mVisiblePlots[SelectedPlot], true);
                 }
-            }
-            for (int i = 0; i != mVisiblePlots.Count; i++) {
-                if (mVisiblePlots[i].Units == UNITS.V && i != SelectedPlot) {
-                    _drawPlot(g, mVisiblePlots[i], hGridLines, false);
-                }
-            }
-            /* draw selection on top.  only works if selection chosen from scope */
-            if (SelectedPlot >= 0 && SelectedPlot < mVisiblePlots.Count) {
-                _drawPlot(g, mVisiblePlots[SelectedPlot], hGridLines, true);
             }
 
             if (mVisiblePlots.Count > 0) {
@@ -693,11 +607,8 @@ namespace Circuit {
             ));
 
             if (5 < mPlots[0].Pointer && !LockScale) {
-                if (1e-4 < mScaleV && mReduceRangeV) {
-                    mScaleV /= 2;
-                }
-                if (1e-4 < mScaleV && mReduceRangeA) {
-                    mScaleA /= 2;
+                if (1e-4 < mScale && mReduceRange) {
+                    mScale /= 2;
                 }
             }
         }
@@ -706,25 +617,16 @@ namespace Circuit {
         #region [private method]
         void _initialize() {
             ResetGraph();
-            mScaleV = 5;
-            mScaleV = 0.1;
+            mScale = 5;
+            mScale = 0.1;
             Speed = 64;
             ShowMax = true;
-            ShowV = ShowI = false;
+            ShowV = false;
             ShowScale = ShowFreq = LockScale = ShowMin = false;
             ShowFFT = false;
             if (!_loadDefaults()) {
                 /* set showV and showI appropriately depending on what plots are present */
-                int i;
-                for (i = 0; i != mPlots.Count; i++) {
-                    var plot = mPlots[i];
-                    if (plot.Units == UNITS.V) {
-                        ShowV = true;
-                    }
-                    if (plot.Units == UNITS.A) {
-                        ShowI = true;
-                    }
-                }
+                ShowV = true;
             }
         }
 
@@ -742,20 +644,10 @@ namespace Circuit {
         void _setValue(VAL val, CircuitElm ce) {
             mPlots = new List<ScopePlot>();
             if (val == VAL.INVALID) {
-                mPlots.Add(new ScopePlot(ce, UNITS.V, 0));
-                /* create plot for current if applicable */
-                if (ce != null && !((ce is OutputElm) || (ce is LogicOutputElm) || (ce is AudioOutputElm) || (ce is ProbeElm))) {
-                    mPlots.Add(new ScopePlot(ce, UNITS.A, VAL.CURRENT));
-                }
+                mPlots.Add(new ScopePlot(ce, 0));
             } else {
-                var u = ce.GetScopeUnits(val);
-                mPlots.Add(new ScopePlot(ce, u, val));
-                if (u == UNITS.V) {
-                    ShowV = true;
-                }
-                if (u == UNITS.A) {
-                    ShowI = true;
-                }
+                mPlots.Add(new ScopePlot(ce, val));
+                ShowV = true;
             }
             _calcVisiblePlots();
             ResetGraph();
@@ -768,16 +660,9 @@ namespace Circuit {
             int oc = 0;
             for (int i = 0; i != mPlots.Count; i++) {
                 var plot = mPlots[i];
-                if (plot.Units == UNITS.V) {
-                    if (ShowV) {
-                        mVisiblePlots.Add(plot);
-                        plot.AssignColor(vc++);
-                    }
-                } else if (plot.Units == UNITS.A) {
-                    if (ShowI) {
-                        mVisiblePlots.Add(plot);
-                        plot.AssignColor(ac++);
-                    }
+                if (ShowV) {
+                    mVisiblePlots.Add(plot);
+                    plot.AssignColor(vc++);
                 } else {
                     mVisiblePlots.Add(plot);
                     plot.AssignColor(oc++);
@@ -786,14 +671,11 @@ namespace Circuit {
         }
 
         /* calculate maximum and minimum values for all plots of given units */
-        void _calcMaxAndMin(UNITS units) {
+        void _calcMaxAndMin() {
             mMaxValue = -1e8;
             mMinValue = 1e8;
             for (int si = 0; si != mVisiblePlots.Count; si++) {
                 var plot = mVisiblePlots[si];
-                if (plot.Units != units) {
-                    continue;
-                }
                 int ipa = plot.StartIndex(BoundingBox.Width);
                 var maxV = plot.MaxValues;
                 var minV = plot.MinValues;
@@ -818,7 +700,7 @@ namespace Circuit {
             var maxV = plot.MaxValues;
             var minV = plot.MinValues;
             double max = 0;
-            double gridMax = (plot.Units == UNITS.V ? mScaleV : mScaleA);
+            double gridMax = mScale;
             for (int i = 0; i != BoundingBox.Width; i++) {
                 int ip = (i + ipa) & (mScopePointCount - 1);
                 if (max < maxV[ip]) {
@@ -837,11 +719,7 @@ namespace Circuit {
                     gridMax *= 2;
                 }
             }
-            if (plot.Units == UNITS.V) {
-                mScaleV = gridMax;
-            } else {
-                mScaleA = gridMax;
-            }
+            mScale = gridMax;
         }
 
         /* find selected plot */
@@ -863,7 +741,7 @@ namespace Circuit {
             
             for (i = 0; i != mVisiblePlots.Count; i++) {
                 var plot = mVisiblePlots[i];
-                var scale = plot.Units == UNITS.V ? mScaleV : mScaleA;
+                var scale = mScale;
                 int maxvy = (int)(maxy / scale * plot.MaxValues[ip]);
                 int dist = Math.Abs(mSim.MouseCursorY - (BoundingBox.Y + y - maxvy));
                 if (dist < bestdist) {
@@ -955,7 +833,7 @@ namespace Circuit {
             }
         }
 
-        void _drawPlot(CustomGraphics g, ScopePlot plot, bool drawHGridLines, bool selected) {
+        void _drawPlot(CustomGraphics g, ScopePlot plot, bool selected) {
             if (plot.Elm == null) {
                 return;
             }
@@ -974,24 +852,23 @@ namespace Circuit {
             var ipa = plot.StartIndex(BoundingBox.Width);
             var maxV = plot.MaxValues;
             var minV = plot.MinValues;
-            var gridMax = (plot.Units == UNITS.V ? mScaleV : mScaleA);
-            double gridMid = 0;
-            if (drawHGridLines) {
-                /* if we don't have overlapping scopes of different units, we can move zero around.
-                 * Put it at the bottom if the scope is never negative. */
-                double mx = gridMax;
-                double mn = 0;
-                if (mMaxScale) {
-                    /* scale is maxed out, so fix boundaries of scope at maximum and minimum. */
-                    mx = mMaxValue;
-                    mn = mMinValue;
-                } else if (mShowNegative || mMinValue < (mx + mn) * .5 - (mx - mn) * .55) {
-                    mn = -gridMax;
-                    mShowNegative = true;
-                }
-                gridMid = (mx + mn) * .5;
-                gridMax = (mx - mn) * .55;  /* leave space at top and bottom */
+            var gridMax = mScale;
+
+            /* if we don't have overlapping scopes of different units, we can move zero around.
+             * Put it at the bottom if the scope is never negative. */
+            double mx = gridMax;
+            double mn = 0;
+            if (mMaxScale) {
+                /* scale is maxed out, so fix boundaries of scope at maximum and minimum. */
+                mx = mMaxValue;
+                mn = mMinValue;
+            } else if (mShowNegative || mMinValue < (mx + mn) * .5 - (mx - mn) * .55) {
+                mn = -gridMax;
+                mShowNegative = true;
             }
+            var gridMid = (mx + mn) * .5;
+            gridMax = (mx - mn) * .55;  /* leave space at top and bottom */
+
             double gridMult = maxy / gridMax;
             if (selected) {
                 mMainGridMult = gridMult;
@@ -1022,7 +899,7 @@ namespace Circuit {
                 /* horizontal gridlines */
 
                 /* don't show gridlines if lines are too close together (except for center line) */
-                bool showGridLines = (mGridStepY != 0) && drawHGridLines;
+                bool showGridLines = (mGridStepY != 0);
                 for (ll = -100; ll <= 100; ll++) {
                     if (ll != 0 && !showGridLines) {
                         continue;
@@ -1074,11 +951,7 @@ namespace Circuit {
                 if (minvy <= maxy) {
                     if (minvy < minRangeLo || maxvy > minRangeHi) {
                         /* we got a value outside min range, so we don't need to rescale later */
-                        if (plot.Units == UNITS.V) {
-                            mReduceRangeV = false;
-                        } else {
-                            mReduceRangeA = false;
-                        }
+                        mReduceRange = false;
                         minRangeLo = -1000;
                         minRangeHi = 1000; /* avoid triggering this test again */
                     }
@@ -1170,7 +1043,7 @@ namespace Circuit {
                 int y0 = 5;
                 int prevY = 0;
                 double ymult = BoundingBox.Height / 10;
-                double val0 = Math.Log(plot.Units == UNITS.V ? mScaleV : mScaleA) * ymult;
+                double val0 = mScale * ymult;
                 for (int i = 0; i < mScopePointCount / 2; i++) {
                     int x = 2 * i * BoundingBox.Width / mScopePointCount;
                     /* rect.width may be greater than or less than scopePointCount/2,
@@ -1354,7 +1227,7 @@ namespace Circuit {
             var plot = mVisiblePlots[0];
             if (ShowScale) {
                 string vScaleText = "";
-                if (mGridStepY != 0 && (!(ShowV && ShowI))) {
+                if (mGridStepY != 0 && (!ShowV)) {
                     vScaleText = " V=" + plot.GetUnitText(mGridStepY) + "/div";
                 }
                 _drawInfoText(g, "H=" + Utils.UnitText(mGridStepX, "s") + "/div" + vScaleText);

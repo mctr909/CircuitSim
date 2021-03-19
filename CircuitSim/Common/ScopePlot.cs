@@ -18,21 +18,18 @@ namespace Circuit {
         public int Pointer { get; private set; }
         public Scope.VAL Value { get; private set; }
         public int Speed { get; private set; }
-        public Scope.UNITS Units { get; set; }
         public double LastValue { get; private set; }
         public Color Color { get; private set; }
 
         int mScopePointCount;
         int mCounter;
 
-        public ScopePlot(CircuitElm e, Scope.UNITS u) {
+        public ScopePlot(CircuitElm e) {
             Elm = e;
-            Units = u;
         }
 
-        public ScopePlot(CircuitElm e, Scope.UNITS u, Scope.VAL v) {
+        public ScopePlot(CircuitElm e, Scope.VAL v) {
             Elm = e;
-            Units = u;
             Value = v;
         }
 
@@ -87,13 +84,7 @@ namespace Circuit {
         }
 
         public string GetUnitText(double v) {
-            switch (Units) {
-            case Scope.UNITS.V:
-                return Utils.VoltageText(v);
-            case Scope.UNITS.A:
-                return Utils.CurrentText(v);
-            }
-            return null;
+            return Utils.VoltageText(v);
         }
 
         public void AssignColor(int count) {
@@ -101,17 +92,7 @@ namespace Circuit {
                 Color = COLORS[(count - 1) % COLORS.Length];
                 return;
             }
-            switch (Units) {
-            case Scope.UNITS.V:
-                Color = Color.FromArgb(0x00, 0xFF, 0x00);
-                break;
-            case Scope.UNITS.A:
-                Color = Color.FromArgb(0x7F, 0x7F, 0x7F);
-                break;
-            default:
-                Color = CirSim.Sim.ControlPanel.ChkPrintable.Checked ? Color.FromArgb(0, 0, 0) : Color.FromArgb(0xFF, 0xFF, 0xFF);
-                break;
-            }
+            Color = Color.FromArgb(0x00, 0xFF, 0x00);
         }
     }
 }
