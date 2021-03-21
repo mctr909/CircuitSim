@@ -100,17 +100,17 @@ namespace Circuit {
                 if (adj != null) {
                     ctrlInsert(vp, new Label() { TextAlign = ContentAlignment.BottomLeft, Text = "Min Value" }, idx++);
                     ei.MinBox = new TextBox() {
-                        Text = ElementInfoDialog.unitString(ei, adj.minValue)
+                        Text = ElementInfoDialog.unitString(ei, adj.MinValue)
                     };
                     ctrlInsert(vp, ei.MinBox, idx++);
                     ctrlInsert(vp, new Label() { TextAlign = ContentAlignment.BottomLeft, Text = "Max Value" }, idx++);
                     ei.MaxBox = new TextBox() {
-                        Text = ElementInfoDialog.unitString(ei, adj.maxValue)
+                        Text = ElementInfoDialog.unitString(ei, adj.MaxValue)
                     };
                     ctrlInsert(vp, ei.MaxBox, idx++);
                     ctrlInsert(vp, new Label() { TextAlign = ContentAlignment.BottomLeft, Text = "Label" }, idx++);
                     ei.LabelBox = new TextBox() {
-                        Text = adj.sliderText
+                        Text = adj.SliderText
                     };
                     ctrlInsert(vp, ei.LabelBox, idx++);
                 }
@@ -135,13 +135,13 @@ namespace Circuit {
                     continue;
                 }
                 try {
-                    adj.sliderText = ei.LabelBox.Text;
-                    adj.label.Text = adj.sliderText;
+                    adj.SliderText = ei.LabelBox.Text;
+                    adj.Label.Text = adj.SliderText;
                     double d = ElementInfoDialog.parseUnits(ei.MinBox.Text);
-                    adj.minValue = d;
+                    adj.MinValue = d;
                     d = ElementInfoDialog.parseUnits(ei.MaxBox.Text);
-                    adj.maxValue = d;
-                    adj.setSliderValue(ei.Value);
+                    adj.MaxValue = d;
+                    adj.Value = ei.Value;
                 } catch { }
             }
         }
@@ -156,12 +156,12 @@ namespace Circuit {
                     if (ei.CheckBox.Checked) {
                         var adj = new Adjustable(elm, i);
                         var rg = new Regex(" \\(.*\\)$");
-                        adj.sliderText = rg.Replace(ei.Name, "");
-                        adj.createSlider(sim, ei.Value);
+                        adj.SliderText = rg.Replace(ei.Name, "");
+                        adj.CreateSlider(ei.Value);
                         sim.Adjustables.Add(adj);
                     } else {
                         var adj = findAdjustable(i);
-                        adj.deleteSlider(sim);
+                        adj.DeleteSlider();
                         sim.Adjustables.Remove(adj);
                     }
                     changed = true;

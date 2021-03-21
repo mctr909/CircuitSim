@@ -230,7 +230,7 @@ namespace Circuit.Elements {
         /// <param name="b"></param>
         /// <param name="pos"></param>
         protected static void drawDots(CustomGraphics g, Point a, Point b, double pos) {
-            if ((!Sim.SimIsRunning()) || pos == 0 || !Sim.ControlPanel.ChkShowDots.Checked) {
+            if ((!Sim.SimIsRunning()) || pos == 0 || !ControlPanel.ChkShowDots.Checked) {
                 return;
             }
             int dx = b.X - a.X;
@@ -241,7 +241,7 @@ namespace Circuit.Elements {
             if (pos < 0) {
                 pos += ds;
             }
-            if (Sim.ControlPanel.ChkPrintable.Checked) {
+            if (ControlPanel.ChkPrintable.Checked) {
                 g.LineColor = GrayColor;
             } else {
                 g.LineColor = Color.Yellow;
@@ -386,7 +386,7 @@ namespace Circuit.Elements {
             if (NeedsHighlight) {
                 return SelectColor;
             }
-            if (!Sim.ControlPanel.ChkShowVolts.Checked || Sim.ControlPanel.ChkPrintable.Checked) {
+            if (!ControlPanel.ChkShowVolts.Checked || ControlPanel.ChkPrintable.Checked) {
                 return GrayColor;
             }
             int c = (int)((volts + ControlPanel.VoltageRange) * (mColorScale.Length - 1) / (ControlPanel.VoltageRange * 2));

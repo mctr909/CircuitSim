@@ -48,7 +48,6 @@ namespace Circuit {
         #endregion
 
         #region Property
-        public ControlPanel ControlPanel { get; private set; }
         public MOUSE_MODE MouseMode { get; private set; } = MOUSE_MODE.SELECT;
         public MOUSE_MODE TempMouseMode { get; private set; } = MOUSE_MODE.SELECT;
         public Point DisplayLocation { get { return mParent.Location; } }

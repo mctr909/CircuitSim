@@ -92,7 +92,7 @@ namespace Circuit.Elements {
                 drawDots(g, mPoint2, mLead2, -mCurCount);
             }
             drawPosts(g);
-            if (Sim.ControlPanel.ChkShowValues.Checked) {
+            if (ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.ShortUnitText(Capacitance, "");
                 g.DrawRightText(s, textPos.X, textPos.Y);
             }

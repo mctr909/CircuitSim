@@ -300,7 +300,7 @@ namespace Circuit {
                 if (elm is CircuitElm) {
                     var adj = cframe.FindAdjustable((CircuitElm)elm, i);
                     if (adj != null) {
-                        adj.setSliderValue(ei.Value);
+                        adj.Value = ei.Value;
                     }
                 }
             }

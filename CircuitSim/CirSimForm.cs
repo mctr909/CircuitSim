@@ -15,7 +15,7 @@ namespace Circuit {
             Sim = this;
             mCir = new Circuit(this);
             mMenuItems = new MenuItems(this);
-            ControlPanel = new ControlPanel(this);
+            ControlPanel.Init(this);
         }
 
         public void init(Form parent) {
@@ -64,9 +64,9 @@ namespace Circuit {
                 mSplitContainer.BorderStyle = BorderStyle.FixedSingle;
                 mSplitContainer.IsSplitterFixed = true;
                 mSplitContainer.Panel1.Controls.Add(mPixCir);
-                mSplitContainer.Panel2.Controls.Add(Sim.ControlPanel.VerticalPanel);
-                Sim.ControlPanel.VerticalPanel.Top = Sim.mMenuBar.Height;
-                int width = Sim.ControlPanel.VerticalPanel.Width;
+                mSplitContainer.Panel2.Controls.Add(ControlPanel.VerticalPanel);
+                ControlPanel.VerticalPanel.Top = Sim.mMenuBar.Height;
+                int width = ControlPanel.VerticalPanel.Width;
                 mSplitContainer.SizeChanged += new EventHandler((s, e) => {
                     if (0 <= mSplitContainer.Width - width) {
                         mSplitContainer.SplitterDistance = mSplitContainer.Width - width;
@@ -132,7 +132,7 @@ namespace Circuit {
         public Adjustable FindAdjustable(CircuitElm elm, int item) {
             for (int i = 0; i != Adjustables.Count; i++) {
                 var a = Adjustables[i];
-                if (a.elm == elm && a.editItem == item) {
+                if (a.Elm == elm && a.EditItem == item) {
                     return a;
                 }
             }
@@ -287,7 +287,7 @@ namespace Circuit {
                     }
                 }
 
-                if (item == MENU_ITEM.dock) {
+                if (item == MENU_ITEM.DOCK) {
                     if (mScopeCount == mScopes.Length) {
                         return;
                     }
@@ -297,7 +297,7 @@ namespace Circuit {
                     mScopeCount++;
                     doDelete(false);
                 }
-                if (item == MENU_ITEM.undock && 0 <= mMenuScope) {
+                if (item == MENU_ITEM.UNDOCK && 0 <= mMenuScope) {
                     var newScope = new ScopeElm(snapGrid(mMenuElm.X1 + 50), snapGrid(mMenuElm.Y1 + 50));
                     ElmList.Add(newScope);
                     newScope.setElmScope(mScopes[mMenuScope]);
@@ -308,10 +308,10 @@ namespace Circuit {
                     mScopeCount--;
                 }
                 if (null != s) {
-                    if (item == MENU_ITEM.remove) {
+                    if (item == MENU_ITEM.REMOVE_SCOPE) {
                         s.SetElm(null);  /* setupScopes() will clean this up */
                     }
-                    if (item == MENU_ITEM.removeplot) {
+                    if (item == MENU_ITEM.REMOVE_PLOT) {
                         s.RemovePlot(mMenuPlot);
                     }
                     if (item == MENU_ITEM.speed2) {
@@ -320,22 +320,22 @@ namespace Circuit {
                     if (item == MENU_ITEM.speed1_2) {
                         s.SlowDown();
                     }
-                    if (item == MENU_ITEM.maxscale) {
+                    if (item == MENU_ITEM.MAX_SCALE) {
                         s.MaxScale();
                     }
-                    if (item == MENU_ITEM.stack) {
+                    if (item == MENU_ITEM.STACK) {
                         stackScope(mMenuScope);
                     }
-                    if (item == MENU_ITEM.unstack) {
+                    if (item == MENU_ITEM.UNSTACK) {
                         unstackScope(mMenuScope);
                     }
-                    if (item == MENU_ITEM.combine) {
+                    if (item == MENU_ITEM.COMBINE) {
                         combineScope(mMenuScope);
                     }
-                    if (item == MENU_ITEM.reset) {
+                    if (item == MENU_ITEM.RESET) {
                         s.ResetGraph(true);
                     }
-                    if (item == MENU_ITEM.properties) {
+                    if (item == MENU_ITEM.PROPERTIES) {
                         s.Properties(mParent);
                     }
                 }
@@ -366,8 +366,8 @@ namespace Circuit {
             }
             for (int i = Adjustables.Count - 1; i >= 0; i--) {
                 var adj = Adjustables[i];
-                if (adj.elm == elm) {
-                    adj.deleteSlider(this);
+                if (adj.Elm == elm) {
+                    adj.DeleteSlider();
                     Adjustables.RemoveAt(i);
                 }
             }
@@ -922,7 +922,7 @@ namespace Circuit {
             }
             for (i = 0; i != Adjustables.Count; i++) {
                 var adj = Adjustables[i];
-                dump += "38 " + adj.dump() + "\n";
+                dump += "38 " + adj.Dump() + "\n";
             }
             if (Hint.Type != -1) {
                 dump += "h " + Hint.Type + " " + Hint.Item1 + " " +
@@ -1050,7 +1050,7 @@ namespace Circuit {
             if ((flags & RC_RETAIN) == 0) {
                 /* create sliders as needed */
                 for (i = 0; i != Adjustables.Count; i++) {
-                    Adjustables[i].createSlider(this);
+                    Adjustables[i].CreateSlider();
                 }
             }
             NeedAnalyze();
@@ -1490,9 +1490,9 @@ namespace Circuit {
                 if (mScopes[ScopeSelected].CanMenu) {
                     mMenuScope = ScopeSelected;
                     mMenuPlot = mScopes[ScopeSelected].SelectedPlot;
-                    mScopePopupMenu.doScopePopupChecks(false, mScopes[ScopeSelected]);
+                    mScopePopupMenu.DoScopePopupChecks(false);
                     mPopupMenu = new ContextMenuStrip();
-                    mPopupMenu.Items.AddRange(mScopePopupMenu.getMenuBar());
+                    mPopupMenu.Items.AddRange(mScopePopupMenu.MenuBar);
                     var y = Math.Max(0, Math.Min(mMenuClientY, mBmp.Height - 160));
                     mPopupMenu.Show();
                     mPopupMenu.Location = new Point(mMenuClientX, y);
@@ -1513,9 +1513,9 @@ namespace Circuit {
                     var s = (ScopeElm)mMouseElm;
                     if (s.elmScope.CanMenu) {
                         mMenuPlot = s.elmScope.SelectedPlot;
-                        mScopePopupMenu.doScopePopupChecks(true, s.elmScope);
+                        mScopePopupMenu.DoScopePopupChecks(true);
                         mPopupMenu = new ContextMenuStrip();
-                        mPopupMenu.Items.AddRange(mScopePopupMenu.getMenuBar());
+                        mPopupMenu.Items.AddRange(mScopePopupMenu.MenuBar);
                         mPopupMenu.Show();
                         mPopupMenu.Location = new Point(mMenuClientX, mMenuClientY);
                     }

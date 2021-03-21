@@ -2,25 +2,25 @@
 using System.Windows.Forms;
 
 namespace Circuit {
-    class ControlPanel {
-        public Panel VerticalPanel { get; private set; }
-        public Button BtnReset { get; private set; }
-        public Button BtnRunStop { get; private set; }
-        public TrackBar TrbSpeed { get; private set; }
-        public TrackBar TrbCurrent { get; private set; }
-        public CheckBox ChkShowVolts { get; private set; }
-        public CheckBox ChkShowDots { get; private set; }
-        public CheckBox ChkShowValues { get; private set; }
-        public CheckBox ChkUseAnsiSymbols { get; private set; }
-        public CheckBox ChkPrintable { get; private set; }
-        public CheckBox ChkCrossHair { get; private set; }
+    static class ControlPanel {
+        public static Panel VerticalPanel { get; private set; }
+        public static Button BtnReset { get; private set; }
+        public static Button BtnRunStop { get; private set; }
+        public static TrackBar TrbSpeed { get; private set; }
+        public static TrackBar TrbCurrent { get; private set; }
+        public static CheckBox ChkShowVolts { get; private set; }
+        public static CheckBox ChkShowDots { get; private set; }
+        public static CheckBox ChkShowValues { get; private set; }
+        public static CheckBox ChkUseAnsiSymbols { get; private set; }
+        public static CheckBox ChkPrintable { get; private set; }
+        public static CheckBox ChkCrossHair { get; private set; }
 
         public static double TimeStep {
             get { return mTimeStep; }
             set {
                 mTimeStep = value;
                 if (null != mTxtTimeStep) {
-                    mTxtTimeStep.Text = Utils.UnitText(mTimeStep, "");
+                    mTxtTimeStep.Text = Utils.ShortUnitText(mTimeStep, "");
                 }
             }
         }
@@ -29,7 +29,7 @@ namespace Circuit {
             set { 
                 mVoltageRange = value;
                 if (null != mTxtVoltageRange) {
-                    mTxtVoltageRange.Text = Utils.UnitText(mVoltageRange, "");
+                    mTxtVoltageRange.Text = Utils.ShortUnitText(mVoltageRange, "");
                 }
             }
         }
@@ -39,9 +39,9 @@ namespace Circuit {
         static double mTimeStep;
         static double mVoltageRange;
 
-        Panel mSliderPanel;
+        static Panel mSliderPanel;
 
-        public ControlPanel(CirSim sim) {
+        public static void Init(CirSim sim) {
             int ofsY = 0;
             VerticalPanel = new Panel();
 
@@ -152,7 +152,7 @@ namespace Circuit {
                 if(Utils.TextToNum(mTxtTimeStep.Text, out tmp)) {
                     mTimeStep = tmp;
                 } else {
-                    mTxtTimeStep.Text = Utils.UnitText(mTimeStep, "");
+                    mTxtTimeStep.Text = Utils.ShortUnitText(mTimeStep, "");
                 }
             });
             VerticalPanel.Controls.Add(mTxtTimeStep);
@@ -169,7 +169,7 @@ namespace Circuit {
                 if (Utils.TextToNum(mTxtVoltageRange.Text, out tmp)) {
                     mVoltageRange = tmp;
                 } else {
-                    mTxtVoltageRange.Text = Utils.UnitText(mVoltageRange, "");
+                    mTxtVoltageRange.Text = Utils.ShortUnitText(mVoltageRange, "");
                 }
             });
             VerticalPanel.Controls.Add(mTxtVoltageRange);
@@ -189,7 +189,7 @@ namespace Circuit {
             VerticalPanel.Height = ofsY;
         }
 
-        public void Reset() {
+        public static void Reset() {
             TimeStep = 10e-6;
             VoltageRange = 5;
             ChkShowDots.Checked = false;
@@ -200,7 +200,7 @@ namespace Circuit {
             TrbCurrent.Value = 50;
         }
 
-        public void SetiFrameHeight() {
+        public static void SetiFrameHeight() {
             if (mSliderPanel == null) {
                 return;
             }
@@ -215,7 +215,7 @@ namespace Circuit {
             VerticalPanel.Height = mSliderPanel.Bottom + 4;
         }
 
-        public void AddSlider(Control ctrl) {
+        public static void AddSlider(Control ctrl) {
             if (mSliderPanel == null) {
                 return;
             }
@@ -230,7 +230,7 @@ namespace Circuit {
             SetiFrameHeight();
         }
 
-        public void RemoveSlider(Control ctrl) {
+        public static void RemoveSlider(Control ctrl) {
             if (mSliderPanel == null) {
                 return;
             }
@@ -245,7 +245,7 @@ namespace Circuit {
             SetiFrameHeight();
         }
 
-        void setOptionInStorage(string key, bool val) {
+        static void setOptionInStorage(string key, bool val) {
             var stor = Storage.getLocalStorageIfSupported();
             if (stor == null) {
                 return;

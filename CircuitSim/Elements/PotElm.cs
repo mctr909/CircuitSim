@@ -71,12 +71,12 @@ namespace Circuit.Elements {
         }
 
         void createSlider() {
-            Sim.ControlPanel.AddSlider(label = new Label() {
+            ControlPanel.AddSlider(label = new Label() {
                 TextAlign = ContentAlignment.BottomLeft,
                 Text = sliderText
             });
             int value = (int)(position * 100);
-            Sim.ControlPanel.AddSlider(slider = new TrackBar() {
+            ControlPanel.AddSlider(slider = new TrackBar() {
                 Minimum = 0,
                 Maximum = 100,
                 SmallChange = 1,
@@ -94,8 +94,8 @@ namespace Circuit.Elements {
         }
 
         public override void Delete() {
-            Sim.ControlPanel.RemoveSlider(label);
-            Sim.ControlPanel.RemoveSlider(slider);
+            ControlPanel.RemoveSlider(label);
+            ControlPanel.RemoveSlider(slider);
             base.Delete();
         }
 
@@ -147,7 +147,7 @@ namespace Circuit.Elements {
             double segf = 1.0 / segments;
             int divide = (int)(segments * position);
 
-            if (Sim.ControlPanel.ChkUseAnsiSymbols.Checked) {
+            if (ControlPanel.ChkUseAnsiSymbols.Checked) {
                 /* draw zigzag */
                 int oy = 0;
                 int ny;
@@ -202,7 +202,7 @@ namespace Circuit.Elements {
             }
             drawPosts(g);
 
-            if (Sim.ControlPanel.ChkShowValues.Checked && resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
+            if (ControlPanel.ChkShowValues.Checked && resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
                 /* check for vertical pot with 3rd terminal on left */
                 bool reverseY = (post3.X < mLead1.X && mLead1.X == mLead2.X);
                 /* check for horizontal pot with 3rd terminal on top */
@@ -319,7 +319,7 @@ namespace Circuit.Elements {
             if (n == 1) {
                 sliderText = ei.Textf.Text;
                 label.Text = sliderText;
-                Sim.ControlPanel.SetiFrameHeight();
+                ControlPanel.SetiFrameHeight();
             }
             if (n == 2) {
                 mFlags = ei.ChangeFlag(mFlags, FLAG_SHOW_VALUES);

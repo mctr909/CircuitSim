@@ -107,7 +107,7 @@ namespace Circuit.Elements {
                 }
             }
 
-            if (Sim.ControlPanel.ChkShowValues.Checked) {
+            if (ControlPanel.ChkShowValues.Checked) {
                 string s = Utils.ShortUnitText(frequency, "Hz");
                 drawValues(g, s, 20, -15);
             }

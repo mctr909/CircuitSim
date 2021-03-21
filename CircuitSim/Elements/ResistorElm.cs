@@ -44,7 +44,7 @@ namespace Circuit.Elements {
                 return;
             }
 
-            int hs = Sim.ControlPanel.ChkUseAnsiSymbols.Checked ? 5 : 4;
+            int hs = ControlPanel.ChkUseAnsiSymbols.Checked ? 5 : 4;
             setBbox(mPoint1, mPoint2, hs);
 
             draw2Leads(g);
@@ -54,7 +54,7 @@ namespace Circuit.Elements {
             double v1 = Volts[0];
             double v2 = Volts[1];
 
-            if (Sim.ControlPanel.ChkUseAnsiSymbols.Checked) {
+            if (ControlPanel.ChkUseAnsiSymbols.Checked) {
                 /* draw zigzag */
                 int oy = 0;
                 int ny;
@@ -87,7 +87,7 @@ namespace Circuit.Elements {
                 g.DrawThickLine(ps1, ps2);
             }
 
-            if (Sim.ControlPanel.ChkShowValues.Checked) {
+            if (ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.ShortUnitText(Resistance, "");
                 g.DrawRightText(s, textPos.X, textPos.Y);
             }

@@ -330,7 +330,7 @@ namespace Circuit.Elements {
             }
             }
 
-            if (Sim.ControlPanel.ChkShowValues.Checked && waveform != WAVEFORM.NOISE) {
+            if (ControlPanel.ChkShowValues.Checked && waveform != WAVEFORM.NOISE) {
                 var s = Utils.ShortUnitText(maxVoltage, "V\r\n");
                 s += Utils.ShortUnitText(frequency, "Hz\r\n");
                 s += Utils.ShortUnitText(phaseShift * ToDeg, "°");

@@ -5,23 +5,33 @@ using Circuit.Elements;
 
 namespace Circuit {
     class Adjustable {
-        public CircuitElm elm;
-        public double minValue;
-        public double maxValue;
-        public string sliderText;
-
         /* index of value in getEditInfo() list that this slider controls */
-        public int editItem { get; private set; }
+        public int EditItem { get; private set; }
 
-        public Label label;
-        TrackBar slider;
-        bool settingValue;
+        public double Value {
+            get { return MinValue + (MaxValue - MinValue) * mSlider.Value / 100; }
+            set {
+                int intValue = (int)((value - MinValue) * 100 / (MaxValue - MinValue));
+                mSettingValue = true; /* don't recursively set value again in execute() */
+                mSlider.Value = intValue;
+                mSettingValue = false;
+            }
+        }
+
+        public Label Label;
+        public CircuitElm Elm;
+        public double MinValue;
+        public double MaxValue;
+        public string SliderText;
+
+        TrackBar mSlider;
+        bool mSettingValue;
 
         public Adjustable(CircuitElm ce, int item) {
-            minValue = 1;
-            maxValue = 1000;
-            elm = ce;
-            editItem = item;
+            MinValue = 1;
+            MaxValue = 1000;
+            Elm = ce;
+            EditItem = item;
         }
 
         public Adjustable(StringTokenizer st, CirSim sim) {
@@ -29,22 +39,22 @@ namespace Circuit {
             if (e == -1) {
                 return;
             }
-            elm = sim.getElm(e);
-            editItem = st.nextTokenInt();
-            minValue = st.nextTokenDouble();
-            maxValue = st.nextTokenDouble();
-            sliderText = CustomLogicModel.unescape(st.nextToken());
+            Elm = sim.getElm(e);
+            EditItem = st.nextTokenInt();
+            MinValue = st.nextTokenDouble();
+            MaxValue = st.nextTokenDouble();
+            SliderText = CustomLogicModel.unescape(st.nextToken());
         }
 
-        public void createSlider(CirSim sim) {
-            double value = elm.GetElementInfo(editItem).Value;
-            createSlider(sim, value);
+        public void CreateSlider() {
+            double value = Elm.GetElementInfo(EditItem).Value;
+            CreateSlider(value);
         }
 
-        public void createSlider(CirSim sim, double value) {
-            int intValue = (int)((value - minValue) * 100 / (maxValue - minValue));
-            sim.ControlPanel.AddSlider(label = new Label() { Text = sliderText });
-            sim.ControlPanel.AddSlider(slider = new TrackBar() {
+        public void CreateSlider(double value) {
+            int intValue = (int)((value - MinValue) * 100 / (MaxValue - MinValue));
+            ControlPanel.AddSlider(Label = new Label() { Text = SliderText });
+            ControlPanel.AddSlider(mSlider = new TrackBar() {
                 SmallChange = 1,
                 LargeChange = 10,
                 TickFrequency = 10,
@@ -55,62 +65,51 @@ namespace Circuit {
                 Width = 175,
                 Height = 23
             });
-            if (elm is ResistorElm) {
-                slider.ValueChanged += new EventHandler((s, e) => {
+            if (Elm is ResistorElm) {
+                mSlider.ValueChanged += new EventHandler((s, e) => {
                     var trb = (TrackBar)s;
-                    ((ResistorElm)elm).Resistance = minValue + (maxValue - minValue) * trb.Value / trb.Maximum;
+                    ((ResistorElm)Elm).Resistance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
                     CirSim.Sim.NeedAnalyze();
                 });
             }
-            if (elm is CapacitorElm) {
-                slider.ValueChanged += new EventHandler((s, e) => {
+            if (Elm is CapacitorElm) {
+                mSlider.ValueChanged += new EventHandler((s, e) => {
                     var trb = (TrackBar)s;
-                    ((CapacitorElm)elm).Capacitance = minValue + (maxValue - minValue) * trb.Value / trb.Maximum;
+                    ((CapacitorElm)Elm).Capacitance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
                     CirSim.Sim.NeedAnalyze();
                 });
             }
-            if (elm is InductorElm) {
-                slider.ValueChanged += new EventHandler((s, e) => {
+            if (Elm is InductorElm) {
+                mSlider.ValueChanged += new EventHandler((s, e) => {
                     var trb = (TrackBar)s;
-                    ((InductorElm)elm).Inductance = minValue + (maxValue - minValue) * trb.Value / trb.Maximum;
+                    ((InductorElm)Elm).Inductance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
                     CirSim.Sim.NeedAnalyze();
                 });
             }
         }
 
-        public void setSliderValue(double value) {
-            int intValue = (int)((value - minValue) * 100 / (maxValue - minValue));
-            settingValue = true; /* don't recursively set value again in execute() */
-            slider.Value = intValue;
-            settingValue = false;
+        public void DeleteSlider() {
+            ControlPanel.RemoveSlider(Label);
+            ControlPanel.RemoveSlider(mSlider);
         }
 
-        public void execute() {
+        public void Execute() {
             CircuitElm.Sim.NeedAnalyze();
-            if (settingValue) {
+            if (mSettingValue) {
                 return;
             }
-            var ei = elm.GetElementInfo(editItem);
-            ei.Value = getSliderValue();
-            elm.SetElementValue(editItem, ei);
+            var ei = Elm.GetElementInfo(EditItem);
+            ei.Value = Value;
+            Elm.SetElementValue(EditItem, ei);
             CircuitElm.Sim.Repaint();
         }
 
-        double getSliderValue() {
-            return minValue + (maxValue - minValue) * slider.Value / 100;
-        }
-
-        public void deleteSlider(CirSim sim) {
-            sim.ControlPanel.RemoveSlider(label);
-            sim.ControlPanel.RemoveSlider(slider);
-        }
-
-        public string dump() {
-            return CircuitElm.Sim.LocateElm(elm)
-                + " " + editItem
-                + " " + minValue
-                + " " + maxValue
-                + " " + CustomLogicModel.escape(sliderText);
+        public string Dump() {
+            return CircuitElm.Sim.LocateElm(Elm)
+                + " " + EditItem
+                + " " + MinValue
+                + " " + MaxValue
+                + " " + CustomLogicModel.escape(SliderText);
         }
     }
 }

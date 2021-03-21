@@ -136,7 +136,7 @@ namespace Circuit.Elements {
         }
 
         public override void Delete() {
-            Sim.ControlPanel.RemoveSlider(button);
+            ControlPanel.RemoveSlider(button);
             base.Delete();
         }
 
@@ -165,7 +165,7 @@ namespace Circuit.Elements {
             if (labelNum > 1) {
                 label += " " + labelNum;
             }
-            Sim.ControlPanel.AddSlider(button = new Button() { Text = label });
+            ControlPanel.AddSlider(button = new Button() { Text = label });
             button.Click += new EventHandler((s, e) => {
                 play();
             });

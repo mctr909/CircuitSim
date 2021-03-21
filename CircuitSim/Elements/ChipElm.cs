@@ -192,7 +192,7 @@ namespace Circuit.Elements {
                 p.curcount = updateDotCount(p.current, p.curcount);
                 drawDots(g, b, a, p.curcount);
                 if (p.bubble) {
-                    g.ThickLineColor = Sim.ControlPanel.ChkPrintable.Checked ? Color.White : Color.Black;
+                    g.ThickLineColor = ControlPanel.ChkPrintable.Checked ? Color.White : Color.Black;
                     g.DrawThickCircle(p.bubblePos, 1);
                     g.ThickLineColor = GrayColor;
                     g.DrawThickCircle(p.bubblePos, 3);

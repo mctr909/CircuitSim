@@ -823,7 +823,7 @@ namespace Circuit {
                 bx = szw / 2;
             }
 
-            g.LineColor = mSim.ControlPanel.ChkPrintable.Checked ? Color.White : Color.Black;
+            g.LineColor = ControlPanel.ChkPrintable.Checked ? Color.White : Color.Black;
             g.FillRectangle(bx - szw / 2, BoundingBox.Y - szh, szw, szh);
 
             g.TextColor = CircuitElm.TextColor;
@@ -886,7 +886,7 @@ namespace Circuit {
             int ll;
             var minorDiv = Color.FromArgb(0x30, 0x30, 0x30);
             var majorDiv = Color.FromArgb(0xA0, 0xA0, 0xA0);
-            if (mSim.ControlPanel.ChkPrintable.Checked) {
+            if (ControlPanel.ChkPrintable.Checked) {
                 minorDiv = Color.FromArgb(0xD0, 0xD0, 0xD0);
                 majorDiv = Color.FromArgb(0x80, 0x80, 0x80);
             }

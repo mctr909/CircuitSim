@@ -123,7 +123,7 @@ namespace Circuit.Elements {
 
         protected virtual string getGateText() { return null; }
 
-        public static bool useAnsiGates() { return Sim.ControlPanel.ChkUseAnsiSymbols.Checked; }
+        public static bool useAnsiGates() { return ControlPanel.ChkUseAnsiSymbols.Checked; }
 
         public override void Draw(CustomGraphics g) {
             int i;

@@ -60,7 +60,7 @@ namespace Circuit.Elements {
 
             setBbox(mPoint1, mPoint2, cr);
             doDots(g);
-            if (Sim.ControlPanel.ChkShowValues.Checked) {
+            if (ControlPanel.ChkShowValues.Checked) {
                 string s = Utils.ShortUnitText(currentValue, "A");
                 g.DrawRightText(s, textPos.X, textPos.Y);
             }
