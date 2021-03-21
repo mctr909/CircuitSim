@@ -48,6 +48,7 @@ namespace Circuit {
         #endregion
 
         #region Property
+        public bool IsRunning { get; private set; }
         public MOUSE_MODE MouseMode { get; private set; } = MOUSE_MODE.SELECT;
         public MOUSE_MODE TempMouseMode { get; private set; } = MOUSE_MODE.SELECT;
         public Point DisplayLocation { get { return mParent.Location; } }
@@ -144,7 +145,6 @@ namespace Circuit {
         long mLastIterTime;
         long mLastSysTime = 0;
 
-        bool mSimRunning;
         bool mNeedsRepaint;
         bool mAnalyzeFlag;
         bool mDumpMatrix;

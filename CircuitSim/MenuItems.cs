@@ -488,6 +488,8 @@ namespace Circuit {
             addMenuItem(fileMenuBar, "上書き保存(S)", MENU_ITEM.SAVE_FILE, new SHORTCUT(Keys.S));
             addMenuItem(fileMenuBar, "名前を付けて保存(A)", MENU_ITEM.SAVE_FILE, new SHORTCUT(Keys.None));
             fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addMenuItem(fileMenuBar, "モジュールを作成(M)", MENU_ITEM.createsubcircuit, new SHORTCUT(Keys.None));
+            fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addMenuItem(fileMenuBar, "印刷(P)", MENU_ITEM.print, new SHORTCUT(Keys.None));
             mainMenuBar.Items.Add(fileMenuBar);
             #endregion

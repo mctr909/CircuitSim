@@ -74,8 +74,8 @@ namespace Circuit.Elements {
         }
 
         public override void Drag(int xx, int yy) {
-            xx = Sim.snapGrid(xx);
-            yy = Sim.snapGrid(yy);
+            xx = Sim.SnapGrid(xx);
+            yy = Sim.SnapGrid(yy);
             width = Math.Max(32, Math.Abs(yy - Y1));
             if (xx == X1) {
                 yy = Y1;

@@ -18,7 +18,7 @@ namespace Circuit {
             ControlPanel.Init(this);
         }
 
-        public void init(Form parent) {
+        public void Init(Form parent) {
             mParent = parent;
             mParent.KeyPreview = true;
             mParent.KeyDown += onKeyDown;
@@ -89,57 +89,7 @@ namespace Circuit {
             SetSimRunning(true);
         }
 
-        #region Public method
-        public void SetSimRunning(bool s) {
-            if (s) {
-                if (mCir.StopMessage != null) {
-                    return;
-                }
-                mSimRunning = true;
-                ControlPanel.BtnRunStop.Text = "RUN";
-            } else {
-                mSimRunning = false;
-                mAnalyzeFlag = false;
-                ControlPanel.BtnRunStop.Text = "STOP";
-                Repaint();
-            }
-        }
-
-        public bool SimIsRunning() {
-            return mSimRunning;
-        }
-
-        public void Repaint() {
-            if (!mNeedsRepaint) {
-                mNeedsRepaint = true;
-                updateCircuit();
-                mNeedsRepaint = false;
-            }
-        }
-
-        public Color getBackgroundColor() {
-            if (ControlPanel.ChkPrintable.Checked) {
-                return Color.White;
-            }
-            return Color.Black;
-        }
-
-        public void NeedAnalyze() {
-            mAnalyzeFlag = true;
-            Repaint();
-        }
-
-        public Adjustable FindAdjustable(CircuitElm elm, int item) {
-            for (int i = 0; i != Adjustables.Count; i++) {
-                var a = Adjustables[i];
-                if (a.Elm == elm && a.EditItem == item) {
-                    return a;
-                }
-            }
-            return null;
-        }
-
-        public void MenuPerformed(MENU_CATEGORY cat, MENU_ITEM item, string option = "") {
+        public void MenuPerformed(MENU_CATEGORY cat, MENU_ITEM item) {
             if (item == MENU_ITEM.OPEN_FILE) {
                 doOpenFile();
             }
@@ -269,7 +219,7 @@ namespace Circuit {
             }
 
             if (item == MENU_ITEM.VIEW_IN_FLOAT_SCOPE && mMenuElm != null) {
-                var newScope = new ScopeElm(snapGrid(mMenuElm.X1 + 50), snapGrid(mMenuElm.Y1 + 50));
+                var newScope = new ScopeElm(SnapGrid(mMenuElm.X1 + 50), SnapGrid(mMenuElm.Y1 + 50));
                 ElmList.Add(newScope);
                 newScope.setScopeElm(mMenuElm);
             }
@@ -298,7 +248,7 @@ namespace Circuit {
                     doDelete(false);
                 }
                 if (item == MENU_ITEM.UNDOCK && 0 <= mMenuScope) {
-                    var newScope = new ScopeElm(snapGrid(mMenuElm.X1 + 50), snapGrid(mMenuElm.Y1 + 50));
+                    var newScope = new ScopeElm(SnapGrid(mMenuElm.X1 + 50), SnapGrid(mMenuElm.Y1 + 50));
                     ElmList.Add(newScope);
                     newScope.setElmScope(mScopes[mMenuScope]);
                     /* remove scope from list.  setupScopes() will fix the positions */
@@ -359,6 +309,127 @@ namespace Circuit {
             Repaint();
         }
 
+        public CustomCompositeModel GetCircuitAsComposite() {
+            int i;
+            string nodeDump = "";
+            string dump = "";
+            CustomLogicModel.clearDumpedFlags();
+            DiodeModel.clearDumpedFlags();
+            var extList = new List<ExtListEntry>();
+
+            bool sel = isSelection();
+
+            // mapping of node labels -> node numbers
+            var nodeNameHash = new Dictionary<string, int>();
+
+            // mapping of node numbers -> equivalent node numbers (if they both have the same label)
+            var nodeNumberHash = new Dictionary<int, int>();
+
+            var used = new bool[mCir.NodeList.Count];
+
+            // output all the elements
+            for (i = 0; i != ElmList.Count; i++) {
+                var ce = getElm(i);
+                if (sel && !ce.IsSelected) {
+                    continue;
+                }
+                // don't need these elements dumped
+                if ((ce is WireElm) || (ce is ScopeElm)) {
+                    continue;
+                }
+                if (ce is GraphicElm) {
+                    continue;
+                }
+                int j;
+                if (nodeDump.Length > 0) {
+                    nodeDump += "\r";
+                }
+                nodeDump += ce.GetType().ToString();
+                for (j = 0; j != ce.PostCount; j++) {
+                    int n = ce.Nodes[j];
+                    int n0 = nodeNumberHash.ContainsKey(n) ? nodeNumberHash[n] : n;
+                    used[n0] = true;
+                    nodeDump += " " + n0;
+                }
+
+                // save positions
+                int x1 = ce.X1;
+                int y1 = ce.Y1;
+                int x2 = ce.X2;
+                int y2 = ce.Y2;
+
+                // set them to 0 so they're easy to remove
+                ce.X1 = ce.Y1 = ce.X2 = ce.Y2 = 0;
+
+                string tstring = ce.Dump;
+                var rg = new Regex("[A-Za-z0-9]+ 0 0 0 0 ");
+                tstring = rg.Replace(tstring, "", 1); // remove unused tint_x1 y1 x2 y2 coords for internal components
+
+                // restore positions
+                ce.X1 = x1;
+                ce.Y1 = y1;
+                ce.X2 = x2;
+                ce.Y2 = y2;
+                if (dump.Length > 0) {
+                    dump += " ";
+                }
+                dump += CustomLogicModel.escape(tstring);
+            }
+
+            for (i = 0; i != extList.Count; i++) {
+                var ent = extList[i];
+                if (!used[ent.node]) {
+                    MessageBox.Show("Node \"" + ent.name + "\" is not used!");
+                    return null;
+                }
+            }
+
+            var ccm = new CustomCompositeModel();
+            ccm.nodeList = nodeDump;
+            ccm.elmDump = dump;
+            ccm.extList = extList;
+            return ccm;
+        }
+
+        #region Public method
+        public void SetSimRunning(bool s) {
+            if (s) {
+                if (mCir.StopMessage != null) {
+                    return;
+                }
+                IsRunning = true;
+                ControlPanel.BtnRunStop.Text = "RUN";
+            } else {
+                IsRunning = false;
+                mAnalyzeFlag = false;
+                ControlPanel.BtnRunStop.Text = "STOP";
+                Repaint();
+            }
+        }
+
+        public void Repaint() {
+            if (!mNeedsRepaint) {
+                mNeedsRepaint = true;
+                updateCircuit();
+                mNeedsRepaint = false;
+            }
+        }
+
+        public void NeedAnalyze() {
+            mAnalyzeFlag = true;
+            Repaint();
+        }
+
+        public Adjustable FindAdjustable(CircuitElm elm, int item) {
+            for (int i = 0; i != Adjustables.Count; i++) {
+                var a = Adjustables[i];
+                if (a.Elm == elm && a.EditItem == item) {
+                    return a;
+                }
+            }
+            return null;
+        }
+
         /* delete sliders for an element */
         public void DeleteSliders(CircuitElm elm) {
             if (Adjustables == null) {
@@ -381,7 +452,6 @@ namespace Circuit {
             }
             return -1;
         }
-
 
         public bool DialogIsShowing() {
             if (EditDialog != null && EditDialog.Visible) {
@@ -442,6 +512,10 @@ namespace Circuit {
             enableUndoRedo();
         }
 
+        public int SnapGrid(int x) {
+            return (x + GRID_ROUND) & GRID_MASK;
+        }
+
         /* convert grid coordinates to screen coordinates */
         public int TransformX(double x) {
             return (int)((x * Transform[0]) + Transform[4]);
@@ -451,7 +525,7 @@ namespace Circuit {
         }
         #endregion
 
-        #region Private methond
+        #region Event method
         void onKeyDown(object sender, KeyEventArgs e) {
             mIsPressShift = e.Shift;
             mIsPressCtrl = e.Control;
@@ -567,8 +641,8 @@ namespace Circuit {
                 return;
             }
             /* */
-            int x0 = snapGrid(gx);
-            int y0 = snapGrid(gy);
+            int x0 = SnapGrid(gx);
+            int y0 = SnapGrid(gy);
             if (!mCircuitArea.Contains(MouseCursorX, MouseCursorY)) {
                 return;
             }
@@ -662,11 +736,13 @@ namespace Circuit {
             MouseCursorX = -1;
             MouseCursorY = -1;
         }
+        #endregion
 
+        #region Private methond
         void setTimer() {
             mTimer = new Timer();
             mTimer.Tick += new EventHandler((s, e) => {
-                if (mSimRunning) {
+                if (IsRunning) {
                     updateCircuit();
                     mNeedsRepaint = false;
                 }
@@ -685,7 +761,7 @@ namespace Circuit {
             if (height < 1) {
                 height = 1;
             }
-            var isRunning = SimIsRunning();
+            var isRunning = IsRunning;
             if (isRunning) {
                 SetSimRunning(false);
             }
@@ -1046,7 +1122,6 @@ namespace Circuit {
                 p += l;
             }
 
-            enableItems();
             if ((flags & RC_RETAIN) == 0) {
                 /* create sliders as needed */
                 for (i = 0; i != Adjustables.Count; i++) {
@@ -1082,10 +1157,6 @@ namespace Circuit {
             ControlPanel.TrbSpeed.Value = sp2;
             ControlPanel.TrbCurrent.Value = st.nextTokenInt();
             ControlPanel.VoltageRange = st.nextTokenDouble();
-        }
-
-        public int snapGrid(int x) {
-            return (x + GRID_ROUND) & GRID_MASK;
         }
 
         bool doSwitch(int x, int y) {
@@ -1129,16 +1200,16 @@ namespace Circuit {
                 dragAll(MouseCursorX, MouseCursorY);
                 break;
             case MOUSE_MODE.DRAG_ROW:
-                dragRow(snapGrid(gx), snapGrid(gy));
+                dragRow(SnapGrid(gx), SnapGrid(gy));
                 changed = true;
                 break;
             case MOUSE_MODE.DRAG_COLUMN:
-                dragColumn(snapGrid(gx), snapGrid(gy));
+                dragColumn(SnapGrid(gx), SnapGrid(gy));
                 changed = true;
                 break;
             case MOUSE_MODE.DRAG_POST:
                 if (mMouseElm != null) {
-                    dragPost(snapGrid(gx), snapGrid(gy));
+                    dragPost(SnapGrid(gx), SnapGrid(gy));
                     changed = true;
                 }
                 break;
@@ -1166,8 +1237,8 @@ namespace Circuit {
                 mDragGridX = inverseTransformX(mDragScreenX);
                 mDragGridY = inverseTransformY(mDragScreenY);
                 if (!(TempMouseMode == MOUSE_MODE.DRAG_SELECTED && onlyGraphicsElmsSelected())) {
-                    mDragGridX = snapGrid(mDragGridX);
-                    mDragGridY = snapGrid(mDragGridY);
+                    mDragGridX = SnapGrid(mDragGridX);
+                    mDragGridY = SnapGrid(mDragGridY);
                 }
             }
             if (changed) {
@@ -1259,8 +1330,8 @@ namespace Circuit {
             }
             if (!onlyGraphicsElmsSelected()) {
                 Console.WriteLine("Snapping x and y");
-                x = snapGrid(x);
-                y = snapGrid(y);
+                x = SnapGrid(x);
+                y = SnapGrid(y);
             }
             int dx = x - mDragGridX;
             int dy = y - mDragGridY;
@@ -1318,8 +1389,8 @@ namespace Circuit {
         }
 
         void doSplit(CircuitElm ce) {
-            int x = snapGrid(inverseTransformX(mMenuX));
-            int y = snapGrid(inverseTransformY(mMenuY));
+            int x = SnapGrid(inverseTransformX(mMenuX));
+            int y = SnapGrid(inverseTransformY(mMenuY));
             if (ce == null || !(ce is WireElm)) {
                 return;
             }
@@ -1409,8 +1480,8 @@ namespace Circuit {
             int gy = inverseTransformY(my);
 
             /*Console.WriteLine("Settingd draggridx in mouseEvent");*/
-            mDragGridX = snapGrid(gx);
-            mDragGridY = snapGrid(gy);
+            mDragGridX = SnapGrid(gx);
+            mDragGridY = SnapGrid(gy);
             mDragScreenX = mx;
             mDragScreenY = my;
             mDraggingPost = -1;
@@ -1587,8 +1658,6 @@ namespace Circuit {
                 }
             }
         }
-
-        void enableItems() { }
 
         void doUndo() {
             if (mUndoStack.Count == 0) {
@@ -1832,17 +1901,17 @@ namespace Circuit {
                 int spacew = mCircuitArea.Width - oldbb.Width - newbb.Width;
                 int spaceh = mCircuitArea.Height - oldbb.Height - newbb.Height;
                 if (spacew > spaceh) {
-                    dx = snapGrid(oldbb.X + oldbb.Width - newbb.X + GRID_SIZE);
+                    dx = SnapGrid(oldbb.X + oldbb.Width - newbb.X + GRID_SIZE);
                 } else {
-                    dy = snapGrid(oldbb.Y + oldbb.Height - newbb.Y + GRID_SIZE);
+                    dy = SnapGrid(oldbb.Y + oldbb.Height - newbb.Y + GRID_SIZE);
                 }
 
                 /* move new items near the mouse if possible */
                 if (MouseCursorX > 0 && mCircuitArea.Contains(MouseCursorX, MouseCursorY)) {
                     int gx = inverseTransformX(MouseCursorX);
                     int gy = inverseTransformY(MouseCursorY);
-                    int mdx = snapGrid(gx - (newbb.X + newbb.Width / 2));
-                    int mdy = snapGrid(gy - (newbb.Y + newbb.Height / 2));
+                    int mdx = SnapGrid(gx - (newbb.X + newbb.Width / 2));
+                    int mdy = SnapGrid(gy - (newbb.Y + newbb.Height / 2));
                     for (i = oldsz; i != ElmList.Count; i++) {
                         if (!getElm(i).AllowMove(mdx, mdy)) {
                             break;
@@ -1987,88 +2056,6 @@ namespace Circuit {
             }
             return false;
         }
-
-        public CustomCompositeModel getCircuitAsComposite() {
-            int i;
-            string nodeDump = "";
-            string dump = "";
-            CustomLogicModel.clearDumpedFlags();
-            DiodeModel.clearDumpedFlags();
-            var extList = new List<ExtListEntry>();
-
-            bool sel = isSelection();
-
-            // mapping of node labels -> node numbers
-            var nodeNameHash = new Dictionary<string, int>();
-
-            // mapping of node numbers -> equivalent node numbers (if they both have the same label)
-            var nodeNumberHash = new Dictionary<int, int>();
-
-            var used = new bool[mCir.NodeList.Count];
-
-            // output all the elements
-            for (i = 0; i != ElmList.Count; i++) {
-                var ce = getElm(i);
-                if (sel && !ce.IsSelected) {
-                    continue;
-                }
-                // don't need these elements dumped
-                if ((ce is WireElm) || (ce is ScopeElm)) {
-                    continue;
-                }
-                if (ce is GraphicElm) {
-                    continue;
-                }
-                int j;
-                if (nodeDump.Length > 0) {
-                    nodeDump += "\r";
-                }
-                nodeDump += ce.GetType().ToString();
-                for (j = 0; j != ce.PostCount; j++) {
-                    int n = ce.Nodes[j];
-                    int n0 = nodeNumberHash.ContainsKey(n) ? nodeNumberHash[n] : n;
-                    used[n0] = true;
-                    nodeDump += " " + n0;
-                }
-
-                // save positions
-                int x1 = ce.X1;
-                int y1 = ce.Y1;
-                int x2 = ce.X2;
-                int y2 = ce.Y2;
-
-                // set them to 0 so they're easy to remove
-                ce.X1 = ce.Y1 = ce.X2 = ce.Y2 = 0;
-
-                string tstring = ce.Dump;
-                var rg = new Regex("[A-Za-z0-9]+ 0 0 0 0 ");
-                tstring = rg.Replace(tstring, "", 1); // remove unused tint_x1 y1 x2 y2 coords for internal components
-
-                // restore positions
-                ce.X1 = x1;
-                ce.Y1 = y1;
-                ce.X2 = x2;
-                ce.Y2 = y2;
-                if (dump.Length > 0) {
-                    dump += " ";
-                }
-                dump += CustomLogicModel.escape(tstring);
-            }
-
-            for (i = 0; i != extList.Count; i++) {
-                var ent = extList[i];
-                if (!used[ent.node]) {
-                    MessageBox.Show("Node \"" + ent.name + "\" is not used!");
-                    return null;
-                }
-            }
-
-            var ccm = new CustomCompositeModel();
-            ccm.nodeList = nodeDump;
-            ccm.elmDump = dump;
-            ccm.extList = extList;
-            return ccm;
-        }
+        #endregion
     }
-    #endregion
 }

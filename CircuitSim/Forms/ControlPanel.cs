@@ -55,7 +55,7 @@ namespace Circuit {
 
             /* Run */
             BtnRunStop = new Button() { AutoSize = true, Text = "RUN" };
-            BtnRunStop.Click += new EventHandler((s, e) => { sim.SetSimRunning(!sim.SimIsRunning()); });
+            BtnRunStop.Click += new EventHandler((s, e) => { sim.SetSimRunning(!sim.IsRunning); });
             BtnRunStop.Left = 4;
             BtnRunStop.Top = ofsY;
             VerticalPanel.Controls.Add(BtnRunStop);

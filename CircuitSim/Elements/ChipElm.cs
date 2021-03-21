@@ -225,13 +225,13 @@ namespace Circuit.Elements {
         }
 
         public override void Drag(int xx, int yy) {
-            yy = Sim.snapGrid(yy);
+            yy = Sim.SnapGrid(yy);
             if (xx < X1) {
                 xx = X1;
                 yy = Y1;
             } else {
                 Y1 = Y2 = yy;
-                X2 = Sim.snapGrid(xx);
+                X2 = Sim.SnapGrid(xx);
             }
             SetPoints();
         }

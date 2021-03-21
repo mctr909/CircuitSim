@@ -230,7 +230,7 @@ namespace Circuit.Elements {
         /// <param name="b"></param>
         /// <param name="pos"></param>
         protected static void drawDots(CustomGraphics g, Point a, Point b, double pos) {
-            if ((!Sim.SimIsRunning()) || pos == 0 || !ControlPanel.ChkShowDots.Checked) {
+            if ((!Sim.IsRunning) || pos == 0 || !ControlPanel.ChkShowDots.Checked) {
                 return;
             }
             int dx = b.X - a.X;
@@ -353,7 +353,7 @@ namespace Circuit.Elements {
         /// <param name="cc"></param>
         /// <returns></returns>
         protected double updateDotCount(double cur, double cc) {
-            if (!Sim.SimIsRunning()) {
+            if (!Sim.IsRunning) {
                 return cc;
             }
             double cadd = cur * CurrentMult;
@@ -697,8 +697,8 @@ namespace Circuit.Elements {
         /// <param name="xx"></param>
         /// <param name="yy"></param>
         public virtual void Drag(int xx, int yy) {
-            xx = Sim.snapGrid(xx);
-            yy = Sim.snapGrid(yy);
+            xx = Sim.SnapGrid(xx);
+            yy = Sim.SnapGrid(yy);
             if (mNoDiagonal) {
                 if (Math.Abs(X1 - xx) < Math.Abs(Y1 - yy)) {
                     xx = X1;

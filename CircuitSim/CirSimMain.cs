@@ -46,7 +46,7 @@ namespace Circuit {
 
             g.TextColor = CircuitElm.TextColor;
 
-            if (mSimRunning) {
+            if (IsRunning) {
                 try {
                     runCircuit(didAnalyze);
                 } catch (Exception e) {
@@ -56,7 +56,7 @@ namespace Circuit {
             }
 
             long sysTime = DateTime.Now.ToFileTimeUtc();
-            if (mSimRunning) {
+            if (IsRunning) {
                 if (mLastTime != 0) {
                     int inc = (int)(sysTime - mLastTime);
                     double c = ControlPanel.TrbCurrent.Value;
@@ -128,8 +128,8 @@ namespace Circuit {
 
             if (ControlPanel.ChkCrossHair.Checked && MouseCursorX >= 0
                 && MouseCursorX <= mCircuitArea.Width && MouseCursorY <= mCircuitArea.Height) {
-                int x = snapGrid(inverseTransformX(MouseCursorX));
-                int y = snapGrid(inverseTransformY(MouseCursorY));
+                int x = SnapGrid(inverseTransformX(MouseCursorX));
+                int y = SnapGrid(inverseTransformY(MouseCursorY));
                 g.LineColor = Color.Gray;
                 g.DrawLine(x, inverseTransformY(0), x, inverseTransformY(mCircuitArea.Height));
                 g.DrawLine(inverseTransformX(0), y, inverseTransformX(mCircuitArea.Width), y);
@@ -292,7 +292,7 @@ namespace Circuit {
                 if ((iter + 1) * 1000 >= steprate * (tm - mLastIterTime) || (tm - mLastFrameTime > 250000)) {
                     break;
                 }
-                if (!mSimRunning) {
+                if (!IsRunning) {
                     break;
                 }
             } /* for (iter = 1; ; iter++) */

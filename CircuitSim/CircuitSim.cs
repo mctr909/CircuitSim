@@ -11,7 +11,7 @@ namespace Circuit {
         }
 
         private void Form1_Load(object sender, EventArgs e) {
-            sim.init(this);
+            sim.Init(this);
             Width = 800;
             Height = 600;
         }
