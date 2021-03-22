@@ -121,8 +121,8 @@ namespace Circuit.Elements {
             while (modelLinet.hasMoreTokens()) {
                 string line = modelLinet.nextToken();
                 var stModel = new StringTokenizer(line, " +\t\n\r\f");
-                var ceType = MenuItems.getItemFromString(stModel.nextToken());
-                var newce = MenuItems.constructElement(ceType, 0, 0);
+                var ceType = MenuItems.GetItemFromString(stModel.nextToken());
+                var newce = MenuItems.ConstructElement(ceType, 0, 0);
                 if (stIn != null) {
                     var tint = newce.DumpType;
                     string dumpedCe = stIn.nextToken();
@@ -131,7 +131,7 @@ namespace Circuit.Elements {
                     }
                     var stCe = new StringTokenizer(dumpedCe, useEscape() ? " " : "_");
                     int flags = stCe.nextTokenInt();
-                    newce = MenuItems.createCe(tint, 0, 0, 0, 0, flags, stCe);
+                    newce = MenuItems.CreateCe(tint, 0, 0, 0, 0, flags, stCe);
                 }
                 compElmList.Add(newce);
 

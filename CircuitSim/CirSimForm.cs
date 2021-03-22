@@ -525,7 +525,7 @@ namespace Circuit {
         }
         #endregion
 
-        #region Event method
+        #region Key event method
         void onKeyDown(object sender, KeyEventArgs e) {
             mIsPressShift = e.Shift;
             mIsPressCtrl = e.Control;
@@ -537,9 +537,69 @@ namespace Circuit {
             mIsPressCtrl = false;
             mIsPressAlt = false;
             mParent.Cursor = Cursors.Arrow;
-            onPreviewNativeEvent(e);
+            keyUpPerformed(e);
         }
 
+        void keyUpPerformed(KeyEventArgs e) {
+            var code = e.KeyCode;
+
+            if (DialogIsShowing()) {
+                if (mScrollValuePopup != null && mScrollValuePopup.Visible) {
+                    if (code == Keys.Escape || code == Keys.Space) {
+                        mScrollValuePopup.close(false);
+                    }
+                    if (code == Keys.Enter) {
+                        mScrollValuePopup.close(true);
+                    }
+                }
+                if (EditDialog != null && EditDialog.Visible) {
+                    if (code == Keys.Escape) {
+                        EditDialog.closeDialog();
+                    }
+                    if (code == Keys.Enter) {
+                        EditDialog.enterPressed();
+                    }
+                }
+                return;
+            }
+
+            if (code == Keys.Back || code == Keys.Delete) {
+                if (ScopeSelected != -1 && null != mScopes[ScopeSelected]) {
+                    /* Treat DELETE key with scope selected as "remove scope", not delete */
+                    mScopes[ScopeSelected].SetElm(null);
+                    ScopeSelected = -1;
+                } else {
+                    mMenuElm = null;
+                    PushUndo();
+                    doDelete(true);
+                }
+            }
+
+            if (code == Keys.Escape) {
+                mMenuItems.AllUnchecked();
+                setMouseMode(MOUSE_MODE.SELECT);
+                mMouseMode = MENU_ITEM.SELECT;
+                TempMouseMode = MouseMode;
+            }
+
+            if (e.KeyValue > 32 && e.KeyValue < 127) {
+                var c = mMenuItems.Shortcuts[e.KeyValue];
+                if (c == MENU_ITEM.INVALID) {
+                    return;
+                }
+                setMouseMode(MOUSE_MODE.ADD_ELM);
+                mMouseMode = c;
+                TempMouseMode = MouseMode;
+            }
+            if (e.KeyValue == 32) {
+                setMouseMode(MOUSE_MODE.SELECT);
+                mMouseMode = MENU_ITEM.SELECT;
+                TempMouseMode = MouseMode;
+            }
+        }
+        #endregion
+
+        #region Mouse event method
         void onClick(Control s, MouseEventArgs e) {
             if (e.Button == MouseButtons.Middle) {
                 scrollValues(0);
@@ -579,7 +639,8 @@ namespace Circuit {
                 TempMouseMode = MOUSE_MODE.DRAG_SPLITTER;
                 return;
             }
-            if (mMouseButton == MouseButtons.Left) {
+
+            if (MouseMode == MOUSE_MODE.SELECT && mMouseButton == MouseButtons.Left) {
                 /* left mouse */
                 TempMouseMode = MouseMode;
                 if (mIsPressCtrl && mIsPressShift) {
@@ -647,7 +708,7 @@ namespace Circuit {
                 return;
             }
 
-            DragElm = MenuItems.constructElement(mMouseMode, x0, y0);
+            DragElm = MenuItems.ConstructElement(mMouseMode, x0, y0);
         }
 
         void onMouseUp(MouseEventArgs e) {
@@ -1104,8 +1165,8 @@ namespace Circuit {
                         int x2 = st.nextTokenInt();
                         int y2 = st.nextTokenInt();
                         int f = st.nextTokenInt();
-                        var dumpId = MenuItems.getDumpIdFromString(type);
-                        var newce = MenuItems.createCe(dumpId, x1, y1, x2, y2, f, st);
+                        var dumpId = MenuItems.GetDumpIdFromString(type);
+                        var newce = MenuItems.CreateCe(dumpId, x1, y1, x2, y2, f, st);
                         if (newce == null) {
                             Console.WriteLine("unrecognized dump type: " + type);
                             break;
@@ -1954,63 +2015,6 @@ namespace Circuit {
                 }
             }
             return false;
-        }
-
-        void onPreviewNativeEvent(KeyEventArgs e) {
-            var code = e.KeyCode;
-
-            if (DialogIsShowing()) {
-                if (mScrollValuePopup != null && mScrollValuePopup.Visible) {
-                    if (code == Keys.Escape || code == Keys.Space) {
-                        mScrollValuePopup.close(false);
-                    }
-                    if (code == Keys.Enter) {
-                        mScrollValuePopup.close(true);
-                    }
-                }
-                if (EditDialog != null && EditDialog.Visible) {
-                    if (code == Keys.Escape) {
-                        EditDialog.closeDialog();
-                    }
-                    if (code == Keys.Enter) {
-                        EditDialog.enterPressed();
-                    }
-                }
-                return;
-            }
-
-            if (code == Keys.Back || code == Keys.Delete) {
-                if (ScopeSelected != -1 && null != mScopes[ScopeSelected]) {
-                    /* Treat DELETE key with scope selected as "remove scope", not delete */
-                    mScopes[ScopeSelected].SetElm(null);
-                    ScopeSelected = -1;
-                } else {
-                    mMenuElm = null;
-                    PushUndo();
-                    doDelete(true);
-                }
-            }
-
-            if (code == Keys.Escape) {
-                setMouseMode(MOUSE_MODE.SELECT);
-                mMouseMode = MENU_ITEM.SELECT;
-                TempMouseMode = MouseMode;
-            }
-
-            if (e.KeyValue > 32 && e.KeyValue < 127) {
-                var c = mMenuItems.shortcuts[e.KeyValue];
-                if (c == MENU_ITEM.INVALID) {
-                    return;
-                }
-                setMouseMode(MOUSE_MODE.ADD_ELM);
-                mMouseMode = c;
-                TempMouseMode = MouseMode;
-            }
-            if (e.KeyValue == 32) {
-                setMouseMode(MOUSE_MODE.SELECT);
-                mMouseMode = MENU_ITEM.SELECT;
-                TempMouseMode = MouseMode;
-            }
         }
 
         /* For debugging */

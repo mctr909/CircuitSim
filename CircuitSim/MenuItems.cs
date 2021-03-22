@@ -357,18 +357,19 @@ namespace Circuit {
 
     class MenuItems {
         #region variable
-        public List<ToolStripMenuItem> mainMenuItems = new List<ToolStripMenuItem>();
-        public List<MENU_ITEM> mainMenuItemNames = new List<MENU_ITEM>();
-        public MENU_ITEM[] shortcuts = new MENU_ITEM[127];
-        Font menuFont = new Font("Segoe UI", 9.0f);
         CirSim mSim;
+        List<ToolStripMenuItem> mMainMenuItems = new List<ToolStripMenuItem>();
+        List<MENU_ITEM> mMainMenuItemNames = new List<MENU_ITEM>();
+        Font menuFont = new Font("Segoe UI", 9.0f);
         #endregion
+
+        public MENU_ITEM[] Shortcuts { get; private set; } = new MENU_ITEM[127];
 
         public MenuItems(CirSim sim) {
             mSim = sim;
         }
 
-        public static DUMP_ID getDumpIdFromString(string v) {
+        public static DUMP_ID GetDumpIdFromString(string v) {
             DUMP_ID e;
             if (Enum.TryParse(v, out e)) {
                 return e;
@@ -377,7 +378,7 @@ namespace Circuit {
             }
         }
 
-        public static MENU_ITEM getItemFromString(string v) {
+        public static MENU_ITEM GetItemFromString(string v) {
             MENU_ITEM e;
             if (Enum.TryParse(v, out e)) {
                 return e;
@@ -386,12 +387,21 @@ namespace Circuit {
             }
         }
 
+        public void AllUnchecked() {
+            for (int i = 0; i < mMainMenuItems.Count; i++) {
+                if (mMainMenuItems[i].Checked) {
+                    mMainMenuItems[i].Checked = false;
+                    mMainMenuItems[i].OwnerItem.BackColor = Color.Transparent;
+                }
+            }
+        }
+
         public void saveShortcuts() {
             Console.WriteLine("saveShortcuts");
             /* format: version;code1=ClassName;code2=ClassName;etc */
             string str = "1";
-            for (int i = 0; i != shortcuts.Length; i++) {
-                var sh = shortcuts[i];
+            for (int i = 0; i != Shortcuts.Length; i++) {
+                var sh = Shortcuts[i];
                 if (sh == MENU_ITEM.INVALID) {
                     continue;
                 }
@@ -403,11 +413,11 @@ namespace Circuit {
 
         void addElementItem(ToolStripMenuItem menu, string title, MENU_ITEM item) {
             var shortcut = DUMP_ID.INVALID;
-            var elm = constructElement(item, 0, 0);
+            var elm = ConstructElement(item, 0, 0);
             if (elm != null) {
                 if (elm.NeedsShortcut) {
                     shortcut = elm.Shortcut;
-                    shortcuts[(int)elm.Shortcut] = item;
+                    Shortcuts[(int)elm.Shortcut] = item;
                 }
                 elm.Delete();
             }
@@ -431,27 +441,23 @@ namespace Circuit {
             mi.Click += new EventHandler((sender, e) => {
                 mSim.MenuPerformed(MENU_CATEGORY.MAIN, item);
                 if (null != mi.OwnerItem) {
-                    for (int i = 0; i < mainMenuItems.Count; i++) {
-                        if (mainMenuItems[i].Checked) {
-                            mainMenuItems[i].Checked = false;
-                            mainMenuItems[i].OwnerItem.BackColor = Color.Transparent;
+                    for (int i = 0; i < mMainMenuItems.Count; i++) {
+                        if (mMainMenuItems[i].Checked) {
+                            mMainMenuItems[i].Checked = false;
+                            mMainMenuItems[i].OwnerItem.BackColor = Color.Transparent;
                         }
                     }
                     mi.Checked = true;
                     mi.OwnerItem.BackColor = Color.LightGray;
                 }
             });
-            mainMenuItems.Add(mi);
-            mainMenuItemNames.Add(item);
+            mMainMenuItems.Add(mi);
+            mMainMenuItemNames.Add(item);
             menu.DropDownItems.Add(mi);
         }
 
         void addMenuItem(ToolStripMenuItem menu, string title, MENU_ITEM item, SHORTCUT shortCut) {
             addMenuItem(menu, title, MENU_CATEGORY.KEY, item, shortCut);
-        }
-
-        void addMenuItem(ToolStripMenuItem menu, string title, MENU_CATEGORY cat, MENU_ITEM item) {
-            addMenuItem(menu, title, cat, item, new SHORTCUT(Keys.None));
         }
 
         void addMenuItem(ToolStripMenuItem menu, string title, MENU_CATEGORY cat, MENU_ITEM item, SHORTCUT shortCut) {
@@ -473,8 +479,8 @@ namespace Circuit {
             mi.Click += new EventHandler((sender, e) => {
                 mSim.MenuPerformed(cat, item);
             });
-            mainMenuItems.Add(mi);
-            mainMenuItemNames.Add(item);
+            mMainMenuItems.Add(mi);
+            mMainMenuItemNames.Add(item);
             menu.DropDownItems.Add(mi);
         }
 
@@ -704,7 +710,7 @@ namespace Circuit {
             #endregion
         }
 
-        public static CircuitElm constructElement(MENU_ITEM n, int x1, int y1) {
+        public static CircuitElm ConstructElement(MENU_ITEM n, int x1, int y1) {
             switch (n) {
             case MENU_ITEM.ScopeElm:
                 return new ScopeElm(x1, y1);
@@ -973,7 +979,7 @@ namespace Circuit {
             }
         }
 
-        public static CircuitElm createCe(DUMP_ID tint, int x1, int y1, int x2, int y2, int f, StringTokenizer st) {
+        public static CircuitElm CreateCe(DUMP_ID tint, int x1, int y1, int x2, int y2, int f, StringTokenizer st) {
             switch (tint) {
             //case 'A': return new AntennaElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.INVERT: return new InverterElm(x1, y1, x2, y2, f, st);
