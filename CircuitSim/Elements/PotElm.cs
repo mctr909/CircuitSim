@@ -319,7 +319,7 @@ namespace Circuit.Elements {
             if (n == 1) {
                 sliderText = ei.Textf.Text;
                 label.Text = sliderText;
-                ControlPanel.SetiFrameHeight();
+                ControlPanel.SetSliderPanelHeight();
             }
             if (n == 2) {
                 mFlags = ei.ChangeFlag(mFlags, FLAG_SHOW_VALUES);

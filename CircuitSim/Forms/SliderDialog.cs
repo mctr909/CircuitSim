@@ -100,12 +100,12 @@ namespace Circuit {
                 if (adj != null) {
                     ctrlInsert(vp, new Label() { TextAlign = ContentAlignment.BottomLeft, Text = "Min Value" }, idx++);
                     ei.MinBox = new TextBox() {
-                        Text = ElementInfoDialog.unitString(ei, adj.MinValue)
+                        Text = ElementInfoDialog.UnitString(ei, adj.MinValue)
                     };
                     ctrlInsert(vp, ei.MinBox, idx++);
                     ctrlInsert(vp, new Label() { TextAlign = ContentAlignment.BottomLeft, Text = "Max Value" }, idx++);
                     ei.MaxBox = new TextBox() {
-                        Text = ElementInfoDialog.unitString(ei, adj.MaxValue)
+                        Text = ElementInfoDialog.UnitString(ei, adj.MaxValue)
                     };
                     ctrlInsert(vp, ei.MaxBox, idx++);
                     ctrlInsert(vp, new Label() { TextAlign = ContentAlignment.BottomLeft, Text = "Label" }, idx++);
@@ -137,9 +137,9 @@ namespace Circuit {
                 try {
                     adj.SliderText = ei.LabelBox.Text;
                     adj.Label.Text = adj.SliderText;
-                    double d = ElementInfoDialog.parseUnits(ei.MinBox.Text);
+                    double d = ElementInfoDialog.ParseUnits(ei.MinBox.Text);
                     adj.MinValue = d;
-                    d = ElementInfoDialog.parseUnits(ei.MaxBox.Text);
+                    d = ElementInfoDialog.ParseUnits(ei.MaxBox.Text);
                     adj.MaxValue = d;
                     adj.Value = ei.Value;
                 } catch { }

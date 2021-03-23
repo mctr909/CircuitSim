@@ -15,59 +15,58 @@ namespace Circuit {
     }
 
     class ElementInfoDialog : Form {
-        const int barmax = 1000;
         const double ROOT2 = 1.41421356237309504880;
 
-        Editable elm;
-        CirSim cframe;
-        Button applyButton;
-        Button cancelButton;
-        ElementInfo[] einfos;
+        CirSim mSim;
+        Editable mElm;
+        Button mBtnApply;
+        Button mBtnCancel;
+        ElementInfo[] mEInfos;
 
-        int einfocount;
+        int mEInfoCount;
 
-        Panel vp;
-        Panel hp;
-        bool closeOnEnter = true;
+        Panel mPnlV;
+        Panel mPnlH;
+        bool mCloseOnEnter = true;
 
         public ElementInfoDialog(Editable ce, CirSim f) : base() {
             Text = "Edit Component";
-            cframe = f;
-            elm = ce;
+            mSim = f;
+            mElm = ce;
 
-            einfos = new ElementInfo[10];
+            mEInfos = new ElementInfo[10];
 
             SuspendLayout();
 
-            vp = new Panel();
-            Controls.Add(vp);
+            mPnlV = new Panel();
+            Controls.Add(mPnlV);
 
-            hp = new Panel();
+            mPnlH = new Panel();
             {
                 /* Apply */
-                hp.Controls.Add(applyButton = new Button() {
+                mPnlH.Controls.Add(mBtnApply = new Button() {
                     AutoSize = true,
                     Width = 50,
                     Text = "Apply"
                 });
-                applyButton.Click += new EventHandler((s, e) => {
+                mBtnApply.Click += new EventHandler((s, e) => {
                     apply();
-                    closeDialog();
+                    Close();
                 });
                 /* Cancel */
-                hp.Controls.Add(cancelButton = new Button() {
+                mPnlH.Controls.Add(mBtnCancel = new Button() {
                     AutoSize = true,
                     Width = 50,
-                    Left = applyButton.Right + 4,
+                    Left = mBtnApply.Right + 4,
                     Text = "Cancel"
                 });
-                cancelButton.Click += new EventHandler((s, e) => {
-                    closeDialog();
+                mBtnCancel.Click += new EventHandler((s, e) => {
+                    Close();
                 });
                 /* */
-                hp.Width = cancelButton.Right;
-                hp.Height = cancelButton.Height;
-                vp.Controls.Add(hp);
+                mPnlH.Width = mBtnCancel.Right;
+                mPnlH.Height = mBtnCancel.Height;
+                mPnlV.Controls.Add(mPnlH);
             }
 
             buildDialog();
@@ -90,16 +89,174 @@ namespace Circuit {
             Visible = true;
         }
 
+        public new void Close() {
+            base.Close();
+            CirSim.EditDialog = null;
+        }
+
+        public void EnterPressed() {
+            if (mCloseOnEnter) {
+                apply();
+                Close();
+            }
+        }
+
+        public static string UnitString(ElementInfo ei, double v) {
+            double va = Math.Abs(v);
+            if (ei != null && ei.Dimensionless) {
+                return (v).ToString();
+            }
+            if (v == 0) {
+                return "0";
+            }
+            if (va < 1e-9) {
+                return (v * 1e12).ToString("0") + "p";
+            }
+            if (va < 1e-6) {
+                return (v * 1e9).ToString("0") + "n";
+            }
+            if (va < 1e-3) {
+                return (v * 1e6).ToString("0") + "u";
+            }
+            if (va < 1) { /*&& !ei.forceLargeM*/
+                return (v * 1e3).ToString("0") + "m";
+            }
+            if (va < 1e3) {
+                return (v).ToString("0");
+            }
+            if (va < 1e6) {
+                return (v * 1e-3).ToString("0") + "k";
+            }
+            if (va < 1e9) {
+                return (v * 1e-6).ToString("0") + "M";
+            }
+            return (v * 1e-9).ToString("0") + "G";
+        }
+
+        public static double ParseUnits(string s) {
+            s = s.Trim();
+            double rmsMult = 1;
+            if (s.EndsWith("rms")) {
+                s = s.Substring(0, s.Length - 3).Trim();
+                rmsMult = ROOT2;
+            }
+            /* rewrite shorthand (eg "2k2") in to normal format (eg 2.2k) using regex */
+            var rg = new Regex("([0-9]+)([pPnNuUmMkKgG])([0-9]+)");
+            s = rg.Replace(s, "$1.$3$2");
+            int len = s.Length;
+            char uc = s.ElementAt(len - 1);
+            double mult = 1;
+            switch (uc) {
+            case 'p':
+            case 'P':
+                mult = 1e-12;
+                break;
+            case 'n':
+            case 'N':
+                mult = 1e-9;
+                break;
+            case 'u':
+            case 'U':
+                mult = 1e-6;
+                break;
+            /* for ohm values, we used to assume mega for lowercase m, otherwise milli */
+            case 'm':
+                mult = 1e-3;
+                break; /*(ei.forceLargeM) ? 1e6 : */
+            case 'k':
+            case 'K':
+                mult = 1e3;
+                break;
+            case 'M':
+                mult = 1e6;
+                break;
+            case 'G':
+            case 'g':
+                mult = 1e9;
+                break;
+            }
+            if (mult != 1) {
+                s = s.Substring(0, len - 1).Trim();
+            }
+            return double.Parse(s) * mult * rmsMult;
+        }
+
+        void apply() {
+            for (int i = 0; i != mEInfoCount; i++) {
+                var ei = mEInfos[i];
+                if (ei.Textf != null && ei.Text == null) {
+                    try {
+                        double d = parseUnits(ei);
+                        ei.Value = d;
+                    } catch (FormatException ex) {
+                        MessageBox.Show(ex.Message);
+                    } catch (Exception ex) {
+                        throw ex;
+                    }
+                }
+                if (ei.Button != null) {
+                    continue;
+                }
+                mElm.SetElementValue(i, ei);
+
+                /* update slider if any */
+                if (mElm is CircuitElm) {
+                    var adj = mSim.FindAdjustable((CircuitElm)mElm, i);
+                    if (adj != null) {
+                        adj.Value = ei.Value;
+                    }
+                }
+            }
+            mSim.NeedAnalyze();
+        }
+
+        void itemStateChanged(object sender) {
+            bool changed = false;
+            bool applied = false;
+            for (int i = 0; i != mEInfoCount; i++) {
+                var ei = mEInfos[i];
+                if (ei.Choice == sender || ei.CheckBox == sender || ei.Button == sender) {
+                    /* if we're pressing a button, make sure to apply changes first */
+                    if (ei.Button == sender && !ei.NewDialog) {
+                        apply();
+                        applied = true;
+                    }
+                    mElm.SetElementValue(i, ei);
+                    if (ei.NewDialog) {
+                        changed = true;
+                    }
+                    mSim.NeedAnalyze();
+                }
+            }
+            if (changed) {
+                /* apply changes before we reset everything
+                 * (need to check if we already applied changes; otherwise Diode create simple model button doesn't work) */
+                if (!applied) {
+                    apply();
+                }
+                SuspendLayout();
+                clear();
+                buildDialog();
+                ResumeLayout(false);
+            }
+        }
+
+        void clear() {
+            while (mPnlV.Controls[0] != mPnlH) {
+                mPnlV.Controls.RemoveAt(0);
+            }
+        }
+
         void buildDialog() {
             int i;
             int idx;
             for (i = 0; ; i++) {
-                einfos[i] = elm.GetElementInfo(i);
-                if (einfos[i] == null) {
+                mEInfos[i] = mElm.GetElementInfo(i);
+                if (mEInfos[i] == null) {
                     break;
                 }
-                var ei = einfos[i];
-                idx = vp.Controls.IndexOf(hp);
+                var ei = mEInfos[i];
+                idx = mPnlV.Controls.IndexOf(mPnlH);
                 if (0 <= ei.Name.IndexOf("<a")) {
                     var name = ei.Name.Replace(" ", "");
                     string title = "";
@@ -121,40 +278,40 @@ namespace Circuit {
                             Process.Start(href);
                         });
                     }
-                    insertCtrl(vp, label, idx);
+                    insertCtrl(mPnlV, label, idx);
                 } else {
-                    insertCtrl(vp, new Label() {
+                    insertCtrl(mPnlV, new Label() {
                         Text = ei.Name,
                         AutoSize = true,
                         TextAlign = ContentAlignment.BottomLeft
                     }, idx);
                 }
-                idx = vp.Controls.IndexOf(hp);
+                idx = mPnlV.Controls.IndexOf(mPnlH);
                 if (ei.Choice != null) {
                     ei.Choice.AutoSize = true;
                     ei.Choice.SelectedValueChanged += new EventHandler((s, e) => {
                         itemStateChanged(s);
                     });
-                    insertCtrl(vp, ei.Choice, idx);
+                    insertCtrl(mPnlV, ei.Choice, idx);
                 } else if (ei.CheckBox != null) {
                     ei.CheckBox.AutoSize = true;
                     ei.CheckBox.CheckedChanged += new EventHandler((s, e) => {
                         itemStateChanged(s);
                     });
-                    insertCtrl(vp, ei.CheckBox, idx);
+                    insertCtrl(mPnlV, ei.CheckBox, idx);
                 } else if (ei.Button != null) {
                     ei.Button.AutoSize = true;
                     ei.Button.Click += new EventHandler((s, e) => {
                         itemStateChanged(s);
                     });
-                    insertCtrl(vp, ei.Button, idx);
+                    insertCtrl(mPnlV, ei.Button, idx);
                 } else if (ei.TextArea != null) {
-                    insertCtrl(vp, ei.TextArea, idx);
-                    closeOnEnter = false;
+                    insertCtrl(mPnlV, ei.TextArea, idx);
+                    mCloseOnEnter = false;
                 } else if (ei.Widget != null) {
-                    insertCtrl(vp, ei.Widget, idx);
+                    insertCtrl(mPnlV, ei.Widget, idx);
                 } else {
-                    insertCtrl(vp, ei.Textf = new TextBox(), idx);
+                    insertCtrl(mPnlV, ei.Textf = new TextBox(), idx);
                     if (ei.Text != null) {
                         ei.Textf.Text = ei.Text;
                     }
@@ -163,9 +320,9 @@ namespace Circuit {
                     }
                 }
             }
-            einfocount = i;
-            Width = vp.Width + 20;
-            Height = vp.Height + 35;
+            mEInfoCount = i;
+            Width = mPnlV.Width + 20;
+            Height = mPnlV.Height + 35;
         }
 
         void insertCtrl(Control parent, Control ctrl, int idx) {
@@ -201,160 +358,19 @@ namespace Circuit {
             return Math.Abs(x - Math.Round(x));
         }
 
-        public string unitString(ElementInfo ei) {
+        string unitString(ElementInfo ei) {
             /* for voltage elements, express values in rms if that would be shorter */
-            if (elm != null && (elm is VoltageElm)
+            if (mElm != null && (mElm is VoltageElm)
                 && Math.Abs(ei.Value) > 1e-4
                 && diffFromInteger(ei.Value * 1e4) > diffFromInteger(ei.Value * 1e4 / ROOT2)) {
-                return unitString(ei, ei.Value / ROOT2) + "rms";
+                return UnitString(ei, ei.Value / ROOT2) + "rms";
             }
-            return unitString(ei, ei.Value);
-        }
-
-        public static string unitString(ElementInfo ei, double v) {
-            double va = Math.Abs(v);
-            if (ei != null && ei.Dimensionless) {
-                return (v).ToString();
-            }
-            if (v == 0) {
-                return "0";
-            }
-            if (va < 1e-9) {
-                return (v * 1e12).ToString("0") + "p";
-            }
-            if (va < 1e-6) {
-                return (v * 1e9).ToString("0") + "n";
-            }
-            if (va < 1e-3) {
-                return (v * 1e6).ToString("0") + "u";
-            }
-            if (va < 1) { /*&& !ei.forceLargeM*/
-                return (v * 1e3).ToString("0") + "m";
-            }
-            if (va < 1e3) {
-                return (v).ToString("0");
-            }
-            if (va < 1e6) {
-                return (v * 1e-3).ToString("0") + "k";
-            }
-            if (va < 1e9) {
-                return (v * 1e-6).ToString("0") + "M";
-            }
-            return (v * 1e-9).ToString("0") + "G";
+            return UnitString(ei, ei.Value);
         }
 
         double parseUnits(ElementInfo ei) {
             string s = ei.Textf.Text;
-            return parseUnits(s);
-        }
-
-        public static double parseUnits(string s) {
-            s = s.Trim();
-            double rmsMult = 1;
-            if (s.EndsWith("rms")) {
-                s = s.Substring(0, s.Length - 3).Trim();
-                rmsMult = ROOT2;
-            }
-            /* rewrite shorthand (eg "2k2") in to normal format (eg 2.2k) using regex */
-            var rg = new Regex("([0-9]+)([pPnNuUmMkKgG])([0-9]+)");
-            s = rg.Replace(s, "$1.$3$2");
-            int len = s.Length;
-            char uc = s.ElementAt(len - 1);
-            double mult = 1;
-            switch (uc) {
-            case 'p': case 'P': mult = 1e-12; break;
-            case 'n': case 'N': mult = 1e-9; break;
-            case 'u': case 'U': mult = 1e-6; break;
-            /* for ohm values, we used to assume mega for lowercase m, otherwise milli */
-            case 'm': mult = 1e-3; break; /*(ei.forceLargeM) ? 1e6 : */
-            case 'k': case 'K': mult = 1e3; break;
-            case 'M': mult = 1e6; break;
-            case 'G': case 'g': mult = 1e9; break;
-            }
-            if (mult != 1) {
-                s = s.Substring(0, len - 1).Trim();
-            }
-            return double.Parse(s) * mult * rmsMult;
-        }
-
-        void apply() {
-            int i;
-            for (i = 0; i != einfocount; i++) {
-                var ei = einfos[i];
-                if (ei.Textf != null && ei.Text == null) {
-                    try {
-                        double d = parseUnits(ei);
-                        ei.Value = d;
-                    } catch (FormatException ex) {
-                        MessageBox.Show(ex.Message);
-                    } catch (Exception ex) {
-                        throw ex;
-                    }
-                }
-                if (ei.Button != null) {
-                    continue;
-                }
-                elm.SetElementValue(i, ei);
-
-                /* update slider if any */
-                if (elm is CircuitElm) {
-                    var adj = cframe.FindAdjustable((CircuitElm)elm, i);
-                    if (adj != null) {
-                        adj.Value = ei.Value;
-                    }
-                }
-            }
-            cframe.NeedAnalyze();
-        }
-
-        void itemStateChanged(object sender) {
-            int i;
-            bool changed = false;
-            bool applied = false;
-            for (i = 0; i != einfocount; i++) {
-                var ei = einfos[i];
-                if (ei.Choice == sender || ei.CheckBox == sender || ei.Button == sender) {
-                    /* if we're pressing a button, make sure to apply changes first */
-                    if (ei.Button == sender && !ei.NewDialog) {
-                        apply();
-                        applied = true;
-                    }
-                    elm.SetElementValue(i, ei);
-                    if (ei.NewDialog) {
-                        changed = true;
-                    }
-                    cframe.NeedAnalyze();
-                }
-            }
-            if (changed) {
-                /* apply changes before we reset everything
-                 * (need to check if we already applied changes; otherwise Diode create simple model button doesn't work) */
-                if (!applied) {
-                    apply();
-                }
-                SuspendLayout();
-                clearDialog();
-                buildDialog();
-                ResumeLayout(false);
-            }
-        }
-
-        void clearDialog() {
-            while (vp.Controls[0] != hp) {
-                vp.Controls.RemoveAt(0);
-            }
-        }
-
-        public void closeDialog() {
-            Close();
-            CirSim.EditDialog = null;
-        }
-
-        public void enterPressed() {
-            if (closeOnEnter) {
-                apply();
-                closeDialog();
-            }
+            return ParseUnits(s);
         }
     }
 }

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Circuit.Elements;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Circuit.Elements;
 
 namespace Circuit {
     struct SHORTCUT {
@@ -87,28 +87,14 @@ namespace Circuit {
         }
     }
 
-    enum MENU_CATEGORY {
-        MAIN,
-        OPTIONS,
-        KEY,
-        ELEMENTS,
-        SCOPE_POP,
-        CIRCUITS
-    }
-
     enum MENU_ITEM {
-        INVALID,
-
-        #region [File]
         OPEN_FILE,
         SAVE_FILE,
-        createsubcircuit,
-        dcanalysis,
-        print,
-        recover,
-        #endregion
+        CREATE_MODULE,
+        DC_ANALYSIS,
+        PRINT,
+        RECOVER,
 
-        #region [Edit]
         SELECT,
         CUT,
         COPY,
@@ -122,50 +108,32 @@ namespace Circuit {
         ZOOM_OUT,
         ZOOM_100,
         CENTER_CIRCUIT,
-        #endregion
 
-        edit,
-        sliders,
-        flip,
-        split,
-
-        #region Scope
-        ScopeElm,
         STACK_ALL,
         UNSTACK_ALL,
         COMBINE_ALL,
-        SEPARATE_ALL,
-        VIEW_IN_SCOPE,
-        VIEW_IN_FLOAT_SCOPE,
-        DOCK,
-        UNDOCK,
-        REMOVE_SCOPE,
-        REMOVE_PLOT,
-        speed2,
-        speed1_2,
-        MAX_SCALE,
-        STACK,
-        UNSTACK,
-        COMBINE,
-        RESET,
-        PROPERTIES,
-        #endregion
+        SEPARATE_ALL
+    }
+
+    enum ELEMENTS {
+        INVALID,
+        SCOPE,
 
         #region Basic Element
-        WireElm,
-        ResistorElm,
-        CapacitorElm,
-        InductorElm,
-        GroundElm,
+        WIRE,
+        GROUND,
+        RESISTOR,
+        CAPACITOR,
+        CAPACITOR_POLER,
+        INDUCTOR,
         #endregion
 
         #region Passive Components
-        PolarCapacitorElm,
-        SwitchElm,
-        PushSwitchElm,
-        Switch2Elm,
-        PotElm,
-        TransformerElm,
+        SWITCH,
+        SWITCH_PUSH,
+        SWITCH_TERM,
+        POT,
+        TRANSFORMER,
         TappedTransformerElm,
         TransLineElm,
         RelayElm,
@@ -177,14 +145,15 @@ namespace Circuit {
         #endregion
 
         #region Active Components
-        DiodeElm,
-        ZenerElm,
-        TransistorElm,
-        NTransistorElm,
-        PTransistorElm,
-        MosfetElm,
-        NMosfetElm,
-        PMosfetElm,
+        DIODE,
+        ZENER,
+        LED,
+        TRANSISTOR,
+        TRANSISTOR_N,
+        TRANSISTOR_P,
+        MOSFET,
+        MOSFET_N,
+        MOSFET_P,
         JfetElm,
         NJfetElm,
         PJfetElm,
@@ -202,47 +171,45 @@ namespace Circuit {
         #endregion
 
         #region Inputs and Sources
-        VoltageElm,
-        DCVoltageElm,
-        ACVoltageElm,
-        RailElm,
-        ACRailElm,
+        VOLTAGE_DC,
+        VOLTAGE_AC,
+        RAIL_DC,
+        RAIL_AC,
+        CLOCK,
+        SWEEP,
+        OSC_AM,
+        OSC_FM,
+        CURRENT,
         SquareRailElm,
-        ClockElm,
-        SweepElm,
         AntennaElm,
-        AMElm,
-        FMElm,
-        CurrentElm,
         NoiseElm,
         AudioInputElm,
         #endregion
 
         #region Outputs and Labels
-        OutputElm,
-        LEDElm,
+        OUTPUT,
+        PROBE,
+        AMMETER,
+        OhmMeterElm,
+        DataRecorderElm,
+        OUTPUT_AUDIO,
         LampElm,
         TextElm,
         BoxElm,
-        ProbeElm,
-        OhmMeterElm,
         TestPointElm,
-        AmmeterElm,
-        DataRecorderElm,
-        AudioOutputElm,
         LEDArrayElm,
         StopTriggerElm,
         #endregion
 
         #region Active Building Blocks
-        OpAmpElm,
-        OpAmpSwapElm,
+        OPAMP,
+        OPAMP_SWAP,
         OpAmpRealElm,
         AnalogSwitchElm,
         AnalogSwitch2Elm,
-        TriStateElm,
-        SchmittElm,
-        InvertingSchmittElm,
+        TRISTATE,
+        SCHMITT,
+        SCHMITT_INV,
         CC2Elm,
         CC2NegElm,
         ComparatorElm,
@@ -252,19 +219,19 @@ namespace Circuit {
         VCCSElm,
         CCVSElm,
         CCCSElm,
-        OptocouplerElm,
+        OPTOCOUPLER,
         CustomCompositeElm,
         #endregion
 
         #region Logic Gates
-        LogicInputElm,
-        LogicOutputElm,
-        InverterElm,
-        NandGateElm,
-        NorGateElm,
-        AndGateElm,
-        OrGateElm,
-        XorGateElm,
+        LOGIC_INPUT,
+        LOGIC_OUTPUT,
+        NOT_GATE,
+        NAND_GATE,
+        NOR_GATE,
+        AND_GATE,
+        OR_GATE,
+        XOR_GATE,
         #endregion
 
         #region Digital Chips
@@ -284,7 +251,7 @@ namespace Circuit {
         SeqGenElm,
         FullAdderElm,
         HalfAdderElm,
-        CustomLogicElm,
+        CUSTOM_LOGIC,
         UserDefinedLogicElm,
         SRAMElm,
         #endregion
@@ -297,8 +264,6 @@ namespace Circuit {
         VCOElm,
         MonostableElm,
         #endregion
-
-        _COUNT
     }
 
     enum DUMP_ID {
@@ -356,14 +321,9 @@ namespace Circuit {
     }
 
     class MenuItems {
-        #region variable
         CirSim mSim;
         List<ToolStripMenuItem> mMainMenuItems = new List<ToolStripMenuItem>();
-        List<MENU_ITEM> mMainMenuItemNames = new List<MENU_ITEM>();
         Font menuFont = new Font("Segoe UI", 9.0f);
-        #endregion
-
-        public MENU_ITEM[] Shortcuts { get; private set; } = new MENU_ITEM[127];
 
         public MenuItems(CirSim sim) {
             mSim = sim;
@@ -378,12 +338,12 @@ namespace Circuit {
             }
         }
 
-        public static MENU_ITEM GetItemFromString(string v) {
-            MENU_ITEM e;
+        public static ELEMENTS GetItemFromString(string v) {
+            ELEMENTS e;
             if (Enum.TryParse(v, out e)) {
                 return e;
             } else {
-                return MENU_ITEM.INVALID;
+                return ELEMENTS.INVALID;
             }
         }
 
@@ -396,50 +356,26 @@ namespace Circuit {
             }
         }
 
-        public void saveShortcuts() {
-            Console.WriteLine("saveShortcuts");
-            /* format: version;code1=ClassName;code2=ClassName;etc */
-            string str = "1";
-            for (int i = 0; i != Shortcuts.Length; i++) {
-                var sh = Shortcuts[i];
-                if (sh == MENU_ITEM.INVALID) {
-                    continue;
-                }
-                str += ";" + i + "=" + sh;
-            }
-            var stor = Storage.getLocalStorageIfSupported();
-            stor.setItem("shortcuts", str);
-        }
-
-        void addElementItem(ToolStripMenuItem menu, string title, MENU_ITEM item) {
-            var shortcut = DUMP_ID.INVALID;
+        void addElementItem(ToolStripMenuItem menu, string title, ELEMENTS item) {
             var elm = ConstructElement(item, 0, 0);
             if (elm != null) {
-                if (elm.NeedsShortcut) {
-                    shortcut = elm.Shortcut;
-                    Shortcuts[(int)elm.Shortcut] = item;
-                }
                 elm.Delete();
             }
             ToolStripMenuItem mi;
-            if (shortcut == DUMP_ID.INVALID) {
+            var sc = SHORTCUT.fromDumpId(elm.Shortcut);
+            if (sc.Key == Keys.None) {
                 mi = new ToolStripMenuItem();
             } else {
-                var sc = SHORTCUT.fromDumpId(elm.Shortcut);
-                if (sc.Key == Keys.None) {
-                    mi = new ToolStripMenuItem();
-                } else {
-                    mi = new ToolStripMenuItem() {
-                        ShowShortcutKeys = true,
-                        ShortcutKeys = sc.Key,
-                        ShortcutKeyDisplayString = sc.Name
-                    };
-                }
+                mi = new ToolStripMenuItem() {
+                    ShowShortcutKeys = true,
+                    ShortcutKeys = sc.Key,
+                    ShortcutKeyDisplayString = sc.Name
+                };
             }
             mi.Font = menuFont;
             mi.Text = title;
             mi.Click += new EventHandler((sender, e) => {
-                mSim.MenuPerformed(MENU_CATEGORY.MAIN, item);
+                mSim.Performed(item);
                 if (null != mi.OwnerItem) {
                     for (int i = 0; i < mMainMenuItems.Count; i++) {
                         if (mMainMenuItems[i].Checked) {
@@ -452,15 +388,10 @@ namespace Circuit {
                 }
             });
             mMainMenuItems.Add(mi);
-            mMainMenuItemNames.Add(item);
             menu.DropDownItems.Add(mi);
         }
 
         void addMenuItem(ToolStripMenuItem menu, string title, MENU_ITEM item, SHORTCUT shortCut) {
-            addMenuItem(menu, title, MENU_CATEGORY.KEY, item, shortCut);
-        }
-
-        void addMenuItem(ToolStripMenuItem menu, string title, MENU_CATEGORY cat, MENU_ITEM item, SHORTCUT shortCut) {
             ToolStripMenuItem mi;
             if (shortCut.Key == Keys.None) {
                 mi = new ToolStripMenuItem() {
@@ -477,26 +408,26 @@ namespace Circuit {
                 };
             }
             mi.Click += new EventHandler((sender, e) => {
-                mSim.MenuPerformed(cat, item);
+                mSim.Performed(item);
             });
             mMainMenuItems.Add(mi);
-            mMainMenuItemNames.Add(item);
             menu.DropDownItems.Add(mi);
         }
 
-        public void composeMainMenu(MenuStrip mainMenuBar) {
+        public void ComposeMainMenu(MenuStrip mainMenuBar) {
             #region File
             var fileMenuBar = new ToolStripMenuItem();
             fileMenuBar.Text = "ファイル(F)";
             fileMenuBar.Font = menuFont;
             addMenuItem(fileMenuBar, "開く(O)", MENU_ITEM.OPEN_FILE, new SHORTCUT(Keys.O));
+            addMenuItem(fileMenuBar, "再読み込み(R)", MENU_ITEM.RECOVER, new SHORTCUT(Keys.None));
             fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addMenuItem(fileMenuBar, "上書き保存(S)", MENU_ITEM.SAVE_FILE, new SHORTCUT(Keys.S));
             addMenuItem(fileMenuBar, "名前を付けて保存(A)", MENU_ITEM.SAVE_FILE, new SHORTCUT(Keys.None));
             fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addMenuItem(fileMenuBar, "モジュールを作成(M)", MENU_ITEM.createsubcircuit, new SHORTCUT(Keys.None));
+            addMenuItem(fileMenuBar, "モジュールを作成(M)", MENU_ITEM.CREATE_MODULE, new SHORTCUT(Keys.None));
             fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addMenuItem(fileMenuBar, "印刷(P)", MENU_ITEM.print, new SHORTCUT(Keys.None));
+            addMenuItem(fileMenuBar, "印刷(P)", MENU_ITEM.PRINT, new SHORTCUT(Keys.None));
             mainMenuBar.Items.Add(fileMenuBar);
             #endregion
 
@@ -527,12 +458,13 @@ namespace Circuit {
             var basicMenuBar = new ToolStripMenuItem();
             basicMenuBar.Text = "基本(B)";
             basicMenuBar.Font = menuFont;
-            addElementItem(basicMenuBar, "配線", MENU_ITEM.WireElm);
-            addElementItem(basicMenuBar, "接地", MENU_ITEM.GroundElm);
+            addElementItem(basicMenuBar, "配線", ELEMENTS.WIRE);
+            addElementItem(basicMenuBar, "接地", ELEMENTS.GROUND);
             basicMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(basicMenuBar, "抵抗", MENU_ITEM.ResistorElm);
-            addElementItem(basicMenuBar, "コンデンサ", MENU_ITEM.CapacitorElm);
-            addElementItem(basicMenuBar, "コイル", MENU_ITEM.InductorElm);
+            addElementItem(basicMenuBar, "抵抗", ELEMENTS.RESISTOR);
+            addElementItem(basicMenuBar, "コンデンサ", ELEMENTS.CAPACITOR);
+            addElementItem(basicMenuBar, "コンデンサ(有極性)", ELEMENTS.CAPACITOR_POLER);
+            addElementItem(basicMenuBar, "コイル", ELEMENTS.INDUCTOR);
             mainMenuBar.Items.Add(new ToolStripSeparator());
             mainMenuBar.Items.Add(basicMenuBar);
             #endregion
@@ -541,21 +473,20 @@ namespace Circuit {
             var passMenuBar = new ToolStripMenuItem();
             passMenuBar.Text = "受動素子(P)";
             passMenuBar.Font = menuFont;
-            addElementItem(passMenuBar, "スイッチ", MENU_ITEM.SwitchElm);
-            addElementItem(passMenuBar, "プッシュスイッチ", MENU_ITEM.PushSwitchElm);
-            addElementItem(passMenuBar, "切り替えスイッチ", MENU_ITEM.Switch2Elm);
+            addElementItem(passMenuBar, "スイッチ", ELEMENTS.SWITCH);
+            addElementItem(passMenuBar, "プッシュスイッチ", ELEMENTS.SWITCH_PUSH);
+            addElementItem(passMenuBar, "切り替えスイッチ", ELEMENTS.SWITCH_TERM);
             passMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(passMenuBar, "可変抵抗", MENU_ITEM.PotElm);
-            addElementItem(passMenuBar, "コンデンサ(有極性)", MENU_ITEM.PolarCapacitorElm);
-            addElementItem(passMenuBar, "トランス", MENU_ITEM.TransformerElm);
-            //addMenuItem(passMenuBar, "Add Tapped Transformer", ITEM.TappedTransformerElm);
-            //addMenuItem(passMenuBar, "Add Transmission Line", ITEM.TransLineElm);
-            //addMenuItem(passMenuBar, "Add Relay", ITEM.RelayElm);
-            //addMenuItem(passMenuBar, "Add Memristor", ITEM.MemristorElm);
-            //addMenuItem(passMenuBar, "Add Spark Gap", ITEM.SparkGapElm);
-            //addMenuItem(passMenuBar, "Add Fuse", ITEM.FuseElm);
-            //addMenuItem(passMenuBar, "Add Custom Transformer", ITEM.CustomTransformerElm);
-            //addMenuItem(passMenuBar, "Add Crystal", ITEM.CrystalElm);
+            addElementItem(passMenuBar, "可変抵抗", ELEMENTS.POT);
+            addElementItem(passMenuBar, "トランス", ELEMENTS.TRANSFORMER);
+            //addMenuItem(passMenuBar, "Add Tapped Transformer", ELEMENTS.TappedTransformerElm);
+            //addMenuItem(passMenuBar, "Add Transmission Line", ELEMENTS.TransLineElm);
+            //addMenuItem(passMenuBar, "Add Relay", ELEMENTS.RelayElm);
+            //addMenuItem(passMenuBar, "Add Memristor", ELEMENTS.MemristorElm);
+            //addMenuItem(passMenuBar, "Add Spark Gap", ELEMENTS.SparkGapElm);
+            //addMenuItem(passMenuBar, "Add Fuse", ELEMENTS.FuseElm);
+            //addMenuItem(passMenuBar, "Add Custom Transformer", ELEMENTS.CustomTransformerElm);
+            //addMenuItem(passMenuBar, "Add Crystal", ELEMENTS.CrystalElm);
             mainMenuBar.Items.Add(passMenuBar);
             #endregion
 
@@ -563,32 +494,32 @@ namespace Circuit {
             var activeMenuBar = new ToolStripMenuItem();
             activeMenuBar.Text = "能動素子(A)";
             activeMenuBar.Font = menuFont;
-            addElementItem(activeMenuBar, "ダイオード", MENU_ITEM.DiodeElm);
-            addElementItem(activeMenuBar, "ツェナーダイオード", MENU_ITEM.ZenerElm);
-            addElementItem(activeMenuBar, "LED", MENU_ITEM.LEDElm);
+            addElementItem(activeMenuBar, "ダイオード", ELEMENTS.DIODE);
+            addElementItem(activeMenuBar, "ツェナーダイオード", ELEMENTS.ZENER);
+            addElementItem(activeMenuBar, "LED", ELEMENTS.LED);
             //addElementItem(activeMenuBar, "LED Array", MENU_ITEM.LEDArrayElm);
             activeMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(activeMenuBar, "NPNトランジスタ", MENU_ITEM.NTransistorElm);
-            addElementItem(activeMenuBar, "PNPトランジスタ", MENU_ITEM.PTransistorElm);
-            addElementItem(activeMenuBar, "Nch MOSトランジスタ", MENU_ITEM.NMosfetElm);
-            addElementItem(activeMenuBar, "Pch MOSトランジスタ", MENU_ITEM.PMosfetElm);
-            //addMenuItem(activeMenuBar, "Add JFET (N-Channel)", ITEM.NJfetElm);
-            //addMenuItem(activeMenuBar, "Add JFET (P-Channel)", ITEM.PJfetElm);
-            //addMenuItem(activeMenuBar, "Add SCR", ITEM.SCRElm);
-            //addMenuItem(activeMenuBar, "Add DIAC", ITEM.DiacElm);
-            //addMenuItem(activeMenuBar, "Add TRIAC", ITEM.TriacElm);
-            //addMenuItem(activeMenuBar, "Add Darlington Pair (NPN)", ITEM.NDarlingtonElm);
-            //addMenuItem(activeMenuBar, "Add Darlington Pair (PNP)", ITEM.PDarlingtonElm);
-            //addMenuItem(activeMenuBar, "Add Varactor/Varicap", ITEM.VaractorElm);
-            //addMenuItem(activeMenuBar, "Add Tunnel Diode", ITEM.TunnelDiodeElm);
-            //addMenuItem(activeMenuBar, "Add Triode", ITEM.TriodeElm);
-            ////addMenuItem(activeMenuBar, "Add Photoresistor", MENU_ITEM.PhotoResistorElm);
-            ////addMenuItem(activeMenuBar, "Add Thermistor", MENU_ITEM.ThermistorElm);
+            addElementItem(activeMenuBar, "NPNトランジスタ", ELEMENTS.TRANSISTOR_N);
+            addElementItem(activeMenuBar, "PNPトランジスタ", ELEMENTS.TRANSISTOR_P);
+            addElementItem(activeMenuBar, "Nch MOSトランジスタ", ELEMENTS.MOSFET_N);
+            addElementItem(activeMenuBar, "Pch MOSトランジスタ", ELEMENTS.MOSFET_P);
+            //addMenuItem(activeMenuBar, "Add JFET (N-Channel)", ELEMENTS.NJfetElm);
+            //addMenuItem(activeMenuBar, "Add JFET (P-Channel)", ELEMENTS.PJfetElm);
+            //addMenuItem(activeMenuBar, "Add SCR", ELEMENTS.SCRElm);
+            //addMenuItem(activeMenuBar, "Add DIAC", ELEMENTS.DiacElm);
+            //addMenuItem(activeMenuBar, "Add TRIAC", ELEMENTS.TriacElm);
+            //addMenuItem(activeMenuBar, "Add Darlington Pair (NPN)", ELEMENTS.NDarlingtonElm);
+            //addMenuItem(activeMenuBar, "Add Darlington Pair (PNP)", ELEMENTS.PDarlingtonElm);
+            //addMenuItem(activeMenuBar, "Add Varactor/Varicap", ELEMENTS.VaractorElm);
+            //addMenuItem(activeMenuBar, "Add Tunnel Diode", ELEMENTS.TunnelDiodeElm);
+            //addMenuItem(activeMenuBar, "Add Triode", ELEMENTS.TriodeElm);
+            ////addMenuItem(activeMenuBar, "Add Photoresistor", ELEMENTS.PhotoResistorElm);
+            ////addMenuItem(activeMenuBar, "Add Thermistor", ELEMENTS.ThermistorElm);
             activeMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(activeMenuBar, "オペアンプ(-側が上)", MENU_ITEM.OpAmpElm);
-            addElementItem(activeMenuBar, "オペアンプ(+側が上)", MENU_ITEM.OpAmpSwapElm);
+            addElementItem(activeMenuBar, "オペアンプ(-側が上)", ELEMENTS.OPAMP);
+            addElementItem(activeMenuBar, "オペアンプ(+側が上)", ELEMENTS.OPAMP_SWAP);
             activeMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(activeMenuBar, "フォトカプラ", MENU_ITEM.OptocouplerElm);
+            addElementItem(activeMenuBar, "フォトカプラ", ELEMENTS.OPTOCOUPLER);
             mainMenuBar.Items.Add(activeMenuBar);
             #endregion
 
@@ -596,21 +527,21 @@ namespace Circuit {
             var inputMenuBar = new ToolStripMenuItem();
             inputMenuBar.Text = "入力源(I)";
             inputMenuBar.Font = menuFont;
-            addElementItem(inputMenuBar, "直流電圧源(2端子)", MENU_ITEM.DCVoltageElm);
-            addElementItem(inputMenuBar, "交流電圧源(2端子)", MENU_ITEM.ACVoltageElm);
-            addElementItem(inputMenuBar, "定電流源", MENU_ITEM.CurrentElm);
+            addElementItem(inputMenuBar, "直流電圧源(2端子)", ELEMENTS.VOLTAGE_DC);
+            addElementItem(inputMenuBar, "交流電圧源(2端子)", ELEMENTS.VOLTAGE_AC);
+            addElementItem(inputMenuBar, "定電流源", ELEMENTS.CURRENT);
             inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(inputMenuBar, "直流電圧源(1端子)", MENU_ITEM.RailElm);
-            addElementItem(inputMenuBar, "交流電圧源(1端子)", MENU_ITEM.ACRailElm);
+            addElementItem(inputMenuBar, "直流電圧源(1端子)", ELEMENTS.RAIL_DC);
+            addElementItem(inputMenuBar, "交流電圧源(1端子)", ELEMENTS.RAIL_AC);
             inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(inputMenuBar, "クロック", MENU_ITEM.ClockElm);
-            addElementItem(inputMenuBar, "スイープ", MENU_ITEM.SweepElm);
-            addElementItem(inputMenuBar, "AM発信器", MENU_ITEM.AMElm);
-            addElementItem(inputMenuBar, "FM発信器", MENU_ITEM.FMElm);
-            //addMenuItem(inputMenuBar, "Add Square Wave Source (1-terminal)", ITEM.SquareRailElm);
-            //addMenuItem(inputMenuBar, "Add Antenna", ITEM.AntennaElm);
-            //addMenuItem(inputMenuBar, "Add Noise Generator", ITEM.NoiseElm);
-            //addMenuItem(inputMenuBar, "Add Audio Input", ITEM.AudioInputElm);
+            addElementItem(inputMenuBar, "クロック", ELEMENTS.CLOCK);
+            addElementItem(inputMenuBar, "スイープ", ELEMENTS.SWEEP);
+            addElementItem(inputMenuBar, "AM発信器", ELEMENTS.OSC_AM);
+            addElementItem(inputMenuBar, "FM発信器", ELEMENTS.OSC_FM);
+            //addMenuItem(inputMenuBar, "Add Square Wave Source (1-terminal)", ELEMENTS.SquareRailElm);
+            //addMenuItem(inputMenuBar, "Add Antenna", ELEMENTS.AntennaElm);
+            //addMenuItem(inputMenuBar, "Add Noise Generator", ELEMENTS.NoiseElm);
+            //addMenuItem(inputMenuBar, "Add Audio Input", ELEMENTS.AudioInputElm);
             mainMenuBar.Items.Add(inputMenuBar);
             #endregion
 
@@ -618,19 +549,20 @@ namespace Circuit {
             var outputMenuBar = new ToolStripMenuItem();
             outputMenuBar.Text = "計測器/出力(O)";
             outputMenuBar.Font = menuFont;
-            addElementItem(outputMenuBar, "電圧計", MENU_ITEM.ProbeElm);
-            addElementItem(outputMenuBar, "電流計", MENU_ITEM.AmmeterElm);
-            addElementItem(outputMenuBar, "音声ファイル出力", MENU_ITEM.AudioOutputElm);
-            //addElementItem(outputMenuBar, "Add Ohmmeter", MENU_ITEM.OhmMeterElm);
+            addElementItem(outputMenuBar, "出力ピン", ELEMENTS.OUTPUT);
+            outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(outputMenuBar, "電圧計", ELEMENTS.PROBE);
+            addElementItem(outputMenuBar, "電流計", ELEMENTS.AMMETER);
+            //addElementItem(outputMenuBar, "Add Ohmmeter", ELEMENTS.OhmMeterElm);
+            outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(outputMenuBar, "音声ファイル出力", ELEMENTS.OUTPUT_AUDIO);
+            //addElementItem(outputMenuBar, "Add Data Export", ELEMENTS.DataRecorderElm);
             //outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            //addElementItem(outputMenuBar, "Add Analog Output", MENU_ITEM.OutputElm);
-            //addElementItem(outputMenuBar, "Add Data Export", MENU_ITEM.DataRecorderElm);
-            //outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            //addElementItem(outputMenuBar, "Add Lamp", MENU_ITEM.LampElm);
-            //addElementItem(outputMenuBar, "Add Text", MENU_ITEM.TextElm);
-            //addElementItem(outputMenuBar, "Add Box", MENU_ITEM.BoxElm);
-            //addElementItem(outputMenuBar, "Add Test Point", MENU_ITEM.TestPointElm);
-            //addElementItem(outputMenuBar, "Add Stop Trigger", MENU_ITEM.StopTriggerElm);
+            //addElementItem(outputMenuBar, "Add Lamp", ELEMENTS.LampElm);
+            //addElementItem(outputMenuBar, "Add Text", ELEMENTS.TextElm);
+            //addElementItem(outputMenuBar, "Add Box", ELEMENTS.BoxElm);
+            //addElementItem(outputMenuBar, "Add Test Point", ELEMENTS.TestPointElm);
+            //addElementItem(outputMenuBar, "Add Stop Trigger", ELEMENTS.StopTriggerElm);
             mainMenuBar.Items.Add(outputMenuBar);
             #endregion
 
@@ -656,20 +588,20 @@ namespace Circuit {
             var gateMenuBar = new ToolStripMenuItem();
             gateMenuBar.Text = "論理回路(L)";
             gateMenuBar.Font = menuFont;
-            addElementItem(gateMenuBar, "AND", MENU_ITEM.AndGateElm);
-            addElementItem(gateMenuBar, "OR", MENU_ITEM.OrGateElm);
-            addElementItem(gateMenuBar, "XOR", MENU_ITEM.XorGateElm);
-            addElementItem(gateMenuBar, "NOT", MENU_ITEM.InverterElm);
-            addElementItem(gateMenuBar, "NAND", MENU_ITEM.NandGateElm);
-            addElementItem(gateMenuBar, "NOR", MENU_ITEM.NorGateElm);
-            addElementItem(gateMenuBar, "カスタムロジック", MENU_ITEM.CustomLogicElm);
+            addElementItem(gateMenuBar, "AND", ELEMENTS.AND_GATE);
+            addElementItem(gateMenuBar, "OR", ELEMENTS.OR_GATE);
+            addElementItem(gateMenuBar, "XOR", ELEMENTS.XOR_GATE);
+            addElementItem(gateMenuBar, "NOT", ELEMENTS.NOT_GATE);
+            addElementItem(gateMenuBar, "NAND", ELEMENTS.NAND_GATE);
+            addElementItem(gateMenuBar, "NOR", ELEMENTS.NOR_GATE);
+            addElementItem(gateMenuBar, "カスタムロジック", ELEMENTS.CUSTOM_LOGIC);
             gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(gateMenuBar, "入力", MENU_ITEM.LogicInputElm);
-            addElementItem(gateMenuBar, "出力", MENU_ITEM.LogicOutputElm);
+            addElementItem(gateMenuBar, "入力", ELEMENTS.LOGIC_INPUT);
+            addElementItem(gateMenuBar, "出力", ELEMENTS.LOGIC_OUTPUT);
             gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(gateMenuBar, "シュミットトリガ", MENU_ITEM.SchmittElm);
-            addElementItem(gateMenuBar, "シュミットトリガ(NOT)", MENU_ITEM.InvertingSchmittElm);
-            addElementItem(gateMenuBar, "3ステートバッファ", MENU_ITEM.TriStateElm);
+            addElementItem(gateMenuBar, "シュミットトリガ", ELEMENTS.SCHMITT);
+            addElementItem(gateMenuBar, "シュミットトリガ(NOT)", ELEMENTS.SCHMITT_INV);
+            addElementItem(gateMenuBar, "3ステートバッファ", ELEMENTS.TRISTATE);
             mainMenuBar.Items.Add(gateMenuBar);
             #endregion
 
@@ -710,270 +642,268 @@ namespace Circuit {
             #endregion
         }
 
-        public static CircuitElm ConstructElement(MENU_ITEM n, int x1, int y1) {
+        public static CircuitElm ConstructElement(ELEMENTS n, int x1, int y1) {
             switch (n) {
-            case MENU_ITEM.ScopeElm:
-                return new ScopeElm(x1, y1);
-
             #region Basic Element
-            case MENU_ITEM.WireElm:
+            case ELEMENTS.WIRE:
                 return new WireElm(x1, y1);
-            case MENU_ITEM.ResistorElm:
+            case ELEMENTS.RESISTOR:
                 return new ResistorElm(x1, y1);
-            case MENU_ITEM.CapacitorElm:
+            case ELEMENTS.CAPACITOR:
                 return new CapacitorElm(x1, y1);
-            case MENU_ITEM.InductorElm:
+            case ELEMENTS.INDUCTOR:
                 return new InductorElm(x1, y1);
-            case MENU_ITEM.GroundElm:
+            case ELEMENTS.GROUND:
                 return new GroundElm(x1, y1);
             #endregion
 
             #region Passive Components
-            case MENU_ITEM.SwitchElm:
+            case ELEMENTS.SWITCH:
                 return new SwitchElm(x1, y1);
-            case MENU_ITEM.PushSwitchElm:
+            case ELEMENTS.SWITCH_PUSH:
                 return new PushSwitchElm(x1, y1);
-            case MENU_ITEM.Switch2Elm:
+            case ELEMENTS.SWITCH_TERM:
                 return new Switch2Elm(x1, y1);
-            case MENU_ITEM.PotElm:
+            case ELEMENTS.POT:
                 return new PotElm(x1, y1);
-            case MENU_ITEM.PolarCapacitorElm:
+            case ELEMENTS.CAPACITOR_POLER:
                 return new PolarCapacitorElm(x1, y1);
-            case MENU_ITEM.TransformerElm:
+            case ELEMENTS.TRANSFORMER:
                 return new TransformerElm(x1, y1);
-            case MENU_ITEM.TappedTransformerElm:
+            case ELEMENTS.TappedTransformerElm:
                 return null; //(CircuitElm)new TappedTransformerElm(x1, y1);
-            case MENU_ITEM.TransLineElm:
+            case ELEMENTS.TransLineElm:
                 return null; //(CircuitElm)new TransLineElm(x1, y1);
-            case MENU_ITEM.RelayElm:
+            case ELEMENTS.RelayElm:
                 return null; //(CircuitElm)new RelayElm(x1, y1);
-            case MENU_ITEM.MemristorElm:
+            case ELEMENTS.MemristorElm:
                 return null; //(CircuitElm)new MemristorElm(x1, y1);
-            case MENU_ITEM.SparkGapElm:
+            case ELEMENTS.SparkGapElm:
                 return null; //(CircuitElm)new SparkGapElm(x1, y1);
-            case MENU_ITEM.FuseElm:
+            case ELEMENTS.FuseElm:
                 return null; //(CircuitElm)new FuseElm(x1, y1);
-            case MENU_ITEM.CustomTransformerElm:
+            case ELEMENTS.CustomTransformerElm:
                 return null; //(CircuitElm)new CustomTransformerElm(x1, y1);
-            case MENU_ITEM.CrystalElm:
+            case ELEMENTS.CrystalElm:
                 return null; //(CircuitElm)new CrystalElm(x1, y1);
             #endregion
 
             #region Active Components
-            case MENU_ITEM.DiodeElm:
+            case ELEMENTS.DIODE:
                 return new DiodeElm(x1, y1);
-            case MENU_ITEM.ZenerElm:
+            case ELEMENTS.ZENER:
                 return new ZenerElm(x1, y1);
-            case MENU_ITEM.LEDElm:
+            case ELEMENTS.LED:
                 return new LEDElm(x1, y1);
-            case MENU_ITEM.TransistorElm:
-            case MENU_ITEM.NTransistorElm:
+            case ELEMENTS.TRANSISTOR:
+            case ELEMENTS.TRANSISTOR_N:
                 return new NTransistorElm(x1, y1);
-            case MENU_ITEM.PTransistorElm:
+            case ELEMENTS.TRANSISTOR_P:
                 return new PTransistorElm(x1, y1);
-            case MENU_ITEM.MosfetElm:
-            case MENU_ITEM.NMosfetElm:
+            case ELEMENTS.MOSFET:
+            case ELEMENTS.MOSFET_N:
                 return new NMosfetElm(x1, y1);
-            case MENU_ITEM.PMosfetElm:
+            case ELEMENTS.MOSFET_P:
                 return new PMosfetElm(x1, y1);
-            case MENU_ITEM.JfetElm:
-            case MENU_ITEM.NJfetElm:
+            case ELEMENTS.JfetElm:
+            case ELEMENTS.NJfetElm:
                 return null; //(CircuitElm)new NJfetElm(x1, y1);
-            case MENU_ITEM.PJfetElm:
+            case ELEMENTS.PJfetElm:
                 return null; //(CircuitElm)new PJfetElm(x1, y1);
-            case MENU_ITEM.SCRElm:
+            case ELEMENTS.SCRElm:
                 return null; //(CircuitElm)new SCRElm(x1, y1);
-            case MENU_ITEM.DiacElm:
+            case ELEMENTS.DiacElm:
                 return null; //(CircuitElm)new DiacElm(x1, y1);
-            case MENU_ITEM.TriacElm:
+            case ELEMENTS.TriacElm:
                 return null; //(CircuitElm)new TriacElm(x1, y1);
-            case MENU_ITEM.DarlingtonElm:
-            case MENU_ITEM.NDarlingtonElm:
+            case ELEMENTS.DarlingtonElm:
+            case ELEMENTS.NDarlingtonElm:
                 return null; //(CircuitElm)new NDarlingtonElm(x1, y1);
-            case MENU_ITEM.PDarlingtonElm:
+            case ELEMENTS.PDarlingtonElm:
                 return null; //(CircuitElm)new PDarlingtonElm(x1, y1);
-            case MENU_ITEM.VaractorElm:
+            case ELEMENTS.VaractorElm:
                 return null; //(CircuitElm)new VaractorElm(x1, y1);
-            case MENU_ITEM.TunnelDiodeElm:
+            case ELEMENTS.TunnelDiodeElm:
                 return null; //(CircuitElm)new TunnelDiodeElm(x1, y1);
-            case MENU_ITEM.TriodeElm:
+            case ELEMENTS.TriodeElm:
                 return null; //(CircuitElm)new TriodeElm(x1, y1);
             #endregion
 
             #region Inputs and Sources
-            case MENU_ITEM.DCVoltageElm:
-            case MENU_ITEM.VoltageElm:
+            case ELEMENTS.VOLTAGE_DC:
                 return new DCVoltageElm(x1, y1);
-            case MENU_ITEM.ACVoltageElm:
+            case ELEMENTS.VOLTAGE_AC:
                 return new ACVoltageElm(x1, y1);
-            case MENU_ITEM.RailElm:
+            case ELEMENTS.RAIL_DC:
                 return new RailElm(x1, y1);
-            case MENU_ITEM.ACRailElm:
+            case ELEMENTS.RAIL_AC:
                 return new ACRailElm(x1, y1);
-            case MENU_ITEM.SquareRailElm:
+            case ELEMENTS.SquareRailElm:
                 return null; //(CircuitElm)new SquareRailElm(x1, y1);
-            case MENU_ITEM.ClockElm:
+            case ELEMENTS.CLOCK:
                 return new ClockElm(x1, y1);
-            case MENU_ITEM.SweepElm:
+            case ELEMENTS.SWEEP:
                 return new SweepElm(x1, y1);
-            case MENU_ITEM.AntennaElm:
+            case ELEMENTS.AntennaElm:
                 return null; //(CircuitElm)new AntennaElm(x1, y1);
-            case MENU_ITEM.AMElm:
+            case ELEMENTS.OSC_AM:
                 return new AMElm(x1, y1);
-            case MENU_ITEM.FMElm:
+            case ELEMENTS.OSC_FM:
                 return new FMElm(x1, y1);
-            case MENU_ITEM.CurrentElm:
+            case ELEMENTS.CURRENT:
                 return new CurrentElm(x1, y1);
-            case MENU_ITEM.NoiseElm:
+            case ELEMENTS.NoiseElm:
                 return null; //(CircuitElm)new NoiseElm(x1, y1);
-            case MENU_ITEM.AudioInputElm:
+            case ELEMENTS.AudioInputElm:
                 return null; //(CircuitElm)new AudioInputElm(x1, y1);
             #endregion
 
             #region Outputs and Labels
-            case MENU_ITEM.OutputElm:
+            case ELEMENTS.OUTPUT:
                 return new OutputElm(x1, y1);
-            case MENU_ITEM.LampElm:
-                return null; //(CircuitElm)new LampElm(x1, y1);
-            case MENU_ITEM.TextElm:
-                return null; //(CircuitElm)new TextElm(x1, y1);
-            case MENU_ITEM.BoxElm:
-                return null; //(CircuitElm)new BoxElm(x1, y1);
-            case MENU_ITEM.ProbeElm:
+            case ELEMENTS.PROBE:
                 return new ProbeElm(x1, y1);
-            case MENU_ITEM.OhmMeterElm:
-                return null; //(CircuitElm)new OhmMeterElm(x1, y1);
-            case MENU_ITEM.TestPointElm:
-                return null; //new TestPointElm(x1, y1);
-            case MENU_ITEM.AmmeterElm:
+            case ELEMENTS.AMMETER:
                 return new AmmeterElm(x1, y1);
-            case MENU_ITEM.DataRecorderElm:
+            case ELEMENTS.OhmMeterElm:
+                return null; //(CircuitElm)new OhmMeterElm(x1, y1);
+            case ELEMENTS.DataRecorderElm:
                 return null; //(CircuitElm)new DataRecorderElm(x1, y1);
-            case MENU_ITEM.AudioOutputElm:
+            case ELEMENTS.OUTPUT_AUDIO:
                 return new AudioOutputElm(x1, y1);
-            case MENU_ITEM.LEDArrayElm:
+            case ELEMENTS.LampElm:
+                return null; //(CircuitElm)new LampElm(x1, y1);
+            case ELEMENTS.TextElm:
+                return null; //(CircuitElm)new TextElm(x1, y1);
+            case ELEMENTS.BoxElm:
+                return null; //(CircuitElm)new BoxElm(x1, y1);
+            case ELEMENTS.TestPointElm:
+                return null; //new TestPointElm(x1, y1);
+            case ELEMENTS.LEDArrayElm:
                 return null; //(CircuitElm)new LEDArrayElm(x1, y1);
-            case MENU_ITEM.StopTriggerElm:
+            case ELEMENTS.StopTriggerElm:
                 return null; //(CircuitElm)new StopTriggerElm(x1, y1);
             #endregion
 
             #region Active Building Blocks
-            case MENU_ITEM.OpAmpElm:
+            case ELEMENTS.OPAMP:
                 return new OpAmpElm(x1, y1);
-            case MENU_ITEM.OpAmpSwapElm:
+            case ELEMENTS.OPAMP_SWAP:
                 return new OpAmpSwapElm(x1, y1);
-            case MENU_ITEM.OpAmpRealElm:
+            case ELEMENTS.OpAmpRealElm:
                 return null; //(CircuitElm)new OpAmpRealElm(x1, y1);
-            case MENU_ITEM.AnalogSwitchElm:
+            case ELEMENTS.AnalogSwitchElm:
                 return new AnalogSwitchElm(x1, y1);
-            case MENU_ITEM.AnalogSwitch2Elm:
+            case ELEMENTS.AnalogSwitch2Elm:
                 return null; //(CircuitElm)new AnalogSwitch2Elm(x1, y1);
-            case MENU_ITEM.SchmittElm:
+            case ELEMENTS.SCHMITT:
                 return new SchmittElm(x1, y1);
-            case MENU_ITEM.InvertingSchmittElm:
+            case ELEMENTS.SCHMITT_INV:
                 return new InvertingSchmittElm(x1, y1);
-            case MENU_ITEM.CC2Elm:
+            case ELEMENTS.CC2Elm:
                 return null; //(CircuitElm)new CC2Elm(x1, y1);
-            case MENU_ITEM.CC2NegElm:
+            case ELEMENTS.CC2NegElm:
                 return null; //(CircuitElm)new CC2NegElm(x1, y1);
-            case MENU_ITEM.ComparatorElm:
+            case ELEMENTS.ComparatorElm:
                 return null; //new ComparatorElm(x1, y1);
-            case MENU_ITEM.ComparatorSwapElm:
+            case ELEMENTS.ComparatorSwapElm:
                 return null; //new ComparatorSwapElm(x1, y1);
-            case MENU_ITEM.OTAElm:
+            case ELEMENTS.OTAElm:
                 return null; //(CircuitElm)new OTAElm(x1, y1);
-            case MENU_ITEM.VCVSElm:
+            case ELEMENTS.VCVSElm:
                 return null; //(CircuitElm)new VCVSElm(x1, y1);
-            case MENU_ITEM.VCCSElm:
+            case ELEMENTS.VCCSElm:
                 return new VCCSElm(x1, y1);
-            case MENU_ITEM.CCVSElm:
+            case ELEMENTS.CCVSElm:
                 return null; //(CircuitElm)new CCVSElm(x1, y1);
-            case MENU_ITEM.CCCSElm:
+            case ELEMENTS.CCCSElm:
                 return new CCCSElm(x1, y1);
-            case MENU_ITEM.OptocouplerElm:
+            case ELEMENTS.OPTOCOUPLER:
                 return new OptocouplerElm(x1, y1);
-            case MENU_ITEM.CustomCompositeElm:
+            case ELEMENTS.CustomCompositeElm:
                 return new CustomCompositeElm(x1, y1);
             #endregion
 
             #region Logic Gates
-            case MENU_ITEM.LogicInputElm:
+            case ELEMENTS.LOGIC_INPUT:
                 return new LogicInputElm(x1, y1);
-            case MENU_ITEM.LogicOutputElm:
+            case ELEMENTS.LOGIC_OUTPUT:
                 return new LogicOutputElm(x1, y1);
-            case MENU_ITEM.TriStateElm:
+            case ELEMENTS.TRISTATE:
                 return new TriStateElm(x1, y1);
-            case MENU_ITEM.InverterElm:
+            case ELEMENTS.NOT_GATE:
                 return new InverterElm(x1, y1);
-            case MENU_ITEM.AndGateElm:
+            case ELEMENTS.AND_GATE:
                 return new AndGateElm(x1, y1);
-            case MENU_ITEM.NandGateElm:
+            case ELEMENTS.NAND_GATE:
                 return new NandGateElm(x1, y1);
-            case MENU_ITEM.OrGateElm:
+            case ELEMENTS.OR_GATE:
                 return new OrGateElm(x1, y1);
-            case MENU_ITEM.NorGateElm:
+            case ELEMENTS.NOR_GATE:
                 return new NorGateElm(x1, y1);
-            case MENU_ITEM.XorGateElm:
+            case ELEMENTS.XOR_GATE:
                 return new XorGateElm(x1, y1);
             #endregion
 
             #region Digital Chips
-            case MENU_ITEM.DFlipFlopElm:
+            case ELEMENTS.DFlipFlopElm:
                 return null; //(CircuitElm)new DFlipFlopElm(x1, y1);
-            case MENU_ITEM.JKFlipFlopElm:
+            case ELEMENTS.JKFlipFlopElm:
                 return null; //(CircuitElm)new JKFlipFlopElm(x1, y1);
-            case MENU_ITEM.TFlipFlopElm:
+            case ELEMENTS.TFlipFlopElm:
                 return null; //(CircuitElm)new TFlipFlopElm(x1, y1);
-            case MENU_ITEM.SevenSegElm:
+            case ELEMENTS.SevenSegElm:
                 return null; //(CircuitElm)new SevenSegElm(x1, y1);
-            case MENU_ITEM.SevenSegDecoderElm:
+            case ELEMENTS.SevenSegDecoderElm:
                 return null; //(CircuitElm)new SevenSegDecoderElm(x1, y1);
-            case MENU_ITEM.MultiplexerElm:
+            case ELEMENTS.MultiplexerElm:
                 return null; //(CircuitElm)new MultiplexerElm(x1, y1);
-            case MENU_ITEM.DeMultiplexerElm:
+            case ELEMENTS.DeMultiplexerElm:
                 return null; //(CircuitElm)new DeMultiplexerElm(x1, y1);
-            case MENU_ITEM.SipoShiftElm:
+            case ELEMENTS.SipoShiftElm:
                 return null; //(CircuitElm)new SipoShiftElm(x1, y1);
-            case MENU_ITEM.PisoShiftElm:
+            case ELEMENTS.PisoShiftElm:
                 return null; //(CircuitElm)new PisoShiftElm(x1, y1);
-            case MENU_ITEM.CounterElm:
+            case ELEMENTS.CounterElm:
                 return null; //(CircuitElm)new CounterElm(x1, y1);
             /* if you take out DecadeElm, it will break the menus and people's saved shortcuts */
             /* if you take out RingCounterElm, it will break subcircuits */
-            case MENU_ITEM.DecadeElm:
-            case MENU_ITEM.RingCounterElm:
+            case ELEMENTS.DecadeElm:
+            case ELEMENTS.RingCounterElm:
                 return new RingCounterElm(x1, y1);
-            case MENU_ITEM.LatchElm:
+            case ELEMENTS.LatchElm:
                 return null; //(CircuitElm)new LatchElm(x1, y1);
-            case MENU_ITEM.SeqGenElm:
+            case ELEMENTS.SeqGenElm:
                 return null; //(CircuitElm)new SeqGenElm(x1, y1);
-            case MENU_ITEM.FullAdderElm:
+            case ELEMENTS.FullAdderElm:
                 return null; //(CircuitElm)new FullAdderElm(x1, y1);
-            case MENU_ITEM.HalfAdderElm:
+            case ELEMENTS.HalfAdderElm:
                 return null; //(CircuitElm)new HalfAdderElm(x1, y1);
             /* if you take out UserDefinedLogicElm, it will break people's saved shortcuts */
-            case MENU_ITEM.CustomLogicElm:
-            case MENU_ITEM.UserDefinedLogicElm:
+            case ELEMENTS.CUSTOM_LOGIC:
+            case ELEMENTS.UserDefinedLogicElm:
                 return new CustomLogicElm(x1, y1);
-            case MENU_ITEM.SRAMElm:
+            case ELEMENTS.SRAMElm:
                 return null; //(CircuitElm)new SRAMElm(x1, y1);
             #endregion
 
             #region Analog and Hybrid Chips
-            case MENU_ITEM.TimerElm:
+            case ELEMENTS.TimerElm:
                 return null; //(CircuitElm)new TimerElm(x1, y1);
-            case MENU_ITEM.PhaseCompElm:
+            case ELEMENTS.PhaseCompElm:
                 return null; //(CircuitElm)new PhaseCompElm(x1, y1);
-            case MENU_ITEM.DACElm:
+            case ELEMENTS.DACElm:
                 return null; //(CircuitElm)new DACElm(x1, y1);
-            case MENU_ITEM.ADCElm:
+            case ELEMENTS.ADCElm:
                 return null; //(CircuitElm)new ADCElm(x1, y1);
-            case MENU_ITEM.VCOElm:
+            case ELEMENTS.VCOElm:
                 return null; //(CircuitElm)new VCOElm(x1, y1);
-            case MENU_ITEM.MonostableElm:
+            case ELEMENTS.MonostableElm:
                 return null; //(CircuitElm)new MonostableElm(x1, y1);
             #endregion
 
+            case ELEMENTS.SCOPE:
+                return new ScopeElm(x1, y1);
             default:
                 return null;
             }

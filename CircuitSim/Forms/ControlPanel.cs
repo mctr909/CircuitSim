@@ -200,7 +200,7 @@ namespace Circuit {
             TrbCurrent.Value = 50;
         }
 
-        public static void SetiFrameHeight() {
+        public static void SetSliderPanelHeight() {
             if (mSliderPanel == null) {
                 return;
             }
@@ -227,7 +227,7 @@ namespace Circuit {
             }
             ctrl.Top = ofsY;
             mSliderPanel.Controls.Add(ctrl);
-            SetiFrameHeight();
+            SetSliderPanelHeight();
         }
 
         public static void RemoveSlider(Control ctrl) {
@@ -242,7 +242,7 @@ namespace Circuit {
                 ofsY += mSliderPanel.Controls[i].Height + 4;
             }
             mSliderPanel.ResumeLayout(false);
-            SetiFrameHeight();
+            SetSliderPanelHeight();
         }
 
         static void setOptionInStorage(string key, bool val) {

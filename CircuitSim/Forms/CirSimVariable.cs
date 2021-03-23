@@ -108,7 +108,7 @@ namespace Circuit {
         public Scope[] mScopes { get; set; }
         int[] mScopeColCount;
 
-        MENU_ITEM mMouseMode = MENU_ITEM.SELECT;
+        ELEMENTS mMouseMode = ELEMENTS.INVALID;
         MouseButtons mMouseButton = MouseButtons.None;
         DateTime mLastMouseMove = DateTime.Now;
         bool mouseDragging = false;

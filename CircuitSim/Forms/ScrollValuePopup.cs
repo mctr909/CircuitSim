@@ -5,72 +5,78 @@ using Circuit.Elements;
 
 namespace Circuit {
     class ScrollValuePopup : Form {
-        static readonly double[] e24 = { 1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2.0, 2.2, 2.4, 2.7, 3.0,
-            3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2, 6.8, 7.5, 8.2, 9.1 };
-    
-        const int labMax = 5;
-        double[] values;
-        int minpow = 0;
-        int maxpow = 1;
-        int nvalues;
-        int currentidx;
-        int lastidx;
-        Panel vp;
-        CircuitElm myElm;
-        Label labels;
-        TrackBar trbValue;
-        int deltaY;
-        string name;
-        ElementInfo inf;
-        CirSim sim;
-        string unit;
+        static readonly double[] E24 = {
+            1.0, 1.1, 1.2, 1.3,
+            1.5, 1.6, 1.8, 2.0,
+            2.2, 2.4, 2.7, 3.0,
+            3.3, 3.6, 3.9, 4.3,
+            4.7, 5.1, 5.6, 6.2,
+            6.8, 7.5, 8.2, 9.1
+        };
+
+        double[] mValues;
+        int mMinPow = 0;
+        int mMaxPow = 1;
+        int mNValues;
+        int mCurrentIdx;
+        int mLastIdx;
+
+        CirSim mSim;
+        CircuitElm mMyElm;
+        ElementInfo mInfo;
+        Panel mPnlV;
+        Label mLabels;
+        TrackBar mTrbValue;
+        int mDeltaY;
+        string mName;
+        string mUnit;
 
         public ScrollValuePopup(int dy, CircuitElm e, CirSim s) : base() {
-            myElm = e;
-            deltaY = 0;
-            sim = s;
-            sim.PushUndo();
+            mMyElm = e;
+            mDeltaY = 0;
+            mSim = s;
+            mSim.PushUndo();
             setupValues();
 
-            Text = name;
+            Text = mName;
 
-            vp = new Panel();
+            mPnlV = new Panel();
             {
-                vp.Left = 4;
-                vp.Top = 4;
+                mPnlV.Left = 4;
+                mPnlV.Top = 4;
                 int ofsY = 0;
                 /* label */
-                labels = new Label() { Text = "---" };
-                labels.AutoSize = true;
-                labels.Left = 4;
-                labels.Top = ofsY;
-                vp.Controls.Add(labels);
-                ofsY += labels.Height;
+                mLabels = new Label() { Text = "---" };
+                mLabels.AutoSize = true;
+                mLabels.Left = 4;
+                mLabels.Top = ofsY;
+                mPnlV.Controls.Add(mLabels);
+                ofsY += mLabels.Height;
                 /* trbValue */
-                trbValue = new TrackBar() {
+                mTrbValue = new TrackBar() {
                     Minimum = 0,
-                    Maximum = nvalues - 1,
+                    Maximum = mNValues - 1,
                     SmallChange = 1,
                     LargeChange = 1,
-                    TickFrequency = nvalues / 24,
+                    TickFrequency = mNValues / 24,
                     TickStyle = TickStyle.TopLeft,
                     Width = 300,
                     Height = 21,
                     Left = 4,
                     Top = ofsY
                 };
-                ofsY += trbValue.Height * 2 / 3;
-                trbValue.ValueChanged += new EventHandler((sender, ev) => { setElmValue((TrackBar)sender); });
-                vp.Width = trbValue.Width + 8;
-                vp.Height = ofsY + 4;
-                vp.Controls.Add(trbValue);
+                ofsY += mTrbValue.Height * 2 / 3;
+                mTrbValue.ValueChanged += new EventHandler((sender, ev) => { setElmValue((TrackBar)sender); });
+                mPnlV.Width = mTrbValue.Width + 8;
+                mPnlV.Height = ofsY + 4;
+                mPnlV.Controls.Add(mTrbValue);
                 /* */
-                Controls.Add(vp);
+                Controls.Add(mPnlV);
             }
 
             doDeltaY(dy);
-            Width = vp.Width + 24;
-            Height = vp.Height + 48;
+            Width = mPnlV.Width + 24;
+            Height = mPnlV.Height + 48;
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
         }
 
@@ -82,51 +88,60 @@ namespace Circuit {
             Visible = true;
         }
 
+        public void Close(bool keepChanges) {
+            if (!keepChanges) {
+                setElmValue(mCurrentIdx);
+            } else {
+                setElmValue();
+            }
+            Close();
+        }
+
         void setupValues() {
-            if (myElm is ResistorElm) {
-                minpow = 0;
-                maxpow = 6;
-                unit = "Ω";
+            if (mMyElm is ResistorElm) {
+                mMinPow = 0;
+                mMaxPow = 6;
+                mUnit = "Ω";
             }
-            if (myElm is CapacitorElm) {
-                minpow = -11;
-                maxpow = -3;
-                unit = "F";
+            if (mMyElm is CapacitorElm) {
+                mMinPow = -11;
+                mMaxPow = -3;
+                mUnit = "F";
             }
-            if (myElm is InductorElm) {
-                minpow = -6;
-                maxpow = 0;
-                unit = "H";
+            if (mMyElm is InductorElm) {
+                mMinPow = -6;
+                mMaxPow = 0;
+                mUnit = "H";
             }
-            values = new double[2 + (maxpow - minpow) * 24];
+            mValues = new double[2 + (mMaxPow - mMinPow) * 24];
             int ptr = 0;
-            for (int i = minpow; i <= maxpow; i++) {
-                for (int j = 0; j < ((i != maxpow) ? 24 : 1); j++, ptr++) {
-                    values[ptr] = Math.Pow(10.0, i) * e24[j];
+            for (int i = mMinPow; i <= mMaxPow; i++) {
+                for (int j = 0; j < ((i != mMaxPow) ? 24 : 1); j++, ptr++) {
+                    mValues[ptr] = Math.Pow(10.0, i) * E24[j];
                 }
             }
-            nvalues = ptr;
-            values[nvalues] = 1E99;
-            inf = myElm.GetElementInfo(0);
-            double currentvalue = inf.Value;
-            for (int i = 0; i < nvalues + 1; i++) {
-                if (Utils.ShortUnitText(currentvalue, "") == Utils.ShortUnitText(values[i], "")) { /* match to an existing value */
-                    values[i] = currentvalue; /* Just in case it isn't 100% identical */
-                    currentidx = i;
+            mNValues = ptr;
+            mValues[mNValues] = 1E99;
+            mInfo = mMyElm.GetElementInfo(0);
+            double currentvalue = mInfo.Value;
+            for (int i = 0; i < mNValues + 1; i++) {
+                if (Utils.ShortUnitText(currentvalue, "") == Utils.ShortUnitText(mValues[i], "")) { /* match to an existing value */
+                    mValues[i] = currentvalue; /* Just in case it isn't 100% identical */
+                    mCurrentIdx = i;
                     break;
                 }
-                if (currentvalue < values[i]) { /* overshot - need to insert value */
-                    currentidx = i;
-                    for (int j = nvalues - 1; j >= i; j--) {
-                        values[j + 1] = values[j];
+                if (currentvalue < mValues[i]) { /* overshot - need to insert value */
+                    mCurrentIdx = i;
+                    for (int j = mNValues - 1; j >= i; j--) {
+                        mValues[j + 1] = mValues[j];
                     }
-                    values[i] = currentvalue;
-                    nvalues++;
+                    mValues[i] = currentvalue;
+                    mNValues++;
                     break;
                 }
             }
-            name = inf.Name;
-            lastidx = currentidx;
+            mName = mInfo.Name;
+            mLastIdx = mCurrentIdx;
             /*for (int i = 0; i < nvalues; i++) {
                 Console.WriteLine("i=" + i + " values=" + values[i] + " current? " + (i == currentidx));
             }*/
@@ -134,72 +149,62 @@ namespace Circuit {
 
         void setupLabels() {
             int thissel = getSelIdx();
-            labels.Text = Utils.ShortUnitText(values[thissel], unit);
-            trbValue.Value = thissel;
+            mLabels.Text = Utils.ShortUnitText(mValues[thissel], mUnit);
+            mTrbValue.Value = thissel;
         }
 
-        public void close(bool keepChanges) {
-            if (!keepChanges) {
-                setElmValue(currentidx);
-            } else {
-                setElmValue();
-            }
-            Close();
-        }
-
-        public void onMouseDown(MouseEventArgs e) {
+        void onMouseDown(MouseEventArgs e) {
             if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Middle) {
-                close(true);
+                Close(true);
             } else {
-                close(false);
+                Close(false);
             }
         }
 
-        public void doDeltaY(int dy) {
-            deltaY += dy;
-            if (currentidx + deltaY / 3 < 0) {
-                deltaY = -3 * currentidx;
+        void doDeltaY(int dy) {
+            mDeltaY += dy;
+            if (mCurrentIdx + mDeltaY / 3 < 0) {
+                mDeltaY = -3 * mCurrentIdx;
             }
-            if (currentidx + deltaY / 3 >= nvalues) {
-                deltaY = (nvalues - currentidx - 1) * 3;
+            if (mCurrentIdx + mDeltaY / 3 >= mNValues) {
+                mDeltaY = (mNValues - mCurrentIdx - 1) * 3;
             }
             setElmValue();
             setupLabels();
         }
 
-        public void setElmValue() {
+        void setElmValue() {
             int idx = getSelIdx();
             setElmValue(idx);
         }
 
-        public void setElmValue(TrackBar tr) {
-            lastidx = currentidx;
-            currentidx = tr.Value;
+        void setElmValue(TrackBar tr) {
+            mLastIdx = mCurrentIdx;
+            mCurrentIdx = tr.Value;
             int thissel = getSelIdx();
-            inf.Value = values[thissel];
-            myElm.SetElementValue(0, inf);
-            sim.NeedAnalyze();
-            labels.Text = Utils.ShortUnitText(values[thissel], unit);
+            mInfo.Value = mValues[thissel];
+            mMyElm.SetElementValue(0, mInfo);
+            mSim.NeedAnalyze();
+            mLabels.Text = Utils.ShortUnitText(mValues[thissel], mUnit);
         }
 
-        public void setElmValue(int i) {
-            if (i != lastidx) {
-                trbValue.Value = i;
-                lastidx = i;
-                inf.Value = values[i];
-                myElm.SetElementValue(0, inf);
-                sim.NeedAnalyze();
+        void setElmValue(int i) {
+            if (i != mLastIdx) {
+                mTrbValue.Value = i;
+                mLastIdx = i;
+                mInfo.Value = mValues[i];
+                mMyElm.SetElementValue(0, mInfo);
+                mSim.NeedAnalyze();
             }
         }
 
-        public int getSelIdx() {
-            int r;
-            r = currentidx + deltaY / 3;
+        int getSelIdx() {
+            var r = mCurrentIdx + mDeltaY / 3;
             if (r < 0) {
                 r = 0;
             }
-            if (r >= nvalues) {
-                r = nvalues - 1;
+            if (r >= mNValues) {
+                r = mNValues - 1;
             }
             return r;
         }

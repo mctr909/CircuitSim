@@ -47,8 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CirSimMain.cs" />
-    <Compile Include="CirSimVariable.cs" />
+    <Compile Include="Forms\CirSimMain.cs" />
+    <Compile Include="Forms\CirSimVariable.cs" />
     <Compile Include="Common\CustomGraphics.cs" />
     <Compile Include="Common\Scope.cs" />
     <Compile Include="Common\Utils.cs" />
@@ -123,7 +123,7 @@
     <Compile Include="Elements\AudioOutputElm.cs" />
     <Compile Include="Elements\CapacitorElm.cs" />
     <Compile Include="Common\CircuitElm.cs" />
-    <Compile Include="CirSimForm.cs" />
+    <Compile Include="Forms\CirSimForm.cs" />
     <Compile Include="Forms\ElementInfoDialog.cs">
       <SubType>Form</SubType>
     </Compile>

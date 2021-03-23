@@ -3,16 +3,17 @@ using System.Windows.Forms;
 
 namespace Circuit {
     class InputDialog : Form {
-        TextBox txb;
-        public string Value;
+        public string Value { get; private set; }
 
-        public InputDialog(string title, string defaultValue = "") {
+        TextBox mTxt;
+
+        public InputDialog(string title = "", string defaultValue = "") {
             Text = title;
-            txb = new TextBox() { Width = 200, Text = defaultValue };
-            Controls.Add(txb);
+            mTxt = new TextBox() { Width = 200, Text = defaultValue };
+            Controls.Add(mTxt);
             var btn = new Button() { Text = "確定" };
             btn.Click += new EventHandler((s, e) => {
-                Value = txb.Text;
+                Value = mTxt.Text;
                 Close();
             });
             Controls.Add(btn);

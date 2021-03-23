@@ -2,7 +2,10 @@
 
 namespace Circuit.Elements {
     class OptocouplerElm : CompositeElm {
-        private static string modelString = "DiodeElm 6 1\rCCCSElm 1 2 3 4\rNTransistorElm 3 4 5";
+        private static string modelString
+            = ELEMENTS.DIODE + " 6 1\r"
+            + ELEMENTS.CCCSElm +" 1 2 3 4\r"
+            + ELEMENTS.TRANSISTOR_N + " 3 4 5";
         private static int[] modelExternalNodes = { 6, 2, 4, 5 };
 
         int csize;

@@ -294,7 +294,7 @@ namespace Circuit {
                 if (rbVce.Checked) scope.ShowingValue(Scope.VAL.VCE);
             }
             lblManualScale.Text = "Scale (Max Value)" + " (V)";
-            txtManualScale.Text = ElementInfoDialog.unitString(null, scope.ScaleValue);
+            txtManualScale.Text = ElementInfoDialog.UnitString(null, scope.ScaleValue);
             chkManualScale.Checked = scope.LockScale;
             txtManualScale.Enabled = scope.LockScale;
             chkLogSpectrum.Checked = scope.LogSpectrum;
@@ -316,7 +316,7 @@ namespace Circuit {
             }
             scope.Text = label;
             try {
-                double d = ElementInfoDialog.parseUnits(txtManualScale.Text);
+                double d = ElementInfoDialog.ParseUnits(txtManualScale.Text);
                 scope.ScaleValue = d;
             } catch { }
         }

@@ -155,8 +155,8 @@ namespace Circuit.Elements {
                     return;
                 }
                 var dlg = new EditCompositeModelDialog();
-                dlg.setModel(model);
-                dlg.createDialog();
+                dlg.SetModel(model);
+                dlg.CreateDialog();
                 CirSim.DialogShowing = dlg;
                 dlg.Show();
                 return;
