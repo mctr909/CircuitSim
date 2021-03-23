@@ -1631,63 +1631,18 @@ namespace Circuit {
                 if (mScopes[ScopeSelected].CanMenu) {
                     mMenuScope = ScopeSelected;
                     mMenuPlot = mScopes[ScopeSelected].SelectedPlot;
-                    mScopePopupMenu.DoScopePopupChecks(false);
-                    mPopupMenu = new ContextMenuStrip();
-                    mPopupMenu.Items.AddRange(mScopePopupMenu.MenuBar);
                     var y = Math.Max(0, Math.Min(mMenuClientY, mBmp.Height - 160));
-                    mPopupMenu.Show();
-                    mPopupMenu.Location = new Point(mMenuClientX, y);
+                    mPopupMenu = mScopePopupMenu.Show(mMenuClientX, y, false);
                 }
             } else if (mMouseElm != null) {
                 if (!(mMouseElm is ScopeElm)) {
-                    mElementMenu.Scope.Enabled = mMouseElm.CanViewInScope;
-                    mElementMenu.FloatScope.Enabled = mMouseElm.CanViewInScope;
-                    mElementMenu.Edit.Enabled = mMouseElm.GetElementInfo(0) != null;
-                    mElementMenu.Flip.Enabled = 2 == mMouseElm.PostCount;
-                    mElementMenu.Split.Enabled = canSplit(mMouseElm);
-                    mElementMenu.Slider.Enabled = sliderItemEnabled(mMouseElm);
-                    mPopupMenu = new ContextMenuStrip();
-                    mPopupMenu.Items.AddRange(mElementMenu.MenuBar);
-                    mPopupMenu.Show();
-                    mPopupMenu.Location = new Point(mMenuClientX, mMenuClientY);
+                    mPopupMenu = mElementMenu.Show(mMenuClientX, mMenuClientY, mMouseElm);
                 } else {
                     var s = (ScopeElm)mMouseElm;
                     if (s.elmScope.CanMenu) {
                         mMenuPlot = s.elmScope.SelectedPlot;
-                        mScopePopupMenu.DoScopePopupChecks(true);
-                        mPopupMenu = new ContextMenuStrip();
-                        mPopupMenu.Items.AddRange(mScopePopupMenu.MenuBar);
-                        mPopupMenu.Show();
-                        mPopupMenu.Location = new Point(mMenuClientX, mMenuClientY);
+                        mPopupMenu = mScopePopupMenu.Show(mMenuClientX, mMenuClientY, true);
                     }
-                }
-            }
-        }
-
-        bool canSplit(CircuitElm ce) {
-            if (!(ce is WireElm)) {
-                return false;
-            }
-            var we = (WireElm)ce;
-            if (we.X1 == we.X2 || we.Y1 == we.Y2) {
-                return true;
-            }
-            return false;
-        }
-
-        /* check if the user can create sliders for this element */
-        bool sliderItemEnabled(CircuitElm elm) {
-            /* prevent confusion */
-            if (elm is PotElm) {
-                return false;
-            }
-            for (int i = 0; ; i++) {
-                var ei = elm.GetElementInfo(i);
-                if (ei == null) {
-                    return false;
-                }
-                if (ei.CanCreateAdjustable()) {
-                    return true;
                 }
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit {
@@ -19,73 +20,78 @@ namespace Circuit {
     }
 
     class ScopePopupMenu {
-        CirSim mSim;
-        List<ToolStripMenuItem> m;
-        ToolStripMenuItem removeScopeItem;
-        ToolStripMenuItem maxScaleItem;
-        ToolStripMenuItem stackItem;
-        ToolStripMenuItem unstackItem;
-        ToolStripMenuItem combineItem;
-        ToolStripMenuItem removePlotItem;
-        ToolStripMenuItem resetItem;
-        ToolStripMenuItem propertiesItem;
-        ToolStripMenuItem dockItem;
-        ToolStripMenuItem undockItem;
-
-        public ToolStripMenuItem[] MenuBar { get { return m.ToArray(); } }
+        List<ToolStripMenuItem> mMenuItems;
+        ToolStripMenuItem mRemoveScope;
+        ToolStripMenuItem mMaxScale;
+        ToolStripMenuItem mStack;
+        ToolStripMenuItem mUnstack;
+        ToolStripMenuItem mCombine;
+        ToolStripMenuItem mRemovePlot;
+        ToolStripMenuItem mReset;
+        ToolStripMenuItem mDock;
+        ToolStripMenuItem mUndock;
+        ToolStripMenuItem mProperties;
 
         public ScopePopupMenu(CirSim sim) {
-            mSim = sim;
-            m = new List<ToolStripMenuItem>();
+            mMenuItems = new List<ToolStripMenuItem>();
             /* */
-            m.Add(removeScopeItem = new ToolStripMenuItem() { Text = "Remove Scope" });
-            removeScopeItem.Click += new EventHandler((s, e) => {
-                mSim.Performed(SCOPE_MENU_ITEM.REMOVE_SCOPE);
+            mMenuItems.Add(mRemoveScope = new ToolStripMenuItem() { Text = "Remove Scope" });
+            mRemoveScope.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.REMOVE_SCOPE);
             });
-            m.Add(dockItem = new ToolStripMenuItem() { Text = "Dock Scope" });
-            dockItem.Click += new EventHandler((s, e) => {
-                mSim.Performed(SCOPE_MENU_ITEM.DOCK);
+            mMenuItems.Add(mDock = new ToolStripMenuItem() { Text = "Dock Scope" });
+            mDock.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.DOCK);
             });
-            m.Add(undockItem = new ToolStripMenuItem() { Text = "Undock Scope" });
-            undockItem.Click += new EventHandler((s, e) => {
-                mSim.Performed(SCOPE_MENU_ITEM.UNDOCK);
+            mMenuItems.Add(mUndock = new ToolStripMenuItem() { Text = "Undock Scope" });
+            mUndock.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.UNDOCK);
             });
-            m.Add(maxScaleItem = new ToolStripMenuItem() { Text = "Max Scale" });
-            maxScaleItem.Click += new EventHandler((s, e) => {
-                mSim.Performed(SCOPE_MENU_ITEM.MAX_SCALE);
+            mMenuItems.Add(mMaxScale = new ToolStripMenuItem() { Text = "Max Scale" });
+            mMaxScale.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.MAX_SCALE);
             });
-            m.Add(stackItem = new ToolStripMenuItem() { Text = "Stack" });
-            stackItem.Click += new EventHandler((s, e) => {
-                mSim.Performed(SCOPE_MENU_ITEM.STACK);
+            mMenuItems.Add(mStack = new ToolStripMenuItem() { Text = "Stack" });
+            mStack.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.STACK);
             });
-            m.Add(unstackItem = new ToolStripMenuItem() { Text = "Unstack" });
-            unstackItem.Click += new EventHandler((s, e) => {
-                mSim.Performed(SCOPE_MENU_ITEM.UNSTACK);
+            mMenuItems.Add(mUnstack = new ToolStripMenuItem() { Text = "Unstack" });
+            mUnstack.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.UNSTACK);
             });
-            m.Add(combineItem = new ToolStripMenuItem() { Text = "Combine" });
-            combineItem.Click += new EventHandler((s, e) => {
-                mSim.Performed(SCOPE_MENU_ITEM.COMBINE);
+            mMenuItems.Add(mCombine = new ToolStripMenuItem() { Text = "Combine" });
+            mCombine.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.COMBINE);
             });
-            m.Add(removePlotItem = new ToolStripMenuItem() { Text = "Remove Plot" });
-            removePlotItem.Click += new EventHandler((s, e) => {
-                mSim.Performed(SCOPE_MENU_ITEM.REMOVE_PLOT);
+            mMenuItems.Add(mRemovePlot = new ToolStripMenuItem() { Text = "Remove Plot" });
+            mRemovePlot.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.REMOVE_PLOT);
             });
-            m.Add(resetItem = new ToolStripMenuItem() { Text = "Reset" });
-            resetItem.Click += new EventHandler((s, e) => {
-                mSim.Performed(SCOPE_MENU_ITEM.RESET);
+            mMenuItems.Add(mReset = new ToolStripMenuItem() { Text = "Reset" });
+            mReset.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.RESET);
             });
-            m.Add(propertiesItem = new ToolStripMenuItem() { Text = "Properties..." });
-            propertiesItem.Click += new EventHandler((s, e) => {
-                mSim.Performed(SCOPE_MENU_ITEM.PROPERTIES);
+            mMenuItems.Add(mProperties = new ToolStripMenuItem() { Text = "Properties..." });
+            mProperties.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.PROPERTIES);
             });
         }
 
-        public void DoScopePopupChecks(bool floating) {
-            stackItem.Visible = !floating;
-            unstackItem.Visible = !floating;
-            combineItem.Visible = !floating;
-            dockItem.Visible = floating;
-            undockItem.Visible = !floating;
+        public ContextMenuStrip Show(int px, int py, bool floating) {
+            doScopePopupChecks(floating);
+            var popupMenu = new ContextMenuStrip();
+            popupMenu.Items.AddRange(mMenuItems.ToArray());
+            popupMenu.Show();
+            popupMenu.Location = new Point(px, py);
+            return popupMenu;
+        }
+
+        void doScopePopupChecks(bool floating) {
+            mStack.Visible = !floating;
+            mUnstack.Visible = !floating;
+            mCombine.Visible = !floating;
+            mDock.Visible = floating;
+            mUndock.Visible = !floating;
         }
     }
 }
