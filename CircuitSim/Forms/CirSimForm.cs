@@ -396,7 +396,8 @@ namespace Circuit {
                 if (nodeDump.Length > 0) {
                     nodeDump += "\r";
                 }
-                nodeDump += ce.GetType().ToString();
+                // TODO: GetCircuitAsComposite
+                nodeDump += ELEMENTS.RAIL_AC;
                 for (int j = 0; j != ce.PostCount; j++) {
                     int n = ce.Nodes[j];
                     int n0 = nodeNumberHash.ContainsKey(n) ? nodeNumberHash[n] : n;
@@ -527,9 +528,6 @@ namespace Circuit {
             if (mScrollValuePopup != null && mScrollValuePopup.Visible) {
                 return true;
             }
-            // TODO: dialogIsShowing
-            //if (aboutBox != null && aboutBox.isShowing())
-            //    return true;
             return false;
         }
 
@@ -1070,7 +1068,7 @@ namespace Circuit {
 
         string dumpCircuit() {
             CustomLogicModel.clearDumpedFlags();
-            CustomCompositeModel.clearDumpedFlags();
+            CustomCompositeModel.ClearDumpedFlags();
             DiodeModel.clearDumpedFlags();
 
             int f = ControlPanel.ChkShowDots.Checked ? 1 : 0;
@@ -1199,7 +1197,7 @@ namespace Circuit {
                             break;
                         }
                         if (tint == '.') {
-                            CustomCompositeModel.undumpModel(st);
+                            CustomCompositeModel.UndumpModel(st);
                             break;
                         }
                         int x1 = st.nextTokenInt();
@@ -1871,7 +1869,7 @@ namespace Circuit {
         string copyOfSelectedElms() {
             string r = "";
             CustomLogicModel.clearDumpedFlags();
-            CustomCompositeModel.clearDumpedFlags();
+            CustomCompositeModel.ClearDumpedFlags();
             DiodeModel.clearDumpedFlags();
             for (int i = ElmList.Count - 1; i >= 0; i--) {
                 var ce = getElm(i);

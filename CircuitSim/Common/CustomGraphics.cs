@@ -48,7 +48,7 @@ namespace Circuit {
 
         Bitmap image;
         Graphics g;
-        Brush brushText;
+        Brush brushText = Brushes.Black;
 
         Pen penPost = new Pen(Color.Red, 5.0f);
         Pen penColor = new Pen(Color.White, 1.0f) {

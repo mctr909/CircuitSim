@@ -570,24 +570,6 @@ namespace Circuit {
             mainMenuBar.Items.Add(outputMenuBar);
             #endregion
 
-            #region Active Building Blocks
-            //var activeBlocMenuBar = new ToolStripMenuItem();
-            //activeBlocMenuBar.Text = "Active Building Blocks(C)";
-            //activeBlocMenuBar.Font = menuFont;
-            //addMenuItem(activeBlocMenuBar, "Add Op Amp (real)", ITEM.OpAmpRealElm);
-            //addMenuItem(activeBlocMenuBar, "Add Analog Switch (SPST)", ITEM.AnalogSwitchElm);
-            //addMenuItem(activeBlocMenuBar, "Add Analog Switch (SPDT)", ITEM.AnalogSwitch2Elm);
-            //addMenuItem(activeBlocMenuBar, "Add CCII+", ITEM.CC2Elm);
-            //addMenuItem(activeBlocMenuBar, "Add CCII-", ITEM.CC2NegElm);
-            //addMenuItem(activeBlocMenuBar, "Add OTA (LM13700 style)", ITEM.OTAElm);
-            //addMenuItem(activeBlocMenuBar, "Add Voltage-Controlled Voltage Source", ITEM.VCVSElm);
-            //addMenuItem(activeBlocMenuBar, "Add Voltage-Controlled Current Source", ITEM.VCCSElm);
-            //addMenuItem(activeBlocMenuBar, "Add Current-Controlled Voltage Source", ITEM.CCVSElm);
-            //addMenuItem(activeBlocMenuBar, "Add Current-Controlled Current Source", ITEM.CCCSElm);
-            //addMenuItem(activeBlocMenuBar, "Add Subcircuit Instance", ITEM.CustomCompositeElm);
-            //mainMenuBar.Items.Add(activeBlocMenuBar);
-            #endregion
-
             #region Logic Gates
             var gateMenuBar = new ToolStripMenuItem();
             gateMenuBar.Text = "論理回路(L)";
@@ -607,6 +589,24 @@ namespace Circuit {
             addElementItem(gateMenuBar, "シュミットトリガ(NOT)", ELEMENTS.SCHMITT_INV);
             addElementItem(gateMenuBar, "3ステートバッファ", ELEMENTS.TRISTATE);
             mainMenuBar.Items.Add(gateMenuBar);
+            #endregion
+
+            #region Active Building Blocks
+            var activeBlockMenuBar = new ToolStripMenuItem();
+            activeBlockMenuBar.Text = "モジュール(M)";
+            activeBlockMenuBar.Font = menuFont;
+            //addElementItem(activeBlocMenuBar, "Add Op Amp (real)", ITEM.OpAmpRealElm);
+            //addElementItem(activeBlocMenuBar, "Add Analog Switch (SPST)", ITEM.AnalogSwitchElm);
+            //addElementItem(activeBlocMenuBar, "Add Analog Switch (SPDT)", ITEM.AnalogSwitch2Elm);
+            //addElementItem(activeBlocMenuBar, "Add CCII+", ITEM.CC2Elm);
+            //addElementItem(activeBlocMenuBar, "Add CCII-", ITEM.CC2NegElm);
+            //addElementItem(activeBlocMenuBar, "Add OTA (LM13700 style)", ITEM.OTAElm);
+            //addElementItem(activeBlocMenuBar, "Add Voltage-Controlled Voltage Source", ITEM.VCVSElm);
+            //addElementItem(activeBlocMenuBar, "Add Voltage-Controlled Current Source", ITEM.VCCSElm);
+            //addElementItem(activeBlocMenuBar, "Add Current-Controlled Voltage Source", ITEM.CCVSElm);
+            //addElementItem(activeBlocMenuBar, "Add Current-Controlled Current Source", ITEM.CCCSElm);
+            addElementItem(activeBlockMenuBar, "カスタムモジュール", ELEMENTS.CustomCompositeElm);
+            mainMenuBar.Items.Add(activeBlockMenuBar);
             #endregion
 
             #region Digital Chips

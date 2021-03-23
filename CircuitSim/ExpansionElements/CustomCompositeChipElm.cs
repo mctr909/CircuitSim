@@ -18,6 +18,7 @@
 
         public void allocPins(int n) {
             pins = new Pin[n];
+            allocNodes();
         }
 
         public void setPin(int n, int p, int s, string t) {

@@ -23,37 +23,88 @@ namespace Circuit.Elements {
     }
 
     class CustomCompositeModel : IComparable<CustomCompositeModel> {
-        static Dictionary<string, CustomCompositeModel> modelMap;
-
-        int flags;
+        static Dictionary<string, CustomCompositeModel> mModelMap = new Dictionary<string, CustomCompositeModel>();
 
         public List<ExtListEntry> ExtList { get; set; }
         public int SizeX { get; set; }
         public int SizeY { get; set; }
-        public string Name { get; private set; }
+        public string Name { get; private set; } = "";
         public string NodeList { get; set; }
         public string ElmDump { get; set; }
         public bool Dumped { get; private set; }
 
-        public void setName(string n) {
-            modelMap.Remove(Name);
-            Name = n;
-            modelMap.Add(Name, this);
-        }
-
-        public static CustomCompositeModel getModelWithName(string name) {
-            if (modelMap == null) {
-                modelMap = new Dictionary<string, CustomCompositeModel>();
+        public static CustomCompositeModel GetModelWithName(string name) {
+            if (mModelMap == null) {
+                mModelMap = new Dictionary<string, CustomCompositeModel>();
 
                 /* create default stub model */
                 var extList = new List<ExtListEntry>();
                 extList.Add(new ExtListEntry("gnd", 1));
                 var d = createModel("default", "0", ELEMENTS.GROUND + " 1", extList);
                 d.SizeX = d.SizeY = 1;
-                modelMap.Add(d.Name, d);
+                mModelMap.Add(d.Name, d);
             }
-            var lm = modelMap[name];
-            return lm;
+            if (mModelMap.ContainsKey(name)) {
+                return mModelMap[name];
+            } else {
+                return null;
+            }
+        }
+
+        public static void ClearDumpedFlags() {
+            if (mModelMap == null) {
+                return;
+            }
+            foreach (var key in mModelMap.Keys) {
+                mModelMap[key].Dumped = false;
+            }
+        }
+
+        public static List<CustomCompositeModel> GetModelList() {
+            var vector = new List<CustomCompositeModel>();
+            foreach (var key in mModelMap.Keys) {
+                var dm = mModelMap[key];
+                vector.Add(dm);
+            }
+            vector.Sort();
+            return vector;
+        }
+
+        public static void UndumpModel(StringTokenizer st) {
+            string name = CustomLogicModel.unescape(st.nextToken());
+            CustomCompositeElm.lastModelName = name;
+            var model = GetModelWithName(name);
+            if (model == null) {
+                model = new CustomCompositeModel();
+                model.Name = name;
+                mModelMap.Add(name, model);
+            }
+            model.undump(st);
+        }
+
+        public void SetName(string n) {
+            mModelMap.Remove(n);
+            Name = n;
+            mModelMap.Add(Name, this);
+        }
+
+        public int CompareTo(CustomCompositeModel dm) {
+            return Name.CompareTo(dm.Name);
+        }
+
+        public string Dump() {
+            Dumped = true;
+            string str = ". " + CustomLogicModel.escape(Name) + " 0 " + SizeX + " " + SizeY + " " + ExtList.Count + " ";
+            int i;
+            for (i = 0; i != ExtList.Count; i++) {
+                var ent = ExtList[i];
+                if (i > 0) {
+                    str += " ";
+                }
+                str += CustomLogicModel.escape(ent.name) + " " + ent.node + " " + ent.pos + " " + ent.side;
+            }
+            str += " " + CustomLogicModel.escape(NodeList) + " " + CustomLogicModel.escape(ElmDump);
+            return str;
         }
 
         static CustomCompositeModel createModel(string name, string elmDump, string nodeList, List<ExtListEntry> extList) {
@@ -62,47 +113,12 @@ namespace Circuit.Elements {
             lm.ElmDump = elmDump;
             lm.NodeList = nodeList;
             lm.ExtList = extList;
-            modelMap.Add(name, lm);
+            mModelMap.Add(name, lm);
             return lm;
         }
 
-        public static void clearDumpedFlags() {
-            if (modelMap == null) {
-                return;
-            }
-            foreach (var key in modelMap.Keys) {
-                modelMap[key].Dumped = false;
-            }
-        }
-
-        public static List<CustomCompositeModel> getModelList() {
-            var vector = new List<CustomCompositeModel>();
-            foreach (var key in modelMap.Keys) {
-                var dm = modelMap[key];
-                vector.Add(dm);
-            }
-            vector.Sort();
-            return vector;
-        }
-
-        public int CompareTo(CustomCompositeModel dm) {
-            return Name.CompareTo(dm.Name);
-        }
-
-        public static void undumpModel(StringTokenizer st) {
-            string name = CustomLogicModel.unescape(st.nextToken());
-            CustomCompositeElm.lastModelName = name;
-            var model = getModelWithName(name);
-            if (model == null) {
-                model = new CustomCompositeModel();
-                model.Name = name;
-                modelMap.Add(name, model);
-            }
-            model.undump(st);
-        }
-
         void undump(StringTokenizer st) {
-            flags = st.nextTokenInt();
+            st.nextTokenInt();
             SizeX = st.nextTokenInt();
             SizeY = st.nextTokenInt();
             int extCount = st.nextTokenInt();
@@ -136,21 +152,6 @@ namespace Circuit.Elements {
 
         string[] listToArray(string arr) {
             return arr.Split(',');
-        }
-
-        public string dump() {
-            Dumped = true;
-            string str = ". " + CustomLogicModel.escape(Name) + " 0 " + SizeX + " " + SizeY + " " + ExtList.Count + " ";
-            int i;
-            for (i = 0; i != ExtList.Count; i++) {
-                var ent = ExtList[i];
-                if (i > 0) {
-                    str += " ";
-                }
-                str += CustomLogicModel.escape(ent.name) + " " + ent.node + " " + ent.pos + " " + ent.side;
-            }
-            str += " " + CustomLogicModel.escape(NodeList) + " " + CustomLogicModel.escape(ElmDump);
-            return str;
         }
     }
 }

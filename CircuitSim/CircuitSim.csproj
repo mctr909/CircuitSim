@@ -114,7 +114,7 @@
     <Compile Include="Common\Hint.cs" />
     <Compile Include="Common\Node.cs" />
     <Compile Include="Forms\ScopePropertiesDialog.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Common\CustomLogicModel.cs" />
     <Compile Include="Forms\ScrollValuePopup.cs">
@@ -162,6 +162,9 @@
     <Compile Include="Common\Storage.cs" />
     <EmbeddedResource Include="CircuitSim.resx">
       <DependentUpon>CircuitSim.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EditCompositeModelDialog.resx">
+      <DependentUpon>EditCompositeModelDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

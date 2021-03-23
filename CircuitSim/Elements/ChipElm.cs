@@ -184,6 +184,7 @@ namespace Circuit.Elements {
         }
 
         public void drawChip(CustomGraphics g) {
+            g.TextColor = Color.White;
             for (int i = 0; i != PostCount; i++) {
                 var p = pins[i];
                 var a = p.post;
@@ -192,7 +193,7 @@ namespace Circuit.Elements {
                 p.curcount = updateDotCount(p.current, p.curcount);
                 drawDots(g, b, a, p.curcount);
                 if (p.bubble) {
-                    g.ThickLineColor = ControlPanel.ChkPrintable.Checked ? Color.White : Color.Black;
+                    g.ThickLineColor = Color.White;
                     g.DrawThickCircle(p.bubblePos, 1);
                     g.ThickLineColor = GrayColor;
                     g.DrawThickCircle(p.bubblePos, 3);

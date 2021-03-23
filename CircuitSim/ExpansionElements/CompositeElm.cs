@@ -15,7 +15,7 @@ namespace Circuit.Elements {
         protected const int FLAG_ESCAPE = 1;
 
         /* list of elements contained in this subcircuit */
-        protected List<CircuitElm> compElmList;
+        protected List<CircuitElm> compElmList = new List<CircuitElm>();
 
         /* list of nodes, mapping each one to a list of elements that reference that node */
         protected List<CircuitNode> compNodeList;
@@ -130,7 +130,8 @@ namespace Circuit.Elements {
                         dumpedCe = CustomLogicModel.unescape(dumpedCe);
                     }
                     var stCe = new StringTokenizer(dumpedCe, useEscape() ? " " : "_");
-                    int flags = stCe.nextTokenInt();
+                    // TODO: loadComposite
+                    int flags = 0; //stCe.nextTokenInt();
                     newce = MenuItems.CreateCe(tint, 0, 0, 0, 0, flags, stCe);
                 }
                 compElmList.Add(newce);

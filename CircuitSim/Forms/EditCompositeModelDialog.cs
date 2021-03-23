@@ -11,6 +11,7 @@ namespace Circuit {
         Panel mPnlV;
         PictureBox mCanvas;
         Bitmap mBmp;
+        CustomGraphics mG;
         TextBox mModelNameTextBox = null;
         CustomCompositeChipElm mChip;
         CustomCompositeModel mModel;
@@ -19,7 +20,20 @@ namespace Circuit {
         int mPostCount;
         double mScale;
         int mSelectedPin;
+        private Timer timer1;
+        private System.ComponentModel.IContainer components;
         bool mDragging;
+
+        private void InitializeComponent() {
+            components = new System.ComponentModel.Container();
+            timer1 = new Timer(components);
+            SuspendLayout();
+            timer1.Tick += new EventHandler(timer1_Tick);
+            ClientSize = new Size(274, 229);
+            Name = "Edit Subcircuit Model";
+            Text = "Edit Subcircuit Model";
+            ResumeLayout(false);
+        }
 
         public void SetModel(CustomCompositeModel m) { mModel = m; }
 
@@ -33,12 +47,9 @@ namespace Circuit {
                 MessageBox.Show("Device has no external inputs/outputs!");
                 return false;
             }
-            // TODO: createModel
-            /*Collections.sort(model.extList, new Comparator<ExtListEntry>() {
-                public int compare(ExtListEntry a, ExtListEntry b) {
-                    return a.name.toLowerCase().compareTo(b.name.toLowerCase());
-                }
-            });*/
+            mModel.ExtList.Sort((ExtListEntry a, ExtListEntry b) => {
+                return a.name.ToLower().CompareTo(b.name.ToLower());
+            });
             int i;
             int postCount = mModel.ExtList.Count;
 
@@ -60,15 +71,14 @@ namespace Circuit {
         }
 
         public void CreateDialog() {
-            Text = "Edit Subcircuit Model";
+            InitializeComponent();
 
             mPnlV = new Panel();
             mPnlV.AutoSize = true;
-            mPnlV.Controls.Add(new Label() { Text = "Drag the pins to the desired position" });
 
-            mCanvas = new PictureBox() { Width = 400, Height = 400 };
+            mCanvas = new PictureBox() { Width = 320, Height = 320 };
             mBmp = new Bitmap(mCanvas.Width, mCanvas.Height);
-            mCanvas.Image = mBmp;
+            mG = CustomGraphics.FromImage(mBmp);
             mPnlV.Controls.Add(mCanvas);
 
             mChip = new CustomCompositeChipElm(50, 50);
@@ -76,55 +86,58 @@ namespace Circuit {
             mChip.Y2 = 50;
             createPinsFromModel();
 
-            if (mModel.Name == null) {
-                mPnlV.Controls.Add(new Label() { Text = "Model Name" });
-                mModelNameTextBox = new TextBox();
-                mPnlV.Controls.Add(mModelNameTextBox);
-            }
+            var lbl = new Label() { Top = mCanvas.Bottom, AutoSize = true, Text = "Model Name" };
+            mPnlV.Controls.Add(lbl);
+            mModelNameTextBox = new TextBox() { Top = lbl.Bottom };
+            mModelNameTextBox.Enabled = string.IsNullOrEmpty(mModel.Name);
+            mModelNameTextBox.Text = mModel.Name;
+            mPnlV.Controls.Add(mModelNameTextBox);
 
-            var hp1 = new Panel();
+            var pnlSize = new Panel();
             {
-                hp1.AutoSize = true;
+                pnlSize.Top = mModelNameTextBox.Bottom;
+                pnlSize.AutoSize = true;
                 int ofsY = 0;
-                var lblW = new Label() { Top = ofsY, Text = "Width" };
-                hp1.Controls.Add(lblW);
-                ofsY += lblW.Height + 2;
+                var lblW = new Label() { Top = ofsY, AutoSize = true, Text = "Width" };
+                pnlSize.Controls.Add(lblW);
+                ofsY += lblW.Height;
                 /* Width+ */
-                var bwp = new Button() { Top = ofsY, Text = "+" };
+                var bwp = new Button() { Top = ofsY, Width = 40, Text = "+" };
                 bwp.Click += new EventHandler((s, e) => {
                     adjustChipSize(1, 0);
                 });
-                hp1.Controls.Add(bwp);
+                pnlSize.Controls.Add(bwp);
                 /* Width- */
-                var bwm = new Button() { Top = ofsY, Left = bwp.Right + 4, Text = "-" };
+                var bwm = new Button() { Top = ofsY, Width = 40, Left = bwp.Right + 4, Text = "-" };
                 bwm.Click += new EventHandler((s, e) => {
                     adjustChipSize(-1, 0);
                 });
-                hp1.Controls.Add(bwm);
+                pnlSize.Controls.Add(bwm);
                 ofsY += bwm.Height + 4;
 
-                var lblH = new Label() { Top = ofsY, Text = "Height" };
-                hp1.Controls.Add(lblH);
-                ofsY += lblH.Height + 2;
+                var lblH = new Label() { Top = ofsY, AutoSize = true, Text = "Height" };
+                pnlSize.Controls.Add(lblH);
+                ofsY += lblH.Height;
                 /* Height+ */
-                var bhp = new Button() { Top = ofsY, Text = "+" };
+                var bhp = new Button() { Top = ofsY, Width = 40, Text = "+" };
                 bhp.Click += new EventHandler((s, e) => {
                     adjustChipSize(0, 1);
                 });
-                hp1.Controls.Add(bhp);
+                pnlSize.Controls.Add(bhp);
                 /* Height- */
-                var bhm = new Button() { Top = ofsY, Left = bhp.Right + 4, Text = "-" };
+                var bhm = new Button() { Top = ofsY, Width = 40, Left = bhp.Right + 4, Text = "-" };
                 bhm.Click += new EventHandler((s, e) => {
                     adjustChipSize(0, -1);
                 });
-                hp1.Controls.Add(bhm);
+                pnlSize.Controls.Add(bhm);
                 /* */
-                mPnlV.Controls.Add(hp1);
+                mPnlV.Controls.Add(pnlSize);
             }
 
-            var hp2 = new Panel();
+            var pnlButton = new Panel();
             {
-                hp2.AutoSize = true;
+                pnlButton.Top = pnlSize.Bottom;
+                pnlButton.AutoSize = true;
                 /* OK */
                 var okButton = new Button() { Text = "OK" };
                 okButton.Click += new EventHandler((s, e) => {
@@ -134,30 +147,29 @@ namespace Circuit {
                             MessageBox.Show("Please enter a model name.");
                             return;
                         }
-                        mModel.setName(CustomCompositeElm.lastModelName = name);
+                        mModel.SetName(CustomCompositeElm.lastModelName = name);
                     }
                     CirSim.Sim.UpdateModels();
                     CirSim.Sim.NeedAnalyze(); /* will get singular matrix if we don't do this */
                     closeDialog();
                 });
-                hp2.Controls.Add(okButton);
-                /* Cancel */
-                if (mModel.Name == null) {
-                    var cancelButton = new Button() { Left = okButton.Right + 4, Text = "Cancel" };
-                    cancelButton.Click += new EventHandler((s, e) => {
-                        closeDialog();
-                    });
-                    hp2.Controls.Add(cancelButton);
-                }
+                pnlButton.Controls.Add(okButton);
                 /* */
-                mPnlV.Controls.Add(hp2);
+                mPnlV.Controls.Add(pnlButton);
             }
 
-            MouseDown += new MouseEventHandler((s, e) => { onMouseDown(e); });
-            MouseUp += new MouseEventHandler((s, e) => { onMouseUp(e); });
-            MouseMove += new MouseEventHandler((s, e) => { onMouseMove(e); });
+            mCanvas.MouseDown += new MouseEventHandler((s, e) => { onMouseDown(e); });
+            mCanvas.MouseUp += new MouseEventHandler((s, e) => { onMouseUp(e); });
+            mCanvas.MouseMove += new MouseEventHandler((s, e) => { onMouseMove(e); });
 
             Controls.Add(mPnlV);
+
+            Width = mCanvas.Width + 16;
+            Height = pnlButton.Bottom;
+
+            timer1.Interval = 33;
+            timer1.Enabled = true;
+            timer1.Start();
         }
 
         void closeDialog() {
@@ -179,7 +191,6 @@ namespace Circuit {
                     p.pos = pos[0];
                     p.side = pos[1];
                     createPinsFromModel();
-                    drawChip();
                 }
             } else {
                 int i;
@@ -199,7 +210,6 @@ namespace Circuit {
                 if (mSelectedPin >= 0) {
                     mChip.pins[mSelectedPin].selected = true;
                 }
-                drawChip();
             }
         }
 
@@ -224,19 +234,24 @@ namespace Circuit {
         }
 
         void drawChip() {
-            var g = CustomGraphics.FromImage(mBmp);
-            double scalew = g.Width / (double)(mChip.BoundingBox.Width + mChip.BoundingBox.X * 2);
-            double scaleh = g.Height / (double)(mChip.BoundingBox.Height + mChip.BoundingBox.Y * 2);
+            if(null == mCanvas) {
+                return;
+            }
+            double scalew = mG.Width / (double)(mChip.BoundingBox.Width + mChip.BoundingBox.X * 2);
+            double scaleh = mG.Height / (double)(mChip.BoundingBox.Height + mChip.BoundingBox.Y * 2);
             mScale = 1 / Math.Min(scalew, scaleh);
-            g.Clear(ControlPanel.ChkPrintable.Checked ? Color.White : Color.Black);
-            g.FillRectangle(Brushes.Blue, 0, 0, g.Width, g.Height);
-            g.SetTransform(new Matrix((float)(1 / mScale), 0, 0, (float)(1 / mScale), 0, 0));
-            mChip.Draw(g);
+            mG.Clear(Color.Blue);
+            mG.SetTransform(new Matrix((float)(1 / mScale), 0, 0, (float)(1 / mScale), 0, 0));
+            mChip.Draw(mG);
+
             if (null != mCanvas.Image) {
                 mCanvas.Image.Dispose();
                 mCanvas.Image = null;
             }
-            mCanvas.Image = mBmp;
+            var tmp = new Bitmap(mBmp.Width, mBmp.Height);
+            var g = Graphics.FromImage(tmp);
+            g.DrawImage(mBmp, 0, 0);
+            mCanvas.Image = tmp;
         }
 
         void adjustChipSize(int dx, int dy) {
@@ -257,6 +272,9 @@ namespace Circuit {
             mModel.SizeX += dx;
             mModel.SizeY += dy;
             createPinsFromModel();
+        }
+
+        void timer1_Tick(object sender, EventArgs arg) {
             drawChip();
         }
     }

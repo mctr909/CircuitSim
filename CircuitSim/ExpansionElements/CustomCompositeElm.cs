@@ -60,7 +60,7 @@ namespace Circuit.Elements {
             if (string.IsNullOrEmpty(modelStr)) {
                 modelStr += "\n";
             }
-            modelStr += model.dump();
+            modelStr += model.Dump();
 
             return modelStr;
         }
@@ -100,7 +100,7 @@ namespace Circuit.Elements {
         }
 
         public void updateModels(StringTokenizer st) {
-            model = CustomCompositeModel.getModelWithName(modelName);
+            model = CustomCompositeModel.GetModelWithName(modelName);
             if (model == null) {
                 return;
             }
@@ -121,7 +121,7 @@ namespace Circuit.Elements {
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
                 var ei = new ElementInfo(ElementInfo.MakeLink("subcircuits.html", "Model Name"), 0, -1, -1);
-                models = CustomCompositeModel.getModelList();
+                models = CustomCompositeModel.GetModelList();
                 ei.Choice = new ComboBox();
                 int i;
                 for (i = 0; i != models.Count; i++) {
