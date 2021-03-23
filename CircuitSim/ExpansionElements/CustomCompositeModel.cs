@@ -26,18 +26,19 @@ namespace Circuit.Elements {
         static Dictionary<string, CustomCompositeModel> modelMap;
 
         int flags;
-        public int sizeX;
-        public int sizeY;
-        public string name;
-        public string nodeList;
-        public List<ExtListEntry> extList;
-        public string elmDump;
-        public bool dumped;
+
+        public List<ExtListEntry> ExtList { get; set; }
+        public int SizeX { get; set; }
+        public int SizeY { get; set; }
+        public string Name { get; private set; }
+        public string NodeList { get; set; }
+        public string ElmDump { get; set; }
+        public bool Dumped { get; private set; }
 
         public void setName(string n) {
-            modelMap.Remove(name);
-            name = n;
-            modelMap.Add(name, this);
+            modelMap.Remove(Name);
+            Name = n;
+            modelMap.Add(Name, this);
         }
 
         public static CustomCompositeModel getModelWithName(string name) {
@@ -47,9 +48,9 @@ namespace Circuit.Elements {
                 /* create default stub model */
                 var extList = new List<ExtListEntry>();
                 extList.Add(new ExtListEntry("gnd", 1));
-                var d = createModel("default", "0", "GroundElm 1", extList);
-                d.sizeX = d.sizeY = 1;
-                modelMap.Add(d.name, d);
+                var d = createModel("default", "0", ELEMENTS.GROUND + " 1", extList);
+                d.SizeX = d.SizeY = 1;
+                modelMap.Add(d.Name, d);
             }
             var lm = modelMap[name];
             return lm;
@@ -57,10 +58,10 @@ namespace Circuit.Elements {
 
         static CustomCompositeModel createModel(string name, string elmDump, string nodeList, List<ExtListEntry> extList) {
             var lm = new CustomCompositeModel();
-            lm.name = name;
-            lm.elmDump = elmDump;
-            lm.nodeList = nodeList;
-            lm.extList = extList;
+            lm.Name = name;
+            lm.ElmDump = elmDump;
+            lm.NodeList = nodeList;
+            lm.ExtList = extList;
             modelMap.Add(name, lm);
             return lm;
         }
@@ -70,7 +71,7 @@ namespace Circuit.Elements {
                 return;
             }
             foreach (var key in modelMap.Keys) {
-                modelMap[key].dumped = false;
+                modelMap[key].Dumped = false;
             }
         }
 
@@ -85,7 +86,7 @@ namespace Circuit.Elements {
         }
 
         public int CompareTo(CustomCompositeModel dm) {
-            return name.CompareTo(dm.name);
+            return Name.CompareTo(dm.Name);
         }
 
         public static void undumpModel(StringTokenizer st) {
@@ -94,7 +95,7 @@ namespace Circuit.Elements {
             var model = getModelWithName(name);
             if (model == null) {
                 model = new CustomCompositeModel();
-                model.name = name;
+                model.Name = name;
                 modelMap.Add(name, model);
             }
             model.undump(st);
@@ -102,20 +103,20 @@ namespace Circuit.Elements {
 
         void undump(StringTokenizer st) {
             flags = st.nextTokenInt();
-            sizeX = st.nextTokenInt();
-            sizeY = st.nextTokenInt();
+            SizeX = st.nextTokenInt();
+            SizeY = st.nextTokenInt();
             int extCount = st.nextTokenInt();
             int i;
-            extList = new List<ExtListEntry>();
+            ExtList = new List<ExtListEntry>();
             for (i = 0; i != extCount; i++) {
                 string s = CustomLogicModel.unescape(st.nextToken());
                 int n = st.nextTokenInt();
                 int p = st.nextTokenInt();
                 int sd = st.nextTokenInt();
-                extList.Add(new ExtListEntry(s, n, p, sd));
+                ExtList.Add(new ExtListEntry(s, n, p, sd));
             }
-            nodeList = CustomLogicModel.unescape(st.nextToken());
-            elmDump = CustomLogicModel.unescape(st.nextToken());
+            NodeList = CustomLogicModel.unescape(st.nextToken());
+            ElmDump = CustomLogicModel.unescape(st.nextToken());
         }
 
         string arrayToList(string[] arr) {
@@ -138,17 +139,17 @@ namespace Circuit.Elements {
         }
 
         public string dump() {
-            dumped = true;
-            string str = ". " + CustomLogicModel.escape(name) + " 0 " + sizeX + " " + sizeY + " " + extList.Count + " ";
+            Dumped = true;
+            string str = ". " + CustomLogicModel.escape(Name) + " 0 " + SizeX + " " + SizeY + " " + ExtList.Count + " ";
             int i;
-            for (i = 0; i != extList.Count; i++) {
-                var ent = extList[i];
+            for (i = 0; i != ExtList.Count; i++) {
+                var ent = ExtList[i];
                 if (i > 0) {
                     str += " ";
                 }
                 str += CustomLogicModel.escape(ent.name) + " " + ent.node + " " + ent.pos + " " + ent.side;
             }
-            str += " " + CustomLogicModel.escape(nodeList) + " " + CustomLogicModel.escape(elmDump);
+            str += " " + CustomLogicModel.escape(NodeList) + " " + CustomLogicModel.escape(ElmDump);
             return str;
         }
     }

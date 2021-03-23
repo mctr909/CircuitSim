@@ -37,15 +37,12 @@ namespace Circuit {
             setTimer();
 
             CircuitElm.InitClass(this, mCir);
-            readRecovery();
 
             mMenuBar = new MenuStrip();
             {
                 mMenuItems.ComposeMainMenu(mMenuBar);
                 parent.Controls.Add(mMenuBar);
             }
-
-            mElementMenu = new ElementMenu(this);
 
             mPixCir = new PictureBox() { Left = 0, Top = mMenuBar.Height };
             {
@@ -79,18 +76,25 @@ namespace Circuit {
             CircuitElm.SetColorScale(64);
 
             readCircuit("");
+            readRecovery();
 
             enableUndoRedo();
             enablePaste();
 
             ControlPanel.SetSliderPanelHeight();
 
+            mElementPopupMenu = new ElementPopupMenu(this);
             mScopePopupMenu = new ScopePopupMenu(this);
 
             SetSimRunning(true);
         }
 
         public void Performed(MENU_ITEM item) {
+            if (item == MENU_ITEM.OPEN_NEW) {
+                readCircuit("");
+                writeRecoveryToStorage();
+                readRecovery();
+            }
             if (item == MENU_ITEM.OPEN_FILE) {
                 doOpenFile();
                 writeRecoveryToStorage();
@@ -329,7 +333,6 @@ namespace Circuit {
         }
 
         public CustomCompositeModel GetCircuitAsComposite() {
-            int i;
             string nodeDump = "";
             string dump = "";
             CustomLogicModel.clearDumpedFlags();
@@ -346,8 +349,39 @@ namespace Circuit {
 
             var used = new bool[mCir.NodeList.Count];
 
+            // find all the labeled nodes, get a list of them, and create a node number map
+            for (int i = 0; i != ElmList.Count; i++) {
+                var ce = getElm(i);
+                if (sel && !ce.IsSelected) {
+                    continue;
+                }
+                if (ce is LabeledNodeElm) {
+                    var lne = (LabeledNodeElm)ce;
+                    var label = lne.Text;
+                    // this node name already seen?  map the new node number to the old one
+                    if (nodeNameHash.ContainsKey(label)) {
+                        var map = nodeNameHash[label];
+                        if (nodeNumberHash.ContainsKey(lne.Nodes[0]) && nodeNumberHash[lne.Nodes[0]] != map) {
+                            MessageBox.Show("Can't have a node with two labels!");
+                            return null;
+                        }
+                        nodeNumberHash.Add(lne.Nodes[0], map);
+                        continue;
+                    }
+                    nodeNameHash.Add(label, lne.Nodes[0]);
+                    // put an entry in nodeNumberHash so we can detect if we try to map it to something else later
+                    nodeNumberHash.Add(lne.Nodes[0], lne.Nodes[0]);
+                    if (lne.IsInternal) {
+                        continue;
+                    }
+                    // create ext list entry for external nodes
+                    var ent = new ExtListEntry(label, ce.Nodes[0]);
+                    extList.Add(ent);
+                }
+            }
+
             // output all the elements
-            for (i = 0; i != ElmList.Count; i++) {
+            for (int i = 0; i != ElmList.Count; i++) {
                 var ce = getElm(i);
                 if (sel && !ce.IsSelected) {
                     continue;
@@ -359,12 +393,11 @@ namespace Circuit {
                 if (ce is GraphicElm) {
                     continue;
                 }
-                int j;
                 if (nodeDump.Length > 0) {
                     nodeDump += "\r";
                 }
                 nodeDump += ce.GetType().ToString();
-                for (j = 0; j != ce.PostCount; j++) {
+                for (int j = 0; j != ce.PostCount; j++) {
                     int n = ce.Nodes[j];
                     int n0 = nodeNumberHash.ContainsKey(n) ? nodeNumberHash[n] : n;
                     used[n0] = true;
@@ -395,7 +428,7 @@ namespace Circuit {
                 dump += CustomLogicModel.escape(tstring);
             }
 
-            for (i = 0; i != extList.Count; i++) {
+            for (int i = 0; i != extList.Count; i++) {
                 var ent = extList[i];
                 if (!used[ent.node]) {
                     MessageBox.Show("Node \"" + ent.name + "\" is not used!");
@@ -404,9 +437,9 @@ namespace Circuit {
             }
 
             var ccm = new CustomCompositeModel();
-            ccm.nodeList = nodeDump;
-            ccm.elmDump = dump;
-            ccm.extList = extList;
+            ccm.NodeList = nodeDump;
+            ccm.ElmDump = dump;
+            ccm.ExtList = extList;
             return ccm;
         }
 
@@ -1636,7 +1669,7 @@ namespace Circuit {
                 }
             } else if (mMouseElm != null) {
                 if (!(mMouseElm is ScopeElm)) {
-                    mPopupMenu = mElementMenu.Show(mMenuClientX, mMenuClientY, mMouseElm);
+                    mPopupMenu = mElementPopupMenu.Show(mMenuClientX, mMenuClientY, mMouseElm);
                 } else {
                     var s = (ScopeElm)mMouseElm;
                     if (s.elmScope.CanMenu) {

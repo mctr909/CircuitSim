@@ -29,7 +29,7 @@ namespace Circuit {
             if (mModel == null) {
                 return false;
             }
-            if (mModel.extList.Count == 0) {
+            if (mModel.ExtList.Count == 0) {
                 MessageBox.Show("Device has no external inputs/outputs!");
                 return false;
             }
@@ -40,15 +40,15 @@ namespace Circuit {
                 }
             });*/
             int i;
-            int postCount = mModel.extList.Count;
+            int postCount = mModel.ExtList.Count;
 
-            mModel.sizeX = 2;
-            mModel.sizeY = (postCount + 1) / 2;
+            mModel.SizeX = 2;
+            mModel.SizeY = (postCount + 1) / 2;
             for (i = 0; i != postCount; i++) {
-                bool left = i < mModel.sizeY;
+                bool left = i < mModel.SizeY;
                 int side = (left) ? ChipElm.SIDE_W : ChipElm.SIDE_E;
-                var pin = mModel.extList[i];
-                pin.pos = left ? i : i - mModel.sizeY;
+                var pin = mModel.ExtList[i];
+                pin.pos = left ? i : i - mModel.SizeY;
                 pin.side = side;
                 if (nodeSet.Contains(pin.node)) {
                     MessageBox.Show("Can't have two input/output nodes connected!");
@@ -76,7 +76,7 @@ namespace Circuit {
             mChip.Y2 = 50;
             createPinsFromModel();
 
-            if (mModel.name == null) {
+            if (mModel.Name == null) {
                 mPnlV.Controls.Add(new Label() { Text = "Model Name" });
                 mModelNameTextBox = new TextBox();
                 mPnlV.Controls.Add(mModelNameTextBox);
@@ -142,7 +142,7 @@ namespace Circuit {
                 });
                 hp2.Controls.Add(okButton);
                 /* Cancel */
-                if (mModel.name == null) {
+                if (mModel.Name == null) {
                     var cancelButton = new Button() { Left = okButton.Right + 4, Text = "Cancel" };
                     cancelButton.Click += new EventHandler((s, e) => {
                         closeDialog();
@@ -175,7 +175,7 @@ namespace Circuit {
                 }
                 var pos = new int[2];
                 if (mChip.getPinPos((int)(e.X * mScale), (int)(e.Y * mScale), mSelectedPin, pos)) {
-                    var p = mModel.extList[mSelectedPin];
+                    var p = mModel.ExtList[mSelectedPin];
                     p.pos = pos[0];
                     p.side = pos[1];
                     createPinsFromModel();
@@ -208,12 +208,12 @@ namespace Circuit {
         }
 
         void createPinsFromModel() {
-            mPostCount = mModel.extList.Count;
+            mPostCount = mModel.ExtList.Count;
             mChip.allocPins(mPostCount);
-            mChip.sizeX = mModel.sizeX;
-            mChip.sizeY = mModel.sizeY;
+            mChip.sizeX = mModel.SizeX;
+            mChip.sizeY = mModel.SizeY;
             for (int i = 0; i != mPostCount; i++) {
-                var pin = mModel.extList[i];
+                var pin = mModel.ExtList[i];
                 mChip.setPin(i, pin.pos, pin.side, pin.name);
                 mChip.Volts[i] = 0;
                 if (i == mSelectedPin) {
@@ -254,8 +254,8 @@ namespace Circuit {
             if (mChip.sizeX + dx < 1 || mChip.sizeY + dy < 1) {
                 return;
             }
-            mModel.sizeX += dx;
-            mModel.sizeY += dy;
+            mModel.SizeX += dx;
+            mModel.SizeY += dy;
             createPinsFromModel();
             drawChip();
         }

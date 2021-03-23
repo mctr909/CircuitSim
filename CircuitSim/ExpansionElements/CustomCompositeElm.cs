@@ -53,7 +53,7 @@ namespace Circuit.Elements {
                     modelStr += m;
                 }
             }
-            if (model.dumped) {
+            if (model.Dumped) {
                 return modelStr;
             }
             /* dump our model */
@@ -80,12 +80,12 @@ namespace Circuit.Elements {
             chip.X2 = X2;
             chip.Y2 = Y2;
 
-            chip.sizeX = model.sizeX;
-            chip.sizeY = model.sizeY;
+            chip.sizeX = model.SizeX;
+            chip.sizeY = model.SizeY;
             chip.allocPins(postCount);
             int i;
             for (i = 0; i != postCount; i++) {
-                var pin = model.extList[i];
+                var pin = model.ExtList[i];
                 chip.setPin(i, pin.pos, pin.side, pin.name);
             }
 
@@ -104,16 +104,16 @@ namespace Circuit.Elements {
             if (model == null) {
                 return;
             }
-            postCount = model.extList.Count;
+            postCount = model.ExtList.Count;
             var externalNodes = new int[postCount];
             int i;
             for (i = 0; i != postCount; i++) {
-                externalNodes[i] = model.extList[i].node;
+                externalNodes[i] = model.ExtList[i].node;
             }
             if (st == null) {
-                st = new StringTokenizer(model.elmDump, " ");
+                st = new StringTokenizer(model.ElmDump, " ");
             }
-            loadComposite(st, model.nodeList, externalNodes);
+            loadComposite(st, model.NodeList, externalNodes);
             allocNodes();
             SetPoints();
         }
@@ -126,7 +126,7 @@ namespace Circuit.Elements {
                 int i;
                 for (i = 0; i != models.Count; i++) {
                     var ccm = models[i];
-                    ei.Choice.Items.Add(ccm.name);
+                    ei.Choice.Items.Add(ccm.Name);
                     if (ccm == model) {
                         ei.Choice.SelectedIndex = i;
                     }
@@ -144,13 +144,13 @@ namespace Circuit.Elements {
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 model = models[ei.Choice.SelectedIndex];
-                lastModelName = modelName = model.name;
+                lastModelName = modelName = model.Name;
                 UpdateModels();
                 SetPoints();
                 return;
             }
             if (n == 1) {
-                if (model.name == "default") {
+                if (model.Name == "default") {
                     MessageBox.Show("Can't edit this model.");
                     return;
                 }

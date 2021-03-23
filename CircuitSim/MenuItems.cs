@@ -88,6 +88,7 @@ namespace Circuit {
     }
 
     enum MENU_ITEM {
+        OPEN_NEW,
         OPEN_FILE,
         SAVE_FILE,
         CREATE_MODULE,
@@ -308,6 +309,7 @@ namespace Circuit {
         INVERT_SCHMITT = 183,
         AM = 200,
         FM = 201,
+        LABELED_NODE = 207,
         CUSTOM_LOGIC = 208,
         CAPACITOR_POLAR = 209,
         WAVE_OUT = 211,
@@ -419,6 +421,8 @@ namespace Circuit {
             var fileMenuBar = new ToolStripMenuItem();
             fileMenuBar.Text = "ファイル(F)";
             fileMenuBar.Font = menuFont;
+            addMenuItem(fileMenuBar, "新規作成(N)", MENU_ITEM.OPEN_NEW, new SHORTCUT(Keys.None));
+            fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addMenuItem(fileMenuBar, "開く(O)", MENU_ITEM.OPEN_FILE, new SHORTCUT(Keys.O));
             addMenuItem(fileMenuBar, "再読み込み(R)", MENU_ITEM.RECOVER, new SHORTCUT(Keys.None));
             fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
@@ -760,7 +764,7 @@ namespace Circuit {
 
             #region Outputs and Labels
             case ELEMENTS.OUTPUT:
-                return new OutputElm(x1, y1);
+                return new LabeledNodeElm(x1, y1);
             case ELEMENTS.PROBE:
                 return new ProbeElm(x1, y1);
             case ELEMENTS.AMMETER:
@@ -986,6 +990,7 @@ namespace Circuit {
             case DUMP_ID.FM: return new FMElm(x1, y1, x2, y2, f, st);
             //case 203: return new DiacElm(x1, y1, x2, y2, f, st);
             //case 206: return new TriacElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.LABELED_NODE: return new LabeledNodeElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.CUSTOM_LOGIC: return new CustomLogicElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.CAPACITOR_POLAR: return new PolarCapacitorElm(x1, y1, x2, y2, f, st);
             //case 210: return new DataRecorderElm(x1, y1, x2, y2, f, st);

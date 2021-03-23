@@ -19,7 +19,7 @@ namespace Circuit {
         VIEW_IN_FLOAT_SCOPE
     }
 
-    class ElementMenu {
+    class ElementPopupMenu {
         List<ToolStripMenuItem> mMenuItems;
         ToolStripMenuItem mEdit;
         ToolStripMenuItem mScope;
@@ -28,7 +28,7 @@ namespace Circuit {
         ToolStripMenuItem mSplit;
         ToolStripMenuItem mSlider;
 
-        public ElementMenu(CirSim sim) {
+        public ElementPopupMenu(CirSim sim) {
             mMenuItems = new List<ToolStripMenuItem>();
             mMenuItems.Add(mEdit = new ToolStripMenuItem() { Text = "Edit..." });
             mEdit.Click += new EventHandler((s, e) => {

@@ -74,10 +74,10 @@ namespace Circuit {
 
         MenuStrip mMenuBar;
         MenuItems mMenuItems;
-        ElementMenu mElementMenu;
         SplitContainer mSplitContainer;
 
         ContextMenuStrip mPopupMenu = null;
+        ElementPopupMenu mElementPopupMenu;
         ScopePopupMenu mScopePopupMenu;
 
         PictureBox mPixCir;

@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Elements\LabeledNodeElm.cs" />
     <Compile Include="Forms\CirSimMain.cs" />
     <Compile Include="Forms\CirSimVariable.cs" />
     <Compile Include="Common\CustomGraphics.cs" />
@@ -97,7 +98,7 @@
     <Compile Include="ExpansionElements\PMosfetElm.cs" />
     <Compile Include="ExpansionElements\PTransistorElm.cs" />
     <Compile Include="Elements\ZenerElm.cs" />
-    <Compile Include="Forms\ElementMenu.cs" />
+    <Compile Include="Forms\ElementPopupMenu.cs" />
     <Compile Include="Forms\InputDialog.cs">
       <SubType>Form</SubType>
     </Compile>
