@@ -1,7 +1,8 @@
-﻿
+﻿using System.Drawing;
+
 namespace Circuit.Elements {
     class ClockElm : RailElm {
-        public ClockElm(int xx, int yy) : base(xx, yy, WAVEFORM.SQUARE) {
+        public ClockElm(Point pos) : base(pos, WAVEFORM.SQUARE) {
             maxVoltage = 2.5;
             bias = 2.5;
             frequency = 100;

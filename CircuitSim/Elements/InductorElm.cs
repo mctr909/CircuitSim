@@ -8,7 +8,7 @@ namespace Circuit.Elements {
 
         public double Inductance { get; set; }
 
-        public InductorElm(int xx, int yy) : base(xx, yy) {
+        public InductorElm(Point pos) : base(pos) {
             ind = new Inductor(Sim, mCir);
             Inductance = 0.001;
             ind.setup(Inductance, mCurrent, mFlags);

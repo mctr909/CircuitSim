@@ -11,7 +11,7 @@ namespace Circuit.Elements {
 
         public bool hasWireInfo; /* used in CirSim to calculate wire currents */
 
-        public WireElm(int xx, int yy) : base(xx, yy) { }
+        public WireElm(Point pos) : base(pos) { }
 
         public WireElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) { }
 

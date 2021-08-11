@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 namespace Circuit.Elements {
     class VCCSElm : ChipElm {
@@ -19,7 +20,7 @@ namespace Circuit.Elements {
             SetupPins();
         }
 
-        public VCCSElm(int xx, int yy) : base(xx, yy) {
+        public VCCSElm(Point pos) : base(pos) {
             inputCount = 2;
             exprString = ".1*(a-b)";
             parseExpr();

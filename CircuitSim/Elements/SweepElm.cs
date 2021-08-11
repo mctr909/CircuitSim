@@ -24,7 +24,7 @@ namespace Circuit.Elements {
 
         Point textPos;
 
-        public SweepElm(int xx, int yy) : base(xx, yy) {
+        public SweepElm(Point pos) : base(pos) {
             minF = 20;
             maxF = 4000;
             maxV = 5;

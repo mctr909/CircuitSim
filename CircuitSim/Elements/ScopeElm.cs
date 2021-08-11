@@ -5,10 +5,10 @@ namespace Circuit.Elements {
     class ScopeElm : CircuitElm {
         public Scope elmScope;
 
-        public ScopeElm(int xx, int yy) : base(xx, yy) {
+        public ScopeElm(Point pos) : base(pos) {
             mNoDiagonal = false;
-            X2 = X1 + 128;
-            Y2 = Y1 + 64;
+            P2.X = P1.X + 128;
+            P2.Y = P1.Y + 64;
             elmScope = new Scope(Sim);
             SetPoints();
         }
@@ -41,10 +41,10 @@ namespace Circuit.Elements {
         }
 
         public void setScopeRect() {
-            int i1 = Sim.TransformX(Math.Min(X1, X2));
-            int i2 = Sim.TransformX(Math.Max(X1, X2));
-            int j1 = Sim.TransformY(Math.Min(Y1, Y2));
-            int j2 = Sim.TransformY(Math.Max(Y1, Y2));
+            int i1 = Sim.TransformX(Math.Min(P1.X, P2.X));
+            int i2 = Sim.TransformX(Math.Max(P1.X, P2.X));
+            int j1 = Sim.TransformY(Math.Min(P1.Y, P2.Y));
+            int j2 = Sim.TransformY(Math.Max(P1.Y, P2.Y));
             var r = new Rectangle(i1, j1, i2 - i1, j2 - j1);
             if (!r.Equals(elmScope.BoundingBox)) {
                 elmScope.SetRect(r);

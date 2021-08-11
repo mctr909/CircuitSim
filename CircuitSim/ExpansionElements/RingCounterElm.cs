@@ -1,10 +1,12 @@
-﻿namespace Circuit.Elements {
+﻿using System.Drawing;
+
+namespace Circuit.Elements {
     class RingCounterElm : ChipElm {
         bool mJustLoaded;
 
         protected override int bits { get; set; } = 10;
 
-        public RingCounterElm(int xx, int yy) : base(xx, yy) { }
+        public RingCounterElm(Point pos) : base(pos) { }
 
         public RingCounterElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) {
             mJustLoaded = true;

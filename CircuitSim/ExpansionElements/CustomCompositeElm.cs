@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit.Elements {
@@ -13,10 +14,10 @@ namespace Circuit.Elements {
         CustomCompositeModel model;
         List<CustomCompositeModel> models;
 
-        public CustomCompositeElm(int xx, int yy) : base(xx, yy) {
+        public CustomCompositeElm(Point pos) : base(pos) {
             /* use last model as default when creating new element in UI.
              * use default otherwise, to avoid infinite recursion when creating nested subcircuits. */
-            modelName = (xx == 0 && yy == 0) ? "default" : lastModelName;
+            modelName = (pos.X == 0 && pos.Y == 0) ? "default" : lastModelName;
 
             mFlags |= FLAG_ESCAPE;
             UpdateModels();
@@ -76,9 +77,9 @@ namespace Circuit.Elements {
         }
 
         public override void SetPoints() {
-            chip = new CustomCompositeChipElm(X1, Y1);
-            chip.X2 = X2;
-            chip.Y2 = Y2;
+            chip = new CustomCompositeChipElm(P1);
+            chip.P2.X = P2.X;
+            chip.P2.Y = P2.Y;
 
             chip.sizeX = model.SizeX;
             chip.sizeY = model.SizeY;

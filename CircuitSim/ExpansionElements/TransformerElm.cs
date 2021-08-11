@@ -34,7 +34,7 @@ namespace Circuit.Elements {
 
         bool IsTrapezoidal { get { return (mFlags & Inductor.FLAG_BACK_EULER) == 0; } }
 
-        public TransformerElm(int xx, int yy) : base(xx, yy) {
+        public TransformerElm(Point pos) : base(pos) {
             inductance = 4;
             ratio = polarity = 1;
             width = 32;
@@ -73,15 +73,14 @@ namespace Circuit.Elements {
                 + " " + couplingCoef;
         }
 
-        public override void Drag(int xx, int yy) {
-            xx = Sim.SnapGrid(xx);
-            yy = Sim.SnapGrid(yy);
-            width = Math.Max(32, Math.Abs(yy - Y1));
-            if (xx == X1) {
-                yy = Y1;
+        public override void Drag(Point pos) {
+            pos = Sim.SnapGrid(pos);
+            width = Math.Max(32, Math.Abs(pos.Y - P1.Y));
+            if (pos.X == P1.X) {
+                pos.Y = P1.Y;
             }
-            X2 = xx;
-            Y2 = yy;
+            P2.X = pos.X;
+            P2.Y = pos.Y;
             SetPoints();
         }
 
@@ -100,8 +99,8 @@ namespace Circuit.Elements {
             g.DrawThickLine(ptCore[0], ptCore[2]);
             g.DrawThickLine(ptCore[1], ptCore[3]);
             if (dots != null) {
-                g.DrawCircle(dots[0].X, dots[0].Y, 2.5f);
-                g.DrawCircle(dots[1].X, dots[1].Y, 2.5f);
+                g.DrawCircle(dots[0], 2.5f);
+                g.DrawCircle(dots[1], 2.5f);
             }
 
             curcount[0] = updateDotCount(current[0], curcount[0]);

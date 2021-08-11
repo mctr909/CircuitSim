@@ -2,7 +2,7 @@
 
 namespace Circuit.Elements {
     class OrGateElm : GateElm {
-        public OrGateElm(int xx, int yy) : base(xx, yy) { }
+        public OrGateElm(Point pos) : base(pos) { }
 
         public OrGateElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) { }
 

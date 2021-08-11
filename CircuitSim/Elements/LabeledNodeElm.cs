@@ -16,7 +16,7 @@ namespace Circuit.Elements {
 
         public bool IsInternal { get { return (mFlags & FLAG_INTERNAL) != 0; } }
 
-        public LabeledNodeElm(int xx, int yy) : base(xx, yy) {
+        public LabeledNodeElm(Point pos) : base(pos) {
             Text = "label";
         }
 
@@ -111,13 +111,13 @@ namespace Circuit.Elements {
                 lineOver = true;
                 str = str.Substring(1);
             }
-            drawCenteredText(g, str, X2, Y2, true);
+            drawCenteredText(g, str, P2.X, P2.Y, true);
             if (lineOver) {
                 int asc = (int)CustomGraphics.FontText.Size;
                 if (lineOver) {
-                    int ya = Y2 - asc;
+                    int ya = P2.Y - asc;
                     int sw = (int)g.GetTextSize(str).Width;
-                    g.DrawLine(X2 - sw / 2, ya, X2 + sw / 2, ya);
+                    g.DrawLine(P2.X - sw / 2, ya, P2.X + sw / 2, ya);
                 }
             }
             mCurCount = updateDotCount(mCurrent, mCurCount);

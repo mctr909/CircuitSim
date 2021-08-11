@@ -11,7 +11,7 @@ namespace Circuit.Elements {
         double maxVoltage;
         double freqTimeZero;
 
-        public AMElm(int xx, int yy) : base(xx, yy) {
+        public AMElm(Point pos) : base(pos) {
             maxVoltage = 5;
             carrierfreq = 1000;
             signalfreq = 40;
@@ -61,7 +61,7 @@ namespace Circuit.Elements {
             g.TextColor = NeedsHighlight ? SelectColor : WhiteColor;
             double v = getVoltage();
             string s = "AM";
-            drawCenteredText(g, s, X2, Y2, true);
+            drawCenteredText(g, s, P2.X, P2.Y, true);
             drawWaveform(g, mPoint2);
             drawPosts(g);
             mCurCount = updateDotCount(-mCurrent, mCurCount);

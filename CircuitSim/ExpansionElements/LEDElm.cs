@@ -13,11 +13,12 @@ namespace Circuit.Elements {
         Point ledLead2;
         Point ledCenter;
 
-        public LEDElm(int xx, int yy) : base(xx, yy) {
+        public LEDElm(Point pos) : base(pos) {
             modelName = lastLEDModelName;
             setup();
             maxBrightnessCurrent = .01;
-            colorR = 1; colorG = colorB = 0;
+            colorR = 1;
+            colorG = colorB = 0;
         }
 
         public LEDElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) {

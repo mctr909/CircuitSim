@@ -1,6 +1,8 @@
-﻿namespace Circuit.Elements {
+﻿using System.Drawing;
+
+namespace Circuit.Elements {
     class NMosfetElm : MosfetElm {
-        public NMosfetElm(int xx, int yy) : base(xx, yy, false) { }
+        public NMosfetElm(Point pos) : base(pos, false) { }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.NMOS; } }
     }

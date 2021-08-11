@@ -128,7 +128,7 @@ namespace Circuit.Elements {
             }
         }
 
-        public ChipElm(int xx, int yy) : base(xx, yy) {
+        public ChipElm(Point pos) : base(pos) {
             mNoDiagonal = true;
             SetupPins();
             setSize(1);
@@ -225,14 +225,14 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public override void Drag(int xx, int yy) {
-            yy = Sim.SnapGrid(yy);
-            if (xx < X1) {
-                xx = X1;
-                yy = Y1;
+        public override void Drag(Point pos) {
+            pos = Sim.SnapGrid(pos);
+            if (pos.X < P1.X) {
+                pos.X = P1.X;
+                pos.Y = P1.Y;
             } else {
-                Y1 = Y2 = yy;
-                X2 = Sim.SnapGrid(xx);
+                P1.Y = P2.Y = pos.Y;
+                P2.X = Sim.SnapGrid(pos.X);
             }
             SetPoints();
         }
@@ -240,7 +240,8 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             clockPoints = null;
             int hs = cspc;
-            int x0 = X1 + cspc2; int y0 = Y1;
+            int x0 = P1.X + cspc2;
+            int y0 = P1.Y;
             int xr = x0 - cspc;
             int yr = y0 - cspc;
             int xs = sizeX * cspc2;
@@ -270,7 +271,8 @@ namespace Circuit.Elements {
 
         /* see if we can move pin to position xp, yp, and return the new position */
         public bool getPinPos(int xp, int yp, int pin, int[] pos) {
-            int x0 = X1 + cspc2; int y0 = Y1;
+            int x0 = P1.X + cspc2;
+            int y0 = P1.Y;
             int xr = x0 - cspc;
             int yr = y0 - cspc;
             double xd = (xp - xr) / (double)cspc2 - .5;

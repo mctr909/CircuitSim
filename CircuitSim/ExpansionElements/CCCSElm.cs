@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 namespace Circuit.Elements {
     class CCCSElm : VCCSElm {
@@ -9,7 +10,7 @@ namespace Circuit.Elements {
             SetupPins();
         }
 
-        public CCCSElm(int xx, int yy) : base(xx, yy) {
+        public CCCSElm(Point pos) : base(pos) {
             exprString = "2*i";
             parseExpr();
         }

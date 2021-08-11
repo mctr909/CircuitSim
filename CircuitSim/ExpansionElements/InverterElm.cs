@@ -11,7 +11,7 @@ namespace Circuit.Elements {
         double lastOutputVoltage;
         Point center;
 
-        public InverterElm(int xx, int yy) : base(xx, yy) {
+        public InverterElm(Point pos) : base(pos) {
             mNoDiagonal = true;
             slewRate = .5;
 

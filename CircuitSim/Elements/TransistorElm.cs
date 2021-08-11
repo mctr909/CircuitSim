@@ -41,7 +41,7 @@ namespace Circuit.Elements {
         const double rgain = .5;
         const double inv_rgain = 1 / rgain;
 
-        public TransistorElm(int xx, int yy, bool pnpflag) : base(xx, yy) {
+        public TransistorElm(Point pos, bool pnpflag) : base(pos) {
             pnp = pnpflag ? -1 : 1;
             beta = 100;
             setup();

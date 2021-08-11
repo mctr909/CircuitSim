@@ -25,11 +25,11 @@ namespace Circuit.Elements {
         protected Point[] posts;
         protected List<VoltageSourceRecord> voltageSources;
 
-        public CompositeElm(int xx, int yy) : base(xx, yy) { }
+        public CompositeElm(Point pos) : base(pos) { }
 
         public CompositeElm(int xa, int ya, int xb, int yb, int f) : base(xa, ya, xb, yb, f) { }
 
-        public CompositeElm(int xx, int yy, string s, int[] externalNodes) : base(xx, yy) {
+        public CompositeElm(Point pos, string s, int[] externalNodes) : base(pos) {
             loadComposite(null, s, externalNodes);
             allocNodes();
         }
@@ -122,7 +122,7 @@ namespace Circuit.Elements {
                 string line = modelLinet.nextToken();
                 var stModel = new StringTokenizer(line, " +\t\n\r\f");
                 var ceType = MenuItems.GetItemFromString(stModel.nextToken());
-                var newce = MenuItems.ConstructElement(ceType, 0, 0);
+                var newce = MenuItems.ConstructElement(ceType);
                 if (stIn != null) {
                     var tint = newce.DumpType;
                     string dumpedCe = stIn.nextToken();

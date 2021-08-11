@@ -24,7 +24,7 @@ namespace Circuit.Elements {
 
         int[] samplingRateChoices = { 8000, 11025, 16000, 22050, 44100 };
 
-        public AudioOutputElm(int xx, int yy) : base(xx, yy) {
+        public AudioOutputElm(Point pos) : base(pos) {
             duration = 1;
             samplingRate = lastSamplingRate;
             labelNum = getNextLabelNum();
@@ -96,11 +96,11 @@ namespace Circuit.Elements {
             int textWidth = (int)g.GetTextSize(s).Width;
             g.LineColor = GrayColor;
             int pct = dataFull ? textWidth : textWidth * dataPtr / dataCount;
-            g.FillRectangle(X2 - textWidth / 2, Y2 - 10, pct, 20);
+            g.FillRectangle(P2.X - textWidth / 2, P2.Y - 10, pct, 20);
             g.LineColor = selected ? SelectColor : WhiteColor;
             Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, 1 - (textWidth / 2.0 + 8) / mLen);
             setBbox(mPoint1, mLead1, 0);
-            drawCenteredText(g, s, X2, Y2, true);
+            drawCenteredText(g, s, P2.X, P2.Y, true);
             if (selected) {
                 g.ThickLineColor = SelectColor;
             } else {

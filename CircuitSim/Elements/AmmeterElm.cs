@@ -29,7 +29,7 @@ namespace Circuit.Elements {
         Point[] arrowPoly;
         Point textPos;
 
-        public AmmeterElm(int xx, int yy) : base(xx, yy) {
+        public AmmeterElm(Point pos) : base(pos) {
             mFlags = FLAG_SHOWCURRENT;
             scale = E_SCALE.AUTO;
         }

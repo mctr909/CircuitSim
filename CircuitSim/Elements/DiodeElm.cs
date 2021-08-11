@@ -21,7 +21,7 @@ namespace Circuit.Elements {
         bool customModelUI;
         List<DiodeModel> models;
 
-        public DiodeElm(int xx, int yy) : base(xx, yy) {
+        public DiodeElm(Point pos) : base(pos) {
             modelName = lastModelName;
             diode = new Diode(Sim, mCir);
             setup();

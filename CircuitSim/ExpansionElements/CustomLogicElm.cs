@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Circuit.Elements {
@@ -13,7 +14,7 @@ namespace Circuit.Elements {
 
         static string lastModelName = "default";
 
-        public CustomLogicElm(int xx, int yy) : base(xx, yy) {
+        public CustomLogicElm(Point pos) : base(pos) {
             modelName = lastModelName;
             SetupPins();
         }
@@ -246,7 +247,7 @@ namespace Circuit.Elements {
                 var editDialog = new ElementInfoDialog(model, Sim);
                 CirSim.CustomLogicEditDialog = editDialog;
                 var pos = Sim.DisplayLocation;
-                editDialog.Show(pos.X + X1, pos.Y + Y1);
+                editDialog.Show(pos.X + P1.X, pos.Y + P1.Y);
                 return;
             }
             base.SetElementValue(n, ei);

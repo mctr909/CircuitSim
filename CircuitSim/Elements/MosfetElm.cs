@@ -57,7 +57,7 @@ namespace Circuit.Elements {
         int mode = 0;
         double gm = 0;
 
-        public MosfetElm(int xx, int yy, bool pnpflag) : base(xx, yy) {
+        public MosfetElm(Point pos, bool pnpflag) : base(pos) {
             pnp = pnpflag ? -1 : 1;
             mFlags = pnpflag ? FLAG_PNP : 0;
             mFlags |= FLAG_BODY_DIODE;
@@ -200,7 +200,7 @@ namespace Circuit.Elements {
 
             if ((mFlags & FLAG_SHOWVT) != 0) {
                 string s = "" + (vt * pnp);
-                drawCenteredLText(g, s, X2 + 2, Y2, false);
+                drawCenteredLText(g, s, P2.X + 2, P2.Y, false);
             }
             mCurCount = updateDotCount(-ids, mCurCount);
             drawDots(g, src[0], src[1], mCurCount);

@@ -18,7 +18,7 @@ namespace Circuit.Elements {
         DiodeElm diode;
         TransistorElm transistor;
 
-        public OptocouplerElm(int xx, int yy) : base(xx, yy, modelString, modelExternalNodes) {
+        public OptocouplerElm(Point pos) : base(pos, modelString, modelExternalNodes) {
             mNoDiagonal = true;
             initOptocoupler();
         }
@@ -103,8 +103,8 @@ namespace Circuit.Elements {
 
             // adapted from ChipElm
             int hs = cspc;
-            int x0 = X1 + cspc2;
-            int y0 = Y1;
+            int x0 = P1.X + cspc2;
+            int y0 = P1.Y;
             int xr = x0 - cspc;
             int yr = y0 - cspc / 2;
             int sizeX = 2;

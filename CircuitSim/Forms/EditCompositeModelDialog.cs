@@ -81,9 +81,9 @@ namespace Circuit {
             mG = CustomGraphics.FromImage(mBmp);
             mPnlV.Controls.Add(mCanvas);
 
-            mChip = new CustomCompositeChipElm(50, 50);
-            mChip.X2 = 200;
-            mChip.Y2 = 50;
+            mChip = new CustomCompositeChipElm(new Point(50, 50));
+            mChip.P2.X = 200;
+            mChip.P2.Y = 50;
             createPinsFromModel();
 
             var lbl = new Label() { Top = mCanvas.Bottom, AutoSize = true, Text = "Model Name" };

@@ -389,12 +389,12 @@ namespace Circuit {
                     bool notReady = (ce is WireElm) && !((WireElm)ce).hasWireInfo;
 
                     /* which post does this element connect to, if any? */
-                    if (pt.X == wire.X1 && pt.Y == wire.Y1) {
+                    if (pt.X == wire.P1.X && pt.Y == wire.P1.Y) {
                         neighbors0.Add(ce);
                         if (notReady) {
                             isReady0 = false;
                         }
-                    } else if (pt.X == wire.X2 && pt.Y == wire.Y2) {
+                    } else if (pt.X == wire.P2.X && pt.Y == wire.P2.Y) {
                         neighbors1.Add(ce);
                         if (notReady) {
                             isReady1 = false;

@@ -10,7 +10,7 @@ namespace Circuit.Elements {
         Point ps4;
         Point textPos;
 
-        public ResistorElm(int xx, int yy) : base(xx, yy) {
+        public ResistorElm(Point pos) : base(pos) {
             Resistance = 1000;
         }
 

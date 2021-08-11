@@ -245,7 +245,7 @@ namespace Circuit {
             }
 
             if (item == ELEMENT_MENU_ITEM.VIEW_IN_FLOAT_SCOPE && mMenuElm != null) {
-                var newScope = new ScopeElm(SnapGrid(mMenuElm.X1 + 50), SnapGrid(mMenuElm.Y1 + 50));
+                var newScope = new ScopeElm(SnapGrid(mMenuElm.P1.X + 50, mMenuElm.P1.Y + 50));
                 ElmList.Add(newScope);
                 newScope.setScopeElm(mMenuElm);
             }
@@ -283,7 +283,7 @@ namespace Circuit {
             }
 
             if (item == SCOPE_MENU_ITEM.UNDOCK && 0 <= mMenuScope) {
-                var newScope = new ScopeElm(SnapGrid(mMenuElm.X1 + 50), SnapGrid(mMenuElm.Y1 + 50));
+                var newScope = new ScopeElm(SnapGrid(mMenuElm.P1.X + 50, mMenuElm.P1.Y + 50));
                 ElmList.Add(newScope);
                 newScope.setElmScope(mScopes[mMenuScope]);
                 /* remove scope from list.  setupScopes() will fix the positions */
@@ -403,23 +403,23 @@ namespace Circuit {
                 }
 
                 // save positions
-                int x1 = ce.X1;
-                int y1 = ce.Y1;
-                int x2 = ce.X2;
-                int y2 = ce.Y2;
+                int x1 = ce.P1.X;
+                int y1 = ce.P1.Y;
+                int x2 = ce.P2.X;
+                int y2 = ce.P2.Y;
 
                 // set them to 0 so they're easy to remove
-                ce.X1 = ce.Y1 = ce.X2 = ce.Y2 = 0;
+                ce.P1.X = ce.P1.Y = ce.P2.X = ce.P2.Y = 0;
 
                 string tstring = ce.Dump;
                 var rg = new Regex("[A-Za-z0-9]+ 0 0 0 0 ");
                 tstring = rg.Replace(tstring, "", 1); // remove unused tint_x1 y1 x2 y2 coords for internal components
 
                 // restore positions
-                ce.X1 = x1;
-                ce.Y1 = y1;
-                ce.X2 = x2;
-                ce.Y2 = y2;
+                ce.P1.X = x1;
+                ce.P1.Y = y1;
+                ce.P2.X = x2;
+                ce.P2.Y = y2;
                 if (dump.Length > 0) {
                     dump += " ";
                 }
@@ -563,6 +563,18 @@ namespace Circuit {
             return (x + GRID_ROUND) & GRID_MASK;
         }
 
+        public Point SnapGrid(int x, int y) {
+            return new Point(
+                (x + GRID_ROUND) & GRID_MASK,
+                (y + GRID_ROUND) & GRID_MASK);
+        }
+
+        public Point SnapGrid(Point pos) {
+            return new Point(
+                (pos.X + GRID_ROUND) & GRID_MASK,
+                (pos.Y + GRID_ROUND) & GRID_MASK);
+        }
+
         /* convert grid coordinates to screen coordinates */
         public int TransformX(double x) {
             return (int)((x * Transform[0]) + Transform[4]);
@@ -654,8 +666,8 @@ namespace Circuit {
 
         void onMouseDown(MouseEventArgs e) {
             mCir.StopElm = null; /* if stopped, allow user to select other elements to fix circuit */
-            mMenuX = mMenuClientX = MouseCursorX = e.X;
-            mMenuY = mMenuClientY = MouseCursorY = e.Y;
+            mMenuPos.X = mMenuClient.X = MouseCursorX = e.X;
+            mMenuPos.Y = mMenuClient.Y = MouseCursorY = e.Y;
             mMouseButton = e.Button;
             mMouseDownTime = DateTime.Now.ToFileTimeUtc();
 
@@ -713,9 +725,10 @@ namespace Circuit {
                 return;
             }
 
-            int gx = inverseTransformX(e.X);
-            int gy = inverseTransformY(e.Y);
-            if (doSwitch(gx, gy)) {
+            var gpos = new Point(
+                inverseTransformX(e.X),
+                inverseTransformY(e.Y));
+            if (doSwitch(gpos)) {
                 /* do this BEFORE we change the mouse mode to MODE_DRAG_POST!  Or else logic inputs */
                 /* will add dots to the whole circuit when we click on them! */
                 return;
@@ -723,7 +736,7 @@ namespace Circuit {
 
             /* IES - Grab resize handles in select mode if they are far enough apart and you are on top of them */
             if (TempMouseMode == MOUSE_MODE.SELECT && mMouseElm != null
-                && mMouseElm.GetHandleGrabbedClose(gx, gy, POSTGRABSQ, MINPOSTGRABSIZE) >= 0
+                && mMouseElm.GetHandleGrabbedClose(gpos, POSTGRABSQ, MINPOSTGRABSIZE) >= 0
                 && !anySelectedButMouse()) {
                 TempMouseMode = MOUSE_MODE.DRAG_POST;
             }
@@ -733,19 +746,17 @@ namespace Circuit {
             }
 
             PushUndo();
-            mInitDragGridX = gx;
-            mInitDragGridY = gy;
+            mInitDragGrid.X = gpos.X;
+            mInitDragGrid.Y = gpos.Y;
             if (TempMouseMode != MOUSE_MODE.ADD_ELM) {
                 return;
             }
             /* */
-            int x0 = SnapGrid(gx);
-            int y0 = SnapGrid(gy);
+            gpos = SnapGrid(gpos);
             if (!mCircuitArea.Contains(MouseCursorX, MouseCursorY)) {
                 return;
             }
-
-            DragElm = MenuItems.ConstructElement(mMouseMode, x0, y0);
+            DragElm = MenuItems.ConstructElement(mMouseMode, gpos);
         }
 
         void onMouseUp(MouseEventArgs e) {
@@ -913,11 +924,11 @@ namespace Circuit {
                 /* centered text causes problems when trying to center the circuit, */
                 /* so we special-case it here */
                 if (!ce.IsCenteredText) {
-                    minx = Math.Min(ce.X1, Math.Min(ce.X2, minx));
-                    maxx = Math.Max(ce.X1, Math.Max(ce.X2, maxx));
+                    minx = Math.Min(ce.P1.X, Math.Min(ce.P2.X, minx));
+                    maxx = Math.Max(ce.P1.X, Math.Max(ce.P2.X, maxx));
                 }
-                miny = Math.Min(ce.Y1, Math.Min(ce.Y2, miny));
-                maxy = Math.Max(ce.Y1, Math.Max(ce.Y2, maxy));
+                miny = Math.Min(ce.P1.Y, Math.Min(ce.P2.Y, miny));
+                maxy = Math.Max(ce.P1.Y, Math.Max(ce.P2.Y, maxy));
             }
             if (minx > maxx) {
                 return new Rectangle();
@@ -1257,12 +1268,12 @@ namespace Circuit {
             ControlPanel.VoltageRange = st.nextTokenDouble();
         }
 
-        bool doSwitch(int x, int y) {
+        bool doSwitch(Point pos) {
             if (mMouseElm == null || !(mMouseElm is SwitchElm)) {
                 return false;
             }
             var se = (SwitchElm)mMouseElm;
-            if (!se.getSwitchRect().Contains(x, y)) {
+            if (!se.getSwitchRect().Contains(pos)) {
                 return false;
             }
             se.toggle();
@@ -1283,14 +1294,15 @@ namespace Circuit {
                 dragSplitter(MouseCursorX, MouseCursorY);
                 return;
             }
-            int gx = inverseTransformX(MouseCursorX);
-            int gy = inverseTransformY(MouseCursorY);
+            var gpos = new Point(
+                inverseTransformX(MouseCursorX),
+                inverseTransformY(MouseCursorY));
             if (!mCircuitArea.Contains(MouseCursorX, MouseCursorY)) {
                 return;
             }
             bool changed = false;
             if (DragElm != null) {
-                DragElm.Drag(gx, gy);
+                DragElm.Drag(gpos);
             }
             bool success = true;
             switch (TempMouseMode) {
@@ -1298,22 +1310,22 @@ namespace Circuit {
                 dragAll(MouseCursorX, MouseCursorY);
                 break;
             case MOUSE_MODE.DRAG_ROW:
-                dragRow(SnapGrid(gx), SnapGrid(gy));
+                dragRow(SnapGrid(gpos));
                 changed = true;
                 break;
             case MOUSE_MODE.DRAG_COLUMN:
-                dragColumn(SnapGrid(gx), SnapGrid(gy));
+                dragColumn(SnapGrid(gpos));
                 changed = true;
                 break;
             case MOUSE_MODE.DRAG_POST:
                 if (mMouseElm != null) {
-                    dragPost(SnapGrid(gx), SnapGrid(gy));
+                    dragPost(SnapGrid(gpos));
                     changed = true;
                 }
                 break;
             case MOUSE_MODE.SELECT:
                 if (mMouseElm == null) {
-                    selectArea(gx, gy);
+                    selectArea(gpos);
                 } else {
                     /* wait short delay before dragging.  This is to fix problem where switches were accidentally getting */
                     /* dragged when tapped on mobile devices */
@@ -1321,22 +1333,20 @@ namespace Circuit {
                         return;
                     }
                     TempMouseMode = MOUSE_MODE.DRAG_SELECTED;
-                    changed = success = dragSelected(gx, gy);
+                    changed = success = dragSelected(gpos);
                 }
                 break;
             case MOUSE_MODE.DRAG_SELECTED:
-                changed = success = dragSelected(gx, gy);
+                changed = success = dragSelected(gpos);
                 break;
             }
             if (success) {
-                mDragScreenX = MouseCursorX;
-                mDragScreenY = MouseCursorY;
+                mDragScreen.X = MouseCursorX;
+                mDragScreen.Y = MouseCursorY;
                 /* Console.WriteLine("setting dragGridx in mousedragged");*/
-                mDragGridX = inverseTransformX(mDragScreenX);
-                mDragGridY = inverseTransformY(mDragScreenY);
+                mDragGrid = inverseTransform(mDragScreen);
                 if (!(TempMouseMode == MOUSE_MODE.DRAG_SELECTED && onlyGraphicsElmsSelected())) {
-                    mDragGridX = SnapGrid(mDragGridX);
-                    mDragGridY = SnapGrid(mDragGridY);
+                    mDragGrid = SnapGrid(mDragGrid);
                 }
             }
             if (changed) {
@@ -1362,65 +1372,52 @@ namespace Circuit {
         }
 
         void dragAll(int x, int y) {
-            int dx = x - mDragScreenX;
-            int dy = y - mDragScreenY;
+            int dx = x - mDragScreen.X;
+            int dy = y - mDragScreen.Y;
             if (dx == 0 && dy == 0) {
                 return;
             }
             Transform[4] += dx;
             Transform[5] += dy;
-            mDragScreenX = x;
-            mDragScreenY = y;
+            mDragScreen.X = x;
+            mDragScreen.Y = y;
         }
 
-        void dragRow(int x, int y) {
-            int dy = y - mDragGridY;
+        void dragRow(Point pos) {
+            int dy = pos.Y - mDragGrid.Y;
             if (dy == 0) {
                 return;
             }
             for (int i = 0; i != ElmList.Count; i++) {
                 var ce = getElm(i);
-                if (ce.Y1 == mDragGridY) {
+                if (ce.P1.Y == mDragGrid.Y) {
                     ce.MovePoint(0, 0, dy);
                 }
-                if (ce.Y2 == mDragGridY) {
+                if (ce.P2.Y == mDragGrid.Y) {
                     ce.MovePoint(1, 0, dy);
                 }
             }
             removeZeroLengthElements();
         }
 
-        void dragColumn(int x, int y) {
-            int dx = x - mDragGridX;
+        void dragColumn(Point pos) {
+            int dx = pos.X - mDragGrid.X;
             if (dx == 0) {
                 return;
             }
             for (int i = 0; i != ElmList.Count; i++) {
                 var ce = getElm(i);
-                if (ce.X1 == mDragGridX) {
+                if (ce.P1.X == mDragGrid.X) {
                     ce.MovePoint(0, dx, 0);
                 }
-                if (ce.X2 == mDragGridX) {
+                if (ce.P1.X == mDragGrid.X) {
                     ce.MovePoint(1, dx, 0);
                 }
             }
             removeZeroLengthElements();
         }
 
-        bool onlyGraphicsElmsSelected() {
-            if (mMouseElm != null) {
-                return false;
-            }
-            for (int i = 0; i != ElmList.Count; i++) {
-                var ce = getElm(i);
-                if (ce.IsSelected) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        bool dragSelected(int x, int y) {
+        bool dragSelected(Point pos) {
             bool me = false;
             int i;
             if (mMouseElm != null && !mMouseElm.IsSelected) {
@@ -1428,11 +1425,10 @@ namespace Circuit {
             }
             if (!onlyGraphicsElmsSelected()) {
                 Console.WriteLine("Snapping x and y");
-                x = SnapGrid(x);
-                y = SnapGrid(y);
+                pos = SnapGrid(pos);
             }
-            int dx = x - mDragGridX;
-            int dy = y - mDragGridY;
+            int dx = pos.X - mDragGrid.X;
+            int dy = pos.Y - mDragGrid.Y;
             if (dx == 0 && dy == 0) {
                 /* don't leave mouseElm selected if we selected it above */
                 if (me) {
@@ -1465,20 +1461,33 @@ namespace Circuit {
             return allowed;
         }
 
-        void dragPost(int x, int y) {
+        void dragPost(Point pos) {
             if (mDraggingPost == -1) {
                 mDraggingPost
-                    = (Utils.Distance(mMouseElm.X1, mMouseElm.Y1, x, y)
-                    > Utils.Distance(mMouseElm.X2, mMouseElm.Y2, x, y))
+                    = (Utils.Distance(mMouseElm.P1.X, mMouseElm.P1.Y, pos.X, pos.Y)
+                    > Utils.Distance(mMouseElm.P2.X, mMouseElm.P2.Y, pos.X, pos.Y))
                     ? 1 : 0;
             }
-            int dx = x - mDragGridX;
-            int dy = y - mDragGridY;
+            int dx = pos.X - mDragGrid.X;
+            int dy = pos.Y - mDragGrid.Y;
             if (dx == 0 && dy == 0) {
                 return;
             }
             mMouseElm.MovePoint(mDraggingPost, dx, dy);
             NeedAnalyze();
+        }
+
+        bool onlyGraphicsElmsSelected() {
+            if (mMouseElm != null) {
+                return false;
+            }
+            for (int i = 0; i != ElmList.Count; i++) {
+                var ce = getElm(i);
+                if (ce.IsSelected) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         void doFlip() {
@@ -1487,32 +1496,31 @@ namespace Circuit {
         }
 
         void doSplit(CircuitElm ce) {
-            int x = SnapGrid(inverseTransformX(mMenuX));
-            int y = SnapGrid(inverseTransformY(mMenuY));
+            var pos = SnapGrid(inverseTransform(mMenuPos));
             if (ce == null || !(ce is WireElm)) {
                 return;
             }
-            if (ce.X1 == ce.X2) {
-                x = ce.X1;
+            if (ce.P1.X == ce.P2.X) {
+                pos.X = ce.P1.X;
             } else {
-                y = ce.Y1;
+                pos.Y = ce.P1.Y;
             }
             /* don't create zero-length wire */
-            if (x == ce.X1 && y == ce.Y1 || x == ce.X2 && y == ce.Y2) {
+            if (pos.X == ce.P1.X && pos.Y == ce.P1.Y || pos.X == ce.P2.X && pos.Y == ce.P2.Y) {
                 return;
             }
-            var newWire = new WireElm(x, y);
-            newWire.Drag(ce.X2, ce.Y2);
-            ce.Drag(x, y);
+            var newWire = new WireElm(pos);
+            newWire.Drag(ce.P2);
+            ce.Drag(pos);
             ElmList.Add(newWire);
             NeedAnalyze();
         }
 
-        void selectArea(int x, int y) {
-            int x1 = Math.Min(x, mInitDragGridX);
-            int x2 = Math.Max(x, mInitDragGridX);
-            int y1 = Math.Min(y, mInitDragGridY);
-            int y2 = Math.Max(y, mInitDragGridY);
+        void selectArea(Point pos) {
+            int x1 = Math.Min(pos.X, mInitDragGrid.X);
+            int x2 = Math.Max(pos.X, mInitDragGrid.X);
+            int y1 = Math.Min(pos.Y, mInitDragGrid.Y);
+            int y2 = Math.Max(pos.Y, mInitDragGrid.Y);
             mSelectedArea = new Rectangle(x1, y1, x2 - x1, y2 - y1);
             for (int i = 0; i != ElmList.Count; i++) {
                 var ce = getElm(i);
@@ -1535,7 +1543,7 @@ namespace Circuit {
         void removeZeroLengthElements() {
             for (int i = ElmList.Count - 1; i >= 0; i--) {
                 var ce = getElm(i);
-                if (ce.X1 == ce.X2 && ce.Y1 == ce.Y2) {
+                if (ce.P1.X == ce.P2.X && ce.P1.Y == ce.P2.Y) {
                     ElmList.RemoveAt(i);
                     /*Console.WriteLine("delete element: {0} {1}\t{2} {3}\t{4}", ce.GetType(), ce.x1, ce.y1, ce.x2, ce.y2); */
                     ce.Delete();
@@ -1567,6 +1575,11 @@ namespace Circuit {
         int inverseTransformY(double y) {
             return (int)((y - Transform[5]) / Transform[3]);
         }
+        Point inverseTransform(Point pos) {
+            return new Point(
+                (int)((pos.X - Transform[4]) / Transform[0]),
+                (int)((pos.Y - Transform[5]) / Transform[3]));
+        }
 
         /* need to break this out into a separate routine to handle selection, */
         /* since we don't get mouse move events on mobile */
@@ -1578,10 +1591,10 @@ namespace Circuit {
             int gy = inverseTransformY(my);
 
             /*Console.WriteLine("Settingd draggridx in mouseEvent");*/
-            mDragGridX = SnapGrid(gx);
-            mDragGridY = SnapGrid(gy);
-            mDragScreenX = mx;
-            mDragScreenY = my;
+            mDragGrid.X = SnapGrid(gx);
+            mDragGrid.Y = SnapGrid(gy);
+            mDragScreen.X = mx;
+            mDragScreen.Y = my;
             mDraggingPost = -1;
 
             mMousePost = -1;
@@ -1646,8 +1659,8 @@ namespace Circuit {
         }
 
         void onContextMenu(Control ctrl, MouseEventArgs e) {
-            mMenuClientX = mParent.Location.X + e.X;
-            mMenuClientY = mParent.Location.Y + e.Y;
+            mMenuClient.X = mParent.Location.X + e.X;
+            mMenuClient.Y = mParent.Location.Y + e.Y;
             doPopupMenu();
         }
 
@@ -1659,17 +1672,17 @@ namespace Circuit {
                 if (mScopes[ScopeSelected].CanMenu) {
                     mMenuScope = ScopeSelected;
                     mMenuPlot = mScopes[ScopeSelected].SelectedPlot;
-                    var y = Math.Max(0, Math.Min(mMenuClientY, mBmp.Height - 160));
-                    mPopupMenu = mScopePopupMenu.Show(mMenuClientX, y, false);
+                    var y = Math.Max(0, Math.Min(mMenuClient.Y, mBmp.Height - 160));
+                    mPopupMenu = mScopePopupMenu.Show(mMenuClient.X, y, false);
                 }
             } else if (mMouseElm != null) {
                 if (!(mMouseElm is ScopeElm)) {
-                    mPopupMenu = mElementPopupMenu.Show(mMenuClientX, mMenuClientY, mMouseElm);
+                    mPopupMenu = mElementPopupMenu.Show(mMenuClient.X, mMenuClient.Y, mMouseElm);
                 } else {
                     var s = (ScopeElm)mMouseElm;
                     if (s.elmScope.CanMenu) {
                         mMenuPlot = s.elmScope.SelectedPlot;
-                        mPopupMenu = mScopePopupMenu.Show(mMenuClientX, mMenuClientY, true);
+                        mPopupMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, true);
                     }
                 }
             }

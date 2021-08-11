@@ -13,13 +13,13 @@ namespace Circuit.Elements {
         Point ps1;
         Point ps2;
 
-        public SwitchElm(int xx, int yy) : base(xx, yy) {
+        public SwitchElm(Point pos) : base(pos) {
             momentary = false;
             position = 0;
             posCount = 2;
         }
 
-        public SwitchElm(int xx, int yy, bool mm) : base(xx, yy) {
+        public SwitchElm(Point pos, bool mm) : base(pos) {
             position = mm ? 1 : 0;
             momentary = mm;
             posCount = 2;

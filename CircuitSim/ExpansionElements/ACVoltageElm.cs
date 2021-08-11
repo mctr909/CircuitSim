@@ -1,5 +1,7 @@
-﻿namespace Circuit.Elements {
+﻿using System.Drawing;
+
+namespace Circuit.Elements {
     class ACVoltageElm : VoltageElm {
-        public ACVoltageElm(int xx, int yy) : base(xx, yy, WAVEFORM.AC) { }
+        public ACVoltageElm(Point pos) : base(pos, WAVEFORM.AC) { }
     }
 }

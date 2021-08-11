@@ -14,7 +14,7 @@ namespace Circuit.Elements {
         double lasttime = 0;
         double funcx = 0;
 
-        public FMElm(int xx, int yy) : base(xx, yy) {
+        public FMElm(Point pos) : base(pos) {
             deviation = 200;
             maxVoltage = 5;
             carrierfreq = 800;
@@ -70,7 +70,7 @@ namespace Circuit.Elements {
             g.TextColor = NeedsHighlight ? SelectColor : WhiteColor;
             double v = getVoltage();
             string s = "FM";
-            drawCenteredText(g, s, X2, Y2, true);
+            drawCenteredText(g, s, P2.X, P2.Y, true);
             drawWaveform(g, mPoint2);
             drawPosts(g);
             mCurCount = updateDotCount(-mCurrent, mCurCount);

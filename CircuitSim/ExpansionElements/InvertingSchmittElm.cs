@@ -17,7 +17,7 @@ namespace Circuit.Elements {
         double dlt;
         double dut;
 
-        public InvertingSchmittElm(int xx, int yy) : base(xx, yy) {
+        public InvertingSchmittElm(Point pos) : base(pos) {
             mNoDiagonal = true;
             slewRate = .5;
             state = false;

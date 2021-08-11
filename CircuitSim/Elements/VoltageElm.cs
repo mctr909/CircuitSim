@@ -37,7 +37,7 @@ namespace Circuit.Elements {
 
         const double defaultPulseDuty = 1 / Pi2;
 
-        protected VoltageElm(int xx, int yy, WAVEFORM wf) : base(xx, yy) {
+        protected VoltageElm(Point pos, WAVEFORM wf) : base(pos) {
             waveform = wf;
             maxVoltage = 5;
             frequency = 40;
@@ -204,7 +204,7 @@ namespace Circuit.Elements {
         }
 
         public override void Draw(CustomGraphics g) {
-            setBbox(X1, Y1, X2, Y2);
+            setBbox(P1.X, P1.Y, P2.X, P2.Y);
             draw2Leads(g);
 
             if (waveform == WAVEFORM.DC) {

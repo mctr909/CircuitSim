@@ -17,7 +17,7 @@ namespace Circuit.Elements {
 
         public bool IsTrapezoidal { get { return (mFlags & FLAG_BACK_EULER) == 0; } }
 
-        public CapacitorElm(int xx, int yy) : base(xx, yy) {
+        public CapacitorElm(Point pos) : base(pos) {
             Capacitance = 1e-5;
         }
 

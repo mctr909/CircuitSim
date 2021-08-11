@@ -5,7 +5,7 @@ namespace Circuit.Elements {
         Point ps1;
         Point ps2;
 
-        public GroundElm(int xx, int yy) : base(xx, yy) { }
+        public GroundElm(Point pos) : base(pos) { }
 
         public GroundElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) { }
 

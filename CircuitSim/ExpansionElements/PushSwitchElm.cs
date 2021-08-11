@@ -1,5 +1,7 @@
-﻿namespace Circuit.Elements {
+﻿using System.Drawing;
+
+namespace Circuit.Elements {
     class PushSwitchElm : SwitchElm {
-        public PushSwitchElm(int xx, int yy) : base(xx, yy, true) { }
+        public PushSwitchElm(Point pos) : base(pos, true) { }
     }
 }

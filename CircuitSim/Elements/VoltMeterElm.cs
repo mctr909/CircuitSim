@@ -42,7 +42,7 @@ namespace Circuit.Elements {
         Point center;
         Point plusPoint;
 
-        public VoltMeterElm(int xx, int yy) : base(xx, yy) {
+        public VoltMeterElm(Point pos) : base(pos) {
             meter = TP_VOL;
 
             /* default for new elements */

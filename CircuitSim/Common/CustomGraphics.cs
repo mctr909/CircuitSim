@@ -113,10 +113,6 @@ namespace Circuit {
             g.FillPie(penPost.Brush, p.X - penPost.Width / 2, p.Y - penPost.Width / 2, penPost.Width, penPost.Width, 0, 360);
         }
 
-        public void DrawPost(float x, float y) {
-            g.FillPie(penPost.Brush, x - penPost.Width / 2, y - penPost.Width / 2, penPost.Width, penPost.Width, 0, 360);
-        }
-
         public void DrawLeftText(string s, float x, float y) {
             g.DrawString(s, FontText, brushText, x, y, textLeft);
         }
@@ -145,16 +141,12 @@ namespace Circuit {
             g.DrawLine(penLine, ax, ay, bx, by);
         }
 
-        public void DrawRectangle(float x, float y, float width, float height) {
-            g.DrawRectangle(penLine, x, y, width, height);
+        public void DrawRectangle(Rectangle rect) {
+            g.DrawRectangle(penLine, rect);
         }
 
-        public void DrawCircle(float centerX, float centerY, float radius) {
-            g.DrawArc(penLine, centerX - radius, centerY - radius, radius * 2, radius * 2, 0, 360);
-        }
-
-        public void DrawArc(float centerX, float centerY, float radius, float angle, float sweep) {
-            g.DrawArc(penLine, centerX - radius, centerY - radius, radius * 2, radius * 2, angle, sweep);
+        public void DrawCircle(Point p, float radius) {
+            g.DrawArc(penLine, p.X - radius, p.Y - radius, radius * 2, radius * 2, 0, 360);
         }
 
         public void DrawPolygon(Point[] p) {
@@ -214,8 +206,8 @@ namespace Circuit {
             g.FillPie(penLine.Brush, cx - radius, cy - radius, radius * 2, radius * 2, 0, 360);
         }
 
-        public void FillCircle(Brush brush, float cx, float cy, float radius) {
-            g.FillPie(brush, cx - radius, cy - radius, radius * 2, radius * 2, 0, 360);
+        public void FillCircle(Brush brush, PointF pos, float radius) {
+            g.FillPie(brush, pos.X - radius, pos.Y - radius, radius * 2, radius * 2, 0, 360);
         }
 
         public void FillPolygon(Color color, Point[] p) {

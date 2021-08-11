@@ -358,7 +358,7 @@ namespace Circuit {
         }
 
         void addElementItem(ToolStripMenuItem menu, string title, ELEMENTS item) {
-            var elm = ConstructElement(item, 0, 0);
+            var elm = ConstructElement(item);
             if (elm == null) {
                 return;
             } else {
@@ -647,34 +647,34 @@ namespace Circuit {
             #endregion
         }
 
-        public static CircuitElm ConstructElement(ELEMENTS n, int x1, int y1) {
+        public static CircuitElm ConstructElement(ELEMENTS n, Point pos = new Point()) {
             switch (n) {
             #region Basic Element
             case ELEMENTS.WIRE:
-                return new WireElm(x1, y1);
+                return new WireElm(pos);
             case ELEMENTS.RESISTOR:
-                return new ResistorElm(x1, y1);
+                return new ResistorElm(pos);
             case ELEMENTS.CAPACITOR:
-                return new CapacitorElm(x1, y1);
+                return new CapacitorElm(pos);
             case ELEMENTS.INDUCTOR:
-                return new InductorElm(x1, y1);
+                return new InductorElm(pos);
             case ELEMENTS.GROUND:
-                return new GroundElm(x1, y1);
+                return new GroundElm(pos);
             #endregion
 
             #region Passive Components
             case ELEMENTS.SWITCH:
-                return new SwitchElm(x1, y1);
+                return new SwitchElm(pos);
             case ELEMENTS.SWITCH_PUSH:
-                return new PushSwitchElm(x1, y1);
+                return new PushSwitchElm(pos);
             case ELEMENTS.SWITCH_TERM:
-                return new Switch2Elm(x1, y1);
+                return new Switch2Elm(pos);
             case ELEMENTS.POT:
-                return new PotElm(x1, y1);
+                return new PotElm(pos);
             case ELEMENTS.CAPACITOR_POLER:
-                return new PolarCapacitorElm(x1, y1);
+                return new PolarCapacitorElm(pos);
             case ELEMENTS.TRANSFORMER:
-                return new TransformerElm(x1, y1);
+                return new TransformerElm(pos);
             case ELEMENTS.TappedTransformerElm:
                 return null; //(CircuitElm)new TappedTransformerElm(x1, y1);
             case ELEMENTS.TransLineElm:
@@ -695,21 +695,21 @@ namespace Circuit {
 
             #region Active Components
             case ELEMENTS.DIODE:
-                return new DiodeElm(x1, y1);
+                return new DiodeElm(pos);
             case ELEMENTS.ZENER:
-                return new ZenerElm(x1, y1);
+                return new ZenerElm(pos);
             case ELEMENTS.LED:
-                return new LEDElm(x1, y1);
+                return new LEDElm(pos);
             case ELEMENTS.TRANSISTOR:
             case ELEMENTS.TRANSISTOR_N:
-                return new NTransistorElm(x1, y1);
+                return new NTransistorElm(pos);
             case ELEMENTS.TRANSISTOR_P:
-                return new PTransistorElm(x1, y1);
+                return new PTransistorElm(pos);
             case ELEMENTS.MOSFET:
             case ELEMENTS.MOSFET_N:
-                return new NMosfetElm(x1, y1);
+                return new NMosfetElm(pos);
             case ELEMENTS.MOSFET_P:
-                return new PMosfetElm(x1, y1);
+                return new PMosfetElm(pos);
             case ELEMENTS.JfetElm:
             case ELEMENTS.NJfetElm:
                 return null; //(CircuitElm)new NJfetElm(x1, y1);
@@ -736,27 +736,27 @@ namespace Circuit {
 
             #region Inputs and Sources
             case ELEMENTS.VOLTAGE_DC:
-                return new DCVoltageElm(x1, y1);
+                return new DCVoltageElm(pos);
             case ELEMENTS.VOLTAGE_AC:
-                return new ACVoltageElm(x1, y1);
+                return new ACVoltageElm(pos);
             case ELEMENTS.RAIL_DC:
-                return new RailElm(x1, y1);
+                return new RailElm(pos);
             case ELEMENTS.RAIL_AC:
-                return new ACRailElm(x1, y1);
+                return new ACRailElm(pos);
             case ELEMENTS.SquareRailElm:
                 return null; //(CircuitElm)new SquareRailElm(x1, y1);
             case ELEMENTS.CLOCK:
-                return new ClockElm(x1, y1);
+                return new ClockElm(pos);
             case ELEMENTS.SWEEP:
-                return new SweepElm(x1, y1);
+                return new SweepElm(pos);
             case ELEMENTS.AntennaElm:
                 return null; //(CircuitElm)new AntennaElm(x1, y1);
             case ELEMENTS.OSC_AM:
-                return new AMElm(x1, y1);
+                return new AMElm(pos);
             case ELEMENTS.OSC_FM:
-                return new FMElm(x1, y1);
+                return new FMElm(pos);
             case ELEMENTS.CURRENT:
-                return new CurrentElm(x1, y1);
+                return new CurrentElm(pos);
             case ELEMENTS.NoiseElm:
                 return null; //(CircuitElm)new NoiseElm(x1, y1);
             case ELEMENTS.AudioInputElm:
@@ -765,17 +765,17 @@ namespace Circuit {
 
             #region Outputs and Labels
             case ELEMENTS.OUTPUT:
-                return new LabeledNodeElm(x1, y1);
+                return new LabeledNodeElm(pos);
             case ELEMENTS.VOLTMETER:
-                return new VoltMeterElm(x1, y1);
+                return new VoltMeterElm(pos);
             case ELEMENTS.AMMETER:
-                return new AmmeterElm(x1, y1);
+                return new AmmeterElm(pos);
             case ELEMENTS.OhmMeterElm:
                 return null; //(CircuitElm)new OhmMeterElm(x1, y1);
             case ELEMENTS.DataRecorderElm:
                 return null; //(CircuitElm)new DataRecorderElm(x1, y1);
             case ELEMENTS.OUTPUT_AUDIO:
-                return new AudioOutputElm(x1, y1);
+                return new AudioOutputElm(pos);
             case ELEMENTS.LampElm:
                 return null; //(CircuitElm)new LampElm(x1, y1);
             case ELEMENTS.TextElm:
@@ -792,19 +792,19 @@ namespace Circuit {
 
             #region Active Building Blocks
             case ELEMENTS.OPAMP:
-                return new OpAmpElm(x1, y1);
+                return new OpAmpElm(pos);
             case ELEMENTS.OPAMP_SWAP:
-                return new OpAmpSwapElm(x1, y1);
+                return new OpAmpSwapElm(pos);
             case ELEMENTS.OpAmpRealElm:
                 return null; //(CircuitElm)new OpAmpRealElm(x1, y1);
             case ELEMENTS.AnalogSwitchElm:
-                return new AnalogSwitchElm(x1, y1);
+                return new AnalogSwitchElm(pos);
             case ELEMENTS.AnalogSwitch2Elm:
                 return null; //(CircuitElm)new AnalogSwitch2Elm(x1, y1);
             case ELEMENTS.SCHMITT:
-                return new SchmittElm(x1, y1);
+                return new SchmittElm(pos);
             case ELEMENTS.SCHMITT_INV:
-                return new InvertingSchmittElm(x1, y1);
+                return new InvertingSchmittElm(pos);
             case ELEMENTS.CC2Elm:
                 return null; //(CircuitElm)new CC2Elm(x1, y1);
             case ELEMENTS.CC2NegElm:
@@ -818,36 +818,36 @@ namespace Circuit {
             case ELEMENTS.VCVSElm:
                 return null; //(CircuitElm)new VCVSElm(x1, y1);
             case ELEMENTS.VCCSElm:
-                return new VCCSElm(x1, y1);
+                return new VCCSElm(pos);
             case ELEMENTS.CCVSElm:
                 return null; //(CircuitElm)new CCVSElm(x1, y1);
             case ELEMENTS.CCCSElm:
-                return new CCCSElm(x1, y1);
+                return new CCCSElm(pos);
             case ELEMENTS.OPTOCOUPLER:
-                return new OptocouplerElm(x1, y1);
+                return new OptocouplerElm(pos);
             case ELEMENTS.CustomCompositeElm:
-                return new CustomCompositeElm(x1, y1);
+                return new CustomCompositeElm(pos);
             #endregion
 
             #region Logic Gates
             case ELEMENTS.LOGIC_INPUT:
-                return new LogicInputElm(x1, y1);
+                return new LogicInputElm(pos);
             case ELEMENTS.LOGIC_OUTPUT:
-                return new LogicOutputElm(x1, y1);
+                return new LogicOutputElm(pos);
             case ELEMENTS.TRISTATE:
-                return new TriStateElm(x1, y1);
+                return new TriStateElm(pos);
             case ELEMENTS.NOT_GATE:
-                return new InverterElm(x1, y1);
+                return new InverterElm(pos);
             case ELEMENTS.AND_GATE:
-                return new AndGateElm(x1, y1);
+                return new AndGateElm(pos);
             case ELEMENTS.NAND_GATE:
-                return new NandGateElm(x1, y1);
+                return new NandGateElm(pos);
             case ELEMENTS.OR_GATE:
-                return new OrGateElm(x1, y1);
+                return new OrGateElm(pos);
             case ELEMENTS.NOR_GATE:
-                return new NorGateElm(x1, y1);
+                return new NorGateElm(pos);
             case ELEMENTS.XOR_GATE:
-                return new XorGateElm(x1, y1);
+                return new XorGateElm(pos);
             #endregion
 
             #region Digital Chips
@@ -875,7 +875,7 @@ namespace Circuit {
             /* if you take out RingCounterElm, it will break subcircuits */
             case ELEMENTS.DecadeElm:
             case ELEMENTS.RingCounterElm:
-                return new RingCounterElm(x1, y1);
+                return new RingCounterElm(pos);
             case ELEMENTS.LatchElm:
                 return null; //(CircuitElm)new LatchElm(x1, y1);
             case ELEMENTS.SeqGenElm:
@@ -887,7 +887,7 @@ namespace Circuit {
             /* if you take out UserDefinedLogicElm, it will break people's saved shortcuts */
             case ELEMENTS.CUSTOM_LOGIC:
             case ELEMENTS.UserDefinedLogicElm:
-                return new CustomLogicElm(x1, y1);
+                return new CustomLogicElm(pos);
             case ELEMENTS.SRAMElm:
                 return null; //(CircuitElm)new SRAMElm(x1, y1);
             #endregion
@@ -908,7 +908,7 @@ namespace Circuit {
             #endregion
 
             case ELEMENTS.SCOPE:
-                return new ScopeElm(x1, y1);
+                return new ScopeElm(pos);
             default:
                 return null;
             }

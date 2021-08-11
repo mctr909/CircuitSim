@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace Circuit.Elements {
     class SchmittElm : InvertingSchmittElm {
-        public SchmittElm(int xx, int yy) : base(xx, yy) { }
+        public SchmittElm(Point pos) : base(pos) { }
 
         public SchmittElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) { }
 

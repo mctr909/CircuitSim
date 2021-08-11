@@ -1,6 +1,8 @@
-﻿namespace Circuit.Elements {
+﻿using System.Drawing;
+
+namespace Circuit.Elements {
     class OpAmpSwapElm : OpAmpElm {
-        public OpAmpSwapElm(int xx, int yy) : base(xx, yy) {
+        public OpAmpSwapElm(Point pos) : base(pos) {
             mFlags |= FLAG_SWAP;
         }
     }

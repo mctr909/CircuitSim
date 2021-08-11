@@ -13,7 +13,7 @@ namespace Circuit.Elements {
         Point lead3;
         Point[] gatePoly;
 
-        public TriStateElm(int xx, int yy) : base(xx, yy) {
+        public TriStateElm(Point pos) : base(pos) {
             r_on = 0.1;
             r_off = 1e10;
         }
@@ -98,21 +98,20 @@ namespace Circuit.Elements {
             mCir.UpdateVoltageSource(0, Nodes[3], mVoltSource, Volts[0] > 2.5 ? 5 : 0);
         }
 
-        public override void Drag(int xx, int yy) {
-            xx = Sim.SnapGrid(xx);
-            yy = Sim.SnapGrid(yy);
-            if (Math.Abs(X1 - xx) < Math.Abs(Y1 - yy)) {
-                xx = X1;
+        public override void Drag(Point pos) {
+            pos = Sim.SnapGrid(pos);
+            if (Math.Abs(P1.X - pos.X) < Math.Abs(P1.Y - pos.Y)) {
+                pos.X = P1.X;
             } else {
-                yy = Y1;
+                pos.Y = P1.Y;
             }
-            int q1 = Math.Abs(X1 - xx) + Math.Abs(Y1 - yy);
+            int q1 = Math.Abs(P1.X - pos.X) + Math.Abs(P1.Y - pos.Y);
             int q2 = (q1 / 2) % CirSim.GRID_SIZE;
             if (q2 != 0) {
                 return;
             }
-            X2 = xx;
-            Y2 = yy;
+            P2.X = pos.X;
+            P2.Y = pos.Y;
             SetPoints();
         }
 

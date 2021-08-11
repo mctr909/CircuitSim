@@ -35,7 +35,7 @@ namespace Circuit.Elements {
         protected Point circlePos;
         protected Point[] linePoints;
 
-        public GateElm(int xx, int yy) : base(xx, yy) {
+        public GateElm(Point pos) : base(pos) {
             mNoDiagonal = true;
             inputCount = 2;
 

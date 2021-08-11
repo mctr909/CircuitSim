@@ -5,7 +5,7 @@ namespace Circuit.Elements {
         double maxNegativeVoltage;
         Point plusPoint;
 
-        public PolarCapacitorElm(int xx, int yy) : base(xx, yy) {
+        public PolarCapacitorElm(Point pos) : base(pos) {
             maxNegativeVoltage = 1;
         }
 
@@ -24,13 +24,13 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             double f = (mLen / 2 - 4) / mLen;
-            if (Y2 > Y1) {
+            if (P2.Y > P1.Y) {
                 plusPoint.Y += 4;
             }
-            if (Y1 > Y2) {
+            if (P1.Y > P2.Y) {
                 plusPoint.Y += 3;
             }
-            if (Y1 == Y2) {
+            if (P1.Y == P2.Y) {
                 plusPoint = Utils.InterpPoint(mPoint1, mPoint2, f - 5 / mLen, 8 * mDsign);
             } else {
                 plusPoint = Utils.InterpPoint(mPoint1, mPoint2, f - 5 / mLen, -8 * mDsign);

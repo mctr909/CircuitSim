@@ -9,7 +9,7 @@ namespace Circuit.Elements {
         Point textPos;
         double currentValue;
 
-        public CurrentElm(int xx, int yy) : base(xx, yy) {
+        public CurrentElm(Point pos) : base(pos) {
             currentValue = .01;
         }
 

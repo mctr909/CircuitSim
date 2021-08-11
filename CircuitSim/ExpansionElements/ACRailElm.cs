@@ -1,5 +1,7 @@
-﻿namespace Circuit.Elements {
+﻿using System.Drawing;
+
+namespace Circuit.Elements {
     class ACRailElm : RailElm {
-        public ACRailElm(int xx, int yy) : base(xx, yy, WAVEFORM.AC) { }
+        public ACRailElm(Point pos) : base(pos, WAVEFORM.AC) { }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Drawing;
+using System.Windows.Forms;
 
 namespace Circuit.Elements {
     class LogicOutputElm : CircuitElm {
@@ -8,7 +9,7 @@ namespace Circuit.Elements {
         double threshold;
         string value;
 
-        public LogicOutputElm(int xx, int yy) : base(xx, yy) {
+        public LogicOutputElm(Point pos) : base(pos) {
             threshold = 2.5;
         }
 
@@ -56,7 +57,7 @@ namespace Circuit.Elements {
             }
             value = s;
             setBbox(mPoint1, mLead1, 0);
-            drawCenteredLText(g, s, X2, Y2, true);
+            drawCenteredLText(g, s, P2.X, P2.Y, true);
             g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
             drawPosts(g);
         }

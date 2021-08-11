@@ -93,11 +93,11 @@ namespace Circuit {
                 || TempMouseMode == MOUSE_MODE.DRAG_SELECTED) {
                 for (int i = 0; i != ElmList.Count; i++) {
                     var ce = getElm(i);
-                    g.DrawPost(ce.X1, ce.Y1);
-                    g.DrawPost(ce.X2, ce.Y2);
+                    g.DrawPost(ce.P1);
+                    g.DrawPost(ce.P2);
                     if (ce != mMouseElm || TempMouseMode != MOUSE_MODE.DRAG_POST) {
-                        g.FillCircle(Brushes.Gray, ce.X1, ce.Y1, 3.5f);
-                        g.FillCircle(Brushes.Gray, ce.X2, ce.Y2, 3.5f);
+                        g.FillCircle(Brushes.Gray, ce.P1, 3.5f);
+                        g.FillCircle(Brushes.Gray, ce.P2, 3.5f);
                     } else {
                         ce.DrawHandles(g);
                     }
@@ -110,7 +110,7 @@ namespace Circuit {
             }
 
             /* draw handles for elm we're dragging */
-            if (DragElm != null && (DragElm.X1 != DragElm.X2 || DragElm.Y1 != DragElm.Y2)) {
+            if (DragElm != null && (DragElm.P1.X != DragElm.P2.X || DragElm.P1.Y != DragElm.P2.Y)) {
                 DragElm.Draw(g);
                 DragElm.DrawHandles(g);
             }
@@ -118,12 +118,12 @@ namespace Circuit {
             /* draw bad connections.  do this last so they will not be overdrawn. */
             for (int i = 0; i != mCir.BadConnectionList.Count; i++) {
                 var cn = mCir.BadConnectionList[i];
-                g.FillCircle(Brushes.Red, cn.X, cn.Y, 3.5f);
+                g.FillCircle(Brushes.Red, cn, 3.5f);
             }
 
             if (0 < mSelectedArea.Width) {
                 g.LineColor = CircuitElm.SelectColor;
-                g.DrawRectangle(mSelectedArea.X, mSelectedArea.Y, mSelectedArea.Width, mSelectedArea.Height);
+                g.DrawRectangle(mSelectedArea);
             }
 
             if (ControlPanel.ChkCrossHair.Checked && MouseCursorX >= 0

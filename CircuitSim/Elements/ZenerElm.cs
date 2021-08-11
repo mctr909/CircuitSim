@@ -11,7 +11,7 @@ namespace Circuit.Elements {
         Point[] cathode;
         Point[] wing;
 
-        public ZenerElm(int xx, int yy) : base(xx, yy) {
+        public ZenerElm(Point pos) : base(pos) {
             modelName = lastZenerModelName;
             setup();
         }

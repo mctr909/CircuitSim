@@ -96,7 +96,7 @@ namespace Circuit {
                 return false;
             }
             var we = (WireElm)ce;
-            if (we.X1 == we.X2 || we.Y1 == we.Y2) {
+            if (we.P1.X == we.P2.X || we.P1.Y == we.P2.Y) {
                 return true;
             }
             return false;

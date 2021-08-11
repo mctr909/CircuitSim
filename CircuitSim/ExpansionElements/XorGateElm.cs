@@ -1,6 +1,8 @@
-﻿namespace Circuit.Elements {
+﻿using System.Drawing;
+
+namespace Circuit.Elements {
     class XorGateElm : OrGateElm {
-        public XorGateElm(int xx, int yy) : base(xx, yy) { }
+        public XorGateElm(Point pos) : base(pos) { }
 
         public XorGateElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) { }
 

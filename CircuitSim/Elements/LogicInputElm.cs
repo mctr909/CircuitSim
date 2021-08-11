@@ -8,7 +8,7 @@ namespace Circuit.Elements {
         double hiV;
         double loV;
 
-        public LogicInputElm(int xx, int yy) : base(xx, yy, false) {
+        public LogicInputElm(Point pos) : base(pos, false) {
             mNumHandles = 1;
             hiV = 5;
             loV = 0;
@@ -55,7 +55,7 @@ namespace Circuit.Elements {
                 s = "" + position;
             }
             setBbox(mPoint1, mLead1, 0);
-            drawCenteredLText(g, s, X2, Y2, true);
+            drawCenteredLText(g, s, P2.X, P2.Y, true);
             g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
             updateDotCount();
             drawDots(g, mPoint1, mLead1, mCurCount);
@@ -63,7 +63,7 @@ namespace Circuit.Elements {
         }
 
         public override Rectangle getSwitchRect() {
-            return new Rectangle(X2 - 10, Y2 - 10, 20, 20);
+            return new Rectangle(P2.X - 10, P2.Y - 10, 20, 20);
         }
 
         public override void SetCurrent(int vs, double c) { mCurrent = -c; }

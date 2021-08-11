@@ -37,7 +37,7 @@ namespace Circuit.Elements {
 
         string sliderText;
 
-        public PotElm(int xx, int yy) : base(xx, yy) {
+        public PotElm(Point pos) : base(pos) {
             setup();
             maxResistance = 1000;
             position = .5;
@@ -103,18 +103,18 @@ namespace Circuit.Elements {
             base.SetPoints();
             int offset = 0;
             int myLen = 0;
-            if (Math.Abs(mDx) > Math.Abs(mDy)) {
-                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDx) * (
-                    (Math.Abs(mDx) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
+            if (Math.Abs(mDiff.X) > Math.Abs(mDiff.Y)) {
+                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDiff.X) * (
+                    (Math.Abs(mDiff.X) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
                 mPoint2.X = mPoint1.X + myLen;
-                offset = (mDx < 0) ? mDy : -mDy;
+                offset = (mDiff.X < 0) ? mDiff.Y : -mDiff.Y;
                 mPoint2.Y = mPoint1.Y;
             } else {
-                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDy) * (
-                    (Math.Abs(mDy) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
-                if (mDy != 0) {
+                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDiff.Y) * (
+                    (Math.Abs(mDiff.Y) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
+                if (mDiff.Y != 0) {
                     mPoint2.Y = mPoint1.Y + myLen;
-                    offset = (mDy > 0) ? mDx : -mDx;
+                    offset = (mDiff.Y > 0) ? mDiff.X : -mDiff.X;
                     mPoint2.X = mPoint1.X;
                 }
             }

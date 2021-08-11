@@ -28,7 +28,7 @@ namespace Circuit.Elements {
 
         double lastvd;
 
-        public OpAmpElm(int xx, int yy) : base(xx, yy) {
+        public OpAmpElm(Point pos) : base(pos) {
             mNoDiagonal = true;
             maxOut = 15;
             minOut = -15;

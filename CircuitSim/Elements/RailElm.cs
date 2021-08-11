@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Drawing;
 
 namespace Circuit.Elements {
     class RailElm : VoltageElm {
         protected const int FLAG_CLOCK = 1;
 
-        public RailElm(int xx, int yy) : base(xx, yy, WAVEFORM.DC) {
+        public RailElm(Point pos) : base(pos, WAVEFORM.DC) {
             mNumHandles = 1;
         }
 
-        public RailElm(int xx, int yy, WAVEFORM wf) : base(xx, yy, wf) { }
+        public RailElm(Point pos, WAVEFORM wf) : base(pos, wf) { }
 
         public RailElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st): base(xa, ya, xb, yb, f, st) {
             mNumHandles = 1;
@@ -53,7 +54,7 @@ namespace Circuit.Elements {
 
         void drawRail(CustomGraphics g) {
             if (waveform == WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
-                drawCenteredText(g, "CLK", X2, Y2, true);
+                drawCenteredText(g, "CLK", P2.X, P2.Y, true);
             } else if (waveform == WAVEFORM.DC) {
                 var color = NeedsHighlight ? SelectColor : WhiteColor;
                 double v = getVoltage();
@@ -66,7 +67,7 @@ namespace Circuit.Elements {
                 if (getVoltage() > 0) {
                     s = "+" + s;
                 }
-                drawCenteredText(g, s, X2, Y2, true);
+                drawCenteredText(g, s, P2.X, P2.Y, true);
             } else {
                 drawWaveform(g, mPoint2);
             }

@@ -14,7 +14,6 @@ namespace Circuit.Elements {
 
         #region static property
         public static CirSim Sim { get; private set; }
-        
         public static double CurrentMult { get; set; }
         public static Brush PenHandle { get; set; }
         public static Color SelectColor { get; set; }
@@ -24,13 +23,17 @@ namespace Circuit.Elements {
         #endregion
 
         #region dynamic property
-        /* initial point where user created element.
-         * For simple two-terminal elements, this is the first node/post. */
-        public int X1, Y1;
+        /// <summary>
+        /// initial point where user created element.
+        /// For simple two-terminal elements, this is the first node/post.
+        /// </summary>
+        public Point P1;
 
-        /* point to which user dragged out element.
-         * For simple two-terminal elements, this is the second node/post */
-        public int X2, Y2;
+        /// <summary>
+        /// point to which user dragged out element.
+        /// For simple two-terminal elements, this is the second node/post
+        /// </summary>
+        public Point P2;
 
         public bool IsSelected;
 
@@ -47,7 +50,7 @@ namespace Circuit.Elements {
         /// called when an element is done being dragged out;
         /// </summary>
         /// <returns>returns true if it's zero size and should be deleted</returns>
-        public bool IsCreationFailed { get { return X1 == X2 && Y1 == Y2; } }
+        public bool IsCreationFailed { get { return P1.X == P2.X && P1.Y == P2.Y; } }
 
         public int[] Nodes { get; protected set; }
 
@@ -62,7 +65,7 @@ namespace Circuit.Elements {
         public string Dump {
             get {
                 var type = DumpType;
-                return string.Format("{0} {1} {2} {3} {4} {5} {6}", type, X1, Y1, X2, Y2, mFlags, dump());
+                return string.Format("{0} {1} {2} {3} {4} {5} {6}", type, P1.X, P1.Y, P2.X, P2.Y, mFlags, dump());
             }
         }
 
@@ -136,22 +139,20 @@ namespace Circuit.Elements {
         protected int mFlags;
         protected int mVoltSource;
 
-        /* length along x and y axes, and sign of difference */
-        protected int mDx;
-        protected int mDy;
-        protected int mDsign;
-
         int mLastHandleGrabbed = -1;
         protected int mNumHandles = 2;
+
+        /* length along x and y axes, and sign of difference */
+        protected Point mDiff;
+        protected int mDsign;
 
         /* length of element */
         protected double mLen;
 
         /* direction of element */
-        protected double mDirX;
-        protected double mDirY;
+        protected PointF mDir;
 
-        /* (x,y) and (x2,y2) as Point objects */
+        /* Point objects */
         protected Point mPoint1;
         protected Point mPoint2;
 
@@ -169,9 +170,9 @@ namespace Circuit.Elements {
         /// <summary>
         /// create new element with one post at xx,yy, to be dragged out by user
         /// </summary>
-        protected CircuitElm(int xx, int yy) {
-            X1 = X2 = xx;
-            Y1 = Y2 = yy;
+        protected CircuitElm(Point pos) {
+            P1.X = P2.X = pos.X;
+            P1.Y = P2.Y = pos.Y;
             mFlags = DefaultFlags;
             allocNodes();
             initBoundingBox();
@@ -181,10 +182,10 @@ namespace Circuit.Elements {
         /// create element between xa,ya and xb,yb from undump
         /// </summary>
         protected CircuitElm(int xa, int ya, int xb, int yb, int f) {
-            X1 = xa;
-            Y1 = ya;
-            X2 = xb;
-            Y2 = yb;
+            P1.X = xa;
+            P1.Y = ya;
+            P2.X = xb;
+            P2.Y = yb;
             mFlags = f;
             allocNodes();
             initBoundingBox();
@@ -195,7 +196,7 @@ namespace Circuit.Elements {
         protected abstract string dump();
 
         void initBoundingBox() {
-            BoundingBox = new Rectangle(Math.Min(X1, X2), Math.Min(Y1, Y2), Math.Abs(X2 - X1) + 1, Math.Abs(Y2 - Y1) + 1);
+            BoundingBox = new Rectangle(Math.Min(P1.X, P2.X), Math.Min(P1.Y, P2.Y), Math.Abs(P2.X - P1.X) + 1, Math.Abs(P2.Y - P1.Y) + 1);
         }
 
         #region [static method]
@@ -307,8 +308,8 @@ namespace Circuit.Elements {
         /// <param name="w"></param>
         protected void setBbox(Point p1, Point p2, double w) {
             setBbox(p1.X, p1.Y, p2.X, p2.Y);
-            int dpx = (int)(mDirX * w);
-            int dpy = (int)(mDirY * w);
+            int dpx = (int)(mDir.X * w);
+            int dpy = (int)(mDir.Y * w);
             adjustBbox(
                 p1.X + dpx, p1.Y + dpy,
                 p1.X - dpx, p1.Y - dpy
@@ -458,11 +459,11 @@ namespace Circuit.Elements {
             var textSize = g.GetTextSize(s);
             int xc, yc;
             if ((this is RailElm) || (this is SweepElm)) {
-                xc = X2;
-                yc = Y2;
+                xc = P2.X;
+                yc = P2.Y;
             } else {
-                xc = (X2 + X1) / 2;
-                yc = (Y2 + Y1) / 2;
+                xc = (P2.X + P1.X) / 2;
+                yc = (P2.Y + P1.Y) / 2;
             }
             g.DrawRightText(s, xc + offsetX, yc - textSize.Height + offsetY);
         }
@@ -512,20 +513,20 @@ namespace Circuit.Elements {
 
         #region [public method]
         public double Distance(double x, double y) {
-            return Utils.DistanceOnLine(X1, Y1, X2, Y2, x, y);
+            return Utils.DistanceOnLine(P1.X, P1.Y, P2.X, P2.Y, x, y);
         }
 
         public void DrawHandles(CustomGraphics g) {
             if (mLastHandleGrabbed == -1) {
-                g.FillRectangle(PenHandle, X1 - 3, Y1 - 3, 7, 7);
+                g.FillRectangle(PenHandle, P1.X - 3, P1.Y - 3, 7, 7);
             } else if (mLastHandleGrabbed == 0) {
-                g.FillRectangle(PenHandle, X1 - 4, Y1 - 4, 9, 9);
+                g.FillRectangle(PenHandle, P1.X - 4, P1.Y - 4, 9, 9);
             }
             if (mNumHandles == 2) {
                 if (mLastHandleGrabbed == -1) {
-                    g.FillRectangle(PenHandle, X2 - 3, Y2 - 3, 7, 7);
+                    g.FillRectangle(PenHandle, P2.X - 3, P2.Y - 3, 7, 7);
                 } else if (mLastHandleGrabbed == 1) {
-                    g.FillRectangle(PenHandle, X2 - 4, Y2 - 4, 9, 9);
+                    g.FillRectangle(PenHandle, P2.X - 4, P2.Y - 4, 9, 9);
                 }
             }
         }
@@ -538,18 +539,18 @@ namespace Circuit.Elements {
         /// <param name="bx"></param>
         /// <param name="by"></param>
         public void SetPosition(int ax, int ay, int bx, int by) {
-            X1 = ax;
-            Y1 = ay;
-            X2 = bx;
-            Y2 = by;
+            P1.X = ax;
+            P1.Y = ay;
+            P2.X = bx;
+            P2.Y = by;
             SetPoints();
         }
 
         public void Move(int dx, int dy) {
-            X1 += dx;
-            Y1 += dy;
-            X2 += dx;
-            Y2 += dy;
+            P1.X += dx;
+            P1.Y += dy;
+            P2.X += dx;
+            P2.Y += dy;
             BoundingBox.X += dx;
             BoundingBox.Y += dy;
             SetPoints();
@@ -562,16 +563,16 @@ namespace Circuit.Elements {
         /// <param name="dy"></param>
         /// <returns></returns>
         public bool AllowMove(int dx, int dy) {
-            int nx = X1 + dx;
-            int ny = Y1 + dy;
-            int nx2 = X2 + dx;
-            int ny2 = Y2 + dy;
+            int nx = P1.X + dx;
+            int ny = P1.Y + dy;
+            int nx2 = P2.X + dx;
+            int ny2 = P2.Y + dy;
             for (int i = 0; i != Sim.ElmList.Count; i++) {
                 var ce = Sim.getElm(i);
-                if (ce.X1 == nx && ce.Y1 == ny && ce.X2 == nx2 && ce.Y2 == ny2) {
+                if (ce.P1.X == nx && ce.P1.Y == ny && ce.P2.X == nx2 && ce.P2.Y == ny2) {
                     return false;
                 }
-                if (ce.X1 == nx2 && ce.Y1 == ny2 && ce.X2 == nx && ce.Y2 == ny) {
+                if (ce.P1.X == nx2 && ce.P1.Y == ny2 && ce.P2.X == nx && ce.P2.Y == ny) {
                     return false;
                 }
             }
@@ -581,31 +582,33 @@ namespace Circuit.Elements {
         public void MovePoint(int n, int dx, int dy) {
             /* modified by IES to prevent the user dragging points to create zero sized nodes
             /* that then render improperly */
-            int oldx = X1;
-            int oldy = Y1;
-            int oldx2 = X2;
-            int oldy2 = Y2;
+            int oldx = P1.X;
+            int oldy = P1.Y;
+            int oldx2 = P2.X;
+            int oldy2 = P2.Y;
             if (n == 0) {
-                X1 += dx; Y1 += dy;
+                P1.X += dx;
+                P1.Y += dy;
             } else {
-                X2 += dx; Y2 += dy;
+                P2.X += dx;
+                P2.Y += dy;
             }
-            if (X1 == X2 && Y1 == Y2) {
-                X1 = oldx;
-                Y1 = oldy;
-                X2 = oldx2;
-                Y2 = oldy2;
+            if (P1.X == P2.X && P1.Y == P2.Y) {
+                P1.X = oldx;
+                P1.Y = oldy;
+                P2.X = oldx2;
+                P2.Y = oldy2;
             }
             SetPoints();
         }
 
         public void FlipPosts() {
-            int oldx = X1;
-            int oldy = Y1;
-            X1 = X2;
-            Y1 = Y2;
-            X2 = oldx;
-            Y2 = oldy;
+            int oldx = P1.X;
+            int oldy = P1.Y;
+            P1.X = P2.X;
+            P1.Y = P2.Y;
+            P2.X = oldx;
+            P2.Y = oldy;
             SetPoints();
         }
 
@@ -615,13 +618,31 @@ namespace Circuit.Elements {
 
         public int GetHandleGrabbedClose(int xtest, int ytest, int deltaSq, int minSize) {
             mLastHandleGrabbed = -1;
-            var x12 = X2 - X1;
-            var y12 = Y2 - Y1;
+            var x12 = P2.X - P1.X;
+            var y12 = P2.Y - P1.Y;
             if (Math.Sqrt(x12 * x12 + y12 * y12) >= minSize) {
-                var x1t = xtest - X1;
-                var y1t = ytest - Y1;
-                var x2t = xtest - X2;
-                var y2t = ytest - Y2;
+                var x1t = xtest - P1.X;
+                var y1t = ytest - P1.Y;
+                var x2t = xtest - P2.X;
+                var y2t = ytest - P2.Y;
+                if (Math.Sqrt(x1t * x1t + y1t * y1t) <= deltaSq) {
+                    mLastHandleGrabbed = 0;
+                } else if (Math.Sqrt(x2t * x2t + y2t * y2t) <= deltaSq) {
+                    mLastHandleGrabbed = 1;
+                }
+            }
+            return mLastHandleGrabbed;
+        }
+
+        public int GetHandleGrabbedClose(Point testp, int deltaSq, int minSize) {
+            mLastHandleGrabbed = -1;
+            var x12 = P2.X - P1.X;
+            var y12 = P2.Y - P1.Y;
+            if (Math.Sqrt(x12 * x12 + y12 * y12) >= minSize) {
+                var x1t = testp.X - P1.X;
+                var y1t = testp.Y - P1.Y;
+                var x2t = testp.X - P2.X;
+                var y2t = testp.Y - P2.Y;
                 if (Math.Sqrt(x1t * x1t + y1t * y1t) <= deltaSq) {
                     mLastHandleGrabbed = 0;
                 } else if (Math.Sqrt(x2t * x2t + y2t * y2t) <= deltaSq) {
@@ -633,7 +654,7 @@ namespace Circuit.Elements {
 
         public int GetNodeAtPoint(int xp, int yp) {
             if (PostCount == 2) {
-                return (X1 == xp && Y1 == yp) ? 0 : 1;
+                return (P1.X == xp && P1.Y == yp) ? 0 : 1;
             }
             for (int i = 0; i != PostCount; i++) {
                 var p = GetPost(i);
@@ -694,19 +715,18 @@ namespace Circuit.Elements {
         /// <summary>
         /// draw second point to xx, yy
         /// </summary>
-        /// <param name="xx"></param>
-        /// <param name="yy"></param>
-        public virtual void Drag(int xx, int yy) {
-            xx = Sim.SnapGrid(xx);
-            yy = Sim.SnapGrid(yy);
+        /// <param name="pos"></param>
+        public virtual void Drag(Point pos) {
+            pos = Sim.SnapGrid(pos);
             if (mNoDiagonal) {
-                if (Math.Abs(X1 - xx) < Math.Abs(Y1 - yy)) {
-                    xx = X1;
+                if (Math.Abs(P1.X - pos.X) < Math.Abs(P1.Y - pos.Y)) {
+                    pos.X = P1.X;
                 } else {
-                    yy = Y1;
+                    pos.Y = P1.Y;
                 }
             }
-            X2 = xx; Y2 = yy;
+            P2.X = pos.X;
+            P2.Y = pos.Y;
             SetPoints();
         }
 
@@ -717,22 +737,22 @@ namespace Circuit.Elements {
         /// Called when element is moved
         /// </summary>
         public virtual void SetPoints() {
-            mDx = X2 - X1;
-            mDy = Y2 - Y1;
-            mLen = Math.Sqrt(mDx * mDx + mDy * mDy);
+            mDiff.X = P2.X - P1.X;
+            mDiff.Y = P2.Y - P1.Y;
+            mLen = Math.Sqrt(mDiff.X * mDiff.X + mDiff.Y * mDiff.Y);
             var sx = mPoint2.X - mPoint1.X;
             var sy = mPoint2.Y - mPoint1.Y;
-            var r = Math.Sqrt(sx * sx + sy * sy);
+            var r = (float)Math.Sqrt(sx * sx + sy * sy);
             if (r == 0) {
-                mDirX = 0;
-                mDirY = 0;
+                mDir.X = 0;
+                mDir.Y = 0;
             } else {
-                mDirX = sy / r;
-                mDirY = -sx / r;
+                mDir.X = sy / r;
+                mDir.Y = -sx / r;
             }
-            mDsign = (mDy == 0) ? Math.Sign(mDx) : Math.Sign(mDy);
-            mPoint1 = new Point(X1, Y1);
-            mPoint2 = new Point(X2, Y2);
+            mDsign = (mDiff.Y == 0) ? Math.Sign(mDiff.X) : Math.Sign(mDiff.Y);
+            mPoint1 = new Point(P1.X, P1.Y);
+            mPoint2 = new Point(P2.X, P2.Y);
         }
 
         public virtual void SetMouseElm(bool v) {

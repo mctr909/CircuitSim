@@ -116,21 +116,16 @@ namespace Circuit {
         int mMousePost = -1;
 
         int mDraggingPost;
-        int mDragGridX;
-        int mDragGridY;
-        int mDragScreenX;
-        int mDragScreenY;
-        int mInitDragGridX;
-        int mInitDragGridY;
+        Point mDragGrid;
+        Point mDragScreen;
+        Point mInitDragGrid;
 
         bool mIsPressShift;
         bool mIsPressCtrl;
         bool mIsPressAlt;
 
-        int mMenuClientX;
-        int mMenuClientY;
-        int mMenuX;
-        int mMenuY;
+        Point mMenuClient;
+        Point mMenuPos;
         int mMenuScope = -1;
         int mMenuPlot = -1;
 

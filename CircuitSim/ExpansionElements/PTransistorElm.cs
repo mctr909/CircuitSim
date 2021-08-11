@@ -1,6 +1,8 @@
-﻿namespace Circuit.Elements {
+﻿using System.Drawing;
+
+namespace Circuit.Elements {
     class PTransistorElm : TransistorElm {
-        public PTransistorElm(int xx, int yy) : base(xx, yy, true) { }
+        public PTransistorElm(Point pos) : base(pos, true) { }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.BIPOLER_PNP; } }
     }

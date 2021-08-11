@@ -1,6 +1,8 @@
-﻿namespace Circuit.Elements {
+﻿using System.Drawing;
+
+namespace Circuit.Elements {
     class CustomCompositeChipElm : ChipElm {
-        public CustomCompositeChipElm(int xx, int yy) : base(xx, yy) {
+        public CustomCompositeChipElm(Point pos) : base(pos) {
             setSize(2);
         }
 

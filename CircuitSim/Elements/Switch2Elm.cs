@@ -10,13 +10,13 @@ namespace Circuit.Elements {
         Point[] swposts;
         Point[] swpoles;
 
-        public Switch2Elm(int xx, int yy) : base(xx, yy, false) {
+        public Switch2Elm(Point pos) : base(pos, false) {
             mNoDiagonal = true;
             throwCount = 2;
             allocNodes();
         }
 
-        Switch2Elm(int xx, int yy, bool mm) : base(xx, yy, mm) {
+        Switch2Elm(Point pos, bool mm) : base(pos, mm) {
             mNoDiagonal = true;
             throwCount = 2;
             allocNodes();
