@@ -359,7 +359,9 @@ namespace Circuit {
 
         void addElementItem(ToolStripMenuItem menu, string title, ELEMENTS item) {
             var elm = ConstructElement(item, 0, 0);
-            if (elm != null) {
+            if (elm == null) {
+                return;
+            } else {
                 elm.Delete();
             }
             ToolStripMenuItem mi;

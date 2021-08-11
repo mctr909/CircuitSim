@@ -48,56 +48,60 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Elements\LabeledNodeElm.cs" />
+    <Compile Include="Elements\RailElm.cs" />
+    <Compile Include="Elements\Switch2Elm.cs" />
+    <Compile Include="Elements\VCCSElm.cs" />
+    <Compile Include="Elements\ZenerElm.cs" />
+    <Compile Include="ExpansionElements\ACRailElm.cs" />
+    <Compile Include="ExpansionElements\ACVoltageElm.cs" />
+    <Compile Include="ExpansionElements\AMElm.cs" />
+    <Compile Include="ExpansionElements\AnalogSwitchElm.cs" />
+    <Compile Include="ExpansionElements\AndGateElm.cs" />
+    <Compile Include="ExpansionElements\CCCSElm.cs" />
+    <Compile Include="ExpansionElements\ClockElm.cs" />
+    <Compile Include="ExpansionElements\CompositeElm.cs" />
+    <Compile Include="ExpansionElements\CustomCompositeChipElm.cs" />
+    <Compile Include="ExpansionElements\CustomCompositeElm.cs" />
+    <Compile Include="ExpansionElements\CustomCompositeModel.cs" />
+    <Compile Include="ExpansionElements\CustomLogicElm.cs" />
+    <Compile Include="ExpansionElements\DCVoltageElm.cs" />
+    <Compile Include="ExpansionElements\FMElm.cs" />
+    <Compile Include="ExpansionElements\GateElm.cs" />
+    <Compile Include="ExpansionElements\InverterElm.cs" />
+    <Compile Include="ExpansionElements\InvertingSchmittElm.cs" />
+    <Compile Include="ExpansionElements\LEDElm.cs" />
+    <Compile Include="ExpansionElements\NandGateElm.cs" />
+    <Compile Include="ExpansionElements\NMosfetElm.cs" />
+    <Compile Include="ExpansionElements\NorGateElm.cs" />
+    <Compile Include="ExpansionElements\NTransistorElm.cs" />
+    <Compile Include="ExpansionElements\OpAmpElm.cs" />
+    <Compile Include="ExpansionElements\OpAmpSwapElm.cs" />
+    <Compile Include="ExpansionElements\OptocouplerElm.cs" />
+    <Compile Include="ExpansionElements\OrGateElm.cs" />
+    <Compile Include="ExpansionElements\PMosfetElm.cs" />
+    <Compile Include="ExpansionElements\PolarCapacitorElm.cs" />
+    <Compile Include="ExpansionElements\PTransistorElm.cs" />
+    <Compile Include="ExpansionElements\PushSwitchElm.cs" />
+    <Compile Include="ExpansionElements\RingCounterElm.cs" />
+    <Compile Include="ExpansionElements\SchmittElm.cs" />
+    <Compile Include="ExpansionElements\TransformerElm.cs" />
+    <Compile Include="ExpansionElements\TriStateElm.cs" />
+    <Compile Include="ExpansionElements\XorGateElm.cs" />
     <Compile Include="Forms\CirSimMain.cs" />
     <Compile Include="Forms\CirSimVariable.cs" />
     <Compile Include="Common\CustomGraphics.cs" />
     <Compile Include="Common\Scope.cs" />
     <Compile Include="Common\Utils.cs" />
     <Compile Include="Elements\AmmeterElm.cs" />
-    <Compile Include="ExpansionElements\AMElm.cs" />
-    <Compile Include="ExpansionElements\AnalogSwitchElm.cs" />
-    <Compile Include="ExpansionElements\CCCSElm.cs" />
-    <Compile Include="ExpansionElements\CustomLogicElm.cs" />
-    <Compile Include="ExpansionElements\GateElm.cs" />
-    <Compile Include="ExpansionElements\FMElm.cs" />
-    <Compile Include="ExpansionElements\InvertingSchmittElm.cs" />
-    <Compile Include="ExpansionElements\OpAmpElm.cs" />
     <Compile Include="Elements\SweepElm.cs" />
-    <Compile Include="ExpansionElements\PolarCapacitorElm.cs" />
-    <Compile Include="ExpansionElements\TransformerElm.cs" />
-    <Compile Include="ExpansionElements\ACRailElm.cs" />
-    <Compile Include="ExpansionElements\ACVoltageElm.cs" />
-    <Compile Include="ExpansionElements\AndGateElm.cs" />
-    <Compile Include="ExpansionElements\ClockElm.cs" />
-    <Compile Include="ExpansionElements\DCVoltageElm.cs" />
-    <Compile Include="ExpansionElements\InverterElm.cs" />
-    <Compile Include="ExpansionElements\NandGateElm.cs" />
-    <Compile Include="ExpansionElements\NorGateElm.cs" />
-    <Compile Include="ExpansionElements\OpAmpSwapElm.cs" />
-    <Compile Include="ExpansionElements\OptocouplerElm.cs" />
-    <Compile Include="ExpansionElements\OrGateElm.cs" />
-    <Compile Include="ExpansionElements\PushSwitchElm.cs" />
-    <Compile Include="ExpansionElements\SchmittElm.cs" />
-    <Compile Include="ExpansionElements\TriStateElm.cs" />
-    <Compile Include="ExpansionElements\XorGateElm.cs" />
     <Compile Include="Forms\ControlPanel.cs" />
-    <Compile Include="Forms\EditCompositeModelDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ExpansionElements\CustomCompositeChipElm.cs" />
-    <Compile Include="ExpansionElements\CustomCompositeElm.cs" />
-    <Compile Include="ExpansionElements\CustomCompositeModel.cs" />
-    <Compile Include="ExpansionElements\CompositeElm.cs" />
     <Compile Include="Common\Diode.cs" />
     <Compile Include="Elements\DiodeElm.cs" />
     <Compile Include="Common\DiodeModel.cs" />
-    <Compile Include="ExpansionElements\LEDElm.cs" />
     <Compile Include="Elements\MosfetElm.cs" />
-    <Compile Include="ExpansionElements\NMosfetElm.cs" />
-    <Compile Include="ExpansionElements\NTransistorElm.cs" />
-    <Compile Include="ExpansionElements\PMosfetElm.cs" />
-    <Compile Include="ExpansionElements\PTransistorElm.cs" />
-    <Compile Include="ExpansionElements\ZenerElm.cs" />
+    <Compile Include="Forms\EditCompositeModelDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\ElementPopupMenu.cs" />
     <Compile Include="Forms\InputDialog.cs">
       <SubType>Form</SubType>
@@ -136,12 +140,8 @@
     <Compile Include="Elements\LogicOutputElm.cs" />
     <Compile Include="Elements\PotElm.cs" />
     <Compile Include="Elements\VoltMeterElm.cs" />
-    <Compile Include="ExpansionElements\RailElm.cs" />
-    <Compile Include="ExpansionElements\RingCounterElm.cs" />
-    <Compile Include="ExpansionElements\Switch2Elm.cs" />
     <Compile Include="Elements\SwitchElm.cs" />
     <Compile Include="Elements\TransistorElm.cs" />
-    <Compile Include="ExpansionElements\VCCSElm.cs" />
     <Compile Include="Elements\VoltageElm.cs" />
     <Compile Include="Elements\WireElm.cs" />
     <Compile Include="CircuitSim.cs">
@@ -186,5 +186,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
