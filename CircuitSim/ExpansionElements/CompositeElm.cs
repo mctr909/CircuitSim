@@ -27,15 +27,14 @@ namespace Circuit.Elements {
 
         public CompositeElm(Point pos) : base(pos) { }
 
-        public CompositeElm(int xa, int ya, int xb, int yb, int f) : base(xa, ya, xb, yb, f) { }
+        public CompositeElm(Point p1, Point p2, int f) : base(p1, p2, f) { }
 
         public CompositeElm(Point pos, string s, int[] externalNodes) : base(pos) {
             loadComposite(null, s, externalNodes);
             allocNodes();
         }
 
-        public CompositeElm(int xa, int ya, int xb, int yb, int f, 
-            StringTokenizer st, string s, int[] externalNodes) : base(xa, ya, xb, yb, f) {
+        public CompositeElm(Point p1, Point p2, int f, StringTokenizer st, string s, int[] externalNodes) : base(p1, p2, f) {
             loadComposite(st, s, externalNodes);
             allocNodes();
         }
@@ -132,7 +131,7 @@ namespace Circuit.Elements {
                     var stCe = new StringTokenizer(dumpedCe, useEscape() ? " " : "_");
                     // TODO: loadComposite
                     int flags = 0; //stCe.nextTokenInt();
-                    newce = MenuItems.CreateCe(tint, 0, 0, 0, 0, flags, stCe);
+                    newce = MenuItems.CreateCe(tint, new Point(), new Point(), flags, stCe);
                 }
                 compElmList.Add(newce);
 

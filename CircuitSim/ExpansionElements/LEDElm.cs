@@ -21,7 +21,7 @@ namespace Circuit.Elements {
             colorG = colorB = 0;
         }
 
-        public LEDElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) {
+        public LEDElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
             if ((f & (FLAG_MODEL | FLAG_FWDROP)) == 0) {
                 const double fwdrop = 2.1024259;
                 model = DiodeModel.getModelWithParameters(fwdrop, 0);
@@ -45,9 +45,9 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             int cr = 12;
-            ledLead1 = Utils.InterpPoint(mPoint1, mPoint2, .5 - cr / mLen);
-            ledLead2 = Utils.InterpPoint(mPoint1, mPoint2, .5 + cr / mLen);
-            ledCenter = Utils.InterpPoint(mPoint1, mPoint2, .5);
+            Utils.InterpPoint(mPoint1, mPoint2, ref ledLead1, .5 - cr / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref ledLead2, .5 + cr / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref ledCenter, .5);
         }
 
         public override void Draw(CustomGraphics g) {

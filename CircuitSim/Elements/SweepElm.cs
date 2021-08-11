@@ -22,7 +22,7 @@ namespace Circuit.Elements {
         double v;
         int dir = 1;
 
-        Point textPos;
+        PointF textPos;
 
         public SweepElm(Point pos) : base(pos) {
             minF = 20;
@@ -33,7 +33,7 @@ namespace Circuit.Elements {
             Reset();
         }
 
-        public SweepElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public SweepElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             minF = st.nextTokenDouble();
             maxF = st.nextTokenDouble();
             maxV = st.nextTokenDouble();
@@ -60,8 +60,8 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - 0.5 * circleSize / mLen);
-            textPos = Utils.InterpPoint(mPoint1, mPoint2, 1.0 + 0.66 * circleSize / Utils.Distance(mPoint1, mPoint2), 24 * mDsign);
+            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, 1 - 0.5 * circleSize / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 1.0 + 0.66 * circleSize / Utils.Distance(mPoint1, mPoint2), 24 * mDsign);
         }
 
         public override void Draw(CustomGraphics g) {

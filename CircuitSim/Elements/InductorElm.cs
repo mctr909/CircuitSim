@@ -4,7 +4,7 @@ using System.Drawing;
 namespace Circuit.Elements {
     class InductorElm : CircuitElm {
         Inductor ind;
-        Point textPos;
+        PointF textPos;
 
         public double Inductance { get; set; }
 
@@ -14,7 +14,7 @@ namespace Circuit.Elements {
             ind.setup(Inductance, mCurrent, mFlags);
         }
 
-        public InductorElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public InductorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             ind = new Inductor(Sim, mCir);
             Inductance = st.nextTokenDouble();
             mCurrent = st.nextTokenDouble();
@@ -40,11 +40,11 @@ namespace Circuit.Elements {
             base.SetPoints();
             calcLeads(40);
             if (mPoint1.Y == mPoint2.Y) {
-                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 13 * mDsign / mLen, 12 * mDsign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5 + 13 * mDsign / mLen, 12 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
-                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -3 * mDsign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5, -3 * mDsign);
             } else {
-                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -8 * mDsign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5, -8 * mDsign);
             }
         }
 

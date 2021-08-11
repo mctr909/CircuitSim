@@ -15,12 +15,12 @@ namespace Circuit.Elements {
         double ratio;
         double couplingCoef;
         Point[] ptEnds;
-        Point[] ptCoil;
-        Point[] ptCore;
+        PointF[] ptCoil;
+        PointF[] ptCore;
         double[] current;
         double[] curcount;
 
-        Point[] dots;
+        PointF[] dots;
         int width;
         int polarity;
 
@@ -44,8 +44,8 @@ namespace Circuit.Elements {
             curcount = new double[2];
         }
 
-        public TransformerElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
-            width = Math.Max(32, Math.Abs(yb - ya));
+        public TransformerElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
+            width = Math.Max(32, Math.Abs(p2.Y - p1.Y));
             inductance = st.nextTokenDouble();
             ratio =  st.nextTokenDouble();
             current = new double[2];
@@ -119,8 +119,8 @@ namespace Circuit.Elements {
             base.SetPoints();
             mPoint2.Y = mPoint1.Y;
             ptEnds = new Point[4];
-            ptCoil = new Point[4];
-            ptCore = new Point[4];
+            ptCoil = new PointF[4];
+            ptCore = new PointF[4];
             ptEnds[0] = mPoint1;
             ptEnds[1] = mPoint2;
             Utils.InterpPoint(mPoint1, mPoint2, ref ptEnds[2], 0, -mDsign * width);
@@ -135,12 +135,16 @@ namespace Circuit.Elements {
                 Utils.InterpPoint(ptEnds[i], ptEnds[i + 1], ref ptCore[i + 1], 1 - cd);
             }
             if (polarity == -1) {
-                dots = new Point[2];
+                dots = new PointF[2];
                 double dotp = Math.Abs(7.0 / width);
-                dots[0] = Utils.InterpPoint(ptCoil[0], ptCoil[2], dotp, -7 * mDsign);
-                dots[1] = Utils.InterpPoint(ptCoil[3], ptCoil[1], dotp, -7 * mDsign);
-                var x = ptEnds[1]; ptEnds[1] = ptEnds[3]; ptEnds[3] = x;
-                x = ptCoil[1]; ptCoil[1] = ptCoil[3]; ptCoil[3] = x;
+                Utils.InterpPoint(ptCoil[0], ptCoil[2], ref dots[0], dotp, -7 * mDsign);
+                Utils.InterpPoint(ptCoil[3], ptCoil[1], ref dots[1], dotp, -7 * mDsign);
+                var x = ptEnds[1];
+                ptEnds[1] = ptEnds[3];
+                ptEnds[3] = x;
+                var tmp = ptCoil[1];
+                ptCoil[1] = ptCoil[3];
+                ptCoil[3] = tmp;
             } else {
                 dots = null;
             }

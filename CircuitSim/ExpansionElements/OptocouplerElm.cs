@@ -12,7 +12,7 @@ namespace Circuit.Elements {
         int cspc;
         int cspc2;
         Point[] stubs;
-        Point[] rectPoints;
+        PointF[] rectPoints;
         double[] curCounts;
 
         DiodeElm diode;
@@ -23,7 +23,7 @@ namespace Circuit.Elements {
             initOptocoupler();
         }
 
-        public OptocouplerElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, null, modelString, modelExternalNodes) {
+        public OptocouplerElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, null, modelString, modelExternalNodes) {
             /* pass st=null since we don't need to undump any of the sub-elements */
             mNoDiagonal = true;
             initOptocoupler();
@@ -111,7 +111,7 @@ namespace Circuit.Elements {
             int sizeY = 2;
             int xs = sizeX * cspc2;
             int ys = sizeY * cspc2 - cspc;
-            rectPoints = new Point[] {
+            rectPoints = new PointF[] {
                 new Point(xr, yr),
                 new Point(xr + xs, yr),
                 new Point(xr + xs, yr + ys),

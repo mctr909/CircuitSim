@@ -1208,13 +1208,15 @@ namespace Circuit {
                             CustomCompositeModel.UndumpModel(st);
                             break;
                         }
-                        int x1 = st.nextTokenInt();
-                        int y1 = st.nextTokenInt();
-                        int x2 = st.nextTokenInt();
-                        int y2 = st.nextTokenInt();
+                        var p1 = new Point(
+                            st.nextTokenInt(),
+                            st.nextTokenInt());
+                        var p2 = new Point(
+                            st.nextTokenInt(),
+                            st.nextTokenInt());
                         int f = st.nextTokenInt();
                         var dumpId = MenuItems.GetDumpIdFromString(type);
-                        var newce = MenuItems.CreateCe(dumpId, x1, y1, x2, y2, f, st);
+                        var newce = MenuItems.CreateCe(dumpId, p1, p2, f, st);
                         if (newce == null) {
                             Console.WriteLine("unrecognized dump type: " + type);
                             break;
@@ -1928,14 +1930,14 @@ namespace Circuit {
             int i;
 
             /* get old bounding box */
-            var oldbb = new Rectangle();
+            var oldbb = new RectangleF();
             for (i = 0; i != ElmList.Count; i++) {
                 var ce = getElm(i);
                 var bb = ce.BoundingBox;
                 if (0 == i) {
                     oldbb = bb;
                 } else {
-                    oldbb = Rectangle.Union(oldbb, bb);
+                    oldbb = RectangleF.Union(oldbb, bb);
                 }
             }
 
@@ -1949,7 +1951,7 @@ namespace Circuit {
             }
 
             /* select new items and get their bounding box */
-            var newbb = new Rectangle();
+            var newbb = new RectangleF();
             for (i = oldsz; i != ElmList.Count; i++) {
                 var ce = getElm(i);
                 ce.IsSelected = true;
@@ -1957,27 +1959,28 @@ namespace Circuit {
                 if (0 == i) {
                     newbb = bb;
                 } else {
-                    newbb = Rectangle.Union(newbb, bb);
+                    newbb = RectangleF.Union(newbb, bb);
                 }
             }
 
             if (oldbb != null && newbb != null && oldbb.Contains(newbb)) {
                 /* find a place on the edge for new items */
-                int dx = 0, dy = 0;
-                int spacew = mCircuitArea.Width - oldbb.Width - newbb.Width;
-                int spaceh = mCircuitArea.Height - oldbb.Height - newbb.Height;
+                int dx = 0;
+                int dy = 0;
+                var spacew = (int)(mCircuitArea.Width - oldbb.Width - newbb.Width);
+                var spaceh = (int)(mCircuitArea.Height - oldbb.Height - newbb.Height);
                 if (spacew > spaceh) {
-                    dx = SnapGrid(oldbb.X + oldbb.Width - newbb.X + GRID_SIZE);
+                    dx = SnapGrid((int)(oldbb.X + oldbb.Width - newbb.X + GRID_SIZE));
                 } else {
-                    dy = SnapGrid(oldbb.Y + oldbb.Height - newbb.Y + GRID_SIZE);
+                    dy = SnapGrid((int)(oldbb.Y + oldbb.Height - newbb.Y + GRID_SIZE));
                 }
 
                 /* move new items near the mouse if possible */
                 if (MouseCursorX > 0 && mCircuitArea.Contains(MouseCursorX, MouseCursorY)) {
                     int gx = inverseTransformX(MouseCursorX);
                     int gy = inverseTransformY(MouseCursorY);
-                    int mdx = SnapGrid(gx - (newbb.X + newbb.Width / 2));
-                    int mdy = SnapGrid(gy - (newbb.Y + newbb.Height / 2));
+                    int mdx = SnapGrid((int)(gx - (newbb.X + newbb.Width / 2)));
+                    int mdy = SnapGrid((int)(gy - (newbb.Y + newbb.Height / 2)));
                     for (i = oldsz; i != ElmList.Count; i++) {
                         if (!getElm(i).AllowMove(mdx, mdy)) {
                             break;

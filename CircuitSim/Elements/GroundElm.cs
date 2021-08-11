@@ -2,12 +2,12 @@
 
 namespace Circuit.Elements {
     class GroundElm : CircuitElm {
-        Point ps1;
-        Point ps2;
+        PointF ps1;
+        PointF ps2;
 
         public GroundElm(Point pos) : base(pos) { }
 
-        public GroundElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) { }
+        public GroundElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) { }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.GROUND; } }
 

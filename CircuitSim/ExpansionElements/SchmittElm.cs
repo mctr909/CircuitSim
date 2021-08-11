@@ -5,7 +5,7 @@ namespace Circuit.Elements {
     class SchmittElm : InvertingSchmittElm {
         public SchmittElm(Point pos) : base(pos) { }
 
-        public SchmittElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) { }
+        public SchmittElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) { }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.SCHMITT; } }
 
@@ -52,11 +52,11 @@ namespace Circuit.Elements {
             if (ww > mLen / 2) {
                 ww = (int)(mLen / 2);
             }
-            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, .5 - ww / mLen);
-            mLead2 = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww - 4) / mLen);
-            gatePoly = new Point[3];
+            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, .5 - ww / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref mLead2, .5 + (ww - 4) / mLen);
+            gatePoly = new PointF[3];
             Utils.InterpPoint(mLead1, mLead2, ref gatePoly[0], ref gatePoly[1], 0, hs);
-            gatePoly[2] = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww - 5) / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref gatePoly[2], .5 + (ww - 5) / mLen);
         }
 
         public override void GetInfo(string[] arr) {

@@ -12,10 +12,9 @@ namespace Circuit.Elements {
         const int V_P = 1;
         const int V_O = 2;
 
-        int opsize;
-        int opheight;
-        int opwidth;
-        int opaddtext;
+        const int opheight = 8;
+        const int opwidth = 16;
+
         double maxOut;
         double minOut;
         double gain;
@@ -23,8 +22,8 @@ namespace Circuit.Elements {
 
         Point[] in1p;
         Point[] in2p;
-        Point[] textp;
-        Point[] triangle;
+        PointF[] textp;
+        PointF[] triangle;
 
         double lastvd;
 
@@ -34,11 +33,11 @@ namespace Circuit.Elements {
             minOut = -15;
             gbw = 1e6;
             mFlags = FLAG_GAIN; /* need to do this before setSize() */
+            mFlags |= FLAG_SMALL;
             gain = 100000;
-            setSize(1);
         }
 
-        public OpAmpElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public OpAmpElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             /* GBW has no effect in this version of the simulator,
              * but we retain it to keep the file format the same */
             try {
@@ -54,7 +53,7 @@ namespace Circuit.Elements {
                 gbw = 1e6;
             }
             mNoDiagonal = true;
-            setSize((f & FLAG_SMALL) != 0 ? 1 : 2);
+            mFlags |= FLAG_SMALL;
             setGain();
         }
 
@@ -106,18 +105,8 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        void setSize(int s) {
-            opsize = s;
-            opheight = 8 * s;
-            opwidth = 16 * s;
-            mFlags = (mFlags & ~FLAG_SMALL) | ((s == 1) ? FLAG_SMALL : 0);
-        }
-
         public override void SetPoints() {
             base.SetPoints();
-            if (mLen > 150 && this == Sim.DragElm) {
-                setSize(2);
-            }
             int ww = opwidth;
             if (ww > mLen / 2) {
                 ww = (int)(mLen / 2);
@@ -129,13 +118,13 @@ namespace Circuit.Elements {
             }
             in1p = new Point[2];
             in2p = new Point[2];
-            textp = new Point[2];
+            textp = new PointF[2];
             Utils.InterpPoint(mPoint1, mPoint2, ref in1p[0], ref in2p[0], 0, hs);
             Utils.InterpPoint(mLead1, mLead2, ref in1p[1], ref in2p[1], 0, hs);
             Utils.InterpPoint(mLead1, mLead2, ref textp[0], ref textp[1], 0.2, hs);
-            var tris = new Point[2];
+            var tris = new PointF[2];
             Utils.InterpPoint(mLead1, mLead2, ref tris[0], ref tris[1], 0, hs * 2);
-            triangle = new Point[] { tris[0], tris[1], mLead2 };
+            triangle = new PointF[] { tris[0], tris[1], mLead2 };
         }
 
         public override Point GetPost(int n) {

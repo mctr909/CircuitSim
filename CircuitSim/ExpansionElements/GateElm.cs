@@ -11,10 +11,10 @@ namespace Circuit.Elements {
         public static double lastHighVoltage = 5;
         static bool lastSchmitt = false;
 
-        int gsize;
-        int gwidth;
-        int gwidth2;
-        int gheight;
+        const int gwidth = 7;
+        const int gwidth2 = 14;
+        const int gheight = 8;
+
         protected int hs2;
 
         Point[] inPosts;
@@ -26,14 +26,14 @@ namespace Circuit.Elements {
 
         protected int ww;
 
-        protected Point[] gatePolyEuro;
-        protected Point[] gatePolyAnsi;
+        protected PointF[] gatePolyEuro;
+        protected PointF[] gatePolyAnsi;
 
-        Point[] schmittPoly;
+        PointF[] schmittPoly;
 
         protected int circleSize;
-        protected Point circlePos;
-        protected Point[] linePoints;
+        protected PointF circlePos;
+        protected PointF[] linePoints;
 
         public GateElm(Point pos) : base(pos) {
             mNoDiagonal = true;
@@ -45,10 +45,10 @@ namespace Circuit.Elements {
                 mFlags |= FLAG_SCHMITT;
             }
 
-            setSize(1);
+            mFlags |= FLAG_SMALL;
         }
 
-        public GateElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public GateElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             inputCount = st.nextTokenInt();
             double lastOutputVoltage = st.nextTokenDouble();
             mNoDiagonal = true;
@@ -58,7 +58,8 @@ namespace Circuit.Elements {
                 highVoltage = 5;
             }
             lastOutput = lastOutputVoltage > highVoltage * .5;
-            setSize((f & FLAG_SMALL) != 0 ? 1 : 2);
+
+            mFlags |= FLAG_SMALL;
         }
 
         public override int VoltageSourceCount { get { return 1; } }
@@ -67,15 +68,6 @@ namespace Circuit.Elements {
 
         protected virtual bool isInverting() { return false; }
 
-        void setSize(int s) {
-            gsize = s;
-            gwidth = 7 * s;
-            gwidth2 = 14 * s;
-            gheight = 8 * s;
-            mFlags &= ~FLAG_SMALL;
-            mFlags |= (s == 1) ? FLAG_SMALL : 0;
-        }
-
         protected override string dump() {
             return inputCount + " " + Volts[inputCount] + " " + highVoltage;
         }
@@ -83,9 +75,6 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             inputStates = new bool[inputCount];
-            if (mLen > 150 && this == Sim.DragElm) {
-                setSize(2);
-            }
             int hs = gheight;
             int i;
             ww = gwidth2;
@@ -104,19 +93,19 @@ namespace Circuit.Elements {
                 if (i0 == 0 && (inputCount & 1) == 0) {
                     i0++;
                 }
-                inPosts[i] = Utils.InterpPoint(mPoint1, mPoint2, 0, hs * i0);
-                inGates[i] = Utils.InterpPoint(mLead1, mLead2, 0, hs * i0);
+                Utils.InterpPoint(mPoint1, mPoint2, ref inPosts[i], 0, hs * i0);
+                Utils.InterpPoint(mLead1, mLead2, ref inGates[i], 0, hs * i0);
                 Volts[i] = (lastOutput ^ isInverting()) ? 5 : 0;
             }
             hs2 = gwidth * (inputCount / 2 + 1);
             setBbox(mPoint1, mPoint2, hs2);
             if (hasSchmittInputs()) {
-                schmittPoly = Utils.CreateSchmitt(mLead1, mLead2, gsize, .47f);
+                schmittPoly = Utils.CreateSchmitt(mLead1, mLead2, 1, .47f);
             }
         }
 
         protected void createEuroGatePolygon() {
-            gatePolyEuro = new Point[4];
+            gatePolyEuro = new PointF[4];
             Utils.InterpPoint(mLead1, mLead2, ref gatePolyEuro[0], ref gatePolyEuro[1], 0, hs2);
             Utils.InterpPoint(mLead1, mLead2, ref gatePolyEuro[3], ref gatePolyEuro[2], 1, hs2);
         }
@@ -136,8 +125,9 @@ namespace Circuit.Elements {
                 g.DrawThickPolygon(gatePolyAnsi);
             } else {
                 g.DrawThickPolygon(gatePolyEuro);
-                var center = Utils.InterpPoint(mPoint1, mPoint2, .5);
-                drawCenteredLText(g, getGateText(), center.X, center.Y - 6 * gsize, true);
+                var center = new PointF();
+                Utils.InterpPoint(mPoint1, mPoint2, ref center, .5);
+                drawCenteredLText(g, getGateText(), center.X, center.Y - 6, true);
             }
             if (hasSchmittInputs()) {
                 g.LineColor = WhiteColor;

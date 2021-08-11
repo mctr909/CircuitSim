@@ -39,8 +39,8 @@ namespace Circuit.Elements {
         long periodLength;
         long pulseStart;
 
-        Point center;
-        Point plusPoint;
+        PointF center;
+        PointF plusPoint;
 
         public VoltMeterElm(Point pos) : base(pos) {
             meter = TP_VOL;
@@ -50,7 +50,7 @@ namespace Circuit.Elements {
             scale = E_SCALE.AUTO;
         }
 
-        public VoltMeterElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public VoltMeterElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             meter = TP_VOL;
             scale = E_SCALE.AUTO;
             try {
@@ -95,8 +95,8 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            center = Utils.InterpPoint(mPoint1, mPoint2, .5, 8 * mDsign);
-            plusPoint = Utils.InterpPoint(mPoint1, mPoint2, (mLen / 2 - 20) / mLen, 16 * mDsign);
+            Utils.InterpPoint(mPoint1, mPoint2, ref center, .5, 8 * mDsign);
+            Utils.InterpPoint(mPoint1, mPoint2, ref plusPoint, (mLen / 2 - 20) / mLen, 16 * mDsign);
         }
 
         public override void Draw(CustomGraphics g) {

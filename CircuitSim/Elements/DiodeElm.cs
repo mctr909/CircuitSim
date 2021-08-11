@@ -15,8 +15,8 @@ namespace Circuit.Elements {
         int diodeEndNode;
 
         const int hs = 6;
-        Point[] poly;
-        Point[] cathode;
+        PointF[] poly;
+        PointF[] mCathode;
 
         bool customModelUI;
         List<DiodeModel> models;
@@ -27,7 +27,7 @@ namespace Circuit.Elements {
             setup();
         }
 
-        public DiodeElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public DiodeElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             const double defaultdrop = .805904783;
             diode = new Diode(Sim, mCir);
             double fwdrop = defaultdrop;
@@ -88,11 +88,11 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(12);
-            cathode = new Point[2];
-            var pa = new Point[2];
+            mCathode = new PointF[2];
+            var pa = new PointF[2];
             Utils.InterpPoint(mLead1, mLead2, ref pa[0], ref pa[1], 0, hs);
-            Utils.InterpPoint(mLead1, mLead2, ref cathode[0], ref cathode[1], 1, hs);
-            poly = new Point[] { pa[0], pa[1], mLead2 };
+            Utils.InterpPoint(mLead1, mLead2, ref mCathode[0], ref mCathode[1], 1, hs);
+            poly = new PointF[] { pa[0], pa[1], mLead2 };
         }
 
         public override void Draw(CustomGraphics g) {
@@ -120,7 +120,7 @@ namespace Circuit.Elements {
             /* draw arrow thingy */
             g.FillPolygon(getVoltageColor(v1), poly);
             /* draw thing arrow is pointing to */
-            g.DrawThickLine(getVoltageColor(v2), cathode[0], cathode[1]);
+            g.DrawThickLine(getVoltageColor(v2), mCathode[0], mCathode[1]);
         }
 
         public override void Stamp() {

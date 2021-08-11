@@ -10,45 +10,45 @@ namespace Circuit {
     }
 
     static class Utils {
-        public static double Angle(Point o, Point p) {
-            double x = p.X - o.X;
-            double y = p.Y - o.Y;
+        public static double Angle(PointF o, PointF p) {
+            var x = p.X - o.X;
+            var y = p.Y - o.Y;
             return Math.Atan2(y, x);
         }
 
-        public static double Angle(Point o, double px, double py) {
-            double x = px - o.X;
-            double y = py - o.Y;
+        public static double Angle(PointF o, double px, double py) {
+            var x = px - o.X;
+            var y = py - o.Y;
             return Math.Atan2(y, x);
         }
 
         public static double Angle(double ox, double oy, Point p) {
-            double x = p.X - ox;
-            double y = p.Y - oy;
+            var x = p.X - ox;
+            var y = p.Y - oy;
             return Math.Atan2(y, x);
         }
 
         public static double Angle(double ox, double oy, double px, double py) {
-            double x = px - ox;
-            double y = py - oy;
+            var x = px - ox;
+            var y = py - oy;
             return Math.Atan2(y, x);
         }
 
-        public static double Distance(Point a, Point b) {
-            double x = b.X - a.X;
-            double y = b.Y - a.Y;
+        public static double Distance(PointF a, PointF b) {
+            var x = b.X - a.X;
+            var y = b.Y - a.Y;
             return Math.Sqrt(x * x + y * y);
         }
 
         public static double Distance(Point a, double bx, double by) {
-            double x = bx - a.X;
-            double y = by - a.Y;
+            var x = bx - a.X;
+            var y = by - a.Y;
             return Math.Sqrt(x * x + y * y);
         }
 
         public static double Distance(double ax, double ay, double bx, double by) {
-            double x = bx - ax;
-            double y = by - ay;
+            var x = bx - ax;
+            var y = by - ay;
             return Math.Sqrt(x * x + y * y);
         }
 
@@ -70,16 +70,15 @@ namespace Circuit {
         }
 
         /// <summary>
-        /// calculate point fraction f between a and b, linearly interpolated
+        /// calculate point fraction f between a and b, linearly interpolated, return it in c
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
+        /// <param name="ret"></param>
         /// <param name="f"></param>
-        /// <returns></returns>
-        public static Point InterpPoint(Point a, Point b, double f) {
-            var p = new Point();
-            InterpPoint(a, b, ref p, f);
-            return p;
+        public static void InterpPoint(PointF a, PointF b, ref PointF ret, double f) {
+            ret.X = (float)(a.X * (1 - f) + b.X * f);
+            ret.Y = (float)(a.Y * (1 - f) + b.Y * f);
         }
 
         /// <summary>
@@ -89,9 +88,9 @@ namespace Circuit {
         /// <param name="b"></param>
         /// <param name="ret"></param>
         /// <param name="f"></param>
-        public static void InterpPoint(Point a, Point b, ref Point ret, double f) {
-            ret.X = (int)Math.Floor(a.X * (1 - f) + b.X * f + 0.48);
-            ret.Y = (int)Math.Floor(a.Y * (1 - f) + b.Y * f + 0.48);
+        public static void InterpPoint(PointF a, PointF b, ref Point ret, double f) {
+            ret.X = (int)(a.X * (1 - f) + b.X * f);
+            ret.Y = (int)(a.Y * (1 - f) + b.Y * f);
         }
 
         /// <summary>
@@ -102,7 +101,7 @@ namespace Circuit {
         /// <param name="ret">Returns interpolated point</param>
         /// <param name="f">Fraction along line</param>
         /// <param name="g">Fraction perpendicular to line</param>
-        public static void InterpPoint(Point a, Point b, ref Point ret, double f, double g) {
+        public static void InterpPoint(PointF a, PointF b, ref PointF ret, double f, double g) {
             var gx = b.Y - a.Y;
             var gy = a.X - b.X;
             var r = Math.Sqrt(gx * gx + gy * gy);
@@ -111,8 +110,8 @@ namespace Circuit {
                 ret.Y = a.Y;
             } else {
                 g /= r;
-                ret.X = (int)Math.Floor(a.X * (1 - f) + b.X * f + g * gx + 0.48);
-                ret.Y = (int)Math.Floor(a.Y * (1 - f) + b.Y * f + g * gy + 0.48);
+                ret.X = (float)(a.X * (1 - f) + b.X * f + g * gx);
+                ret.Y = (float)(a.Y * (1 - f) + b.Y * f + g * gy);
             }
         }
 
@@ -121,13 +120,21 @@ namespace Circuit {
         /// </summary>
         /// <param name="a">1st Point</param>
         /// <param name="b">2nd Point</param>
+        /// <param name="ret">Returns interpolated point</param>
         /// <param name="f">Fraction along line</param>
         /// <param name="g">Fraction perpendicular to line</param>
-        /// <returns>Interpolated point</returns>
-        public static Point InterpPoint(Point a, Point b, double f, double g) {
-            var p = new Point();
-            InterpPoint(a, b, ref p, f, g);
-            return p;
+        public static void InterpPoint(PointF a, PointF b, ref Point ret, double f, double g) {
+            var gx = b.Y - a.Y;
+            var gy = a.X - b.X;
+            var r = Math.Sqrt(gx * gx + gy * gy);
+            if (0.0 == r) {
+                ret.X = (int)a.X;
+                ret.Y = (int)a.Y;
+            } else {
+                g /= r;
+                ret.X = (int)(a.X * (1 - f) + b.X * f + g * gx);
+                ret.Y = (int)(a.Y * (1 - f) + b.Y * f + g * gy);
+            }
         }
 
         /// <summary>
@@ -139,7 +146,7 @@ namespace Circuit {
         /// <param name="ret2">2nd point (Out)</param>
         /// <param name="f">Fraction along line</param>
         /// <param name="g">Fraction perpendicular to line</param>
-        public static void InterpPoint(Point a, Point b, ref Point ret1, ref Point ret2, double f, double g) {
+        public static void InterpPoint(PointF a, PointF b, ref PointF ret1, ref PointF ret2, double f, double g) {
             var gx = b.Y - a.Y;
             var gy = a.X - b.X;
             var r = Math.Sqrt(gx * gx + gy * gy);
@@ -150,35 +157,62 @@ namespace Circuit {
                 ret2.Y = b.Y;
             } else {
                 g /= r;
-                ret1.X = (int)Math.Floor(a.X * (1 - f) + b.X * f + g * gx + 0.48);
-                ret1.Y = (int)Math.Floor(a.Y * (1 - f) + b.Y * f + g * gy + 0.48);
-                ret2.X = (int)Math.Floor(a.X * (1 - f) + b.X * f - g * gx + 0.48);
-                ret2.Y = (int)Math.Floor(a.Y * (1 - f) + b.Y * f - g * gy + 0.48);
+                ret1.X = (float)(a.X * (1 - f) + b.X * f + g * gx);
+                ret1.Y = (float)(a.Y * (1 - f) + b.Y * f + g * gy);
+                ret2.X = (float)(a.X * (1 - f) + b.X * f - g * gx);
+                ret2.Y = (float)(a.Y * (1 - f) + b.Y * f - g * gy);
             }
         }
 
-        public static Point[] CreateArrow(Point a, Point b, double al, double aw) {
-            int adx = b.X - a.X;
-            int ady = b.Y - a.Y;
+        /// <summary>
+        /// Calculates two points fraction f along the line between a and b and offest perpendicular by +/-g
+        /// </summary>
+        /// <param name="a">1st point (In)</param>
+        /// <param name="b">2nd point (In)</param>
+        /// <param name="ret1">1st point (Out)</param>
+        /// <param name="ret2">2nd point (Out)</param>
+        /// <param name="f">Fraction along line</param>
+        /// <param name="g">Fraction perpendicular to line</param>
+        public static void InterpPoint(PointF a, PointF b, ref Point ret1, ref Point ret2, double f, double g) {
+            var gx = b.Y - a.Y;
+            var gy = a.X - b.X;
+            var r = Math.Sqrt(gx * gx + gy * gy);
+            if (0.0 == r) {
+                ret1.X = (int)a.X;
+                ret1.Y = (int)a.Y;
+                ret2.X = (int)b.X;
+                ret2.Y = (int)b.Y;
+            } else {
+                g /= r;
+                ret1.X = (int)(a.X * (1 - f) + b.X * f + g * gx);
+                ret1.Y = (int)(a.Y * (1 - f) + b.Y * f + g * gy);
+                ret2.X = (int)(a.X * (1 - f) + b.X * f - g * gx);
+                ret2.Y = (int)(a.Y * (1 - f) + b.Y * f - g * gy);
+            }
+        }
+
+        public static PointF[] CreateArrow(PointF a, PointF b, double al, double aw) {
+            var adx = b.X - a.X;
+            var ady = b.Y - a.Y;
             double l = Math.Sqrt(adx * adx + ady * ady);
-            var poly = new Point[3];
-            poly[0] = new Point(b.X, b.Y);
+            var poly = new PointF[3];
+            poly[0] = new PointF(b.X, b.Y);
             InterpPoint(a, b, ref poly[1], ref poly[2], 1.0 - al / l, aw);
             return poly;
         }
 
-        public static Point[] CreateSchmitt(Point a, Point b, double gsize, double ctr) {
-            var pts = new Point[6];
+        public static PointF[] CreateSchmitt(PointF a, PointF b, double gsize, double ctr) {
+            var pts = new PointF[6];
             var hs = 3 * gsize;
             var h1 = 3 * gsize;
             var h2 = h1 * 2;
             double len = Distance(a, b);
-            pts[0] = InterpPoint(a, b, ctr - h2 / len, hs);
-            pts[1] = InterpPoint(a, b, ctr + h1 / len, hs);
-            pts[2] = InterpPoint(a, b, ctr + h1 / len, -hs);
-            pts[3] = InterpPoint(a, b, ctr + h2 / len, -hs);
-            pts[4] = InterpPoint(a, b, ctr - h1 / len, -hs);
-            pts[5] = InterpPoint(a, b, ctr - h1 / len, hs);
+            InterpPoint(a, b, ref pts[0], ctr - h2 / len, hs);
+            InterpPoint(a, b, ref pts[1], ctr + h1 / len, hs);
+            InterpPoint(a, b, ref pts[2], ctr + h1 / len, -hs);
+            InterpPoint(a, b, ref pts[3], ctr + h2 / len, -hs);
+            InterpPoint(a, b, ref pts[4], ctr - h1 / len, -hs);
+            InterpPoint(a, b, ref pts[5], ctr - h1 / len, hs);
             return pts;
         }
 

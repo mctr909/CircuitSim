@@ -25,16 +25,16 @@ namespace Circuit.Elements {
         bool increasingI = true;
         bool decreasingI = true;
 
-        Point mid;
-        Point[] arrowPoly;
-        Point textPos;
+        PointF mid;
+        PointF[] arrowPoly;
+        PointF textPos;
 
         public AmmeterElm(Point pos) : base(pos) {
             mFlags = FLAG_SHOWCURRENT;
             scale = E_SCALE.AUTO;
         }
 
-        public AmmeterElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public AmmeterElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             meter = st.nextTokenInt();
             try {
                 scale = st.nextTokenEnum<E_SCALE>();
@@ -69,7 +69,7 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            mid = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 8 / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref mid, 0.5 + 8 / mLen);
             arrowPoly = Utils.CreateArrow(mPoint1, mid, 14, 7);
             int sign;
             if (mPoint1.Y == mPoint2.Y) {
@@ -77,7 +77,7 @@ namespace Circuit.Elements {
             } else {
                 sign = -mDsign;
             }
-            textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 8 * sign / mLen, 12 * sign);
+            Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5 + 8 * sign / mLen, 12 * sign);
         }
 
         public override void StepFinished() {

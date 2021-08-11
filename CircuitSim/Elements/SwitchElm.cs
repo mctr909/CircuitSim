@@ -10,8 +10,8 @@ namespace Circuit.Elements {
          * position 1 == open */
         public int position { get; protected set; }
         public int posCount { get; protected set; }
-        Point ps1;
-        Point ps2;
+        PointF ps1;
+        PointF ps2;
 
         public SwitchElm(Point pos) : base(pos) {
             momentary = false;
@@ -25,7 +25,7 @@ namespace Circuit.Elements {
             posCount = 2;
         }
 
-        public SwitchElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public SwitchElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             string str = st.nextToken();
             if (str.CompareTo("true") == 0) {
                 position = (this is LogicInputElm) ? 0 : 1;
@@ -70,12 +70,12 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public virtual Rectangle getSwitchRect() {
+        public virtual RectangleF getSwitchRect() {
             Utils.InterpPoint(mLead1, mLead2, ref ps1, 0, openhs);
-            var l1 = new Rectangle(mLead1.X, mLead1.Y, 0, 0);
-            var l2 = new Rectangle(mLead2.X, mLead2.Y, 0, 0);
-            var p = new Rectangle(ps1.X, ps1.Y, 0, 0);
-            return Rectangle.Union(l1, Rectangle.Union(l2, p));
+            var l1 = new RectangleF(mLead1.X, mLead1.Y, 0, 0);
+            var l2 = new RectangleF(mLead2.X, mLead2.Y, 0, 0);
+            var p = new RectangleF(ps1.X, ps1.Y, 0, 0);
+            return RectangleF.Union(l1, RectangleF.Union(l2, p));
         }
 
         protected override void calculateCurrent() {

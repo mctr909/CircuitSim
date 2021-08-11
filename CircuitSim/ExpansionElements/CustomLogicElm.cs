@@ -19,7 +19,7 @@ namespace Circuit.Elements {
             SetupPins();
         }
 
-        public CustomLogicElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) {
+        public CustomLogicElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
             modelName = CustomLogicModel.unescape(st.nextToken());
             UpdateModels();
             int i;

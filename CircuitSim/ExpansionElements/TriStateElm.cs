@@ -10,15 +10,15 @@ namespace Circuit.Elements {
 
         Point ps;
         Point point3;
-        Point lead3;
-        Point[] gatePoly;
+        PointF lead3;
+        PointF[] gatePoly;
 
         public TriStateElm(Point pos) : base(pos) {
             r_on = 0.1;
             r_off = 1e10;
         }
 
-        public TriStateElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public TriStateElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             r_on = 0.1;
             r_off = 1e10;
             try {
@@ -54,11 +54,11 @@ namespace Circuit.Elements {
             if (ww > mLen / 2) {
                 ww = (int)(mLen / 2);
             }
-            gatePoly = new Point[3];
+            gatePoly = new PointF[3];
             Utils.InterpPoint(mLead1, mLead2, ref gatePoly[0], ref gatePoly[1], 0, hs);
-            gatePoly[2] = Utils.InterpPoint(mPoint1, mPoint2, .5 + ww / mLen);
-            point3 = Utils.InterpPoint(mPoint1, mPoint2, .5, -hs);
-            lead3 = Utils.InterpPoint(mPoint1, mPoint2, .5, -hs / 2);
+            Utils.InterpPoint(mPoint1, mPoint2, ref gatePoly[2], .5 + ww / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref point3, .5, -hs);
+            Utils.InterpPoint(mPoint1, mPoint2, ref lead3, .5, -hs / 2);
         }
 
         public override void Draw(CustomGraphics g) {

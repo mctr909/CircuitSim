@@ -7,13 +7,13 @@ namespace Circuit.Elements {
         const int FLAG_SHOWCURRENT = 1;
         const int FLAG_SHOWVOLTAGE = 2;
 
-        Point textPos;
+        PointF textPos;
 
         public bool hasWireInfo; /* used in CirSim to calculate wire currents */
 
         public WireElm(Point pos) : base(pos) { }
 
-        public WireElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) { }
+        public WireElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) { }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.WIRE; } }
 
@@ -35,7 +35,7 @@ namespace Circuit.Elements {
             } else {
                 sign = -mDsign;
             }
-            textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 8 * sign / mLen, 15 * sign);
+            Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5 + 8 * sign / mLen, 15 * sign);
         }
 
         public override void Draw(CustomGraphics g) {

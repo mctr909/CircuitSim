@@ -9,9 +9,9 @@ namespace Circuit.Elements {
         double voltdiff;
         double curSourceValue;
 
-        Point[] plate1;
-        Point[] plate2;
-        Point textPos;
+        PointF[] mPlate1;
+        PointF[] mPlate2;
+        PointF mTextPos;
 
         public double Capacitance { get; set; }
 
@@ -21,7 +21,7 @@ namespace Circuit.Elements {
             Capacitance = 1e-5;
         }
 
-        public CapacitorElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public CapacitorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Capacitance = st.nextTokenDouble();
             voltdiff = st.nextTokenDouble();
         }
@@ -57,19 +57,19 @@ namespace Circuit.Elements {
             base.SetPoints();
             double f = (mLen / 2 - 3) / mLen;
             /* calc leads */
-            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, f);
-            mLead2 = Utils.InterpPoint(mPoint1, mPoint2, 1 - f);
+            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, f);
+            Utils.InterpPoint(mPoint1, mPoint2, ref mLead2, 1 - f);
             /* calc plates */
-            plate1 = new Point[2];
-            plate2 = new Point[2];
-            Utils.InterpPoint(mPoint1, mPoint2, ref plate1[0], ref plate1[1], f, 8);
-            Utils.InterpPoint(mPoint1, mPoint2, ref plate2[0], ref plate2[1], 1 - f, 8);
+            mPlate1 = new PointF[2];
+            mPlate2 = new PointF[2];
+            Utils.InterpPoint(mPoint1, mPoint2, ref mPlate1[0], ref mPlate1[1], f, 8);
+            Utils.InterpPoint(mPoint1, mPoint2, ref mPlate2[0], ref mPlate2[1], 1 - f, 8);
             if (mPoint1.Y == mPoint2.Y) {
-                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 12 * mDsign / mLen, 16 * mDsign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5 + 12 * mDsign / mLen, 16 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
-                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -8 * mDsign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5, -8 * mDsign);
             } else {
-                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -10 * mDsign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5, -10 * mDsign);
             }
         }
 
@@ -80,11 +80,11 @@ namespace Circuit.Elements {
             /* draw first lead and plate */
             g.ThickLineColor = getVoltageColor(Volts[0]);
             g.DrawThickLine(mPoint1, mLead1);
-            g.DrawThickLine(plate1[0], plate1[1]);
+            g.DrawThickLine(mPlate1[0], mPlate1[1]);
             /* draw second lead and plate */
             g.ThickLineColor = getVoltageColor(Volts[1]);
             g.DrawThickLine(mPoint2, mLead2);
-            g.DrawThickLine(plate2[0], plate2[1]);
+            g.DrawThickLine(mPlate2[0], mPlate2[1]);
 
             updateDotCount();
             if (Sim.DragElm != this) {
@@ -94,7 +94,7 @@ namespace Circuit.Elements {
             drawPosts(g);
             if (ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.ShortUnitText(Capacitance, "");
-                g.DrawRightText(s, textPos.X, textPos.Y);
+                g.DrawRightText(s, mTextPos.X, mTextPos.Y);
             }
         }
 

@@ -11,7 +11,7 @@ namespace Circuit.Elements {
 
         public RailElm(Point pos, WAVEFORM wf) : base(pos, wf) { }
 
-        public RailElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st): base(xa, ya, xb, yb, f, st) {
+        public RailElm(Point p1, Point p2, int f, StringTokenizer st): base(p1, p2, f, st) {
             mNumHandles = 1;
         }
 
@@ -23,7 +23,7 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - circleSize / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, 1 - circleSize / mLen);
         }
 
         public string getRailText() {
@@ -37,9 +37,9 @@ namespace Circuit.Elements {
                 w = mLen * .8;
             }
             if (waveform == WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0 || waveform == WAVEFORM.DC) {
-                mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - (w - 5) / mLen);
+                Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, 1 - (w - 5) / mLen);
             } else {
-                mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - w / mLen);
+                Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, 1 - w / mLen);
             }
             setBbox(mPoint1, mPoint2, circleSize);
 

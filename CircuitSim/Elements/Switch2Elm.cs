@@ -22,7 +22,7 @@ namespace Circuit.Elements {
             allocNodes();
         }
 
-        public Switch2Elm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) {
+        public Switch2Elm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
             link = st.nextTokenInt();
             throwCount = 2;
             try {
@@ -94,11 +94,11 @@ namespace Circuit.Elements {
             return 0;
         }
 
-        public override Rectangle getSwitchRect() {
-            var l1 = new Rectangle(mLead1.X, mLead1.Y, 0, 0);
-            var s0 = new Rectangle(swpoles[0].X, swpoles[0].Y, 0, 0);
-            var s1 = new Rectangle(swpoles[throwCount - 1].X, swpoles[throwCount - 1].Y, 0, 0);
-            return Rectangle.Union(l1, Rectangle.Union(s0, s1));
+        public override RectangleF getSwitchRect() {
+            var l1 = new RectangleF(mLead1.X, mLead1.Y, 0, 0);
+            var s0 = new RectangleF(swpoles[0].X, swpoles[0].Y, 0, 0);
+            var s1 = new RectangleF(swpoles[throwCount - 1].X, swpoles[throwCount - 1].Y, 0, 0);
+            return RectangleF.Union(l1, RectangleF.Union(s0, s1));
         }
 
         public override Point GetPost(int n) {

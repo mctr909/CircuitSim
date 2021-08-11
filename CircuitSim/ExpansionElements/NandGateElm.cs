@@ -4,7 +4,7 @@ namespace Circuit.Elements {
     class NandGateElm : AndGateElm {
         public NandGateElm(Point pos) : base(pos) { }
 
-        public NandGateElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) { }
+        public NandGateElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) { }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.NAND_GATE; } }
 

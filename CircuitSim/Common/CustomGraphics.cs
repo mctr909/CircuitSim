@@ -109,7 +109,7 @@ namespace Circuit {
             return new CustomGraphics(width, height);
         }
 
-        public void DrawPost(Point p) {
+        public void DrawPost(PointF p) {
             g.FillPie(penPost.Brush, p.X - penPost.Width / 2, p.Y - penPost.Width / 2, penPost.Width, penPost.Width, 0, 360);
         }
 
@@ -145,11 +145,11 @@ namespace Circuit {
             g.DrawRectangle(penLine, rect);
         }
 
-        public void DrawCircle(Point p, float radius) {
+        public void DrawCircle(PointF p, float radius) {
             g.DrawArc(penLine, p.X - radius, p.Y - radius, radius * 2, radius * 2, 0, 360);
         }
 
-        public void DrawPolygon(Point[] p) {
+        public void DrawPolygon(PointF[] p) {
             g.DrawPolygon(penLine, p);
         }
 
@@ -175,21 +175,21 @@ namespace Circuit {
             g.DrawLine(penThickLine, a.X, a.Y, b.X, b.Y);
         }
 
-        public void DrawThickCircle(Point p, float diameter) {
+        public void DrawThickCircle(PointF p, float diameter) {
             var md = diameter * .98f;
             g.DrawArc(penThickLine, p.X - md / 2, p.Y - md / 2, md, md, 0, 360);
         }
 
-        public void DrawThickArc(Point p, float diameter, float start, float sweep) {
+        public void DrawThickArc(PointF p, float diameter, float start, float sweep) {
             var md = diameter * .98f;
             g.DrawArc(penThickLine, p.X - md / 2, p.Y - md / 2, md, md, start, sweep);
         }
 
-        public void DrawThickPolygon(Point[] p) {
+        public void DrawThickPolygon(PointF[] p) {
             g.DrawPolygon(penThickLine, p);
         }
 
-        public void DrawThickPolygon(Color color, Point[] p) {
+        public void DrawThickPolygon(Color color, PointF[] p) {
             penColor.Color = color;
             g.DrawPolygon(penColor, p);
         }
@@ -210,7 +210,7 @@ namespace Circuit {
             g.FillPie(brush, pos.X - radius, pos.Y - radius, radius * 2, radius * 2, 0, 360);
         }
 
-        public void FillPolygon(Color color, Point[] p) {
+        public void FillPolygon(Color color, PointF[] p) {
             penColor.Color = color;
             g.FillPolygon(penColor.Brush, p);
         }

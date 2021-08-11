@@ -22,7 +22,7 @@ namespace Circuit.Elements {
             Reset();
         }
 
-        public FMElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public FMElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             carrierfreq = st.nextTokenDouble();
             signalfreq = st.nextTokenDouble();
             maxVoltage = st.nextTokenDouble();
@@ -89,7 +89,7 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - 0.5 * circleSize / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, 1 - 0.5 * circleSize / mLen);
         }
 
         public override double VoltageDiff { get { return Volts[0]; } }

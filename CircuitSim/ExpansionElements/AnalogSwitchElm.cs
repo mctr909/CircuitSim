@@ -11,16 +11,16 @@ namespace Circuit.Elements {
 
         bool open;
 
-        Point ps;
+        PointF ps;
         Point point3;
-        Point lead3;
+        PointF lead3;
 
         public AnalogSwitchElm(Point pos) : base(pos) {
             r_on = 20;
             r_off = 1e10;
         }
 
-        public AnalogSwitchElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public AnalogSwitchElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
                 r_on = st.nextTokenDouble();
                 r_off = st.nextTokenDouble();
@@ -45,8 +45,8 @@ namespace Circuit.Elements {
             base.SetPoints();
             calcLeads(32);
             int openhs = 16;
-            point3 = Utils.InterpPoint(mPoint1, mPoint2, .5, -openhs);
-            lead3 = Utils.InterpPoint(mPoint1, mPoint2, .5, -openhs / 2);
+            Utils.InterpPoint(mPoint1, mPoint2, ref point3, .5, -openhs);
+            Utils.InterpPoint(mPoint1, mPoint2, ref lead3, .5, -openhs / 2);
         }
 
         public override void Draw(CustomGraphics g) {

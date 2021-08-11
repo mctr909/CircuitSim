@@ -20,7 +20,7 @@ namespace Circuit.Elements {
             Text = "label";
         }
 
-        public LabeledNodeElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public LabeledNodeElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Text = st.nextToken();
             if ((mFlags & FLAG_ESCAPE) == 0) {
                 // old-style dump before escape/unescape
@@ -69,7 +69,7 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - CircleSize / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, 1 - CircleSize / mLen);
         }
 
         public override void SetNode(int p, int n) {

@@ -2,18 +2,18 @@
 
 namespace Circuit.Elements {
     class CurrentElm : CircuitElm {
-        Point[] arrow;
-        Point ashaft1;
-        Point ashaft2;
-        Point center;
-        Point textPos;
+        PointF[] arrow;
+        PointF ashaft1;
+        PointF ashaft2;
+        PointF center;
+        PointF textPos;
         double currentValue;
 
         public CurrentElm(Point pos) : base(pos) {
             currentValue = .01;
         }
 
-        public CurrentElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public CurrentElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
                 currentValue = st.nextTokenDouble();
             } catch {
@@ -34,17 +34,18 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(32);
-            ashaft1 = Utils.InterpPoint(mLead1, mLead2, .25);
-            ashaft2 = Utils.InterpPoint(mLead1, mLead2, .6);
-            center = Utils.InterpPoint(mLead1, mLead2, .5);
+            Utils.InterpPoint(mLead1, mLead2, ref ashaft1, .25);
+            Utils.InterpPoint(mLead1, mLead2, ref ashaft2, .6);
+            Utils.InterpPoint(mLead1, mLead2, ref center, .5);
             int sign;
             if (mPoint1.Y == mPoint2.Y) {
                 sign = mDsign;
             } else {
                 sign = -mDsign;
             }
-            textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, 20 * sign);
-            var p2 = Utils.InterpPoint(mLead1, mLead2, .8);
+            Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5, 20 * sign);
+            var p2 = new PointF();
+            Utils.InterpPoint(mLead1, mLead2, ref p2, .8);
             arrow = Utils.CreateArrow(center, p2, 8, 4);
         }
 

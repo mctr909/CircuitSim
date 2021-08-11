@@ -4,17 +4,17 @@ namespace Circuit.Elements {
     class ResistorElm : CircuitElm {
         public double Resistance { get; set; }
 
-        Point ps1;
-        Point ps2;
-        Point ps3;
-        Point ps4;
-        Point textPos;
+        PointF ps1;
+        PointF ps2;
+        PointF ps3;
+        PointF ps4;
+        PointF textPos;
 
         public ResistorElm(Point pos) : base(pos) {
             Resistance = 1000;
         }
 
-        public ResistorElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public ResistorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Resistance = st.nextTokenDouble();
         }
 
@@ -30,11 +30,11 @@ namespace Circuit.Elements {
             base.SetPoints();
             calcLeads(24);
             if (mPoint1.Y == mPoint2.Y) {
-                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5 + 10 * mDsign / mLen, 12 * mDsign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5 + 10 * mDsign / mLen, 12 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
-                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -4 * mDsign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5, -4 * mDsign);
             } else {
-                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -8 * mDsign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5, -8 * mDsign);
             }
         }
 

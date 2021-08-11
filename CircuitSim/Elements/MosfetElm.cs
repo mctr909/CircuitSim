@@ -44,11 +44,11 @@ namespace Circuit.Elements {
         /* points for gate, body, and the little circle on PNP mosfets */
         Point[] gate;
         Point[] body;
-        Point pcircle;
-        Point[] arrowPoly;
+        PointF pcircle;
+        PointF[] arrowPoly;
 
-        Point ps1;
-        Point ps2;
+        PointF ps1;
+        PointF ps2;
 
         double lastv0;
         double lastv1;
@@ -67,7 +67,7 @@ namespace Circuit.Elements {
             vt = DefaultThreshold;
         }
 
-        public MosfetElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public MosfetElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             pnp = ((f & FLAG_PNP) != 0) ? -1 : 1;
             mNoDiagonal = true;
             setupDiodes();
@@ -271,7 +271,7 @@ namespace Circuit.Elements {
             } else if (pnp == -1) {
                 Utils.InterpPoint(mPoint1, mPoint2, ref gate[1], 1 - 36 / mLen);
                 int dist = (mDsign < 0) ? 32 : 31;
-                pcircle = Utils.InterpPoint(mPoint1, mPoint2, 1 - dist / mLen);
+                Utils.InterpPoint(mPoint1, mPoint2, ref pcircle, 1 - dist / mLen);
                 pcircler = 3;
             }
         }

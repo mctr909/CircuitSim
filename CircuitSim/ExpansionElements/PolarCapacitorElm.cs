@@ -3,13 +3,13 @@
 namespace Circuit.Elements {
     class PolarCapacitorElm : CapacitorElm {
         double maxNegativeVoltage;
-        Point plusPoint;
+        PointF plusPoint;
 
         public PolarCapacitorElm(Point pos) : base(pos) {
             maxNegativeVoltage = 1;
         }
 
-        public PolarCapacitorElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) {
+        public PolarCapacitorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
             maxNegativeVoltage = st.nextTokenDouble();
         }
 
@@ -31,9 +31,9 @@ namespace Circuit.Elements {
                 plusPoint.Y += 3;
             }
             if (P1.Y == P2.Y) {
-                plusPoint = Utils.InterpPoint(mPoint1, mPoint2, f - 5 / mLen, 8 * mDsign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref plusPoint, f - 5 / mLen, 8 * mDsign);
             } else {
-                plusPoint = Utils.InterpPoint(mPoint1, mPoint2, f - 5 / mLen, -8 * mDsign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref plusPoint, f - 5 / mLen, -8 * mDsign);
             }
         }
 

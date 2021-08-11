@@ -24,12 +24,12 @@ namespace Circuit.Elements {
         double curcount_e;
         double curcount_b;
 
-        Point[] coll;
-        Point[] emit;
-        Point tbase;
+        Point[] mColl;
+        Point[] mEmit;
+        PointF tbase;
 
-        Point[] rectPoly;
-        Point[] arrowPoly;
+        PointF[] mRectPoly;
+        PointF[] mArrowPoly;
 
         const int V_B = 0;
         const int V_C = 1;
@@ -47,7 +47,7 @@ namespace Circuit.Elements {
             setup();
         }
 
-        public TransistorElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public TransistorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             pnp = st.nextTokenInt();
             beta = 100;
             try {
@@ -122,11 +122,11 @@ namespace Circuit.Elements {
             setBbox(mPoint1, mPoint2, 16);
            
             /* draw collector */
-            g.DrawThickLine(getVoltageColor(Volts[V_C]), coll[0], coll[1]);
+            g.DrawThickLine(getVoltageColor(Volts[V_C]), mColl[0], mColl[1]);
             /* draw emitter */
-            g.DrawThickLine(getVoltageColor(Volts[V_E]), emit[0], emit[1]);
+            g.DrawThickLine(getVoltageColor(Volts[V_E]), mEmit[0], mEmit[1]);
             /* draw arrow */
-            g.FillPolygon(getVoltageColor(Volts[V_E]), arrowPoly);
+            g.FillPolygon(getVoltageColor(Volts[V_E]), mArrowPoly);
             /* draw base */
             g.DrawThickLine(getVoltageColor(Volts[V_B]), mPoint1, tbase);
 
@@ -134,18 +134,18 @@ namespace Circuit.Elements {
             curcount_b = updateDotCount(-ib, curcount_b);
             drawDots(g, tbase, mPoint1, curcount_b);
             curcount_c = updateDotCount(-ic, curcount_c);
-            drawDots(g, coll[1], coll[0], curcount_c);
+            drawDots(g, mColl[1], mColl[0], curcount_c);
             curcount_e = updateDotCount(-ie, curcount_e);
-            drawDots(g, emit[1], emit[0], curcount_e);
+            drawDots(g, mEmit[1], mEmit[0], curcount_e);
 
             /* draw base rectangle */
-            g.FillPolygon(getVoltageColor(Volts[V_B]), rectPoly);
+            g.FillPolygon(getVoltageColor(Volts[V_B]), mRectPoly);
 
             drawPosts(g);
         }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? mPoint1 : (n == 1) ? coll[0] : emit[0];
+            return (n == 0) ? mPoint1 : (n == 1) ? mColl[0] : mEmit[0];
         }
 
         public override void SetPoints() {
@@ -157,30 +157,31 @@ namespace Circuit.Elements {
             int hs2 = hs * mDsign * pnp;
 
             /* calc collector, emitter posts */
-            coll = new Point[2];
-            emit = new Point[2];
-            Utils.InterpPoint(mPoint1, mPoint2, ref coll[0], ref emit[0], 1, hs2);
+            mColl = new Point[2];
+            mEmit = new Point[2];
+            Utils.InterpPoint(mPoint1, mPoint2, ref mColl[0], ref mEmit[0], 1, hs2);
 
             /* calc rectangle edges */
-            var rect = new Point[4];
+            var rect = new PointF[4];
             Utils.InterpPoint(mPoint1, mPoint2, ref rect[0], ref rect[1], 1 - 16 / mLen, hs);
             Utils.InterpPoint(mPoint1, mPoint2, ref rect[2], ref rect[3], 1 - 13 / mLen, hs);
 
             /* calc points where collector/emitter leads contact rectangle */
-            Utils.InterpPoint(mPoint1, mPoint2, ref coll[1], ref emit[1], 1 - 13 / mLen, 6 * mDsign * pnp);
+            Utils.InterpPoint(mPoint1, mPoint2, ref mColl[1], ref mEmit[1], 1 - 13 / mLen, 6 * mDsign * pnp);
 
             /* calc point where base lead contacts rectangle */
             Utils.InterpPoint(mPoint1, mPoint2, ref tbase, 1 - 16 / mLen);
 
             /* rectangle */
-            rectPoly = new Point[] { rect[0], rect[2], rect[3], rect[1] };
+            mRectPoly = new PointF[] { rect[0], rect[2], rect[3], rect[1] };
 
             /* arrow */
             if (pnp == 1) {
-                arrowPoly = Utils.CreateArrow(emit[1], emit[0], 8, 3);
+                mArrowPoly = Utils.CreateArrow(mEmit[1], mEmit[0], 8, 3);
             } else {
-                var pt = Utils.InterpPoint(mPoint1, mPoint2, 1 - 14 / mLen, -5 * mDsign * pnp);
-                arrowPoly = Utils.CreateArrow(emit[0], pt, 8, 3);
+                var pt = new PointF();
+                Utils.InterpPoint(mPoint1, mPoint2, ref pt, 1 - 14 / mLen, -5 * mDsign * pnp);
+                mArrowPoly = Utils.CreateArrow(mEmit[0], pt, 8, 3);
             }
         }
 

@@ -13,7 +13,7 @@ namespace Circuit.Elements {
             SetPoints();
         }
 
-        public ScopeElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public ScopeElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             mNoDiagonal = false;
             string sStr = st.nextToken();
             var sst = new StringTokenizer(sStr, "_");

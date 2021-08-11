@@ -13,7 +13,7 @@ namespace Circuit.Elements {
             threshold = 2.5;
         }
 
-        public LogicOutputElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public LogicOutputElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
                 threshold = st.nextTokenDouble();
             } catch {
@@ -39,7 +39,7 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - 12 / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, 1 - 12 / mLen);
         }
 
         public override void Draw(CustomGraphics g) {

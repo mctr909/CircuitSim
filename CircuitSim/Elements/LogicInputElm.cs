@@ -14,7 +14,7 @@ namespace Circuit.Elements {
             loV = 0;
         }
 
-        public LogicInputElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) {
+        public LogicInputElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
             mNumHandles = 1;
             try {
                 hiV = st.nextTokenDouble();
@@ -46,7 +46,7 @@ namespace Circuit.Elements {
 
         public override void SetPoints() {
             base.SetPoints();
-            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, 1 - 12 / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, 1 - 12 / mLen);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -62,8 +62,8 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        public override Rectangle getSwitchRect() {
-            return new Rectangle(P2.X - 10, P2.Y - 10, 20, 20);
+        public override RectangleF getSwitchRect() {
+            return new RectangleF(P2.X - 10, P2.Y - 10, 20, 20);
         }
 
         public override void SetCurrent(int vs, double c) { mCurrent = -c; }

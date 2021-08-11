@@ -134,7 +134,7 @@ namespace Circuit.Elements {
         #endregion
 
         #region dynamic variable
-        public Rectangle BoundingBox;
+        public RectangleF BoundingBox;
 
         protected int mFlags;
         protected int mVoltSource;
@@ -168,7 +168,7 @@ namespace Circuit.Elements {
         #endregion
 
         /// <summary>
-        /// create new element with one post at xx,yy, to be dragged out by user
+        /// create new element with one post at pos, to be dragged out by user
         /// </summary>
         protected CircuitElm(Point pos) {
             P1.X = P2.X = pos.X;
@@ -179,13 +179,11 @@ namespace Circuit.Elements {
         }
 
         /// <summary>
-        /// create element between xa,ya and xb,yb from undump
+        /// create element between p1 and p2 from undump
         /// </summary>
-        protected CircuitElm(int xa, int ya, int xb, int yb, int f) {
-            P1.X = xa;
-            P1.Y = ya;
-            P2.X = xb;
-            P2.Y = yb;
+        protected CircuitElm(Point p1, Point p2, int f) {
+            P1 = p1;
+            P2 = p2;
             mFlags = f;
             allocNodes();
             initBoundingBox();
@@ -230,12 +228,12 @@ namespace Circuit.Elements {
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <param name="pos"></param>
-        protected static void drawDots(CustomGraphics g, Point a, Point b, double pos) {
+        protected static void drawDots(CustomGraphics g, PointF a, PointF b, double pos) {
             if ((!Sim.IsRunning) || pos == 0 || !ControlPanel.ChkShowDots.Checked) {
                 return;
             }
-            int dx = b.X - a.X;
-            int dy = b.Y - a.Y;
+            var dx = b.X - a.X;
+            var dy = b.Y - a.Y;
             double dn = Math.Sqrt(dx * dx + dy * dy);
             int ds = CirSim.GRID_SIZE * 4;
             pos %= ds;
@@ -279,8 +277,8 @@ namespace Circuit.Elements {
                 mLead2 = mPoint2;
                 return;
             }
-            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, (mLen - len) / (2 * mLen));
-            mLead2 = Utils.InterpPoint(mPoint1, mPoint2, (mLen + len) / (2 * mLen));
+            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, (mLen - len) / (2 * mLen));
+            Utils.InterpPoint(mPoint1, mPoint2, ref mLead2, (mLen + len) / (2 * mLen));
         }
 
         /// <summary>
@@ -291,9 +289,9 @@ namespace Circuit.Elements {
         /// <param name="y1"></param>
         /// <param name="x2"></param>
         /// <param name="y2"></param>
-        protected void setBbox(int x1, int y1, int x2, int y2) {
-            if (x1 > x2) { int q = x1; x1 = x2; x2 = q; }
-            if (y1 > y2) { int q = y1; y1 = y2; y2 = q; }
+        protected void setBbox(float x1, float y1, float x2, float y2) {
+            if (x1 > x2) { var q = x1; x1 = x2; x2 = q; }
+            if (y1 > y2) { var q = y1; y1 = y2; y2 = q; }
             BoundingBox.X = x1;
             BoundingBox.Y = y1;
             BoundingBox.Width = x2 - x1 + 1;
@@ -306,7 +304,7 @@ namespace Circuit.Elements {
         /// <param name="p1"></param>
         /// <param name="p2"></param>
         /// <param name="w"></param>
-        protected void setBbox(Point p1, Point p2, double w) {
+        protected void setBbox(PointF p1, PointF p2, double w) {
             setBbox(p1.X, p1.Y, p2.X, p2.Y);
             int dpx = (int)(mDir.X * w);
             int dpy = (int)(mDir.Y * w);
@@ -323,9 +321,9 @@ namespace Circuit.Elements {
         /// <param name="y1"></param>
         /// <param name="x2"></param>
         /// <param name="y2"></param>
-        protected void adjustBbox(int x1, int y1, int x2, int y2) {
-            if (x1 > x2) { int q = x1; x1 = x2; x2 = q; }
-            if (y1 > y2) { int q = y1; y1 = y2; y2 = q; }
+        protected void adjustBbox(float x1, float y1, float x2, float y2) {
+            if (x1 > x2) { var q = x1; x1 = x2; x2 = q; }
+            if (y1 > y2) { var q = y1; y1 = y2; y2 = q; }
             x1 = Math.Min(BoundingBox.X, x1);
             y1 = Math.Min(BoundingBox.Y, y1);
             x2 = Math.Max(BoundingBox.X + BoundingBox.Width, x2);
@@ -336,7 +334,7 @@ namespace Circuit.Elements {
             BoundingBox.Height = y2 - y1;
         }
 
-        protected void adjustBbox(Point p1, Point p2) {
+        protected void adjustBbox(PointF p1, PointF p2) {
             adjustBbox(p1.X, p1.Y, p2.X, p2.Y);
         }
 
@@ -423,7 +421,7 @@ namespace Circuit.Elements {
             g.DrawThickLine(getVoltageColor(Volts[1]), mLead2, mPoint2);
         }
 
-        protected void drawCenteredText(CustomGraphics g, string s, int x, int y, bool cx) {
+        protected void drawCenteredText(CustomGraphics g, string s, float x, float y, bool cx) {
             var fs = g.GetTextSize(s);
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
@@ -435,7 +433,7 @@ namespace Circuit.Elements {
             g.DrawCenteredText(s, x, y);
         }
 
-        protected void drawCenteredLText(CustomGraphics g, string s, int x, int y, bool cx) {
+        protected void drawCenteredLText(CustomGraphics g, string s, float x, float y, bool cx) {
             var fs = g.GetLTextSize(s);
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
@@ -468,19 +466,19 @@ namespace Circuit.Elements {
             g.DrawRightText(s, xc + offsetX, yc - textSize.Height + offsetY);
         }
 
-        protected void drawCoil(CustomGraphics g, Point p1, Point p2, double v1, double v2) {
+        protected void drawCoil(CustomGraphics g, PointF p1, PointF p2, double v1, double v2) {
             var coilLen = (float)Utils.Distance(p1, p2);
             if (0 == coilLen) {
                 return;
             }
             /* draw more loops for a longer coil */
-            int loopCt = (int)Math.Ceiling(coilLen / 12);
+            int loopCt = (int)Math.Ceiling(coilLen / 11);
             float w = coilLen / loopCt;
             float h = w * 1.2f;
             float wh = w * 0.5f;
             float hh = h * 0.5f;
             float th = (float)(Utils.Angle(p1, p2) * ToDeg);
-            var pos = new Point();
+            var pos = new PointF();
             for (int loop = 0; loop != loopCt; loop++) {
                 Utils.InterpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
@@ -489,19 +487,19 @@ namespace Circuit.Elements {
             }
         }
 
-        protected void drawCoil(CustomGraphics g, Point p1, Point p2, double v1, double v2, float dir) {
+        protected void drawCoil(CustomGraphics g, PointF p1, PointF p2, double v1, double v2, float dir) {
             var coilLen = (float)Utils.Distance(p1, p2);
             if (0 == coilLen) {
                 return;
             }
             /* draw more loops for a longer coil */
-            int loopCt = (int)Math.Ceiling(coilLen / 12);
+            int loopCt = (int)Math.Ceiling(coilLen / 11);
             float w = coilLen / loopCt;
             float wh = w * 0.5f;
             if (Utils.Angle(p1, p2) < 0) {
                 dir = -dir;
             }
-            var pos = new Point();
+            var pos = new PointF();
             for (int loop = 0; loop != loopCt; loop++) {
                 Utils.InterpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
@@ -612,7 +610,7 @@ namespace Circuit.Elements {
             SetPoints();
         }
 
-        public void SelectRect(Rectangle r) {
+        public void SelectRect(RectangleF r) {
             IsSelected = r.IntersectsWith(BoundingBox);
         }
 

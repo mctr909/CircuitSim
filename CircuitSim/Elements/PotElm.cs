@@ -24,15 +24,15 @@ namespace Circuit.Elements {
         Label label;
 
         Point post3;
-        Point corner2;
-        Point arrowPoint;
-        Point midpoint;
-        Point arrow1;
-        Point arrow2;
-        Point ps1;
-        Point ps2;
-        Point ps3;
-        Point ps4;
+        PointF corner2;
+        PointF arrowPoint;
+        PointF midpoint;
+        PointF arrow1;
+        PointF arrow2;
+        PointF ps1;
+        PointF ps2;
+        PointF ps3;
+        PointF ps4;
         int bodyLen;
 
         string sliderText;
@@ -46,7 +46,7 @@ namespace Circuit.Elements {
             createSlider();
         }
 
-        public PotElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public PotElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             maxResistance = st.nextTokenDouble();
             position = st.nextTokenDouble();
             sliderText = st.nextToken();
@@ -126,10 +126,10 @@ namespace Circuit.Elements {
             calcLeads(bodyLen);
             position = slider.Value * .0099 + .005;
             int soff = (int)((position - .5) * bodyLen);
-            post3 = Utils.InterpPoint(mPoint1, mPoint2, .5, offset);
-            corner2 = Utils.InterpPoint(mPoint1, mPoint2, soff / mLen + .5, offset);
-            arrowPoint = Utils.InterpPoint(mPoint1, mPoint2, soff / mLen + .5, 8 * Math.Sign(offset));
-            midpoint = Utils.InterpPoint(mPoint1, mPoint2, soff / mLen + .5);
+            Utils.InterpPoint(mPoint1, mPoint2, ref post3, .5, offset);
+            Utils.InterpPoint(mPoint1, mPoint2, ref corner2, soff / mLen + .5, offset);
+            Utils.InterpPoint(mPoint1, mPoint2, ref arrowPoint, soff / mLen + .5, 8 * Math.Sign(offset));
+            Utils.InterpPoint(mPoint1, mPoint2, ref midpoint, soff / mLen + .5);
             double clen = Math.Abs(offset) - 8;
             Utils.InterpPoint(corner2, arrowPoint, ref arrow1, ref arrow2, (clen - 8) / clen, 4);
         }

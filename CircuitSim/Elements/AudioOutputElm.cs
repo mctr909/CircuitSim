@@ -32,7 +32,7 @@ namespace Circuit.Elements {
             createButton();
         }
 
-        public AudioOutputElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public AudioOutputElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             duration = st.nextTokenDouble();
             samplingRate = st.nextTokenInt();
             labelNum = st.nextTokenInt();

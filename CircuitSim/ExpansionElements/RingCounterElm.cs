@@ -8,7 +8,7 @@ namespace Circuit.Elements {
 
         public RingCounterElm(Point pos) : base(pos) { }
 
-        public RingCounterElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) {
+        public RingCounterElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
             mJustLoaded = true;
         }
 

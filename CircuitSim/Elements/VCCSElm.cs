@@ -13,7 +13,7 @@ namespace Circuit.Elements {
         double[] lastVolts;
         double lastvd;
 
-        public VCCSElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) {
+        public VCCSElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
             inputCount = st.nextTokenInt();
             exprString = CustomLogicModel.unescape(st.nextToken());
             parseExpr();

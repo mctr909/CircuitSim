@@ -5,11 +5,11 @@ namespace Circuit.Elements {
     class InverterElm : CircuitElm {
         double slewRate; /* V/ns */
         double highVoltage;
-        Point[] gatePolyEuro;
-        Point[] gatePolyAnsi;
-        Point pcircle;
+        PointF[] gatePolyEuro;
+        PointF[] gatePolyAnsi;
+        PointF pcircle;
         double lastOutputVoltage;
-        Point center;
+        PointF center;
 
         public InverterElm(Point pos) : base(pos) {
             mNoDiagonal = true;
@@ -19,7 +19,7 @@ namespace Circuit.Elements {
             highVoltage = GateElm.lastHighVoltage;
         }
 
-        public InverterElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public InverterElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             mNoDiagonal = true;
             try {
                 slewRate = st.nextTokenDouble();
@@ -60,19 +60,20 @@ namespace Circuit.Elements {
             if (ww > mLen / 2) {
                 ww = (int)(mLen / 2);
             }
-            mLead1 = Utils.InterpPoint(mPoint1, mPoint2, .5 - ww / mLen);
-            mLead2 = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww + 2) / mLen);
-            pcircle = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww - 2) / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, .5 - ww / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref mLead2, .5 + (ww + 2) / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref pcircle, .5 + (ww - 2) / mLen);
 
-            gatePolyAnsi = new Point[3];
+            gatePolyAnsi = new PointF[3];
             Utils.InterpPoint(mLead1, mLead2, ref gatePolyAnsi[0], ref gatePolyAnsi[1], 0, hs);
-            gatePolyAnsi[2] = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww - 5) / mLen);
+            Utils.InterpPoint(mPoint1, mPoint2, ref gatePolyAnsi[2], .5 + (ww - 5) / mLen);
 
-            gatePolyEuro = new Point[4];
-            var l2 = Utils.InterpPoint(mPoint1, mPoint2, .5 + (ww - 5) / mLen); /* make room for circle */
+            gatePolyEuro = new PointF[4];
+            var l2 = new PointF();
+            Utils.InterpPoint(mPoint1, mPoint2, ref l2, .5 + (ww - 5) / mLen); /* make room for circle */
             Utils.InterpPoint(mLead1, l2, ref gatePolyEuro[0], ref gatePolyEuro[1], 0, hs);
             Utils.InterpPoint(mLead1, l2, ref gatePolyEuro[3], ref gatePolyEuro[2], 1, hs);
-            center = Utils.InterpPoint(mLead1, l2, .5);
+            Utils.InterpPoint(mLead1, l2, ref center, .5);
 
             setBbox(mPoint1, mPoint2, hs);
         }

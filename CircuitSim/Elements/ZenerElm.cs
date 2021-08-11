@@ -7,16 +7,16 @@ namespace Circuit.Elements {
         const double default_zvoltage = 5.6;
 
         const int hs = 6;
-        Point[] poly;
-        Point[] cathode;
-        Point[] wing;
+        PointF[] poly;
+        PointF[] cathode;
+        PointF[] wing;
 
         public ZenerElm(Point pos) : base(pos) {
             modelName = lastZenerModelName;
             setup();
         }
 
-        public ZenerElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f, st) {
+        public ZenerElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
             if ((f & FLAG_MODEL) == 0) {
                 double zvoltage = st.nextTokenDouble();
                 model = DiodeModel.getModelWithParameters(model.fwdrop, zvoltage);
@@ -31,14 +31,14 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(12);
-            cathode = new Point[2];
-            wing = new Point[2];
-            var pa = new Point[2];
+            cathode = new PointF[2];
+            wing = new PointF[2];
+            var pa = new PointF[2];
             Utils.InterpPoint(mLead1, mLead2, ref pa[0], ref pa[1], 0, hs);
             Utils.InterpPoint(mLead1, mLead2, ref cathode[0], ref cathode[1], 1, hs);
             Utils.InterpPoint(cathode[0], cathode[1], ref wing[0], -0.2, -hs);
             Utils.InterpPoint(cathode[1], cathode[0], ref wing[1], -0.2, -hs);
-            poly = new Point[] { pa[0], pa[1], mLead2 };
+            poly = new PointF[] { pa[0], pa[1], mLead2 };
         }
 
         public override void Draw(CustomGraphics g) {

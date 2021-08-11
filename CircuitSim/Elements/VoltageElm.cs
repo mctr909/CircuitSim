@@ -31,9 +31,9 @@ namespace Circuit.Elements {
         double dutyCycle;
         double noiseValue;
 
-        Point ps1;
-        Point ps2;
-        Point textPos;
+        PointF ps1;
+        PointF ps2;
+        PointF textPos;
 
         const double defaultPulseDuty = 1 / Pi2;
 
@@ -45,7 +45,7 @@ namespace Circuit.Elements {
             Reset();
         }
 
-        public VoltageElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public VoltageElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             maxVoltage = 5;
             frequency = 40;
             waveform = WAVEFORM.DC;
@@ -197,9 +197,9 @@ namespace Circuit.Elements {
                 sign = mDsign;
             }
             if(waveform == WAVEFORM.DC) {
-                textPos = Utils.InterpPoint(mPoint1, mPoint2, 0.5, -16 * sign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5, -16 * sign);
             } else {
-                textPos = Utils.InterpPoint(mPoint1, mPoint2, (mLen / 2 + 0.7 * circleSize) / mLen, 10 * sign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref textPos, (mLen / 2 + 0.7 * circleSize) / mLen, 10 * sign);
             }
         }
 
@@ -243,9 +243,9 @@ namespace Circuit.Elements {
             drawPosts(g);
         }
 
-        protected void drawWaveform(CustomGraphics g, Point center) {
-            int x = center.X;
-            int y = center.Y;
+        protected void drawWaveform(CustomGraphics g, PointF center) {
+            var x = center.X;
+            var y = center.Y;
 
             if (waveform != WAVEFORM.NOISE) {
                 g.ThickLineColor = NeedsHighlight ? SelectColor : GrayColor;
@@ -315,10 +315,10 @@ namespace Circuit.Elements {
                 break;
             }
             case WAVEFORM.AC: {
-                int xl = 10;
-                int x0 = 0;
+                var xl = 10f;
+                var x0 = 0f;
                 float y0 = 0;
-                for (int i = -xl; i <= xl; i++) {
+                for (var i = -xl; i <= xl; i++) {
                     var yy = y + (float)(.95 * Math.Sin(i * Pi / xl) * h);
                     if (i != -xl) {
                         g.DrawLine(x0, y0, x + i, yy);
