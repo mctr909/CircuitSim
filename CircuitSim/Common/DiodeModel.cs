@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Circuit.Elements {
+namespace Circuit {
     class DiodeModel : Editable {
         static Dictionary<string, DiodeModel> modelMap;
 

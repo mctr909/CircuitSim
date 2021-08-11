@@ -189,7 +189,7 @@ namespace Circuit {
 
         #region Outputs and Labels
         OUTPUT,
-        PROBE,
+        VOLTMETER,
         AMMETER,
         OhmMeterElm,
         DataRecorderElm,
@@ -287,13 +287,12 @@ namespace Circuit {
         LOGIC_I = 'L',
         LOGIC_O = 'M',
         NMOS = 'N',
-        OUTPUT = 'O',
         PMOS = 'P',
         RAIL = 'R',
         SWITCH = 's',
         SWITCH2 = 'S',
         TRANSFORMER = 'T',
-        PROBE = '>',
+        VOLTMETER = '>',
         AND_GATE = 150,
         NAND_GATE = 151,
         OR_GATE = 152,
@@ -555,7 +554,7 @@ namespace Circuit {
             outputMenuBar.Font = menuFont;
             addElementItem(outputMenuBar, "出力ピン", ELEMENTS.OUTPUT);
             outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(outputMenuBar, "電圧計", ELEMENTS.PROBE);
+            addElementItem(outputMenuBar, "電圧計", ELEMENTS.VOLTMETER);
             addElementItem(outputMenuBar, "電流計", ELEMENTS.AMMETER);
             //addElementItem(outputMenuBar, "Add Ohmmeter", ELEMENTS.OhmMeterElm);
             outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
@@ -765,8 +764,8 @@ namespace Circuit {
             #region Outputs and Labels
             case ELEMENTS.OUTPUT:
                 return new LabeledNodeElm(x1, y1);
-            case ELEMENTS.PROBE:
-                return new ProbeElm(x1, y1);
+            case ELEMENTS.VOLTMETER:
+                return new VoltMeterElm(x1, y1);
             case ELEMENTS.AMMETER:
                 return new AmmeterElm(x1, y1);
             case ELEMENTS.OhmMeterElm:
@@ -919,7 +918,6 @@ namespace Circuit {
             case DUMP_ID.INVERT: return new InverterElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.LOGIC_I: return new LogicInputElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.LOGIC_O: return new LogicOutputElm(x1, y1, x2, y2, f, st);
-            case DUMP_ID.OUTPUT: return new OutputElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.RAIL: return new RailElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.SWITCH2: return new Switch2Elm(x1, y1, x2, y2, f, st);
             case DUMP_ID.TRANSFORMER: return new TransformerElm(x1, y1, x2, y2, f, st);
@@ -934,7 +932,7 @@ namespace Circuit {
             case DUMP_ID.INDUCTOR: return new InductorElm(x1, y1, x2, y2, f, st);
             //case 'm': return new MemristorElm(x1, y1, x2, y2, f, st);
             //case 'n': return new NoiseElm(x1, y1, x2, y2, f, st);
-            case DUMP_ID.PROBE: return new ProbeElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.VOLTMETER: return new VoltMeterElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.RESISTOR: return new ResistorElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.SWITCH: return new SwitchElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.TRANSISTOR: return new TransistorElm(x1, y1, x2, y2, f, st);

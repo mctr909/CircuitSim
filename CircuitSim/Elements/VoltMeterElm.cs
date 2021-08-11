@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit.Elements {
-    class ProbeElm : CircuitElm {
+    class VoltMeterElm : CircuitElm {
         const int FLAG_SHOWVOLTAGE = 1;
 
         const int TP_VOL = 0;
@@ -42,7 +42,7 @@ namespace Circuit.Elements {
         Point center;
         Point plusPoint;
 
-        public ProbeElm(int xx, int yy) : base(xx, yy) {
+        public VoltMeterElm(int xx, int yy) : base(xx, yy) {
             meter = TP_VOL;
 
             /* default for new elements */
@@ -50,7 +50,7 @@ namespace Circuit.Elements {
             scale = E_SCALE.AUTO;
         }
 
-        public ProbeElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
+        public VoltMeterElm(int xa, int ya, int xb, int yb, int f, StringTokenizer st) : base(xa, ya, xb, yb, f) {
             meter = TP_VOL;
             scale = E_SCALE.AUTO;
             try {
@@ -59,9 +59,9 @@ namespace Circuit.Elements {
             } catch { }
         }
 
-        public override DUMP_ID Shortcut { get { return DUMP_ID.PROBE; } }
+        public override DUMP_ID Shortcut { get { return DUMP_ID.VOLTMETER; } }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.PROBE; } }
+        public override DUMP_ID DumpType { get { return DUMP_ID.VOLTMETER; } }
 
         protected override string dump() {
             return meter + " " + scale;

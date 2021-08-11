@@ -390,9 +390,6 @@ namespace Circuit {
                 if ((ce is WireElm) || (ce is ScopeElm)) {
                     continue;
                 }
-                if (ce is GraphicElm) {
-                    continue;
-                }
                 if (nodeDump.Length > 0) {
                     nodeDump += "\r";
                 }
@@ -1411,12 +1408,12 @@ namespace Circuit {
         }
 
         bool onlyGraphicsElmsSelected() {
-            if (mMouseElm != null && !(mMouseElm is GraphicElm)) {
+            if (mMouseElm != null) {
                 return false;
             }
             for (int i = 0; i != ElmList.Count; i++) {
                 var ce = getElm(i);
-                if (ce.IsSelected && !(ce is GraphicElm)) {
+                if (ce.IsSelected) {
                     return false;
                 }
             }

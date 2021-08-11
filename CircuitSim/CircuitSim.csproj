@@ -53,7 +53,7 @@
     <Compile Include="Common\CustomGraphics.cs" />
     <Compile Include="Common\Scope.cs" />
     <Compile Include="Common\Utils.cs" />
-    <Compile Include="ExpansionElements\AmmeterElm.cs" />
+    <Compile Include="Elements\AmmeterElm.cs" />
     <Compile Include="ExpansionElements\AMElm.cs" />
     <Compile Include="ExpansionElements\AnalogSwitchElm.cs" />
     <Compile Include="ExpansionElements\CCCSElm.cs" />
@@ -88,16 +88,16 @@
     <Compile Include="ExpansionElements\CustomCompositeElm.cs" />
     <Compile Include="ExpansionElements\CustomCompositeModel.cs" />
     <Compile Include="ExpansionElements\CompositeElm.cs" />
-    <Compile Include="Elements\Diode.cs" />
+    <Compile Include="Common\Diode.cs" />
     <Compile Include="Elements\DiodeElm.cs" />
-    <Compile Include="Elements\DiodeModel.cs" />
+    <Compile Include="Common\DiodeModel.cs" />
     <Compile Include="ExpansionElements\LEDElm.cs" />
     <Compile Include="Elements\MosfetElm.cs" />
     <Compile Include="ExpansionElements\NMosfetElm.cs" />
     <Compile Include="ExpansionElements\NTransistorElm.cs" />
     <Compile Include="ExpansionElements\PMosfetElm.cs" />
     <Compile Include="ExpansionElements\PTransistorElm.cs" />
-    <Compile Include="Elements\ZenerElm.cs" />
+    <Compile Include="ExpansionElements\ZenerElm.cs" />
     <Compile Include="Forms\ElementPopupMenu.cs" />
     <Compile Include="Forms\InputDialog.cs">
       <SubType>Form</SubType>
@@ -131,19 +131,17 @@
     <Compile Include="Forms\ElementInfo.cs" />
     <Compile Include="Elements\ChipElm.cs" />
     <Compile Include="Elements\CurrentElm.cs" />
-    <Compile Include="Elements\GraphicElm.cs" />
     <Compile Include="Elements\GroundElm.cs" />
     <Compile Include="Elements\LogicInputElm.cs" />
     <Compile Include="Elements\LogicOutputElm.cs" />
-    <Compile Include="Elements\OutputElm.cs" />
     <Compile Include="Elements\PotElm.cs" />
-    <Compile Include="Elements\ProbeElm.cs" />
-    <Compile Include="Elements\RailElm.cs" />
+    <Compile Include="Elements\VoltMeterElm.cs" />
+    <Compile Include="ExpansionElements\RailElm.cs" />
     <Compile Include="ExpansionElements\RingCounterElm.cs" />
-    <Compile Include="Elements\Switch2Elm.cs" />
+    <Compile Include="ExpansionElements\Switch2Elm.cs" />
     <Compile Include="Elements\SwitchElm.cs" />
     <Compile Include="Elements\TransistorElm.cs" />
-    <Compile Include="Elements\VCCSElm.cs" />
+    <Compile Include="ExpansionElements\VCCSElm.cs" />
     <Compile Include="Elements\VoltageElm.cs" />
     <Compile Include="Elements\WireElm.cs" />
     <Compile Include="CircuitSim.cs">
@@ -152,7 +150,7 @@
     <Compile Include="CircuitSim.Designer.cs">
       <DependentUpon>CircuitSim.cs</DependentUpon>
     </Compile>
-    <Compile Include="Elements\Inductor.cs" />
+    <Compile Include="Common\Inductor.cs" />
     <Compile Include="Elements\InductorElm.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

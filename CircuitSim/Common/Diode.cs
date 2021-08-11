@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Circuit.Elements {
+namespace Circuit {
     class Diode {
         CirSim sim;
         Circuit cir;

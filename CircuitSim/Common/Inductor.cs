@@ -1,4 +1,4 @@
-﻿namespace Circuit.Elements {
+﻿namespace Circuit {
     class Inductor {
         public static readonly int FLAG_BACK_EULER = 2;
 

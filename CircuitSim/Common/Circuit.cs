@@ -446,9 +446,6 @@ namespace Circuit {
                     var cn = entry.Key;
                     for (int j = 0; j != mSim.ElmList.Count && !bad; j++) {
                         var ce = mSim.getElm(j);
-                        if (ce is GraphicElm) {
-                            continue;
-                        }
                         /* does this post intersect elm's bounding box? */
                         if (!ce.BoundingBox.Contains(cn.X, cn.Y)) {
                             continue;
