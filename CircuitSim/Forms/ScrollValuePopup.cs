@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using Circuit.Elements;
+using Circuit.PassiveElements;
 
 namespace Circuit {
     class ScrollValuePopup : Form {

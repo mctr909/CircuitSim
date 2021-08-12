@@ -4,7 +4,8 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-using Circuit.Elements;
+using Circuit.PassiveElements;
+using Circuit.ActiveElements;
 
 namespace Circuit {
     class Scope {

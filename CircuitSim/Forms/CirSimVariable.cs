@@ -1,8 +1,9 @@
-﻿using Circuit.Elements;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+
+using Circuit.PassiveElements;
 
 namespace Circuit {
     partial class CirSim {

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using Circuit.Elements;
+
+using Circuit.OutputElements;
 
 namespace Circuit {
     partial class CirSim {

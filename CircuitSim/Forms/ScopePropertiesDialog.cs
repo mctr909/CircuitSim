@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-using Circuit.Elements;
+using Circuit.ActiveElements;
 
 namespace Circuit {
     enum SCOPE_MENU {

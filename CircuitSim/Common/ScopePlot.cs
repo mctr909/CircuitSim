@@ -1,7 +1,5 @@
 ﻿using System.Drawing;
 
-using Circuit.Elements;
-
 namespace Circuit {
     class ScopePlot {
         static readonly Color[] COLORS = {

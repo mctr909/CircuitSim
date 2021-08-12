@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Circuit.Elements;
+using Circuit.PassiveElements;
 
 namespace Circuit {
     class Hint {

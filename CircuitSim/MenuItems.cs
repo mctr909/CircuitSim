@@ -1,8 +1,14 @@
-﻿using Circuit.Elements;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+
+using Circuit.PassiveElements;
+using Circuit.ActiveElements;
+using Circuit.InputElements;
+using Circuit.OutputElements;
+using Circuit.LogicElements;
+using Circuit.CustomElements;
 
 namespace Circuit {
     struct SHORTCUT {
@@ -298,14 +304,25 @@ namespace Circuit {
         OR_GATE = 152,
         NOR_GATE = 153,
         XOR_GATE = 154,
+        FLIP_FLOP_D = 155,
+        FLIP_FLOP_JK = 156,
+        FLIP_FLOP_T = 193,
         ANALOG_SW = 159,
         LED = 162,
         RING_COUNTER = 163,
+        COUNTER = 164,
+        LATCH = 168,
         SWEEP = 170,
         POT = 174,
         TRISTATE = 180,
         SCHMITT = 182,
         INVERT_SCHMITT = 183,
+        MULTIPLEXER = 184,
+        DEMULTIPLEXER = 185,
+        SHIFT_REGISTER_PISO = 186,
+        SHIFT_REGISTER_SIPO = 189,
+        HALF_ADDER = 195,
+        FULL_ADDER = 196,
         AM = 200,
         FM = 201,
         LABELED_NODE = 207,
@@ -318,7 +335,8 @@ namespace Circuit {
         COMPARATOR = 401,
         SCOPE = 403,
         OPTO_COUPLER = 407,
-        CUSTOM_COMPOSITE = 410
+        CUSTOM_COMPOSITE = 410,
+        SRAM = 413
     }
 
     class MenuItems {
@@ -581,25 +599,26 @@ namespace Circuit {
             addElementItem(gateMenuBar, "NOT", ELEMENTS.NOT_GATE);
             addElementItem(gateMenuBar, "NAND", ELEMENTS.NAND_GATE);
             addElementItem(gateMenuBar, "NOR", ELEMENTS.NOR_GATE);
-            //addElementItem(gateMenuBar, "全加算器", ELEMENTS.FullAdderElm);
-            //addElementItem(gateMenuBar, "半加算器", ELEMENTS.HalfAdderElm);
-            //gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            //addElementItem(gateMenuBar, "フリップフロップ(D)", ELEMENTS.DFlipFlopElm);
-            //addElementItem(gateMenuBar, "フリップフロップ(JK)", ELEMENTS.JKFlipFlopElm);
-            //addElementItem(gateMenuBar, "フリップフロップ(T)", ELEMENTS.TFlipFlopElm);
+            addElementItem(gateMenuBar, "全加算器", ELEMENTS.FullAdderElm);
+            addElementItem(gateMenuBar, "半加算器", ELEMENTS.HalfAdderElm);
             gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(gateMenuBar, "シュミットトリガ", ELEMENTS.SCHMITT);
             addElementItem(gateMenuBar, "シュミットトリガ(NOT)", ELEMENTS.SCHMITT_INV);
             addElementItem(gateMenuBar, "3ステートバッファ", ELEMENTS.TRISTATE);
-            //addElementItem(gateMenuBar, "ラッチ", ELEMENTS.LatchElm);
-            //addElementItem(gateMenuBar, "マルチプレクサ", ELEMENTS.MultiplexerElm);
-            //addElementItem(gateMenuBar, "デマルチプレクサ", ELEMENTS.DeMultiplexerElm);
             gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(gateMenuBar, "ラッチ", ELEMENTS.LatchElm);
+            addElementItem(gateMenuBar, "マルチプレクサ", ELEMENTS.MultiplexerElm);
+            addElementItem(gateMenuBar, "デマルチプレクサ", ELEMENTS.DeMultiplexerElm);
+            gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(gateMenuBar, "フリップフロップ(D)", ELEMENTS.DFlipFlopElm);
+            addElementItem(gateMenuBar, "フリップフロップ(JK)", ELEMENTS.JKFlipFlopElm);
+            addElementItem(gateMenuBar, "フリップフロップ(T)", ELEMENTS.TFlipFlopElm);
+            gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(gateMenuBar, "カウンタ", ELEMENTS.CounterElm);
             addElementItem(gateMenuBar, "リングカウンタ", ELEMENTS.RingCounterElm);
-            //addElementItem(gateMenuBar, "シーケンサ", ELEMENTS.SeqGenElm);
-            //addElementItem(gateMenuBar, "シフトレジスタ(SIPO)", ELEMENTS.SipoShiftElm);
-            //addElementItem(gateMenuBar, "シフトレジスタ(PISO)", ELEMENTS.PisoShiftElm);
-            //addElementItem(gateMenuBar, "SRAM", ELEMENTS.SRAMElm);
+            addElementItem(gateMenuBar, "シフトレジスタ(SIPO)", ELEMENTS.SipoShiftElm);
+            addElementItem(gateMenuBar, "シフトレジスタ(PISO)", ELEMENTS.PisoShiftElm);
+            addElementItem(gateMenuBar, "SRAM", ELEMENTS.SRAMElm);
             gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(gateMenuBar, "カスタムロジック", ELEMENTS.CUSTOM_LOGIC);
             gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
@@ -790,8 +809,8 @@ namespace Circuit {
                 return new OpAmpSwapElm(pos);
             case ELEMENTS.OpAmpRealElm:
                 return null; //(CircuitElm)new OpAmpRealElm(x1, y1);
-            case ELEMENTS.AnalogSwitchElm:
-                return new AnalogSwitchElm(pos);
+            //case ELEMENTS.AnalogSwitchElm:
+            //    return new AnalogSwitchElm(pos);
             case ELEMENTS.AnalogSwitch2Elm:
                 return null; //(CircuitElm)new AnalogSwitch2Elm(x1, y1);
             case ELEMENTS.SCHMITT:
@@ -845,44 +864,44 @@ namespace Circuit {
 
             #region Digital Chips
             case ELEMENTS.DFlipFlopElm:
-                return null; //(CircuitElm)new DFlipFlopElm(x1, y1);
+                return new DFlipFlopElm(pos);
             case ELEMENTS.JKFlipFlopElm:
-                return null; //(CircuitElm)new JKFlipFlopElm(x1, y1);
+                return new JKFlipFlopElm(pos);
             case ELEMENTS.TFlipFlopElm:
-                return null; //(CircuitElm)new TFlipFlopElm(x1, y1);
+                return new TFlipFlopElm(pos);
             case ELEMENTS.SevenSegElm:
                 return null; //(CircuitElm)new SevenSegElm(x1, y1);
             case ELEMENTS.SevenSegDecoderElm:
                 return null; //(CircuitElm)new SevenSegDecoderElm(x1, y1);
             case ELEMENTS.MultiplexerElm:
-                return null; //(CircuitElm)new MultiplexerElm(x1, y1);
+                return new MultiplexerElm(pos);
             case ELEMENTS.DeMultiplexerElm:
-                return null; //(CircuitElm)new DeMultiplexerElm(x1, y1);
+                return new DeMultiplexerElm(pos);
             case ELEMENTS.SipoShiftElm:
-                return null; //(CircuitElm)new SipoShiftElm(x1, y1);
+                return new SipoShiftElm(pos);
             case ELEMENTS.PisoShiftElm:
-                return null; //(CircuitElm)new PisoShiftElm(x1, y1);
+                return new PisoShiftElm(pos);
             case ELEMENTS.CounterElm:
-                return null; //(CircuitElm)new CounterElm(x1, y1);
+                return new CounterElm(pos);
             /* if you take out DecadeElm, it will break the menus and people's saved shortcuts */
             /* if you take out RingCounterElm, it will break subcircuits */
             case ELEMENTS.DecadeElm:
             case ELEMENTS.RingCounterElm:
                 return new RingCounterElm(pos);
             case ELEMENTS.LatchElm:
-                return null; //(CircuitElm)new LatchElm(x1, y1);
+                return new LatchElm(pos);
             case ELEMENTS.SeqGenElm:
                 return null; //(CircuitElm)new SeqGenElm(x1, y1);
             case ELEMENTS.FullAdderElm:
-                return null; //(CircuitElm)new FullAdderElm(x1, y1);
+                return new FullAdderElm(pos);
             case ELEMENTS.HalfAdderElm:
-                return null; //(CircuitElm)new HalfAdderElm(x1, y1);
+                return new HalfAdderElm(pos);
             /* if you take out UserDefinedLogicElm, it will break people's saved shortcuts */
             case ELEMENTS.CUSTOM_LOGIC:
             case ELEMENTS.UserDefinedLogicElm:
                 return new CustomLogicElm(pos);
             case ELEMENTS.SRAMElm:
-                return null; //(CircuitElm)new SRAMElm(x1, y1);
+                return new SRAMElm(pos);
             #endregion
 
             #region Analog and Hybrid Chips
@@ -940,20 +959,20 @@ namespace Circuit {
             case DUMP_ID.OR_GATE: return new OrGateElm(p1, p2, f, st);
             case DUMP_ID.NOR_GATE: return new NorGateElm(p1, p2, f, st);
             case DUMP_ID.XOR_GATE: return new XorGateElm(p1, p2, f, st);
-            //case 155: return new DFlipFlopElm(x1, y1, x2, y2, f, st);
-            //case 156: return new JKFlipFlopElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.FLIP_FLOP_D: return new DFlipFlopElm(p1, p2, f, st);
+            case DUMP_ID.FLIP_FLOP_JK: return new JKFlipFlopElm(p1, p2, f, st);
             //case 157: return new SevenSegElm(x1, y1, x2, y2, f, st);
             //case 158: return new VCOElm(x1, y1, x2, y2, f, st);
-            case DUMP_ID.ANALOG_SW: return new AnalogSwitchElm(p1, p2, f, st);
+            //case DUMP_ID.ANALOG_SW: return new AnalogSwitchElm(p1, p2, f, st);
             //case 160: return new AnalogSwitch2Elm(x1, y1, x2, y2, f, st);
             //case 161: return new PhaseCompElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.LED: return new LEDElm(p1, p2, f, st);
             case DUMP_ID.RING_COUNTER: return new RingCounterElm(p1, p2, f, st);
-            //case 164: return new CounterElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.COUNTER: return new CounterElm(p1, p2, f, st);
             //case 165: return new TimerElm(x1, y1, x2, y2, f, st);
             //case 166: return new DACElm(x1, y1, x2, y2, f, st);
             //case 167: return new ADCElm(x1, y1, x2, y2, f, st);
-            //case 168: return new LatchElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.LATCH: return new LatchElm(p1, p2, f, st);
             //case 169: return new TappedTransformerElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.SWEEP: return new SweepElm(p1, p2, f, st);
             //case 171: return new TransLineElm(x1, y1, x2, y2, f, st);
@@ -968,16 +987,16 @@ namespace Circuit {
             //case 181: return new LampElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.SCHMITT: return new SchmittElm(p1, p2, f, st);
             case DUMP_ID.INVERT_SCHMITT: return new InvertingSchmittElm(p1, p2, f, st);
-            //case 184: return new MultiplexerElm(x1, y1, x2, y2, f, st);
-            //case 185: return new DeMultiplexerElm(x1, y1, x2, y2, f, st);
-            //case 186: return new PisoShiftElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.MULTIPLEXER: return new MultiplexerElm(p1, p2, f, st);
+            case DUMP_ID.DEMULTIPLEXER: return new DeMultiplexerElm(p1, p2, f, st);
+            case DUMP_ID.SHIFT_REGISTER_PISO: return new PisoShiftElm(p1, p2, f, st);
             //case 187: return new SparkGapElm(x1, y1, x2, y2, f, st);
             //case 188: return new SeqGenElm(x1, y1, x2, y2, f, st);
-            //case 189: return new SipoShiftElm(x1, y1, x2, y2, f, st);
-            //case 193: return new TFlipFlopElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.SHIFT_REGISTER_SIPO: return new SipoShiftElm(p1, p2, f, st);
+            case DUMP_ID.FLIP_FLOP_T: return new TFlipFlopElm(p1, p2, f, st);
             //case 194: return new MonostableElm(x1, y1, x2, y2, f, st);
-            //case 195: return new HalfAdderElm(x1, y1, x2, y2, f, st);
-            //case 196: return new FullAdderElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.HALF_ADDER: return new HalfAdderElm(p1, p2, f, st);
+            case DUMP_ID.FULL_ADDER: return new FullAdderElm(p1, p2, f, st);
             //case 197: return new SevenSegDecoderElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.AM: return new AMElm(p1, p2, f, st);
             case DUMP_ID.FM: return new FMElm(p1, p2, f, st);
@@ -1008,7 +1027,7 @@ namespace Circuit {
             case DUMP_ID.CUSTOM_COMPOSITE: return new CustomCompositeElm(p1, p2, f, st);
             //case 411: return new AudioInputElm(x1, y1, x2, y2, f, st);
             //case 412: return new CrystalElm(x1, y1, x2, y2, f, st);
-            //case 413: return new SRAMElm(x1, y1, x2, y2, f, st);
+            case DUMP_ID.SRAM: return new SRAMElm(p1, p2, f, st);
             }
             return null;
         }

@@ -4,8 +4,6 @@ using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
-using Circuit.Elements;
-
 namespace Circuit {
     class SliderDialog : Form {
         const int barmax = 1000;

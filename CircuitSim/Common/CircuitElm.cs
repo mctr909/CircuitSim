@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Drawing;
 
-namespace Circuit.Elements {
+using Circuit.InputElements;
+using Circuit.OutputElements;
+
+namespace Circuit {
     abstract class CircuitElm : Editable {
         protected const double Pi = Math.PI;
         protected const double Pi2 = Math.PI * 2;

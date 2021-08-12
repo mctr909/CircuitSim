@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Circuit.Elements;
+using Circuit.PassiveElements;
+using Circuit.InputElements;
 
 namespace Circuit {
     class CircuitNodeLink {
