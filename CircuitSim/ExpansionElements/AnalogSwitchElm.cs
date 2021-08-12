@@ -11,9 +11,9 @@ namespace Circuit.Elements {
 
         bool open;
 
-        PointF ps;
+        Point ps;
         Point point3;
-        PointF lead3;
+        Point lead3;
 
         public AnalogSwitchElm(Point pos) : base(pos) {
             r_on = 20;

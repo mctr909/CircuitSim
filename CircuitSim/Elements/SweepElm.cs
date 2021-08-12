@@ -22,7 +22,7 @@ namespace Circuit.Elements {
         double v;
         int dir = 1;
 
-        PointF textPos;
+        Point textPos;
 
         public SweepElm(Point pos) : base(pos) {
             minF = 20;

@@ -4,11 +4,11 @@ namespace Circuit.Elements {
     class ResistorElm : CircuitElm {
         public double Resistance { get; set; }
 
-        PointF ps1;
-        PointF ps2;
-        PointF ps3;
-        PointF ps4;
-        PointF textPos;
+        Point ps1;
+        Point ps2;
+        Point ps3;
+        Point ps4;
+        Point textPos;
 
         public ResistorElm(Point pos) : base(pos) {
             Resistance = 1000;

@@ -39,8 +39,8 @@ namespace Circuit.Elements {
         long periodLength;
         long pulseStart;
 
-        PointF center;
-        PointF plusPoint;
+        Point center;
+        Point plusPoint;
 
         public VoltMeterElm(Point pos) : base(pos) {
             meter = TP_VOL;

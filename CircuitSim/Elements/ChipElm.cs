@@ -17,8 +17,8 @@ namespace Circuit.Elements {
         int cspc;
         int cspc2;
 
-        PointF[] rectPoints;
-        PointF[] clockPoints;
+        Point[] rectPoints;
+        Point[] clockPoints;
         public Pin[] pins;
         public int sizeX;
         public int sizeY;
@@ -78,7 +78,7 @@ namespace Circuit.Elements {
                     bubblePos = new Point(xa + dax * 10 * mElm.csize, ya + day * 10 * mElm.csize);
                 }
                 if (clock) {
-                    mElm.clockPoints = new PointF[3];
+                    mElm.clockPoints = new Point[3];
                     mElm.clockPoints[0] = new Point(
                         xa + dax * mElm.cspc - dx * mElm.cspc / 2,
                         ya + day * mElm.cspc - dy * mElm.cspc / 2
@@ -246,7 +246,7 @@ namespace Circuit.Elements {
             int yr = y0 - cspc;
             int xs = sizeX * cspc2;
             int ys = sizeY * cspc2;
-            rectPoints = new PointF[] {
+            rectPoints = new Point[] {
                 new Point(xr, yr),
                 new Point(xr + xs, yr),
                 new Point(xr + xs, yr + ys),

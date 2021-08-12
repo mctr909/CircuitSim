@@ -15,8 +15,8 @@ namespace Circuit.Elements {
         int diodeEndNode;
 
         const int hs = 6;
-        PointF[] poly;
-        PointF[] mCathode;
+        Point[] poly;
+        Point[] mCathode;
 
         bool customModelUI;
         List<DiodeModel> models;
@@ -88,11 +88,11 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(12);
-            mCathode = new PointF[2];
-            var pa = new PointF[2];
+            mCathode = new Point[2];
+            var pa = new Point[2];
             Utils.InterpPoint(mLead1, mLead2, ref pa[0], ref pa[1], 0, hs);
             Utils.InterpPoint(mLead1, mLead2, ref mCathode[0], ref mCathode[1], 1, hs);
-            poly = new PointF[] { pa[0], pa[1], mLead2 };
+            poly = new Point[] { pa[0], pa[1], mLead2 };
         }
 
         public override void Draw(CustomGraphics g) {

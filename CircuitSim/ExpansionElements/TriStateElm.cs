@@ -10,8 +10,8 @@ namespace Circuit.Elements {
 
         Point ps;
         Point point3;
-        PointF lead3;
-        PointF[] gatePoly;
+        Point lead3;
+        Point[] gatePoly;
 
         public TriStateElm(Point pos) : base(pos) {
             r_on = 0.1;
@@ -54,7 +54,7 @@ namespace Circuit.Elements {
             if (ww > mLen / 2) {
                 ww = (int)(mLen / 2);
             }
-            gatePoly = new PointF[3];
+            gatePoly = new Point[3];
             Utils.InterpPoint(mLead1, mLead2, ref gatePoly[0], ref gatePoly[1], 0, hs);
             Utils.InterpPoint(mPoint1, mPoint2, ref gatePoly[2], .5 + ww / mLen);
             Utils.InterpPoint(mPoint1, mPoint2, ref point3, .5, -hs);

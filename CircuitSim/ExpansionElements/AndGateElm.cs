@@ -21,7 +21,7 @@ namespace Circuit.Elements {
              * 11   = right,
              * 12-21= bottom curve,
              * 22   = bottom left */
-            gatePolyAnsi = new PointF[23];
+            gatePolyAnsi = new Point[23];
             Utils.InterpPoint(mLead1, mLead2, ref gatePolyAnsi[0], ref gatePolyAnsi[22], 0, hs2);
             for (int i = 0; i != 10; i++) {
                 double a = i * .1;

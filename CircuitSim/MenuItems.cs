@@ -581,14 +581,30 @@ namespace Circuit {
             addElementItem(gateMenuBar, "NOT", ELEMENTS.NOT_GATE);
             addElementItem(gateMenuBar, "NAND", ELEMENTS.NAND_GATE);
             addElementItem(gateMenuBar, "NOR", ELEMENTS.NOR_GATE);
-            addElementItem(gateMenuBar, "カスタムロジック", ELEMENTS.CUSTOM_LOGIC);
-            gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(gateMenuBar, "入力", ELEMENTS.LOGIC_INPUT);
-            addElementItem(gateMenuBar, "出力", ELEMENTS.LOGIC_OUTPUT);
+            //addElementItem(gateMenuBar, "全加算器", ELEMENTS.FullAdderElm);
+            //addElementItem(gateMenuBar, "半加算器", ELEMENTS.HalfAdderElm);
+            //gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            //addElementItem(gateMenuBar, "フリップフロップ(D)", ELEMENTS.DFlipFlopElm);
+            //addElementItem(gateMenuBar, "フリップフロップ(JK)", ELEMENTS.JKFlipFlopElm);
+            //addElementItem(gateMenuBar, "フリップフロップ(T)", ELEMENTS.TFlipFlopElm);
             gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(gateMenuBar, "シュミットトリガ", ELEMENTS.SCHMITT);
             addElementItem(gateMenuBar, "シュミットトリガ(NOT)", ELEMENTS.SCHMITT_INV);
             addElementItem(gateMenuBar, "3ステートバッファ", ELEMENTS.TRISTATE);
+            //addElementItem(gateMenuBar, "ラッチ", ELEMENTS.LatchElm);
+            //addElementItem(gateMenuBar, "マルチプレクサ", ELEMENTS.MultiplexerElm);
+            //addElementItem(gateMenuBar, "デマルチプレクサ", ELEMENTS.DeMultiplexerElm);
+            gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(gateMenuBar, "リングカウンタ", ELEMENTS.RingCounterElm);
+            //addElementItem(gateMenuBar, "シーケンサ", ELEMENTS.SeqGenElm);
+            //addElementItem(gateMenuBar, "シフトレジスタ(SIPO)", ELEMENTS.SipoShiftElm);
+            //addElementItem(gateMenuBar, "シフトレジスタ(PISO)", ELEMENTS.PisoShiftElm);
+            //addElementItem(gateMenuBar, "SRAM", ELEMENTS.SRAMElm);
+            gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(gateMenuBar, "カスタムロジック", ELEMENTS.CUSTOM_LOGIC);
+            gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(gateMenuBar, "入力", ELEMENTS.LOGIC_INPUT);
+            addElementItem(gateMenuBar, "出力", ELEMENTS.LOGIC_OUTPUT);
             mainMenuBar.Items.Add(gateMenuBar);
             #endregion
 
@@ -608,29 +624,6 @@ namespace Circuit {
             //addElementItem(activeBlocMenuBar, "Add Current-Controlled Current Source", ITEM.CCCSElm);
             addElementItem(activeBlockMenuBar, "カスタムモジュール", ELEMENTS.CustomCompositeElm);
             mainMenuBar.Items.Add(activeBlockMenuBar);
-            #endregion
-
-            #region Digital Chips
-            //var chipMenuBar = new ToolStripMenuItem();
-            //chipMenuBar.Text = "Digital Chips(D)";
-            //chipMenuBar.Font = menuFont;
-            //addMenuItem(chipMenuBar, "Add D Flip-Flop", ITEM.DFlipFlopElm);
-            //addMenuItem(chipMenuBar, "Add JK Flip-Flop", ITEM.JKFlipFlopElm);
-            //addMenuItem(chipMenuBar, "Add T Flip-Flop", ITEM.TFlipFlopElm);
-            //addMenuItem(chipMenuBar, "Add 7 Segment LED", ITEM.SevenSegElm);
-            //addMenuItem(chipMenuBar, "Add 7 Segment Decoder", ITEM.SevenSegDecoderElm);
-            //addMenuItem(chipMenuBar, "Add Multiplexer", ITEM.MultiplexerElm);
-            //addMenuItem(chipMenuBar, "Add Demultiplexer", ITEM.DeMultiplexerElm);
-            //addMenuItem(chipMenuBar, "Add SIPO shift register", ITEM.SipoShiftElm);
-            //addMenuItem(chipMenuBar, "Add PISO shift register", ITEM.PisoShiftElm);
-            //addMenuItem(chipMenuBar, "Add Counter", ITEM.CounterElm);
-            //addElementItem(chipMenuBar, "Add Ring Counter", MENU_ITEM.DecadeElm);
-            //addMenuItem(chipMenuBar, "Add Latch", ITEM.LatchElm);
-            //addMenuItem(chipMenuBar, "Add Sequence generator", ITEM.SeqGenElm);
-            //addMenuItem(chipMenuBar, "Add Full Adder", ITEM.FullAdderElm);
-            //addMenuItem(chipMenuBar, "Add Half Adder", ITEM.HalfAdderElm);
-            //addMenuItem(chipMenuBar, "Add Static RAM", ITEM.SRAMElm);
-            //mainMenuBar.Items.Add(chipMenuBar);
             #endregion
 
             #region Analog and Hybrid Chips

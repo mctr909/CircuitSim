@@ -50,7 +50,9 @@ namespace Circuit.Elements {
         /// called when an element is done being dragged out;
         /// </summary>
         /// <returns>returns true if it's zero size and should be deleted</returns>
-        public bool IsCreationFailed { get { return P1.X == P2.X && P1.Y == P2.Y; } }
+        public bool IsCreationFailed {
+            get { return P1.X == P2.X && P1.Y == P2.Y; }
+        }
 
         public int[] Nodes { get; protected set; }
 
@@ -466,7 +468,7 @@ namespace Circuit.Elements {
             g.DrawRightText(s, xc + offsetX, yc - textSize.Height + offsetY);
         }
 
-        protected void drawCoil(CustomGraphics g, PointF p1, PointF p2, double v1, double v2) {
+        protected void drawCoil(CustomGraphics g, Point p1, Point p2, double v1, double v2) {
             var coilLen = (float)Utils.Distance(p1, p2);
             if (0 == coilLen) {
                 return;
@@ -478,7 +480,7 @@ namespace Circuit.Elements {
             float wh = w * 0.5f;
             float hh = h * 0.5f;
             float th = (float)(Utils.Angle(p1, p2) * ToDeg);
-            var pos = new PointF();
+            var pos = new Point();
             for (int loop = 0; loop != loopCt; loop++) {
                 Utils.InterpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
@@ -487,7 +489,7 @@ namespace Circuit.Elements {
             }
         }
 
-        protected void drawCoil(CustomGraphics g, PointF p1, PointF p2, double v1, double v2, float dir) {
+        protected void drawCoil(CustomGraphics g, Point p1, Point p2, double v1, double v2, float dir) {
             var coilLen = (float)Utils.Distance(p1, p2);
             if (0 == coilLen) {
                 return;
@@ -499,7 +501,7 @@ namespace Circuit.Elements {
             if (Utils.Angle(p1, p2) < 0) {
                 dir = -dir;
             }
-            var pos = new PointF();
+            var pos = new Point();
             for (int loop = 0; loop != loopCt; loop++) {
                 Utils.InterpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;

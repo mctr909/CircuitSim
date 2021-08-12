@@ -24,15 +24,15 @@ namespace Circuit.Elements {
         Label label;
 
         Point post3;
-        PointF corner2;
-        PointF arrowPoint;
-        PointF midpoint;
-        PointF arrow1;
-        PointF arrow2;
-        PointF ps1;
-        PointF ps2;
-        PointF ps3;
-        PointF ps4;
+        Point corner2;
+        Point arrowPoint;
+        Point midpoint;
+        Point arrow1;
+        Point arrow2;
+        Point ps1;
+        Point ps2;
+        Point ps3;
+        Point ps4;
         int bodyLen;
 
         string sliderText;

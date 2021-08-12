@@ -12,7 +12,7 @@ namespace Circuit.Elements {
         int cspc;
         int cspc2;
         Point[] stubs;
-        PointF[] rectPoints;
+        Point[] rectPoints;
         double[] curCounts;
 
         DiodeElm diode;
@@ -92,7 +92,8 @@ namespace Circuit.Elements {
                 int y = sy + i * 10 - 5;
                 var p1 = new Point(sx, y);
                 var p2 = new Point(sx + 20, y);
-                var p = Utils.CreateArrow(p1, p2, 5, 2);
+                Point[] p;
+                Utils.CreateArrow(p1, p2, out p, 5, 2);
                 g.FillPolygon(c, p);
                 g.DrawLine(sx + 10, y, sx + 15, y);
             }
@@ -111,7 +112,7 @@ namespace Circuit.Elements {
             int sizeY = 2;
             int xs = sizeX * cspc2;
             int ys = sizeY * cspc2 - cspc;
-            rectPoints = new PointF[] {
+            rectPoints = new Point[] {
                 new Point(xr, yr),
                 new Point(xr + xs, yr),
                 new Point(xr + xs, yr + ys),

@@ -44,11 +44,11 @@ namespace Circuit.Elements {
         /* points for gate, body, and the little circle on PNP mosfets */
         Point[] gate;
         Point[] body;
-        PointF pcircle;
-        PointF[] arrowPoly;
+        Point pcircle;
+        Point[] arrowPoly;
 
-        PointF ps1;
-        PointF ps2;
+        Point ps1;
+        Point ps2;
 
         double lastv0;
         double lastv1;
@@ -257,15 +257,15 @@ namespace Circuit.Elements {
             if (!DrawDigital) {
                 if (pnp == 1) {
                     if (ShowBulk) {
-                        arrowPoly = Utils.CreateArrow(body[0], body[1], 10, 4);
+                        Utils.CreateArrow(body[0], body[1], out arrowPoly, 10, 4);
                     } else {
-                        arrowPoly = Utils.CreateArrow(src[1], src[0], 10, 4);
+                        Utils.CreateArrow(src[1], src[0], out arrowPoly, 10, 4);
                     }
                 } else {
                     if (ShowBulk) {
-                        arrowPoly = Utils.CreateArrow(body[1], body[0], 10, 4);
+                        Utils.CreateArrow(body[1], body[0], out arrowPoly, 10, 4);
                     } else {
-                        arrowPoly = Utils.CreateArrow(drn[0], drn[1], 10, 4);
+                        Utils.CreateArrow(drn[0], drn[1], out arrowPoly, 10, 4);
                     }
                 }
             } else if (pnp == -1) {

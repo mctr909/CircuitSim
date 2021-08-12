@@ -7,7 +7,7 @@ namespace Circuit.Elements {
         const int FLAG_SHOWCURRENT = 1;
         const int FLAG_SHOWVOLTAGE = 2;
 
-        PointF textPos;
+        Point textPos;
 
         public bool hasWireInfo; /* used in CirSim to calculate wire currents */
 

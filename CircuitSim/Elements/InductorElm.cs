@@ -4,7 +4,7 @@ using System.Drawing;
 namespace Circuit.Elements {
     class InductorElm : CircuitElm {
         Inductor ind;
-        PointF textPos;
+        Point textPos;
 
         public double Inductance { get; set; }
 

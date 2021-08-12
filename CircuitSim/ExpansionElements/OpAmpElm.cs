@@ -22,8 +22,8 @@ namespace Circuit.Elements {
 
         Point[] in1p;
         Point[] in2p;
-        PointF[] textp;
-        PointF[] triangle;
+        Point[] textp;
+        Point[] triangle;
 
         double lastvd;
 
@@ -118,13 +118,13 @@ namespace Circuit.Elements {
             }
             in1p = new Point[2];
             in2p = new Point[2];
-            textp = new PointF[2];
+            textp = new Point[2];
             Utils.InterpPoint(mPoint1, mPoint2, ref in1p[0], ref in2p[0], 0, hs);
             Utils.InterpPoint(mLead1, mLead2, ref in1p[1], ref in2p[1], 0, hs);
             Utils.InterpPoint(mLead1, mLead2, ref textp[0], ref textp[1], 0.2, hs);
-            var tris = new PointF[2];
+            var tris = new Point[2];
             Utils.InterpPoint(mLead1, mLead2, ref tris[0], ref tris[1], 0, hs * 2);
-            triangle = new PointF[] { tris[0], tris[1], mLead2 };
+            triangle = new Point[] { tris[0], tris[1], mLead2 };
         }
 
         public override Point GetPost(int n) {

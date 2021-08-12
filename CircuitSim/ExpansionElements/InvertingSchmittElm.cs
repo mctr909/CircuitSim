@@ -10,9 +10,9 @@ namespace Circuit.Elements {
         protected double logicOnLevel;
         protected double logicOffLevel;
 
-        protected PointF[] gatePoly;
-        protected PointF[] symbolPoly;
-        PointF pcircle;
+        protected Point[] gatePoly;
+        protected Point[] symbolPoly;
+        Point pcircle;
 
         double dlt;
         double dut;
@@ -80,10 +80,10 @@ namespace Circuit.Elements {
             Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, .5 - ww / mLen);
             Utils.InterpPoint(mPoint1, mPoint2, ref mLead2, .5 + (ww + 2) / mLen);
             Utils.InterpPoint(mPoint1, mPoint2, ref pcircle, .5 + (ww - 2) / mLen);
-            gatePoly = new PointF[3];
+            gatePoly = new Point[3];
             Utils.InterpPoint(mLead1, mLead2, ref gatePoly[0], ref gatePoly[1], 0, hs);
             Utils.InterpPoint(mPoint1, mPoint2, ref gatePoly[2], .5 + (ww - 5) / mLen);
-            symbolPoly = Utils.CreateSchmitt(mPoint1, mPoint2, 1, .5 - (ww - 9) / mLen);
+            Utils.CreateSchmitt(mPoint1, mPoint2, out symbolPoly, 1, .5 - (ww - 9) / mLen);
             setBbox(mPoint1, mPoint2, hs);
         }
 

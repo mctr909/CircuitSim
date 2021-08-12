@@ -25,9 +25,9 @@ namespace Circuit.Elements {
         bool increasingI = true;
         bool decreasingI = true;
 
-        PointF mid;
-        PointF[] arrowPoly;
-        PointF textPos;
+        Point mid;
+        Point[] arrowPoly;
+        Point textPos;
 
         public AmmeterElm(Point pos) : base(pos) {
             mFlags = FLAG_SHOWCURRENT;
@@ -70,7 +70,7 @@ namespace Circuit.Elements {
         public override void SetPoints() {
             base.SetPoints();
             Utils.InterpPoint(mPoint1, mPoint2, ref mid, 0.5 + 8 / mLen);
-            arrowPoly = Utils.CreateArrow(mPoint1, mid, 14, 7);
+            Utils.CreateArrow(mPoint1, mid, out arrowPoly, 14, 7);
             int sign;
             if (mPoint1.Y == mPoint2.Y) {
                 sign = mDsign;

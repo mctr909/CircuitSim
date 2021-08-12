@@ -31,9 +31,9 @@ namespace Circuit.Elements {
         double dutyCycle;
         double noiseValue;
 
-        PointF ps1;
-        PointF ps2;
-        PointF textPos;
+        Point ps1;
+        Point ps2;
+        Point textPos;
 
         const double defaultPulseDuty = 1 / Pi2;
 

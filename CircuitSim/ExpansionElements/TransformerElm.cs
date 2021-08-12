@@ -15,12 +15,12 @@ namespace Circuit.Elements {
         double ratio;
         double couplingCoef;
         Point[] ptEnds;
-        PointF[] ptCoil;
-        PointF[] ptCore;
+        Point[] ptCoil;
+        Point[] ptCore;
         double[] current;
         double[] curcount;
 
-        PointF[] dots;
+        Point[] dots;
         int width;
         int polarity;
 
@@ -119,8 +119,8 @@ namespace Circuit.Elements {
             base.SetPoints();
             mPoint2.Y = mPoint1.Y;
             ptEnds = new Point[4];
-            ptCoil = new PointF[4];
-            ptCore = new PointF[4];
+            ptCoil = new Point[4];
+            ptCore = new Point[4];
             ptEnds[0] = mPoint1;
             ptEnds[1] = mPoint2;
             Utils.InterpPoint(mPoint1, mPoint2, ref ptEnds[2], 0, -mDsign * width);
@@ -135,16 +135,16 @@ namespace Circuit.Elements {
                 Utils.InterpPoint(ptEnds[i], ptEnds[i + 1], ref ptCore[i + 1], 1 - cd);
             }
             if (polarity == -1) {
-                dots = new PointF[2];
+                dots = new Point[2];
                 double dotp = Math.Abs(7.0 / width);
                 Utils.InterpPoint(ptCoil[0], ptCoil[2], ref dots[0], dotp, -7 * mDsign);
                 Utils.InterpPoint(ptCoil[3], ptCoil[1], ref dots[1], dotp, -7 * mDsign);
                 var x = ptEnds[1];
                 ptEnds[1] = ptEnds[3];
                 ptEnds[3] = x;
-                var tmp = ptCoil[1];
+                x = ptCoil[1];
                 ptCoil[1] = ptCoil[3];
-                ptCoil[3] = tmp;
+                ptCoil[3] = x;
             } else {
                 dots = null;
             }

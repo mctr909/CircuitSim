@@ -182,8 +182,8 @@ namespace Circuit {
         }
 
         public void Performed(ELEMENTS item) {
-            if (mPopupMenu != null) {
-                mPopupMenu.Close();
+            if (mContextMenu != null) {
+                mContextMenu.Close();
             }
             setMouseMode(MOUSE_MODE.ADD_ELM);
             mMouseMode = item;
@@ -192,12 +192,12 @@ namespace Circuit {
         }
 
         public void Performed(ELEMENT_MENU_ITEM item) {
-            if (mPopupMenu != null) {
-                mPopupMenu.Close();
+            if (mContextMenu != null) {
+                mContextMenu.Close();
             }
 
             if (item == ELEMENT_MENU_ITEM.EDIT) {
-                doEdit(mMenuElm);
+                doEdit(mMenuElm, mContextMenuLocation);
             }
             if (item == ELEMENT_MENU_ITEM.CUT) {
                 doCut();
@@ -220,7 +220,7 @@ namespace Circuit {
                 doSplit(mMenuElm);
             }
             if (item == ELEMENT_MENU_ITEM.SLIDERS) {
-                doSliders(mMenuElm);
+                doSliders(mMenuElm, mContextMenuLocation);
             }
 
             if (item == ELEMENT_MENU_ITEM.VIEW_IN_SCOPE && mMenuElm != null) {
@@ -254,8 +254,8 @@ namespace Circuit {
         }
 
         public void Performed(SCOPE_MENU_ITEM item) {
-            if (mPopupMenu != null) {
-                mPopupMenu.Close();
+            if (mContextMenu != null) {
+                mContextMenu.Close();
             }
 
             PushUndo();
@@ -519,7 +519,7 @@ namespace Circuit {
             if (DialogShowing != null && DialogShowing.Visible) {
                 return true;
             }
-            if (mPopupMenu != null && mPopupMenu.Visible) {
+            if (mContextMenu != null && mContextMenu.Visible) {
                 return true;
             }
             if (mScrollValuePopup != null && mScrollValuePopup.Visible) {
@@ -660,7 +660,9 @@ namespace Circuit {
 
         void onDoubleClick(EventArgs e) {
             if (mMouseElm != null && !(mMouseElm is SwitchElm)) {
-                doEdit(mMouseElm);
+                doEdit(mMouseElm, new Point(
+                    mParent.Location.X + mMenuClient.X,
+                    mParent.Location.Y + mMenuClient.Y));
             }
         }
 
@@ -1010,7 +1012,7 @@ namespace Circuit {
             mScopeCount = ct;
         }
 
-        void doEdit(Editable eable) {
+        void doEdit(Editable eable, Point location) {
             clearSelection();
             PushUndo();
             if (EditDialog != null) {
@@ -1018,13 +1020,10 @@ namespace Circuit {
                 EditDialog = null;
             }
             EditDialog = new ElementInfoDialog(eable, this);
-            EditDialog.Show(
-                MouseCursorX + mParent.Location.X,
-                MouseCursorY + mParent.Location.Y
-            );
+            EditDialog.Show(location.X, location.Y);
         }
 
-        void doSliders(CircuitElm ce) {
+        void doSliders(CircuitElm ce, Point location) {
             clearSelection();
             PushUndo();
             if (SliderDialog != null) {
@@ -1032,7 +1031,7 @@ namespace Circuit {
                 SliderDialog = null;
             }
             SliderDialog = new SliderDialog(ce, this);
-            SliderDialog.Show(mParent.Left + MouseCursorX, mParent.Top + MouseCursorY);
+            SliderDialog.Show(location.X, location.Y);
         }
 
         void doCreateSubcircuit() {
@@ -1675,16 +1674,19 @@ namespace Circuit {
                     mMenuScope = ScopeSelected;
                     mMenuPlot = mScopes[ScopeSelected].SelectedPlot;
                     var y = Math.Max(0, Math.Min(mMenuClient.Y, mBmp.Height - 160));
-                    mPopupMenu = mScopePopupMenu.Show(mMenuClient.X, y, false);
+                    mContextMenu = mScopePopupMenu.Show(mMenuClient.X, y, false);
+                    mContextMenuLocation = mContextMenu.Location;
                 }
             } else if (mMouseElm != null) {
                 if (!(mMouseElm is ScopeElm)) {
-                    mPopupMenu = mElementPopupMenu.Show(mMenuClient.X, mMenuClient.Y, mMouseElm);
+                    mContextMenu = mElementPopupMenu.Show(mMenuClient.X, mMenuClient.Y, mMouseElm);
+                    mContextMenuLocation = mContextMenu.Location;
                 } else {
                     var s = (ScopeElm)mMouseElm;
                     if (s.elmScope.CanMenu) {
                         mMenuPlot = s.elmScope.SelectedPlot;
-                        mPopupMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, true);
+                        mContextMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, true);
+                        mContextMenuLocation = mContextMenu.Location;
                     }
                 }
             }

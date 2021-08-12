@@ -26,10 +26,10 @@ namespace Circuit.Elements {
 
         Point[] mColl;
         Point[] mEmit;
-        PointF tbase;
+        Point tbase;
 
-        PointF[] mRectPoly;
-        PointF[] mArrowPoly;
+        Point[] mRectPoly;
+        Point[] mArrowPoly;
 
         const int V_B = 0;
         const int V_C = 1;
@@ -162,7 +162,7 @@ namespace Circuit.Elements {
             Utils.InterpPoint(mPoint1, mPoint2, ref mColl[0], ref mEmit[0], 1, hs2);
 
             /* calc rectangle edges */
-            var rect = new PointF[4];
+            var rect = new Point[4];
             Utils.InterpPoint(mPoint1, mPoint2, ref rect[0], ref rect[1], 1 - 16 / mLen, hs);
             Utils.InterpPoint(mPoint1, mPoint2, ref rect[2], ref rect[3], 1 - 13 / mLen, hs);
 
@@ -173,15 +173,15 @@ namespace Circuit.Elements {
             Utils.InterpPoint(mPoint1, mPoint2, ref tbase, 1 - 16 / mLen);
 
             /* rectangle */
-            mRectPoly = new PointF[] { rect[0], rect[2], rect[3], rect[1] };
+            mRectPoly = new Point[] { rect[0], rect[2], rect[3], rect[1] };
 
             /* arrow */
             if (pnp == 1) {
-                mArrowPoly = Utils.CreateArrow(mEmit[1], mEmit[0], 8, 3);
+                Utils.CreateArrow(mEmit[1], mEmit[0], out mArrowPoly, 8, 3);
             } else {
-                var pt = new PointF();
+                var pt = new Point();
                 Utils.InterpPoint(mPoint1, mPoint2, ref pt, 1 - 14 / mLen, -5 * mDsign * pnp);
-                mArrowPoly = Utils.CreateArrow(mEmit[0], pt, 8, 3);
+                Utils.CreateArrow(mEmit[0], pt, out mArrowPoly, 8, 3);
             }
         }
 

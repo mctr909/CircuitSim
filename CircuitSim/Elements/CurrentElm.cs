@@ -2,11 +2,11 @@
 
 namespace Circuit.Elements {
     class CurrentElm : CircuitElm {
-        PointF[] arrow;
-        PointF ashaft1;
-        PointF ashaft2;
-        PointF center;
-        PointF textPos;
+        Point[] arrow;
+        Point ashaft1;
+        Point ashaft2;
+        Point center;
+        Point textPos;
         double currentValue;
 
         public CurrentElm(Point pos) : base(pos) {
@@ -44,9 +44,9 @@ namespace Circuit.Elements {
                 sign = -mDsign;
             }
             Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5, 20 * sign);
-            var p2 = new PointF();
+            var p2 = new Point();
             Utils.InterpPoint(mLead1, mLead2, ref p2, .8);
-            arrow = Utils.CreateArrow(center, p2, 8, 4);
+            Utils.CreateArrow(center, p2, out arrow, 8, 4);
         }
 
         public override void Draw(CustomGraphics g) {

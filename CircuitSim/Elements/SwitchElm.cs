@@ -10,8 +10,8 @@ namespace Circuit.Elements {
          * position 1 == open */
         public int position { get; protected set; }
         public int posCount { get; protected set; }
-        PointF ps1;
-        PointF ps2;
+        Point ps1;
+        Point ps2;
 
         public SwitchElm(Point pos) : base(pos) {
             momentary = false;

@@ -76,7 +76,8 @@ namespace Circuit {
         MenuItems mMenuItems;
         SplitContainer mSplitContainer;
 
-        ContextMenuStrip mPopupMenu = null;
+        ContextMenuStrip mContextMenu = null;
+        Point mContextMenuLocation;
         ElementPopupMenu mElementPopupMenu;
         ScopePopupMenu mScopePopupMenu;
 

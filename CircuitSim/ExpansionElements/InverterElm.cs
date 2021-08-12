@@ -5,11 +5,11 @@ namespace Circuit.Elements {
     class InverterElm : CircuitElm {
         double slewRate; /* V/ns */
         double highVoltage;
-        PointF[] gatePolyEuro;
-        PointF[] gatePolyAnsi;
-        PointF pcircle;
+        Point[] gatePolyEuro;
+        Point[] gatePolyAnsi;
+        Point pcircle;
         double lastOutputVoltage;
-        PointF center;
+        Point center;
 
         public InverterElm(Point pos) : base(pos) {
             mNoDiagonal = true;
@@ -64,12 +64,12 @@ namespace Circuit.Elements {
             Utils.InterpPoint(mPoint1, mPoint2, ref mLead2, .5 + (ww + 2) / mLen);
             Utils.InterpPoint(mPoint1, mPoint2, ref pcircle, .5 + (ww - 2) / mLen);
 
-            gatePolyAnsi = new PointF[3];
+            gatePolyAnsi = new Point[3];
             Utils.InterpPoint(mLead1, mLead2, ref gatePolyAnsi[0], ref gatePolyAnsi[1], 0, hs);
             Utils.InterpPoint(mPoint1, mPoint2, ref gatePolyAnsi[2], .5 + (ww - 5) / mLen);
 
-            gatePolyEuro = new PointF[4];
-            var l2 = new PointF();
+            gatePolyEuro = new Point[4];
+            var l2 = new Point();
             Utils.InterpPoint(mPoint1, mPoint2, ref l2, .5 + (ww - 5) / mLen); /* make room for circle */
             Utils.InterpPoint(mLead1, l2, ref gatePolyEuro[0], ref gatePolyEuro[1], 0, hs);
             Utils.InterpPoint(mLead1, l2, ref gatePolyEuro[3], ref gatePolyEuro[2], 1, hs);

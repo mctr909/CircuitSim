@@ -149,7 +149,7 @@ namespace Circuit {
             g.DrawArc(penLine, p.X - radius, p.Y - radius, radius * 2, radius * 2, 0, 360);
         }
 
-        public void DrawPolygon(PointF[] p) {
+        public void DrawPolygon(Point[] p) {
             g.DrawPolygon(penLine, p);
         }
 
@@ -185,11 +185,11 @@ namespace Circuit {
             g.DrawArc(penThickLine, p.X - md / 2, p.Y - md / 2, md, md, start, sweep);
         }
 
-        public void DrawThickPolygon(PointF[] p) {
+        public void DrawThickPolygon(Point[] p) {
             g.DrawPolygon(penThickLine, p);
         }
 
-        public void DrawThickPolygon(Color color, PointF[] p) {
+        public void DrawThickPolygon(Color color, Point[] p) {
             penColor.Color = color;
             g.DrawPolygon(penColor, p);
         }
@@ -210,7 +210,7 @@ namespace Circuit {
             g.FillPie(brush, pos.X - radius, pos.Y - radius, radius * 2, radius * 2, 0, 360);
         }
 
-        public void FillPolygon(Color color, PointF[] p) {
+        public void FillPolygon(Color color, Point[] p) {
             penColor.Color = color;
             g.FillPolygon(penColor.Brush, p);
         }

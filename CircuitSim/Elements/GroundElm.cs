@@ -2,8 +2,8 @@
 
 namespace Circuit.Elements {
     class GroundElm : CircuitElm {
-        PointF ps1;
-        PointF ps2;
+        Point ps1;
+        Point ps2;
 
         public GroundElm(Point pos) : base(pos) { }
 

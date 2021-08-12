@@ -9,9 +9,9 @@ namespace Circuit.Elements {
         double voltdiff;
         double curSourceValue;
 
-        PointF[] mPlate1;
-        PointF[] mPlate2;
-        PointF mTextPos;
+        Point[] mPlate1;
+        Point[] mPlate2;
+        Point mTextPos;
 
         public double Capacitance { get; set; }
 
@@ -60,8 +60,8 @@ namespace Circuit.Elements {
             Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, f);
             Utils.InterpPoint(mPoint1, mPoint2, ref mLead2, 1 - f);
             /* calc plates */
-            mPlate1 = new PointF[2];
-            mPlate2 = new PointF[2];
+            mPlate1 = new Point[2];
+            mPlate2 = new Point[2];
             Utils.InterpPoint(mPoint1, mPoint2, ref mPlate1[0], ref mPlate1[1], f, 8);
             Utils.InterpPoint(mPoint1, mPoint2, ref mPlate2[0], ref mPlate2[1], 1 - f, 8);
             if (mPoint1.Y == mPoint2.Y) {

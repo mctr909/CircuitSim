@@ -26,14 +26,14 @@ namespace Circuit.Elements {
 
         protected int ww;
 
-        protected PointF[] gatePolyEuro;
-        protected PointF[] gatePolyAnsi;
+        protected Point[] gatePolyEuro;
+        protected Point[] gatePolyAnsi;
 
-        PointF[] schmittPoly;
+        Point[] schmittPoly;
 
         protected int circleSize;
-        protected PointF circlePos;
-        protected PointF[] linePoints;
+        protected Point circlePos;
+        protected Point[] linePoints;
 
         public GateElm(Point pos) : base(pos) {
             mNoDiagonal = true;
@@ -100,12 +100,12 @@ namespace Circuit.Elements {
             hs2 = gwidth * (inputCount / 2 + 1);
             setBbox(mPoint1, mPoint2, hs2);
             if (hasSchmittInputs()) {
-                schmittPoly = Utils.CreateSchmitt(mLead1, mLead2, 1, .47f);
+                Utils.CreateSchmitt(mLead1, mLead2, out schmittPoly, 1, .47f);
             }
         }
 
         protected void createEuroGatePolygon() {
-            gatePolyEuro = new PointF[4];
+            gatePolyEuro = new Point[4];
             Utils.InterpPoint(mLead1, mLead2, ref gatePolyEuro[0], ref gatePolyEuro[1], 0, hs2);
             Utils.InterpPoint(mLead1, mLead2, ref gatePolyEuro[3], ref gatePolyEuro[2], 1, hs2);
         }
@@ -125,7 +125,7 @@ namespace Circuit.Elements {
                 g.DrawThickPolygon(gatePolyAnsi);
             } else {
                 g.DrawThickPolygon(gatePolyEuro);
-                var center = new PointF();
+                var center = new Point();
                 Utils.InterpPoint(mPoint1, mPoint2, ref center, .5);
                 drawCenteredLText(g, getGateText(), center.X, center.Y - 6, true);
             }

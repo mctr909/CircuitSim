@@ -19,9 +19,9 @@ namespace Circuit.Elements {
              * 16    = right,
              * 17-32 = bottom curve,
              * 33-39 = left curve */
-            gatePolyAnsi = new PointF[40];
+            gatePolyAnsi = new Point[40];
             if (this is XorGateElm) {
-                linePoints = new PointF[7];
+                linePoints = new Point[7];
             }
             for (int i = 0; i != 16; i++) {
                 double a = i / 16.0;

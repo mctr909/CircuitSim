@@ -3,7 +3,7 @@
 namespace Circuit.Elements {
     class PolarCapacitorElm : CapacitorElm {
         double maxNegativeVoltage;
-        PointF plusPoint;
+        Point plusPoint;
 
         public PolarCapacitorElm(Point pos) : base(pos) {
             maxNegativeVoltage = 1;
