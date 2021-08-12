@@ -11,9 +11,10 @@ namespace Circuit.PassiveElements {
         const int SEC_T = 1;
         const int SEC_B = 3;
 
-        double inductance;
-        double ratio;
-        double couplingCoef;
+        double mInductance;
+        double mRatio;
+        double mCouplingCoef;
+
         Point[] ptEnds;
         Point[] ptCoil;
         Point[] ptCore;
@@ -32,30 +33,28 @@ namespace Circuit.PassiveElements {
         double a3;
         double a4;
 
-        bool IsTrapezoidal { get { return (mFlags & Inductor.FLAG_BACK_EULER) == 0; } }
-
         public TransformerElm(Point pos) : base(pos) {
-            inductance = 4;
-            ratio = polarity = 1;
+            mInductance = 4;
+            mRatio = polarity = 1;
             width = 32;
             mNoDiagonal = true;
-            couplingCoef = .999;
+            mCouplingCoef = .999;
             current = new double[2];
             curcount = new double[2];
         }
 
         public TransformerElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             width = Math.Max(32, Math.Abs(p2.Y - p1.Y));
-            inductance = st.nextTokenDouble();
-            ratio =  st.nextTokenDouble();
+            mInductance = st.nextTokenDouble();
+            mRatio =  st.nextTokenDouble();
             current = new double[2];
             curcount = new double[2];
             current[0] = st.nextTokenDouble();
             current[1] = st.nextTokenDouble();
             try {
-                couplingCoef = st.nextTokenDouble();
+                mCouplingCoef = st.nextTokenDouble();
             } catch {
-                couplingCoef = .999;
+                mCouplingCoef = .999;
             }
             mNoDiagonal = true;
             polarity = ((mFlags & FLAG_REVERSE) != 0) ? -1 : 1;
@@ -65,12 +64,21 @@ namespace Circuit.PassiveElements {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.TRANSFORMER; } }
 
+        bool IsTrapezoidal { get { return (mFlags & Inductor.FLAG_BACK_EULER) == 0; } }
+
         protected override string dump() {
-            return inductance
-                + " " + ratio
+            return mInductance
+                + " " + mRatio
                 + " " + current[0]
                 + " " + current[1]
-                + " " + couplingCoef;
+                + " " + mCouplingCoef;
+        }
+
+        protected override void calculateCurrent() {
+            double voltdiff1 = Volts[PRI_T] - Volts[PRI_B];
+            double voltdiff2 = Volts[SEC_T] - Volts[SEC_B];
+            current[0] = voltdiff1 * a1 + voltdiff2 * a2 + curSourceValue1;
+            current[1] = voltdiff1 * a3 + voltdiff2 * a4 + curSourceValue2;
         }
 
         public override void Drag(Point pos) {
@@ -193,9 +201,9 @@ namespace Circuit.PassiveElements {
              * dt instead of dt/2 for the resistor and VCCS.
              *
              * first winding goes from node 0 to 2, second is from 1 to 3 */
-            double l1 = inductance;
-            double l2 = inductance * ratio * ratio;
-            double m = couplingCoef * Math.Sqrt(l1 * l2);
+            double l1 = mInductance;
+            double l2 = mInductance * mRatio * mRatio;
+            double m = mCouplingCoef * Math.Sqrt(l1 * l2);
             /* build inverted matrix */
             double deti = 1 / (l1 * l2 - m * m);
             double ts = IsTrapezoidal ? ControlPanel.TimeStep / 2 : ControlPanel.TimeStep;
@@ -230,13 +238,6 @@ namespace Circuit.PassiveElements {
             mCir.StampCurrentSource(Nodes[1], Nodes[3], curSourceValue2);
         }
 
-        protected override void calculateCurrent() {
-            double voltdiff1 = Volts[PRI_T] - Volts[PRI_B];
-            double voltdiff2 = Volts[SEC_T] - Volts[SEC_B];
-            current[0] = voltdiff1 * a1 + voltdiff2 * a2 + curSourceValue1;
-            current[1] = voltdiff1 * a3 + voltdiff2 * a4 + curSourceValue2;
-        }
-
         public override double GetCurrentIntoNode(int n) {
             if (n < 2) {
                 return -current[n];
@@ -246,8 +247,8 @@ namespace Circuit.PassiveElements {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "transformer";
-            arr[1] = "L = " + Utils.UnitText(inductance, "H");
-            arr[2] = "Ratio = 1:" + ratio;
+            arr[1] = "L = " + Utils.UnitText(mInductance, "H");
+            arr[2] = "Ratio = 1:" + mRatio;
             arr[3] = "Vd1 = " + Utils.VoltageText(Volts[PRI_T] - Volts[PRI_B]);
             arr[4] = "Vd2 = " + Utils.VoltageText(Volts[SEC_T] - Volts[SEC_B]);
             arr[5] = "I1 = " + Utils.CurrentText(current[0]);
@@ -266,13 +267,13 @@ namespace Circuit.PassiveElements {
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new ElementInfo("Primary Inductance (H)", inductance, .01, 5);
+                return new ElementInfo("Primary Inductance (H)", mInductance, .01, 5);
             }
             if (n == 1) {
-                return new ElementInfo("Ratio", ratio, 1, 10).SetDimensionless();
+                return new ElementInfo("Ratio", mRatio, 1, 10).SetDimensionless();
             }
             if (n == 2) {
-                return new ElementInfo("Coupling Coefficient", couplingCoef, 0, 1).SetDimensionless();
+                return new ElementInfo("Coupling Coefficient", mCouplingCoef, 0, 1).SetDimensionless();
             }
             if (n == 3) {
                 var ei = new ElementInfo("", 0, -1, -1);
@@ -295,13 +296,13 @@ namespace Circuit.PassiveElements {
 
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0 && ei.Value > 0) {
-                inductance = ei.Value;
+                mInductance = ei.Value;
             }
             if (n == 1 && ei.Value > 0) {
-                ratio = ei.Value;
+                mRatio = ei.Value;
             }
             if (n == 2 && ei.Value > 0 && ei.Value < 1) {
-                couplingCoef = ei.Value;
+                mCouplingCoef = ei.Value;
             }
             if (n == 3) {
                 if (ei.CheckBox.Checked) {

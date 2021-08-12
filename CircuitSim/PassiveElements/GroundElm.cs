@@ -2,8 +2,8 @@
 
 namespace Circuit.PassiveElements {
     class GroundElm : CircuitElm {
-        Point ps1;
-        Point ps2;
+        Point mP1;
+        Point mP2;
 
         public GroundElm(Point pos) : base(pos) { }
 
@@ -27,12 +27,12 @@ namespace Circuit.PassiveElements {
             for (int i = 0; i != 3; i++) {
                 int a = 10 - i * 4;
                 int b = i * 5; /* -10; */
-                Utils.InterpPoint(mPoint1, mPoint2, ref ps1, ref ps2, 1 + b / mLen, a);
-                g.DrawThickLine(ps1, ps2);
+                Utils.InterpPoint(mPoint1, mPoint2, ref mP1, ref mP2, 1 + b / mLen, a);
+                g.DrawThickLine(mP1, mP2);
             }
             doDots(g);
-            Utils.InterpPoint(mPoint1, mPoint2, ref ps2, 1 + 11.0 / mLen);
-            setBbox(mPoint1, ps2, 11);
+            Utils.InterpPoint(mPoint1, mPoint2, ref mP2, 1 + 11.0 / mLen);
+            setBbox(mPoint1, mP2, 11);
             drawPosts(g);
         }
 

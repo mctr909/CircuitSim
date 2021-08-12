@@ -3,27 +3,27 @@ using System.Drawing;
 
 namespace Circuit.PassiveElements {
     class InductorElm : CircuitElm {
-        Inductor ind;
-        Point textPos;
-
-        public double Inductance { get; set; }
+        Inductor mInd;
+        Point mTextPos;
 
         public InductorElm(Point pos) : base(pos) {
-            ind = new Inductor(Sim, mCir);
+            mInd = new Inductor(Sim, mCir);
             Inductance = 0.001;
-            ind.setup(Inductance, mCurrent, mFlags);
+            mInd.setup(Inductance, mCurrent, mFlags);
         }
 
         public InductorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            ind = new Inductor(Sim, mCir);
+            mInd = new Inductor(Sim, mCir);
             Inductance = st.nextTokenDouble();
             mCurrent = st.nextTokenDouble();
-            ind.setup(Inductance, mCurrent, mFlags);
+            mInd.setup(Inductance, mCurrent, mFlags);
         }
+
+        public double Inductance { get; set; }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.INDUCTOR; } }
 
-        public override bool NonLinear { get { return ind.nonLinear(); } }
+        public override bool NonLinear { get { return mInd.nonLinear(); } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.INDUCTOR; } }
 
@@ -31,20 +31,20 @@ namespace Circuit.PassiveElements {
             return Inductance + " " + mCurrent;
         }
 
-        public void setInductance(double l) {
-            Inductance = l;
-            ind.setup(Inductance, mCurrent, mFlags);
+        protected override void calculateCurrent() {
+            var voltdiff = Volts[0] - Volts[1];
+            mCurrent = mInd.calculateCurrent(voltdiff);
         }
 
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(40);
             if (mPoint1.Y == mPoint2.Y) {
-                Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5 + 13 * mDsign / mLen, 12 * mDsign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5 + 13 * mDsign / mLen, 12 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
-                Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5, -3 * mDsign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5, -3 * mDsign);
             } else {
-                Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5, -8 * mDsign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5, -8 * mDsign);
             }
         }
 
@@ -59,7 +59,7 @@ namespace Circuit.PassiveElements {
 
             if (ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.ShortUnitText(Inductance, "");
-                g.DrawRightText(s, textPos.X, textPos.Y);
+                g.DrawRightText(s, mTextPos.X, mTextPos.Y);
             }
             doDots(g);
             drawPosts(g);
@@ -67,23 +67,18 @@ namespace Circuit.PassiveElements {
 
         public override void Reset() {
             mCurrent = Volts[0] = Volts[1] = mCurCount = 0;
-            ind.reset();
+            mInd.reset();
         }
 
-        public override void Stamp() { ind.stamp(Nodes[0], Nodes[1]); }
+        public override void Stamp() { mInd.stamp(Nodes[0], Nodes[1]); }
 
         public override void StartIteration() {
-            ind.startIteration(Volts[0] - Volts[1]);
-        }
-
-        protected override void calculateCurrent() {
-            double voltdiff = Volts[0] - Volts[1];
-            mCurrent = ind.calculateCurrent(voltdiff);
+            mInd.startIteration(Volts[0] - Volts[1]);
         }
 
         public override void DoStep() {
             double voltdiff = Volts[0] - Volts[1];
-            ind.doStep(voltdiff);
+            mInd.doStep(voltdiff);
         }
 
         public override void GetInfo(string[] arr) {
@@ -101,7 +96,7 @@ namespace Circuit.PassiveElements {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "Trapezoidal Approximation";
-                ei.CheckBox.Checked = ind.IsTrapezoidal;
+                ei.CheckBox.Checked = mInd.IsTrapezoidal;
                 return ei;
             }
             return null;
@@ -118,7 +113,7 @@ namespace Circuit.PassiveElements {
                     mFlags |= Inductor.FLAG_BACK_EULER;
                 }
             }
-            ind.setup(Inductance, mCurrent, mFlags);
+            mInd.setup(Inductance, mCurrent, mFlags);
         }
     }
 }

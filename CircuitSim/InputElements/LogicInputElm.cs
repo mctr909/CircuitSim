@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 using Circuit.PassiveElements;
 
-namespace Circuit.LogicElements {
+namespace Circuit.InputElements {
     class LogicInputElm : SwitchElm {
         const int FLAG_TERNARY = 1;
         const int FLAG_NUMERIC = 2;
@@ -26,7 +26,7 @@ namespace Circuit.LogicElements {
                 loV = 0;
             }
             if (isTernary()) {
-                posCount = 3;
+                PosCount = 3;
             }
         }
 
@@ -39,7 +39,7 @@ namespace Circuit.LogicElements {
         public override DUMP_ID DumpType { get { return DUMP_ID.LOGIC_I; } }
 
         protected override string dump() {
-            return base.dump() + " " + hiV + " " + loV;
+            return hiV + " " + loV;
         }
 
         bool isTernary() { return (mFlags & FLAG_TERNARY) != 0; }
@@ -52,9 +52,9 @@ namespace Circuit.LogicElements {
         }
 
         public override void Draw(CustomGraphics g) {
-            string s = position == 0 ? "L" : "H";
+            string s = Position == 0 ? "L" : "H";
             if (isNumeric()) {
-                s = "" + position;
+                s = "" + Position;
             }
             setBbox(mPoint1, mLead1, 0);
             drawCenteredLText(g, s, P2.X, P2.Y, true);
@@ -64,25 +64,25 @@ namespace Circuit.LogicElements {
             drawPosts(g);
         }
 
-        public override RectangleF getSwitchRect() {
-            return new RectangleF(P2.X - 10, P2.Y - 10, 20, 20);
+        public override Rectangle GetSwitchRect() {
+            return new Rectangle(P2.X - 10, P2.Y - 10, 20, 20);
         }
 
         public override void SetCurrent(int vs, double c) { mCurrent = -c; }
 
         public override void Stamp() {
-            double v = (position == 0) ? loV : hiV;
+            double v = (Position == 0) ? loV : hiV;
             if (isTernary()) {
-                v = position * 2.5;
+                v = Position * 2.5;
             }
             mCir.StampVoltageSource(0, Nodes[0], mVoltSource, v);
         }
 
         public override void GetInfo(string[] arr) {
             arr[0] = "logic input";
-            arr[1] = (position == 0) ? "low" : "high";
+            arr[1] = (Position == 0) ? "low" : "high";
             if (isNumeric()) {
-                arr[1] = "" + position;
+                arr[1] = "" + Position;
             }
             arr[1] += " (" + Utils.VoltageText(Volts[0]) + ")";
             arr[2] = "I = " + Utils.CurrentText(mCurrent);
@@ -95,7 +95,7 @@ namespace Circuit.LogicElements {
                 var ei = new ElementInfo("", 0, 0, 0);
                 ei.CheckBox = new CheckBox() {
                     Text = "Momentary Switch",
-                    Checked = momentary
+                    Checked = Momentary
                 };
                 return ei;
             }
@@ -126,7 +126,7 @@ namespace Circuit.LogicElements {
 
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
-                momentary = ei.CheckBox.Checked;
+                Momentary = ei.CheckBox.Checked;
             }
             if (n == 1) {
                 hiV = ei.Value;
@@ -147,7 +147,7 @@ namespace Circuit.LogicElements {
                 } else {
                     mFlags &= ~FLAG_TERNARY;
                 }
-                posCount = (isTernary()) ? 3 : 2;
+                PosCount = (isTernary()) ? 3 : 2;
             }
         }
 

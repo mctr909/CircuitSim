@@ -14,8 +14,6 @@ namespace Circuit.PassiveElements {
         int mNodeNumber;
         Point mPos;
 
-        public bool IsInternal { get { return (mFlags & FLAG_INTERNAL) != 0; } }
-
         public LabeledNodeElm(Point pos) : base(pos) {
             Text = "label";
         }
@@ -32,6 +30,8 @@ namespace Circuit.PassiveElements {
                 Text = CustomLogicModel.unescape(Text);
             }
         }
+
+        public bool IsInternal { get { return (mFlags & FLAG_INTERNAL) != 0; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.LABELED_NODE; } }
 

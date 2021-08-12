@@ -782,7 +782,7 @@ namespace Circuit {
             mSelectedArea = new Rectangle();
             bool circuitChanged = false;
             if (mHeldSwitchElm != null) {
-                mHeldSwitchElm.mouseUp();
+                mHeldSwitchElm.MouseUp();
                 mHeldSwitchElm = null;
                 circuitChanged = true;
             }
@@ -1277,11 +1277,11 @@ namespace Circuit {
                 return false;
             }
             var se = (SwitchElm)mMouseElm;
-            if (!se.getSwitchRect().Contains(pos)) {
+            if (!se.GetSwitchRect().Contains(pos)) {
                 return false;
             }
-            se.toggle();
-            if (se.momentary) {
+            se.Toggle();
+            if (se.Momentary) {
                 mHeldSwitchElm = se;
             }
             NeedAnalyze();

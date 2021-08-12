@@ -147,8 +147,8 @@
     <Compile Include="ActiveElements\ChipElm.cs" />
     <Compile Include="InputElements\CurrentElm.cs" />
     <Compile Include="PassiveElements\GroundElm.cs" />
-    <Compile Include="LogicElements\LogicInputElm.cs" />
-    <Compile Include="LogicElements\LogicOutputElm.cs" />
+    <Compile Include="InputElements\LogicInputElm.cs" />
+    <Compile Include="OutputElements\LogicOutputElm.cs" />
     <Compile Include="PassiveElements\PotElm.cs" />
     <Compile Include="OutputElements\VoltMeterElm.cs" />
     <Compile Include="PassiveElements\SwitchElm.cs" />

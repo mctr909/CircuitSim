@@ -111,7 +111,7 @@ namespace Circuit.LogicElements {
         }
 
         protected override string dump() {
-            var s = base.dump() + " " + addressBits + " " + dataBits;
+            var s = addressBits + " " + dataBits;
 
             // dump contents
             int maxI = 1 << addressBits;

@@ -548,7 +548,7 @@ namespace Circuit {
 
             #region Inputs and Sources
             var inputMenuBar = new ToolStripMenuItem();
-            inputMenuBar.Text = "入力源(I)";
+            inputMenuBar.Text = "入力(I)";
             inputMenuBar.Font = menuFont;
             addElementItem(inputMenuBar, "直流電圧源(2端子)", ELEMENTS.VOLTAGE_DC);
             addElementItem(inputMenuBar, "交流電圧源(2端子)", ELEMENTS.VOLTAGE_AC);
@@ -561,10 +561,6 @@ namespace Circuit {
             addElementItem(inputMenuBar, "スイープ", ELEMENTS.SWEEP);
             addElementItem(inputMenuBar, "AM発信器", ELEMENTS.OSC_AM);
             addElementItem(inputMenuBar, "FM発信器", ELEMENTS.OSC_FM);
-            //addMenuItem(inputMenuBar, "Add Square Wave Source (1-terminal)", ELEMENTS.SquareRailElm);
-            //addMenuItem(inputMenuBar, "Add Antenna", ELEMENTS.AntennaElm);
-            //addMenuItem(inputMenuBar, "Add Noise Generator", ELEMENTS.NoiseElm);
-            //addMenuItem(inputMenuBar, "Add Audio Input", ELEMENTS.AudioInputElm);
             mainMenuBar.Items.Add(inputMenuBar);
             #endregion
 

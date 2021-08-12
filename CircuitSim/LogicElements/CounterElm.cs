@@ -29,7 +29,7 @@ namespace Circuit.LogicElements {
         protected override bool needsBits() { return true; }
 
         protected override string dump() {
-            return base.dump() + " " + invertreset + " " + modulus;
+            return invertreset + " " + modulus;
         }
 
         string getChipName() { return "Counter"; }

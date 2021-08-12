@@ -5,17 +5,13 @@ namespace Circuit.PassiveElements {
     class CapacitorElm : CircuitElm {
         public static readonly int FLAG_BACK_EULER = 2;
 
-        double compResistance;
-        double voltdiff;
-        double curSourceValue;
+        double mCompResistance;
+        double mVoltDiff;
+        double mCurSourceValue;
 
         Point[] mPlate1;
         Point[] mPlate2;
         Point mTextPos;
-
-        public double Capacitance { get; set; }
-
-        public bool IsTrapezoidal { get { return (mFlags & FLAG_BACK_EULER) == 0; } }
 
         public CapacitorElm(Point pos) : base(pos) {
             Capacitance = 1e-5;
@@ -23,34 +19,50 @@ namespace Circuit.PassiveElements {
 
         public CapacitorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Capacitance = st.nextTokenDouble();
-            voltdiff = st.nextTokenDouble();
+            mVoltDiff = st.nextTokenDouble();
         }
+
+        public double Capacitance { get; set; }
+
+        public bool IsTrapezoidal { get { return (mFlags & FLAG_BACK_EULER) == 0; } }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.CAPACITOR; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.CAPACITOR; } }
 
         protected override string dump() {
-            return Capacitance + " " + voltdiff;
+            return Capacitance + " " + mVoltDiff;
         }
 
-        public void setCapacitance(double c) { Capacitance = c; }
+        protected override void calculateCurrent() {
+            double voltdiff = Volts[0] - Volts[1];
+            if (Sim.DcAnalysisFlag) {
+                mCurrent = voltdiff / 1e8;
+                return;
+            }
+            /* we check compResistance because this might get called
+             * before stamp(), which sets compResistance, causing
+             * infinite current */
+            if (mCompResistance > 0) {
+                mCurrent = voltdiff / mCompResistance + mCurSourceValue;
+            }
+        }
+
+        public void Shorted() {
+            base.Reset();
+            mVoltDiff = mCurrent = mCurCount = mCurSourceValue = 0;
+        }
 
         public override void SetNodeVoltage(int n, double c) {
             base.SetNodeVoltage(n, c);
-            voltdiff = Volts[0] - Volts[1];
+            mVoltDiff = Volts[0] - Volts[1];
         }
 
         public override void Reset() {
             base.Reset();
-            mCurrent = mCurCount = curSourceValue = 0;
+            mCurrent = mCurCount = mCurSourceValue = 0;
             /* put small charge on caps when reset to start oscillators */
-            voltdiff = 1e-3;
-        }
-
-        public void shorted() {
-            base.Reset();
-            voltdiff = mCurrent = mCurCount = curSourceValue = 0;
+            mVoltDiff = 1e-3;
         }
 
         public override void SetPoints() {
@@ -102,7 +114,7 @@ namespace Circuit.PassiveElements {
             if (Sim.DcAnalysisFlag) {
                 /* when finding DC operating point, replace cap with a 100M resistor */
                 mCir.StampResistor(Nodes[0], Nodes[1], 1e8);
-                curSourceValue = 0;
+                mCurSourceValue = 0;
                 return;
             }
 
@@ -112,34 +124,20 @@ namespace Circuit.PassiveElements {
              * than backward euler but can cause oscillatory behavior
              * if RC is small relative to the timestep. */
             if (IsTrapezoidal) {
-                compResistance = ControlPanel.TimeStep / (2 * Capacitance);
+                mCompResistance = ControlPanel.TimeStep / (2 * Capacitance);
             } else {
-                compResistance = ControlPanel.TimeStep / Capacitance;
+                mCompResistance = ControlPanel.TimeStep / Capacitance;
             }
-            mCir.StampResistor(Nodes[0], Nodes[1], compResistance);
+            mCir.StampResistor(Nodes[0], Nodes[1], mCompResistance);
             mCir.StampRightSide(Nodes[0]);
             mCir.StampRightSide(Nodes[1]);
         }
 
         public override void StartIteration() {
             if (IsTrapezoidal) {
-                curSourceValue = -voltdiff / compResistance - mCurrent;
+                mCurSourceValue = -mVoltDiff / mCompResistance - mCurrent;
             } else {
-                curSourceValue = -voltdiff / compResistance;
-            }
-        }
-
-        protected override void calculateCurrent() {
-            double voltdiff = Volts[0] - Volts[1];
-            if (Sim.DcAnalysisFlag) {
-                mCurrent = voltdiff / 1e8;
-                return;
-            }
-            /* we check compResistance because this might get called
-             * before stamp(), which sets compResistance, causing
-             * infinite current */
-            if (compResistance > 0) {
-                mCurrent = voltdiff / compResistance + curSourceValue;
+                mCurSourceValue = -mVoltDiff / mCompResistance;
             }
         }
 
@@ -147,7 +145,7 @@ namespace Circuit.PassiveElements {
             if (Sim.DcAnalysisFlag) {
                 return;
             }
-            mCir.StampCurrentSource(Nodes[0], Nodes[1], curSourceValue);
+            mCir.StampCurrentSource(Nodes[0], Nodes[1], mCurSourceValue);
         }
 
         public override void GetInfo(string[] arr) {

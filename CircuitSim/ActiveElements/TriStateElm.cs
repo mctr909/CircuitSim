@@ -24,8 +24,7 @@ namespace Circuit.ActiveElements {
             try {
                 r_on = st.nextTokenDouble();
                 r_off = st.nextTokenDouble();
-            } catch (Exception e) {
-            }
+            } catch { }
         }
 
         /* we need this to be able to change the matrix for each step */

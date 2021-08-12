@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 
-namespace Circuit.LogicElements {
+namespace Circuit.OutputElements {
     class LogicOutputElm : CircuitElm {
         const int FLAG_TERNARY = 1;
         const int FLAG_NUMERIC = 2;

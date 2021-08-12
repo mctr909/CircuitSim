@@ -4,7 +4,6 @@ using System.Drawing;
 
 using Circuit.PassiveElements;
 using Circuit.InputElements;
-using Circuit.LogicElements;
 
 namespace Circuit {
     class Circuit {
@@ -314,7 +313,7 @@ namespace Circuit {
                     continue;
                 }
                 var we = (WireElm)ce;
-                we.hasWireInfo = false;
+                we.mHasWireInfo = false;
                 mWireInfoList.Add(new WireInfo(we));
                 var p1 = ce.GetPost(0);
                 var p2 = ce.GetPost(1);
@@ -388,7 +387,7 @@ namespace Circuit {
 
                     /* is this a wire that doesn't have wire info yet?  If so we can't use it.
                     /* That would create a circular dependency */
-                    bool notReady = (ce is WireElm) && !((WireElm)ce).hasWireInfo;
+                    bool notReady = (ce is WireElm) && !((WireElm)ce).mHasWireInfo;
 
                     /* which post does this element connect to, if any? */
                     if (pt.X == wire.P1.X && pt.Y == wire.P1.Y) {
@@ -408,12 +407,12 @@ namespace Circuit {
                 if (isReady0) {
                     wi.Neighbors = neighbors0;
                     wi.Post = 0;
-                    wire.hasWireInfo = true;
+                    wire.mHasWireInfo = true;
                     moved = 0;
                 } else if (isReady1) {
                     wi.Neighbors = neighbors1;
                     wi.Post = 1;
-                    wire.hasWireInfo = true;
+                    wire.mHasWireInfo = true;
                     moved = 0;
                 } else {
                     /* move to the end of the list and try again later */
@@ -911,7 +910,7 @@ namespace Circuit {
                     var fpi = new FindPathInfo(FindPathInfo.SHORT, ce, ce.Nodes[1], elmList, NodeList.Count);
                     if (fpi.FindPath(ce.Nodes[0])) {
                         Console.WriteLine(ce + " shorted");
-                        ((CapacitorElm)ce).shorted();
+                        ((CapacitorElm)ce).Shorted();
                     } else {
                         /* a capacitor loop used to cause a matrix error. but we changed the capacitor model
                         /* so it works fine now. The only issue is if a capacitor is added in parallel with

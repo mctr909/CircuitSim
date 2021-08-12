@@ -7,9 +7,8 @@ namespace Circuit.PassiveElements {
         const int FLAG_SHOWCURRENT = 1;
         const int FLAG_SHOWVOLTAGE = 2;
 
-        Point textPos;
-
-        public bool hasWireInfo; /* used in CirSim to calculate wire currents */
+        Point mTextPos;
+        public bool mHasWireInfo; /* used in CirSim to calculate wire currents */
 
         public WireElm(Point pos) : base(pos) { }
 
@@ -19,6 +18,8 @@ namespace Circuit.PassiveElements {
 
         public override bool IsWire { get { return true; } }
 
+        /*public override int VoltageSourceCount { get { return 1; } } */
+
         public override double VoltageDiff { get { return Volts[0]; } }
 
         public override double Power { get { return 0; } }
@@ -26,6 +27,10 @@ namespace Circuit.PassiveElements {
         public override DUMP_ID DumpType { get { return DUMP_ID.WIRE; } }
 
         protected override string dump() { return ""; }
+
+        bool mustShowCurrent { get { return (mFlags & FLAG_SHOWCURRENT) != 0; } }
+
+        bool mustShowVoltage { get { return (mFlags & FLAG_SHOWVOLTAGE) != 0; } }
 
         public override void SetPoints() {
             base.SetPoints();
@@ -35,7 +40,7 @@ namespace Circuit.PassiveElements {
             } else {
                 sign = -mDsign;
             }
-            Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5 + 8 * sign / mLen, 15 * sign);
+            Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5 + 8 * sign / mLen, 15 * sign);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -43,29 +48,19 @@ namespace Circuit.PassiveElements {
             doDots(g);
             setBbox(mPoint1, mPoint2, 3);
             string s = "";
-            if (mustShowCurrent()) {
+            if (mustShowCurrent) {
                 s = Utils.ShortUnitText(Math.Abs(mCurrent), "A");
             }
-            if (mustShowVoltage()) {
+            if (mustShowVoltage) {
                 s = (s.Length > 0 ? s + "\r\n" : "") + Utils.ShortUnitText(Volts[0], "V");
             }
-            g.DrawRightText(s, textPos.X, textPos.Y);
+            g.DrawRightText(s, mTextPos.X, mTextPos.Y);
             drawPosts(g);
         }
 
         public override void Stamp() {
             /*cir.stampVoltageSource(nodes[0], nodes[1], voltSource, 0);*/
         }
-
-        bool mustShowCurrent() {
-            return (mFlags & FLAG_SHOWCURRENT) != 0;
-        }
-
-        bool mustShowVoltage() {
-            return (mFlags & FLAG_SHOWVOLTAGE) != 0;
-        }
-
-        /*public override int getVoltageSourceCount() { return 1; } */
 
         public override void GetInfo(string[] arr) {
             arr[0] = "wire";
@@ -78,14 +73,14 @@ namespace Circuit.PassiveElements {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "Show Current";
-                ei.CheckBox.Checked = mustShowCurrent();
+                ei.CheckBox.Checked = mustShowCurrent;
                 return ei;
             }
             if (n == 1) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "Show Voltage";
-                ei.CheckBox.Checked = mustShowVoltage();
+                ei.CheckBox.Checked = mustShowVoltage;
                 return ei;
             }
             return null;

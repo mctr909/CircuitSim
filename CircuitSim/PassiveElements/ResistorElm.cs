@@ -2,13 +2,11 @@
 
 namespace Circuit.PassiveElements {
     class ResistorElm : CircuitElm {
-        public double Resistance { get; set; }
-
-        Point ps1;
-        Point ps2;
-        Point ps3;
-        Point ps4;
-        Point textPos;
+        Point mP1;
+        Point mP2;
+        Point mP3;
+        Point mP4;
+        Point mTextPos;
 
         public ResistorElm(Point pos) : base(pos) {
             Resistance = 1000;
@@ -18,6 +16,8 @@ namespace Circuit.PassiveElements {
             Resistance = st.nextTokenDouble();
         }
 
+        public double Resistance { get; set; }
+
         public override DUMP_ID Shortcut { get { return DUMP_ID.RESISTOR; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.RESISTOR; } }
@@ -26,15 +26,20 @@ namespace Circuit.PassiveElements {
             return Resistance.ToString();
         }
 
+        protected override void calculateCurrent() {
+            mCurrent = (Volts[0] - Volts[1]) / Resistance;
+            /*Console.WriteLine(this + " res current set to " + current + "\n");*/
+        }
+
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(24);
             if (mPoint1.Y == mPoint2.Y) {
-                Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5 + 10 * mDsign / mLen, 12 * mDsign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5 + 10 * mDsign / mLen, 12 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
-                Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5, -4 * mDsign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5, -4 * mDsign);
             } else {
-                Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5, -8 * mDsign);
+                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5, -8 * mDsign);
             }
         }
 
@@ -64,41 +69,36 @@ namespace Circuit.PassiveElements {
                     case 2: ny = -hs; break;
                     default: ny = 0; break;
                     }
-                    Utils.InterpPoint(mLead1, mLead2, ref ps1, i * segf, oy);
-                    Utils.InterpPoint(mLead1, mLead2, ref ps2, (i + 1) * segf, ny);
+                    Utils.InterpPoint(mLead1, mLead2, ref mP1, i * segf, oy);
+                    Utils.InterpPoint(mLead1, mLead2, ref mP2, (i + 1) * segf, ny);
                     double v = v1 + (v2 - v1) * i / segments;
-                    g.DrawThickLine(getVoltageColor(v), ps1, ps2);
+                    g.DrawThickLine(getVoltageColor(v), mP1, mP2);
                     oy = ny;
                 }
             } else {
                 /* draw rectangle */
-                Utils.InterpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, hs);
+                Utils.InterpPoint(mLead1, mLead2, ref mP1, ref mP2, 0, hs);
                 g.ThickLineColor = getVoltageColor(v1);
-                g.DrawThickLine(ps1, ps2);
+                g.DrawThickLine(mP1, mP2);
                 for (int i = 0; i != segments; i++) {
                     double v = v1 + (v2 - v1) * i / segments;
-                    Utils.InterpPoint(mLead1, mLead2, ref ps1, ref ps2, i * segf, hs);
-                    Utils.InterpPoint(mLead1, mLead2, ref ps3, ref ps4, (i + 1) * segf, hs);
+                    Utils.InterpPoint(mLead1, mLead2, ref mP1, ref mP2, i * segf, hs);
+                    Utils.InterpPoint(mLead1, mLead2, ref mP3, ref mP4, (i + 1) * segf, hs);
                     g.ThickLineColor = getVoltageColor(v);
-                    g.DrawThickLine(ps1, ps3);
-                    g.DrawThickLine(ps2, ps4);
+                    g.DrawThickLine(mP1, mP3);
+                    g.DrawThickLine(mP2, mP4);
                 }
-                Utils.InterpPoint(mLead1, mLead2, ref ps1, ref ps2, 1, hs);
-                g.DrawThickLine(ps1, ps2);
+                Utils.InterpPoint(mLead1, mLead2, ref mP1, ref mP2, 1, hs);
+                g.DrawThickLine(mP1, mP2);
             }
 
             if (ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.ShortUnitText(Resistance, "");
-                g.DrawRightText(s, textPos.X, textPos.Y);
+                g.DrawRightText(s, mTextPos.X, mTextPos.Y);
             }
 
             doDots(g);
             drawPosts(g);
-        }
-
-        protected override void calculateCurrent() {
-            mCurrent = (Volts[0] - Volts[1]) / Resistance;
-            /*Console.WriteLine(this + " res current set to " + current + "\n");*/
         }
 
         public override void Stamp() {

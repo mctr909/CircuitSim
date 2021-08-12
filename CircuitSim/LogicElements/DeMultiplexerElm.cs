@@ -24,7 +24,7 @@ namespace Circuit.LogicElements {
 
         public override int VoltageSourceCount { get { return outputCount; } }
 
-        protected override string dump() { return base.dump() + " " + selectBitCount; }
+        protected override string dump() { return selectBitCount.ToString(); }
 
         string getChipName() { return "demultiplexer"; }
 
