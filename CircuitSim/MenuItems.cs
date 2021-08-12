@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-using Circuit.PassiveElements;
-using Circuit.ActiveElements;
-using Circuit.InputElements;
-using Circuit.OutputElements;
-using Circuit.LogicElements;
-using Circuit.CustomElements;
+using Circuit.Elements;
+using Circuit.Elements.Passive;
+using Circuit.Elements.Active;
+using Circuit.Elements.Input;
+using Circuit.Elements.Output;
+using Circuit.Elements.Gate;
+using Circuit.Elements.Logic;
+using Circuit.Elements.Custom;
 
 namespace Circuit {
     struct SHORTCUT {

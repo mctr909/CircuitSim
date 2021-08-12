@@ -6,7 +6,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
-using Circuit.InputElements;
+using Circuit.Elements;
+using Circuit.Elements.Input;
 
 namespace Circuit {
     interface Editable {

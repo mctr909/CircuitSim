@@ -4,8 +4,8 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
-using Circuit.ActiveElements;
-using Circuit.CustomElements;
+using Circuit.Elements.Active;
+using Circuit.Elements.Custom;
 
 namespace Circuit {
     class EditCompositeModelDialog : Form {

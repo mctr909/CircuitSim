@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using Circuit.PassiveElements;
+using Circuit.Elements;
+using Circuit.Elements.Passive;
 
 namespace Circuit {
     class Adjustable {

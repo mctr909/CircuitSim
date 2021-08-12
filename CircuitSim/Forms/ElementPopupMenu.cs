@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-using Circuit.PassiveElements;
+using Circuit.Elements;
+using Circuit.Elements.Passive;
 
 namespace Circuit {
     enum ELEMENT_MENU_ITEM {

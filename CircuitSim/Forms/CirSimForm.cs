@@ -7,10 +7,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
-using Circuit.PassiveElements;
-using Circuit.ActiveElements;
-using Circuit.OutputElements;
-using Circuit.CustomElements;
+using Circuit.Elements;
+using Circuit.Elements.Passive;
+using Circuit.Elements.Active;
+using Circuit.Elements.Output;
+using Circuit.Elements.Custom;
 
 namespace Circuit {
     partial class CirSim {

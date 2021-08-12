@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-using Circuit.PassiveElements;
-using Circuit.InputElements;
+using Circuit.Elements;
+using Circuit.Elements.Passive;
+using Circuit.Elements.Input;
 
 namespace Circuit {
     class Circuit {
