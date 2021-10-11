@@ -18,7 +18,6 @@ namespace Circuit {
     class ElementInfoDialog : Form {
         const double ROOT2 = 1.41421356237309504880;
 
-        CirSim mSim;
         Editable mElm;
         Button mBtnApply;
         Button mBtnCancel;
@@ -30,9 +29,8 @@ namespace Circuit {
         Panel mPnlH;
         bool mCloseOnEnter = true;
 
-        public ElementInfoDialog(Editable ce, CirSim f) : base() {
+        public ElementInfoDialog(Editable ce) : base() {
             Text = "Edit Component";
-            mSim = f;
             mElm = ce;
 
             mEInfos = new ElementInfo[10];
@@ -202,13 +200,13 @@ namespace Circuit {
 
                 /* update slider if any */
                 if (mElm is CircuitElm) {
-                    var adj = mSim.FindAdjustable((CircuitElm)mElm, i);
+                    var adj = CirSim.Sim.FindAdjustable((CircuitElm)mElm, i);
                     if (adj != null) {
                         adj.Value = ei.Value;
                     }
                 }
             }
-            mSim.NeedAnalyze();
+            CirSim.Sim.NeedAnalyze();
         }
 
         void itemStateChanged(object sender) {
@@ -226,7 +224,7 @@ namespace Circuit {
                     if (ei.NewDialog) {
                         changed = true;
                     }
-                    mSim.NeedAnalyze();
+                    CirSim.Sim.NeedAnalyze();
                 }
             }
             if (changed) {

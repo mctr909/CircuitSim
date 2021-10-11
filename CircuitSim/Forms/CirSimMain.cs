@@ -29,24 +29,22 @@ namespace Circuit {
             var g = mBackContext;
 
             if (ControlPanel.ChkPrintable.Checked) {
-                CircuitElm.WhiteColor = Color.Black;
-                CircuitElm.GrayColor = Color.Black;
-                CircuitElm.TextColor = Color.Black;
-                CircuitElm.SelectColor = Color.Red;
-                CircuitElm.PenHandle = Pens.Red.Brush;
+                CustomGraphics.WhiteColor = Color.Black;
+                CustomGraphics.GrayColor = Color.Black;
+                CustomGraphics.TextColor = Color.Black;
+                CustomGraphics.SelectColor = Color.Red;
+                CustomGraphics.PenHandle = Pens.Red.Brush;
                 g.PostColor = Color.Black;
                 g.Clear(Color.White);
             } else {
-                CircuitElm.WhiteColor = Color.White;
-                CircuitElm.GrayColor = Color.Gray;
-                CircuitElm.TextColor = Color.LightGray;
-                CircuitElm.SelectColor = Color.Cyan;
-                CircuitElm.PenHandle = Pens.Cyan.Brush;
+                CustomGraphics.WhiteColor = Color.White;
+                CustomGraphics.GrayColor = Color.Gray;
+                CustomGraphics.TextColor = Color.LightGray;
+                CustomGraphics.SelectColor = Color.Cyan;
+                CustomGraphics.PenHandle = Pens.Cyan.Brush;
                 g.PostColor = Color.Red;
                 g.Clear(Color.Black);
             }
-
-            g.TextColor = CircuitElm.TextColor;
 
             if (IsRunning) {
                 try {
@@ -124,7 +122,7 @@ namespace Circuit {
             }
 
             if (0 < mSelectedArea.Width) {
-                g.LineColor = CircuitElm.SelectColor;
+                g.LineColor = CustomGraphics.SelectColor;
                 g.DrawRectangle(mSelectedArea);
             }
 

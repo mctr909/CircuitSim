@@ -95,18 +95,18 @@ namespace Circuit {
         }
 
         public void Execute() {
-            CircuitElm.Sim.NeedAnalyze();
+            CirSim.Sim.NeedAnalyze();
             if (mSettingValue) {
                 return;
             }
             var ei = Elm.GetElementInfo(EditItem);
             ei.Value = Value;
             Elm.SetElementValue(EditItem, ei);
-            CircuitElm.Sim.Repaint();
+            CirSim.Sim.Repaint();
         }
 
         public string Dump() {
-            return CircuitElm.Sim.LocateElm(Elm)
+            return CirSim.Sim.LocateElm(Elm)
                 + " " + EditItem
                 + " " + MinValue
                 + " " + MaxValue

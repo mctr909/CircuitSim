@@ -40,7 +40,7 @@ namespace Circuit {
 
             setTimer();
 
-            CircuitElm.InitClass(this, mCir);
+            CircuitElm.InitClass(mCir);
 
             mMenuBar = new MenuStrip();
             {
@@ -239,7 +239,7 @@ namespace Circuit {
                         return;
                     }
                     mScopeCount++;
-                    mScopes[i] = new Scope(this);
+                    mScopes[i] = new Scope();
                     mScopes[i].Position = i;
                 }
                 mScopes[i].SetElm(mMenuElm);
@@ -1023,7 +1023,7 @@ namespace Circuit {
                 EditDialog.Close();
                 EditDialog = null;
             }
-            EditDialog = new ElementInfoDialog(eable, this);
+            EditDialog = new ElementInfoDialog(eable);
             EditDialog.Show(location.X, location.Y);
         }
 
@@ -1170,7 +1170,7 @@ namespace Circuit {
                             continue;
                         }
                         if (tint == 'o') {
-                            var sc = new Scope(this);
+                            var sc = new Scope();
                             sc.Position = mScopeCount;
                             sc.Undump(st);
                             mScopes[mScopeCount++] = sc;
