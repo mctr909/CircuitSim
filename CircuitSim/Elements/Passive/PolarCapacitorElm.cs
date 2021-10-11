@@ -31,9 +31,9 @@ namespace Circuit.Elements.Passive {
                 mPlusPoint.Y += 3;
             }
             if (P1.Y == P2.Y) {
-                Utils.InterpPoint(mPoint1, mPoint2, ref mPlusPoint, f - 5 / mLen, 8 * mDsign);
+                interpPoint(ref mPlusPoint, f - 5 / mLen, 8 * mDsign);
             } else {
-                Utils.InterpPoint(mPoint1, mPoint2, ref mPlusPoint, f - 5 / mLen, -8 * mDsign);
+                interpPoint(ref mPlusPoint, f - 5 / mLen, -8 * mDsign);
             }
         }
 

@@ -90,8 +90,8 @@ namespace Circuit.Elements.Active {
             calcLeads(12);
             mCathode = new Point[2];
             var pa = new Point[2];
-            Utils.InterpPoint(mLead1, mLead2, ref pa[0], ref pa[1], 0, hs);
-            Utils.InterpPoint(mLead1, mLead2, ref mCathode[0], ref mCathode[1], 1, hs);
+            interpLeadAB(ref pa[0], ref pa[1], 0, hs);
+            interpLeadAB(ref mCathode[0], ref mCathode[1], 1, hs);
             poly = new Point[] { pa[0], pa[1], mLead2 };
         }
 
@@ -112,15 +112,12 @@ namespace Circuit.Elements.Active {
         void drawDiode(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, hs);
 
-            double v1 = Volts[0];
-            double v2 = Volts[1];
-
             draw2Leads(g);
 
             /* draw arrow thingy */
-            g.FillPolygon(getVoltageColor(v1), poly);
+            drawVoltage(g, 0, poly);
             /* draw thing arrow is pointing to */
-            g.DrawThickLine(getVoltageColor(v2), mCathode[0], mCathode[1]);
+            drawVoltage(g, 1, mCathode[0], mCathode[1]);
         }
 
         public override void Stamp() {

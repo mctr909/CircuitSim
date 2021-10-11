@@ -59,8 +59,8 @@ namespace Circuit.Elements.Passive {
                 if (mThrowCount == 2 && i == 0) {
                     hs = OPEN_HS;
                 }
-                Utils.InterpPoint(mLead1, mLead2, ref mSwPoles[i], 1, hs);
-                Utils.InterpPoint(mPoint1, mPoint2, ref mSwPosts[i], 1, hs);
+                interpLead(ref mSwPoles[i], 1, hs);
+                interpPoint(ref mSwPosts[i], 1, hs);
             }
             mSwPoles[i] = mLead2; /* for center off */
             PosCount = hasCenterOff ? 3 : mThrowCount;
@@ -71,10 +71,10 @@ namespace Circuit.Elements.Passive {
             adjustBbox(mSwPosts[0], mSwPosts[mThrowCount - 1]);
 
             /* draw first lead */
-            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
+            drawVoltage(g, 0, mPoint1, mLead1);
             /* draw other leads */
             for (int i = 0; i < mThrowCount; i++) {
-                g.DrawThickLine(getVoltageColor(Volts[i + 1]), mSwPoles[i], mSwPosts[i]);
+                drawVoltage(g, i + 1, mSwPoles[i], mSwPosts[i]);
             }
             /* draw switch */
             g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;

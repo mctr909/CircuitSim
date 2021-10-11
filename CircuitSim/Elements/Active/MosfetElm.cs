@@ -153,8 +153,8 @@ namespace Circuit.Elements.Active {
             setBbox(mPoint1, mPoint2, hs);
 
             /* draw source/drain terminals */
-            g.DrawThickLine(getVoltageColor(Volts[V_S]), src[0], src[1]);
-            g.DrawThickLine(getVoltageColor(Volts[V_D]), drn[0], drn[1]);
+            drawVoltage(g, V_S, src[0], src[1]);
+            drawVoltage(g, V_D, drn[0], drn[1]);
 
             /* draw line connecting source and drain */
             int segments = 6;
@@ -173,8 +173,8 @@ namespace Circuit.Elements.Active {
             }
 
             /* draw little extensions of that line */
-            g.DrawThickLine(getVoltageColor(Volts[V_S]), src[1], src[2]);
-            g.DrawThickLine(getVoltageColor(Volts[V_D]), drn[1], drn[2]);
+            drawVoltage(g, V_S, src[1], src[2]);
+            drawVoltage(g, V_D, drn[1], drn[2]);
 
             /* draw bulk connection */
             if (ShowBulk) {
@@ -187,7 +187,7 @@ namespace Circuit.Elements.Active {
 
             /* draw arrow */
             if (!DrawDigital) {
-                g.FillPolygon(getVoltageColor(Volts[bodyTerminal]), arrowPoly);
+                drawVoltage(g, bodyTerminal, arrowPoly);
             }
 
             /* draw gate */
@@ -240,12 +240,12 @@ namespace Circuit.Elements.Active {
             }
             src = new Point[3];
             drn = new Point[3];
-            Utils.InterpPoint(mPoint1, mPoint2, ref src[0], ref drn[0], 1, -hs2);
-            Utils.InterpPoint(mPoint1, mPoint2, ref src[1], ref drn[1], 1 - 18 / mLen, -hs2);
-            Utils.InterpPoint(mPoint1, mPoint2, ref src[2], ref drn[2], 1 - 18 / mLen, -hs2 * 4 / 3);
+            interpPointAB(ref src[0], ref drn[0], 1, -hs2);
+            interpPointAB(ref src[1], ref drn[1], 1 - 18 / mLen, -hs2);
+            interpPointAB(ref src[2], ref drn[2], 1 - 18 / mLen, -hs2 * 4 / 3);
 
             gate = new Point[3];
-            Utils.InterpPoint(mPoint1, mPoint2, ref gate[0], ref gate[2], 1 - 24 / mLen, hs2 / 2);
+            interpPointAB(ref gate[0], ref gate[2], 1 - 24 / mLen, hs2 / 2);
             Utils.InterpPoint(gate[0], gate[2], ref gate[1], .5);
 
             if (ShowBulk) {
@@ -269,9 +269,9 @@ namespace Circuit.Elements.Active {
                     }
                 }
             } else if (pnp == -1) {
-                Utils.InterpPoint(mPoint1, mPoint2, ref gate[1], 1 - 36 / mLen);
+                interpPoint(ref gate[1], 1 - 36 / mLen);
                 int dist = (mDsign < 0) ? 32 : 31;
-                Utils.InterpPoint(mPoint1, mPoint2, ref pcircle, 1 - dist / mLen);
+                interpPoint(ref pcircle, 1 - dist / mLen);
                 pcircler = 3;
             }
         }

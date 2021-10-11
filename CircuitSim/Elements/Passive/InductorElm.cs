@@ -40,11 +40,11 @@ namespace Circuit.Elements.Passive {
             base.SetPoints();
             calcLeads(40);
             if (mPoint1.Y == mPoint2.Y) {
-                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5 + 13 * mDsign / mLen, 12 * mDsign);
+                interpPoint(ref mTextPos, 0.5 + 13 * mDsign / mLen, 12 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
-                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5, -3 * mDsign);
+                interpPoint(ref mTextPos, 0.5, -3 * mDsign);
             } else {
-                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5, -8 * mDsign);
+                interpPoint(ref mTextPos, 0.5, -8 * mDsign);
             }
         }
 

@@ -91,9 +91,9 @@ namespace Circuit.Elements.Active {
         public override void Draw(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, opheight * 2);
 
-            g.DrawThickLine(getVoltageColor(Volts[V_N]), in1p[0], in1p[1]);
-            g.DrawThickLine(getVoltageColor(Volts[V_P]), in2p[0], in2p[1]);
-            g.DrawThickLine(getVoltageColor(Volts[V_O]), mLead2, mPoint2);
+            drawVoltage(g, V_N, in1p[0], in1p[1]);
+            drawVoltage(g, V_P, in2p[0], in2p[1]);
+            drawVoltage(g, V_O, mLead2, mPoint2);
 
             g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.DrawThickPolygon(triangle);
@@ -119,11 +119,11 @@ namespace Circuit.Elements.Active {
             in1p = new Point[2];
             in2p = new Point[2];
             textp = new Point[2];
-            Utils.InterpPoint(mPoint1, mPoint2, ref in1p[0], ref in2p[0], 0, hs);
-            Utils.InterpPoint(mLead1, mLead2, ref in1p[1], ref in2p[1], 0, hs);
-            Utils.InterpPoint(mLead1, mLead2, ref textp[0], ref textp[1], 0.2, hs);
+            interpPointAB(ref in1p[0], ref in2p[0], 0, hs);
+            interpLeadAB(ref in1p[1], ref in2p[1], 0, hs);
+            interpLeadAB(ref textp[0], ref textp[1], 0.2, hs);
             var tris = new Point[2];
-            Utils.InterpPoint(mLead1, mLead2, ref tris[0], ref tris[1], 0, hs * 2);
+            interpLeadAB(ref tris[0], ref tris[1], 0, hs * 2);
             triangle = new Point[] { tris[0], tris[1], mLead2 };
         }
 

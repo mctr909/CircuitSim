@@ -27,11 +27,11 @@ namespace Circuit.Elements.Passive {
             for (int i = 0; i != 3; i++) {
                 int a = 10 - i * 4;
                 int b = i * 5; /* -10; */
-                Utils.InterpPoint(mPoint1, mPoint2, ref mP1, ref mP2, 1 + b / mLen, a);
+                interpPointAB(ref mP1, ref mP2, 1 + b / mLen, a);
                 g.DrawThickLine(mP1, mP2);
             }
             doDots(g);
-            Utils.InterpPoint(mPoint1, mPoint2, ref mP2, 1 + 11.0 / mLen);
+            interpPoint(ref mP2, 1 + 11.0 / mLen);
             setBbox(mPoint1, mP2, 11);
             drawPosts(g);
         }

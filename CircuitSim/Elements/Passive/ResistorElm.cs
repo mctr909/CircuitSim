@@ -35,11 +35,11 @@ namespace Circuit.Elements.Passive {
             base.SetPoints();
             calcLeads(24);
             if (mPoint1.Y == mPoint2.Y) {
-                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5 + 10 * mDsign / mLen, 12 * mDsign);
+                interpPoint(ref mTextPos, 0.5 + 10 * mDsign / mLen, 12 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
-                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5, -4 * mDsign);
+                interpPoint(ref mTextPos, 0.5, -4 * mDsign);
             } else {
-                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5, -8 * mDsign);
+                interpPoint(ref mTextPos, 0.5, -8 * mDsign);
             }
         }
 
@@ -69,26 +69,26 @@ namespace Circuit.Elements.Passive {
                     case 2: ny = -hs; break;
                     default: ny = 0; break;
                     }
-                    Utils.InterpPoint(mLead1, mLead2, ref mP1, i * segf, oy);
-                    Utils.InterpPoint(mLead1, mLead2, ref mP2, (i + 1) * segf, ny);
+                    interpLead(ref mP1, i * segf, oy);
+                    interpLead(ref mP2, (i + 1) * segf, ny);
                     double v = v1 + (v2 - v1) * i / segments;
                     g.DrawThickLine(getVoltageColor(v), mP1, mP2);
                     oy = ny;
                 }
             } else {
                 /* draw rectangle */
-                Utils.InterpPoint(mLead1, mLead2, ref mP1, ref mP2, 0, hs);
+                interpLeadAB(ref mP1, ref mP2, 0, hs);
                 g.ThickLineColor = getVoltageColor(v1);
                 g.DrawThickLine(mP1, mP2);
                 for (int i = 0; i != segments; i++) {
                     double v = v1 + (v2 - v1) * i / segments;
-                    Utils.InterpPoint(mLead1, mLead2, ref mP1, ref mP2, i * segf, hs);
-                    Utils.InterpPoint(mLead1, mLead2, ref mP3, ref mP4, (i + 1) * segf, hs);
+                    interpLeadAB(ref mP1, ref mP2, i * segf, hs);
+                    interpLeadAB(ref mP3, ref mP4, (i + 1) * segf, hs);
                     g.ThickLineColor = getVoltageColor(v);
                     g.DrawThickLine(mP1, mP3);
                     g.DrawThickLine(mP2, mP4);
                 }
-                Utils.InterpPoint(mLead1, mLead2, ref mP1, ref mP2, 1, hs);
+                interpLeadAB(ref mP1, ref mP2, 1, hs);
                 g.DrawThickLine(mP1, mP2);
             }
 

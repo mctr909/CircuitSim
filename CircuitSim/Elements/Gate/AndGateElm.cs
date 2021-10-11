@@ -22,20 +22,18 @@ namespace Circuit.Elements.Gate {
              * 12-21= bottom curve,
              * 22   = bottom left */
             gatePolyAnsi = new Point[23];
-            Utils.InterpPoint(mLead1, mLead2, ref gatePolyAnsi[0], ref gatePolyAnsi[22], 0, hs2);
+            interpLeadAB(ref gatePolyAnsi[0], ref gatePolyAnsi[22], 0, hs2);
             for (int i = 0; i != 10; i++) {
                 double a = i * .1;
                 double b = Math.Sqrt(1 - a * a);
-                Utils.InterpPoint(mLead1, mLead2,
-                    ref gatePolyAnsi[i + 1], ref gatePolyAnsi[21 - i],
-                    .5 + a / 2, b * hs2);
+                interpLeadAB(ref gatePolyAnsi[i + 1], ref gatePolyAnsi[21 - i], 0.5 + a / 2, b * hs2);
             }
             gatePolyAnsi[11] = mLead2;
 
             if (isInverting()) {
                 circleSize = 6;
-                Utils.InterpPoint(mPoint1, mPoint2, ref circlePos, .5 + (ww + 3) / mLen);
-                Utils.InterpPoint(mPoint1, mPoint2, ref mLead2, .5 + (ww + 6) / mLen);
+                interpPoint(ref circlePos, 0.5 + (ww + 3) / mLen);
+                interpPoint(ref mLead2, 0.5 + (ww + 6) / mLen);
             }
         }
 

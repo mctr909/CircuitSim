@@ -34,18 +34,18 @@ namespace Circuit.Elements.Input {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(32);
-            Utils.InterpPoint(mLead1, mLead2, ref ashaft1, .25);
-            Utils.InterpPoint(mLead1, mLead2, ref ashaft2, .6);
-            Utils.InterpPoint(mLead1, mLead2, ref center, .5);
+            interpLead(ref ashaft1, 0.25);
+            interpLead(ref ashaft2, 0.6);
+            interpLead(ref center, 0.5);
             int sign;
             if (mPoint1.Y == mPoint2.Y) {
                 sign = mDsign;
             } else {
                 sign = -mDsign;
             }
-            Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5, 20 * sign);
+            interpPoint(ref textPos, 0.5, 20 * sign);
             var p2 = new Point();
-            Utils.InterpPoint(mLead1, mLead2, ref p2, .8);
+            interpLead(ref p2, 0.8);
             Utils.CreateArrow(center, p2, out arrow, 8, 4);
         }
 

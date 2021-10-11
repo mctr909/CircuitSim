@@ -93,10 +93,10 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            g.DrawThickLine(getVoltageColor(Volts[PRI_T]), ptEnds[0], ptCoil[0]);
-            g.DrawThickLine(getVoltageColor(Volts[SEC_T]), ptEnds[1], ptCoil[1]);
-            g.DrawThickLine(getVoltageColor(Volts[PRI_B]), ptEnds[2], ptCoil[2]);
-            g.DrawThickLine(getVoltageColor(Volts[SEC_B]), ptEnds[3], ptCoil[3]);
+            drawVoltage(g, PRI_T, ptEnds[0], ptCoil[0]);
+            drawVoltage(g, SEC_T, ptEnds[1], ptCoil[1]);
+            drawVoltage(g, PRI_B, ptEnds[2], ptCoil[2]);
+            drawVoltage(g, SEC_B, ptEnds[3], ptCoil[3]);
 
             drawCoil(g, ptCoil[0], ptCoil[2], Volts[PRI_T], Volts[PRI_B], 90 * mDsign);
             drawCoil(g, ptCoil[1], ptCoil[3], Volts[SEC_T], Volts[SEC_B], -90 * mDsign * polarity);
@@ -131,8 +131,8 @@ namespace Circuit.Elements.Passive {
             ptCore = new Point[4];
             ptEnds[0] = mPoint1;
             ptEnds[1] = mPoint2;
-            Utils.InterpPoint(mPoint1, mPoint2, ref ptEnds[2], 0, -mDsign * width);
-            Utils.InterpPoint(mPoint1, mPoint2, ref ptEnds[3], 1, -mDsign * width);
+            interpPoint(ref ptEnds[2], 0, -mDsign * width);
+            interpPoint(ref ptEnds[3], 1, -mDsign * width);
             double ce = .5 - 16 / mLen;
             double cd = .5 - 2 / mLen;
             int i;

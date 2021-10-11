@@ -69,7 +69,7 @@ namespace Circuit.Elements.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            Utils.InterpPoint(mPoint1, mPoint2, ref mid, 0.5 + 8 / mLen);
+            interpPoint(ref mid, 0.5 + 8 / mLen);
             Utils.CreateArrow(mPoint1, mid, out arrowPoly, 14, 7);
             int sign;
             if (mPoint1.Y == mPoint2.Y) {
@@ -77,7 +77,7 @@ namespace Circuit.Elements.Output {
             } else {
                 sign = -mDsign;
             }
-            Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5 + 8 * sign / mLen, 12 * sign);
+            interpPoint(ref textPos, 0.5 + 8 * sign / mLen, 12 * sign);
         }
 
         public override void StepFinished() {

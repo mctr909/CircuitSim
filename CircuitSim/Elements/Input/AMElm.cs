@@ -56,7 +56,7 @@ namespace Circuit.Elements.Input {
 
         public override void Draw(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, circleSize);
-            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
+            drawVoltage(g, 0, mPoint1, mLead1);
 
             CustomGraphics.TextColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             double v = getVoltage();
@@ -80,7 +80,7 @@ namespace Circuit.Elements.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, 1 - 0.5 * circleSize / mLen);
+            interpPoint(ref mLead1, 1 - 0.5 * circleSize / mLen);
         }
 
         public override double VoltageDiff { get { return Volts[0]; } }

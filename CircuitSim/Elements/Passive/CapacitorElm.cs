@@ -69,19 +69,19 @@ namespace Circuit.Elements.Passive {
             base.SetPoints();
             double f = (mLen / 2 - 3) / mLen;
             /* calc leads */
-            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, f);
-            Utils.InterpPoint(mPoint1, mPoint2, ref mLead2, 1 - f);
+            interpPoint(ref mLead1, f);
+            interpPoint(ref mLead2, 1 - f);
             /* calc plates */
             mPlate1 = new Point[2];
             mPlate2 = new Point[2];
-            Utils.InterpPoint(mPoint1, mPoint2, ref mPlate1[0], ref mPlate1[1], f, 8);
-            Utils.InterpPoint(mPoint1, mPoint2, ref mPlate2[0], ref mPlate2[1], 1 - f, 8);
+            interpPointAB(ref mPlate1[0], ref mPlate1[1], f, 8);
+            interpPointAB(ref mPlate2[0], ref mPlate2[1], 1 - f, 8);
             if (mPoint1.Y == mPoint2.Y) {
-                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5 + 12 * mDsign / mLen, 16 * mDsign);
+                interpPoint(ref mTextPos, 0.5 + 12 * mDsign / mLen, 16 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
-                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5, -8 * mDsign);
+                interpPoint(ref mTextPos, 0.5, -8 * mDsign);
             } else {
-                Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5, -10 * mDsign);
+                interpPoint(ref mTextPos, 0.5, -10 * mDsign);
             }
         }
 

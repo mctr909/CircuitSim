@@ -189,7 +189,7 @@ namespace Circuit.Elements.Active {
                 var p = pins[i];
                 var a = p.post;
                 var b = p.stub;
-                g.DrawThickLine(getVoltageColor(Volts[i]), a, b);
+                drawVoltage(g, i, a, b);
                 p.curcount = updateDotCount(p.current, p.curcount);
                 drawDots(g, b, a, p.curcount);
                 if (p.bubble) {

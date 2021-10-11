@@ -95,8 +95,8 @@ namespace Circuit.Elements.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            Utils.InterpPoint(mPoint1, mPoint2, ref center, .5, 8 * mDsign);
-            Utils.InterpPoint(mPoint1, mPoint2, ref plusPoint, (mLen / 2 - 20) / mLen, 16 * mDsign);
+            interpPoint(ref center, .5, 8 * mDsign);
+            interpPoint(ref plusPoint, (mLen / 2 - 20) / mLen, 16 * mDsign);
         }
 
         public override void Draw(CustomGraphics g) {

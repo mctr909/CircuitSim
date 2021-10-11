@@ -40,11 +40,11 @@ namespace Circuit.Elements.Passive {
             } else {
                 sign = -mDsign;
             }
-            Utils.InterpPoint(mPoint1, mPoint2, ref mTextPos, 0.5 + 8 * sign / mLen, 15 * sign);
+            interpPoint(ref mTextPos, 0.5 + 8 * sign / mLen, 15 * sign);
         }
 
         public override void Draw(CustomGraphics g) {
-            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mPoint2);
+            drawVoltage(g, 0, mPoint1, mPoint2);
             doDots(g);
             setBbox(mPoint1, mPoint2, 3);
             string s = "";

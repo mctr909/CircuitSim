@@ -54,10 +54,10 @@ namespace Circuit.Elements.Active {
                 ww = (int)(mLen / 2);
             }
             gatePoly = new Point[3];
-            Utils.InterpPoint(mLead1, mLead2, ref gatePoly[0], ref gatePoly[1], 0, hs);
-            Utils.InterpPoint(mPoint1, mPoint2, ref gatePoly[2], .5 + ww / mLen);
-            Utils.InterpPoint(mPoint1, mPoint2, ref point3, .5, -hs);
-            Utils.InterpPoint(mPoint1, mPoint2, ref lead3, .5, -hs / 2);
+            interpLeadAB(ref gatePoly[0], ref gatePoly[1], 0, hs);
+            interpPoint(ref gatePoly[2], 0.5 + ww / mLen);
+            interpPoint(ref point3, 0.5, -hs);
+            interpPoint(ref lead3, 0.5, -hs / 2);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -67,7 +67,7 @@ namespace Circuit.Elements.Active {
             draw2Leads(g);
 
             g.DrawThickPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, gatePoly);
-            g.DrawThickLine(getVoltageColor(Volts[2]), point3, lead3);
+            drawVoltage(g, 2, point3, lead3);
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(g, mLead2, mPoint2, mCurCount);
             drawPosts(g);

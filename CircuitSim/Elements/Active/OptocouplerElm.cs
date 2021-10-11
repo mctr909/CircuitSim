@@ -76,7 +76,7 @@ namespace Circuit.Elements.Active {
             for (int i = 0; i != 4; i++) {
                 var a = posts[i];
                 var b = stubs[i];
-                g.DrawThickLine(getVoltageColor(Volts[i]), a, b);
+                drawVoltage(g, i, a, b);
                 curCounts[i] = updateDotCount(-GetCurrentIntoNode(i), curCounts[i]);
                 drawDots(g, a, b, curCounts[i]);
             }

@@ -52,11 +52,11 @@ namespace Circuit.Elements.Active {
             if (ww > mLen / 2) {
                 ww = (int)(mLen / 2);
             }
-            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, .5 - ww / mLen);
-            Utils.InterpPoint(mPoint1, mPoint2, ref mLead2, .5 + (ww - 4) / mLen);
+            interpPoint(ref mLead1, 0.5 - ww / mLen);
+            interpPoint(ref mLead2, 0.5 + (ww - 4) / mLen);
             gatePoly = new Point[3];
-            Utils.InterpPoint(mLead1, mLead2, ref gatePoly[0], ref gatePoly[1], 0, hs);
-            Utils.InterpPoint(mPoint1, mPoint2, ref gatePoly[2], .5 + (ww - 5) / mLen);
+            interpLeadAB(ref gatePoly[0], ref gatePoly[1], 0, hs);
+            interpPoint(ref gatePoly[2], 0.5 + (ww - 5) / mLen);
         }
 
         public override void GetInfo(string[] arr) {

@@ -61,7 +61,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public virtual Rectangle GetSwitchRect() {
-            Utils.InterpPoint(mLead1, mLead2, ref mP1, 0, OPEN_HS);
+            interpLead(ref mP1, 0, OPEN_HS);
             var l1 = new Rectangle(mLead1.X, mLead1.Y, 0, 0);
             var l2 = new Rectangle(mLead2.X, mLead2.Y, 0, 0);
             var p = new Rectangle(mP1.X, mP1.Y, 0, 0);
@@ -81,8 +81,8 @@ namespace Circuit.Elements.Passive {
             if (Position == 0) {
                 doDots(g);
             }
-            Utils.InterpPoint(mLead1, mLead2, ref mP1, 0, hs1);
-            Utils.InterpPoint(mLead1, mLead2, ref mP2, 1, hs2);
+            interpLead(ref mP1, 0, hs1);
+            interpLead(ref mP2, 1, hs2);
             g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             g.DrawThickLine(mP1, mP2);
             drawPosts(g);

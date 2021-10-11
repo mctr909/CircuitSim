@@ -93,8 +93,8 @@ namespace Circuit.Elements.Gate {
                 if (i0 == 0 && (inputCount & 1) == 0) {
                     i0++;
                 }
-                Utils.InterpPoint(mPoint1, mPoint2, ref inPosts[i], 0, hs * i0);
-                Utils.InterpPoint(mLead1, mLead2, ref inGates[i], 0, hs * i0);
+                interpPoint(ref inPosts[i], 0, hs * i0);
+                interpLead(ref inGates[i], 0, hs * i0);
                 Volts[i] = (lastOutput ^ isInverting()) ? 5 : 0;
             }
             hs2 = gwidth * (inputCount / 2 + 1);
@@ -106,8 +106,8 @@ namespace Circuit.Elements.Gate {
 
         protected void createEuroGatePolygon() {
             gatePolyEuro = new Point[4];
-            Utils.InterpPoint(mLead1, mLead2, ref gatePolyEuro[0], ref gatePolyEuro[1], 0, hs2);
-            Utils.InterpPoint(mLead1, mLead2, ref gatePolyEuro[3], ref gatePolyEuro[2], 1, hs2);
+            interpLeadAB(ref gatePolyEuro[0], ref gatePolyEuro[1], 0, hs2);
+            interpLeadAB(ref gatePolyEuro[3], ref gatePolyEuro[2], 1, hs2);
         }
 
         protected virtual string getGateText() { return null; }
@@ -117,16 +117,16 @@ namespace Circuit.Elements.Gate {
         public override void Draw(CustomGraphics g) {
             int i;
             for (i = 0; i != inputCount; i++) {
-                g.DrawThickLine(getVoltageColor(Volts[i]), inPosts[i], inGates[i]);
+                drawVoltage(g, i, inPosts[i], inGates[i]);
             }
-            g.DrawThickLine(getVoltageColor(Volts[inputCount]), mLead2, mPoint2);
+            drawVoltage(g, inputCount, mLead2, mPoint2);
             g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             if (useAnsiGates()) {
                 g.DrawThickPolygon(gatePolyAnsi);
             } else {
                 g.DrawThickPolygon(gatePolyEuro);
                 var center = new Point();
-                Utils.InterpPoint(mPoint1, mPoint2, ref center, .5);
+                interpPoint(ref center, 0.5);
                 drawCenteredLText(g, getGateText(), center.X, center.Y - 6, true);
             }
             if (hasSchmittInputs()) {

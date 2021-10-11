@@ -120,15 +120,15 @@ namespace Circuit.Elements.Active {
 
         public override void Draw(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, 16);
-           
+
             /* draw collector */
-            g.DrawThickLine(getVoltageColor(Volts[V_C]), mColl[0], mColl[1]);
+            drawVoltage(g, V_C, mColl[0], mColl[1]);
             /* draw emitter */
-            g.DrawThickLine(getVoltageColor(Volts[V_E]), mEmit[0], mEmit[1]);
+            drawVoltage(g, V_E, mEmit[0], mEmit[1]);
             /* draw arrow */
-            g.FillPolygon(getVoltageColor(Volts[V_E]), mArrowPoly);
+            drawVoltage(g, V_E, mArrowPoly);
             /* draw base */
-            g.DrawThickLine(getVoltageColor(Volts[V_B]), mPoint1, tbase);
+            drawVoltage(g, V_B, mPoint1, tbase);
 
             /* draw dots */
             curcount_b = updateDotCount(-ib, curcount_b);
@@ -139,7 +139,7 @@ namespace Circuit.Elements.Active {
             drawDots(g, mEmit[1], mEmit[0], curcount_e);
 
             /* draw base rectangle */
-            g.FillPolygon(getVoltageColor(Volts[V_B]), mRectPoly);
+            drawVoltage(g, V_B, mRectPoly);
 
             drawPosts(g);
         }
@@ -159,18 +159,18 @@ namespace Circuit.Elements.Active {
             /* calc collector, emitter posts */
             mColl = new Point[2];
             mEmit = new Point[2];
-            Utils.InterpPoint(mPoint1, mPoint2, ref mColl[0], ref mEmit[0], 1, hs2);
+            interpPointAB(ref mColl[0], ref mEmit[0], 1, hs2);
 
             /* calc rectangle edges */
             var rect = new Point[4];
-            Utils.InterpPoint(mPoint1, mPoint2, ref rect[0], ref rect[1], 1 - 16 / mLen, hs);
-            Utils.InterpPoint(mPoint1, mPoint2, ref rect[2], ref rect[3], 1 - 13 / mLen, hs);
+            interpPointAB(ref rect[0], ref rect[1], 1 - 16 / mLen, hs);
+            interpPointAB(ref rect[2], ref rect[3], 1 - 13 / mLen, hs);
 
             /* calc points where collector/emitter leads contact rectangle */
-            Utils.InterpPoint(mPoint1, mPoint2, ref mColl[1], ref mEmit[1], 1 - 13 / mLen, 6 * mDsign * pnp);
+            interpPointAB(ref mColl[1], ref mEmit[1], 1 - 13 / mLen, 6 * mDsign * pnp);
 
             /* calc point where base lead contacts rectangle */
-            Utils.InterpPoint(mPoint1, mPoint2, ref tbase, 1 - 16 / mLen);
+            interpPoint(ref tbase, 1 - 16 / mLen);
 
             /* rectangle */
             mRectPoly = new Point[] { rect[0], rect[2], rect[3], rect[1] };
@@ -180,7 +180,7 @@ namespace Circuit.Elements.Active {
                 Utils.CreateArrow(mEmit[1], mEmit[0], out mArrowPoly, 8, 3);
             } else {
                 var pt = new Point();
-                Utils.InterpPoint(mPoint1, mPoint2, ref pt, 1 - 14 / mLen, -5 * mDsign * pnp);
+                interpPoint(ref pt, 1 - 14 / mLen, -5 * mDsign * pnp);
                 Utils.CreateArrow(mEmit[0], pt, out mArrowPoly, 8, 3);
             }
         }

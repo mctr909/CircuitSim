@@ -39,7 +39,7 @@ namespace Circuit.Elements.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, 1 - 12 / mLen);
+            interpPoint(ref mLead1, 1 - 12 / mLen);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -58,7 +58,7 @@ namespace Circuit.Elements.Output {
             value = s;
             setBbox(mPoint1, mLead1, 0);
             drawCenteredLText(g, s, P2.X, P2.Y, true);
-            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
+            drawVoltage(g, 0, mPoint1, mLead1);
             drawPosts(g);
         }
 

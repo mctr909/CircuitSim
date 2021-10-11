@@ -197,9 +197,9 @@ namespace Circuit.Elements.Input {
                 sign = mDsign;
             }
             if(waveform == WAVEFORM.DC) {
-                Utils.InterpPoint(mPoint1, mPoint2, ref textPos, 0.5, -16 * sign);
+                interpPoint(ref textPos, 0.5, -16 * sign);
             } else {
-                Utils.InterpPoint(mPoint1, mPoint2, ref textPos, (mLen / 2 + 0.7 * circleSize) / mLen, 10 * sign);
+                interpPoint(ref textPos, (mLen / 2 + 0.7 * circleSize) / mLen, 10 * sign);
             }
         }
 
@@ -208,18 +208,18 @@ namespace Circuit.Elements.Input {
             draw2Leads(g);
 
             if (waveform == WAVEFORM.DC) {
-                Utils.InterpPoint(mLead1, mLead2, ref ps1, ref ps2, 0, 10);
-                g.DrawThickLine(getVoltageColor(Volts[0]), ps1, ps2);
+                interpLeadAB(ref ps1, ref ps2, 0, 10);
+                drawVoltage(g, 0, ps1, ps2);
 
                 int hs = 16;
                 setBbox(mPoint1, mPoint2, hs);
-                Utils.InterpPoint(mLead1, mLead2, ref ps1, ref ps2, 1, hs);
-                g.DrawThickLine(getVoltageColor(Volts[1]), ps1, ps2);
+                interpLeadAB(ref ps1, ref ps2, 1, hs);
+                drawVoltage(g, 1, ps1, ps2);
                 string s = Utils.ShortUnitText(maxVoltage, "V");
                 g.DrawRightText(s, textPos.X, textPos.Y);
             } else {
                 setBbox(mPoint1, mPoint2, circleSize);
-                Utils.InterpPoint(mLead1, mLead2, ref ps1, .5);
+                interpLead(ref ps1, 0.5);
                 drawWaveform(g, ps1);
                 string inds;
                 if (bias > 0 || (bias == 0 && waveform == WAVEFORM.PULSE)) {

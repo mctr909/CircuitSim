@@ -69,7 +69,7 @@ namespace Circuit.Elements.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
-            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, 1 - CircleSize / mLen);
+            interpPoint(ref mLead1, 1 - CircleSize / mLen);
         }
 
         public override void SetNode(int p, int n) {
@@ -103,7 +103,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
+            drawVoltage(g, 0, mPoint1, mLead1);
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             var str = Text;
             var lineOver = false;
@@ -122,7 +122,7 @@ namespace Circuit.Elements.Passive {
             }
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(g, mPoint1, mLead1, mCurCount);
-            Utils.InterpPoint(mPoint1, mPoint2, ref mPos, 1 + 11.0 / mLen);
+            interpPoint(ref mPos, 1 + 11.0 / mLen);
             setBbox(mPoint1, mPos, CircleSize);
             drawPosts(g);
         }

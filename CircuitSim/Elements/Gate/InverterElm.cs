@@ -60,17 +60,17 @@ namespace Circuit.Elements.Gate {
             if (ww > mLen / 2) {
                 ww = (int)(mLen / 2);
             }
-            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, .5 - ww / mLen);
-            Utils.InterpPoint(mPoint1, mPoint2, ref mLead2, .5 + (ww + 2) / mLen);
-            Utils.InterpPoint(mPoint1, mPoint2, ref pcircle, .5 + (ww - 2) / mLen);
+            interpPoint(ref mLead1, 0.5 - ww / mLen);
+            interpPoint(ref mLead2, 0.5 + (ww + 2) / mLen);
+            interpPoint(ref pcircle, 0.5 + (ww - 2) / mLen);
 
             gatePolyAnsi = new Point[3];
-            Utils.InterpPoint(mLead1, mLead2, ref gatePolyAnsi[0], ref gatePolyAnsi[1], 0, hs);
-            Utils.InterpPoint(mPoint1, mPoint2, ref gatePolyAnsi[2], .5 + (ww - 5) / mLen);
+            interpLeadAB(ref gatePolyAnsi[0], ref gatePolyAnsi[1], 0, hs);
+            interpPoint(ref gatePolyAnsi[2], 0.5 + (ww - 5) / mLen);
 
             gatePolyEuro = new Point[4];
             var l2 = new Point();
-            Utils.InterpPoint(mPoint1, mPoint2, ref l2, .5 + (ww - 5) / mLen); /* make room for circle */
+            interpPoint(ref l2, 0.5 + (ww - 5) / mLen); /* make room for circle */
             Utils.InterpPoint(mLead1, l2, ref gatePolyEuro[0], ref gatePolyEuro[1], 0, hs);
             Utils.InterpPoint(mLead1, l2, ref gatePolyEuro[3], ref gatePolyEuro[2], 1, hs);
             Utils.InterpPoint(mLead1, l2, ref center, .5);

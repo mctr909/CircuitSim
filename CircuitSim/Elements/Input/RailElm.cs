@@ -23,7 +23,7 @@ namespace Circuit.Elements.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, 1 - circleSize / mLen);
+            interpPoint(ref mLead1, 1 - circleSize / mLen);
         }
 
         public string getRailText() {
@@ -37,13 +37,13 @@ namespace Circuit.Elements.Input {
                 w = mLen * .8;
             }
             if (waveform == WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0 || waveform == WAVEFORM.DC) {
-                Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, 1 - (w - 5) / mLen);
+                interpPoint(ref mLead1, 1 - (w - 5) / mLen);
             } else {
-                Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, 1 - w / mLen);
+                interpPoint(ref mLead1, 1 - w / mLen);
             }
             setBbox(mPoint1, mPoint2, circleSize);
 
-            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
+            drawVoltage(g, 0, mPoint1, mLead1);
             drawRail(g);
             drawPosts(g);
             mCurCount = updateDotCount(-mCurrent, mCurCount);

@@ -45,9 +45,9 @@ namespace Circuit.Elements.Active {
         public override void SetPoints() {
             base.SetPoints();
             int cr = 12;
-            Utils.InterpPoint(mPoint1, mPoint2, ref ledLead1, .5 - cr / mLen);
-            Utils.InterpPoint(mPoint1, mPoint2, ref ledLead2, .5 + cr / mLen);
-            Utils.InterpPoint(mPoint1, mPoint2, ref ledCenter, .5);
+            interpPoint(ref ledLead1, 0.5 - cr / mLen);
+            interpPoint(ref ledLead2, 0.5 + cr / mLen);
+            interpPoint(ref ledCenter, 0.5);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -55,9 +55,9 @@ namespace Circuit.Elements.Active {
                 base.Draw(g);
                 return;
             }
-            
-            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, ledLead1);
-            g.DrawThickLine(getVoltageColor(Volts[1]), ledLead2, mPoint2);
+
+            drawVoltage(g, 0, mPoint1, ledLead1);
+            drawVoltage(g, 1, ledLead2, mPoint2);
 
             g.ThickLineColor = CustomGraphics.GrayColor;
 

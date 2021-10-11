@@ -267,8 +267,8 @@ namespace Circuit.Elements {
                 mLead2 = mPoint2;
                 return;
             }
-            Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, (mLen - len) / (2 * mLen));
-            Utils.InterpPoint(mPoint1, mPoint2, ref mLead2, (mLen + len) / (2 * mLen));
+            interpPoint(ref mLead1, (mLen - len) / (2 * mLen));
+            interpPoint(ref mLead2, (mLen + len) / (2 * mLen));
         }
 
         /// <summary>
@@ -388,6 +388,80 @@ namespace Circuit.Elements {
             return mColorScale[c];
         }
 
+        protected void interpPoint(ref Point p, double f) {
+            p.X = (int)Math.Floor(mPoint1.X * (1 - f) + mPoint2.X * f + 0.45);
+            p.Y = (int)Math.Floor(mPoint1.Y * (1 - f) + mPoint2.Y * f + 0.45);
+        }
+
+        protected void interpPoint(ref Point p, double f, double g) {
+            var gx = mPoint2.Y - mPoint1.Y;
+            var gy = mPoint1.X - mPoint2.X;
+            var r = Math.Sqrt(gx * gx + gy * gy);
+            if (0.0 == r) {
+                p.X = mPoint1.X;
+                p.Y = mPoint1.Y;
+            } else {
+                g /= r;
+                p.X = (int)Math.Floor(mPoint1.X * (1 - f) + mPoint2.X * f + g * gx + 0.45);
+                p.Y = (int)Math.Floor(mPoint1.Y * (1 - f) + mPoint2.Y * f + g * gy + 0.45);
+            }
+        }
+
+        protected void interpPointAB(ref Point p1, ref Point p2, double f, double g) {
+            var gx = mPoint2.Y - mPoint1.Y;
+            var gy = mPoint1.X - mPoint2.X;
+            var r = Math.Sqrt(gx * gx + gy * gy);
+            if (0.0 == r) {
+                p1.X = mPoint1.X;
+                p1.Y = mPoint1.Y;
+                p2.X = mPoint2.X;
+                p2.Y = mPoint2.Y;
+            } else {
+                g /= r;
+                p1.X = (int)Math.Floor(mPoint1.X * (1 - f) + mPoint2.X * f + g * gx + 0.45);
+                p1.Y = (int)Math.Floor(mPoint1.Y * (1 - f) + mPoint2.Y * f + g * gy + 0.45);
+                p2.X = (int)Math.Floor(mPoint1.X * (1 - f) + mPoint2.X * f - g * gx + 0.45);
+                p2.Y = (int)Math.Floor(mPoint1.Y * (1 - f) + mPoint2.Y * f - g * gy + 0.45);
+            }
+        }
+
+        protected void interpLead(ref Point p, double f) {
+            p.X = (int)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f + 0.45);
+            p.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f + 0.45);
+        }
+
+        protected void interpLead(ref Point p, double f, double g) {
+            var gx = mLead2.Y - mLead1.Y;
+            var gy = mLead1.X - mLead2.X;
+            var r = Math.Sqrt(gx * gx + gy * gy);
+            if (0.0 == r) {
+                p.X = mLead1.X;
+                p.Y = mLead1.Y;
+            } else {
+                g /= r;
+                p.X = (int)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f + g * gx + 0.45);
+                p.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f + g * gy + 0.45);
+            }
+        }
+
+        protected void interpLeadAB(ref Point p1, ref Point p2, double f, double g) {
+            var gx = mLead2.Y - mLead1.Y;
+            var gy = mLead1.X - mLead2.X;
+            var r = Math.Sqrt(gx * gx + gy * gy);
+            if (0.0 == r) {
+                p1.X = mLead1.X;
+                p1.Y = mLead1.Y;
+                p2.X = mLead2.X;
+                p2.Y = mLead2.Y;
+            } else {
+                g /= r;
+                p1.X = (int)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f + g * gx + 0.45);
+                p1.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f + g * gy + 0.45);
+                p2.X = (int)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f - g * gx + 0.45);
+                p2.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f - g * gy + 0.45);
+            }
+        }
+
         protected void drawPosts(CustomGraphics g) {
             /* we normally do this in updateCircuit() now because the logic is more complicated.
              * we only handle the case where we have to draw all the posts.  That happens when
@@ -409,6 +483,14 @@ namespace Circuit.Elements {
             g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
             /* draw second lead */
             g.DrawThickLine(getVoltageColor(Volts[1]), mLead2, mPoint2);
+        }
+
+        protected void drawVoltage(CustomGraphics g, int index, Point a, Point b) {
+            g.DrawThickLine(getVoltageColor(Volts[index]), a, b);
+        }
+
+        protected void drawVoltage(CustomGraphics g, int index, Point[] poly) {
+            g.FillPolygon(getVoltageColor(Volts[index]), poly);
         }
 
         protected void drawCenteredText(CustomGraphics g, string s, float x, float y, bool cx) {
