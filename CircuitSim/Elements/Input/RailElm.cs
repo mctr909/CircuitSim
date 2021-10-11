@@ -47,7 +47,7 @@ namespace Circuit.Elements.Input {
             drawRail(g);
             drawPosts(g);
             mCurCount = updateDotCount(-mCurrent, mCurCount);
-            if (Sim.DragElm != this) {
+            if (CirSim.Sim.DragElm != this) {
                 drawDots(g, mPoint1, mLead1, mCurCount);
             }
         }
@@ -56,7 +56,7 @@ namespace Circuit.Elements.Input {
             if (waveform == WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
                 drawCenteredText(g, "CLK", P2.X, P2.Y, true);
             } else if (waveform == WAVEFORM.DC) {
-                var color = NeedsHighlight ? SelectColor : WhiteColor;
+                var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
                 double v = getVoltage();
                 string s;
                 if (Math.Abs(v) < 1) {

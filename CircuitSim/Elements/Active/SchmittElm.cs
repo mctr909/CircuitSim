@@ -37,7 +37,7 @@ namespace Circuit.Elements.Active {
         public override void Draw(CustomGraphics g) {
             drawPosts(g);
             draw2Leads(g);
-            g.LineColor = NeedsHighlight ? SelectColor : GrayColor;
+            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.ThickLineColor = g.LineColor;
             g.DrawThickPolygon(gatePoly);
             g.DrawPolygon(symbolPoly);

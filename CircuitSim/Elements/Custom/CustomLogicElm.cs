@@ -246,9 +246,9 @@ namespace Circuit.Elements.Custom {
                 return;
             }
             if (n == 3) {
-                var editDialog = new ElementInfoDialog(model, Sim);
+                var editDialog = new ElementInfoDialog(model);
                 CirSim.CustomLogicEditDialog = editDialog;
-                var pos = Sim.DisplayLocation;
+                var pos = CirSim.Sim.DisplayLocation;
                 editDialog.Show(pos.X + P1.X, pos.Y + P1.Y);
                 return;
             }

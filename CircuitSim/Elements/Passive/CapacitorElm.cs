@@ -36,7 +36,7 @@ namespace Circuit.Elements.Passive {
 
         protected override void calculateCurrent() {
             double voltdiff = Volts[0] - Volts[1];
-            if (Sim.DcAnalysisFlag) {
+            if (CirSim.Sim.DcAnalysisFlag) {
                 mCurrent = voltdiff / 1e8;
                 return;
             }
@@ -99,7 +99,7 @@ namespace Circuit.Elements.Passive {
             g.DrawThickLine(mPlate2[0], mPlate2[1]);
 
             updateDotCount();
-            if (Sim.DragElm != this) {
+            if (CirSim.Sim.DragElm != this) {
                 drawDots(g, mPoint1, mLead1, mCurCount);
                 drawDots(g, mPoint2, mLead2, -mCurCount);
             }
@@ -111,7 +111,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Stamp() {
-            if (Sim.DcAnalysisFlag) {
+            if (CirSim.Sim.DcAnalysisFlag) {
                 /* when finding DC operating point, replace cap with a 100M resistor */
                 mCir.StampResistor(Nodes[0], Nodes[1], 1e8);
                 mCurSourceValue = 0;
@@ -142,7 +142,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void DoStep() {
-            if (Sim.DcAnalysisFlag) {
+            if (CirSim.Sim.DcAnalysisFlag) {
                 return;
             }
             mCir.StampCurrentSource(Nodes[0], Nodes[1], mCurSourceValue);

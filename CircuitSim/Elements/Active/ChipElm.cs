@@ -184,7 +184,7 @@ namespace Circuit.Elements.Active {
         }
 
         public void drawChip(CustomGraphics g) {
-            g.TextColor = Color.White;
+            CustomGraphics.TextColor = Color.White;
             for (int i = 0; i != PostCount; i++) {
                 var p = pins[i];
                 var a = p.post;
@@ -195,10 +195,10 @@ namespace Circuit.Elements.Active {
                 if (p.bubble) {
                     g.ThickLineColor = Color.White;
                     g.DrawThickCircle(p.bubblePos, 1);
-                    g.ThickLineColor = GrayColor;
+                    g.ThickLineColor = CustomGraphics.GrayColor;
                     g.DrawThickCircle(p.bubblePos, 3);
                 }
-                g.ThickLineColor = p.selected ? SelectColor : GrayColor;
+                g.ThickLineColor = p.selected ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
                 int fsz = 12 * csize;
                 var font = CustomGraphics.FontText;
                 while (true) {
@@ -217,7 +217,7 @@ namespace Circuit.Elements.Active {
                     break;
                 }
             }
-            g.ThickLineColor = NeedsHighlight ? SelectColor : GrayColor;
+            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.DrawThickPolygon(rectPoints);
             if (clockPoints != null) {
                 g.DrawThickPolygon(clockPoints);
@@ -226,13 +226,13 @@ namespace Circuit.Elements.Active {
         }
 
         public override void Drag(Point pos) {
-            pos = Sim.SnapGrid(pos);
+            pos = CirSim.Sim.SnapGrid(pos);
             if (pos.X < P1.X) {
                 pos.X = P1.X;
                 pos.Y = P1.Y;
             } else {
                 P1.Y = P2.Y = pos.Y;
-                P2.X = Sim.SnapGrid(pos.X);
+                P2.X = CirSim.Sim.SnapGrid(pos.X);
             }
             SetPoints();
         }

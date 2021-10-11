@@ -83,7 +83,7 @@ namespace Circuit.Elements.Passive {
             }
             Utils.InterpPoint(mLead1, mLead2, ref mP1, 0, hs1);
             Utils.InterpPoint(mLead1, mLead2, ref mP2, 1, hs2);
-            g.ThickLineColor = NeedsHighlight ? SelectColor : WhiteColor;
+            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             g.DrawThickLine(mP1, mP2);
             drawPosts(g);
         }

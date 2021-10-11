@@ -103,27 +103,27 @@ namespace Circuit.Elements.Output {
             int hs = 8;
             setBbox(mPoint1, mPoint2, hs);
             bool selected = NeedsHighlight;
-            double len = (selected || Sim.DragElm == this || mustShowVoltage()) ? 16 : mLen - 32;
+            double len = (selected || CirSim.Sim.DragElm == this || mustShowVoltage()) ? 16 : mLen - 32;
             calcLeads((int)len);
 
             if (selected) {
-                g.ThickLineColor = SelectColor;
+                g.ThickLineColor = CustomGraphics.SelectColor;
             } else {
                 g.ThickLineColor = getVoltageColor(Volts[0]);
             }
             g.DrawThickLine(mPoint1, mLead1);
 
             if (selected) {
-                g.ThickLineColor = SelectColor;
+                g.ThickLineColor = CustomGraphics.SelectColor;
             } else {
                 g.ThickLineColor = getVoltageColor(Volts[1]);
             }
             g.DrawThickLine(mLead2, mPoint2);
 
-            if (this == Sim.PlotXElm) {
+            if (this == CirSim.Sim.PlotXElm) {
                 drawCenteredLText(g, "X", center.X, center.Y, true);
             }
-            if (this == Sim.PlotYElm) {
+            if (this == CirSim.Sim.PlotYElm) {
                 drawCenteredLText(g, "Y", center.X, center.Y, true);
             }
 
@@ -152,7 +152,7 @@ namespace Circuit.Elements.Output {
                     s = Utils.UnitText(frequency, "Hz");
                     break;
                 case TP_PER:
-                    s = "percent:" + period + " " + ControlPanel.TimeStep + " " + Sim.Time + " " + Sim.getIterCount();
+                    s = "percent:" + period + " " + ControlPanel.TimeStep + " " + CirSim.Sim.Time + " " + CirSim.Sim.getIterCount();
                     break;
                 case TP_PWI:
                     s = Utils.UnitText(pulseWidth, "S");

@@ -77,7 +77,7 @@ namespace Circuit.Elements.Passive {
                 g.DrawThickLine(getVoltageColor(Volts[i + 1]), mSwPoles[i], mSwPosts[i]);
             }
             /* draw switch */
-            g.ThickLineColor = NeedsHighlight ? SelectColor : WhiteColor;
+            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             g.DrawThickLine(mLead1, mSwPoles[Position]);
 
             updateDotCount();
@@ -120,8 +120,8 @@ namespace Circuit.Elements.Passive {
             base.Toggle();
             if (mLink != 0) {
                 int i;
-                for (i = 0; i != Sim.ElmList.Count; i++) {
-                    var o = Sim.ElmList[i];
+                for (i = 0; i != CirSim.Sim.ElmList.Count; i++) {
+                    var o = CirSim.Sim.ElmList[i];
                     if (o is Switch2Elm) {
                         var s2 = (Switch2Elm)o;
                         if (s2.mLink == mLink) {

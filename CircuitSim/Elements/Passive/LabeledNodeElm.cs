@@ -104,7 +104,7 @@ namespace Circuit.Elements.Passive {
 
         public override void Draw(CustomGraphics g) {
             g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
-            g.LineColor = NeedsHighlight ? SelectColor : WhiteColor;
+            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             var str = Text;
             var lineOver = false;
             if (str.StartsWith("/")) {

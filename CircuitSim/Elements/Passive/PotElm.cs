@@ -90,7 +90,7 @@ namespace Circuit.Elements.Passive {
 
         void execute() {
             SetPoints();
-            Sim.NeedAnalyze();
+            CirSim.Sim.NeedAnalyze();
         }
 
         public override void Delete() {
@@ -194,7 +194,7 @@ namespace Circuit.Elements.Passive {
             curcount1 = updateDotCount(current1, curcount1);
             curcount2 = updateDotCount(current2, curcount2);
             curcount3 = updateDotCount(current3, curcount3);
-            if (Sim.DragElm != this) {
+            if (CirSim.Sim.DragElm != this) {
                 drawDots(g, mPoint1, midpoint, curcount1);
                 drawDots(g, mPoint2, midpoint, curcount2);
                 drawDots(g, post3, corner2, curcount3);

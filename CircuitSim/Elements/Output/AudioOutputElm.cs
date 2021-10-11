@@ -58,11 +58,11 @@ namespace Circuit.Elements.Output {
         int getNextLabelNum() {
             int i;
             int num = 1;
-            if (Sim.ElmList == null) {
+            if (CirSim.Sim.ElmList == null) {
                 return 0;
             }
-            for (i = 0; i != Sim.ElmList.Count; i++) {
-                var ce = Sim.getElm(i);
+            for (i = 0; i != CirSim.Sim.ElmList.Count; i++) {
+                var ce = CirSim.Sim.getElm(i);
                 if (!(ce is AudioOutputElm)) {
                     continue;
                 }
@@ -94,15 +94,15 @@ namespace Circuit.Elements.Output {
                 s = "Audio " + labelNum;
             }
             int textWidth = (int)g.GetTextSize(s).Width;
-            g.LineColor = GrayColor;
+            g.LineColor = CustomGraphics.GrayColor;
             int pct = dataFull ? textWidth : textWidth * dataPtr / dataCount;
             g.FillRectangle(P2.X - textWidth / 2, P2.Y - 10, pct, 20);
-            g.LineColor = selected ? SelectColor : WhiteColor;
+            g.LineColor = selected ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             Utils.InterpPoint(mPoint1, mPoint2, ref mLead1, 1 - (textWidth / 2.0 + 8) / mLen);
             setBbox(mPoint1, mLead1, 0);
             drawCenteredText(g, s, P2.X, P2.Y, true);
             if (selected) {
-                g.ThickLineColor = SelectColor;
+                g.ThickLineColor = CustomGraphics.SelectColor;
             } else {
                 g.ThickLineColor = getVoltageColor(Volts[0]);
             }
@@ -115,7 +115,7 @@ namespace Circuit.Elements.Output {
             arr[1] = "V = " + Utils.VoltageText(Volts[0]);
             int ct = (dataFull ? dataCount : dataPtr);
             double dur = sampleStep * ct;
-            arr[2] = "start = " + Utils.UnitText(dataFull ? Sim.Time - duration : dataStart, "s");
+            arr[2] = "start = " + Utils.UnitText(dataFull ? CirSim.Sim.Time - duration : dataStart, "s");
             arr[3] = "dur = " + Utils.UnitText(dur, "s");
             arr[4] = "samples = " + ct + (dataFull ? "" : "/" + dataCount);
         }
@@ -123,7 +123,7 @@ namespace Circuit.Elements.Output {
         public override void StepFinished() {
             dataSample += Volts[0];
             dataSampleCount++;
-            if (Sim.Time >= nextDataSample) {
+            if (CirSim.Sim.Time >= nextDataSample) {
                 nextDataSample += sampleStep;
                 data[dataPtr++] = dataSample / dataSampleCount;
                 dataSampleCount = 0;
@@ -143,11 +143,11 @@ namespace Circuit.Elements.Output {
         void setDataCount() {
             dataCount = (int)(samplingRate * duration);
             data = new double[dataCount];
-            dataStart = Sim.Time;
+            dataStart = CirSim.Sim.Time;
             dataPtr = 0;
             dataFull = false;
             sampleStep = 1.0 / samplingRate;
-            nextDataSample = Sim.Time + sampleStep;
+            nextDataSample = CirSim.Sim.Time + sampleStep;
         }
 
         void setTimeStep() {

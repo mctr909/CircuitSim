@@ -35,7 +35,7 @@ namespace Circuit.Elements.Input {
         Point ps2;
         Point textPos;
 
-        const double defaultPulseDuty = 1 / Pi2;
+        const double defaultPulseDuty = 0.5 / Math.PI;
 
         protected VoltageElm(Point pos, WAVEFORM wf) : base(pos) {
             waveform = wf;
@@ -62,7 +62,7 @@ namespace Circuit.Elements.Input {
 
             if ((mFlags & FLAG_COS) != 0) {
                 mFlags &= ~FLAG_COS;
-                phaseShift = Pi / 2;
+                phaseShift = Math.PI / 2;
             }
 
             /* old circuit files have the wrong duty cycle for pulse waveforms (wasn't configurable in the past) */
@@ -103,10 +103,10 @@ namespace Circuit.Elements.Input {
         }
 
         double triangleFunc(double x) {
-            if (x < Pi) {
-                return x * (2 / Pi) - 1;
+            if (x < Math.PI) {
+                return x * (2 / Math.PI) - 1;
             }
-            return 1 - (x - Pi) * (2 / Pi);
+            return 1 - (x - Math.PI) * (2 / Math.PI);
         }
 
         public override void Stamp() {
@@ -130,11 +130,11 @@ namespace Circuit.Elements.Input {
         }
 
         public virtual double getVoltage() {
-            if (waveform != WAVEFORM.DC && Sim.DcAnalysisFlag) {
+            if (waveform != WAVEFORM.DC && CirSim.Sim.DcAnalysisFlag) {
                 return bias;
             }
 
-            double t = Pi2 * Sim.Time;
+            double t = 2 * Math.PI * CirSim.Sim.Time;
             double wt = t * frequency + phaseShift;
 
             switch (waveform) {
@@ -143,16 +143,16 @@ namespace Circuit.Elements.Input {
             case WAVEFORM.AC:
                 return Math.Sin(wt) * maxVoltage + bias;
             case WAVEFORM.SQUARE:
-                return bias + ((wt % Pi2 > (Pi2 * dutyCycle)) ? -maxVoltage : maxVoltage);
+                return bias + ((wt % (2 * Math.PI) > ((2 * Math.PI) * dutyCycle)) ? -maxVoltage : maxVoltage);
             case WAVEFORM.TRIANGLE:
-                return bias + triangleFunc(wt % Pi2) * maxVoltage;
+                return bias + triangleFunc(wt % (2 * Math.PI)) * maxVoltage;
             case WAVEFORM.SAWTOOTH:
-                return bias + (wt % Pi2) * (maxVoltage / Pi) - maxVoltage;
+                return bias + (wt % (2 * Math.PI)) * (maxVoltage / Math.PI) - maxVoltage;
             case WAVEFORM.PULSE:
-                return ((wt % Pi2) < (Pi2 * dutyCycle)) ? maxVoltage + bias : bias;
+                return ((wt % (2 * Math.PI)) < ((2 * Math.PI) * dutyCycle)) ? maxVoltage + bias : bias;
             case WAVEFORM.PWM_BOTH: {
                 var maxfreq = 1 / (32 * ControlPanel.TimeStep);
-                var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % Pi2);
+                var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % (2 * Math.PI));
                 var sg = dutyCycle * Math.Sin(wt) + Math.Sin(wt * 3) / 6;
                 if (0.0 <= sg) {
                     return bias + (cr < sg ? maxVoltage : 0);
@@ -162,7 +162,7 @@ namespace Circuit.Elements.Input {
             }
             case WAVEFORM.PWM_POSITIVE: {
                 var maxfreq = 1 / (32 * ControlPanel.TimeStep);
-                var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % Pi2);
+                var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % (2 * Math.PI));
                 var sg = dutyCycle * Math.Sin(wt) + Math.Sin(wt * 3) / 6;
                 if (0.0 <= sg) {
                     return bias + (cr < sg ? maxVoltage : 0);
@@ -172,7 +172,7 @@ namespace Circuit.Elements.Input {
             }
             case WAVEFORM.PWM_NEGATIVE: {
                 var maxfreq = 1 / (32 * ControlPanel.TimeStep);
-                var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % Pi2);
+                var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % (2 * Math.PI));
                 var sg = dutyCycle * Math.Sin(wt) + Math.Sin(wt * 3) / 6;
                 if (0.0 <= sg) {
                     return bias;
@@ -232,7 +232,7 @@ namespace Circuit.Elements.Input {
 
             updateDotCount();
 
-            if (Sim.DragElm != this) {
+            if (CirSim.Sim.DragElm != this) {
                 if (waveform == WAVEFORM.DC) {
                     drawDots(g, mPoint1, mPoint2, mCurCount);
                 } else {
@@ -248,7 +248,7 @@ namespace Circuit.Elements.Input {
             var y = center.Y;
 
             if (waveform != WAVEFORM.NOISE) {
-                g.ThickLineColor = NeedsHighlight ? SelectColor : GrayColor;
+                g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
                 g.DrawThickCircle(center, circleSize);
             }
 
@@ -261,7 +261,7 @@ namespace Circuit.Elements.Input {
             float xd = (float)(h * 2 * dutyCycle - h + x);
             xd = Math.Max(x - h + 1, Math.Min(x + h - 1, xd));
 
-            g.LineColor = NeedsHighlight ? SelectColor : GrayColor;
+            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
 
             switch (waveform) {
             case WAVEFORM.DC: {
@@ -319,7 +319,7 @@ namespace Circuit.Elements.Input {
                 var x0 = 0f;
                 float y0 = 0;
                 for (var i = -xl; i <= xl; i++) {
-                    var yy = y + (float)(.95 * Math.Sin(i * Pi / xl) * h);
+                    var yy = y + (float)(.95 * Math.Sin(i * Math.PI / xl) * h);
                     if (i != -xl) {
                         g.DrawLine(x0, y0, x + i, yy);
                     }
@@ -333,7 +333,7 @@ namespace Circuit.Elements.Input {
             if (ControlPanel.ChkShowValues.Checked && waveform != WAVEFORM.NOISE) {
                 var s = Utils.ShortUnitText(maxVoltage, "V\r\n");
                 s += Utils.ShortUnitText(frequency, "Hz\r\n");
-                s += Utils.ShortUnitText(phaseShift * ToDeg, "°");
+                s += Utils.ShortUnitText(phaseShift * 180 / Math.PI, "°");
                 drawValues(g, s, 0, 5);
             }
         }
@@ -402,7 +402,7 @@ namespace Circuit.Elements.Input {
                 return new ElementInfo("Frequency (Hz)", frequency, 4, 500);
             }
             if (n == 4) {
-                return new ElementInfo("Phase Offset (degrees)", phaseShift * ToDeg, -180, 180).SetDimensionless();
+                return new ElementInfo("Phase Offset (degrees)", phaseShift * 180 * Math.PI, -180, 180).SetDimensionless();
             }
             if (n == 5 && (waveform == WAVEFORM.PULSE || waveform == WAVEFORM.SQUARE
                 || waveform == WAVEFORM.PWM_BOTH || waveform == WAVEFORM.PWM_POSITIVE || waveform == WAVEFORM.PWM_NEGATIVE)) {
@@ -453,7 +453,7 @@ namespace Circuit.Elements.Input {
                 SetPoints();
             }
             if (n == 4) {
-                phaseShift = ei.Value * ToRad;
+                phaseShift = ei.Value * Math.PI / 180;
             }
             if (n == 5) {
                 dutyCycle = ei.Value * .01;

@@ -82,7 +82,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Drag(Point pos) {
-            pos = Sim.SnapGrid(pos);
+            pos = CirSim.Sim.SnapGrid(pos);
             width = Math.Max(32, Math.Abs(pos.Y - P1.Y));
             if (pos.X == P1.X) {
                 pos.Y = P1.Y;
@@ -101,7 +101,7 @@ namespace Circuit.Elements.Passive {
             drawCoil(g, ptCoil[0], ptCoil[2], Volts[PRI_T], Volts[PRI_B], 90 * mDsign);
             drawCoil(g, ptCoil[1], ptCoil[3], Volts[SEC_T], Volts[SEC_B], -90 * mDsign * polarity);
 
-            var c = NeedsHighlight ? SelectColor : GrayColor;
+            var c = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.LineColor = c;
             g.ThickLineColor = c;
             g.DrawThickLine(ptCore[0], ptCore[2]);

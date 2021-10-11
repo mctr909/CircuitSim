@@ -66,7 +66,7 @@ namespace Circuit.Elements.Active {
 
             draw2Leads(g);
 
-            g.DrawThickPolygon(NeedsHighlight ? SelectColor : GrayColor, gatePoly);
+            g.DrawThickPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, gatePoly);
             g.DrawThickLine(getVoltageColor(Volts[2]), point3, lead3);
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(g, mLead2, mPoint2, mCurCount);
@@ -98,7 +98,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override void Drag(Point pos) {
-            pos = Sim.SnapGrid(pos);
+            pos = CirSim.Sim.SnapGrid(pos);
             if (Math.Abs(P1.X - pos.X) < Math.Abs(P1.Y - pos.Y)) {
                 pos.X = P1.X;
             } else {

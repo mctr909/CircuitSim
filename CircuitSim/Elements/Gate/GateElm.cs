@@ -120,7 +120,7 @@ namespace Circuit.Elements.Gate {
                 g.DrawThickLine(getVoltageColor(Volts[i]), inPosts[i], inGates[i]);
             }
             g.DrawThickLine(getVoltageColor(Volts[inputCount]), mLead2, mPoint2);
-            g.ThickLineColor = NeedsHighlight ? SelectColor : GrayColor;
+            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             if (useAnsiGates()) {
                 g.DrawThickPolygon(gatePolyAnsi);
             } else {
@@ -130,7 +130,7 @@ namespace Circuit.Elements.Gate {
                 drawCenteredLText(g, getGateText(), center.X, center.Y - 6, true);
             }
             if (hasSchmittInputs()) {
-                g.LineColor = WhiteColor;
+                g.LineColor = CustomGraphics.WhiteColor;
                 g.DrawPolygon(schmittPoly);
             }
             if (linePoints != null && useAnsiGates()) {

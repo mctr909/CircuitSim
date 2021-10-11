@@ -6,24 +6,10 @@ using Circuit.Elements.Output;
 
 namespace Circuit.Elements {
     abstract class CircuitElm : Editable {
-        protected const double Pi = Math.PI;
-        protected const double Pi2 = Math.PI * 2;
-        protected const double ToDeg = 180 / Pi;
-        protected const double ToRad = Pi / 180;
-
+        public static double CurrentMult { get; set; }
         protected static Circuit mCir;
         private static Color[] mColorScale;
         private static CircuitElm mMouseElmRef = null;
-
-        #region static property
-        public static CirSim Sim { get; private set; }
-        public static double CurrentMult { get; set; }
-        public static Brush PenHandle { get; set; }
-        public static Color SelectColor { get; set; }
-        public static Color TextColor { get; set; }
-        public static Color WhiteColor { get; set; }
-        public static Color GrayColor { get; set; }
-        #endregion
 
         #region dynamic property
         /// <summary>
@@ -203,8 +189,7 @@ namespace Circuit.Elements {
         }
 
         #region [static method]
-        public static void InitClass(CirSim s, Circuit c) {
-            Sim = s;
+        public static void InitClass(Circuit c) {
             CurrentMult = 0;
             mCir = c;
             mMouseElmRef = null;
@@ -234,7 +219,7 @@ namespace Circuit.Elements {
         /// <param name="b"></param>
         /// <param name="pos"></param>
         protected static void drawDots(CustomGraphics g, PointF a, PointF b, double pos) {
-            if ((!Sim.IsRunning) || pos == 0 || !ControlPanel.ChkShowDots.Checked) {
+            if ((!CirSim.Sim.IsRunning) || pos == 0 || !ControlPanel.ChkShowDots.Checked) {
                 return;
             }
             var dx = b.X - a.X;
@@ -246,7 +231,7 @@ namespace Circuit.Elements {
                 pos += ds;
             }
             if (ControlPanel.ChkPrintable.Checked) {
-                g.LineColor = GrayColor;
+                g.LineColor = CustomGraphics.GrayColor;
             } else {
                 g.LineColor = Color.Yellow;
             }
@@ -357,7 +342,7 @@ namespace Circuit.Elements {
         /// <param name="cc"></param>
         /// <returns></returns>
         protected double updateDotCount(double cur, double cc) {
-            if (!Sim.IsRunning) {
+            if (!CirSim.Sim.IsRunning) {
                 return cc;
             }
             double cadd = cur * CurrentMult;
@@ -371,7 +356,7 @@ namespace Circuit.Elements {
         /// <param name="g"></param>
         protected void doDots(CustomGraphics g) {
             updateDotCount();
-            if (Sim.DragElm != this) {
+            if (CirSim.Sim.DragElm != this) {
                 drawDots(g, mPoint1, mPoint2, mCurCount);
             }
         }
@@ -388,10 +373,10 @@ namespace Circuit.Elements {
 
         protected Color getVoltageColor(double volts) {
             if (NeedsHighlight) {
-                return SelectColor;
+                return CustomGraphics.SelectColor;
             }
             if (!ControlPanel.ChkShowVolts.Checked || ControlPanel.ChkPrintable.Checked) {
-                return GrayColor;
+                return CustomGraphics.GrayColor;
             }
             int c = (int)((volts + ControlPanel.VoltageRange) * (mColorScale.Length - 1) / (ControlPanel.VoltageRange * 2));
             if (c < 0) {
@@ -407,10 +392,10 @@ namespace Circuit.Elements {
             /* we normally do this in updateCircuit() now because the logic is more complicated.
              * we only handle the case where we have to draw all the posts.  That happens when
              * this element is selected or is being created */
-            if (Sim.DragElm == null && !NeedsHighlight) {
+            if (CirSim.Sim.DragElm == null && !NeedsHighlight) {
                 return;
             }
-            if (Sim.MouseMode == CirSim.MOUSE_MODE.DRAG_ROW || Sim.MouseMode == CirSim.MOUSE_MODE.DRAG_COLUMN) {
+            if (CirSim.Sim.MouseMode == CirSim.MOUSE_MODE.DRAG_ROW || CirSim.Sim.MouseMode == CirSim.MOUSE_MODE.DRAG_COLUMN) {
                 return;
             }
             for (int i = 0; i != PostCount; i++) {
@@ -482,7 +467,7 @@ namespace Circuit.Elements {
             float h = w * 1.2f;
             float wh = w * 0.5f;
             float hh = h * 0.5f;
-            float th = (float)(Utils.Angle(p1, p2) * ToDeg);
+            float th = (float)(Utils.Angle(p1, p2) * 180 / Math.PI);
             var pos = new Point();
             for (int loop = 0; loop != loopCt; loop++) {
                 Utils.InterpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
@@ -521,15 +506,15 @@ namespace Circuit.Elements {
 
         public void DrawHandles(CustomGraphics g) {
             if (mLastHandleGrabbed == -1) {
-                g.FillRectangle(PenHandle, P1.X - 3, P1.Y - 3, 7, 7);
+                g.FillRectangle(CustomGraphics.PenHandle, P1.X - 3, P1.Y - 3, 7, 7);
             } else if (mLastHandleGrabbed == 0) {
-                g.FillRectangle(PenHandle, P1.X - 4, P1.Y - 4, 9, 9);
+                g.FillRectangle(CustomGraphics.PenHandle, P1.X - 4, P1.Y - 4, 9, 9);
             }
             if (mNumHandles == 2) {
                 if (mLastHandleGrabbed == -1) {
-                    g.FillRectangle(PenHandle, P2.X - 3, P2.Y - 3, 7, 7);
+                    g.FillRectangle(CustomGraphics.PenHandle, P2.X - 3, P2.Y - 3, 7, 7);
                 } else if (mLastHandleGrabbed == 1) {
-                    g.FillRectangle(PenHandle, P2.X - 4, P2.Y - 4, 9, 9);
+                    g.FillRectangle(CustomGraphics.PenHandle, P2.X - 4, P2.Y - 4, 9, 9);
                 }
             }
         }
@@ -570,8 +555,8 @@ namespace Circuit.Elements {
             int ny = P1.Y + dy;
             int nx2 = P2.X + dx;
             int ny2 = P2.Y + dy;
-            for (int i = 0; i != Sim.ElmList.Count; i++) {
-                var ce = Sim.getElm(i);
+            for (int i = 0; i != CirSim.Sim.ElmList.Count; i++) {
+                var ce = CirSim.Sim.getElm(i);
                 if (ce.P1.X == nx && ce.P1.Y == ny && ce.P2.X == nx2 && ce.P2.Y == ny2) {
                     return false;
                 }
@@ -692,8 +677,8 @@ namespace Circuit.Elements {
             if (mMouseElmRef == this) {
                 mMouseElmRef = null;
             }
-            if (null != Sim) {
-                Sim.DeleteSliders(this);
+            if (null != CirSim.Sim) {
+                CirSim.Sim.DeleteSliders(this);
             }
         }
 
@@ -720,7 +705,7 @@ namespace Circuit.Elements {
         /// </summary>
         /// <param name="pos"></param>
         public virtual void Drag(Point pos) {
-            pos = Sim.SnapGrid(pos);
+            pos = CirSim.Sim.SnapGrid(pos);
             if (mNoDiagonal) {
                 if (Math.Abs(P1.X - pos.X) < Math.Abs(P1.Y - pos.Y)) {
                     pos.X = P1.X;

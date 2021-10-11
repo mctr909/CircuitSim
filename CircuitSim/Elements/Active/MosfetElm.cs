@@ -129,10 +129,10 @@ namespace Circuit.Elements.Active {
         /* set up body diodes */
         void setupDiodes() {
             /* diode from node 1 to body terminal */
-            diodeB1 = new Diode(Sim, mCir);
+            diodeB1 = new Diode(mCir);
             diodeB1.setupForDefaultModel();
             /* diode from node 2 to body terminal */
-            diodeB2 = new Diode(Sim, mCir);
+            diodeB2 = new Diode(mCir);
             diodeB2.setupForDefaultModel();
         }
 

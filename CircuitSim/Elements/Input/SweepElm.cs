@@ -69,7 +69,7 @@ namespace Circuit.Elements.Input {
 
             g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
 
-            g.ThickLineColor = NeedsHighlight ? SelectColor : GrayColor;
+            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
 
             int xc = mPoint2.X;
             int yc = mPoint2.Y;
@@ -88,15 +88,15 @@ namespace Circuit.Elements.Input {
                 tm = 2000 - tm;
             }
             double w = 1 + tm * .002;
-            if (Sim.IsRunning) {
+            if (CirSim.Sim.IsRunning) {
                 w = 1 + 3 * (frequency - minF) / (maxF - minF);
             }
 
             int x0 = 0;
             float y0 = 0;
-            g.LineColor = GrayColor;
+            g.LineColor = CustomGraphics.GrayColor;
             for (int i = -xl; i <= xl; i++) {
-                float yy = yc + (float)(.95 * Math.Sin(i * Pi * w / xl) * wl);
+                float yy = yc + (float)(.95 * Math.Sin(i * Math.PI * w / xl) * wl);
                 if (i == -xl) {
                     x0 = xc + i;
                     y0 = yy;
@@ -114,7 +114,7 @@ namespace Circuit.Elements.Input {
 
             drawPosts(g);
             mCurCount = updateDotCount(-mCurrent, mCurCount);
-            if (Sim.DragElm != this) {
+            if (CirSim.Sim.DragElm != this) {
                 drawDots(g, mPoint1, mLead1, mCurCount);
             }
         }
@@ -152,7 +152,7 @@ namespace Circuit.Elements.Input {
                 setParams();
             }
             v = Math.Sin(freqTime) * maxV;
-            freqTime += frequency * Pi2 * ControlPanel.TimeStep;
+            freqTime += frequency * 2 * Math.PI * ControlPanel.TimeStep;
             frequency = frequency * fmul + fadd;
             if (frequency >= maxF && dir == 1) {
                 if ((mFlags & FLAG_BIDIR) != 0) {

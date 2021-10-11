@@ -9,7 +9,7 @@ namespace Circuit.Elements.Output {
             mNoDiagonal = false;
             P2.X = P1.X + 128;
             P2.Y = P1.Y + 64;
-            elmScope = new Scope(Sim);
+            elmScope = new Scope();
             SetPoints();
         }
 
@@ -17,7 +17,7 @@ namespace Circuit.Elements.Output {
             mNoDiagonal = false;
             string sStr = st.nextToken();
             var sst = new StringTokenizer(sStr, "_");
-            elmScope = new Scope(Sim);
+            elmScope = new Scope();
             elmScope.Undump(sst);
             SetPoints();
             elmScope.ResetGraph();
@@ -41,10 +41,10 @@ namespace Circuit.Elements.Output {
         }
 
         public void setScopeRect() {
-            int i1 = Sim.TransformX(Math.Min(P1.X, P2.X));
-            int i2 = Sim.TransformX(Math.Max(P1.X, P2.X));
-            int j1 = Sim.TransformY(Math.Min(P1.Y, P2.Y));
-            int j2 = Sim.TransformY(Math.Max(P1.Y, P2.Y));
+            int i1 = CirSim.Sim.TransformX(Math.Min(P1.X, P2.X));
+            int i2 = CirSim.Sim.TransformX(Math.Max(P1.X, P2.X));
+            int j1 = CirSim.Sim.TransformY(Math.Min(P1.Y, P2.Y));
+            int j2 = CirSim.Sim.TransformY(Math.Max(P1.Y, P2.Y));
             var r = new Rectangle(i1, j1, i2 - i1, j2 - j1);
             if (!r.Equals(elmScope.BoundingBox)) {
                 elmScope.SetRect(r);
@@ -74,7 +74,7 @@ namespace Circuit.Elements.Output {
         }
 
         public override void Draw(CustomGraphics g) {
-            var color = NeedsHighlight ? SelectColor : WhiteColor;
+            var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             setScopeRect();
             elmScope.Draw(g);
             setBbox(mPoint1, mPoint2, 0);

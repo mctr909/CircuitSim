@@ -51,7 +51,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            if (NeedsHighlight || this == Sim.DragElm) {
+            if (NeedsHighlight || this == CirSim.Sim.DragElm) {
                 base.Draw(g);
                 return;
             }
@@ -59,7 +59,7 @@ namespace Circuit.Elements.Active {
             g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, ledLead1);
             g.DrawThickLine(getVoltageColor(Volts[1]), ledLead2, mPoint2);
 
-            g.ThickLineColor = GrayColor;
+            g.ThickLineColor = CustomGraphics.GrayColor;
 
             int cr = 12;
             g.DrawThickCircle(ledCenter, cr);

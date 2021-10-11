@@ -55,11 +55,11 @@ namespace Circuit.Elements.Input {
         }
 
         double getVoltage() {
-            double deltaT = Sim.Time - lasttime;
-            lasttime = Sim.Time;
-            double signalamplitude = Math.Sin(2 * Pi * (Sim.Time - freqTimeZero) * signalfreq);
+            double deltaT = CirSim.Sim.Time - lasttime;
+            lasttime = CirSim.Sim.Time;
+            double signalamplitude = Math.Sin(2 * Math.PI * (CirSim.Sim.Time - freqTimeZero) * signalfreq);
             funcx += deltaT * (carrierfreq + (signalamplitude * deviation));
-            double w = 2 * Pi * funcx;
+            double w = 2 * Math.PI * funcx;
             return Math.Sin(w) * maxVoltage;
         }
 
@@ -67,20 +67,20 @@ namespace Circuit.Elements.Input {
             setBbox(mPoint1, mPoint2, circleSize);
             g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
 
-            g.TextColor = NeedsHighlight ? SelectColor : WhiteColor;
+            CustomGraphics.TextColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             double v = getVoltage();
             string s = "FM";
             drawCenteredText(g, s, P2.X, P2.Y, true);
             drawWaveform(g, mPoint2);
             drawPosts(g);
             mCurCount = updateDotCount(-mCurrent, mCurCount);
-            if (Sim.DragElm != this) {
+            if (CirSim.Sim.DragElm != this) {
                 drawDots(g, mPoint1, mLead1, mCurCount);
             }
         }
 
         void drawWaveform(CustomGraphics g, Point center) {
-            g.ThickLineColor = NeedsHighlight ? SelectColor : GrayColor;
+            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             int xc = center.X;
             int yc = center.Y;
             g.DrawThickCircle(center, circleSize);

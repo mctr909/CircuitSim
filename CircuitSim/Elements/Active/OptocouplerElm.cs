@@ -69,7 +69,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            g.ThickLineColor = NeedsHighlight ? SelectColor : GrayColor;
+            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.DrawThickPolygon(rectPoints);
 
             /* draw stubs */
@@ -87,7 +87,7 @@ namespace Circuit.Elements.Active {
             drawPosts(g);
 
             /* draw little arrows */
-            var c = NeedsHighlight ? SelectColor : getVoltageColor(Volts[0]);
+            var c = NeedsHighlight ? CustomGraphics.SelectColor : getVoltageColor(Volts[0]);
             g.LineColor = c;
             int sx = stubs[0].X + 2;
             int sy = (stubs[0].Y + stubs[1].Y) / 2;

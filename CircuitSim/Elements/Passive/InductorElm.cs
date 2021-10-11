@@ -7,13 +7,13 @@ namespace Circuit.Elements.Passive {
         Point mTextPos;
 
         public InductorElm(Point pos) : base(pos) {
-            mInd = new Inductor(Sim, mCir);
+            mInd = new Inductor(mCir);
             Inductance = 0.001;
             mInd.setup(Inductance, mCurrent, mFlags);
         }
 
         public InductorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            mInd = new Inductor(Sim, mCir);
+            mInd = new Inductor(mCir);
             Inductance = st.nextTokenDouble();
             mCurrent = st.nextTokenDouble();
             mInd.setup(Inductance, mCurrent, mFlags);

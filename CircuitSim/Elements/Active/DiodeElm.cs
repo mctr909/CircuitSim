@@ -23,13 +23,13 @@ namespace Circuit.Elements.Active {
 
         public DiodeElm(Point pos) : base(pos) {
             modelName = lastModelName;
-            diode = new Diode(Sim, mCir);
+            diode = new Diode(mCir);
             setup();
         }
 
         public DiodeElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             const double defaultdrop = .805904783;
-            diode = new Diode(Sim, mCir);
+            diode = new Diode(mCir);
             double fwdrop = defaultdrop;
             double zvoltage = 0;
             if ((f & FLAG_MODEL) != 0) {
@@ -223,7 +223,7 @@ namespace Circuit.Elements.Active {
                     MessageBox.Show("This model cannot be modified.\r\nChange the model name to allow customization.");
                     return;
                 }
-                CirSim.DiodeModelEditDialog = new ElementInfoDialog(model, Sim);
+                CirSim.DiodeModelEditDialog = new ElementInfoDialog(model);
                 CirSim.DiodeModelEditDialog.Show();
                 return;
             }
