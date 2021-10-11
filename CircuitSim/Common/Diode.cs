@@ -2,7 +2,6 @@
 
 namespace Circuit {
     class Diode {
-        CirSim sim;
         Circuit cir;
         int[] nodes;
 
@@ -29,8 +28,7 @@ namespace Circuit {
         double vzcrit;
         double lastvoltdiff;
 
-        public Diode(CirSim s, Circuit c) {
-            sim = s;
+        public Diode(Circuit c) {
             cir = c;
             nodes = new int[2];
         }

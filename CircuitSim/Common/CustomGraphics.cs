@@ -5,13 +5,23 @@ using System.Drawing.Printing;
 namespace Circuit {
     class CustomGraphics {
         public static readonly Font FontText = new Font("Segoe UI", 9.0f);
+        static Brush brushText = Brushes.Black;
+        static Color colorText;
 
-        public Color TextColor {
+        public static Brush PenHandle { get; set; }
+        public static Color SelectColor { get; set; }
+        public static Color WhiteColor { get; set; }
+        public static Color GrayColor { get; set; }
+
+        public static Color TextColor {
+            get { return colorText; }
             set {
                 var p = new Pen(value, 1.0f);
                 brushText = p.Brush;
+                colorText = value;
             }
         }
+
         public Color PostColor {
             get { return penPost.Color; }
             set { penPost.Color = value; }
@@ -48,7 +58,6 @@ namespace Circuit {
 
         Bitmap image;
         Graphics g;
-        Brush brushText = Brushes.Black;
 
         Pen penPost = new Pen(Color.Red, 5.0f);
         Pen penColor = new Pen(Color.White, 1.0f) {

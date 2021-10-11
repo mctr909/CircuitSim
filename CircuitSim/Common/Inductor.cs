@@ -4,7 +4,6 @@
 
         int[] nodes;
         int flags;
-        CirSim sim;
         Circuit cir;
 
         double inductance;
@@ -14,8 +13,7 @@
 
         public bool IsTrapezoidal { get { return (flags & FLAG_BACK_EULER) == 0; } }
 
-        public Inductor(CirSim s, Circuit c) {
-            sim = s;
+        public Inductor(Circuit c) {
             cir = c;
             nodes = new int[2];
         }
