@@ -122,31 +122,31 @@ namespace Circuit {
             g.FillPie(penPost.Brush, p.X - penPost.Width / 2, p.Y - penPost.Width / 2, penPost.Width, penPost.Width, 0, 360);
         }
 
-        public void DrawLeftText(string s, float x, float y) {
+        public void DrawLeftText(string s, int x, int y) {
             g.DrawString(s, FontText, brushText, x, y, textLeft);
         }
 
-        public void DrawLeftTopText(string s, float x, float y) {
+        public void DrawLeftTopText(string s, int x, int y) {
             g.DrawString(s, FontText, brushText, x, y, textLeftTop);
         }
 
-        public void DrawRightText(string s, float x, float y) {
+        public void DrawRightText(string s, int x, int y) {
             g.DrawString(s, FontText, brushText, x, y, textRight);
         }
 
-        public void DrawCenteredText(string s, float x, float y) {
+        public void DrawCenteredText(string s, int x, int y) {
             g.DrawString(s, FontText, brushText, x, y, textCenter);
         }
 
-        public void DrawCenteredText(string s, float x, float y, Font font) {
+        public void DrawCenteredText(string s, int x, int y, Font font) {
             g.DrawString(s, font, brushText, x, y, textCenter);
         }
 
-        public void DrawCenteredLText(string s, float x, float y) {
+        public void DrawCenteredLText(string s, int x, int y) {
             g.DrawString(s, fontLText, brushText, x, y + 1, textCenter);
         }
 
-        public void DrawLine(float ax, float ay, float bx, float by) {
+        public void DrawLine(int ax, int ay, int bx, int by) {
             g.DrawLine(penLine, ax, ay, bx, by);
         }
 
@@ -154,7 +154,7 @@ namespace Circuit {
             g.DrawRectangle(penLine, rect);
         }
 
-        public void DrawCircle(PointF p, float radius) {
+        public void DrawCircle(Point p, float radius) {
             g.DrawArc(penLine, p.X - radius, p.Y - radius, radius * 2, radius * 2, 0, 360);
         }
 
@@ -162,15 +162,11 @@ namespace Circuit {
             g.DrawPolygon(penLine, p);
         }
 
-        public void DrawThickLine(float ax, float ay, float bx, float by) {
+        public void DrawThickLine(int ax, int ay, int bx, int by) {
             g.DrawLine(penThickLine, ax, ay, bx, by);
         }
 
         public void DrawThickLine(Point a, Point b) {
-            g.DrawLine(penThickLine, a.X, a.Y, b.X, b.Y);
-        }
-
-        public void DrawThickLine(PointF a, PointF b) {
             g.DrawLine(penThickLine, a.X, a.Y, b.X, b.Y);
         }
 
@@ -179,17 +175,12 @@ namespace Circuit {
             g.DrawLine(penThickLine, a.X, a.Y, b.X, b.Y);
         }
 
-        public void DrawThickLine(Color color, PointF a, PointF b) {
-            penThickLine.Color = color;
-            g.DrawLine(penThickLine, a.X, a.Y, b.X, b.Y);
-        }
-
-        public void DrawThickCircle(PointF p, float diameter) {
+        public void DrawThickCircle(Point p, float diameter) {
             var md = diameter * .98f;
             g.DrawArc(penThickLine, p.X - md / 2, p.Y - md / 2, md, md, 0, 360);
         }
 
-        public void DrawThickArc(PointF p, float diameter, float start, float sweep) {
+        public void DrawThickArc(Point p, float diameter, float start, float sweep) {
             var md = diameter * .98f;
             g.DrawArc(penThickLine, p.X - md / 2, p.Y - md / 2, md, md, start, sweep);
         }
@@ -203,19 +194,19 @@ namespace Circuit {
             g.DrawPolygon(penColor, p);
         }
 
-        public void FillRectangle(float x, float y, float width, float height) {
+        public void FillRectangle(int x, int y, int width, int height) {
             g.FillRectangle(penLine.Brush, x, y, width, height);
         }
 
-        public void FillRectangle(Brush brush, float x, float y, float width, float height) {
+        public void FillRectangle(Brush brush, int x, int y, int width, int height) {
             g.FillRectangle(brush, x, y, width, height);
         }
 
-        public void FillCircle(float cx, float cy, float radius) {
+        public void FillCircle(int cx, int cy, float radius) {
             g.FillPie(penLine.Brush, cx - radius, cy - radius, radius * 2, radius * 2, 0, 360);
         }
 
-        public void FillCircle(Brush brush, PointF pos, float radius) {
+        public void FillCircle(Brush brush, Point pos, float radius) {
             g.FillPie(brush, pos.X - radius, pos.Y - radius, radius * 2, radius * 2, 0, 360);
         }
 
