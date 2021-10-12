@@ -47,6 +47,7 @@ namespace Circuit {
         public static SliderDialog SliderDialog { get; set; }
         public static Form DialogShowing { get; set; } = null;
         public static Random Random { get; set; } = new Random();
+        public static double CurrentMult { get; set; } = 0;
         #endregion
 
         #region Property

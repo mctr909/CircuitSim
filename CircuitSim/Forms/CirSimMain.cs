@@ -61,7 +61,7 @@ namespace Circuit {
                     int inc = (int)(sysTime - mLastTime);
                     double c = ControlPanel.TrbCurrent.Value;
                     c = Math.Exp(c / 3.5 - 14.2);
-                    CircuitElm.CurrentMult = 1.7 * inc * c;
+                    CurrentMult = 1.7 * inc * c;
                 }
                 mLastTime = sysTime;
             } else {
