@@ -6,25 +6,12 @@ using Circuit.Elements.Output;
 
 namespace Circuit.Elements {
     abstract class CircuitElm : Editable {
-        public static double CurrentMult { get; set; }
+        static Color[] mColorScale;
+        static CircuitElm mMouseElmRef = null;
         protected static Circuit mCir;
-        private static Color[] mColorScale;
-        private static CircuitElm mMouseElmRef = null;
 
         #region dynamic property
-        /// <summary>
-        /// initial point where user created element.
-        /// For simple two-terminal elements, this is the first node/post.
-        /// </summary>
-        public Point P1;
-
-        /// <summary>
-        /// point to which user dragged out element.
-        /// For simple two-terminal elements, this is the second node/post
-        /// </summary>
-        public Point P2;
-
-        public bool IsSelected;
+        public bool IsSelected { get; set; }
 
         public bool IsMouseElm {
             get {
@@ -122,16 +109,26 @@ namespace Circuit.Elements {
         public virtual int ConnectionNodeCount { get { return PostCount; } }
 
         public virtual int DefaultFlags { get { return 0; } }
+
+        protected virtual int NumHandles { get { return 2; } }
         #endregion
 
         #region dynamic variable
-        public RectangleF BoundingBox;
+        /// <summary>
+        /// initial point where user created element.
+        /// For simple two-terminal elements, this is the first node/post.
+        /// </summary>
+        public Point P1;
 
-        protected int mFlags;
-        protected int mVoltSource;
+        /// <summary>
+        /// point to which user dragged out element.
+        /// For simple two-terminal elements, this is the second node/post
+        /// </summary>
+        public Point P2;
+
+        public Rectangle BoundingBox;
 
         int mLastHandleGrabbed = -1;
-        protected int mNumHandles = 2;
 
         /* length along x and y axes, and sign of difference */
         protected Point mDiff;
@@ -156,6 +153,9 @@ namespace Circuit.Elements {
 
         /* if subclasses set this to true, element will be horizontal or vertical only */
         protected bool mNoDiagonal;
+
+        protected int mFlags;
+        protected int mVoltSource;
         #endregion
 
         /// <summary>
@@ -190,9 +190,7 @@ namespace Circuit.Elements {
 
         #region [static method]
         public static void InitClass(Circuit c) {
-            CurrentMult = 0;
             mCir = c;
-            mMouseElmRef = null;
         }
 
         public static void SetColorScale(int colorScaleCount) {
@@ -218,7 +216,7 @@ namespace Circuit.Elements {
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <param name="pos"></param>
-        protected static void drawDots(CustomGraphics g, PointF a, PointF b, double pos) {
+        protected static void drawDots(CustomGraphics g, Point a, Point b, double pos) {
             if ((!CirSim.Sim.IsRunning) || pos == 0 || !ControlPanel.ChkShowDots.Checked) {
                 return;
             }
@@ -236,8 +234,8 @@ namespace Circuit.Elements {
                 g.LineColor = Color.Yellow;
             }
             for (var di = pos; di < dn; di += ds) {
-                var x0 = (float)(a.X + di * dx / dn);
-                var y0 = (float)(a.Y + di * dy / dn);
+                var x0 = (int)(a.X + di * dx / dn);
+                var y0 = (int)(a.Y + di * dy / dn);
                 g.FillCircle(x0, y0, 1.5f);
             }
         }
@@ -267,8 +265,8 @@ namespace Circuit.Elements {
                 mLead2 = mPoint2;
                 return;
             }
-            interpPoint(ref mLead1, (mLen - len) / (2 * mLen));
-            interpPoint(ref mLead2, (mLen + len) / (2 * mLen));
+            setLead1((mLen - len) / (2 * mLen));
+            setLead2((mLen + len) / (2 * mLen));
         }
 
         /// <summary>
@@ -279,7 +277,7 @@ namespace Circuit.Elements {
         /// <param name="y1"></param>
         /// <param name="x2"></param>
         /// <param name="y2"></param>
-        protected void setBbox(float x1, float y1, float x2, float y2) {
+        protected void setBbox(int x1, int y1, int x2, int y2) {
             if (x1 > x2) { var q = x1; x1 = x2; x2 = q; }
             if (y1 > y2) { var q = y1; y1 = y2; y2 = q; }
             BoundingBox.X = x1;
@@ -294,7 +292,7 @@ namespace Circuit.Elements {
         /// <param name="p1"></param>
         /// <param name="p2"></param>
         /// <param name="w"></param>
-        protected void setBbox(PointF p1, PointF p2, double w) {
+        protected void setBbox(Point p1, Point p2, double w) {
             setBbox(p1.X, p1.Y, p2.X, p2.Y);
             int dpx = (int)(mDir.X * w);
             int dpy = (int)(mDir.Y * w);
@@ -311,7 +309,7 @@ namespace Circuit.Elements {
         /// <param name="y1"></param>
         /// <param name="x2"></param>
         /// <param name="y2"></param>
-        protected void adjustBbox(float x1, float y1, float x2, float y2) {
+        protected void adjustBbox(int x1, int y1, int x2, int y2) {
             if (x1 > x2) { var q = x1; x1 = x2; x2 = q; }
             if (y1 > y2) { var q = y1; y1 = y2; y2 = q; }
             x1 = Math.Min(BoundingBox.X, x1);
@@ -324,7 +322,7 @@ namespace Circuit.Elements {
             BoundingBox.Height = y2 - y1;
         }
 
-        protected void adjustBbox(PointF p1, PointF p2) {
+        protected void adjustBbox(Point p1, Point p2) {
             adjustBbox(p1.X, p1.Y, p2.X, p2.Y);
         }
 
@@ -345,7 +343,7 @@ namespace Circuit.Elements {
             if (!CirSim.Sim.IsRunning) {
                 return cc;
             }
-            double cadd = cur * CurrentMult;
+            double cadd = cur * CirSim.CurrentMult;
             cadd %= 8;
             return cc + cadd;
         }
@@ -386,6 +384,14 @@ namespace Circuit.Elements {
                 c = mColorScale.Length - 1;
             }
             return mColorScale[c];
+        }
+
+        protected void setLead1(double w) {
+            interpPoint(ref mLead1, w);
+        }
+
+        protected void setLead2(double w) {
+            interpPoint(ref mLead2, w);
         }
 
         protected void interpPoint(ref Point p, double f) {
@@ -493,7 +499,7 @@ namespace Circuit.Elements {
             g.FillPolygon(getVoltageColor(Volts[index]), poly);
         }
 
-        protected void drawCenteredText(CustomGraphics g, string s, float x, float y, bool cx) {
+        protected void drawCenteredText(CustomGraphics g, string s, int x, int y, bool cx) {
             var fs = g.GetTextSize(s);
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
@@ -505,7 +511,7 @@ namespace Circuit.Elements {
             g.DrawCenteredText(s, x, y);
         }
 
-        protected void drawCenteredLText(CustomGraphics g, string s, float x, float y, bool cx) {
+        protected void drawCenteredLText(CustomGraphics g, string s, int x, int y, bool cx) {
             var fs = g.GetLTextSize(s);
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
@@ -535,7 +541,7 @@ namespace Circuit.Elements {
                 xc = (P2.X + P1.X) / 2;
                 yc = (P2.Y + P1.Y) / 2;
             }
-            g.DrawRightText(s, xc + offsetX, yc - textSize.Height + offsetY);
+            g.DrawRightText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
         }
 
         protected void drawCoil(CustomGraphics g, Point p1, Point p2, double v1, double v2) {
@@ -592,7 +598,7 @@ namespace Circuit.Elements {
             } else if (mLastHandleGrabbed == 0) {
                 g.FillRectangle(CustomGraphics.PenHandle, P1.X - 4, P1.Y - 4, 9, 9);
             }
-            if (mNumHandles == 2) {
+            if (NumHandles == 2) {
                 if (mLastHandleGrabbed == -1) {
                     g.FillRectangle(CustomGraphics.PenHandle, P2.X - 3, P2.Y - 3, 7, 7);
                 } else if (mLastHandleGrabbed == 1) {

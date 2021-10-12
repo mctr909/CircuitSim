@@ -60,8 +60,8 @@ namespace Circuit.Elements.Gate {
             if (ww > mLen / 2) {
                 ww = (int)(mLen / 2);
             }
-            interpPoint(ref mLead1, 0.5 - ww / mLen);
-            interpPoint(ref mLead2, 0.5 + (ww + 2) / mLen);
+            setLead1(0.5 - ww / mLen);
+            setLead2(0.5 + (ww + 2) / mLen);
             interpPoint(ref pcircle, 0.5 + (ww - 2) / mLen);
 
             gatePolyAnsi = new Point[3];

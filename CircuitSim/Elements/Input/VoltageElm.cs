@@ -243,7 +243,7 @@ namespace Circuit.Elements.Input {
             drawPosts(g);
         }
 
-        protected void drawWaveform(CustomGraphics g, PointF center) {
+        protected void drawWaveform(CustomGraphics g, Point center) {
             var x = center.X;
             var y = center.Y;
 
@@ -257,8 +257,8 @@ namespace Circuit.Elements.Input {
                 x + circleSize, y + circleSize
             );
 
-            float h = 11;
-            float xd = (float)(h * 2 * dutyCycle - h + x);
+            var h = 11;
+            var xd = (int)(h * 2 * dutyCycle - h + x);
             xd = Math.Max(x - h + 1, Math.Min(x + h - 1, xd));
 
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
@@ -315,11 +315,11 @@ namespace Circuit.Elements.Input {
                 break;
             }
             case WAVEFORM.AC: {
-                var xl = 10f;
-                var x0 = 0f;
-                float y0 = 0;
+                var xl = 10;
+                var x0 = 0;
+                var y0 = 0;
                 for (var i = -xl; i <= xl; i++) {
-                    var yy = y + (float)(.95 * Math.Sin(i * Math.PI / xl) * h);
+                    var yy = y + (int)(.95 * Math.Sin(i * Math.PI / xl) * h);
                     if (i != -xl) {
                         g.DrawLine(x0, y0, x + i, yy);
                     }

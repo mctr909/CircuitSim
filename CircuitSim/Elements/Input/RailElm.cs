@@ -5,15 +5,13 @@ namespace Circuit.Elements.Input {
     class RailElm : VoltageElm {
         protected const int FLAG_CLOCK = 1;
 
-        public RailElm(Point pos) : base(pos, WAVEFORM.DC) {
-            mNumHandles = 1;
-        }
+        public RailElm(Point pos) : base(pos, WAVEFORM.DC) { }
 
         public RailElm(Point pos, WAVEFORM wf) : base(pos, wf) { }
 
-        public RailElm(Point p1, Point p2, int f, StringTokenizer st): base(p1, p2, f, st) {
-            mNumHandles = 1;
-        }
+        public RailElm(Point p1, Point p2, int f, StringTokenizer st): base(p1, p2, f, st) { }
+
+        protected override int NumHandles { get { return 1; } }
 
         public override double VoltageDiff { get { return Volts[0]; } }
 
@@ -23,7 +21,7 @@ namespace Circuit.Elements.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            interpPoint(ref mLead1, 1 - circleSize / mLen);
+            setLead1(1 - circleSize / mLen);
         }
 
         public string getRailText() {
@@ -37,9 +35,9 @@ namespace Circuit.Elements.Input {
                 w = mLen * .8;
             }
             if (waveform == WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0 || waveform == WAVEFORM.DC) {
-                interpPoint(ref mLead1, 1 - (w - 5) / mLen);
+                setLead1(1 - (w - 5) / mLen);
             } else {
-                interpPoint(ref mLead1, 1 - w / mLen);
+                setLead1(1 - w / mLen);
             }
             setBbox(mPoint1, mPoint2, circleSize);
 

@@ -60,7 +60,7 @@ namespace Circuit.Elements.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            interpPoint(ref mLead1, 1 - 0.5 * circleSize / mLen);
+            setLead1(1 - 0.5 * circleSize / mLen);
             interpPoint(ref textPos, 1.0 + 0.66 * circleSize / Utils.Distance(mPoint1, mPoint2), 24 * mDsign);
         }
 
@@ -93,10 +93,10 @@ namespace Circuit.Elements.Input {
             }
 
             int x0 = 0;
-            float y0 = 0;
+            int y0 = 0;
             g.LineColor = CustomGraphics.GrayColor;
             for (int i = -xl; i <= xl; i++) {
-                float yy = yc + (float)(.95 * Math.Sin(i * Math.PI * w / xl) * wl);
+                var yy = yc + (int)(.95 * Math.Sin(i * Math.PI * w / xl) * wl);
                 if (i == -xl) {
                     x0 = xc + i;
                     y0 = yy;

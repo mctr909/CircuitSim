@@ -89,7 +89,7 @@ namespace Circuit.Elements.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            interpPoint(ref mLead1, 1 - 0.5 * circleSize / mLen);
+            setLead1(1 - 0.5 * circleSize / mLen);
         }
 
         public override double VoltageDiff { get { return Volts[0]; } }

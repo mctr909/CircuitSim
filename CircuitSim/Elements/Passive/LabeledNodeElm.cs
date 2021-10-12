@@ -69,7 +69,7 @@ namespace Circuit.Elements.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
-            interpPoint(ref mLead1, 1 - CircleSize / mLen);
+            setLead1(1 - CircleSize / mLen);
         }
 
         public override void SetNode(int p, int n) {

@@ -52,8 +52,8 @@ namespace Circuit.Elements.Active {
             if (ww > mLen / 2) {
                 ww = (int)(mLen / 2);
             }
-            interpPoint(ref mLead1, 0.5 - ww / mLen);
-            interpPoint(ref mLead2, 0.5 + (ww - 4) / mLen);
+            setLead1(0.5 - ww / mLen);
+            setLead2(0.5 + (ww - 4) / mLen);
             gatePoly = new Point[3];
             interpLeadAB(ref gatePoly[0], ref gatePoly[1], 0, hs);
             interpPoint(ref gatePoly[2], 0.5 + (ww - 5) / mLen);

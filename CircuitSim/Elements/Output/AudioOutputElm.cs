@@ -98,7 +98,7 @@ namespace Circuit.Elements.Output {
             int pct = dataFull ? textWidth : textWidth * dataPtr / dataCount;
             g.FillRectangle(P2.X - textWidth / 2, P2.Y - 10, pct, 20);
             g.LineColor = selected ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
-            interpPoint(ref mLead1, 1 - (textWidth / 2.0 + 8) / mLen);
+            setLead1(1 - (textWidth / 2.0 + 8) / mLen);
             setBbox(mPoint1, mLead1, 0);
             drawCenteredText(g, s, P2.X, P2.Y, true);
             if (selected) {

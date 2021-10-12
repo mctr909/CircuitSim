@@ -191,8 +191,7 @@ namespace Circuit.Elements.Active {
             }
 
             /* draw gate */
-            g.ThickLineColor = getVoltageColor(Volts[V_G]);
-            g.DrawThickLine(mPoint1, gate[1]);
+            drawVoltage(g, V_G, mPoint1, gate[1]);
             g.DrawThickLine(gate[0], gate[2]);
             if (DrawDigital && pnp == -1) {
                 g.DrawThickCircle(pcircle, pcircler);

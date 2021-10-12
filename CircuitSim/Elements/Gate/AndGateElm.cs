@@ -33,7 +33,7 @@ namespace Circuit.Elements.Gate {
             if (isInverting()) {
                 circleSize = 6;
                 interpPoint(ref circlePos, 0.5 + (ww + 3) / mLen);
-                interpPoint(ref mLead2, 0.5 + (ww + 6) / mLen);
+                setLead2(0.5 + (ww + 6) / mLen);
             }
         }
 

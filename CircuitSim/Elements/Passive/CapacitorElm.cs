@@ -69,8 +69,8 @@ namespace Circuit.Elements.Passive {
             base.SetPoints();
             double f = (mLen / 2 - 3) / mLen;
             /* calc leads */
-            interpPoint(ref mLead1, f);
-            interpPoint(ref mLead2, 1 - f);
+            setLead1(f);
+            setLead2(1 - f);
             /* calc plates */
             mPlate1 = new Point[2];
             mPlate2 = new Point[2];
@@ -90,12 +90,10 @@ namespace Circuit.Elements.Passive {
             setBbox(mPoint1, mPoint2, hs);
 
             /* draw first lead and plate */
-            g.ThickLineColor = getVoltageColor(Volts[0]);
-            g.DrawThickLine(mPoint1, mLead1);
+            drawVoltage(g, 0, mPoint1, mLead1);
             g.DrawThickLine(mPlate1[0], mPlate1[1]);
             /* draw second lead and plate */
-            g.ThickLineColor = getVoltageColor(Volts[1]);
-            g.DrawThickLine(mPoint2, mLead2);
+            drawVoltage(g, 1, mPoint2, mLead2);
             g.DrawThickLine(mPlate2[0], mPlate2[1]);
 
             updateDotCount();

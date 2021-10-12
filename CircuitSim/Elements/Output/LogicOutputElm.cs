@@ -39,7 +39,7 @@ namespace Circuit.Elements.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            interpPoint(ref mLead1, 1 - 12 / mLen);
+            setLead1(1 - 12 / mLen);
         }
 
         public override void Draw(CustomGraphics g) {

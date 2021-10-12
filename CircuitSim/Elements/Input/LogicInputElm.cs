@@ -11,13 +11,11 @@ namespace Circuit.Elements.Input {
         double loV;
 
         public LogicInputElm(Point pos) : base(pos, false) {
-            mNumHandles = 1;
             hiV = 5;
             loV = 0;
         }
 
         public LogicInputElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
-            mNumHandles = 1;
             try {
                 hiV = st.nextTokenDouble();
                 loV = st.nextTokenDouble();
@@ -29,6 +27,8 @@ namespace Circuit.Elements.Input {
                 PosCount = 3;
             }
         }
+
+        protected override int NumHandles { get { return 1; } }
 
         public override double VoltageDiff { get { return Volts[0]; } }
 
@@ -48,7 +48,7 @@ namespace Circuit.Elements.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            interpPoint(ref mLead1, 1 - 12 / mLen);
+            setLead1(1 - 12 / mLen);
         }
 
         public override void Draw(CustomGraphics g) {
