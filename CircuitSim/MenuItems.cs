@@ -69,26 +69,16 @@ namespace Circuit {
             switch (id) {
             case DUMP_ID.INVALID:
                 return create();
-            case DUMP_ID.GROUND:
-                return create(Keys.G, true, false, false);
             case DUMP_ID.WIRE:
-                return create(Keys.W, true, false, false);
+                return create(Keys.F1);
+            case DUMP_ID.GROUND:
+                return create(Keys.F2);
             case DUMP_ID.RESISTOR:
-                return create(Keys.R, true, true, false);
-            case DUMP_ID.INDUCTOR:
-                return create(Keys.L, true, true, false);
+                return create(Keys.F3);
             case DUMP_ID.CAPACITOR:
-                return create(Keys.C, true, true, false);
-            case DUMP_ID.DIODE:
-                return create(Keys.D, true, true, false);
-            case DUMP_ID.BIPOLER_NPN:
-                return create(Keys.N, true, false, false);
-            case DUMP_ID.BIPOLER_PNP:
-                return create(Keys.P, true, false, false);
-            case DUMP_ID.NMOS:
-                return create(Keys.N, true, true, false);
-            case DUMP_ID.PMOS:
-                return create(Keys.P, true, true, false);
+                return create(Keys.F4);
+            case DUMP_ID.INDUCTOR:
+                return create(Keys.F5);
             default:
                 return create();
             }
@@ -214,7 +204,7 @@ namespace Circuit {
         OPAMP,
         OPAMP_SWAP,
         OpAmpRealElm,
-        AnalogSwitchElm,
+        ANALOG_SWITCH,
         AnalogSwitch2Elm,
         TRISTATE,
         SCHMITT,
@@ -487,9 +477,8 @@ namespace Circuit {
             addElementItem(basicMenuBar, "接地", ELEMENTS.GROUND);
             basicMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(basicMenuBar, "抵抗", ELEMENTS.RESISTOR);
-            addElementItem(basicMenuBar, "コイル", ELEMENTS.INDUCTOR);
             addElementItem(basicMenuBar, "コンデンサ", ELEMENTS.CAPACITOR);
-            addElementItem(basicMenuBar, "コンデンサ(有極性)", ELEMENTS.CAPACITOR_POLER);
+            addElementItem(basicMenuBar, "コイル", ELEMENTS.INDUCTOR);
             mainMenuBar.Items.Add(new ToolStripSeparator());
             mainMenuBar.Items.Add(basicMenuBar);
             #endregion
@@ -503,14 +492,8 @@ namespace Circuit {
             addElementItem(passMenuBar, "切り替えスイッチ", ELEMENTS.SWITCH_TERM);
             passMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(passMenuBar, "可変抵抗", ELEMENTS.POT);
+            addElementItem(passMenuBar, "コンデンサ(有極性)", ELEMENTS.CAPACITOR_POLER);
             addElementItem(passMenuBar, "トランス", ELEMENTS.TRANSFORMER);
-            //addMenuItem(passMenuBar, "Add Tapped Transformer", ELEMENTS.TappedTransformerElm);
-            //addMenuItem(passMenuBar, "Add Transmission Line", ELEMENTS.TransLineElm);
-            //addMenuItem(passMenuBar, "Add Relay", ELEMENTS.RelayElm);
-            //addMenuItem(passMenuBar, "Add Memristor", ELEMENTS.MemristorElm);
-            //addMenuItem(passMenuBar, "Add Spark Gap", ELEMENTS.SparkGapElm);
-            //addMenuItem(passMenuBar, "Add Fuse", ELEMENTS.FuseElm);
-            //addMenuItem(passMenuBar, "Add Custom Transformer", ELEMENTS.CustomTransformerElm);
             //addMenuItem(passMenuBar, "Add Crystal", ELEMENTS.CrystalElm);
             mainMenuBar.Items.Add(passMenuBar);
             #endregion
@@ -521,8 +504,8 @@ namespace Circuit {
             activeMenuBar.Font = menuFont;
             addElementItem(activeMenuBar, "ダイオード", ELEMENTS.DIODE);
             addElementItem(activeMenuBar, "ツェナーダイオード", ELEMENTS.ZENER);
+            //addElementItem(activeMenuBar, "可変容量ダイオード ", ELEMENTS.VaractorElm);
             addElementItem(activeMenuBar, "LED", ELEMENTS.LED);
-            //addElementItem(activeMenuBar, "LED Array", MENU_ITEM.LEDArrayElm);
             activeMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(activeMenuBar, "NPNトランジスタ", ELEMENTS.TRANSISTOR_N);
             addElementItem(activeMenuBar, "PNPトランジスタ", ELEMENTS.TRANSISTOR_P);
@@ -535,16 +518,16 @@ namespace Circuit {
             //addMenuItem(activeMenuBar, "Add TRIAC", ELEMENTS.TriacElm);
             //addMenuItem(activeMenuBar, "Add Darlington Pair (NPN)", ELEMENTS.NDarlingtonElm);
             //addMenuItem(activeMenuBar, "Add Darlington Pair (PNP)", ELEMENTS.PDarlingtonElm);
-            //addMenuItem(activeMenuBar, "Add Varactor/Varicap", ELEMENTS.VaractorElm);
             //addMenuItem(activeMenuBar, "Add Tunnel Diode", ELEMENTS.TunnelDiodeElm);
             //addMenuItem(activeMenuBar, "Add Triode", ELEMENTS.TriodeElm);
-            ////addMenuItem(activeMenuBar, "Add Photoresistor", ELEMENTS.PhotoResistorElm);
-            ////addMenuItem(activeMenuBar, "Add Thermistor", ELEMENTS.ThermistorElm);
+            //addMenuItem(activeMenuBar, "Add Photoresistor", ELEMENTS.PhotoResistorElm);
+            //addMenuItem(activeMenuBar, "Add Thermistor", ELEMENTS.ThermistorElm);
             activeMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(activeMenuBar, "オペアンプ(-側が上)", ELEMENTS.OPAMP);
             addElementItem(activeMenuBar, "オペアンプ(+側が上)", ELEMENTS.OPAMP_SWAP);
             activeMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(activeMenuBar, "フォトカプラ", ELEMENTS.OPTOCOUPLER);
+            addElementItem(activeMenuBar, "アナログスイッチ", ELEMENTS.ANALOG_SWITCH);
             mainMenuBar.Items.Add(activeMenuBar);
             #endregion
 
@@ -574,10 +557,9 @@ namespace Circuit {
             outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(outputMenuBar, "電圧計", ELEMENTS.VOLTMETER);
             addElementItem(outputMenuBar, "電流計", ELEMENTS.AMMETER);
-            //addElementItem(outputMenuBar, "Add Ohmmeter", ELEMENTS.OhmMeterElm);
             outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            //addElementItem(outputMenuBar, "データ出力", ELEMENTS.DataRecorderElm);
             addElementItem(outputMenuBar, "音声ファイル出力", ELEMENTS.OUTPUT_AUDIO);
-            //addElementItem(outputMenuBar, "Add Data Export", ELEMENTS.DataRecorderElm);
             //outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             //addElementItem(outputMenuBar, "Add Lamp", ELEMENTS.LampElm);
             //addElementItem(outputMenuBar, "Add Text", ELEMENTS.TextElm);
@@ -630,7 +612,6 @@ namespace Circuit {
             activeBlockMenuBar.Text = "モジュール(M)";
             activeBlockMenuBar.Font = menuFont;
             //addElementItem(activeBlocMenuBar, "Add Op Amp (real)", ITEM.OpAmpRealElm);
-            //addElementItem(activeBlocMenuBar, "Add Analog Switch (SPST)", ITEM.AnalogSwitchElm);
             //addElementItem(activeBlocMenuBar, "Add Analog Switch (SPDT)", ITEM.AnalogSwitch2Elm);
             //addElementItem(activeBlocMenuBar, "Add CCII+", ITEM.CC2Elm);
             //addElementItem(activeBlocMenuBar, "Add CCII-", ITEM.CC2NegElm);
@@ -807,8 +788,8 @@ namespace Circuit {
                 return new OpAmpSwapElm(pos);
             case ELEMENTS.OpAmpRealElm:
                 return null; //(CircuitElm)new OpAmpRealElm(x1, y1);
-            //case ELEMENTS.AnalogSwitchElm:
-            //    return new AnalogSwitchElm(pos);
+            case ELEMENTS.ANALOG_SWITCH:
+                return new AnalogSwitchElm(pos);
             case ELEMENTS.AnalogSwitch2Elm:
                 return null; //(CircuitElm)new AnalogSwitch2Elm(x1, y1);
             case ELEMENTS.SCHMITT:
@@ -961,7 +942,7 @@ namespace Circuit {
             case DUMP_ID.FLIP_FLOP_JK: return new JKFlipFlopElm(p1, p2, f, st);
             //case 157: return new SevenSegElm(x1, y1, x2, y2, f, st);
             //case 158: return new VCOElm(x1, y1, x2, y2, f, st);
-            //case DUMP_ID.ANALOG_SW: return new AnalogSwitchElm(p1, p2, f, st);
+            case DUMP_ID.ANALOG_SW: return new AnalogSwitchElm(p1, p2, f, st);
             //case 160: return new AnalogSwitch2Elm(x1, y1, x2, y2, f, st);
             //case 161: return new PhaseCompElm(x1, y1, x2, y2, f, st);
             case DUMP_ID.LED: return new LEDElm(p1, p2, f, st);
