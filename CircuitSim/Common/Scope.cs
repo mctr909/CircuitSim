@@ -846,7 +846,10 @@ namespace Circuit {
                 color = Color.FromArgb(0x00, 0xFF, 0xFF);
             } else if (selected) {
                 color = plot.Color;
+            } else if (ControlPanel.ChkPrintable.Checked) {
+                color = CustomGraphics.GrayColor;
             }
+
             var ipa = plot.StartIndex(BoundingBox.Width);
             var maxV = plot.MaxValues;
             var minV = plot.MinValues;
