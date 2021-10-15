@@ -22,7 +22,7 @@ namespace Circuit.Elements.Input {
 
         protected WAVEFORM waveform { get; private set; }
 
-        protected const int circleSize = 36;
+        protected const int circleSize = 28;
 
         protected double frequency;
         protected double maxVoltage;
@@ -257,7 +257,7 @@ namespace Circuit.Elements.Input {
                 x + circleSize, y + circleSize
             );
 
-            var h = 11;
+            var h = 7;
             var xd = (int)(h * 2 * dutyCycle - h + x);
             xd = Math.Max(x - h + 1, Math.Min(x + h - 1, xd));
 
@@ -402,7 +402,7 @@ namespace Circuit.Elements.Input {
                 return new ElementInfo("Frequency (Hz)", frequency, 4, 500);
             }
             if (n == 4) {
-                return new ElementInfo("Phase Offset (degrees)", phaseShift * 180 * Math.PI, -180, 180).SetDimensionless();
+                return new ElementInfo("Phase Offset (degrees)", double.Parse((phaseShift * 180 / Math.PI).ToString("0.00")), -180, 180).SetDimensionless();
             }
             if (n == 5 && (waveform == WAVEFORM.PULSE || waveform == WAVEFORM.SQUARE
                 || waveform == WAVEFORM.PWM_BOTH || waveform == WAVEFORM.PWM_POSITIVE || waveform == WAVEFORM.PWM_NEGATIVE)) {

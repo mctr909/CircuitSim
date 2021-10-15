@@ -2,11 +2,16 @@
 
 namespace Circuit.Elements.Passive {
     class ResistorElm : CircuitElm {
-        Point mP1;
-        Point mP2;
-        Point mP3;
-        Point mP4;
+        Point[] mP1;
+        Point[] mP2;
+        Point[] mRect1;
+        Point[] mRect2;
+        Point[] mRect3;
+        Point[] mRect4;
         Point mTextPos;
+
+        const int SEGMENTS = 12;
+        const double SEG_F = 1.0 / SEGMENTS;
 
         public ResistorElm(Point pos) : base(pos) {
             Resistance = 1000;
@@ -41,6 +46,7 @@ namespace Circuit.Elements.Passive {
             } else {
                 interpPoint(ref mTextPos, 0.5, -8 * mDsign);
             }
+            setPoly();
         }
 
         public override void Draw(CustomGraphics g) {
@@ -54,42 +60,26 @@ namespace Circuit.Elements.Passive {
 
             draw2Leads(g);
 
-            int segments = 12;
-            double segf = 1.0 / segments;
             double v1 = Volts[0];
             double v2 = Volts[1];
 
             if (ControlPanel.ChkUseAnsiSymbols.Checked) {
                 /* draw zigzag */
-                int oy = 0;
-                int ny;
-                for (int i = 0; i != segments; i++) {
-                    switch (i & 3) {
-                    case 0: ny = hs; break;
-                    case 2: ny = -hs; break;
-                    default: ny = 0; break;
-                    }
-                    interpLead(ref mP1, i * segf, oy);
-                    interpLead(ref mP2, (i + 1) * segf, ny);
-                    double v = v1 + (v2 - v1) * i / segments;
-                    g.DrawThickLine(getVoltageColor(v), mP1, mP2);
-                    oy = ny;
+                for (int i = 0; i < SEGMENTS; i++) {
+                    double v = v1 + (v2 - v1) * i / SEGMENTS;
+                    g.DrawThickLine(getVoltageColor(v), mP1[i], mP2[i]);
                 }
             } else {
                 /* draw rectangle */
-                interpLeadAB(ref mP1, ref mP2, 0, hs);
                 g.ThickLineColor = getVoltageColor(v1);
-                g.DrawThickLine(mP1, mP2);
-                for (int i = 0; i != segments; i++) {
-                    double v = v1 + (v2 - v1) * i / segments;
-                    interpLeadAB(ref mP1, ref mP2, i * segf, hs);
-                    interpLeadAB(ref mP3, ref mP4, (i + 1) * segf, hs);
+                g.DrawThickLine(mRect1[0], mRect2[0]);
+                for (int i = 0, j = 1; i < SEGMENTS; i++, j++) {
+                    double v = v1 + (v2 - v1) * i / SEGMENTS;
                     g.ThickLineColor = getVoltageColor(v);
-                    g.DrawThickLine(mP1, mP3);
-                    g.DrawThickLine(mP2, mP4);
+                    g.DrawThickLine(mRect1[j], mRect3[j]);
+                    g.DrawThickLine(mRect2[j], mRect4[j]);
                 }
-                interpLeadAB(ref mP1, ref mP2, 1, hs);
-                g.DrawThickLine(mP1, mP2);
+                g.DrawThickLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
             }
 
             if (ControlPanel.ChkShowValues.Checked) {
@@ -128,6 +118,42 @@ namespace Circuit.Elements.Passive {
             if (ei.Value > 0) {
                 Resistance = ei.Value;
             }
+        }
+
+        void setPoly() {
+            /* zigzag */
+            mP1 = new Point[SEGMENTS];
+            mP2 = new Point[SEGMENTS];
+            int oy = 0;
+            int ny;
+            for (int i = 0; i != SEGMENTS; i++) {
+                switch (i & 3) {
+                case 0:
+                    ny = 5;
+                    break;
+                case 2:
+                    ny = -5;
+                    break;
+                default:
+                    ny = 0;
+                    break;
+                }
+                interpLead(ref mP1[i], i * SEG_F, oy);
+                interpLead(ref mP2[i], (i + 1) * SEG_F, ny);
+                oy = ny;
+            }
+
+            /* rectangle */
+            mRect1 = new Point[SEGMENTS + 2];
+            mRect2 = new Point[SEGMENTS + 2];
+            mRect3 = new Point[SEGMENTS + 2];
+            mRect4 = new Point[SEGMENTS + 2];
+            interpLeadAB(ref mRect1[0], ref mRect2[0], 0, 4);
+            for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
+                interpLeadAB(ref mRect1[j], ref mRect2[j], i * SEG_F, 4);
+                interpLeadAB(ref mRect3[j], ref mRect4[j], (i + 1) * SEG_F, 4);
+            }
+            interpLeadAB(ref mRect1[SEGMENTS + 1], ref mRect2[SEGMENTS + 1], 1, 4);
         }
     }
 }
