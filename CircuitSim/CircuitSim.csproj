@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Elements\Active\AnalogSwitch.cs" />
     <Compile Include="Elements\Passive\LabeledNodeElm.cs" />
     <Compile Include="Elements\Input\RailElm.cs" />
     <Compile Include="Elements\Passive\Switch2Elm.cs" />
