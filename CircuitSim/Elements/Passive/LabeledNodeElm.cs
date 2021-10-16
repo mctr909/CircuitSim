@@ -49,7 +49,7 @@ namespace Circuit.Elements.Passive {
                     return 0;
                 }
                 // node assigned already?
-                if (mNodeList.ContainsKey(Text)) {
+                if (null != Text && mNodeList.ContainsKey(Text)) {
                     var nn = mNodeList[Text];
                     mNodeNumber = nn;
                     return 0;
@@ -63,26 +63,12 @@ namespace Circuit.Elements.Passive {
 
         public override int VoltageSourceCount { get { return 1; } }
 
+        public static void ResetNodeList() {
+            mNodeList = new Dictionary<string, int>();
+        }
+
         protected override string dump() {
             return Text;
-        }
-
-        public override void SetPoints() {
-            base.SetPoints();
-            setLead1(1 - CircleSize / mLen);
-        }
-
-        public override void SetNode(int p, int n) {
-            base.SetNode(p, n);
-            if (p == 1) {
-                // assign new node
-                mNodeList.Add(Text, n);
-                mNodeNumber = n;
-            }
-        }
-
-        static void resetNodeList() {
-            mNodeList = new Dictionary<string, int>();
         }
 
         // get connection node (which is the same as regular nodes for all elements but this one).
@@ -100,6 +86,20 @@ namespace Circuit.Elements.Passive {
 
         public override void Stamp() {
             mCir.StampVoltageSource(mNodeNumber, Nodes[0], mVoltSource, 0);
+        }
+
+        public override void SetNode(int p, int n) {
+            base.SetNode(p, n);
+            if (p == 1) {
+                // assign new node
+                mNodeList.Add(Text, n);
+                mNodeNumber = n;
+            }
+        }
+
+        public override void SetPoints() {
+            base.SetPoints();
+            setLead1(1 - CircleSize / mLen);
         }
 
         public override void Draw(CustomGraphics g) {

@@ -153,7 +153,7 @@ namespace Circuit.Elements.Input {
             case WAVEFORM.PWM_BOTH: {
                 var maxfreq = 1 / (32 * ControlPanel.TimeStep);
                 var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % (2 * Math.PI));
-                var sg = dutyCycle * Math.Sin(wt) + Math.Sin(wt * 3) / 6;
+                var sg = dutyCycle * Math.Sin(wt);
                 if (0.0 <= sg) {
                     return bias + (cr < sg ? maxVoltage : 0);
                 } else {
@@ -163,7 +163,7 @@ namespace Circuit.Elements.Input {
             case WAVEFORM.PWM_POSITIVE: {
                 var maxfreq = 1 / (32 * ControlPanel.TimeStep);
                 var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % (2 * Math.PI));
-                var sg = dutyCycle * Math.Sin(wt) + Math.Sin(wt * 3) / 6;
+                var sg = dutyCycle * Math.Sin(wt);
                 if (0.0 <= sg) {
                     return bias + (cr < sg ? maxVoltage : 0);
                 } else {
@@ -173,7 +173,7 @@ namespace Circuit.Elements.Input {
             case WAVEFORM.PWM_NEGATIVE: {
                 var maxfreq = 1 / (32 * ControlPanel.TimeStep);
                 var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % (2 * Math.PI));
-                var sg = dutyCycle * Math.Sin(wt) + Math.Sin(wt * 3) / 6;
+                var sg = dutyCycle * Math.Sin(wt);
                 if (0.0 <= sg) {
                     return bias;
                 } else {

@@ -14,9 +14,9 @@ namespace Circuit.Elements.Active {
         bool hasResistance;
         int diodeEndNode;
 
-        const int hs = 6;
-        Point[] poly;
-        Point[] mCathode;
+        protected const int hs = 6;
+        protected Point[] poly;
+        protected Point[] mCathode;
 
         bool customModelUI;
         List<DiodeModel> models;
@@ -109,7 +109,7 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        void drawDiode(CustomGraphics g) {
+        protected void drawDiode(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, hs);
 
             draw2Leads(g);

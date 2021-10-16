@@ -26,6 +26,8 @@ namespace Circuit.Elements.Active {
             setup();
         }
 
+        public override DUMP_ID DumpType { get { return DUMP_ID.ZENER; } }
+
         public override DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }
 
         public override void SetPoints() {
