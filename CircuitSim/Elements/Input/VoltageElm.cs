@@ -208,13 +208,15 @@ namespace Circuit.Elements.Input {
             draw2Leads(g);
 
             if (waveform == WAVEFORM.DC) {
-                interpLeadAB(ref ps1, ref ps2, 0, 10);
+                int hs = 12;
+                setBbox(mPoint1, mPoint2, hs);
+
+                interpLeadAB(ref ps1, ref ps2, 0, hs * 0.5);
                 drawVoltage(g, 0, ps1, ps2);
 
-                int hs = 16;
-                setBbox(mPoint1, mPoint2, hs);
                 interpLeadAB(ref ps1, ref ps2, 1, hs);
                 drawVoltage(g, 1, ps1, ps2);
+
                 string s = Utils.ShortUnitText(maxVoltage, "V");
                 g.DrawRightText(s, textPos.X, textPos.Y);
             } else {
@@ -222,7 +224,7 @@ namespace Circuit.Elements.Input {
                 interpLead(ref ps1, 0.5);
                 drawWaveform(g, ps1);
                 string inds;
-                if (bias > 0 || (bias == 0 && waveform == WAVEFORM.PULSE)) {
+                if (0 < bias || (0 == bias && WAVEFORM.PULSE == waveform)) {
                     inds = "+";
                 } else {
                     inds = "*";

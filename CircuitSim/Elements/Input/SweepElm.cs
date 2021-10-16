@@ -7,7 +7,7 @@ namespace Circuit.Elements.Input {
         const int FLAG_LOG = 1;
         const int FLAG_BIDIR = 2;
 
-        const int circleSize = 36;
+        const int circleSize = 28;
 
         double maxV;
         double maxF;
@@ -80,7 +80,7 @@ namespace Circuit.Elements.Input {
                 xc + circleSize, yc + circleSize
             );
 
-            int wl = 11;
+            int wl = 7;
             int xl = 10;
             long tm = DateTime.Now.ToFileTimeUtc();
             tm %= 2000;

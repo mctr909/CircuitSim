@@ -49,6 +49,8 @@
   <ItemGroup>
     <Compile Include="Elements\Active\AnalogSwitch.cs" />
     <Compile Include="Elements\Active\VaractorElm.cs" />
+    <Compile Include="Elements\Input\NoiseElm.cs" />
+    <Compile Include="Elements\Output\DataRecorderElm.cs" />
     <Compile Include="Elements\Passive\CrystalElm.cs" />
     <Compile Include="Elements\Passive\LabeledNodeElm.cs" />
     <Compile Include="Elements\Input\RailElm.cs" />
@@ -172,6 +174,7 @@
     <Compile Include="Common\ScopePlot.cs" />
     <Compile Include="Elements\Passive\ResistorElm.cs" />
     <Compile Include="Common\Storage.cs" />
+    <Compile Include="Shortcut.cs" />
     <EmbeddedResource Include="CircuitSim.resx">
       <DependentUpon>CircuitSim.cs</DependentUpon>
     </EmbeddedResource>

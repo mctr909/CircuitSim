@@ -4,7 +4,7 @@ using System.Drawing;
 namespace Circuit.Elements.Input {
     class AMElm : CircuitElm {
         const int FLAG_COS = 2;
-        const int circleSize = 32;
+        const int circleSize = 28;
 
         double carrierfreq;
         double signalfreq;
