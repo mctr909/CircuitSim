@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-using Circuit.Elements.Active;
+using Circuit.Elements.Custom;
 
 namespace Circuit.Elements.Logic {
     class RingCounterElm : ChipElm {

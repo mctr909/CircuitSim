@@ -3,25 +3,25 @@ using System.Drawing;
 
 namespace Circuit.Elements.Active {
     class VaractorElm : DiodeElm {
-        double baseCapacitance;
-        double capacitance;
-        double capCurrent;
-        double voltSourceValue;
+        double mBaseCapacitance;
+        double mCapacitance;
+        double mCapCurrent;
+        double mVoltSourceValue;
 
         // DiodeElm.lastvoltdiff = volt diff from last iteration
         // capvoltdiff = volt diff from last timestep
-        double compResistance;
-        double capvoltdiff;
-        Point[] plate1;
-        Point[] plate2;
+        double mCompResistance;
+        double mCapVoltDiff;
+        Point[] mPlate1;
+        Point[] mPlate2;
 
         public VaractorElm(Point pos) : base(pos) {
-            baseCapacitance = 4e-12;
+            mBaseCapacitance = 4e-12;
         }
 
         public VaractorElm(Point a, Point b, int f, StringTokenizer st) : base(a, b, f, st) {
-            capvoltdiff = double.Parse(st.nextToken());
-            baseCapacitance = double.Parse(st.nextToken());
+            mCapVoltDiff = double.Parse(st.nextToken());
+            mBaseCapacitance = double.Parse(st.nextToken());
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.VARACTOR; } }
@@ -32,56 +32,20 @@ namespace Circuit.Elements.Active {
 
         public override int InternalNodeCount { get { return 1; } }
 
-        public override void SetCurrent(int x, double c) { capCurrent = c; }
+        public override void SetCurrent(int x, double c) { mCapCurrent = c; }
 
         protected override string dump() {
-            return capvoltdiff + " " + baseCapacitance;
+            return mCapVoltDiff + " " + mBaseCapacitance;
         }
 
         protected override void calculateCurrent() {
             base.calculateCurrent();
-            mCurrent += capCurrent;
-        }
-
-        public override void GetInfo(string[] arr) {
-            base.GetInfo(arr);
-            arr[0] = "varactor";
-            arr[5] = "C = " + Utils.UnitText(capacitance, "F");
+            mCurrent += mCapCurrent;
         }
 
         public override void SetNodeVoltage(int n, double c) {
             base.SetNodeVoltage(n, c);
-            capvoltdiff = Volts[0] - Volts[1];
-        }
-
-        public override void SetPoints() {
-            base.SetPoints();
-            double platef = 0.6;
-            var pa = new Point[2];
-            interpLeadAB(ref pa[0], ref pa[1], 0, hs);
-            interpLeadAB(ref mCathode[0], ref mCathode[1], platef, hs);
-            var arrowPoint = new Point();
-            interpLead(ref arrowPoint, platef);
-            poly = new Point[] { pa[0], pa[1], arrowPoint };
-            // calc plates
-            plate1 = new Point[2];
-            plate2 = new Point[2];
-            interpLeadAB(ref plate1[0], ref plate1[1], platef, hs);
-            interpLeadAB(ref plate2[0], ref plate2[1], 1, hs);
-        }
-
-        public override void Draw(CustomGraphics g) {
-            // draw leads and diode arrow
-            drawDiode(g);
-
-            // draw first plate
-            drawVoltage(g, 0, plate1[0], plate1[1]);
-
-            // draw second plate
-            drawVoltage(g, 1, plate2[0], plate2[1]);
-
-            doDots(g);
-            drawPosts(g);
+            mCapVoltDiff = Volts[0] - Volts[1];
         }
 
         public override void Stamp() {
@@ -90,9 +54,10 @@ namespace Circuit.Elements.Active {
             mCir.StampNonLinear(Nodes[2]);
         }
 
-        public override void Reset() {
-            base.Reset();
-            capvoltdiff = 0;
+        public override void DoStep() {
+            base.DoStep();
+            mCir.StampResistor(Nodes[2], Nodes[1], mCompResistance);
+            mCir.UpdateVoltageSource(Nodes[0], Nodes[2], mVoltSource, mVoltSourceValue);
         }
 
         public override void StartIteration() {
@@ -100,32 +65,67 @@ namespace Circuit.Elements.Active {
             // capacitor companion model using trapezoidal approximation
             // (Thevenin equivalent) consists of a voltage source in
             // series with a resistor
-            double c0 = baseCapacitance;
-            if (0 < capvoltdiff) {
-                capacitance = c0;
+            double c0 = mBaseCapacitance;
+            if (0 < mCapVoltDiff) {
+                mCapacitance = c0;
             } else {
-                capacitance = c0 / Math.Pow(1 - capvoltdiff / model.fwdrop, 0.5);
+                mCapacitance = c0 / Math.Pow(1 - mCapVoltDiff / mModel.fwdrop, 0.5);
             }
-            compResistance = ControlPanel.TimeStep / (2 * capacitance);
-            voltSourceValue = -capvoltdiff - capCurrent * compResistance;
+            mCompResistance = ControlPanel.TimeStep / (2 * mCapacitance);
+            mVoltSourceValue = -mCapVoltDiff - mCapCurrent * mCompResistance;
         }
 
-        public override void DoStep() {
-            base.DoStep();
-            mCir.StampResistor(Nodes[2], Nodes[1], compResistance);
-            mCir.UpdateVoltageSource(Nodes[0], Nodes[2], mVoltSource, voltSourceValue);
+        public override void SetPoints() {
+            base.SetPoints();
+            double platef = 0.6;
+            var pa = new Point[2];
+            interpLeadAB(ref pa[0], ref pa[1], 0, HS);
+            interpLeadAB(ref mCathode[0], ref mCathode[1], platef, HS);
+            var arrowPoint = new Point();
+            interpLead(ref arrowPoint, platef);
+            mPoly = new Point[] { pa[0], pa[1], arrowPoint };
+            // calc plates
+            mPlate1 = new Point[2];
+            mPlate2 = new Point[2];
+            interpLeadAB(ref mPlate1[0], ref mPlate1[1], platef, HS);
+            interpLeadAB(ref mPlate2[0], ref mPlate2[1], 1, HS);
+        }
+
+        public override void Reset() {
+            base.Reset();
+            mCapVoltDiff = 0;
+        }
+
+        public override void Draw(CustomGraphics g) {
+            // draw leads and diode arrow
+            drawDiode(g);
+
+            // draw first plate
+            drawVoltage(g, 0, mPlate1[0], mPlate1[1]);
+
+            // draw second plate
+            drawVoltage(g, 1, mPlate2[0], mPlate2[1]);
+
+            doDots(g);
+            drawPosts(g);
+        }
+
+        public override void GetInfo(string[] arr) {
+            base.GetInfo(arr);
+            arr[0] = "varactor";
+            arr[5] = "C = " + Utils.UnitText(mCapacitance, "F");
         }
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 1) {
-                return new ElementInfo("Capacitance @ 0V (F)", baseCapacitance, 10, 1000);
+                return new ElementInfo("静電容量(F) @ 0V", mBaseCapacitance, 10, 1000);
             }
             return base.GetElementInfo(n);
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 1) {
-                baseCapacitance = ei.Value;
+                mBaseCapacitance = ei.Value;
                 return;
             }
             base.SetElementValue(n, ei);

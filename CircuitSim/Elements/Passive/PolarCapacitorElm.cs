@@ -37,6 +37,12 @@ namespace Circuit.Elements.Passive {
             }
         }
 
+        public override void StepFinished() {
+            if (VoltageDiff < 0 && VoltageDiff < -mMaxNegativeVoltage) {
+                mCir.Stop("耐逆電圧" + Utils.VoltageText(mMaxNegativeVoltage) + "を超えました", this);
+            }
+        }
+
         public override void Draw(CustomGraphics g) {
             base.Draw(g);
             CustomGraphics.TextColor = CustomGraphics.WhiteColor;
@@ -51,7 +57,7 @@ namespace Circuit.Elements.Passive {
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 2) {
-                return new ElementInfo("Max Reverse Voltage", mMaxNegativeVoltage, 0, 0);
+                return new ElementInfo("耐逆電圧(V)", mMaxNegativeVoltage, 0, 0);
             }
             return base.GetElementInfo(n);
         }
@@ -61,12 +67,6 @@ namespace Circuit.Elements.Passive {
                 mMaxNegativeVoltage = ei.Value;
             }
             base.SetElementValue(n, ei);
-        }
-
-        public override void StepFinished() {
-            if (VoltageDiff < 0 && VoltageDiff < -mMaxNegativeVoltage) {
-                mCir.Stop("capacitor exceeded max reverse voltage", this);
-            }
         }
     }
 }

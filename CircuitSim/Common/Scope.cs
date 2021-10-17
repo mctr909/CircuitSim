@@ -655,7 +655,6 @@ namespace Circuit {
         void _calcVisiblePlots() {
             mVisiblePlots = new List<ScopePlot>();
             int vc = 0;
-            int ac = 0;
             int oc = 0;
             for (int i = 0; i != mPlots.Count; i++) {
                 var plot = mPlots[i];

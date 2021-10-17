@@ -5,6 +5,8 @@ namespace Circuit.Elements.Passive {
     class CapacitorElm : CircuitElm {
         public static readonly int FLAG_BACK_EULER = 2;
 
+        const int HS = 8;
+
         double mCompResistance;
         double mVoltDiff;
         double mCurSourceValue;
@@ -86,8 +88,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            int hs = 8;
-            setBbox(mPoint1, mPoint2, hs);
+            setBbox(mPoint1, mPoint2, HS);
 
             /* draw first lead and plate */
             drawVoltage(g, 0, mPoint1, mLead1);
@@ -160,12 +161,12 @@ namespace Circuit.Elements.Passive {
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new ElementInfo("Capacitance (F)", Capacitance, 0, 0);
+                return new ElementInfo("静電容量(F)", Capacitance, 0, 0);
             }
             if (n == 1) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
-                ei.CheckBox.Text = "Trapezoidal Approximation";
+                ei.CheckBox.Text = "台形近似";
                 ei.CheckBox.Checked = IsTrapezoidal;
                 return ei;
             }

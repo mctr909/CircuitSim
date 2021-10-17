@@ -36,6 +36,17 @@ namespace Circuit.Elements.Passive {
             mCurrent = mInd.calculateCurrent(voltdiff);
         }
 
+        public override void Stamp() { mInd.stamp(Nodes[0], Nodes[1]); }
+
+        public override void StartIteration() {
+            mInd.startIteration(Volts[0] - Volts[1]);
+        }
+
+        public override void DoStep() {
+            double voltdiff = Volts[0] - Volts[1];
+            mInd.doStep(voltdiff);
+        }
+
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(40);
@@ -46,6 +57,11 @@ namespace Circuit.Elements.Passive {
             } else {
                 interpPoint(ref mTextPos, 0.5, -8 * mDsign);
             }
+        }
+
+        public override void Reset() {
+            mCurrent = Volts[0] = Volts[1] = mCurCount = 0;
+            mInd.reset();
         }
 
         public override void Draw(CustomGraphics g) {
@@ -65,22 +81,6 @@ namespace Circuit.Elements.Passive {
             drawPosts(g);
         }
 
-        public override void Reset() {
-            mCurrent = Volts[0] = Volts[1] = mCurCount = 0;
-            mInd.reset();
-        }
-
-        public override void Stamp() { mInd.stamp(Nodes[0], Nodes[1]); }
-
-        public override void StartIteration() {
-            mInd.startIteration(Volts[0] - Volts[1]);
-        }
-
-        public override void DoStep() {
-            double voltdiff = Volts[0] - Volts[1];
-            mInd.doStep(voltdiff);
-        }
-
         public override void GetInfo(string[] arr) {
             arr[0] = "inductor";
             getBasicInfo(arr);
@@ -90,12 +90,12 @@ namespace Circuit.Elements.Passive {
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new ElementInfo("Inductance (H)", Inductance, 0, 0);
+                return new ElementInfo("インダクタンス(H)", Inductance, 0, 0);
             }
             if (n == 1) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
-                ei.CheckBox.Text = "Trapezoidal Approximation";
+                ei.CheckBox.Text = "台形近似";
                 ei.CheckBox.Checked = mInd.IsTrapezoidal;
                 return ei;
             }

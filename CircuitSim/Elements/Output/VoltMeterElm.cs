@@ -18,7 +18,6 @@ namespace Circuit.Elements.Output {
         const int TP_DUT = 9; /* mark to space ratio */
 
         int meter;
-        int units;
         E_SCALE scale;
 
         double rmsV = 0, total, count;

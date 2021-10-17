@@ -5,35 +5,36 @@ using System.Windows.Forms;
 namespace Circuit.Elements.Active {
     class AnalogSwitchElm : CircuitElm {
         const int FLAG_INVERT = 1;
-        double resistance;
-        double r_on;
-        double r_off;
-        bool open;
-        Point ps;
-        Point point3;
-        Point lead3;
+        const int OPEN_HS = 16;
+
+        double mResistance;
+        double mR_on;
+        double mR_off;
+        bool mIsOpen;
+        Point mPs;
+        Point mPoint3;
+        Point mLead3;
 
         public AnalogSwitchElm(Point pos) : base(pos) {
-            r_on = 20;
-            r_off = 1e10;
+            mR_on = 20;
+            mR_off = 1e10;
         }
 
         public AnalogSwitchElm(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-            r_on = 20;
-            r_off = 1e10;
+            mR_on = 20;
+            mR_off = 1e10;
             try {
-                r_on = double.Parse(st.nextToken());
-                r_off = double.Parse(st.nextToken());
-            } catch (Exception e) {
-            }
+                mR_on = double.Parse(st.nextToken());
+                mR_off = double.Parse(st.nextToken());
+            } catch { }
         }
 
         protected override string dump() {
-            return " " + r_on + " " + r_off;
+            return mR_on + " " + mR_off;
         }
 
         protected override void calculateCurrent() {
-            mCurrent = (Volts[0] - Volts[1]) / resistance;
+            mCurrent = (Volts[0] - Volts[1]) / mResistance;
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.ANALOG_SW; } }
@@ -44,7 +45,7 @@ namespace Circuit.Elements.Active {
         public override int PostCount { get { return 3; } }
 
         public override Point GetPost(int n) {
-            return (0 == n) ? mPoint1 : (1 == n) ? mPoint2 : point3;
+            return (0 == n) ? mPoint1 : (1 == n) ? mPoint2 : mPoint3;
         }
 
         // we have to just assume current will flow either way, even though that
@@ -57,11 +58,11 @@ namespace Circuit.Elements.Active {
         }
 
         public override double GetCurrentIntoNode(int n) {
-            if (n == 2) {
-                return 0;
-            }
             if (n == 0) {
                 return -mCurrent;
+            }
+            if (n == 2) {
+                return 0;
             }
             return mCurrent;
         }
@@ -91,42 +92,40 @@ namespace Circuit.Elements.Active {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(32);
-            ps = new Point();
-            int openhs = 16;
-            interpPoint(ref point3, 0.5, -openhs);
-            interpPoint(ref lead3, 0.5, -openhs / 2);
+            mPs = new Point();
+            interpPoint(ref mPoint3, 0.5, -OPEN_HS);
+            interpPoint(ref mLead3, 0.5, -OPEN_HS / 2);
         }
 
         public override void Draw(CustomGraphics g) {
-            int openhs = 16;
-            int hs = open ? openhs : 0;
-            setBbox(mPoint1, mPoint2, openhs);
+            int hs = mIsOpen ? OPEN_HS : 0;
+            setBbox(mPoint1, mPoint2, OPEN_HS);
 
             draw2Leads(g);
 
-            interpLead(ref ps, 1, hs);
-            g.DrawThickLine(CustomGraphics.SelectColor, mLead1, ps);
+            interpLead(ref mPs, 1, hs);
+            g.DrawThickLine(CustomGraphics.SelectColor, mLead1, mPs);
 
-            drawVoltage(g, 2, point3, lead3);
+            drawVoltage(g, 2, mPoint3, mLead3);
 
-            if (!open) {
+            if (!mIsOpen) {
                 doDots(g);
             }
             drawPosts(g);
         }
 
         public override void DoStep() {
-            open = Volts[2] < 2.5;
+            mIsOpen = Volts[2] < 2.5;
             if ((mFlags & FLAG_INVERT) != 0) {
-                open = !open;
+                mIsOpen = !mIsOpen;
             }
-            resistance = open ? r_off : r_on;
-            mCir.StampResistor(Nodes[0], Nodes[1], resistance);
+            mResistance = mIsOpen ? mR_off : mR_on;
+            mCir.StampResistor(Nodes[0], Nodes[1], mResistance);
         }
 
         public override void GetInfo(string[] arr) {
             arr[0] = "analog switch";
-            arr[1] = open ? "open" : "closed";
+            arr[1] = mIsOpen ? "open" : "closed";
             arr[2] = "Vd = " + Utils.VoltageDText(VoltageDiff);
             arr[3] = "I = " + Utils.CurrentDText(Current);
             arr[4] = "Vc = " + Utils.VoltageText(Volts[2]);
@@ -136,16 +135,16 @@ namespace Circuit.Elements.Active {
             if (n == 0) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
-                    Text = "Normally closed",
+                    Text = "ノーマリクローズ",
                     Checked = (mFlags & FLAG_INVERT) != 0
                 };
                 return ei;
             }
             if (n == 1) {
-                return new ElementInfo("On Resistance (ohms)", r_on, 0, 0);
+                return new ElementInfo("オン抵抗(Ω)", mR_on, 0, 0);
             }
             if (n == 2) {
-                return new ElementInfo("Off Resistance (ohms)", r_off, 0, 0);
+                return new ElementInfo("オフ抵抗(Ω)", mR_off, 0, 0);
             }
             return null;
         }
@@ -154,11 +153,11 @@ namespace Circuit.Elements.Active {
             if (n == 0) {
                 mFlags = ei.CheckBox.Checked ? (mFlags | FLAG_INVERT) : (mFlags & ~FLAG_INVERT);
             }
-            if (n == 1 && ei.Value > 0) {
-                r_on = ei.Value;
+            if (n == 1 && 0 < ei.Value) {
+                mR_on = ei.Value;
             }
-            if (n == 2 && ei.Value > 0) {
-                r_off = ei.Value;
+            if (n == 2 && 0 < ei.Value) {
+                mR_off = ei.Value;
             }
         }
     }

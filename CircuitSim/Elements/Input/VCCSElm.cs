@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Drawing;
 
-using Circuit.Elements.Active;
+using Circuit.Elements.Custom;
 
 namespace Circuit.Elements.Input {
     class VCCSElm : ChipElm {
         public bool broken;
 
-        double gain;
         protected int inputCount;
         protected Expr expr;
         protected ExprState exprState;
         protected string exprString;
         double[] lastVolts;
-        double lastvd;
 
         public VCCSElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
             inputCount = st.nextTokenInt();

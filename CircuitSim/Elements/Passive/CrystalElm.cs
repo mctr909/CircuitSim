@@ -11,47 +11,49 @@ namespace Circuit.Elements.Passive {
             + ELEMENTS.INDUCTOR + " 3 4\r"
             + ELEMENTS.RESISTOR + " 4 2";
 
-        double seriesCapacitance;
-        double parallelCapacitance;
-        double inductance;
-        double resistance;
-        Point[] plate1;
-        Point[] plate2;
-        Point[] sandwichPoints;
+        const int HS = 12;
+
+        double mSeriesCapacitance;
+        double mParallelCapacitance;
+        double mInductance;
+        double mResistance;
+        Point[] mPlate1;
+        Point[] mPlate2;
+        Point[] mSandwichPoints;
 
         public override bool CanViewInScope { get { return true; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.CRYSTAL; } }
 
         public CrystalElm(Point pos) : base(pos, modelString, modelExternalNodes) {
-            parallelCapacitance = 28.7e-12;
-            seriesCapacitance = 0.1e-12;
-            inductance = 2.5e-3;
-            resistance = 6.4;
+            mParallelCapacitance = 28.7e-12;
+            mSeriesCapacitance = 0.1e-12;
+            mInductance = 2.5e-3;
+            mResistance = 6.4;
             initCrystal();
         }
 
         public CrystalElm(Point a, Point b, int f, StringTokenizer st) : base(a, b, f, st, modelString, modelExternalNodes) {
             var c1 = (CapacitorElm)compElmList[0];
-            parallelCapacitance = c1.Capacitance;
+            mParallelCapacitance = c1.Capacitance;
             var c2 = (CapacitorElm)compElmList[1];
-            seriesCapacitance = c2.Capacitance;
+            mSeriesCapacitance = c2.Capacitance;
             var i1 = (InductorElm)compElmList[2];
-            inductance = i1.Inductance;
+            mInductance = i1.Inductance;
             var r1 = (ResistorElm)compElmList[3];
-            resistance = r1.Resistance;
+            mResistance = r1.Resistance;
             initCrystal();
         }
 
-        private void initCrystal() {
+        void initCrystal() {
             var c1 = (CapacitorElm)compElmList[0];
-            c1.Capacitance = parallelCapacitance;
+            c1.Capacitance = mParallelCapacitance;
             var c2 = (CapacitorElm)compElmList[1];
-            c2.Capacitance = seriesCapacitance;
+            c2.Capacitance = mSeriesCapacitance;
             var i1 = (InductorElm)compElmList[2];
-            i1.Inductance = inductance;
+            i1.Inductance = mInductance;
             var r1 = (ResistorElm)compElmList[3];
-            r1.Resistance = resistance;
+            r1.Resistance = mResistance;
         }
 
         protected override void calculateCurrent() {
@@ -67,15 +69,15 @@ namespace Circuit.Elements.Passive {
             setLead2(1 - f);
 
             // calc plates
-            plate1 = new Point[2];
-            plate2 = new Point[2];
-            interpPointAB(ref plate1[0], ref plate1[1], f, 6);
-            interpPointAB(ref plate2[0], ref plate2[1], 1 - f, 6);
+            mPlate1 = new Point[2];
+            mPlate2 = new Point[2];
+            interpPointAB(ref mPlate1[0], ref mPlate1[1], f, 6);
+            interpPointAB(ref mPlate2[0], ref mPlate2[1], 1 - f, 6);
 
             double f2 = (mLen / 2 - 4) / mLen;
-            sandwichPoints = new Point[4];
-            interpPointAB(ref sandwichPoints[0], ref sandwichPoints[1], f2, 8);
-            interpPointAB(ref sandwichPoints[3], ref sandwichPoints[2], 1 - f2, 8);
+            mSandwichPoints = new Point[4];
+            interpPointAB(ref mSandwichPoints[0], ref mSandwichPoints[1], f2, 8);
+            interpPointAB(ref mSandwichPoints[3], ref mSandwichPoints[2], 1 - f2, 8);
 
             // need to do this explicitly for CompositeElms
             setPost(0, mPoint1);
@@ -83,20 +85,19 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            int hs = 12;
-            setBbox(mPoint1, mPoint2, hs);
+            setBbox(mPoint1, mPoint2, HS);
 
             // draw first lead and plate
             drawVoltage(g, 0, mPoint1, mLead1);
-            g.DrawThickLine(plate1[0], plate1[1]);
+            g.DrawThickLine(mPlate1[0], mPlate1[1]);
 
             // draw second lead and plate
             drawVoltage(g, 1, mPoint2, mLead2);
-            g.DrawThickLine(plate2[0], plate2[1]);
+            g.DrawThickLine(mPlate2[0], mPlate2[1]);
 
             g.ThickLineColor = getVoltageColor(0.5 * (Volts[0] + Volts[1]));
             for (int i = 0; i != 4; i++) {
-                g.DrawThickLine(sandwichPoints[i], sandwichPoints[(i + 1) % 4]);
+                g.DrawThickLine(mSandwichPoints[i], mSandwichPoints[(i + 1) % 4]);
             }
 
             updateDotCount();
@@ -118,32 +119,32 @@ namespace Circuit.Elements.Passive {
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new ElementInfo(ElementInfo.MakeLink("crystal.html", "Parallel Capacitance"), parallelCapacitance);
+                return new ElementInfo(ElementInfo.MakeLink("crystal.html", "並列静電容量"), mParallelCapacitance);
             }
             if (n == 1) {
-                return new ElementInfo("Series Capacitance (F)", seriesCapacitance);
+                return new ElementInfo("直列静電容量(F)", mSeriesCapacitance);
             }
             if (n == 2) {
-                return new ElementInfo("Inductance (H)", inductance, 0, 0);
+                return new ElementInfo("インダクタンス(H)", mInductance, 0, 0);
             }
             if (n == 3) {
-                return new ElementInfo("Resistance (Ω)", resistance, 0, 0);
+                return new ElementInfo("レジスタンス(Ω)", mResistance, 0, 0);
             }
             return null;
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0 && 0 < ei.Value) {
-                parallelCapacitance = ei.Value;
+                mParallelCapacitance = ei.Value;
             }
             if (n == 1 && 0 < ei.Value) {
-                seriesCapacitance = ei.Value;
+                mSeriesCapacitance = ei.Value;
             }
             if (n == 2 && 0 < ei.Value) {
-                inductance = ei.Value;
+                mInductance = ei.Value;
             }
             if (n == 3 && 0 < ei.Value) {
-                resistance = ei.Value;
+                mResistance = ei.Value;
             }
             initCrystal();
         }

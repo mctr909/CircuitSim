@@ -218,8 +218,6 @@ namespace Circuit.Elements.Output {
             short _channels;
             short[] _buffer;
             int _bufferNeedle = 0;
-            int[] _internalBuffer;
-            bool _hasOutputHeader;
             bool _eof = true;
 
             public Wav(int sampleRate = 44100, short channels = 1) {
@@ -230,8 +228,6 @@ namespace Circuit.Elements.Output {
             public void setBuffer(short[] buffer) {
                 _buffer = getWavInt16Array(buffer);
                 _bufferNeedle = 0;
-                _internalBuffer = null;
-                _hasOutputHeader = false;
                 _eof = false;
             }
 

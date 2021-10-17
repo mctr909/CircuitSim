@@ -12,7 +12,7 @@ namespace Circuit.Elements.Output {
         SaveFileDialog saveFileDialog = new SaveFileDialog();
 
         public DataRecorderElm(Point pos) : base(pos) {
-            setDataCount(10240);
+            setDataCount(10000);
         }
 
         public DataRecorderElm(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {

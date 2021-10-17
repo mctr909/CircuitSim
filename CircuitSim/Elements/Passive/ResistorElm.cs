@@ -36,6 +36,42 @@ namespace Circuit.Elements.Passive {
             /*Console.WriteLine(this + " res current set to " + current + "\n");*/
         }
 
+        void setPoly() {
+            /* zigzag */
+            mP1 = new Point[SEGMENTS];
+            mP2 = new Point[SEGMENTS];
+            int oy = 0;
+            int ny;
+            for (int i = 0; i != SEGMENTS; i++) {
+                switch (i & 3) {
+                case 0:
+                    ny = 5;
+                    break;
+                case 2:
+                    ny = -5;
+                    break;
+                default:
+                    ny = 0;
+                    break;
+                }
+                interpLead(ref mP1[i], i * SEG_F, oy);
+                interpLead(ref mP2[i], (i + 1) * SEG_F, ny);
+                oy = ny;
+            }
+
+            /* rectangle */
+            mRect1 = new Point[SEGMENTS + 2];
+            mRect2 = new Point[SEGMENTS + 2];
+            mRect3 = new Point[SEGMENTS + 2];
+            mRect4 = new Point[SEGMENTS + 2];
+            interpLeadAB(ref mRect1[0], ref mRect2[0], 0, 4);
+            for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
+                interpLeadAB(ref mRect1[j], ref mRect2[j], i * SEG_F, 4);
+                interpLeadAB(ref mRect3[j], ref mRect4[j], (i + 1) * SEG_F, 4);
+            }
+            interpLeadAB(ref mRect1[SEGMENTS + 1], ref mRect2[SEGMENTS + 1], 1, 4);
+        }
+
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(24);
@@ -107,9 +143,8 @@ namespace Circuit.Elements.Passive {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            /* ohmString doesn't work here on linux */
             if (n == 0) {
-                return new ElementInfo("Resistance (ohms)", Resistance, 0, 0);
+                return new ElementInfo("レジスタンス(Ω)", Resistance, 0, 0);
             }
             return null;
         }
@@ -118,42 +153,6 @@ namespace Circuit.Elements.Passive {
             if (ei.Value > 0) {
                 Resistance = ei.Value;
             }
-        }
-
-        void setPoly() {
-            /* zigzag */
-            mP1 = new Point[SEGMENTS];
-            mP2 = new Point[SEGMENTS];
-            int oy = 0;
-            int ny;
-            for (int i = 0; i != SEGMENTS; i++) {
-                switch (i & 3) {
-                case 0:
-                    ny = 5;
-                    break;
-                case 2:
-                    ny = -5;
-                    break;
-                default:
-                    ny = 0;
-                    break;
-                }
-                interpLead(ref mP1[i], i * SEG_F, oy);
-                interpLead(ref mP2[i], (i + 1) * SEG_F, ny);
-                oy = ny;
-            }
-
-            /* rectangle */
-            mRect1 = new Point[SEGMENTS + 2];
-            mRect2 = new Point[SEGMENTS + 2];
-            mRect3 = new Point[SEGMENTS + 2];
-            mRect4 = new Point[SEGMENTS + 2];
-            interpLeadAB(ref mRect1[0], ref mRect2[0], 0, 4);
-            for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
-                interpLeadAB(ref mRect1[j], ref mRect2[j], i * SEG_F, 4);
-                interpLeadAB(ref mRect3[j], ref mRect4[j], (i + 1) * SEG_F, 4);
-            }
-            interpLeadAB(ref mRect1[SEGMENTS + 1], ref mRect2[SEGMENTS + 1], 1, 4);
         }
     }
 }

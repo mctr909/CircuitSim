@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 
-using Circuit.Elements.Active;
+using Circuit.Elements.Custom;
 
 namespace Circuit.Elements.Logic {
     class CounterElm : ChipElm {

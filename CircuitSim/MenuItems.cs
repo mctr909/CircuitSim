@@ -134,7 +134,7 @@ namespace Circuit {
         VCVSElm,
         VCCSElm,
         CCVSElm,
-        CCCSElm,
+        CCCS,
         OPTOCOUPLER,
         CustomCompositeElm,
         #endregion
@@ -737,7 +737,7 @@ namespace Circuit {
                 return new VCCSElm(pos);
             case ELEMENTS.CCVSElm:
                 return null; //(CircuitElm)new CCVSElm(x1, y1);
-            case ELEMENTS.CCCSElm:
+            case ELEMENTS.CCCS:
                 return new CCCSElm(pos);
             case ELEMENTS.OPTOCOUPLER:
                 return new OptocouplerElm(pos);

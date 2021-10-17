@@ -21,7 +21,6 @@ namespace Circuit.Elements.Output {
         double lastMinI;
         double selectedValue = 0;
 
-        double[] currents;
         bool increasingI = true;
         bool decreasingI = true;
 

@@ -21,6 +21,12 @@ namespace Circuit.Elements.Passive {
 
         protected override string dump() { return ""; }
 
+        public override bool HasGroundConnection(int n1) { return true; }
+
+        public override double GetCurrentIntoNode(int n) { return -mCurrent; }
+
+        public override void SetCurrent(int x, double c) { mCurrent = -c; }
+
         public override void Draw(CustomGraphics g) {
             g.ThickLineColor = getVoltageColor(0);
             g.DrawThickLine(mPoint1, mPoint2);
@@ -36,8 +42,6 @@ namespace Circuit.Elements.Passive {
             drawPosts(g);
         }
 
-        public override void SetCurrent(int x, double c) { mCurrent = -c; }
-
         public override void Stamp() {
             mCir.StampVoltageSource(0, Nodes[0], mVoltSource, 0);
         }
@@ -46,9 +50,5 @@ namespace Circuit.Elements.Passive {
             arr[0] = "ground";
             arr[1] = "I = " + Utils.CurrentText(mCurrent);
         }
-
-        public override bool HasGroundConnection(int n1) { return true; }
-
-        public override double GetCurrentIntoNode(int n) { return -mCurrent; }
     }
 }

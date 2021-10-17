@@ -4,6 +4,7 @@ using System.Windows.Forms;
 namespace Circuit.Elements.Passive {
     class SwitchElm : CircuitElm {
         const int OPEN_HS = 16;
+        const int BODY_LEN = 28;
 
         Point mP1;
         Point mP2;
@@ -70,7 +71,7 @@ namespace Circuit.Elements.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads(32);
+            calcLeads(BODY_LEN);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -112,7 +113,7 @@ namespace Circuit.Elements.Passive {
             if (n == 0) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
-                ei.CheckBox.Text = "Momentary Switch";
+                ei.CheckBox.Text = "モーメンタリ";
                 ei.CheckBox.Checked = Momentary;
                 return ei;
             }

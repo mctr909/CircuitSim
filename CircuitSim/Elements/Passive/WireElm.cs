@@ -32,6 +32,10 @@ namespace Circuit.Elements.Passive {
 
         bool mustShowVoltage { get { return (mFlags & FLAG_SHOWVOLTAGE) != 0; } }
 
+        public override void Stamp() {
+            /*cir.stampVoltageSource(nodes[0], nodes[1], voltSource, 0);*/
+        }
+
         public override void SetPoints() {
             base.SetPoints();
             int sign;
@@ -49,17 +53,13 @@ namespace Circuit.Elements.Passive {
             setBbox(mPoint1, mPoint2, 3);
             string s = "";
             if (mustShowCurrent) {
-                s = Utils.ShortUnitText(Math.Abs(mCurrent), "A");
+                s = Utils.CurrentDText(Math.Abs(mCurrent));
             }
             if (mustShowVoltage) {
-                s = (s.Length > 0 ? s + "\r\n" : "") + Utils.ShortUnitText(Volts[0], "V");
+                s = (s.Length > 0 ? s + "\r\n" : "") + Utils.VoltageText(Volts[0]);
             }
             g.DrawRightText(s, mTextPos.X, mTextPos.Y);
             drawPosts(g);
-        }
-
-        public override void Stamp() {
-            /*cir.stampVoltageSource(nodes[0], nodes[1], voltSource, 0);*/
         }
 
         public override void GetInfo(string[] arr) {
@@ -72,14 +72,14 @@ namespace Circuit.Elements.Passive {
             if (n == 0) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
-                ei.CheckBox.Text = "Show Current";
+                ei.CheckBox.Text = "電流表示";
                 ei.CheckBox.Checked = mustShowCurrent;
                 return ei;
             }
             if (n == 1) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
-                ei.CheckBox.Text = "Show Voltage";
+                ei.CheckBox.Text = "電圧表示";
                 ei.CheckBox.Checked = mustShowVoltage;
                 return ei;
             }
