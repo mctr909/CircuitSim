@@ -30,7 +30,6 @@ namespace Circuit.Elements.Active {
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads(12);
             mCathode = new Point[2];
             mWing = new Point[2];
             var pa = new Point[2];

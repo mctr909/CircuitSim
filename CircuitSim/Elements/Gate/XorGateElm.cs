@@ -14,7 +14,7 @@ namespace Circuit.Elements.Gate {
 
         protected override bool calcFunction() {
             bool f = false;
-            for (int i = 0; i != inputCount; i++) {
+            for (int i = 0; i != mInputCount; i++) {
                 f ^= getInput(i);
             }
             return f;

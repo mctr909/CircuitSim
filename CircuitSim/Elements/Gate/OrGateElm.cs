@@ -10,6 +10,16 @@ namespace Circuit.Elements.Gate {
 
         protected override string getGateName() { return "OR gate"; }
 
+        protected override string getGateText() { return "\u22651"; }
+
+        protected override bool calcFunction() {
+            bool f = false;
+            for (int i = 0; i != mInputCount; i++) {
+                f |= getInput(i);
+            }
+            return f;
+        }
+
         public override void SetPoints() {
             base.SetPoints();
 
@@ -19,41 +29,31 @@ namespace Circuit.Elements.Gate {
              * 16    = right,
              * 17-32 = bottom curve,
              * 33-39 = left curve */
-            gatePolyAnsi = new Point[40];
+            mGatePolyAnsi = new Point[40];
             if (this is XorGateElm) {
-                linePoints = new Point[7];
+                mLinePoints = new Point[7];
             }
             for (int i = 0; i != 16; i++) {
                 double a = i / 16.0;
                 double b = 1 - a * a;
-                interpLeadAB(ref gatePolyAnsi[i], ref gatePolyAnsi[32 - i], 0.5 + a / 2, b * hs2);
+                interpLeadAB(ref mGatePolyAnsi[i], ref mGatePolyAnsi[32 - i], 0.5 + a / 2, b * mHs2);
             }
-            double ww2 = (ww == 0) ? mLen * 2 : ww * 2;
+            double ww2 = (mWw == 0) ? mLen * 2 : mWw * 2;
             for (int i = 0; i != 7; i++) {
                 double a = (i - 3) / 3.0;
                 double b = 6 * (1 - a * a) - 3;
-                interpLead(ref gatePolyAnsi[33 + i], b / ww2, a * hs2);
+                interpLead(ref mGatePolyAnsi[33 + i], b / ww2, a * mHs2);
                 if (this is XorGateElm) {
-                    interpLead(ref linePoints[i], (b - 5) / ww2, a * hs2);
+                    interpLead(ref mLinePoints[i], (b - 5) / ww2, a * mHs2);
                 }
             }
-            gatePolyAnsi[16] = mLead2;
+            mGatePolyAnsi[16] = mLead2;
 
             if (isInverting()) {
-                circleSize = 6;
-                interpPoint(ref circlePos, 0.5 + (ww + 3) / mLen);
-                setLead2(0.5 + (ww + 6) / mLen);
+                mCircleSize = 6;
+                interpPoint(ref mCirclePos, 0.5 + (mWw + 3) / mLen);
+                setLead2(0.5 + (mWw + 6) / mLen);
             }
-        }
-
-        protected override string getGateText() { return "\u22651"; }
-
-        protected override bool calcFunction() {
-            bool f = false;
-            for (int i = 0; i != inputCount; i++) {
-                f |= getInput(i);
-            }
-            return f;
         }
     }
 }

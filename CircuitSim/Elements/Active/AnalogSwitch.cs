@@ -6,6 +6,7 @@ namespace Circuit.Elements.Active {
     class AnalogSwitchElm : CircuitElm {
         const int FLAG_INVERT = 1;
         const int OPEN_HS = 16;
+        const int BODY_LEN = 24;
 
         double mResistance;
         double mR_on;
@@ -91,7 +92,7 @@ namespace Circuit.Elements.Active {
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads(32);
+            calcLeads(BODY_LEN);
             mPs = new Point();
             interpPoint(ref mPoint3, 0.5, -OPEN_HS);
             interpPoint(ref mLead3, 0.5, -OPEN_HS / 2);

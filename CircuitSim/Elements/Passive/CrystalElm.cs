@@ -4,8 +4,8 @@ using Circuit.Elements.Custom;
 
 namespace Circuit.Elements.Passive {
     class CrystalElm : CompositeElm {
-        private static int[] modelExternalNodes = { 1, 2 };
-        private static string modelString
+        static readonly int[] EXTERNAL_NODES = { 1, 2 };
+        static readonly string MODEL_STRING
             = ELEMENTS.CAPACITOR + " 1 2\r"
             + ELEMENTS.CAPACITOR + " 1 3\r"
             + ELEMENTS.INDUCTOR + " 3 4\r"
@@ -25,7 +25,7 @@ namespace Circuit.Elements.Passive {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.CRYSTAL; } }
 
-        public CrystalElm(Point pos) : base(pos, modelString, modelExternalNodes) {
+        public CrystalElm(Point pos) : base(pos, MODEL_STRING, EXTERNAL_NODES) {
             mParallelCapacitance = 28.7e-12;
             mSeriesCapacitance = 0.1e-12;
             mInductance = 2.5e-3;
@@ -33,7 +33,7 @@ namespace Circuit.Elements.Passive {
             initCrystal();
         }
 
-        public CrystalElm(Point a, Point b, int f, StringTokenizer st) : base(a, b, f, st, modelString, modelExternalNodes) {
+        public CrystalElm(Point a, Point b, int f, StringTokenizer st) : base(a, b, f, st, MODEL_STRING, EXTERNAL_NODES) {
             var c1 = (CapacitorElm)compElmList[0];
             mParallelCapacitance = c1.Capacitance;
             var c2 = (CapacitorElm)compElmList[1];
@@ -111,10 +111,6 @@ namespace Circuit.Elements.Passive {
         public override void GetInfo(string[] arr) {
             arr[0] = "crystal";
             getBasicInfo(arr);
-            //	    arr[3] = "C = " + getUnitText(capacitance, "F");
-            //	    arr[4] = "P = " + getUnitText(getPower(), "W");
-            //double v = getVoltageDiff();
-            //arr[4] = "U = " + getUnitText(.5*capacitance*v*v, "J");
         }
 
         public override ElementInfo GetElementInfo(int n) {

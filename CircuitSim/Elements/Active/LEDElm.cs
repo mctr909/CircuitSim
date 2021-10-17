@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace Circuit.Elements.Active {
     class LEDElm : DiodeElm {
-        const int CD = 20;
+        const int CR = 10;
         const int CR_INNER = 7;
 
         static string mLastLEDModelName = "default";
@@ -48,8 +48,8 @@ namespace Circuit.Elements.Active {
 
         public override void SetPoints() {
             base.SetPoints();
-            interpPoint(ref mLedLead1, 0.5 - CD / mLen);
-            interpPoint(ref mLedLead2, 0.5 + CD / mLen);
+            interpPoint(ref mLedLead1, 0.5 - CR / mLen);
+            interpPoint(ref mLedLead2, 0.5 + CR / mLen);
             interpPoint(ref mLedCenter, 0.5);
         }
 
@@ -63,7 +63,7 @@ namespace Circuit.Elements.Active {
             drawVoltage(g, 1, mLedLead2, mPoint2);
 
             g.ThickLineColor = CustomGraphics.GrayColor;
-            g.DrawThickCircle(mLedCenter, CD);
+            g.DrawThickCircle(mLedCenter, 2 * CR);
 
             double w = mCurrent / mMaxBrightnessCurrent;
             if (0 < w) {

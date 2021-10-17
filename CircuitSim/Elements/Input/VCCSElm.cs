@@ -5,24 +5,24 @@ using Circuit.Elements.Custom;
 
 namespace Circuit.Elements.Input {
     class VCCSElm : ChipElm {
-        public bool broken;
+        public bool mBroken;
 
-        protected int inputCount;
-        protected Expr expr;
-        protected ExprState exprState;
-        protected string exprString;
-        double[] lastVolts;
+        protected int mInputCount;
+        protected Expr mExpr;
+        protected ExprState mExprState;
+        protected string mExprString;
+        double[] mLastVolts;
 
         public VCCSElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
-            inputCount = st.nextTokenInt();
-            exprString = CustomLogicModel.unescape(st.nextToken());
+            mInputCount = st.nextTokenInt();
+            mExprString = CustomLogicModel.unescape(st.nextToken());
             parseExpr();
             SetupPins();
         }
 
         public VCCSElm(Point pos) : base(pos) {
-            inputCount = 2;
-            exprString = ".1*(a-b)";
+            mInputCount = 2;
+            mExprString = ".1*(a-b)";
             parseExpr();
             SetupPins();
         }
@@ -31,36 +31,135 @@ namespace Circuit.Elements.Input {
 
         public override bool NonLinear { get { return true; } }
 
-        public override int PostCount { get { return inputCount + 2; } }
+        public override int PostCount { get { return mInputCount + 2; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.VCCS; } }
 
+        public virtual bool hasCurrentOutput() { return true; }
+
         protected override string dump() {
-            return base.dump() + " " + inputCount + " " + CustomLogicModel.escape(exprString);
-        }
-
-        public override void SetupPins() {
-            sizeX = 2;
-            sizeY = inputCount > 2 ? inputCount : 2;
-            pins = new Pin[inputCount + 2];
-            for (int i = 0; i != inputCount; i++) {
-                pins[i] = new Pin(this, i, SIDE_W, char.ToString((char)('A' + i)));
-            }
-            pins[inputCount] = new Pin(this, 0, SIDE_E, "C+");
-            pins[inputCount + 1] = new Pin(this, 1, SIDE_E, "C-");
-            lastVolts = new double[inputCount];
-            exprState = new ExprState(inputCount);
-        }
-
-        string getChipName() { return "VCCS~"; } /* ~ is for localization */
-
-        public override void Stamp() {
-            mCir.StampNonLinear(Nodes[inputCount]);
-            mCir.StampNonLinear(Nodes[inputCount + 1]);
+            return base.dump() + " " + mInputCount + " " + CustomLogicModel.escape(mExprString);
         }
 
         protected double sign(double a, double b) {
             return a > 0 ? b : -b;
+        }
+
+        protected void parseExpr() {
+            var parser = new ExprParser(mExprString);
+            mExpr = parser.parseExpression();
+        }
+
+        protected double getConvergeLimit() {
+            /* get maximum change in voltage per step when testing for convergence.
+             * be more lenient over time */
+            if (mCir.SubIterations < 10) {
+                return .001;
+            }
+            if (mCir.SubIterations < 200) {
+                return .01;
+            }
+            return .1;
+        }
+
+        public override bool GetConnection(int n1, int n2) {
+            return comparePair(mInputCount, mInputCount + 1, n1, n2);
+        }
+
+        public override bool HasGroundConnection(int n1) {
+            return false;
+        }
+
+        public override void SetupPins() {
+            sizeX = 2;
+            sizeY = mInputCount > 2 ? mInputCount : 2;
+            pins = new Pin[mInputCount + 2];
+            for (int i = 0; i != mInputCount; i++) {
+                pins[i] = new Pin(this, i, SIDE_W, char.ToString((char)('A' + i)));
+            }
+            pins[mInputCount] = new Pin(this, 0, SIDE_E, "C+");
+            pins[mInputCount + 1] = new Pin(this, 1, SIDE_E, "C-");
+            mLastVolts = new double[mInputCount];
+            mExprState = new ExprState(mInputCount);
+        }
+
+        string getChipName() { return "VCCS~"; } /* ~ is for localization */
+
+        public void SetExpr(string expr) {
+            mExprString = expr.Replace(" ", "").Replace("\r", "").Replace("\n", "");
+            parseExpr();
+        }
+
+        public override void Stamp() {
+            mCir.StampNonLinear(Nodes[mInputCount]);
+            mCir.StampNonLinear(Nodes[mInputCount + 1]);
+        }
+
+        public override void DoStep() {
+            int i;
+
+            /* no current path?  give up */
+            if (mBroken) {
+                pins[mInputCount].current = 0;
+                pins[mInputCount + 1].current = 0;
+                /* avoid singular matrix errors */
+                mCir.StampResistor(Nodes[mInputCount], Nodes[mInputCount + 1], 1e8);
+                return;
+            }
+
+            /* converged yet? */
+            double limitStep = getLimitStep();
+            double convergeLimit = getConvergeLimit();
+            for (i = 0; i != mInputCount; i++) {
+                if (Math.Abs(Volts[i] - mLastVolts[i]) > convergeLimit) {
+                    mCir.Converged = false;
+                }
+                if (double.IsNaN(Volts[i])) {
+                    Volts[i] = 0;
+                }
+                if (Math.Abs(Volts[i] - mLastVolts[i]) > limitStep) {
+                    Volts[i] = mLastVolts[i] + sign(Volts[i] - mLastVolts[i], limitStep);
+                }
+            }
+
+            if (mExpr != null) {
+                /* calculate output */
+                for (i = 0; i != mInputCount; i++) {
+                    mExprState.values[i] = Volts[i];
+                }
+                mExprState.t = CirSim.Sim.Time;
+                double v0 = -mExpr.eval(mExprState);
+                /*if (Math.Abs(volts[inputCount] - v0) > Math.Abs(v0) * .01 && cir.SubIterations < 100) {
+                    cir.Converged = false;
+                }*/
+                double rs = v0;
+
+                /* calculate and stamp output derivatives */
+                for (i = 0; i != mInputCount; i++) {
+                    double dv = 1e-6;
+                    mExprState.values[i] = Volts[i] + dv;
+                    double v = -mExpr.eval(mExprState);
+                    mExprState.values[i] = Volts[i] - dv;
+                    double v2 = -mExpr.eval(mExprState);
+                    double dx = (v - v2) / (dv * 2);
+                    if (Math.Abs(dx) < 1e-6) {
+                        dx = sign(dx, 1e-6);
+                    }
+                    mCir.StampVCCurrentSource(Nodes[mInputCount], Nodes[mInputCount + 1], Nodes[i], 0, dx);
+                    /*Console.WriteLine("ccedx " + i + " " + dx); */
+                    /* adjust right side */
+                    rs -= dx * Volts[i];
+                    mExprState.values[i] = Volts[i];
+                }
+                /*Console.WriteLine("ccers " + rs);*/
+                mCir.StampCurrentSource(Nodes[mInputCount], Nodes[mInputCount + 1], rs);
+                pins[mInputCount].current = -v0;
+                pins[mInputCount + 1].current = v0;
+            }
+
+            for (i = 0; i != mInputCount; i++) {
+                mLastVolts[i] = Volts[i];
+            }
         }
 
         double getLimitStep() {
@@ -81,119 +180,38 @@ namespace Circuit.Elements.Input {
             return .001;
         }
 
-        protected double getConvergeLimit() {
-            /* get maximum change in voltage per step when testing for convergence.
-             * be more lenient over time */
-            if (mCir.SubIterations < 10) {
-                return .001;
-            }
-            if (mCir.SubIterations < 200) {
-                return .01;
-            }
-            return .1;
-        }
-
-        public virtual bool hasCurrentOutput() { return true; }
-
         public int getOutputNode(int n) {
-            return Nodes[n + inputCount];
-        }
-
-        public override void DoStep() {
-            int i;
-
-            /* no current path?  give up */
-            if (broken) {
-                pins[inputCount].current = 0;
-                pins[inputCount + 1].current = 0;
-                /* avoid singular matrix errors */
-                mCir.StampResistor(Nodes[inputCount], Nodes[inputCount + 1], 1e8);
-                return;
-            }
-
-            /* converged yet? */
-            double limitStep = getLimitStep();
-            double convergeLimit = getConvergeLimit();
-            for (i = 0; i != inputCount; i++) {
-                if (Math.Abs(Volts[i] - lastVolts[i]) > convergeLimit) {
-                    mCir.Converged = false;
-                }
-                if (double.IsNaN(Volts[i])) {
-                    Volts[i] = 0;
-                }
-                if (Math.Abs(Volts[i] - lastVolts[i]) > limitStep) {
-                    Volts[i] = lastVolts[i] + sign(Volts[i] - lastVolts[i], limitStep);
-                }
-            }
-
-            if (expr != null) {
-                /* calculate output */
-                for (i = 0; i != inputCount; i++) {
-                    exprState.values[i] = Volts[i];
-                }
-                exprState.t = CirSim.Sim.Time;
-                double v0 = -expr.eval(exprState);
-                /*if (Math.Abs(volts[inputCount] - v0) > Math.Abs(v0) * .01 && cir.SubIterations < 100) {
-                    cir.Converged = false;
-                }*/
-                double rs = v0;
-
-                /* calculate and stamp output derivatives */
-                for (i = 0; i != inputCount; i++) {
-                    double dv = 1e-6;
-                    exprState.values[i] = Volts[i] + dv;
-                    double v = -expr.eval(exprState);
-                    exprState.values[i] = Volts[i] - dv;
-                    double v2 = -expr.eval(exprState);
-                    double dx = (v - v2) / (dv * 2);
-                    if (Math.Abs(dx) < 1e-6) {
-                        dx = sign(dx, 1e-6);
-                    }
-                    mCir.StampVCCurrentSource(Nodes[inputCount], Nodes[inputCount + 1], Nodes[i], 0, dx);
-                    /*Console.WriteLine("ccedx " + i + " " + dx); */
-                    /* adjust right side */
-                    rs -= dx * Volts[i];
-                    exprState.values[i] = Volts[i];
-                }
-                /*Console.WriteLine("ccers " + rs);*/
-                mCir.StampCurrentSource(Nodes[inputCount], Nodes[inputCount + 1], rs);
-                pins[inputCount].current = -v0;
-                pins[inputCount + 1].current = v0;
-            }
-
-            for (i = 0; i != inputCount; i++) {
-                lastVolts[i] = Volts[i];
-            }
+            return Nodes[n + mInputCount];
         }
 
         public override void Draw(CustomGraphics g) {
             drawChip(g);
         }
 
-        public override bool GetConnection(int n1, int n2) {
-            return comparePair(inputCount, inputCount + 1, n1, n2);
-        }
-
-        public override bool HasGroundConnection(int n1) {
-            return false;
+        public override void GetInfo(string[] arr) {
+            base.GetInfo(arr);
+            int i;
+            for (i = 0; arr[i] != null; i++)
+                ;
+            arr[i] = "I = " + Utils.CurrentText(pins[mInputCount].current);
         }
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
                 var ei = new ElementInfo(ElementInfo.MakeLink("customfunction.html", "Output Function"), 0, -1, -1);
-                ei.Text = exprString;
+                ei.Text = mExprString;
                 ei.DisallowSliders();
                 return ei;
             }
             if (n == 1) {
-                return new ElementInfo("# of Inputs", inputCount, 1, 8).SetDimensionless();
+                return new ElementInfo("入力数", mInputCount, 1, 8).SetDimensionless();
             }
             return null;
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
-                exprString = ei.Textf.Text.Replace(" ", "").Replace("\r", "").Replace("\n", "");
+                mExprString = ei.Textf.Text.Replace(" ", "").Replace("\r", "").Replace("\n", "");
                 parseExpr();
                 return;
             }
@@ -201,28 +219,11 @@ namespace Circuit.Elements.Input {
                 if (ei.Value < 0 || ei.Value > 8) {
                     return;
                 }
-                inputCount = (int)ei.Value;
+                mInputCount = (int)ei.Value;
                 SetupPins();
                 allocNodes();
                 SetPoints();
             }
-        }
-
-        public void setExpr(string expr) {
-            exprString = expr.Replace(" ", "").Replace("\r", "").Replace("\n", "");
-            parseExpr();
-        }
-
-        protected void parseExpr() {
-            var parser = new ExprParser(exprString);
-            expr = parser.parseExpression();
-        }
-
-        public override void GetInfo(string[] arr) {
-            base.GetInfo(arr);
-            int i;
-            for (i = 0; arr[i] != null; i++) ;
-            arr[i] = "I = " + Utils.CurrentText(pins[inputCount].current);
         }
     }
 }

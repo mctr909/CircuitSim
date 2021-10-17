@@ -4,24 +4,24 @@ using System.Drawing;
 namespace Circuit.Elements.Input {
     class AMElm : CircuitElm {
         const int FLAG_COS = 2;
-        const int circleSize = 28;
+        const int SIZE = 28;
 
-        double carrierfreq;
-        double signalfreq;
-        double maxVoltage;
-        double freqTimeZero;
+        double mCarrierFreq;
+        double mSignalFreq;
+        double mMaxVoltage;
+        double mFreqTimeZero;
 
         public AMElm(Point pos) : base(pos) {
-            maxVoltage = 5;
-            carrierfreq = 1000;
-            signalfreq = 40;
+            mMaxVoltage = 5;
+            mCarrierFreq = 1000;
+            mSignalFreq = 40;
             Reset();
         }
 
         public AMElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            carrierfreq = st.nextTokenDouble();
-            signalfreq = st.nextTokenDouble();
-            maxVoltage = st.nextTokenDouble();
+            mCarrierFreq = st.nextTokenDouble();
+            mSignalFreq = st.nextTokenDouble();
+            mMaxVoltage = st.nextTokenDouble();
             if ((mFlags & FLAG_COS) != 0) {
                 mFlags &= ~FLAG_COS;
             }
@@ -31,15 +31,23 @@ namespace Circuit.Elements.Input {
         public override DUMP_ID DumpType { get { return DUMP_ID.AM; } }
 
         protected override string dump() {
-            return carrierfreq + " " + signalfreq + " " + maxVoltage;
+            return mCarrierFreq + " " + mSignalFreq + " " + mMaxVoltage;
         }
 
         public override void Reset() {
-            freqTimeZero = 0;
+            mFreqTimeZero = 0;
             mCurCount = 0;
         }
 
         public override int PostCount { get { return 1; } }
+
+        public override double VoltageDiff { get { return Volts[0]; } }
+
+        public override int VoltageSourceCount { get { return 1; } }
+
+        public override double Power { get { return -VoltageDiff * mCurrent; } }
+
+        public override bool HasGroundConnection(int n1) { return true; }
 
         public override void Stamp() {
             mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
@@ -49,13 +57,13 @@ namespace Circuit.Elements.Input {
             mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
         }
 
-        double getVoltage() {
-            double w = 2 * Math.PI * (CirSim.Sim.Time - freqTimeZero);
-            return (Math.Sin(w * signalfreq) + 1) / 2 * Math.Sin(w * carrierfreq) * maxVoltage;
+        public override void SetPoints() {
+            base.SetPoints();
+            setLead1(1 - 0.5 * SIZE / mLen);
         }
 
         public override void Draw(CustomGraphics g) {
-            setBbox(mPoint1, mPoint2, circleSize);
+            setBbox(mPoint1, mPoint2, SIZE);
             drawVoltage(g, 0, mPoint1, mLead1);
 
             CustomGraphics.TextColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
@@ -70,58 +78,50 @@ namespace Circuit.Elements.Input {
             }
         }
 
-        void drawWaveform(CustomGraphics g, Point center) {
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            int xc = center.X;
-            int yc = center.Y;
-            g.DrawThickCircle(center, circleSize);
-            adjustBbox(xc - circleSize, yc - circleSize, xc + circleSize, yc + circleSize);
-        }
-
-        public override void SetPoints() {
-            base.SetPoints();
-            setLead1(1 - 0.5 * circleSize / mLen);
-        }
-
-        public override double VoltageDiff { get { return Volts[0]; } }
-
-        public override bool HasGroundConnection(int n1) { return true; }
-
-        public override int VoltageSourceCount { get { return 1; } }
-
-        public override double Power { get { return -VoltageDiff * mCurrent; } }
-
         public override void GetInfo(string[] arr) {
             arr[0] = "AM Source";
             arr[1] = "I = " + Utils.CurrentText(Current);
             arr[2] = "V = " + Utils.VoltageText(VoltageDiff);
-            arr[3] = "cf = " + Utils.UnitText(carrierfreq, "Hz");
-            arr[4] = "sf = " + Utils.UnitText(signalfreq, "Hz");
-            arr[5] = "Vmax = " + Utils.VoltageText(maxVoltage);
+            arr[3] = "cf = " + Utils.UnitText(mCarrierFreq, "Hz");
+            arr[4] = "sf = " + Utils.UnitText(mSignalFreq, "Hz");
+            arr[5] = "Vmax = " + Utils.VoltageText(mMaxVoltage);
+        }
+
+        void drawWaveform(CustomGraphics g, Point center) {
+            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            int xc = center.X;
+            int yc = center.Y;
+            g.DrawThickCircle(center, SIZE);
+            adjustBbox(xc - SIZE, yc - SIZE, xc + SIZE, yc + SIZE);
+        }
+
+        double getVoltage() {
+            double w = 2 * Math.PI * (CirSim.Sim.Time - mFreqTimeZero);
+            return (Math.Sin(w * mSignalFreq) + 1) / 2 * Math.Sin(w * mCarrierFreq) * mMaxVoltage;
         }
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new ElementInfo("Max Voltage", maxVoltage, -20, 20);
+                return new ElementInfo("振幅(V)", mMaxVoltage, -20, 20);
             }
             if (n == 1) {
-                return new ElementInfo("Carrier Frequency (Hz)", carrierfreq, 4, 500);
+                return new ElementInfo("搬送波周波数(Hz)", mCarrierFreq, 4, 500);
             }
             if (n == 2) {
-                return new ElementInfo("Signal Frequency (Hz)", signalfreq, 4, 500);
+                return new ElementInfo("信号周波数(Hz)", mSignalFreq, 4, 500);
             }
             return null;
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
-                maxVoltage = ei.Value;
+                mMaxVoltage = ei.Value;
             }
             if (n == 1) {
-                carrierfreq = ei.Value;
+                mCarrierFreq = ei.Value;
             }
             if (n == 2) {
-                signalfreq = ei.Value;
+                mSignalFreq = ei.Value;
             }
         }
     }

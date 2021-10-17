@@ -3,15 +3,15 @@ using System.Drawing;
 
 namespace Circuit.Elements.Input {
     class CCCSElm : VCCSElm {
-        double lastCurrent;
+        double mLastCurrent;
 
         public CCCSElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
-            inputCount = 2;
+            mInputCount = 2;
             SetupPins();
         }
 
         public CCCSElm(Point pos) : base(pos) {
-            exprString = "2*i";
+            mExprString = "2*i";
             parseExpr();
         }
 
@@ -20,6 +20,25 @@ namespace Circuit.Elements.Input {
         public override int PostCount { get { return 4; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.CCCS; } }
+
+        public override void SetCurrent(int vn, double c) {
+            if (pins[1].voltSource == vn) {
+                pins[0].current = -c;
+                pins[1].current = c;
+            }
+        }
+
+        public override bool GetConnection(int n1, int n2) {
+            if (comparePair(0, 1, n1, n2)) {
+                return true;
+            }
+            if (comparePair(2, 3, n1, n2)) {
+                return true;
+            }
+            return false;
+        }
+
+        public override bool hasCurrentOutput() { return true; }
 
         public override void SetupPins() {
             sizeX = 2;
@@ -31,7 +50,7 @@ namespace Circuit.Elements.Input {
             pins[2] = new Pin(this, 0, SIDE_E, "O+");
             pins[2].output = true;
             pins[3] = new Pin(this, 1, SIDE_E, "O-");
-            exprState = new ExprState(1);
+            mExprState = new ExprState(1);
         }
 
         string getChipName() { return "CCCS"; }
@@ -47,11 +66,11 @@ namespace Circuit.Elements.Input {
 
         public override void DoStep() {
             /* no current path?  give up */
-            if (broken) {
-                pins[inputCount].current = 0;
-                pins[inputCount + 1].current = 0;
+            if (mBroken) {
+                pins[mInputCount].current = 0;
+                pins[mInputCount + 1].current = 0;
                 /* avoid singular matrix errors */
-                mCir.StampResistor(Nodes[inputCount], Nodes[inputCount + 1], 1e8);
+                mCir.StampResistor(Nodes[mInputCount], Nodes[mInputCount + 1], 1e8);
                 return;
             }
 
@@ -60,24 +79,24 @@ namespace Circuit.Elements.Input {
             double convergeLimit = getConvergeLimit() * .1;
 
             double cur = pins[1].current;
-            if (Math.Abs(cur - lastCurrent) > convergeLimit) {
+            if (Math.Abs(cur - mLastCurrent) > convergeLimit) {
                 mCir.Converged = false;
             }
             int vn1 = pins[1].voltSource + mCir.NodeList.Count;
-            if (expr != null) {
+            if (mExpr != null) {
                 /* calculate output */
-                exprState.values[8] = cur;  /* I = current */
-                exprState.t = CirSim.Sim.Time;
-                double v0 = expr.eval(exprState);
+                mExprState.values[8] = cur;  /* I = current */
+                mExprState.t = CirSim.Sim.Time;
+                double v0 = mExpr.eval(mExprState);
                 double rs = v0;
                 pins[2].current = v0;
                 pins[3].current = -v0;
 
                 double dv = 1e-6;
-                exprState.values[8] = cur + dv;
-                double v = expr.eval(exprState);
-                exprState.values[8] = cur - dv;
-                double v2 = expr.eval(exprState);
+                mExprState.values[8] = cur + dv;
+                double v = mExpr.eval(mExprState);
+                mExprState.values[8] = cur - dv;
+                double v2 = mExpr.eval(mExprState);
                 double dx = (v - v2) / (dv * 2);
                 if (Math.Abs(dx) < 1e-6) {
                     dx = sign(dx, 1e-6);
@@ -89,26 +108,7 @@ namespace Circuit.Elements.Input {
                 mCir.StampCurrentSource(Nodes[3], Nodes[2], rs);
             }
 
-            lastCurrent = cur;
-        }
-
-        public override bool GetConnection(int n1, int n2) {
-            if (comparePair(0, 1, n1, n2)) {
-                return true;
-            }
-            if (comparePair(2, 3, n1, n2)) {
-                return true;
-            }
-            return false;
-        }
-
-        public override bool hasCurrentOutput() { return true; }
-
-        public override void SetCurrent(int vn, double c) {
-            if (pins[1].voltSource == vn) {
-                pins[0].current = -c;
-                pins[1].current = c;
-            }
+            mLastCurrent = cur;
         }
 
         public override ElementInfo GetElementInfo(int n) {

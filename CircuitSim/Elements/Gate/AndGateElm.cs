@@ -11,6 +11,16 @@ namespace Circuit.Elements.Gate {
 
         protected override string getGateText() { return "&"; }
 
+        protected override string getGateName() { return "AND gate"; }
+
+        protected override bool calcFunction() {
+            bool f = true;
+            for (int i = 0; i != mInputCount; i++) {
+                f &= getInput(i);
+            }
+            return f;
+        }
+
         public override void SetPoints() {
             base.SetPoints();
 
@@ -21,30 +31,20 @@ namespace Circuit.Elements.Gate {
              * 11   = right,
              * 12-21= bottom curve,
              * 22   = bottom left */
-            gatePolyAnsi = new Point[23];
-            interpLeadAB(ref gatePolyAnsi[0], ref gatePolyAnsi[22], 0, hs2);
+            mGatePolyAnsi = new Point[23];
+            interpLeadAB(ref mGatePolyAnsi[0], ref mGatePolyAnsi[22], 0, mHs2);
             for (int i = 0; i != 10; i++) {
                 double a = i * .1;
                 double b = Math.Sqrt(1 - a * a);
-                interpLeadAB(ref gatePolyAnsi[i + 1], ref gatePolyAnsi[21 - i], 0.5 + a / 2, b * hs2);
+                interpLeadAB(ref mGatePolyAnsi[i + 1], ref mGatePolyAnsi[21 - i], 0.5 + a / 2, b * mHs2);
             }
-            gatePolyAnsi[11] = mLead2;
+            mGatePolyAnsi[11] = mLead2;
 
             if (isInverting()) {
-                circleSize = 6;
-                interpPoint(ref circlePos, 0.5 + (ww + 3) / mLen);
-                setLead2(0.5 + (ww + 6) / mLen);
+                mCircleSize = 6;
+                interpPoint(ref mCirclePos, 0.5 + (mWw + 3) / mLen);
+                setLead2(0.5 + (mWw + 6) / mLen);
             }
-        }
-
-        protected override string getGateName() { return "AND gate"; }
-
-        protected override bool calcFunction() {
-            bool f = true;
-            for (int i = 0; i != inputCount; i++) {
-                f &= getInput(i);
-            }
-            return f;
         }
     }
 }

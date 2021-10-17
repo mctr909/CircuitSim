@@ -871,9 +871,9 @@ namespace Circuit {
                     var cur = (VCCSElm)ce;
                     var fpi = new FindPathInfo(FindPathInfo.INDUCT, ce, cur.getOutputNode(0), elmList, NodeList.Count);
                     if (cur.hasCurrentOutput() && !fpi.FindPath(cur.getOutputNode(1))) {
-                        cur.broken = true;
+                        cur.mBroken = true;
                     } else {
-                        cur.broken = false;
+                        cur.mBroken = false;
                     }
                 }
 

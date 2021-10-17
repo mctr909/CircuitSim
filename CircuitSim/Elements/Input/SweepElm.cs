@@ -7,37 +7,37 @@ namespace Circuit.Elements.Input {
         const int FLAG_LOG = 1;
         const int FLAG_BIDIR = 2;
 
-        const int circleSize = 28;
+        const int CR = 28;
 
-        double maxV;
-        double maxF;
-        double minF;
-        double sweepTime;
-        double frequency;
+        double mMaxV;
+        double mMaxF;
+        double mMinF;
+        double mSweepTime;
+        double mFrequency;
 
-        double fadd;
-        double fmul;
-        double freqTime;
-        double savedTimeStep;
-        double v;
-        int dir = 1;
+        double mFadd;
+        double mFmul;
+        double mFreqTime;
+        double mSavedTimeStep;
+        double mVolt;
+        int mFdir = 1;
 
-        Point textPos;
+        Point mTextPos;
 
         public SweepElm(Point pos) : base(pos) {
-            minF = 20;
-            maxF = 4000;
-            maxV = 5;
-            sweepTime = .1;
+            mMinF = 20;
+            mMaxF = 4000;
+            mMaxV = 5;
+            mSweepTime = .1;
             mFlags = FLAG_BIDIR;
             Reset();
         }
 
         public SweepElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            minF = st.nextTokenDouble();
-            maxF = st.nextTokenDouble();
-            maxV = st.nextTokenDouble();
-            sweepTime = st.nextTokenDouble();
+            mMinF = st.nextTokenDouble();
+            mMaxF = st.nextTokenDouble();
+            mMaxV = st.nextTokenDouble();
+            mSweepTime = st.nextTokenDouble();
             Reset();
         }
 
@@ -51,21 +51,62 @@ namespace Circuit.Elements.Input {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.SWEEP; } }
 
+        public override bool HasGroundConnection(int n1) { return true; }
+
         protected override string dump() {
-            return minF
-                + " " + maxF
-                + " " + maxV
-                + " " + sweepTime;
+            return mMinF
+                + " " + mMaxF
+                + " " + mMaxV
+                + " " + mSweepTime;
+        }
+
+        public override void StartIteration() {
+            /* has timestep been changed? */
+            if (ControlPanel.TimeStep != mSavedTimeStep) {
+                setParams();
+            }
+            mVolt = Math.Sin(mFreqTime) * mMaxV;
+            mFreqTime += mFrequency * 2 * Math.PI * ControlPanel.TimeStep;
+            mFrequency = mFrequency * mFmul + mFadd;
+            if (mFrequency >= mMaxF && mFdir == 1) {
+                if ((mFlags & FLAG_BIDIR) != 0) {
+                    mFadd = -mFadd;
+                    mFmul = 1 / mFmul;
+                    mFdir = -1;
+                } else {
+                    mFrequency = mMinF;
+                }
+            }
+            if (mFrequency <= mMinF && mFdir == -1) {
+                mFadd = -mFadd;
+                mFmul = 1 / mFmul;
+                mFdir = 1;
+            }
+        }
+
+        public override void DoStep() {
+            mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, mVolt);
+        }
+
+        public override void Stamp() {
+            mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
         }
 
         public override void SetPoints() {
             base.SetPoints();
-            setLead1(1 - 0.5 * circleSize / mLen);
-            interpPoint(ref textPos, 1.0 + 0.66 * circleSize / Utils.Distance(mPoint1, mPoint2), 24 * mDsign);
+            setLead1(1 - 0.5 * CR / mLen);
+            interpPoint(ref mTextPos, 1.0 + 0.66 * CR / Utils.Distance(mPoint1, mPoint2), 24 * mDsign);
+        }
+
+        public override void Reset() {
+            mFrequency = mMinF;
+            mFreqTime = 0;
+            mFdir = 1;
+            setParams();
         }
 
         public override void Draw(CustomGraphics g) {
-            setBbox(mPoint1, mPoint2, circleSize);
+            setBbox(mPoint1, mPoint2, CR);
 
             drawVoltage(g, 0, mPoint1, mLead1);
 
@@ -73,11 +114,11 @@ namespace Circuit.Elements.Input {
 
             int xc = mPoint2.X;
             int yc = mPoint2.Y;
-            g.DrawThickCircle(mPoint2, circleSize);
+            g.DrawThickCircle(mPoint2, CR);
 
             adjustBbox(
-                xc - circleSize, yc - circleSize,
-                xc + circleSize, yc + circleSize
+                xc - CR, yc - CR,
+                xc + CR, yc + CR
             );
 
             int wl = 7;
@@ -89,7 +130,7 @@ namespace Circuit.Elements.Input {
             }
             double w = 1 + tm * .002;
             if (CirSim.Sim.IsRunning) {
-                w = 1 + 3 * (frequency - minF) / (maxF - minF);
+                w = 1 + 3 * (mFrequency - mMinF) / (mMaxF - mMinF);
             }
 
             int x0 = 0;
@@ -108,7 +149,7 @@ namespace Circuit.Elements.Input {
             }
 
             if (ControlPanel.ChkShowValues.Checked) {
-                string s = Utils.ShortUnitText(frequency, "Hz");
+                string s = Utils.ShortUnitText(mFrequency, "Hz");
                 drawValues(g, s, 20, -15);
             }
 
@@ -119,97 +160,56 @@ namespace Circuit.Elements.Input {
             }
         }
 
-        public override void Stamp() {
-            mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
-        }
-
         void setParams() {
-            if (frequency < minF || frequency > maxF) {
-                frequency = minF;
-                freqTime = 0;
-                dir = 1;
+            if (mFrequency < mMinF || mFrequency > mMaxF) {
+                mFrequency = mMinF;
+                mFreqTime = 0;
+                mFdir = 1;
             }
             if ((mFlags & FLAG_LOG) == 0) {
-                fadd = dir * ControlPanel.TimeStep * (maxF - minF) / sweepTime;
-                fmul = 1;
+                mFadd = mFdir * ControlPanel.TimeStep * (mMaxF - mMinF) / mSweepTime;
+                mFmul = 1;
             } else {
-                fadd = 0;
-                fmul = Math.Pow(maxF / minF, dir * ControlPanel.TimeStep / sweepTime);
+                mFadd = 0;
+                mFmul = Math.Pow(mMaxF / mMinF, mFdir * ControlPanel.TimeStep / mSweepTime);
             }
-            savedTimeStep = ControlPanel.TimeStep;
+            mSavedTimeStep = ControlPanel.TimeStep;
         }
-
-        public override void Reset() {
-            frequency = minF;
-            freqTime = 0;
-            dir = 1;
-            setParams();
-        }
-
-        public override void StartIteration() {
-            /* has timestep been changed? */
-            if (ControlPanel.TimeStep != savedTimeStep) {
-                setParams();
-            }
-            v = Math.Sin(freqTime) * maxV;
-            freqTime += frequency * 2 * Math.PI * ControlPanel.TimeStep;
-            frequency = frequency * fmul + fadd;
-            if (frequency >= maxF && dir == 1) {
-                if ((mFlags & FLAG_BIDIR) != 0) {
-                    fadd = -fadd;
-                    fmul = 1 / fmul;
-                    dir = -1;
-                } else {
-                    frequency = minF;
-                }
-            }
-            if (frequency <= minF && dir == -1) {
-                fadd = -fadd;
-                fmul = 1 / fmul;
-                dir = 1;
-            }
-        }
-
-        public override void DoStep() {
-            mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, v);
-        }
-
-        public override bool HasGroundConnection(int n1) { return true; }
 
         public override void GetInfo(string[] arr) {
             arr[0] = "sweep " + (((mFlags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
             arr[1] = "I = " + Utils.CurrentDText(mCurrent);
             arr[2] = "V = " + Utils.VoltageText(Volts[0]);
-            arr[3] = "f = " + Utils.UnitText(frequency, "Hz");
-            arr[4] = "range = " + Utils.UnitText(minF, "Hz") + " .. " + Utils.UnitText(maxF, "Hz");
-            arr[5] = "time = " + Utils.UnitText(sweepTime, "s");
+            arr[3] = "f = " + Utils.UnitText(mFrequency, "Hz");
+            arr[4] = "range = " + Utils.UnitText(mMinF, "Hz") + " .. " + Utils.UnitText(mMaxF, "Hz");
+            arr[5] = "time = " + Utils.UnitText(mSweepTime, "s");
         }
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new ElementInfo("Min Frequency (Hz)", minF, 0, 0);
+                return new ElementInfo("最小周波数(Hz)", mMinF, 0, 0);
             }
             if (n == 1) {
-                return new ElementInfo("Max Frequency (Hz)", maxF, 0, 0);
+                return new ElementInfo("最大周波数(Hz)", mMaxF, 0, 0);
             }
             if (n == 2) {
-                return new ElementInfo("Sweep Time (s)", sweepTime, 0, 0);
+                return new ElementInfo("スウィープ時間(sec)", mSweepTime, 0, 0);
             }
             if (n == 3) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
-                    Text = "Logarithmic",
+                    Text = "周波数対数変化",
                     Checked = (mFlags & FLAG_LOG) != 0
                 };
                 return ei;
             }
             if (n == 4) {
-                return new ElementInfo("Max Voltage", maxV, 0, 0);
+                return new ElementInfo("振幅(V)", mMaxV, 0, 0);
             }
             if (n == 5) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
-                    Text = "Bidirectional",
+                    Text = "双方向周波数遷移",
                     Checked = (mFlags & FLAG_BIDIR) != 0
                 };
                 return ei;
@@ -220,19 +220,19 @@ namespace Circuit.Elements.Input {
         public override void SetElementValue(int n, ElementInfo ei) {
             double maxfreq = 1 / (8 * ControlPanel.TimeStep);
             if (n == 0) {
-                minF = ei.Value;
-                if (minF > maxfreq) {
-                    minF = maxfreq;
+                mMinF = ei.Value;
+                if (mMinF > maxfreq) {
+                    mMinF = maxfreq;
                 }
             }
             if (n == 1) {
-                maxF = ei.Value;
-                if (maxF > maxfreq) {
-                    maxF = maxfreq;
+                mMaxF = ei.Value;
+                if (mMaxF > maxfreq) {
+                    mMaxF = maxfreq;
                 }
             }
             if (n == 2) {
-                sweepTime = ei.Value;
+                mSweepTime = ei.Value;
             }
             if (n == 3) {
                 mFlags &= ~FLAG_LOG;
@@ -241,7 +241,7 @@ namespace Circuit.Elements.Input {
                 }
             }
             if (n == 4)
-                maxV = ei.Value;
+                mMaxV = ei.Value;
             if (n == 5) {
                 mFlags &= ~FLAG_BIDIR;
                 if (ei.CheckBox.Checked) {

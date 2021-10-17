@@ -3,30 +3,30 @@ using System.Drawing;
 
 namespace Circuit.Elements.Gate {
     class InverterElm : CircuitElm {
-        double slewRate; /* V/ns */
-        double highVoltage;
-        Point[] gatePolyEuro;
-        Point[] gatePolyAnsi;
-        Point pcircle;
-        double lastOutputVoltage;
-        Point center;
+        double mSlewRate; /* V/ns */
+        double mHighVoltage;
+        double mLastOutputVoltage;
+        Point[] mGatePolyEuro;
+        Point[] mGatePolyAnsi;
+        Point mCenter;
+        Point mPcircle;
 
         public InverterElm(Point pos) : base(pos) {
             mNoDiagonal = true;
-            slewRate = .5;
+            mSlewRate = .5;
 
             /* copy defaults from last gate edited */
-            highVoltage = GateElm.lastHighVoltage;
+            mHighVoltage = GateElm.LastHighVoltage;
         }
 
         public InverterElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             mNoDiagonal = true;
             try {
-                slewRate = st.nextTokenDouble();
-                highVoltage = st.nextTokenDouble();
+                mSlewRate = st.nextTokenDouble();
+                mHighVoltage = st.nextTokenDouble();
             } catch {
-                slewRate = .5;
-                highVoltage = 5;
+                mSlewRate = .5;
+                mHighVoltage = 5;
             }
         }
 
@@ -38,19 +38,32 @@ namespace Circuit.Elements.Gate {
 
         protected override string dump() { return ""; }
 
-        public override void Draw(CustomGraphics g) {
-            drawPosts(g);
-            draw2Leads(g);
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            if (GateElm.useAnsiGates()) {
-                g.DrawThickPolygon(gatePolyAnsi);
-            } else {
-                g.DrawThickPolygon(gatePolyEuro);
-                drawCenteredLText(g, "1", center.X, center.Y - 6, true);
+        public override bool HasGroundConnection(int n1) { return n1 == 1; }
+
+        /* there is no current path through the inverter input,
+         * but there is an indirect path through the output to ground. */
+        public override bool GetConnection(int n1, int n2) { return false; }
+
+        public override double GetCurrentIntoNode(int n) {
+            if (n == 1) {
+                return mCurrent;
             }
-            g.DrawThickCircle(pcircle, 6);
-            mCurCount = updateDotCount(mCurrent, mCurCount);
-            drawDots(g, mLead2, mPoint2, mCurCount);
+            return 0;
+        }
+
+        public override void Stamp() {
+            mCir.StampVoltageSource(0, Nodes[1], mVoltSource);
+        }
+
+        public override void StartIteration() {
+            mLastOutputVoltage = Volts[1];
+        }
+
+        public override void DoStep() {
+            double v = Volts[0] > mHighVoltage * .5 ? 0 : mHighVoltage;
+            double maxStep = mSlewRate * ControlPanel.TimeStep * 1e9;
+            v = Math.Max(Math.Min(mLastOutputVoltage + maxStep, v), mLastOutputVoltage - maxStep);
+            mCir.UpdateVoltageSource(0, Nodes[1], mVoltSource, v);
         }
 
         public override void SetPoints() {
@@ -62,35 +75,35 @@ namespace Circuit.Elements.Gate {
             }
             setLead1(0.5 - ww / mLen);
             setLead2(0.5 + (ww + 2) / mLen);
-            interpPoint(ref pcircle, 0.5 + (ww - 2) / mLen);
+            interpPoint(ref mPcircle, 0.5 + (ww - 2) / mLen);
 
-            gatePolyAnsi = new Point[3];
-            interpLeadAB(ref gatePolyAnsi[0], ref gatePolyAnsi[1], 0, hs);
-            interpPoint(ref gatePolyAnsi[2], 0.5 + (ww - 5) / mLen);
+            mGatePolyAnsi = new Point[3];
+            interpLeadAB(ref mGatePolyAnsi[0], ref mGatePolyAnsi[1], 0, hs);
+            interpPoint(ref mGatePolyAnsi[2], 0.5 + (ww - 5) / mLen);
 
-            gatePolyEuro = new Point[4];
+            mGatePolyEuro = new Point[4];
             var l2 = new Point();
             interpPoint(ref l2, 0.5 + (ww - 5) / mLen); /* make room for circle */
-            Utils.InterpPoint(mLead1, l2, ref gatePolyEuro[0], ref gatePolyEuro[1], 0, hs);
-            Utils.InterpPoint(mLead1, l2, ref gatePolyEuro[3], ref gatePolyEuro[2], 1, hs);
-            Utils.InterpPoint(mLead1, l2, ref center, .5);
+            Utils.InterpPoint(mLead1, l2, ref mGatePolyEuro[0], ref mGatePolyEuro[1], 0, hs);
+            Utils.InterpPoint(mLead1, l2, ref mGatePolyEuro[3], ref mGatePolyEuro[2], 1, hs);
+            Utils.InterpPoint(mLead1, l2, ref mCenter, .5);
 
             setBbox(mPoint1, mPoint2, hs);
         }
 
-        public override void Stamp() {
-            mCir.StampVoltageSource(0, Nodes[1], mVoltSource);
-        }
-
-        public override void StartIteration() {
-            lastOutputVoltage = Volts[1];
-        }
-
-        public override void DoStep() {
-            double v = Volts[0] > highVoltage * .5 ? 0 : highVoltage;
-            double maxStep = slewRate * ControlPanel.TimeStep * 1e9;
-            v = Math.Max(Math.Min(lastOutputVoltage + maxStep, v), lastOutputVoltage - maxStep);
-            mCir.UpdateVoltageSource(0, Nodes[1], mVoltSource, v);
+        public override void Draw(CustomGraphics g) {
+            drawPosts(g);
+            draw2Leads(g);
+            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            if (GateElm.useAnsiGates()) {
+                g.DrawThickPolygon(mGatePolyAnsi);
+            } else {
+                g.DrawThickPolygon(mGatePolyEuro);
+                drawCenteredLText(g, "1", mCenter.X, mCenter.Y - 6, true);
+            }
+            g.DrawThickCircle(mPcircle, 6);
+            mCurCount = updateDotCount(mCurrent, mCurCount);
+            drawDots(g, mLead2, mPoint2, mCurCount);
         }
 
         public override void GetInfo(string[] arr) {
@@ -101,34 +114,21 @@ namespace Circuit.Elements.Gate {
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new ElementInfo("Slew Rate (V/ns)", slewRate, 0, 0);
+                return new ElementInfo("Slew Rate (V/ns)", mSlewRate, 0, 0);
             }
             if (n == 1) {
-                return new ElementInfo("High Voltage (V)", highVoltage, 1, 10);
+                return new ElementInfo("High Voltage (V)", mHighVoltage, 1, 10);
             }
             return null;
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
-                slewRate = ei.Value;
+                mSlewRate = ei.Value;
             }
             if (n == 1) {
-                highVoltage = GateElm.lastHighVoltage = ei.Value;
+                mHighVoltage = GateElm.LastHighVoltage = ei.Value;
             }
-        }
-
-        /* there is no current path through the inverter input,
-         * but there is an indirect path through the output to ground. */
-        public override bool GetConnection(int n1, int n2) { return false; }
-
-        public override bool HasGroundConnection(int n1) { return n1 == 1; }
-
-        public override double GetCurrentIntoNode(int n) {
-            if (n == 1) {
-                return mCurrent;
-            }
-            return 0;
         }
     }
 }

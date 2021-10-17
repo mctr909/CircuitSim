@@ -19,18 +19,34 @@ namespace Circuit.Elements.Input {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.RAIL; } }
 
+        public override bool HasGroundConnection(int n1) { return true; }
+
         public override void SetPoints() {
             base.SetPoints();
-            setLead1(1 - circleSize / mLen);
+            setLead1(1 - CR / mLen);
         }
 
         public string getRailText() {
             return null;
         }
 
+        public override void Stamp() {
+            if (waveform == WAVEFORM.DC) {
+                mCir.StampVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
+            } else {
+                mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
+            }
+        }
+
+        public override void DoStep() {
+            if (waveform != WAVEFORM.DC) {
+                mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
+            }
+        }
+
         public override void Draw(CustomGraphics g) {
             var rt = getRailText();
-            double w = rt == null ? (circleSize * 0.5) : g.GetTextSize(rt).Width / 2;
+            double w = rt == null ? (CR * 0.5) : g.GetTextSize(rt).Width / 2;
             if (w > mLen * .8) {
                 w = mLen * .8;
             }
@@ -39,7 +55,7 @@ namespace Circuit.Elements.Input {
             } else {
                 setLead1(1 - w / mLen);
             }
-            setBbox(mPoint1, mPoint2, circleSize);
+            setBbox(mPoint1, mPoint2, CR);
 
             drawVoltage(g, 0, mPoint1, mLead1);
             drawRail(g);
@@ -70,21 +86,5 @@ namespace Circuit.Elements.Input {
                 drawWaveform(g, mPoint2);
             }
         }
-
-        public override void Stamp() {
-            if (waveform == WAVEFORM.DC) {
-                mCir.StampVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
-            } else {
-                mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
-            }
-        }
-
-        public override void DoStep() {
-            if (waveform != WAVEFORM.DC) {
-                mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
-            }
-        }
-
-        public override bool HasGroundConnection(int n1) { return true; }
     }
 }

@@ -5,43 +5,46 @@ namespace Circuit.Elements.Gate {
     abstract class GateElm : CircuitElm {
         const int FLAG_SMALL = 1;
         const int FLAG_SCHMITT = 2;
-        protected int inputCount = 2;
-        bool lastOutput;
-        double highVoltage;
-        public static double lastHighVoltage = 5;
-        static bool lastSchmitt = false;
 
-        const int gwidth = 7;
-        const int gwidth2 = 14;
-        const int gheight = 8;
+        const int G_WIDTH = 7;
+        const int G_WIDTH2 = 14;
+        const int G_HEIGHT = 8;
 
-        protected int hs2;
+        public static double LastHighVoltage = 5;
 
-        Point[] inPosts;
-        Point[] inGates;
+        static bool mLastSchmitt = false;
 
-        bool[] inputStates;
+        protected int mHs2;
+        protected int mWw;
+        protected int mInputCount = 2;
 
-        int oscillationCount;
+        protected Point[] mGatePolyEuro;
+        protected Point[] mGatePolyAnsi;
 
-        protected int ww;
+        protected int mCircleSize;
+        protected Point mCirclePos;
+        protected Point[] mLinePoints;
 
-        protected Point[] gatePolyEuro;
-        protected Point[] gatePolyAnsi;
+        Point[] mSchmittPoly;
+        Point[] mInPosts;
+        Point[] mInGates;
 
-        Point[] schmittPoly;
+        bool mLastOutput;
+        double mHighVoltage;
+        bool[] mInputStates;
+        int mOscillationCount;
 
-        protected int circleSize;
-        protected Point circlePos;
-        protected Point[] linePoints;
+        protected abstract string getGateName();
+
+        protected abstract bool calcFunction();
 
         public GateElm(Point pos) : base(pos) {
             mNoDiagonal = true;
-            inputCount = 2;
+            mInputCount = 2;
 
             /* copy defaults from last gate edited */
-            highVoltage = lastHighVoltage;
-            if (lastSchmitt) {
+            mHighVoltage = LastHighVoltage;
+            if (mLastSchmitt) {
                 mFlags |= FLAG_SCHMITT;
             }
 
@@ -49,134 +52,75 @@ namespace Circuit.Elements.Gate {
         }
 
         public GateElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            inputCount = st.nextTokenInt();
+            mInputCount = st.nextTokenInt();
             double lastOutputVoltage = st.nextTokenDouble();
             mNoDiagonal = true;
             try {
-                highVoltage = st.nextTokenDouble();
+                mHighVoltage = st.nextTokenDouble();
             } catch {
-                highVoltage = 5;
+                mHighVoltage = 5;
             }
-            lastOutput = lastOutputVoltage > highVoltage * .5;
+            mLastOutput = lastOutputVoltage > mHighVoltage * .5;
 
             mFlags |= FLAG_SMALL;
         }
 
         public override int VoltageSourceCount { get { return 1; } }
 
-        public override int PostCount { get { return inputCount + 1; } }
+        public override int PostCount { get { return mInputCount + 1; } }
+
+        public static bool useAnsiGates() { return ControlPanel.ChkUseAnsiSymbols.Checked; }
+
+        bool hasSchmittInputs() { return (mFlags & FLAG_SCHMITT) != 0; }
 
         protected virtual bool isInverting() { return false; }
 
         protected override string dump() {
-            return inputCount + " " + Volts[inputCount] + " " + highVoltage;
+            return mInputCount + " " + Volts[mInputCount] + " " + mHighVoltage;
         }
 
-        public override void SetPoints() {
-            base.SetPoints();
-            inputStates = new bool[inputCount];
-            int hs = gheight;
-            int i;
-            ww = gwidth2;
-            if (ww > mLen / 2) {
-                ww = (int)(mLen / 2);
+        public override Point GetPost(int n) {
+            if (n == mInputCount) {
+                return mPoint2;
             }
-            if (isInverting() && ww + 8 > mLen / 2) {
-                ww = (int)(mLen / 2 - 8);
+            return mInPosts[n];
+        }
+
+        /* there is no current path through the gate inputs,
+         * but there is an indirect path through the output to ground. */
+        public override bool GetConnection(int n1, int n2) { return false; }
+
+        public override double GetCurrentIntoNode(int n) {
+            if (n == mInputCount) {
+                return mCurrent;
             }
-            calcLeads(ww * 2);
-            inPosts = new Point[inputCount];
-            inGates = new Point[inputCount];
-            allocNodes();
-            int i0 = -inputCount / 2;
-            for (i = 0; i != inputCount; i++, i0++) {
-                if (i0 == 0 && (inputCount & 1) == 0) {
-                    i0++;
-                }
-                interpPoint(ref inPosts[i], 0, hs * i0);
-                interpLead(ref inGates[i], 0, hs * i0);
-                Volts[i] = (lastOutput ^ isInverting()) ? 5 : 0;
+            return 0;
+        }
+
+        public override bool HasGroundConnection(int n1) {
+            return (n1 == mInputCount);
+        }
+
+        protected bool getInput(int x) {
+            if (!hasSchmittInputs()) {
+                return Volts[x] > mHighVoltage * .5;
             }
-            hs2 = gwidth * (inputCount / 2 + 1);
-            setBbox(mPoint1, mPoint2, hs2);
-            if (hasSchmittInputs()) {
-                Utils.CreateSchmitt(mLead1, mLead2, out schmittPoly, 1, .47f);
-            }
+            bool res = Volts[x] > mHighVoltage * (mInputStates[x] ? .35 : .55);
+            mInputStates[x] = res;
+            return res;
         }
 
         protected void createEuroGatePolygon() {
-            gatePolyEuro = new Point[4];
-            interpLeadAB(ref gatePolyEuro[0], ref gatePolyEuro[1], 0, hs2);
-            interpLeadAB(ref gatePolyEuro[3], ref gatePolyEuro[2], 1, hs2);
+            mGatePolyEuro = new Point[4];
+            interpLeadAB(ref mGatePolyEuro[0], ref mGatePolyEuro[1], 0, mHs2);
+            interpLeadAB(ref mGatePolyEuro[3], ref mGatePolyEuro[2], 1, mHs2);
         }
 
         protected virtual string getGateText() { return null; }
 
-        public static bool useAnsiGates() { return ControlPanel.ChkUseAnsiSymbols.Checked; }
-
-        public override void Draw(CustomGraphics g) {
-            int i;
-            for (i = 0; i != inputCount; i++) {
-                drawVoltage(g, i, inPosts[i], inGates[i]);
-            }
-            drawVoltage(g, inputCount, mLead2, mPoint2);
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            if (useAnsiGates()) {
-                g.DrawThickPolygon(gatePolyAnsi);
-            } else {
-                g.DrawThickPolygon(gatePolyEuro);
-                var center = new Point();
-                interpPoint(ref center, 0.5);
-                drawCenteredLText(g, getGateText(), center.X, center.Y - 6, true);
-            }
-            if (hasSchmittInputs()) {
-                g.LineColor = CustomGraphics.WhiteColor;
-                g.DrawPolygon(schmittPoly);
-            }
-            if (linePoints != null && useAnsiGates()) {
-                for (i = 0; i != linePoints.Length - 1; i++) {
-                    g.DrawThickLine(linePoints[i], linePoints[i + 1]);
-                }
-            }
-            if (isInverting()) {
-                g.DrawThickCircle(circlePos, circleSize);
-            }
-            mCurCount = updateDotCount(mCurrent, mCurCount);
-            drawDots(g, mLead2, mPoint2, mCurCount);
-            drawPosts(g);
-        }
-
-        public override Point GetPost(int n) {
-            if (n == inputCount) {
-                return mPoint2;
-            }
-            return inPosts[n];
-        }
-
-        protected abstract string getGateName();
-
-        public override void GetInfo(string[] arr) {
-            arr[0] = getGateName();
-            arr[1] = "Vout = " + Utils.VoltageText(Volts[inputCount]);
-            arr[2] = "Iout = " + Utils.CurrentText(mCurrent);
-        }
-
         public override void Stamp() {
-            mCir.StampVoltageSource(0, Nodes[inputCount], mVoltSource);
+            mCir.StampVoltageSource(0, Nodes[mInputCount], mVoltSource);
         }
-
-        bool hasSchmittInputs() { return (mFlags & FLAG_SCHMITT) != 0; }
-
-        protected bool getInput(int x) {
-            if (!hasSchmittInputs()) {
-                return Volts[x] > highVoltage * .5;
-            }
-            bool res = Volts[x] > highVoltage * (inputStates[x] ? .35 : .55);
-            inputStates[x] = res;
-            return res;
-        }
-
-        protected abstract bool calcFunction();
 
         public override void DoStep() {
             bool f = calcFunction();
@@ -185,33 +129,103 @@ namespace Circuit.Elements.Gate {
             }
 
             /* detect oscillation (using same strategy as Atanua) */
-            if (lastOutput == !f) {
-                if (oscillationCount++ > 50) {
+            if (mLastOutput == !f) {
+                if (mOscillationCount++ > 50) {
                     /* output is oscillating too much, randomly leave output the same */
-                    oscillationCount = 0;
+                    mOscillationCount = 0;
                     if (CirSim.Random.Next(10) > 5) {
-                        f = lastOutput;
+                        f = mLastOutput;
                     }
                 }
             } else {
-                oscillationCount = 0;
+                mOscillationCount = 0;
             }
-            lastOutput = f;
-            double res = f ? highVoltage : 0;
-            mCir.UpdateVoltageSource(0, Nodes[inputCount], mVoltSource, res);
+            mLastOutput = f;
+            double res = f ? mHighVoltage : 0;
+            mCir.UpdateVoltageSource(0, Nodes[mInputCount], mVoltSource, res);
+        }
+
+        public override void SetPoints() {
+            base.SetPoints();
+            mInputStates = new bool[mInputCount];
+            int hs = G_HEIGHT;
+            int i;
+            mWw = G_WIDTH2;
+            if (mWw > mLen / 2) {
+                mWw = (int)(mLen / 2);
+            }
+            if (isInverting() && mWw + 8 > mLen / 2) {
+                mWw = (int)(mLen / 2 - 8);
+            }
+            calcLeads(mWw * 2);
+            mInPosts = new Point[mInputCount];
+            mInGates = new Point[mInputCount];
+            allocNodes();
+            int i0 = -mInputCount / 2;
+            for (i = 0; i != mInputCount; i++, i0++) {
+                if (i0 == 0 && (mInputCount & 1) == 0) {
+                    i0++;
+                }
+                interpPoint(ref mInPosts[i], 0, hs * i0);
+                interpLead(ref mInGates[i], 0, hs * i0);
+                Volts[i] = (mLastOutput ^ isInverting()) ? 5 : 0;
+            }
+            mHs2 = G_WIDTH * (mInputCount / 2 + 1);
+            setBbox(mPoint1, mPoint2, mHs2);
+            if (hasSchmittInputs()) {
+                Utils.CreateSchmitt(mLead1, mLead2, out mSchmittPoly, 1, .47f);
+            }
+        }
+
+        public override void Draw(CustomGraphics g) {
+            int i;
+            for (i = 0; i != mInputCount; i++) {
+                drawVoltage(g, i, mInPosts[i], mInGates[i]);
+            }
+            drawVoltage(g, mInputCount, mLead2, mPoint2);
+            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            if (useAnsiGates()) {
+                g.DrawThickPolygon(mGatePolyAnsi);
+            } else {
+                g.DrawThickPolygon(mGatePolyEuro);
+                var center = new Point();
+                interpPoint(ref center, 0.5);
+                drawCenteredLText(g, getGateText(), center.X, center.Y - 6, true);
+            }
+            if (hasSchmittInputs()) {
+                g.LineColor = CustomGraphics.WhiteColor;
+                g.DrawPolygon(mSchmittPoly);
+            }
+            if (mLinePoints != null && useAnsiGates()) {
+                for (i = 0; i != mLinePoints.Length - 1; i++) {
+                    g.DrawThickLine(mLinePoints[i], mLinePoints[i + 1]);
+                }
+            }
+            if (isInverting()) {
+                g.DrawThickCircle(mCirclePos, mCircleSize);
+            }
+            mCurCount = updateDotCount(mCurrent, mCurCount);
+            drawDots(g, mLead2, mPoint2, mCurCount);
+            drawPosts(g);
+        }
+
+        public override void GetInfo(string[] arr) {
+            arr[0] = getGateName();
+            arr[1] = "Vout = " + Utils.VoltageText(Volts[mInputCount]);
+            arr[2] = "Iout = " + Utils.CurrentText(mCurrent);
         }
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new ElementInfo("# of Inputs", inputCount, 1, 8).SetDimensionless();
+                return new ElementInfo("入力数", mInputCount, 1, 8).SetDimensionless();
             }
             if (n == 1) {
-                return new ElementInfo("High Voltage (V)", highVoltage, 1, 10);
+                return new ElementInfo("閾値(V)", mHighVoltage, 1, 10);
             }
             if (n == 2) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
-                    Text = "Schmitt Inputs",
+                    Text = "シュミットトリガー",
                     Checked = hasSchmittInputs()
                 };
                 return ei;
@@ -221,11 +235,11 @@ namespace Circuit.Elements.Gate {
 
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0 && ei.Value >= 1) {
-                inputCount = (int)ei.Value;
+                mInputCount = (int)ei.Value;
                 SetPoints();
             }
             if (n == 1) {
-                highVoltage = lastHighVoltage = ei.Value;
+                mHighVoltage = LastHighVoltage = ei.Value;
             }
             if (n == 2) {
                 if (ei.CheckBox.Checked) {
@@ -233,24 +247,9 @@ namespace Circuit.Elements.Gate {
                 } else {
                     mFlags &= ~FLAG_SCHMITT;
                 }
-                lastSchmitt = hasSchmittInputs();
+                mLastSchmitt = hasSchmittInputs();
                 SetPoints();
             }
-        }
-
-        /* there is no current path through the gate inputs,
-         * but there is an indirect path through the output to ground. */
-        public override bool GetConnection(int n1, int n2) { return false; }
-
-        public override bool HasGroundConnection(int n1) {
-            return (n1 == inputCount);
-        }
-
-        public override double GetCurrentIntoNode(int n) {
-            if (n == inputCount) {
-                return mCurrent;
-            }
-            return 0;
         }
     }
 }

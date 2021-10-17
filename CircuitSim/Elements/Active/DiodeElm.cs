@@ -7,6 +7,7 @@ namespace Circuit.Elements.Active {
     class DiodeElm : CircuitElm {
         public const int FLAG_FWDROP = 1;
         public const int FLAG_MODEL = 2;
+        protected const int BODY_LEN = 12;
         protected const int HS = 6;
 
         static string lastModelName = "default";
@@ -58,17 +59,13 @@ namespace Circuit.Elements.Active {
 
         protected override string dump() {
             mFlags |= FLAG_MODEL;
-            /*if (modelName == null) {
-                Console.WriteLine("model name is null??");
-                modelName = "default";
-            }*/
             return CustomLogicModel.escape(mModelName);
         }
 
         protected void setup() {
             /*Console.WriteLine("setting up for model " + modelName + " " + model); */
             mModel = DiodeModel.getModelWithNameOrCopy(mModelName, mModel);
-            mModelName = mModel.name;   /* in case we couldn't find that model */
+            mModelName = mModel.name;
             mDiode.setup(mModel);
             mHasResistance = (mModel.seriesResistance > 0);
             mDiodeEndNode = (mHasResistance) ? 2 : 1;
@@ -86,9 +83,32 @@ namespace Circuit.Elements.Active {
             return mModel.dump();
         }
 
+        public override void Stamp() {
+            if (mHasResistance) {
+                /* create diode from node 0 to internal node */
+                mDiode.stamp(Nodes[0], Nodes[2]);
+                /* create resistor from internal node to node 1 */
+                mCir.StampResistor(Nodes[1], Nodes[2], mModel.seriesResistance);
+            } else {
+                /* don't need any internal nodes if no series resistance */
+                mDiode.stamp(Nodes[0], Nodes[1]);
+            }
+        }
+
+        public override void DoStep() {
+            mDiode.doStep(Volts[0] - Volts[mDiodeEndNode]);
+        }
+
+        public override void StepFinished() {
+            /* stop for huge currents that make simulator act weird */
+            if (Math.Abs(mCurrent) > 1e12) {
+                mCir.Stop("max current exceeded", this);
+            }
+        }
+
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads(12);
+            calcLeads(BODY_LEN);
             mCathode = new Point[2];
             interpLeadAB(ref mCathode[0], ref mCathode[1], 1, HS);
             var pa = new Point[2];
@@ -119,29 +139,6 @@ namespace Circuit.Elements.Active {
             drawVoltage(g, 0, mPoly);
             /* draw thing arrow is pointing to */
             drawVoltage(g, 1, mCathode[0], mCathode[1]);
-        }
-
-        public override void Stamp() {
-            if (mHasResistance) {
-                /* create diode from node 0 to internal node */
-                mDiode.stamp(Nodes[0], Nodes[2]);
-                /* create resistor from internal node to node 1 */
-                mCir.StampResistor(Nodes[1], Nodes[2], mModel.seriesResistance);
-            } else {
-                /* don't need any internal nodes if no series resistance */
-                mDiode.stamp(Nodes[0], Nodes[1]);
-            }
-        }
-
-        public override void DoStep() {
-            mDiode.doStep(Volts[0] - Volts[mDiodeEndNode]);
-        }
-
-        public override void StepFinished() {
-            /* stop for huge currents that make simulator act weird */
-            if (Math.Abs(mCurrent) > 1e12) {
-                mCir.Stop("max current exceeded", this);
-            }
         }
 
         protected override void calculateCurrent() {

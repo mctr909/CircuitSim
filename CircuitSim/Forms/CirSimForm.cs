@@ -663,11 +663,15 @@ namespace Circuit {
         }
 
         void onDoubleClick(EventArgs e) {
-            if (mMouseElm != null && !(mMouseElm is SwitchElm)) {
-                doEdit(mMouseElm, new Point(
-                    mParent.Location.X + mMenuClient.X,
-                    mParent.Location.Y + mMenuClient.Y));
+            if (mMouseElm == null) {
+                return;
             }
+            if (mMouseElm is SwitchElm || mMouseElm is GroundElm || mMouseElm is OptocouplerElm) {
+                return;
+            }
+            doEdit(mMouseElm, new Point(
+                mParent.Location.X + mMenuClient.X,
+                mParent.Location.Y + mMenuClient.Y));
         }
 
         void onMouseDown(MouseEventArgs e) {

@@ -2,22 +2,24 @@
 
 namespace Circuit.Elements.Input {
     class CurrentElm : CircuitElm {
-        Point[] arrow;
-        Point ashaft1;
-        Point ashaft2;
-        Point center;
-        Point textPos;
-        double currentValue;
+        const int CR = 28;
+
+        Point[] mArrow;
+        Point mAshaft1;
+        Point mAshaft2;
+        Point mCenter;
+        Point mTextPos;
+        double mCurrentValue;
 
         public CurrentElm(Point pos) : base(pos) {
-            currentValue = .01;
+            mCurrentValue = 0.01;
         }
 
         public CurrentElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
-                currentValue = st.nextTokenDouble();
+                mCurrentValue = st.nextTokenDouble();
             } catch {
-                currentValue = .01;
+                mCurrentValue = 0.01;
             }
         }
 
@@ -28,44 +30,48 @@ namespace Circuit.Elements.Input {
         public override DUMP_ID DumpType { get { return DUMP_ID.CURRENT; } }
 
         protected override string dump() {
-            return currentValue.ToString();
+            return mCurrentValue.ToString();
         }
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads(32);
-            interpLead(ref ashaft1, 0.25);
-            interpLead(ref ashaft2, 0.6);
-            interpLead(ref center, 0.5);
+            calcLeads(CR);
+            interpLead(ref mAshaft1, 0.25);
+            interpLead(ref mAshaft2, 0.6);
+            interpLead(ref mCenter, 0.5);
             int sign;
             if (mPoint1.Y == mPoint2.Y) {
                 sign = mDsign;
             } else {
                 sign = -mDsign;
             }
-            interpPoint(ref textPos, 0.5, 20 * sign);
+            interpPoint(ref mTextPos, 0.5, 20 * sign);
             var p2 = new Point();
             interpLead(ref p2, 0.8);
-            Utils.CreateArrow(center, p2, out arrow, 8, 4);
+            Utils.CreateArrow(mCenter, p2, out mArrow, 8, 4);
         }
 
         public override void Draw(CustomGraphics g) {
-            int cr = 32;
             draw2Leads(g);
 
             var c = getVoltageColor((Volts[0] + Volts[1]) / 2);
             g.ThickLineColor = c;
-            g.DrawThickCircle(center, cr);
-            g.DrawThickLine(ashaft1, ashaft2);
-            g.FillPolygon(c, arrow);
+            g.DrawThickCircle(mCenter, CR);
+            g.DrawThickLine(mAshaft1, mAshaft2);
+            g.FillPolygon(c, mArrow);
 
-            setBbox(mPoint1, mPoint2, cr);
+            setBbox(mPoint1, mPoint2, CR);
             doDots(g);
             if (ControlPanel.ChkShowValues.Checked) {
-                string s = Utils.ShortUnitText(currentValue, "A");
-                g.DrawRightText(s, textPos.X, textPos.Y);
+                string s = Utils.ShortUnitText(mCurrentValue, "A");
+                g.DrawRightText(s, mTextPos.X, mTextPos.Y);
             }
             drawPosts(g);
+        }
+
+        public override void GetInfo(string[] arr) {
+            arr[0] = "current source";
+            getBasicInfo(arr);
         }
 
         /* we defer stamping current sources until we can tell if they have a current path or not */
@@ -76,25 +82,20 @@ namespace Circuit.Elements.Input {
                 mCurrent = 0;
             } else {
                 /* ok to stamp a current source */
-                mCir.StampCurrentSource(Nodes[0], Nodes[1], currentValue);
-                mCurrent = currentValue;
+                mCir.StampCurrentSource(Nodes[0], Nodes[1], mCurrentValue);
+                mCurrent = mCurrentValue;
             }
         }
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new ElementInfo("Current (A)", currentValue, 0, .1);
+                return new ElementInfo("電流(A)", mCurrentValue, 0, .1);
             }
             return null;
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            currentValue = ei.Value;
-        }
-
-        public override void GetInfo(string[] arr) {
-            arr[0] = "current source";
-            getBasicInfo(arr);
+            mCurrentValue = ei.Value;
         }
     }
 }

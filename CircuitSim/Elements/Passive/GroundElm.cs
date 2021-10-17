@@ -27,6 +27,10 @@ namespace Circuit.Elements.Passive {
 
         public override void SetCurrent(int x, double c) { mCurrent = -c; }
 
+        public override void Stamp() {
+            mCir.StampVoltageSource(0, Nodes[0], mVoltSource, 0);
+        }
+
         public override void Draw(CustomGraphics g) {
             g.ThickLineColor = getVoltageColor(0);
             g.DrawThickLine(mPoint1, mPoint2);
@@ -37,13 +41,9 @@ namespace Circuit.Elements.Passive {
                 g.DrawThickLine(mP1, mP2);
             }
             doDots(g);
-            interpPoint(ref mP2, 1 + 11.0 / mLen);
-            setBbox(mPoint1, mP2, 11);
+            interpPoint(ref mP1, 1 + 11.0 / mLen);
+            setBbox(mPoint1, mP1, 11);
             drawPosts(g);
-        }
-
-        public override void Stamp() {
-            mCir.StampVoltageSource(0, Nodes[0], mVoltSource, 0);
         }
 
         public override void GetInfo(string[] arr) {

@@ -49,7 +49,7 @@ namespace Circuit.Elements.Active {
             mDiode = (DiodeElm)compElmList[0];
             var cccs = (CCCSElm)compElmList[1];
 
-            cccs.setExpr(@"max(0,
+            cccs.SetExpr(@"max(0,
                 min(.0001,
                     select {i-0.003,
                         ( -80000000000*i^5 +800000000*i^4 -3000000*i^3 +5177.20*i^2 +0.2453*i -0.00005 )*1.040/700,

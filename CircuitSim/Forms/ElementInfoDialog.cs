@@ -74,9 +74,10 @@ namespace Circuit {
         }
 
         public void Show(int x, int y) {
-            FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Visible = false;
+            FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Show();
+
             x -= Width / 2;
             if (x < 0) {
                 x = 0;
@@ -247,8 +248,8 @@ namespace Circuit {
         }
 
         void buildDialog() {
-            int i;
             int idx;
+            int i;
             for (i = 0; ; i++) {
                 mEInfos[i] = mElm.GetElementInfo(i);
                 if (mEInfos[i] == null) {

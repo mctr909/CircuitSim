@@ -28,6 +28,8 @@ namespace Circuit {
         /// </summary>
         public TextBox LabelBox;
 
+        public ElementInfo() { }
+
         public ElementInfo(string n, double val, double mn, double mx) {
             Name = n;
             Value = val;
