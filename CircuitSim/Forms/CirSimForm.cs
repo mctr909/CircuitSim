@@ -2047,7 +2047,7 @@ namespace Circuit {
                     continue;
                 }
                 if (cs == "TransistorElm") {
-                    if (((TransistorElm)e).pnp == -1) {
+                    if (((TransistorElm)e).PNP == -1) {
                         cs = "PTransistorElm";
                     } else {
                         cs = "NTransistorElm";

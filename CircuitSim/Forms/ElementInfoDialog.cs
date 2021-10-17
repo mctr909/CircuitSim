@@ -307,8 +307,6 @@ namespace Circuit {
                 } else if (ei.TextArea != null) {
                     insertCtrl(mPnlV, ei.TextArea, idx);
                     mCloseOnEnter = false;
-                } else if (ei.Widget != null) {
-                    insertCtrl(mPnlV, ei.Widget, idx);
                 } else {
                     insertCtrl(mPnlV, ei.Textf = new TextBox(), idx);
                     if (ei.Text != null) {

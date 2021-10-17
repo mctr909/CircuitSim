@@ -9,7 +9,6 @@ namespace Circuit {
         public bool NoSliders { get; private set; }
         public bool NewDialog { get; set; }
 
-        public Form Widget;
         public ComboBox Choice;
         public CheckBox CheckBox;
         public Button Button;
@@ -57,7 +56,6 @@ namespace Circuit {
                 && CheckBox == null
                 && Button == null
                 && TextArea == null
-                && Widget == null
                 && !NoSliders;
         }
 
