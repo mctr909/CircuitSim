@@ -5,6 +5,7 @@ using System.Drawing;
 using Circuit.Elements;
 using Circuit.Elements.Passive;
 using Circuit.Elements.Input;
+using Circuit.Elements.Output;
 
 namespace Circuit {
     class Circuit {

@@ -52,7 +52,7 @@
     <Compile Include="Elements\Input\NoiseElm.cs" />
     <Compile Include="Elements\Output\DataRecorderElm.cs" />
     <Compile Include="Elements\Passive\CrystalElm.cs" />
-    <Compile Include="Elements\Passive\LabeledNodeElm.cs" />
+    <Compile Include="Elements\Output\LabeledNodeElm.cs" />
     <Compile Include="Elements\Input\RailElm.cs" />
     <Compile Include="Elements\Passive\Switch2Elm.cs" />
     <Compile Include="Elements\Input\VCCSElm.cs" />
