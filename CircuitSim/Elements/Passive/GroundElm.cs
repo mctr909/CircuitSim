@@ -2,6 +2,8 @@
 
 namespace Circuit.Elements.Passive {
     class GroundElm : CircuitElm {
+        const int BODY_LEN = 10;
+
         Point mP1;
         Point mP2;
 
@@ -35,13 +37,12 @@ namespace Circuit.Elements.Passive {
             g.ThickLineColor = getVoltageColor(0);
             g.DrawThickLine(mPoint1, mPoint2);
             for (int i = 0; i != 3; i++) {
-                int a = 10 - i * 4;
-                int b = i * 5; /* -10; */
+                var a = BODY_LEN - i * 4;
+                var b = i * BODY_LEN * 0.5;
                 interpPointAB(ref mP1, ref mP2, 1 + b / mLen, a);
                 g.DrawThickLine(mP1, mP2);
             }
             doDots(g);
-            interpPoint(ref mP1, 1 + 11.0 / mLen);
             setBbox(mPoint1, mP1, 11);
             drawPosts(g);
         }

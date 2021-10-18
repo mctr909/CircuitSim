@@ -2,6 +2,9 @@
 
 namespace Circuit.Elements.Passive {
     class ResistorElm : CircuitElm {
+        const int SEGMENTS = 12;
+        const double SEG_F = 1.0 / SEGMENTS;
+
         Point[] mP1;
         Point[] mP2;
         Point[] mRect1;
@@ -9,9 +12,6 @@ namespace Circuit.Elements.Passive {
         Point[] mRect3;
         Point[] mRect4;
         Point mTextPos;
-
-        const int SEGMENTS = 12;
-        const double SEG_F = 1.0 / SEGMENTS;
 
         public ResistorElm(Point pos) : base(pos) {
             Resistance = 1000;
@@ -36,51 +36,19 @@ namespace Circuit.Elements.Passive {
             /*Console.WriteLine(this + " res current set to " + current + "\n");*/
         }
 
-        void setPoly() {
-            /* zigzag */
-            mP1 = new Point[SEGMENTS];
-            mP2 = new Point[SEGMENTS];
-            int oy = 0;
-            int ny;
-            for (int i = 0; i != SEGMENTS; i++) {
-                switch (i & 3) {
-                case 0:
-                    ny = 5;
-                    break;
-                case 2:
-                    ny = -5;
-                    break;
-                default:
-                    ny = 0;
-                    break;
-                }
-                interpLead(ref mP1[i], i * SEG_F, oy);
-                interpLead(ref mP2[i], (i + 1) * SEG_F, ny);
-                oy = ny;
-            }
-
-            /* rectangle */
-            mRect1 = new Point[SEGMENTS + 2];
-            mRect2 = new Point[SEGMENTS + 2];
-            mRect3 = new Point[SEGMENTS + 2];
-            mRect4 = new Point[SEGMENTS + 2];
-            interpLeadAB(ref mRect1[0], ref mRect2[0], 0, 4);
-            for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
-                interpLeadAB(ref mRect1[j], ref mRect2[j], i * SEG_F, 4);
-                interpLeadAB(ref mRect3[j], ref mRect4[j], (i + 1) * SEG_F, 4);
-            }
-            interpLeadAB(ref mRect1[SEGMENTS + 1], ref mRect2[SEGMENTS + 1], 1, 4);
+        public override void Stamp() {
+            mCir.StampResistor(Nodes[0], Nodes[1], Resistance);
         }
 
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(24);
             if (mPoint1.Y == mPoint2.Y) {
-                interpPoint(ref mTextPos, 0.5 + 10 * mDsign / mLen, 12 * mDsign);
+                interpPoint(ref mTextPos, 0.5 + 14 * mDsign / mLen, 12 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
-                interpPoint(ref mTextPos, 0.5, -4 * mDsign);
+                interpPoint(ref mTextPos, 0.5, -5 * mDsign);
             } else {
-                interpPoint(ref mTextPos, 0.5, -8 * mDsign);
+                interpPoint(ref mTextPos, 0.5, -10 * mDsign);
             }
             setPoly();
         }
@@ -127,10 +95,6 @@ namespace Circuit.Elements.Passive {
             drawPosts(g);
         }
 
-        public override void Stamp() {
-            mCir.StampResistor(Nodes[0], Nodes[1], Resistance);
-        }
-
         public override void GetInfo(string[] arr) {
             arr[0] = "resistor";
             getBasicInfo(arr);
@@ -140,6 +104,42 @@ namespace Circuit.Elements.Passive {
 
         public override string GetScopeText(Scope.VAL v) {
             return "resistor, " + Utils.UnitText(Resistance, CirSim.OHM_TEXT);
+        }
+
+        void setPoly() {
+            /* zigzag */
+            mP1 = new Point[SEGMENTS];
+            mP2 = new Point[SEGMENTS];
+            int oy = 0;
+            int ny;
+            for (int i = 0; i != SEGMENTS; i++) {
+                switch (i & 3) {
+                case 0:
+                    ny = 5;
+                    break;
+                case 2:
+                    ny = -5;
+                    break;
+                default:
+                    ny = 0;
+                    break;
+                }
+                interpLead(ref mP1[i], i * SEG_F, oy);
+                interpLead(ref mP2[i], (i + 1) * SEG_F, ny);
+                oy = ny;
+            }
+
+            /* rectangle */
+            mRect1 = new Point[SEGMENTS + 2];
+            mRect2 = new Point[SEGMENTS + 2];
+            mRect3 = new Point[SEGMENTS + 2];
+            mRect4 = new Point[SEGMENTS + 2];
+            interpLeadAB(ref mRect1[0], ref mRect2[0], 0, 4);
+            for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
+                interpLeadAB(ref mRect1[j], ref mRect2[j], i * SEG_F, 4);
+                interpLeadAB(ref mRect3[j], ref mRect4[j], (i + 1) * SEG_F, 4);
+            }
+            interpLeadAB(ref mRect1[SEGMENTS + 1], ref mRect2[SEGMENTS + 1], 1, 4);
         }
 
         public override ElementInfo GetElementInfo(int n) {

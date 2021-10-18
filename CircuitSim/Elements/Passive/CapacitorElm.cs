@@ -45,7 +45,7 @@ namespace Circuit.Elements.Passive {
             /* we check compResistance because this might get called
              * before stamp(), which sets compResistance, causing
              * infinite current */
-            if (mCompResistance > 0) {
+            if (0 < mCompResistance) {
                 mCurrent = voltdiff / mCompResistance + mCurSourceValue;
             }
         }

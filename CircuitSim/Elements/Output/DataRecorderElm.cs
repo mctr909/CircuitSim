@@ -1,13 +1,16 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
 namespace Circuit.Elements.Output {
     class DataRecorderElm : CircuitElm {
+        double[] mData;
         int mDataCount;
         int mDataPtr;
-        double[] mData;
         bool mDataFull;
+
+        string mName = "";
 
         SaveFileDialog saveFileDialog = new SaveFileDialog();
 
@@ -66,9 +69,9 @@ namespace Circuit.Elements.Output {
 
         void setDataCount(int ct) {
             mDataCount = ct;
-            mData = new double[mDataCount];
             mDataPtr = 0;
             mDataFull = false;
+            mData = new double[mDataCount];
         }
 
         public override ElementInfo GetElementInfo(int n) {
@@ -76,6 +79,11 @@ namespace Circuit.Elements.Output {
                 return new ElementInfo("サンプル数", mDataCount, -1, -1).SetDimensionless();
             }
             if (n == 1) {
+                var ei = new ElementInfo("列名", 0, -1, -1);
+                ei.Text = mName;
+                return ei;
+            }
+            if (n == 2) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.Button = new Button() {
                     Text = "ファイルに保存"
@@ -85,7 +93,7 @@ namespace Circuit.Elements.Output {
                     saveFileDialog.ShowDialog();
                     var filePath = saveFileDialog.FileName;
                     var fs = new StreamWriter(filePath);
-                    fs.WriteLine("単位時間 {0}sec", ControlPanel.TimeStep);
+                    fs.WriteLine(mName + "," + ControlPanel.TimeStep);
                     if (mDataFull) {
                         for (int i = 0; i != mDataCount; i++) {
                             fs.WriteLine(mData[(i + mDataPtr) % mDataCount]);
@@ -108,6 +116,9 @@ namespace Circuit.Elements.Output {
                 setDataCount((int)ei.Value);
             }
             if (n == 1) {
+                mName = ei.Textf.Text;
+            }
+            if (n == 2) {
                 return;
             }
         }
