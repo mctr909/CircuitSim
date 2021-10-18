@@ -2,7 +2,7 @@
 
 namespace Circuit.Elements.Passive {
     class Switch2Elm : SwitchElm {
-        const int OPEN_HS = 16;
+        const int OPEN_HS = 8;
         const int BODY_LEN = 28;
 
         int mLink;

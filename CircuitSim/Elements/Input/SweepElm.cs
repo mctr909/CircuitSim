@@ -128,7 +128,7 @@ namespace Circuit.Elements.Input {
             if (tm > 1000) {
                 tm = 2000 - tm;
             }
-            double w = 1 + tm * .002;
+            double w = 1 + tm * 0.002;
             if (CirSim.Sim.IsRunning) {
                 w = 1 + 3 * (mFrequency - mMinF) / (mMaxF - mMinF);
             }
@@ -137,7 +137,7 @@ namespace Circuit.Elements.Input {
             int y0 = 0;
             g.LineColor = CustomGraphics.GrayColor;
             for (int i = -xl; i <= xl; i++) {
-                var yy = yc + (int)(.95 * Math.Sin(i * Math.PI * w / xl) * wl);
+                var yy = yc + (int)(0.95 * Math.Sin(i * Math.PI * w / xl) * wl);
                 if (i == -xl) {
                     x0 = xc + i;
                     y0 = yy;
@@ -187,28 +187,30 @@ namespace Circuit.Elements.Input {
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new ElementInfo("最小周波数(Hz)", mMinF, 0, 0);
+                return new ElementInfo("振幅(V)", mMaxV, 0, 0);
             }
             if (n == 1) {
-                return new ElementInfo("最大周波数(Hz)", mMaxF, 0, 0);
+                return new ElementInfo("最小周波数(Hz)", mMinF, 0, 0);
             }
             if (n == 2) {
-                return new ElementInfo("スウィープ時間(sec)", mSweepTime, 0, 0);
+                return new ElementInfo("最大周波数(Hz)", mMaxF, 0, 0);
             }
             if (n == 3) {
+                return new ElementInfo("スウィープ時間(sec)", mSweepTime, 0, 0);
+            }
+            if (n == 4) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
+                    AutoSize = true,
                     Text = "周波数対数変化",
                     Checked = (mFlags & FLAG_LOG) != 0
                 };
                 return ei;
             }
-            if (n == 4) {
-                return new ElementInfo("振幅(V)", mMaxV, 0, 0);
-            }
             if (n == 5) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
+                    AutoSize = true,
                     Text = "双方向周波数遷移",
                     Checked = (mFlags & FLAG_BIDIR) != 0
                 };
@@ -220,28 +222,29 @@ namespace Circuit.Elements.Input {
         public override void SetElementValue(int n, ElementInfo ei) {
             double maxfreq = 1 / (8 * ControlPanel.TimeStep);
             if (n == 0) {
+                mMaxV = ei.Value;
+            }
+            if (n == 1) {
                 mMinF = ei.Value;
                 if (mMinF > maxfreq) {
                     mMinF = maxfreq;
                 }
             }
-            if (n == 1) {
+            if (n == 2) {
                 mMaxF = ei.Value;
                 if (mMaxF > maxfreq) {
                     mMaxF = maxfreq;
                 }
             }
-            if (n == 2) {
+            if (n == 3) {
                 mSweepTime = ei.Value;
             }
-            if (n == 3) {
+            if (n == 4) {
                 mFlags &= ~FLAG_LOG;
                 if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_LOG;
                 }
             }
-            if (n == 4)
-                mMaxV = ei.Value;
             if (n == 5) {
                 mFlags &= ~FLAG_BIDIR;
                 if (ei.CheckBox.Checked) {

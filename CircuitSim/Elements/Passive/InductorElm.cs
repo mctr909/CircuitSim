@@ -3,6 +3,8 @@ using System.Drawing;
 
 namespace Circuit.Elements.Passive {
     class InductorElm : CircuitElm {
+        const int BODY_LEN = 24;
+
         Inductor mInd;
         Point mTextPos;
 
@@ -49,7 +51,7 @@ namespace Circuit.Elements.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads(40);
+            calcLeads(BODY_LEN);
             if (mPoint1.Y == mPoint2.Y) {
                 interpPoint(ref mTextPos, 0.5 + 13 * mDsign / mLen, 12 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {

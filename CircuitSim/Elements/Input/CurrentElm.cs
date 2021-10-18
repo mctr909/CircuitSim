@@ -45,7 +45,7 @@ namespace Circuit.Elements.Input {
             } else {
                 sign = -mDsign;
             }
-            interpPoint(ref mTextPos, 0.5, 20 * sign);
+            interpPoint(ref mTextPos, 0.5, 16 * sign);
             var p2 = new Point();
             interpLead(ref p2, 0.8);
             Utils.CreateArrow(mCenter, p2, out mArrow, 8, 4);

@@ -62,7 +62,7 @@ namespace Circuit.Elements.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
-            double f = (mLen / 2 - 8) / mLen;
+            double f = (mLen / 2 - 6) / mLen;
 
             // calc leads
             setLead1(f);
@@ -74,7 +74,7 @@ namespace Circuit.Elements.Passive {
             interpPointAB(ref mPlate1[0], ref mPlate1[1], f, 6);
             interpPointAB(ref mPlate2[0], ref mPlate2[1], 1 - f, 6);
 
-            double f2 = (mLen / 2 - 4) / mLen;
+            double f2 = (mLen / 2 - 3) / mLen;
             mSandwichPoints = new Point[4];
             interpPointAB(ref mSandwichPoints[0], ref mSandwichPoints[1], f2, 8);
             interpPointAB(ref mSandwichPoints[3], ref mSandwichPoints[2], 1 - f2, 8);
@@ -115,7 +115,7 @@ namespace Circuit.Elements.Passive {
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new ElementInfo(ElementInfo.MakeLink("crystal.html", "並列静電容量"), mParallelCapacitance);
+                return new ElementInfo(ElementInfo.MakeLink("crystal.html", "並列静電容量(F)"), mParallelCapacitance);
             }
             if (n == 1) {
                 return new ElementInfo("直列静電容量(F)", mSeriesCapacitance);

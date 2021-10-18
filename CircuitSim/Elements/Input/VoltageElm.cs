@@ -196,7 +196,7 @@ namespace Circuit.Elements.Input {
             } else {
                 sign = mDsign;
             }
-            if(waveform == WAVEFORM.DC) {
+            if (waveform == WAVEFORM.DC) {
                 interpPoint(ref mTextPos, 0.5, -16 * sign);
             } else {
                 interpPoint(ref mTextPos, (mLen / 2 + 0.7 * CR) / mLen, 10 * sign);

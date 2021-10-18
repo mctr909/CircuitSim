@@ -4,10 +4,10 @@ using System.Windows.Forms;
 
 namespace Circuit.Elements.Output {
     class DataRecorderElm : CircuitElm {
-        int dataCount;
-        int dataPtr;
-        double[] data;
-        bool dataFull;
+        int mDataCount;
+        int mDataPtr;
+        double[] mData;
+        bool mDataFull;
 
         SaveFileDialog saveFileDialog = new SaveFileDialog();
 
@@ -26,12 +26,20 @@ namespace Circuit.Elements.Output {
         public override double VoltageDiff { get { return Volts[0]; } }
 
         protected override string dump() {
-            return dataCount.ToString();
+            return mDataCount.ToString();
+        }
+
+        public override void StepFinished() {
+            mData[mDataPtr++] = Volts[0];
+            if (mDataPtr >= mDataCount) {
+                mDataPtr = 0;
+                mDataFull = true;
+            }
         }
 
         public override void Reset() {
-            dataPtr = 0;
-            dataFull = false;
+            mDataPtr = 0;
+            mDataFull = false;
         }
 
         public override void SetPoints() {
@@ -42,7 +50,7 @@ namespace Circuit.Elements.Output {
         public override void Draw(CustomGraphics g) {
             var str = "export";
 
-            interpPoint(ref mLead1, 1 - ((int)g.GetLTextSize(str).Width / 2 + 8) / mLen);
+            interpPoint(ref mLead1, 1 - ((int)g.GetTextSize(str).Width / 2) / mLen);
             setBbox(mPoint1, mLead1, 0);
 
             drawCenteredText(g, str, P2.X, P2.Y, true);
@@ -53,46 +61,38 @@ namespace Circuit.Elements.Output {
         public override void GetInfo(string[] arr) {
             arr[0] = "data export";
             arr[1] = "V = " + Utils.VoltageText(Volts[0]);
-            arr[2] = (dataFull ? dataCount : dataPtr) + "/" + dataCount;
-        }
-
-        public override void StepFinished() {
-            data[dataPtr++] = Volts[0];
-            if (dataPtr >= dataCount) {
-                dataPtr = 0;
-                dataFull = true;
-            }
+            arr[2] = (mDataFull ? mDataCount : mDataPtr) + "/" + mDataCount;
         }
 
         void setDataCount(int ct) {
-            dataCount = ct;
-            data = new double[dataCount];
-            dataPtr = 0;
-            dataFull = false;
+            mDataCount = ct;
+            mData = new double[mDataCount];
+            mDataPtr = 0;
+            mDataFull = false;
         }
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new ElementInfo("# of Data Points", dataCount, -1, -1).SetDimensionless();
+                return new ElementInfo("サンプル数", mDataCount, -1, -1).SetDimensionless();
             }
             if (n == 1) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.Button = new Button() {
-                    Text = "Save file"
+                    Text = "ファイルに保存"
                 };
                 ei.Button.Click += new System.EventHandler((s, e) => {
                     saveFileDialog.Filter = "CSVファイル(*.csv)|*.csv";
                     saveFileDialog.ShowDialog();
                     var filePath = saveFileDialog.FileName;
                     var fs = new StreamWriter(filePath);
-                    fs.WriteLine("# time step = {0} sec", ControlPanel.TimeStep);
-                    if (dataFull) {
-                        for (int i = 0; i != dataCount; i++) {
-                            fs.WriteLine(data[(i + dataPtr) % dataCount]);
+                    fs.WriteLine("単位時間 {0}sec", ControlPanel.TimeStep);
+                    if (mDataFull) {
+                        for (int i = 0; i != mDataCount; i++) {
+                            fs.WriteLine(mData[(i + mDataPtr) % mDataCount]);
                         }
                     } else {
-                        for (int i = 0; i != dataPtr; i++) {
-                            fs.WriteLine(data[i]);
+                        for (int i = 0; i != mDataPtr; i++) {
+                            fs.WriteLine(mData[i]);
                         }
                     }
                     fs.Close();

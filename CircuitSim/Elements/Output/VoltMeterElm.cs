@@ -17,44 +17,46 @@ namespace Circuit.Elements.Output {
         const int TP_PWI = 8;
         const int TP_DUT = 9; /* mark to space ratio */
 
-        int meter;
-        E_SCALE scale;
+        int mMeter;
+        E_SCALE mScale;
 
-        double rmsV = 0, total, count;
-        double binaryLevel = 0; /*0 or 1 - double because we only pass doubles back to the web page */
-        int zerocount = 0;
-        double maxV = 0, lastMaxV;
-        double minV = 0, lastMinV;
-        double frequency = 0;
-        double period = 0;
-        double pulseWidth = 0;
-        double dutyCycle = 0;
-        double selectedValue = 0;
+        double mRmsV = 0;
+        double mTotal;
+        double mCount;
+        double mBinaryLevel = 0; /*0 or 1 - double because we only pass doubles back to the web page */
+        int mZeroCount = 0;
+        double mMaxV = 0, mLastMaxV;
+        double mMinV = 0, mLastMinV;
+        double mFrequency = 0;
+        double mPeriod = 0;
+        double mPulseWidth = 0;
+        double mDutyCycle = 0;
+        double mSelectedValue = 0;
 
-        bool increasingV = true;
-        bool decreasingV = true;
+        bool mIncreasingV = true;
+        bool mDecreasingV = true;
 
-        long periodStart; /* time between consecutive max values */
-        long periodLength;
-        long pulseStart;
+        long mPeriodStart; /* time between consecutive max values */
+        long mPeriodLength;
+        long mPulseStart;
 
-        Point center;
-        Point plusPoint;
+        Point mCenter;
+        Point mPlusPoint;
 
         public VoltMeterElm(Point pos) : base(pos) {
-            meter = TP_VOL;
+            mMeter = TP_VOL;
 
             /* default for new elements */
             mFlags = FLAG_SHOWVOLTAGE;
-            scale = E_SCALE.AUTO;
+            mScale = E_SCALE.AUTO;
         }
 
         public VoltMeterElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            meter = TP_VOL;
-            scale = E_SCALE.AUTO;
+            mMeter = TP_VOL;
+            mScale = E_SCALE.AUTO;
             try {
-                meter = st.nextTokenInt(); /* get meter type from saved dump */
-                scale = st.nextTokenEnum<E_SCALE>();
+                mMeter = st.nextTokenInt(); /* get meter type from saved dump */
+                mScale = st.nextTokenEnum<E_SCALE>();
             } catch { }
         }
 
@@ -63,39 +65,93 @@ namespace Circuit.Elements.Output {
         public override DUMP_ID DumpType { get { return DUMP_ID.VOLTMETER; } }
 
         protected override string dump() {
-            return meter + " " + scale;
+            return mMeter + " " + mScale;
         }
 
-        string getMeter() {
-            switch (meter) {
-            case TP_VOL:
-                return "V";
-            case TP_RMS:
-                return "V(rms)";
-            case TP_MAX:
-                return "Vmax";
-            case TP_MIN:
-                return "Vmin";
-            case TP_P2P:
-                return "Peak to peak";
-            case TP_BIN:
-                return "Binary";
-            case TP_FRQ:
-                return "Frequency";
-            case TP_PER:
-                return "Period";
-            case TP_PWI:
-                return "Pulse width";
-            case TP_DUT:
-                return "Duty cycle";
+        public override bool GetConnection(int n1, int n2) { return false; }
+
+        public override void StepFinished() {
+            mCount++; /*how many counts are in a cycle */
+            double v = VoltageDiff;
+            mTotal += v * v;
+
+            if (v < 2.5) {
+                mBinaryLevel = 0;
+            } else {
+                mBinaryLevel = 1;
             }
-            return "";
+
+            /* V going up, track maximum value with */
+            if (v > mMaxV && mIncreasingV) {
+                mMaxV = v;
+                mIncreasingV = true;
+                mDecreasingV = false;
+            }
+
+            if (v < mMaxV && mIncreasingV) { /* change of direction V now going down - at start of waveform */
+                mLastMaxV = mMaxV; /* capture last maximum */
+                                   /* capture time between */
+                var now = DateTime.Now.ToFileTimeUtc();
+                mPeriodLength = now - mPeriodStart;
+                mPeriodStart = now;
+                mPeriod = mPeriodLength;
+                mPulseWidth = now - mPulseStart;
+                mDutyCycle = mPulseWidth / mPeriodLength;
+                mMinV = v; /* track minimum value with V */
+                mIncreasingV = false;
+                mDecreasingV = true;
+
+                /* rms data */
+                mTotal = mTotal / mCount;
+                mRmsV = Math.Sqrt(mTotal);
+                if (double.IsNaN(mRmsV)) {
+                    mRmsV = 0;
+                }
+                mCount = 0;
+                mTotal = 0;
+            }
+
+            if (v < mMinV && mDecreasingV) { /* V going down, track minimum value with V */
+                mMinV = v;
+                mIncreasingV = false;
+                mDecreasingV = true;
+            }
+
+            if (v > mMinV && mDecreasingV) { /* change of direction V now going up */
+                mLastMinV = mMinV; /* capture last minimum */
+                mPulseStart = DateTime.Now.ToFileTimeUtc();
+                mMaxV = v;
+                mIncreasingV = true;
+                mDecreasingV = false;
+
+                /* rms data */
+                mTotal = mTotal / mCount;
+                mRmsV = Math.Sqrt(mTotal);
+                if (double.IsNaN(mRmsV)) {
+                    mRmsV = 0;
+                }
+                mCount = 0;
+                mTotal = 0;
+            }
+
+            /* need to zero the rms value if it stays at 0 for a while */
+            if (v == 0) {
+                mZeroCount++;
+                if (mZeroCount > 5) {
+                    mTotal = 0;
+                    mRmsV = 0;
+                    mMaxV = 0;
+                    mMinV = 0;
+                }
+            } else {
+                mZeroCount = 0;
+            }
         }
 
         public override void SetPoints() {
             base.SetPoints();
-            interpPoint(ref center, .5, 8 * mDsign);
-            interpPoint(ref plusPoint, (mLen / 2 - 20) / mLen, 16 * mDsign);
+            interpPoint(ref mCenter, 0.5, 12 * mDsign);
+            interpPoint(ref mPlusPoint, (mLen - 10) / mLen, 10 * mDsign);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -120,132 +176,80 @@ namespace Circuit.Elements.Output {
             g.DrawThickLine(mLead2, mPoint2);
 
             if (this == CirSim.Sim.PlotXElm) {
-                drawCenteredLText(g, "X", center.X, center.Y, true);
+                drawCenteredLText(g, "X", mCenter.X, mCenter.Y, true);
             }
             if (this == CirSim.Sim.PlotYElm) {
-                drawCenteredLText(g, "Y", center.X, center.Y, true);
+                drawCenteredLText(g, "Y", mCenter.X, mCenter.Y, true);
             }
 
             if (mustShowVoltage()) {
                 string s = "";
-                switch (meter) {
+                switch (mMeter) {
                 case TP_VOL:
-                    s = Utils.UnitTextWithScale(VoltageDiff, "V", scale);
+                    s = Utils.UnitTextWithScale(VoltageDiff, "V", mScale);
                     break;
                 case TP_RMS:
-                    s = Utils.UnitTextWithScale(rmsV, "V(rms)", scale);
+                    s = Utils.UnitTextWithScale(mRmsV, "V(rms)", mScale);
                     break;
                 case TP_MAX:
-                    s = Utils.UnitTextWithScale(lastMaxV, "Vpk", scale);
+                    s = Utils.UnitTextWithScale(mLastMaxV, "Vpk", mScale);
                     break;
                 case TP_MIN:
-                    s = Utils.UnitTextWithScale(lastMinV, "Vmin", scale);
+                    s = Utils.UnitTextWithScale(mLastMinV, "Vmin", mScale);
                     break;
                 case TP_P2P:
-                    s = Utils.UnitTextWithScale(lastMaxV - lastMinV, "Vp2p", scale);
+                    s = Utils.UnitTextWithScale(mLastMaxV - mLastMinV, "Vp2p", mScale);
                     break;
                 case TP_BIN:
-                    s = binaryLevel + "";
+                    s = mBinaryLevel + "";
                     break;
                 case TP_FRQ:
-                    s = Utils.UnitText(frequency, "Hz");
+                    s = Utils.UnitText(mFrequency, "Hz");
                     break;
                 case TP_PER:
-                    s = "percent:" + period + " " + ControlPanel.TimeStep + " " + CirSim.Sim.Time + " " + CirSim.Sim.getIterCount();
+                    s = "percent:" + mPeriod + " " + ControlPanel.TimeStep + " " + CirSim.Sim.Time + " " + CirSim.Sim.getIterCount();
                     break;
                 case TP_PWI:
-                    s = Utils.UnitText(pulseWidth, "S");
+                    s = Utils.UnitText(mPulseWidth, "S");
                     break;
                 case TP_DUT:
-                    s = dutyCycle.ToString("0.000");
+                    s = mDutyCycle.ToString("0.000");
                     break;
                 }
-                drawCenteredText(g, s, center.X, center.Y, true);
+                drawCenteredText(g, s, mCenter.X, mCenter.Y, true);
             }
-            drawCenteredLText(g, "+", plusPoint.X, plusPoint.Y, true);
+            drawCenteredLText(g, "+", mPlusPoint.X, mPlusPoint.Y, true);
             drawPosts(g);
+        }
+
+        string getMeter() {
+            switch (mMeter) {
+            case TP_VOL:
+                return "V";
+            case TP_RMS:
+                return "V(rms)";
+            case TP_MAX:
+                return "Vmax";
+            case TP_MIN:
+                return "Vmin";
+            case TP_P2P:
+                return "Peak to peak";
+            case TP_BIN:
+                return "Binary";
+            case TP_FRQ:
+                return "Frequency";
+            case TP_PER:
+                return "Period";
+            case TP_PWI:
+                return "Pulse width";
+            case TP_DUT:
+                return "Duty cycle";
+            }
+            return "";
         }
 
         bool mustShowVoltage() {
             return (mFlags & FLAG_SHOWVOLTAGE) != 0;
-        }
-
-        public override void StepFinished() {
-            count++; /*how many counts are in a cycle */
-            double v = VoltageDiff;
-            total += v * v;
-
-            if (v < 2.5) {
-                binaryLevel = 0;
-            } else {
-                binaryLevel = 1;
-            }
-
-            /* V going up, track maximum value with */
-            if (v > maxV && increasingV) {
-                maxV = v;
-                increasingV = true;
-                decreasingV = false;
-            }
-
-            if (v < maxV && increasingV) { /* change of direction V now going down - at start of waveform */
-                lastMaxV = maxV; /* capture last maximum */
-                                 /* capture time between */
-                var now = DateTime.Now.ToFileTimeUtc();
-                periodLength = now - periodStart;
-                periodStart = now;
-                period = periodLength;
-                pulseWidth = now - pulseStart;
-                dutyCycle = pulseWidth / periodLength;
-                minV = v; /* track minimum value with V */
-                increasingV = false;
-                decreasingV = true;
-
-                /* rms data */
-                total = total / count;
-                rmsV = Math.Sqrt(total);
-                if (double.IsNaN(rmsV)) {
-                    rmsV = 0;
-                }
-                count = 0;
-                total = 0;
-            }
-
-            if (v < minV && decreasingV) { /* V going down, track minimum value with V */
-                minV = v;
-                increasingV = false;
-                decreasingV = true;
-            }
-
-            if (v > minV && decreasingV) { /* change of direction V now going up */
-                lastMinV = minV; /* capture last minimum */
-                pulseStart = DateTime.Now.ToFileTimeUtc();
-                maxV = v;
-                increasingV = true;
-                decreasingV = false;
-
-                /* rms data */
-                total = total / count;
-                rmsV = Math.Sqrt(total);
-                if (double.IsNaN(rmsV)) {
-                    rmsV = 0;
-                }
-                count = 0;
-                total = 0;
-            }
-
-            /* need to zero the rms value if it stays at 0 for a while */
-            if (v == 0) {
-                zerocount++;
-                if (zerocount > 5) {
-                    total = 0;
-                    rmsV = 0;
-                    maxV = 0;
-                    minV = 0;
-                }
-            } else {
-                zerocount = 0;
-            }
         }
 
         public override void GetInfo(string[] arr) {
@@ -253,59 +257,38 @@ namespace Circuit.Elements.Output {
             arr[1] = "Vd = " + Utils.VoltageText(VoltageDiff);
         }
 
-        public override bool GetConnection(int n1, int n2) { return false; }
-
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox();
-                ei.CheckBox.Text = "Show Value";
-                ei.CheckBox.Checked = mustShowVoltage();
+                var ei = new ElementInfo("表示", mSelectedValue, -1, -1);
+                ei.Choice = new ComboBox();
+                ei.Choice.Items.Add("瞬時値");
+                ei.Choice.Items.Add("実効値");
+                ei.Choice.Items.Add("最大値");
+                ei.Choice.Items.Add("最小値");
+                ei.Choice.Items.Add("P-P");
+                ei.Choice.Items.Add("2値");
+                ei.Choice.SelectedIndex = mMeter;
                 return ei;
             }
             if (n == 1) {
-                var ei = new ElementInfo("Value", selectedValue, -1, -1);
+                var ei = new ElementInfo("スケール", 0);
                 ei.Choice = new ComboBox();
-                ei.Choice.Items.Add("Voltage");
-                ei.Choice.Items.Add("RMS Voltage");
-                ei.Choice.Items.Add("Max Voltage");
-                ei.Choice.Items.Add("Min Voltage");
-                ei.Choice.Items.Add("P2P Voltage");
-                ei.Choice.Items.Add("Binary Value");
-                /*ei.choice.Items.Add("Frequency");
-                ei.choice.Items.Add("Period");
-                ei.choice.Items.Add("Pulse Width");
-                ei.choice.Items.Add("Duty Cycle"); */
-                ei.Choice.SelectedIndex = meter;
-                return ei;
-            }
-            if (n == 2) {
-                var ei = new ElementInfo("Scale", 0);
-                ei.Choice = new ComboBox();
-                ei.Choice.Items.Add("Auto");
+                ei.Choice.Items.Add("自動");
                 ei.Choice.Items.Add("V");
                 ei.Choice.Items.Add("mV");
                 ei.Choice.Items.Add(CirSim.MU_TEXT + "V");
-                ei.Choice.SelectedIndex = (int)scale;
+                ei.Choice.SelectedIndex = (int)mScale;
                 return ei;
             }
-
             return null;
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
-                if (ei.CheckBox.Checked) {
-                    mFlags = FLAG_SHOWVOLTAGE;
-                } else {
-                    mFlags &= ~FLAG_SHOWVOLTAGE;
-                }
+                mMeter = ei.Choice.SelectedIndex;
             }
             if (n == 1) {
-                meter = ei.Choice.SelectedIndex;
-            }
-            if (n == 2) {
-                scale = (E_SCALE)ei.Choice.SelectedIndex;
+                mScale = (E_SCALE)ei.Choice.SelectedIndex;
             }
         }
     }
