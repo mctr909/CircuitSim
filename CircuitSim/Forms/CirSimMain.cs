@@ -72,69 +72,71 @@ namespace Circuit {
                 mLastSysTime = sysTime;
             }
 
-            /* draw elements */
             g.SetTransform(new Matrix(Transform[0], Transform[1], Transform[2], Transform[3], Transform[4], Transform[5]));
-            for (int i = 0; i != ElmList.Count; i++) {
-                ElmList[i].Draw(g);
-            }
-
-            /* draw posts normally */
-            if (MouseMode != MOUSE_MODE.DRAG_ROW && MouseMode != MOUSE_MODE.DRAG_COLUMN) {
-                for (int i = 0; i != mCir.PostDrawList.Count; i++) {
-                    g.DrawPost(mCir.PostDrawList[i]);
-                }
-            }
-
-            /* for some mouse modes, what matters is not the posts but the endpoints (which are only
-            /* the same for 2-terminal elements).  We draw those now if needed */
-            if (TempMouseMode == MOUSE_MODE.DRAG_ROW
-                || TempMouseMode == MOUSE_MODE.DRAG_COLUMN
-                || TempMouseMode == MOUSE_MODE.DRAG_POST
-                || TempMouseMode == MOUSE_MODE.DRAG_SELECTED) {
+            {
+                /* draw elements */
                 for (int i = 0; i != ElmList.Count; i++) {
-                    var ce = getElm(i);
-                    g.DrawPost(ce.P1);
-                    g.DrawPost(ce.P2);
-                    if (ce != mMouseElm || TempMouseMode != MOUSE_MODE.DRAG_POST) {
-                        g.FillCircle(Brushes.Gray, ce.P1, 3.5f);
-                        g.FillCircle(Brushes.Gray, ce.P2, 3.5f);
-                    } else {
-                        ce.DrawHandles(g);
+                    ElmList[i].Draw(g);
+                }
+
+                /* draw posts normally */
+                if (MouseMode != MOUSE_MODE.DRAG_ROW && MouseMode != MOUSE_MODE.DRAG_COLUMN) {
+                    for (int i = 0; i != mCir.PostDrawList.Count; i++) {
+                        g.DrawPost(mCir.PostDrawList[i]);
                     }
                 }
-            }
 
-            /* draw handles for elm we're creating */
-            if (TempMouseMode == MOUSE_MODE.SELECT && mMouseElm != null) {
-                mMouseElm.DrawHandles(g);
-            }
+                /* for some mouse modes, what matters is not the posts but the endpoints (which are only
+                /* the same for 2-terminal elements).  We draw those now if needed */
+                if (TempMouseMode == MOUSE_MODE.DRAG_ROW
+                    || TempMouseMode == MOUSE_MODE.DRAG_COLUMN
+                    || TempMouseMode == MOUSE_MODE.DRAG_POST
+                    || TempMouseMode == MOUSE_MODE.DRAG_SELECTED) {
+                    for (int i = 0; i != ElmList.Count; i++) {
+                        var ce = getElm(i);
+                        g.DrawPost(ce.P1);
+                        g.DrawPost(ce.P2);
+                        if (ce != mMouseElm || TempMouseMode != MOUSE_MODE.DRAG_POST) {
+                            g.FillCircle(Brushes.Gray, ce.P1, 3.5f);
+                            g.FillCircle(Brushes.Gray, ce.P2, 3.5f);
+                        } else {
+                            ce.DrawHandles(g);
+                        }
+                    }
+                }
 
-            /* draw handles for elm we're dragging */
-            if (DragElm != null && (DragElm.P1.X != DragElm.P2.X || DragElm.P1.Y != DragElm.P2.Y)) {
-                DragElm.Draw(g);
-                DragElm.DrawHandles(g);
-            }
+                /* draw handles for elm we're creating */
+                if (TempMouseMode == MOUSE_MODE.SELECT && mMouseElm != null) {
+                    mMouseElm.DrawHandles(g);
+                }
 
-            /* draw bad connections.  do this last so they will not be overdrawn. */
-            for (int i = 0; i != mCir.BadConnectionList.Count; i++) {
-                var cn = mCir.BadConnectionList[i];
-                g.FillCircle(Brushes.Red, cn, 3.5f);
-            }
+                /* draw handles for elm we're dragging */
+                if (DragElm != null && (DragElm.P1.X != DragElm.P2.X || DragElm.P1.Y != DragElm.P2.Y)) {
+                    DragElm.Draw(g);
+                    DragElm.DrawHandles(g);
+                }
 
-            if (0 < mSelectedArea.Width) {
-                g.LineColor = CustomGraphics.SelectColor;
-                g.DrawRectangle(mSelectedArea);
-            }
+                /* draw bad connections.  do this last so they will not be overdrawn. */
+                for (int i = 0; i != mCir.BadConnectionList.Count; i++) {
+                    var cn = mCir.BadConnectionList[i];
+                    g.FillCircle(Brushes.Red, cn, 3.5f);
+                }
 
-            if (ControlPanel.ChkCrossHair.Checked && MouseCursorX >= 0
-                && MouseCursorX <= mCircuitArea.Width && MouseCursorY <= mCircuitArea.Height) {
-                int x = SnapGrid(inverseTransformX(MouseCursorX));
-                int y = SnapGrid(inverseTransformY(MouseCursorY));
-                g.LineColor = Color.Gray;
-                g.DrawLine(x, inverseTransformY(0), x, inverseTransformY(mCircuitArea.Height));
-                g.DrawLine(inverseTransformX(0), y, inverseTransformX(mCircuitArea.Width), y);
-            }
+                if (0 < mSelectedArea.Width) {
+                    g.LineColor = CustomGraphics.SelectColor;
+                    g.DrawRectangle(mSelectedArea);
+                }
 
+                /* draw cross hair */
+                if (ControlPanel.ChkCrossHair.Checked && MouseCursorX >= 0
+                    && MouseCursorX <= mCircuitArea.Width && MouseCursorY <= mCircuitArea.Height) {
+                    int x = SnapGrid(inverseTransformX(MouseCursorX));
+                    int y = SnapGrid(inverseTransformY(MouseCursorY));
+                    g.LineColor = Color.Gray;
+                    g.DrawLine(x, inverseTransformY(0), x, inverseTransformY(mCircuitArea.Height));
+                    g.DrawLine(inverseTransformX(0), y, inverseTransformX(mCircuitArea.Width), y);
+                }
+            }
             g.ClearTransform();
 
             Brush bCircuitArea;
@@ -145,6 +147,9 @@ namespace Circuit {
             }
             g.FillRectangle(bCircuitArea, 0, mCircuitArea.Height, mCircuitArea.Width, g.Height - mCircuitArea.Height);
 
+            g.LineColor = mMouseWasOverSplitter ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawLine(0, mCircuitArea.Height - 2, mCircuitArea.Width, mCircuitArea.Height - 2);
+
             int ct = mScopeCount;
             if (mCir.StopMessage != null) {
                 ct = 0;
@@ -152,10 +157,7 @@ namespace Circuit {
             for (int i = 0; i != ct; i++) {
                 mScopes[i].Draw(g);
             }
-            if (mMouseWasOverSplitter) {
-                g.LineColor = Color.Cyan;
-                g.DrawLine(0, mCircuitArea.Height - 2, mCircuitArea.Width, mCircuitArea.Height - 2);
-            }
+            g.ClearTransform();
 
             if (mCir.StopMessage != null) {
                 g.DrawLeftText(mCir.StopMessage, 10, mCircuitArea.Height - 10);

@@ -1063,10 +1063,10 @@ namespace Circuit {
         }
 
         void _drawSettingsWheel(CustomGraphics g) {
-            const int outR = 8 * 18 / 16;
-            const int inR = 6 * 18 / 16;
-            const int inR45 = 4 * 18 / 16;
-            const int outR45 = 6 * 18 / 16;
+            const int outR = 6 * 18 / 16;
+            const int inR = 4 * 18 / 16;
+            const int inR45 = 3 * 18 / 16;
+            const int outR45 = 4 * 18 / 16;
             if (mShowSettingsWheel) {
                 if (CursorInSettingsWheel) {
                     g.LineColor = Color.Cyan;
