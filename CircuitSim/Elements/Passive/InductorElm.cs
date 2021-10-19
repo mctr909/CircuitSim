@@ -52,10 +52,15 @@ namespace Circuit.Elements.Passive {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(BODY_LEN);
+            setTextPos();
+        }
+
+        void setTextPos() {
             if (mPoint1.Y == mPoint2.Y) {
-                interpPoint(ref mTextPos, 0.5 + 13 * mDsign / mLen, 12 * mDsign);
+                var wh = Context.GetTextSize(Utils.ShortUnitText(Inductance, "")).Width * 0.5;
+                interpPoint(ref mTextPos, 0.5 + wh / mLen * mDsign, 12 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
-                interpPoint(ref mTextPos, 0.5, -3 * mDsign);
+                interpPoint(ref mTextPos, 0.5, -4 * mDsign);
             } else {
                 interpPoint(ref mTextPos, 0.5, -8 * mDsign);
             }
@@ -107,6 +112,7 @@ namespace Circuit.Elements.Passive {
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0 && ei.Value > 0) {
                 Inductance = ei.Value;
+                setTextPos();
             }
             if (n == 1) {
                 if (ei.CheckBox.Checked) {

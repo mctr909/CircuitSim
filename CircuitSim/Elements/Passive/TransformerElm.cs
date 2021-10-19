@@ -6,6 +6,8 @@ namespace Circuit.Elements.Passive {
     class TransformerElm : CircuitElm {
         public const int FLAG_REVERSE = 4;
 
+        const int BODY_LEN = 24;
+
         const int PRI_T = 0;
         const int PRI_B = 2;
         const int SEC_T = 1;
@@ -36,7 +38,7 @@ namespace Circuit.Elements.Passive {
         public TransformerElm(Point pos) : base(pos) {
             mInductance = 4;
             mRatio = mPolarity = 1;
-            mWidth = 32;
+            mWidth = BODY_LEN;
             mNoDiagonal = true;
             mCouplingCoef = .999;
             mCurrents = new double[2];
@@ -44,7 +46,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public TransformerElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            mWidth = Math.Max(32, Math.Abs(p2.Y - p1.Y));
+            mWidth = Math.Max(BODY_LEN, BODY_LEN * (Math.Abs(p2.Y - p1.Y) / BODY_LEN));
             mInductance = st.nextTokenDouble();
             mRatio =  st.nextTokenDouble();
             mCurrents = new double[2];
@@ -54,7 +56,7 @@ namespace Circuit.Elements.Passive {
             try {
                 mCouplingCoef = st.nextTokenDouble();
             } catch {
-                mCouplingCoef = .999;
+                mCouplingCoef = 0.99;
             }
             mNoDiagonal = true;
             mPolarity = ((mFlags & FLAG_REVERSE) != 0) ? -1 : 1;
@@ -169,7 +171,7 @@ namespace Circuit.Elements.Passive {
 
         public override void Drag(Point pos) {
             pos = CirSim.Sim.SnapGrid(pos);
-            mWidth = Math.Max(32, Math.Abs(pos.Y - P1.Y));
+            mWidth = Math.Max(BODY_LEN, Math.Abs(pos.Y - P1.Y));
             if (pos.X == P1.X) {
                 pos.Y = P1.Y;
             }
@@ -188,8 +190,8 @@ namespace Circuit.Elements.Passive {
             mPtEnds[1] = mPoint2;
             interpPoint(ref mPtEnds[2], 0, -mDsign * mWidth);
             interpPoint(ref mPtEnds[3], 1, -mDsign * mWidth);
-            double ce = .5 - 16 / mLen;
-            double cd = .5 - 2 / mLen;
+            double ce = 0.5 - 16 / mLen;
+            double cd = 0.5 - 2 / mLen;
             int i;
             for (i = 0; i != 4; i += 2) {
                 Utils.InterpPoint(mPtEnds[i], mPtEnds[i + 1], ref mPtCoil[i], ce);

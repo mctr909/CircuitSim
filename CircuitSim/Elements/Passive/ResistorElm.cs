@@ -2,6 +2,7 @@
 
 namespace Circuit.Elements.Passive {
     class ResistorElm : CircuitElm {
+        const int BODY_LEN = 24;
         const int SEGMENTS = 12;
         const double SEG_F = 1.0 / SEGMENTS;
 
@@ -42,15 +43,20 @@ namespace Circuit.Elements.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads(24);
+            calcLeads(BODY_LEN);
+            setTextPos();
+            setPoly();
+        }
+
+        void setTextPos() {
             if (mPoint1.Y == mPoint2.Y) {
-                interpPoint(ref mTextPos, 0.5 + 14 * mDsign / mLen, 12 * mDsign);
+                var wh = Context.GetTextSize(Utils.ShortUnitText(Resistance, "")).Width * 0.5;
+                interpPoint(ref mTextPos, 0.5 + wh / mLen * mDsign, 12 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
                 interpPoint(ref mTextPos, 0.5, -5 * mDsign);
             } else {
                 interpPoint(ref mTextPos, 0.5, -10 * mDsign);
             }
-            setPoly();
         }
 
         public override void Draw(CustomGraphics g) {
@@ -152,6 +158,7 @@ namespace Circuit.Elements.Passive {
         public override void SetElementValue(int n, ElementInfo ei) {
             if (ei.Value > 0) {
                 Resistance = ei.Value;
+                setTextPos();
             }
         }
     }

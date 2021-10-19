@@ -5,6 +5,7 @@ namespace Circuit.Elements.Passive {
     class CapacitorElm : CircuitElm {
         public static readonly int FLAG_BACK_EULER = 2;
 
+        const int BODY_LEN = 6;
         const int HS = 8;
 
         double mCompResistance;
@@ -69,7 +70,7 @@ namespace Circuit.Elements.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
-            double f = (mLen / 2 - 3) / mLen;
+            double f = (mLen - BODY_LEN) * 0.5 / mLen;
             /* calc leads */
             setLead1(f);
             setLead2(1 - f);
@@ -78,8 +79,13 @@ namespace Circuit.Elements.Passive {
             mPlate2 = new Point[2];
             interpPointAB(ref mPlate1[0], ref mPlate1[1], f, 8);
             interpPointAB(ref mPlate2[0], ref mPlate2[1], 1 - f, 8);
+            setTextPos();
+        }
+
+        void setTextPos() {
             if (mPoint1.Y == mPoint2.Y) {
-                interpPoint(ref mTextPos, 0.5 + 12 * mDsign / mLen, 16 * mDsign);
+                var wh = Context.GetTextSize(Utils.ShortUnitText(Capacitance, "")).Width * 0.5;
+                interpPoint(ref mTextPos, 0.5 + wh / mLen * mDsign, 15 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
                 interpPoint(ref mTextPos, 0.5, -8 * mDsign);
             } else {
@@ -176,6 +182,7 @@ namespace Circuit.Elements.Passive {
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0 && ei.Value > 0) {
                 Capacitance = ei.Value;
+                setTextPos();
             }
             if (n == 1) {
                 if (ei.CheckBox.Checked) {
