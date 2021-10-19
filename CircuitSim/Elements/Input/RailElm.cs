@@ -44,9 +44,9 @@ namespace Circuit.Elements.Input {
             }
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             var rt = getRailText();
-            double w = rt == null ? (CR * 0.5) : g.GetTextSize(rt).Width / 2;
+            double w = rt == null ? (CR * 0.5) : Context.GetTextSize(rt).Width / 2;
             if (w > mLen * .8) {
                 w = mLen * .8;
             }
@@ -58,7 +58,7 @@ namespace Circuit.Elements.Input {
             setBbox(mPoint1, mPoint2, CR);
 
             drawVoltage(0, mPoint1, mLead1);
-            drawRail(g);
+            drawRail();
             drawPosts();
             mCurCount = updateDotCount(-mCurrent, mCurCount);
             if (CirSim.Sim.DragElm != this) {
@@ -66,7 +66,7 @@ namespace Circuit.Elements.Input {
             }
         }
 
-        void drawRail(CustomGraphics g) {
+        void drawRail() {
             if (waveform == WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
                 drawCenteredText("CLK", P2.X, P2.Y, true);
             } else if (waveform == WAVEFORM.DC) {
@@ -83,7 +83,7 @@ namespace Circuit.Elements.Input {
                 }
                 drawCenteredText(s, P2.X, P2.Y, true);
             } else {
-                drawWaveform(g, mPoint2);
+                drawWaveform(mPoint2);
             }
         }
     }

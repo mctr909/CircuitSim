@@ -254,7 +254,7 @@ namespace Circuit.Elements.Active {
             mLastVbc = mLastVbe = mCurCount_c = mCurCount_e = mCurCount_b = 0;
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             setBbox(mPoint1, mPoint2, 16);
 
             /* draw collector */

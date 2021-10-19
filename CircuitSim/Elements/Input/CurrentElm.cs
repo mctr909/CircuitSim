@@ -51,20 +51,20 @@ namespace Circuit.Elements.Input {
             Utils.CreateArrow(mCenter, p2, out mArrow, 8, 4);
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             draw2Leads();
 
             var c = getVoltageColor((Volts[0] + Volts[1]) / 2);
-            g.ThickLineColor = c;
-            g.DrawThickCircle(mCenter, CR);
-            g.DrawThickLine(mAshaft1, mAshaft2);
-            g.FillPolygon(c, mArrow);
+            Context.ThickLineColor = c;
+            Context.DrawThickCircle(mCenter, CR);
+            Context.DrawThickLine(mAshaft1, mAshaft2);
+            Context.FillPolygon(c, mArrow);
 
             setBbox(mPoint1, mPoint2, CR);
             doDots();
             if (ControlPanel.ChkShowValues.Checked) {
                 string s = Utils.ShortUnitText(mCurrentValue, "A");
-                g.DrawRightText(s, mTextPos.X, mTextPos.Y);
+                Context.DrawRightText(s, mTextPos.X, mTextPos.Y);
             }
             drawPosts();
         }

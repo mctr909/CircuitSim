@@ -188,26 +188,26 @@ namespace Circuit.Elements.Output {
             base.Delete();
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             var selected = NeedsHighlight;
             var s = "Audio Out";
             if (mLabelNum > 1) {
                 s = "Audio " + mLabelNum;
             }
-            int textWidth = (int)g.GetTextSize(s).Width;
-            g.LineColor = CustomGraphics.GrayColor;
+            int textWidth = (int)Context.GetTextSize(s).Width;
+            Context.LineColor = CustomGraphics.GrayColor;
             int pct = mDataFull ? textWidth : textWidth * mDataPtr / mDataCount;
-            g.FillRectangle(P2.X - textWidth / 2, P2.Y - 10, pct, 20);
-            g.LineColor = selected ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
+            Context.FillRectangle(P2.X - textWidth / 2, P2.Y - 10, pct, 20);
+            Context.LineColor = selected ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             setLead1(1 - (textWidth / 2.0) / mLen);
             setBbox(mPoint1, mLead1, 0);
             drawCenteredText(s, P2.X, P2.Y, true);
             if (selected) {
-                g.ThickLineColor = CustomGraphics.SelectColor;
+                Context.ThickLineColor = CustomGraphics.SelectColor;
             } else {
-                g.ThickLineColor = getVoltageColor(Volts[0]);
+                Context.ThickLineColor = getVoltageColor(Volts[0]);
             }
-            g.DrawThickLine(mPoint1, mLead1);
+            Context.DrawThickLine(mPoint1, mLead1);
             drawPosts();
         }
 

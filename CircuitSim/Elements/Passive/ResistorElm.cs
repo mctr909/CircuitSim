@@ -59,7 +59,7 @@ namespace Circuit.Elements.Passive {
             }
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             var len = (float)Utils.Distance(mLead1, mLead2);
             if (0 == len) {
                 return;
@@ -77,24 +77,24 @@ namespace Circuit.Elements.Passive {
                 /* draw zigzag */
                 for (int i = 0; i < SEGMENTS; i++) {
                     double v = v1 + (v2 - v1) * i / SEGMENTS;
-                    g.DrawThickLine(getVoltageColor(v), mP1[i], mP2[i]);
+                    Context.DrawThickLine(getVoltageColor(v), mP1[i], mP2[i]);
                 }
             } else {
                 /* draw rectangle */
-                g.ThickLineColor = getVoltageColor(v1);
-                g.DrawThickLine(mRect1[0], mRect2[0]);
+                Context.ThickLineColor = getVoltageColor(v1);
+                Context.DrawThickLine(mRect1[0], mRect2[0]);
                 for (int i = 0, j = 1; i < SEGMENTS; i++, j++) {
                     double v = v1 + (v2 - v1) * i / SEGMENTS;
-                    g.ThickLineColor = getVoltageColor(v);
-                    g.DrawThickLine(mRect1[j], mRect3[j]);
-                    g.DrawThickLine(mRect2[j], mRect4[j]);
+                    Context.ThickLineColor = getVoltageColor(v);
+                    Context.DrawThickLine(mRect1[j], mRect3[j]);
+                    Context.DrawThickLine(mRect2[j], mRect4[j]);
                 }
-                g.DrawThickLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
+                Context.DrawThickLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
             }
 
             if (ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.ShortUnitText(Resistance, "");
-                g.DrawRightText(s, mTextPos.X, mTextPos.Y);
+                Context.DrawRightText(s, mTextPos.X, mTextPos.Y);
             }
 
             doDots();

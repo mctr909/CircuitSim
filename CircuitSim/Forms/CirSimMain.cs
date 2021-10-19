@@ -75,7 +75,7 @@ namespace Circuit {
             /* draw elements */
             g.SetTransform(new Matrix(Transform[0], Transform[1], Transform[2], Transform[3], Transform[4], Transform[5]));
             for (int i = 0; i != ElmList.Count; i++) {
-                ElmList[i].Draw(g);
+                ElmList[i].Draw();
             }
 
             /* draw posts normally */
@@ -99,20 +99,20 @@ namespace Circuit {
                         g.FillCircle(Brushes.Gray, ce.P1, 3.5f);
                         g.FillCircle(Brushes.Gray, ce.P2, 3.5f);
                     } else {
-                        ce.DrawHandles(g);
+                        ce.DrawHandles();
                     }
                 }
             }
 
             /* draw handles for elm we're creating */
             if (TempMouseMode == MOUSE_MODE.SELECT && mMouseElm != null) {
-                mMouseElm.DrawHandles(g);
+                mMouseElm.DrawHandles();
             }
 
             /* draw handles for elm we're dragging */
             if (DragElm != null && (DragElm.P1.X != DragElm.P2.X || DragElm.P1.Y != DragElm.P2.Y)) {
-                DragElm.Draw(g);
-                DragElm.DrawHandles(g);
+                DragElm.Draw();
+                DragElm.DrawHandles();
             }
 
             /* draw bad connections.  do this last so they will not be overdrawn. */

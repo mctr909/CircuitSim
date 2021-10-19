@@ -76,7 +76,7 @@ namespace Circuit.Elements.Input {
             setLead1(1 - 0.5 * CR / mLen);
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             setBbox(mPoint1, mPoint2, CR);
             drawVoltage(0, mPoint1, mLead1);
 
@@ -84,7 +84,7 @@ namespace Circuit.Elements.Input {
             double v = getVoltage();
             string s = "FM";
             drawCenteredText(s, P2.X, P2.Y, true);
-            drawWaveform(g, mPoint2);
+            drawWaveform(mPoint2);
             drawPosts();
             mCurCount = updateDotCount(-mCurrent, mCurCount);
             if (CirSim.Sim.DragElm != this) {
@@ -92,11 +92,11 @@ namespace Circuit.Elements.Input {
             }
         }
 
-        void drawWaveform(CustomGraphics g, Point center) {
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+        void drawWaveform(Point center) {
+            Context.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             int xc = center.X;
             int yc = center.Y;
-            g.DrawThickCircle(center, CR);
+            Context.DrawThickCircle(center, CR);
             adjustBbox(xc - CR, yc - CR, xc + CR, yc + CR);
         }
 

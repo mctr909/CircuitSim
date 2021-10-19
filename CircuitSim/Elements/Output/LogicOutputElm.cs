@@ -49,7 +49,7 @@ namespace Circuit.Elements.Output {
             setLead1(1 - 12 / mLen);
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             string s = (Volts[0] < mThreshold) ? "L" : "H";
             if (isTernary()) {
                 if (Volts[0] > 3.75) {

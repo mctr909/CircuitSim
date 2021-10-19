@@ -243,7 +243,7 @@ namespace Circuit {
             mScale = 1 / Math.Min(scalew, scaleh);
             mG.Clear(Color.Blue);
             mG.SetTransform(new Matrix((float)(1 / mScale), 0, 0, (float)(1 / mScale), 0, 0));
-            mChip.Draw(mG);
+            mChip.Draw();
 
             if (null != mCanvas.Image) {
                 mCanvas.Image.Dispose();

@@ -91,17 +91,17 @@ namespace Circuit.Elements.Gate {
             setBbox(mPoint1, mPoint2, hs);
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             drawPosts();
             draw2Leads();
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             if (GateElm.useAnsiGates()) {
-                g.DrawThickPolygon(mGatePolyAnsi);
+                Context.DrawThickPolygon(mGatePolyAnsi);
             } else {
-                g.DrawThickPolygon(mGatePolyEuro);
+                Context.DrawThickPolygon(mGatePolyEuro);
                 drawCenteredLText("1", mCenter.X, mCenter.Y - 6, true);
             }
-            g.DrawThickCircle(mPcircle, 6);
+            Context.DrawThickCircle(mPcircle, 6);
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(mLead2, mPoint2, mCurCount);
         }

@@ -238,7 +238,7 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             /* pick up global flags changes */
             if ((mFlags & FLAGS_GLOBAL) != mGlobalFlags) {
                 SetPoints();
@@ -257,7 +257,7 @@ namespace Circuit.Elements.Active {
                     continue;
                 }
                 double v = Volts[V_S] + (Volts[V_D] - Volts[V_S]) * i / SEGMENTS;
-                g.DrawThickLine(getVoltageColor(v), mPs1[i], mPs2[i]);
+                Context.DrawThickLine(getVoltageColor(v), mPs1[i], mPs2[i]);
             }
 
             /* draw little extensions of that line */
@@ -266,9 +266,9 @@ namespace Circuit.Elements.Active {
 
             /* draw bulk connection */
             if (ShowBulk) {
-                g.ThickLineColor = getVoltageColor(Volts[mBodyTerminal]);
-                g.DrawThickLine(mPnp == -1 ? mDrn[0] : mSrc[0], mBody[0]);
-                g.DrawThickLine(mBody[0], mBody[1]);
+                Context.ThickLineColor = getVoltageColor(Volts[mBodyTerminal]);
+                Context.DrawThickLine(mPnp == -1 ? mDrn[0] : mSrc[0], mBody[0]);
+                Context.DrawThickLine(mBody[0], mBody[1]);
             }
 
             /* draw arrow */
@@ -278,9 +278,9 @@ namespace Circuit.Elements.Active {
 
             /* draw gate */
             drawVoltage(V_G, mPoint1, mGate[1]);
-            g.DrawThickLine(mGate[0], mGate[2]);
+            Context.DrawThickLine(mGate[0], mGate[2]);
             if (DrawDigital && mPnp == -1) {
-                g.DrawThickCircle(mPcircle, mPcircler);
+                Context.DrawThickCircle(mPcircle, mPcircler);
             }
 
             if ((mFlags & FLAG_SHOWVT) != 0) {

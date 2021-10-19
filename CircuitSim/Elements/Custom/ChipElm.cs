@@ -179,11 +179,11 @@ namespace Circuit.Elements.Custom {
 
         public virtual void SetupPins() { }
 
-        public override void Draw(CustomGraphics g) {
-            drawChip(g);
+        public override void Draw() {
+            drawChip();
         }
 
-        public void drawChip(CustomGraphics g) {
+        public void drawChip() {
             CustomGraphics.TextColor = Color.White;
             for (int i = 0; i != PostCount; i++) {
                 var p = pins[i];
@@ -193,34 +193,34 @@ namespace Circuit.Elements.Custom {
                 p.curcount = updateDotCount(p.current, p.curcount);
                 drawDots(b, a, p.curcount);
                 if (p.bubble) {
-                    g.ThickLineColor = Color.White;
-                    g.DrawThickCircle(p.bubblePos, 1);
-                    g.ThickLineColor = CustomGraphics.GrayColor;
-                    g.DrawThickCircle(p.bubblePos, 3);
+                    Context.ThickLineColor = Color.White;
+                    Context.DrawThickCircle(p.bubblePos, 1);
+                    Context.ThickLineColor = CustomGraphics.GrayColor;
+                    Context.DrawThickCircle(p.bubblePos, 3);
                 }
-                g.ThickLineColor = p.selected ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+                Context.ThickLineColor = p.selected ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
                 int fsz = 12 * csize;
                 var font = CustomGraphics.FontText;
                 while (true) {
-                    int sw = (int)g.GetTextSize(p.text, font).Width;
+                    int sw = (int)Context.GetTextSize(p.text, font).Width;
                     /* scale font down if it's too big */
                     if (sw > 12 * csize) {
                         fsz--;
                         font = new Font(CustomGraphics.FontText.Name, fsz);
                         continue;
                     }
-                    g.DrawCenteredText(p.text, p.textloc.X, p.textloc.Y, font);
+                    Context.DrawCenteredText(p.text, p.textloc.X, p.textloc.Y, font);
                     if (p.lineOver) {
                         int ya = p.textloc.Y;
-                        g.DrawThickLine(p.textloc.X - sw / 2, ya, p.textloc.X + sw / 2, ya);
+                        Context.DrawThickLine(p.textloc.X - sw / 2, ya, p.textloc.X + sw / 2, ya);
                     }
                     break;
                 }
             }
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            g.DrawThickPolygon(rectPoints);
+            Context.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.DrawThickPolygon(rectPoints);
             if (clockPoints != null) {
-                g.DrawThickPolygon(clockPoints);
+                Context.DrawThickPolygon(clockPoints);
             }
             drawPosts();
         }

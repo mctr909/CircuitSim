@@ -154,7 +154,7 @@ namespace Circuit.Elements.Output {
             interpPoint(ref mPlusPoint, (mLen - 10) / mLen, 10 * mDsign);
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             int hs = 8;
             setBbox(mPoint1, mPoint2, hs);
             bool selected = NeedsHighlight;
@@ -162,18 +162,18 @@ namespace Circuit.Elements.Output {
             calcLeads((int)len);
 
             if (selected) {
-                g.ThickLineColor = CustomGraphics.SelectColor;
+                Context.ThickLineColor = CustomGraphics.SelectColor;
             } else {
-                g.ThickLineColor = getVoltageColor(Volts[0]);
+                Context.ThickLineColor = getVoltageColor(Volts[0]);
             }
-            g.DrawThickLine(mPoint1, mLead1);
+            Context.DrawThickLine(mPoint1, mLead1);
 
             if (selected) {
-                g.ThickLineColor = CustomGraphics.SelectColor;
+                Context.ThickLineColor = CustomGraphics.SelectColor;
             } else {
-                g.ThickLineColor = getVoltageColor(Volts[1]);
+                Context.ThickLineColor = getVoltageColor(Volts[1]);
             }
-            g.DrawThickLine(mLead2, mPoint2);
+            Context.DrawThickLine(mLead2, mPoint2);
 
             if (this == CirSim.Sim.PlotXElm) {
                 drawCenteredLText("X", mCenter.X, mCenter.Y, true);

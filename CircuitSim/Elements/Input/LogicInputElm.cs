@@ -71,7 +71,7 @@ namespace Circuit.Elements.Input {
             setLead1(1 - 12 / mLen);
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             string s = Position == 0 ? "L" : "H";
             if (isNumeric()) {
                 s = "" + Position;

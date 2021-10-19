@@ -88,15 +88,15 @@ namespace Circuit.Elements.Active {
             mGain = ((mFlags & FLAG_LOWGAIN) != 0) ? 1000 : 100000;
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             setBbox(mPoint1, mPoint2, mOpHeight * 2);
 
             drawVoltage(V_N, mIn1p[0], mIn1p[1]);
             drawVoltage(V_P, mIn2p[0], mIn2p[1]);
             drawVoltage(V_O, mLead2, mPoint2);
 
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            g.DrawThickPolygon(mTriangle);
+            Context.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.DrawThickPolygon(mTriangle);
 
             drawCenteredLText("-", mTextp[0].X, mTextp[0].Y - 2, true);
             drawCenteredLText("+", mTextp[1].X, mTextp[1].Y, true);

@@ -71,7 +71,7 @@ namespace Circuit.Elements.Passive {
             mInd.reset();
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             double v1 = Volts[0];
             double v2 = Volts[1];
             int hs = 8;
@@ -82,7 +82,7 @@ namespace Circuit.Elements.Passive {
 
             if (ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.ShortUnitText(Inductance, "");
-                g.DrawRightText(s, mTextPos.X, mTextPos.Y);
+                Context.DrawRightText(s, mTextPos.X, mTextPos.Y);
             }
             doDots();
             drawPosts();

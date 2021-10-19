@@ -102,9 +102,9 @@ namespace Circuit.Elements.Output {
             setLead1(1 - CircleSize / mLen);
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             drawVoltage(0, mPoint1, mLead1);
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
+            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             var str = Text;
             var lineOver = false;
             if (str.StartsWith("/")) {
@@ -116,8 +116,8 @@ namespace Circuit.Elements.Output {
                 int asc = (int)CustomGraphics.FontText.Size;
                 if (lineOver) {
                     int ya = P2.Y - asc;
-                    int sw = (int)g.GetTextSize(str).Width;
-                    g.DrawLine(P2.X - sw / 2, ya, P2.X + sw / 2, ya);
+                    int sw = (int)Context.GetTextSize(str).Width;
+                    Context.DrawLine(P2.X - sw / 2, ya, P2.X + sw / 2, ya);
                 }
             }
             mCurCount = updateDotCount(mCurrent, mCurCount);

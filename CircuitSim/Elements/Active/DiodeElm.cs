@@ -116,8 +116,8 @@ namespace Circuit.Elements.Active {
             mPoly = new Point[] { pa[0], pa[1], mLead2 };
         }
 
-        public override void Draw(CustomGraphics g) {
-            drawDiode(g);
+        public override void Draw() {
+            drawDiode();
             doDots();
             drawPosts();
         }
@@ -130,7 +130,7 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        protected void drawDiode(CustomGraphics g) {
+        protected void drawDiode() {
             setBbox(mPoint1, mPoint2, HS);
 
             draw2Leads();

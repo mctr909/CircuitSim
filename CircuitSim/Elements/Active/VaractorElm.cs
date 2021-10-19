@@ -96,9 +96,9 @@ namespace Circuit.Elements.Active {
             mCapVoltDiff = 0;
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             // draw leads and diode arrow
-            drawDiode(g);
+            drawDiode();
 
             // draw first plate
             drawVoltage(0, mPlate1[0], mPlate1[1]);

@@ -98,14 +98,14 @@ namespace Circuit.Elements.Active {
             interpPoint(ref mLead3, 0.5, -OPEN_HS / 2);
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             int hs = mIsOpen ? OPEN_HS : 0;
             setBbox(mPoint1, mPoint2, OPEN_HS);
 
             draw2Leads();
 
             interpLead(ref mPs, 1, hs);
-            g.DrawThickLine(CustomGraphics.SelectColor, mLead1, mPs);
+            Context.DrawThickLine(CustomGraphics.SelectColor, mLead1, mPs);
 
             drawVoltage(2, mPoint3, mLead3);
 

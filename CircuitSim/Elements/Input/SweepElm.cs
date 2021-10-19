@@ -105,16 +105,16 @@ namespace Circuit.Elements.Input {
             setParams();
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             setBbox(mPoint1, mPoint2, CR);
 
             drawVoltage(0, mPoint1, mLead1);
 
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
 
             int xc = mPoint2.X;
             int yc = mPoint2.Y;
-            g.DrawThickCircle(mPoint2, CR);
+            Context.DrawThickCircle(mPoint2, CR);
 
             adjustBbox(
                 xc - CR, yc - CR,
@@ -135,14 +135,14 @@ namespace Circuit.Elements.Input {
 
             int x0 = 0;
             int y0 = 0;
-            g.LineColor = CustomGraphics.GrayColor;
+            Context.LineColor = CustomGraphics.GrayColor;
             for (int i = -xl; i <= xl; i++) {
                 var yy = yc + (int)(0.95 * Math.Sin(i * Math.PI * w / xl) * wl);
                 if (i == -xl) {
                     x0 = xc + i;
                     y0 = yy;
                 } else {
-                    g.DrawLine(x0, y0, xc + i, yy);
+                    Context.DrawLine(x0, y0, xc + i, yy);
                     x0 = xc + i;
                     y0 = yy;
                 }

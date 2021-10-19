@@ -62,7 +62,7 @@ namespace Circuit.Elements.Input {
             setLead1(1 - 0.5 * SIZE / mLen);
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             setBbox(mPoint1, mPoint2, SIZE);
             drawVoltage(0, mPoint1, mLead1);
 
@@ -70,7 +70,7 @@ namespace Circuit.Elements.Input {
             double v = getVoltage();
             string s = "AM";
             drawCenteredText(s, P2.X, P2.Y, true);
-            drawWaveform(g, mPoint2);
+            drawWaveform(mPoint2);
             drawPosts();
             mCurCount = updateDotCount(-mCurrent, mCurCount);
             if (CirSim.Sim.DragElm != this) {
@@ -87,11 +87,11 @@ namespace Circuit.Elements.Input {
             arr[5] = "Vmax = " + Utils.VoltageText(mMaxVoltage);
         }
 
-        void drawWaveform(CustomGraphics g, Point center) {
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+        void drawWaveform(Point center) {
+            Context.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             int xc = center.X;
             int yc = center.Y;
-            g.DrawThickCircle(center, SIZE);
+            Context.DrawThickCircle(center, SIZE);
             adjustBbox(xc - SIZE, yc - SIZE, xc + SIZE, yc + SIZE);
         }
 

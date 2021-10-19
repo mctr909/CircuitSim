@@ -50,10 +50,10 @@ namespace Circuit.Elements.Output {
             mLead1 = new Point();
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             var str = "export";
 
-            interpPoint(ref mLead1, 1 - ((int)g.GetTextSize(str).Width / 2) / mLen);
+            interpPoint(ref mLead1, 1 - (int)(Context.GetTextSize(str).Width * 0.5) / mLen);
             setBbox(mPoint1, mLead1, 0);
 
             drawCenteredText(str, P2.X, P2.Y, true);

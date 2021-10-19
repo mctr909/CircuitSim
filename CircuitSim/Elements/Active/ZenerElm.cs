@@ -40,7 +40,7 @@ namespace Circuit.Elements.Active {
             mPoly = new Point[] { pa[0], pa[1], mLead2 };
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             setBbox(mPoint1, mPoint2, HS);
 
             double v2 = Volts[1];
@@ -50,11 +50,11 @@ namespace Circuit.Elements.Active {
             /* draw arrow thingy */
             drawVoltage(0, mPoly);
             /* draw thing arrow is pointing to */
-            g.ThickLineColor = getVoltageColor(v2);
-            g.DrawThickLine(mCathode[0], mCathode[1]);
+            Context.ThickLineColor = getVoltageColor(v2);
+            Context.DrawThickLine(mCathode[0], mCathode[1]);
             /* draw wings on cathode */
-            g.DrawThickLine(mWing[0], mCathode[0]);
-            g.DrawThickLine(mWing[1], mCathode[1]);
+            Context.DrawThickLine(mWing[0], mCathode[0]);
+            Context.DrawThickLine(mWing[1], mCathode[1]);
 
             doDots();
             drawPosts();

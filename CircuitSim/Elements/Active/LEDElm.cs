@@ -53,17 +53,17 @@ namespace Circuit.Elements.Active {
             interpPoint(ref mLedCenter, 0.5);
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             if (NeedsHighlight || this == CirSim.Sim.DragElm) {
-                base.Draw(g);
+                base.Draw();
                 return;
             }
 
             drawVoltage(0, mPoint1, mLedLead1);
             drawVoltage(1, mLedLead2, mPoint2);
 
-            g.ThickLineColor = CustomGraphics.GrayColor;
-            g.DrawThickCircle(mLedCenter, 2 * CR);
+            Context.ThickLineColor = CustomGraphics.GrayColor;
+            Context.DrawThickCircle(mLedCenter, 2 * CR);
 
             double w = mCurrent / mMaxBrightnessCurrent;
             if (0 < w) {
@@ -76,8 +76,8 @@ namespace Circuit.Elements.Active {
                 w = 0;
             }
 
-            g.LineColor = Color.FromArgb((int)(mColorR * w), (int)(mColorG * w), (int)(mColorB * w));
-            g.FillCircle(mLedCenter.X, mLedCenter.Y, CR_INNER);
+            Context.LineColor = Color.FromArgb((int)(mColorR * w), (int)(mColorG * w), (int)(mColorB * w));
+            Context.FillCircle(mLedCenter.X, mLedCenter.Y, CR_INNER);
 
             setBbox(mPoint1, mPoint2, CR_INNER);
             updateDotCount();

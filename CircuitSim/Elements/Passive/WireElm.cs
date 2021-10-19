@@ -47,7 +47,7 @@ namespace Circuit.Elements.Passive {
             interpPoint(ref mTextPos, 0.5 + 8 * sign / mLen, 15 * sign);
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             drawVoltage(0, mPoint1, mPoint2);
             doDots();
             setBbox(mPoint1, mPoint2, 3);
@@ -56,9 +56,9 @@ namespace Circuit.Elements.Passive {
                 s = Utils.CurrentDText(Math.Abs(mCurrent));
             }
             if (mustShowVoltage) {
-                s = (s.Length > 0 ? s + "\r\n" : "") + Utils.VoltageText(Volts[0]);
+                s = (0 < s.Length ? s + "\r\n" : "") + Utils.VoltageText(Volts[0]);
             }
-            g.DrawRightText(s, mTextPos.X, mTextPos.Y);
+            Context.DrawRightText(s, mTextPos.X, mTextPos.Y);
             drawPosts();
         }
 

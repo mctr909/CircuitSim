@@ -58,13 +58,13 @@ namespace Circuit.Elements.Logic {
             interpPoint(ref lead3, 0.5, -hs / 2);
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             int hs = 16;
             setBbox(mPoint1, mPoint2, hs);
 
             draw2Leads();
 
-            g.DrawThickPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, gatePoly);
+            Context.DrawThickPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, gatePoly);
             drawVoltage(2, point3, lead3);
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(mLead2, mPoint2, mCurCount);

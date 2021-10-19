@@ -127,9 +127,9 @@ namespace Circuit.Elements.Active {
             Utils.CreateArrow(p1, p2, out mArrow2, 5, 2);
         }
 
-        public override void Draw(CustomGraphics g) {
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            g.DrawThickPolygon(mRectPoints);
+        public override void Draw() {
+            Context.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.DrawThickPolygon(mRectPoints);
 
             /* draw stubs */
             for (int i = 0; i != 4; i++) {
@@ -140,21 +140,21 @@ namespace Circuit.Elements.Active {
                 drawDots(a, b, mCurCounts[i]);
             }
 
-            mDiode.Draw(g);
-            mTransistor.Draw(g);
+            mDiode.Draw();
+            mTransistor.Draw();
 
             drawPosts();
 
             /* draw little arrows */
             var c = NeedsHighlight ? CustomGraphics.SelectColor : getVoltageColor(Volts[0]);
-            g.FillPolygon(c, mArrow1);
-            g.FillPolygon(c, mArrow2);
-            g.LineColor = c;
+            Context.FillPolygon(c, mArrow1);
+            Context.FillPolygon(c, mArrow2);
+            Context.LineColor = c;
             int sx = mStubs[0].X + 2;
             int sy = (mStubs[0].Y + mStubs[1].Y) / 2;
             for (int i = 0; i != 2; i++) {
                 int y = sy + i * 10 - 5;
-                g.DrawLine(sx + 10, y, sx + 15, y);
+                Context.DrawLine(sx + 10, y, sx + 15, y);
             }
         }
 

@@ -34,13 +34,13 @@ namespace Circuit.Elements.Logic {
             mCir.UpdateVoltageSource(0, Nodes[1], mVoltSource, _out);
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             drawPosts();
             draw2Leads();
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            g.ThickLineColor = g.LineColor;
-            g.DrawThickPolygon(gatePoly);
-            g.DrawPolygon(symbolPoly);
+            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.ThickLineColor = Context.LineColor;
+            Context.DrawThickPolygon(gatePoly);
+            Context.DrawPolygon(symbolPoly);
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(mLead2, mPoint2, mCurCount);
         }

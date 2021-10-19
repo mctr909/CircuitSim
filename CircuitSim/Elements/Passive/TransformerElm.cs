@@ -6,7 +6,7 @@ namespace Circuit.Elements.Passive {
     class TransformerElm : CircuitElm {
         public const int FLAG_REVERSE = 4;
 
-        const int BODY_LEN = 24;
+        const int BODY_LEN = 16;
 
         const int PRI_T = 0;
         const int PRI_B = 2;
@@ -46,7 +46,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public TransformerElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            mWidth = Math.Max(BODY_LEN, BODY_LEN * (Math.Abs(p2.Y - p1.Y) / BODY_LEN));
+            mWidth = Math.Max(BODY_LEN, Math.Abs(p2.Y - p1.Y));
             mInductance = st.nextTokenDouble();
             mRatio =  st.nextTokenDouble();
             mCurrents = new double[2];
@@ -226,7 +226,7 @@ namespace Circuit.Elements.Passive {
             mCurSourceValue1 = mCurSourceValue2 = 0;
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             drawVoltage(PRI_T, mPtEnds[0], mPtCoil[0]);
             drawVoltage(SEC_T, mPtEnds[1], mPtCoil[1]);
             drawVoltage(PRI_B, mPtEnds[2], mPtCoil[2]);
@@ -236,13 +236,13 @@ namespace Circuit.Elements.Passive {
             drawCoil(mPtCoil[1], mPtCoil[3], Volts[SEC_T], Volts[SEC_B], -90 * mDsign * mPolarity);
 
             var c = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            g.LineColor = c;
-            g.ThickLineColor = c;
-            g.DrawThickLine(mPtCore[0], mPtCore[2]);
-            g.DrawThickLine(mPtCore[1], mPtCore[3]);
+            Context.LineColor = c;
+            Context.ThickLineColor = c;
+            Context.DrawThickLine(mPtCore[0], mPtCore[2]);
+            Context.DrawThickLine(mPtCore[1], mPtCore[3]);
             if (mDots != null) {
-                g.DrawCircle(mDots[0], 2.5f);
-                g.DrawCircle(mDots[1], 2.5f);
+                Context.DrawCircle(mDots[0], 2.5f);
+                Context.DrawCircle(mDots[1], 2.5f);
             }
 
             mCurCounts[0] = updateDotCount(mCurrents[0], mCurCounts[0]);

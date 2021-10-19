@@ -191,7 +191,7 @@ namespace Circuit.Elements.Passive {
             base.Reset();
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             double vl = Volts[V_L];
             double vr = Volts[V_R];
             double vs = Volts[V_S];
@@ -207,29 +207,29 @@ namespace Circuit.Elements.Passive {
                     if (i >= divide) {
                         v = vs + (vr - vs) * (i - divide) / (SEGMENTS - divide);
                     }
-                    g.DrawThickLine(getVoltageColor(v), mPs1[i], mPs2[i]);
+                    Context.DrawThickLine(getVoltageColor(v), mPs1[i], mPs2[i]);
                 }
             } else {
                 /* draw rectangle */
-                g.DrawThickLine(getVoltageColor(vl), mRect1[0], mRect2[0]);
+                Context.DrawThickLine(getVoltageColor(vl), mRect1[0], mRect2[0]);
                 for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
                     double v = vl + (vs - vl) * i / divide;
                     if (i >= divide) {
                         v = vs + (vr - vs) * (i - divide) / (SEGMENTS - divide);
                     }
-                    g.ThickLineColor = getVoltageColor(v);
-                    g.DrawThickLine(mRect1[j], mRect3[j]);
-                    g.DrawThickLine(mRect2[j], mRect4[j]);
+                    Context.ThickLineColor = getVoltageColor(v);
+                    Context.DrawThickLine(mRect1[j], mRect3[j]);
+                    Context.DrawThickLine(mRect2[j], mRect4[j]);
                 }
-                g.DrawThickLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
+                Context.DrawThickLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
             }
 
             /* draw slider */
-            g.ThickLineColor = getVoltageColor(vs);
-            g.DrawThickLine(mPost3, mCorner2);
-            g.DrawThickLine(mCorner2, mArrowPoint);
-            g.DrawThickLine(mArrow1, mArrowPoint);
-            g.DrawThickLine(mArrow2, mArrowPoint);
+            Context.ThickLineColor = getVoltageColor(vs);
+            Context.DrawThickLine(mPost3, mCorner2);
+            Context.DrawThickLine(mCorner2, mArrowPoint);
+            Context.DrawThickLine(mArrow1, mArrowPoint);
+            Context.DrawThickLine(mArrow2, mArrowPoint);
 
             /* draw dot */
             mCurCount1 = updateDotCount(mCurrent1, mCurCount1);
@@ -255,16 +255,16 @@ namespace Circuit.Elements.Passive {
                 string s1 = Utils.ShortUnitText(rev ? mResistance2 : mResistance1, "");
                 string s2 = Utils.ShortUnitText(rev ? mResistance1 : mResistance2, "");
                 int txtHeightH = CustomGraphics.FontText.Height / 2;
-                int txtWidth1 = (int)g.GetTextSize(s1).Width;
-                int txtWidth2 = (int)g.GetTextSize(s2).Width;
+                int txtWidth1 = (int)Context.GetTextSize(s1).Width;
+                int txtWidth2 = (int)Context.GetTextSize(s2).Width;
 
                 /* vertical? */
                 if (mLead1.X == mLead2.X) {
-                    g.DrawLeftTopText(s1, !reverseY ? mArrowPoint.X : mArrowPoint.X - txtWidth1, Math.Min(mArrow1.Y, mArrow2.Y) + 4 * txtHeightH);
-                    g.DrawLeftTopText(s2, !reverseY ? mArrowPoint.X : mArrowPoint.X - txtWidth2, Math.Max(mArrow1.Y, mArrow2.Y) - txtHeightH);
+                    Context.DrawLeftTopText(s1, !reverseY ? mArrowPoint.X : mArrowPoint.X - txtWidth1, Math.Min(mArrow1.Y, mArrow2.Y) + 4 * txtHeightH);
+                    Context.DrawLeftTopText(s2, !reverseY ? mArrowPoint.X : mArrowPoint.X - txtWidth2, Math.Max(mArrow1.Y, mArrow2.Y) - txtHeightH);
                 } else {
-                    g.DrawLeftTopText(s1, Math.Min(mArrow1.X, mArrow2.X) - txtWidth1, !reverseX ? (mArrowPoint.Y + txtHeightH + 10) : mArrowPoint.Y);
-                    g.DrawLeftTopText(s2, Math.Max(mArrow1.X, mArrow2.X), !reverseX ? (mArrowPoint.Y + txtHeightH + 10) : mArrowPoint.Y);
+                    Context.DrawLeftTopText(s1, Math.Min(mArrow1.X, mArrow2.X) - txtWidth1, !reverseX ? (mArrowPoint.Y + txtHeightH + 10) : mArrowPoint.Y);
+                    Context.DrawLeftTopText(s2, Math.Max(mArrow1.X, mArrow2.X), !reverseX ? (mArrowPoint.Y + txtHeightH + 10) : mArrowPoint.Y);
                 }
             }
         }

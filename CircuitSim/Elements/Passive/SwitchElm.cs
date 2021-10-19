@@ -74,7 +74,7 @@ namespace Circuit.Elements.Passive {
             calcLeads(BODY_LEN);
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             int hs1 = (Position == 1) ? 0 : 2;
             int hs2 = (Position == 1) ? OPEN_HS : 2;
             setBbox(mPoint1, mPoint2, OPEN_HS);
@@ -84,8 +84,8 @@ namespace Circuit.Elements.Passive {
             }
             interpLead(ref mP1, 0, hs1);
             interpLead(ref mP2, 1, hs2);
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
-            g.DrawThickLine(mP1, mP2);
+            Context.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
+            Context.DrawThickLine(mP1, mP2);
             drawPosts();
         }
 

@@ -184,8 +184,8 @@ namespace Circuit.Elements.Input {
             return Nodes[n + mInputCount];
         }
 
-        public override void Draw(CustomGraphics g) {
-            drawChip(g);
+        public override void Draw() {
+            drawChip();
         }
 
         public override void GetInfo(string[] arr) {

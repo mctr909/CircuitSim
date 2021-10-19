@@ -103,7 +103,7 @@ namespace Circuit.Elements.Passive {
             PosCount = mThrowCount;
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             setBbox(mPoint1, mPoint2, OPEN_HS);
             adjustBbox(mSwPosts[0], mSwPosts[mThrowCount - 1]);
 
@@ -114,8 +114,8 @@ namespace Circuit.Elements.Passive {
                 drawVoltage(i + 1, mSwPoles[i], mSwPosts[i]);
             }
             /* draw switch */
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
-            g.DrawThickLine(mLead1, mSwPoles[Position]);
+            Context.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
+            Context.DrawThickLine(mLead1, mSwPoles[Position]);
 
             updateDotCount();
             drawDots(mPoint1, mLead1, mCurCount);

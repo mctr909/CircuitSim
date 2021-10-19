@@ -156,12 +156,12 @@ namespace Circuit.Elements.Output {
             interpPoint(ref mTextPos, 0.5, 10 * sign);
         }
 
-        public override void Draw(CustomGraphics g) {
-            base.Draw(g); /* BC required for highlighting */
+        public override void Draw() {
+            base.Draw(); /* BC required for highlighting */
             var c = getVoltageColor(Volts[0]);
-            g.ThickLineColor = c;
-            g.DrawThickLine(mPoint1, mPoint2);
-            g.FillPolygon(c, mArrowPoly);
+            Context.ThickLineColor = c;
+            Context.DrawThickLine(mPoint1, mPoint2);
+            Context.FillPolygon(c, mArrowPoly);
             doDots();
             setBbox(mPoint1, mPoint2, 3);
             string s = "A";
@@ -173,7 +173,7 @@ namespace Circuit.Elements.Output {
                 s = Utils.UnitTextWithScale(mRmsI, "A(rms)", mScale);
                 break;
             }
-            g.DrawRightText(s, mTextPos.X, mTextPos.Y);
+            Context.DrawRightText(s, mTextPos.X, mTextPos.Y);
             drawPosts();
         }
 

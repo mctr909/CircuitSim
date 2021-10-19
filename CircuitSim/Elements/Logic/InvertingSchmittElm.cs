@@ -58,14 +58,14 @@ namespace Circuit.Elements.Logic {
                 + " " + logicOffLevel;
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             drawPosts();
             draw2Leads();
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            g.ThickLineColor = g.LineColor;
-            g.DrawThickPolygon(gatePoly);
-            g.DrawPolygon(symbolPoly);
-            g.DrawThickCircle(pcircle, 6);
+            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.ThickLineColor = Context.LineColor;
+            Context.DrawThickPolygon(gatePoly);
+            Context.DrawPolygon(symbolPoly);
+            Context.DrawThickCircle(pcircle, 6);
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(mLead2, mPoint2, mCurCount);
         }

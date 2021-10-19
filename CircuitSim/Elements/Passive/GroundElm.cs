@@ -33,14 +33,14 @@ namespace Circuit.Elements.Passive {
             mCir.StampVoltageSource(0, Nodes[0], mVoltSource, 0);
         }
 
-        public override void Draw(CustomGraphics g) {
-            g.ThickLineColor = getVoltageColor(0);
-            g.DrawThickLine(mPoint1, mPoint2);
+        public override void Draw() {
+            Context.ThickLineColor = getVoltageColor(0);
+            Context.DrawThickLine(mPoint1, mPoint2);
             for (int i = 0; i != 3; i++) {
                 var a = BODY_LEN - i * 4;
                 var b = i * BODY_LEN * 0.5;
                 interpPointAB(ref mP1, ref mP2, 1 + b / mLen, a);
-                g.DrawThickLine(mP1, mP2);
+                Context.DrawThickLine(mP1, mP2);
             }
             doDots();
             setBbox(mPoint1, mP1, 11);

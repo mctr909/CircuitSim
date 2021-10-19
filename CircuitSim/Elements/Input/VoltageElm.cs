@@ -203,7 +203,7 @@ namespace Circuit.Elements.Input {
             }
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             setBbox(P1.X, P1.Y, P2.X, P2.Y);
             draw2Leads();
 
@@ -218,11 +218,11 @@ namespace Circuit.Elements.Input {
                 drawVoltage(1, mPs1, mPs2);
 
                 string s = Utils.ShortUnitText(mMaxVoltage, "V");
-                g.DrawRightText(s, mTextPos.X, mTextPos.Y);
+                Context.DrawRightText(s, mTextPos.X, mTextPos.Y);
             } else {
                 setBbox(mPoint1, mPoint2, CR);
                 interpLead(ref mPs1, 0.5);
-                drawWaveform(g, mPs1);
+                drawWaveform(mPs1);
                 string inds;
                 if (0 < mBias || (0 == mBias && WAVEFORM.PULSE == waveform)) {
                     inds = "+";
@@ -245,7 +245,8 @@ namespace Circuit.Elements.Input {
             drawPosts();
         }
 
-        protected void drawWaveform(CustomGraphics g, Point center) {
+        protected void drawWaveform(Point center) {
+            var g = Context;
             var x = center.X;
             var y = center.Y;
 

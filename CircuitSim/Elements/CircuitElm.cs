@@ -590,17 +590,17 @@ namespace Circuit.Elements {
             return Utils.DistanceOnLine(P1.X, P1.Y, P2.X, P2.Y, x, y);
         }
 
-        public void DrawHandles(CustomGraphics g) {
+        public void DrawHandles() {
             if (mLastHandleGrabbed == -1) {
-                g.FillRectangle(CustomGraphics.PenHandle, P1.X - 3, P1.Y - 3, 7, 7);
+                Context.FillRectangle(CustomGraphics.PenHandle, P1.X - 3, P1.Y - 3, 7, 7);
             } else if (mLastHandleGrabbed == 0) {
-                g.FillRectangle(CustomGraphics.PenHandle, P1.X - 4, P1.Y - 4, 9, 9);
+                Context.FillRectangle(CustomGraphics.PenHandle, P1.X - 4, P1.Y - 4, 9, 9);
             }
             if (NumHandles == 2) {
                 if (mLastHandleGrabbed == -1) {
-                    g.FillRectangle(CustomGraphics.PenHandle, P2.X - 3, P2.Y - 3, 7, 7);
+                    Context.FillRectangle(CustomGraphics.PenHandle, P2.X - 3, P2.Y - 3, 7, 7);
                 } else if (mLastHandleGrabbed == 1) {
-                    g.FillRectangle(CustomGraphics.PenHandle, P2.X - 4, P2.Y - 4, 9, 9);
+                    Context.FillRectangle(CustomGraphics.PenHandle, P2.X - 4, P2.Y - 4, 9, 9);
                 }
             }
         }
@@ -784,7 +784,7 @@ namespace Circuit.Elements {
 
         public virtual void StepFinished() { }
 
-        public virtual void Draw(CustomGraphics g) { }
+        public virtual void Draw() { }
 
         /// <summary>
         /// draw second point to xx, yy

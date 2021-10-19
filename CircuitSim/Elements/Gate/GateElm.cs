@@ -177,32 +177,32 @@ namespace Circuit.Elements.Gate {
             }
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             int i;
             for (i = 0; i != mInputCount; i++) {
                 drawVoltage(i, mInPosts[i], mInGates[i]);
             }
             drawVoltage(mInputCount, mLead2, mPoint2);
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             if (useAnsiGates()) {
-                g.DrawThickPolygon(mGatePolyAnsi);
+                Context.DrawThickPolygon(mGatePolyAnsi);
             } else {
-                g.DrawThickPolygon(mGatePolyEuro);
+                Context.DrawThickPolygon(mGatePolyEuro);
                 var center = new Point();
                 interpPoint(ref center, 0.5);
                 drawCenteredLText(getGateText(), center.X, center.Y - 6, true);
             }
             if (hasSchmittInputs()) {
-                g.LineColor = CustomGraphics.WhiteColor;
-                g.DrawPolygon(mSchmittPoly);
+                Context.LineColor = CustomGraphics.WhiteColor;
+                Context.DrawPolygon(mSchmittPoly);
             }
             if (mLinePoints != null && useAnsiGates()) {
                 for (i = 0; i != mLinePoints.Length - 1; i++) {
-                    g.DrawThickLine(mLinePoints[i], mLinePoints[i + 1]);
+                    Context.DrawThickLine(mLinePoints[i], mLinePoints[i + 1]);
                 }
             }
             if (isInverting()) {
-                g.DrawThickCircle(mCirclePos, mCircleSize);
+                Context.DrawThickCircle(mCirclePos, mCircleSize);
             }
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(mLead2, mPoint2, mCurCount);

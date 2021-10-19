@@ -73,10 +73,10 @@ namespace Circuit.Elements.Output {
             elmScope = null;
         }
 
-        public override void Draw(CustomGraphics g) {
+        public override void Draw() {
             var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             setScopeRect();
-            elmScope.Draw(g);
+            elmScope.Draw(Context);
             setBbox(mPoint1, mPoint2, 0);
             drawPosts();
         }
