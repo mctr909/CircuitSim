@@ -29,7 +29,7 @@ namespace Circuit {
             var g = CircuitElm.Context;
 
             if (ControlPanel.ChkPrintable.Checked) {
-                CustomGraphics.WhiteColor = Color.Black;
+                CustomGraphics.WhiteColor = Color.Gray;
                 CustomGraphics.GrayColor = Color.Black;
                 CustomGraphics.TextColor = Color.Black;
                 CustomGraphics.SelectColor = Color.Red;

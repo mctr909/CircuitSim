@@ -9,7 +9,7 @@ namespace Circuit.Elements.Input {
 
         const double DEFAULT_PULSE_DUTY = 0.5 / Math.PI;
 
-        protected const int CR = 28;
+        protected const int SIZE = 28;
 
         protected double mFrequency;
         protected double mMaxVoltage;
@@ -188,7 +188,7 @@ namespace Circuit.Elements.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads((waveform == WAVEFORM.DC) ? 8 : CR);
+            calcLeads((waveform == WAVEFORM.DC) ? 8 : SIZE);
 
             int sign;
             if (mPoint1.Y == mPoint2.Y) {
@@ -199,7 +199,7 @@ namespace Circuit.Elements.Input {
             if (waveform == WAVEFORM.DC) {
                 interpPoint(ref mTextPos, 0.5, -16 * sign);
             } else {
-                interpPoint(ref mTextPos, (mLen / 2 + 0.7 * CR) / mLen, 10 * sign);
+                interpPoint(ref mTextPos, (mLen / 2 + 0.7 * SIZE) / mLen, 10 * sign);
             }
         }
 
@@ -220,7 +220,7 @@ namespace Circuit.Elements.Input {
                 string s = Utils.ShortUnitText(mMaxVoltage, "V");
                 g.DrawRightText(s, mTextPos.X, mTextPos.Y);
             } else {
-                setBbox(mPoint1, mPoint2, CR);
+                setBbox(mPoint1, mPoint2, SIZE);
                 interpLead(ref mPs1, 0.5);
                 drawWaveform(g, mPs1);
                 string inds;
@@ -250,13 +250,13 @@ namespace Circuit.Elements.Input {
             var y = center.Y;
 
             if (waveform != WAVEFORM.NOISE) {
-                g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-                g.DrawThickCircle(center, CR);
+                g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+                g.DrawCircle(center, SIZE / 2);
             }
 
             adjustBbox(
-                x - CR, y - CR,
-                x + CR, y + CR
+                x - SIZE, y - SIZE,
+                x + SIZE, y + SIZE
             );
 
             var h = 7;

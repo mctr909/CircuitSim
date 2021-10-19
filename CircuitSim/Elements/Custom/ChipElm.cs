@@ -193,12 +193,12 @@ namespace Circuit.Elements.Custom {
                 p.curcount = updateDotCount(p.current, p.curcount);
                 drawDots(b, a, p.curcount);
                 if (p.bubble) {
-                    g.ThickLineColor = Color.White;
-                    g.DrawThickCircle(p.bubblePos, 1);
-                    g.ThickLineColor = CustomGraphics.GrayColor;
-                    g.DrawThickCircle(p.bubblePos, 3);
+                    g.LineColor = Color.White;
+                    g.DrawCircle(p.bubblePos, 1);
+                    g.LineColor = CustomGraphics.GrayColor;
+                    g.DrawCircle(p.bubblePos, 3);
                 }
-                g.ThickLineColor = p.selected ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+                g.LineColor = p.selected ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
                 int fsz = 12 * csize;
                 var font = CustomGraphics.FontText;
                 while (true) {
@@ -212,15 +212,15 @@ namespace Circuit.Elements.Custom {
                     g.DrawCenteredText(p.text, p.textloc.X, p.textloc.Y, font);
                     if (p.lineOver) {
                         int ya = p.textloc.Y;
-                        g.DrawThickLine(p.textloc.X - sw / 2, ya, p.textloc.X + sw / 2, ya);
+                        g.DrawLine(p.textloc.X - sw / 2, ya, p.textloc.X + sw / 2, ya);
                     }
                     break;
                 }
             }
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            g.DrawThickPolygon(rectPoints);
+            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawPolygon(rectPoints);
             if (clockPoints != null) {
-                g.DrawThickPolygon(clockPoints);
+                g.DrawPolygon(clockPoints);
             }
             drawPosts();
         }

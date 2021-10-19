@@ -38,8 +38,7 @@ namespace Circuit.Elements.Logic {
             drawPosts();
             draw2Leads();
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            g.ThickLineColor = g.LineColor;
-            g.DrawThickPolygon(gatePoly);
+            g.DrawPolygon(gatePoly);
             g.DrawPolygon(symbolPoly);
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(mLead2, mPoint2, mCurCount);

@@ -207,29 +207,31 @@ namespace Circuit.Elements.Passive {
                     if (i >= divide) {
                         v = vs + (vr - vs) * (i - divide) / (SEGMENTS - divide);
                     }
-                    g.DrawThickLine(getVoltageColor(v), mPs1[i], mPs2[i]);
+                    g.LineColor = getVoltageColor(v);
+                    g.DrawLine(mPs1[i], mPs2[i]);
                 }
             } else {
                 /* draw rectangle */
-                g.DrawThickLine(getVoltageColor(vl), mRect1[0], mRect2[0]);
+                g.LineColor = getVoltageColor(vl);
+                g.DrawLine(mRect1[0], mRect2[0]);
                 for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
                     double v = vl + (vs - vl) * i / divide;
                     if (i >= divide) {
                         v = vs + (vr - vs) * (i - divide) / (SEGMENTS - divide);
                     }
-                    g.ThickLineColor = getVoltageColor(v);
-                    g.DrawThickLine(mRect1[j], mRect3[j]);
-                    g.DrawThickLine(mRect2[j], mRect4[j]);
+                    g.LineColor = getVoltageColor(v);
+                    g.DrawLine(mRect1[j], mRect3[j]);
+                    g.DrawLine(mRect2[j], mRect4[j]);
                 }
-                g.DrawThickLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
+                g.DrawLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
             }
 
             /* draw slider */
-            g.ThickLineColor = getVoltageColor(vs);
-            g.DrawThickLine(mPost3, mCorner2);
-            g.DrawThickLine(mCorner2, mArrowPoint);
-            g.DrawThickLine(mArrow1, mArrowPoint);
-            g.DrawThickLine(mArrow2, mArrowPoint);
+            g.LineColor = getVoltageColor(vs);
+            g.DrawLine(mPost3, mCorner2);
+            g.DrawLine(mCorner2, mArrowPoint);
+            g.DrawLine(mArrow1, mArrowPoint);
+            g.DrawLine(mArrow2, mArrowPoint);
 
             /* draw dot */
             mCurCount1 = updateDotCount(mCurrent1, mCurCount1);

@@ -159,8 +159,8 @@ namespace Circuit.Elements.Output {
         public override void Draw(CustomGraphics g) {
             base.Draw(g); /* BC required for highlighting */
             var c = getVoltageColor(Volts[0]);
-            g.ThickLineColor = c;
-            g.DrawThickLine(mPoint1, mPoint2);
+            g.LineColor = c;
+            g.DrawLine(mPoint1, mPoint2);
             g.FillPolygon(c, mArrowPoly);
             doDots();
             setBbox(mPoint1, mPoint2, 3);

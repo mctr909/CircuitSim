@@ -7,7 +7,7 @@ namespace Circuit.Elements.Input {
         const int FLAG_LOG = 1;
         const int FLAG_BIDIR = 2;
 
-        const int CR = 28;
+        const int SIZE = 28;
 
         double mMaxV;
         double mMaxF;
@@ -94,8 +94,8 @@ namespace Circuit.Elements.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            setLead1(1 - 0.5 * CR / mLen);
-            interpPoint(ref mTextPos, 1.0 + 0.66 * CR / Utils.Distance(mPoint1, mPoint2), 24 * mDsign);
+            setLead1(1 - 0.5 * SIZE / mLen);
+            interpPoint(ref mTextPos, 1.0 + 0.66 * SIZE / Utils.Distance(mPoint1, mPoint2), 24 * mDsign);
         }
 
         public override void Reset() {
@@ -106,19 +106,19 @@ namespace Circuit.Elements.Input {
         }
 
         public override void Draw(CustomGraphics g) {
-            setBbox(mPoint1, mPoint2, CR);
+            setBbox(mPoint1, mPoint2, SIZE);
 
             drawVoltage(0, mPoint1, mLead1);
 
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
 
             int xc = mPoint2.X;
             int yc = mPoint2.Y;
-            g.DrawThickCircle(mPoint2, CR);
+            g.DrawCircle(mPoint2, SIZE / 2);
 
             adjustBbox(
-                xc - CR, yc - CR,
-                xc + CR, yc + CR
+                xc - SIZE, yc - SIZE,
+                xc + SIZE, yc + SIZE
             );
 
             int wl = 7;

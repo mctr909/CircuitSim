@@ -84,8 +84,8 @@ namespace Circuit.Elements.Passive {
             }
             interpLead(ref mP1, 0, hs1);
             interpLead(ref mP2, 1, hs2);
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
-            g.DrawThickLine(mP1, mP2);
+            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
+            g.DrawLine(mP1, mP2);
             drawPosts();
         }
 

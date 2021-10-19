@@ -50,11 +50,11 @@ namespace Circuit.Elements.Active {
             /* draw arrow thingy */
             drawVoltage(0, mPoly);
             /* draw thing arrow is pointing to */
-            g.ThickLineColor = getVoltageColor(v2);
-            g.DrawThickLine(mCathode[0], mCathode[1]);
+            g.LineColor = getVoltageColor(v2);
+            g.DrawLine(mCathode[0], mCathode[1]);
             /* draw wings on cathode */
-            g.DrawThickLine(mWing[0], mCathode[0]);
-            g.DrawThickLine(mWing[1], mCathode[1]);
+            g.DrawLine(mWing[0], mCathode[0]);
+            g.DrawLine(mWing[1], mCathode[1]);
 
             doDots();
             drawPosts();

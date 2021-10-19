@@ -257,7 +257,8 @@ namespace Circuit.Elements.Active {
                     continue;
                 }
                 double v = Volts[V_S] + (Volts[V_D] - Volts[V_S]) * i / SEGMENTS;
-                g.DrawThickLine(getVoltageColor(v), mPs1[i], mPs2[i]);
+                g.LineColor = getVoltageColor(v);
+                g.DrawLine(mPs1[i], mPs2[i]);
             }
 
             /* draw little extensions of that line */
@@ -266,9 +267,9 @@ namespace Circuit.Elements.Active {
 
             /* draw bulk connection */
             if (ShowBulk) {
-                g.ThickLineColor = getVoltageColor(Volts[mBodyTerminal]);
-                g.DrawThickLine(mPnp == -1 ? mDrn[0] : mSrc[0], mBody[0]);
-                g.DrawThickLine(mBody[0], mBody[1]);
+                g.LineColor = getVoltageColor(Volts[mBodyTerminal]);
+                g.DrawLine(mPnp == -1 ? mDrn[0] : mSrc[0], mBody[0]);
+                g.DrawLine(mBody[0], mBody[1]);
             }
 
             /* draw arrow */
@@ -278,9 +279,9 @@ namespace Circuit.Elements.Active {
 
             /* draw gate */
             drawVoltage(V_G, mPoint1, mGate[1]);
-            g.DrawThickLine(mGate[0], mGate[2]);
+            g.DrawLine(mGate[0], mGate[2]);
             if (DrawDigital && mPnp == -1) {
-                g.DrawThickCircle(mPcircle, mPcircler);
+                g.DrawCircle(mPcircle, mPcircler);
             }
 
             if ((mFlags & FLAG_SHOWVT) != 0) {

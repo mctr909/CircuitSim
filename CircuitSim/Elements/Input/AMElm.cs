@@ -88,10 +88,10 @@ namespace Circuit.Elements.Input {
         }
 
         void drawWaveform(CustomGraphics g, Point center) {
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             int xc = center.X;
             int yc = center.Y;
-            g.DrawThickCircle(center, SIZE);
+            g.DrawCircle(center, SIZE / 2);
             adjustBbox(xc - SIZE, yc - SIZE, xc + SIZE, yc + SIZE);
         }
 

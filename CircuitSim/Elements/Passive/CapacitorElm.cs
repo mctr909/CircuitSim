@@ -98,10 +98,10 @@ namespace Circuit.Elements.Passive {
 
             /* draw first lead and plate */
             drawVoltage(0, mPoint1, mLead1);
-            g.DrawThickLine(mPlate1[0], mPlate1[1]);
+            g.DrawLine(mPlate1[0], mPlate1[1]);
             /* draw second lead and plate */
             drawVoltage(1, mPoint2, mLead2);
-            g.DrawThickLine(mPlate2[0], mPlate2[1]);
+            g.DrawLine(mPlate2[0], mPlate2[1]);
 
             updateDotCount();
             if (CirSim.Sim.DragElm != this) {

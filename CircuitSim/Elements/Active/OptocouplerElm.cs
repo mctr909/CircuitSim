@@ -128,8 +128,8 @@ namespace Circuit.Elements.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            g.DrawThickPolygon(mRectPoints);
+            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawPolygon(mRectPoints);
 
             /* draw stubs */
             for (int i = 0; i != 4; i++) {

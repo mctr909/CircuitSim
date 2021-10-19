@@ -46,7 +46,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public TransformerElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            mWidth = Math.Max(BODY_LEN, BODY_LEN * (Math.Abs(p2.Y - p1.Y) / BODY_LEN));
+            mWidth = Math.Max(BODY_LEN, Math.Abs(p2.Y - p1.Y));
             mInductance = st.nextTokenDouble();
             mRatio =  st.nextTokenDouble();
             mCurrents = new double[2];
@@ -237,9 +237,8 @@ namespace Circuit.Elements.Passive {
 
             var c = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.LineColor = c;
-            g.ThickLineColor = c;
-            g.DrawThickLine(mPtCore[0], mPtCore[2]);
-            g.DrawThickLine(mPtCore[1], mPtCore[3]);
+            g.DrawLine(mPtCore[0], mPtCore[2]);
+            g.DrawLine(mPtCore[1], mPtCore[3]);
             if (mDots != null) {
                 g.DrawCircle(mDots[0], 2.5f);
                 g.DrawCircle(mDots[1], 2.5f);

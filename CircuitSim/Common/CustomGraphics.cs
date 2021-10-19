@@ -12,7 +12,6 @@ namespace Circuit {
         public static Color SelectColor { get; set; }
         public static Color WhiteColor { get; set; }
         public static Color GrayColor { get; set; }
-
         public static Color TextColor {
             get { return colorText; }
             set {
@@ -29,10 +28,6 @@ namespace Circuit {
         public Color LineColor {
             get { return penLine.Color; }
             set { penLine.Color = value; }
-        }
-        public Color ThickLineColor {
-            get { return penThickLine.Color; }
-            set { penThickLine.Color = value; }
         }
 
         public int Width { get; private set; }
@@ -65,10 +60,6 @@ namespace Circuit {
             EndCap = LineCap.Triangle
         };
         Pen penLine = new Pen(Color.White, 1.0f) {
-            StartCap = LineCap.Triangle,
-            EndCap = LineCap.Triangle
-        };
-        Pen penThickLine = new Pen(Color.White, 1.0f) {
             StartCap = LineCap.Triangle,
             EndCap = LineCap.Triangle
         };
@@ -150,6 +141,10 @@ namespace Circuit {
             g.DrawLine(penLine, ax, ay, bx, by);
         }
 
+        public void DrawLine(Point a, Point b) {
+            g.DrawLine(penLine, a, b);
+        }
+
         public void DrawRectangle(Rectangle rect) {
             g.DrawRectangle(penLine, rect);
         }
@@ -158,40 +153,13 @@ namespace Circuit {
             g.DrawArc(penLine, p.X - radius, p.Y - radius, radius * 2, radius * 2, 0, 360);
         }
 
+        public void DrawArc(Point p, float diameter, float start, float sweep) {
+            var md = diameter * .98f;
+            g.DrawArc(penLine, p.X - md / 2, p.Y - md / 2, md, md, start, sweep);
+        }
+
         public void DrawPolygon(Point[] p) {
             g.DrawPolygon(penLine, p);
-        }
-
-        public void DrawThickLine(int ax, int ay, int bx, int by) {
-            g.DrawLine(penThickLine, ax, ay, bx, by);
-        }
-
-        public void DrawThickLine(Point a, Point b) {
-            g.DrawLine(penThickLine, a.X, a.Y, b.X, b.Y);
-        }
-
-        public void DrawThickLine(Color color, Point a, Point b) {
-            penThickLine.Color = color;
-            g.DrawLine(penThickLine, a.X, a.Y, b.X, b.Y);
-        }
-
-        public void DrawThickCircle(Point p, float diameter) {
-            var md = diameter * .98f;
-            g.DrawArc(penThickLine, p.X - md / 2, p.Y - md / 2, md, md, 0, 360);
-        }
-
-        public void DrawThickArc(Point p, float diameter, float start, float sweep) {
-            var md = diameter * .98f;
-            g.DrawArc(penThickLine, p.X - md / 2, p.Y - md / 2, md, md, start, sweep);
-        }
-
-        public void DrawThickPolygon(Point[] p) {
-            g.DrawPolygon(penThickLine, p);
-        }
-
-        public void DrawThickPolygon(Color color, Point[] p) {
-            penColor.Color = color;
-            g.DrawPolygon(penColor, p);
         }
 
         public void FillRectangle(int x, int y, int width, int height) {

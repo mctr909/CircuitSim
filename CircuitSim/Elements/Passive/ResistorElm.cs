@@ -77,19 +77,20 @@ namespace Circuit.Elements.Passive {
                 /* draw zigzag */
                 for (int i = 0; i < SEGMENTS; i++) {
                     double v = v1 + (v2 - v1) * i / SEGMENTS;
-                    g.DrawThickLine(getVoltageColor(v), mP1[i], mP2[i]);
+                    g.LineColor = getVoltageColor(v);
+                    g.DrawLine(mP1[i], mP2[i]);
                 }
             } else {
                 /* draw rectangle */
-                g.ThickLineColor = getVoltageColor(v1);
-                g.DrawThickLine(mRect1[0], mRect2[0]);
+                g.LineColor = getVoltageColor(v1);
+                g.DrawLine(mRect1[0], mRect2[0]);
                 for (int i = 0, j = 1; i < SEGMENTS; i++, j++) {
                     double v = v1 + (v2 - v1) * i / SEGMENTS;
-                    g.ThickLineColor = getVoltageColor(v);
-                    g.DrawThickLine(mRect1[j], mRect3[j]);
-                    g.DrawThickLine(mRect2[j], mRect4[j]);
+                    g.LineColor = getVoltageColor(v);
+                    g.DrawLine(mRect1[j], mRect3[j]);
+                    g.DrawLine(mRect2[j], mRect4[j]);
                 }
-                g.DrawThickLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
+                g.DrawLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
             }
 
             if (ControlPanel.ChkShowValues.Checked) {

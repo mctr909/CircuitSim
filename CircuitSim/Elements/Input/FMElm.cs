@@ -4,7 +4,7 @@ using System.Drawing;
 namespace Circuit.Elements.Input {
     class FMElm : CircuitElm {
         const int FLAG_COS = 2;
-        const int CR = 28;
+        const int SIZE = 28;
 
         double mCarrierFreq;
         double mSignalfreq;
@@ -73,11 +73,11 @@ namespace Circuit.Elements.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            setLead1(1 - 0.5 * CR / mLen);
+            setLead1(1 - 0.5 * SIZE / mLen);
         }
 
         public override void Draw(CustomGraphics g) {
-            setBbox(mPoint1, mPoint2, CR);
+            setBbox(mPoint1, mPoint2, SIZE);
             drawVoltage(0, mPoint1, mLead1);
 
             CustomGraphics.TextColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
@@ -93,11 +93,11 @@ namespace Circuit.Elements.Input {
         }
 
         void drawWaveform(CustomGraphics g, Point center) {
-            g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             int xc = center.X;
             int yc = center.Y;
-            g.DrawThickCircle(center, CR);
-            adjustBbox(xc - CR, yc - CR, xc + CR, yc + CR);
+            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawCircle(center, SIZE / 2);
+            adjustBbox(xc - SIZE, yc - SIZE, xc + SIZE, yc + SIZE);
         }
 
         public override void GetInfo(string[] arr) {
