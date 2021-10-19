@@ -108,7 +108,7 @@ namespace Circuit.Elements.Input {
         public override void Draw(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, CR);
 
-            drawVoltage(g, 0, mPoint1, mLead1);
+            drawVoltage(0, mPoint1, mLead1);
 
             g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
 
@@ -150,13 +150,13 @@ namespace Circuit.Elements.Input {
 
             if (ControlPanel.ChkShowValues.Checked) {
                 string s = Utils.ShortUnitText(mFrequency, "Hz");
-                drawValues(g, s, 20, -15);
+                drawValues(s, 20, -15);
             }
 
-            drawPosts(g);
+            drawPosts();
             mCurCount = updateDotCount(-mCurrent, mCurCount);
             if (CirSim.Sim.DragElm != this) {
-                drawDots(g, mPoint1, mLead1, mCurCount);
+                drawDots(mPoint1, mLead1, mCurCount);
             }
         }
 

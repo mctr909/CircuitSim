@@ -59,8 +59,8 @@ namespace Circuit.Elements.Active {
                 return;
             }
 
-            drawVoltage(g, 0, mPoint1, mLedLead1);
-            drawVoltage(g, 1, mLedLead2, mPoint2);
+            drawVoltage(0, mPoint1, mLedLead1);
+            drawVoltage(1, mLedLead2, mPoint2);
 
             g.ThickLineColor = CustomGraphics.GrayColor;
             g.DrawThickCircle(mLedCenter, 2 * CR);
@@ -81,9 +81,9 @@ namespace Circuit.Elements.Active {
 
             setBbox(mPoint1, mPoint2, CR_INNER);
             updateDotCount();
-            drawDots(g, mPoint1, mLedLead1, mCurCount);
-            drawDots(g, mPoint2, mLedLead2, -mCurCount);
-            drawPosts(g);
+            drawDots(mPoint1, mLedLead1, mCurCount);
+            drawDots(mPoint2, mLedLead2, -mCurCount);
+            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

@@ -196,7 +196,7 @@ namespace Circuit.Elements.Passive {
             double vr = Volts[V_R];
             double vs = Volts[V_S];
             setBbox(mPoint1, mPoint2, HS);
-            draw2Leads(g);
+            draw2Leads();
 
             int divide = (int)(SEGMENTS * mPosition);
 
@@ -236,12 +236,12 @@ namespace Circuit.Elements.Passive {
             mCurCount2 = updateDotCount(mCurrent2, mCurCount2);
             mCurCount3 = updateDotCount(mCurrent3, mCurCount3);
             if (CirSim.Sim.DragElm != this) {
-                drawDots(g, mPoint1, mMidPoint, mCurCount1);
-                drawDots(g, mPoint2, mMidPoint, mCurCount2);
-                drawDots(g, mPost3, mCorner2, mCurCount3);
-                drawDots(g, mCorner2, mMidPoint, mCurCount3 + Utils.Distance(mPost3, mCorner2));
+                drawDots(mPoint1, mMidPoint, mCurCount1);
+                drawDots(mPoint2, mMidPoint, mCurCount2);
+                drawDots(mPost3, mCorner2, mCurCount3);
+                drawDots(mCorner2, mMidPoint, mCurCount3 + Utils.Distance(mPost3, mCorner2));
             }
-            drawPosts(g);
+            drawPosts();
 
             if (ControlPanel.ChkShowValues.Checked && mResistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
                 /* check for vertical pot with 3rd terminal on left */

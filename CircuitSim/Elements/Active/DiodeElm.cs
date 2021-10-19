@@ -118,8 +118,8 @@ namespace Circuit.Elements.Active {
 
         public override void Draw(CustomGraphics g) {
             drawDiode(g);
-            doDots(g);
-            drawPosts(g);
+            doDots();
+            drawPosts();
         }
 
         public override void Reset() {
@@ -133,12 +133,12 @@ namespace Circuit.Elements.Active {
         protected void drawDiode(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, HS);
 
-            draw2Leads(g);
+            draw2Leads();
 
             /* draw arrow thingy */
-            drawVoltage(g, 0, mPoly);
+            drawVoltage(0, mPoly);
             /* draw thing arrow is pointing to */
-            drawVoltage(g, 1, mCathode[0], mCathode[1]);
+            drawVoltage(1, mCathode[0], mCathode[1]);
         }
 
         protected override void calculateCurrent() {

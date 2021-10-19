@@ -56,9 +56,9 @@ namespace Circuit.Elements.Output {
             interpPoint(ref mLead1, 1 - ((int)g.GetTextSize(str).Width / 2) / mLen);
             setBbox(mPoint1, mLead1, 0);
 
-            drawCenteredText(g, str, P2.X, P2.Y, true);
-            drawVoltage(g, 0, mPoint1, mLead1);
-            drawPosts(g);
+            drawCenteredText(str, P2.X, P2.Y, true);
+            drawVoltage(0, mPoint1, mLead1);
+            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

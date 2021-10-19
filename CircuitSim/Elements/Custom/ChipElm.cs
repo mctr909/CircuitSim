@@ -189,9 +189,9 @@ namespace Circuit.Elements.Custom {
                 var p = pins[i];
                 var a = p.post;
                 var b = p.stub;
-                drawVoltage(g, i, a, b);
+                drawVoltage(i, a, b);
                 p.curcount = updateDotCount(p.current, p.curcount);
-                drawDots(g, b, a, p.curcount);
+                drawDots(b, a, p.curcount);
                 if (p.bubble) {
                     g.ThickLineColor = Color.White;
                     g.DrawThickCircle(p.bubblePos, 1);
@@ -222,7 +222,7 @@ namespace Circuit.Elements.Custom {
             if (clockPoints != null) {
                 g.DrawThickPolygon(clockPoints);
             }
-            drawPosts(g);
+            drawPosts();
         }
 
         public override void Drag(Point pos) {

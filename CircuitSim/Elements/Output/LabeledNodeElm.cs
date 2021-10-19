@@ -103,7 +103,7 @@ namespace Circuit.Elements.Output {
         }
 
         public override void Draw(CustomGraphics g) {
-            drawVoltage(g, 0, mPoint1, mLead1);
+            drawVoltage(0, mPoint1, mLead1);
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             var str = Text;
             var lineOver = false;
@@ -111,7 +111,7 @@ namespace Circuit.Elements.Output {
                 lineOver = true;
                 str = str.Substring(1);
             }
-            drawCenteredText(g, str, P2.X, P2.Y, true);
+            drawCenteredText(str, P2.X, P2.Y, true);
             if (lineOver) {
                 int asc = (int)CustomGraphics.FontText.Size;
                 if (lineOver) {
@@ -121,10 +121,10 @@ namespace Circuit.Elements.Output {
                 }
             }
             mCurCount = updateDotCount(mCurrent, mCurCount);
-            drawDots(g, mPoint1, mLead1, mCurCount);
+            drawDots(mPoint1, mLead1, mCurCount);
             interpPoint(ref mPos, 1 + 11.0 / mLen);
             setBbox(mPoint1, mPos, CircleSize);
-            drawPosts(g);
+            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

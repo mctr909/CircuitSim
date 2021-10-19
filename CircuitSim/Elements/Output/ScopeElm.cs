@@ -78,7 +78,7 @@ namespace Circuit.Elements.Output {
             setScopeRect();
             elmScope.Draw(g);
             setBbox(mPoint1, mPoint2, 0);
-            drawPosts(g);
+            drawPosts();
         }
     }
 }

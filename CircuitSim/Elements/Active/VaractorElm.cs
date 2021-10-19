@@ -101,13 +101,13 @@ namespace Circuit.Elements.Active {
             drawDiode(g);
 
             // draw first plate
-            drawVoltage(g, 0, mPlate1[0], mPlate1[1]);
+            drawVoltage(0, mPlate1[0], mPlate1[1]);
 
             // draw second plate
-            drawVoltage(g, 1, mPlate2[0], mPlate2[1]);
+            drawVoltage(1, mPlate2[0], mPlate2[1]);
 
-            doDots(g);
-            drawPosts(g);
+            doDots();
+            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

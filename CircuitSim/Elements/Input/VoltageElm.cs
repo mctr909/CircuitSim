@@ -205,17 +205,17 @@ namespace Circuit.Elements.Input {
 
         public override void Draw(CustomGraphics g) {
             setBbox(P1.X, P1.Y, P2.X, P2.Y);
-            draw2Leads(g);
+            draw2Leads();
 
             if (waveform == WAVEFORM.DC) {
                 int hs = 12;
                 setBbox(mPoint1, mPoint2, hs);
 
                 interpLeadAB(ref mPs1, ref mPs2, 0, hs * 0.5);
-                drawVoltage(g, 0, mPs1, mPs2);
+                drawVoltage(0, mPs1, mPs2);
 
                 interpLeadAB(ref mPs1, ref mPs2, 1, hs);
-                drawVoltage(g, 1, mPs1, mPs2);
+                drawVoltage(1, mPs1, mPs2);
 
                 string s = Utils.ShortUnitText(mMaxVoltage, "V");
                 g.DrawRightText(s, mTextPos.X, mTextPos.Y);
@@ -229,20 +229,20 @@ namespace Circuit.Elements.Input {
                 } else {
                     inds = "*";
                 }
-                drawCenteredLText(g, inds, mTextPos.X, mTextPos.Y, true);
+                drawCenteredLText(inds, mTextPos.X, mTextPos.Y, true);
             }
 
             updateDotCount();
 
             if (CirSim.Sim.DragElm != this) {
                 if (waveform == WAVEFORM.DC) {
-                    drawDots(g, mPoint1, mPoint2, mCurCount);
+                    drawDots(mPoint1, mPoint2, mCurCount);
                 } else {
-                    drawDots(g, mPoint1, mLead1, mCurCount);
-                    drawDots(g, mPoint2, mLead2, -mCurCount);
+                    drawDots(mPoint1, mLead1, mCurCount);
+                    drawDots(mPoint2, mLead2, -mCurCount);
                 }
             }
-            drawPosts(g);
+            drawPosts();
         }
 
         protected void drawWaveform(CustomGraphics g, Point center) {
@@ -313,7 +313,7 @@ namespace Circuit.Elements.Input {
                 break;
             }
             case WAVEFORM.NOISE: {
-                drawCenteredText(g, "Noise", x, y, true);
+                drawCenteredText("Noise", x, y, true);
                 break;
             }
             case WAVEFORM.AC: {
@@ -336,7 +336,7 @@ namespace Circuit.Elements.Input {
                 var s = Utils.ShortUnitText(mMaxVoltage, "V\r\n");
                 s += Utils.ShortUnitText(mFrequency, "Hz\r\n");
                 s += Utils.ShortUnitText(mPhaseShift * 180 / Math.PI, "°");
-                drawValues(g, s, 0, 5);
+                drawValues(s, 0, 5);
             }
         }
 

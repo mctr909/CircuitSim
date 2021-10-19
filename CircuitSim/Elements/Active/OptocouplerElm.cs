@@ -135,15 +135,15 @@ namespace Circuit.Elements.Active {
             for (int i = 0; i != 4; i++) {
                 var a = posts[i];
                 var b = mStubs[i];
-                drawVoltage(g, i, a, b);
+                drawVoltage(i, a, b);
                 mCurCounts[i] = updateDotCount(-GetCurrentIntoNode(i), mCurCounts[i]);
-                drawDots(g, a, b, mCurCounts[i]);
+                drawDots(a, b, mCurCounts[i]);
             }
 
             mDiode.Draw(g);
             mTransistor.Draw(g);
 
-            drawPosts(g);
+            drawPosts();
 
             /* draw little arrows */
             var c = NeedsHighlight ? CustomGraphics.SelectColor : getVoltageColor(Volts[0]);

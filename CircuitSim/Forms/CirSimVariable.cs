@@ -87,7 +87,6 @@ namespace Circuit {
         PictureBox mPixCir;
         Bitmap mBmp = null;
         Graphics mContext;
-        CustomGraphics mBackContext;
 
         MenuItem mUndoItem;
         MenuItem mRedoItem;

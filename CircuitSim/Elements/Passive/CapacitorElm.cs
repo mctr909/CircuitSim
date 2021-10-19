@@ -91,18 +91,18 @@ namespace Circuit.Elements.Passive {
             setBbox(mPoint1, mPoint2, HS);
 
             /* draw first lead and plate */
-            drawVoltage(g, 0, mPoint1, mLead1);
+            drawVoltage(0, mPoint1, mLead1);
             g.DrawThickLine(mPlate1[0], mPlate1[1]);
             /* draw second lead and plate */
-            drawVoltage(g, 1, mPoint2, mLead2);
+            drawVoltage(1, mPoint2, mLead2);
             g.DrawThickLine(mPlate2[0], mPlate2[1]);
 
             updateDotCount();
             if (CirSim.Sim.DragElm != this) {
-                drawDots(g, mPoint1, mLead1, mCurCount);
-                drawDots(g, mPoint2, mLead2, -mCurCount);
+                drawDots(mPoint1, mLead1, mCurCount);
+                drawDots(mPoint2, mLead2, -mCurCount);
             }
-            drawPosts(g);
+            drawPosts();
             if (ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.ShortUnitText(Capacitance, "");
                 g.DrawRightText(s, mTextPos.X, mTextPos.Y);

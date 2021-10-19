@@ -78,15 +78,15 @@ namespace Circuit.Elements.Passive {
             int hs1 = (Position == 1) ? 0 : 2;
             int hs2 = (Position == 1) ? OPEN_HS : 2;
             setBbox(mPoint1, mPoint2, OPEN_HS);
-            draw2Leads(g);
+            draw2Leads();
             if (Position == 0) {
-                doDots(g);
+                doDots();
             }
             interpLead(ref mP1, 0, hs1);
             interpLead(ref mP2, 1, hs2);
             g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             g.DrawThickLine(mP1, mP2);
-            drawPosts(g);
+            drawPosts();
         }
 
         public override void Stamp() {

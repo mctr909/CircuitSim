@@ -258,26 +258,26 @@ namespace Circuit.Elements.Active {
             setBbox(mPoint1, mPoint2, 16);
 
             /* draw collector */
-            drawVoltage(g, V_C, mColl[0], mColl[1]);
+            drawVoltage(V_C, mColl[0], mColl[1]);
             /* draw emitter */
-            drawVoltage(g, V_E, mEmit[0], mEmit[1]);
+            drawVoltage(V_E, mEmit[0], mEmit[1]);
             /* draw arrow */
-            drawVoltage(g, V_E, mArrowPoly);
+            drawVoltage(V_E, mArrowPoly);
             /* draw base */
-            drawVoltage(g, V_B, mPoint1, mTbase);
+            drawVoltage(V_B, mPoint1, mTbase);
 
             /* draw dots */
             mCurCount_b = updateDotCount(-mIb, mCurCount_b);
-            drawDots(g, mTbase, mPoint1, mCurCount_b);
+            drawDots(mTbase, mPoint1, mCurCount_b);
             mCurCount_c = updateDotCount(-mIc, mCurCount_c);
-            drawDots(g, mColl[1], mColl[0], mCurCount_c);
+            drawDots(mColl[1], mColl[0], mCurCount_c);
             mCurCount_e = updateDotCount(-mIe, mCurCount_e);
-            drawDots(g, mEmit[1], mEmit[0], mCurCount_e);
+            drawDots(mEmit[1], mEmit[0], mCurCount_e);
 
             /* draw base rectangle */
-            drawVoltage(g, V_B, mRectPoly);
+            drawVoltage(V_B, mRectPoly);
 
-            drawPosts(g);
+            drawPosts();
         }
 
         public override string GetScopeText(Scope.VAL x) {

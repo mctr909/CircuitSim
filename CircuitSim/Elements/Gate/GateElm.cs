@@ -180,9 +180,9 @@ namespace Circuit.Elements.Gate {
         public override void Draw(CustomGraphics g) {
             int i;
             for (i = 0; i != mInputCount; i++) {
-                drawVoltage(g, i, mInPosts[i], mInGates[i]);
+                drawVoltage(i, mInPosts[i], mInGates[i]);
             }
-            drawVoltage(g, mInputCount, mLead2, mPoint2);
+            drawVoltage(mInputCount, mLead2, mPoint2);
             g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             if (useAnsiGates()) {
                 g.DrawThickPolygon(mGatePolyAnsi);
@@ -190,7 +190,7 @@ namespace Circuit.Elements.Gate {
                 g.DrawThickPolygon(mGatePolyEuro);
                 var center = new Point();
                 interpPoint(ref center, 0.5);
-                drawCenteredLText(g, getGateText(), center.X, center.Y - 6, true);
+                drawCenteredLText(getGateText(), center.X, center.Y - 6, true);
             }
             if (hasSchmittInputs()) {
                 g.LineColor = CustomGraphics.WhiteColor;
@@ -205,8 +205,8 @@ namespace Circuit.Elements.Gate {
                 g.DrawThickCircle(mCirclePos, mCircleSize);
             }
             mCurCount = updateDotCount(mCurrent, mCurCount);
-            drawDots(g, mLead2, mPoint2, mCurCount);
-            drawPosts(g);
+            drawDots(mLead2, mPoint2, mCurCount);
+            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

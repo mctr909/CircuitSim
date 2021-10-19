@@ -247,8 +247,8 @@ namespace Circuit.Elements.Active {
             setBbox(mPoint1, mPoint2, HS);
 
             /* draw source/drain terminals */
-            drawVoltage(g, V_S, mSrc[0], mSrc[1]);
-            drawVoltage(g, V_D, mDrn[0], mDrn[1]);
+            drawVoltage(V_S, mSrc[0], mSrc[1]);
+            drawVoltage(V_D, mDrn[0], mDrn[1]);
 
             /* draw line connecting source and drain */
             bool enhancement = mVt > 0 && ShowBulk;
@@ -261,8 +261,8 @@ namespace Circuit.Elements.Active {
             }
 
             /* draw little extensions of that line */
-            drawVoltage(g, V_S, mSrc[1], mSrc[2]);
-            drawVoltage(g, V_D, mDrn[1], mDrn[2]);
+            drawVoltage(V_S, mSrc[1], mSrc[2]);
+            drawVoltage(V_D, mDrn[1], mDrn[2]);
 
             /* draw bulk connection */
             if (ShowBulk) {
@@ -273,11 +273,11 @@ namespace Circuit.Elements.Active {
 
             /* draw arrow */
             if (!DrawDigital) {
-                drawVoltage(g, mBodyTerminal, mArrowPoly);
+                drawVoltage(mBodyTerminal, mArrowPoly);
             }
 
             /* draw gate */
-            drawVoltage(g, V_G, mPoint1, mGate[1]);
+            drawVoltage(V_G, mPoint1, mGate[1]);
             g.DrawThickLine(mGate[0], mGate[2]);
             if (DrawDigital && mPnp == -1) {
                 g.DrawThickCircle(mPcircle, mPcircler);
@@ -285,21 +285,21 @@ namespace Circuit.Elements.Active {
 
             if ((mFlags & FLAG_SHOWVT) != 0) {
                 string s = "" + (mVt * mPnp);
-                drawCenteredLText(g, s, P2.X + 2, P2.Y, false);
+                drawCenteredLText(s, P2.X + 2, P2.Y, false);
             }
             mCurCount = updateDotCount(-mIds, mCurCount);
-            drawDots(g, mSrc[0], mSrc[1], mCurCount);
-            drawDots(g, mDrn[1], mDrn[0], mCurCount);
-            drawDots(g, mSrc[1], mDrn[1], mCurCount);
+            drawDots(mSrc[0], mSrc[1], mCurCount);
+            drawDots(mDrn[1], mDrn[0], mCurCount);
+            drawDots(mSrc[1], mDrn[1], mCurCount);
 
             if (ShowBulk) {
                 mCurcountBody1 = updateDotCount(mDiodeCurrent1, mCurcountBody1);
                 mCurcountBody2 = updateDotCount(mDiodeCurrent2, mCurcountBody2);
-                drawDots(g, mSrc[0], mBody[0], -mCurcountBody1);
-                drawDots(g, mBody[0], mDrn[0], mCurcountBody2);
+                drawDots(mSrc[0], mBody[0], -mCurcountBody1);
+                drawDots(mBody[0], mDrn[0], mCurcountBody2);
             }
 
-            drawPosts(g);
+            drawPosts();
         }
 
         /* set up body diodes */

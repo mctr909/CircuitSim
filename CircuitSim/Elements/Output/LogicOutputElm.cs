@@ -64,9 +64,9 @@ namespace Circuit.Elements.Output {
             }
             mValue = s;
             setBbox(mPoint1, mLead1, 0);
-            drawCenteredLText(g, s, P2.X, P2.Y, true);
-            drawVoltage(g, 0, mPoint1, mLead1);
-            drawPosts(g);
+            drawCenteredLText(s, P2.X, P2.Y, true);
+            drawVoltage(0, mPoint1, mLead1);
+            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

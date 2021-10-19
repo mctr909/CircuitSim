@@ -42,9 +42,9 @@ namespace Circuit.Elements.Passive {
                 interpPointAB(ref mP1, ref mP2, 1 + b / mLen, a);
                 g.DrawThickLine(mP1, mP2);
             }
-            doDots(g);
+            doDots();
             setBbox(mPoint1, mP1, 11);
-            drawPosts(g);
+            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

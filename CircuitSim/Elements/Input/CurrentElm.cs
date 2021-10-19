@@ -52,7 +52,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override void Draw(CustomGraphics g) {
-            draw2Leads(g);
+            draw2Leads();
 
             var c = getVoltageColor((Volts[0] + Volts[1]) / 2);
             g.ThickLineColor = c;
@@ -61,12 +61,12 @@ namespace Circuit.Elements.Input {
             g.FillPolygon(c, mArrow);
 
             setBbox(mPoint1, mPoint2, CR);
-            doDots(g);
+            doDots();
             if (ControlPanel.ChkShowValues.Checked) {
                 string s = Utils.ShortUnitText(mCurrentValue, "A");
                 g.DrawRightText(s, mTextPos.X, mTextPos.Y);
             }
-            drawPosts(g);
+            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

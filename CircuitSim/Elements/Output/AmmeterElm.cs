@@ -162,7 +162,7 @@ namespace Circuit.Elements.Output {
             g.ThickLineColor = c;
             g.DrawThickLine(mPoint1, mPoint2);
             g.FillPolygon(c, mArrowPoly);
-            doDots(g);
+            doDots();
             setBbox(mPoint1, mPoint2, 3);
             string s = "A";
             switch (mMeter) {
@@ -174,7 +174,7 @@ namespace Circuit.Elements.Output {
                 break;
             }
             g.DrawRightText(s, mTextPos.X, mTextPos.Y);
-            drawPosts(g);
+            drawPosts();
         }
 
         bool mustShowCurrent() {

@@ -26,7 +26,7 @@ namespace Circuit {
             }
             setupScopes();
 
-            var g = mBackContext;
+            var g = CircuitElm.Context;
 
             if (ControlPanel.ChkPrintable.Checked) {
                 CustomGraphics.WhiteColor = Color.Black;
@@ -222,7 +222,7 @@ namespace Circuit {
 
             mBmp = new Bitmap(g.Width, g.Height);
             mContext = Graphics.FromImage(mBmp);
-            mBackContext.CopyTo(mContext);
+            CircuitElm.Context.CopyTo(mContext);
             mPixCir.Image = mBmp;
 
             /* if we did DC analysis, we need to re-analyze the circuit with that flag cleared. */
@@ -328,7 +328,7 @@ namespace Circuit {
                 mScopeCount--;
             }
 
-            int h = mBackContext.Height - mCircuitArea.Height;
+            int h = CircuitElm.Context.Height - mCircuitArea.Height;
             pos = 0;
             for (int i = 0; i != mScopeCount; i++) {
                 mScopeColCount[i] = 0;
@@ -342,7 +342,7 @@ namespace Circuit {
             if (colct <= 2) {
                 iw = iw * 3 / 2;
             }
-            int w = (mBackContext.Width - iw) / colct;
+            int w = (CircuitElm.Context.Width - iw) / colct;
             int marg = 10;
             if (w < marg * 2) {
                 w = marg * 2;
@@ -365,7 +365,7 @@ namespace Circuit {
                     s.Speed = speed;
                     s.ResetGraph();
                 }
-                var r = new Rectangle(pos * w, mBackContext.Height - h + colh * row, w - marg, colh);
+                var r = new Rectangle(pos * w, CircuitElm.Context.Height - h + colh * row, w - marg, colh);
                 row++;
                 if (!r.Equals(s.BoundingBox)) {
                     s.SetRect(r);

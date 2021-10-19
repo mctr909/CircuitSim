@@ -9,6 +9,7 @@ namespace Circuit.Elements {
         static Color[] mColorScale;
         static CircuitElm mMouseElmRef = null;
         protected static Circuit mCir;
+        public static CustomGraphics Context;
 
         #region dynamic property
         public bool IsSelected { get; set; }
@@ -212,31 +213,30 @@ namespace Circuit.Elements {
         /// <summary>
         /// draw current dots from point a to b
         /// </summary>
-        /// <param name="g"></param>
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <param name="pos"></param>
-        protected static void drawDots(CustomGraphics g, Point a, Point b, double pos) {
+        protected static void drawDots(Point a, Point b, double pos) {
             if ((!CirSim.Sim.IsRunning) || pos == 0 || !ControlPanel.ChkShowDots.Checked) {
                 return;
             }
             var dx = b.X - a.X;
             var dy = b.Y - a.Y;
-            double dn = Math.Sqrt(dx * dx + dy * dy);
+            var dr = Math.Sqrt(dx * dx + dy * dy);
             int ds = CirSim.GRID_SIZE * 4;
             pos %= ds;
             if (pos < 0) {
                 pos += ds;
             }
             if (ControlPanel.ChkPrintable.Checked) {
-                g.LineColor = CustomGraphics.GrayColor;
+                Context.LineColor = CustomGraphics.GrayColor;
             } else {
-                g.LineColor = Color.Yellow;
+                Context.LineColor = Color.Yellow;
             }
-            for (var di = pos; di < dn; di += ds) {
-                var x0 = (int)(a.X + di * dx / dn);
-                var y0 = (int)(a.Y + di * dy / dn);
-                g.FillCircle(x0, y0, 1.5f);
+            for (var di = pos; di < dr; di += ds) {
+                var x0 = (int)(a.X + di * dx / dr);
+                var y0 = (int)(a.Y + di * dy / dr);
+                Context.FillCircle(x0, y0, 1.5f);
             }
         }
         #endregion
@@ -351,11 +351,10 @@ namespace Circuit.Elements {
         /// <summary>
         /// update and draw current for simple two-terminal element
         /// </summary>
-        /// <param name="g"></param>
-        protected void doDots(CustomGraphics g) {
+        protected void doDots() {
             updateDotCount();
             if (CirSim.Sim.DragElm != this) {
-                drawDots(g, mPoint1, mPoint2, mCurCount);
+                drawDots(mPoint1, mPoint2, mCurCount);
             }
         }
 
@@ -468,7 +467,7 @@ namespace Circuit.Elements {
             }
         }
 
-        protected void drawPosts(CustomGraphics g) {
+        protected void drawPosts() {
             /* we normally do this in updateCircuit() now because the logic is more complicated.
              * we only handle the case where we have to draw all the posts.  That happens when
              * this element is selected or is being created */
@@ -480,27 +479,27 @@ namespace Circuit.Elements {
             }
             for (int i = 0; i != PostCount; i++) {
                 var p = GetPost(i);
-                g.DrawPost(p);
+                Context.DrawPost(p);
             }
         }
 
-        protected void draw2Leads(CustomGraphics g) {
+        protected void draw2Leads() {
             /* draw first lead */
-            g.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
+            Context.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
             /* draw second lead */
-            g.DrawThickLine(getVoltageColor(Volts[1]), mLead2, mPoint2);
+            Context.DrawThickLine(getVoltageColor(Volts[1]), mLead2, mPoint2);
         }
 
-        protected void drawVoltage(CustomGraphics g, int index, Point a, Point b) {
-            g.DrawThickLine(getVoltageColor(Volts[index]), a, b);
+        protected void drawVoltage(int index, Point a, Point b) {
+            Context.DrawThickLine(getVoltageColor(Volts[index]), a, b);
         }
 
-        protected void drawVoltage(CustomGraphics g, int index, Point[] poly) {
-            g.FillPolygon(getVoltageColor(Volts[index]), poly);
+        protected void drawVoltage(int index, Point[] poly) {
+            Context.FillPolygon(getVoltageColor(Volts[index]), poly);
         }
 
-        protected void drawCenteredText(CustomGraphics g, string s, int x, int y, bool cx) {
-            var fs = g.GetTextSize(s);
+        protected void drawCenteredText(string s, int x, int y, bool cx) {
+            var fs = Context.GetTextSize(s);
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
             if (cx) {
@@ -508,11 +507,11 @@ namespace Circuit.Elements {
             } else {
                 adjustBbox(x, y - h2, x + w, y + h2);
             }
-            g.DrawCenteredText(s, x, y);
+            Context.DrawCenteredText(s, x, y);
         }
 
-        protected void drawCenteredLText(CustomGraphics g, string s, int x, int y, bool cx) {
-            var fs = g.GetLTextSize(s);
+        protected void drawCenteredLText(string s, int x, int y, bool cx) {
+            var fs = Context.GetLTextSize(s);
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
             if (cx) {
@@ -520,19 +519,18 @@ namespace Circuit.Elements {
             } else {
                 adjustBbox(x, y - h2, x + w, y + h2);
             }
-            g.DrawCenteredLText(s, x, y);
+            Context.DrawCenteredLText(s, x, y);
         }
 
         /// <summary>
         /// draw component values (number of resistor ohms, etc).
         /// </summary>
-        /// <param name="g"></param>
         /// <param name="s"></param>
-        protected void drawValues(CustomGraphics g, string s, int offsetX = 0, int offsetY = 0) {
+        protected void drawValues(string s, int offsetX = 0, int offsetY = 0) {
             if (s == null) {
                 return;
             }
-            var textSize = g.GetTextSize(s);
+            var textSize = Context.GetTextSize(s);
             int xc, yc;
             if ((this is RailElm) || (this is SweepElm)) {
                 xc = P2.X;
@@ -541,10 +539,10 @@ namespace Circuit.Elements {
                 xc = (P2.X + P1.X) / 2;
                 yc = (P2.Y + P1.Y) / 2;
             }
-            g.DrawRightText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
+            Context.DrawRightText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
         }
 
-        protected void drawCoil(CustomGraphics g, Point p1, Point p2, double v1, double v2) {
+        protected void drawCoil(Point p1, Point p2, double v1, double v2) {
             var coilLen = (float)Utils.Distance(p1, p2);
             if (0 == coilLen) {
                 return;
@@ -560,12 +558,12 @@ namespace Circuit.Elements {
             for (int loop = 0; loop != loopCt; loop++) {
                 Utils.InterpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
-                g.ThickLineColor = getVoltageColor(v);
-                g.DrawThickArc(pos, w, th, -180);
+                Context.ThickLineColor = getVoltageColor(v);
+                Context.DrawThickArc(pos, w, th, -180);
             }
         }
 
-        protected void drawCoil(CustomGraphics g, Point p1, Point p2, double v1, double v2, float dir) {
+        protected void drawCoil(Point p1, Point p2, double v1, double v2, float dir) {
             var coilLen = (float)Utils.Distance(p1, p2);
             if (0 == coilLen) {
                 return;
@@ -581,8 +579,8 @@ namespace Circuit.Elements {
             for (int loop = 0; loop != loopCt; loop++) {
                 Utils.InterpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
-                g.ThickLineColor = getVoltageColor(v);
-                g.DrawThickArc(pos, w, dir, -180);
+                Context.ThickLineColor = getVoltageColor(v);
+                Context.DrawThickArc(pos, w, dir, -180);
             }
         }
         #endregion

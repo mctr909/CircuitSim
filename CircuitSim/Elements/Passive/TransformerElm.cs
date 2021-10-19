@@ -225,13 +225,13 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            drawVoltage(g, PRI_T, mPtEnds[0], mPtCoil[0]);
-            drawVoltage(g, SEC_T, mPtEnds[1], mPtCoil[1]);
-            drawVoltage(g, PRI_B, mPtEnds[2], mPtCoil[2]);
-            drawVoltage(g, SEC_B, mPtEnds[3], mPtCoil[3]);
+            drawVoltage(PRI_T, mPtEnds[0], mPtCoil[0]);
+            drawVoltage(SEC_T, mPtEnds[1], mPtCoil[1]);
+            drawVoltage(PRI_B, mPtEnds[2], mPtCoil[2]);
+            drawVoltage(SEC_B, mPtEnds[3], mPtCoil[3]);
 
-            drawCoil(g, mPtCoil[0], mPtCoil[2], Volts[PRI_T], Volts[PRI_B], 90 * mDsign);
-            drawCoil(g, mPtCoil[1], mPtCoil[3], Volts[SEC_T], Volts[SEC_B], -90 * mDsign * mPolarity);
+            drawCoil(mPtCoil[0], mPtCoil[2], Volts[PRI_T], Volts[PRI_B], 90 * mDsign);
+            drawCoil(mPtCoil[1], mPtCoil[3], Volts[SEC_T], Volts[SEC_B], -90 * mDsign * mPolarity);
 
             var c = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.LineColor = c;
@@ -246,12 +246,12 @@ namespace Circuit.Elements.Passive {
             mCurCounts[0] = updateDotCount(mCurrents[0], mCurCounts[0]);
             mCurCounts[1] = updateDotCount(mCurrents[1], mCurCounts[1]);
             for (int i = 0; i != 2; i++) {
-                drawDots(g, mPtEnds[i], mPtCoil[i], mCurCounts[i]);
-                drawDots(g, mPtCoil[i], mPtCoil[i + 2], mCurCounts[i]);
-                drawDots(g, mPtEnds[i + 2], mPtCoil[i + 2], -mCurCounts[i]);
+                drawDots(mPtEnds[i], mPtCoil[i], mCurCounts[i]);
+                drawDots(mPtCoil[i], mPtCoil[i + 2], mCurCounts[i]);
+                drawDots(mPtEnds[i + 2], mPtCoil[i + 2], -mCurCounts[i]);
             }
 
-            drawPosts(g);
+            drawPosts();
             setBbox(mPtEnds[0], mPtEnds[mPolarity == 1 ? 3 : 1], 0);
         }
 

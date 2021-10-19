@@ -35,14 +35,14 @@ namespace Circuit.Elements.Logic {
         }
 
         public override void Draw(CustomGraphics g) {
-            drawPosts(g);
-            draw2Leads(g);
+            drawPosts();
+            draw2Leads();
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.ThickLineColor = g.LineColor;
             g.DrawThickPolygon(gatePoly);
             g.DrawPolygon(symbolPoly);
             mCurCount = updateDotCount(mCurrent, mCurCount);
-            drawDots(g, mLead2, mPoint2, mCurCount);
+            drawDots(mLead2, mPoint2, mCurCount);
         }
 
         public override void SetPoints() {

@@ -57,18 +57,18 @@ namespace Circuit.Elements.Input {
             }
             setBbox(mPoint1, mPoint2, CR);
 
-            drawVoltage(g, 0, mPoint1, mLead1);
+            drawVoltage(0, mPoint1, mLead1);
             drawRail(g);
-            drawPosts(g);
+            drawPosts();
             mCurCount = updateDotCount(-mCurrent, mCurCount);
             if (CirSim.Sim.DragElm != this) {
-                drawDots(g, mPoint1, mLead1, mCurCount);
+                drawDots(mPoint1, mLead1, mCurCount);
             }
         }
 
         void drawRail(CustomGraphics g) {
             if (waveform == WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
-                drawCenteredText(g, "CLK", P2.X, P2.Y, true);
+                drawCenteredText("CLK", P2.X, P2.Y, true);
             } else if (waveform == WAVEFORM.DC) {
                 var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
                 double v = getVoltage();
@@ -81,7 +81,7 @@ namespace Circuit.Elements.Input {
                 if (getVoltage() > 0) {
                     s = "+" + s;
                 }
-                drawCenteredText(g, s, P2.X, P2.Y, true);
+                drawCenteredText(s, P2.X, P2.Y, true);
             } else {
                 drawWaveform(g, mPoint2);
             }

@@ -62,7 +62,7 @@ namespace Circuit.Elements.Passive {
             int hs = ControlPanel.ChkUseAnsiSymbols.Checked ? 5 : 4;
             setBbox(mPoint1, mPoint2, hs);
 
-            draw2Leads(g);
+            draw2Leads();
 
             double v1 = Volts[0];
             double v2 = Volts[1];
@@ -91,8 +91,8 @@ namespace Circuit.Elements.Passive {
                 g.DrawRightText(s, mTextPos.X, mTextPos.Y);
             }
 
-            doDots(g);
-            drawPosts(g);
+            doDots();
+            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

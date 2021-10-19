@@ -114,7 +114,7 @@ namespace Circuit {
                 doDCAnalysis();
             }
             if (item == MENU_ITEM.PRINT) {
-                mBackContext.Print();
+                CircuitElm.Context.Print();
             }
             if (item == MENU_ITEM.RECOVER) {
                 doRecover();
@@ -887,10 +887,10 @@ namespace Circuit {
 
             mPixCir.Width = width;
             mPixCir.Height = height;
-            if (mBackContext != null) {
-                mBackContext.Dispose();
+            if (CircuitElm.Context != null) {
+                CircuitElm.Context.Dispose();
             }
-            mBackContext = CustomGraphics.FromImage(width, height);
+            CircuitElm.Context = CustomGraphics.FromImage(width, height);
             setCircuitArea();
             SetSimRunning(isRunning);
         }

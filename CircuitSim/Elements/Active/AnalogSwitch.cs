@@ -102,17 +102,17 @@ namespace Circuit.Elements.Active {
             int hs = mIsOpen ? OPEN_HS : 0;
             setBbox(mPoint1, mPoint2, OPEN_HS);
 
-            draw2Leads(g);
+            draw2Leads();
 
             interpLead(ref mPs, 1, hs);
             g.DrawThickLine(CustomGraphics.SelectColor, mLead1, mPs);
 
-            drawVoltage(g, 2, mPoint3, mLead3);
+            drawVoltage(2, mPoint3, mLead3);
 
             if (!mIsOpen) {
-                doDots(g);
+                doDots();
             }
-            drawPosts(g);
+            drawPosts();
         }
 
         public override void DoStep() {

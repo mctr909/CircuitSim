@@ -176,10 +176,10 @@ namespace Circuit.Elements.Output {
             g.DrawThickLine(mLead2, mPoint2);
 
             if (this == CirSim.Sim.PlotXElm) {
-                drawCenteredLText(g, "X", mCenter.X, mCenter.Y, true);
+                drawCenteredLText("X", mCenter.X, mCenter.Y, true);
             }
             if (this == CirSim.Sim.PlotYElm) {
-                drawCenteredLText(g, "Y", mCenter.X, mCenter.Y, true);
+                drawCenteredLText("Y", mCenter.X, mCenter.Y, true);
             }
 
             if (mustShowVoltage()) {
@@ -216,10 +216,10 @@ namespace Circuit.Elements.Output {
                     s = mDutyCycle.ToString("0.000");
                     break;
                 }
-                drawCenteredText(g, s, mCenter.X, mCenter.Y, true);
+                drawCenteredText(s, mCenter.X, mCenter.Y, true);
             }
-            drawCenteredLText(g, "+", mPlusPoint.X, mPlusPoint.Y, true);
-            drawPosts(g);
+            drawCenteredLText("+", mPlusPoint.X, mPlusPoint.Y, true);
+            drawPosts();
         }
 
         string getMeter() {

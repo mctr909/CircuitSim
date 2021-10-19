@@ -62,13 +62,13 @@ namespace Circuit.Elements.Logic {
             int hs = 16;
             setBbox(mPoint1, mPoint2, hs);
 
-            draw2Leads(g);
+            draw2Leads();
 
             g.DrawThickPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, gatePoly);
-            drawVoltage(g, 2, point3, lead3);
+            drawVoltage(2, point3, lead3);
             mCurCount = updateDotCount(mCurrent, mCurCount);
-            drawDots(g, mLead2, mPoint2, mCurCount);
-            drawPosts(g);
+            drawDots(mLead2, mPoint2, mCurCount);
+            drawPosts();
         }
 
         public override double GetCurrentIntoNode(int n) {

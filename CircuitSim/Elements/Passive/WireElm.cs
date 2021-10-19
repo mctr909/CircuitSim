@@ -48,8 +48,8 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            drawVoltage(g, 0, mPoint1, mPoint2);
-            doDots(g);
+            drawVoltage(0, mPoint1, mPoint2);
+            doDots();
             setBbox(mPoint1, mPoint2, 3);
             string s = "";
             if (mustShowCurrent) {
@@ -59,7 +59,7 @@ namespace Circuit.Elements.Passive {
                 s = (s.Length > 0 ? s + "\r\n" : "") + Utils.VoltageText(Volts[0]);
             }
             g.DrawRightText(s, mTextPos.X, mTextPos.Y);
-            drawPosts(g);
+            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

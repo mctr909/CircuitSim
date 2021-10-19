@@ -77,11 +77,11 @@ namespace Circuit.Elements.Input {
                 s = "" + Position;
             }
             setBbox(mPoint1, mLead1, 0);
-            drawCenteredLText(g, s, P2.X, P2.Y, true);
-            drawVoltage(g, 0, mPoint1, mLead1);
+            drawCenteredLText(s, P2.X, P2.Y, true);
+            drawVoltage(0, mPoint1, mLead1);
             updateDotCount();
-            drawDots(g, mPoint1, mLead1, mCurCount);
-            drawPosts(g);
+            drawDots(mPoint1, mLead1, mCurCount);
+            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

@@ -91,18 +91,18 @@ namespace Circuit.Elements.Active {
         public override void Draw(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, mOpHeight * 2);
 
-            drawVoltage(g, V_N, mIn1p[0], mIn1p[1]);
-            drawVoltage(g, V_P, mIn2p[0], mIn2p[1]);
-            drawVoltage(g, V_O, mLead2, mPoint2);
+            drawVoltage(V_N, mIn1p[0], mIn1p[1]);
+            drawVoltage(V_P, mIn2p[0], mIn2p[1]);
+            drawVoltage(V_O, mLead2, mPoint2);
 
             g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.DrawThickPolygon(mTriangle);
 
-            drawCenteredLText(g, "-", mTextp[0].X, mTextp[0].Y - 2, true);
-            drawCenteredLText(g, "+", mTextp[1].X, mTextp[1].Y, true);
+            drawCenteredLText("-", mTextp[0].X, mTextp[0].Y - 2, true);
+            drawCenteredLText("+", mTextp[1].X, mTextp[1].Y, true);
             mCurCount = updateDotCount(mCurrent, mCurCount);
-            drawDots(g, mPoint2, mLead2, mCurCount);
-            drawPosts(g);
+            drawDots(mPoint2, mLead2, mCurCount);
+            drawPosts();
         }
 
         public override void SetPoints() {

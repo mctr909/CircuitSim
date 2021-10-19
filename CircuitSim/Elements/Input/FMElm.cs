@@ -78,17 +78,17 @@ namespace Circuit.Elements.Input {
 
         public override void Draw(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, CR);
-            drawVoltage(g, 0, mPoint1, mLead1);
+            drawVoltage(0, mPoint1, mLead1);
 
             CustomGraphics.TextColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             double v = getVoltage();
             string s = "FM";
-            drawCenteredText(g, s, P2.X, P2.Y, true);
+            drawCenteredText(s, P2.X, P2.Y, true);
             drawWaveform(g, mPoint2);
-            drawPosts(g);
+            drawPosts();
             mCurCount = updateDotCount(-mCurrent, mCurCount);
             if (CirSim.Sim.DragElm != this) {
-                drawDots(g, mPoint1, mLead1, mCurCount);
+                drawDots(mPoint1, mLead1, mCurCount);
             }
         }
 

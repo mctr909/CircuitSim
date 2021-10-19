@@ -108,21 +108,21 @@ namespace Circuit.Elements.Passive {
             adjustBbox(mSwPosts[0], mSwPosts[mThrowCount - 1]);
 
             /* draw first lead */
-            drawVoltage(g, 0, mPoint1, mLead1);
+            drawVoltage(0, mPoint1, mLead1);
             /* draw other leads */
             for (int i = 0; i < mThrowCount; i++) {
-                drawVoltage(g, i + 1, mSwPoles[i], mSwPosts[i]);
+                drawVoltage(i + 1, mSwPoles[i], mSwPosts[i]);
             }
             /* draw switch */
             g.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             g.DrawThickLine(mLead1, mSwPoles[Position]);
 
             updateDotCount();
-            drawDots(g, mPoint1, mLead1, mCurCount);
+            drawDots(mPoint1, mLead1, mCurCount);
             if (Position != 2) {
-                drawDots(g, mSwPoles[Position], mSwPosts[Position], mCurCount);
+                drawDots(mSwPoles[Position], mSwPosts[Position], mCurCount);
             }
-            drawPosts(g);
+            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

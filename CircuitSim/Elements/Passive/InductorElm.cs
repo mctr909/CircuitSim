@@ -72,15 +72,15 @@ namespace Circuit.Elements.Passive {
             int hs = 8;
             setBbox(mPoint1, mPoint2, hs);
 
-            draw2Leads(g);
-            drawCoil(g, mLead1, mLead2, v1, v2);
+            draw2Leads();
+            drawCoil(mLead1, mLead2, v1, v2);
 
             if (ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.ShortUnitText(Inductance, "");
                 g.DrawRightText(s, mTextPos.X, mTextPos.Y);
             }
-            doDots(g);
-            drawPosts(g);
+            doDots();
+            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

@@ -45,10 +45,10 @@ namespace Circuit.Elements.Active {
 
             double v2 = Volts[1];
 
-            draw2Leads(g);
+            draw2Leads();
 
             /* draw arrow thingy */
-            drawVoltage(g, 0, mPoly);
+            drawVoltage(0, mPoly);
             /* draw thing arrow is pointing to */
             g.ThickLineColor = getVoltageColor(v2);
             g.DrawThickLine(mCathode[0], mCathode[1]);
@@ -56,8 +56,8 @@ namespace Circuit.Elements.Active {
             g.DrawThickLine(mWing[0], mCathode[0]);
             g.DrawThickLine(mWing[1], mCathode[1]);
 
-            doDots(g);
-            drawPosts(g);
+            doDots();
+            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {
