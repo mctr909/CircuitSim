@@ -34,13 +34,12 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw() {
-            Context.ThickLineColor = getVoltageColor(0);
-            Context.DrawThickLine(mPoint1, mPoint2);
+            Context.DrawLine(getVoltageColor(0), mPoint1, mPoint2);
             for (int i = 0; i != 3; i++) {
                 var a = BODY_LEN - i * 4;
                 var b = i * BODY_LEN * 0.5;
                 interpPointAB(ref mP1, ref mP2, 1 + b / mLen, a);
-                Context.DrawThickLine(mP1, mP2);
+                Context.DrawLine(mP1, mP2);
             }
             doDots();
             setBbox(mPoint1, mP1, 11);

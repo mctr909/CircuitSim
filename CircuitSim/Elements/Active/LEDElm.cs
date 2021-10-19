@@ -62,8 +62,7 @@ namespace Circuit.Elements.Active {
             drawVoltage(0, mPoint1, mLedLead1);
             drawVoltage(1, mLedLead2, mPoint2);
 
-            Context.ThickLineColor = CustomGraphics.GrayColor;
-            Context.DrawThickCircle(mLedCenter, 2 * CR);
+            Context.DrawCircle(CustomGraphics.GrayColor, mLedCenter, CR);
 
             double w = mCurrent / mMaxBrightnessCurrent;
             if (0 < w) {

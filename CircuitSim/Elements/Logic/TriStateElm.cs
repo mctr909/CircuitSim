@@ -64,7 +64,7 @@ namespace Circuit.Elements.Logic {
 
             draw2Leads();
 
-            Context.DrawThickPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, gatePoly);
+            Context.DrawPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, gatePoly);
             drawVoltage(2, point3, lead3);
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(mLead2, mPoint2, mCurCount);

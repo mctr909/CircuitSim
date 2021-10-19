@@ -183,26 +183,25 @@ namespace Circuit.Elements.Gate {
                 drawVoltage(i, mInPosts[i], mInGates[i]);
             }
             drawVoltage(mInputCount, mLead2, mPoint2);
-            Context.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             if (useAnsiGates()) {
-                Context.DrawThickPolygon(mGatePolyAnsi);
+                Context.DrawPolygon(mGatePolyAnsi);
             } else {
-                Context.DrawThickPolygon(mGatePolyEuro);
+                Context.DrawPolygon(mGatePolyEuro);
                 var center = new Point();
                 interpPoint(ref center, 0.5);
                 drawCenteredLText(getGateText(), center.X, center.Y - 6, true);
             }
             if (hasSchmittInputs()) {
-                Context.LineColor = CustomGraphics.WhiteColor;
-                Context.DrawPolygon(mSchmittPoly);
+                Context.DrawPolygon(CustomGraphics.WhiteColor, mSchmittPoly);
             }
             if (mLinePoints != null && useAnsiGates()) {
                 for (i = 0; i != mLinePoints.Length - 1; i++) {
-                    Context.DrawThickLine(mLinePoints[i], mLinePoints[i + 1]);
+                    Context.DrawLine(mLinePoints[i], mLinePoints[i + 1]);
                 }
             }
             if (isInverting()) {
-                Context.DrawThickCircle(mCirclePos, mCircleSize);
+                Context.DrawCircle(mCirclePos, mCircleSize);
             }
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(mLead2, mPoint2, mCurCount);

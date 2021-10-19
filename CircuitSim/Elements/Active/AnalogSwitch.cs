@@ -105,7 +105,7 @@ namespace Circuit.Elements.Active {
             draw2Leads();
 
             interpLead(ref mPs, 1, hs);
-            Context.DrawThickLine(CustomGraphics.SelectColor, mLead1, mPs);
+            Context.DrawLine(CustomGraphics.SelectColor, mLead1, mPs);
 
             drawVoltage(2, mPoint3, mLead3);
 

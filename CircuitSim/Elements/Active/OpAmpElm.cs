@@ -95,8 +95,8 @@ namespace Circuit.Elements.Active {
             drawVoltage(V_P, mIn2p[0], mIn2p[1]);
             drawVoltage(V_O, mLead2, mPoint2);
 
-            Context.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            Context.DrawThickPolygon(mTriangle);
+            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.DrawPolygon(mTriangle);
 
             drawCenteredLText("-", mTextp[0].X, mTextp[0].Y - 2, true);
             drawCenteredLText("+", mTextp[1].X, mTextp[1].Y, true);

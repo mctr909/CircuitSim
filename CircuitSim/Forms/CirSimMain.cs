@@ -122,8 +122,7 @@ namespace Circuit {
             }
 
             if (0 < mSelectedArea.Width) {
-                g.LineColor = CustomGraphics.SelectColor;
-                g.DrawRectangle(mSelectedArea);
+                g.DrawRectangle(CustomGraphics.SelectColor, mSelectedArea);
             }
 
             if (ControlPanel.ChkCrossHair.Checked && MouseCursorX >= 0
@@ -153,8 +152,7 @@ namespace Circuit {
                 mScopes[i].Draw(g);
             }
             if (mMouseWasOverSplitter) {
-                g.LineColor = Color.Cyan;
-                g.DrawLine(0, mCircuitArea.Height - 2, mCircuitArea.Width, mCircuitArea.Height - 2);
+                g.DrawLine(Color.Cyan, 0, mCircuitArea.Height - 2, mCircuitArea.Width, mCircuitArea.Height - 2);
             }
 
             if (mCir.StopMessage != null) {

@@ -62,10 +62,9 @@ namespace Circuit.Elements.Logic {
             drawPosts();
             draw2Leads();
             Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            Context.ThickLineColor = Context.LineColor;
-            Context.DrawThickPolygon(gatePoly);
+            Context.DrawPolygon(gatePoly);
             Context.DrawPolygon(symbolPoly);
-            Context.DrawThickCircle(pcircle, 6);
+            Context.DrawCircle(pcircle, 6);
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(mLead2, mPoint2, mCurCount);
         }

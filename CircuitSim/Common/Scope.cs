@@ -1074,7 +1074,6 @@ namespace Circuit {
                     g.LineColor = Color.DarkGray;
                 }
                 g.SetTransform(new Matrix(1, 0, 0, 1, BoundingBox.X + 12, BoundingBox.Y + BoundingBox.Height - 16));
-                g.DrawCircle(new Point(), inR);
                 g.DrawLine(-outR, 0, -inR, 0);
                 g.DrawLine(outR, 0, inR, 0);
                 g.DrawLine(0, -outR, 0, -inR);
@@ -1083,6 +1082,7 @@ namespace Circuit {
                 g.DrawLine(outR45, -outR45, inR45, -inR45);
                 g.DrawLine(-outR45, outR45, -inR45, inR45);
                 g.DrawLine(outR45, outR45, inR45, inR45);
+                g.DrawCircle(new Point(), inR);
                 g.ClearTransform();
             }
         }

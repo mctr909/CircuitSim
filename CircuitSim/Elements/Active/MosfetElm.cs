@@ -257,7 +257,7 @@ namespace Circuit.Elements.Active {
                     continue;
                 }
                 double v = Volts[V_S] + (Volts[V_D] - Volts[V_S]) * i / SEGMENTS;
-                Context.DrawThickLine(getVoltageColor(v), mPs1[i], mPs2[i]);
+                Context.DrawLine(getVoltageColor(v), mPs1[i], mPs2[i]);
             }
 
             /* draw little extensions of that line */
@@ -266,9 +266,9 @@ namespace Circuit.Elements.Active {
 
             /* draw bulk connection */
             if (ShowBulk) {
-                Context.ThickLineColor = getVoltageColor(Volts[mBodyTerminal]);
-                Context.DrawThickLine(mPnp == -1 ? mDrn[0] : mSrc[0], mBody[0]);
-                Context.DrawThickLine(mBody[0], mBody[1]);
+                Context.LineColor = getVoltageColor(Volts[mBodyTerminal]);
+                Context.DrawLine(mPnp == -1 ? mDrn[0] : mSrc[0], mBody[0]);
+                Context.DrawLine(mBody[0], mBody[1]);
             }
 
             /* draw arrow */
@@ -278,9 +278,9 @@ namespace Circuit.Elements.Active {
 
             /* draw gate */
             drawVoltage(V_G, mPoint1, mGate[1]);
-            Context.DrawThickLine(mGate[0], mGate[2]);
+            Context.DrawLine(mGate[0], mGate[2]);
             if (DrawDigital && mPnp == -1) {
-                Context.DrawThickCircle(mPcircle, mPcircler);
+                Context.DrawCircle(mPcircle, mPcircler);
             }
 
             if ((mFlags & FLAG_SHOWVT) != 0) {

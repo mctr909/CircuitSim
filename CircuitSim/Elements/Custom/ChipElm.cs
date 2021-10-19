@@ -193,12 +193,10 @@ namespace Circuit.Elements.Custom {
                 p.curcount = updateDotCount(p.current, p.curcount);
                 drawDots(b, a, p.curcount);
                 if (p.bubble) {
-                    Context.ThickLineColor = Color.White;
-                    Context.DrawThickCircle(p.bubblePos, 1);
-                    Context.ThickLineColor = CustomGraphics.GrayColor;
-                    Context.DrawThickCircle(p.bubblePos, 3);
+                    Context.DrawCircle(CustomGraphics.WhiteColor, p.bubblePos, 1);
+                    Context.DrawCircle(CustomGraphics.GrayColor, p.bubblePos, 3);
                 }
-                Context.ThickLineColor = p.selected ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+                Context.LineColor = p.selected ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
                 int fsz = 12 * csize;
                 var font = CustomGraphics.FontText;
                 while (true) {
@@ -212,15 +210,15 @@ namespace Circuit.Elements.Custom {
                     Context.DrawCenteredText(p.text, p.textloc.X, p.textloc.Y, font);
                     if (p.lineOver) {
                         int ya = p.textloc.Y;
-                        Context.DrawThickLine(p.textloc.X - sw / 2, ya, p.textloc.X + sw / 2, ya);
+                        Context.DrawLine(p.textloc.X - sw / 2, ya, p.textloc.X + sw / 2, ya);
                     }
                     break;
                 }
             }
-            Context.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            Context.DrawThickPolygon(rectPoints);
+            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.DrawPolygon(rectPoints);
             if (clockPoints != null) {
-                Context.DrawThickPolygon(clockPoints);
+                Context.DrawPolygon(clockPoints);
             }
             drawPosts();
         }

@@ -485,13 +485,13 @@ namespace Circuit.Elements {
 
         protected void draw2Leads() {
             /* draw first lead */
-            Context.DrawThickLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
+            Context.DrawLine(getVoltageColor(Volts[0]), mPoint1, mLead1);
             /* draw second lead */
-            Context.DrawThickLine(getVoltageColor(Volts[1]), mLead2, mPoint2);
+            Context.DrawLine(getVoltageColor(Volts[1]), mLead2, mPoint2);
         }
 
         protected void drawVoltage(int index, Point a, Point b) {
-            Context.DrawThickLine(getVoltageColor(Volts[index]), a, b);
+            Context.DrawLine(getVoltageColor(Volts[index]), a, b);
         }
 
         protected void drawVoltage(int index, Point[] poly) {
@@ -558,8 +558,8 @@ namespace Circuit.Elements {
             for (int loop = 0; loop != loopCt; loop++) {
                 Utils.InterpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
-                Context.ThickLineColor = getVoltageColor(v);
-                Context.DrawThickArc(pos, w, th, -180);
+                Context.LineColor = getVoltageColor(v);
+                Context.DrawArc(pos, w, th, -180);
             }
         }
 
@@ -579,8 +579,8 @@ namespace Circuit.Elements {
             for (int loop = 0; loop != loopCt; loop++) {
                 Utils.InterpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
-                Context.ThickLineColor = getVoltageColor(v);
-                Context.DrawThickArc(pos, w, dir, -180);
+                Context.LineColor = getVoltageColor(v);
+                Context.DrawArc(pos, w, dir, -180);
             }
         }
         #endregion

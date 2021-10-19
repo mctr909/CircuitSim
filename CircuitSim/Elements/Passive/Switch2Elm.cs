@@ -114,8 +114,8 @@ namespace Circuit.Elements.Passive {
                 drawVoltage(i + 1, mSwPoles[i], mSwPosts[i]);
             }
             /* draw switch */
-            Context.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
-            Context.DrawThickLine(mLead1, mSwPoles[Position]);
+            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
+            Context.DrawLine(mLead1, mSwPoles[Position]);
 
             updateDotCount();
             drawDots(mPoint1, mLead1, mCurCount);

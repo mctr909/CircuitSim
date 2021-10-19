@@ -207,29 +207,29 @@ namespace Circuit.Elements.Passive {
                     if (i >= divide) {
                         v = vs + (vr - vs) * (i - divide) / (SEGMENTS - divide);
                     }
-                    Context.DrawThickLine(getVoltageColor(v), mPs1[i], mPs2[i]);
+                    Context.DrawLine(getVoltageColor(v), mPs1[i], mPs2[i]);
                 }
             } else {
                 /* draw rectangle */
-                Context.DrawThickLine(getVoltageColor(vl), mRect1[0], mRect2[0]);
+                Context.DrawLine(getVoltageColor(vl), mRect1[0], mRect2[0]);
                 for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
                     double v = vl + (vs - vl) * i / divide;
                     if (i >= divide) {
                         v = vs + (vr - vs) * (i - divide) / (SEGMENTS - divide);
                     }
-                    Context.ThickLineColor = getVoltageColor(v);
-                    Context.DrawThickLine(mRect1[j], mRect3[j]);
-                    Context.DrawThickLine(mRect2[j], mRect4[j]);
+                    Context.LineColor = getVoltageColor(v);
+                    Context.DrawLine(mRect1[j], mRect3[j]);
+                    Context.DrawLine(mRect2[j], mRect4[j]);
                 }
-                Context.DrawThickLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
+                Context.DrawLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
             }
 
             /* draw slider */
-            Context.ThickLineColor = getVoltageColor(vs);
-            Context.DrawThickLine(mPost3, mCorner2);
-            Context.DrawThickLine(mCorner2, mArrowPoint);
-            Context.DrawThickLine(mArrow1, mArrowPoint);
-            Context.DrawThickLine(mArrow2, mArrowPoint);
+            Context.LineColor = getVoltageColor(vs);
+            Context.DrawLine(mPost3, mCorner2);
+            Context.DrawLine(mCorner2, mArrowPoint);
+            Context.DrawLine(mArrow1, mArrowPoint);
+            Context.DrawLine(mArrow2, mArrowPoint);
 
             /* draw dot */
             mCurCount1 = updateDotCount(mCurrent1, mCurCount1);

@@ -128,8 +128,8 @@ namespace Circuit.Elements.Active {
         }
 
         public override void Draw() {
-            Context.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            Context.DrawThickPolygon(mRectPoints);
+            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.DrawPolygon(mRectPoints);
 
             /* draw stubs */
             for (int i = 0; i != 4; i++) {
@@ -147,9 +147,9 @@ namespace Circuit.Elements.Active {
 
             /* draw little arrows */
             var c = NeedsHighlight ? CustomGraphics.SelectColor : getVoltageColor(Volts[0]);
+            Context.LineColor = c;
             Context.FillPolygon(c, mArrow1);
             Context.FillPolygon(c, mArrow2);
-            Context.LineColor = c;
             int sx = mStubs[0].X + 2;
             int sy = (mStubs[0].Y + mStubs[1].Y) / 2;
             for (int i = 0; i != 2; i++) {

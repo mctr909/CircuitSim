@@ -55,9 +55,9 @@ namespace Circuit.Elements.Input {
             draw2Leads();
 
             var c = getVoltageColor((Volts[0] + Volts[1]) / 2);
-            Context.ThickLineColor = c;
-            Context.DrawThickCircle(mCenter, CR);
-            Context.DrawThickLine(mAshaft1, mAshaft2);
+            Context.LineColor = c;
+            Context.DrawCircle(mCenter, CR);
+            Context.DrawLine(mAshaft1, mAshaft2);
             Context.FillPolygon(c, mArrow);
 
             setBbox(mPoint1, mPoint2, CR);

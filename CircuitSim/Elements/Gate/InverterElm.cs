@@ -94,14 +94,14 @@ namespace Circuit.Elements.Gate {
         public override void Draw() {
             drawPosts();
             draw2Leads();
-            Context.ThickLineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             if (GateElm.useAnsiGates()) {
-                Context.DrawThickPolygon(mGatePolyAnsi);
+                Context.DrawPolygon(mGatePolyAnsi);
             } else {
-                Context.DrawThickPolygon(mGatePolyEuro);
+                Context.DrawPolygon(mGatePolyEuro);
                 drawCenteredLText("1", mCenter.X, mCenter.Y - 6, true);
             }
-            Context.DrawThickCircle(mPcircle, 6);
+            Context.DrawCircle(mPcircle, 6);
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(mLead2, mPoint2, mCurCount);
         }

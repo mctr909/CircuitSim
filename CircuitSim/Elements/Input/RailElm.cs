@@ -23,7 +23,7 @@ namespace Circuit.Elements.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            setLead1(1 - CR / mLen);
+            setLead1(1 - SIZE / mLen);
         }
 
         public string getRailText() {
@@ -46,7 +46,7 @@ namespace Circuit.Elements.Input {
 
         public override void Draw() {
             var rt = getRailText();
-            double w = rt == null ? (CR * 0.5) : Context.GetTextSize(rt).Width / 2;
+            double w = rt == null ? (SIZE * 0.5) : Context.GetTextSize(rt).Width / 2;
             if (w > mLen * .8) {
                 w = mLen * .8;
             }
@@ -55,7 +55,7 @@ namespace Circuit.Elements.Input {
             } else {
                 setLead1(1 - w / mLen);
             }
-            setBbox(mPoint1, mPoint2, CR);
+            setBbox(mPoint1, mPoint2, SIZE);
 
             drawVoltage(0, mPoint1, mLead1);
             drawRail();

@@ -235,11 +235,9 @@ namespace Circuit.Elements.Passive {
             drawCoil(mPtCoil[0], mPtCoil[2], Volts[PRI_T], Volts[PRI_B], 90 * mDsign);
             drawCoil(mPtCoil[1], mPtCoil[3], Volts[SEC_T], Volts[SEC_B], -90 * mDsign * mPolarity);
 
-            var c = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            Context.LineColor = c;
-            Context.ThickLineColor = c;
-            Context.DrawThickLine(mPtCore[0], mPtCore[2]);
-            Context.DrawThickLine(mPtCore[1], mPtCore[3]);
+            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.DrawLine(mPtCore[0], mPtCore[2]);
+            Context.DrawLine(mPtCore[1], mPtCore[3]);
             if (mDots != null) {
                 Context.DrawCircle(mDots[0], 2.5f);
                 Context.DrawCircle(mDots[1], 2.5f);

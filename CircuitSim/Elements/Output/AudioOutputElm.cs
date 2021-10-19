@@ -203,11 +203,11 @@ namespace Circuit.Elements.Output {
             setBbox(mPoint1, mLead1, 0);
             drawCenteredText(s, P2.X, P2.Y, true);
             if (selected) {
-                Context.ThickLineColor = CustomGraphics.SelectColor;
+                Context.LineColor = CustomGraphics.SelectColor;
             } else {
-                Context.ThickLineColor = getVoltageColor(Volts[0]);
+                Context.LineColor = getVoltageColor(Volts[0]);
             }
-            Context.DrawThickLine(mPoint1, mLead1);
+            Context.DrawLine(mPoint1, mLead1);
             drawPosts();
         }
 

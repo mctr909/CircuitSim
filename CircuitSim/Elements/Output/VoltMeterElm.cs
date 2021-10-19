@@ -162,18 +162,18 @@ namespace Circuit.Elements.Output {
             calcLeads((int)len);
 
             if (selected) {
-                Context.ThickLineColor = CustomGraphics.SelectColor;
+                Context.LineColor = CustomGraphics.SelectColor;
             } else {
-                Context.ThickLineColor = getVoltageColor(Volts[0]);
+                Context.LineColor = getVoltageColor(Volts[0]);
             }
-            Context.DrawThickLine(mPoint1, mLead1);
+            Context.DrawLine(mPoint1, mLead1);
 
             if (selected) {
-                Context.ThickLineColor = CustomGraphics.SelectColor;
+                Context.LineColor = CustomGraphics.SelectColor;
             } else {
-                Context.ThickLineColor = getVoltageColor(Volts[1]);
+                Context.LineColor = getVoltageColor(Volts[1]);
             }
-            Context.DrawThickLine(mLead2, mPoint2);
+            Context.DrawLine(mLead2, mPoint2);
 
             if (this == CirSim.Sim.PlotXElm) {
                 drawCenteredLText("X", mCenter.X, mCenter.Y, true);
