@@ -69,7 +69,7 @@ namespace Circuit.Elements.Passive {
             if (mPoint1.Y == mPoint2.Y) {
                 var wv = Context.GetTextSize(Utils.ShortUnitText(Inductance, "")).Width * 0.5;
                 var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
-                interpPoint(ref mValuePos, 0.5 + wv / mLen * mDsign, 12 * mDsign);
+                interpPoint(ref mValuePos, 0.5 + wv / mLen * mDsign, 10 * mDsign);
                 interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -12 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
                 interpPoint(ref mValuePos, 0.5, -4 * mDsign);
