@@ -14,7 +14,9 @@ namespace Circuit.Elements.Passive {
 
         Point[] mPlate1;
         Point[] mPlate2;
-        Point mTextPos;
+        Point mValuePos;
+        Point mNamePos;
+        string mReferenceName = "";
 
         public CapacitorElm(Point pos) : base(pos) {
             Capacitance = 1e-5;
@@ -61,60 +63,6 @@ namespace Circuit.Elements.Passive {
             mVoltDiff = Volts[0] - Volts[1];
         }
 
-        public override void Reset() {
-            base.Reset();
-            mCurrent = mCurCount = mCurSourceValue = 0;
-            /* put small charge on caps when reset to start oscillators */
-            mVoltDiff = 1e-3;
-        }
-
-        public override void SetPoints() {
-            base.SetPoints();
-            double f = (mLen - BODY_LEN) * 0.5 / mLen;
-            /* calc leads */
-            setLead1(f);
-            setLead2(1 - f);
-            /* calc plates */
-            mPlate1 = new Point[2];
-            mPlate2 = new Point[2];
-            interpPointAB(ref mPlate1[0], ref mPlate1[1], f, 8);
-            interpPointAB(ref mPlate2[0], ref mPlate2[1], 1 - f, 8);
-            setTextPos();
-        }
-
-        void setTextPos() {
-            if (mPoint1.Y == mPoint2.Y) {
-                var wh = Context.GetTextSize(Utils.ShortUnitText(Capacitance, "")).Width * 0.5;
-                interpPoint(ref mTextPos, 0.5 + wh / mLen * mDsign, 15 * mDsign);
-            } else if (mPoint1.X == mPoint2.X) {
-                interpPoint(ref mTextPos, 0.5, -8 * mDsign);
-            } else {
-                interpPoint(ref mTextPos, 0.5, -10 * mDsign);
-            }
-        }
-
-        public override void Draw(CustomGraphics g) {
-            setBbox(mPoint1, mPoint2, HS);
-
-            /* draw first lead and plate */
-            drawVoltage(0, mPoint1, mLead1);
-            g.DrawLine(mPlate1[0], mPlate1[1]);
-            /* draw second lead and plate */
-            drawVoltage(1, mPoint2, mLead2);
-            g.DrawLine(mPlate2[0], mPlate2[1]);
-
-            updateDotCount();
-            if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mLead1, mCurCount);
-                drawDots(mPoint2, mLead2, -mCurCount);
-            }
-            drawPosts();
-            if (ControlPanel.ChkShowValues.Checked) {
-                var s = Utils.ShortUnitText(Capacitance, "");
-                g.DrawRightText(s, mTextPos.X, mTextPos.Y);
-            }
-        }
-
         public override void Stamp() {
             if (CirSim.Sim.DcAnalysisFlag) {
                 /* when finding DC operating point, replace cap with a 100M resistor */
@@ -153,8 +101,67 @@ namespace Circuit.Elements.Passive {
             mCir.StampCurrentSource(Nodes[0], Nodes[1], mCurSourceValue);
         }
 
+        public override void Reset() {
+            base.Reset();
+            mCurrent = mCurCount = mCurSourceValue = 0;
+            /* put small charge on caps when reset to start oscillators */
+            mVoltDiff = 1e-3;
+        }
+
+        public override void SetPoints() {
+            base.SetPoints();
+            double f = (mLen - BODY_LEN) * 0.5 / mLen;
+            /* calc leads */
+            setLead1(f);
+            setLead2(1 - f);
+            /* calc plates */
+            mPlate1 = new Point[2];
+            mPlate2 = new Point[2];
+            interpPointAB(ref mPlate1[0], ref mPlate1[1], f, 8);
+            interpPointAB(ref mPlate2[0], ref mPlate2[1], 1 - f, 8);
+            setTextPos();
+        }
+
+        void setTextPos() {
+            if (mPoint1.Y == mPoint2.Y) {
+                var wv = Context.GetTextSize(Utils.ShortUnitText(Capacitance, "")).Width * 0.5;
+                var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
+                interpPoint(ref mValuePos, 0.5 + wv / mLen * mDsign, 15 * mDsign);
+                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -16 * mDsign);
+            } else if (mPoint1.X == mPoint2.X) {
+                interpPoint(ref mValuePos, 0.5, -8 * mDsign);
+                interpPoint(ref mNamePos, 0.5, 8 * mDsign);
+            } else {
+                interpPoint(ref mValuePos, 0.5, -10 * mDsign);
+                interpPoint(ref mNamePos, 0.5, 10 * mDsign);
+            }
+        }
+
+        public override void Draw(CustomGraphics g) {
+            setBbox(mPoint1, mPoint2, HS);
+
+            /* draw first lead and plate */
+            drawVoltage(0, mPoint1, mLead1);
+            g.DrawLine(mPlate1[0], mPlate1[1]);
+            /* draw second lead and plate */
+            drawVoltage(1, mPoint2, mLead2);
+            g.DrawLine(mPlate2[0], mPlate2[1]);
+
+            updateDotCount();
+            if (CirSim.Sim.DragElm != this) {
+                drawDots(mPoint1, mLead1, mCurCount);
+                drawDots(mPoint2, mLead2, -mCurCount);
+            }
+            drawPosts();
+            if (ControlPanel.ChkShowValues.Checked) {
+                var s = Utils.ShortUnitText(Capacitance, "");
+                g.DrawRightText(s, mValuePos.X, mValuePos.Y);
+                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+            }
+        }
+
         public override void GetInfo(string[] arr) {
-            arr[0] = "capacitor";
+            arr[0] = string.IsNullOrEmpty(mReferenceName) ? "コンデンサ" : mReferenceName;
             getBasicInfo(arr);
             arr[3] = "C = " + Utils.UnitText(Capacitance, "F");
             arr[4] = "P = " + Utils.UnitText(Power, "W");
@@ -170,6 +177,11 @@ namespace Circuit.Elements.Passive {
                 return new ElementInfo("静電容量(F)", Capacitance, 0, 0);
             }
             if (n == 1) {
+                var ei = new ElementInfo("名前", 0, 0, 0);
+                ei.Text = mReferenceName;
+                return ei;
+            }
+            if (n == 2) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "台形近似";
@@ -185,6 +197,10 @@ namespace Circuit.Elements.Passive {
                 setTextPos();
             }
             if (n == 1) {
+                mReferenceName = ei.Textf.Text;
+                setTextPos();
+            }
+            if (n == 2) {
                 if (ei.CheckBox.Checked) {
                     mFlags &= ~FLAG_BACK_EULER;
                 } else {

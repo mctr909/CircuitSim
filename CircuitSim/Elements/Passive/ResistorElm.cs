@@ -12,7 +12,9 @@ namespace Circuit.Elements.Passive {
         Point[] mRect2;
         Point[] mRect3;
         Point[] mRect4;
-        Point mTextPos;
+        Point mValuePos;
+        Point mNamePos;
+        string mReferenceName = "";
 
         public ResistorElm(Point pos) : base(pos) {
             Resistance = 1000;
@@ -34,7 +36,6 @@ namespace Circuit.Elements.Passive {
 
         protected override void calculateCurrent() {
             mCurrent = (Volts[0] - Volts[1]) / Resistance;
-            /*Console.WriteLine(this + " res current set to " + current + "\n");*/
         }
 
         public override void Stamp() {
@@ -50,67 +51,17 @@ namespace Circuit.Elements.Passive {
 
         void setTextPos() {
             if (mPoint1.Y == mPoint2.Y) {
-                var wh = Context.GetTextSize(Utils.ShortUnitText(Resistance, "")).Width * 0.5;
-                interpPoint(ref mTextPos, 0.5 + wh / mLen * mDsign, 12 * mDsign);
+                var wv = Context.GetTextSize(Utils.ShortUnitText(Resistance, "")).Width * 0.5;
+                var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
+                interpPoint(ref mValuePos, 0.5 + wv / mLen * mDsign, 12 * mDsign);
+                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -13 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
-                interpPoint(ref mTextPos, 0.5, -5 * mDsign);
+                interpPoint(ref mValuePos, 0.5, -5 * mDsign);
+                interpPoint(ref mNamePos, 0.5, 5 * mDsign);
             } else {
-                interpPoint(ref mTextPos, 0.5, -10 * mDsign);
+                interpPoint(ref mValuePos, 0.5, -10 * mDsign);
+                interpPoint(ref mNamePos, 0.5, 10 * mDsign);
             }
-        }
-
-        public override void Draw(CustomGraphics g) {
-            var len = (float)Utils.Distance(mLead1, mLead2);
-            if (0 == len) {
-                return;
-            }
-
-            int hs = ControlPanel.ChkUseAnsiSymbols.Checked ? 5 : 4;
-            setBbox(mPoint1, mPoint2, hs);
-
-            draw2Leads();
-
-            double v1 = Volts[0];
-            double v2 = Volts[1];
-
-            if (ControlPanel.ChkUseAnsiSymbols.Checked) {
-                /* draw zigzag */
-                for (int i = 0; i < SEGMENTS; i++) {
-                    double v = v1 + (v2 - v1) * i / SEGMENTS;
-                    g.LineColor = getVoltageColor(v);
-                    g.DrawLine(mP1[i], mP2[i]);
-                }
-            } else {
-                /* draw rectangle */
-                g.LineColor = getVoltageColor(v1);
-                g.DrawLine(mRect1[0], mRect2[0]);
-                for (int i = 0, j = 1; i < SEGMENTS; i++, j++) {
-                    double v = v1 + (v2 - v1) * i / SEGMENTS;
-                    g.LineColor = getVoltageColor(v);
-                    g.DrawLine(mRect1[j], mRect3[j]);
-                    g.DrawLine(mRect2[j], mRect4[j]);
-                }
-                g.DrawLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
-            }
-
-            if (ControlPanel.ChkShowValues.Checked) {
-                var s = Utils.ShortUnitText(Resistance, "");
-                g.DrawRightText(s, mTextPos.X, mTextPos.Y);
-            }
-
-            doDots();
-            drawPosts();
-        }
-
-        public override void GetInfo(string[] arr) {
-            arr[0] = "resistor";
-            getBasicInfo(arr);
-            arr[3] = "R = " + Utils.UnitText(Resistance, CirSim.OHM_TEXT);
-            arr[4] = "P = " + Utils.UnitText(Power, "W");
-        }
-
-        public override string GetScopeText(Scope.VAL v) {
-            return "resistor, " + Utils.UnitText(Resistance, CirSim.OHM_TEXT);
         }
 
         void setPoly() {
@@ -149,16 +100,80 @@ namespace Circuit.Elements.Passive {
             interpLeadAB(ref mRect1[SEGMENTS + 1], ref mRect2[SEGMENTS + 1], 1, 4);
         }
 
+        public override void Draw(CustomGraphics g) {
+            var len = (float)Utils.Distance(mLead1, mLead2);
+            if (0 == len) {
+                return;
+            }
+
+            int hs = ControlPanel.ChkUseAnsiSymbols.Checked ? 5 : 4;
+            setBbox(mPoint1, mPoint2, hs);
+
+            draw2Leads();
+
+            double v1 = Volts[0];
+            double v2 = Volts[1];
+
+            if (ControlPanel.ChkUseAnsiSymbols.Checked) {
+                /* draw zigzag */
+                for (int i = 0; i < SEGMENTS; i++) {
+                    double v = v1 + (v2 - v1) * i / SEGMENTS;
+                    g.LineColor = getVoltageColor(v);
+                    g.DrawLine(mP1[i], mP2[i]);
+                }
+            } else {
+                /* draw rectangle */
+                g.LineColor = getVoltageColor(v1);
+                g.DrawLine(mRect1[0], mRect2[0]);
+                for (int i = 0, j = 1; i < SEGMENTS; i++, j++) {
+                    double v = v1 + (v2 - v1) * i / SEGMENTS;
+                    g.LineColor = getVoltageColor(v);
+                    g.DrawLine(mRect1[j], mRect3[j]);
+                    g.DrawLine(mRect2[j], mRect4[j]);
+                }
+                g.DrawLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
+            }
+
+            if (ControlPanel.ChkShowValues.Checked) {
+                var s = Utils.ShortUnitText(Resistance, "");
+                g.DrawRightText(s, mValuePos.X, mValuePos.Y);
+                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+            }
+
+            doDots();
+            drawPosts();
+        }
+
+        public override void GetInfo(string[] arr) {
+            arr[0] = string.IsNullOrEmpty(mReferenceName) ? "抵抗" : mReferenceName;
+            getBasicInfo(arr);
+            arr[3] = "R = " + Utils.UnitText(Resistance, CirSim.OHM_TEXT);
+            arr[4] = "P = " + Utils.UnitText(Power, "W");
+        }
+
+        public override string GetScopeText(Scope.VAL v) {
+            return "resistor, " + Utils.UnitText(Resistance, CirSim.OHM_TEXT);
+        }
+
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
                 return new ElementInfo("レジスタンス(Ω)", Resistance, 0, 0);
+            }
+            if (n == 1) {
+                var ei = new ElementInfo("名前", 0, 0, 0);
+                ei.Text = mReferenceName;
+                return ei;
             }
             return null;
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            if (ei.Value > 0) {
+            if (n == 0 && 0 < ei.Value) {
                 Resistance = ei.Value;
+                setTextPos();
+            }
+            if (n == 1) {
+                mReferenceName = ei.Textf.Text;
                 setTextPos();
             }
         }

@@ -6,7 +6,9 @@ namespace Circuit.Elements.Passive {
         const int BODY_LEN = 24;
 
         Inductor mInd;
-        Point mTextPos;
+        Point mValuePos;
+        Point mNamePos;
+        string mReferenceName = "";
 
         public InductorElm(Point pos) : base(pos) {
             mInd = new Inductor(mCir);
@@ -49,6 +51,11 @@ namespace Circuit.Elements.Passive {
             mInd.doStep(voltdiff);
         }
 
+        public override void Reset() {
+            mCurrent = Volts[0] = Volts[1] = mCurCount = 0;
+            mInd.reset();
+        }
+
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(BODY_LEN);
@@ -57,18 +64,17 @@ namespace Circuit.Elements.Passive {
 
         void setTextPos() {
             if (mPoint1.Y == mPoint2.Y) {
-                var wh = Context.GetTextSize(Utils.ShortUnitText(Inductance, "")).Width * 0.5;
-                interpPoint(ref mTextPos, 0.5 + wh / mLen * mDsign, 12 * mDsign);
+                var wv = Context.GetTextSize(Utils.ShortUnitText(Inductance, "")).Width * 0.5;
+                var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
+                interpPoint(ref mValuePos, 0.5 + wv / mLen * mDsign, 12 * mDsign);
+                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -12 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
-                interpPoint(ref mTextPos, 0.5, -4 * mDsign);
+                interpPoint(ref mValuePos, 0.5, -4 * mDsign);
+                interpPoint(ref mNamePos, 0.5, 4 * mDsign);
             } else {
-                interpPoint(ref mTextPos, 0.5, -8 * mDsign);
+                interpPoint(ref mValuePos, 0.5, -8 * mDsign);
+                interpPoint(ref mNamePos, 0.5, 8 * mDsign);
             }
-        }
-
-        public override void Reset() {
-            mCurrent = Volts[0] = Volts[1] = mCurCount = 0;
-            mInd.reset();
         }
 
         public override void Draw(CustomGraphics g) {
@@ -82,14 +88,15 @@ namespace Circuit.Elements.Passive {
 
             if (ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.ShortUnitText(Inductance, "");
-                g.DrawRightText(s, mTextPos.X, mTextPos.Y);
+                g.DrawRightText(s, mValuePos.X, mValuePos.Y);
+                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
             }
             doDots();
             drawPosts();
         }
 
         public override void GetInfo(string[] arr) {
-            arr[0] = "inductor";
+            arr[0] = string.IsNullOrEmpty(mReferenceName) ? "コイル" : mReferenceName;
             getBasicInfo(arr);
             arr[3] = "L = " + Utils.UnitText(Inductance, "H");
             arr[4] = "P = " + Utils.UnitText(Power, "W");
@@ -100,6 +107,11 @@ namespace Circuit.Elements.Passive {
                 return new ElementInfo("インダクタンス(H)", Inductance, 0, 0);
             }
             if (n == 1) {
+                var ei = new ElementInfo("名前", 0, 0, 0);
+                ei.Text = mReferenceName;
+                return ei;
+            }
+            if (n == 2) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "台形近似";
@@ -115,6 +127,10 @@ namespace Circuit.Elements.Passive {
                 setTextPos();
             }
             if (n == 1) {
+                mReferenceName = ei.Textf.Text;
+                setTextPos();
+            }
+            if (n == 2) {
                 if (ei.CheckBox.Checked) {
                     mFlags &= ~Inductor.FLAG_BACK_EULER;
                 } else {

@@ -56,14 +56,14 @@ namespace Circuit.Elements.Passive {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            if (n == 2) {
+            if (n == 3) {
                 return new ElementInfo("耐逆電圧(V)", mMaxNegativeVoltage, 0, 0);
             }
             return base.GetElementInfo(n);
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            if (n == 2 && ei.Value >= 0) {
+            if (n == 3 && ei.Value >= 0) {
                 mMaxNegativeVoltage = ei.Value;
             }
             base.SetElementValue(n, ei);
