@@ -366,7 +366,7 @@ namespace Circuit.Elements.Passive {
                 return new ElementInfo("レジスタンス(Ω)", mMaxResistance, 0, 0);
             }
             if (n == 1) {
-                var ei = new ElementInfo("名称", 0, -1, -1);
+                var ei = new ElementInfo("名前", 0, -1, -1);
                 ei.Text = mReferenceName;
                 return ei;
             }
