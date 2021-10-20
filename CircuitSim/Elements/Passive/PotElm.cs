@@ -368,7 +368,6 @@ namespace Circuit.Elements.Passive {
             if (n == 1) {
                 var ei = new ElementInfo("名称", 0, -1, -1);
                 ei.Text = mReferenceName;
-                setNamePos();
                 return ei;
             }
             if (n == 2) {
@@ -389,6 +388,7 @@ namespace Circuit.Elements.Passive {
                 mReferenceName = ei.Textf.Text;
                 mLabel.Text = mReferenceName;
                 ControlPanel.SetSliderPanelHeight();
+                setNamePos();
             }
             if (n == 2) {
                 mFlags = ei.ChangeFlag(mFlags, FLAG_SHOW_VALUES);
