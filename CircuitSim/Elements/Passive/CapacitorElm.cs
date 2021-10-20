@@ -6,7 +6,7 @@ namespace Circuit.Elements.Passive {
         public static readonly int FLAG_BACK_EULER = 2;
 
         const int BODY_LEN = 6;
-        const int HS = 8;
+        const int HS = 7;
 
         double mCompResistance;
         double mVoltDiff;
@@ -120,8 +120,8 @@ namespace Circuit.Elements.Passive {
             /* calc plates */
             mPlate1 = new Point[2];
             mPlate2 = new Point[2];
-            interpPointAB(ref mPlate1[0], ref mPlate1[1], f, 8);
-            interpPointAB(ref mPlate2[0], ref mPlate2[1], 1 - f, 8);
+            interpPointAB(ref mPlate1[0], ref mPlate1[1], f, HS);
+            interpPointAB(ref mPlate2[0], ref mPlate2[1], 1 - f, HS);
             setTextPos();
         }
 
@@ -129,11 +129,11 @@ namespace Circuit.Elements.Passive {
             if (mPoint1.Y == mPoint2.Y) {
                 var wv = Context.GetTextSize(Utils.ShortUnitText(Capacitance, "")).Width * 0.5;
                 var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
-                interpPoint(ref mValuePos, 0.5 + wv / mLen * mDsign, 13 * mDsign);
-                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -16 * mDsign);
+                interpPoint(ref mValuePos, 0.5 + wv / mLen * mDsign, 12 * mDsign);
+                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -15 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
-                interpPoint(ref mValuePos, 0.5, -8 * mDsign);
-                interpPoint(ref mNamePos, 0.5, 8 * mDsign);
+                interpPoint(ref mValuePos, 0.5, -6 * mDsign);
+                interpPoint(ref mNamePos, 0.5, 7 * mDsign);
             } else {
                 interpPoint(ref mValuePos, 0.5, -10 * mDsign);
                 interpPoint(ref mNamePos, 0.5, 10 * mDsign);

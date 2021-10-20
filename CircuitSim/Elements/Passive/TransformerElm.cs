@@ -24,7 +24,6 @@ namespace Circuit.Elements.Passive {
         double[] mCurCounts;
 
         Point[] mDots;
-        int mWidth;
         int mPolarity;
 
         double mCurSourceValue1;
@@ -35,10 +34,12 @@ namespace Circuit.Elements.Passive {
         double mA3;
         double mA4;
 
+        string mReferenceName = "T";
+        Point mNamePos;
+
         public TransformerElm(Point pos) : base(pos) {
             mInductance = 4;
             mRatio = mPolarity = 1;
-            mWidth = BODY_LEN;
             mNoDiagonal = true;
             mCouplingCoef = .999;
             mCurrents = new double[2];
@@ -46,18 +47,20 @@ namespace Circuit.Elements.Passive {
         }
 
         public TransformerElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            mWidth = Math.Max(BODY_LEN, Math.Abs(p2.Y - p1.Y));
-            mInductance = st.nextTokenDouble();
-            mRatio =  st.nextTokenDouble();
             mCurrents = new double[2];
             mCurCounts = new double[2];
-            mCurrents[0] = st.nextTokenDouble();
-            mCurrents[1] = st.nextTokenDouble();
             try {
-                mCouplingCoef = st.nextTokenDouble();
-            } catch {
-                mCouplingCoef = 0.99;
-            }
+                mInductance = st.nextTokenDouble();
+                mRatio = st.nextTokenDouble();
+                mCurrents[0] = st.nextTokenDouble();
+                mCurrents[1] = st.nextTokenDouble();
+                try {
+                    mCouplingCoef = st.nextTokenDouble();
+                } catch {
+                    mCouplingCoef = 0.99;
+                }
+                mReferenceName = st.nextToken();
+            } catch { }
             mNoDiagonal = true;
             mPolarity = ((mFlags & FLAG_REVERSE) != 0) ? -1 : 1;
         }
@@ -73,7 +76,8 @@ namespace Circuit.Elements.Passive {
                 + " " + mRatio
                 + " " + mCurrents[0]
                 + " " + mCurrents[1]
-                + " " + mCouplingCoef;
+                + " " + mCouplingCoef
+                + " " + mReferenceName;
         }
 
         protected override void calculateCurrent() {
@@ -171,16 +175,17 @@ namespace Circuit.Elements.Passive {
 
         public override void Drag(Point pos) {
             pos = CirSim.Sim.SnapGrid(pos);
-            mWidth = Math.Max(BODY_LEN, Math.Abs(pos.Y - P1.Y));
-            if (pos.X == P1.X) {
-                pos.Y = P1.Y;
-            }
             P2.X = pos.X;
             P2.Y = pos.Y;
             SetPoints();
         }
-        
+
         public override void SetPoints() {
+            var width = Math.Max(BODY_LEN, Math.Abs(P2.X - P1.X));
+            var height = Math.Max(BODY_LEN, Math.Abs(P2.Y - P1.Y));
+            if (P2.X == P1.X) {
+                P2.Y = P1.Y;
+            }
             base.SetPoints();
             mPoint2.Y = mPoint1.Y;
             mPtEnds = new Point[4];
@@ -188,20 +193,19 @@ namespace Circuit.Elements.Passive {
             mPtCore = new Point[4];
             mPtEnds[0] = mPoint1;
             mPtEnds[1] = mPoint2;
-            interpPoint(ref mPtEnds[2], 0, -mDsign * mWidth);
-            interpPoint(ref mPtEnds[3], 1, -mDsign * mWidth);
-            double ce = 0.5 - 16 / mLen;
-            double cd = 0.5 - 2 / mLen;
-            int i;
-            for (i = 0; i != 4; i += 2) {
+            interpPoint(ref mPtEnds[2], 0, -mDsign * height);
+            interpPoint(ref mPtEnds[3], 1, -mDsign * height);
+            var ce = 0.5 - 10.0 / width;
+            var cd = 0.5 - 1.0 / width;
+            for (int i = 0; i != 4; i += 2) {
                 Utils.InterpPoint(mPtEnds[i], mPtEnds[i + 1], ref mPtCoil[i], ce);
                 Utils.InterpPoint(mPtEnds[i], mPtEnds[i + 1], ref mPtCoil[i + 1], 1 - ce);
                 Utils.InterpPoint(mPtEnds[i], mPtEnds[i + 1], ref mPtCore[i], cd);
                 Utils.InterpPoint(mPtEnds[i], mPtEnds[i + 1], ref mPtCore[i + 1], 1 - cd);
             }
-            if (mPolarity == -1) {
+            if (-1 == mPolarity) {
                 mDots = new Point[2];
-                double dotp = Math.Abs(7.0 / mWidth);
+                var dotp = Math.Abs(7.0 / height);
                 Utils.InterpPoint(mPtCoil[0], mPtCoil[2], ref mDots[0], dotp, -7 * mDsign);
                 Utils.InterpPoint(mPtCoil[3], mPtCoil[1], ref mDots[1], dotp, -7 * mDsign);
                 var x = mPtEnds[1];
@@ -213,6 +217,12 @@ namespace Circuit.Elements.Passive {
             } else {
                 mDots = null;
             }
+            setNamePos();
+        }
+
+        void setNamePos() {
+            var wn = Context.GetTextSize(mReferenceName).Width;
+            mNamePos = new Point((int)(mPtCore[0].X - wn / 2 + 2), mPtCore[0].Y - 8);
         }
 
         public override void Reset() {
@@ -235,8 +245,7 @@ namespace Circuit.Elements.Passive {
             drawCoil(mPtCoil[0], mPtCoil[2], Volts[PRI_T], Volts[PRI_B], 90 * mDsign);
             drawCoil(mPtCoil[1], mPtCoil[3], Volts[SEC_T], Volts[SEC_B], -90 * mDsign * mPolarity);
 
-            var c = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            g.LineColor = c;
+            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.DrawLine(mPtCore[0], mPtCore[2]);
             g.DrawLine(mPtCore[1], mPtCore[3]);
             if (mDots != null) {
@@ -254,10 +263,14 @@ namespace Circuit.Elements.Passive {
 
             drawPosts();
             setBbox(mPtEnds[0], mPtEnds[mPolarity == 1 ? 3 : 1], 0);
+
+            if (ControlPanel.ChkShowValues.Checked) {
+                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+            }
         }
 
         public override void GetInfo(string[] arr) {
-            arr[0] = "transformer";
+            arr[0] = "トランス";
             arr[1] = "L = " + Utils.UnitText(mInductance, "H");
             arr[2] = "Ratio = 1:" + mRatio;
             arr[3] = "Vd1 = " + Utils.VoltageText(Volts[PRI_T] - Volts[PRI_B]);
@@ -271,12 +284,17 @@ namespace Circuit.Elements.Passive {
                 return new ElementInfo("一次側インダクタンス(H)", mInductance, .01, 5);
             }
             if (n == 1) {
-                return new ElementInfo("巻数比", mRatio, 1, 10).SetDimensionless();
+                return new ElementInfo("二次側巻数比", mRatio, 1, 10).SetDimensionless();
             }
             if (n == 2) {
                 return new ElementInfo("結合係数", mCouplingCoef, 0, 1).SetDimensionless();
             }
             if (n == 3) {
+                var ei = new ElementInfo("名前", 0, 0, 0);
+                ei.Text = mReferenceName;
+                return ei;
+            }
+            if (n == 4) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     Text = "台形近似",
@@ -284,7 +302,7 @@ namespace Circuit.Elements.Passive {
                 };
                 return ei;
             }
-            if (n == 4) {
+            if (n == 5) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     Text = "極性反転",
@@ -306,13 +324,17 @@ namespace Circuit.Elements.Passive {
                 mCouplingCoef = ei.Value;
             }
             if (n == 3) {
+                mReferenceName = ei.Textf.Text;
+                setNamePos();
+            }
+            if (n == 4) {
                 if (ei.CheckBox.Checked) {
                     mFlags &= ~Inductor.FLAG_BACK_EULER;
                 } else {
                     mFlags |= Inductor.FLAG_BACK_EULER;
                 }
             }
-            if (n == 4) {
+            if (n == 5) {
                 mPolarity = ei.CheckBox.Checked ? -1 : 1;
                 if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_REVERSE;

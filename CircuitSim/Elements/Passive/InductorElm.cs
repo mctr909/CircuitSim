@@ -70,10 +70,10 @@ namespace Circuit.Elements.Passive {
                 var wv = Context.GetTextSize(Utils.ShortUnitText(Inductance, "")).Width * 0.5;
                 var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
                 interpPoint(ref mValuePos, 0.5 + wv / mLen * mDsign, 10 * mDsign);
-                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -12 * mDsign);
+                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -11 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
-                interpPoint(ref mValuePos, 0.5, -4 * mDsign);
-                interpPoint(ref mNamePos, 0.5, 4 * mDsign);
+                interpPoint(ref mValuePos, 0.5, -3 * mDsign);
+                interpPoint(ref mNamePos, 0.5, 3 * mDsign);
             } else {
                 interpPoint(ref mValuePos, 0.5, -8 * mDsign);
                 interpPoint(ref mNamePos, 0.5, 8 * mDsign);
