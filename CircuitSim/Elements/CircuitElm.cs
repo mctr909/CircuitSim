@@ -553,9 +553,6 @@ namespace Circuit.Elements {
             /* draw more loops for a longer coil */
             int loopCt = (int)Math.Ceiling(coilLen / 11);
             float w = coilLen / loopCt;
-            float h = w * 1.2f;
-            float wh = w * 0.5f;
-            float hh = h * 0.5f;
             float th = (float)(Utils.Angle(p1, p2) * 180 / Math.PI);
             var pos = new Point();
             for (int loop = 0; loop != loopCt; loop++) {
@@ -572,9 +569,8 @@ namespace Circuit.Elements {
                 return;
             }
             /* draw more loops for a longer coil */
-            int loopCt = (int)Math.Ceiling(coilLen / 11);
+            int loopCt = (int)Math.Ceiling(coilLen / 9);
             float w = coilLen / loopCt;
-            float wh = w * 0.5f;
             if (Utils.Angle(p1, p2) < 0) {
                 dir = -dir;
             }
