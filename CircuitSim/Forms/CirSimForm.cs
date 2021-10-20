@@ -1125,11 +1125,11 @@ namespace Circuit {
         }
 
         void readCircuit(string text, int flags) {
-            readCircuit(Encoding.ASCII.GetBytes(text), flags);
+            readCircuit(Encoding.UTF8.GetBytes(text), flags);
         }
 
         void readCircuit(string text) {
-            readCircuit(Encoding.ASCII.GetBytes(text), 0);
+            readCircuit(Encoding.UTF8.GetBytes(text), 0);
         }
 
         void readCircuit(byte[] b, int flags) {
@@ -1164,7 +1164,7 @@ namespace Circuit {
                         break;
                     }
                 }
-                string line = Encoding.ASCII.GetString(b, p, linelen);
+                string line = Encoding.UTF8.GetString(b, p, linelen);
                 var st = new StringTokenizer(line, " +\t\n\r\f");
                 while (st.hasMoreTokens()) {
                     string type = st.nextToken();

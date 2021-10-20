@@ -23,8 +23,11 @@ namespace Circuit.Elements.Passive {
         }
 
         public CapacitorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            Capacitance = st.nextTokenDouble();
-            mVoltDiff = st.nextTokenDouble();
+            try {
+                Capacitance = st.nextTokenDouble();
+                mVoltDiff = st.nextTokenDouble();
+                mReferenceName = st.nextToken();
+            } catch { }
         }
 
         public double Capacitance { get; set; }
@@ -36,7 +39,7 @@ namespace Circuit.Elements.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.CAPACITOR; } }
 
         protected override string dump() {
-            return Capacitance + " " + mVoltDiff;
+            return Capacitance + " " + mVoltDiff + " " + mReferenceName;
         }
 
         protected override void calculateCurrent() {

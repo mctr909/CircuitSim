@@ -18,8 +18,11 @@ namespace Circuit.Elements.Passive {
 
         public InductorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             mInd = new Inductor(mCir);
-            Inductance = st.nextTokenDouble();
-            mCurrent = st.nextTokenDouble();
+            try {
+                Inductance = st.nextTokenDouble();
+                mCurrent = st.nextTokenDouble();
+                mReferenceName = st.nextToken();
+            } catch { }
             mInd.setup(Inductance, mCurrent, mFlags);
         }
 
@@ -32,7 +35,7 @@ namespace Circuit.Elements.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.INDUCTOR; } }
 
         protected override string dump() {
-            return Inductance + " " + mCurrent;
+            return Inductance + " " + mCurrent + " " + mReferenceName;
         }
 
         protected override void calculateCurrent() {

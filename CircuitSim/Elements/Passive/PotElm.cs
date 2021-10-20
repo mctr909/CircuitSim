@@ -38,26 +38,30 @@ namespace Circuit.Elements.Passive {
         Point[] mRect3;
         Point[] mRect4;
 
+        Point mNamePos;
+        string mReferenceName;
+
         TrackBar mSlider;
         Label mLabel;
-        string mSliderText;
 
         public PotElm(Point pos) : base(pos) {
             setup();
             mMaxResistance = 1000;
             mPosition = .5;
-            mSliderText = "Resistance";
+            mReferenceName = "VR";
             mFlags = FLAG_SHOW_VALUES;
             createSlider();
         }
 
         public PotElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            mMaxResistance = st.nextTokenDouble();
-            mPosition = st.nextTokenDouble();
-            mSliderText = st.nextToken();
-            while (st.hasMoreTokens()) {
-                mSliderText += ' ' + st.nextToken();
-            }
+            try {
+                mMaxResistance = st.nextTokenDouble();
+                mPosition = st.nextTokenDouble();
+                mReferenceName = st.nextToken();
+                while (st.hasMoreTokens()) {
+                    mReferenceName += ' ' + st.nextToken();
+                }
+            } catch { }
             createSlider();
         }
 
@@ -66,7 +70,7 @@ namespace Circuit.Elements.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.POT; } }
 
         protected override string dump() {
-            return mMaxResistance + " " + mPosition + " " + mSliderText;
+            return mMaxResistance + " " + mPosition + " " + mReferenceName;
         }
 
         protected override void calculateCurrent() {
@@ -151,18 +155,20 @@ namespace Circuit.Elements.Passive {
             base.SetPoints();
             int offset = 0;
             int myLen = 0;
-            if (Math.Abs(mDiff.X) > Math.Abs(mDiff.Y)) {
-                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDiff.X) * (
-                    (Math.Abs(mDiff.X) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
+            if (Math.Abs(mDiff.Y) < Math.Abs(mDiff.X)) {
+                /* horizontal */
+                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDiff.X)
+                    * ((Math.Abs(mDiff.X) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
                 mPoint2.X = mPoint1.X + myLen;
                 offset = (mDiff.X < 0) ? mDiff.Y : -mDiff.Y;
                 mPoint2.Y = mPoint1.Y;
             } else {
-                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDiff.Y) * (
-                    (Math.Abs(mDiff.Y) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
+                /* vertical */
+                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDiff.Y)
+                    * ((Math.Abs(mDiff.Y) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
                 if (mDiff.Y != 0) {
                     mPoint2.Y = mPoint1.Y + myLen;
-                    offset = (mDiff.Y > 0) ? mDiff.X : -mDiff.X;
+                    offset = (0 < mDiff.Y) ? mDiff.X : -mDiff.X;
                     mPoint2.X = mPoint1.X;
                 }
             }
@@ -183,7 +189,32 @@ namespace Circuit.Elements.Passive {
             double clen = Math.Abs(offset) - 8;
             Utils.InterpPoint(mCorner2, mArrowPoint, ref mArrow1, ref mArrow2, (clen - 8) / clen, 4);
 
+            setNamePos();
+
             setPoly();
+        }
+
+        void setNamePos() {
+            var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
+            if (Math.Abs(mDiff.Y) < Math.Abs(mDiff.X)) {
+                if (0 < mDiff.X) {
+                    /* upper slider */
+                    interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 14 * mDsign);
+                } else {
+                    /* lower slider */
+                    interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, -12 * mDsign);
+                }
+            } else {
+                if (mDiff.Y != 0) {
+                    if (0 < mDiff.Y) {
+                        /* right slider */
+                        interpPoint(ref mNamePos, 0.5, -(2 * wn + 4) * mDsign);
+                    } else {
+                        /* left slider */
+                        interpPoint(ref mNamePos, 0.5, 5 * mDsign);
+                    }
+                }
+            }
         }
 
         public override void Reset() {
@@ -269,6 +300,9 @@ namespace Circuit.Elements.Passive {
                     g.DrawLeftTopText(s2, Math.Max(mArrow1.X, mArrow2.X), !reverseX ? (mArrowPoint.Y + txtHeightH + 10) : mArrowPoint.Y);
                 }
             }
+            if (ControlPanel.ChkShowValues.Checked) {
+                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+            }
         }
 
         /* draw component values (number of resistor ohms, etc).  hs = offset */
@@ -298,7 +332,7 @@ namespace Circuit.Elements.Passive {
         void createSlider() {
             ControlPanel.AddSlider(mLabel = new Label() {
                 TextAlign = ContentAlignment.BottomLeft,
-                Text = mSliderText
+                Text = mReferenceName
             });
             int value = (int)(mPosition * 100);
             ControlPanel.AddSlider(mSlider = new TrackBar() {
@@ -319,7 +353,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void GetInfo(string[] arr) {
-            arr[0] = "potentiometer";
+            arr[0] = "可変抵抗";
             arr[1] = "Vd = " + Utils.VoltageDText(VoltageDiff);
             arr[2] = "R1 = " + Utils.UnitText(mResistance1, CirSim.OHM_TEXT);
             arr[3] = "R2 = " + Utils.UnitText(mResistance2, CirSim.OHM_TEXT);
@@ -333,7 +367,8 @@ namespace Circuit.Elements.Passive {
             }
             if (n == 1) {
                 var ei = new ElementInfo("名称", 0, -1, -1);
-                ei.Text = mSliderText;
+                ei.Text = mReferenceName;
+                setNamePos();
                 return ei;
             }
             if (n == 2) {
@@ -351,8 +386,8 @@ namespace Circuit.Elements.Passive {
                 mMaxResistance = ei.Value;
             }
             if (n == 1) {
-                mSliderText = ei.Textf.Text;
-                mLabel.Text = mSliderText;
+                mReferenceName = ei.Textf.Text;
+                mLabel.Text = mReferenceName;
                 ControlPanel.SetSliderPanelHeight();
             }
             if (n == 2) {

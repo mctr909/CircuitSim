@@ -21,7 +21,10 @@ namespace Circuit.Elements.Passive {
         }
 
         public ResistorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            Resistance = st.nextTokenDouble();
+            try {
+                Resistance = st.nextTokenDouble();
+                mReferenceName = st.nextToken();
+            } catch { }
         }
 
         public double Resistance { get; set; }
@@ -31,7 +34,7 @@ namespace Circuit.Elements.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.RESISTOR; } }
 
         protected override string dump() {
-            return Resistance.ToString();
+            return Resistance + " " + mReferenceName;
         }
 
         protected override void calculateCurrent() {
