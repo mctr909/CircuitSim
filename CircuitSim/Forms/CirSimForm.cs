@@ -1192,7 +1192,7 @@ namespace Circuit {
                             CustomLogicModel.undumpModel(st);
                             break;
                         }
-                        if (tint == '%' || tint == '?' || tint == 'B') {
+                        if (tint == '%' || tint == '?') {
                             /* ignore afilter-specific stuff */
                             break;
                         }

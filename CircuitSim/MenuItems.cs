@@ -185,6 +185,7 @@ namespace Circuit {
     enum DUMP_ID {
         INVALID = 0,
         OPAMP = 'a',
+        BOX = 'b',
         CAPACITOR = 'c',
         DIODE = 'd',
         MOSFET = 'f',
@@ -207,6 +208,7 @@ namespace Circuit {
         SWITCH = 's',
         SWITCH2 = 'S',
         TRANSFORMER = 'T',
+        TEXT = 'x',
         VOLTMETER = '>',
         AND_GATE = 150,
         NAND_GATE = 151,
@@ -249,7 +251,7 @@ namespace Circuit {
         OPTO_COUPLER = 407,
         CUSTOM_COMPOSITE = 410,
         CRYSTAL = 412,
-        SRAM = 413
+        SRAM = 413,
     }
 
     class MenuItems {
@@ -418,6 +420,9 @@ namespace Circuit {
             addElementItem(basicMenuBar, "抵抗", ELEMENTS.RESISTOR);
             addElementItem(basicMenuBar, "コンデンサ", ELEMENTS.CAPACITOR);
             addElementItem(basicMenuBar, "コイル", ELEMENTS.INDUCTOR);
+            basicMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(basicMenuBar, "矩形", ELEMENTS.BoxElm);
+            addElementItem(basicMenuBar, "テキスト", ELEMENTS.TextElm);
             mainMenuBar.Items.Add(new ToolStripSeparator());
             mainMenuBar.Items.Add(basicMenuBar);
             #endregion
@@ -502,8 +507,6 @@ namespace Circuit {
             addElementItem(outputMenuBar, "音声ファイル出力", ELEMENTS.OUTPUT_AUDIO);
             //outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             //addElementItem(outputMenuBar, "Add Lamp", ELEMENTS.LampElm);
-            //addElementItem(outputMenuBar, "Add Text", ELEMENTS.TextElm);
-            //addElementItem(outputMenuBar, "Add Box", ELEMENTS.BoxElm);
             //addElementItem(outputMenuBar, "Add Test Point", ELEMENTS.TestPointElm);
             //addElementItem(outputMenuBar, "Add Stop Trigger", ELEMENTS.StopTriggerElm);
             mainMenuBar.Items.Add(outputMenuBar);
@@ -696,10 +699,6 @@ namespace Circuit {
                 return new AudioOutputElm(pos);
             case ELEMENTS.LampElm:
                 return null; //(CircuitElm)new LampElm(x1, y1);
-            case ELEMENTS.TextElm:
-                return null; //(CircuitElm)new TextElm(x1, y1);
-            case ELEMENTS.BoxElm:
-                return null; //(CircuitElm)new BoxElm(x1, y1);
             case ELEMENTS.TestPointElm:
                 return null; //new TestPointElm(x1, y1);
             case ELEMENTS.LEDArrayElm:
@@ -826,6 +825,11 @@ namespace Circuit {
             case ELEMENTS.MonostableElm:
                 return null; //(CircuitElm)new MonostableElm(x1, y1);
             #endregion
+
+            case ELEMENTS.BoxElm:
+                return new BoxElm(pos);
+            case ELEMENTS.TextElm:
+                return new TextElm(pos);
 
             default:
                 return null;
@@ -970,12 +974,15 @@ namespace Circuit {
                 return new CustomLogicElm(p1, p2, f, st);
             #endregion
 
+            case DUMP_ID.BOX:
+                return new BoxElm(p1, p2, f, st);
+            case DUMP_ID.TEXT:
+                return new TextElm(p1, p2, f, st);
+
             //case 'A': return new AntennaElm(x1, y1, x2, y2, f, st);
-            //case 'b': return new BoxElm(x1, y1, x2, y2, f, st);
             //case 'j': return new JfetElm(x1, y1, x2, y2, f, st);
             //case 'm': return new MemristorElm(x1, y1, x2, y2, f, st);
             //case 'n': return new NoiseElm(x1, y1, x2, y2, f, st);
-            //case 'x': return new TextElm(x1, y1, x2, y2, f, st);
             //case 157: return new SevenSegElm(x1, y1, x2, y2, f, st);
             //case 158: return new VCOElm(x1, y1, x2, y2, f, st);
             //case 160: return new AnalogSwitch2Elm(x1, y1, x2, y2, f, st);

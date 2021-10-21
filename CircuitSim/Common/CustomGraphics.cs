@@ -4,7 +4,7 @@ using System.Drawing.Printing;
 
 namespace Circuit {
     class CustomGraphics {
-        public static readonly Font FontText = new Font("Segoe UI", 9.0f);
+        public static Font FontText = new Font("Segoe UI", 9.0f);
         static Brush brushText = Brushes.Black;
         static Color colorText;
 
@@ -18,6 +18,12 @@ namespace Circuit {
                 var p = new Pen(value, 1.0f);
                 brushText = p.Brush;
                 colorText = value;
+            }
+        }
+        public static float TextSize {
+            get { return FontText.Size; }
+            set {
+                FontText = new Font(FontText.Name, value);
             }
         }
 
@@ -143,6 +149,10 @@ namespace Circuit {
 
         public void DrawLine(Point a, Point b) {
             g.DrawLine(penLine, a, b);
+        }
+
+        public void DrawRectangle(int x, int y, int w, int h) {
+            g.DrawRectangle(penLine, new Rectangle(x, y, w, h));
         }
 
         public void DrawRectangle(Rectangle rect) {

@@ -4,6 +4,8 @@ namespace Circuit.Elements.Passive {
     class ResistorElm : CircuitElm {
         const int BODY_LEN = 24;
         const int SEGMENTS = 12;
+        const int ANSI_HEIGHT = 5;
+        const int EU_HEIGHT = 4;
         const double SEG_F = 1.0 / SEGMENTS;
 
         Point[] mP1;
@@ -76,10 +78,10 @@ namespace Circuit.Elements.Passive {
             for (int i = 0; i != SEGMENTS; i++) {
                 switch (i & 3) {
                 case 0:
-                    ny = 5;
+                    ny = ANSI_HEIGHT;
                     break;
                 case 2:
-                    ny = -5;
+                    ny = -ANSI_HEIGHT;
                     break;
                 default:
                     ny = 0;
@@ -95,12 +97,12 @@ namespace Circuit.Elements.Passive {
             mRect2 = new Point[SEGMENTS + 2];
             mRect3 = new Point[SEGMENTS + 2];
             mRect4 = new Point[SEGMENTS + 2];
-            interpLeadAB(ref mRect1[0], ref mRect2[0], 0, 4);
+            interpLeadAB(ref mRect1[0], ref mRect2[0], 0, EU_HEIGHT);
             for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
-                interpLeadAB(ref mRect1[j], ref mRect2[j], i * SEG_F, 4);
-                interpLeadAB(ref mRect3[j], ref mRect4[j], (i + 1) * SEG_F, 4);
+                interpLeadAB(ref mRect1[j], ref mRect2[j], i * SEG_F, EU_HEIGHT);
+                interpLeadAB(ref mRect3[j], ref mRect4[j], (i + 1) * SEG_F, EU_HEIGHT);
             }
-            interpLeadAB(ref mRect1[SEGMENTS + 1], ref mRect2[SEGMENTS + 1], 1, 4);
+            interpLeadAB(ref mRect1[SEGMENTS + 1], ref mRect2[SEGMENTS + 1], 1, EU_HEIGHT);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -109,7 +111,7 @@ namespace Circuit.Elements.Passive {
                 return;
             }
 
-            int hs = ControlPanel.ChkUseAnsiSymbols.Checked ? 5 : 4;
+            int hs = ControlPanel.ChkUseAnsiSymbols.Checked ? ANSI_HEIGHT : EU_HEIGHT;
             setBbox(mPoint1, mPoint2, hs);
 
             draw2Leads();

@@ -23,14 +23,6 @@ namespace Circuit.Elements {
             }
         }
 
-        /// <summary>
-        /// called when an element is done being dragged out;
-        /// </summary>
-        /// <returns>returns true if it's zero size and should be deleted</returns>
-        public bool IsCreationFailed {
-            get { return P1.X == P2.X && P1.Y == P2.Y; }
-        }
-
         public int[] Nodes { get; protected set; }
 
         /// <summary>
@@ -64,6 +56,12 @@ namespace Circuit.Elements {
 
         #region virtual property
         public virtual DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }
+
+        /// <summary>
+        /// called when an element is done being dragged out;
+        /// </summary>
+        /// <returns>returns true if it's zero size and should be deleted</returns>
+        public virtual bool IsCreationFailed { get { return P1.X == P2.X && P1.Y == P2.Y; } }
 
         /// <summary>
         /// is this a wire or equivalent to a wire?

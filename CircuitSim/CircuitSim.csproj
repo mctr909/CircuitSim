@@ -49,6 +49,9 @@
   <ItemGroup>
     <Compile Include="Elements\Active\AnalogSwitch.cs" />
     <Compile Include="Elements\Active\VaractorElm.cs" />
+    <Compile Include="Elements\Custom\BoxElm.cs" />
+    <Compile Include="Elements\Custom\GraphicElm.cs" />
+    <Compile Include="Elements\Custom\TextElm.cs" />
     <Compile Include="Elements\Input\NoiseElm.cs" />
     <Compile Include="Elements\Output\DataRecorderElm.cs" />
     <Compile Include="Elements\Passive\CrystalElm.cs" />
