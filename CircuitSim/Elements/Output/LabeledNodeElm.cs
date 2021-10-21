@@ -111,7 +111,7 @@ namespace Circuit.Elements.Output {
                 lineOver = true;
                 str = str.Substring(1);
             }
-            drawCenteredText(str, P2.X, P2.Y, true);
+            drawCenteredText(str, P2, true);
             if (lineOver) {
                 int asc = (int)CustomGraphics.FontText.Size;
                 if (lineOver) {

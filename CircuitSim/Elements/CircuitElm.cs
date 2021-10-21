@@ -209,36 +209,6 @@ namespace Circuit.Elements {
                 }
             }
         }
-
-        /// <summary>
-        /// draw current dots from point a to b
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <param name="pos"></param>
-        protected static void drawDots(Point a, Point b, double pos) {
-            if ((!CirSim.Sim.IsRunning) || pos == 0 || !ControlPanel.ChkShowDots.Checked) {
-                return;
-            }
-            var dx = b.X - a.X;
-            var dy = b.Y - a.Y;
-            var dr = Math.Sqrt(dx * dx + dy * dy);
-            int ds = CirSim.GRID_SIZE;
-            pos %= ds;
-            if (pos < 0) {
-                pos += ds;
-            }
-            if (ControlPanel.ChkPrintable.Checked) {
-                Context.LineColor = CustomGraphics.GrayColor;
-            } else {
-                Context.LineColor = Color.Yellow;
-            }
-            for (var di = pos; di < dr; di += ds) {
-                var x0 = (int)(a.X + di * dx / dr);
-                var y0 = (int)(a.Y + di * dy / dr);
-                Context.FillCircle(x0, y0, 1.5f);
-            }
-        }
         #endregion
 
         #region [protected method]
@@ -273,32 +243,30 @@ namespace Circuit.Elements {
         /// set/adjust bounding box used for selecting elements.
         /// getCircuitBounds() does not use this!
         /// </summary>
-        /// <param name="x1"></param>
-        /// <param name="y1"></param>
-        /// <param name="x2"></param>
-        /// <param name="y2"></param>
-        protected void setBbox(int x1, int y1, int x2, int y2) {
-            if (x1 > x2) { var q = x1; x1 = x2; x2 = q; }
-            if (y1 > y2) { var q = y1; y1 = y2; y2 = q; }
-            BoundingBox.X = x1;
-            BoundingBox.Y = y1;
-            BoundingBox.Width = x2 - x1 + 1;
-            BoundingBox.Height = y2 - y1 + 1;
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        protected void setBbox(Point a, Point b) {
+            if (a.X > b.X) { var q = a.X; a.X = b.X; b.X = q; }
+            if (a.Y > b.Y) { var q = a.Y; a.Y = b.Y; b.Y = q; }
+            BoundingBox.X = a.X;
+            BoundingBox.Y = a.Y;
+            BoundingBox.Width = b.X - a.X + 1;
+            BoundingBox.Height = b.Y - a.Y + 1;
         }
 
         /// <summary>
-        /// set bounding box for an element from p1 to p2 with width w
+        /// set bounding box for an element from a to b with width w
         /// </summary>
-        /// <param name="p1"></param>
-        /// <param name="p2"></param>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
         /// <param name="w"></param>
-        protected void setBbox(Point p1, Point p2, double w) {
-            setBbox(p1.X, p1.Y, p2.X, p2.Y);
-            int dpx = (int)(mDir.X * w);
-            int dpy = (int)(mDir.Y * w);
+        protected void setBbox(Point a, Point b, double w) {
+            setBbox(a, b);
+            var dpx = (int)(mDir.X * w);
+            var dpy = (int)(mDir.Y * w);
             adjustBbox(
-                p1.X + dpx, p1.Y + dpy,
-                p1.X - dpx, p1.Y - dpy
+                a.X + dpx, a.Y + dpy,
+                a.X - dpx, a.Y - dpy
             );
         }
 
@@ -322,8 +290,8 @@ namespace Circuit.Elements {
             BoundingBox.Height = y2 - y1;
         }
 
-        protected void adjustBbox(Point p1, Point p2) {
-            adjustBbox(p1.X, p1.Y, p2.X, p2.Y);
+        protected void adjustBbox(Point a, Point b) {
+            adjustBbox(a.X, a.Y, b.X, b.Y);
         }
 
         /// <summary>
@@ -394,8 +362,8 @@ namespace Circuit.Elements {
         }
 
         protected void interpPoint(ref Point p, double f) {
-            p.X = (int)Math.Floor(mPoint1.X * (1 - f) + mPoint2.X * f + 0.45);
-            p.Y = (int)Math.Floor(mPoint1.Y * (1 - f) + mPoint2.Y * f + 0.45);
+            p.X = (int)Math.Floor(mPoint1.X * (1 - f) + mPoint2.X * f + 0.5);
+            p.Y = (int)Math.Floor(mPoint1.Y * (1 - f) + mPoint2.Y * f + 0.5);
         }
 
         protected void interpPoint(ref Point p, double f, double g) {
@@ -407,32 +375,32 @@ namespace Circuit.Elements {
                 p.Y = mPoint1.Y;
             } else {
                 g /= r;
-                p.X = (int)Math.Floor(mPoint1.X * (1 - f) + mPoint2.X * f + g * gx + 0.45);
-                p.Y = (int)Math.Floor(mPoint1.Y * (1 - f) + mPoint2.Y * f + g * gy + 0.45);
+                p.X = (int)Math.Floor(mPoint1.X * (1 - f) + mPoint2.X * f + g * gx + 0.5);
+                p.Y = (int)Math.Floor(mPoint1.Y * (1 - f) + mPoint2.Y * f + g * gy + 0.5);
             }
         }
 
-        protected void interpPointAB(ref Point p1, ref Point p2, double f, double g) {
+        protected void interpPointAB(ref Point a, ref Point b, double f, double g) {
             var gx = mPoint2.Y - mPoint1.Y;
             var gy = mPoint1.X - mPoint2.X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                p1.X = mPoint1.X;
-                p1.Y = mPoint1.Y;
-                p2.X = mPoint2.X;
-                p2.Y = mPoint2.Y;
+                a.X = mPoint1.X;
+                a.Y = mPoint1.Y;
+                b.X = mPoint2.X;
+                b.Y = mPoint2.Y;
             } else {
                 g /= r;
-                p1.X = (int)Math.Floor(mPoint1.X * (1 - f) + mPoint2.X * f + g * gx + 0.45);
-                p1.Y = (int)Math.Floor(mPoint1.Y * (1 - f) + mPoint2.Y * f + g * gy + 0.45);
-                p2.X = (int)Math.Floor(mPoint1.X * (1 - f) + mPoint2.X * f - g * gx + 0.45);
-                p2.Y = (int)Math.Floor(mPoint1.Y * (1 - f) + mPoint2.Y * f - g * gy + 0.45);
+                a.X = (int)Math.Floor(mPoint1.X * (1 - f) + mPoint2.X * f + g * gx + 0.5);
+                a.Y = (int)Math.Floor(mPoint1.Y * (1 - f) + mPoint2.Y * f + g * gy + 0.5);
+                b.X = (int)Math.Floor(mPoint1.X * (1 - f) + mPoint2.X * f - g * gx + 0.5);
+                b.Y = (int)Math.Floor(mPoint1.Y * (1 - f) + mPoint2.Y * f - g * gy + 0.5);
             }
         }
 
         protected void interpLead(ref Point p, double f) {
-            p.X = (int)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f + 0.45);
-            p.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f + 0.45);
+            p.X = (int)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f + 0.5);
+            p.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f + 0.5);
         }
 
         protected void interpLead(ref Point p, double f, double g) {
@@ -444,26 +412,26 @@ namespace Circuit.Elements {
                 p.Y = mLead1.Y;
             } else {
                 g /= r;
-                p.X = (int)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f + g * gx + 0.45);
-                p.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f + g * gy + 0.45);
+                p.X = (int)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f + g * gx + 0.5);
+                p.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f + g * gy + 0.5);
             }
         }
 
-        protected void interpLeadAB(ref Point p1, ref Point p2, double f, double g) {
+        protected void interpLeadAB(ref Point a, ref Point b, double f, double g) {
             var gx = mLead2.Y - mLead1.Y;
             var gy = mLead1.X - mLead2.X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                p1.X = mLead1.X;
-                p1.Y = mLead1.Y;
-                p2.X = mLead2.X;
-                p2.Y = mLead2.Y;
+                a.X = mLead1.X;
+                a.Y = mLead1.Y;
+                b.X = mLead2.X;
+                b.Y = mLead2.Y;
             } else {
                 g /= r;
-                p1.X = (int)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f + g * gx + 0.45);
-                p1.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f + g * gy + 0.45);
-                p2.X = (int)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f - g * gx + 0.45);
-                p2.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f - g * gy + 0.45);
+                a.X = (int)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f + g * gx + 0.5);
+                a.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f + g * gy + 0.5);
+                b.X = (int)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f - g * gx + 0.5);
+                b.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f - g * gy + 0.5);
             }
         }
 
@@ -497,32 +465,62 @@ namespace Circuit.Elements {
             Context.DrawLine(a, b);
         }
 
-        protected void drawVoltage(int index, Point[] poly) {
+        protected void fillVoltage(int index, Point[] poly) {
             Context.FillPolygon(getVoltageColor(Volts[index]), poly);
         }
 
-        protected void drawCenteredText(string s, int x, int y, bool cx) {
+        /// <summary>
+        /// draw current dots from point a to b
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="pos"></param>
+        protected void drawDots(Point a, Point b, double pos) {
+            if ((!CirSim.Sim.IsRunning) || pos == 0 || !ControlPanel.ChkShowDots.Checked) {
+                return;
+            }
+            var dx = b.X - a.X;
+            var dy = b.Y - a.Y;
+            var dr = Math.Sqrt(dx * dx + dy * dy);
+            int ds = CirSim.GRID_SIZE;
+            pos %= ds;
+            if (pos < 0) {
+                pos += ds;
+            }
+            if (ControlPanel.ChkPrintable.Checked) {
+                Context.LineColor = CustomGraphics.GrayColor;
+            } else {
+                Context.LineColor = Color.Yellow;
+            }
+            for (var di = pos; di < dr; di += ds) {
+                var x0 = (int)(a.X + di * dx / dr);
+                var y0 = (int)(a.Y + di * dy / dr);
+                Context.FillCircle(x0, y0, 1.5f);
+            }
+        }
+
+        protected void drawCenteredText(string s, Point p, bool cx) {
             var fs = Context.GetTextSize(s);
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
             if (cx) {
-                adjustBbox(x - w / 2, y - h2, x + w / 2, y + h2);
+                adjustBbox(p.X - w / 2, p.Y - h2, p.X + w / 2, p.Y + h2);
             } else {
-                adjustBbox(x, y - h2, x + w, y + h2);
+                adjustBbox(p.X, p.Y - h2, p.X + w, p.Y + h2);
             }
-            Context.DrawCenteredText(s, x, y);
+            Context.DrawCenteredText(s, p.X, p.Y);
         }
 
-        protected void drawCenteredLText(string s, int x, int y, bool cx) {
+        protected void drawCenteredLText(string s, Point p, bool cx) {
             var fs = Context.GetLTextSize(s);
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
             if (cx) {
-                adjustBbox(x - w / 2, y - h2, x + w / 2, y + h2);
+                adjustBbox(p.X - w / 2, p.Y - h2, p.X + w / 2, p.Y + h2);
             } else {
-                adjustBbox(x, y - h2, x + w, y + h2);
+                adjustBbox(p.X, p.Y - h2, p.X + w, p.Y + h2);
             }
-            Context.DrawCenteredLText(s, x, y);
+            Context.DrawCenteredLText(s, p.X, p.Y);
         }
 
         /// <summary>
@@ -545,38 +543,38 @@ namespace Circuit.Elements {
             Context.DrawRightText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
         }
 
-        protected void drawCoil(Point p1, Point p2, double v1, double v2) {
-            var coilLen = (float)Utils.Distance(p1, p2);
+        protected void drawCoil(Point a, Point b, double v1, double v2) {
+            var coilLen = (float)Utils.Distance(a, b);
             if (0 == coilLen) {
                 return;
             }
             /* draw more loops for a longer coil */
-            int loopCt = (int)Math.Ceiling(coilLen / 11);
-            float w = coilLen / loopCt;
-            float th = (float)(Utils.Angle(p1, p2) * 180 / Math.PI);
+            var loopCt = (int)Math.Ceiling(coilLen / 11);
+            var w = coilLen / loopCt;
+            var th = (float)(Utils.Angle(a, b) * 180 / Math.PI);
             var pos = new Point();
             for (int loop = 0; loop != loopCt; loop++) {
-                Utils.InterpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
+                Utils.InterpPoint(a, b, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
                 Context.LineColor = getVoltageColor(v);
                 Context.DrawArc(pos, w, th, -180);
             }
         }
 
-        protected void drawCoil(Point p1, Point p2, double v1, double v2, float dir) {
-            var coilLen = (float)Utils.Distance(p1, p2);
+        protected void drawCoil(Point a, Point b, double v1, double v2, float dir) {
+            var coilLen = (float)Utils.Distance(a, b);
             if (0 == coilLen) {
                 return;
             }
             /* draw more loops for a longer coil */
-            int loopCt = (int)Math.Ceiling(coilLen / 9);
+            var loopCt = (int)Math.Ceiling(coilLen / 9);
             float w = coilLen / loopCt;
-            if (Utils.Angle(p1, p2) < 0) {
+            if (Utils.Angle(a, b) < 0) {
                 dir = -dir;
             }
             var pos = new Point();
             for (int loop = 0; loop != loopCt; loop++) {
-                Utils.InterpPoint(p1, p2, ref pos, (loop + 0.5) / loopCt, 0);
+                Utils.InterpPoint(a, b, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
                 Context.LineColor = getVoltageColor(v);
                 Context.DrawArc(pos, w, dir, -180);

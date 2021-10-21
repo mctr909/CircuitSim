@@ -262,7 +262,7 @@ namespace Circuit.Elements.Active {
             /* draw emitter */
             drawVoltage(V_E, mEmit[0], mEmit[1]);
             /* draw arrow */
-            drawVoltage(V_E, mArrowPoly);
+            fillVoltage(V_E, mArrowPoly);
             /* draw base */
             drawVoltage(V_B, mPoint1, mTbase);
 
@@ -275,7 +275,7 @@ namespace Circuit.Elements.Active {
             drawDots(mEmit[1], mEmit[0], mCurCount_e);
 
             /* draw base rectangle */
-            drawVoltage(V_B, mRectPoly);
+            fillVoltage(V_B, mRectPoly);
 
             drawPosts();
         }

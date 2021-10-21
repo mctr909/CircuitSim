@@ -99,7 +99,7 @@ namespace Circuit.Elements.Gate {
                 g.DrawPolygon(mGatePolyAnsi);
             } else {
                 g.DrawPolygon(mGatePolyEuro);
-                drawCenteredLText("1", mCenter.X, mCenter.Y - 6, true);
+                drawCenteredLText("1", mCenter, true);
             }
             g.DrawCircle(mPcircle, 3);
             mCurCount = updateDotCount(mCurrent, mCurCount);

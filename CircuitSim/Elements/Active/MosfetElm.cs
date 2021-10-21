@@ -274,7 +274,7 @@ namespace Circuit.Elements.Active {
 
             /* draw arrow */
             if (!DrawDigital) {
-                drawVoltage(mBodyTerminal, mArrowPoly);
+                fillVoltage(mBodyTerminal, mArrowPoly);
             }
 
             /* draw gate */
@@ -286,7 +286,7 @@ namespace Circuit.Elements.Active {
 
             if ((mFlags & FLAG_SHOWVT) != 0) {
                 string s = "" + (mVt * mPnp);
-                drawCenteredLText(s, P2.X + 2, P2.Y, false);
+                drawCenteredLText(s, P2, false);
             }
             mCurCount = updateDotCount(-mIds, mCurCount);
             drawDots(mSrc[0], mSrc[1], mCurCount);

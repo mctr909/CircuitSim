@@ -2,7 +2,7 @@
 
 namespace Circuit.Elements.Input {
     class CurrentElm : CircuitElm {
-        const int CR = 28;
+        const int BODY_LEN = 28;
 
         Point[] mArrow;
         Point mAshaft1;
@@ -35,7 +35,7 @@ namespace Circuit.Elements.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads(CR);
+            calcLeads(BODY_LEN);
             interpLead(ref mAshaft1, 0.25);
             interpLead(ref mAshaft2, 0.6);
             interpLead(ref mCenter, 0.5);
@@ -56,11 +56,11 @@ namespace Circuit.Elements.Input {
 
             var c = getVoltageColor((Volts[0] + Volts[1]) / 2);
             g.LineColor = c;
-            g.DrawCircle(mCenter, CR);
+            g.DrawCircle(mCenter, BODY_LEN);
             g.DrawLine(mAshaft1, mAshaft2);
             g.FillPolygon(c, mArrow);
 
-            setBbox(mPoint1, mPoint2, CR);
+            setBbox(mPoint1, mPoint2, BODY_LEN);
             doDots();
             if (ControlPanel.ChkShowValues.Checked) {
                 string s = Utils.ShortUnitText(mCurrentValue, "A");

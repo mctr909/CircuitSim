@@ -176,10 +176,10 @@ namespace Circuit.Elements.Output {
             g.DrawLine(mLead2, mPoint2);
 
             if (this == CirSim.Sim.PlotXElm) {
-                drawCenteredLText("X", mCenter.X, mCenter.Y, true);
+                drawCenteredLText("X", mCenter, true);
             }
             if (this == CirSim.Sim.PlotYElm) {
-                drawCenteredLText("Y", mCenter.X, mCenter.Y, true);
+                drawCenteredLText("Y", mCenter, true);
             }
 
             if (mustShowVoltage()) {
@@ -216,9 +216,9 @@ namespace Circuit.Elements.Output {
                     s = mDutyCycle.ToString("0.000");
                     break;
                 }
-                drawCenteredText(s, mCenter.X, mCenter.Y, true);
+                drawCenteredText(s, mCenter, true);
             }
-            drawCenteredLText("+", mPlusPoint.X, mPlusPoint.Y, true);
+            drawCenteredLText("+", mPlusPoint, true);
             drawPosts();
         }
 

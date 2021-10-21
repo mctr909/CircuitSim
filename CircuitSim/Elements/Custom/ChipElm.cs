@@ -184,7 +184,7 @@ namespace Circuit.Elements.Custom {
         }
 
         public void drawChip(CustomGraphics g) {
-            CustomGraphics.TextColor = Color.White;
+            CustomGraphics.TextColor = ControlPanel.ChkPrintable.Checked ? Color.Black : Color.White;
             for (int i = 0; i != PostCount; i++) {
                 var p = pins[i];
                 var a = p.post;
@@ -242,19 +242,17 @@ namespace Circuit.Elements.Custom {
             int hs = cspc;
             int x0 = P1.X + cspc2;
             int y0 = P1.Y;
-            int xr = x0 - cspc;
-            int yr = y0 - cspc;
+            var r = new Point(x0 - cspc, y0 - cspc);
             int xs = sizeX * cspc2;
             int ys = sizeY * cspc2;
             rectPoints = new Point[] {
-                new Point(xr, yr),
-                new Point(xr + xs, yr),
-                new Point(xr + xs, yr + ys),
-                new Point(xr, yr + ys)
+                new Point(r.X, r.Y),
+                new Point(r.X + xs, r.Y),
+                new Point(r.X + xs, r.Y + ys),
+                new Point(r.X, r.Y + ys)
             };
-            setBbox(xr, yr, rectPoints[2].X, rectPoints[2].Y);
-            int i;
-            for (i = 0; i != PostCount; i++) {
+            setBbox(r, rectPoints[2]);
+            for (int i = 0; i != PostCount; i++) {
                 var p = pins[i];
                 switch (p.side) {
                 case SIDE_N:

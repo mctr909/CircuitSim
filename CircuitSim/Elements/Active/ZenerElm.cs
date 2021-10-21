@@ -48,7 +48,7 @@ namespace Circuit.Elements.Active {
             draw2Leads();
 
             /* draw arrow thingy */
-            drawVoltage(0, mPoly);
+            fillVoltage(0, mPoly);
             /* draw thing arrow is pointing to */
             g.LineColor = getVoltageColor(v2);
             g.DrawLine(mCathode[0], mCathode[1]);

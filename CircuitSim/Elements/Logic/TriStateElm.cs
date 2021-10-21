@@ -3,6 +3,8 @@ using System.Drawing;
 
 namespace Circuit.Elements.Logic {
     class TriStateElm : CircuitElm {
+        const int BODY_LEN = 32;
+
         double resistance;
         double r_on;
         double r_off;
@@ -45,9 +47,9 @@ namespace Circuit.Elements.Logic {
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads(32);
-            int hs = 16;
-            int ww = 16;
+            calcLeads(BODY_LEN);
+            int hs = BODY_LEN / 2;
+            int ww = BODY_LEN / 2;
             if (ww > mLen / 2) {
                 ww = (int)(mLen / 2);
             }

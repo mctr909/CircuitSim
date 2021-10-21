@@ -136,7 +136,7 @@ namespace Circuit.Elements.Active {
             draw2Leads();
 
             /* draw arrow thingy */
-            drawVoltage(0, mPoly);
+            fillVoltage(0, mPoly);
             /* draw thing arrow is pointing to */
             drawVoltage(1, mCathode[0], mCathode[1]);
         }

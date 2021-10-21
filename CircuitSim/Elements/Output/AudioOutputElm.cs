@@ -201,7 +201,7 @@ namespace Circuit.Elements.Output {
             g.LineColor = selected ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             setLead1(1 - (textWidth / 2.0) / mLen);
             setBbox(mPoint1, mLead1, 0);
-            drawCenteredText(s, P2.X, P2.Y, true);
+            drawCenteredText(s, P2, true);
             if (selected) {
                 g.LineColor = CustomGraphics.SelectColor;
             } else {

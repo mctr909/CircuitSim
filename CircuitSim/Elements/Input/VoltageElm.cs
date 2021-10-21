@@ -9,7 +9,8 @@ namespace Circuit.Elements.Input {
 
         const double DEFAULT_PULSE_DUTY = 0.5 / Math.PI;
 
-        protected const int SIZE = 28;
+        protected const int BODY_LEN = 28;
+        const int BODY_LEN_DC = 8;
 
         protected double mFrequency;
         protected double mMaxVoltage;
@@ -188,7 +189,7 @@ namespace Circuit.Elements.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads((waveform == WAVEFORM.DC) ? 8 : SIZE);
+            calcLeads((waveform == WAVEFORM.DC) ? BODY_LEN_DC : BODY_LEN);
 
             int sign;
             if (mPoint1.Y == mPoint2.Y) {
@@ -197,14 +198,14 @@ namespace Circuit.Elements.Input {
                 sign = mDsign;
             }
             if (waveform == WAVEFORM.DC) {
-                interpPoint(ref mTextPos, 0.5, -16 * sign);
+                interpPoint(ref mTextPos, 0.5, -2 * BODY_LEN_DC * sign);
             } else {
-                interpPoint(ref mTextPos, (mLen / 2 + 0.7 * SIZE) / mLen, 10 * sign);
+                interpPoint(ref mTextPos, (mLen / 2 + 0.7 * BODY_LEN) / mLen, 10 * sign);
             }
         }
 
         public override void Draw(CustomGraphics g) {
-            setBbox(P1.X, P1.Y, P2.X, P2.Y);
+            setBbox(P1, P2);
             draw2Leads();
 
             if (waveform == WAVEFORM.DC) {
@@ -220,7 +221,7 @@ namespace Circuit.Elements.Input {
                 string s = Utils.ShortUnitText(mMaxVoltage, "V");
                 g.DrawRightText(s, mTextPos.X, mTextPos.Y);
             } else {
-                setBbox(mPoint1, mPoint2, SIZE);
+                setBbox(mPoint1, mPoint2, BODY_LEN);
                 interpLead(ref mPs1, 0.5);
                 drawWaveform(g, mPs1);
                 string inds;
@@ -229,7 +230,7 @@ namespace Circuit.Elements.Input {
                 } else {
                     inds = "*";
                 }
-                drawCenteredLText(inds, mTextPos.X, mTextPos.Y, true);
+                drawCenteredLText(inds, mTextPos, true);
             }
 
             updateDotCount();
@@ -251,12 +252,12 @@ namespace Circuit.Elements.Input {
 
             if (waveform != WAVEFORM.NOISE) {
                 g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-                g.DrawCircle(center, SIZE / 2);
+                g.DrawCircle(center, BODY_LEN / 2);
             }
 
             adjustBbox(
-                x - SIZE, y - SIZE,
-                x + SIZE, y + SIZE
+                x - BODY_LEN, y - BODY_LEN,
+                x + BODY_LEN, y + BODY_LEN
             );
 
             var h = 7;
@@ -313,7 +314,7 @@ namespace Circuit.Elements.Input {
                 break;
             }
             case WAVEFORM.NOISE: {
-                drawCenteredText("Noise", x, y, true);
+                drawCenteredText("Noise", center, true);
                 break;
             }
             case WAVEFORM.AC: {

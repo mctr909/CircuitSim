@@ -83,19 +83,18 @@ namespace Circuit.Elements.Active {
             int hs = mCspc;
             int x0 = P1.X + mCspc;
             int y0 = P1.Y;
-            int xr = x0 - mCspc;
-            int yr = y0 - mCspc / 2;
+            var r = new Point(x0 - mCspc, y0 - mCspc / 2);
             int sizeX = 2;
             int sizeY = 2;
             int xs = sizeX * mCspc2;
             int ys = sizeY * mCspc2 - mCspc;
             mRectPoints = new Point[] {
-                new Point(xr, yr),
-                new Point(xr + xs, yr),
-                new Point(xr + xs, yr + ys),
-                new Point(xr, yr + ys)
+                new Point(r.X, r.Y),
+                new Point(r.X + xs, r.Y),
+                new Point(r.X + xs, r.Y + ys),
+                new Point(r.X, r.Y + ys)
             };
-            setBbox(xr, yr, mRectPoints[2].X, mRectPoints[2].Y);
+            setBbox(r, mRectPoints[2]);
 
             mStubs = new Point[4];
             setPin(0, x0, y0, 0, 1, -0.5, 0, 0, 0);

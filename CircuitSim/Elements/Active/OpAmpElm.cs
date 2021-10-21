@@ -98,8 +98,8 @@ namespace Circuit.Elements.Active {
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.DrawPolygon(mTriangle);
 
-            drawCenteredLText("-", mTextp[0].X, mTextp[0].Y - 2, true);
-            drawCenteredLText("+", mTextp[1].X, mTextp[1].Y, true);
+            drawCenteredLText("-", mTextp[0], true);
+            drawCenteredLText("+", mTextp[1], true);
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(mPoint2, mLead2, mCurCount);
             drawPosts();

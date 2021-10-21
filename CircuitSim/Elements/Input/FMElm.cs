@@ -83,7 +83,7 @@ namespace Circuit.Elements.Input {
             CustomGraphics.TextColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             double v = getVoltage();
             string s = "FM";
-            drawCenteredText(s, P2.X, P2.Y, true);
+            drawCenteredText(s, P2, true);
             drawWaveform(g, mPoint2);
             drawPosts();
             mCurCount = updateDotCount(-mCurrent, mCurCount);

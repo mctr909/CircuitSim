@@ -23,7 +23,7 @@ namespace Circuit.Elements.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            setLead1(1 - SIZE / mLen);
+            setLead1(1 - BODY_LEN / mLen);
         }
 
         public string getRailText() {
@@ -46,7 +46,7 @@ namespace Circuit.Elements.Input {
 
         public override void Draw(CustomGraphics g) {
             var rt = getRailText();
-            double w = rt == null ? (SIZE * 0.5) : g.GetTextSize(rt).Width / 2;
+            double w = rt == null ? (BODY_LEN * 0.5) : g.GetTextSize(rt).Width / 2;
             if (w > mLen * .8) {
                 w = mLen * .8;
             }
@@ -55,7 +55,7 @@ namespace Circuit.Elements.Input {
             } else {
                 setLead1(1 - w / mLen);
             }
-            setBbox(mPoint1, mPoint2, SIZE);
+            setBbox(mPoint1, mPoint2, BODY_LEN);
 
             drawVoltage(0, mPoint1, mLead1);
             drawRail(g);
@@ -68,7 +68,7 @@ namespace Circuit.Elements.Input {
 
         void drawRail(CustomGraphics g) {
             if (waveform == WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
-                drawCenteredText("CLK", P2.X, P2.Y, true);
+                drawCenteredText("CLK", P2, true);
             } else if (waveform == WAVEFORM.DC) {
                 var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
                 double v = getVoltage();
@@ -81,7 +81,7 @@ namespace Circuit.Elements.Input {
                 if (getVoltage() > 0) {
                     s = "+" + s;
                 }
-                drawCenteredText(s, P2.X, P2.Y, true);
+                drawCenteredText(s, P2, true);
             } else {
                 drawWaveform(g, mPoint2);
             }

@@ -190,7 +190,7 @@ namespace Circuit.Elements.Gate {
                 g.DrawPolygon(mGatePolyEuro);
                 var center = new Point();
                 interpPoint(ref center, 0.5);
-                drawCenteredLText(getGateText(), center.X, center.Y - 6, true);
+                drawCenteredLText(getGateText(), center, true);
             }
             if (hasSchmittInputs()) {
                 g.LineColor = CustomGraphics.WhiteColor;
