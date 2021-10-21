@@ -26,20 +26,20 @@ namespace Circuit.Elements.Custom {
         }
 
         public override void Draw(CustomGraphics g) {
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : Color.Gray;
+            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             setBbox(P1, P2);
             var x1 = P1.X;
             var y1 = P1.Y;
             var x2 = P2.X;
             var y2 = P2.Y;
             if (x1 < x2 && y1 < y2) {
-                g.DrawRectangle(x1, y1, x2 - x1, y2 - y1);
+                g.DrawDashRectangle(x1, y1, x2 - x1, y2 - y1);
             } else if (x1 > x2 && y1 < y2) {
-                g.DrawRectangle(x2, y1, x1 - x2, y2 - y1);
+                g.DrawDashRectangle(x2, y1, x1 - x2, y2 - y1);
             } else if (x1 < x2 && y1 > y2) {
-                g.DrawRectangle(x1, y2, x2 - x1, y1 - y2);
+                g.DrawDashRectangle(x1, y2, x2 - x1, y1 - y2);
             } else {
-                g.DrawRectangle(x2, y2, x1 - x2, y1 - y2);
+                g.DrawDashRectangle(x2, y2, x1 - x2, y1 - y2);
             }
         }
 

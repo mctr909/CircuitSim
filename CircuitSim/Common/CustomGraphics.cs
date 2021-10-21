@@ -151,12 +151,14 @@ namespace Circuit {
             g.DrawLine(penLine, a, b);
         }
 
-        public void DrawRectangle(int x, int y, int w, int h) {
-            g.DrawRectangle(penLine, new Rectangle(x, y, w, h));
-        }
-
         public void DrawRectangle(Rectangle rect) {
             g.DrawRectangle(penLine, rect);
+        }
+
+        public void DrawDashRectangle(int x, int y, int w, int h) {
+            penLine.DashStyle = DashStyle.Dash;
+            g.DrawRectangle(penLine, new Rectangle(x, y, w, h));
+            penLine.DashStyle = DashStyle.Solid;
         }
 
         public void DrawCircle(Point p, float radius) {
