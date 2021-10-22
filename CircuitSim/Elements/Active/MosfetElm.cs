@@ -54,6 +54,9 @@ namespace Circuit.Elements.Active {
         int mMode = 0;
         double mGm = 0;
 
+        Point mNamePos;
+        string mReferenceName = "Tr";
+
         public MosfetElm(Point pos, bool pnpflag) : base(pos) {
             mPnp = pnpflag ? -1 : 1;
             mFlags = pnpflag ? FLAG_PNP : 0;
@@ -116,6 +119,16 @@ namespace Circuit.Elements.Active {
 
         bool DoBodyDiode { get { return (mFlags & FLAG_BODY_DIODE) != 0 && ShowBulk; } }
 
+        /* set up body diodes */
+        void setupDiodes() {
+            /* diode from node 1 to body terminal */
+            mDiodeB1 = new Diode(mCir);
+            mDiodeB1.setupForDefaultModel();
+            /* diode from node 2 to body terminal */
+            mDiodeB2 = new Diode(mCir);
+            mDiodeB2.setupForDefaultModel();
+        }
+
         /* post 0 = gate,
          * 1 = source for NPN,
          * 2 = drain for NPN,
@@ -157,71 +170,6 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override void Reset() {
-            mLastV1 = mLastV2 = 0;
-            Volts[V_G] = Volts[V_S] = Volts[V_D] = 0;
-            mCurCount = 0;
-            mDiodeB1.reset();
-            mDiodeB2.reset();
-        }
-
-        public override void SetPoints() {
-            base.SetPoints();
-
-            /* these two flags apply to all mosfets */
-            mFlags &= ~FLAGS_GLOBAL;
-            mFlags |= mGlobalFlags;
-
-            /* find the coordinates of the various points we need to draw the MOSFET. */
-            int hs2 = HS * mDsign;
-            if ((mFlags & FLAG_FLIP) != 0) {
-                hs2 = -hs2;
-            }
-            mSrc = new Point[3];
-            mDrn = new Point[3];
-            interpPointAB(ref mSrc[0], ref mDrn[0], 1, -hs2);
-            interpPointAB(ref mSrc[1], ref mDrn[1], 1 - 18 / mLen, -hs2);
-            interpPointAB(ref mSrc[2], ref mDrn[2], 1 - 18 / mLen, -hs2 * 4 / 3);
-
-            mGate = new Point[3];
-            interpPointAB(ref mGate[0], ref mGate[2], 1 - 24 / mLen, hs2 / 2);
-            Utils.InterpPoint(mGate[0], mGate[2], ref mGate[1], .5);
-
-            if (ShowBulk) {
-                mBody = new Point[2];
-                Utils.InterpPoint(mSrc[0], mDrn[0], ref mBody[0], .5);
-                Utils.InterpPoint(mSrc[1], mDrn[1], ref mBody[1], .5);
-            }
-
-            if (!DrawDigital) {
-                if (mPnp == 1) {
-                    if (ShowBulk) {
-                        Utils.CreateArrow(mBody[0], mBody[1], out mArrowPoly, 10, 4);
-                    } else {
-                        Utils.CreateArrow(mSrc[1], mSrc[0], out mArrowPoly, 10, 4);
-                    }
-                } else {
-                    if (ShowBulk) {
-                        Utils.CreateArrow(mBody[1], mBody[0], out mArrowPoly, 10, 4);
-                    } else {
-                        Utils.CreateArrow(mDrn[0], mDrn[1], out mArrowPoly, 10, 4);
-                    }
-                }
-            } else if (mPnp == -1) {
-                interpPoint(ref mGate[1], 1 - 36 / mLen);
-                int dist = (mDsign < 0) ? 32 : 31;
-                interpPoint(ref mPcircle, 1 - dist / mLen);
-                mPcircler = 3;
-            }
-
-            mPs1 = new Point[SEGMENTS];
-            mPs2 = new Point[SEGMENTS];
-            for (int i = 0; i != SEGMENTS; i++) {
-                Utils.InterpPoint(mSrc[1], mDrn[1], ref mPs1[i], i * SEG_F);
-                Utils.InterpPoint(mSrc[1], mDrn[1], ref mPs2[i], (i + 1) * SEG_F);
-            }
-        }
-
         public override void DoStep() {
             calculate(false);
         }
@@ -236,81 +184,6 @@ namespace Circuit.Elements.Active {
             if (mBodyTerminal == 2) {
                 mDiodeCurrent2 = -mDiodeCurrent1;
             }
-        }
-
-        public override void Draw(CustomGraphics g) {
-            /* pick up global flags changes */
-            if ((mFlags & FLAGS_GLOBAL) != mGlobalFlags) {
-                SetPoints();
-            }
-
-            setBbox(mPoint1, mPoint2, HS);
-
-            /* draw source/drain terminals */
-            drawVoltage(V_S, mSrc[0], mSrc[1]);
-            drawVoltage(V_D, mDrn[0], mDrn[1]);
-
-            /* draw line connecting source and drain */
-            bool enhancement = mVt > 0 && ShowBulk;
-            for (int i = 0; i != SEGMENTS; i++) {
-                if ((i == 1 || i == 4) && enhancement) {
-                    continue;
-                }
-                double v = Volts[V_S] + (Volts[V_D] - Volts[V_S]) * i / SEGMENTS;
-                g.LineColor = getVoltageColor(v);
-                g.DrawLine(mPs1[i], mPs2[i]);
-            }
-
-            /* draw little extensions of that line */
-            drawVoltage(V_S, mSrc[1], mSrc[2]);
-            drawVoltage(V_D, mDrn[1], mDrn[2]);
-
-            /* draw bulk connection */
-            if (ShowBulk) {
-                g.LineColor = getVoltageColor(Volts[mBodyTerminal]);
-                g.DrawLine(mPnp == -1 ? mDrn[0] : mSrc[0], mBody[0]);
-                g.DrawLine(mBody[0], mBody[1]);
-            }
-
-            /* draw arrow */
-            if (!DrawDigital) {
-                fillVoltage(mBodyTerminal, mArrowPoly);
-            }
-
-            /* draw gate */
-            drawVoltage(V_G, mPoint1, mGate[1]);
-            g.DrawLine(mGate[0], mGate[2]);
-            if (DrawDigital && mPnp == -1) {
-                g.DrawCircle(mPcircle, mPcircler);
-            }
-
-            if ((mFlags & FLAG_SHOWVT) != 0) {
-                string s = "" + (mVt * mPnp);
-                drawCenteredLText(s, P2, false);
-            }
-            mCurCount = updateDotCount(-mIds, mCurCount);
-            drawDots(mSrc[0], mSrc[1], mCurCount);
-            drawDots(mDrn[1], mDrn[0], mCurCount);
-            drawDots(mSrc[1], mDrn[1], mCurCount);
-
-            if (ShowBulk) {
-                mCurcountBody1 = updateDotCount(mDiodeCurrent1, mCurcountBody1);
-                mCurcountBody2 = updateDotCount(mDiodeCurrent2, mCurcountBody2);
-                drawDots(mSrc[0], mBody[0], -mCurcountBody1);
-                drawDots(mBody[0], mDrn[0], mCurcountBody2);
-            }
-
-            drawPosts();
-        }
-
-        /* set up body diodes */
-        void setupDiodes() {
-            /* diode from node 1 to body terminal */
-            mDiodeB1 = new Diode(mCir);
-            mDiodeB1.setupForDefaultModel();
-            /* diode from node 2 to body terminal */
-            mDiodeB2 = new Diode(mCir);
-            mDiodeB2.setupForDefaultModel();
         }
 
         /* this is called in doStep to stamp the matrix,
@@ -442,6 +315,161 @@ namespace Circuit.Elements.Active {
             return true;
         }
 
+        public override void Reset() {
+            mLastV1 = mLastV2 = 0;
+            Volts[V_G] = Volts[V_S] = Volts[V_D] = 0;
+            mCurCount = 0;
+            mDiodeB1.reset();
+            mDiodeB2.reset();
+        }
+
+        public override void SetPoints() {
+            base.SetPoints();
+
+            /* these two flags apply to all mosfets */
+            mFlags &= ~FLAGS_GLOBAL;
+            mFlags |= mGlobalFlags;
+
+            /* find the coordinates of the various points we need to draw the MOSFET. */
+            int hs2 = HS * mDsign;
+            if ((mFlags & FLAG_FLIP) != 0) {
+                hs2 = -hs2;
+            }
+            mSrc = new Point[3];
+            mDrn = new Point[3];
+            interpPointAB(ref mSrc[0], ref mDrn[0], 1, -hs2);
+            interpPointAB(ref mSrc[1], ref mDrn[1], 1 - 18 / mLen, -hs2);
+            interpPointAB(ref mSrc[2], ref mDrn[2], 1 - 18 / mLen, -hs2 * 4 / 3);
+
+            mGate = new Point[3];
+            interpPointAB(ref mGate[0], ref mGate[2], 1 - 24 / mLen, hs2 / 2);
+            Utils.InterpPoint(mGate[0], mGate[2], ref mGate[1], .5);
+
+            if (ShowBulk) {
+                mBody = new Point[2];
+                Utils.InterpPoint(mSrc[0], mDrn[0], ref mBody[0], .5);
+                Utils.InterpPoint(mSrc[1], mDrn[1], ref mBody[1], .5);
+            }
+
+            if (!DrawDigital) {
+                if (mPnp == 1) {
+                    if (ShowBulk) {
+                        Utils.CreateArrow(mBody[0], mBody[1], out mArrowPoly, 10, 4);
+                    } else {
+                        Utils.CreateArrow(mSrc[1], mSrc[0], out mArrowPoly, 10, 4);
+                    }
+                } else {
+                    if (ShowBulk) {
+                        Utils.CreateArrow(mBody[1], mBody[0], out mArrowPoly, 10, 4);
+                    } else {
+                        Utils.CreateArrow(mDrn[0], mDrn[1], out mArrowPoly, 10, 4);
+                    }
+                }
+            } else if (mPnp == -1) {
+                interpPoint(ref mGate[1], 1 - 36 / mLen);
+                int dist = (mDsign < 0) ? 32 : 31;
+                interpPoint(ref mPcircle, 1 - dist / mLen);
+                mPcircler = 3;
+            }
+
+            mPs1 = new Point[SEGMENTS];
+            mPs2 = new Point[SEGMENTS];
+            for (int i = 0; i != SEGMENTS; i++) {
+                Utils.InterpPoint(mSrc[1], mDrn[1], ref mPs1[i], i * SEG_F);
+                Utils.InterpPoint(mSrc[1], mDrn[1], ref mPs2[i], (i + 1) * SEG_F);
+            }
+
+            setTextPos();
+        }
+
+        void setTextPos() {
+            var txtW = Context.GetTextSize(mReferenceName).Width;
+            if (mPoint1.Y == mPoint2.Y) {
+                if (0 < mDsign) {
+                    mNamePos = mPoint2;
+                } else {
+                    mNamePos = new Point((int)(mPoint2.X - txtW + 1), mPoint2.Y);
+                }
+            } else if (mPoint1.X == mPoint2.X) {
+                mNamePos = new Point(mPoint2.X - (int)(txtW / 2), mPoint2.Y + HS * mDsign * 2 / 3);
+            } else {
+                interpPoint(ref mNamePos, 0.5, 10 * mDsign);
+            }
+        }
+
+        public override void Draw(CustomGraphics g) {
+            /* pick up global flags changes */
+            if ((mFlags & FLAGS_GLOBAL) != mGlobalFlags) {
+                SetPoints();
+            }
+
+            setBbox(mPoint1, mPoint2, HS);
+
+            /* draw source/drain terminals */
+            drawVoltage(V_S, mSrc[0], mSrc[1]);
+            drawVoltage(V_D, mDrn[0], mDrn[1]);
+
+            /* draw line connecting source and drain */
+            bool enhancement = mVt > 0 && ShowBulk;
+            for (int i = 0; i != SEGMENTS; i++) {
+                if ((i == 1 || i == 4) && enhancement) {
+                    continue;
+                }
+                double v = Volts[V_S] + (Volts[V_D] - Volts[V_S]) * i / SEGMENTS;
+                g.LineColor = getVoltageColor(v);
+                g.DrawLine(mPs1[i], mPs2[i]);
+            }
+
+            /* draw little extensions of that line */
+            drawVoltage(V_S, mSrc[1], mSrc[2]);
+            drawVoltage(V_D, mDrn[1], mDrn[2]);
+
+            /* draw bulk connection */
+            if (ShowBulk) {
+                g.LineColor = getVoltageColor(Volts[mBodyTerminal]);
+                g.DrawLine(mPnp == -1 ? mDrn[0] : mSrc[0], mBody[0]);
+                g.DrawLine(mBody[0], mBody[1]);
+            }
+
+            /* draw arrow */
+            if (!DrawDigital) {
+                fillVoltage(mBodyTerminal, mArrowPoly);
+            }
+
+            /* draw gate */
+            drawVoltage(V_G, mPoint1, mGate[1]);
+            g.DrawLine(mGate[0], mGate[2]);
+            if (DrawDigital && mPnp == -1) {
+                g.DrawCircle(mPcircle, mPcircler);
+            }
+
+            if ((mFlags & FLAG_SHOWVT) != 0) {
+                string s = "" + (mVt * mPnp);
+                drawCenteredLText(s, P2, false);
+            }
+            mCurCount = updateDotCount(-mIds, mCurCount);
+            drawDots(mSrc[0], mSrc[1], mCurCount);
+            drawDots(mDrn[1], mDrn[0], mCurCount);
+            drawDots(mSrc[1], mDrn[1], mCurCount);
+
+            if (ShowBulk) {
+                mCurcountBody1 = updateDotCount(mDiodeCurrent1, mCurcountBody1);
+                mCurcountBody2 = updateDotCount(mDiodeCurrent2, mCurcountBody2);
+                drawDots(mSrc[0], mBody[0], -mCurcountBody1);
+                drawDots(mBody[0], mDrn[0], mCurcountBody2);
+            }
+
+            drawPosts();
+
+            if (ControlPanel.ChkShowValues.Checked) {
+                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+            }
+        }
+
+        public override void GetInfo(string[] arr) {
+            getFetInfo(arr, "MOSFET");
+        }
+
         void getFetInfo(string[] arr, string n) {
             arr[0] = ((mPnp == -1) ? "p-" : "n-") + n;
             arr[0] += " (Vt=" + Utils.VoltageText(mPnp * mVt);
@@ -457,10 +485,6 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override void GetInfo(string[] arr) {
-            getFetInfo(arr, "MOSFET");
-        }
-
         public override string GetScopeText(Scope.VAL v) {
             return ((mPnp == -1) ? "p-" : "n-") + "MOSFET";
         }
@@ -471,12 +495,17 @@ namespace Circuit.Elements.Active {
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new ElementInfo("閾値電圧", mPnp * mVt, .01, 5);
+                var ei = new ElementInfo("名前", 0, 0, 0);
+                ei.Text = mReferenceName;
+                return ei;
             }
             if (n == 1) {
-                return new ElementInfo("hfe", mHfe, .01, 5);
+                return new ElementInfo("閾値電圧", mPnp * mVt, .01, 5);
             }
             if (n == 2) {
+                return new ElementInfo("hfe", mHfe, .01, 5);
+            }
+            if (n == 3) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
@@ -485,7 +514,7 @@ namespace Circuit.Elements.Active {
                 };
                 return ei;
             }
-            if (n == 3) {
+            if (n == 4) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
@@ -494,7 +523,7 @@ namespace Circuit.Elements.Active {
                 };
                 return ei;
             }
-            if (n == 4 && !ShowBulk) {
+            if (n == 5 && !ShowBulk) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
@@ -503,7 +532,7 @@ namespace Circuit.Elements.Active {
                 };
                 return ei;
             }
-            if (n == 4 && ShowBulk) {
+            if (n == 5 && ShowBulk) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
@@ -517,28 +546,32 @@ namespace Circuit.Elements.Active {
 
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
+                mReferenceName = ei.Textf.Text;
+                setTextPos();
+            }
+            if (n == 1) {
                 mVt = mPnp * ei.Value;
             }
-            if (n == 1 && ei.Value > 0) {
+            if (n == 2 && ei.Value > 0) {
                 mHfe = mLastHfe = ei.Value;
             }
-            if (n == 2) {
+            if (n == 3) {
                 mGlobalFlags = (!ei.CheckBox.Checked)
                     ? (mGlobalFlags | FLAG_HIDE_BULK) : (mGlobalFlags & ~(FLAG_HIDE_BULK | FLAG_DIGITAL));
                 SetPoints();
                 ei.NewDialog = true;
             }
-            if (n == 3) {
+            if (n == 4) {
                 mFlags = ei.CheckBox.Checked
                     ? (mFlags | FLAG_FLIP) : (mFlags & ~FLAG_FLIP);
                 SetPoints();
             }
-            if (n == 4 && !ShowBulk) {
+            if (n == 5 && !ShowBulk) {
                 mGlobalFlags = ei.CheckBox.Checked
                     ? (mGlobalFlags | FLAG_DIGITAL) : (mGlobalFlags & ~FLAG_DIGITAL);
                 SetPoints();
             }
-            if (n == 4 && ShowBulk) {
+            if (n == 5 && ShowBulk) {
                 mFlags = ei.ChangeFlag(mFlags, FLAG_BODY_DIODE);
             }
         }

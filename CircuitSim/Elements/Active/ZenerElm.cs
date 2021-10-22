@@ -8,6 +8,8 @@ namespace Circuit.Elements.Active {
         static string mLastZenerModelName = "default-zener";
 
         Point[] mWing;
+        Point mNamePos;
+        string mReferenceName = "Z";
 
         public ZenerElm(Point pos) : base(pos) {
             mModelName = mLastZenerModelName;
@@ -38,6 +40,18 @@ namespace Circuit.Elements.Active {
             Utils.InterpPoint(mCathode[0], mCathode[1], ref mWing[0], -0.2, -HS);
             Utils.InterpPoint(mCathode[1], mCathode[0], ref mWing[1], -0.2, -HS);
             mPoly = new Point[] { pa[0], pa[1], mLead2 };
+            setTextPos();
+        }
+
+        void setTextPos() {
+            if (mPoint1.Y == mPoint2.Y) {
+                var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
+                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -14 * mDsign);
+            } else if (mPoint1.X == mPoint2.X) {
+                interpPoint(ref mNamePos, 0.5, 6 * mDsign);
+            } else {
+                interpPoint(ref mNamePos, 0.5, 10 * mDsign);
+            }
         }
 
         public override void Draw(CustomGraphics g) {
@@ -58,6 +72,9 @@ namespace Circuit.Elements.Active {
 
             doDots();
             drawPosts();
+            if (ControlPanel.ChkShowValues.Checked) {
+                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+            }
         }
 
         public override void GetInfo(string[] arr) {
@@ -70,19 +87,22 @@ namespace Circuit.Elements.Active {
             mLastZenerModelName = n;
         }
 
-        public override void SetElementValue(int n, ElementInfo ei) {
+        public override ElementInfo GetElementInfo(int n) {
+            if (n == 0) {
+                var ei = new ElementInfo("名前", 0, 0, 0);
+                ei.Text = mReferenceName;
+                return ei;
+            }
             if (n == 2) {
-                var val = new InputDialog("Breakdown Voltage", "5.6");
-                try {
-                    double zvoltage = double.Parse(val.Value);
-                    zvoltage = Math.Abs(zvoltage);
-                    if (zvoltage > 0) {
-                        mModel = DiodeModel.getZenerModel(zvoltage);
-                        mModelName = mModel.name;
-                        ei.NewDialog = true;
-                        return;
-                    }
-                } catch { }
+                return new ElementInfo("ブレークダウン電圧(V)", mModel.breakdownVoltage, 0, 0);
+            }
+            return base.GetElementInfo(n);
+        }
+
+        public override void SetElementValue(int n, ElementInfo ei) {
+            if (n == 0) {
+                mReferenceName = ei.Textf.Text;
+                setTextPos();
             }
             base.SetElementValue(n, ei);
         }

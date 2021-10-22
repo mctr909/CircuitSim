@@ -59,7 +59,7 @@ namespace Circuit.Elements.Active {
             )");
 
             mTransistor = (TransistorElm)compElmList[2];
-            mTransistor.setHfe(700);
+            mTransistor.SetHfe(700);
             mCurCounts = new double[4];
         }
 

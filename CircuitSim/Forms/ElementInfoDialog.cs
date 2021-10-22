@@ -122,7 +122,7 @@ namespace Circuit {
                 return (v * 1e3).ToString("0") + "m";
             }
             if (va < 1e3) {
-                return (v).ToString("0");
+                return (v).ToString("0.##");
             }
             if (va < 1e6) {
                 return (v * 1e-3).ToString("0") + "k";

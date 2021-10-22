@@ -15,6 +15,7 @@ namespace Circuit.Elements.Active {
         const double R_GAIN = .5;
         const double INV_R_GAIN = 1 / R_GAIN;
 
+        const int BODY_LEN = 16;
         const int HS = 16;
 
         double mHfe;
@@ -40,14 +41,17 @@ namespace Circuit.Elements.Active {
         Point[] mRectPoly;
         Point[] mArrowPoly;
 
+        Point mNamePos;
+        string mReferenceName = "Tr";
+
         public TransistorElm(Point pos, bool pnpflag) : base(pos) {
-            PNP = pnpflag ? -1 : 1;
+            NPN = pnpflag ? -1 : 1;
             mHfe = 100;
             setup();
         }
 
         public TransistorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            PNP = st.nextTokenInt();
+            NPN = st.nextTokenInt();
             mHfe = 100;
             try {
                 mLastVbe = st.nextTokenDouble();
@@ -60,10 +64,8 @@ namespace Circuit.Elements.Active {
             setup();
         }
 
-        /* node 0 = base
-         * node 1 = collector
-         * node 2 = emitter */
-        public int PNP { get; private set; }
+        ///<summary>1 = NPN, -1 = PNP</summary>  
+        public int NPN { get; private set; }
 
         public override bool CanViewInScope { get { return true; } }
 
@@ -78,43 +80,10 @@ namespace Circuit.Elements.Active {
         public override DUMP_ID DumpType { get { return DUMP_ID.TRANSISTOR; } }
 
         protected override string dump() {
-            return PNP
+            return NPN
                 + " " + (Volts[V_B] - Volts[V_C])
                 + " " + (Volts[V_B] - Volts[V_E])
                 + " " + mHfe;
-        }
-
-        public void setHfe(double hfe) {
-            mHfe = hfe;
-            setup();
-        }
-
-        void setup() {
-            mVcrit = VT * Math.Log(VT / (Math.Sqrt(2) * LEAKAGE));
-            mFgain = mHfe / (mHfe + 1);
-            mInv_fgain = 1 / mFgain;
-            mNoDiagonal = true;
-        }
-
-        double limitStep(double vnew, double vold) {
-            double arg;
-            double oo = vnew;
-
-            if (vnew > mVcrit && Math.Abs(vnew - vold) > (VT + VT)) {
-                if (vold > 0) {
-                    arg = 1 + (vnew - vold) / VT;
-                    if (arg > 0) {
-                        vnew = vold + VT * Math.Log(arg);
-                    } else {
-                        vnew = mVcrit;
-                    }
-                } else {
-                    vnew = VT * Math.Log(vnew / VT);
-                }
-                mCir.Converged = false;
-                /*Console.WriteLine(vnew + " " + oo + " " + vold);*/
-            }
-            return vnew;
         }
 
         public override Point GetPost(int n) {
@@ -131,41 +100,16 @@ namespace Circuit.Elements.Active {
             return -mIe;
         }
 
-        public override void SetPoints() {
-            base.SetPoints();
+        public void SetHfe(double hfe) {
+            mHfe = hfe;
+            setup();
+        }
 
-            if ((mFlags & FLAG_FLIP) != 0) {
-                mDsign = -mDsign;
-            }
-            int hs2 = HS * mDsign * PNP;
-
-            /* calc collector, emitter posts */
-            mColl = new Point[2];
-            mEmit = new Point[2];
-            interpPointAB(ref mColl[0], ref mEmit[0], 1, hs2);
-
-            /* calc rectangle edges */
-            var rect = new Point[4];
-            interpPointAB(ref rect[0], ref rect[1], 1 - 16 / mLen, HS);
-            interpPointAB(ref rect[2], ref rect[3], 1 - 13 / mLen, HS);
-
-            /* calc points where collector/emitter leads contact rectangle */
-            interpPointAB(ref mColl[1], ref mEmit[1], 1 - 13 / mLen, 6 * mDsign * PNP);
-
-            /* calc point where base lead contacts rectangle */
-            interpPoint(ref mTbase, 1 - 16 / mLen);
-
-            /* rectangle */
-            mRectPoly = new Point[] { rect[0], rect[2], rect[3], rect[1] };
-
-            /* arrow */
-            if (PNP == 1) {
-                Utils.CreateArrow(mEmit[1], mEmit[0], out mArrowPoly, 8, 3);
-            } else {
-                var pt = new Point();
-                interpPoint(ref pt, 1 - 14 / mLen, -5 * mDsign * PNP);
-                Utils.CreateArrow(mEmit[0], pt, out mArrowPoly, 8, 3);
-            }
+        void setup() {
+            mVcrit = VT * Math.Log(VT / (Math.Sqrt(2) * LEAKAGE));
+            mFgain = mHfe / (mHfe + 1);
+            mInv_fgain = 1 / mFgain;
+            mNoDiagonal = true;
         }
 
         public override void Stamp() {
@@ -195,19 +139,19 @@ namespace Circuit.Elements.Active {
             }
 
             /*Console.WriteLine("T " + vbc + " " + vbe + "\n"); */
-            vbc = PNP * limitStep(PNP * vbc, PNP * mLastVbc);
-            vbe = PNP * limitStep(PNP * vbe, PNP * mLastVbe);
+            vbc = NPN * limitStep(NPN * vbc, NPN * mLastVbc);
+            vbe = NPN * limitStep(NPN * vbe, NPN * mLastVbe);
             mLastVbc = vbc;
             mLastVbe = vbe;
-            double pcoef = VD_COEF * PNP;
+            double pcoef = VD_COEF * NPN;
             double expbc = Math.Exp(vbc * pcoef);
             /*if (expbc > 1e13 || Double.isInfinite(expbc))
              * expbc = 1e13;*/
             double expbe = Math.Exp(vbe * pcoef);
             /*if (expbe > 1e13 || Double.isInfinite(expbe))
              * expbe = 1e13;*/
-            mIe = PNP * LEAKAGE * (-mInv_fgain * (expbe - 1) + (expbc - 1));
-            mIc = PNP * LEAKAGE * ((expbe - 1) - INV_R_GAIN * (expbc - 1));
+            mIe = NPN * LEAKAGE * (-mInv_fgain * (expbe - 1) + (expbc - 1));
+            mIc = NPN * LEAKAGE * ((expbe - 1) - INV_R_GAIN * (expbc - 1));
             mIb = -(mIe + mIc);
             /*Console.WriteLine("gain " + ic/ib);
             Console.WriteLine("T " + vbc + " " + vbe + " " + ie + " " + ic + "\n"); */
@@ -242,6 +186,27 @@ namespace Circuit.Elements.Active {
             mCir.StampRightSide(Nodes[V_E], -mIe + gee * vbe + gec * vbc);
         }
 
+        double limitStep(double vnew, double vold) {
+            double arg;
+            double oo = vnew;
+
+            if (vnew > mVcrit && Math.Abs(vnew - vold) > (VT + VT)) {
+                if (vold > 0) {
+                    arg = 1 + (vnew - vold) / VT;
+                    if (arg > 0) {
+                        vnew = vold + VT * Math.Log(arg);
+                    } else {
+                        vnew = mVcrit;
+                    }
+                } else {
+                    vnew = VT * Math.Log(vnew / VT);
+                }
+                mCir.Converged = false;
+                /*Console.WriteLine(vnew + " " + oo + " " + vold);*/
+            }
+            return vnew;
+        }
+
         public override void StepFinished() {
             /* stop for huge currents that make simulator act weird */
             if (Math.Abs(mIc) > 1e12 || Math.Abs(mIb) > 1e12) {
@@ -252,6 +217,61 @@ namespace Circuit.Elements.Active {
         public override void Reset() {
             Volts[V_B] = Volts[V_C] = Volts[V_E] = 0;
             mLastVbc = mLastVbe = mCurCount_c = mCurCount_e = mCurCount_b = 0;
+        }
+
+        public override void SetPoints() {
+            base.SetPoints();
+
+            if ((mFlags & FLAG_FLIP) != 0) {
+                mDsign = -mDsign;
+            }
+            int hs2 = HS * mDsign * NPN;
+
+            /* calc collector, emitter posts */
+            mColl = new Point[2];
+            mEmit = new Point[2];
+            interpPointAB(ref mColl[0], ref mEmit[0], 1, hs2);
+
+            /* calc rectangle edges */
+            var rect = new Point[4];
+            interpPointAB(ref rect[0], ref rect[1], 1 - BODY_LEN / mLen, HS);
+            interpPointAB(ref rect[2], ref rect[3], 1 - (BODY_LEN - 3) / mLen, HS);
+
+            /* calc points where collector/emitter leads contact rectangle */
+            interpPointAB(ref mColl[1], ref mEmit[1], 1 - (BODY_LEN - 3) / mLen, 6 * mDsign * NPN);
+
+            /* calc point where base lead contacts rectangle */
+            interpPoint(ref mTbase, 1 - BODY_LEN / mLen);
+
+            /* rectangle */
+            mRectPoly = new Point[] { rect[0], rect[2], rect[3], rect[1] };
+
+            /* arrow */
+            if (NPN == 1) {
+                Utils.CreateArrow(mEmit[1], mEmit[0], out mArrowPoly, 8, 3);
+            } else {
+                var pt = new Point();
+                interpPoint(ref pt, 1 - (BODY_LEN - 2) / mLen, -5 * mDsign * NPN);
+                Utils.CreateArrow(mEmit[0], pt, out mArrowPoly, 8, 3);
+            }
+
+            setTextPos();
+        }
+
+        void setTextPos() {
+            var txtW = Context.GetTextSize(mReferenceName).Width;
+            var swap = 0 < (mFlags & FLAG_FLIP) ? -1 : 1;
+            if (mPoint1.Y == mPoint2.Y) {
+                if (0 < mDsign * swap) {
+                    mNamePos = mPoint2;
+                } else {
+                    mNamePos = new Point((int)(mPoint2.X - txtW), mPoint2.Y);
+                }
+            } else if (mPoint1.X == mPoint2.X) {
+                mNamePos = new Point(mPoint2.X - (int)(txtW / 2), mPoint2.Y + HS * swap * mDsign * 2 / 3);
+            } else {
+                interpPoint(ref mNamePos, 0.5, 10 * mDsign);
+            }
         }
 
         public override void Draw(CustomGraphics g) {
@@ -278,6 +298,10 @@ namespace Circuit.Elements.Active {
             fillVoltage(V_B, mRectPoly);
 
             drawPosts();
+
+            if (ControlPanel.ChkShowValues.Checked) {
+                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+            }
         }
 
         public override string GetScopeText(Scope.VAL x) {
@@ -303,14 +327,14 @@ namespace Circuit.Elements.Active {
         }
 
         public override void GetInfo(string[] arr) {
-            arr[0] = "transistor (" + ((PNP == -1) ? "PNP)" : "NPN)") + " hfe=" + mHfe.ToString("0.000");
+            arr[0] = "transistor (" + ((NPN == -1) ? "PNP)" : "NPN)") + " hfe=" + mHfe.ToString("0.000");
             double vbc = Volts[V_B] - Volts[V_C];
             double vbe = Volts[V_B] - Volts[V_E];
             double vce = Volts[V_C] - Volts[V_E];
-            if (vbc * PNP > .2) {
-                arr[1] = vbe * PNP > .2 ? "saturation" : "reverse active";
+            if (vbc * NPN > .2) {
+                arr[1] = vbe * NPN > .2 ? "saturation" : "reverse active";
             } else {
-                arr[1] = vbe * PNP > .2 ? "fwd active" : "cutoff";
+                arr[1] = vbe * NPN > .2 ? "fwd active" : "cutoff";
             }
             arr[1] = arr[1];
             arr[2] = "Ic = " + Utils.CurrentText(mIc);
@@ -323,9 +347,14 @@ namespace Circuit.Elements.Active {
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new ElementInfo("hfe", mHfe, 10, 1000).SetDimensionless();
+                var ei = new ElementInfo("名前", 0, 0, 0);
+                ei.Text = mReferenceName;
+                return ei;
             }
             if (n == 1) {
+                return new ElementInfo("hfe", mHfe, 10, 1000).SetDimensionless();
+            }
+            if (n == 2) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "エミッタ/コレクタ 入れ替え";
@@ -337,10 +366,14 @@ namespace Circuit.Elements.Active {
 
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
+                mReferenceName = ei.Textf.Text;
+                setTextPos();
+            }
+            if (n == 1) {
                 mHfe = ei.Value;
                 setup();
             }
-            if (n == 1) {
+            if (n == 2) {
                 if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_FLIP;
                 } else {

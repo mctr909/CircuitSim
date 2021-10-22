@@ -20,6 +20,8 @@ namespace Circuit.Elements.Passive {
         Point[] mPlate1;
         Point[] mPlate2;
         Point[] mSandwichPoints;
+        Point mNamePos;
+        string mReferenceName = "X";
 
         public override bool CanViewInScope { get { return true; } }
 
@@ -82,6 +84,19 @@ namespace Circuit.Elements.Passive {
             // need to do this explicitly for CompositeElms
             setPost(0, mPoint1);
             setPost(1, mPoint2);
+
+            setTextPos();
+        }
+
+        void setTextPos() {
+            if (mPoint1.Y == mPoint2.Y) {
+                var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
+                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -16 * mDsign);
+            } else if (mPoint1.X == mPoint2.X) {
+                interpPoint(ref mNamePos, 0.5, 8 * mDsign);
+            } else {
+                interpPoint(ref mNamePos, 0.5, 12 * mDsign);
+            }
         }
 
         public override void Draw(CustomGraphics g) {
@@ -106,6 +121,10 @@ namespace Circuit.Elements.Passive {
                 drawDots(mPoint2, mLead2, -mCurCount);
             }
             drawPosts();
+
+            if (ControlPanel.ChkShowValues.Checked) {
+                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+            }
         }
 
         public override void GetInfo(string[] arr) {
@@ -126,6 +145,11 @@ namespace Circuit.Elements.Passive {
             if (n == 3) {
                 return new ElementInfo("レジスタンス(Ω)", mResistance, 0, 0);
             }
+            if (n == 4) {
+                var ei = new ElementInfo("名前", 0, 0, 0);
+                ei.Text = mReferenceName;
+                return ei;
+            }
             return null;
         }
 
@@ -141,6 +165,10 @@ namespace Circuit.Elements.Passive {
             }
             if (n == 3 && 0 < ei.Value) {
                 mResistance = ei.Value;
+            }
+            if (n == 4) {
+                mReferenceName = ei.Textf.Text;
+                setTextPos();
             }
             initCrystal();
         }

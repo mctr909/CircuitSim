@@ -14,6 +14,8 @@ namespace Circuit.Elements.Active {
         double mCapVoltDiff;
         Point[] mPlate1;
         Point[] mPlate2;
+        Point mNamePos;
+        string mReferenceName = "Vc";
 
         public VaractorElm(Point pos) : base(pos) {
             mBaseCapacitance = 4e-12;
@@ -89,6 +91,18 @@ namespace Circuit.Elements.Active {
             mPlate2 = new Point[2];
             interpLeadAB(ref mPlate1[0], ref mPlate1[1], platef, HS);
             interpLeadAB(ref mPlate2[0], ref mPlate2[1], 1, HS);
+            setTextPos();
+        }
+
+        void setTextPos() {
+            if (mPoint1.Y == mPoint2.Y) {
+                var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
+                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -13 * mDsign);
+            } else if (mPoint1.X == mPoint2.X) {
+                interpPoint(ref mNamePos, 0.5, 5 * mDsign);
+            } else {
+                interpPoint(ref mNamePos, 0.5, 10 * mDsign);
+            }
         }
 
         public override void Reset() {
@@ -108,6 +122,10 @@ namespace Circuit.Elements.Active {
 
             doDots();
             drawPosts();
+
+            if (ControlPanel.ChkShowValues.Checked) {
+                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+            }
         }
 
         public override void GetInfo(string[] arr) {
@@ -117,14 +135,23 @@ namespace Circuit.Elements.Active {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            if (n == 1) {
+            if (n == 0) {
+                var ei = new ElementInfo("名前", 0, 0, 0);
+                ei.Text = mReferenceName;
+                return ei;
+            }
+            if (n == 2) {
                 return new ElementInfo("静電容量(F) @ 0V", mBaseCapacitance, 10, 1000);
             }
             return base.GetElementInfo(n);
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            if (n == 1) {
+            if (n == 0) {
+                mReferenceName = ei.Textf.Text;
+                setTextPos();
+            }
+            if (n == 2) {
                 mBaseCapacitance = ei.Value;
                 return;
             }

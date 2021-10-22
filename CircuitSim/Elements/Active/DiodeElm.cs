@@ -16,6 +16,8 @@ namespace Circuit.Elements.Active {
         protected DiodeModel mModel;
         protected Point[] mPoly;
         protected Point[] mCathode;
+        Point mNamePos;
+        string mReferenceName = "D";
 
         Diode mDiode;
         bool mHasResistance;
@@ -114,12 +116,27 @@ namespace Circuit.Elements.Active {
             var pa = new Point[2];
             interpLeadAB(ref pa[0], ref pa[1], 0, HS);
             mPoly = new Point[] { pa[0], pa[1], mLead2 };
+            setTextPos();
+        }
+
+        void setTextPos() {
+            if (mPoint1.Y == mPoint2.Y) {
+                var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
+                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -13 * mDsign);
+            } else if (mPoint1.X == mPoint2.X) {
+                interpPoint(ref mNamePos, 0.5, 5 * mDsign);
+            } else {
+                interpPoint(ref mNamePos, 0.5, 10 * mDsign);
+            }
         }
 
         public override void Draw(CustomGraphics g) {
             drawDiode(g);
             doDots();
             drawPosts();
+            if (ControlPanel.ChkShowValues.Checked) {
+                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+            }
         }
 
         public override void Reset() {
@@ -160,7 +177,12 @@ namespace Circuit.Elements.Active {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            if (!mCustomModelUI && n == 0) {
+            if (n == 0) {
+                var ei = new ElementInfo("名前", 0, 0, 0);
+                ei.Text = mReferenceName;
+                return ei;
+            }
+            if (!mCustomModelUI && n == 1) {
                 var ei = new ElementInfo("モデル", 0, -1, -1);
                 mModels = DiodeModel.getModelList(this is ZenerElm);
                 ei.Choice = new ComboBox();
@@ -171,32 +193,17 @@ namespace Circuit.Elements.Active {
                         ei.Choice.SelectedIndex = i;
                     }
                 }
-                ei.Choice.Items.Add("カスタム");
-                return ei;
-            }
-            if (n == 0) {
-                var ei = new ElementInfo("モデル名", 0, -1, -1);
-                ei.Text = mModelName;
-                return ei;
-            }
-            if (n == 1) {
-                if (mModel.readOnly && !mCustomModelUI) {
-                    return null;
-                }
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.Button = new Button() { Text = "編集" };
-                return ei;
-            }
-            if (n == 2) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.Button = new Button() { Text = "モデル作成" };
                 return ei;
             }
             return base.GetElementInfo(n);
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            if (!mCustomModelUI && n == 0) {
+            if (n == 0) {
+                mReferenceName = ei.Textf.Text;
+                setTextPos();
+            }
+            if (!mCustomModelUI && n == 1) {
                 int ix = ei.Choice.SelectedIndex;
                 if (ix >= mModels.Count) {
                     mModels = null;
@@ -208,38 +215,6 @@ namespace Circuit.Elements.Active {
                 mModelName = mModel.name;
                 setup();
                 return;
-            }
-            if (n == 0) {
-                /* the text field may not have been created yet, check to avoid exception */
-                if (ei.Textf == null) {
-                    return;
-                }
-                mModelName = ei.Textf.Text;
-                setLastModelName(mModelName);
-                mModel = DiodeModel.getModelWithNameOrCopy(mModelName, mModel);
-                setup();
-                return;
-            }
-            if (n == 1) {
-                if (mModel.readOnly) {
-                    MessageBox.Show("This model cannot be modified.\r\nChange the model name to allow customization.");
-                    return;
-                }
-                CirSim.DiodeModelEditDialog = new ElementInfoDialog(mModel);
-                CirSim.DiodeModelEditDialog.Show();
-                return;
-            }
-            if (n == 2) {
-                var dlg = new InputDialog("順電圧 @ 1A", "0.8");
-                double fwdrop;
-                if (double.TryParse(dlg.Value, out fwdrop)) {
-                    if (fwdrop > 0) {
-                        mModel = DiodeModel.getModelWithVoltageDrop(fwdrop);
-                        mModelName = mModel.name;
-                        ei.NewDialog = true;
-                        return;
-                    }
-                }
             }
             base.SetElementValue(n, ei);
         }
