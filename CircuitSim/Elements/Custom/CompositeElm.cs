@@ -77,7 +77,7 @@ namespace Circuit.Elements.Custom {
             string dumpStr = "";
             for (int i = 0; i < compElmList.Count; i++) {
                 string tstring = compElmList[i].Dump;
-                var rg = new Regex("[A-Za-z0-9]+ 0 0 0 0 ");
+                var rg = new Regex("[A-Za-z0-9]+ 0 0 0 0 0 ");
                 tstring = rg.Replace(tstring, "", 1); /* remove unused tint x1 y1 x2 y2 coords for internal components */
                 dumpStr = string.Join(" ", dumpStr, CustomLogicModel.escape(tstring));
             }

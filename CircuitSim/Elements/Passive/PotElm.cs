@@ -39,7 +39,7 @@ namespace Circuit.Elements.Passive {
         Point[] mRect4;
 
         Point mNamePos;
-        string mReferenceName;
+        string mReferenceName = "VR";
 
         TrackBar mSlider;
         Label mLabel;
@@ -47,8 +47,7 @@ namespace Circuit.Elements.Passive {
         public PotElm(Point pos) : base(pos) {
             setup();
             mMaxResistance = 1000;
-            mPosition = .5;
-            mReferenceName = "VR";
+            mPosition = 0.5;
             mFlags = FLAG_SHOW_VALUES;
             createSlider();
         }
@@ -285,8 +284,8 @@ namespace Circuit.Elements.Passive {
                 bool rev = (mLead1.X == mLead2.X && mLead1.Y < mLead2.Y) || (mLead1.Y == mLead2.Y && mLead1.X > mLead2.X);
 
                 /* draw units */
-                string s1 = Utils.ShortUnitText(rev ? mResistance2 : mResistance1, "");
-                string s2 = Utils.ShortUnitText(rev ? mResistance1 : mResistance2, "");
+                string s1 = Utils.UnitText(rev ? mResistance2 : mResistance1, "");
+                string s2 = Utils.UnitText(rev ? mResistance1 : mResistance2, "");
                 int txtHeightH = CustomGraphics.FontText.Height / 2;
                 int txtWidth1 = (int)g.GetTextSize(s1).Width;
                 int txtWidth2 = (int)g.GetTextSize(s2).Width;
@@ -300,7 +299,7 @@ namespace Circuit.Elements.Passive {
                     g.DrawLeftTopText(s2, Math.Max(mArrow1.X, mArrow2.X), !reverseX ? (mArrowPoint.Y + txtHeightH + 10) : mArrowPoint.Y);
                 }
             }
-            if (ControlPanel.ChkShowValues.Checked) {
+            if (ControlPanel.ChkShowName.Checked) {
                 g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
             }
         }

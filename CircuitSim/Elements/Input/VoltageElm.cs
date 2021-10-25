@@ -218,7 +218,7 @@ namespace Circuit.Elements.Input {
                 interpLeadAB(ref mPs1, ref mPs2, 1, hs);
                 drawVoltage(1, mPs1, mPs2);
 
-                string s = Utils.ShortUnitText(mMaxVoltage, "V");
+                string s = Utils.UnitText(mMaxVoltage, "V");
                 g.DrawRightText(s, mTextPos.X, mTextPos.Y);
             } else {
                 setBbox(mPoint1, mPoint2, BODY_LEN);
@@ -334,9 +334,9 @@ namespace Circuit.Elements.Input {
             }
 
             if (ControlPanel.ChkShowValues.Checked && waveform != WAVEFORM.NOISE) {
-                var s = Utils.ShortUnitText(mMaxVoltage, "V\r\n");
-                s += Utils.ShortUnitText(mFrequency, "Hz\r\n");
-                s += Utils.ShortUnitText(mPhaseShift * 180 / Math.PI, "°");
+                var s = Utils.UnitText(mMaxVoltage, "V\r\n");
+                s += Utils.UnitText(mFrequency, "Hz\r\n");
+                s += Utils.UnitText(mPhaseShift * 180 / Math.PI, "°");
                 drawValues(s, 0, 5);
             }
         }

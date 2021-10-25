@@ -122,7 +122,7 @@ namespace Circuit.Elements.Passive {
             }
             drawPosts();
 
-            if (ControlPanel.ChkShowValues.Checked) {
+            if (ControlPanel.ChkShowName.Checked) {
                 g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
             }
         }

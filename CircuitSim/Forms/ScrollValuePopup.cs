@@ -126,7 +126,7 @@ namespace Circuit {
             mInfo = mMyElm.GetElementInfo(0);
             double currentvalue = mInfo.Value;
             for (int i = 0; i < mNValues + 1; i++) {
-                if (Utils.ShortUnitText(currentvalue, "") == Utils.ShortUnitText(mValues[i], "")) { /* match to an existing value */
+                if (Utils.UnitText(currentvalue, "") == Utils.UnitText(mValues[i], "")) { /* match to an existing value */
                     mValues[i] = currentvalue; /* Just in case it isn't 100% identical */
                     mCurrentIdx = i;
                     break;
@@ -150,7 +150,7 @@ namespace Circuit {
 
         void setupLabels() {
             int thissel = getSelIdx();
-            mLabels.Text = Utils.ShortUnitText(mValues[thissel], mUnit);
+            mLabels.Text = Utils.UnitText(mValues[thissel], mUnit);
             mTrbValue.Value = thissel;
         }
 
@@ -186,7 +186,7 @@ namespace Circuit {
             mInfo.Value = mValues[thissel];
             mMyElm.SetElementValue(0, mInfo);
             mSim.NeedAnalyze();
-            mLabels.Text = Utils.ShortUnitText(mValues[thissel], mUnit);
+            mLabels.Text = Utils.UnitText(mValues[thissel], mUnit);
         }
 
         void setElmValue(int i) {

@@ -14,10 +14,9 @@ namespace Circuit.Elements.Active {
         double mCapVoltDiff;
         Point[] mPlate1;
         Point[] mPlate2;
-        Point mNamePos;
-        string mReferenceName = "Vc";
 
         public VaractorElm(Point pos) : base(pos) {
+            ReferenceName = "Vc";
             mBaseCapacitance = 4e-12;
         }
 
@@ -37,7 +36,7 @@ namespace Circuit.Elements.Active {
         public override void SetCurrent(int x, double c) { mCapCurrent = c; }
 
         protected override string dump() {
-            return mCapVoltDiff + " " + mBaseCapacitance;
+            return base.dump() + " " + mCapVoltDiff + " " + mBaseCapacitance;
         }
 
         protected override void calculateCurrent() {
@@ -96,7 +95,7 @@ namespace Circuit.Elements.Active {
 
         void setTextPos() {
             if (mPoint1.Y == mPoint2.Y) {
-                var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
+                var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
                 interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -13 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
                 interpPoint(ref mNamePos, 0.5, 5 * mDsign);
@@ -123,8 +122,8 @@ namespace Circuit.Elements.Active {
             doDots();
             drawPosts();
 
-            if (ControlPanel.ChkShowValues.Checked) {
-                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+            if (ControlPanel.ChkShowName.Checked) {
+                g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
             }
         }
 
@@ -135,11 +134,6 @@ namespace Circuit.Elements.Active {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            if (n == 0) {
-                var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = mReferenceName;
-                return ei;
-            }
             if (n == 2) {
                 return new ElementInfo("静電容量(F) @ 0V", mBaseCapacitance, 10, 1000);
             }
@@ -147,10 +141,6 @@ namespace Circuit.Elements.Active {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            if (n == 0) {
-                mReferenceName = ei.Textf.Text;
-                setTextPos();
-            }
             if (n == 2) {
                 mBaseCapacitance = ei.Value;
                 return;

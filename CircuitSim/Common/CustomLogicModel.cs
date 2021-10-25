@@ -248,7 +248,6 @@ namespace Circuit {
             }
             return s.Replace("\\", "\\\\")
                 .Replace("\n", "\\n")
-                .Replace(" ", "\\s")
                 .Replace("+", "\\p")
                 .Replace("=", "\\q")
                 .Replace("#", "\\h")

@@ -33,11 +33,14 @@ namespace Circuit.Elements.Active {
                 Console.WriteLine("model name wparams = " + mModelName);
                 setup();
             }
-            mColorR = st.nextTokenDouble();
-            mColorG = st.nextTokenDouble();
-            mColorB = st.nextTokenDouble();
-            mMaxBrightnessCurrent = .01;
+            mColorR = 1.0;
+            mColorG = 0.0;
+            mColorB = 0.0;
+            mMaxBrightnessCurrent = 0.01;
             try {
+                mColorR = st.nextTokenDouble();
+                mColorG = st.nextTokenDouble();
+                mColorB = st.nextTokenDouble();
                 mMaxBrightnessCurrent = st.nextTokenDouble();
             } catch { }
         }
@@ -45,6 +48,14 @@ namespace Circuit.Elements.Active {
         public override DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.LED; } }
+
+        protected override string dump() {
+            return base.dump()
+                + " " + mColorR
+                + " " + mColorG
+                + " " + mColorB
+                + " " + mMaxBrightnessCurrent;
+        }
 
         public override void SetPoints() {
             base.SetPoints();

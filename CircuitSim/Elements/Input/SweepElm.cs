@@ -149,7 +149,7 @@ namespace Circuit.Elements.Input {
             }
 
             if (ControlPanel.ChkShowValues.Checked) {
-                string s = Utils.ShortUnitText(mFrequency, "Hz");
+                string s = Utils.UnitText(mFrequency, "Hz");
                 drawValues(s, 20, -15);
             }
 

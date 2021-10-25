@@ -76,6 +76,7 @@ namespace Circuit.Elements.Active {
             try {
                 mVt = st.nextTokenDouble();
                 mHfe = st.nextTokenDouble();
+                mReferenceName = st.nextToken();
             } catch { }
             mGlobalFlags = mFlags & (FLAGS_GLOBAL);
             allocNodes(); /* make sure volts[] has the right number of elements when hasBodyTerminal() is true */
@@ -102,7 +103,9 @@ namespace Circuit.Elements.Active {
         public override DUMP_ID DumpType { get { return DUMP_ID.MOSFET; } }
 
         protected override string dump() {
-            return mVt + " " + mHfe;
+            return mVt
+                + " " + mHfe
+                + " " + mReferenceName;
         }
 
         double DefaultThreshold { get { return 1.5; } }
@@ -461,7 +464,7 @@ namespace Circuit.Elements.Active {
 
             drawPosts();
 
-            if (ControlPanel.ChkShowValues.Checked) {
+            if (ControlPanel.ChkShowName.Checked) {
                 g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
             }
         }

@@ -10,18 +10,23 @@ namespace Circuit.Elements.Input {
         double mSignalFreq;
         double mMaxVoltage;
         double mFreqTimeZero;
+        double mPhase;
 
         public AMElm(Point pos) : base(pos) {
             mMaxVoltage = 5;
             mCarrierFreq = 1000;
             mSignalFreq = 40;
+            mPhase = 0.0;
             Reset();
         }
 
         public AMElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            mCarrierFreq = st.nextTokenDouble();
-            mSignalFreq = st.nextTokenDouble();
-            mMaxVoltage = st.nextTokenDouble();
+            try {
+                mCarrierFreq = st.nextTokenDouble();
+                mSignalFreq = st.nextTokenDouble();
+                mMaxVoltage = st.nextTokenDouble();
+                mPhase = st.nextTokenDouble();
+            } catch { }
             if ((mFlags & FLAG_COS) != 0) {
                 mFlags &= ~FLAG_COS;
             }
@@ -31,7 +36,10 @@ namespace Circuit.Elements.Input {
         public override DUMP_ID DumpType { get { return DUMP_ID.AM; } }
 
         protected override string dump() {
-            return mCarrierFreq + " " + mSignalFreq + " " + mMaxVoltage;
+            return mCarrierFreq
+                + " " + mSignalFreq
+                + " " + mMaxVoltage
+                + " " + mPhase;
         }
 
         public override void Reset() {
@@ -97,7 +105,7 @@ namespace Circuit.Elements.Input {
 
         double getVoltage() {
             double w = 2 * Math.PI * (CirSim.Sim.Time - mFreqTimeZero);
-            return (Math.Sin(w * mSignalFreq) + 1) / 2 * Math.Sin(w * mCarrierFreq) * mMaxVoltage;
+            return (Math.Sin(w * mSignalFreq + mPhase) + 1) / 2 * Math.Sin(w * mCarrierFreq) * mMaxVoltage;
         }
 
         public override ElementInfo GetElementInfo(int n) {
@@ -109,6 +117,9 @@ namespace Circuit.Elements.Input {
             }
             if (n == 2) {
                 return new ElementInfo("信号周波数(Hz)", mSignalFreq, 4, 500);
+            }
+            if (n == 3) {
+                return new ElementInfo("位相(degrees)", double.Parse((mPhase * 180 / Math.PI).ToString("0.00")), -180, 180).SetDimensionless();
             }
             return null;
         }
@@ -122,6 +133,9 @@ namespace Circuit.Elements.Input {
             }
             if (n == 2) {
                 mSignalFreq = ei.Value;
+            }
+            if (n == 3) {
+                mPhase = ei.Value * Math.PI / 180;
             }
         }
     }

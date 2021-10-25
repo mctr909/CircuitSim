@@ -63,7 +63,7 @@ namespace Circuit.Elements.Input {
             setBbox(mPoint1, mPoint2, BODY_LEN);
             doDots();
             if (ControlPanel.ChkShowValues.Checked) {
-                string s = Utils.ShortUnitText(mCurrentValue, "A");
+                string s = Utils.UnitText(mCurrentValue, "A");
                 g.DrawRightText(s, mTextPos.X, mTextPos.Y);
             }
             drawPosts();

@@ -8,11 +8,10 @@ namespace Circuit.Elements.Active {
         static string mLastZenerModelName = "default-zener";
 
         Point[] mWing;
-        Point mNamePos;
-        string mReferenceName = "Z";
 
         public ZenerElm(Point pos) : base(pos) {
             mModelName = mLastZenerModelName;
+            ReferenceName = "Z";
             setup();
         }
 
@@ -45,7 +44,7 @@ namespace Circuit.Elements.Active {
 
         void setTextPos() {
             if (mPoint1.Y == mPoint2.Y) {
-                var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
+                var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
                 interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -14 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
                 interpPoint(ref mNamePos, 0.5, 6 * mDsign);
@@ -72,8 +71,8 @@ namespace Circuit.Elements.Active {
 
             doDots();
             drawPosts();
-            if (ControlPanel.ChkShowValues.Checked) {
-                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+            if (ControlPanel.ChkShowName.Checked) {
+                g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
             }
         }
 
@@ -88,23 +87,10 @@ namespace Circuit.Elements.Active {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            if (n == 0) {
-                var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = mReferenceName;
-                return ei;
-            }
             if (n == 2) {
                 return new ElementInfo("ブレークダウン電圧(V)", mModel.breakdownVoltage, 0, 0);
             }
             return base.GetElementInfo(n);
-        }
-
-        public override void SetElementValue(int n, ElementInfo ei) {
-            if (n == 0) {
-                mReferenceName = ei.Textf.Text;
-                setTextPos();
-            }
-            base.SetElementValue(n, ei);
         }
     }
 }

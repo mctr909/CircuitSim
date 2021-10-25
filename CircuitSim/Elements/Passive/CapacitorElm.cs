@@ -6,7 +6,7 @@ namespace Circuit.Elements.Passive {
         public static readonly int FLAG_BACK_EULER = 2;
 
         const int BODY_LEN = 6;
-        const int HS = 7;
+        const int HS = 5;
 
         double mCompResistance;
         double mVoltDiff;
@@ -16,7 +16,7 @@ namespace Circuit.Elements.Passive {
         Point[] mPlate2;
         Point mValuePos;
         Point mNamePos;
-        string mReferenceName = "";
+        string mReferenceName = "C";
 
         public CapacitorElm(Point pos) : base(pos) {
             Capacitance = 1e-5;
@@ -127,16 +127,16 @@ namespace Circuit.Elements.Passive {
 
         void setTextPos() {
             if (mPoint1.Y == mPoint2.Y) {
-                var wv = Context.GetTextSize(Utils.ShortUnitText(Capacitance, "")).Width * 0.5;
+                var wv = Context.GetTextSize(Utils.UnitText(Capacitance, "")).Width * 0.5;
                 var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
-                interpPoint(ref mValuePos, 0.5 + wv / mLen * mDsign, 12 * mDsign);
-                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -15 * mDsign);
+                interpPoint(ref mValuePos, 0.5 + wv / mLen * mDsign, 10 * mDsign);
+                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -13 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
-                interpPoint(ref mValuePos, 0.5, -6 * mDsign);
-                interpPoint(ref mNamePos, 0.5, 7 * mDsign);
+                interpPoint(ref mValuePos, 0.5, -4 * mDsign);
+                interpPoint(ref mNamePos, 0.5, 5 * mDsign);
             } else {
-                interpPoint(ref mValuePos, 0.5, -10 * mDsign);
-                interpPoint(ref mNamePos, 0.5, 10 * mDsign);
+                interpPoint(ref mValuePos, 0.5, -8 * mDsign);
+                interpPoint(ref mNamePos, 0.5, 8 * mDsign);
             }
         }
 
@@ -157,8 +157,10 @@ namespace Circuit.Elements.Passive {
             }
             drawPosts();
             if (ControlPanel.ChkShowValues.Checked) {
-                var s = Utils.ShortUnitText(Capacitance, "");
+                var s = Utils.UnitText(Capacitance, "");
                 g.DrawRightText(s, mValuePos.X, mValuePos.Y);
+            }
+            if (ControlPanel.ChkShowName.Checked) {
                 g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
             }
         }

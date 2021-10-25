@@ -42,7 +42,8 @@ namespace Circuit.Elements.Active {
         Point[] mArrowPoly;
 
         Point mNamePos;
-        string mReferenceName = "Tr";
+
+        public string ReferenceName = "Tr";
 
         public TransistorElm(Point pos, bool pnpflag) : base(pos) {
             NPN = pnpflag ? -1 : 1;
@@ -60,6 +61,7 @@ namespace Circuit.Elements.Active {
                 Volts[V_C] = -mLastVbe;
                 Volts[V_E] = -mLastVbc;
                 mHfe = st.nextTokenDouble();
+                ReferenceName = st.nextToken();
             } catch { }
             setup();
         }
@@ -83,7 +85,8 @@ namespace Circuit.Elements.Active {
             return NPN
                 + " " + (Volts[V_B] - Volts[V_C])
                 + " " + (Volts[V_B] - Volts[V_E])
-                + " " + mHfe;
+                + " " + mHfe
+                + " " + ReferenceName;
         }
 
         public override Point GetPost(int n) {
@@ -259,7 +262,7 @@ namespace Circuit.Elements.Active {
         }
 
         void setTextPos() {
-            var txtW = Context.GetTextSize(mReferenceName).Width;
+            var txtW = Context.GetTextSize(ReferenceName).Width;
             var swap = 0 < (mFlags & FLAG_FLIP) ? -1 : 1;
             if (mPoint1.Y == mPoint2.Y) {
                 if (0 < mDsign * swap) {
@@ -299,8 +302,8 @@ namespace Circuit.Elements.Active {
 
             drawPosts();
 
-            if (ControlPanel.ChkShowValues.Checked) {
-                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+            if (ControlPanel.ChkShowName.Checked) {
+                g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
             }
         }
 
@@ -348,7 +351,7 @@ namespace Circuit.Elements.Active {
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = mReferenceName;
+                ei.Text = ReferenceName;
                 return ei;
             }
             if (n == 1) {
@@ -366,7 +369,7 @@ namespace Circuit.Elements.Active {
 
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
-                mReferenceName = ei.Textf.Text;
+                ReferenceName = ei.Textf.Text;
                 setTextPos();
             }
             if (n == 1) {

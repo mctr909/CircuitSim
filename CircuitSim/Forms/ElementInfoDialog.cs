@@ -104,33 +104,9 @@ namespace Circuit {
         public static string UnitString(ElementInfo ei, double v) {
             double va = Math.Abs(v);
             if (ei != null && ei.Dimensionless) {
-                return (v).ToString();
+                return v.ToString();
             }
-            if (v == 0) {
-                return "0";
-            }
-            if (va < 1e-9) {
-                return (v * 1e12).ToString("0") + "p";
-            }
-            if (va < 1e-6) {
-                return (v * 1e9).ToString("0") + "n";
-            }
-            if (va < 1e-3) {
-                return (v * 1e6).ToString("0") + "u";
-            }
-            if (va < 1) { /*&& !ei.forceLargeM*/
-                return (v * 1e3).ToString("0") + "m";
-            }
-            if (va < 1e3) {
-                return (v).ToString("0.##");
-            }
-            if (va < 1e6) {
-                return (v * 1e-3).ToString("0") + "k";
-            }
-            if (va < 1e9) {
-                return (v * 1e-6).ToString("0") + "M";
-            }
-            return (v * 1e-9).ToString("0") + "G";
+            return Utils.UnitText(v);
         }
 
         public static double ParseUnits(string s) {

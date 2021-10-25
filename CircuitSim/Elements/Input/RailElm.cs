@@ -76,7 +76,7 @@ namespace Circuit.Elements.Input {
                 if (Math.Abs(v) < 1) {
                     s = v.ToString("0.000") + " V";
                 } else {
-                    s = Utils.ShortUnitText(v, "V");
+                    s = Utils.UnitText(v, "V");
                 }
                 if (getVoltage() > 0) {
                     s = "+" + s;

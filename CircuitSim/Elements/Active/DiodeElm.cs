@@ -16,14 +16,15 @@ namespace Circuit.Elements.Active {
         protected DiodeModel mModel;
         protected Point[] mPoly;
         protected Point[] mCathode;
-        Point mNamePos;
-        string mReferenceName = "D";
+        protected Point mNamePos;
 
         Diode mDiode;
         bool mHasResistance;
         bool mCustomModelUI;
         int mDiodeEndNode;
         List<DiodeModel> mModels;
+
+        public string ReferenceName = "D";
 
         public DiodeElm(Point pos) : base(pos) {
             mModelName = lastModelName;
@@ -36,17 +37,21 @@ namespace Circuit.Elements.Active {
             mDiode = new Diode(mCir);
             double fwdrop = defaultdrop;
             double zvoltage = 0;
-            if ((f & FLAG_MODEL) != 0) {
-                mModelName = CustomLogicModel.unescape(st.nextToken());
+            try {
+                ReferenceName = st.nextToken();
+            } catch { }
+            if (0 != (f & FLAG_MODEL)) {
+                try {
+                    mModelName = CustomLogicModel.unescape(st.nextToken());
+                } catch { }
             } else {
-                if ((f & FLAG_FWDROP) > 0) {
+                if (0 != (f & FLAG_FWDROP)) {
                     try {
                         fwdrop = st.nextTokenDouble();
                     } catch { }
                 }
                 mModel = DiodeModel.getModelWithParameters(fwdrop, zvoltage);
                 mModelName = mModel.name;
-                /*Console.WriteLine("model name wparams = " + modelName); */
             }
             setup();
         }
@@ -61,7 +66,7 @@ namespace Circuit.Elements.Active {
 
         protected override string dump() {
             mFlags |= FLAG_MODEL;
-            return CustomLogicModel.escape(mModelName);
+            return ReferenceName + " " + CustomLogicModel.escape(mModelName);
         }
 
         protected void setup() {
@@ -121,7 +126,7 @@ namespace Circuit.Elements.Active {
 
         void setTextPos() {
             if (mPoint1.Y == mPoint2.Y) {
-                var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
+                var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
                 interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -13 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
                 interpPoint(ref mNamePos, 0.5, 5 * mDsign);
@@ -134,8 +139,8 @@ namespace Circuit.Elements.Active {
             drawDiode(g);
             doDots();
             drawPosts();
-            if (ControlPanel.ChkShowValues.Checked) {
-                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+            if (ControlPanel.ChkShowName.Checked) {
+                g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
             }
         }
 
@@ -179,7 +184,7 @@ namespace Circuit.Elements.Active {
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = mReferenceName;
+                ei.Text = ReferenceName;
                 return ei;
             }
             if (!mCustomModelUI && n == 1) {
@@ -200,7 +205,7 @@ namespace Circuit.Elements.Active {
 
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
-                mReferenceName = ei.Textf.Text;
+                ReferenceName = ei.Textf.Text;
                 setTextPos();
             }
             if (!mCustomModelUI && n == 1) {

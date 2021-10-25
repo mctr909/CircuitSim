@@ -264,7 +264,7 @@ namespace Circuit.Elements.Passive {
             drawPosts();
             setBbox(mPtEnds[0], mPtEnds[mPolarity == 1 ? 3 : 1], 0);
 
-            if (ControlPanel.ChkShowValues.Checked) {
+            if (ControlPanel.ChkShowName.Checked) {
                 g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
             }
         }

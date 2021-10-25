@@ -61,6 +61,8 @@ namespace Circuit.Elements.Active {
             mTransistor = (TransistorElm)compElmList[2];
             mTransistor.SetHfe(700);
             mCurCounts = new double[4];
+            mDiode.ReferenceName = "";
+            mTransistor.ReferenceName = "";
         }
 
         void setPin(int n, int px, int py, double dx, double dy, double dax, double day, int sx, int sy) {

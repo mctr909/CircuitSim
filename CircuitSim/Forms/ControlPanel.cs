@@ -11,6 +11,7 @@ namespace Circuit {
         public static CheckBox ChkShowVolts { get; private set; }
         public static CheckBox ChkShowDots { get; private set; }
         public static CheckBox ChkShowValues { get; private set; }
+        public static CheckBox ChkShowName { get; private set; }
         public static CheckBox ChkUseAnsiSymbols { get; private set; }
         public static CheckBox ChkPrintable { get; private set; }
         public static CheckBox ChkCrossHair { get; private set; }
@@ -20,7 +21,7 @@ namespace Circuit {
             set {
                 mTimeStep = value;
                 if (null != mTxtTimeStep) {
-                    mTxtTimeStep.Text = Utils.ShortUnitText(mTimeStep, "");
+                    mTxtTimeStep.Text = Utils.UnitText(mTimeStep, "");
                 }
             }
         }
@@ -29,7 +30,7 @@ namespace Circuit {
             set { 
                 mVoltageRange = value;
                 if (null != mTxtVoltageRange) {
-                    mTxtVoltageRange.Text = Utils.ShortUnitText(mVoltageRange, "");
+                    mTxtVoltageRange.Text = Utils.UnitText(mVoltageRange, "");
                 }
             }
         }
@@ -114,6 +115,11 @@ namespace Circuit {
             VerticalPanel.Controls.Add(ChkShowValues);
             ofsY += ChkShowValues.Height + 4;
 
+            /* Show Name */
+            ChkShowName = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "名前を表示" };
+            VerticalPanel.Controls.Add(ChkShowName);
+            ofsY += ChkShowName.Height + 4;
+
             /* ANSI */
             ChkUseAnsiSymbols = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "ANSI" };
             ChkUseAnsiSymbols.CheckedChanged += new EventHandler((s, e) => {
@@ -152,7 +158,7 @@ namespace Circuit {
                 if(Utils.TextToNum(mTxtTimeStep.Text, out tmp)) {
                     mTimeStep = tmp;
                 } else {
-                    mTxtTimeStep.Text = Utils.ShortUnitText(mTimeStep, "");
+                    mTxtTimeStep.Text = Utils.UnitText(mTimeStep, "");
                 }
             });
             VerticalPanel.Controls.Add(mTxtTimeStep);
@@ -169,7 +175,7 @@ namespace Circuit {
                 if (Utils.TextToNum(mTxtVoltageRange.Text, out tmp)) {
                     mVoltageRange = tmp;
                 } else {
-                    mTxtVoltageRange.Text = Utils.ShortUnitText(mVoltageRange, "");
+                    mTxtVoltageRange.Text = Utils.UnitText(mVoltageRange, "");
                 }
             });
             VerticalPanel.Controls.Add(mTxtVoltageRange);

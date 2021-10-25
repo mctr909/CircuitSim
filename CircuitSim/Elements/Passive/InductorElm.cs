@@ -8,7 +8,7 @@ namespace Circuit.Elements.Passive {
         Inductor mInd;
         Point mValuePos;
         Point mNamePos;
-        string mReferenceName = "";
+        string mReferenceName = "L";
 
         public InductorElm(Point pos) : base(pos) {
             mInd = new Inductor(mCir);
@@ -67,7 +67,7 @@ namespace Circuit.Elements.Passive {
 
         void setTextPos() {
             if (mPoint1.Y == mPoint2.Y) {
-                var wv = Context.GetTextSize(Utils.ShortUnitText(Inductance, "")).Width * 0.5;
+                var wv = Context.GetTextSize(Utils.UnitText(Inductance, "")).Width * 0.5;
                 var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
                 interpPoint(ref mValuePos, 0.5 + wv / mLen * mDsign, 10 * mDsign);
                 interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -11 * mDsign);
@@ -90,8 +90,10 @@ namespace Circuit.Elements.Passive {
             drawCoil(mLead1, mLead2, v1, v2);
 
             if (ControlPanel.ChkShowValues.Checked) {
-                var s = Utils.ShortUnitText(Inductance, "");
+                var s = Utils.UnitText(Inductance, "");
                 g.DrawRightText(s, mValuePos.X, mValuePos.Y);
+            }
+            if (ControlPanel.ChkShowName.Checked) {
                 g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
             }
             doDots();

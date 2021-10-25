@@ -16,7 +16,7 @@ namespace Circuit.Elements.Passive {
         Point[] mRect4;
         Point mValuePos;
         Point mNamePos;
-        string mReferenceName = "";
+        string mReferenceName = "R";
 
         public ResistorElm(Point pos) : base(pos) {
             Resistance = 1000;
@@ -56,7 +56,7 @@ namespace Circuit.Elements.Passive {
 
         void setTextPos() {
             if (mPoint1.Y == mPoint2.Y) {
-                var wv = Context.GetTextSize(Utils.ShortUnitText(Resistance, "")).Width * 0.5;
+                var wv = Context.GetTextSize(Utils.UnitText(Resistance, "")).Width * 0.5;
                 var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
                 interpPoint(ref mValuePos, 0.5 + wv / mLen * mDsign, 10 * mDsign);
                 interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -13 * mDsign);
@@ -140,8 +140,10 @@ namespace Circuit.Elements.Passive {
             }
 
             if (ControlPanel.ChkShowValues.Checked) {
-                var s = Utils.ShortUnitText(Resistance, "");
+                var s = Utils.UnitText(Resistance, "");
                 g.DrawRightText(s, mValuePos.X, mValuePos.Y);
+            }
+            if (ControlPanel.ChkShowName.Checked) {
                 g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
             }
 

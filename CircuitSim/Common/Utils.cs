@@ -154,27 +154,23 @@ namespace Circuit {
         }
 
         public static string VoltageText(double v) {
-            return unitText(v, "V", false);
+            return unitText(v, "V");
         }
 
         public static string VoltageDText(double v) {
-            return unitText(Math.Abs(v), "V", false);
+            return unitText(Math.Abs(v), "V");
         }
 
         public static string CurrentText(double i) {
-            return unitText(i, "A", false);
+            return unitText(i, "A");
         }
 
         public static string CurrentDText(double i) {
-            return unitText(Math.Abs(i), "A", false);
+            return unitText(Math.Abs(i), "A");
         }
 
-        public static string UnitText(double v, string u) {
-            return unitText(v, u, false);
-        }
-
-        public static string ShortUnitText(double v, string u) {
-            return unitText(v, u, true);
+        public static string UnitText(double v, string u = "") {
+            return unitText(v, u);
         }
 
         public static string TimeText(double v) {
@@ -188,7 +184,7 @@ namespace Circuit {
                 }
                 return h + ":" + ((m >= 10) ? "" : "0") + m + ":" + ((v >= 10) ? "" : "0") + v.ToString("0.00");
             }
-            return unitText(v, "s", false);
+            return unitText(v, "s");
         }
 
         public static string UnitTextWithScale(double val, string utext, E_SCALE scale) {
@@ -201,7 +197,7 @@ namespace Circuit {
             if (scale == E_SCALE.MU) {
                 return (1e6 * val).ToString("0.000") + " " + CirSim.MU_TEXT + utext;
             }
-            return unitText(val, utext, false);
+            return unitText(val, utext);
         }
 
         public static bool TextToNum(string text, out double num) {
@@ -239,39 +235,38 @@ namespace Circuit {
             return double.TryParse(text, out num);
         }
 
-        static string unitText(double v, string u, bool sf) {
-            string sp = sf ? "" : " ";
+        static string unitText(double v, string u) {
             double va = Math.Abs(v);
             if (va < 1e-14) {
                 /* this used to return null, but then wires would display "null" with 0V */
-                return "0" + sp + u;
+                return "0" + u;
             }
             if (va < 1e-9) {
-                return format(v * 1e12, sf) + sp + "p" + u;
+                return format(v * 1e12) + "p" + u;
             }
             if (va < 1e-6) {
-                return format(v * 1e9, sf) + sp + "n" + u;
+                return format(v * 1e9) + "n" + u;
             }
             if (va < 1e-3) {
-                return format(v * 1e6, sf) + sp + CirSim.MU_TEXT + u;
+                return format(v * 1e6) + CirSim.MU_TEXT + u;
             }
             if (va < 1) {
-                return format(v * 1e3, sf) + sp + "m" + u;
+                return format(v * 1e3) + "m" + u;
             }
             if (va < 1e3) {
-                return format(v, sf) + sp + u;
+                return format(v) + u;
             }
             if (va < 1e6) {
-                return format(v * 1e-3, sf) + sp + "k" + u;
+                return format(v * 1e-3) + "k" + u;
             }
             if (va < 1e9) {
-                return format(v * 1e-6, sf) + sp + "M" + u;
+                return format(v * 1e-6) + "M" + u;
             }
-            return format(v * 1e-9, sf) + sp + "G" + u;
+            return format(v * 1e-9) + "G" + u;
         }
 
-        static string format(double v, bool sf) {
-            return sf ? v.ToString("0.##") : v.ToString("0.00");
+        static string format(double v) {
+            return v.ToString("0.##");
         }
     }
 }
