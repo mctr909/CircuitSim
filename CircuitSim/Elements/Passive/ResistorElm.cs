@@ -14,17 +14,16 @@ namespace Circuit.Elements.Passive {
         Point[] mRect2;
         Point[] mRect3;
         Point[] mRect4;
-        Point mValuePos;
 
         public ResistorElm(Point pos) : base(pos) {
             Resistance = 1000;
-            mReferenceName = "R";
+            ReferenceName = "R";
         }
 
         public ResistorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
                 Resistance = st.nextTokenDouble();
-                mReferenceName = st.nextToken();
+                ReferenceName = st.nextToken();
             } catch { }
         }
 
@@ -35,7 +34,7 @@ namespace Circuit.Elements.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.RESISTOR; } }
 
         protected override string dump() {
-            return Resistance + " " + mReferenceName;
+            return Resistance + " " + ReferenceName;
         }
 
         protected override void calculateCurrent() {
@@ -57,15 +56,15 @@ namespace Circuit.Elements.Passive {
             mNameV = mPoint1.X == mPoint2.X;
             if (mPoint1.Y == mPoint2.Y) {
                 var wv = Context.GetTextSize(Utils.UnitText(Resistance, "")).Width * 0.5;
-                var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
-                interpPoint(ref mValuePos, 0.5 + wv / mLen * mDsign, 10 * mDsign);
-                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -13 * mDsign);
+                var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
+                interpPoint(ref mValuePos, 0.5 - wv / mLen * mDsign, -13 * mDsign);
+                interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 10 * mDsign);
             } else if (mNameV) {
-                interpPoint(ref mValuePos, 0.5, -20 * mDsign);
-                interpPoint(ref mNamePos, 0.5, 2 * mDsign);
+                interpPoint(ref mValuePos, 0.5, 2 * mDsign);
+                interpPoint(ref mNamePos, 0.5, -20 * mDsign);
             } else {
-                interpPoint(ref mValuePos, 0.5, -10 * mDsign);
-                interpPoint(ref mNamePos, 0.5, 10 * mDsign);
+                interpPoint(ref mValuePos, 0.5, 10 * mDsign);
+                interpPoint(ref mNamePos, 0.5, -10 * mDsign);
             }
         }
 
@@ -139,28 +138,15 @@ namespace Circuit.Elements.Passive {
                 g.DrawLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
             }
 
-            if (ControlPanel.ChkShowValues.Checked) {
-                var s = Utils.UnitText(Resistance, "");
-                if (mNameV) {
-                    g.DrawCenteredVText(s, mValuePos.X, mValuePos.Y);
-                } else {
-                    g.DrawRightText(s, mValuePos.X, mValuePos.Y);
-                }
-            }
-            if (ControlPanel.ChkShowName.Checked) {
-                if (mNameV) {
-                    g.DrawCenteredVText(mReferenceName, mNamePos.X, mNamePos.Y);
-                } else {
-                    g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
-                }
-            }
+            drawValue(Resistance);
+            drawName();
 
             doDots();
             drawPosts();
         }
 
         public override void GetInfo(string[] arr) {
-            arr[0] = string.IsNullOrEmpty(mReferenceName) ? "抵抗" : mReferenceName;
+            arr[0] = string.IsNullOrEmpty(ReferenceName) ? "抵抗" : ReferenceName;
             getBasicInfo(arr);
             arr[3] = "R = " + Utils.UnitText(Resistance, CirSim.OHM_TEXT);
             arr[4] = "P = " + Utils.UnitText(Power, "W");
@@ -176,7 +162,7 @@ namespace Circuit.Elements.Passive {
             }
             if (n == 1) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = mReferenceName;
+                ei.Text = ReferenceName;
                 return ei;
             }
             return null;
@@ -188,7 +174,7 @@ namespace Circuit.Elements.Passive {
                 setTextPos();
             }
             if (n == 1) {
-                mReferenceName = ei.Textf.Text;
+                ReferenceName = ei.Textf.Text;
                 setTextPos();
             }
         }

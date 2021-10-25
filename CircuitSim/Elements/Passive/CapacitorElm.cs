@@ -14,18 +14,17 @@ namespace Circuit.Elements.Passive {
 
         Point[] mPlate1;
         Point[] mPlate2;
-        Point mValuePos;
 
         public CapacitorElm(Point pos) : base(pos) {
             Capacitance = 1e-5;
-            mReferenceName = "C";
+            ReferenceName = "C";
         }
 
         public CapacitorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
                 Capacitance = st.nextTokenDouble();
                 mVoltDiff = st.nextTokenDouble();
-                mReferenceName = st.nextToken();
+                ReferenceName = st.nextToken();
             } catch { }
         }
 
@@ -38,7 +37,7 @@ namespace Circuit.Elements.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.CAPACITOR; } }
 
         protected override string dump() {
-            return Capacitance + " " + mVoltDiff + " " + mReferenceName;
+            return Capacitance + " " + mVoltDiff + " " + ReferenceName;
         }
 
         protected override void calculateCurrent() {
@@ -128,15 +127,15 @@ namespace Circuit.Elements.Passive {
             mNameV = mPoint1.X == mPoint2.X;
             if (mPoint1.Y == mPoint2.Y) {
                 var wv = Context.GetTextSize(Utils.UnitText(Capacitance, "")).Width * 0.5;
-                var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
-                interpPoint(ref mValuePos, 0.5 + wv / mLen * mDsign, 10 * mDsign);
-                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -13 * mDsign);
+                var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
+                interpPoint(ref mValuePos, 0.5 - wv / mLen * mDsign, -13 * mDsign);
+                interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 10 * mDsign);
             } else if (mNameV) {
-                interpPoint(ref mValuePos, 0.5, -20 * mDsign);
-                interpPoint(ref mNamePos, 0.5, 2 * mDsign);
+                interpPoint(ref mValuePos, 0.5, 2 * mDsign);
+                interpPoint(ref mNamePos, 0.5, -20 * mDsign);
             } else {
-                interpPoint(ref mValuePos, 0.5, -8 * mDsign);
-                interpPoint(ref mNamePos, 0.5, 8 * mDsign);
+                interpPoint(ref mValuePos, 0.5, 8 * mDsign);
+                interpPoint(ref mNamePos, 0.5, -8 * mDsign);
             }
         }
 
@@ -156,25 +155,13 @@ namespace Circuit.Elements.Passive {
                 drawDots(mPoint2, mLead2, -mCurCount);
             }
             drawPosts();
-            if (ControlPanel.ChkShowValues.Checked) {
-                var s = Utils.UnitText(Capacitance, "");
-                if (mNameV) {
-                    g.DrawCenteredVText(s, mValuePos.X, mValuePos.Y);
-                } else {
-                    g.DrawRightText(s, mValuePos.X, mValuePos.Y);
-                }
-            }
-            if (ControlPanel.ChkShowName.Checked) {
-                if (mNameV) {
-                    g.DrawCenteredVText(mReferenceName, mNamePos.X, mNamePos.Y);
-                } else {
-                    g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
-                }
-            }
+
+            drawValue(Capacitance);
+            drawName();
         }
 
         public override void GetInfo(string[] arr) {
-            arr[0] = string.IsNullOrEmpty(mReferenceName) ? "コンデンサ" : mReferenceName;
+            arr[0] = string.IsNullOrEmpty(ReferenceName) ? "コンデンサ" : ReferenceName;
             getBasicInfo(arr);
             arr[3] = "C = " + Utils.UnitText(Capacitance, "F");
             arr[4] = "P = " + Utils.UnitText(Power, "W");
@@ -191,7 +178,7 @@ namespace Circuit.Elements.Passive {
             }
             if (n == 1) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = mReferenceName;
+                ei.Text = ReferenceName;
                 return ei;
             }
             if (n == 2) {
@@ -210,7 +197,7 @@ namespace Circuit.Elements.Passive {
                 setTextPos();
             }
             if (n == 1) {
-                mReferenceName = ei.Textf.Text;
+                ReferenceName = ei.Textf.Text;
                 setTextPos();
             }
             if (n == 2) {

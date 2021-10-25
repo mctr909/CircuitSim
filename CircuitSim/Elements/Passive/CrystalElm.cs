@@ -30,7 +30,7 @@ namespace Circuit.Elements.Passive {
             mSeriesCapacitance = 0.1e-12;
             mInductance = 2.5e-3;
             mResistance = 6.4;
-            mReferenceName = "X";
+            ReferenceName = "X";
             initCrystal();
         }
 
@@ -89,12 +89,12 @@ namespace Circuit.Elements.Passive {
 
         void setTextPos() {
             if (mPoint1.Y == mPoint2.Y) {
-                var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
-                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -16 * mDsign);
+                var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
+                interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 16 * mDsign);
             } else if (mPoint1.X == mPoint2.X) {
-                interpPoint(ref mNamePos, 0.5, 8 * mDsign);
+                interpPoint(ref mNamePos, 0.5, -8 * mDsign);
             } else {
-                interpPoint(ref mNamePos, 0.5, 12 * mDsign);
+                interpPoint(ref mNamePos, 0.5, -12 * mDsign);
             }
         }
 
@@ -121,9 +121,7 @@ namespace Circuit.Elements.Passive {
             }
             drawPosts();
 
-            if (ControlPanel.ChkShowName.Checked) {
-                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
-            }
+            drawName();
         }
 
         public override void GetInfo(string[] arr) {
@@ -146,7 +144,7 @@ namespace Circuit.Elements.Passive {
             }
             if (n == 4) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = mReferenceName;
+                ei.Text = ReferenceName;
                 return ei;
             }
             return null;
@@ -166,7 +164,7 @@ namespace Circuit.Elements.Passive {
                 mResistance = ei.Value;
             }
             if (n == 4) {
-                mReferenceName = ei.Textf.Text;
+                ReferenceName = ei.Textf.Text;
                 setTextPos();
             }
             initCrystal();

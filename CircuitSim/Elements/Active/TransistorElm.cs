@@ -41,8 +41,6 @@ namespace Circuit.Elements.Active {
         Point[] mRectPoly;
         Point[] mArrowPoly;
 
-        public string ReferenceName;
-
         public TransistorElm(Point pos, bool pnpflag) : base(pos) {
             NPN = pnpflag ? -1 : 1;
             mHfe = 100;

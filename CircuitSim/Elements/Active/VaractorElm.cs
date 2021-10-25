@@ -93,17 +93,6 @@ namespace Circuit.Elements.Active {
             setTextPos();
         }
 
-        void setTextPos() {
-            if (mPoint1.Y == mPoint2.Y) {
-                var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
-                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -13 * mDsign);
-            } else if (mPoint1.X == mPoint2.X) {
-                interpPoint(ref mNamePos, 0.5, 5 * mDsign);
-            } else {
-                interpPoint(ref mNamePos, 0.5, 10 * mDsign);
-            }
-        }
-
         public override void Reset() {
             base.Reset();
             mCapVoltDiff = 0;
@@ -121,10 +110,7 @@ namespace Circuit.Elements.Active {
 
             doDots();
             drawPosts();
-
-            if (ControlPanel.ChkShowName.Checked) {
-                g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
-            }
+            drawName();
         }
 
         public override void GetInfo(string[] arr) {

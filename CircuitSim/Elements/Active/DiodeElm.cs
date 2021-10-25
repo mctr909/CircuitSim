@@ -16,7 +16,6 @@ namespace Circuit.Elements.Active {
         protected DiodeModel mModel;
         protected Point[] mPoly;
         protected Point[] mCathode;
-        protected Point mNamePos;
 
         Diode mDiode;
         bool mHasResistance;
@@ -24,11 +23,10 @@ namespace Circuit.Elements.Active {
         int mDiodeEndNode;
         List<DiodeModel> mModels;
 
-        public string ReferenceName = "D";
-
         public DiodeElm(Point pos) : base(pos) {
             mModelName = lastModelName;
             mDiode = new Diode(mCir);
+            ReferenceName = "D";
             setup();
         }
 
@@ -124,14 +122,15 @@ namespace Circuit.Elements.Active {
             setTextPos();
         }
 
-        void setTextPos() {
+        protected void setTextPos() {
+            mNameV = mPoint1.X == mPoint2.X;
             if (mPoint1.Y == mPoint2.Y) {
                 var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
-                interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -13 * mDsign);
-            } else if (mPoint1.X == mPoint2.X) {
-                interpPoint(ref mNamePos, 0.5, 5 * mDsign);
+                interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 13 * mDsign);
+            } else if (mNameV) {
+                interpPoint(ref mNamePos, 0.5, -20 * mDsign);
             } else {
-                interpPoint(ref mNamePos, 0.5, 10 * mDsign);
+                interpPoint(ref mNamePos, 0.5, -10 * mDsign);
             }
         }
 
@@ -139,9 +138,7 @@ namespace Circuit.Elements.Active {
             drawDiode(g);
             doDots();
             drawPosts();
-            if (ControlPanel.ChkShowName.Checked) {
-                g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
-            }
+            drawName();
         }
 
         public override void Reset() {

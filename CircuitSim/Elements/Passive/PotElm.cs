@@ -46,7 +46,7 @@ namespace Circuit.Elements.Passive {
             mMaxResistance = 1000;
             mPosition = 0.5;
             mFlags = FLAG_SHOW_VALUES;
-            mReferenceName = "VR";
+            ReferenceName = "VR";
             createSlider();
         }
 
@@ -54,9 +54,9 @@ namespace Circuit.Elements.Passive {
             try {
                 mMaxResistance = st.nextTokenDouble();
                 mPosition = st.nextTokenDouble();
-                mReferenceName = st.nextToken();
+                ReferenceName = st.nextToken();
                 while (st.hasMoreTokens()) {
-                    mReferenceName += ' ' + st.nextToken();
+                    ReferenceName += ' ' + st.nextToken();
                 }
             } catch { }
             createSlider();
@@ -67,7 +67,7 @@ namespace Circuit.Elements.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.POT; } }
 
         protected override string dump() {
-            return mMaxResistance + " " + mPosition + " " + mReferenceName;
+            return mMaxResistance + " " + mPosition + " " + ReferenceName;
         }
 
         protected override void calculateCurrent() {
@@ -193,7 +193,7 @@ namespace Circuit.Elements.Passive {
         }
 
         void setNamePos() {
-            var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
+            var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
             if (Math.Abs(mDiff.Y) < Math.Abs(mDiff.X)) {
                 if (0 < mDiff.X) {
                     /* upper slider */
@@ -300,9 +300,9 @@ namespace Circuit.Elements.Passive {
             }
             if (ControlPanel.ChkShowName.Checked) {
                 if (mNameV) {
-                    g.DrawCenteredVText(mReferenceName, mNamePos.X, mNamePos.Y);
+                    g.DrawCenteredVText(ReferenceName, mNamePos.X, mNamePos.Y);
                 } else {
-                    g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+                    g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
                 }
             }
         }
@@ -334,7 +334,7 @@ namespace Circuit.Elements.Passive {
         void createSlider() {
             ControlPanel.AddSlider(mLabel = new Label() {
                 TextAlign = ContentAlignment.BottomLeft,
-                Text = mReferenceName
+                Text = ReferenceName
             });
             int value = (int)(mPosition * 100);
             ControlPanel.AddSlider(mSlider = new TrackBar() {
@@ -369,7 +369,7 @@ namespace Circuit.Elements.Passive {
             }
             if (n == 1) {
                 var ei = new ElementInfo("名前", 0, -1, -1);
-                ei.Text = mReferenceName;
+                ei.Text = ReferenceName;
                 return ei;
             }
             if (n == 2) {
@@ -387,8 +387,8 @@ namespace Circuit.Elements.Passive {
                 mMaxResistance = ei.Value;
             }
             if (n == 1) {
-                mReferenceName = ei.Textf.Text;
-                mLabel.Text = mReferenceName;
+                ReferenceName = ei.Textf.Text;
+                mLabel.Text = ReferenceName;
                 ControlPanel.SetSliderPanelHeight();
                 setNamePos();
             }

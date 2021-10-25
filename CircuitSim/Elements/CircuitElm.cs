@@ -12,6 +12,8 @@ namespace Circuit.Elements {
         public static CustomGraphics Context;
 
         #region dynamic property
+        public string ReferenceName { get; set; }
+
         public bool IsSelected { get; set; }
 
         public bool IsMouseElm {
@@ -152,7 +154,7 @@ namespace Circuit.Elements {
 
         protected bool mNameV;
         protected Point mNamePos;
-        protected string mReferenceName;
+        protected Point mValuePos;
 
         /* if subclasses set this to true, element will be horizontal or vertical only */
         protected bool mNoDiagonal;
@@ -543,6 +545,27 @@ namespace Circuit.Elements {
                 yc = (P2.Y + P1.Y) / 2;
             }
             Context.DrawRightText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
+        }
+
+        protected void drawValue(double value) {
+            if (ControlPanel.ChkShowValues.Checked) {
+                var s = Utils.UnitText(value);
+                if (mNameV) {
+                    Context.DrawCenteredVText(s, mValuePos.X, mValuePos.Y);
+                } else {
+                    Context.DrawLeftText(s, mValuePos.X, mValuePos.Y);
+                }
+            }
+        }
+
+        protected void drawName() {
+            if (ControlPanel.ChkShowName.Checked) {
+                if (mNameV) {
+                    Context.DrawCenteredVText(ReferenceName, mNamePos.X, mNamePos.Y);
+                } else {
+                    Context.DrawRightText(ReferenceName, mNamePos.X, mNamePos.Y);
+                }
+            }
         }
 
         protected void drawCoil(Point a, Point b, double v1, double v2) {

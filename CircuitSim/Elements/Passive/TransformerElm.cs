@@ -41,7 +41,7 @@ namespace Circuit.Elements.Passive {
             mCouplingCoef = .999;
             mCurrents = new double[2];
             mCurCounts = new double[2];
-            mReferenceName = "T";
+            ReferenceName = "T";
         }
 
         public TransformerElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -57,7 +57,7 @@ namespace Circuit.Elements.Passive {
                 } catch {
                     mCouplingCoef = 0.99;
                 }
-                mReferenceName = st.nextToken();
+                ReferenceName = st.nextToken();
             } catch { }
             mNoDiagonal = true;
             mPolarity = ((mFlags & FLAG_REVERSE) != 0) ? -1 : 1;
@@ -75,7 +75,7 @@ namespace Circuit.Elements.Passive {
                 + " " + mCurrents[0]
                 + " " + mCurrents[1]
                 + " " + mCouplingCoef
-                + " " + mReferenceName;
+                + " " + ReferenceName;
         }
 
         protected override void calculateCurrent() {
@@ -219,7 +219,7 @@ namespace Circuit.Elements.Passive {
         }
 
         void setNamePos() {
-            var wn = Context.GetTextSize(mReferenceName).Width;
+            var wn = Context.GetTextSize(ReferenceName).Width;
             mNamePos = new Point((int)(mPtCore[0].X - wn / 2 + 2), mPtCore[0].Y - 8);
         }
 
@@ -263,7 +263,7 @@ namespace Circuit.Elements.Passive {
             setBbox(mPtEnds[0], mPtEnds[mPolarity == 1 ? 3 : 1], 0);
 
             if (ControlPanel.ChkShowName.Checked) {
-                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+                g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
             }
         }
 
@@ -289,7 +289,7 @@ namespace Circuit.Elements.Passive {
             }
             if (n == 3) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = mReferenceName;
+                ei.Text = ReferenceName;
                 return ei;
             }
             if (n == 4) {
@@ -322,7 +322,7 @@ namespace Circuit.Elements.Passive {
                 mCouplingCoef = ei.Value;
             }
             if (n == 3) {
-                mReferenceName = ei.Textf.Text;
+                ReferenceName = ei.Textf.Text;
                 setNamePos();
             }
             if (n == 4) {
