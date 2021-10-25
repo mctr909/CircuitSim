@@ -61,6 +61,11 @@ namespace Circuit {
             LineAlignment = StringAlignment.Near,
             FormatFlags = StringFormatFlags.DirectionVertical,
         };
+        static readonly StringFormat textRightV = new StringFormat() {
+            Alignment = StringAlignment.Far,
+            LineAlignment = StringAlignment.Near,
+            FormatFlags = StringFormatFlags.DirectionVertical,
+        };
 
         Bitmap image;
         Graphics g;
@@ -134,6 +139,10 @@ namespace Circuit {
 
         public void DrawRightText(string s, int x, int y) {
             g.DrawString(s, FontText, brushText, x, y, textRight);
+        }
+
+        public void DrawRightVText(string s, int x, int y) {
+            g.DrawString(s, FontText, brushText, x, y, textRightV);
         }
 
         public void DrawCenteredText(string s, int x, int y) {

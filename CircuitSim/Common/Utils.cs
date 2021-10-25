@@ -189,15 +189,15 @@ namespace Circuit {
 
         public static string UnitTextWithScale(double val, string utext, E_SCALE scale) {
             if (scale == E_SCALE.X1) {
-                return val.ToString("0.000") + " " + utext;
+                return val.ToString("0") + " " + utext;
             }
             if (scale == E_SCALE.M) {
-                return (1e3 * val).ToString("0.000") + " m" + utext;
+                return (1e3 * val).ToString("0") + " m" + utext;
             }
             if (scale == E_SCALE.MU) {
-                return (1e6 * val).ToString("0.000") + " " + CirSim.MU_TEXT + utext;
+                return (1e6 * val).ToString("0") + " " + CirSim.MU_TEXT + utext;
             }
-            return unitText(val, utext);
+            return unitText(val, utext, true);
         }
 
         public static bool TextToNum(string text, out double num) {
@@ -235,38 +235,38 @@ namespace Circuit {
             return double.TryParse(text, out num);
         }
 
-        static string unitText(double v, string u) {
+        static string unitText(double v, string u, bool isShort = false) {
             double va = Math.Abs(v);
             if (va < 1e-14) {
                 /* this used to return null, but then wires would display "null" with 0V */
                 return "0" + u;
             }
             if (va < 1e-9) {
-                return format(v * 1e12) + "p" + u;
+                return format(v * 1e12, isShort) + "p" + u;
             }
             if (va < 1e-6) {
-                return format(v * 1e9) + "n" + u;
+                return format(v * 1e9, isShort) + "n" + u;
             }
             if (va < 1e-3) {
-                return format(v * 1e6) + CirSim.MU_TEXT + u;
+                return format(v * 1e6, isShort) + CirSim.MU_TEXT + u;
             }
             if (va < 1) {
-                return format(v * 1e3) + "m" + u;
+                return format(v * 1e3, isShort) + "m" + u;
             }
             if (va < 1e3) {
-                return format(v) + u;
+                return format(v, isShort) + u;
             }
             if (va < 1e6) {
-                return format(v * 1e-3) + "k" + u;
+                return format(v * 1e-3, isShort) + "k" + u;
             }
             if (va < 1e9) {
-                return format(v * 1e-6) + "M" + u;
+                return format(v * 1e-6, isShort) + "M" + u;
             }
-            return format(v * 1e-9) + "G" + u;
+            return format(v * 1e-9, isShort) + "G" + u;
         }
 
-        static string format(double v) {
-            return v.ToString("0.##");
+        static string format(double v, bool isShort) {
+            return isShort ? v.ToString("0") : v.ToString("0.##");
         }
     }
 }

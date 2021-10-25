@@ -148,12 +148,22 @@ namespace Circuit.Elements.Output {
             interpPoint(ref mMid, 0.5 + 8 / mLen);
             Utils.CreateArrow(mPoint1, mMid, out mArrowPoly, 14, 7);
             int sign;
-            if (mPoint1.Y == mPoint2.Y) {
-                sign = mDsign;
-            } else {
+            mNameV = mPoint1.X == mPoint2.X;
+            if (mNameV) {
                 sign = -mDsign;
+                if (mPoint1.Y < mPoint2.Y) {
+                    interpPoint(ref mTextPos, (mLen - 5) / mLen, 21 * sign);
+                } else {
+                    interpPoint(ref mTextPos, 5 / mLen, 21 * sign);
+                }
+            } else {
+                sign = mDsign;
+                if(mPoint1.X < mPoint2.X) {
+                    interpPoint(ref mTextPos, (mLen - 5) / mLen, 12 * sign);
+                } else {
+                    interpPoint(ref mTextPos, 5 / mLen, 12 * sign);
+                }
             }
-            interpPoint(ref mTextPos, 0.5, 10 * sign);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -173,7 +183,11 @@ namespace Circuit.Elements.Output {
                 s = Utils.UnitTextWithScale(mRmsI, "A(rms)", mScale);
                 break;
             }
-            g.DrawRightText(s, mTextPos.X, mTextPos.Y);
+            if (mNameV) {
+                g.DrawRightVText(s, mTextPos.X, mTextPos.Y);
+            } else {
+                g.DrawRightText(s, mTextPos.X, mTextPos.Y);
+            }
             drawPosts();
         }
 
