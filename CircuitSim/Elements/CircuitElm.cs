@@ -150,6 +150,10 @@ namespace Circuit.Elements {
         protected double mCurrent;
         protected double mCurCount;
 
+        protected bool mNameV;
+        protected Point mNamePos;
+        protected string mReferenceName;
+
         /* if subclasses set this to true, element will be horizontal or vertical only */
         protected bool mNoDiagonal;
 

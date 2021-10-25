@@ -41,13 +41,12 @@ namespace Circuit.Elements.Active {
         Point[] mRectPoly;
         Point[] mArrowPoly;
 
-        Point mNamePos;
-
-        public string ReferenceName = "Tr";
+        public string ReferenceName;
 
         public TransistorElm(Point pos, bool pnpflag) : base(pos) {
             NPN = pnpflag ? -1 : 1;
             mHfe = 100;
+            ReferenceName = "Tr";
             setup();
         }
 
@@ -264,11 +263,12 @@ namespace Circuit.Elements.Active {
         void setTextPos() {
             var txtW = Context.GetTextSize(ReferenceName).Width;
             var swap = 0 < (mFlags & FLAG_FLIP) ? -1 : 1;
-            if (mPoint1.Y == mPoint2.Y) {
+            mNameV = mPoint1.Y == mPoint2.Y;
+            if (mNameV) {
                 if (0 < mDsign * swap) {
-                    mNamePos = mPoint2;
+                    mNamePos = new Point(mPoint2.X - 1, mPoint2.Y);
                 } else {
-                    mNamePos = new Point((int)(mPoint2.X - txtW), mPoint2.Y);
+                    mNamePos = new Point(mPoint2.X - 17, mPoint2.Y);
                 }
             } else if (mPoint1.X == mPoint2.X) {
                 mNamePos = new Point(mPoint2.X - (int)(txtW / 2), mPoint2.Y + HS * swap * mDsign * 2 / 3);
@@ -303,7 +303,11 @@ namespace Circuit.Elements.Active {
             drawPosts();
 
             if (ControlPanel.ChkShowName.Checked) {
-                g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
+                if (mNameV) {
+                    g.DrawCenteredVText(ReferenceName, mNamePos.X, mNamePos.Y);
+                } else {
+                    g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
+                }
             }
         }
 

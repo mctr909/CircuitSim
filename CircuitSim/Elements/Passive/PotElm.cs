@@ -38,9 +38,6 @@ namespace Circuit.Elements.Passive {
         Point[] mRect3;
         Point[] mRect4;
 
-        Point mNamePos;
-        string mReferenceName = "VR";
-
         TrackBar mSlider;
         Label mLabel;
 
@@ -49,6 +46,7 @@ namespace Circuit.Elements.Passive {
             mMaxResistance = 1000;
             mPosition = 0.5;
             mFlags = FLAG_SHOW_VALUES;
+            mReferenceName = "VR";
             createSlider();
         }
 
@@ -154,14 +152,8 @@ namespace Circuit.Elements.Passive {
             base.SetPoints();
             int offset = 0;
             int myLen = 0;
-            if (Math.Abs(mDiff.Y) < Math.Abs(mDiff.X)) {
-                /* horizontal */
-                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDiff.X)
-                    * ((Math.Abs(mDiff.X) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
-                mPoint2.X = mPoint1.X + myLen;
-                offset = (mDiff.X < 0) ? mDiff.Y : -mDiff.Y;
-                mPoint2.Y = mPoint1.Y;
-            } else {
+            mNameV = Math.Abs(mDiff.X) <= Math.Abs(mDiff.Y);
+            if (mNameV) {
                 /* vertical */
                 myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDiff.Y)
                     * ((Math.Abs(mDiff.Y) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
@@ -170,6 +162,13 @@ namespace Circuit.Elements.Passive {
                     offset = (0 < mDiff.Y) ? mDiff.X : -mDiff.X;
                     mPoint2.X = mPoint1.X;
                 }
+            } else {
+                /* horizontal */
+                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDiff.X)
+                    * ((Math.Abs(mDiff.X) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
+                mPoint2.X = mPoint1.X + myLen;
+                offset = (mDiff.X < 0) ? mDiff.Y : -mDiff.Y;
+                mPoint2.Y = mPoint1.Y;
             }
             if (offset < CirSim.GRID_SIZE) {
                 offset = CirSim.GRID_SIZE;
@@ -207,10 +206,10 @@ namespace Circuit.Elements.Passive {
                 if (mDiff.Y != 0) {
                     if (0 < mDiff.Y) {
                         /* right slider */
-                        interpPoint(ref mNamePos, 0.5, -(2 * wn + 4) * mDsign);
+                        interpPoint(ref mNamePos, 0.5, -20 * mDsign);
                     } else {
                         /* left slider */
-                        interpPoint(ref mNamePos, 0.5, 5 * mDsign);
+                        interpPoint(ref mNamePos, 0.5, 2 * mDsign);
                     }
                 }
             }
@@ -300,7 +299,11 @@ namespace Circuit.Elements.Passive {
                 }
             }
             if (ControlPanel.ChkShowName.Checked) {
-                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+                if (mNameV) {
+                    g.DrawCenteredVText(mReferenceName, mNamePos.X, mNamePos.Y);
+                } else {
+                    g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+                }
             }
         }
 

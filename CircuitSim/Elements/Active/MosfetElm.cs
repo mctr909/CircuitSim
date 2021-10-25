@@ -54,9 +54,6 @@ namespace Circuit.Elements.Active {
         int mMode = 0;
         double mGm = 0;
 
-        Point mNamePos;
-        string mReferenceName = "Tr";
-
         public MosfetElm(Point pos, bool pnpflag) : base(pos) {
             mPnp = pnpflag ? -1 : 1;
             mFlags = pnpflag ? FLAG_PNP : 0;
@@ -65,6 +62,7 @@ namespace Circuit.Elements.Active {
             setupDiodes();
             mHfe = DefaultHfe;
             mVt = DefaultThreshold;
+            mReferenceName = "Tr";
         }
 
         public MosfetElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -386,12 +384,13 @@ namespace Circuit.Elements.Active {
         }
 
         void setTextPos() {
+            mNameV = mPoint1.Y == mPoint2.Y;
             var txtW = Context.GetTextSize(mReferenceName).Width;
-            if (mPoint1.Y == mPoint2.Y) {
+            if (mNameV) {
                 if (0 < mDsign) {
                     mNamePos = mPoint2;
                 } else {
-                    mNamePos = new Point((int)(mPoint2.X - txtW + 1), mPoint2.Y);
+                    mNamePos = new Point((int)(mPoint2.X - txtW - 2), mPoint2.Y);
                 }
             } else if (mPoint1.X == mPoint2.X) {
                 mNamePos = new Point(mPoint2.X - (int)(txtW / 2), mPoint2.Y + HS * mDsign * 2 / 3);
@@ -465,7 +464,11 @@ namespace Circuit.Elements.Active {
             drawPosts();
 
             if (ControlPanel.ChkShowName.Checked) {
-                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+                if (mNameV) {
+                    g.DrawCenteredVText(mReferenceName, mNamePos.X, mNamePos.Y);
+                } else {
+                    g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+                }
             }
         }
 

@@ -7,12 +7,11 @@ namespace Circuit.Elements.Passive {
 
         Inductor mInd;
         Point mValuePos;
-        Point mNamePos;
-        string mReferenceName = "L";
 
         public InductorElm(Point pos) : base(pos) {
             mInd = new Inductor(mCir);
             Inductance = 0.001;
+            mReferenceName = "L";
             mInd.setup(Inductance, mCurrent, mFlags);
         }
 
@@ -66,14 +65,15 @@ namespace Circuit.Elements.Passive {
         }
 
         void setTextPos() {
+            mNameV = mPoint1.X == mPoint2.X;
             if (mPoint1.Y == mPoint2.Y) {
                 var wv = Context.GetTextSize(Utils.UnitText(Inductance, "")).Width * 0.5;
                 var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
                 interpPoint(ref mValuePos, 0.5 + wv / mLen * mDsign, 10 * mDsign);
                 interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -11 * mDsign);
-            } else if (mPoint1.X == mPoint2.X) {
-                interpPoint(ref mValuePos, 0.5, -3 * mDsign);
-                interpPoint(ref mNamePos, 0.5, 3 * mDsign);
+            } else if (mNameV) {
+                interpPoint(ref mValuePos, 0.5, -20 * mDsign);
+                interpPoint(ref mNamePos, 0.5, mDsign);
             } else {
                 interpPoint(ref mValuePos, 0.5, -8 * mDsign);
                 interpPoint(ref mNamePos, 0.5, 8 * mDsign);
@@ -91,10 +91,18 @@ namespace Circuit.Elements.Passive {
 
             if (ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.UnitText(Inductance, "");
-                g.DrawRightText(s, mValuePos.X, mValuePos.Y);
+                if (mNameV) {
+                    g.DrawCenteredVText(s, mValuePos.X, mValuePos.Y);
+                } else {
+                    g.DrawRightText(s, mValuePos.X, mValuePos.Y);
+                }
             }
             if (ControlPanel.ChkShowName.Checked) {
-                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+                if (mNameV) {
+                    g.DrawCenteredVText(mReferenceName, mNamePos.X, mNamePos.Y);
+                } else {
+                    g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+                }
             }
             doDots();
             drawPosts();

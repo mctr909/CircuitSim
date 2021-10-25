@@ -20,8 +20,6 @@ namespace Circuit.Elements.Passive {
         Point[] mPlate1;
         Point[] mPlate2;
         Point[] mSandwichPoints;
-        Point mNamePos;
-        string mReferenceName = "X";
 
         public override bool CanViewInScope { get { return true; } }
 
@@ -32,6 +30,7 @@ namespace Circuit.Elements.Passive {
             mSeriesCapacitance = 0.1e-12;
             mInductance = 2.5e-3;
             mResistance = 6.4;
+            mReferenceName = "X";
             initCrystal();
         }
 

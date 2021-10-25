@@ -15,11 +15,10 @@ namespace Circuit.Elements.Passive {
         Point[] mRect3;
         Point[] mRect4;
         Point mValuePos;
-        Point mNamePos;
-        string mReferenceName = "R";
 
         public ResistorElm(Point pos) : base(pos) {
             Resistance = 1000;
+            mReferenceName = "R";
         }
 
         public ResistorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -55,14 +54,15 @@ namespace Circuit.Elements.Passive {
         }
 
         void setTextPos() {
+            mNameV = mPoint1.X == mPoint2.X;
             if (mPoint1.Y == mPoint2.Y) {
                 var wv = Context.GetTextSize(Utils.UnitText(Resistance, "")).Width * 0.5;
                 var wn = Context.GetTextSize(mReferenceName).Width * 0.5;
                 interpPoint(ref mValuePos, 0.5 + wv / mLen * mDsign, 10 * mDsign);
                 interpPoint(ref mNamePos, 0.5 - wn / mLen * mDsign, -13 * mDsign);
-            } else if (mPoint1.X == mPoint2.X) {
-                interpPoint(ref mValuePos, 0.5, -5 * mDsign);
-                interpPoint(ref mNamePos, 0.5, 5 * mDsign);
+            } else if (mNameV) {
+                interpPoint(ref mValuePos, 0.5, -20 * mDsign);
+                interpPoint(ref mNamePos, 0.5, 2 * mDsign);
             } else {
                 interpPoint(ref mValuePos, 0.5, -10 * mDsign);
                 interpPoint(ref mNamePos, 0.5, 10 * mDsign);
@@ -141,10 +141,18 @@ namespace Circuit.Elements.Passive {
 
             if (ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.UnitText(Resistance, "");
-                g.DrawRightText(s, mValuePos.X, mValuePos.Y);
+                if (mNameV) {
+                    g.DrawCenteredVText(s, mValuePos.X, mValuePos.Y);
+                } else {
+                    g.DrawRightText(s, mValuePos.X, mValuePos.Y);
+                }
             }
             if (ControlPanel.ChkShowName.Checked) {
-                g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+                if (mNameV) {
+                    g.DrawCenteredVText(mReferenceName, mNamePos.X, mNamePos.Y);
+                } else {
+                    g.DrawLeftText(mReferenceName, mNamePos.X, mNamePos.Y);
+                }
             }
 
             doDots();

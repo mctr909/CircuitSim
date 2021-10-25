@@ -34,9 +34,6 @@ namespace Circuit.Elements.Passive {
         double mA3;
         double mA4;
 
-        string mReferenceName = "T";
-        Point mNamePos;
-
         public TransformerElm(Point pos) : base(pos) {
             mInductance = 4;
             mRatio = mPolarity = 1;
@@ -44,6 +41,7 @@ namespace Circuit.Elements.Passive {
             mCouplingCoef = .999;
             mCurrents = new double[2];
             mCurCounts = new double[2];
+            mReferenceName = "T";
         }
 
         public TransformerElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {

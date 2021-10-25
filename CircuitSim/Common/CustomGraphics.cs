@@ -56,6 +56,11 @@ namespace Circuit {
             Alignment = StringAlignment.Center,
             LineAlignment = StringAlignment.Center
         };
+        static readonly StringFormat textCenterV = new StringFormat() {
+            Alignment = StringAlignment.Center,
+            LineAlignment = StringAlignment.Near,
+            FormatFlags = StringFormatFlags.DirectionVertical,
+        };
 
         Bitmap image;
         Graphics g;
@@ -141,6 +146,10 @@ namespace Circuit {
 
         public void DrawCenteredLText(string s, int x, int y) {
             g.DrawString(s, fontLText, brushText, x, y + 1, textCenter);
+        }
+
+        public void DrawCenteredVText(string s, int x, int y) {
+            g.DrawString(s, FontText, brushText, x, y, textCenterV);
         }
 
         public void DrawLine(int ax, int ay, int bx, int by) {
