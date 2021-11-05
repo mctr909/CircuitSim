@@ -103,7 +103,7 @@ namespace Circuit.Elements.Output {
         }
 
         public override void Draw(CustomGraphics g) {
-            drawVoltage(0, mPoint1, mLead1);
+            drawLead(mPoint1, mLead1);
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             var str = Text;
             var lineOver = false;

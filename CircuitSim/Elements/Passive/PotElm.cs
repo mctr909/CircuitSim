@@ -236,31 +236,27 @@ namespace Circuit.Elements.Passive {
                     if (i >= divide) {
                         v = vs + (vr - vs) * (i - divide) / (SEGMENTS - divide);
                     }
-                    g.LineColor = getVoltageColor(v);
-                    g.DrawLine(mPs1[i], mPs2[i]);
+                    drawLead(mPs1[i], mPs2[i]);
                 }
             } else {
                 /* draw rectangle */
-                g.LineColor = getVoltageColor(vl);
-                g.DrawLine(mRect1[0], mRect2[0]);
+                drawLead(mRect1[0], mRect2[0]);
                 for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
                     double v = vl + (vs - vl) * i / divide;
                     if (i >= divide) {
                         v = vs + (vr - vs) * (i - divide) / (SEGMENTS - divide);
                     }
-                    g.LineColor = getVoltageColor(v);
-                    g.DrawLine(mRect1[j], mRect3[j]);
-                    g.DrawLine(mRect2[j], mRect4[j]);
+                    drawLead(mRect1[j], mRect3[j]);
+                    drawLead(mRect2[j], mRect4[j]);
                 }
-                g.DrawLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
+                drawLead(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
             }
 
             /* draw slider */
-            g.LineColor = getVoltageColor(vs);
-            g.DrawLine(mPost3, mCorner2);
-            g.DrawLine(mCorner2, mArrowPoint);
-            g.DrawLine(mArrow1, mArrowPoint);
-            g.DrawLine(mArrow2, mArrowPoint);
+            drawLead(mPost3, mCorner2);
+            drawLead(mCorner2, mArrowPoint);
+            drawLead(mArrow1, mArrowPoint);
+            drawLead(mArrow2, mArrowPoint);
 
             /* draw dot */
             mCurCount1 = updateDotCount(mCurrent1, mCurCount1);

@@ -178,11 +178,10 @@ namespace Circuit.Elements.Gate {
         }
 
         public override void Draw(CustomGraphics g) {
-            int i;
-            for (i = 0; i != mInputCount; i++) {
-                drawVoltage(i, mInPosts[i], mInGates[i]);
+            for (int i = 0; i != mInputCount; i++) {
+                drawLead(mInPosts[i], mInGates[i]);
             }
-            drawVoltage(mInputCount, mLead2, mPoint2);
+            drawLead(mLead2, mPoint2);
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             if (useAnsiGates()) {
                 g.DrawPolygon(mGatePolyAnsi);
@@ -197,8 +196,8 @@ namespace Circuit.Elements.Gate {
                 g.DrawPolygon(mSchmittPoly);
             }
             if (mLinePoints != null && useAnsiGates()) {
-                for (i = 0; i != mLinePoints.Length - 1; i++) {
-                    g.DrawLine(mLinePoints[i], mLinePoints[i + 1]);
+                for (int i = 0; i != mLinePoints.Length - 1; i++) {
+                    drawLead(mLinePoints[i], mLinePoints[i + 1]);
                 }
             }
             if (isInverting()) {

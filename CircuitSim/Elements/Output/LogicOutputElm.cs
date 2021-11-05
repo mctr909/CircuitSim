@@ -65,7 +65,7 @@ namespace Circuit.Elements.Output {
             mValue = s;
             setBbox(mPoint1, mLead1, 0);
             drawCenteredLText(s, P2, true);
-            drawVoltage(0, mPoint1, mLead1);
+            drawLead(mPoint1, mLead1);
             drawPosts();
         }
 

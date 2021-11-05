@@ -48,7 +48,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            drawVoltage(0, mPoint1, mPoint2);
+            drawLead(mPoint1, mPoint2);
             doDots();
             setBbox(mPoint1, mPoint2, 3);
             string s = "";

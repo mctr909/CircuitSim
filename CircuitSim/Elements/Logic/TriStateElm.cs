@@ -68,7 +68,7 @@ namespace Circuit.Elements.Logic {
 
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.DrawPolygon(gatePoly);
-            drawVoltage(2, point3, lead3);
+            drawLead(point3, lead3);
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(mLead2, mPoint2, mCurCount);
             drawPosts();

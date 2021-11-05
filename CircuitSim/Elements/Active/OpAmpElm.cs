@@ -91,9 +91,9 @@ namespace Circuit.Elements.Active {
         public override void Draw(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, mOpHeight * 2);
 
-            drawVoltage(V_N, mIn1p[0], mIn1p[1]);
-            drawVoltage(V_P, mIn2p[0], mIn2p[1]);
-            drawVoltage(V_O, mLead2, mPoint2);
+            drawLead(mIn1p[0], mIn1p[1]);
+            drawLead(mIn2p[0], mIn2p[1]);
+            drawLead(mLead2, mPoint2);
 
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.DrawPolygon(mTriangle);

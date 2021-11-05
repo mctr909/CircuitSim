@@ -6,7 +6,6 @@ using Circuit.Elements.Output;
 
 namespace Circuit.Elements {
     abstract class CircuitElm : Editable {
-        static Color[] mColorScale;
         static CircuitElm mMouseElmRef = null;
         protected static Circuit mCir;
         public static CustomGraphics Context;
@@ -197,22 +196,6 @@ namespace Circuit.Elements {
         public static void InitClass(Circuit c) {
             mCir = c;
         }
-
-        public static void SetColorScale(int colorScaleCount) {
-            mColorScale = new Color[colorScaleCount];
-            for (int i = 0; i != colorScaleCount; i++) {
-                double v = (i * 2.0 / colorScaleCount - 1.0) * 0.66;
-                if (v < 0) {
-                    int n1 = (int)(128 * -v) + 127;
-                    int n2 = (int)(127 * (1 + v));
-                    mColorScale[i] = Color.FromArgb(n2, n2, n1);
-                } else {
-                    int n1 = (int)(128 * v) + 127;
-                    int n2 = (int)(127 * (1 - v));
-                    mColorScale[i] = Color.FromArgb(n2, n1, n2);
-                }
-            }
-        }
         #endregion
 
         #region [protected method]
@@ -340,23 +323,6 @@ namespace Circuit.Elements {
             return (x1 == y1 && x2 == y2) || (x1 == y2 && x2 == y1);
         }
 
-        protected Color getVoltageColor(double volts) {
-            if (NeedsHighlight) {
-                return CustomGraphics.SelectColor;
-            }
-            if (!ControlPanel.ChkShowVolts.Checked || ControlPanel.ChkPrintable.Checked) {
-                return CustomGraphics.GrayColor;
-            }
-            int c = (int)((volts + ControlPanel.VoltageRange) * (mColorScale.Length - 1) / (ControlPanel.VoltageRange * 2));
-            if (c < 0) {
-                c = 0;
-            }
-            if (c >= mColorScale.Length) {
-                c = mColorScale.Length - 1;
-            }
-            return mColorScale[c];
-        }
-
         protected void setLead1(double w) {
             interpPoint(ref mLead1, w);
         }
@@ -455,22 +421,17 @@ namespace Circuit.Elements {
             }
         }
 
-        protected void draw2Leads() {
-            /* draw first lead */
-            Context.LineColor = getVoltageColor(Volts[0]);
-            Context.DrawLine(mPoint1, mLead1);
-            /* draw second lead */
-            Context.LineColor = getVoltageColor(Volts[1]);
-            Context.DrawLine(mLead2, mPoint2);
-        }
-
-        protected void drawVoltage(int index, Point a, Point b) {
-            Context.LineColor = getVoltageColor(Volts[index]);
+        protected void drawLead(Point a, Point b) {
+            Context.LineColor = CustomGraphics.GrayColor;
             Context.DrawLine(a, b);
         }
 
-        protected void fillVoltage(int index, Point[] poly) {
-            Context.FillPolygon(getVoltageColor(Volts[index]), poly);
+        protected void draw2Leads() {
+            Context.LineColor = CustomGraphics.GrayColor;
+            /* draw first lead */
+            Context.DrawLine(mPoint1, mLead1);
+            /* draw second lead */
+            Context.DrawLine(mLead2, mPoint2);
         }
 
         /// <summary>
@@ -581,7 +542,7 @@ namespace Circuit.Elements {
             for (int loop = 0; loop != loopCt; loop++) {
                 Utils.InterpPoint(a, b, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
-                Context.LineColor = getVoltageColor(v);
+                Context.LineColor = CustomGraphics.GrayColor;
                 Context.DrawArc(pos, w, th, -180);
             }
         }
@@ -601,7 +562,7 @@ namespace Circuit.Elements {
             for (int loop = 0; loop != loopCt; loop++) {
                 Utils.InterpPoint(a, b, ref pos, (loop + 0.5) / loopCt, 0);
                 double v = v1 + (v2 - v1) * loop / loopCt;
-                Context.LineColor = getVoltageColor(v);
+                Context.LineColor = CustomGraphics.GrayColor;
                 Context.DrawArc(pos, w, dir, -180);
             }
         }

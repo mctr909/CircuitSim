@@ -155,9 +155,9 @@ namespace Circuit.Elements.Active {
             draw2Leads();
 
             /* draw arrow thingy */
-            fillVoltage(0, mPoly);
+            g.FillPolygon(CustomGraphics.GrayColor, mPoly);
             /* draw thing arrow is pointing to */
-            drawVoltage(1, mCathode[0], mCathode[1]);
+            drawLead(mCathode[0], mCathode[1]);
         }
 
         protected override void calculateCurrent() {

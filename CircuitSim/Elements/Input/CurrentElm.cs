@@ -54,11 +54,9 @@ namespace Circuit.Elements.Input {
         public override void Draw(CustomGraphics g) {
             draw2Leads();
 
-            var c = getVoltageColor((Volts[0] + Volts[1]) / 2);
-            g.LineColor = c;
             g.DrawCircle(mCenter, BODY_LEN);
-            g.DrawLine(mAshaft1, mAshaft2);
-            g.FillPolygon(c, mArrow);
+            drawLead(mAshaft1, mAshaft2);
+            g.FillPolygon(CustomGraphics.GrayColor, mArrow);
 
             setBbox(mPoint1, mPoint2, BODY_LEN);
             doDots();

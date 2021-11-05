@@ -108,7 +108,7 @@ namespace Circuit.Elements.Input {
         public override void Draw(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, SIZE);
 
-            drawVoltage(0, mPoint1, mLead1);
+            drawLead(mPoint1, mLead1);
 
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
 

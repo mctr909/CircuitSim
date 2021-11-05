@@ -5,7 +5,7 @@ namespace Circuit.Elements.Passive {
     class CapacitorElm : CircuitElm {
         public static readonly int FLAG_BACK_EULER = 2;
 
-        const int BODY_LEN = 6;
+        const int BODY_LEN = 5;
         const int HS = 5;
 
         double mCompResistance;
@@ -29,8 +29,6 @@ namespace Circuit.Elements.Passive {
         }
 
         public double Capacitance { get; set; }
-
-        public bool IsTrapezoidal { get { return (mFlags & FLAG_BACK_EULER) == 0; } }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.CAPACITOR; } }
 
@@ -72,27 +70,15 @@ namespace Circuit.Elements.Passive {
                 return;
             }
 
-            /* capacitor companion model using trapezoidal approximation
-             * (Norton equivalent) consists of a current source in
-             * parallel with a resistor.  Trapezoidal is more accurate
-             * than backward euler but can cause oscillatory behavior
-             * if RC is small relative to the timestep. */
-            if (IsTrapezoidal) {
-                mCompResistance = ControlPanel.TimeStep / (2 * Capacitance);
-            } else {
-                mCompResistance = ControlPanel.TimeStep / Capacitance;
-            }
+            mCompResistance = ControlPanel.TimeStep / (2 * Capacitance);
+
             mCir.StampResistor(Nodes[0], Nodes[1], mCompResistance);
             mCir.StampRightSide(Nodes[0]);
             mCir.StampRightSide(Nodes[1]);
         }
 
         public override void StartIteration() {
-            if (IsTrapezoidal) {
-                mCurSourceValue = -mVoltDiff / mCompResistance - mCurrent;
-            } else {
-                mCurSourceValue = -mVoltDiff / mCompResistance;
-            }
+            mCurSourceValue = -mVoltDiff / mCompResistance - mCurrent;
         }
 
         public override void DoStep() {
@@ -143,11 +129,11 @@ namespace Circuit.Elements.Passive {
             setBbox(mPoint1, mPoint2, HS);
 
             /* draw first lead and plate */
-            drawVoltage(0, mPoint1, mLead1);
-            g.DrawLine(mPlate1[0], mPlate1[1]);
+            drawLead(mPoint1, mLead1);
+            drawLead(mPlate1[0], mPlate1[1]);
             /* draw second lead and plate */
-            drawVoltage(1, mPoint2, mLead2);
-            g.DrawLine(mPlate2[0], mPlate2[1]);
+            drawLead(mPoint2, mLead2);
+            drawLead(mPlate2[0], mPlate2[1]);
 
             updateDotCount();
             if (CirSim.Sim.DragElm != this) {
@@ -181,13 +167,6 @@ namespace Circuit.Elements.Passive {
                 ei.Text = ReferenceName;
                 return ei;
             }
-            if (n == 2) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox();
-                ei.CheckBox.Text = "台形近似";
-                ei.CheckBox.Checked = IsTrapezoidal;
-                return ei;
-            }
             return null;
         }
 
@@ -199,13 +178,6 @@ namespace Circuit.Elements.Passive {
             if (n == 1) {
                 ReferenceName = ei.Textf.Text;
                 setTextPos();
-            }
-            if (n == 2) {
-                if (ei.CheckBox.Checked) {
-                    mFlags &= ~FLAG_BACK_EULER;
-                } else {
-                    mFlags |= FLAG_BACK_EULER;
-                }
             }
         }
     }

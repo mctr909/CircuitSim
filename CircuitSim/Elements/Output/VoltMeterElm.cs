@@ -164,16 +164,16 @@ namespace Circuit.Elements.Output {
             if (selected) {
                 g.LineColor = CustomGraphics.SelectColor;
             } else {
-                g.LineColor = getVoltageColor(Volts[0]);
+                g.LineColor = CustomGraphics.GrayColor;
             }
-            g.DrawLine(mPoint1, mLead1);
+            drawLead(mPoint1, mLead1);
 
             if (selected) {
                 g.LineColor = CustomGraphics.SelectColor;
             } else {
-                g.LineColor = getVoltageColor(Volts[1]);
+                g.LineColor = CustomGraphics.GrayColor;
             }
-            g.DrawLine(mLead2, mPoint2);
+            drawLead(mLead2, mPoint2);
 
             if (this == CirSim.Sim.PlotXElm) {
                 drawCenteredLText("X", mCenter, true);

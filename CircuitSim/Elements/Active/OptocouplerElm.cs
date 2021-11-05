@@ -136,7 +136,7 @@ namespace Circuit.Elements.Active {
             for (int i = 0; i != 4; i++) {
                 var a = posts[i];
                 var b = mStubs[i];
-                drawVoltage(i, a, b);
+                drawLead(a, b);
                 mCurCounts[i] = updateDotCount(-GetCurrentIntoNode(i), mCurCounts[i]);
                 drawDots(a, b, mCurCounts[i]);
             }
@@ -147,7 +147,7 @@ namespace Circuit.Elements.Active {
             drawPosts();
 
             /* draw little arrows */
-            var c = NeedsHighlight ? CustomGraphics.SelectColor : getVoltageColor(Volts[0]);
+            var c = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.FillPolygon(c, mArrow1);
             g.FillPolygon(c, mArrow2);
             g.LineColor = c;

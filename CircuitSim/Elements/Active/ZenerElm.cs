@@ -50,13 +50,12 @@ namespace Circuit.Elements.Active {
             draw2Leads();
 
             /* draw arrow thingy */
-            fillVoltage(0, mPoly);
+            g.FillPolygon(CustomGraphics.GrayColor, mPoly);
             /* draw thing arrow is pointing to */
-            g.LineColor = getVoltageColor(v2);
-            g.DrawLine(mCathode[0], mCathode[1]);
+            drawLead(mCathode[0], mCathode[1]);
             /* draw wings on cathode */
-            g.DrawLine(mWing[0], mCathode[0]);
-            g.DrawLine(mWing[1], mCathode[1]);
+            drawLead(mWing[0], mCathode[0]);
+            drawLead(mWing[1], mCathode[1]);
 
             doDots();
             drawPosts();

@@ -108,10 +108,10 @@ namespace Circuit.Elements.Passive {
             adjustBbox(mSwPosts[0], mSwPosts[mThrowCount - 1]);
 
             /* draw first lead */
-            drawVoltage(0, mPoint1, mLead1);
+            drawLead(mPoint1, mLead1);
             /* draw other leads */
             for (int i = 0; i < mThrowCount; i++) {
-                drawVoltage(i + 1, mSwPoles[i], mSwPosts[i]);
+                drawLead(mSwPoles[i], mSwPosts[i]);
             }
             /* draw switch */
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;

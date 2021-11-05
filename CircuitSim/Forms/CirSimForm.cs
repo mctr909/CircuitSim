@@ -77,8 +77,6 @@ namespace Circuit {
                 parent.Controls.Add(mSplitContainer);
             }
 
-            CircuitElm.SetColorScale(64);
-
             readCircuit("");
             readRecovery();
 
@@ -1087,15 +1085,13 @@ namespace Circuit {
             DiodeModel.clearDumpedFlags();
 
             int f = ControlPanel.ChkShowDots.Checked ? 1 : 0;
-            f |= ControlPanel.ChkShowVolts.Checked ? 0 : 4;
             f |= ControlPanel.ChkShowValues.Checked ? 0 : 16;
 
             /* 32 = linear scale in afilter */
             string dump = "$ " + f
                 + " " + ControlPanel.TimeStep
                 + " " + getIterCount()
-                + " " + ControlPanel.TrbCurrent.Value
-                + " " + ControlPanel.VoltageRange + "\n";
+                + " " + ControlPanel.TrbCurrent.Value + "\n";
 
             int i;
             for (i = 0; i != ElmList.Count; i++) {
@@ -1266,7 +1262,6 @@ namespace Circuit {
         void readOptions(StringTokenizer st) {
             int flags = st.nextTokenInt();
             ControlPanel.ChkShowDots.Checked = (flags & 1) != 0;
-            ControlPanel.ChkShowVolts.Checked = (flags & 4) == 0;
             ControlPanel.ChkShowValues.Checked = (flags & 16) == 0;
 
             ControlPanel.TimeStep = st.nextTokenDouble();
@@ -1274,7 +1269,6 @@ namespace Circuit {
             int sp2 = (int)(Math.Log(10 * sp) * 24 + 61.5);
             ControlPanel.TrbSpeed.Value = sp2;
             ControlPanel.TrbCurrent.Value = st.nextTokenInt();
-            ControlPanel.VoltageRange = st.nextTokenDouble();
         }
 
         bool doSwitch(Point pos) {

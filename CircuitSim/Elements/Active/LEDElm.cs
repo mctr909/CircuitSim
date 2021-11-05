@@ -70,8 +70,8 @@ namespace Circuit.Elements.Active {
                 return;
             }
 
-            drawVoltage(0, mPoint1, mLedLead1);
-            drawVoltage(1, mLedLead2, mPoint2);
+            drawLead(mPoint1, mLedLead1);
+            drawLead(mLedLead2, mPoint2);
 
             g.LineColor = CustomGraphics.GrayColor;
             g.DrawCircle(mLedCenter, CR);

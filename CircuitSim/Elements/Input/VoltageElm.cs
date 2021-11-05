@@ -213,10 +213,10 @@ namespace Circuit.Elements.Input {
                 setBbox(mPoint1, mPoint2, hs);
 
                 interpLeadAB(ref mPs1, ref mPs2, 0, hs * 0.5);
-                drawVoltage(0, mPs1, mPs2);
+                drawLead(mPs1, mPs2);
 
                 interpLeadAB(ref mPs1, ref mPs2, 1, hs);
-                drawVoltage(1, mPs1, mPs2);
+                drawLead(mPs1, mPs2);
 
                 string s = Utils.UnitText(mMaxVoltage, "V");
                 g.DrawRightText(s, mTextPos.X, mTextPos.Y);

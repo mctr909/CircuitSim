@@ -279,13 +279,13 @@ namespace Circuit.Elements.Active {
             setBbox(mPoint1, mPoint2, 16);
 
             /* draw collector */
-            drawVoltage(V_C, mColl[0], mColl[1]);
+            drawLead(mColl[0], mColl[1]);
             /* draw emitter */
-            drawVoltage(V_E, mEmit[0], mEmit[1]);
+            drawLead(mEmit[0], mEmit[1]);
             /* draw arrow */
-            fillVoltage(V_E, mArrowPoly);
+            g.FillPolygon(CustomGraphics.GrayColor, mArrowPoly);
             /* draw base */
-            drawVoltage(V_B, mPoint1, mTbase);
+            drawLead(mPoint1, mTbase);
 
             /* draw dots */
             mCurCount_b = updateDotCount(-mIb, mCurCount_b);
@@ -296,7 +296,7 @@ namespace Circuit.Elements.Active {
             drawDots(mEmit[1], mEmit[0], mCurCount_e);
 
             /* draw base rectangle */
-            fillVoltage(V_B, mRectPoly);
+            g.FillPolygon(CustomGraphics.GrayColor, mRectPoly);
 
             drawPosts();
 

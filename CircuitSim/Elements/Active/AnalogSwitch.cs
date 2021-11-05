@@ -108,7 +108,7 @@ namespace Circuit.Elements.Active {
             g.LineColor = CustomGraphics.WhiteColor;
             g.DrawLine(mLead1, mPs);
 
-            drawVoltage(2, mPoint3, mLead3);
+            drawLead(mPoint3, mLead3);
 
             if (!mIsOpen) {
                 doDots();

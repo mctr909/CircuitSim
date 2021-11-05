@@ -78,7 +78,7 @@ namespace Circuit.Elements.Input {
             }
             setBbox(mPoint1, mLead1, 0);
             drawCenteredLText(s, P2, true);
-            drawVoltage(0, mPoint1, mLead1);
+            drawLead(mPoint1, mLead1);
             updateDotCount();
             drawDots(mPoint1, mLead1, mCurCount);
             drawPosts();

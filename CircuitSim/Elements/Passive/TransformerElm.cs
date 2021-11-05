@@ -235,10 +235,10 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            drawVoltage(PRI_T, mPtEnds[0], mPtCoil[0]);
-            drawVoltage(SEC_T, mPtEnds[1], mPtCoil[1]);
-            drawVoltage(PRI_B, mPtEnds[2], mPtCoil[2]);
-            drawVoltage(SEC_B, mPtEnds[3], mPtCoil[3]);
+            drawLead(mPtEnds[0], mPtCoil[0]);
+            drawLead(mPtEnds[1], mPtCoil[1]);
+            drawLead(mPtEnds[2], mPtCoil[2]);
+            drawLead(mPtEnds[3], mPtCoil[3]);
 
             drawCoil(mPtCoil[0], mPtCoil[2], Volts[PRI_T], Volts[PRI_B], 90 * mDsign);
             drawCoil(mPtCoil[1], mPtCoil[3], Volts[SEC_T], Volts[SEC_B], -90 * mDsign * mPolarity);

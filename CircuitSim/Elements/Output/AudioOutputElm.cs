@@ -205,9 +205,9 @@ namespace Circuit.Elements.Output {
             if (selected) {
                 g.LineColor = CustomGraphics.SelectColor;
             } else {
-                g.LineColor = getVoltageColor(Volts[0]);
+                g.LineColor = CustomGraphics.GrayColor;
             }
-            g.DrawLine(mPoint1, mLead1);
+            drawLead(mPoint1, mLead1);
             drawPosts();
         }
 

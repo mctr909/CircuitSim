@@ -103,10 +103,10 @@ namespace Circuit.Elements.Active {
             drawDiode(g);
 
             // draw first plate
-            drawVoltage(0, mPlate1[0], mPlate1[1]);
+            drawLead(mPlate1[0], mPlate1[1]);
 
             // draw second plate
-            drawVoltage(1, mPlate2[0], mPlate2[1]);
+            drawLead(mPlate2[0], mPlate2[1]);
 
             doDots();
             drawPosts();

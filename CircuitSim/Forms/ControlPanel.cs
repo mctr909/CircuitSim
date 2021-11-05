@@ -8,7 +8,6 @@ namespace Circuit {
         public static Button BtnRunStop { get; private set; }
         public static TrackBar TrbSpeed { get; private set; }
         public static TrackBar TrbCurrent { get; private set; }
-        public static CheckBox ChkShowVolts { get; private set; }
         public static CheckBox ChkShowDots { get; private set; }
         public static CheckBox ChkShowValues { get; private set; }
         public static CheckBox ChkShowName { get; private set; }
@@ -25,21 +24,9 @@ namespace Circuit {
                 }
             }
         }
-        public static double VoltageRange {
-            get { return mVoltageRange; }
-            set { 
-                mVoltageRange = value;
-                if (null != mTxtVoltageRange) {
-                    mTxtVoltageRange.Text = Utils.UnitText(mVoltageRange, "");
-                }
-            }
-        }
 
         static TextBox mTxtTimeStep;
-        static TextBox mTxtVoltageRange;
         static double mTimeStep;
-        static double mVoltageRange;
-
         static Panel mSliderPanel;
 
         public static void Init(CirSim sim) {
@@ -100,11 +87,6 @@ namespace Circuit {
             VerticalPanel.Controls.Add(TrbCurrent);
             ofsY += TrbCurrent.Height + 4;
 
-            /* Show Voltage */
-            ChkShowVolts = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "電圧を表示" };
-            VerticalPanel.Controls.Add(ChkShowVolts);
-            ofsY += ChkShowVolts.Height + 4;
-
             /* Show Current */
             ChkShowDots = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "電流を表示" };
             VerticalPanel.Controls.Add(ChkShowDots);
@@ -164,23 +146,6 @@ namespace Circuit {
             VerticalPanel.Controls.Add(mTxtTimeStep);
             ofsY += mTxtTimeStep.Height + 4;
 
-            /* VoltageRange */
-            ofsY += 4;
-            var lblVoltageRange = new Label() { Left = 4, Top = ofsY, AutoSize = true, Text = "青から緑への電圧幅(V)" };
-            VerticalPanel.Controls.Add(lblVoltageRange);
-            ofsY += lblVoltageRange.Height + 4;
-            mTxtVoltageRange = new TextBox() { Left = 4, Top = ofsY, Width = 80 };
-            mTxtVoltageRange.TextChanged += new EventHandler((s, e) => {
-                var tmp = 0.0;
-                if (Utils.TextToNum(mTxtVoltageRange.Text, out tmp)) {
-                    mVoltageRange = tmp;
-                } else {
-                    mTxtVoltageRange.Text = Utils.UnitText(mVoltageRange, "");
-                }
-            });
-            VerticalPanel.Controls.Add(mTxtVoltageRange);
-            ofsY += mTxtVoltageRange.Height + 4;
-
             /* SliderPanel */
             mSliderPanel = new Panel() {
                 Left = 4,
@@ -197,9 +162,7 @@ namespace Circuit {
 
         public static void Reset() {
             TimeStep = 10e-6;
-            VoltageRange = 5;
             ChkShowDots.Checked = false;
-            ChkShowVolts.Checked = true;
             ChkShowValues.Checked = true;
             ChkUseAnsiSymbols.Checked = true;
             TrbSpeed.Value = 57;

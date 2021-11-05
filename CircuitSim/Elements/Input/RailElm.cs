@@ -57,7 +57,7 @@ namespace Circuit.Elements.Input {
             }
             setBbox(mPoint1, mPoint2, BODY_LEN);
 
-            drawVoltage(0, mPoint1, mLead1);
+            drawLead(mPoint1, mLead1);
             drawRail(g);
             drawPosts();
             mCurCount = updateDotCount(-mCurrent, mCurCount);

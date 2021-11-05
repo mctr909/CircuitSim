@@ -189,7 +189,7 @@ namespace Circuit.Elements.Custom {
                 var p = pins[i];
                 var a = p.post;
                 var b = p.stub;
-                drawVoltage(i, a, b);
+                drawLead(a, b);
                 p.curcount = updateDotCount(p.current, p.curcount);
                 drawDots(b, a, p.curcount);
                 if (p.bubble) {

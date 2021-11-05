@@ -408,8 +408,8 @@ namespace Circuit.Elements.Active {
             setBbox(mPoint1, mPoint2, HS);
 
             /* draw source/drain terminals */
-            drawVoltage(V_S, mSrc[0], mSrc[1]);
-            drawVoltage(V_D, mDrn[0], mDrn[1]);
+            drawLead(mSrc[0], mSrc[1]);
+            drawLead(mDrn[0], mDrn[1]);
 
             /* draw line connecting source and drain */
             bool enhancement = mVt > 0 && ShowBulk;
@@ -418,29 +418,27 @@ namespace Circuit.Elements.Active {
                     continue;
                 }
                 double v = Volts[V_S] + (Volts[V_D] - Volts[V_S]) * i / SEGMENTS;
-                g.LineColor = getVoltageColor(v);
-                g.DrawLine(mPs1[i], mPs2[i]);
+                drawLead(mPs1[i], mPs2[i]);
             }
 
             /* draw little extensions of that line */
-            drawVoltage(V_S, mSrc[1], mSrc[2]);
-            drawVoltage(V_D, mDrn[1], mDrn[2]);
+            drawLead(mSrc[1], mSrc[2]);
+            drawLead(mDrn[1], mDrn[2]);
 
             /* draw bulk connection */
             if (ShowBulk) {
-                g.LineColor = getVoltageColor(Volts[mBodyTerminal]);
-                g.DrawLine(mPnp == -1 ? mDrn[0] : mSrc[0], mBody[0]);
-                g.DrawLine(mBody[0], mBody[1]);
+                drawLead(mPnp == -1 ? mDrn[0] : mSrc[0], mBody[0]);
+                drawLead(mBody[0], mBody[1]);
             }
 
             /* draw arrow */
             if (!DrawDigital) {
-                fillVoltage(mBodyTerminal, mArrowPoly);
+                g.FillPolygon(CustomGraphics.GrayColor, mArrowPoly);
             }
 
             /* draw gate */
-            drawVoltage(V_G, mPoint1, mGate[1]);
-            g.DrawLine(mGate[0], mGate[2]);
+            drawLead(mPoint1, mGate[1]);
+            drawLead(mGate[0], mGate[2]);
             if (DrawDigital && mPnp == -1) {
                 g.DrawCircle(mPcircle, mPcircler);
             }
