@@ -128,7 +128,7 @@ namespace Circuit.Elements.Active {
                 var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
                 interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 13 * mDsign);
             } else if (mNameV) {
-                interpPoint(ref mNamePos, 0.5, -20 * mDsign);
+                interpPoint(ref mNamePos, 0.5, -22 * mDsign);
             } else {
                 interpPoint(ref mNamePos, 0.5, -10 * mDsign);
             }

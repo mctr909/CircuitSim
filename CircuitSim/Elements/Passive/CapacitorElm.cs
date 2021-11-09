@@ -5,8 +5,8 @@ namespace Circuit.Elements.Passive {
     class CapacitorElm : CircuitElm {
         public static readonly int FLAG_BACK_EULER = 2;
 
-        const int BODY_LEN = 5;
-        const int HS = 5;
+        const int BODY_LEN = 6;
+        const int HS = 6;
 
         double mCompResistance;
         double mVoltDiff;
@@ -117,7 +117,7 @@ namespace Circuit.Elements.Passive {
                 interpPoint(ref mValuePos, 0.5 - wv / mLen * mDsign, -13 * mDsign);
                 interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 10 * mDsign);
             } else if (mNameV) {
-                interpPoint(ref mValuePos, 0.5, 2 * mDsign);
+                interpPoint(ref mValuePos, 0.5, 3 * mDsign);
                 interpPoint(ref mNamePos, 0.5, -20 * mDsign);
             } else {
                 interpPoint(ref mValuePos, 0.5, 8 * mDsign);
