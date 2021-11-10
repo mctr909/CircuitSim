@@ -39,7 +39,7 @@ namespace Circuit.Elements.Input {
         public override DUMP_ID DumpType { get { return DUMP_ID.LOGIC_I; } }
 
         protected override string dump() {
-            return mHiV + " " + mLoV;
+            return " " + mHiV + " " + mLoV;
         }
 
         bool isTernary() { return (mFlags & FLAG_TERNARY) != 0; }

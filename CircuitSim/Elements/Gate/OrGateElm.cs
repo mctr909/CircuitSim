@@ -50,7 +50,6 @@ namespace Circuit.Elements.Gate {
             mGatePolyAnsi[16] = mLead2;
 
             if (isInverting()) {
-                mCircleSize = 6;
                 interpPoint(ref mCirclePos, 0.5 + (mWw + 3) / mLen);
                 setLead2(0.5 + (mWw + 6) / mLen);
             }

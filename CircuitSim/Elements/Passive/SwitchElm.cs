@@ -22,10 +22,14 @@ namespace Circuit.Elements.Passive {
         }
 
         public SwitchElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            string str = st.nextToken();
-            Position = int.Parse(str);
-            Momentary = st.nextTokenBool();
+            Position = 0;
+            Momentary = false;
             PosCount = 2;
+            try {
+                string str = st.nextToken();
+                Position = int.Parse(str);
+                Momentary = st.nextTokenBool();
+            } catch { }
         }
 
         public bool Momentary { get; protected set; }

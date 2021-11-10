@@ -9,6 +9,7 @@ namespace Circuit.Elements.Gate {
         const int G_WIDTH = 7;
         const int G_WIDTH2 = 14;
         const int G_HEIGHT = 8;
+        const int CIRCLE_SIZE = 3;
 
         public static double LastHighVoltage = 5;
 
@@ -21,7 +22,6 @@ namespace Circuit.Elements.Gate {
         protected Point[] mGatePolyEuro;
         protected Point[] mGatePolyAnsi;
 
-        protected int mCircleSize;
         protected Point mCirclePos;
         protected Point[] mLinePoints;
 
@@ -201,7 +201,7 @@ namespace Circuit.Elements.Gate {
                 }
             }
             if (isInverting()) {
-                g.DrawCircle(mCirclePos, mCircleSize);
+                g.DrawCircle(mCirclePos, CIRCLE_SIZE);
             }
             mCurCount = updateDotCount(mCurrent, mCurCount);
             drawDots(mLead2, mPoint2, mCurCount);
