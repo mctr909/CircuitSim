@@ -422,12 +422,12 @@ namespace Circuit.Elements {
         }
 
         protected void drawLead(Point a, Point b) {
-            Context.LineColor = CustomGraphics.GrayColor;
+            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             Context.DrawLine(a, b);
         }
 
         protected void draw2Leads() {
-            Context.LineColor = CustomGraphics.GrayColor;
+            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             /* draw first lead */
             Context.DrawLine(mPoint1, mLead1);
             /* draw second lead */
@@ -535,14 +535,13 @@ namespace Circuit.Elements {
                 return;
             }
             /* draw more loops for a longer coil */
+            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             var loopCt = (int)Math.Ceiling(coilLen / 11);
             var w = coilLen / loopCt;
             var th = (float)(Utils.Angle(a, b) * 180 / Math.PI);
             var pos = new Point();
             for (int loop = 0; loop != loopCt; loop++) {
                 Utils.InterpPoint(a, b, ref pos, (loop + 0.5) / loopCt, 0);
-                double v = v1 + (v2 - v1) * loop / loopCt;
-                Context.LineColor = CustomGraphics.GrayColor;
                 Context.DrawArc(pos, w, th, -180);
             }
         }
@@ -553,6 +552,7 @@ namespace Circuit.Elements {
                 return;
             }
             /* draw more loops for a longer coil */
+            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             var loopCt = (int)Math.Ceiling(coilLen / 9);
             float w = coilLen / loopCt;
             if (Utils.Angle(a, b) < 0) {
@@ -561,8 +561,6 @@ namespace Circuit.Elements {
             var pos = new Point();
             for (int loop = 0; loop != loopCt; loop++) {
                 Utils.InterpPoint(a, b, ref pos, (loop + 0.5) / loopCt, 0);
-                double v = v1 + (v2 - v1) * loop / loopCt;
-                Context.LineColor = CustomGraphics.GrayColor;
                 Context.DrawArc(pos, w, dir, -180);
             }
         }

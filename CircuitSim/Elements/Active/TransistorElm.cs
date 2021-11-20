@@ -283,7 +283,7 @@ namespace Circuit.Elements.Active {
             /* draw emitter */
             drawLead(mEmit[0], mEmit[1]);
             /* draw arrow */
-            g.FillPolygon(CustomGraphics.GrayColor, mArrowPoly);
+            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, mArrowPoly);
             /* draw base */
             drawLead(mPoint1, mTbase);
 
@@ -296,7 +296,7 @@ namespace Circuit.Elements.Active {
             drawDots(mEmit[1], mEmit[0], mCurCount_e);
 
             /* draw base rectangle */
-            g.FillPolygon(CustomGraphics.GrayColor, mRectPoly);
+            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, mRectPoly);
 
             drawPosts();
 

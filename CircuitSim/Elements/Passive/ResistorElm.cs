@@ -57,11 +57,11 @@ namespace Circuit.Elements.Passive {
             if (mPoint1.Y == mPoint2.Y) {
                 var wv = Context.GetTextSize(Utils.UnitText(Resistance, "")).Width * 0.5;
                 var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
-                interpPoint(ref mValuePos, 0.5 - wv / mLen * mDsign, -13 * mDsign);
+                interpPoint(ref mValuePos, 0.5 - wv / mLen * mDsign, -11 * mDsign);
                 interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 10 * mDsign);
             } else if (mNameV) {
                 interpPoint(ref mValuePos, 0.5, 2 * mDsign);
-                interpPoint(ref mNamePos, 0.5, -20 * mDsign);
+                interpPoint(ref mNamePos, 0.5, -19 * mDsign);
             } else {
                 interpPoint(ref mValuePos, 0.5, 10 * mDsign);
                 interpPoint(ref mNamePos, 0.5, -10 * mDsign);

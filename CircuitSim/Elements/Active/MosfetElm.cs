@@ -433,7 +433,7 @@ namespace Circuit.Elements.Active {
 
             /* draw arrow */
             if (!DrawDigital) {
-                g.FillPolygon(CustomGraphics.GrayColor, mArrowPoly);
+                g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, mArrowPoly);
             }
 
             /* draw gate */

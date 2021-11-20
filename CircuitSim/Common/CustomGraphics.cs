@@ -77,7 +77,8 @@ namespace Circuit {
         };
         Pen penLine = new Pen(Color.White, 1.0f) {
             StartCap = LineCap.Triangle,
-            EndCap = LineCap.Triangle
+            EndCap = LineCap.Triangle,
+            Width = 0.1f
         };
 
         CustomGraphics() { }

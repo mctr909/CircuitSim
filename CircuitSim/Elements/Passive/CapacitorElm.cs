@@ -114,8 +114,8 @@ namespace Circuit.Elements.Passive {
             if (mPoint1.Y == mPoint2.Y) {
                 var wv = Context.GetTextSize(Utils.UnitText(Capacitance, "")).Width * 0.5;
                 var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
-                interpPoint(ref mValuePos, 0.5 - wv / mLen * mDsign, -13 * mDsign);
-                interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 10 * mDsign);
+                interpPoint(ref mValuePos, 0.5 - wv / mLen * mDsign, -12 * mDsign);
+                interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 11 * mDsign);
             } else if (mNameV) {
                 interpPoint(ref mValuePos, 0.5, 3 * mDsign);
                 interpPoint(ref mNamePos, 0.5, -20 * mDsign);

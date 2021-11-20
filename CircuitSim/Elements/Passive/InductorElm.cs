@@ -72,7 +72,7 @@ namespace Circuit.Elements.Passive {
                 interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 10 * mDsign);
             } else if (mNameV) {
                 interpPoint(ref mValuePos, 0.5, mDsign);
-                interpPoint(ref mNamePos, 0.5, -20 * mDsign);
+                interpPoint(ref mNamePos, 0.5, -19 * mDsign);
             } else {
                 interpPoint(ref mValuePos, 0.5, 8 * mDsign);
                 interpPoint(ref mNamePos, 0.5, -8 * mDsign);

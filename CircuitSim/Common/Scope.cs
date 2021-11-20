@@ -841,10 +841,8 @@ namespace Circuit {
             int y = maxy;
 
             var color = (mSomethingSelected) ? Color.FromArgb(0xA0, 0xA0, 0xA0) : plot.Color;
-            if (CirSim.Sim.ScopeSelected == -1 && plot.Elm.IsMouseElm) {
-                color = Color.FromArgb(0x00, 0xFF, 0xFF);
-            } else if (selected) {
-                color = plot.Color;
+            if (selected || (CirSim.Sim.ScopeSelected == -1 && plot.Elm.IsMouseElm)) {
+                color = CustomGraphics.SelectColor;
             } else if (ControlPanel.ChkPrintable.Checked) {
                 color = CustomGraphics.GrayColor;
             }

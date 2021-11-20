@@ -99,7 +99,12 @@ namespace Circuit.Elements.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            setLead1(1 - CircleSize / mLen);
+
+            if (mPoint1.X == mPoint2.X) {
+                setLead1(1 - 0.5 * Context.GetTextSize(Text).Height / mLen);
+            } else {
+                setLead1(1 - 0.5 * Context.GetTextSize(Text).Width / mLen);
+            }
         }
 
         public override void Draw(CustomGraphics g) {

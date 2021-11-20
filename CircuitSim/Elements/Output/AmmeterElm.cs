@@ -169,7 +169,7 @@ namespace Circuit.Elements.Output {
         public override void Draw(CustomGraphics g) {
             base.Draw(g); /* BC required for highlighting */
             drawLead(mPoint1, mPoint2);
-            g.FillPolygon(CustomGraphics.GrayColor, mArrowPoly);
+            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, mArrowPoly);
             doDots();
             setBbox(mPoint1, mPoint2, 3);
             string s = "A";
