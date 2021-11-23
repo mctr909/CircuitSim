@@ -10,28 +10,13 @@ using Circuit.Elements.Output;
 namespace Circuit {
     class Circuit {
         class RowInfo {
-            public const int ROW_NORMAL = 0; /* ordinary value */
-            public const int ROW_CONST = 1;  /* value is constant */
-            public int Type = ROW_NORMAL;
+            public bool IsConst;
             public int MapCol;
             public int MapRow;
             public double Value;
             public bool RightChanges; /* row's right side changes */
             public bool LeftChanges;  /* row's left side changes */
             public bool DropRow;      /* row is not needed in matrix */
-        }
-
-        class WireInfo {
-            public WireElm Wire;
-            public List<CircuitElm> Neighbors;
-            public int Post;
-            public WireInfo(WireElm w) { Wire = w; }
-        }
-
-        class NodeMapEntry {
-            public int Node;
-            public NodeMapEntry() { Node = -1; }
-            public NodeMapEntry(int n) { Node = n; }
         }
 
         #region private varidate
@@ -206,7 +191,7 @@ namespace Circuit {
                 /* look for rows that can be removed */
                 for (matCol = 0; matCol != matrixSize; matCol++) {
                     double q = Matrix[matRow, matCol];
-                    if (mRowInfo[matCol].Type == RowInfo.ROW_CONST) {
+                    if (mRowInfo[matCol].IsConst) {
                         /* keep a running total of const values that have been
                         /* removed already */
                         rsadd -= mRowInfo[matCol].Value * q;
@@ -232,14 +217,12 @@ namespace Circuit {
                         return false;
                     }
                     var elt = mRowInfo[qp];
-                    /* we found a row with only one nonzero nonconst entry; that value
-                    /* is a constant */
-                    if (elt.Type != RowInfo.ROW_NORMAL) {
-                        Console.WriteLine("type already " + elt.Type + " for " + qp + "!");
+                    /* we found a row with only one nonzero nonconst entry; that value is a constant */
+                    if (elt.IsConst) {
+                        Console.WriteLine("type already CONST for " + qp + "!");
                         continue;
                     }
-                    elt.Type = RowInfo.ROW_CONST;
-                    /*Console.WriteLine("ROW_CONST " + i + " " + rsadd);*/
+                    elt.IsConst = true;
                     elt.Value = (mRightSide[matRow] + rsadd) / qv;
                     mRowInfo[matRow].DropRow = true;
                     matRow = -1; /* start over from scratch */
@@ -251,20 +234,18 @@ namespace Circuit {
             int nn = 0;
             for (matRow = 0; matRow != matrixSize; matRow++) {
                 var elt = mRowInfo[matRow];
-                if (elt.Type == RowInfo.ROW_NORMAL) {
-                    elt.MapCol = nn++;
-                    /*Console.WriteLine("col " + i + " maps to " + elt.mapCol);*/
-                    continue;
-                }
-                if (elt.Type == RowInfo.ROW_CONST) {
+                if (elt.IsConst) {
                     elt.MapCol = -1;
+                } else {
+                    elt.MapCol = nn++;
+                    continue;
                 }
             }
 
             /* make the new, simplified matrix */
-            int newsize = nn;
-            var newmatx = new double[newsize, newsize];
-            var newrs = new double[newsize];
+            int newSize = nn;
+            var newMat = new double[newSize, newSize];
+            var newRS = new double[newSize];
             int ii = 0;
             for (matRow = 0; matRow != matrixSize; matRow++) {
                 var rri = mRowInfo[matRow];
@@ -272,25 +253,23 @@ namespace Circuit {
                     rri.MapRow = -1;
                     continue;
                 }
-                newrs[ii] = mRightSide[matRow];
+                newRS[ii] = mRightSide[matRow];
                 rri.MapRow = ii;
-                /*Console.WriteLine("Row " + i + " maps to " + ii); */
                 for (matCol = 0; matCol != matrixSize; matCol++) {
                     var ri = mRowInfo[matCol];
-                    if (ri.Type == RowInfo.ROW_CONST) {
-                        newrs[ii] -= ri.Value * Matrix[matRow, matCol];
+                    if (ri.IsConst) {
+                        newRS[ii] -= ri.Value * Matrix[matRow, matCol];
                     } else {
-                        newmatx[ii, ri.MapCol] += Matrix[matRow, matCol];
+                        newMat[ii, ri.MapCol] += Matrix[matRow, matCol];
                     }
                 }
                 ii++;
             }
+            /*Console.WriteLine("old size = " + matrixSize + " new size = " + newSize);*/
 
-            /*Console.WriteLine("old size = " + matrixSize + " new size = " + newsize);*/
-
-            Matrix = newmatx;
-            mRightSide = newrs;
-            matrixSize = mMatrixSize = newsize;
+            Matrix = newMat;
+            mRightSide = newRS;
+            matrixSize = mMatrixSize = newSize;
             for (matRow = 0; matRow != matrixSize; matRow++) {
                 mOrigRightSide[matRow] = mRightSide[matRow];
             }
@@ -557,7 +536,7 @@ namespace Circuit {
                 if (mCircuitNeedsMap) {
                     i = mRowInfo[i - 1].MapRow;
                     var ri = mRowInfo[j - 1];
-                    if (ri.Type == RowInfo.ROW_CONST) {
+                    if (ri.IsConst) {
                         /*Console.WriteLine("Stamping constant " + i + " " + j + " " + x);*/
                         mRightSide[i] -= x * ri.Value;
                         return;
@@ -850,7 +829,7 @@ namespace Circuit {
 
                 /* look for inductors with no current path */
                 if (ce is InductorElm) {
-                    var fpi = new FindPathInfo(FindPathInfo.INDUCT, ce, ce.Nodes[1], elmList, NodeList.Count);
+                    var fpi = new PathInfo(PathType.INDUCTOR, ce, ce.Nodes[1], elmList, NodeList.Count);
                     if (!fpi.FindPath(ce.Nodes[0])) {
                         if (debug) Console.WriteLine(ce + " no path");
                         ce.Reset();
@@ -860,7 +839,7 @@ namespace Circuit {
                 /* look for current sources with no current path */
                 if (ce is CurrentElm) {
                     var cur = (CurrentElm)ce;
-                    var fpi = new FindPathInfo(FindPathInfo.INDUCT, ce, ce.Nodes[1], elmList, NodeList.Count);
+                    var fpi = new PathInfo(PathType.INDUCTOR, ce, ce.Nodes[1], elmList, NodeList.Count);
                     if (!fpi.FindPath(ce.Nodes[0])) {
                         cur.stampCurrentSource(true);
                     } else {
@@ -870,7 +849,7 @@ namespace Circuit {
 
                 if (ce is VCCSElm) {
                     var cur = (VCCSElm)ce;
-                    var fpi = new FindPathInfo(FindPathInfo.INDUCT, ce, cur.getOutputNode(0), elmList, NodeList.Count);
+                    var fpi = new PathInfo(PathType.INDUCTOR, ce, cur.getOutputNode(0), elmList, NodeList.Count);
                     if (cur.hasCurrentOutput() && !fpi.FindPath(cur.getOutputNode(1))) {
                         cur.mBroken = true;
                     } else {
@@ -882,7 +861,7 @@ namespace Circuit {
                 /* because those are optimized out, so the findPath won't work) */
                 if (2 == ce.PostCount) {
                     if ((ce is VoltageElm) || (ce.IsWire && !(ce is WireElm))) {
-                        var fpi = new FindPathInfo(FindPathInfo.VOLTAGE, ce, ce.Nodes[1], elmList, NodeList.Count);
+                        var fpi = new PathInfo(PathType.VOLTAGE, ce, ce.Nodes[1], elmList, NodeList.Count);
                         if (fpi.FindPath(ce.Nodes[0])) {
                             Stop("Voltage source/wire loop with no resistance!", ce);
                             return;
@@ -890,7 +869,7 @@ namespace Circuit {
                     }
                 } else if (ce is Switch2Elm) {
                     /* for Switch2Elms we need to do extra work to look for wire loops */
-                    var fpi = new FindPathInfo(FindPathInfo.VOLTAGE, ce, ce.Nodes[0], elmList, NodeList.Count);
+                    var fpi = new PathInfo(PathType.VOLTAGE, ce, ce.Nodes[0], elmList, NodeList.Count);
                     for (int j = 1; j < ce.PostCount; j++) {
                         if (ce.GetConnection(0, j) && fpi.FindPath(ce.Nodes[j])) {
                             Stop("Voltage source/wire loop with no resistance!", ce);
@@ -901,7 +880,7 @@ namespace Circuit {
 
                 /* look for path from rail to ground */
                 if ((ce is RailElm) || (ce is LogicInputElm)) {
-                    var fpi = new FindPathInfo(FindPathInfo.VOLTAGE, ce, ce.Nodes[0], elmList, NodeList.Count);
+                    var fpi = new PathInfo(PathType.VOLTAGE, ce, ce.Nodes[0], elmList, NodeList.Count);
                     if (fpi.FindPath(0)) {
                         Stop("Path to ground with no resistance!", ce);
                         return;
@@ -910,7 +889,7 @@ namespace Circuit {
 
                 /* look for shorted caps, or caps w/ voltage but no R */
                 if (ce is CapacitorElm) {
-                    var fpi = new FindPathInfo(FindPathInfo.SHORT, ce, ce.Nodes[1], elmList, NodeList.Count);
+                    var fpi = new PathInfo(PathType.SHORT, ce, ce.Nodes[1], elmList, NodeList.Count);
                     if (fpi.FindPath(ce.Nodes[0])) {
                         Console.WriteLine(ce + " shorted");
                         ((CapacitorElm)ce).Shorted();
@@ -920,7 +899,7 @@ namespace Circuit {
                         /* another capacitor with a nonzero voltage; in that case we will get oscillation unless
                         /* we reset both capacitors to have the same voltage. Rather than check for that, we just
                         /* give an error. */
-                        fpi = new FindPathInfo(FindPathInfo.CAP_V, ce, ce.Nodes[1], elmList, NodeList.Count);
+                        fpi = new PathInfo(PathType.CAPACITOR_V, ce, ce.Nodes[1], elmList, NodeList.Count);
                         if (fpi.FindPath(ce.Nodes[0])) {
                             Stop("Capacitor loop with no resistance!", ce);
                             return;
@@ -1034,7 +1013,7 @@ namespace Circuit {
                 for (j = 0; j != mMatrixFullSize; j++) {
                     var ri = mRowInfo[j];
                     double res = 0;
-                    if (ri.Type == RowInfo.ROW_CONST) {
+                    if (ri.IsConst) {
                         res = ri.Value;
                     } else {
                         res = mRightSide[ri.MapCol];

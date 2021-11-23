@@ -28,8 +28,8 @@ namespace Circuit.Elements.Active {
         public LEDElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
             if ((f & (FLAG_MODEL | FLAG_FWDROP)) == 0) {
                 const double fwdrop = 2.1024259;
-                mModel = DiodeModel.getModelWithParameters(fwdrop, 0);
-                mModelName = mModel.name;
+                mModel = DiodeModel.GetModelWithParameters(fwdrop, 0);
+                mModelName = mModel.Name;
                 Console.WriteLine("model name wparams = " + mModelName);
                 setup();
             }
@@ -99,7 +99,7 @@ namespace Circuit.Elements.Active {
 
         public override void GetInfo(string[] arr) {
             base.GetInfo(arr);
-            if (mModel.oldStyle) {
+            if (mModel.OldStyle) {
                 arr[0] = "LED";
             } else {
                 arr[0] = "LED (" + mModelName + ")";

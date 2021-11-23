@@ -85,18 +85,18 @@ namespace Circuit.Elements.Input {
             int vn1 = pins[1].voltSource + mCir.NodeList.Count;
             if (mExpr != null) {
                 /* calculate output */
-                mExprState.values[8] = cur;  /* I = current */
-                mExprState.t = CirSim.Sim.Time;
-                double v0 = mExpr.eval(mExprState);
+                mExprState.Values[8] = cur;  /* I = current */
+                mExprState.Time = CirSim.Sim.Time;
+                double v0 = mExpr.Eval(mExprState);
                 double rs = v0;
                 pins[2].current = v0;
                 pins[3].current = -v0;
 
                 double dv = 1e-6;
-                mExprState.values[8] = cur + dv;
-                double v = mExpr.eval(mExprState);
-                mExprState.values[8] = cur - dv;
-                double v2 = mExpr.eval(mExprState);
+                mExprState.Values[8] = cur + dv;
+                double v = mExpr.Eval(mExprState);
+                mExprState.Values[8] = cur - dv;
+                double v2 = mExpr.Eval(mExprState);
                 double dx = (v - v2) / (dv * 2);
                 if (Math.Abs(dx) < 1e-6) {
                     dx = sign(dx, 1e-6);

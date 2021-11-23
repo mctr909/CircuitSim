@@ -100,9 +100,6 @@ namespace Circuit {
         List<string> mUndoStack = new List<string>();
         List<string> mRedoStack = new List<string>();
 
-        string mStartCircuit = null;
-        string mStartLabel = null;
-
         string mRecovery;
         string mClipboard = "";
 

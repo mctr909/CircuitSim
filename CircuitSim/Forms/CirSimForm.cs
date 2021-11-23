@@ -338,7 +338,7 @@ namespace Circuit {
             string nodeDump = "";
             string dump = "";
             CustomLogicModel.clearDumpedFlags();
-            DiodeModel.clearDumpedFlags();
+            DiodeModel.ClearDumpedFlags();
             var extList = new List<ExtListEntry>();
 
             bool sel = isSelection();
@@ -1082,7 +1082,7 @@ namespace Circuit {
         string dumpCircuit() {
             CustomLogicModel.clearDumpedFlags();
             CustomCompositeModel.ClearDumpedFlags();
-            DiodeModel.clearDumpedFlags();
+            DiodeModel.ClearDumpedFlags();
 
             int f = ControlPanel.ChkShowDots.Checked ? 1 : 0;
             f |= ControlPanel.ChkShowValues.Checked ? 0 : 16;
@@ -1199,7 +1199,7 @@ namespace Circuit {
                             tint = int.Parse(type);
                         }
                         if (tint == 34) {
-                            DiodeModel.undumpModel(st);
+                            DiodeModel.UndumpModel(st);
                             break;
                         }
                         if (tint == 38) {
@@ -1886,7 +1886,7 @@ namespace Circuit {
             string r = "";
             CustomLogicModel.clearDumpedFlags();
             CustomCompositeModel.ClearDumpedFlags();
-            DiodeModel.clearDumpedFlags();
+            DiodeModel.ClearDumpedFlags();
             for (int i = ElmList.Count - 1; i >= 0; i--) {
                 var ce = getElm(i);
                 string m = ce.DumpModel();

@@ -18,8 +18,8 @@ namespace Circuit.Elements.Active {
         public ZenerElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
             if ((f & FLAG_MODEL) == 0) {
                 double zvoltage = st.nextTokenDouble();
-                mModel = DiodeModel.getModelWithParameters(mModel.fwdrop, zvoltage);
-                mModelName = mModel.name;
+                mModel = DiodeModel.GetModelWithParameters(mModel.FwDrop, zvoltage);
+                mModelName = mModel.Name;
                 Console.WriteLine("model name wparams = " + mModelName);
             }
             setup();
@@ -65,7 +65,7 @@ namespace Circuit.Elements.Active {
         public override void GetInfo(string[] arr) {
             base.GetInfo(arr);
             arr[0] = "Zener diode";
-            arr[5] = "Vz = " + Utils.VoltageText(mModel.breakdownVoltage);
+            arr[5] = "Vz = " + Utils.VoltageText(mModel.BreakdownVoltage);
         }
 
         void setLastModelName(string n) {
@@ -74,7 +74,7 @@ namespace Circuit.Elements.Active {
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 2) {
-                return new ElementInfo("ブレークダウン電圧(V)", mModel.breakdownVoltage, 0, 0);
+                return new ElementInfo("ブレークダウン電圧(V)", mModel.BreakdownVoltage, 0, 0);
             }
             return base.GetElementInfo(n);
         }

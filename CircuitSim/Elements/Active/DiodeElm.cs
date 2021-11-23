@@ -31,7 +31,7 @@ namespace Circuit.Elements.Active {
         }
 
         public DiodeElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            const double defaultdrop = .805904783;
+            const double defaultdrop = 0.805904783;
             mDiode = new Diode(mCir);
             double fwdrop = defaultdrop;
             double zvoltage = 0;
@@ -48,8 +48,8 @@ namespace Circuit.Elements.Active {
                         fwdrop = st.nextTokenDouble();
                     } catch { }
                 }
-                mModel = DiodeModel.getModelWithParameters(fwdrop, zvoltage);
-                mModelName = mModel.name;
+                mModel = DiodeModel.GetModelWithParameters(fwdrop, zvoltage);
+                mModelName = mModel.Name;
             }
             setup();
         }
@@ -68,11 +68,10 @@ namespace Circuit.Elements.Active {
         }
 
         protected void setup() {
-            /*Console.WriteLine("setting up for model " + modelName + " " + model); */
-            mModel = DiodeModel.getModelWithNameOrCopy(mModelName, mModel);
-            mModelName = mModel.name;
-            mDiode.setup(mModel);
-            mHasResistance = (mModel.seriesResistance > 0);
+            mModel = DiodeModel.GetModelWithNameOrCopy(mModelName, mModel);
+            mModelName = mModel.Name;
+            mDiode.Setup(mModel);
+            mHasResistance = (mModel.SeriesResistance > 0);
             mDiodeEndNode = (mHasResistance) ? 2 : 1;
             allocNodes();
         }
@@ -82,26 +81,26 @@ namespace Circuit.Elements.Active {
         }
 
         public override string DumpModel() {
-            if (mModel.builtIn || mModel.dumped) {
+            if (mModel.BuiltIn || mModel.Dumped) {
                 return null;
             }
-            return mModel.dump();
+            return mModel.Dump();
         }
 
         public override void Stamp() {
             if (mHasResistance) {
                 /* create diode from node 0 to internal node */
-                mDiode.stamp(Nodes[0], Nodes[2]);
+                mDiode.Stamp(Nodes[0], Nodes[2]);
                 /* create resistor from internal node to node 1 */
-                mCir.StampResistor(Nodes[1], Nodes[2], mModel.seriesResistance);
+                mCir.StampResistor(Nodes[1], Nodes[2], mModel.SeriesResistance);
             } else {
                 /* don't need any internal nodes if no series resistance */
-                mDiode.stamp(Nodes[0], Nodes[1]);
+                mDiode.Stamp(Nodes[0], Nodes[1]);
             }
         }
 
         public override void DoStep() {
-            mDiode.doStep(Volts[0] - Volts[mDiodeEndNode]);
+            mDiode.DoStep(Volts[0] - Volts[mDiodeEndNode]);
         }
 
         public override void StepFinished() {
@@ -142,7 +141,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override void Reset() {
-            mDiode.reset();
+            mDiode.Reset();
             Volts[0] = Volts[1] = mCurCount = 0;
             if (mHasResistance) {
                 Volts[2] = 0;
@@ -161,11 +160,11 @@ namespace Circuit.Elements.Active {
         }
 
         protected override void calculateCurrent() {
-            mCurrent = mDiode.calculateCurrent(Volts[0] - Volts[mDiodeEndNode]);
+            mCurrent = mDiode.CalculateCurrent(Volts[0] - Volts[mDiodeEndNode]);
         }
 
         public override void GetInfo(string[] arr) {
-            if (mModel.oldStyle) {
+            if (mModel.OldStyle) {
                 arr[0] = "diode";
             } else {
                 arr[0] = "diode (" + mModelName + ")";
@@ -173,8 +172,8 @@ namespace Circuit.Elements.Active {
             arr[1] = "I = " + Utils.CurrentText(mCurrent);
             arr[2] = "Vd = " + Utils.VoltageText(VoltageDiff);
             arr[3] = "P = " + Utils.UnitText(Power, "W");
-            if (mModel.oldStyle) {
-                arr[4] = "Vf = " + Utils.VoltageText(mModel.fwdrop);
+            if (mModel.OldStyle) {
+                arr[4] = "Vf = " + Utils.VoltageText(mModel.FwDrop);
             }
         }
 
@@ -186,11 +185,11 @@ namespace Circuit.Elements.Active {
             }
             if (!mCustomModelUI && n == 1) {
                 var ei = new ElementInfo("モデル", 0, -1, -1);
-                mModels = DiodeModel.getModelList(this is ZenerElm);
+                mModels = DiodeModel.GetModelList(this is ZenerElm);
                 ei.Choice = new ComboBox();
                 for (int i = 0; i != mModels.Count; i++) {
                     var dm = mModels[i];
-                    ei.Choice.Items.Add(dm.getDescription());
+                    ei.Choice.Items.Add(dm.GetDescription());
                     if (dm == mModel) {
                         ei.Choice.SelectedIndex = i;
                     }
@@ -214,7 +213,7 @@ namespace Circuit.Elements.Active {
                     return;
                 }
                 mModel = mModels[ei.Choice.SelectedIndex];
-                mModelName = mModel.name;
+                mModelName = mModel.Name;
                 setup();
                 return;
             }

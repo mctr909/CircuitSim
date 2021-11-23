@@ -11,7 +11,7 @@ namespace Circuit.Elements.Passive {
             mInd = new Inductor(mCir);
             Inductance = 0.001;
             ReferenceName = "L";
-            mInd.setup(Inductance, mCurrent, mFlags);
+            mInd.Setup(Inductance, mCurrent, mFlags);
         }
 
         public InductorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -21,14 +21,14 @@ namespace Circuit.Elements.Passive {
                 mCurrent = st.nextTokenDouble();
                 ReferenceName = st.nextToken();
             } catch { }
-            mInd.setup(Inductance, mCurrent, mFlags);
+            mInd.Setup(Inductance, mCurrent, mFlags);
         }
 
         public double Inductance { get; set; }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.INDUCTOR; } }
 
-        public override bool NonLinear { get { return mInd.nonLinear(); } }
+        public override bool NonLinear { get { return mInd.NonLinear(); } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.INDUCTOR; } }
 
@@ -38,23 +38,24 @@ namespace Circuit.Elements.Passive {
 
         protected override void calculateCurrent() {
             var voltdiff = Volts[0] - Volts[1];
-            mCurrent = mInd.calculateCurrent(voltdiff);
+            mCurrent = mInd.CalculateCurrent(voltdiff);
         }
 
-        public override void Stamp() { mInd.stamp(Nodes[0], Nodes[1]); }
+        public override void Stamp() { mInd.Stamp(Nodes[0], Nodes[1]); }
 
         public override void StartIteration() {
-            mInd.startIteration(Volts[0] - Volts[1]);
+            double voltdiff = Volts[0] - Volts[1];
+            mInd.StartIteration(voltdiff);
         }
 
         public override void DoStep() {
             double voltdiff = Volts[0] - Volts[1];
-            mInd.doStep(voltdiff);
+            mInd.DoStep(voltdiff);
         }
 
         public override void Reset() {
             mCurrent = Volts[0] = Volts[1] = mCurCount = 0;
-            mInd.reset();
+            mInd.Reset();
         }
 
         public override void SetPoints() {
@@ -137,7 +138,7 @@ namespace Circuit.Elements.Passive {
                     mFlags |= Inductor.FLAG_BACK_EULER;
                 }
             }
-            mInd.setup(Inductance, mCurrent, mFlags);
+            mInd.Setup(Inductance, mCurrent, mFlags);
         }
     }
 }

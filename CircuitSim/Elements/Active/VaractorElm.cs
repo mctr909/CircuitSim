@@ -70,7 +70,7 @@ namespace Circuit.Elements.Active {
             if (0 < mCapVoltDiff) {
                 mCapacitance = c0;
             } else {
-                mCapacitance = c0 / Math.Pow(1 - mCapVoltDiff / mModel.fwdrop, 0.5);
+                mCapacitance = c0 / Math.Pow(1 - mCapVoltDiff / mModel.FwDrop, 0.5);
             }
             mCompResistance = ControlPanel.TimeStep / (2 * mCapacitance);
             mVoltSourceValue = -mCapVoltDiff - mCapCurrent * mCompResistance;

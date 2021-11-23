@@ -254,7 +254,7 @@ namespace Circuit {
 
             /* Check if we don't need to run simulation (for very slow simulation speeds).
             /* If the circuit changed, do at least one iteration to make sure everything is consistent. */
-            if (12500 >= steprate * (tm - mLastIterTime) && !didAnalyze) {
+            if (1000 >= steprate * (tm - mLastIterTime) && !didAnalyze) {
                 return;
             }
 

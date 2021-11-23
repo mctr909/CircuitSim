@@ -16,13 +16,28 @@ namespace Circuit {
         public bool Internal;
     }
 
-    class FindPathInfo {
-        public const int INDUCT = 1;
-        public const int VOLTAGE = 2;
-        public const int SHORT = 3;
-        public const int CAP_V = 4;
+    class NodeMapEntry {
+        public int Node;
+        public NodeMapEntry() { Node = -1; }
+        public NodeMapEntry(int n) { Node = n; }
+    }
 
-        int mType;
+    class WireInfo {
+        public WireElm Wire;
+        public List<CircuitElm> Neighbors;
+        public int Post;
+        public WireInfo(WireElm w) { Wire = w; }
+    }
+
+    enum PathType {
+        INDUCTOR = 1,
+        VOLTAGE = 2,
+        SHORT = 3,
+        CAPACITOR_V = 4
+    }
+
+    class PathInfo {
+        PathType mType;
         int mDest;
         CircuitElm mFirstElm;
         List<CircuitElm> mElmList;
@@ -31,7 +46,7 @@ namespace Circuit {
         /* State object to help find loops in circuit subject to various conditions (depending on type)
          * elm = source and destination element.
          * dest = destination node. */
-        public FindPathInfo(int type, CircuitElm elm, int dest, List<CircuitElm> elmList, int nodeCount) {
+        public PathInfo(PathType type, CircuitElm elm, int dest, List<CircuitElm> elmList, int nodeCount) {
             mDest = dest;
             mType = type;
             mFirstElm = elm;
@@ -57,28 +72,33 @@ namespace Circuit {
                 if (ce == mFirstElm) {
                     continue;
                 }
-                if (mType == INDUCT) {
+                switch (mType) {
+                case PathType.INDUCTOR:
                     /* inductors need a path free of current sources */
                     if (ce is CurrentElm) {
                         continue;
                     }
-                }
-                if (mType == VOLTAGE) {
+                    break;
+                case PathType.VOLTAGE:
                     /* when checking for voltage loops, we only care about voltage sources/wires/ground */
                     if (!(ce.IsWire || (ce is VoltageElm) || (ce is GroundElm))) {
                         continue;
                     }
-                }
+                    break;
                 /* when checking for shorts, just check wires */
-                if (mType == SHORT && !ce.IsWire) {
-                    continue;
-                }
-                if (mType == CAP_V) {
+                case PathType.SHORT:
+                    if (!ce.IsWire) {
+                        continue;
+                    }
+                    break;
+                case PathType.CAPACITOR_V:
                     /* checking for capacitor/voltage source loops */
                     if (!(ce.IsWire || (ce is CapacitorElm) || (ce is VoltageElm))) {
                         continue;
                     }
+                    break;
                 }
+
                 if (n1 == 0) {
                     /* look for posts which have a ground connection;
                     /* our path can go through ground */
@@ -102,7 +122,7 @@ namespace Circuit {
                     return true;
                 }
 
-                if (mType == INDUCT && (ce is InductorElm)) {
+                if (mType == PathType.INDUCTOR && (ce is InductorElm)) {
                     /* inductors can use paths with other inductors of matching current */
                     double c = ce.Current;
                     if (nodeA == 0) {

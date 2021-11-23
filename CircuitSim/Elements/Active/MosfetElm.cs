@@ -124,10 +124,10 @@ namespace Circuit.Elements.Active {
         void setupDiodes() {
             /* diode from node 1 to body terminal */
             mDiodeB1 = new Diode(mCir);
-            mDiodeB1.setupForDefaultModel();
+            mDiodeB1.SetupForDefaultModel();
             /* diode from node 2 to body terminal */
             mDiodeB2 = new Diode(mCir);
-            mDiodeB2.setupForDefaultModel();
+            mDiodeB2.SetupForDefaultModel();
         }
 
         /* post 0 = gate,
@@ -161,12 +161,12 @@ namespace Circuit.Elements.Active {
             if (DoBodyDiode) {
                 if (mPnp == -1) {
                     /* pnp: diodes conduct when S or D are higher than body */
-                    mDiodeB1.stamp(Nodes[1], Nodes[mBodyTerminal]);
-                    mDiodeB2.stamp(Nodes[2], Nodes[mBodyTerminal]);
+                    mDiodeB1.Stamp(Nodes[1], Nodes[mBodyTerminal]);
+                    mDiodeB2.Stamp(Nodes[2], Nodes[mBodyTerminal]);
                 } else {
                     /* npn: diodes conduct when body is higher than S or D */
-                    mDiodeB1.stamp(Nodes[mBodyTerminal], Nodes[1]);
-                    mDiodeB2.stamp(Nodes[mBodyTerminal], Nodes[2]);
+                    mDiodeB1.Stamp(Nodes[mBodyTerminal], Nodes[1]);
+                    mDiodeB2.Stamp(Nodes[mBodyTerminal], Nodes[2]);
                 }
             }
         }
@@ -260,10 +260,10 @@ namespace Circuit.Elements.Active {
             }
 
             if (DoBodyDiode) {
-                mDiodeB1.doStep(mPnp * (Volts[mBodyTerminal] - Volts[V_S]));
-                mDiodeCurrent1 = mDiodeB1.calculateCurrent(mPnp * (Volts[mBodyTerminal] - Volts[V_S])) * mPnp;
-                mDiodeB2.doStep(mPnp * (Volts[mBodyTerminal] - Volts[V_D]));
-                mDiodeCurrent2 = mDiodeB2.calculateCurrent(mPnp * (Volts[mBodyTerminal] - Volts[V_D])) * mPnp;
+                mDiodeB1.DoStep(mPnp * (Volts[mBodyTerminal] - Volts[V_S]));
+                mDiodeCurrent1 = mDiodeB1.CalculateCurrent(mPnp * (Volts[mBodyTerminal] - Volts[V_S])) * mPnp;
+                mDiodeB2.DoStep(mPnp * (Volts[mBodyTerminal] - Volts[V_D]));
+                mDiodeCurrent2 = mDiodeB2.CalculateCurrent(mPnp * (Volts[mBodyTerminal] - Volts[V_D])) * mPnp;
             } else {
                 mDiodeCurrent1 = mDiodeCurrent2 = 0;
             }
@@ -320,8 +320,8 @@ namespace Circuit.Elements.Active {
             mLastV1 = mLastV2 = 0;
             Volts[V_G] = Volts[V_S] = Volts[V_D] = 0;
             mCurCount = 0;
-            mDiodeB1.reset();
-            mDiodeB2.reset();
+            mDiodeB1.Reset();
+            mDiodeB2.Reset();
         }
 
         public override void SetPoints() {

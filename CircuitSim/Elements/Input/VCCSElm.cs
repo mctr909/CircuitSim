@@ -47,7 +47,7 @@ namespace Circuit.Elements.Input {
 
         protected void parseExpr() {
             var parser = new ExprParser(mExprString);
-            mExpr = parser.parseExpression();
+            mExpr = parser.ParseExpression();
         }
 
         protected double getConvergeLimit() {
@@ -125,10 +125,10 @@ namespace Circuit.Elements.Input {
             if (mExpr != null) {
                 /* calculate output */
                 for (i = 0; i != mInputCount; i++) {
-                    mExprState.values[i] = Volts[i];
+                    mExprState.Values[i] = Volts[i];
                 }
-                mExprState.t = CirSim.Sim.Time;
-                double v0 = -mExpr.eval(mExprState);
+                mExprState.Time = CirSim.Sim.Time;
+                double v0 = -mExpr.Eval(mExprState);
                 /*if (Math.Abs(volts[inputCount] - v0) > Math.Abs(v0) * .01 && cir.SubIterations < 100) {
                     cir.Converged = false;
                 }*/
@@ -137,10 +137,10 @@ namespace Circuit.Elements.Input {
                 /* calculate and stamp output derivatives */
                 for (i = 0; i != mInputCount; i++) {
                     double dv = 1e-6;
-                    mExprState.values[i] = Volts[i] + dv;
-                    double v = -mExpr.eval(mExprState);
-                    mExprState.values[i] = Volts[i] - dv;
-                    double v2 = -mExpr.eval(mExprState);
+                    mExprState.Values[i] = Volts[i] + dv;
+                    double v = -mExpr.Eval(mExprState);
+                    mExprState.Values[i] = Volts[i] - dv;
+                    double v2 = -mExpr.Eval(mExprState);
                     double dx = (v - v2) / (dv * 2);
                     if (Math.Abs(dx) < 1e-6) {
                         dx = sign(dx, 1e-6);
@@ -149,7 +149,7 @@ namespace Circuit.Elements.Input {
                     /*Console.WriteLine("ccedx " + i + " " + dx); */
                     /* adjust right side */
                     rs -= dx * Volts[i];
-                    mExprState.values[i] = Volts[i];
+                    mExprState.Values[i] = Volts[i];
                 }
                 /*Console.WriteLine("ccers " + rs);*/
                 mCir.StampCurrentSource(Nodes[mInputCount], Nodes[mInputCount + 1], rs);

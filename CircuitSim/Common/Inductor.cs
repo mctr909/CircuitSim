@@ -13,25 +13,27 @@
 
         public bool IsTrapezoidal { get { return (flags & FLAG_BACK_EULER) == 0; } }
 
+        public virtual bool NonLinear() { return false; }
+
         public Inductor(Circuit c) {
             cir = c;
             nodes = new int[2];
         }
 
-        public void setup(double ic, double cr, int f) {
+        public void Setup(double ic, double cr, int f) {
             inductance = ic;
             current = cr;
             flags = f;
         }
 
-        public void reset() {
+        public void Reset() {
             /* need to set curSourceValue here in case one of inductor nodes is node 0.  In that case
              * calculateCurrent() may get called (from setNodeVoltage()) when analyzing circuit, before
              * startIteration() gets called */
             current = curSourceValue = 0;
         }
 
-        public void stamp(int n0, int n1) {
+        public void Stamp(int n0, int n1) {
             /* inductor companion model using trapezoidal or backward euler
              * approximations (Norton equivalent) consists of a current
              * source in parallel with a resistor.  Trapezoidal is more
@@ -49,9 +51,7 @@
             cir.StampRightSide(nodes[1]);
         }
 
-        public virtual bool nonLinear() { return false; }
-
-        public void startIteration(double voltdiff) {
+        public void StartIteration(double voltdiff) {
             if (IsTrapezoidal) {
                 curSourceValue = voltdiff / compResistance + current;
             } else { /* backward euler */
@@ -59,7 +59,7 @@
             }
         }
 
-        public double calculateCurrent(double voltdiff) {
+        public double CalculateCurrent(double voltdiff) {
             /* we check compResistance because this might get called
              * before stamp(), which sets compResistance, causing
              * infinite current */
@@ -69,7 +69,7 @@
             return current;
         }
 
-        public void doStep(double voltdiff) {
+        public void DoStep(double voltdiff) {
             cir.StampCurrentSource(nodes[0], nodes[1], curSourceValue);
         }
     }
