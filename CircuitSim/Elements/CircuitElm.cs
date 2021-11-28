@@ -314,8 +314,8 @@ namespace Circuit.Elements {
         }
 
         protected int getBasicInfo(string[] arr) {
-            arr[1] = "I = " + Utils.CurrentDText(mCurrent);
-            arr[2] = "Vd = " + Utils.VoltageDText(VoltageDiff);
+            arr[1] = "I = " + Utils.CurrentAbsText(mCurrent);
+            arr[2] = "Vd = " + Utils.VoltageAbsText(VoltageDiff);
             return 3;
         }
 

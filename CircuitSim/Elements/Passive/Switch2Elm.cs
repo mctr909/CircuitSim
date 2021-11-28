@@ -128,7 +128,7 @@ namespace Circuit.Elements.Passive {
         public override void GetInfo(string[] arr) {
             arr[0] = "switch (" + (mLink == 0 ? "S" : "D")
                 + "P" + ((mThrowCount > 2) ? mThrowCount + "T)" : "DT)");
-            arr[1] = "I = " + Utils.CurrentDText(mCurrent);
+            arr[1] = "I = " + Utils.CurrentAbsText(mCurrent);
         }
 
         public override ElementInfo GetElementInfo(int n) {

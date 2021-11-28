@@ -45,7 +45,6 @@ namespace Circuit.Elements.Passive {
 
         public override void Draw(CustomGraphics g) {
             base.Draw(g);
-            CustomGraphics.TextColor = CustomGraphics.WhiteColor;
             int w = (int)g.GetTextSize("+").Width;
             g.DrawLeftText("+", mPlusPoint.X - w / 2, mPlusPoint.Y);
         }

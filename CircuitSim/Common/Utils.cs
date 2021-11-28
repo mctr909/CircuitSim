@@ -157,7 +157,7 @@ namespace Circuit {
             return unitText(v, "V");
         }
 
-        public static string VoltageDText(double v) {
+        public static string VoltageAbsText(double v) {
             return unitText(Math.Abs(v), "V");
         }
 
@@ -165,7 +165,7 @@ namespace Circuit {
             return unitText(i, "A");
         }
 
-        public static string CurrentDText(double i) {
+        public static string CurrentAbsText(double i) {
             return unitText(Math.Abs(i), "A");
         }
 
@@ -189,15 +189,15 @@ namespace Circuit {
 
         public static string UnitTextWithScale(double val, string utext, E_SCALE scale) {
             if (scale == E_SCALE.X1) {
-                return val.ToString("0") + " " + utext;
+                return val.ToString("0.00") + " " + utext;
             }
             if (scale == E_SCALE.M) {
                 return (1e3 * val).ToString("0") + " m" + utext;
             }
             if (scale == E_SCALE.MU) {
-                return (1e6 * val).ToString("0") + " " + CirSim.MU_TEXT + utext;
+                return (1e6 * val).ToString("0") + " u" + utext;
             }
-            return unitText(val, utext, true);
+            return unitText(val, utext, false);
         }
 
         public static bool TextToNum(string text, out double num) {
@@ -212,8 +212,8 @@ namespace Circuit {
                 num *= 1e-9;
                 return ret;
             }
-            if (0 <= text.IndexOf(CirSim.MU_TEXT)) {
-                var ret = double.TryParse(text.Replace(CirSim.MU_TEXT, ""), out num);
+            if (0 <= text.IndexOf("u")) {
+                var ret = double.TryParse(text.Replace("u", ""), out num);
                 num *= 1e-6;
                 return ret;
             }
@@ -235,20 +235,17 @@ namespace Circuit {
             return double.TryParse(text, out num);
         }
 
-        static string unitText(double v, string u, bool isShort = false) {
+        static string unitText(double v, string u, bool isShort = true) {
             double va = Math.Abs(v);
             if (va < 1e-14) {
                 /* this used to return null, but then wires would display "null" with 0V */
                 return "0" + u;
             }
-            if (va < 1e-9) {
+            if (va < 1e-8) {
                 return format(v * 1e12, isShort) + "p" + u;
             }
-            if (va < 1e-6) {
-                return format(v * 1e9, isShort) + "n" + u;
-            }
             if (va < 1e-3) {
-                return format(v * 1e6, isShort) + CirSim.MU_TEXT + u;
+                return format(v * 1e6, isShort) + "u" + u;
             }
             if (va < 1) {
                 return format(v * 1e3, isShort) + "m" + u;
@@ -266,7 +263,7 @@ namespace Circuit {
         }
 
         static string format(double v, bool isShort) {
-            return isShort ? v.ToString("0") : v.ToString("0.##");
+            return isShort ? v.ToString("0.##") : v.ToString("0.00");
         }
     }
 }

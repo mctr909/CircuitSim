@@ -80,7 +80,6 @@ namespace Circuit.Elements.Input {
             setBbox(mPoint1, mPoint2, SIZE);
             drawLead(mPoint1, mLead1);
 
-            CustomGraphics.TextColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             double v = getVoltage();
             string s = "FM";
             drawCenteredText(s, P2, true);

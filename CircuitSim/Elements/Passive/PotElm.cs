@@ -303,30 +303,6 @@ namespace Circuit.Elements.Passive {
             }
         }
 
-        /* draw component values (number of resistor ohms, etc).  hs = offset */
-        void drawValues(CustomGraphics g, string s, Point pt, int hs) {
-            if (s == null) {
-                return;
-            }
-            int w = (int)g.GetLTextSize(s).Width;
-            int ya = CustomGraphics.FontText.Height / 2;
-            int xc = pt.X;
-            int yc = pt.Y;
-            int dpx = hs;
-            int dpy = 0;
-            if (mLead1.X != mLead2.X) {
-                dpx = 0;
-                dpy = -hs;
-            }
-            Console.WriteLine("dv " + dpx + " " + w);
-            if (dpx == 0) {
-                g.DrawLeftText(s, xc - w / 2, yc - Math.Abs(dpy) - 2);
-            } else {
-                int xx = xc + Math.Abs(dpx) + 2;
-                g.DrawLeftText(s, xx, yc + dpy + ya);
-            }
-        }
-
         void createSlider() {
             ControlPanel.AddSlider(mLabel = new Label() {
                 TextAlign = ContentAlignment.BottomLeft,
@@ -352,11 +328,11 @@ namespace Circuit.Elements.Passive {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "可変抵抗";
-            arr[1] = "Vd = " + Utils.VoltageDText(VoltageDiff);
+            arr[1] = "Vd = " + Utils.VoltageAbsText(VoltageDiff);
             arr[2] = "R1 = " + Utils.UnitText(mResistance1, CirSim.OHM_TEXT);
             arr[3] = "R2 = " + Utils.UnitText(mResistance2, CirSim.OHM_TEXT);
-            arr[4] = "I1 = " + Utils.CurrentDText(mCurrent1);
-            arr[5] = "I2 = " + Utils.CurrentDText(mCurrent2);
+            arr[4] = "I1 = " + Utils.CurrentAbsText(mCurrent1);
+            arr[5] = "I2 = " + Utils.CurrentAbsText(mCurrent2);
         }
 
         public override ElementInfo GetElementInfo(int n) {

@@ -103,11 +103,11 @@ namespace Circuit.Elements.Passive {
             arr[0] = (Momentary) ? "push switch (SPST)" : "switch (SPST)";
             if (Position == 1) {
                 arr[1] = "open";
-                arr[2] = "Vd = " + Utils.VoltageDText(VoltageDiff);
+                arr[2] = "Vd = " + Utils.VoltageAbsText(VoltageDiff);
             } else {
                 arr[1] = "closed";
                 arr[2] = "V = " + Utils.VoltageText(Volts[0]);
-                arr[3] = "I = " + Utils.CurrentDText(mCurrent);
+                arr[3] = "I = " + Utils.CurrentAbsText(mCurrent);
             }
         }
 

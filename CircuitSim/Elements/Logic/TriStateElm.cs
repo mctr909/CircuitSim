@@ -122,8 +122,8 @@ namespace Circuit.Elements.Logic {
         public override void GetInfo(string[] arr) {
             arr[0] = "tri-state buffer";
             arr[1] = open ? "open" : "closed";
-            arr[2] = "Vd = " + Utils.VoltageDText(VoltageDiff);
-            arr[3] = "I = " + Utils.CurrentDText(Current);
+            arr[2] = "Vd = " + Utils.VoltageAbsText(VoltageDiff);
+            arr[3] = "I = " + Utils.CurrentAbsText(Current);
             arr[4] = "Vc = " + Utils.VoltageText(Volts[2]);
         }
 

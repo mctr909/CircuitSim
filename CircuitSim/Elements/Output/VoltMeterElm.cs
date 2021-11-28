@@ -151,7 +151,7 @@ namespace Circuit.Elements.Output {
         public override void SetPoints() {
             base.SetPoints();
             interpPoint(ref mCenter, 0.5, 12 * mDsign);
-            interpPoint(ref mPlusPoint, (mLen - 10) / mLen, 10 * mDsign);
+            interpPoint(ref mPlusPoint, 8.0 / mLen, 6 * mDsign);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -276,7 +276,7 @@ namespace Circuit.Elements.Output {
                 ei.Choice.Items.Add("自動");
                 ei.Choice.Items.Add("V");
                 ei.Choice.Items.Add("mV");
-                ei.Choice.Items.Add(CirSim.MU_TEXT + "V");
+                ei.Choice.Items.Add("uV");
                 ei.Choice.SelectedIndex = (int)mScale;
                 return ei;
             }

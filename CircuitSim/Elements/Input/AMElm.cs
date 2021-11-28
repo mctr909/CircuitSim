@@ -8,6 +8,7 @@ namespace Circuit.Elements.Input {
 
         double mCarrierFreq;
         double mSignalFreq;
+        double mDepth;
         double mMaxVoltage;
         double mFreqTimeZero;
         double mPhase;
@@ -16,6 +17,7 @@ namespace Circuit.Elements.Input {
             mMaxVoltage = 5;
             mCarrierFreq = 1000;
             mSignalFreq = 40;
+            mDepth = 0.1;
             mPhase = 0.0;
             Reset();
         }
@@ -26,6 +28,7 @@ namespace Circuit.Elements.Input {
                 mSignalFreq = st.nextTokenDouble();
                 mMaxVoltage = st.nextTokenDouble();
                 mPhase = st.nextTokenDouble();
+                mDepth = st.nextTokenDouble();
             } catch { }
             if ((mFlags & FLAG_COS) != 0) {
                 mFlags &= ~FLAG_COS;
@@ -39,7 +42,8 @@ namespace Circuit.Elements.Input {
             return mCarrierFreq
                 + " " + mSignalFreq
                 + " " + mMaxVoltage
-                + " " + mPhase;
+                + " " + mPhase
+                + " " + mDepth;
         }
 
         public override void Reset() {
@@ -74,7 +78,6 @@ namespace Circuit.Elements.Input {
             setBbox(mPoint1, mPoint2, SIZE);
             drawLead(mPoint1, mLead1);
 
-            CustomGraphics.TextColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             double v = getVoltage();
             string s = "AM";
             drawCenteredText(s, P2, true);
@@ -105,7 +108,7 @@ namespace Circuit.Elements.Input {
 
         double getVoltage() {
             double w = 2 * Math.PI * (CirSim.Sim.Time - mFreqTimeZero);
-            return (Math.Sin(w * mSignalFreq + mPhase) + 1) / 2 * Math.Sin(w * mCarrierFreq) * mMaxVoltage;
+            return (Math.Sin(w * mSignalFreq + mPhase) * mDepth + 2 - mDepth) / 2 * Math.Sin(w * mCarrierFreq) * mMaxVoltage;
         }
 
         public override ElementInfo GetElementInfo(int n) {
@@ -119,6 +122,9 @@ namespace Circuit.Elements.Input {
                 return new ElementInfo("信号周波数(Hz)", mSignalFreq, 4, 500);
             }
             if (n == 3) {
+                return new ElementInfo("変調度(%)", (int)(mDepth * 100), 0, 100);
+            }
+            if (n == 4) {
                 return new ElementInfo("位相(degrees)", double.Parse((mPhase * 180 / Math.PI).ToString("0.00")), -180, 180).SetDimensionless();
             }
             return null;
@@ -135,6 +141,9 @@ namespace Circuit.Elements.Input {
                 mSignalFreq = ei.Value;
             }
             if (n == 3) {
+                mDepth = ei.Value * 0.01;
+            }
+            if (n == 4) {
                 mPhase = ei.Value * Math.PI / 180;
             }
         }

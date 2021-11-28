@@ -145,8 +145,8 @@ namespace Circuit.Elements.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            interpPoint(ref mMid, 0.5 + 8 / mLen);
-            Utils.CreateArrow(mPoint1, mMid, out mArrowPoly, 14, 7);
+            interpPoint(ref mMid, 0.5 + 4 / mLen);
+            Utils.CreateArrow(mPoint1, mMid, out mArrowPoly, 9, 5);
             int sign;
             mNameV = mPoint1.X == mPoint2.X;
             if (mNameV) {
@@ -220,7 +220,7 @@ namespace Circuit.Elements.Output {
                 ei.Choice.Items.Add("自動");
                 ei.Choice.Items.Add("A");
                 ei.Choice.Items.Add("mA");
-                ei.Choice.Items.Add(CirSim.MU_TEXT + "A");
+                ei.Choice.Items.Add("uA");
                 ei.Choice.SelectedIndex = (int)mScale;
                 return ei;
             }

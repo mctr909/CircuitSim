@@ -12,7 +12,6 @@ namespace Circuit {
         public static readonly Font FONT_TEXT = new Font("Meiryo UI", 9.0f);
         public static readonly Brush BRUSH_TEXT = Brushes.Red;
 
-        public static readonly string MU_TEXT = "u";
         public static readonly string OHM_TEXT = "Ω";
 
         public enum MOUSE_MODE {

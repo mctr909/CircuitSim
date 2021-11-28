@@ -178,7 +178,7 @@ namespace Circuit.Elements.Input {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "sweep " + (((mFlags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
-            arr[1] = "I = " + Utils.CurrentDText(mCurrent);
+            arr[1] = "I = " + Utils.CurrentAbsText(mCurrent);
             arr[2] = "V = " + Utils.VoltageText(Volts[0]);
             arr[3] = "f = " + Utils.UnitText(mFrequency, "Hz");
             arr[4] = "range = " + Utils.UnitText(mMinF, "Hz") + " .. " + Utils.UnitText(mMaxF, "Hz");

@@ -184,7 +184,6 @@ namespace Circuit.Elements.Custom {
         }
 
         public void drawChip(CustomGraphics g) {
-            CustomGraphics.TextColor = ControlPanel.ChkPrintable.Checked ? Color.Black : Color.White;
             for (int i = 0; i != PostCount; i++) {
                 var p = pins[i];
                 var a = p.post;

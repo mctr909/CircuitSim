@@ -53,7 +53,7 @@ namespace Circuit.Elements.Passive {
             setBbox(mPoint1, mPoint2, 3);
             string s = "";
             if (mustShowCurrent) {
-                s = Utils.CurrentDText(Math.Abs(mCurrent));
+                s = Utils.CurrentAbsText(Math.Abs(mCurrent));
             }
             if (mustShowVoltage) {
                 s = (s.Length > 0 ? s + "\r\n" : "") + Utils.VoltageText(Volts[0]);
@@ -64,7 +64,7 @@ namespace Circuit.Elements.Passive {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "wire";
-            arr[1] = "I = " + Utils.CurrentDText(mCurrent);
+            arr[1] = "I = " + Utils.CurrentAbsText(mCurrent);
             arr[2] = "V = " + Utils.VoltageText(Volts[0]);
         }
 
