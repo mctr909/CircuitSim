@@ -1612,7 +1612,7 @@ namespace Circuit {
             for (int i = 0; i != ElmList.Count; i++) {
                 var ce = getElm(i);
                 var distance = ce.Distance(gx, gy);
-                if (distance < minDistance || ce.BoundingBox.IntersectsWith(new Rectangle(gx - 1, gy - 1, 2, 2))) {
+                if (distance < minDistance) {
                     newMouseElm = ce;
                     minDistance = distance;
                 }

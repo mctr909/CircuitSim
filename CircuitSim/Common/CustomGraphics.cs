@@ -52,17 +52,17 @@ namespace Circuit {
             Alignment = StringAlignment.Far,
             LineAlignment = StringAlignment.Center
         };
+        static readonly StringFormat textRightV = new StringFormat() {
+            Alignment = StringAlignment.Far,
+            LineAlignment = StringAlignment.Near,
+            FormatFlags = StringFormatFlags.DirectionVertical,
+        };
         static readonly StringFormat textCenter = new StringFormat() {
             Alignment = StringAlignment.Center,
             LineAlignment = StringAlignment.Center
         };
         static readonly StringFormat textCenterV = new StringFormat() {
             Alignment = StringAlignment.Center,
-            LineAlignment = StringAlignment.Near,
-            FormatFlags = StringFormatFlags.DirectionVertical,
-        };
-        static readonly StringFormat textRightV = new StringFormat() {
-            Alignment = StringAlignment.Far,
             LineAlignment = StringAlignment.Near,
             FormatFlags = StringFormatFlags.DirectionVertical,
         };

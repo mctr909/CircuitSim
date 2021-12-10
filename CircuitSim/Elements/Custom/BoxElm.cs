@@ -21,6 +21,15 @@ namespace Circuit.Elements.Custom {
             get { return Math.Abs(P2.X - P1.X) < 32 || Math.Abs(P2.Y - P1.Y) < 32; }
         }
 
+        public override double Distance(double x, double y) {
+            return Math.Min(
+                Utils.DistanceOnLine(P1.X, P1.Y, P2.X, P1.Y, x, y), Math.Min(
+                Utils.DistanceOnLine(P2.X, P1.Y, P2.X, P2.Y, x, y), Math.Min(
+                Utils.DistanceOnLine(P2.X, P2.Y, P1.X, P2.Y, x, y),
+                Utils.DistanceOnLine(P1.X, P2.Y, P1.X, P1.Y, x, y)
+            )));
+        }
+
         public override void Drag(Point p) {
             P2 = p;
         }

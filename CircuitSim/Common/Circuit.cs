@@ -294,7 +294,7 @@ namespace Circuit {
                     continue;
                 }
                 var we = (WireElm)ce;
-                we.mHasWireInfo = false;
+                we.HasWireInfo = false;
                 mWireInfoList.Add(new WireInfo(we));
                 var p1 = ce.GetPost(0);
                 var p2 = ce.GetPost(1);
@@ -368,7 +368,7 @@ namespace Circuit {
 
                     /* is this a wire that doesn't have wire info yet?  If so we can't use it.
                     /* That would create a circular dependency */
-                    bool notReady = (ce is WireElm) && !((WireElm)ce).mHasWireInfo;
+                    bool notReady = (ce is WireElm) && !((WireElm)ce).HasWireInfo;
 
                     /* which post does this element connect to, if any? */
                     if (pt.X == wire.P1.X && pt.Y == wire.P1.Y) {
@@ -388,12 +388,12 @@ namespace Circuit {
                 if (isReady0) {
                     wi.Neighbors = neighbors0;
                     wi.Post = 0;
-                    wire.mHasWireInfo = true;
+                    wire.HasWireInfo = true;
                     moved = 0;
                 } else if (isReady1) {
                     wi.Neighbors = neighbors1;
                     wi.Post = 1;
-                    wire.mHasWireInfo = true;
+                    wire.HasWireInfo = true;
                     moved = 0;
                 } else {
                     /* move to the end of the list and try again later */

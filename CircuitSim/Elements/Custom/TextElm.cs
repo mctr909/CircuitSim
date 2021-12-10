@@ -1,9 +1,9 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit.Elements.Custom {
     class TextElm : GraphicElm {
-        const int FLAG_CENTER = 1;
         const int FLAG_BAR = 2;
         const int FLAG_ESCAPE = 4;
 
@@ -11,8 +11,8 @@ namespace Circuit.Elements.Custom {
         int mSize;
 
         public TextElm(Point pos) : base(pos) {
-            mText = "hello";
-            mSize = 24;
+            mText = "Text";
+            mSize = 11;
         }
 
         public TextElm(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
@@ -28,6 +28,15 @@ namespace Circuit.Elements.Custom {
             return mSize + " " + CustomLogicModel.escape(mText);
         }
 
+        public override double Distance(double x, double y) {
+            return BoundingBox.Contains((int)x, (int)y) ? 0 : Math.Min(
+                Utils.DistanceOnLine(P1.X, P1.Y, P2.X, P1.Y, x, y), Math.Min(
+                Utils.DistanceOnLine(P2.X, P1.Y, P2.X, P2.Y, x, y), Math.Min(
+                Utils.DistanceOnLine(P2.X, P2.Y, P1.X, P2.Y, x, y), 
+                Utils.DistanceOnLine(P1.X, P2.Y, P1.X, P1.Y, x, y)
+            )));
+        }
+
         public override void Drag(Point p) {
             P1 = p;
             P2.X = p.X + 16;
@@ -40,21 +49,10 @@ namespace Circuit.Elements.Custom {
             CustomGraphics.TextColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             CustomGraphics.TextSize = mSize;
             var size = g.GetTextSize(mText);
-            if (0 < (mFlags & FLAG_CENTER)) {
-                var p1 = new Point(
-                    (int)(P1.X - size.Width / 2),
-                    (int)(P1.Y - size.Height / 2)
-                );
-                P2.X = (int)(P1.X + size.Width / 2);
-                P2.Y = (int)(P1.Y + size.Height / 2);
-                g.DrawCenteredText(mText, P1.X, P1.Y);
-                setBbox(p1, P2);
-            } else {
-                P2.X = (int)(P1.X + size.Width);
-                P2.Y = (int)(P1.Y + size.Height);
-                g.DrawLeftText(mText, P1.X, (int)(P1.Y + size.Height / 2));
-                setBbox(P1, P2);
-            }
+            P2.X = (int)(P1.X + size.Width);
+            P2.Y = (int)(P1.Y + size.Height);
+            g.DrawLeftText(mText, P1.X, (int)(P1.Y + size.Height / 2));
+            setBbox(P1, P2);
             CustomGraphics.TextColor = bkColor;
             CustomGraphics.TextSize = bkSize;
         }
@@ -74,14 +72,6 @@ namespace Circuit.Elements.Custom {
             if (n == 1) {
                 return new ElementInfo("サイズ", mSize, 5, 100);
             }
-            if (n == 2) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox() {
-                    Text = "中央",
-                    Checked = (mFlags & FLAG_CENTER) != 0
-                };
-                return ei;
-            }
             return null;
         }
 
@@ -91,13 +81,6 @@ namespace Circuit.Elements.Custom {
             }
             if (n == 1) {
                 mSize = (int)ei.Value;
-            }
-            if (n == 2) {
-                if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_CENTER;
-                } else {
-                    mFlags &= ~FLAG_CENTER;
-                }
             }
         }
     }

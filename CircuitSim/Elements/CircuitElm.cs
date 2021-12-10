@@ -567,10 +567,6 @@ namespace Circuit.Elements {
         #endregion
 
         #region [public method]
-        public double Distance(double x, double y) {
-            return Utils.DistanceOnLine(P1.X, P1.Y, P2.X, P2.Y, x, y);
-        }
-
         public void DrawHandles(CustomGraphics g) {
             if (mLastHandleGrabbed == -1) {
                 g.FillRectangle(CustomGraphics.PenHandle, P1.X - 3, P1.Y - 3, 7, 7);
@@ -783,6 +779,10 @@ namespace Circuit.Elements {
             P2.X = pos.X;
             P2.Y = pos.Y;
             SetPoints();
+        }
+
+        public virtual double Distance(double x, double y) {
+            return Utils.DistanceOnLine(P1.X, P1.Y, P2.X, P2.Y, x, y);
         }
 
         public virtual void DraggingDone() { }
