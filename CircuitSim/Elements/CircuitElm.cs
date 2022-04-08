@@ -447,7 +447,7 @@ namespace Circuit.Elements {
             var dx = b.X - a.X;
             var dy = b.Y - a.Y;
             var dr = Math.Sqrt(dx * dx + dy * dy);
-            int ds = CirSim.GRID_SIZE;
+            int ds = CirSim.GRID_SIZE * 2;
             pos %= ds;
             if (pos < 0) {
                 pos += ds;
