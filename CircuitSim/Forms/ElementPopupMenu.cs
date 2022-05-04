@@ -104,10 +104,9 @@ namespace Circuit {
         }
 
         bool sliderItemEnabled(CircuitElm elm) {
-            // Todo: PotElm
-            //if (elm is PotElm) {
-            //    return false;
-            //}
+            if (elm is PotElm) {
+                return false;
+            }
             for (int i = 0; ; i++) {
                 var ei = elm.GetElementInfo(i);
                 if (ei == null) {

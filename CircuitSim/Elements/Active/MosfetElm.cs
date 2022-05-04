@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit.Elements.Active {
@@ -12,26 +11,13 @@ namespace Circuit.Elements.Active {
         const int FLAG_BODY_DIODE = 32;
         const int FLAGS_GLOBAL = (FLAG_HIDE_BULK | FLAG_DIGITAL);
 
-        const int V_G = 0;
-        const int V_S = 1;
-        const int V_D = 2;
-
         const int HS = 16;
 
         const int SEGMENTS = 6;
         const double SEG_F = 1.0 / SEGMENTS;
 
         static int mGlobalFlags;
-        static double mLastHfe;
 
-        int mPnp;
-        int mBodyTerminal;
-        double mVt;
-        double mHfe; /* hfe = 1/(RdsON*(Vgs-Vt)) */
-        Diode mDiodeB1;
-        Diode mDiodeB2;
-        double mDiodeCurrent1;
-        double mDiodeCurrent2;
         double mCurcountBody1;
         double mCurcountBody2;
 
@@ -47,88 +33,37 @@ namespace Circuit.Elements.Active {
         Point[] mPs1;
         Point[] mPs2;
 
-        double mLastV0;
-        double mLastV1;
-        double mLastV2;
-        double mIds;
-        int mMode = 0;
-        double mGm = 0;
-
         public MosfetElm(Point pos, bool pnpflag) : base(pos) {
-            mPnp = pnpflag ? -1 : 1;
+            CirElm = new MosfetElmE(pnpflag);
             mFlags = pnpflag ? FLAG_PNP : 0;
             mFlags |= FLAG_BODY_DIODE;
             mNoDiagonal = true;
-            setupDiodes();
-            mHfe = DefaultHfe;
-            mVt = DefaultThreshold;
             ReferenceName = "Tr";
         }
 
         public MosfetElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            mPnp = ((f & FLAG_PNP) != 0) ? -1 : 1;
+            CirElm = new MosfetElmE((f & FLAG_PNP) != 0, st);
             mNoDiagonal = true;
-            setupDiodes();
-            mVt = DefaultThreshold;
-            mHfe = BackwardCompatibilityHfe;
             try {
-                mVt = st.nextTokenDouble();
-                mHfe = st.nextTokenDouble();
                 ReferenceName = st.nextToken();
             } catch { }
             mGlobalFlags = mFlags & (FLAGS_GLOBAL);
-            cirAllocNodes(); /* make sure volts[] has the right number of elements when hasBodyTerminal() is true */
-        }
-
-        public override double CirCurrent { get { return mIds; } }
-
-        public override double CirVoltageDiff { get { return CirVolts[V_D] - CirVolts[V_S]; } }
-
-        public override double CirPower {
-            get {
-                return mIds * (CirVolts[V_D] - CirVolts[V_S])
-                    - mDiodeCurrent1 * (CirVolts[V_S] - CirVolts[mBodyTerminal])
-                    - mDiodeCurrent2 * (CirVolts[V_D] - CirVolts[mBodyTerminal]);
-            }
         }
 
         public override bool CanViewInScope { get { return true; } }
 
-        public override bool CirNonLinear { get { return true; } }
-
-        public override int CirPostCount { get { return 3; } }
-
         public override DUMP_ID DumpType { get { return DUMP_ID.MOSFET; } }
 
         protected override string dump() {
-            return mVt
-                + " " + mHfe
+            var ce = (MosfetElmE)CirElm;
+            return ce.Vt
+                + " " + ce.Hfe
                 + " " + ReferenceName;
         }
-
-        double DefaultThreshold { get { return 1.5; } }
-
-        double DefaultHfe {
-            get { return mLastHfe == 0 ? BackwardCompatibilityHfe : mLastHfe; }
-        }
-
-        double BackwardCompatibilityHfe { get { return .02; } }
 
         bool DrawDigital { get { return (mFlags & FLAG_DIGITAL) != 0; } }
 
         bool ShowBulk { get { return (mFlags & (FLAG_DIGITAL | FLAG_HIDE_BULK)) == 0; } }
-
-        bool DoBodyDiode { get { return (mFlags & FLAG_BODY_DIODE) != 0 && ShowBulk; } }
-
-        /* set up body diodes */
-        void setupDiodes() {
-            /* diode from node 1 to body terminal */
-            mDiodeB1 = new Diode(mCir);
-            mDiodeB1.SetupForDefaultModel();
-            /* diode from node 2 to body terminal */
-            mDiodeB2 = new Diode(mCir);
-            mDiodeB2.SetupForDefaultModel();
-        }
 
         /* post 0 = gate,
          * 1 = source for NPN,
@@ -139,189 +74,8 @@ namespace Circuit.Elements.Active {
             return (n == 0) ? mPoint1 : (n == 1) ? mSrc[0] : (n == 2) ? mDrn[0] : mBody[0];
         }
 
-        public override double CirGetCurrentIntoNode(int n) {
-            if (n == 0) {
-                return 0;
-            }
-            if (n == 3) {
-                return -mDiodeCurrent1 - mDiodeCurrent2;
-            }
-            if (n == 1) {
-                return mIds + mDiodeCurrent1;
-            }
-            return -mIds + mDiodeCurrent2;
-        }
-
-        public override void CirStamp() {
-            mCir.StampNonLinear(CirNodes[1]);
-            mCir.StampNonLinear(CirNodes[2]);
-
-            mBodyTerminal = (mPnp == -1) ? 2 : 1;
-
-            if (DoBodyDiode) {
-                if (mPnp == -1) {
-                    /* pnp: diodes conduct when S or D are higher than body */
-                    mDiodeB1.Stamp(CirNodes[1], CirNodes[mBodyTerminal]);
-                    mDiodeB2.Stamp(CirNodes[2], CirNodes[mBodyTerminal]);
-                } else {
-                    /* npn: diodes conduct when body is higher than S or D */
-                    mDiodeB1.Stamp(CirNodes[mBodyTerminal], CirNodes[1]);
-                    mDiodeB2.Stamp(CirNodes[mBodyTerminal], CirNodes[2]);
-                }
-            }
-        }
-
-        public override void CirDoStep() {
-            calculate(false);
-        }
-
-        public override void CirStepFinished() {
-            calculate(true);
-
-            /* fix current if body is connected to source or drain */
-            if (mBodyTerminal == 1) {
-                mDiodeCurrent1 = -mDiodeCurrent2;
-            }
-            if (mBodyTerminal == 2) {
-                mDiodeCurrent2 = -mDiodeCurrent1;
-            }
-        }
-
-        /* this is called in doStep to stamp the matrix,
-         * and also called in stepFinished() to calculate the current */
-        void calculate(bool finished) {
-            double[] vs;
-            if (finished) {
-                vs = CirVolts;
-            } else {
-                /* limit voltage changes to .5V */
-                vs = new double[3];
-                vs[0] = CirVolts[V_G];
-                vs[1] = CirVolts[V_S];
-                vs[2] = CirVolts[V_D];
-                if (vs[1] > mLastV1 + .5) {
-                    vs[1] = mLastV1 + .5;
-                }
-                if (vs[1] < mLastV1 - .5) {
-                    vs[1] = mLastV1 - .5;
-                }
-                if (vs[2] > mLastV2 + .5) {
-                    vs[2] = mLastV2 + .5;
-                }
-                if (vs[2] < mLastV2 - .5) {
-                    vs[2] = mLastV2 - .5;
-                }
-            }
-
-            int source = 1;
-            int drain = 2;
-
-            /* if source voltage > drain (for NPN), swap source and drain
-             * (opposite for PNP) */
-            if (mPnp * vs[1] > mPnp * vs[2]) {
-                source = 2;
-                drain = 1;
-            }
-            int gate = 0;
-            double vgs = vs[gate] - vs[source];
-            double vds = vs[drain] - vs[source];
-            if (!finished && (nonConvergence(mLastV1, vs[1]) || nonConvergence(mLastV2, vs[2]) || nonConvergence(mLastV0, vs[0]))) {
-                mCir.Converged = false;
-            }
-            mLastV0 = vs[0];
-            mLastV1 = vs[1];
-            mLastV2 = vs[2];
-            double realvgs = vgs;
-            double realvds = vds;
-            vgs *= mPnp;
-            vds *= mPnp;
-            mIds = 0;
-            mGm = 0;
-            double Gds = 0;
-            if (vgs < mVt) {
-                /* should be all zero, but that causes a singular matrix,
-                 * so instead we treat it as a large resistor */
-                Gds = 1e-8;
-                mIds = vds * Gds;
-                mMode = 0;
-            } else if (vds < vgs - mVt) {
-                /* linear */
-                mIds = mHfe * ((vgs - mVt) * vds - vds * vds * .5);
-                mGm = mHfe * vds;
-                Gds = mHfe * (vgs - vds - mVt);
-                mMode = 1;
-            } else {
-                /* saturation; Gds = 0 */
-                mGm = mHfe * (vgs - mVt);
-                /* use very small Gds to avoid nonconvergence */
-                Gds = 1e-8;
-                mIds = .5 * mHfe * (vgs - mVt) * (vgs - mVt) + (vds - (vgs - mVt)) * Gds;
-                mMode = 2;
-            }
-
-            if (DoBodyDiode) {
-                mDiodeB1.DoStep(mPnp * (CirVolts[mBodyTerminal] - CirVolts[V_S]));
-                mDiodeCurrent1 = mDiodeB1.CalculateCurrent(mPnp * (CirVolts[mBodyTerminal] - CirVolts[V_S])) * mPnp;
-                mDiodeB2.DoStep(mPnp * (CirVolts[mBodyTerminal] - CirVolts[V_D]));
-                mDiodeCurrent2 = mDiodeB2.CalculateCurrent(mPnp * (CirVolts[mBodyTerminal] - CirVolts[V_D])) * mPnp;
-            } else {
-                mDiodeCurrent1 = mDiodeCurrent2 = 0;
-            }
-
-            double ids0 = mIds;
-
-            /* flip ids if we swapped source and drain above */
-            if (source == 2 && mPnp == 1 || source == 1 && mPnp == -1) {
-                mIds = -mIds;
-            }
-
-            if (finished) {
-                return;
-            }
-
-            double rs = -mPnp * ids0 + Gds * realvds + mGm * realvgs;
-            mCir.StampMatrix(CirNodes[drain], CirNodes[drain], Gds);
-            mCir.StampMatrix(CirNodes[drain], CirNodes[source], -Gds - mGm);
-            mCir.StampMatrix(CirNodes[drain], CirNodes[gate], mGm);
-
-            mCir.StampMatrix(CirNodes[source], CirNodes[drain], -Gds);
-            mCir.StampMatrix(CirNodes[source], CirNodes[source], Gds + mGm);
-            mCir.StampMatrix(CirNodes[source], CirNodes[gate], -mGm);
-
-            mCir.StampRightSide(CirNodes[drain], rs);
-            mCir.StampRightSide(CirNodes[source], -rs);
-        }
-
-        bool nonConvergence(double last, double now) {
-            double diff = Math.Abs(last - now);
-
-            /* high beta MOSFETs are more sensitive to small differences,
-             * so we are more strict about convergence testing */
-            if (mHfe > 1) {
-                diff *= 100;
-            }
-
-            /* difference of less than 10mV is fine */
-            if (diff < .01) {
-                return false;
-            }
-            /* larger differences are fine if value is large */
-            if (mCir.SubIterations > 10 && diff < Math.Abs(now) * .001) {
-                return false;
-            }
-            /* if we're having trouble converging, get more lenient */
-            if (mCir.SubIterations > 100 && diff < .01 + (mCir.SubIterations - 100) * .0001) {
-                return false;
-            }
-            return true;
-        }
-
-        public override void CirReset() {
-            mLastV1 = mLastV2 = 0;
-            CirVolts[V_G] = CirVolts[V_S] = CirVolts[V_D] = 0;
-            mCirCurCount = 0;
-            mDiodeB1.Reset();
-            mDiodeB2.Reset();
+        public override bool CirGetConnection(int n1, int n2) {
+            return !(n1 == 0 || n2 == 0);
         }
 
         public override void SetPoints() {
@@ -352,8 +106,10 @@ namespace Circuit.Elements.Active {
                 Utils.InterpPoint(mSrc[1], mDrn[1], ref mBody[1], .5);
             }
 
+            var ce = (MosfetElmE)CirElm;
+
             if (!DrawDigital) {
-                if (mPnp == 1) {
+                if (ce.Pnp == 1) {
                     if (ShowBulk) {
                         Utils.CreateArrow(mBody[0], mBody[1], out mArrowPoly, 10, 4);
                     } else {
@@ -366,7 +122,7 @@ namespace Circuit.Elements.Active {
                         Utils.CreateArrow(mDrn[0], mDrn[1], out mArrowPoly, 10, 4);
                     }
                 }
-            } else if (mPnp == -1) {
+            } else if (ce.Pnp == -1) {
                 interpPoint(ref mGate[1], 1 - 36 / mLen);
                 int dist = (mDsign < 0) ? 32 : 31;
                 interpPoint(ref mPcircle, 1 - dist / mLen);
@@ -411,13 +167,14 @@ namespace Circuit.Elements.Active {
             drawLead(mSrc[0], mSrc[1]);
             drawLead(mDrn[0], mDrn[1]);
 
+            var ce = (MosfetElmE)CirElm;
+
             /* draw line connecting source and drain */
-            bool enhancement = mVt > 0 && ShowBulk;
+            bool enhancement = ce.Vt > 0 && ShowBulk;
             for (int i = 0; i != SEGMENTS; i++) {
                 if ((i == 1 || i == 4) && enhancement) {
                     continue;
                 }
-                double v = CirVolts[V_S] + (CirVolts[V_D] - CirVolts[V_S]) * i / SEGMENTS;
                 drawLead(mPs1[i], mPs2[i]);
             }
 
@@ -427,7 +184,7 @@ namespace Circuit.Elements.Active {
 
             /* draw bulk connection */
             if (ShowBulk) {
-                drawLead(mPnp == -1 ? mDrn[0] : mSrc[0], mBody[0]);
+                drawLead(ce.Pnp == -1 ? mDrn[0] : mSrc[0], mBody[0]);
                 drawLead(mBody[0], mBody[1]);
             }
 
@@ -439,22 +196,22 @@ namespace Circuit.Elements.Active {
             /* draw gate */
             drawLead(mPoint1, mGate[1]);
             drawLead(mGate[0], mGate[2]);
-            if (DrawDigital && mPnp == -1) {
+            if (DrawDigital && ce.Pnp == -1) {
                 g.DrawCircle(mPcircle, mPcircler);
             }
 
             if ((mFlags & FLAG_SHOWVT) != 0) {
-                string s = "" + (mVt * mPnp);
+                string s = "" + (ce.Vt * ce.Pnp);
                 drawCenteredLText(s, P2, false);
             }
-            mCirCurCount = cirUpdateDotCount(-mIds, mCirCurCount);
-            drawDots(mSrc[0], mSrc[1], mCirCurCount);
-            drawDots(mDrn[1], mDrn[0], mCirCurCount);
-            drawDots(mSrc[1], mDrn[1], mCirCurCount);
+            ce.mCirCurCount = ce.cirUpdateDotCount(-ce.Ids, ce.mCirCurCount);
+            drawDots(mSrc[0], mSrc[1], ce.mCirCurCount);
+            drawDots(mDrn[1], mDrn[0], ce.mCirCurCount);
+            drawDots(mSrc[1], mDrn[1], ce.mCirCurCount);
 
             if (ShowBulk) {
-                mCurcountBody1 = cirUpdateDotCount(mDiodeCurrent1, mCurcountBody1);
-                mCurcountBody2 = cirUpdateDotCount(mDiodeCurrent2, mCurcountBody2);
+                mCurcountBody1 = ce.cirUpdateDotCount(ce.DiodeCurrent1, mCurcountBody1);
+                mCurcountBody2 = ce.cirUpdateDotCount(ce.DiodeCurrent2, mCurcountBody2);
                 drawDots(mSrc[0], mBody[0], -mCurcountBody1);
                 drawDots(mBody[0], mDrn[0], mCurcountBody2);
             }
@@ -475,39 +232,40 @@ namespace Circuit.Elements.Active {
         }
 
         void getFetInfo(string[] arr, string n) {
-            arr[0] = ((mPnp == -1) ? "p-" : "n-") + n;
-            arr[0] += " (Vt=" + Utils.VoltageText(mPnp * mVt);
-            arr[0] += ", \u03b2=" + mHfe + ")";
-            arr[1] = ((mPnp == 1) ? "Ids = " : "Isd = ") + Utils.CurrentText(mIds);
-            arr[2] = "Vgs = " + Utils.VoltageText(CirVolts[V_G] - CirVolts[mPnp == -1 ? V_D : V_S]);
-            arr[3] = ((mPnp == 1) ? "Vds = " : "Vsd = ") + Utils.VoltageText(CirVolts[V_D] - CirVolts[V_S]);
-            arr[4] = (mMode == 0) ? "off" : (mMode == 1) ? "linear" : "saturation";
-            arr[5] = "gm = " + Utils.UnitText(mGm, "A/V");
-            arr[6] = "P = " + Utils.UnitText(CirPower, "W");
+            var ce = (MosfetElmE)CirElm;
+            arr[0] = ((ce.Pnp == -1) ? "p-" : "n-") + n;
+            arr[0] += " (Vt=" + Utils.VoltageText(ce.Pnp * ce.Vt);
+            arr[0] += ", \u03b2=" + ce.Hfe + ")";
+            arr[1] = ((ce.Pnp == 1) ? "Ids = " : "Isd = ") + Utils.CurrentText(ce.Ids);
+            arr[2] = "Vgs = " + Utils.VoltageText(ce.CirVolts[MosfetElmE.V_G] - ce.CirVolts[ce.Pnp == -1 ? MosfetElmE.V_D : MosfetElmE.V_S]);
+            arr[3] = ((ce.Pnp == 1) ? "Vds = " : "Vsd = ") + Utils.VoltageText(ce.CirVolts[MosfetElmE.V_D] - ce.CirVolts[MosfetElmE.V_S]);
+            arr[4] = (ce.Mode == 0) ? "off" : (ce.Mode == 1) ? "linear" : "saturation";
+            arr[5] = "gm = " + Utils.UnitText(ce.Gm, "A/V");
+            arr[6] = "P = " + Utils.UnitText(ce.CirPower, "W");
             if (ShowBulk) {
-                arr[7] = "Ib = " + Utils.UnitText(mBodyTerminal == 1 ? -mDiodeCurrent1 : mBodyTerminal == 2 ? mDiodeCurrent2 : -mPnp * (mDiodeCurrent1 + mDiodeCurrent2), "A");
+                arr[7] = "Ib = " + Utils.UnitText(
+                    ce.BodyTerminal == 1 ? -ce.DiodeCurrent1 :
+                    ce.BodyTerminal == 2 ? ce.DiodeCurrent2 :
+                    -ce.Pnp * (ce.DiodeCurrent1 + ce.DiodeCurrent2), "A");
             }
         }
 
         public override string GetScopeText(Scope.VAL v) {
-            return ((mPnp == -1) ? "p-" : "n-") + "MOSFET";
-        }
-
-        public override bool CirGetConnection(int n1, int n2) {
-            return !(n1 == 0 || n2 == 0);
+            return ((((MosfetElmE)CirElm).Pnp == -1) ? "p-" : "n-") + "MOSFET";
         }
 
         public override ElementInfo GetElementInfo(int n) {
+            var ce = (MosfetElmE)CirElm;
             if (n == 0) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
                 ei.Text = ReferenceName;
                 return ei;
             }
             if (n == 1) {
-                return new ElementInfo("閾値電圧", mPnp * mVt, .01, 5);
+                return new ElementInfo("閾値電圧", ce.Pnp * ce.Vt, .01, 5);
             }
             if (n == 2) {
-                return new ElementInfo("hfe", mHfe, .01, 5);
+                return new ElementInfo("hfe", ce.Hfe, .01, 5);
             }
             if (n == 3) {
                 var ei = new ElementInfo("", 0, -1, -1);
@@ -549,15 +307,16 @@ namespace Circuit.Elements.Active {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
+            var ce = (MosfetElmE)CirElm;
             if (n == 0) {
                 ReferenceName = ei.Textf.Text;
                 setTextPos();
             }
             if (n == 1) {
-                mVt = mPnp * ei.Value;
+                ce.Vt = ce.Pnp * ei.Value;
             }
             if (n == 2 && ei.Value > 0) {
-                mHfe = mLastHfe = ei.Value;
+                ce.Hfe = MosfetElmE.LastHfe = ei.Value;
             }
             if (n == 3) {
                 mGlobalFlags = (!ei.CheckBox.Checked)
@@ -577,6 +336,7 @@ namespace Circuit.Elements.Active {
             }
             if (n == 5 && ShowBulk) {
                 mFlags = ei.ChangeFlag(mFlags, FLAG_BODY_DIODE);
+                ce.DoBodyDiode = 0 != (mFlags & FLAG_BODY_DIODE);
             }
         }
     }

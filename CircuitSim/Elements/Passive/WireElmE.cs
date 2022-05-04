@@ -1,7 +1,5 @@
 ﻿namespace Circuit.Elements.Passive {
     class WireElmE : BaseElement {
-        public bool HasWireInfo; /* used in CirSim to calculate wire currents */
-
         public WireElmE() { }
 
         public override bool CirIsWire { get { return true; } }

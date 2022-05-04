@@ -9,59 +9,42 @@ namespace Circuit.Elements.Passive {
         Point mP1;
         Point mP2;
 
+        public SwitchElm(Point pos, int dummy) : base(pos) { }
+
         public SwitchElm(Point pos) : base(pos) {
-            Momentary = false;
-            Position = 0;
-            PosCount = 2;
+            CirElm = new SwitchElmE();
         }
 
         public SwitchElm(Point pos, bool mm) : base(pos) {
-            Position = mm ? 1 : 0;
-            Momentary = mm;
-            PosCount = 2;
+            CirElm = new SwitchElmE(mm);
         }
+
+        public SwitchElm(Point p1, Point p2, int f) : base(p1, p2, f) { }
 
         public SwitchElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            Position = 0;
-            Momentary = false;
-            PosCount = 2;
-            try {
-                string str = st.nextToken();
-                Position = int.Parse(str);
-                Momentary = st.nextTokenBool();
-            } catch { }
+            CirElm = new SwitchElmE(st);
         }
 
-        public bool Momentary { get; protected set; }
-        /* position 0 == closed
-         * position 1 == open */
-        public int Position { get; protected set; }
-        public int PosCount { get; protected set; }
-        public override bool CirIsWire { get { return Position == 0; } }
-        public override int CirVoltageSourceCount { get { return (1 == Position) ? 0 : 1; } }
         public override DUMP_ID Shortcut { get { return DUMP_ID.SWITCH; } }
         public override DUMP_ID DumpType { get { return DUMP_ID.SWITCH; } }
 
         protected override string dump() {
-            return Position + " " + Momentary;
-        }
-
-        protected override void cirCalculateCurrent() {
-            if (Position == 1) {
-                mCirCurrent = 0;
-            }
+            var ce = (SwitchElmE)CirElm;
+            return ce.Position + " " + ce.Momentary;
         }
 
         public void MouseUp() {
-            if (Momentary) {
+            var ce = (SwitchElmE)CirElm;
+            if (ce.Momentary) {
                 Toggle();
             }
         }
 
         public virtual void Toggle() {
-            Position++;
-            if (Position >= PosCount) {
-                Position = 0;
+            var ce = (SwitchElmE)CirElm;
+            ce.Position++;
+            if (ce.PosCount <= ce.Position) {
+                ce.Position = 0;
             }
         }
 
@@ -79,11 +62,12 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            int hs1 = (Position == 1) ? 0 : 2;
-            int hs2 = (Position == 1) ? OPEN_HS : 2;
+            var ce = (SwitchElmE)CirElm;
+            int hs1 = (ce.Position == 1) ? 0 : 2;
+            int hs2 = (ce.Position == 1) ? OPEN_HS : 2;
             setBbox(mPoint1, mPoint2, OPEN_HS);
             draw2Leads();
-            if (Position == 0) {
+            if (ce.Position == 0) {
                 doDots();
             }
             interpLead(ref mP1, 0, hs1);
@@ -93,40 +77,37 @@ namespace Circuit.Elements.Passive {
             drawPosts();
         }
 
-        public override void CirStamp() {
-            if (Position == 0) {
-                mCir.StampVoltageSource(CirNodes[0], CirNodes[1], mCirVoltSource, 0);
-            }
-        }
-
         public override void GetInfo(string[] arr) {
-            arr[0] = (Momentary) ? "push switch (SPST)" : "switch (SPST)";
-            if (Position == 1) {
+            var ce = (SwitchElmE)CirElm;
+            arr[0] = (ce.Momentary) ? "push switch (SPST)" : "switch (SPST)";
+            if (ce.Position == 1) {
                 arr[1] = "open";
-                arr[2] = "Vd = " + Utils.VoltageAbsText(CirVoltageDiff);
+                arr[2] = "Vd = " + Utils.VoltageAbsText(ce.CirVoltageDiff);
             } else {
                 arr[1] = "closed";
-                arr[2] = "V = " + Utils.VoltageText(CirVolts[0]);
-                arr[3] = "I = " + Utils.CurrentAbsText(mCirCurrent);
+                arr[2] = "V = " + Utils.VoltageText(ce.CirVolts[0]);
+                arr[3] = "I = " + Utils.CurrentAbsText(ce.mCirCurrent);
             }
         }
 
-        public override bool CirGetConnection(int n1, int n2) { return Position == 0; }
+        public override bool CirGetConnection(int n1, int n2) { return 0 == ((SwitchElmE)CirElm).Position; }
 
         public override ElementInfo GetElementInfo(int n) {
+            var ce = (SwitchElmE)CirElm;
             if (n == 0) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "モーメンタリ";
-                ei.CheckBox.Checked = Momentary;
+                ei.CheckBox.Checked = ce.Momentary;
                 return ei;
             }
             return null;
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
+            var ce = (SwitchElmE)CirElm;
             if (n == 0) {
-                Momentary = ei.CheckBox.Checked;
+                ce.Momentary = ei.CheckBox.Checked;
             }
         }
     }

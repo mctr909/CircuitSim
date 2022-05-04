@@ -8,42 +8,24 @@ namespace Circuit.Elements.Active {
         const int OPEN_HS = 16;
         const int BODY_LEN = 24;
 
-        double mResistance;
-        double mR_on;
-        double mR_off;
-        bool mIsOpen;
         Point mPs;
         Point mPoint3;
         Point mLead3;
 
         public AnalogSwitchElm(Point pos) : base(pos) {
-            mR_on = 20;
-            mR_off = 1e10;
+            CirElm = new AnalogSwitchElmE();
         }
 
         public AnalogSwitchElm(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-            mR_on = 20;
-            mR_off = 1e10;
-            try {
-                mR_on = double.Parse(st.nextToken());
-                mR_off = double.Parse(st.nextToken());
-            } catch { }
+            CirElm = new AnalogSwitchElmE(st);
         }
 
         protected override string dump() {
-            return mR_on + " " + mR_off;
-        }
-
-        protected override void cirCalculateCurrent() {
-            mCirCurrent = (CirVolts[0] - CirVolts[1]) / mResistance;
+            var ce = (AnalogSwitchElmE)CirElm;
+            return ce.Ron + " " + ce.Roff;
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.ANALOG_SW; } }
-
-        // we need this to be able to change the matrix for each step
-        public override bool CirNonLinear { get { return true; } }
-
-        public override int CirPostCount { get { return 3; } }
 
         public override Point GetPost(int n) {
             return (0 == n) ? mPoint1 : (1 == n) ? mPoint2 : mPoint3;
@@ -56,21 +38,6 @@ namespace Circuit.Elements.Active {
                 return false;
             }
             return true;
-        }
-
-        public override double CirGetCurrentIntoNode(int n) {
-            if (n == 0) {
-                return -mCirCurrent;
-            }
-            if (n == 2) {
-                return 0;
-            }
-            return mCirCurrent;
-        }
-
-        public override void CirStamp() {
-            mCir.StampNonLinear(CirNodes[0]);
-            mCir.StampNonLinear(CirNodes[1]);
         }
 
         public override void Drag(Point pos) {
@@ -99,7 +66,8 @@ namespace Circuit.Elements.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            int hs = mIsOpen ? OPEN_HS : 0;
+            var ce = (AnalogSwitchElmE)CirElm;
+            int hs = ce.IsOpen ? OPEN_HS : 0;
             setBbox(mPoint1, mPoint2, OPEN_HS);
 
             draw2Leads();
@@ -110,30 +78,23 @@ namespace Circuit.Elements.Active {
 
             drawLead(mPoint3, mLead3);
 
-            if (!mIsOpen) {
+            if (!ce.IsOpen) {
                 doDots();
             }
             drawPosts();
         }
 
-        public override void CirDoStep() {
-            mIsOpen = CirVolts[2] < 2.5;
-            if ((mFlags & FLAG_INVERT) != 0) {
-                mIsOpen = !mIsOpen;
-            }
-            mResistance = mIsOpen ? mR_off : mR_on;
-            mCir.StampResistor(CirNodes[0], CirNodes[1], mResistance);
-        }
-
         public override void GetInfo(string[] arr) {
+            var ce = (AnalogSwitchElmE)CirElm;
             arr[0] = "analog switch";
-            arr[1] = mIsOpen ? "open" : "closed";
-            arr[2] = "Vd = " + Utils.VoltageAbsText(CirVoltageDiff);
-            arr[3] = "I = " + Utils.CurrentAbsText(CirCurrent);
-            arr[4] = "Vc = " + Utils.VoltageText(CirVolts[2]);
+            arr[1] = ce.IsOpen ? "open" : "closed";
+            arr[2] = "Vd = " + Utils.VoltageAbsText(ce.CirVoltageDiff);
+            arr[3] = "I = " + Utils.CurrentAbsText(ce.CirCurrent);
+            arr[4] = "Vc = " + Utils.VoltageText(ce.CirVolts[2]);
         }
 
         public override ElementInfo GetElementInfo(int n) {
+            var ce = (AnalogSwitchElmE)CirElm;
             if (n == 0) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
@@ -143,23 +104,25 @@ namespace Circuit.Elements.Active {
                 return ei;
             }
             if (n == 1) {
-                return new ElementInfo("オン抵抗(Ω)", mR_on, 0, 0);
+                return new ElementInfo("オン抵抗(Ω)", ce.Ron, 0, 0);
             }
             if (n == 2) {
-                return new ElementInfo("オフ抵抗(Ω)", mR_off, 0, 0);
+                return new ElementInfo("オフ抵抗(Ω)", ce.Roff, 0, 0);
             }
             return null;
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
+            var ce = (AnalogSwitchElmE)CirElm;
             if (n == 0) {
                 mFlags = ei.CheckBox.Checked ? (mFlags | FLAG_INVERT) : (mFlags & ~FLAG_INVERT);
+                ce.Invert = 0 != (mFlags & FLAG_INVERT);
             }
             if (n == 1 && 0 < ei.Value) {
-                mR_on = ei.Value;
+                ce.Ron = ei.Value;
             }
             if (n == 2 && 0 < ei.Value) {
-                mR_off = ei.Value;
+                ce.Roff = ei.Value;
             }
         }
     }

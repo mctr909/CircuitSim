@@ -6,7 +6,7 @@ namespace Circuit.Elements.Active {
         const int CR = 10;
         const int CR_INNER = 7;
 
-        static string mLastLEDModelName = "default";
+        static string mLastLEDModelName = "default-led";
 
         double mMaxBrightnessCurrent;
         double mColorR;
@@ -17,8 +17,9 @@ namespace Circuit.Elements.Active {
         Point mLedLead2;
         Point mLedCenter;
 
-        public LEDElm(Point pos) : base(pos) {
-            mModelName = mLastLEDModelName;
+        public LEDElm(Point pos) : base(pos, "D") {
+            var ce = (DiodeElmE)CirElm;
+            ce.mModelName = mLastLEDModelName;
             setup();
             mMaxBrightnessCurrent = .01;
             mColorR = 1;
@@ -26,11 +27,12 @@ namespace Circuit.Elements.Active {
         }
 
         public LEDElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
+            var ce = (DiodeElmE)CirElm;
             if ((f & (FLAG_MODEL | FLAG_FWDROP)) == 0) {
                 const double fwdrop = 2.1024259;
-                mModel = DiodeModel.GetModelWithParameters(fwdrop, 0);
-                mModelName = mModel.Name;
-                Console.WriteLine("model name wparams = " + mModelName);
+                ce.mModel = DiodeModel.GetModelWithParameters(fwdrop, 0);
+                ce.mModelName = ce.mModel.Name;
+                Console.WriteLine("model name wparams = " + ce.mModelName);
                 setup();
             }
             mColorR = 1.0;
@@ -76,7 +78,9 @@ namespace Circuit.Elements.Active {
             g.LineColor = CustomGraphics.GrayColor;
             g.DrawCircle(mLedCenter, CR);
 
-            double w = mCirCurrent / mMaxBrightnessCurrent;
+            var ce = (DiodeElmE)CirElm;
+
+            double w = ce.mCirCurrent / mMaxBrightnessCurrent;
             if (0 < w) {
                 w = 255 * (1 + .2 * Math.Log(w));
             }
@@ -91,18 +95,19 @@ namespace Circuit.Elements.Active {
             g.FillCircle(mLedCenter.X, mLedCenter.Y, CR_INNER);
 
             setBbox(mPoint1, mPoint2, CR_INNER);
-            cirUpdateDotCount();
-            drawDots(mPoint1, mLedLead1, mCirCurCount);
-            drawDots(mPoint2, mLedLead2, -mCirCurCount);
+            ce.cirUpdateDotCount();
+            drawDots(mPoint1, mLedLead1, ce.mCirCurCount);
+            drawDots(mPoint2, mLedLead2, -ce.mCirCurCount);
             drawPosts();
         }
 
         public override void GetInfo(string[] arr) {
             base.GetInfo(arr);
-            if (mModel.OldStyle) {
+            var ce = (DiodeElmE)CirElm;
+            if (ce.mModel.OldStyle) {
                 arr[0] = "LED";
             } else {
-                arr[0] = "LED (" + mModelName + ")";
+                arr[0] = "LED (" + ce.mModelName + ")";
             }
         }
 

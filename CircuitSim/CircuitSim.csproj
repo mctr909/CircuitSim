@@ -47,6 +47,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Elements\Active\AnalogSwitchE.cs" />
+    <Compile Include="Elements\Active\AnalogSwitch.cs" />
+    <Compile Include="Elements\Active\DiodeElmE.cs" />
+    <Compile Include="Elements\Active\DiodeElm.cs" />
+    <Compile Include="Elements\Active\LEDElm.cs" />
+    <Compile Include="Elements\Active\MosfetElmE.cs" />
+    <Compile Include="Elements\Active\MosfetElm.cs" />
+    <Compile Include="Elements\Active\NMosfetElm.cs" />
+    <Compile Include="Elements\Active\NTransistorElm.cs" />
+    <Compile Include="Elements\Active\OpAmpElmE.cs" />
+    <Compile Include="Elements\Active\OpAmpElm.cs" />
+    <Compile Include="Elements\Active\OpAmpSwapElm.cs" />
+    <Compile Include="Elements\Active\PMosfetElm.cs" />
+    <Compile Include="Elements\Active\PTransistorElm.cs" />
+    <Compile Include="Elements\Active\TransistorElmE.cs" />
+    <Compile Include="Elements\Active\TransistorElm.cs" />
+    <Compile Include="Elements\Active\VaractorElmE.cs" />
+    <Compile Include="Elements\Active\VaractorElm.cs" />
+    <Compile Include="Elements\Active\ZenerElm.cs" />
     <Compile Include="Elements\BaseElement.cs" />
     <Compile Include="Elements\Custom\BoxElm.cs" />
     <Compile Include="Elements\Custom\GraphicElm.cs" />
@@ -61,11 +80,20 @@
     <Compile Include="Elements\Input\RailElm.cs" />
     <Compile Include="Elements\Passive\GroundElmE.cs" />
     <Compile Include="Elements\Passive\InductorElmE.cs" />
+    <Compile Include="Elements\Passive\PotElmE.cs" />
+    <Compile Include="Elements\Passive\PotElm.cs" />
+    <Compile Include="Elements\Passive\PushSwitchElm.cs" />
     <Compile Include="Elements\Passive\ResistorElmE.cs" />
     <Compile Include="Elements\Input\ACRailElm.cs" />
     <Compile Include="Elements\Input\ACVoltageElm.cs" />
     <Compile Include="Elements\Input\ClockElm.cs" />
     <Compile Include="Elements\Input\DCVoltageElm.cs" />
+    <Compile Include="Elements\Passive\Switch2ElmE.cs" />
+    <Compile Include="Elements\Passive\Switch2Elm.cs" />
+    <Compile Include="Elements\Passive\SwitchElmE.cs" />
+    <Compile Include="Elements\Passive\SwitchElm.cs" />
+    <Compile Include="Elements\Passive\TransformerElmE.cs" />
+    <Compile Include="Elements\Passive\TransformerElm.cs" />
     <Compile Include="Elements\Passive\WireElmE.cs" />
     <Compile Include="Forms\CirSimMain.cs" />
     <Compile Include="Forms\CirSimVariable.cs" />
@@ -150,7 +178,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Elements\Active\" />
     <Folder Include="Elements\Gate\" />
     <Folder Include="Elements\Logic\" />
   </ItemGroup>

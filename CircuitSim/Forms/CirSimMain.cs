@@ -7,7 +7,7 @@ using Circuit.Elements.Output;
 
 namespace Circuit {
     partial class CirSim {
-        public Tuple<CircuitElm, BaseElement> getElm(int n) {
+        public CircuitElm getElm(int n) {
             if (n >= ElmList.Count) {
                 return null;
             }
@@ -18,7 +18,7 @@ namespace Circuit {
             if (n >= ElmList.Count) {
                 return null;
             }
-            return ElmList[n].Item2;
+            return ElmList[n].CirElm;
         }
 
         public void updateCircuit() {
@@ -83,7 +83,7 @@ namespace Circuit {
             {
                 /* draw elements */
                 for (int i = 0; i != ElmCount; i++) {
-                    ElmList[i].Item1.Draw(g);
+                    ElmList[i].Draw(g);
                 }
 
                 /* draw posts normally */
@@ -100,7 +100,7 @@ namespace Circuit {
                     || TempMouseMode == MOUSE_MODE.DRAG_POST
                     || TempMouseMode == MOUSE_MODE.DRAG_SELECTED) {
                     for (int i = 0; i != ElmCount; i++) {
-                        var ce = getElm(i).Item1;
+                        var ce = getElm(i);
                         g.DrawPost(ce.P1);
                         g.DrawPost(ce.P2);
                         if (ce != mMouseElm || TempMouseMode != MOUSE_MODE.DRAG_POST) {
@@ -270,7 +270,7 @@ namespace Circuit {
             int iter;
             for (iter = 1; ; iter++) {
                 for (int i = 0; i != ElmCount; i++) {
-                    var ce = getElm(i).Item2;
+                    var ce = getElmE(i);
                     ce.CirStartIteration();
                 }
 
@@ -280,7 +280,7 @@ namespace Circuit {
 
                 Time += ControlPanel.TimeStep;
                 for (int i = 0; i != ElmCount; i++) {
-                    getElm(i).Item2.CirStepFinished();
+                    getElmE(i).CirStepFinished();
                 }
                 if (!delayWireProcessing) {
                     mCir.CalcWireCurrents();
@@ -289,8 +289,8 @@ namespace Circuit {
                     mScopes[i].TimeStep();
                 }
                 for (int i = 0; i != ElmCount; i++) {
-                    if (getElm(i).Item1 is ScopeElm) {
-                        ((ScopeElm)getElm(i).Item1).stepScope();
+                    if (getElm(i) is ScopeElm) {
+                        ((ScopeElm)getElm(i)).stepScope();
                     }
                 }
 
@@ -400,7 +400,7 @@ namespace Circuit {
                 }
             }
             for (i = 0; i != ElmCount; i++) {
-                if ((getElm(i).Item1 is ScopeElm) && ((ScopeElm)getElm(i).Item1).elmScope.ViewingWire) {
+                if ((getElm(i) is ScopeElm) && ((ScopeElm)getElm(i)).elmScope.ViewingWire) {
                     return false;
                 }
             }

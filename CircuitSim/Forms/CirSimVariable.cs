@@ -61,7 +61,7 @@ namespace Circuit {
         public bool DcAnalysisFlag { get; private set; }
         public double Time { get; private set; }
 
-        public List<Tuple<CircuitElm, BaseElement>> ElmList { get; private set; }
+        public List<CircuitElm> ElmList { get; private set; }
         public int ElmCount { get { return null == ElmList ? 0 : ElmList.Count; } }
         public CircuitElm PlotXElm { get; private set; }
         public CircuitElm PlotYElm { get; private set; }
@@ -95,8 +95,7 @@ namespace Circuit {
         Circuit mCir;
         CircuitElm mMenuElm;
         CircuitElm mMouseElm = null;
-        // Todo: SwitchElm
-        //SwitchElm mHeldSwitchElm;
+        SwitchElm mHeldSwitchElm;
 
         List<string> mUndoStack = new List<string>();
         List<string> mRedoStack = new List<string>();

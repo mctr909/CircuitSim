@@ -68,7 +68,6 @@ namespace Circuit.Elements.Output {
         }
 
         public override void Draw(CustomGraphics g) {
-            var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             setScopeRect();
             elmScope.Draw(g);
             setBbox(mPoint1, mPoint2, 0);

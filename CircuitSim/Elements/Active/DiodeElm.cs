@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -10,70 +9,38 @@ namespace Circuit.Elements.Active {
         protected const int BODY_LEN = 12;
         protected const int HS = 6;
 
-        static string lastModelName = "default";
-
-        protected string mModelName;
-        protected DiodeModel mModel;
         protected Point[] mPoly;
         protected Point[] mCathode;
 
-        Diode mDiode;
-        bool mHasResistance;
-        bool mCustomModelUI;
-        int mDiodeEndNode;
-        List<DiodeModel> mModels;
+        protected List<DiodeModel> mModels;
+        protected bool mCustomModelUI;
 
-        public DiodeElm(Point pos) : base(pos) {
-            mModelName = lastModelName;
-            mDiode = new Diode(mCir);
-            ReferenceName = "D";
+        public DiodeElm(Point pos) : base(pos) { }
+
+        public DiodeElm(Point pos, string referenceName) : base(pos) {
+            CirElm = new DiodeElmE();
+            ReferenceName = referenceName;
             setup();
         }
 
+        public DiodeElm(Point p1, Point p2, int f) : base(p1, p2, f) { }
+
         public DiodeElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            const double defaultdrop = 0.805904783;
-            mDiode = new Diode(mCir);
-            double fwdrop = defaultdrop;
-            double zvoltage = 0;
             try {
                 ReferenceName = st.nextToken();
             } catch { }
-            if (0 != (f & FLAG_MODEL)) {
-                try {
-                    mModelName = CustomLogicModel.unescape(st.nextToken());
-                } catch { }
-            } else {
-                if (0 != (f & FLAG_FWDROP)) {
-                    try {
-                        fwdrop = st.nextTokenDouble();
-                    } catch { }
-                }
-                mModel = DiodeModel.GetModelWithParameters(fwdrop, zvoltage);
-                mModelName = mModel.Name;
-            }
+            CirElm = new DiodeElmE(st, 0 != (f & FLAG_FWDROP), 0 != (f & FLAG_MODEL));
             setup();
         }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.DIODE; } }
 
-        public override int CirInternalNodeCount { get { return mHasResistance ? 1 : 0; } }
-
-        public override bool CirNonLinear { get { return true; } }
-
         public override DUMP_ID DumpType { get { return DUMP_ID.DIODE; } }
 
         protected override string dump() {
             mFlags |= FLAG_MODEL;
-            return ReferenceName + " " + CustomLogicModel.escape(mModelName);
-        }
-
-        protected void setup() {
-            mModel = DiodeModel.GetModelWithNameOrCopy(mModelName, mModel);
-            mModelName = mModel.Name;
-            mDiode.Setup(mModel);
-            mHasResistance = (mModel.SeriesResistance > 0);
-            mDiodeEndNode = (mHasResistance) ? 2 : 1;
-            cirAllocNodes();
+            var ce = (DiodeElmE)CirElm;
+            return ReferenceName + " " + CustomLogicModel.escape(ce.mModelName);
         }
 
         public override void UpdateModels() {
@@ -81,33 +48,11 @@ namespace Circuit.Elements.Active {
         }
 
         public override string DumpModel() {
-            if (mModel.BuiltIn || mModel.Dumped) {
+            var ce = (DiodeElmE)CirElm;
+            if (ce.mModel.BuiltIn || ce.mModel.Dumped) {
                 return null;
             }
-            return mModel.Dump();
-        }
-
-        public override void CirStamp() {
-            if (mHasResistance) {
-                /* create diode from node 0 to internal node */
-                mDiode.Stamp(CirNodes[0], CirNodes[2]);
-                /* create resistor from internal node to node 1 */
-                mCir.StampResistor(CirNodes[1], CirNodes[2], mModel.SeriesResistance);
-            } else {
-                /* don't need any internal nodes if no series resistance */
-                mDiode.Stamp(CirNodes[0], CirNodes[1]);
-            }
-        }
-
-        public override void CirDoStep() {
-            mDiode.DoStep(CirVolts[0] - CirVolts[mDiodeEndNode]);
-        }
-
-        public override void CirStepFinished() {
-            /* stop for huge currents that make simulator act weird */
-            if (Math.Abs(mCirCurrent) > 1e12) {
-                mCir.Stop("max current exceeded", this);
-            }
+            return ce.mModel.Dump();
         }
 
         public override void SetPoints() {
@@ -140,14 +85,6 @@ namespace Circuit.Elements.Active {
             drawName();
         }
 
-        public override void CirReset() {
-            mDiode.Reset();
-            CirVolts[0] = CirVolts[1] = mCirCurCount = 0;
-            if (mHasResistance) {
-                CirVolts[2] = 0;
-            }
-        }
-
         protected void drawDiode(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, HS);
 
@@ -159,25 +96,23 @@ namespace Circuit.Elements.Active {
             drawLead(mCathode[0], mCathode[1]);
         }
 
-        protected override void cirCalculateCurrent() {
-            mCirCurrent = mDiode.CalculateCurrent(CirVolts[0] - CirVolts[mDiodeEndNode]);
-        }
-
         public override void GetInfo(string[] arr) {
-            if (mModel.OldStyle) {
+            var ce = (DiodeElmE)CirElm;
+            if (ce.mModel.OldStyle) {
                 arr[0] = "diode";
             } else {
-                arr[0] = "diode (" + mModelName + ")";
+                arr[0] = "diode (" + ce.mModelName + ")";
             }
-            arr[1] = "I = " + Utils.CurrentText(mCirCurrent);
-            arr[2] = "Vd = " + Utils.VoltageText(CirVoltageDiff);
-            arr[3] = "P = " + Utils.UnitText(CirPower, "W");
-            if (mModel.OldStyle) {
-                arr[4] = "Vf = " + Utils.VoltageText(mModel.FwDrop);
+            arr[1] = "I = " + Utils.CurrentText(ce.mCirCurrent);
+            arr[2] = "Vd = " + Utils.VoltageText(ce.CirVoltageDiff);
+            arr[3] = "P = " + Utils.UnitText(ce.CirPower, "W");
+            if (ce.mModel.OldStyle) {
+                arr[4] = "Vf = " + Utils.VoltageText(ce.mModel.FwDrop);
             }
         }
 
         public override ElementInfo GetElementInfo(int n) {
+            var ce = (DiodeElmE)CirElm;
             if (n == 0) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
                 ei.Text = ReferenceName;
@@ -190,7 +125,7 @@ namespace Circuit.Elements.Active {
                 for (int i = 0; i != mModels.Count; i++) {
                     var dm = mModels[i];
                     ei.Choice.Items.Add(dm.GetDescription());
-                    if (dm == mModel) {
+                    if (dm == ce.mModel) {
                         ei.Choice.SelectedIndex = i;
                     }
                 }
@@ -200,6 +135,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
+            var ce = (DiodeElmE)CirElm;
             if (n == 0) {
                 ReferenceName = ei.Textf.Text;
                 setTextPos();
@@ -212,16 +148,20 @@ namespace Circuit.Elements.Active {
                     ei.NewDialog = true;
                     return;
                 }
-                mModel = mModels[ei.Choice.SelectedIndex];
-                mModelName = mModel.Name;
+                ce.mModel = mModels[ei.Choice.SelectedIndex];
+                ce.mModelName = ce.mModel.Name;
                 setup();
                 return;
             }
             base.SetElementValue(n, ei);
         }
 
+        protected void setup() {
+            ((DiodeElmE)CirElm).Setup();
+        }
+
         void setLastModelName(string n) {
-            lastModelName = n;
+            DiodeElmE.lastModelName = n;
         }
     }
 }

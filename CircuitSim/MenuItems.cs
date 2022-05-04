@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 using Circuit.Elements;
 using Circuit.Elements.Passive;
-//using Circuit.Elements.Active;
+using Circuit.Elements.Active;
 using Circuit.Elements.Input;
 using Circuit.Elements.Output;
 //using Circuit.Elements.Gate;
@@ -566,9 +566,9 @@ namespace Circuit {
             //addElementItem(activeBlocMenuBar, "Add CCII-", ITEM.CC2NegElm);
             //addElementItem(activeBlocMenuBar, "Add OTA (LM13700 style)", ITEM.OTAElm);
             //addElementItem(activeBlocMenuBar, "Add Voltage-Controlled Voltage Source", ITEM.VCVSElm);
-            //addElementItem(activeBlocMenuBar, "Add Voltage-Controlled Current Source", ITEM.VCCSElm);
+            addElementItem(activeBlockMenuBar, "Add Voltage-Controlled Current Source", ELEMENTS.VCCSElm);
             //addElementItem(activeBlocMenuBar, "Add Current-Controlled Voltage Source", ITEM.CCVSElm);
-            //addElementItem(activeBlocMenuBar, "Add Current-Controlled Current Source", ITEM.CCCSElm);
+            addElementItem(activeBlockMenuBar, "Add Current-Controlled Current Source", ELEMENTS.CCCS);
             addElementItem(activeBlockMenuBar, "カスタムモジュール", ELEMENTS.CustomCompositeElm);
             mainMenuBar.Items.Add(activeBlockMenuBar);
             #endregion
@@ -594,45 +594,45 @@ namespace Circuit {
                 return new WireElm(pos);
             case ELEMENTS.GROUND:
                 return new GroundElm(pos);
-            //case ELEMENTS.SWITCH:
-            //    return new SwitchElm(pos);
-            //case ELEMENTS.SWITCH_PUSH:
-            //    return new PushSwitchElm(pos);
-            //case ELEMENTS.SWITCH_TERM:
-            //    return new Switch2Elm(pos);
+            case ELEMENTS.SWITCH:
+                return new SwitchElm(pos);
+            case ELEMENTS.SWITCH_PUSH:
+                return new PushSwitchElm(pos);
+            case ELEMENTS.SWITCH_TERM:
+                return new Switch2Elm(pos);
             case ELEMENTS.RESISTOR:
                 return new ResistorElm(pos);
-            //case ELEMENTS.POT:
-            //    return new PotElm(pos);
+            case ELEMENTS.POT:
+                return new PotElm(pos);
             case ELEMENTS.CAPACITOR:
                 return new CapacitorElm(pos);
             //case ELEMENTS.CAPACITOR_POLER:
             //    return new PolarCapacitorElm(pos);
             case ELEMENTS.INDUCTOR:
                 return new InductorElm(pos);
-            //case ELEMENTS.TRANSFORMER:
-            //    return new TransformerElm(pos);
+            case ELEMENTS.TRANSFORMER:
+                return new TransformerElm(pos);
             //case ELEMENTS.CRYSTAL:
             //    return new CrystalElm(pos);
             #endregion
 
             #region Active Components
-            //case ELEMENTS.DIODE:
-            //    return new DiodeElm(pos);
-            //case ELEMENTS.ZENER:
-            //    return new ZenerElm(pos);
-            //case ELEMENTS.LED:
-            //    return new LEDElm(pos);
-            //case ELEMENTS.TRANSISTOR:
-            //case ELEMENTS.TRANSISTOR_N:
-            //    return new NTransistorElm(pos);
-            //case ELEMENTS.TRANSISTOR_P:
-            //    return new PTransistorElm(pos);
-            //case ELEMENTS.MOSFET:
-            //case ELEMENTS.MOSFET_N:
-            //    return new NMosfetElm(pos);
-            //case ELEMENTS.MOSFET_P:
-            //    return new PMosfetElm(pos);
+            case ELEMENTS.DIODE:
+                return new DiodeElm(pos, "D");
+            case ELEMENTS.ZENER:
+                return new ZenerElm(pos);
+            case ELEMENTS.LED:
+                return new LEDElm(pos);
+            case ELEMENTS.TRANSISTOR:
+            case ELEMENTS.TRANSISTOR_N:
+                return new NTransistorElm(pos);
+            case ELEMENTS.TRANSISTOR_P:
+                return new PTransistorElm(pos);
+            case ELEMENTS.MOSFET:
+            case ELEMENTS.MOSFET_N:
+                return new NMosfetElm(pos);
+            case ELEMENTS.MOSFET_P:
+                return new PMosfetElm(pos);
             //case ELEMENTS.JfetElm:
             //case ELEMENTS.NJfetElm:
             //    return null; //(CircuitElm)new NJfetElm(x1, y1);
@@ -649,8 +649,8 @@ namespace Circuit {
             //    return null; //(CircuitElm)new NDarlingtonElm(x1, y1);
             //case ELEMENTS.PDarlingtonElm:
             //    return null; //(CircuitElm)new PDarlingtonElm(x1, y1);
-            //case ELEMENTS.VARACTOR:
-            //    return new VaractorElm(pos);
+            case ELEMENTS.VARACTOR:
+                return new VaractorElm(pos);
             //case ELEMENTS.TunnelDiodeElm:
             //    return null; //(CircuitElm)new TunnelDiodeElm(x1, y1);
             //case ELEMENTS.TriodeElm:
@@ -710,14 +710,14 @@ namespace Circuit {
             #endregion
 
             #region Active Building Blocks
-            //case ELEMENTS.OPAMP:
-            //    return new OpAmpElm(pos);
-            //case ELEMENTS.OPAMP_SWAP:
-            //    return new OpAmpSwapElm(pos);
+            case ELEMENTS.OPAMP:
+                return new OpAmpElm(pos);
+            case ELEMENTS.OPAMP_SWAP:
+                return new OpAmpSwapElm(pos);
             //case ELEMENTS.OpAmpRealElm:
             //    return null; //(CircuitElm)new OpAmpRealElm(x1, y1);
-            //case ELEMENTS.ANALOG_SWITCH:
-            //    return new AnalogSwitchElm(pos);
+            case ELEMENTS.ANALOG_SWITCH:
+                return new AnalogSwitchElm(pos);
             //case ELEMENTS.AnalogSwitch2Elm:
             //    return null; //(CircuitElm)new AnalogSwitch2Elm(x1, y1);
             //case ELEMENTS.CC2Elm:
@@ -843,45 +843,45 @@ namespace Circuit {
                 return new WireElm(p1, p2, f, st);
             case DUMP_ID.GROUND:
                 return new GroundElm(p1, p2, f, st);
-            //case DUMP_ID.SWITCH:
-            //    return new SwitchElm(p1, p2, f, st);
-            //case DUMP_ID.SWITCH2:
-            //    return new Switch2Elm(p1, p2, f, st);
+            case DUMP_ID.SWITCH:
+                return new SwitchElm(p1, p2, f, st);
+            case DUMP_ID.SWITCH2:
+                return new Switch2Elm(p1, p2, f, st);
             case DUMP_ID.RESISTOR:
                 return new ResistorElm(p1, p2, f, st);
-            //case DUMP_ID.POT:
-            //    return new PotElm(p1, p2, f, st);
+            case DUMP_ID.POT:
+                return new PotElm(p1, p2, f, st);
             case DUMP_ID.CAPACITOR:
                 return new CapacitorElm(p1, p2, f, st);
             //case DUMP_ID.CAPACITOR_POLAR:
             //    return new PolarCapacitorElm(p1, p2, f, st);
             case DUMP_ID.INDUCTOR:
                 return new InductorElm(p1, p2, f, st);
-            //case DUMP_ID.TRANSFORMER:
-            //    return new TransformerElm(p1, p2, f, st);
+            case DUMP_ID.TRANSFORMER:
+                return new TransformerElm(p1, p2, f, st);
             //case DUMP_ID.CRYSTAL:
             //    return new CrystalElm(p1, p2, f, st);
             #endregion
 
             #region Active Components
-            //case DUMP_ID.DIODE:
-            //    return new DiodeElm(p1, p2, f, st);
-            //case DUMP_ID.ZENER:
-            //    return new ZenerElm(p1, p2, f, st);
-            //case DUMP_ID.VARACTOR:
-            //    return new VaractorElm(p1, p2, f, st);
-            //case DUMP_ID.LED:
-            //    return new LEDElm(p1, p2, f, st);
-            //case DUMP_ID.TRANSISTOR:
-            //    return new TransistorElm(p1, p2, f, st);
-            //case DUMP_ID.MOSFET:
-            //    return new MosfetElm(p1, p2, f, st);
-            //case DUMP_ID.OPAMP:
-            //    return new OpAmpElm(p1, p2, f, st);
+            case DUMP_ID.DIODE:
+                return new DiodeElm(p1, p2, f, st);
+            case DUMP_ID.ZENER:
+                return new ZenerElm(p1, p2, f, st);
+            case DUMP_ID.VARACTOR:
+                return new VaractorElm(p1, p2, f, st);
+            case DUMP_ID.LED:
+                return new LEDElm(p1, p2, f, st);
+            case DUMP_ID.TRANSISTOR:
+                return new TransistorElm(p1, p2, f, st);
+            case DUMP_ID.MOSFET:
+                return new MosfetElm(p1, p2, f, st);
+            case DUMP_ID.OPAMP:
+                return new OpAmpElm(p1, p2, f, st);
             //case DUMP_ID.OPTO_COUPLER:
             //    return new OptocouplerElm(p1, p2, f, st);
-            //case DUMP_ID.ANALOG_SW:
-            //    return new AnalogSwitchElm(p1, p2, f, st);
+            case DUMP_ID.ANALOG_SW:
+                return new AnalogSwitchElm(p1, p2, f, st);
             #endregion
 
             #region Inputs and Sources

@@ -8,19 +8,8 @@ namespace Circuit.Elements.Active {
         protected const int FLAG_LOWGAIN = 4;
         protected const int FLAG_GAIN = 8;
 
-        const int V_N = 0;
-        const int V_P = 1;
-        const int V_O = 2;
-
         const int mOpHeight = 8;
         const int mOpWidth = 16;
-
-        double mMaxOut;
-        double mMinOut;
-        double mGain;
-        double mGbw;
-
-        double mLastVd;
 
         Point[] mIn1p;
         Point[] mIn2p;
@@ -29,63 +18,29 @@ namespace Circuit.Elements.Active {
 
         public OpAmpElm(Point pos) : base(pos) {
             mNoDiagonal = true;
-            mMaxOut = 15;
-            mMinOut = -15;
-            mGbw = 1e6;
             mFlags = FLAG_GAIN; /* need to do this before setSize() */
             mFlags |= FLAG_SMALL;
-            mGain = 100000;
+            CirElm = new OpAmpElmE();
         }
 
         public OpAmpElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            /* GBW has no effect in this version of the simulator,
-             * but we retain it to keep the file format the same */
-            try {
-                mMaxOut = st.nextTokenDouble();
-                mMinOut = st.nextTokenDouble();
-                mGbw = st.nextTokenDouble();
-                CirVolts[V_N] = st.nextTokenDouble();
-                CirVolts[V_P] = st.nextTokenDouble();
-                mGain = st.nextTokenDouble();
-            } catch {
-                mMaxOut = 15;
-                mMinOut = -15;
-                mGbw = 1e6;
-            }
+            CirElm = new OpAmpElmE(st);
             mNoDiagonal = true;
             mFlags |= FLAG_SMALL;
             setGain();
         }
 
-        public override double CirVoltageDiff { get { return CirVolts[V_O] - CirVolts[V_P]; } }
-
-        public override double CirPower { get { return CirVolts[V_O] * mCirCurrent; } }
-
-        public override int CirVoltageSourceCount { get { return 1; } }
-
-        public override bool CirNonLinear { get { return true; } }
-
-        public override int CirPostCount { get { return 3; } }
-
         public override DUMP_ID DumpType { get { return DUMP_ID.OPAMP; } }
 
         protected override string dump() {
+            var ce = (OpAmpElmE)CirElm;
             mFlags |= FLAG_GAIN;
-            return mMaxOut
-                + " " + mMinOut
-                + " " + mGbw
-                + " " + CirVolts[V_N]
-                + " " + CirVolts[V_P]
-                + " " + mGain;
-        }
-
-        void setGain() {
-            if ((mFlags & FLAG_GAIN) != 0) {
-                return;
-            }
-            /* gain of 100000 breaks e-amp-dfdx.txt
-             * gain was 1000, but it broke amp-schmitt.txt */
-            mGain = ((mFlags & FLAG_LOWGAIN) != 0) ? 1000 : 100000;
+            return ce.MaxOut
+                + " " + ce.MinOut
+                + " " + ce.Gbw
+                + " " + ce.CirVolts[OpAmpElmE.V_N]
+                + " " + ce.CirVolts[OpAmpElmE.V_P]
+                + " " + ce.Gain;
         }
 
         public override void Draw(CustomGraphics g) {
@@ -100,8 +55,10 @@ namespace Circuit.Elements.Active {
 
             drawCenteredLText("-", mTextp[0], true);
             drawCenteredLText("+", mTextp[1], true);
-            mCirCurCount = cirUpdateDotCount(mCirCurrent, mCirCurCount);
-            drawDots(mPoint2, mLead2, mCirCurCount);
+
+            var ce = (OpAmpElmE)CirElm;
+            ce.mCirCurCount = ce.cirUpdateDotCount(ce.mCirCurrent, ce.mCirCurCount);
+            drawDots(mPoint2, mLead2, ce.mCirCurCount);
             drawPosts();
         }
 
@@ -131,91 +88,59 @@ namespace Circuit.Elements.Active {
             return (n == 0) ? mIn1p[0] : (n == 1) ? mIn2p[0] : mPoint2;
         }
 
-        public override void GetInfo(string[] arr) {
-            arr[0] = "op-amp";
-            arr[1] = "V+ = " + Utils.VoltageText(CirVolts[V_P]);
-            arr[2] = "V- = " + Utils.VoltageText(CirVolts[V_N]);
-            /* sometimes the voltage goes slightly outside range,
-             * to make convergence easier.  so we hide that here. */
-            double vo = Math.Max(Math.Min(CirVolts[V_O], mMaxOut), mMinOut);
-            arr[3] = "Vout = " + Utils.VoltageText(vo);
-            arr[4] = "Iout = " + Utils.CurrentText(-mCirCurrent);
-            arr[5] = "range = " + Utils.VoltageText(mMinOut)
-                + " to " + Utils.VoltageText(mMaxOut);
-        }
-
-        public override void CirStamp() {
-            int vn = mCir.NodeList.Count + mCirVoltSource;
-            mCir.StampNonLinear(vn);
-            mCir.StampMatrix(CirNodes[2], vn, 1);
-        }
-
-        public override void CirDoStep() {
-            double vd = CirVolts[V_P] - CirVolts[V_N];
-            if (Math.Abs(mLastVd - vd) > .1) {
-                mCir.Converged = false;
-            } else if (CirVolts[V_O] > mMaxOut + .1 || CirVolts[V_O] < mMinOut - .1) {
-                mCir.Converged = false;
-            }
-            double x = 0;
-            int vn = mCir.NodeList.Count + mCirVoltSource;
-            double dx = 0;
-            if (vd >= mMaxOut / mGain && (mLastVd >= 0 || CirSim.Random.Next(4) == 1)) {
-                dx = 1e-4;
-                x = mMaxOut - dx * mMaxOut / mGain;
-            } else if (vd <= mMinOut / mGain && (mLastVd <= 0 || CirSim.Random.Next(4) == 1)) {
-                dx = 1e-4;
-                x = mMinOut - dx * mMinOut / mGain;
-            } else {
-                dx = mGain;
-            }
-            /*Console.WriteLine("opamp " + vd + " " + Volts[V_O] + " " + dx + " "  + x + " " + lastvd + " " + Cir.Converged);*/
-
-            /* newton-raphson */
-            mCir.StampMatrix(vn, CirNodes[0], dx);
-            mCir.StampMatrix(vn, CirNodes[1], -dx);
-            mCir.StampMatrix(vn, CirNodes[2], 1);
-            mCir.StampRightSide(vn, x);
-
-            mLastVd = vd;
-        }
-
         /* there is no current path through the op-amp inputs,
          * but there is an indirect path through the output to ground. */
         public override bool CirGetConnection(int n1, int n2) { return false; }
 
-        public override bool CirHasGroundConnection(int n1) { return n1 == 2; }
+        public override void GetInfo(string[] arr) {
+            var ce = (OpAmpElmE)CirElm;
+            arr[0] = "op-amp";
+            arr[1] = "V+ = " + Utils.VoltageText(ce.CirVolts[OpAmpElmE.V_P]);
+            arr[2] = "V- = " + Utils.VoltageText(ce.CirVolts[OpAmpElmE.V_N]);
+            /* sometimes the voltage goes slightly outside range,
+             * to make convergence easier.  so we hide that here. */
+            double vo = Math.Max(Math.Min(ce.CirVolts[OpAmpElmE.V_O], ce.MaxOut), ce.MinOut);
+            arr[3] = "Vout = " + Utils.VoltageText(vo);
+            arr[4] = "Iout = " + Utils.CurrentText(-ce.mCirCurrent);
+            arr[5] = "range = " + Utils.VoltageText(ce.MinOut)
+                + " to " + Utils.VoltageText(ce.MaxOut);
+        }
 
         public override ElementInfo GetElementInfo(int n) {
+            var ce = (OpAmpElmE)CirElm;
             if (n == 0) {
-                return new ElementInfo("+電源(V)", mMaxOut, 1, 20);
+                return new ElementInfo("+電源(V)", ce.MaxOut, 1, 20);
             }
             if (n == 1) {
-                return new ElementInfo("-電源(V)", mMinOut, -20, 0);
+                return new ElementInfo("-電源(V)", ce.MinOut, -20, 0);
             }
             if (n == 2) {
-                return new ElementInfo("ゲイン(db)", 20 * Math.Log10(mGain), 10, 1000000);
+                return new ElementInfo("ゲイン(db)", 20 * Math.Log10(ce.Gain), 10, 1000000);
             }
             return null;
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
+            var ce = (OpAmpElmE)CirElm;
             if (n == 0) {
-                mMaxOut = ei.Value;
+                ce.MaxOut = ei.Value;
             }
             if (n == 1) {
-                mMinOut = ei.Value;
+                ce.MinOut = ei.Value;
             }
             if (n == 2 && ei.Value > 0) {
-                mGain = Math.Pow(10.0, ei.Value / 20.0);
+                ce.Gain = Math.Pow(10.0, ei.Value / 20.0);
             }
         }
 
-        public override double CirGetCurrentIntoNode(int n) {
-            if (n == 2) {
-                return -mCirCurrent;
+        void setGain() {
+            if ((mFlags & FLAG_GAIN) != 0) {
+                return;
             }
-            return 0;
+            var ce = (OpAmpElmE)CirElm;
+            /* gain of 100000 breaks e-amp-dfdx.txt
+             * gain was 1000, but it broke amp-schmitt.txt */
+            ce.Gain = ((mFlags & FLAG_LOWGAIN) != 0) ? 1000 : 100000;
         }
     }
 }

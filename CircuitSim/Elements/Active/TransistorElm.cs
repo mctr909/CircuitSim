@@ -1,35 +1,13 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit.Elements.Active {
     class TransistorElm : CircuitElm {
         const int FLAG_FLIP = 1;
-        const int V_B = 0;
-        const int V_C = 1;
-        const int V_E = 2;
-
-        const double VT = 0.025865;
-        const double LEAKAGE = 1e-13; /* 1e-6; */
-        const double VD_COEF = 1 / VT;
-        const double R_GAIN = .5;
-        const double INV_R_GAIN = 1 / R_GAIN;
 
         const int BODY_LEN = 16;
         const int HS = 16;
 
-        double mHfe;
-        double mFgain;
-        double mInv_fgain;
-        double mGmin;
-
-        double mVcrit;
-        double mLastVbc;
-        double mLastVbe;
-
-        double mIc;
-        double mIe;
-        double mIb;
         double mCurCount_c;
         double mCurCount_e;
         double mCurCount_b;
@@ -42,47 +20,29 @@ namespace Circuit.Elements.Active {
         Point[] mArrowPoly;
 
         public TransistorElm(Point pos, bool pnpflag) : base(pos) {
-            NPN = pnpflag ? -1 : 1;
-            mHfe = 100;
+            CirElm = new TransistorElmE(pnpflag);
             ReferenceName = "Tr";
             setup();
         }
 
         public TransistorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            NPN = st.nextTokenInt();
-            mHfe = 100;
+            CirElm = new TransistorElmE(st);
             try {
-                mLastVbe = st.nextTokenDouble();
-                mLastVbc = st.nextTokenDouble();
-                CirVolts[V_B] = 0;
-                CirVolts[V_C] = -mLastVbe;
-                CirVolts[V_E] = -mLastVbc;
-                mHfe = st.nextTokenDouble();
                 ReferenceName = st.nextToken();
             } catch { }
             setup();
         }
 
-        ///<summary>1 = NPN, -1 = PNP</summary>  
-        public int NPN { get; private set; }
-
         public override bool CanViewInScope { get { return true; } }
-
-        public override double CirPower {
-            get { return (CirVolts[V_B] - CirVolts[V_E]) * mIb + (CirVolts[V_C] - CirVolts[V_E]) * mIc; }
-        }
-
-        public override bool CirNonLinear { get { return true; } }
-
-        public override int CirPostCount { get { return 3; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.TRANSISTOR; } }
 
         protected override string dump() {
-            return NPN
-                + " " + (CirVolts[V_B] - CirVolts[V_C])
-                + " " + (CirVolts[V_B] - CirVolts[V_E])
-                + " " + mHfe
+            var ce = (TransistorElmE)CirElm;
+            return ce.NPN
+                + " " + (ce.CirVolts[TransistorElmE.V_B] - ce.CirVolts[TransistorElmE.V_C])
+                + " " + (ce.CirVolts[TransistorElmE.V_B] - ce.CirVolts[TransistorElmE.V_E])
+                + " " + ce.Hfe
                 + " " + ReferenceName;
         }
 
@@ -90,142 +50,24 @@ namespace Circuit.Elements.Active {
             return (n == 0) ? mPoint1 : (n == 1) ? mColl[0] : mEmit[0];
         }
 
-        public override double CirGetCurrentIntoNode(int n) {
-            if (n == 0) {
-                return -mIb;
-            }
-            if (n == 1) {
-                return -mIc;
-            }
-            return -mIe;
-        }
-
         public void SetHfe(double hfe) {
-            mHfe = hfe;
+            ((TransistorElmE)CirElm).Hfe = hfe;
             setup();
         }
 
         void setup() {
-            mVcrit = VT * Math.Log(VT / (Math.Sqrt(2) * LEAKAGE));
-            mFgain = mHfe / (mHfe + 1);
-            mInv_fgain = 1 / mFgain;
+            ((TransistorElmE)CirElm).Setup();
             mNoDiagonal = true;
-        }
-
-        public override void CirStamp() {
-            mCir.StampNonLinear(CirNodes[V_B]);
-            mCir.StampNonLinear(CirNodes[V_C]);
-            mCir.StampNonLinear(CirNodes[V_E]);
-        }
-
-        public override void CirDoStep() {
-            double vbc = CirVolts[V_B] - CirVolts[V_C]; /* typically negative */
-            double vbe = CirVolts[V_B] - CirVolts[V_E]; /* typically positive */
-            if (Math.Abs(vbc - mLastVbc) > .01 || /* .01 */
-                Math.Abs(vbe - mLastVbe) > .01) {
-                mCir.Converged = false;
-            }
-            /* To prevent a possible singular matrix,
-             * put a tiny conductance in parallel with each P-N junction. */
-            mGmin = LEAKAGE * 0.01;
-            if (mCir.SubIterations > 100) {
-                /* if we have trouble converging, put a conductance in parallel with all P-N junctions.
-                 * Gradually increase the conductance value for each iteration. */
-                mGmin = Math.Exp(-9 * Math.Log(10) * (1 - mCir.SubIterations / 300.0));
-                if (mGmin > .1) {
-                    mGmin = .1;
-                }
-                /*Console.WriteLine("gmin " + gmin + " vbc " + vbc + " vbe " + vbe); */
-            }
-
-            /*Console.WriteLine("T " + vbc + " " + vbe + "\n"); */
-            vbc = NPN * limitStep(NPN * vbc, NPN * mLastVbc);
-            vbe = NPN * limitStep(NPN * vbe, NPN * mLastVbe);
-            mLastVbc = vbc;
-            mLastVbe = vbe;
-            double pcoef = VD_COEF * NPN;
-            double expbc = Math.Exp(vbc * pcoef);
-            /*if (expbc > 1e13 || Double.isInfinite(expbc))
-             * expbc = 1e13;*/
-            double expbe = Math.Exp(vbe * pcoef);
-            /*if (expbe > 1e13 || Double.isInfinite(expbe))
-             * expbe = 1e13;*/
-            mIe = NPN * LEAKAGE * (-mInv_fgain * (expbe - 1) + (expbc - 1));
-            mIc = NPN * LEAKAGE * ((expbe - 1) - INV_R_GAIN * (expbc - 1));
-            mIb = -(mIe + mIc);
-            /*Console.WriteLine("gain " + ic/ib);
-            Console.WriteLine("T " + vbc + " " + vbe + " " + ie + " " + ic + "\n"); */
-            double gee = -LEAKAGE * VD_COEF * expbe * mInv_fgain;
-            double gec = LEAKAGE * VD_COEF * expbc;
-            double gce = -gee * mFgain;
-            double gcc = -gec * INV_R_GAIN;
-
-            /* add minimum conductance (gmin) between b,e and b,c */
-            gcc -= mGmin;
-            gee -= mGmin;
-
-            /* stamps from page 302 of Pillage.
-             * node 0 is the base,
-             * node 1 the collector,
-             * node 2 the emitter. */
-            mCir.StampMatrix(CirNodes[V_B], CirNodes[V_B], -gee - gec - gce - gcc);
-            mCir.StampMatrix(CirNodes[V_B], CirNodes[V_C], gec + gcc);
-            mCir.StampMatrix(CirNodes[V_B], CirNodes[V_E], gee + gce);
-            mCir.StampMatrix(CirNodes[V_C], CirNodes[V_B], gce + gcc);
-            mCir.StampMatrix(CirNodes[V_C], CirNodes[V_C], -gcc);
-            mCir.StampMatrix(CirNodes[V_C], CirNodes[V_E], -gce);
-            mCir.StampMatrix(CirNodes[V_E], CirNodes[V_B], gee + gec);
-            mCir.StampMatrix(CirNodes[V_E], CirNodes[V_C], -gec);
-            mCir.StampMatrix(CirNodes[V_E], CirNodes[V_E], -gee);
-
-            /* we are solving for v(k+1), not delta v, so we use formula
-             * 10.5.13 (from Pillage), multiplying J by v(k) */
-
-            mCir.StampRightSide(CirNodes[V_B], -mIb - (gec + gcc) * vbc - (gee + gce) * vbe);
-            mCir.StampRightSide(CirNodes[V_C], -mIc + gce * vbe + gcc * vbc);
-            mCir.StampRightSide(CirNodes[V_E], -mIe + gee * vbe + gec * vbc);
-        }
-
-        double limitStep(double vnew, double vold) {
-            double arg;
-            double oo = vnew;
-
-            if (vnew > mVcrit && Math.Abs(vnew - vold) > (VT + VT)) {
-                if (vold > 0) {
-                    arg = 1 + (vnew - vold) / VT;
-                    if (arg > 0) {
-                        vnew = vold + VT * Math.Log(arg);
-                    } else {
-                        vnew = mVcrit;
-                    }
-                } else {
-                    vnew = VT * Math.Log(vnew / VT);
-                }
-                mCir.Converged = false;
-                /*Console.WriteLine(vnew + " " + oo + " " + vold);*/
-            }
-            return vnew;
-        }
-
-        public override void CirStepFinished() {
-            /* stop for huge currents that make simulator act weird */
-            if (Math.Abs(mIc) > 1e12 || Math.Abs(mIb) > 1e12) {
-                mCir.Stop("max current exceeded", this);
-            }
-        }
-
-        public override void CirReset() {
-            CirVolts[V_B] = CirVolts[V_C] = CirVolts[V_E] = 0;
-            mLastVbc = mLastVbe = mCurCount_c = mCurCount_e = mCurCount_b = 0;
         }
 
         public override void SetPoints() {
             base.SetPoints();
+            var ce = (TransistorElmE)CirElm;
 
             if ((mFlags & FLAG_FLIP) != 0) {
                 mDsign = -mDsign;
             }
-            int hs2 = HS * mDsign * NPN;
+            int hs2 = HS * mDsign * ce.NPN;
 
             /* calc collector, emitter posts */
             mColl = new Point[2];
@@ -238,7 +80,7 @@ namespace Circuit.Elements.Active {
             interpPointAB(ref rect[2], ref rect[3], 1 - (BODY_LEN - 3) / mLen, HS);
 
             /* calc points where collector/emitter leads contact rectangle */
-            interpPointAB(ref mColl[1], ref mEmit[1], 1 - (BODY_LEN - 3) / mLen, 6 * mDsign * NPN);
+            interpPointAB(ref mColl[1], ref mEmit[1], 1 - (BODY_LEN - 3) / mLen, 6 * mDsign * ce.NPN);
 
             /* calc point where base lead contacts rectangle */
             interpPoint(ref mTbase, 1 - BODY_LEN / mLen);
@@ -247,11 +89,11 @@ namespace Circuit.Elements.Active {
             mRectPoly = new Point[] { rect[0], rect[2], rect[3], rect[1] };
 
             /* arrow */
-            if (NPN == 1) {
+            if (ce.NPN == 1) {
                 Utils.CreateArrow(mEmit[1], mEmit[0], out mArrowPoly, 8, 3);
             } else {
                 var pt = new Point();
-                interpPoint(ref pt, 1 - (BODY_LEN - 2) / mLen, -5 * mDsign * NPN);
+                interpPoint(ref pt, 1 - (BODY_LEN - 2) / mLen, -5 * mDsign * ce.NPN);
                 Utils.CreateArrow(mEmit[0], pt, out mArrowPoly, 8, 3);
             }
 
@@ -288,11 +130,12 @@ namespace Circuit.Elements.Active {
             drawLead(mPoint1, mTbase);
 
             /* draw dots */
-            mCurCount_b = cirUpdateDotCount(-mIb, mCurCount_b);
+            var ce = (TransistorElmE)CirElm;
+            mCurCount_b = ce.cirUpdateDotCount(-ce.Ib, mCurCount_b);
             drawDots(mTbase, mPoint1, mCurCount_b);
-            mCurCount_c = cirUpdateDotCount(-mIc, mCurCount_c);
+            mCurCount_c = ce.cirUpdateDotCount(-ce.Ic, mCurCount_c);
             drawDots(mColl[1], mColl[0], mCurCount_c);
-            mCurCount_e = cirUpdateDotCount(-mIe, mCurCount_e);
+            mCurCount_e = ce.cirUpdateDotCount(-ce.Ie, mCurCount_e);
             drawDots(mEmit[1], mEmit[0], mCurCount_e);
 
             /* draw base rectangle */
@@ -319,35 +162,24 @@ namespace Circuit.Elements.Active {
             return "transistor, " + t;
         }
 
-        public override double CirGetScopeValue(Scope.VAL x) {
-            switch (x) {
-            case Scope.VAL.VBE:
-                return CirVolts[V_B] - CirVolts[V_E];
-            case Scope.VAL.VBC:
-                return CirVolts[V_B] - CirVolts[V_C];
-            case Scope.VAL.VCE:
-                return CirVolts[V_C] - CirVolts[V_E];
-            }
-            return 0;
-        }
-
         public override void GetInfo(string[] arr) {
-            arr[0] = "transistor (" + ((NPN == -1) ? "PNP)" : "NPN)") + " hfe=" + mHfe.ToString("0.000");
-            double vbc = CirVolts[V_B] - CirVolts[V_C];
-            double vbe = CirVolts[V_B] - CirVolts[V_E];
-            double vce = CirVolts[V_C] - CirVolts[V_E];
-            if (vbc * NPN > .2) {
-                arr[1] = vbe * NPN > .2 ? "saturation" : "reverse active";
+            var ce = (TransistorElmE)CirElm;
+            arr[0] = "transistor (" + ((ce.NPN == -1) ? "PNP)" : "NPN)") + " hfe=" + ce.Hfe.ToString("0.000");
+            double vbc = ce.CirVolts[TransistorElmE.V_B] - ce.CirVolts[TransistorElmE.V_C];
+            double vbe = ce.CirVolts[TransistorElmE.V_B] - ce.CirVolts[TransistorElmE.V_E];
+            double vce = ce.CirVolts[TransistorElmE.V_C] - ce.CirVolts[TransistorElmE.V_E];
+            if (vbc * ce.NPN > .2) {
+                arr[1] = vbe * ce.NPN > .2 ? "saturation" : "reverse active";
             } else {
-                arr[1] = vbe * NPN > .2 ? "fwd active" : "cutoff";
+                arr[1] = vbe * ce.NPN > .2 ? "fwd active" : "cutoff";
             }
             arr[1] = arr[1];
-            arr[2] = "Ic = " + Utils.CurrentText(mIc);
-            arr[3] = "Ib = " + Utils.CurrentText(mIb);
+            arr[2] = "Ic = " + Utils.CurrentText(ce.Ic);
+            arr[3] = "Ib = " + Utils.CurrentText(ce.Ib);
             arr[4] = "Vbe = " + Utils.VoltageText(vbe);
             arr[5] = "Vbc = " + Utils.VoltageText(vbc);
             arr[6] = "Vce = " + Utils.VoltageText(vce);
-            arr[7] = "P = " + Utils.UnitText(CirPower, "W");
+            arr[7] = "P = " + Utils.UnitText(ce.CirPower, "W");
         }
 
         public override ElementInfo GetElementInfo(int n) {
@@ -357,7 +189,7 @@ namespace Circuit.Elements.Active {
                 return ei;
             }
             if (n == 1) {
-                return new ElementInfo("hfe", mHfe, 10, 1000).SetDimensionless();
+                return new ElementInfo("hfe", ((TransistorElmE)CirElm).Hfe, 10, 1000).SetDimensionless();
             }
             if (n == 2) {
                 var ei = new ElementInfo("", 0, -1, -1);
@@ -375,7 +207,7 @@ namespace Circuit.Elements.Active {
                 setTextPos();
             }
             if (n == 1) {
-                mHfe = ei.Value;
+                ((TransistorElmE)CirElm).Hfe = ei.Value;
                 setup();
             }
             if (n == 2) {

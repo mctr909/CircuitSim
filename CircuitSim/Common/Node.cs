@@ -40,13 +40,13 @@ namespace Circuit {
         PathType mType;
         int mDest;
         BaseElement mFirstElm;
-        List<Tuple<CircuitElm, BaseElement>> mElmList;
+        List<CircuitElm> mElmList;
         bool[] mVisited;
 
         /* State object to help find loops in circuit subject to various conditions (depending on type)
          * elm = source and destination element.
          * dest = destination node. */
-        public PathInfo(PathType type, BaseElement elm, int dest, List<Tuple<CircuitElm, BaseElement>> elmList, int nodeCount) {
+        public PathInfo(PathType type, BaseElement elm, int dest, List<CircuitElm> elmList, int nodeCount) {
             mDest = dest;
             mType = type;
             mFirstElm = elm;
@@ -68,32 +68,33 @@ namespace Circuit {
 
             mVisited[n1] = true;
             for (int i = 0; i != mElmList.Count; i++) {
-                var ce = mElmList[i].Item2;
-                if (ce == mFirstElm) {
+                var ce = mElmList[i];
+                var cee = ce.CirElm;
+                if (cee == mFirstElm) {
                     continue;
                 }
                 switch (mType) {
                 case PathType.INDUCTOR:
                     /* inductors need a path free of current sources */
-                    if (ce is CurrentElmE) {
+                    if (cee is CurrentElmE) {
                         continue;
                     }
                     break;
                 case PathType.VOLTAGE:
                     /* when checking for voltage loops, we only care about voltage sources/wires/ground */
-                    if (!(ce.CirIsWire || (ce is VoltageElmE) || (ce is GroundElmE))) {
+                    if (!(cee.CirIsWire || (cee is VoltageElmE) || (cee is GroundElmE))) {
                         continue;
                     }
                     break;
                 /* when checking for shorts, just check wires */
                 case PathType.SHORT:
-                    if (!ce.CirIsWire) {
+                    if (!cee.CirIsWire) {
                         continue;
                     }
                     break;
                 case PathType.CAPACITOR_V:
                     /* checking for capacitor/voltage source loops */
-                    if (!(ce.CirIsWire || (ce is CapacitorElmE) || (ce is VoltageElmE))) {
+                    if (!(cee.CirIsWire || (cee is CapacitorElmE) || (cee is VoltageElmE))) {
                         continue;
                     }
                     break;
@@ -102,29 +103,29 @@ namespace Circuit {
                 if (n1 == 0) {
                     /* look for posts which have a ground connection;
                     /* our path can go through ground */
-                    for (int j = 0; j != ce.CirConnectionNodeCount; j++) {
-                        if (ce.CirHasGroundConnection(j) && FindPath(ce.CirGetConnectionNode(j))) {
+                    for (int j = 0; j != cee.CirConnectionNodeCount; j++) {
+                        if (cee.CirHasGroundConnection(j) && FindPath(cee.CirGetConnectionNode(j))) {
                             return true;
                         }
                     }
                 }
 
                 int nodeA;
-                for (nodeA = 0; nodeA != ce.CirConnectionNodeCount; nodeA++) {
-                    if (ce.CirGetConnectionNode(nodeA) == n1) {
+                for (nodeA = 0; nodeA != cee.CirConnectionNodeCount; nodeA++) {
+                    if (cee.CirGetConnectionNode(nodeA) == n1) {
                         break;
                     }
                 }
-                if (nodeA == ce.CirConnectionNodeCount) {
+                if (nodeA == cee.CirConnectionNodeCount) {
                     continue;
                 }
-                if (ce.CirHasGroundConnection(nodeA) && FindPath(0)) {
+                if (cee.CirHasGroundConnection(nodeA) && FindPath(0)) {
                     return true;
                 }
 
-                if (mType == PathType.INDUCTOR && (ce is InductorElmE)) {
+                if (mType == PathType.INDUCTOR && (cee is InductorElmE)) {
                     /* inductors can use paths with other inductors of matching current */
-                    double c = ce.CirCurrent;
+                    double c = cee.CirCurrent;
                     if (nodeA == 0) {
                         c = -c;
                     }
@@ -133,11 +134,11 @@ namespace Circuit {
                     }
                 }
 
-                for (int nodeB = 0; nodeB != ce.CirConnectionNodeCount; nodeB++) {
+                for (int nodeB = 0; nodeB != cee.CirConnectionNodeCount; nodeB++) {
                     if (nodeA == nodeB) {
                         continue;
                     }
-                    if (ce.CirGetConnection(nodeA, nodeB) && FindPath(ce.CirGetConnectionNode(nodeB))) {
+                    if (ce.CirGetConnection(nodeA, nodeB) && FindPath(cee.CirGetConnectionNode(nodeB))) {
                         /*Console.WriteLine("got findpath " + n1); */
                         return true;
                     }

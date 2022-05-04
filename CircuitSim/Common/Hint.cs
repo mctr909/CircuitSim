@@ -16,14 +16,14 @@ namespace Circuit {
         public static int Item1;
         public static int Item2;
 
-        static CircuitElm getElm(List<Tuple<CircuitElm, BaseElement>> elmList, int n) {
+        static CircuitElm getElm(List<CircuitElm> elmList, int n) {
             if (n >= elmList.Count) {
                 return null;
             }
-            return elmList[n].Item1;
+            return elmList[n];
         }
 
-        public static string getHint(List<Tuple<CircuitElm, BaseElement>> elmList) {
+        public static string getHint(List<CircuitElm> elmList) {
             var c1 = getElm(elmList, Item1);
             var c2 = getElm(elmList, Item2);
             if (c1 == null || c2 == null) {
@@ -37,9 +37,9 @@ namespace Circuit {
                 if (!(c2 is CapacitorElm)) {
                     return null;
                 }
-                var ie = (InductorElm)c1;
-                var ce = (CapacitorElm)c2;
-                return "res.f = " + Utils.UnitText(1 / (2 * Math.PI * Math.Sqrt(ie.CirElm.Inductance * ce.CirElm.Capacitance)), "Hz");
+                var ie = (InductorElmE)c1.CirElm;
+                var ce = (CapacitorElmE)c2.CirElm;
+                return "res.f = " + Utils.UnitText(1 / (2 * Math.PI * Math.Sqrt(ie.Inductance * ce.Capacitance)), "Hz");
             }
             if (Type == HINT_RC) {
                 if (!(c1 is ResistorElm)) {
@@ -48,9 +48,9 @@ namespace Circuit {
                 if (!(c2 is CapacitorElm)) {
                     return null;
                 }
-                var re = (ResistorElm)c1;
-                var ce = (CapacitorElm)c2;
-                return "RC = " + Utils.UnitText(re.CirElm.Resistance * ce.CirElm.Capacitance, "s");
+                var re = (ResistorElmE)c1.CirElm;
+                var ce = (CapacitorElmE)c2.CirElm;
+                return "RC = " + Utils.UnitText(re.Resistance * ce.Capacitance, "s");
             }
             if (Type == HINT_3DB_C) {
                 if (!(c1 is ResistorElm)) {
@@ -59,9 +59,9 @@ namespace Circuit {
                 if (!(c2 is CapacitorElm)) {
                     return null;
                 }
-                var re = (ResistorElm)c1;
-                var ce = (CapacitorElm)c2;
-                return "f.3db = " + Utils.UnitText(1 / (2 * Math.PI * re.CirElm.Resistance * ce.CirElm.Capacitance), "Hz");
+                var re = (ResistorElmE)c1.CirElm;
+                var ce = (CapacitorElmE)c2.CirElm;
+                return "f.3db = " + Utils.UnitText(1 / (2 * Math.PI * re.Resistance * ce.Capacitance), "Hz");
             }
             if (Type == HINT_3DB_L) {
                 if (!(c1 is ResistorElm)) {
@@ -70,9 +70,9 @@ namespace Circuit {
                 if (!(c2 is InductorElm)) {
                     return null;
                 }
-                var re = (ResistorElm)c1;
-                var ie = (InductorElm)c2;
-                return "f.3db = " + Utils.UnitText(re.CirElm.Resistance / (2 * Math.PI * ie.CirElm.Inductance), "Hz");
+                var re = (ResistorElmE)c1.CirElm;
+                var ie = (InductorElmE)c2.CirElm;
+                return "f.3db = " + Utils.UnitText(re.Resistance / (2 * Math.PI * ie.Inductance), "Hz");
             }
             if (Type == HINT_TWINT) {
                 if (!(c1 is ResistorElm)) {
@@ -81,9 +81,9 @@ namespace Circuit {
                 if (!(c2 is CapacitorElm)) {
                     return null;
                 }
-                var re = (ResistorElm)c1;
-                var ce = (CapacitorElm)c2;
-                return "fc = " + Utils.UnitText(1 / (2 * Math.PI * re.CirElm.Resistance * ce.CirElm.Capacitance), "Hz");
+                var re = (ResistorElmE)c1.CirElm;
+                var ce = (CapacitorElmE)c2.CirElm;
+                return "fc = " + Utils.UnitText(1 / (2 * Math.PI * re.Resistance * ce.Capacitance), "Hz");
             }
             return null;
         }

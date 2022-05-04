@@ -5,25 +5,11 @@ using System.Drawing;
 namespace Circuit.Elements.Passive {
     class PotElm : CircuitElm {
         const int FLAG_SHOW_VALUES = 1;
-        const int V_L = 0;
-        const int V_R = 1;
-        const int V_S = 2;
 
         const int HS = 5;
         const int BODY_LEN = 24;
         const int SEGMENTS = 12;
         const double SEG_F = 1.0 / SEGMENTS;
-
-        double mPosition;
-        double mMaxResistance;
-        double mResistance1;
-        double mResistance2;
-        double mCurrent1;
-        double mCurrent2;
-        double mCurrent3;
-        double mCurCount1;
-        double mCurCount2;
-        double mCurCount3;
 
         Point mPost3;
         Point mCorner2;
@@ -42,9 +28,7 @@ namespace Circuit.Elements.Passive {
         Label mLabel;
 
         public PotElm(Point pos) : base(pos) {
-            setup();
-            mMaxResistance = 1000;
-            mPosition = 0.5;
+            CirElm = new PotElmE();
             mFlags = FLAG_SHOW_VALUES;
             ReferenceName = "VR";
             createSlider();
@@ -52,8 +36,7 @@ namespace Circuit.Elements.Passive {
 
         public PotElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
-                mMaxResistance = st.nextTokenDouble();
-                mPosition = st.nextTokenDouble();
+                CirElm = new PotElmE(st);
                 ReferenceName = st.nextToken();
                 while (st.hasMoreTokens()) {
                     ReferenceName += ' ' + st.nextToken();
@@ -62,24 +45,201 @@ namespace Circuit.Elements.Passive {
             createSlider();
         }
 
-        public override int CirPostCount { get { return 3; } }
-
         public override DUMP_ID DumpType { get { return DUMP_ID.POT; } }
 
         protected override string dump() {
-            return mMaxResistance + " " + mPosition + " " + ReferenceName;
+            var ce = (PotElmE)CirElm;
+            return ce.MaxResistance + " " + ce.Position + " " + ReferenceName;
         }
 
-        protected override void cirCalculateCurrent() {
-            if (mResistance1 == 0) {
-                return; /* avoid NaN */
+        public override void SetMouseElm(bool v) {
+            base.SetMouseElm(v);
+        }
+
+        public override Point GetPost(int n) {
+            return (n == 0) ? mPoint1 : (n == 1) ? mPoint2 : mPost3;
+        }
+
+        public override void Delete() {
+            ControlPanel.RemoveSlider(mLabel);
+            ControlPanel.RemoveSlider(mSlider);
+            base.Delete();
+        }
+
+        public override void SetPoints() {
+            base.SetPoints();
+            int offset = 0;
+            int myLen = 0;
+            mNameV = Math.Abs(mDiff.X) <= Math.Abs(mDiff.Y);
+            if (mNameV) {
+                /* vertical */
+                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDiff.Y)
+                    * ((Math.Abs(mDiff.Y) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
+                if (mDiff.Y != 0) {
+                    mPoint2.Y = mPoint1.Y + myLen;
+                    offset = (0 < mDiff.Y) ? mDiff.X : -mDiff.X;
+                    mPoint2.X = mPoint1.X;
+                }
+            } else {
+                /* horizontal */
+                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDiff.X)
+                    * ((Math.Abs(mDiff.X) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
+                mPoint2.X = mPoint1.X + myLen;
+                offset = (mDiff.X < 0) ? mDiff.Y : -mDiff.Y;
+                mPoint2.Y = mPoint1.Y;
             }
-            mCurrent1 = (CirVolts[V_L] - CirVolts[V_S]) / mResistance1;
-            mCurrent2 = (CirVolts[V_R] - CirVolts[V_S]) / mResistance2;
-            mCurrent3 = -mCurrent1 - mCurrent2;
+            if (offset < CirSim.GRID_SIZE) {
+                offset = CirSim.GRID_SIZE;
+            }
+            mLen = Utils.Distance(mPoint1, mPoint2);
+
+            calcLeads(BODY_LEN);
+
+            /* set slider */
+            var ce = (PotElmE)CirElm;
+            ce.Position = mSlider.Value * 0.0099 + 0.0001;
+            int soff = (int)((ce.Position - 0.5) * BODY_LEN);
+            interpPoint(ref mPost3, 0.5, offset);
+            interpPoint(ref mCorner2, soff / mLen + 0.5, offset);
+            interpPoint(ref mArrowPoint, soff / mLen + 0.5, 8 * Math.Sign(offset));
+            interpPoint(ref mMidPoint, soff / mLen + 0.5);
+            double clen = Math.Abs(offset) - 8;
+            Utils.InterpPoint(mCorner2, mArrowPoint, ref mArrow1, ref mArrow2, (clen - 8) / clen, 4);
+
+            setNamePos();
+
+            setPoly();
         }
 
-        void setup() { }
+        public override void Draw(CustomGraphics g) {
+            var ce = (PotElmE)CirElm;
+            double vl = ce.CirVolts[PotElmE.V_L];
+            double vr = ce.CirVolts[PotElmE.V_R];
+            double vs = ce.CirVolts[PotElmE.V_S];
+            setBbox(mPoint1, mPoint2, HS);
+            draw2Leads();
+
+            int divide = (int)(SEGMENTS * ce.Position);
+
+            if (ControlPanel.ChkUseAnsiSymbols.Checked) {
+                /* draw zigzag */
+                for (int i = 0; i != SEGMENTS; i++) {
+                    double v = vl + (vs - vl) * i / divide;
+                    if (i >= divide) {
+                        v = vs + (vr - vs) * (i - divide) / (SEGMENTS - divide);
+                    }
+                    drawLead(mPs1[i], mPs2[i]);
+                }
+            } else {
+                /* draw rectangle */
+                drawLead(mRect1[0], mRect2[0]);
+                for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
+                    double v = vl + (vs - vl) * i / divide;
+                    if (i >= divide) {
+                        v = vs + (vr - vs) * (i - divide) / (SEGMENTS - divide);
+                    }
+                    drawLead(mRect1[j], mRect3[j]);
+                    drawLead(mRect2[j], mRect4[j]);
+                }
+                drawLead(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
+            }
+
+            /* draw slider */
+            drawLead(mPost3, mCorner2);
+            drawLead(mCorner2, mArrowPoint);
+            drawLead(mArrow1, mArrowPoint);
+            drawLead(mArrow2, mArrowPoint);
+
+            /* draw dot */
+            ce.CurCount1 = ce.cirUpdateDotCount(ce.Current1, ce.CurCount1);
+            ce.CurCount2 = ce.cirUpdateDotCount(ce.Current2, ce.CurCount2);
+            ce.CurCount3 = ce.cirUpdateDotCount(ce.Current3, ce.CurCount3);
+            if (CirSim.Sim.DragElm != this) {
+                drawDots(mPoint1, mMidPoint, ce.CurCount1);
+                drawDots(mPoint2, mMidPoint, ce.CurCount2);
+                drawDots(mPost3, mCorner2, ce.CurCount3);
+                drawDots(mCorner2, mMidPoint, ce.CurCount3 + Utils.Distance(mPost3, mCorner2));
+            }
+            drawPosts();
+
+            if (ControlPanel.ChkShowValues.Checked && ce.Resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
+                /* check for vertical pot with 3rd terminal on left */
+                bool reverseY = (mPost3.X < mLead1.X && mLead1.X == mLead2.X);
+                /* check for horizontal pot with 3rd terminal on top */
+                bool reverseX = (mPost3.Y < mLead1.Y && mLead1.X != mLead2.X);
+                /* check if we need to swap texts (if leads are reversed, e.g. drawn right to left) */
+                bool rev = (mLead1.X == mLead2.X && mLead1.Y < mLead2.Y) || (mLead1.Y == mLead2.Y && mLead1.X > mLead2.X);
+
+                /* draw units */
+                string s1 = Utils.UnitText(rev ? ce.Resistance2 : ce.Resistance1, "");
+                string s2 = Utils.UnitText(rev ? ce.Resistance1 : ce.Resistance2, "");
+                int txtHeightH = CustomGraphics.FontText.Height / 2;
+                int txtWidth1 = (int)g.GetTextSize(s1).Width;
+                int txtWidth2 = (int)g.GetTextSize(s2).Width;
+
+                /* vertical? */
+                if (mLead1.X == mLead2.X) {
+                    g.DrawLeftTopText(s1, !reverseY ? mArrowPoint.X : mArrowPoint.X - txtWidth1, Math.Min(mArrow1.Y, mArrow2.Y) + 4 * txtHeightH);
+                    g.DrawLeftTopText(s2, !reverseY ? mArrowPoint.X : mArrowPoint.X - txtWidth2, Math.Max(mArrow1.Y, mArrow2.Y) - txtHeightH);
+                } else {
+                    g.DrawLeftTopText(s1, Math.Min(mArrow1.X, mArrow2.X) - txtWidth1, !reverseX ? (mArrowPoint.Y + txtHeightH + 10) : mArrowPoint.Y);
+                    g.DrawLeftTopText(s2, Math.Max(mArrow1.X, mArrow2.X), !reverseX ? (mArrowPoint.Y + txtHeightH + 10) : mArrowPoint.Y);
+                }
+            }
+            if (ControlPanel.ChkShowName.Checked) {
+                if (mNameV) {
+                    g.DrawCenteredVText(ReferenceName, mNamePos.X, mNamePos.Y);
+                } else {
+                    g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
+                }
+            }
+        }
+
+        public override void GetInfo(string[] arr) {
+            var ce = (PotElmE)CirElm;
+            arr[0] = "可変抵抗";
+            arr[1] = "Vd = " + Utils.VoltageAbsText(ce.CirVoltageDiff);
+            arr[2] = "R1 = " + Utils.UnitText(ce.Resistance1, CirSim.OHM_TEXT);
+            arr[3] = "R2 = " + Utils.UnitText(ce.Resistance2, CirSim.OHM_TEXT);
+            arr[4] = "I1 = " + Utils.CurrentAbsText(ce.Current1);
+            arr[5] = "I2 = " + Utils.CurrentAbsText(ce.Current2);
+        }
+
+        public override ElementInfo GetElementInfo(int n) {
+            var ce = (PotElmE)CirElm;
+            if (n == 0) {
+                return new ElementInfo("レジスタンス(Ω)", ce.MaxResistance, 0, 0);
+            }
+            if (n == 1) {
+                var ei = new ElementInfo("名前", 0, -1, -1);
+                ei.Text = ReferenceName;
+                return ei;
+            }
+            if (n == 2) {
+                var ei = new ElementInfo("", 0, -1, -1);
+                ei.CheckBox = new CheckBox();
+                ei.CheckBox.Text = "値を表示";
+                ei.CheckBox.Checked = (mFlags & FLAG_SHOW_VALUES) != 0;
+                return ei;
+            }
+            return null;
+        }
+
+        public override void SetElementValue(int n, ElementInfo ei) {
+            var ce = (PotElmE)CirElm;
+            if (n == 0) {
+                ce.MaxResistance = ei.Value;
+            }
+            if (n == 1) {
+                ReferenceName = ei.Textf.Text;
+                mLabel.Text = ReferenceName;
+                ControlPanel.SetSliderPanelHeight();
+                setNamePos();
+            }
+            if (n == 2) {
+                mFlags = ei.ChangeFlag(mFlags, FLAG_SHOW_VALUES);
+            }
+        }
 
         void setPoly() {
             /* set zigzag */
@@ -117,81 +277,6 @@ namespace Circuit.Elements.Passive {
             interpLeadAB(ref mRect1[SEGMENTS + 1], ref mRect2[SEGMENTS + 1], 1, HS);
         }
 
-        public override void SetMouseElm(bool v) {
-            base.SetMouseElm(v);
-        }
-
-        public override Point GetPost(int n) {
-            return (n == 0) ? mPoint1 : (n == 1) ? mPoint2 : mPost3;
-        }
-
-        public override double CirGetCurrentIntoNode(int n) {
-            if (n == 0) {
-                return -mCurrent1;
-            }
-            if (n == 1) {
-                return -mCurrent2;
-            }
-            return -mCurrent3;
-        }
-
-        public override void Delete() {
-            ControlPanel.RemoveSlider(mLabel);
-            ControlPanel.RemoveSlider(mSlider);
-            base.Delete();
-        }
-
-        public override void CirStamp() {
-            mResistance1 = mMaxResistance * mPosition;
-            mResistance2 = mMaxResistance * (1 - mPosition);
-            mCir.StampResistor(CirNodes[0], CirNodes[2], mResistance1);
-            mCir.StampResistor(CirNodes[2], CirNodes[1], mResistance2);
-        }
-
-        public override void SetPoints() {
-            base.SetPoints();
-            int offset = 0;
-            int myLen = 0;
-            mNameV = Math.Abs(mDiff.X) <= Math.Abs(mDiff.Y);
-            if (mNameV) {
-                /* vertical */
-                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDiff.Y)
-                    * ((Math.Abs(mDiff.Y) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
-                if (mDiff.Y != 0) {
-                    mPoint2.Y = mPoint1.Y + myLen;
-                    offset = (0 < mDiff.Y) ? mDiff.X : -mDiff.X;
-                    mPoint2.X = mPoint1.X;
-                }
-            } else {
-                /* horizontal */
-                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDiff.X)
-                    * ((Math.Abs(mDiff.X) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
-                mPoint2.X = mPoint1.X + myLen;
-                offset = (mDiff.X < 0) ? mDiff.Y : -mDiff.Y;
-                mPoint2.Y = mPoint1.Y;
-            }
-            if (offset < CirSim.GRID_SIZE) {
-                offset = CirSim.GRID_SIZE;
-            }
-            mLen = Utils.Distance(mPoint1, mPoint2);
-
-            calcLeads(BODY_LEN);
-
-            /* set slider */
-            mPosition = mSlider.Value * 0.0099 + 0.0001;
-            int soff = (int)((mPosition - 0.5) * BODY_LEN);
-            interpPoint(ref mPost3, 0.5, offset);
-            interpPoint(ref mCorner2, soff / mLen + 0.5, offset);
-            interpPoint(ref mArrowPoint, soff / mLen + 0.5, 8 * Math.Sign(offset));
-            interpPoint(ref mMidPoint, soff / mLen + 0.5);
-            double clen = Math.Abs(offset) - 8;
-            Utils.InterpPoint(mCorner2, mArrowPoint, ref mArrow1, ref mArrow2, (clen - 8) / clen, 4);
-
-            setNamePos();
-
-            setPoly();
-        }
-
         void setNamePos() {
             var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
             if (Math.Abs(mDiff.Y) < Math.Abs(mDiff.X)) {
@@ -215,100 +300,13 @@ namespace Circuit.Elements.Passive {
             }
         }
 
-        public override void CirReset() {
-            mCurCount1 = mCurCount2 = mCurCount3 = 0;
-            base.CirReset();
-        }
-
-        public override void Draw(CustomGraphics g) {
-            double vl = CirVolts[V_L];
-            double vr = CirVolts[V_R];
-            double vs = CirVolts[V_S];
-            setBbox(mPoint1, mPoint2, HS);
-            draw2Leads();
-
-            int divide = (int)(SEGMENTS * mPosition);
-
-            if (ControlPanel.ChkUseAnsiSymbols.Checked) {
-                /* draw zigzag */
-                for (int i = 0; i != SEGMENTS; i++) {
-                    double v = vl + (vs - vl) * i / divide;
-                    if (i >= divide) {
-                        v = vs + (vr - vs) * (i - divide) / (SEGMENTS - divide);
-                    }
-                    drawLead(mPs1[i], mPs2[i]);
-                }
-            } else {
-                /* draw rectangle */
-                drawLead(mRect1[0], mRect2[0]);
-                for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
-                    double v = vl + (vs - vl) * i / divide;
-                    if (i >= divide) {
-                        v = vs + (vr - vs) * (i - divide) / (SEGMENTS - divide);
-                    }
-                    drawLead(mRect1[j], mRect3[j]);
-                    drawLead(mRect2[j], mRect4[j]);
-                }
-                drawLead(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
-            }
-
-            /* draw slider */
-            drawLead(mPost3, mCorner2);
-            drawLead(mCorner2, mArrowPoint);
-            drawLead(mArrow1, mArrowPoint);
-            drawLead(mArrow2, mArrowPoint);
-
-            /* draw dot */
-            mCurCount1 = cirUpdateDotCount(mCurrent1, mCurCount1);
-            mCurCount2 = cirUpdateDotCount(mCurrent2, mCurCount2);
-            mCurCount3 = cirUpdateDotCount(mCurrent3, mCurCount3);
-            if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mMidPoint, mCurCount1);
-                drawDots(mPoint2, mMidPoint, mCurCount2);
-                drawDots(mPost3, mCorner2, mCurCount3);
-                drawDots(mCorner2, mMidPoint, mCurCount3 + Utils.Distance(mPost3, mCorner2));
-            }
-            drawPosts();
-
-            if (ControlPanel.ChkShowValues.Checked && mResistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
-                /* check for vertical pot with 3rd terminal on left */
-                bool reverseY = (mPost3.X < mLead1.X && mLead1.X == mLead2.X);
-                /* check for horizontal pot with 3rd terminal on top */
-                bool reverseX = (mPost3.Y < mLead1.Y && mLead1.X != mLead2.X);
-                /* check if we need to swap texts (if leads are reversed, e.g. drawn right to left) */
-                bool rev = (mLead1.X == mLead2.X && mLead1.Y < mLead2.Y) || (mLead1.Y == mLead2.Y && mLead1.X > mLead2.X);
-
-                /* draw units */
-                string s1 = Utils.UnitText(rev ? mResistance2 : mResistance1, "");
-                string s2 = Utils.UnitText(rev ? mResistance1 : mResistance2, "");
-                int txtHeightH = CustomGraphics.FontText.Height / 2;
-                int txtWidth1 = (int)g.GetTextSize(s1).Width;
-                int txtWidth2 = (int)g.GetTextSize(s2).Width;
-
-                /* vertical? */
-                if (mLead1.X == mLead2.X) {
-                    g.DrawLeftTopText(s1, !reverseY ? mArrowPoint.X : mArrowPoint.X - txtWidth1, Math.Min(mArrow1.Y, mArrow2.Y) + 4 * txtHeightH);
-                    g.DrawLeftTopText(s2, !reverseY ? mArrowPoint.X : mArrowPoint.X - txtWidth2, Math.Max(mArrow1.Y, mArrow2.Y) - txtHeightH);
-                } else {
-                    g.DrawLeftTopText(s1, Math.Min(mArrow1.X, mArrow2.X) - txtWidth1, !reverseX ? (mArrowPoint.Y + txtHeightH + 10) : mArrowPoint.Y);
-                    g.DrawLeftTopText(s2, Math.Max(mArrow1.X, mArrow2.X), !reverseX ? (mArrowPoint.Y + txtHeightH + 10) : mArrowPoint.Y);
-                }
-            }
-            if (ControlPanel.ChkShowName.Checked) {
-                if (mNameV) {
-                    g.DrawCenteredVText(ReferenceName, mNamePos.X, mNamePos.Y);
-                } else {
-                    g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
-                }
-            }
-        }
-
         void createSlider() {
+            var ce = (PotElmE)CirElm;
             ControlPanel.AddSlider(mLabel = new Label() {
                 TextAlign = ContentAlignment.BottomLeft,
                 Text = ReferenceName
             });
-            int value = (int)(mPosition * 100);
+            int value = (int)(ce.Position * 100);
             ControlPanel.AddSlider(mSlider = new TrackBar() {
                 Minimum = 0,
                 Maximum = 100,
@@ -324,49 +322,6 @@ namespace Circuit.Elements.Passive {
         void execute() {
             SetPoints();
             CirSim.Sim.NeedAnalyze();
-        }
-
-        public override void GetInfo(string[] arr) {
-            arr[0] = "可変抵抗";
-            arr[1] = "Vd = " + Utils.VoltageAbsText(CirVoltageDiff);
-            arr[2] = "R1 = " + Utils.UnitText(mResistance1, CirSim.OHM_TEXT);
-            arr[3] = "R2 = " + Utils.UnitText(mResistance2, CirSim.OHM_TEXT);
-            arr[4] = "I1 = " + Utils.CurrentAbsText(mCurrent1);
-            arr[5] = "I2 = " + Utils.CurrentAbsText(mCurrent2);
-        }
-
-        public override ElementInfo GetElementInfo(int n) {
-            if (n == 0) {
-                return new ElementInfo("レジスタンス(Ω)", mMaxResistance, 0, 0);
-            }
-            if (n == 1) {
-                var ei = new ElementInfo("名前", 0, -1, -1);
-                ei.Text = ReferenceName;
-                return ei;
-            }
-            if (n == 2) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox();
-                ei.CheckBox.Text = "値を表示";
-                ei.CheckBox.Checked = (mFlags & FLAG_SHOW_VALUES) != 0;
-                return ei;
-            }
-            return null;
-        }
-
-        public override void SetElementValue(int n, ElementInfo ei) {
-            if (n == 0) {
-                mMaxResistance = ei.Value;
-            }
-            if (n == 1) {
-                ReferenceName = ei.Textf.Text;
-                mLabel.Text = ReferenceName;
-                ControlPanel.SetSliderPanelHeight();
-                setNamePos();
-            }
-            if (n == 2) {
-                mFlags = ei.ChangeFlag(mFlags, FLAG_SHOW_VALUES);
-            }
         }
     }
 }

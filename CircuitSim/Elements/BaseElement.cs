@@ -67,7 +67,7 @@
         /// <summary>
         /// allocate nodes/volts arrays we need
         /// </summary>
-        protected void cirAllocNodes() {
+        public void cirAllocNodes() {
             int n = CirPostCount + CirInternalNodeCount;
             /* preserve voltages if possible */
             if (CirNodes == null || CirNodes.Length != n) {
@@ -190,15 +190,6 @@
         /// <param name="n"></param>
         /// <returns></returns>
         public virtual int CirGetConnectionNode(int n) { return CirNodes[n]; }
-
-        /// <summary>
-        /// are n1 and n2 connected by this element?  this is used to determine
-        /// unconnected nodes, and look for loops
-        /// </summary>
-        /// <param name="n1"></param>
-        /// <param name="n2"></param>
-        /// <returns></returns>
-        public virtual bool CirGetConnection(int n1, int n2) { return true; }
 
         /// <summary>
         /// is n1 connected to ground somehow?

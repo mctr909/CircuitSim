@@ -9,18 +9,19 @@ namespace Circuit.Elements.Active {
 
         Point[] mWing;
 
-        public ZenerElm(Point pos) : base(pos) {
-            mModelName = mLastZenerModelName;
-            ReferenceName = "Z";
+        public ZenerElm(Point pos) : base(pos, "Z") {
+            var ce = (DiodeElmE)CirElm;
+            ce.mModelName = mLastZenerModelName;
             setup();
         }
 
         public ZenerElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
             if ((f & FLAG_MODEL) == 0) {
+                var ce = (DiodeElmE)CirElm;
                 double zvoltage = st.nextTokenDouble();
-                mModel = DiodeModel.GetModelWithParameters(mModel.FwDrop, zvoltage);
-                mModelName = mModel.Name;
-                Console.WriteLine("model name wparams = " + mModelName);
+                ce.mModel = DiodeModel.GetModelWithParameters(ce.mModel.FwDrop, zvoltage);
+                ce.mModelName = ce.mModel.Name;
+                Console.WriteLine("model name wparams = " + ce.mModelName);
             }
             setup();
         }
@@ -45,8 +46,6 @@ namespace Circuit.Elements.Active {
         public override void Draw(CustomGraphics g) {
             setBbox(mPoint1, mPoint2, HS);
 
-            double v2 = CirVolts[1];
-
             draw2Leads();
 
             /* draw arrow thingy */
@@ -63,20 +62,22 @@ namespace Circuit.Elements.Active {
         }
 
         public override void GetInfo(string[] arr) {
+            var ce = (DiodeElmE)CirElm;
             base.GetInfo(arr);
             arr[0] = "Zener diode";
-            arr[5] = "Vz = " + Utils.VoltageText(mModel.BreakdownVoltage);
+            arr[5] = "Vz = " + Utils.VoltageText(ce.mModel.BreakdownVoltage);
+        }
+
+        public override ElementInfo GetElementInfo(int n) {
+            var ce = (DiodeElmE)CirElm;
+            if (n == 2) {
+                return new ElementInfo("ブレークダウン電圧(V)", ce.mModel.BreakdownVoltage, 0, 0);
+            }
+            return base.GetElementInfo(n);
         }
 
         void setLastModelName(string n) {
             mLastZenerModelName = n;
-        }
-
-        public override ElementInfo GetElementInfo(int n) {
-            if (n == 2) {
-                return new ElementInfo("ブレークダウン電圧(V)", mModel.BreakdownVoltage, 0, 0);
-            }
-            return base.GetElementInfo(n);
         }
     }
 }

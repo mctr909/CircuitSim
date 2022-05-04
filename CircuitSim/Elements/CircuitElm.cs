@@ -532,7 +532,7 @@ namespace Circuit.Elements {
             int nx2 = P2.X + dx;
             int ny2 = P2.Y + dy;
             for (int i = 0; i != CirSim.Sim.ElmCount; i++) {
-                var ce = CirSim.Sim.getElm(i).Item1;
+                var ce = CirSim.Sim.getElm(i);
                 if (ce.P1.X == nx && ce.P1.Y == ny && ce.P2.X == nx2 && ce.P2.Y == ny2) {
                     return false;
                 }
@@ -713,6 +713,15 @@ namespace Circuit.Elements {
         public virtual Point GetPost(int n) {
             return (n == 0) ? mPoint1 : (n == 1) ? mPoint2 : new Point();
         }
+
+        /// <summary>
+        /// are n1 and n2 connected by this element?  this is used to determine
+        /// unconnected nodes, and look for loops
+        /// </summary>
+        /// <param name="n1"></param>
+        /// <param name="n2"></param>
+        /// <returns></returns>
+        public virtual bool CirGetConnection(int n1, int n2) { return true; }
 
         /// <summary>
         /// get component info for display in lower right
