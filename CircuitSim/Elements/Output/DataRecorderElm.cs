@@ -1,48 +1,25 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
 namespace Circuit.Elements.Output {
     class DataRecorderElm : CircuitElm {
-        double[] mData;
-        int mDataCount;
-        int mDataPtr;
-        bool mDataFull;
-
+        SaveFileDialog saveFileDialog = new SaveFileDialog();
         string mName = "";
 
-        SaveFileDialog saveFileDialog = new SaveFileDialog();
-
         public DataRecorderElm(Point pos) : base(pos) {
-            setDataCount(10000);
+            CirElm = new DataRecorderElmE();
         }
 
         public DataRecorderElm(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-            setDataCount(int.Parse(st.nextToken()));
+            CirElm = new DataRecorderElmE(st);
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.DATA_RECORDER; } }
 
-        public override int CirPostCount { get { return 1; } }
-
-        public override double CirVoltageDiff { get { return CirVolts[0]; } }
-
         protected override string dump() {
-            return mDataCount.ToString();
-        }
-
-        public override void CirStepFinished() {
-            mData[mDataPtr++] = CirVolts[0];
-            if (mDataPtr >= mDataCount) {
-                mDataPtr = 0;
-                mDataFull = true;
-            }
-        }
-
-        public override void CirReset() {
-            mDataPtr = 0;
-            mDataFull = false;
+            var ce = (DataRecorderElmE)CirElm;
+            return ce.DataCount.ToString();
         }
 
         public override void SetPoints() {
@@ -62,21 +39,16 @@ namespace Circuit.Elements.Output {
         }
 
         public override void GetInfo(string[] arr) {
+            var ce = (DataRecorderElmE)CirElm;
             arr[0] = "data export";
-            arr[1] = "V = " + Utils.VoltageText(CirVolts[0]);
-            arr[2] = (mDataFull ? mDataCount : mDataPtr) + "/" + mDataCount;
-        }
-
-        void setDataCount(int ct) {
-            mDataCount = ct;
-            mDataPtr = 0;
-            mDataFull = false;
-            mData = new double[mDataCount];
+            arr[1] = "V = " + Utils.VoltageText(ce.CirVolts[0]);
+            arr[2] = (ce.DataFull ? ce.DataCount : ce.DataPtr) + "/" + ce.DataCount;
         }
 
         public override ElementInfo GetElementInfo(int n) {
+            var ce = (DataRecorderElmE)CirElm;
             if (n == 0) {
-                return new ElementInfo("サンプル数", mDataCount, -1, -1).SetDimensionless();
+                return new ElementInfo("サンプル数", ce.DataCount, -1, -1).SetDimensionless();
             }
             if (n == 1) {
                 var ei = new ElementInfo("列名", 0, -1, -1);
@@ -94,13 +66,13 @@ namespace Circuit.Elements.Output {
                     var filePath = saveFileDialog.FileName;
                     var fs = new StreamWriter(filePath);
                     fs.WriteLine(mName + "," + ControlPanel.TimeStep);
-                    if (mDataFull) {
-                        for (int i = 0; i != mDataCount; i++) {
-                            fs.WriteLine(mData[(i + mDataPtr) % mDataCount]);
+                    if (ce.DataFull) {
+                        for (int i = 0; i != ce.DataCount; i++) {
+                            fs.WriteLine(ce.Data[(i + ce.DataPtr) % ce.DataCount]);
                         }
                     } else {
-                        for (int i = 0; i != mDataPtr; i++) {
-                            fs.WriteLine(mData[i]);
+                        for (int i = 0; i != ce.DataPtr; i++) {
+                            fs.WriteLine(ce.Data[i]);
                         }
                     }
                     fs.Close();
@@ -112,8 +84,9 @@ namespace Circuit.Elements.Output {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
+            var ce = (DataRecorderElmE)CirElm;
             if (n == 0 && 0 < ei.Value) {
-                setDataCount((int)ei.Value);
+                ce.setDataCount((int)ei.Value);
             }
             if (n == 1) {
                 mName = ei.Textf.Text;

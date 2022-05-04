@@ -22,7 +22,8 @@ namespace Circuit.Elements.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.INDUCTOR; } }
 
         protected override string dump() {
-            return CirElm.Inductance + " " + CirElm.mCirCurrent + " " + ReferenceName;
+            var ce = (InductorElmE)CirElm;
+            return ce.Inductance + " " + ce.mCirCurrent + " " + ReferenceName;
         }
 
         public override void SetPoints() {
@@ -32,9 +33,10 @@ namespace Circuit.Elements.Passive {
         }
 
         void setTextPos() {
+            var ce = (InductorElmE)CirElm;
             mNameV = mPoint1.X == mPoint2.X;
             if (mPoint1.Y == mPoint2.Y) {
-                var wv = Context.GetTextSize(Utils.UnitText(CirElm.Inductance, "")).Width * 0.5;
+                var wv = Context.GetTextSize(Utils.UnitText(ce.Inductance, "")).Width * 0.5;
                 var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
                 interpPoint(ref mValuePos, 0.5 - wv / mLen * mDsign, -11 * mDsign);
                 interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 10 * mDsign);
@@ -48,6 +50,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
+            var ce = (InductorElmE)CirElm;
             double v1 = CirElm.CirVolts[0];
             double v2 = CirElm.CirVolts[1];
             int hs = 8;
@@ -56,7 +59,7 @@ namespace Circuit.Elements.Passive {
             draw2Leads();
             drawCoil(mLead1, mLead2, v1, v2);
 
-            drawValue(CirElm.Inductance);
+            drawValue(ce.Inductance);
             drawName();
 
             doDots();
@@ -64,15 +67,17 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void GetInfo(string[] arr) {
+            var ce = (InductorElmE)CirElm;
             arr[0] = string.IsNullOrEmpty(ReferenceName) ? "コイル" : ReferenceName;
             getBasicInfo(arr);
-            arr[3] = "L = " + Utils.UnitText(CirElm.Inductance, "H");
-            arr[4] = "P = " + Utils.UnitText(CirElm.CirPower, "W");
+            arr[3] = "L = " + Utils.UnitText(ce.Inductance, "H");
+            arr[4] = "P = " + Utils.UnitText(ce.CirPower, "W");
         }
 
         public override ElementInfo GetElementInfo(int n) {
+            var ce = (InductorElmE)CirElm;
             if (n == 0) {
-                return new ElementInfo("インダクタンス(H)", CirElm.Inductance, 0, 0);
+                return new ElementInfo("インダクタンス(H)", ce.Inductance, 0, 0);
             }
             if (n == 1) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
@@ -90,8 +95,9 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
+            var ce = (InductorElmE)CirElm;
             if (n == 0 && ei.Value > 0) {
-                CirElm.Inductance = ei.Value;
+                ce.Inductance = ei.Value;
                 setTextPos();
             }
             if (n == 1) {
@@ -105,7 +111,7 @@ namespace Circuit.Elements.Passive {
                     mFlags |= Inductor.FLAG_BACK_EULER;
                 }
             }
-            ((InductorElmE)CirElm).Ind.Setup(CirElm.Inductance, CirElm.mCirCurrent, mFlags);
+            ce.Ind.Setup(ce.Inductance, CirElm.mCirCurrent, mFlags);
         }
     }
 }

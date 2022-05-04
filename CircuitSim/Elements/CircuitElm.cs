@@ -721,7 +721,7 @@ namespace Circuit.Elements {
         /// <param name="n1"></param>
         /// <param name="n2"></param>
         /// <returns></returns>
-        public virtual bool CirGetConnection(int n1, int n2) { return true; }
+        public virtual bool GetConnection(int n1, int n2) { return true; }
 
         /// <summary>
         /// get component info for display in lower right

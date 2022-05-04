@@ -1,5 +1,7 @@
 ﻿namespace Circuit.Elements.Passive {
     class ResistorElmE : BaseElement {
+        public double Resistance { get; set; }
+
         public ResistorElmE() {
             Resistance = 1000;
         }

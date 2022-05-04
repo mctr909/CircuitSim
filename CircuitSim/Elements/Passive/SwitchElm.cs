@@ -90,7 +90,7 @@ namespace Circuit.Elements.Passive {
             }
         }
 
-        public override bool CirGetConnection(int n1, int n2) { return 0 == ((SwitchElmE)CirElm).Position; }
+        public override bool GetConnection(int n1, int n2) { return 0 == ((SwitchElmE)CirElm).Position; }
 
         public override ElementInfo GetElementInfo(int n) {
             var ce = (SwitchElmE)CirElm;

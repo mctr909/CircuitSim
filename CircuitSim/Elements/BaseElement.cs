@@ -17,10 +17,6 @@
         #endregion
 
         #region [property]
-        public double Resistance { get; set; }
-        public double Capacitance { get; set; }
-        public double Inductance { get; set; }
-
         public int[] CirNodes { get; protected set; }
 
         /// <summary>

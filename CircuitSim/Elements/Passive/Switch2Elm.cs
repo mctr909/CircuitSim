@@ -29,7 +29,7 @@ namespace Circuit.Elements.Passive {
             return (n == 0) ? mPoint1 : mSwPosts[n - 1];
         }
 
-        public override bool CirGetConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             var ce = (Switch2ElmE)CirElm;
             return comparePair(n1, n2, 0, 1 + ce.Position);
         }

@@ -43,7 +43,7 @@ namespace Circuit.Elements.Passive {
             return mPtEnds[n];
         }
 
-        public override bool CirGetConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             if (comparePair(n1, n2, 0, 2)) {
                 return true;
             }

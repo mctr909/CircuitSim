@@ -9,87 +9,26 @@ namespace Circuit.Elements.Input {
 
         const int SIZE = 28;
 
-        double mMaxV;
-        double mMaxF;
-        double mMinF;
-        double mSweepTime;
-        double mFrequency;
-
-        double mFadd;
-        double mFmul;
-        double mFreqTime;
-        double mSavedTimeStep;
-        double mVolt;
-        int mFdir = 1;
-
         Point mTextPos;
 
         public SweepElm(Point pos) : base(pos) {
-            mMinF = 20;
-            mMaxF = 4000;
-            mMaxV = 5;
-            mSweepTime = .1;
+            CirElm = new SweepElmE();
             mFlags = FLAG_BIDIR;
-            CirReset();
+            ((SweepElmE)CirElm).BothSides = 0 != (mFlags & FLAG_BIDIR);
         }
 
         public SweepElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            mMinF = st.nextTokenDouble();
-            mMaxF = st.nextTokenDouble();
-            mMaxV = st.nextTokenDouble();
-            mSweepTime = st.nextTokenDouble();
-            CirReset();
+            CirElm = new SweepElmE(st);
         }
-
-        public override double CirVoltageDiff { get { return CirVolts[0]; } }
-
-        public override double CirPower { get { return -CirVoltageDiff * mCirCurrent; } }
-
-        public override int CirVoltageSourceCount { get { return 1; } }
-
-        public override int CirPostCount { get { return 1; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.SWEEP; } }
 
-        public override bool CirHasGroundConnection(int n1) { return true; }
-
         protected override string dump() {
-            return mMinF
-                + " " + mMaxF
-                + " " + mMaxV
-                + " " + mSweepTime;
-        }
-
-        public override void CirStartIteration() {
-            /* has timestep been changed? */
-            if (ControlPanel.TimeStep != mSavedTimeStep) {
-                setParams();
-            }
-            mVolt = Math.Sin(mFreqTime) * mMaxV;
-            mFreqTime += mFrequency * 2 * Math.PI * ControlPanel.TimeStep;
-            mFrequency = mFrequency * mFmul + mFadd;
-            if (mFrequency >= mMaxF && mFdir == 1) {
-                if ((mFlags & FLAG_BIDIR) != 0) {
-                    mFadd = -mFadd;
-                    mFmul = 1 / mFmul;
-                    mFdir = -1;
-                } else {
-                    mFrequency = mMinF;
-                }
-            }
-            if (mFrequency <= mMinF && mFdir == -1) {
-                mFadd = -mFadd;
-                mFmul = 1 / mFmul;
-                mFdir = 1;
-            }
-        }
-
-        public override void CirDoStep() {
-            mCir.UpdateVoltageSource(0, CirNodes[0], mCirVoltSource, mVolt);
-        }
-
-        public override void CirStamp() {
-            mCir.StampVoltageSource(0, CirNodes[0], mCirVoltSource);
+            var ce = (SweepElmE)CirElm;
+            return ce.MinF
+                + " " + ce.MaxF
+                + " " + ce.MaxV
+                + " " + ce.SweepTime;
         }
 
         public override void SetPoints() {
@@ -98,14 +37,8 @@ namespace Circuit.Elements.Input {
             interpPoint(ref mTextPos, 1.0 + 0.66 * SIZE / Utils.Distance(mPoint1, mPoint2), 24 * mDsign);
         }
 
-        public override void CirReset() {
-            mFrequency = mMinF;
-            mFreqTime = 0;
-            mFdir = 1;
-            setParams();
-        }
-
         public override void Draw(CustomGraphics g) {
+            var ce = (SweepElmE)CirElm;
             setBbox(mPoint1, mPoint2, SIZE);
 
             drawLead(mPoint1, mLead1);
@@ -130,7 +63,7 @@ namespace Circuit.Elements.Input {
             }
             double w = 1 + tm * 0.002;
             if (CirSim.Sim.IsRunning) {
-                w = 1 + 3 * (mFrequency - mMinF) / (mMaxF - mMinF);
+                w = 1 + 3 * (ce.Frequency - ce.MinF) / (ce.MaxF - ce.MinF);
             }
 
             int x0 = 0;
@@ -149,54 +82,40 @@ namespace Circuit.Elements.Input {
             }
 
             if (ControlPanel.ChkShowValues.Checked) {
-                string s = Utils.UnitText(mFrequency, "Hz");
+                string s = Utils.UnitText(ce.Frequency, "Hz");
                 drawValues(s, 20, -15);
             }
 
             drawPosts();
-            mCirCurCount = cirUpdateDotCount(-mCirCurrent, mCirCurCount);
+            ce.mCirCurCount = ce.cirUpdateDotCount(-ce.mCirCurrent, ce.mCirCurCount);
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mLead1, mCirCurCount);
+                drawDots(mPoint1, mLead1, ce.mCirCurCount);
             }
-        }
-
-        void setParams() {
-            if (mFrequency < mMinF || mFrequency > mMaxF) {
-                mFrequency = mMinF;
-                mFreqTime = 0;
-                mFdir = 1;
-            }
-            if ((mFlags & FLAG_LOG) == 0) {
-                mFadd = mFdir * ControlPanel.TimeStep * (mMaxF - mMinF) / mSweepTime;
-                mFmul = 1;
-            } else {
-                mFadd = 0;
-                mFmul = Math.Pow(mMaxF / mMinF, mFdir * ControlPanel.TimeStep / mSweepTime);
-            }
-            mSavedTimeStep = ControlPanel.TimeStep;
         }
 
         public override void GetInfo(string[] arr) {
+            var ce = (SweepElmE)CirElm;
             arr[0] = "sweep " + (((mFlags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
-            arr[1] = "I = " + Utils.CurrentAbsText(mCirCurrent);
-            arr[2] = "V = " + Utils.VoltageText(CirVolts[0]);
-            arr[3] = "f = " + Utils.UnitText(mFrequency, "Hz");
-            arr[4] = "range = " + Utils.UnitText(mMinF, "Hz") + " .. " + Utils.UnitText(mMaxF, "Hz");
-            arr[5] = "time = " + Utils.UnitText(mSweepTime, "s");
+            arr[1] = "I = " + Utils.CurrentAbsText(ce.mCirCurrent);
+            arr[2] = "V = " + Utils.VoltageText(ce.CirVolts[0]);
+            arr[3] = "f = " + Utils.UnitText(ce.Frequency, "Hz");
+            arr[4] = "range = " + Utils.UnitText(ce.MinF, "Hz") + " .. " + Utils.UnitText(ce.MaxF, "Hz");
+            arr[5] = "time = " + Utils.UnitText(ce.SweepTime, "s");
         }
 
         public override ElementInfo GetElementInfo(int n) {
+            var ce = (SweepElmE)CirElm;
             if (n == 0) {
-                return new ElementInfo("振幅(V)", mMaxV, 0, 0);
+                return new ElementInfo("振幅(V)", ce.MaxV, 0, 0);
             }
             if (n == 1) {
-                return new ElementInfo("最小周波数(Hz)", mMinF, 0, 0);
+                return new ElementInfo("最小周波数(Hz)", ce.MinF, 0, 0);
             }
             if (n == 2) {
-                return new ElementInfo("最大周波数(Hz)", mMaxF, 0, 0);
+                return new ElementInfo("最大周波数(Hz)", ce.MaxF, 0, 0);
             }
             if (n == 3) {
-                return new ElementInfo("スウィープ時間(sec)", mSweepTime, 0, 0);
+                return new ElementInfo("スウィープ時間(sec)", ce.SweepTime, 0, 0);
             }
             if (n == 4) {
                 var ei = new ElementInfo("", 0, -1, -1);
@@ -220,38 +139,41 @@ namespace Circuit.Elements.Input {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
+            var ce = (SweepElmE)CirElm;
             double maxfreq = 1 / (8 * ControlPanel.TimeStep);
             if (n == 0) {
-                mMaxV = ei.Value;
+                ce.MaxV = ei.Value;
             }
             if (n == 1) {
-                mMinF = ei.Value;
-                if (mMinF > maxfreq) {
-                    mMinF = maxfreq;
+                ce.MinF = ei.Value;
+                if (ce.MinF > maxfreq) {
+                    ce.MinF = maxfreq;
                 }
             }
             if (n == 2) {
-                mMaxF = ei.Value;
-                if (mMaxF > maxfreq) {
-                    mMaxF = maxfreq;
+                ce.MaxF = ei.Value;
+                if (ce.MaxF > maxfreq) {
+                    ce.MaxF = maxfreq;
                 }
             }
             if (n == 3) {
-                mSweepTime = ei.Value;
+                ce.SweepTime = ei.Value;
             }
             if (n == 4) {
                 mFlags &= ~FLAG_LOG;
                 if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_LOG;
                 }
+                ce.IsLog = 0 != (mFlags & FLAG_LOG);
             }
             if (n == 5) {
                 mFlags &= ~FLAG_BIDIR;
                 if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_BIDIR;
                 }
+                ce.BothSides = 0 != (mFlags & FLAG_BIDIR);
             }
-            setParams();
+            ce.setParams();
         }
     }
 }

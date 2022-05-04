@@ -2,6 +2,8 @@
     class InductorElmE : BaseElement {
         public Inductor Ind;
 
+        public double Inductance { get; set; }
+
         public InductorElmE() {
             Ind = new Inductor(mCir);
             Inductance = 0.001;

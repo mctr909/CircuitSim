@@ -1,74 +1,26 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace Circuit.Elements.Input {
     class FMElm : CircuitElm {
         const int FLAG_COS = 2;
         const int SIZE = 28;
 
-        double mCarrierFreq;
-        double mSignalfreq;
-        double mMaxVoltage;
-        double mFreqTimeZero;
-        double mDeviation;
-        double mLastTime = 0;
-        double mFuncx = 0;
-
         public FMElm(Point pos) : base(pos) {
-            mDeviation = 200;
-            mMaxVoltage = 5;
-            mCarrierFreq = 800;
-            mSignalfreq = 40;
-            CirReset();
+            CirElm = new FMElmE();
         }
 
         public FMElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            mCarrierFreq = st.nextTokenDouble();
-            mSignalfreq = st.nextTokenDouble();
-            mMaxVoltage = st.nextTokenDouble();
-            mDeviation = st.nextTokenDouble();
+            CirElm = new FMElmE(st);
             if ((mFlags & FLAG_COS) != 0) {
                 mFlags &= ~FLAG_COS;
             }
-            CirReset();
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.FM; } }
 
         protected override string dump() {
-            return mCarrierFreq + " " + mSignalfreq + " " + mMaxVoltage + " " + mDeviation;
-        }
-
-        public override void CirReset() {
-            mFreqTimeZero = 0;
-            mCirCurCount = 0;
-        }
-
-        public override int CirPostCount { get { return 1; } }
-
-        public override double CirVoltageDiff { get { return CirVolts[0]; } }
-
-        public override int CirVoltageSourceCount { get { return 1; } }
-
-        public override double CirPower { get { return -CirVoltageDiff * mCirCurrent; } }
-
-        public override bool CirHasGroundConnection(int n1) { return true; }
-
-        public override void CirStamp() {
-            mCir.StampVoltageSource(0, CirNodes[0], mCirVoltSource);
-        }
-
-        public override void CirDoStep() {
-            mCir.UpdateVoltageSource(0, CirNodes[0], mCirVoltSource, getVoltage());
-        }
-
-        double getVoltage() {
-            double deltaT = CirSim.Sim.Time - mLastTime;
-            mLastTime = CirSim.Sim.Time;
-            double signalamplitude = Math.Sin(2 * Math.PI * (CirSim.Sim.Time - mFreqTimeZero) * mSignalfreq);
-            mFuncx += deltaT * (mCarrierFreq + (signalamplitude * mDeviation));
-            double w = 2 * Math.PI * mFuncx;
-            return Math.Sin(w) * mMaxVoltage;
+            var ce = (FMElmE)CirElm;
+            return ce.CarrierFreq + " " + ce.Signalfreq + " " + ce.MaxVoltage + " " + ce.Deviation;
         }
 
         public override void SetPoints() {
@@ -77,17 +29,17 @@ namespace Circuit.Elements.Input {
         }
 
         public override void Draw(CustomGraphics g) {
+            var ce = (FMElmE)CirElm;
             setBbox(mPoint1, mPoint2, SIZE);
             drawLead(mPoint1, mLead1);
 
-            double v = getVoltage();
             string s = "FM";
             drawCenteredText(s, P2, true);
             drawWaveform(g, mPoint2);
             drawPosts();
-            mCirCurCount = cirUpdateDotCount(-mCirCurrent, mCirCurCount);
+            ce.mCirCurCount = ce.cirUpdateDotCount(-ce.mCirCurrent, ce.mCirCurCount);
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mLead1, mCirCurCount);
+                drawDots(mPoint1, mLead1, ce.mCirCurCount);
             }
         }
 
@@ -100,43 +52,46 @@ namespace Circuit.Elements.Input {
         }
 
         public override void GetInfo(string[] arr) {
+            var ce = (FMElmE)CirElm;
             arr[0] = "FM Source";
-            arr[1] = "I = " + Utils.CurrentText(CirCurrent);
-            arr[2] = "V = " + Utils.VoltageText(CirVoltageDiff);
-            arr[3] = "cf = " + Utils.UnitText(mCarrierFreq, "Hz");
-            arr[4] = "sf = " + Utils.UnitText(mSignalfreq, "Hz");
-            arr[5] = "dev =" + Utils.UnitText(mDeviation, "Hz");
-            arr[6] = "Vmax = " + Utils.VoltageText(mMaxVoltage);
+            arr[1] = "I = " + Utils.CurrentText(ce.CirCurrent);
+            arr[2] = "V = " + Utils.VoltageText(ce.CirVoltageDiff);
+            arr[3] = "cf = " + Utils.UnitText(ce.CarrierFreq, "Hz");
+            arr[4] = "sf = " + Utils.UnitText(ce.Signalfreq, "Hz");
+            arr[5] = "dev =" + Utils.UnitText(ce.Deviation, "Hz");
+            arr[6] = "Vmax = " + Utils.VoltageText(ce.MaxVoltage);
         }
 
         public override ElementInfo GetElementInfo(int n) {
+            var ce = (FMElmE)CirElm;
             if (n == 0) {
-                return new ElementInfo("振幅(V)", mMaxVoltage, -20, 20);
+                return new ElementInfo("振幅(V)", ce.MaxVoltage, -20, 20);
             }
             if (n == 1) {
-                return new ElementInfo("搬送波周波数(Hz)", mCarrierFreq, 4, 500);
+                return new ElementInfo("搬送波周波数(Hz)", ce.CarrierFreq, 4, 500);
             }
             if (n == 2) {
-                return new ElementInfo("信号周波数(Hz)", mSignalfreq, 4, 500);
+                return new ElementInfo("信号周波数(Hz)", ce.Signalfreq, 4, 500);
             }
             if (n == 3) {
-                return new ElementInfo("周波数偏移(Hz)", mDeviation, 4, 500);
+                return new ElementInfo("周波数偏移(Hz)", ce.Deviation, 4, 500);
             }
             return null;
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
+            var ce = (FMElmE)CirElm;
             if (n == 0) {
-                mMaxVoltage = ei.Value;
+                ce.MaxVoltage = ei.Value;
             }
             if (n == 1) {
-                mCarrierFreq = ei.Value;
+                ce.CarrierFreq = ei.Value;
             }
             if (n == 2) {
-                mSignalfreq = ei.Value;
+                ce.Signalfreq = ei.Value;
             }
             if (n == 3) {
-                mDeviation = ei.Value;
+                ce.Deviation = ei.Value;
             }
         }
     }

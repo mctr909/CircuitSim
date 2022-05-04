@@ -90,7 +90,7 @@ namespace Circuit.Elements.Active {
 
         /* there is no current path through the op-amp inputs,
          * but there is an indirect path through the output to ground. */
-        public override bool CirGetConnection(int n1, int n2) { return false; }
+        public override bool GetConnection(int n1, int n2) { return false; }
 
         public override void GetInfo(string[] arr) {
             var ce = (OpAmpElmE)CirElm;

@@ -663,8 +663,7 @@ namespace Circuit {
             if (debug) Console.WriteLine("ac2");
 
             /* allocate nodes and voltage sources */
-            // Todo: LabeledNodeElm
-            //LabeledNodeElm.ResetNodeList();
+            LabeledNodeElmE.ResetNodeList();
             for (int i = 0; i != mSim.ElmCount; i++) {
                 var ce = mSim.getElm(i);
                 var cee = ce.CirElm;
@@ -805,7 +804,7 @@ namespace Circuit {
                                 continue;
                             }
                             int kn = cee.CirGetConnectionNode(k);
-                            if (ce.CirGetConnection(j, k) && !closure[kn]) {
+                            if (ce.GetConnection(j, k) && !closure[kn]) {
                                 closure[kn] = true;
                                 changed = true;
                             }
@@ -867,7 +866,7 @@ namespace Circuit {
                     /* for Switch2Elms we need to do extra work to look for wire loops */
                     var fpi = new PathInfo(PathType.VOLTAGE, cee, cee.CirNodes[0], elmList, NodeList.Count);
                     for (int j = 1; j < cee.CirPostCount; j++) {
-                        if (ce.CirGetConnection(0, j) && fpi.FindPath(cee.CirNodes[j])) {
+                        if (ce.GetConnection(0, j) && fpi.FindPath(cee.CirNodes[j])) {
                             Stop("Voltage source/wire loop with no resistance!", cee);
                             return;
                         }

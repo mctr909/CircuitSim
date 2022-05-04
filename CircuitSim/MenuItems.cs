@@ -513,64 +513,64 @@ namespace Circuit {
             #endregion
 
             #region Logic Gates
-            var gateMenuBar = new ToolStripMenuItem();
-            gateMenuBar.Text = "論理ゲート(G)";
-            gateMenuBar.Font = menuFont;
-            addElementItem(gateMenuBar, "入力", ELEMENTS.LOGIC_INPUT);
-            addElementItem(gateMenuBar, "出力", ELEMENTS.LOGIC_OUTPUT);
-            gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(gateMenuBar, "AND", ELEMENTS.AND_GATE);
-            addElementItem(gateMenuBar, "OR", ELEMENTS.OR_GATE);
-            addElementItem(gateMenuBar, "XOR", ELEMENTS.XOR_GATE);
-            addElementItem(gateMenuBar, "NOT", ELEMENTS.NOT_GATE);
-            addElementItem(gateMenuBar, "NAND", ELEMENTS.NAND_GATE);
-            addElementItem(gateMenuBar, "NOR", ELEMENTS.NOR_GATE);
-            addElementItem(gateMenuBar, "全加算器", ELEMENTS.FullAdderElm);
-            addElementItem(gateMenuBar, "半加算器", ELEMENTS.HalfAdderElm);
-            mainMenuBar.Items.Add(gateMenuBar);
+            //var gateMenuBar = new ToolStripMenuItem();
+            //gateMenuBar.Text = "論理ゲート(G)";
+            //gateMenuBar.Font = menuFont;
+            //addElementItem(gateMenuBar, "入力", ELEMENTS.LOGIC_INPUT);
+            //addElementItem(gateMenuBar, "出力", ELEMENTS.LOGIC_OUTPUT);
+            //gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            //addElementItem(gateMenuBar, "AND", ELEMENTS.AND_GATE);
+            //addElementItem(gateMenuBar, "OR", ELEMENTS.OR_GATE);
+            //addElementItem(gateMenuBar, "XOR", ELEMENTS.XOR_GATE);
+            //addElementItem(gateMenuBar, "NOT", ELEMENTS.NOT_GATE);
+            //addElementItem(gateMenuBar, "NAND", ELEMENTS.NAND_GATE);
+            //addElementItem(gateMenuBar, "NOR", ELEMENTS.NOR_GATE);
+            //addElementItem(gateMenuBar, "全加算器", ELEMENTS.FullAdderElm);
+            //addElementItem(gateMenuBar, "半加算器", ELEMENTS.HalfAdderElm);
+            //mainMenuBar.Items.Add(gateMenuBar);
             #endregion
 
             #region Logic ICs
-            var logicIcMenuBar = new ToolStripMenuItem();
-            logicIcMenuBar.Text = "論理IC(L)";
-            logicIcMenuBar.Font = menuFont;
-            addElementItem(logicIcMenuBar, "シュミットトリガ", ELEMENTS.SCHMITT);
-            addElementItem(logicIcMenuBar, "シュミットトリガ(NOT)", ELEMENTS.SCHMITT_INV);
-            addElementItem(logicIcMenuBar, "3ステートバッファ", ELEMENTS.TRISTATE);
-            logicIcMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(logicIcMenuBar, "ラッチ", ELEMENTS.LatchElm);
-            addElementItem(logicIcMenuBar, "マルチプレクサ", ELEMENTS.MultiplexerElm);
-            addElementItem(logicIcMenuBar, "デマルチプレクサ", ELEMENTS.DeMultiplexerElm);
-            logicIcMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(logicIcMenuBar, "フリップフロップ(D)", ELEMENTS.DFlipFlopElm);
-            addElementItem(logicIcMenuBar, "フリップフロップ(JK)", ELEMENTS.JKFlipFlopElm);
-            addElementItem(logicIcMenuBar, "フリップフロップ(T)", ELEMENTS.TFlipFlopElm);
-            logicIcMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(logicIcMenuBar, "カウンタ", ELEMENTS.CounterElm);
-            addElementItem(logicIcMenuBar, "リングカウンタ", ELEMENTS.RingCounterElm);
-            addElementItem(logicIcMenuBar, "シフトレジスタ(SIPO)", ELEMENTS.SipoShiftElm);
-            addElementItem(logicIcMenuBar, "シフトレジスタ(PISO)", ELEMENTS.PisoShiftElm);
-            addElementItem(logicIcMenuBar, "SRAM", ELEMENTS.SRAMElm);
-            logicIcMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(logicIcMenuBar, "カスタムロジック", ELEMENTS.CUSTOM_LOGIC);
-            mainMenuBar.Items.Add(logicIcMenuBar);
+            //var logicIcMenuBar = new ToolStripMenuItem();
+            //logicIcMenuBar.Text = "論理IC(L)";
+            //logicIcMenuBar.Font = menuFont;
+            //addElementItem(logicIcMenuBar, "シュミットトリガ", ELEMENTS.SCHMITT);
+            //addElementItem(logicIcMenuBar, "シュミットトリガ(NOT)", ELEMENTS.SCHMITT_INV);
+            //addElementItem(logicIcMenuBar, "3ステートバッファ", ELEMENTS.TRISTATE);
+            //logicIcMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            //addElementItem(logicIcMenuBar, "ラッチ", ELEMENTS.LatchElm);
+            //addElementItem(logicIcMenuBar, "マルチプレクサ", ELEMENTS.MultiplexerElm);
+            //addElementItem(logicIcMenuBar, "デマルチプレクサ", ELEMENTS.DeMultiplexerElm);
+            //logicIcMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            //addElementItem(logicIcMenuBar, "フリップフロップ(D)", ELEMENTS.DFlipFlopElm);
+            //addElementItem(logicIcMenuBar, "フリップフロップ(JK)", ELEMENTS.JKFlipFlopElm);
+            //addElementItem(logicIcMenuBar, "フリップフロップ(T)", ELEMENTS.TFlipFlopElm);
+            //logicIcMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            //addElementItem(logicIcMenuBar, "カウンタ", ELEMENTS.CounterElm);
+            //addElementItem(logicIcMenuBar, "リングカウンタ", ELEMENTS.RingCounterElm);
+            //addElementItem(logicIcMenuBar, "シフトレジスタ(SIPO)", ELEMENTS.SipoShiftElm);
+            //addElementItem(logicIcMenuBar, "シフトレジスタ(PISO)", ELEMENTS.PisoShiftElm);
+            //addElementItem(logicIcMenuBar, "SRAM", ELEMENTS.SRAMElm);
+            //logicIcMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            //addElementItem(logicIcMenuBar, "カスタムロジック", ELEMENTS.CUSTOM_LOGIC);
+            //mainMenuBar.Items.Add(logicIcMenuBar);
             #endregion
 
             #region Active Building Blocks
-            var activeBlockMenuBar = new ToolStripMenuItem();
-            activeBlockMenuBar.Text = "モジュール(M)";
-            activeBlockMenuBar.Font = menuFont;
+            //var activeBlockMenuBar = new ToolStripMenuItem();
+            //activeBlockMenuBar.Text = "モジュール(M)";
+            //activeBlockMenuBar.Font = menuFont;
             //addElementItem(activeBlocMenuBar, "Add Op Amp (real)", ITEM.OpAmpRealElm);
             //addElementItem(activeBlocMenuBar, "Add Analog Switch (SPDT)", ITEM.AnalogSwitch2Elm);
             //addElementItem(activeBlocMenuBar, "Add CCII+", ITEM.CC2Elm);
             //addElementItem(activeBlocMenuBar, "Add CCII-", ITEM.CC2NegElm);
             //addElementItem(activeBlocMenuBar, "Add OTA (LM13700 style)", ITEM.OTAElm);
             //addElementItem(activeBlocMenuBar, "Add Voltage-Controlled Voltage Source", ITEM.VCVSElm);
-            addElementItem(activeBlockMenuBar, "Add Voltage-Controlled Current Source", ELEMENTS.VCCSElm);
+            //addElementItem(activeBlockMenuBar, "Add Voltage-Controlled Current Source", ELEMENTS.VCCSElm);
             //addElementItem(activeBlocMenuBar, "Add Current-Controlled Voltage Source", ITEM.CCVSElm);
-            addElementItem(activeBlockMenuBar, "Add Current-Controlled Current Source", ELEMENTS.CCCS);
-            addElementItem(activeBlockMenuBar, "カスタムモジュール", ELEMENTS.CustomCompositeElm);
-            mainMenuBar.Items.Add(activeBlockMenuBar);
+            //addElementItem(activeBlockMenuBar, "Add Current-Controlled Current Source", ELEMENTS.CCCS);
+            //addElementItem(activeBlockMenuBar, "カスタムモジュール", ELEMENTS.CustomCompositeElm);
+            //mainMenuBar.Items.Add(activeBlockMenuBar);
             #endregion
 
             #region Analog and Hybrid Chips
@@ -670,14 +670,14 @@ namespace Circuit {
                 return null; //(CircuitElm)new SquareRailElm(x1, y1);
             case ELEMENTS.CLOCK:
                 return new ClockElm(pos);
-            //case ELEMENTS.SWEEP:
-            //    return new SweepElm(pos);
+            case ELEMENTS.SWEEP:
+                return new SweepElm(pos);
             case ELEMENTS.AntennaElm:
                 return null; //(CircuitElm)new AntennaElm(x1, y1);
-            //case ELEMENTS.OSC_AM:
-            //    return new AMElm(pos);
-            //case ELEMENTS.OSC_FM:
-            //    return new FMElm(pos);
+            case ELEMENTS.OSC_AM:
+                return new AMElm(pos);
+            case ELEMENTS.OSC_FM:
+                return new FMElm(pos);
             case ELEMENTS.CURRENT:
                 return new CurrentElm(pos);
             case ELEMENTS.NOISE:
@@ -687,14 +687,14 @@ namespace Circuit {
             #endregion
 
             #region Outputs and Labels
-            //case ELEMENTS.OUTPUT:
-            //    return new LabeledNodeElm(pos);
-            //case ELEMENTS.VOLTMETER:
-            //    return new VoltMeterElm(pos);
-            //case ELEMENTS.AMMETER:
-            //    return new AmmeterElm(pos);
-            //case ELEMENTS.DataRecorderElm:
-            //    return new DataRecorderElm(pos);
+            case ELEMENTS.OUTPUT:
+                return new LabeledNodeElm(pos);
+            case ELEMENTS.VOLTMETER:
+                return new VoltMeterElm(pos);
+            case ELEMENTS.AMMETER:
+                return new AmmeterElm(pos);
+            case ELEMENTS.DataRecorderElm:
+                return new DataRecorderElm(pos);
             //case ELEMENTS.OUTPUT_AUDIO:
             //    return new AudioOutputElm(pos);
             //case ELEMENTS.LampElm:
@@ -895,25 +895,25 @@ namespace Circuit {
             //    return new VCCSElm(p1, p2, f, st);
             //case DUMP_ID.CCCS:
             //    return new CCCSElm(p1, p2, f, st);
-            //case DUMP_ID.SWEEP:
-            //    return new SweepElm(p1, p2, f, st);
-            //case DUMP_ID.AM:
-            //    return new AMElm(p1, p2, f, st);
-            //case DUMP_ID.FM:
-            //    return new FMElm(p1, p2, f, st);
+            case DUMP_ID.SWEEP:
+                return new SweepElm(p1, p2, f, st);
+            case DUMP_ID.AM:
+                return new AMElm(p1, p2, f, st);
+            case DUMP_ID.FM:
+                return new FMElm(p1, p2, f, st);
             #endregion
 
             #region Outputs and Labels
-            //case DUMP_ID.VOLTMETER:
-            //    return new VoltMeterElm(p1, p2, f, st);
-            //case DUMP_ID.AMMETER:
-            //    return new AmmeterElm(p1, p2, f, st);
-            //case DUMP_ID.LABELED_NODE:
-            //    return new LabeledNodeElm(p1, p2, f, st);
+            case DUMP_ID.VOLTMETER:
+                return new VoltMeterElm(p1, p2, f, st);
+            case DUMP_ID.AMMETER:
+                return new AmmeterElm(p1, p2, f, st);
+            case DUMP_ID.LABELED_NODE:
+                return new LabeledNodeElm(p1, p2, f, st);
             //case DUMP_ID.WAVE_OUT:
             //    return new AudioOutputElm(p1, p2, f, st);
-            //case DUMP_ID.DATA_RECORDER:
-            //    return new DataRecorderElm(p1, p2, f, st);
+            case DUMP_ID.DATA_RECORDER:
+                return new DataRecorderElm(p1, p2, f, st);
             case DUMP_ID.SCOPE:
                 return new ScopeElm(p1, p2, f, st);
             #endregion

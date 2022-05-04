@@ -27,7 +27,8 @@ namespace Circuit.Elements.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.CAPACITOR; } }
 
         protected override string dump() {
-            return CirElm.Capacitance + " " + ((CapacitorElmE)CirElm).VoltDiff + " " + ReferenceName;
+            var ce = (CapacitorElmE)CirElm;
+            return ce.Capacitance + " " + ce.VoltDiff + " " + ReferenceName;
         }
 
         public override void SetPoints() {
@@ -45,9 +46,10 @@ namespace Circuit.Elements.Passive {
         }
 
         void setTextPos() {
+            var ce = (CapacitorElmE)CirElm;
             mNameV = mPoint1.X == mPoint2.X;
             if (mPoint1.Y == mPoint2.Y) {
-                var wv = Context.GetTextSize(Utils.UnitText(CirElm.Capacitance, "")).Width * 0.5;
+                var wv = Context.GetTextSize(Utils.UnitText(ce.Capacitance, "")).Width * 0.5;
                 var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
                 interpPoint(ref mValuePos, 0.5 - wv / mLen * mDsign, -12 * mDsign);
                 interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 11 * mDsign);
@@ -61,6 +63,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
+            var ce = (CapacitorElmE)CirElm;
             setBbox(mPoint1, mPoint2, HS);
 
             /* draw first lead and plate */
@@ -70,32 +73,35 @@ namespace Circuit.Elements.Passive {
             drawLead(mPoint2, mLead2);
             drawLead(mPlate2[0], mPlate2[1]);
 
-            CirElm.cirUpdateDotCount();
+            ce.cirUpdateDotCount();
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mLead1, CirElm.mCirCurCount);
-                drawDots(mPoint2, mLead2, -CirElm.mCirCurCount);
+                drawDots(mPoint1, mLead1, ce.mCirCurCount);
+                drawDots(mPoint2, mLead2, -ce.mCirCurCount);
             }
             drawPosts();
 
-            drawValue(CirElm.Capacitance);
+            drawValue(ce.Capacitance);
             drawName();
         }
 
         public override void GetInfo(string[] arr) {
+            var ce = (CapacitorElmE)CirElm;
             arr[0] = string.IsNullOrEmpty(ReferenceName) ? "コンデンサ" : ReferenceName;
             getBasicInfo(arr);
-            arr[3] = "C = " + Utils.UnitText(CirElm.Capacitance, "F");
-            arr[4] = "P = " + Utils.UnitText(CirElm.CirPower, "W");
+            arr[3] = "C = " + Utils.UnitText(ce.Capacitance, "F");
+            arr[4] = "P = " + Utils.UnitText(ce.CirPower, "W");
         }
 
         public override string GetScopeText(Scope.VAL v) {
             base.GetScopeText(v);
-            return "capacitor, " + Utils.UnitText(CirElm.Capacitance, "F");
+            var ce = (CapacitorElmE)CirElm;
+            return "capacitor, " + Utils.UnitText(ce.Capacitance, "F");
         }
 
         public override ElementInfo GetElementInfo(int n) {
+            var ce = (CapacitorElmE)CirElm;
             if (n == 0) {
-                return new ElementInfo("静電容量(F)", CirElm.Capacitance, 0, 0);
+                return new ElementInfo("静電容量(F)", ce.Capacitance, 0, 0);
             }
             if (n == 1) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
@@ -106,8 +112,9 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
+            var ce = (CapacitorElmE)CirElm;
             if (n == 0 && ei.Value > 0) {
-                CirElm.Capacitance = ei.Value;
+                ce.Capacitance = ei.Value;
                 setTextPos();
             }
             if (n == 1) {

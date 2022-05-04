@@ -1,146 +1,28 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit.Elements.Output {
     class AmmeterElm : CircuitElm {
-        const int AM_VOL = 0;
-        const int AM_RMS = 1;
         const int FLAG_SHOWCURRENT = 1;
-
-        int mMeter;
-        E_SCALE mScale;
-
-        int mZeroCount = 0;
-        double mRmsI = 0;
-        double mTotal;
-        double mCount;
-        double mMaxI = 0;
-        double mLastMaxI;
-        double mMinI = 0;
-        double mLastMinI;
-        double mSelectedValue = 0;
-
-        bool mIncreasingI = true;
-        bool mDecreasingI = true;
 
         Point mMid;
         Point[] mArrowPoly;
         Point mTextPos;
 
         public AmmeterElm(Point pos) : base(pos) {
+            CirElm = new AmmeterElmE();
             mFlags = FLAG_SHOWCURRENT;
-            mScale = E_SCALE.AUTO;
         }
 
         public AmmeterElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            mMeter = st.nextTokenInt();
-            try {
-                mScale = st.nextTokenEnum<E_SCALE>();
-            } catch {
-                mScale = E_SCALE.AUTO;
-            }
+            CirElm = new AmmeterElmE(st);
         }
-
-        public override bool CirIsWire { get { return true; } }
-
-        public override double CirVoltageDiff { get { return CirVolts[0]; } }
-
-        public override double CirPower { get { return 0; } }
-
-        public override int CirVoltageSourceCount { get { return 1; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.AMMETER; } }
 
         protected override string dump() {
-            return mMeter + " " + mScale;
-        }
-
-        string getMeter() {
-            switch (mMeter) {
-            case AM_VOL:
-                return "I";
-            case AM_RMS:
-                return "Irms";
-            }
-            return "";
-        }
-
-        public override void CirStepFinished() {
-            mCount++; /*how many counts are in a cycle */
-            mTotal += mCirCurrent * mCirCurrent; /* sum of squares */
-            if (mCirCurrent > mMaxI && mIncreasingI) {
-                mMaxI = mCirCurrent;
-                mIncreasingI = true;
-                mDecreasingI = false;
-            }
-
-            if (mCirCurrent < mMaxI && mIncreasingI) { /* change of direction I now going down - at start of waveform */
-                mLastMaxI = mMaxI; /* capture last maximum */
-                                 /* capture time between */
-                mMinI = mCirCurrent; /* track minimum value */
-                mIncreasingI = false;
-                mDecreasingI = true;
-
-                /* rms data */
-                mTotal = mTotal / mCount;
-                mRmsI = Math.Sqrt(mTotal);
-                if (double.IsNaN(mRmsI)) {
-                    mRmsI = 0;
-                }
-                mCount = 0;
-                mTotal = 0;
-
-            }
-
-            if (mCirCurrent < mMinI && mDecreasingI) { /* I going down, track minimum value */
-                mMinI = mCirCurrent;
-                mIncreasingI = false;
-                mDecreasingI = true;
-            }
-
-            if (mCirCurrent > mMinI && mDecreasingI) { /* change of direction I now going up */
-                mLastMinI = mMinI; /* capture last minimum */
-
-                mMaxI = mCirCurrent;
-                mIncreasingI = true;
-                mDecreasingI = false;
-
-                /* rms data */
-                mTotal = mTotal / mCount;
-                mRmsI = Math.Sqrt(mTotal);
-                if (double.IsNaN(mRmsI)) {
-                    mRmsI = 0;
-                }
-                mCount = 0;
-                mTotal = 0;
-            }
-
-            /* need to zero the rms value if it stays at 0 for a while */
-            if (mCirCurrent == 0) {
-                mZeroCount++;
-                if (mZeroCount > 5) {
-                    mTotal = 0;
-                    mRmsI = 0;
-                    mMaxI = 0;
-                    mMinI = 0;
-                }
-            } else {
-                mZeroCount = 0;
-            }
-
-            switch (mMeter) {
-            case AM_VOL:
-                mSelectedValue = mCirCurrent;
-                break;
-            case AM_RMS:
-                mSelectedValue = mRmsI;
-                break;
-            }
-        }
-
-        public override void CirStamp() {
-            mCir.StampVoltageSource(CirNodes[0], CirNodes[1], mCirVoltSource, 0);
+            var ce = (AmmeterElmE)CirElm;
+            return ce.Meter + " " + ce.Scale;
         }
 
         public override void SetPoints() {
@@ -168,17 +50,19 @@ namespace Circuit.Elements.Output {
 
         public override void Draw(CustomGraphics g) {
             base.Draw(g); /* BC required for highlighting */
+            var ce = (AmmeterElmE)CirElm;
+
             drawLead(mPoint1, mPoint2);
             g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, mArrowPoly);
             doDots();
             setBbox(mPoint1, mPoint2, 3);
             string s = "A";
-            switch (mMeter) {
-            case AM_VOL:
-                s = Utils.UnitTextWithScale(mCirCurrent, "A", mScale);
+            switch (ce.Meter) {
+            case AmmeterElmE.AM_VOL:
+                s = Utils.UnitTextWithScale(ce.mCirCurrent, "A", ce.Scale);
                 break;
-            case AM_RMS:
-                s = Utils.UnitTextWithScale(mRmsI, "A(rms)", mScale);
+            case AmmeterElmE.AM_RMS:
+                s = Utils.UnitTextWithScale(ce.RmsI, "A(rms)", ce.Scale);
                 break;
             }
             if (mNameV) {
@@ -189,29 +73,27 @@ namespace Circuit.Elements.Output {
             drawPosts();
         }
 
-        bool mustShowCurrent() {
-            return (mFlags & FLAG_SHOWCURRENT) != 0;
-        }
-
         public override void GetInfo(string[] arr) {
+            var ce = (AmmeterElmE)CirElm;
             arr[0] = "Ammeter";
-            switch (mMeter) {
-            case AM_VOL:
-                arr[1] = "I = " + Utils.UnitText(mCirCurrent, "A");
+            switch (ce.Meter) {
+            case AmmeterElmE.AM_VOL:
+                arr[1] = "I = " + Utils.UnitText(ce.mCirCurrent, "A");
                 break;
-            case AM_RMS:
-                arr[1] = "Irms = " + Utils.UnitText(mRmsI, "A");
+            case AmmeterElmE.AM_RMS:
+                arr[1] = "Irms = " + Utils.UnitText(ce.RmsI, "A");
                 break;
             }
         }
 
         public override ElementInfo GetElementInfo(int n) {
+            var ce = (AmmeterElmE)CirElm;
             if (n == 0) {
-                var ei = new ElementInfo("表示", mSelectedValue, -1, -1);
+                var ei = new ElementInfo("表示", ce.SelectedValue, -1, -1);
                 ei.Choice = new ComboBox();
                 ei.Choice.Items.Add("瞬時値");
                 ei.Choice.Items.Add("実効値");
-                ei.Choice.SelectedIndex = mMeter;
+                ei.Choice.SelectedIndex = ce.Meter;
                 return ei;
             }
             if (n == 1) {
@@ -221,19 +103,24 @@ namespace Circuit.Elements.Output {
                 ei.Choice.Items.Add("A");
                 ei.Choice.Items.Add("mA");
                 ei.Choice.Items.Add("uA");
-                ei.Choice.SelectedIndex = (int)mScale;
+                ei.Choice.SelectedIndex = (int)ce.Scale;
                 return ei;
             }
             return null;
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
+            var ce = (AmmeterElmE)CirElm;
             if (n == 0) {
-                mMeter = ei.Choice.SelectedIndex;
+                ce.Meter = ei.Choice.SelectedIndex;
             }
             if (n == 1) {
-                mScale = (E_SCALE)ei.Choice.SelectedIndex;
+                ce.Scale = (E_SCALE)ei.Choice.SelectedIndex;
             }
+        }
+
+        bool mustShowCurrent() {
+            return (mFlags & FLAG_SHOWCURRENT) != 0;
         }
     }
 }

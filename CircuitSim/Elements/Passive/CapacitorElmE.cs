@@ -3,6 +3,8 @@
         double mCompResistance;
         double mCurSourceValue;
 
+        public double Capacitance { get; set; }
+
         public double VoltDiff { get; private set; }
 
         public CapacitorElmE() {

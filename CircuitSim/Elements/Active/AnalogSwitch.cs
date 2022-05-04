@@ -33,7 +33,7 @@ namespace Circuit.Elements.Active {
 
         // we have to just assume current will flow either way, even though that
         // might cause singular matrix errors
-        public override bool CirGetConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             if (n1 == 2 || n2 == 2) {
                 return false;
             }

@@ -74,7 +74,7 @@ namespace Circuit.Elements.Active {
             return (n == 0) ? mPoint1 : (n == 1) ? mSrc[0] : (n == 2) ? mDrn[0] : mBody[0];
         }
 
-        public override bool CirGetConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             return !(n1 == 0 || n2 == 0);
         }
 

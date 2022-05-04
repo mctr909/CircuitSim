@@ -69,21 +69,21 @@ namespace Circuit {
             if (Elm is ResistorElm) {
                 mSlider.ValueChanged += new EventHandler((s, e) => {
                     var trb = (TrackBar)s;
-                    Elm.CirElm.Resistance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
+                    ((ResistorElmE)Elm.CirElm).Resistance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
                     CirSim.Sim.NeedAnalyze();
                 });
             }
             if (Elm is CapacitorElm) {
                 mSlider.ValueChanged += new EventHandler((s, e) => {
                     var trb = (TrackBar)s;
-                    Elm.CirElm.Capacitance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
+                    ((CapacitorElmE)Elm.CirElm).Capacitance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
                     CirSim.Sim.NeedAnalyze();
                 });
             }
             if (Elm is InductorElm) {
                 mSlider.ValueChanged += new EventHandler((s, e) => {
                     var trb = (TrackBar)s;
-                    ((InductorElm)Elm).CirElm.Inductance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
+                    ((InductorElmE)Elm.CirElm).Inductance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
                     CirSim.Sim.NeedAnalyze();
                 });
             }
