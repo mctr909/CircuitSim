@@ -19,7 +19,7 @@ namespace Circuit.Elements.Input {
             mSignalFreq = 40;
             mDepth = 0.1;
             mPhase = 0.0;
-            Reset();
+            CirReset();
         }
 
         public AMElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -33,7 +33,7 @@ namespace Circuit.Elements.Input {
             if ((mFlags & FLAG_COS) != 0) {
                 mFlags &= ~FLAG_COS;
             }
-            Reset();
+            CirReset();
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.AM; } }
@@ -46,27 +46,27 @@ namespace Circuit.Elements.Input {
                 + " " + mDepth;
         }
 
-        public override void Reset() {
+        public override void CirReset() {
             mFreqTimeZero = 0;
-            mCurCount = 0;
+            mCirCurCount = 0;
         }
 
-        public override int PostCount { get { return 1; } }
+        public override int CirPostCount { get { return 1; } }
 
-        public override double VoltageDiff { get { return Volts[0]; } }
+        public override double CirVoltageDiff { get { return CirVolts[0]; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int CirVoltageSourceCount { get { return 1; } }
 
-        public override double Power { get { return -VoltageDiff * mCurrent; } }
+        public override double CirPower { get { return -CirVoltageDiff * mCirCurrent; } }
 
-        public override bool HasGroundConnection(int n1) { return true; }
+        public override bool CirHasGroundConnection(int n1) { return true; }
 
-        public override void Stamp() {
-            mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
+        public override void CirStamp() {
+            mCir.StampVoltageSource(0, CirNodes[0], mCirVoltSource);
         }
 
-        public override void DoStep() {
-            mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
+        public override void CirDoStep() {
+            mCir.UpdateVoltageSource(0, CirNodes[0], mCirVoltSource, getVoltage());
         }
 
         public override void SetPoints() {
@@ -83,16 +83,16 @@ namespace Circuit.Elements.Input {
             drawCenteredText(s, P2, true);
             drawWaveform(g, mPoint2);
             drawPosts();
-            mCurCount = updateDotCount(-mCurrent, mCurCount);
+            mCirCurCount = cirUpdateDotCount(-mCirCurrent, mCirCurCount);
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mLead1, mCurCount);
+                drawDots(mPoint1, mLead1, mCirCurCount);
             }
         }
 
         public override void GetInfo(string[] arr) {
             arr[0] = "AM Source";
-            arr[1] = "I = " + Utils.CurrentText(Current);
-            arr[2] = "V = " + Utils.VoltageText(VoltageDiff);
+            arr[1] = "I = " + Utils.CurrentText(CirCurrent);
+            arr[2] = "V = " + Utils.VoltageText(CirVoltageDiff);
             arr[3] = "cf = " + Utils.UnitText(mCarrierFreq, "Hz");
             arr[4] = "sf = " + Utils.UnitText(mSignalFreq, "Hz");
             arr[5] = "Vmax = " + Utils.VoltageText(mMaxVoltage);

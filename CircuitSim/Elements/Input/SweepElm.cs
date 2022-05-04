@@ -30,7 +30,7 @@ namespace Circuit.Elements.Input {
             mMaxV = 5;
             mSweepTime = .1;
             mFlags = FLAG_BIDIR;
-            Reset();
+            CirReset();
         }
 
         public SweepElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -38,20 +38,20 @@ namespace Circuit.Elements.Input {
             mMaxF = st.nextTokenDouble();
             mMaxV = st.nextTokenDouble();
             mSweepTime = st.nextTokenDouble();
-            Reset();
+            CirReset();
         }
 
-        public override double VoltageDiff { get { return Volts[0]; } }
+        public override double CirVoltageDiff { get { return CirVolts[0]; } }
 
-        public override double Power { get { return -VoltageDiff * mCurrent; } }
+        public override double CirPower { get { return -CirVoltageDiff * mCirCurrent; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int CirVoltageSourceCount { get { return 1; } }
 
-        public override int PostCount { get { return 1; } }
+        public override int CirPostCount { get { return 1; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.SWEEP; } }
 
-        public override bool HasGroundConnection(int n1) { return true; }
+        public override bool CirHasGroundConnection(int n1) { return true; }
 
         protected override string dump() {
             return mMinF
@@ -60,7 +60,7 @@ namespace Circuit.Elements.Input {
                 + " " + mSweepTime;
         }
 
-        public override void StartIteration() {
+        public override void CirStartIteration() {
             /* has timestep been changed? */
             if (ControlPanel.TimeStep != mSavedTimeStep) {
                 setParams();
@@ -84,12 +84,12 @@ namespace Circuit.Elements.Input {
             }
         }
 
-        public override void DoStep() {
-            mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, mVolt);
+        public override void CirDoStep() {
+            mCir.UpdateVoltageSource(0, CirNodes[0], mCirVoltSource, mVolt);
         }
 
-        public override void Stamp() {
-            mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
+        public override void CirStamp() {
+            mCir.StampVoltageSource(0, CirNodes[0], mCirVoltSource);
         }
 
         public override void SetPoints() {
@@ -98,7 +98,7 @@ namespace Circuit.Elements.Input {
             interpPoint(ref mTextPos, 1.0 + 0.66 * SIZE / Utils.Distance(mPoint1, mPoint2), 24 * mDsign);
         }
 
-        public override void Reset() {
+        public override void CirReset() {
             mFrequency = mMinF;
             mFreqTime = 0;
             mFdir = 1;
@@ -154,9 +154,9 @@ namespace Circuit.Elements.Input {
             }
 
             drawPosts();
-            mCurCount = updateDotCount(-mCurrent, mCurCount);
+            mCirCurCount = cirUpdateDotCount(-mCirCurrent, mCirCurCount);
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mLead1, mCurCount);
+                drawDots(mPoint1, mLead1, mCirCurCount);
             }
         }
 
@@ -178,8 +178,8 @@ namespace Circuit.Elements.Input {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "sweep " + (((mFlags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
-            arr[1] = "I = " + Utils.CurrentAbsText(mCurrent);
-            arr[2] = "V = " + Utils.VoltageText(Volts[0]);
+            arr[1] = "I = " + Utils.CurrentAbsText(mCirCurrent);
+            arr[2] = "V = " + Utils.VoltageText(CirVolts[0]);
             arr[3] = "f = " + Utils.UnitText(mFrequency, "Hz");
             arr[4] = "range = " + Utils.UnitText(mMinF, "Hz") + " .. " + Utils.UnitText(mMaxF, "Hz");
             arr[5] = "time = " + Utils.UnitText(mSweepTime, "s");

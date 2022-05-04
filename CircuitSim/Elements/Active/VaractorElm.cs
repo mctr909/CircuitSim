@@ -29,40 +29,40 @@ namespace Circuit.Elements.Active {
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.VARACTOR; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int CirVoltageSourceCount { get { return 1; } }
 
-        public override int InternalNodeCount { get { return 1; } }
+        public override int CirInternalNodeCount { get { return 1; } }
 
-        public override void SetCurrent(int x, double c) { mCapCurrent = c; }
+        public override void CirSetCurrent(int x, double c) { mCapCurrent = c; }
 
         protected override string dump() {
             return base.dump() + " " + mCapVoltDiff + " " + mBaseCapacitance;
         }
 
-        protected override void calculateCurrent() {
-            base.calculateCurrent();
-            mCurrent += mCapCurrent;
+        protected override void cirCalculateCurrent() {
+            base.cirCalculateCurrent();
+            mCirCurrent += mCapCurrent;
         }
 
-        public override void SetNodeVoltage(int n, double c) {
-            base.SetNodeVoltage(n, c);
-            mCapVoltDiff = Volts[0] - Volts[1];
+        public override void CirSetNodeVoltage(int n, double c) {
+            base.CirSetNodeVoltage(n, c);
+            mCapVoltDiff = CirVolts[0] - CirVolts[1];
         }
 
-        public override void Stamp() {
-            base.Stamp();
-            mCir.StampVoltageSource(Nodes[0], Nodes[2], mVoltSource);
-            mCir.StampNonLinear(Nodes[2]);
+        public override void CirStamp() {
+            base.CirStamp();
+            mCir.StampVoltageSource(CirNodes[0], CirNodes[2], mCirVoltSource);
+            mCir.StampNonLinear(CirNodes[2]);
         }
 
-        public override void DoStep() {
-            base.DoStep();
-            mCir.StampResistor(Nodes[2], Nodes[1], mCompResistance);
-            mCir.UpdateVoltageSource(Nodes[0], Nodes[2], mVoltSource, mVoltSourceValue);
+        public override void CirDoStep() {
+            base.CirDoStep();
+            mCir.StampResistor(CirNodes[2], CirNodes[1], mCompResistance);
+            mCir.UpdateVoltageSource(CirNodes[0], CirNodes[2], mCirVoltSource, mVoltSourceValue);
         }
 
-        public override void StartIteration() {
-            base.StartIteration();
+        public override void CirStartIteration() {
+            base.CirStartIteration();
             // capacitor companion model using trapezoidal approximation
             // (Thevenin equivalent) consists of a voltage source in
             // series with a resistor
@@ -93,8 +93,8 @@ namespace Circuit.Elements.Active {
             setTextPos();
         }
 
-        public override void Reset() {
-            base.Reset();
+        public override void CirReset() {
+            base.CirReset();
             mCapVoltDiff = 0;
         }
 

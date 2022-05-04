@@ -22,9 +22,9 @@ namespace Circuit.Elements.Logic {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.COUNTER; } }
 
-        public override int PostCount { get { return hasUpDown ? bits + 3 : bits + 2; } }
+        public override int CirPostCount { get { return hasUpDown ? bits + 3 : bits + 2; } }
 
-        public override int VoltageSourceCount { get { return bits; } }
+        public override int CirVoltageSourceCount { get { return bits; } }
 
         protected override bool needsBits() { return true; }
 
@@ -41,7 +41,7 @@ namespace Circuit.Elements.Logic {
         public override void SetupPins() {
             sizeX = 2;
             sizeY = bits > 2 ? bits : 2;
-            pins = new Pin[PostCount];
+            pins = new Pin[CirPostCount];
             pins[0] = new Pin(this, 0, SIDE_W, "");
             pins[0].clock = true;
             pins[1] = new Pin(this, sizeY - 1, SIDE_W, "R");
@@ -54,7 +54,7 @@ namespace Circuit.Elements.Logic {
             if (hasUpDown) {
                 pins[bits + 2] = new Pin(this, sizeY - 2, SIDE_W, "U/D");
             }
-            allocNodes();
+            cirAllocNodes();
         }
 
         public override ElementInfo GetElementInfo(int n) {

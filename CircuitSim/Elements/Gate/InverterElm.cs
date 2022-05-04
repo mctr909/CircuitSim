@@ -30,40 +30,40 @@ namespace Circuit.Elements.Gate {
             }
         }
 
-        public override double VoltageDiff { get { return Volts[0]; } }
+        public override double CirVoltageDiff { get { return CirVolts[0]; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int CirVoltageSourceCount { get { return 1; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.INVERT; } }
 
         protected override string dump() { return ""; }
 
-        public override bool HasGroundConnection(int n1) { return n1 == 1; }
+        public override bool CirHasGroundConnection(int n1) { return n1 == 1; }
 
         /* there is no current path through the inverter input,
          * but there is an indirect path through the output to ground. */
-        public override bool GetConnection(int n1, int n2) { return false; }
+        public override bool CirGetConnection(int n1, int n2) { return false; }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             if (n == 1) {
-                return mCurrent;
+                return mCirCurrent;
             }
             return 0;
         }
 
-        public override void Stamp() {
-            mCir.StampVoltageSource(0, Nodes[1], mVoltSource);
+        public override void CirStamp() {
+            mCir.StampVoltageSource(0, CirNodes[1], mCirVoltSource);
         }
 
-        public override void StartIteration() {
-            mLastOutputVoltage = Volts[1];
+        public override void CirStartIteration() {
+            mLastOutputVoltage = CirVolts[1];
         }
 
-        public override void DoStep() {
-            double v = Volts[0] > mHighVoltage * .5 ? 0 : mHighVoltage;
+        public override void CirDoStep() {
+            double v = CirVolts[0] > mHighVoltage * .5 ? 0 : mHighVoltage;
             double maxStep = mSlewRate * ControlPanel.TimeStep * 1e9;
             v = Math.Max(Math.Min(mLastOutputVoltage + maxStep, v), mLastOutputVoltage - maxStep);
-            mCir.UpdateVoltageSource(0, Nodes[1], mVoltSource, v);
+            mCir.UpdateVoltageSource(0, CirNodes[1], mCirVoltSource, v);
         }
 
         public override void SetPoints() {
@@ -102,14 +102,14 @@ namespace Circuit.Elements.Gate {
                 drawCenteredLText("1", mCenter, true);
             }
             g.DrawCircle(mPcircle, 3);
-            mCurCount = updateDotCount(mCurrent, mCurCount);
-            drawDots(mLead2, mPoint2, mCurCount);
+            mCirCurCount = cirUpdateDotCount(mCirCurrent, mCirCurCount);
+            drawDots(mLead2, mPoint2, mCirCurCount);
         }
 
         public override void GetInfo(string[] arr) {
             arr[0] = "inverter";
-            arr[1] = "Vi = " + Utils.VoltageText(Volts[0]);
-            arr[2] = "Vo = " + Utils.VoltageText(Volts[1]);
+            arr[1] = "Vi = " + Utils.VoltageText(CirVolts[0]);
+            arr[2] = "Vo = " + Utils.VoltageText(CirVolts[1]);
         }
 
         public override ElementInfo GetElementInfo(int n) {

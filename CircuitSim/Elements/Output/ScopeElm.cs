@@ -25,7 +25,7 @@ namespace Circuit.Elements.Output {
 
         public override bool CanViewInScope { get { return false; } }
 
-        public override int PostCount { get { return 0; } }
+        public override int CirPostCount { get { return 0; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.SCOPE; } }
 
@@ -64,8 +64,8 @@ namespace Circuit.Elements.Output {
             elmScope.TimeStep();
         }
 
-        public override void Reset() {
-            base.Reset();
+        public override void CirReset() {
+            base.CirReset();
             elmScope.ResetGraph(true);
         }
 

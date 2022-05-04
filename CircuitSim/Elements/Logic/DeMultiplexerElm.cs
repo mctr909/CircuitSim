@@ -20,9 +20,9 @@ namespace Circuit.Elements.Logic {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.DEMULTIPLEXER; } }
 
-        public override int PostCount { get { return qPin + 1; } }
+        public override int CirPostCount { get { return qPin + 1; } }
 
-        public override int VoltageSourceCount { get { return outputCount; } }
+        public override int CirVoltageSourceCount { get { return outputCount; } }
 
         protected override string dump() { return selectBitCount.ToString(); }
 
@@ -35,8 +35,8 @@ namespace Circuit.Elements.Logic {
             qPin = outputCount + selectBitCount;
             sizeX = 1 + selectBitCount;
             sizeY = 1 + outputCount;
-            allocNodes();
-            pins = new Pin[PostCount];
+            cirAllocNodes();
+            pins = new Pin[CirPostCount];
             for (var i = 0; i != outputCount; i++) {
                 pins[i] = new Pin(this, i, SIDE_E, "Q" + i);
                 pins[i].output = true;

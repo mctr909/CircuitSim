@@ -43,7 +43,7 @@ namespace Circuit.Elements.Input {
             mMaxVoltage = 5;
             mFrequency = 40;
             mDutyCycle = .5;
-            Reset();
+            CirReset();
         }
 
         public VoltageElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -71,14 +71,14 @@ namespace Circuit.Elements.Input {
                 mDutyCycle = DEFAULT_PULSE_DUTY;
             }
 
-            Reset();
+            CirReset();
         }
 
-        public override double VoltageDiff { get { return Volts[1] - Volts[0]; } }
+        public override double CirVoltageDiff { get { return CirVolts[1] - CirVolts[0]; } }
 
-        public override double Power { get { return -VoltageDiff * mCurrent; } }
+        public override double CirPower { get { return -CirVoltageDiff * mCirCurrent; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int CirVoltageSourceCount { get { return 1; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.VOLTAGE; } }
 
@@ -99,8 +99,8 @@ namespace Circuit.Elements.Input {
             /* VarRailElm adds text at the end */
         }
 
-        public override void Reset() {
-            mCurCount = 0;
+        public override void CirReset() {
+            mCirCurCount = 0;
         }
 
         double triangleFunc(double x) {
@@ -110,21 +110,21 @@ namespace Circuit.Elements.Input {
             return 1 - (x - Math.PI) * (2 / Math.PI);
         }
 
-        public override void Stamp() {
+        public override void CirStamp() {
             if (waveform == WAVEFORM.DC) {
-                mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
+                mCir.StampVoltageSource(CirNodes[0], CirNodes[1], mCirVoltSource, getVoltage());
             } else {
-                mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource);
+                mCir.StampVoltageSource(CirNodes[0], CirNodes[1], mCirVoltSource);
             }
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             if (waveform != WAVEFORM.DC) {
-                mCir.UpdateVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
+                mCir.UpdateVoltageSource(CirNodes[0], CirNodes[1], mCirVoltSource, getVoltage());
             }
         }
 
-        public override void StepFinished() {
+        public override void CirStepFinished() {
             if (waveform == WAVEFORM.NOISE) {
                 mNoiseValue = (CirSim.Random.NextDouble() * 2 - 1) * mMaxVoltage + mBias;
             }
@@ -233,14 +233,14 @@ namespace Circuit.Elements.Input {
                 drawCenteredLText(inds, mTextPos, true);
             }
 
-            updateDotCount();
+            cirUpdateDotCount();
 
             if (CirSim.Sim.DragElm != this) {
                 if (waveform == WAVEFORM.DC) {
-                    drawDots(mPoint1, mPoint2, mCurCount);
+                    drawDots(mPoint1, mPoint2, mCirCurCount);
                 } else {
-                    drawDots(mPoint1, mLead1, mCurCount);
-                    drawDots(mPoint2, mLead2, -mCurCount);
+                    drawDots(mPoint1, mLead1, mCirCurCount);
+                    drawDots(mPoint2, mLead2, -mCirCurCount);
                 }
             }
             drawPosts();
@@ -354,8 +354,8 @@ namespace Circuit.Elements.Input {
                 arr[0] = waveform.ToString(); break;
             }
 
-            arr[1] = "I = " + Utils.CurrentText(mCurrent);
-            arr[2] = ((this is RailElm) ? "V = " : "Vd = ") + Utils.VoltageText(VoltageDiff);
+            arr[1] = "I = " + Utils.CurrentText(mCirCurrent);
+            arr[2] = ((this is RailElm) ? "V = " : "Vd = ") + Utils.VoltageText(CirVoltageDiff);
             int i = 3;
             if (waveform != WAVEFORM.DC && waveform != WAVEFORM.NOISE) {
                 arr[i++] = "f = " + Utils.UnitText(mFrequency, "Hz");
@@ -369,10 +369,10 @@ namespace Circuit.Elements.Input {
                     arr[i++] = "wavelength = " + Utils.UnitText(2.9979e8 / mFrequency, "m");
                 }
             }
-            if (waveform == WAVEFORM.DC && mCurrent != 0 && mCir.ShowResistanceInVoltageSources) {
-                arr[i++] = "(R = " + Utils.UnitText(mMaxVoltage / mCurrent, CirSim.OHM_TEXT) + ")";
+            if (waveform == WAVEFORM.DC && mCirCurrent != 0 && mCir.ShowResistanceInVoltageSources) {
+                arr[i++] = "(R = " + Utils.UnitText(mMaxVoltage / mCirCurrent, CirSim.OHM_TEXT) + ")";
             }
-            arr[i++] = "P = " + Utils.UnitText(Power, "W");
+            arr[i++] = "P = " + Utils.UnitText(CirPower, "W");
         }
 
         public override ElementInfo GetElementInfo(int n) {

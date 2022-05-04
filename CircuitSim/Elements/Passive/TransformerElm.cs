@@ -63,7 +63,7 @@ namespace Circuit.Elements.Passive {
             mPolarity = ((mFlags & FLAG_REVERSE) != 0) ? -1 : 1;
         }
 
-        public override int PostCount { get { return 4; } }
+        public override int CirPostCount { get { return 4; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.TRANSFORMER; } }
 
@@ -78,9 +78,9 @@ namespace Circuit.Elements.Passive {
                 + " " + ReferenceName;
         }
 
-        protected override void calculateCurrent() {
-            double voltdiff1 = Volts[PRI_T] - Volts[PRI_B];
-            double voltdiff2 = Volts[SEC_T] - Volts[SEC_B];
+        protected override void cirCalculateCurrent() {
+            double voltdiff1 = CirVolts[PRI_T] - CirVolts[PRI_B];
+            double voltdiff2 = CirVolts[SEC_T] - CirVolts[SEC_B];
             mCurrents[0] = voltdiff1 * mA1 + voltdiff2 * mA2 + mCurSourceValue1;
             mCurrents[1] = voltdiff1 * mA3 + voltdiff2 * mA4 + mCurSourceValue2;
         }
@@ -89,7 +89,7 @@ namespace Circuit.Elements.Passive {
             return mPtEnds[n];
         }
 
-        public override bool GetConnection(int n1, int n2) {
+        public override bool CirGetConnection(int n1, int n2) {
             if (comparePair(n1, n2, 0, 2)) {
                 return true;
             }
@@ -99,14 +99,14 @@ namespace Circuit.Elements.Passive {
             return false;
         }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             if (n < 2) {
                 return -mCurrents[n];
             }
             return mCurrents[n - 2];
         }
 
-        public override void Stamp() {
+        public override void CirStamp() {
             /* equations for transformer:
              *   v1 = L1 di1/dt + M  di2/dt
              *   v2 = M  di1/dt + L2 di2/dt
@@ -144,19 +144,19 @@ namespace Circuit.Elements.Passive {
             mA2 = -m * deti * ts;
             mA3 = -m * deti * ts;
             mA4 = l1 * deti * ts;
-            mCir.StampConductance(Nodes[0], Nodes[2], mA1);
-            mCir.StampVCCurrentSource(Nodes[0], Nodes[2], Nodes[1], Nodes[3], mA2);
-            mCir.StampVCCurrentSource(Nodes[1], Nodes[3], Nodes[0], Nodes[2], mA3);
-            mCir.StampConductance(Nodes[1], Nodes[3], mA4);
-            mCir.StampRightSide(Nodes[0]);
-            mCir.StampRightSide(Nodes[1]);
-            mCir.StampRightSide(Nodes[2]);
-            mCir.StampRightSide(Nodes[3]);
+            mCir.StampConductance(CirNodes[0], CirNodes[2], mA1);
+            mCir.StampVCCurrentSource(CirNodes[0], CirNodes[2], CirNodes[1], CirNodes[3], mA2);
+            mCir.StampVCCurrentSource(CirNodes[1], CirNodes[3], CirNodes[0], CirNodes[2], mA3);
+            mCir.StampConductance(CirNodes[1], CirNodes[3], mA4);
+            mCir.StampRightSide(CirNodes[0]);
+            mCir.StampRightSide(CirNodes[1]);
+            mCir.StampRightSide(CirNodes[2]);
+            mCir.StampRightSide(CirNodes[3]);
         }
 
-        public override void StartIteration() {
-            double voltdiff1 = Volts[PRI_T] - Volts[PRI_B];
-            double voltdiff2 = Volts[SEC_T] - Volts[SEC_B];
+        public override void CirStartIteration() {
+            double voltdiff1 = CirVolts[PRI_T] - CirVolts[PRI_B];
+            double voltdiff2 = CirVolts[SEC_T] - CirVolts[SEC_B];
             if (IsTrapezoidal) {
                 mCurSourceValue1 = voltdiff1 * mA1 + voltdiff2 * mA2 + mCurrents[0];
                 mCurSourceValue2 = voltdiff1 * mA3 + voltdiff2 * mA4 + mCurrents[1];
@@ -166,9 +166,9 @@ namespace Circuit.Elements.Passive {
             }
         }
 
-        public override void DoStep() {
-            mCir.StampCurrentSource(Nodes[0], Nodes[2], mCurSourceValue1);
-            mCir.StampCurrentSource(Nodes[1], Nodes[3], mCurSourceValue2);
+        public override void CirDoStep() {
+            mCir.StampCurrentSource(CirNodes[0], CirNodes[2], mCurSourceValue1);
+            mCir.StampCurrentSource(CirNodes[1], CirNodes[3], mCurSourceValue2);
         }
 
         public override void Drag(Point pos) {
@@ -223,13 +223,13 @@ namespace Circuit.Elements.Passive {
             mNamePos = new Point((int)(mPtCore[0].X - wn / 2 + 2), mPtCore[0].Y - 8);
         }
 
-        public override void Reset() {
+        public override void CirReset() {
             /* need to set current-source values here in case one of the nodes is node 0.  In that case
              * calculateCurrent() may get called (from setNodeVoltage()) when analyzing circuit, before
              * startIteration() gets called */
             mCurrents[0] = mCurrents[1] = 0;
-            Volts[PRI_T] = Volts[PRI_B] = 0;
-            Volts[SEC_T] = Volts[SEC_B] = 0;
+            CirVolts[PRI_T] = CirVolts[PRI_B] = 0;
+            CirVolts[SEC_T] = CirVolts[SEC_B] = 0;
             mCurCounts[0] = mCurCounts[1] = 0;
             mCurSourceValue1 = mCurSourceValue2 = 0;
         }
@@ -240,8 +240,8 @@ namespace Circuit.Elements.Passive {
             drawLead(mPtEnds[2], mPtCoil[2]);
             drawLead(mPtEnds[3], mPtCoil[3]);
 
-            drawCoil(mPtCoil[0], mPtCoil[2], Volts[PRI_T], Volts[PRI_B], 90 * mDsign);
-            drawCoil(mPtCoil[1], mPtCoil[3], Volts[SEC_T], Volts[SEC_B], -90 * mDsign * mPolarity);
+            drawCoil(mPtCoil[0], mPtCoil[2], CirVolts[PRI_T], CirVolts[PRI_B], 90 * mDsign);
+            drawCoil(mPtCoil[1], mPtCoil[3], CirVolts[SEC_T], CirVolts[SEC_B], -90 * mDsign * mPolarity);
 
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.DrawLine(mPtCore[0], mPtCore[2]);
@@ -251,8 +251,8 @@ namespace Circuit.Elements.Passive {
                 g.DrawCircle(mDots[1], 2.5f);
             }
 
-            mCurCounts[0] = updateDotCount(mCurrents[0], mCurCounts[0]);
-            mCurCounts[1] = updateDotCount(mCurrents[1], mCurCounts[1]);
+            mCurCounts[0] = cirUpdateDotCount(mCurrents[0], mCurCounts[0]);
+            mCurCounts[1] = cirUpdateDotCount(mCurrents[1], mCurCounts[1]);
             for (int i = 0; i != 2; i++) {
                 drawDots(mPtEnds[i], mPtCoil[i], mCurCounts[i]);
                 drawDots(mPtCoil[i], mPtCoil[i + 2], mCurCounts[i]);
@@ -271,8 +271,8 @@ namespace Circuit.Elements.Passive {
             arr[0] = "トランス";
             arr[1] = "L = " + Utils.UnitText(mInductance, "H");
             arr[2] = "Ratio = 1:" + mRatio;
-            arr[3] = "Vd1 = " + Utils.VoltageText(Volts[PRI_T] - Volts[PRI_B]);
-            arr[4] = "Vd2 = " + Utils.VoltageText(Volts[SEC_T] - Volts[SEC_B]);
+            arr[3] = "Vd1 = " + Utils.VoltageText(CirVolts[PRI_T] - CirVolts[PRI_B]);
+            arr[4] = "Vd2 = " + Utils.VoltageText(CirVolts[SEC_T] - CirVolts[SEC_B]);
             arr[5] = "I1 = " + Utils.CurrentText(mCurrents[0]);
             arr[6] = "I2 = " + Utils.CurrentText(mCurrents[1]);
         }

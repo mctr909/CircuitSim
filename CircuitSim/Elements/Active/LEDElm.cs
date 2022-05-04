@@ -76,7 +76,7 @@ namespace Circuit.Elements.Active {
             g.LineColor = CustomGraphics.GrayColor;
             g.DrawCircle(mLedCenter, CR);
 
-            double w = mCurrent / mMaxBrightnessCurrent;
+            double w = mCirCurrent / mMaxBrightnessCurrent;
             if (0 < w) {
                 w = 255 * (1 + .2 * Math.Log(w));
             }
@@ -91,9 +91,9 @@ namespace Circuit.Elements.Active {
             g.FillCircle(mLedCenter.X, mLedCenter.Y, CR_INNER);
 
             setBbox(mPoint1, mPoint2, CR_INNER);
-            updateDotCount();
-            drawDots(mPoint1, mLedLead1, mCurCount);
-            drawDots(mPoint2, mLedLead2, -mCurCount);
+            cirUpdateDotCount();
+            drawDots(mPoint1, mLedLead1, mCirCurCount);
+            drawDots(mPoint2, mLedLead2, -mCirCurCount);
             drawPosts();
         }
 

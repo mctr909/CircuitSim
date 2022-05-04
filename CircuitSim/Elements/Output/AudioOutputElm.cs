@@ -121,9 +121,9 @@ namespace Circuit.Elements.Output {
             createButton();
         }
 
-        public override int PostCount { get { return 1; } }
+        public override int CirPostCount { get { return 1; } }
 
-        public override double VoltageDiff { get { return Volts[0]; } }
+        public override double CirVoltageDiff { get { return CirVolts[0]; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.WAVE_OUT; } }
 
@@ -139,10 +139,10 @@ namespace Circuit.Elements.Output {
         int getNextLabelNum() {
             int i;
             int num = 1;
-            if (CirSim.Sim.ElmList == null) {
+            if (0 == CirSim.Sim.ElmCount) {
                 return 0;
             }
-            for (i = 0; i != CirSim.Sim.ElmList.Count; i++) {
+            for (i = 0; i != CirSim.Sim.ElmCount; i++) {
                 var ce = CirSim.Sim.getElm(i);
                 if (!(ce is AudioOutputElm)) {
                     continue;
@@ -155,7 +155,7 @@ namespace Circuit.Elements.Output {
             return num;
         }
 
-        public override void Reset() {
+        public override void CirReset() {
             mDataPtr = 0;
             mDataFull = false;
             mDataSampleCount = 0;
@@ -163,8 +163,8 @@ namespace Circuit.Elements.Output {
             mDataSample = 0;
         }
 
-        public override void StepFinished() {
-            mDataSample += Volts[0];
+        public override void CirStepFinished() {
+            mDataSample += CirVolts[0];
             mDataSampleCount++;
             if (CirSim.Sim.Time >= mNextDataSample) {
                 mNextDataSample += mSampleStep;
@@ -213,7 +213,7 @@ namespace Circuit.Elements.Output {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "audio output";
-            arr[1] = "V = " + Utils.VoltageText(Volts[0]);
+            arr[1] = "V = " + Utils.VoltageText(CirVolts[0]);
             int ct = (mDataFull ? mDataCount : mDataPtr);
             double dur = mSampleStep * ct;
             arr[2] = "start = " + Utils.UnitText(mDataFull ? CirSim.Sim.Time - mDuration : mDataStart, "s");

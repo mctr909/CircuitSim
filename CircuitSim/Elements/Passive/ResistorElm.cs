@@ -37,12 +37,12 @@ namespace Circuit.Elements.Passive {
             return Resistance + " " + ReferenceName;
         }
 
-        protected override void calculateCurrent() {
-            mCurrent = (Volts[0] - Volts[1]) / Resistance;
+        protected override void cirCalculateCurrent() {
+            mCirCurrent = (CirVolts[0] - CirVolts[1]) / Resistance;
         }
 
-        public override void Stamp() {
-            mCir.StampResistor(Nodes[0], Nodes[1], Resistance);
+        public override void CirStamp() {
+            mCir.StampResistor(CirNodes[0], CirNodes[1], Resistance);
         }
 
         public override void SetPoints() {
@@ -115,8 +115,8 @@ namespace Circuit.Elements.Passive {
 
             draw2Leads();
 
-            double v1 = Volts[0];
-            double v2 = Volts[1];
+            double v1 = CirVolts[0];
+            double v2 = CirVolts[1];
 
             if (ControlPanel.ChkUseAnsiSymbols.Checked) {
                 /* draw zigzag */
@@ -144,7 +144,7 @@ namespace Circuit.Elements.Passive {
             arr[0] = string.IsNullOrEmpty(ReferenceName) ? "抵抗" : ReferenceName;
             getBasicInfo(arr);
             arr[3] = "R = " + Utils.UnitText(Resistance, CirSim.OHM_TEXT);
-            arr[4] = "P = " + Utils.UnitText(Power, "W");
+            arr[4] = "P = " + Utils.UnitText(CirPower, "W");
         }
 
         public override string GetScopeText(Scope.VAL v) {

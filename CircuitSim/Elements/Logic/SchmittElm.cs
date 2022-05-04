@@ -9,11 +9,11 @@ namespace Circuit.Elements.Logic {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.SCHMITT; } }
 
-        public override void DoStep() {
-            double v0 = Volts[1];
+        public override void CirDoStep() {
+            double v0 = CirVolts[1];
             double _out;
             if (state) {//Output is high
-                if (Volts[0] > upperTrigger)//Input voltage high enough to set output high
+                if (CirVolts[0] > upperTrigger)//Input voltage high enough to set output high
                 {
                     state = false;
                     _out = logicOnLevel;
@@ -21,7 +21,7 @@ namespace Circuit.Elements.Logic {
                     _out = logicOffLevel;
                 }
             } else {//Output is low
-                if (Volts[0] < lowerTrigger)//Input voltage low enough to set output low
+                if (CirVolts[0] < lowerTrigger)//Input voltage low enough to set output low
                 {
                     state = true;
                     _out = logicOffLevel;
@@ -31,7 +31,7 @@ namespace Circuit.Elements.Logic {
             }
             double maxStep = slewRate * ControlPanel.TimeStep * 1e9;
             _out = Math.Max(Math.Min(v0 + maxStep, _out), v0 - maxStep);
-            mCir.UpdateVoltageSource(0, Nodes[1], mVoltSource, _out);
+            mCir.UpdateVoltageSource(0, CirNodes[1], mCirVoltSource, _out);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -40,8 +40,8 @@ namespace Circuit.Elements.Logic {
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.DrawPolygon(gatePoly);
             g.DrawPolygon(symbolPoly);
-            mCurCount = updateDotCount(mCurrent, mCurCount);
-            drawDots(mLead2, mPoint2, mCurCount);
+            mCirCurCount = cirUpdateDotCount(mCirCurrent, mCirCurCount);
+            drawDots(mLead2, mPoint2, mCirCurCount);
         }
 
         public override void SetPoints() {
@@ -62,9 +62,9 @@ namespace Circuit.Elements.Logic {
             arr[0] = "Schmitt Trigger~"; // ~ is for localization
         }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             if (n == 1) {
-                return mCurrent;
+                return mCirCurrent;
             }
             return 0;
         }

@@ -13,7 +13,7 @@ namespace Circuit.Elements.Passive {
         public Switch2Elm(Point pos) : base(pos, false) {
             mNoDiagonal = true;
             mThrowCount = 2;
-            allocNodes();
+            cirAllocNodes();
         }
 
         public Switch2Elm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
@@ -23,14 +23,14 @@ namespace Circuit.Elements.Passive {
                 mThrowCount = st.nextTokenInt();
             } catch { }
             mNoDiagonal = true;
-            allocNodes();
+            cirAllocNodes();
         }
 
-        public override bool IsWire { get { return true; } }
+        public override bool CirIsWire { get { return true; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int CirVoltageSourceCount { get { return 1; } }
 
-        public override int PostCount { get { return 1 + mThrowCount; } }
+        public override int CirPostCount { get { return 1 + mThrowCount; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.SWITCH2; } }
 
@@ -38,22 +38,22 @@ namespace Circuit.Elements.Passive {
             return base.dump() + " " + mLink + " " + mThrowCount;
         }
 
-        protected override void calculateCurrent() { }
+        protected override void cirCalculateCurrent() { }
 
         public override Point GetPost(int n) {
             return (n == 0) ? mPoint1 : mSwPosts[n - 1];
         }
 
-        public override bool GetConnection(int n1, int n2) {
+        public override bool CirGetConnection(int n1, int n2) {
             return comparePair(n1, n2, 0, 1 + Position);
         }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             if (n == 0) {
-                return -mCurrent;
+                return -mCirCurrent;
             }
             if (n == Position + 1) {
-                return mCurrent;
+                return mCirCurrent;
             }
             return 0;
         }
@@ -69,8 +69,8 @@ namespace Circuit.Elements.Passive {
             base.Toggle();
             if (mLink != 0) {
                 int i;
-                for (i = 0; i != CirSim.Sim.ElmList.Count; i++) {
-                    var o = CirSim.Sim.ElmList[i];
+                for (i = 0; i != CirSim.Sim.ElmCount; i++) {
+                    var o = CirSim.Sim.getElm(i);
                     if (o is Switch2Elm) {
                         var s2 = (Switch2Elm)o;
                         if (s2.mLink == mLink) {
@@ -81,8 +81,8 @@ namespace Circuit.Elements.Passive {
             }
         }
 
-        public override void Stamp() {
-            mCir.StampVoltageSource(Nodes[0], Nodes[Position + 1], mVoltSource, 0);
+        public override void CirStamp() {
+            mCir.StampVoltageSource(CirNodes[0], CirNodes[Position + 1], mCirVoltSource, 0);
         }
 
         public override void SetPoints() {
@@ -117,10 +117,10 @@ namespace Circuit.Elements.Passive {
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             g.DrawLine(mLead1, mSwPoles[Position]);
 
-            updateDotCount();
-            drawDots(mPoint1, mLead1, mCurCount);
+            cirUpdateDotCount();
+            drawDots(mPoint1, mLead1, mCirCurCount);
             if (Position != 2) {
-                drawDots(mSwPoles[Position], mSwPosts[Position], mCurCount);
+                drawDots(mSwPoles[Position], mSwPosts[Position], mCirCurCount);
             }
             drawPosts();
         }
@@ -128,7 +128,7 @@ namespace Circuit.Elements.Passive {
         public override void GetInfo(string[] arr) {
             arr[0] = "switch (" + (mLink == 0 ? "S" : "D")
                 + "P" + ((mThrowCount > 2) ? mThrowCount + "T)" : "DT)");
-            arr[1] = "I = " + Utils.CurrentAbsText(mCurrent);
+            arr[1] = "I = " + Utils.CurrentAbsText(mCirCurrent);
         }
 
         public override ElementInfo GetElementInfo(int n) {
@@ -151,7 +151,7 @@ namespace Circuit.Elements.Passive {
                 if (mThrowCount > 2) {
                     Momentary = false;
                 }
-                allocNodes();
+                cirAllocNodes();
                 SetPoints();
             } else {
                 base.SetElementValue(n, ei);

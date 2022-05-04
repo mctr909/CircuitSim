@@ -42,13 +42,13 @@ namespace Circuit.Elements.Output {
             }
         }
 
-        public override bool IsWire { get { return true; } }
+        public override bool CirIsWire { get { return true; } }
 
-        public override double VoltageDiff { get { return Volts[0]; } }
+        public override double CirVoltageDiff { get { return CirVolts[0]; } }
 
-        public override double Power { get { return 0; } }
+        public override double CirPower { get { return 0; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int CirVoltageSourceCount { get { return 1; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.AMMETER; } }
 
@@ -66,19 +66,19 @@ namespace Circuit.Elements.Output {
             return "";
         }
 
-        public override void StepFinished() {
+        public override void CirStepFinished() {
             mCount++; /*how many counts are in a cycle */
-            mTotal += mCurrent * mCurrent; /* sum of squares */
-            if (mCurrent > mMaxI && mIncreasingI) {
-                mMaxI = mCurrent;
+            mTotal += mCirCurrent * mCirCurrent; /* sum of squares */
+            if (mCirCurrent > mMaxI && mIncreasingI) {
+                mMaxI = mCirCurrent;
                 mIncreasingI = true;
                 mDecreasingI = false;
             }
 
-            if (mCurrent < mMaxI && mIncreasingI) { /* change of direction I now going down - at start of waveform */
+            if (mCirCurrent < mMaxI && mIncreasingI) { /* change of direction I now going down - at start of waveform */
                 mLastMaxI = mMaxI; /* capture last maximum */
                                  /* capture time between */
-                mMinI = mCurrent; /* track minimum value */
+                mMinI = mCirCurrent; /* track minimum value */
                 mIncreasingI = false;
                 mDecreasingI = true;
 
@@ -93,16 +93,16 @@ namespace Circuit.Elements.Output {
 
             }
 
-            if (mCurrent < mMinI && mDecreasingI) { /* I going down, track minimum value */
-                mMinI = mCurrent;
+            if (mCirCurrent < mMinI && mDecreasingI) { /* I going down, track minimum value */
+                mMinI = mCirCurrent;
                 mIncreasingI = false;
                 mDecreasingI = true;
             }
 
-            if (mCurrent > mMinI && mDecreasingI) { /* change of direction I now going up */
+            if (mCirCurrent > mMinI && mDecreasingI) { /* change of direction I now going up */
                 mLastMinI = mMinI; /* capture last minimum */
 
-                mMaxI = mCurrent;
+                mMaxI = mCirCurrent;
                 mIncreasingI = true;
                 mDecreasingI = false;
 
@@ -117,7 +117,7 @@ namespace Circuit.Elements.Output {
             }
 
             /* need to zero the rms value if it stays at 0 for a while */
-            if (mCurrent == 0) {
+            if (mCirCurrent == 0) {
                 mZeroCount++;
                 if (mZeroCount > 5) {
                     mTotal = 0;
@@ -131,7 +131,7 @@ namespace Circuit.Elements.Output {
 
             switch (mMeter) {
             case AM_VOL:
-                mSelectedValue = mCurrent;
+                mSelectedValue = mCirCurrent;
                 break;
             case AM_RMS:
                 mSelectedValue = mRmsI;
@@ -139,8 +139,8 @@ namespace Circuit.Elements.Output {
             }
         }
 
-        public override void Stamp() {
-            mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
+        public override void CirStamp() {
+            mCir.StampVoltageSource(CirNodes[0], CirNodes[1], mCirVoltSource, 0);
         }
 
         public override void SetPoints() {
@@ -175,7 +175,7 @@ namespace Circuit.Elements.Output {
             string s = "A";
             switch (mMeter) {
             case AM_VOL:
-                s = Utils.UnitTextWithScale(mCurrent, "A", mScale);
+                s = Utils.UnitTextWithScale(mCirCurrent, "A", mScale);
                 break;
             case AM_RMS:
                 s = Utils.UnitTextWithScale(mRmsI, "A(rms)", mScale);
@@ -197,7 +197,7 @@ namespace Circuit.Elements.Output {
             arr[0] = "Ammeter";
             switch (mMeter) {
             case AM_VOL:
-                arr[1] = "I = " + Utils.UnitText(mCurrent, "A");
+                arr[1] = "I = " + Utils.UnitText(mCirCurrent, "A");
                 break;
             case AM_RMS:
                 arr[1] = "Irms = " + Utils.UnitText(mRmsI, "A");

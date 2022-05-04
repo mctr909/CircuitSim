@@ -226,7 +226,7 @@ namespace Circuit {
             for (int i = 0; i != mPostCount; i++) {
                 var pin = mModel.ExtList[i];
                 mChip.setPin(i, pin.pos, pin.side, pin.name);
-                mChip.Volts[i] = 0;
+                mChip.CirVolts[i] = 0;
                 if (i == mSelectedPin) {
                     mChip.pins[i].selected = true;
                 }

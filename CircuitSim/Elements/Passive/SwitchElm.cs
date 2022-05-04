@@ -37,8 +37,8 @@ namespace Circuit.Elements.Passive {
          * position 1 == open */
         public int Position { get; protected set; }
         public int PosCount { get; protected set; }
-        public override bool IsWire { get { return Position == 0; } }
-        public override int VoltageSourceCount { get { return (1 == Position) ? 0 : 1; } }
+        public override bool CirIsWire { get { return Position == 0; } }
+        public override int CirVoltageSourceCount { get { return (1 == Position) ? 0 : 1; } }
         public override DUMP_ID Shortcut { get { return DUMP_ID.SWITCH; } }
         public override DUMP_ID DumpType { get { return DUMP_ID.SWITCH; } }
 
@@ -46,9 +46,9 @@ namespace Circuit.Elements.Passive {
             return Position + " " + Momentary;
         }
 
-        protected override void calculateCurrent() {
+        protected override void cirCalculateCurrent() {
             if (Position == 1) {
-                mCurrent = 0;
+                mCirCurrent = 0;
             }
         }
 
@@ -93,9 +93,9 @@ namespace Circuit.Elements.Passive {
             drawPosts();
         }
 
-        public override void Stamp() {
+        public override void CirStamp() {
             if (Position == 0) {
-                mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
+                mCir.StampVoltageSource(CirNodes[0], CirNodes[1], mCirVoltSource, 0);
             }
         }
 
@@ -103,15 +103,15 @@ namespace Circuit.Elements.Passive {
             arr[0] = (Momentary) ? "push switch (SPST)" : "switch (SPST)";
             if (Position == 1) {
                 arr[1] = "open";
-                arr[2] = "Vd = " + Utils.VoltageAbsText(VoltageDiff);
+                arr[2] = "Vd = " + Utils.VoltageAbsText(CirVoltageDiff);
             } else {
                 arr[1] = "closed";
-                arr[2] = "V = " + Utils.VoltageText(Volts[0]);
-                arr[3] = "I = " + Utils.CurrentAbsText(mCurrent);
+                arr[2] = "V = " + Utils.VoltageText(CirVolts[0]);
+                arr[3] = "I = " + Utils.CurrentAbsText(mCirCurrent);
             }
         }
 
-        public override bool GetConnection(int n1, int n2) { return Position == 0; }
+        public override bool CirGetConnection(int n1, int n2) { return Position == 0; }
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {

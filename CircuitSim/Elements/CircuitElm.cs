@@ -10,7 +10,205 @@ namespace Circuit.Elements {
         protected static Circuit mCir;
         public static CustomGraphics Context;
 
-        #region dynamic property
+        #region [circuit property]
+        public int[] CirNodes { get; protected set; }
+
+        /// <summary>
+        /// voltages at each node
+        /// </summary>
+        public double[] CirVolts { get; protected set; }
+
+        /// <summary>
+        /// is this a wire or equivalent to a wire?
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool CirIsWire { get { return false; } }
+
+        public virtual double CirCurrent { get { return mCirCurrent; } }
+
+        public virtual double CirVoltageDiff { get { return CirVolts[0] - CirVolts[1]; } }
+
+        public virtual double CirPower { get { return CirVoltageDiff * mCirCurrent; } }
+
+        /// <summary>
+        /// number of voltage sources this element needs
+        /// </summary>
+        /// <returns></returns>
+        public virtual int CirVoltageSourceCount { get { return 0; } }
+
+        /// <summary>
+        /// number of internal nodes (nodes not visible in UI that are needed for implementation)
+        /// </summary>
+        /// <returns></returns>
+        public virtual int CirInternalNodeCount { get { return 0; } }
+
+        public virtual bool CirNonLinear { get { return false; } }
+
+        public virtual int CirPostCount { get { return 2; } }
+
+        /// <summary>
+        /// get number of nodes that can be retrieved by ConnectionNode
+        /// </summary>
+        /// <returns></returns>
+        public virtual int CirConnectionNodeCount { get { return CirPostCount; } }
+        #endregion
+
+        #region [circuit variable]
+        protected double mCirCurrent;
+        protected double mCirCurCount;
+        protected int mCirVoltSource;
+        #endregion
+
+        #region [circuit method]
+        /// <summary>
+        /// allocate nodes/volts arrays we need
+        /// </summary>
+        protected void cirAllocNodes() {
+            int n = CirPostCount + CirInternalNodeCount;
+            /* preserve voltages if possible */
+            if (CirNodes == null || CirNodes.Length != n) {
+                CirNodes = new int[n];
+                CirVolts = new double[n];
+            }
+        }
+
+        /// <summary>
+        /// update dot positions (curcount) for drawing current (simple case for single current)
+        /// </summary>
+        protected void cirUpdateDotCount() {
+            mCirCurCount = cirUpdateDotCount(mCirCurrent, mCirCurCount);
+        }
+
+        /// <summary>
+        ///  update dot positions (curcount) for drawing current (general case for multiple currents)
+        /// </summary>
+        /// <param name="cur"></param>
+        /// <param name="cc"></param>
+        /// <returns></returns>
+        protected double cirUpdateDotCount(double cur, double cc) {
+            if (!CirSim.Sim.IsRunning) {
+                return cc;
+            }
+            double cadd = cur * CirSim.CurrentMult;
+            cadd %= 8;
+            return cc + cadd;
+        }
+
+        /// <summary>
+        /// calculate current in response to node voltages changing
+        /// </summary>
+        protected virtual void cirCalculateCurrent() { }
+
+        /// <summary>
+        /// handle reset button
+        /// </summary>
+        public virtual void CirReset() {
+            for (int i = 0; i != CirPostCount + CirInternalNodeCount; i++) {
+                CirVolts[i] = 0;
+            }
+            mCirCurCount = 0;
+        }
+
+        public virtual void CirShorted() { }
+
+        /// <summary>
+        /// stamp matrix values for linear elements.
+        /// for non-linear elements, use this to stamp values that don't change each iteration,
+        /// and call stampRightSide() or stampNonLinear() as needed
+        /// </summary>
+        public virtual void CirStamp() { }
+
+        /// <summary>
+        /// stamp matrix values for non-linear elements
+        /// </summary>
+        public virtual void CirDoStep() { }
+
+        public virtual void CirStartIteration() { }
+
+        public virtual void CirStepFinished() { }
+
+        /// <summary>
+        /// set current for voltage source vn to c.
+        /// vn will be the same value as in a previous call to setVoltageSource(n, vn)
+        /// </summary>
+        /// <param name="vn"></param>
+        /// <param name="c"></param>
+        public virtual void CirSetCurrent(int vn, double c) { mCirCurrent = c; }
+
+        /// <summary>
+        /// notify this element that its pth node is n.
+        /// This value n can be passed to stampMatrix()
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="n"></param>
+        public virtual void CirSetNode(int p, int n) {
+            if (p < CirNodes.Length) {
+                CirNodes[p] = n;
+            }
+        }
+
+        /// <summary>
+        /// notify this element that its nth voltage source is v.
+        /// This value v can be passed to stampVoltageSource(),
+        /// etc and will be passed back in calls to setCurrent()
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="v"></param>
+        public virtual void CirSetVoltageSource(int n, int v) {
+            /* default implementation only makes sense for subclasses with one voltage source.
+             * If we have 0 this isn't used, if we have >1 this won't work */
+            mCirVoltSource = v;
+        }
+
+        /// <summary>
+        /// set voltage of x'th node, called by simulator logic
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="c"></param>
+        public virtual void CirSetNodeVoltage(int n, double c) {
+            CirVolts[n] = c;
+            cirCalculateCurrent();
+        }
+
+        public virtual double CirGetCurrentIntoNode(int n) {
+            /* if we take out the getPostCount() == 2 it gives the wrong value for rails */
+            if (n == 0 && CirPostCount == 2) {
+                return -mCirCurrent;
+            } else {
+                return mCirCurrent;
+            }
+        }
+
+        /// <summary>
+        /// get nodes that can be passed to getConnection(), to test if this element connects
+        /// those two nodes; this is the same as getNode() for all but labeled nodes.
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public virtual int CirGetConnectionNode(int n) { return CirNodes[n]; }
+
+        /// <summary>
+        /// are n1 and n2 connected by this element?  this is used to determine
+        /// unconnected nodes, and look for loops
+        /// </summary>
+        /// <param name="n1"></param>
+        /// <param name="n2"></param>
+        /// <returns></returns>
+        public virtual bool CirGetConnection(int n1, int n2) { return true; }
+
+        /// <summary>
+        /// is n1 connected to ground somehow?
+        /// </summary>
+        /// <param name="n1"></param>
+        /// <returns></returns>
+        public virtual bool CirHasGroundConnection(int n1) { return false; }
+
+        public virtual double CirGetScopeValue(Scope.VAL x) {
+            return CirVoltageDiff;
+        }
+        #endregion
+
+        #region [property]
         public string ReferenceName { get; set; }
 
         public bool IsSelected { get; set; }
@@ -23,13 +221,6 @@ namespace Circuit.Elements {
                 return mMouseElmRef.Equals(this);
             }
         }
-
-        public int[] Nodes { get; protected set; }
-
-        /// <summary>
-        /// voltages at each node
-        /// </summary>
-        public double[] Volts { get; protected set; }
 
         /// <summary>
         /// dump component state for export/undo
@@ -53,9 +244,7 @@ namespace Circuit.Elements {
                 return mMouseElmRef.Equals(this) || IsSelected || isScopeElm;
             }
         }
-        #endregion
 
-        #region virtual property
         public virtual DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }
 
         /// <summary>
@@ -63,12 +252,6 @@ namespace Circuit.Elements {
         /// </summary>
         /// <returns>returns true if it's zero size and should be deleted</returns>
         public virtual bool IsCreationFailed { get { return P1.X == P2.X && P1.Y == P2.Y; } }
-
-        /// <summary>
-        /// is this a wire or equivalent to a wire?
-        /// </summary>
-        /// <returns></returns>
-        public virtual bool IsWire { get { return false; } }
 
         public virtual bool IsGraphicElmt { get { return false; } }
 
@@ -78,42 +261,14 @@ namespace Circuit.Elements {
         /// <returns></returns>
         public virtual bool IsCenteredText { get { return false; } }
 
-        public virtual bool CanViewInScope { get { return PostCount <= 2; } }
-
-        public virtual double Current { get { return mCurrent; } }
-
-        public virtual double VoltageDiff { get { return Volts[0] - Volts[1]; } }
-
-        public virtual double Power { get { return VoltageDiff * mCurrent; } }
-
-        /// <summary>
-        /// number of voltage sources this element needs
-        /// </summary>
-        /// <returns></returns>
-        public virtual int VoltageSourceCount { get { return 0; } }
-
-        /// <summary>
-        /// number of internal nodes (nodes not visible in UI that are needed for implementation)
-        /// </summary>
-        /// <returns></returns>
-        public virtual int InternalNodeCount { get { return 0; } }
-
-        public virtual bool NonLinear { get { return false; } }
-
-        public virtual int PostCount { get { return 2; } }
-
-        /// <summary>
-        /// get number of nodes that can be retrieved by ConnectionNode
-        /// </summary>
-        /// <returns></returns>
-        public virtual int ConnectionNodeCount { get { return PostCount; } }
+        public virtual bool CanViewInScope { get { return CirPostCount <= 2; } }
 
         public virtual int DefaultFlags { get { return 0; } }
 
         protected virtual int NumHandles { get { return 2; } }
         #endregion
 
-        #region dynamic variable
+        #region [variable]
         /// <summary>
         /// initial point where user created element.
         /// For simple two-terminal elements, this is the first node/post.
@@ -148,9 +303,6 @@ namespace Circuit.Elements {
         protected Point mLead1;
         protected Point mLead2;
 
-        protected double mCurrent;
-        protected double mCurCount;
-
         protected bool mNameV;
         protected Point mNamePos;
         protected Point mValuePos;
@@ -159,7 +311,6 @@ namespace Circuit.Elements {
         protected bool mNoDiagonal;
 
         protected int mFlags;
-        protected int mVoltSource;
         #endregion
 
         /// <summary>
@@ -169,7 +320,7 @@ namespace Circuit.Elements {
             P1.X = P2.X = pos.X;
             P1.Y = P2.Y = pos.Y;
             mFlags = DefaultFlags;
-            allocNodes();
+            cirAllocNodes();
             initBoundingBox();
         }
 
@@ -180,7 +331,7 @@ namespace Circuit.Elements {
             P1 = p1;
             P2 = p2;
             mFlags = f;
-            allocNodes();
+            cirAllocNodes();
             initBoundingBox();
         }
 
@@ -199,18 +350,6 @@ namespace Circuit.Elements {
         #endregion
 
         #region [protected method]
-        /// <summary>
-        /// allocate nodes/volts arrays we need
-        /// </summary>
-        protected void allocNodes() {
-            int n = PostCount + InternalNodeCount;
-            /* preserve voltages if possible */
-            if (Nodes == null || Nodes.Length != n) {
-                Nodes = new int[n];
-                Volts = new double[n];
-            }
-        }
-
         /// <summary>
         /// calculate lead points for an element of length len.  Handy for simple two-terminal elements.
         /// Posts are where the user connects wires; leads are ends of wire stubs drawn inside the element.
@@ -282,40 +421,18 @@ namespace Circuit.Elements {
         }
 
         /// <summary>
-        /// update dot positions (curcount) for drawing current (simple case for single current)
-        /// </summary>
-        protected void updateDotCount() {
-            mCurCount = updateDotCount(mCurrent, mCurCount);
-        }
-
-        /// <summary>
-        ///  update dot positions (curcount) for drawing current (general case for multiple currents)
-        /// </summary>
-        /// <param name="cur"></param>
-        /// <param name="cc"></param>
-        /// <returns></returns>
-        protected double updateDotCount(double cur, double cc) {
-            if (!CirSim.Sim.IsRunning) {
-                return cc;
-            }
-            double cadd = cur * CirSim.CurrentMult;
-            cadd %= 8;
-            return cc + cadd;
-        }
-
-        /// <summary>
         /// update and draw current for simple two-terminal element
         /// </summary>
         protected void doDots() {
-            updateDotCount();
+            cirUpdateDotCount();
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mPoint2, mCurCount);
+                drawDots(mPoint1, mPoint2, mCirCurCount);
             }
         }
 
         protected int getBasicInfo(string[] arr) {
-            arr[1] = "I = " + Utils.CurrentAbsText(mCurrent);
-            arr[2] = "Vd = " + Utils.VoltageAbsText(VoltageDiff);
+            arr[1] = "I = " + Utils.CurrentAbsText(mCirCurrent);
+            arr[2] = "Vd = " + Utils.VoltageAbsText(CirVoltageDiff);
             return 3;
         }
 
@@ -415,7 +532,7 @@ namespace Circuit.Elements {
             if (CirSim.Sim.MouseMode == CirSim.MOUSE_MODE.DRAG_ROW || CirSim.Sim.MouseMode == CirSim.MOUSE_MODE.DRAG_COLUMN) {
                 return;
             }
-            for (int i = 0; i != PostCount; i++) {
+            for (int i = 0; i != CirPostCount; i++) {
                 var p = GetPost(i);
                 Context.DrawPost(p);
             }
@@ -618,7 +735,7 @@ namespace Circuit.Elements {
             int ny = P1.Y + dy;
             int nx2 = P2.X + dx;
             int ny2 = P2.Y + dy;
-            for (int i = 0; i != CirSim.Sim.ElmList.Count; i++) {
+            for (int i = 0; i != CirSim.Sim.ElmCount; i++) {
                 var ce = CirSim.Sim.getElm(i);
                 if (ce.P1.X == nx && ce.P1.Y == ny && ce.P2.X == nx2 && ce.P2.Y == ny2) {
                     return false;
@@ -704,10 +821,10 @@ namespace Circuit.Elements {
         }
 
         public int GetNodeAtPoint(int xp, int yp) {
-            if (PostCount == 2) {
+            if (CirPostCount == 2) {
                 return (P1.X == xp && P1.Y == yp) ? 0 : 1;
             }
-            for (int i = 0; i != PostCount; i++) {
+            for (int i = 0; i != CirPostCount; i++) {
                 var p = GetPost(i);
                 if (p.X == xp && p.Y == yp) {
                     return i;
@@ -717,8 +834,8 @@ namespace Circuit.Elements {
         }
 
         public string DispPostVoltage(int x) {
-            if (x < Volts.Length) {
-                return Utils.UnitText(Volts[x], "V");
+            if (x < CirVolts.Length) {
+                return Utils.UnitText(CirVolts[x], "V");
             } else {
                 return "";
             }
@@ -726,16 +843,6 @@ namespace Circuit.Elements {
         #endregion
 
         #region [virtual method]
-        /// <summary>
-        /// handle reset button
-        /// </summary>
-        public virtual void Reset() {
-            for (int i = 0; i != PostCount + InternalNodeCount; i++) {
-                Volts[i] = 0;
-            }
-            mCurCount = 0;
-        }
-
         public virtual void Delete() {
             if (mMouseElmRef == this) {
                 mMouseElmRef = null;
@@ -744,22 +851,6 @@ namespace Circuit.Elements {
                 CirSim.Sim.DeleteSliders(this);
             }
         }
-
-        /// <summary>
-        /// stamp matrix values for linear elements.
-        /// for non-linear elements, use this to stamp values that don't change each iteration,
-        /// and call stampRightSide() or stampNonLinear() as needed
-        /// </summary>
-        public virtual void Stamp() { }
-
-        /// <summary>
-        /// stamp matrix values for non-linear elements
-        /// </summary>
-        public virtual void DoStep() { }
-
-        public virtual void StartIteration() { }
-
-        public virtual void StepFinished() { }
 
         public virtual void Draw(CustomGraphics g) { }
 
@@ -819,87 +910,6 @@ namespace Circuit.Elements {
         }
 
         /// <summary>
-        /// set current for voltage source vn to c.
-        /// vn will be the same value as in a previous call to setVoltageSource(n, vn)
-        /// </summary>
-        /// <param name="vn"></param>
-        /// <param name="c"></param>
-        public virtual void SetCurrent(int vn, double c) { mCurrent = c; }
-
-        /// <summary>
-        /// notify this element that its pth node is n.
-        /// This value n can be passed to stampMatrix()
-        /// </summary>
-        /// <param name="p"></param>
-        /// <param name="n"></param>
-        public virtual void SetNode(int p, int n) {
-            if (p < Nodes.Length) {
-                Nodes[p] = n;
-            }
-        }
-
-        /// <summary>
-        /// notify this element that its nth voltage source is v.
-        /// This value v can be passed to stampVoltageSource(),
-        /// etc and will be passed back in calls to setCurrent()
-        /// </summary>
-        /// <param name="n"></param>
-        /// <param name="v"></param>
-        public virtual void SetVoltageSource(int n, int v) {
-            /* default implementation only makes sense for subclasses with one voltage source.
-             * If we have 0 this isn't used, if we have >1 this won't work */
-            mVoltSource = v;
-        }
-
-        /// <summary>
-        /// set voltage of x'th node, called by simulator logic
-        /// </summary>
-        /// <param name="n"></param>
-        /// <param name="c"></param>
-        public virtual void SetNodeVoltage(int n, double c) {
-            Volts[n] = c;
-            calculateCurrent();
-        }
-
-        /// <summary>
-        /// calculate current in response to node voltages changing
-        /// </summary>
-        protected virtual void calculateCurrent() { }
-
-        public virtual double GetCurrentIntoNode(int n) {
-            /* if we take out the getPostCount() == 2 it gives the wrong value for rails */
-            if (n == 0 && PostCount == 2) {
-                return -mCurrent;
-            } else {
-                return mCurrent;
-            }
-        }
-
-        /// <summary>
-        /// get nodes that can be passed to getConnection(), to test if this element connects
-        /// those two nodes; this is the same as getNode() for all but labeled nodes.
-        /// </summary>
-        /// <param name="n"></param>
-        /// <returns></returns>
-        public virtual int GetConnectionNode(int n) { return Nodes[n]; }
-
-        /// <summary>
-        /// are n1 and n2 connected by this element?  this is used to determine
-        /// unconnected nodes, and look for loops
-        /// </summary>
-        /// <param name="n1"></param>
-        /// <param name="n2"></param>
-        /// <returns></returns>
-        public virtual bool GetConnection(int n1, int n2) { return true; }
-
-        /// <summary>
-        /// is n1 connected to ground somehow?
-        /// </summary>
-        /// <param name="n1"></param>
-        /// <returns></returns>
-        public virtual bool HasGroundConnection(int n1) { return false; }
-
-        /// <summary>
         /// get position of nth node
         /// </summary>
         /// <param name="n"></param>
@@ -920,10 +930,6 @@ namespace Circuit.Elements {
             var info = new string[10];
             GetInfo(info);
             return info[0];
-        }
-
-        public virtual double GetScopeValue(Scope.VAL x) {
-            return VoltageDiff;
         }
 
         public virtual string DumpModel() { return null; }

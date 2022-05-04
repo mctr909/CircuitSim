@@ -28,7 +28,7 @@ namespace Circuit.Elements.Custom {
             updateModels(st);
         }
 
-        public override int PostCount { get { return postCount; } }
+        public override int CirPostCount { get { return postCount; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.CUSTOM_COMPOSITE; } }
 
@@ -68,8 +68,8 @@ namespace Circuit.Elements.Custom {
 
         public override void Draw(CustomGraphics g) {
             for (int i = 0; i != postCount; i++) {
-                chip.Volts[i] = Volts[i];
-                chip.pins[i].current = GetCurrentIntoNode(i);
+                chip.CirVolts[i] = CirVolts[i];
+                chip.pins[i].current = CirGetCurrentIntoNode(i);
             }
             chip.IsSelected = NeedsHighlight;
             chip.Draw(g);
@@ -91,7 +91,7 @@ namespace Circuit.Elements.Custom {
             }
 
             chip.SetPoints();
-            for (i = 0; i != PostCount; i++) {
+            for (i = 0; i != CirPostCount; i++) {
                 setPost(i, chip.GetPost(i));
             }
         }
@@ -115,7 +115,7 @@ namespace Circuit.Elements.Custom {
                 st = new StringTokenizer(model.ElmDump, " ");
             }
             loadComposite(st, model.NodeList, externalNodes);
-            allocNodes();
+            cirAllocNodes();
             SetPoints();
         }
 

@@ -49,31 +49,31 @@ namespace Circuit.Elements.Logic {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.SRAM; } }
 
-        public override int PostCount { get { return 2 + addressBits + dataBits; } }
+        public override int CirPostCount { get { return 2 + addressBits + dataBits; } }
 
-        public override int VoltageSourceCount { get { return dataBits; } }
+        public override int CirVoltageSourceCount { get { return dataBits; } }
 
-        public override int InternalNodeCount { get { return dataBits; } }
+        public override int CirInternalNodeCount { get { return dataBits; } }
 
-        public override bool NonLinear { get { return true; } }
+        public override bool CirNonLinear { get { return true; } }
 
-        public override void Stamp() {
+        public override void CirStamp() {
             for (var i = 0; i != dataBits; i++) {
                 var p = pins[i + dataNodes];
-                mCir.StampVoltageSource(0, Nodes[internalNodes + i], p.voltSource);
-                mCir.StampNonLinear(Nodes[internalNodes + i]);
-                mCir.StampNonLinear(Nodes[dataNodes + i]);
+                mCir.StampVoltageSource(0, CirNodes[internalNodes + i], p.voltSource);
+                mCir.StampNonLinear(CirNodes[internalNodes + i]);
+                mCir.StampNonLinear(CirNodes[dataNodes + i]);
             }
         }
 
-        public override void DoStep() {
-            var writeEnabled = Volts[0] < 2.5;
-            var outputEnabled = (Volts[1] < 2.5) && !writeEnabled;
+        public override void CirDoStep() {
+            var writeEnabled = CirVolts[0] < 2.5;
+            var outputEnabled = (CirVolts[1] < 2.5) && !writeEnabled;
 
             // get address
             address = 0;
             for (var i = 0; i != addressBits; i++) {
-                address |= (Volts[addressNodes + i] > 2.5) ? 1 << (addressBits - 1 - i) : 0;
+                address |= (CirVolts[addressNodes + i] > 2.5) ? 1 << (addressBits - 1 - i) : 0;
             }
 
             int data;
@@ -84,24 +84,24 @@ namespace Circuit.Elements.Logic {
             }
             for (var i = 0; i != dataBits; i++) {
                 var p = pins[i + dataNodes];
-                mCir.UpdateVoltageSource(0, Nodes[internalNodes + i], p.voltSource, (data & (1 << (dataBits - 1 - i))) == 0 ? 0 : 5);
+                mCir.UpdateVoltageSource(0, CirNodes[internalNodes + i], p.voltSource, (data & (1 << (dataBits - 1 - i))) == 0 ? 0 : 5);
 
                 // stamp resistor from internal voltage source to data pin.
                 // if output enabled, make it a small resistor.  otherwise large.
-                mCir.StampResistor(Nodes[internalNodes + i], Nodes[dataNodes + i], outputEnabled ? 1 : 1e8);
+                mCir.StampResistor(CirNodes[internalNodes + i], CirNodes[dataNodes + i], outputEnabled ? 1 : 1e8);
             }
         }
 
-        public override void StepFinished() {
+        public override void CirStepFinished() {
             int data = 0;
-            var writeEnabled = Volts[0] < 2.5;
+            var writeEnabled = CirVolts[0] < 2.5;
             if (!writeEnabled) {
                 return;
             }
 
             // store data in RAM
             for (var i = 0; i != dataBits; i++) {
-                data |= (Volts[dataNodes + i] > 2.5) ? 1 << (dataBits - 1 - i) : 0;
+                data |= (CirVolts[dataNodes + i] > 2.5) ? 1 << (dataBits - 1 - i) : 0;
             }
             if (address < map.Count) {
                 map[address] = data;
@@ -140,7 +140,7 @@ namespace Circuit.Elements.Logic {
         public override void SetupPins() {
             sizeX = 2;
             sizeY = Math.Max(addressBits, dataBits) + 1;
-            pins = new Pin[PostCount];
+            pins = new Pin[CirPostCount];
             pins[0] = new Pin(this, 0, SIDE_W, "WE");
             pins[0].lineOver = true;
             pins[1] = new Pin(this, 0, SIDE_E, "OE");
@@ -158,12 +158,12 @@ namespace Circuit.Elements.Logic {
                 pins[ii] = new Pin(this, sizeY - dataBits + i, SIDE_E, "D" + (dataBits - i - 1));
                 pins[ii].output = true;
             }
-            allocNodes();
+            cirAllocNodes();
         }
 
-        public override void Reset() {
-            base.Reset();
-            Volts[2] = 5;
+        public override void CirReset() {
+            base.CirReset();
+            CirVolts[2] = 5;
             pins[2].value = true;
         }
 

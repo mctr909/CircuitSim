@@ -29,15 +29,15 @@ namespace Circuit.Elements.Logic {
         }
 
         /* we need this to be able to change the matrix for each step */
-        public override bool NonLinear {
+        public override bool CirNonLinear {
             get { return true; }
         }
 
-        public override int PostCount { get { return 3; } }
+        public override int CirPostCount { get { return 3; } }
 
-        public override int InternalNodeCount { get { return 1; } }
+        public override int CirInternalNodeCount { get { return 1; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int CirVoltageSourceCount { get { return 1; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.TRISTATE; } }
 
@@ -69,33 +69,33 @@ namespace Circuit.Elements.Logic {
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.DrawPolygon(gatePoly);
             drawLead(point3, lead3);
-            mCurCount = updateDotCount(mCurrent, mCurCount);
-            drawDots(mLead2, mPoint2, mCurCount);
+            mCirCurCount = cirUpdateDotCount(mCirCurrent, mCirCurCount);
+            drawDots(mLead2, mPoint2, mCirCurCount);
             drawPosts();
         }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             if (n == 1) {
-                return mCurrent;
+                return mCirCurrent;
             }
             return 0;
         }
 
-        protected override void calculateCurrent() {
-            mCurrent = (Volts[0] - Volts[1]) / resistance;
+        protected override void cirCalculateCurrent() {
+            mCirCurrent = (CirVolts[0] - CirVolts[1]) / resistance;
         }
 
-        public override void Stamp() {
-            mCir.StampVoltageSource(0, Nodes[3], mVoltSource);
-            mCir.StampNonLinear(Nodes[3]);
-            mCir.StampNonLinear(Nodes[1]);
+        public override void CirStamp() {
+            mCir.StampVoltageSource(0, CirNodes[3], mCirVoltSource);
+            mCir.StampNonLinear(CirNodes[3]);
+            mCir.StampNonLinear(CirNodes[1]);
         }
 
-        public override void DoStep() {
-            open = Volts[2] < 2.5;
+        public override void CirDoStep() {
+            open = CirVolts[2] < 2.5;
             resistance = open ? r_off : r_on;
-            mCir.StampResistor(Nodes[3], Nodes[1], resistance);
-            mCir.UpdateVoltageSource(0, Nodes[3], mVoltSource, Volts[0] > 2.5 ? 5 : 0);
+            mCir.StampResistor(CirNodes[3], CirNodes[1], resistance);
+            mCir.UpdateVoltageSource(0, CirNodes[3], mCirVoltSource, CirVolts[0] > 2.5 ? 5 : 0);
         }
 
         public override void Drag(Point pos) {
@@ -122,18 +122,18 @@ namespace Circuit.Elements.Logic {
         public override void GetInfo(string[] arr) {
             arr[0] = "tri-state buffer";
             arr[1] = open ? "open" : "closed";
-            arr[2] = "Vd = " + Utils.VoltageAbsText(VoltageDiff);
-            arr[3] = "I = " + Utils.CurrentAbsText(Current);
-            arr[4] = "Vc = " + Utils.VoltageText(Volts[2]);
+            arr[2] = "Vd = " + Utils.VoltageAbsText(CirVoltageDiff);
+            arr[3] = "I = " + Utils.CurrentAbsText(CirCurrent);
+            arr[4] = "Vc = " + Utils.VoltageText(CirVolts[2]);
         }
 
         /* there is no current path through the input, but there
          * is an indirect path through the output to ground. */
-        public override bool GetConnection(int n1, int n2) {
+        public override bool CirGetConnection(int n1, int n2) {
             return false;
         }
 
-        public override bool HasGroundConnection(int n1) {
+        public override bool CirHasGroundConnection(int n1) {
             return n1 == 1;
         }
 

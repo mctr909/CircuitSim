@@ -25,21 +25,21 @@ namespace Circuit.Elements.Custom {
             modelName = CustomLogicModel.unescape(st.nextToken());
             UpdateModels();
             int i;
-            for (i = 0; i != PostCount; i++) {
+            for (i = 0; i != CirPostCount; i++) {
                 if (pins[i].output) {
-                    Volts[i] = st.nextTokenDouble();
-                    pins[i].value = Volts[i] > 2.5;
+                    CirVolts[i] = st.nextTokenDouble();
+                    pins[i].value = CirVolts[i] > 2.5;
                 }
             }
         }
 
-        public override int PostCount { get { return postCount; } }
+        public override int CirPostCount { get { return postCount; } }
 
-        public override int VoltageSourceCount { get { return outputCount; } }
+        public override int CirVoltageSourceCount { get { return outputCount; } }
 
-        public override bool NonLinear { get { return hasTriState; } }
+        public override bool CirNonLinear { get { return hasTriState; } }
 
-        public override int InternalNodeCount {
+        public override int CirInternalNodeCount {
             /* for tri-state outputs, we need an internal node to connect a voltage source to, and then connect a resistor from there to the output.
              * we do this for all outputs if any of them are tri-state */
             get { return hasTriState ? outputCount : 0; }
@@ -57,9 +57,9 @@ namespace Circuit.Elements.Custom {
             /* the code to do this in ChipElm doesn't work here because we don't know
              * how many pins to read until we read the model name!  So we have to
              * duplicate it here. */
-            for (int i = 0; i != PostCount; i++) {
+            for (int i = 0; i != CirPostCount; i++) {
                 if (pins[i].output) {
-                    s += " " + Volts[i];
+                    s += " " + CirVolts[i];
                 }
             }
             return s;
@@ -75,14 +75,14 @@ namespace Circuit.Elements.Custom {
         public override void UpdateModels() {
             model = CustomLogicModel.getModelWithNameOrCopy(modelName, model);
             SetupPins();
-            allocNodes();
+            cirAllocNodes();
             SetPoints();
         }
 
         public override void SetupPins() {
             if (modelName == null) {
                 postCount = bits;
-                allocNodes();
+                cirAllocNodes();
                 return;
             }
             model = CustomLogicModel.getModelWithName(modelName);
@@ -109,38 +109,38 @@ namespace Circuit.Elements.Custom {
             highImpedance = new bool[postCount];
         }
 
-        public override void Stamp() {
+        public override void CirStamp() {
             int add = hasTriState ? outputCount : 0;
-            for (int i = 0; i != PostCount; i++) {
+            for (int i = 0; i != CirPostCount; i++) {
                 var p = pins[i];
                 if (p.output) {
-                    mCir.StampVoltageSource(0, Nodes[i + add], p.voltSource);
+                    mCir.StampVoltageSource(0, CirNodes[i + add], p.voltSource);
                     if (hasTriState) {
-                        mCir.StampNonLinear(Nodes[i + add]);
-                        mCir.StampNonLinear(Nodes[i]);
+                        mCir.StampNonLinear(CirNodes[i + add]);
+                        mCir.StampNonLinear(CirNodes[i]);
                     }
                 }
             }
         }
 
-        public override void DoStep() {
-            for (int i = 0; i != PostCount; i++) {
+        public override void CirDoStep() {
+            for (int i = 0; i != CirPostCount; i++) {
                 var p = pins[i];
                 if (!p.output) {
-                    p.value = Volts[i] > 2.5;
+                    p.value = CirVolts[i] > 2.5;
                 }
             }
             execute();
             int add = hasTriState ? outputCount : 0;
-            for (int i = 0; i != PostCount; i++) {
+            for (int i = 0; i != CirPostCount; i++) {
                 var p = pins[i];
                 if (p.output) {
                     /* connect output voltage source (to internal node if tri-state, otherwise connect directly to output) */
-                    mCir.UpdateVoltageSource(0, Nodes[i + add], p.voltSource, p.value ? 5 : 0);
+                    mCir.UpdateVoltageSource(0, CirNodes[i + add], p.voltSource, p.value ? 5 : 0);
 
                     /* add resistor for tri-state if necessary */
                     if (hasTriState) {
-                        mCir.StampResistor(Nodes[i + add], Nodes[i], highImpedance[i] ? 1e8 : 1e-3);
+                        mCir.StampResistor(CirNodes[i + add], CirNodes[i], highImpedance[i] ? 1e8 : 1e-3);
                     }
                 }
             }
@@ -241,7 +241,7 @@ namespace Circuit.Elements.Custom {
                 modelName = lastModelName = ei.Textf.Text;
                 model = CustomLogicModel.getModelWithNameOrCopy(modelName, model);
                 SetupPins();
-                allocNodes();
+                cirAllocNodes();
                 SetPoints();
                 return;
             }

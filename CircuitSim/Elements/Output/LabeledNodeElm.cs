@@ -35,14 +35,14 @@ namespace Circuit.Elements.Output {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.LABELED_NODE; } }
 
-        public override int PostCount { get { return 1; } }
+        public override int CirPostCount { get { return 1; } }
 
-        public override int ConnectionNodeCount { get { return 2; } }
+        public override int CirConnectionNodeCount { get { return 2; } }
 
         // this is basically a wire, since it just connects two nodes together
-        public override bool IsWire { get { return true; } }
+        public override bool CirIsWire { get { return true; } }
 
-        public override int InternalNodeCount {
+        public override int CirInternalNodeCount {
             get {
                 // this can happen at startup
                 if (mNodeList == null) {
@@ -59,9 +59,9 @@ namespace Circuit.Elements.Output {
             }
         }
 
-        public override double VoltageDiff { get { return Volts[0]; } }
+        public override double CirVoltageDiff { get { return CirVolts[0]; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int CirVoltageSourceCount { get { return 1; } }
 
         public static void ResetNodeList() {
             mNodeList = new Dictionary<string, int>();
@@ -73,23 +73,23 @@ namespace Circuit.Elements.Output {
 
         // get connection node (which is the same as regular nodes for all elements but this one).
         // node 0 is the terminal, node 1 is the internal node shared by all nodes with same name
-        public override int GetConnectionNode(int n) {
+        public override int CirGetConnectionNode(int n) {
             if (n == 0) {
-                return Nodes[0];
+                return CirNodes[0];
             }
             return mNodeNumber;
         }
 
-        public override double GetCurrentIntoNode(int n) { return -mCurrent; }
+        public override double CirGetCurrentIntoNode(int n) { return -mCirCurrent; }
 
-        public override void SetCurrent(int x, double c) { mCurrent = -c; }
+        public override void CirSetCurrent(int x, double c) { mCirCurrent = -c; }
 
-        public override void Stamp() {
-            mCir.StampVoltageSource(mNodeNumber, Nodes[0], mVoltSource, 0);
+        public override void CirStamp() {
+            mCir.StampVoltageSource(mNodeNumber, CirNodes[0], mCirVoltSource, 0);
         }
 
-        public override void SetNode(int p, int n) {
-            base.SetNode(p, n);
+        public override void CirSetNode(int p, int n) {
+            base.CirSetNode(p, n);
             if (p == 1) {
                 // assign new node
                 mNodeList.Add(Text, n);
@@ -125,8 +125,8 @@ namespace Circuit.Elements.Output {
                     g.DrawLine(P2.X - sw / 2, ya, P2.X + sw / 2, ya);
                 }
             }
-            mCurCount = updateDotCount(mCurrent, mCurCount);
-            drawDots(mPoint1, mLead1, mCurCount);
+            mCirCurCount = cirUpdateDotCount(mCirCurrent, mCirCurCount);
+            drawDots(mPoint1, mLead1, mCirCurCount);
             interpPoint(ref mPos, 1 + 11.0 / mLen);
             setBbox(mPoint1, mPos, CircleSize);
             drawPosts();
@@ -134,8 +134,8 @@ namespace Circuit.Elements.Output {
 
         public override void GetInfo(string[] arr) {
             arr[0] = Text;
-            arr[1] = "I = " + Utils.CurrentText(mCurrent);
-            arr[2] = "V = " + Utils.VoltageText(Volts[0]);
+            arr[1] = "I = " + Utils.CurrentText(mCirCurrent);
+            arr[2] = "V = " + Utils.VoltageText(CirVolts[0]);
         }
 
         public override ElementInfo GetElementInfo(int n) {

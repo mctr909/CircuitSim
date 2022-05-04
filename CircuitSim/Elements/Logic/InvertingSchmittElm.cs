@@ -44,9 +44,9 @@ namespace Circuit.Elements.Logic {
             }
         }
 
-        public override double VoltageDiff { get { return Volts[0]; } }
+        public override double CirVoltageDiff { get { return CirVolts[0]; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int CirVoltageSourceCount { get { return 1; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.INVERT_SCHMITT; } }
 
@@ -65,8 +65,8 @@ namespace Circuit.Elements.Logic {
             g.DrawPolygon(gatePoly);
             g.DrawPolygon(symbolPoly);
             g.DrawCircle(pcircle, 3);
-            mCurCount = updateDotCount(mCurrent, mCurCount);
-            drawDots(mLead2, mPoint2, mCurCount);
+            mCirCurCount = cirUpdateDotCount(mCirCurrent, mCirCurCount);
+            drawDots(mLead2, mPoint2, mCirCurCount);
         }
 
         public override void SetPoints() {
@@ -86,15 +86,15 @@ namespace Circuit.Elements.Logic {
             setBbox(mPoint1, mPoint2, hs);
         }
 
-        public override void Stamp() {
-            mCir.StampVoltageSource(0, Nodes[1], mVoltSource);
+        public override void CirStamp() {
+            mCir.StampVoltageSource(0, CirNodes[1], mCirVoltSource);
         }
 
-        public override void DoStep() {
-            double v0 = Volts[1];
+        public override void CirDoStep() {
+            double v0 = CirVolts[1];
             double _out;
             if (state) {//Output is high
-                if (Volts[0] > upperTrigger)//Input voltage high enough to set output low
+                if (CirVolts[0] > upperTrigger)//Input voltage high enough to set output low
                 {
                     state = false;
                     _out = logicOffLevel;
@@ -102,7 +102,7 @@ namespace Circuit.Elements.Logic {
                     _out = logicOnLevel;
                 }
             } else {//Output is low
-                if (Volts[0] < lowerTrigger)//Input voltage low enough to set output high
+                if (CirVolts[0] < lowerTrigger)//Input voltage low enough to set output high
                 {
                     state = true;
                     _out = logicOnLevel;
@@ -112,24 +112,24 @@ namespace Circuit.Elements.Logic {
             }
             double maxStep = slewRate * ControlPanel.TimeStep * 1e9;
             _out = Math.Max(Math.Min(v0 + maxStep, _out), v0 - maxStep);
-            mCir.UpdateVoltageSource(0, Nodes[1], mVoltSource, _out);
+            mCir.UpdateVoltageSource(0, CirNodes[1], mCirVoltSource, _out);
         }
 
         public override void GetInfo(string[] arr) {
             arr[0] = "inverting Schmitt trigger";
-            arr[1] = "Vi = " + Utils.VoltageText(Volts[0]);
-            arr[2] = "Vo = " + Utils.VoltageText(Volts[1]);
+            arr[1] = "Vi = " + Utils.VoltageText(CirVolts[0]);
+            arr[2] = "Vo = " + Utils.VoltageText(CirVolts[1]);
         }
 
         // there is no current path through the InvertingSchmitt input, but there
         // is an indirect path through the output to ground.
-        public override bool GetConnection(int n1, int n2) { return false; }
+        public override bool CirGetConnection(int n1, int n2) { return false; }
 
-        public override bool HasGroundConnection(int n1) { return n1 == 1; }
+        public override bool CirHasGroundConnection(int n1) { return n1 == 1; }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             if (n == 1) {
-                return mCurrent;
+                return mCirCurrent;
             }
             return 0;
         }

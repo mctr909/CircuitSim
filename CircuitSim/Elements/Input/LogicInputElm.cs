@@ -30,11 +30,11 @@ namespace Circuit.Elements.Input {
 
         protected override int NumHandles { get { return 1; } }
 
-        public override double VoltageDiff { get { return Volts[0]; } }
+        public override double CirVoltageDiff { get { return CirVolts[0]; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int CirVoltageSourceCount { get { return 1; } }
 
-        public override int PostCount { get { return 1; } }
+        public override int CirPostCount { get { return 1; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.LOGIC_I; } }
 
@@ -46,24 +46,24 @@ namespace Circuit.Elements.Input {
 
         bool isNumeric() { return (mFlags & (FLAG_TERNARY | FLAG_NUMERIC)) != 0; }
 
-        public override bool HasGroundConnection(int n1) { return true; }
+        public override bool CirHasGroundConnection(int n1) { return true; }
 
-        public override double GetCurrentIntoNode(int n) {
-            return -mCurrent;
+        public override double CirGetCurrentIntoNode(int n) {
+            return -mCirCurrent;
         }
 
         public override Rectangle GetSwitchRect() {
             return new Rectangle(P2.X - 10, P2.Y - 10, 20, 20);
         }
 
-        public override void SetCurrent(int vs, double c) { mCurrent = -c; }
+        public override void CirSetCurrent(int vs, double c) { mCirCurrent = -c; }
 
-        public override void Stamp() {
+        public override void CirStamp() {
             double v = (Position == 0) ? mLoV : mHiV;
             if (isTernary()) {
                 v = Position * 2.5;
             }
-            mCir.StampVoltageSource(0, Nodes[0], mVoltSource, v);
+            mCir.StampVoltageSource(0, CirNodes[0], mCirVoltSource, v);
         }
 
         public override void SetPoints() {
@@ -79,8 +79,8 @@ namespace Circuit.Elements.Input {
             setBbox(mPoint1, mLead1, 0);
             drawCenteredLText(s, P2, true);
             drawLead(mPoint1, mLead1);
-            updateDotCount();
-            drawDots(mPoint1, mLead1, mCurCount);
+            cirUpdateDotCount();
+            drawDots(mPoint1, mLead1, mCirCurCount);
             drawPosts();
         }
 
@@ -90,8 +90,8 @@ namespace Circuit.Elements.Input {
             if (isNumeric()) {
                 arr[1] = "" + Position;
             }
-            arr[1] += " (" + Utils.VoltageText(Volts[0]) + ")";
-            arr[2] = "I = " + Utils.CurrentText(mCurrent);
+            arr[1] += " (" + Utils.VoltageText(CirVolts[0]) + ")";
+            arr[2] = "I = " + Utils.CurrentText(mCirCurrent);
         }
 
         public override ElementInfo GetElementInfo(int n) {

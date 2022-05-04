@@ -57,8 +57,8 @@ namespace Circuit.Elements.Passive {
             r1.Resistance = mResistance;
         }
 
-        protected override void calculateCurrent() {
-            mCurrent = GetCurrentIntoNode(1);
+        protected override void cirCalculateCurrent() {
+            mCirCurrent = CirGetCurrentIntoNode(1);
         }
 
         public override void SetPoints() {
@@ -113,10 +113,10 @@ namespace Circuit.Elements.Passive {
                 drawLead(mSandwichPoints[i], mSandwichPoints[(i + 1) % 4]);
             }
 
-            updateDotCount();
+            cirUpdateDotCount();
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mLead1, mCurCount);
-                drawDots(mPoint2, mLead2, -mCurCount);
+                drawDots(mPoint1, mLead1, mCirCurCount);
+                drawDots(mPoint2, mLead2, -mCirCurCount);
             }
             drawPosts();
 

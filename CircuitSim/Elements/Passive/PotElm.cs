@@ -62,7 +62,7 @@ namespace Circuit.Elements.Passive {
             createSlider();
         }
 
-        public override int PostCount { get { return 3; } }
+        public override int CirPostCount { get { return 3; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.POT; } }
 
@@ -70,12 +70,12 @@ namespace Circuit.Elements.Passive {
             return mMaxResistance + " " + mPosition + " " + ReferenceName;
         }
 
-        protected override void calculateCurrent() {
+        protected override void cirCalculateCurrent() {
             if (mResistance1 == 0) {
                 return; /* avoid NaN */
             }
-            mCurrent1 = (Volts[V_L] - Volts[V_S]) / mResistance1;
-            mCurrent2 = (Volts[V_R] - Volts[V_S]) / mResistance2;
+            mCurrent1 = (CirVolts[V_L] - CirVolts[V_S]) / mResistance1;
+            mCurrent2 = (CirVolts[V_R] - CirVolts[V_S]) / mResistance2;
             mCurrent3 = -mCurrent1 - mCurrent2;
         }
 
@@ -125,7 +125,7 @@ namespace Circuit.Elements.Passive {
             return (n == 0) ? mPoint1 : (n == 1) ? mPoint2 : mPost3;
         }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             if (n == 0) {
                 return -mCurrent1;
             }
@@ -141,11 +141,11 @@ namespace Circuit.Elements.Passive {
             base.Delete();
         }
 
-        public override void Stamp() {
+        public override void CirStamp() {
             mResistance1 = mMaxResistance * mPosition;
             mResistance2 = mMaxResistance * (1 - mPosition);
-            mCir.StampResistor(Nodes[0], Nodes[2], mResistance1);
-            mCir.StampResistor(Nodes[2], Nodes[1], mResistance2);
+            mCir.StampResistor(CirNodes[0], CirNodes[2], mResistance1);
+            mCir.StampResistor(CirNodes[2], CirNodes[1], mResistance2);
         }
 
         public override void SetPoints() {
@@ -215,15 +215,15 @@ namespace Circuit.Elements.Passive {
             }
         }
 
-        public override void Reset() {
+        public override void CirReset() {
             mCurCount1 = mCurCount2 = mCurCount3 = 0;
-            base.Reset();
+            base.CirReset();
         }
 
         public override void Draw(CustomGraphics g) {
-            double vl = Volts[V_L];
-            double vr = Volts[V_R];
-            double vs = Volts[V_S];
+            double vl = CirVolts[V_L];
+            double vr = CirVolts[V_R];
+            double vs = CirVolts[V_S];
             setBbox(mPoint1, mPoint2, HS);
             draw2Leads();
 
@@ -259,9 +259,9 @@ namespace Circuit.Elements.Passive {
             drawLead(mArrow2, mArrowPoint);
 
             /* draw dot */
-            mCurCount1 = updateDotCount(mCurrent1, mCurCount1);
-            mCurCount2 = updateDotCount(mCurrent2, mCurCount2);
-            mCurCount3 = updateDotCount(mCurrent3, mCurCount3);
+            mCurCount1 = cirUpdateDotCount(mCurrent1, mCurCount1);
+            mCurCount2 = cirUpdateDotCount(mCurrent2, mCurCount2);
+            mCurCount3 = cirUpdateDotCount(mCurrent3, mCurCount3);
             if (CirSim.Sim.DragElm != this) {
                 drawDots(mPoint1, mMidPoint, mCurCount1);
                 drawDots(mPoint2, mMidPoint, mCurCount2);
@@ -328,7 +328,7 @@ namespace Circuit.Elements.Passive {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "可変抵抗";
-            arr[1] = "Vd = " + Utils.VoltageAbsText(VoltageDiff);
+            arr[1] = "Vd = " + Utils.VoltageAbsText(CirVoltageDiff);
             arr[2] = "R1 = " + Utils.UnitText(mResistance1, CirSim.OHM_TEXT);
             arr[3] = "R2 = " + Utils.UnitText(mResistance2, CirSim.OHM_TEXT);
             arr[4] = "I1 = " + Utils.CurrentAbsText(mCurrent1);

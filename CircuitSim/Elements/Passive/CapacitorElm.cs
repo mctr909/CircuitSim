@@ -1,5 +1,4 @@
-﻿using System.Windows.Forms;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace Circuit.Elements.Passive {
     class CapacitorElm : CircuitElm {
@@ -38,59 +37,59 @@ namespace Circuit.Elements.Passive {
             return Capacitance + " " + mVoltDiff + " " + ReferenceName;
         }
 
-        protected override void calculateCurrent() {
-            double voltdiff = Volts[0] - Volts[1];
+        protected override void cirCalculateCurrent() {
+            double voltdiff = CirVolts[0] - CirVolts[1];
             if (CirSim.Sim.DcAnalysisFlag) {
-                mCurrent = voltdiff / 1e8;
+                mCirCurrent = voltdiff / 1e8;
                 return;
             }
             /* we check compResistance because this might get called
              * before stamp(), which sets compResistance, causing
              * infinite current */
             if (0 < mCompResistance) {
-                mCurrent = voltdiff / mCompResistance + mCurSourceValue;
+                mCirCurrent = voltdiff / mCompResistance + mCurSourceValue;
             }
         }
 
-        public void Shorted() {
-            base.Reset();
-            mVoltDiff = mCurrent = mCurCount = mCurSourceValue = 0;
+        public override void CirShorted() {
+            base.CirReset();
+            mVoltDiff = mCirCurrent = mCirCurCount = mCurSourceValue = 0;
         }
 
-        public override void SetNodeVoltage(int n, double c) {
-            base.SetNodeVoltage(n, c);
-            mVoltDiff = Volts[0] - Volts[1];
+        public override void CirSetNodeVoltage(int n, double c) {
+            base.CirSetNodeVoltage(n, c);
+            mVoltDiff = CirVolts[0] - CirVolts[1];
         }
 
-        public override void Stamp() {
+        public override void CirStamp() {
             if (CirSim.Sim.DcAnalysisFlag) {
                 /* when finding DC operating point, replace cap with a 100M resistor */
-                mCir.StampResistor(Nodes[0], Nodes[1], 1e8);
+                mCir.StampResistor(CirNodes[0], CirNodes[1], 1e8);
                 mCurSourceValue = 0;
                 return;
             }
 
             mCompResistance = ControlPanel.TimeStep / (2 * Capacitance);
 
-            mCir.StampResistor(Nodes[0], Nodes[1], mCompResistance);
-            mCir.StampRightSide(Nodes[0]);
-            mCir.StampRightSide(Nodes[1]);
+            mCir.StampResistor(CirNodes[0], CirNodes[1], mCompResistance);
+            mCir.StampRightSide(CirNodes[0]);
+            mCir.StampRightSide(CirNodes[1]);
         }
 
-        public override void StartIteration() {
-            mCurSourceValue = -mVoltDiff / mCompResistance - mCurrent;
+        public override void CirStartIteration() {
+            mCurSourceValue = -mVoltDiff / mCompResistance - mCirCurrent;
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             if (CirSim.Sim.DcAnalysisFlag) {
                 return;
             }
-            mCir.StampCurrentSource(Nodes[0], Nodes[1], mCurSourceValue);
+            mCir.StampCurrentSource(CirNodes[0], CirNodes[1], mCurSourceValue);
         }
 
-        public override void Reset() {
-            base.Reset();
-            mCurrent = mCurCount = mCurSourceValue = 0;
+        public override void CirReset() {
+            base.CirReset();
+            mCirCurrent = mCirCurCount = mCurSourceValue = 0;
             /* put small charge on caps when reset to start oscillators */
             mVoltDiff = 1e-3;
         }
@@ -135,10 +134,10 @@ namespace Circuit.Elements.Passive {
             drawLead(mPoint2, mLead2);
             drawLead(mPlate2[0], mPlate2[1]);
 
-            updateDotCount();
+            cirUpdateDotCount();
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mLead1, mCurCount);
-                drawDots(mPoint2, mLead2, -mCurCount);
+                drawDots(mPoint1, mLead1, mCirCurCount);
+                drawDots(mPoint2, mLead2, -mCirCurCount);
             }
             drawPosts();
 
@@ -150,7 +149,7 @@ namespace Circuit.Elements.Passive {
             arr[0] = string.IsNullOrEmpty(ReferenceName) ? "コンデンサ" : ReferenceName;
             getBasicInfo(arr);
             arr[3] = "C = " + Utils.UnitText(Capacitance, "F");
-            arr[4] = "P = " + Utils.UnitText(Power, "W");
+            arr[4] = "P = " + Utils.UnitText(CirPower, "W");
         }
 
         public override string GetScopeText(Scope.VAL v) {

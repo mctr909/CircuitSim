@@ -13,24 +13,24 @@ namespace Circuit.Elements.Passive {
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.GROUND; } }
 
-        public override double VoltageDiff { get { return 0; } }
+        public override double CirVoltageDiff { get { return 0; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int CirVoltageSourceCount { get { return 1; } }
 
-        public override int PostCount { get { return 1; } }
+        public override int CirPostCount { get { return 1; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.GROUND; } }
 
         protected override string dump() { return ""; }
 
-        public override bool HasGroundConnection(int n1) { return true; }
+        public override bool CirHasGroundConnection(int n1) { return true; }
 
-        public override double GetCurrentIntoNode(int n) { return -mCurrent; }
+        public override double CirGetCurrentIntoNode(int n) { return -mCirCurrent; }
 
-        public override void SetCurrent(int x, double c) { mCurrent = -c; }
+        public override void CirSetCurrent(int x, double c) { mCirCurrent = -c; }
 
-        public override void Stamp() {
-            mCir.StampVoltageSource(0, Nodes[0], mVoltSource, 0);
+        public override void CirStamp() {
+            mCir.StampVoltageSource(0, CirNodes[0], mCirVoltSource, 0);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -48,7 +48,7 @@ namespace Circuit.Elements.Passive {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "ground";
-            arr[1] = "I = " + Utils.CurrentText(mCurrent);
+            arr[1] = "I = " + Utils.CurrentText(mCirCurrent);
         }
     }
 }

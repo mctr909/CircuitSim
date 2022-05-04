@@ -6,7 +6,7 @@ namespace Circuit.Elements.Custom {
 
         public GraphicElm(Point a, Point b, int flags) : base(a, b, flags) { }
 
-        public override int PostCount { get { return 0; } }
+        public override int CirPostCount { get { return 0; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.INVALID; } }
 

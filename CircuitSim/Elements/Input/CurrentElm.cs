@@ -23,9 +23,9 @@ namespace Circuit.Elements.Input {
             }
         }
 
-        public override double VoltageDiff { get { return Volts[1] - Volts[0]; } }
+        public override double CirVoltageDiff { get { return CirVolts[1] - CirVolts[0]; } }
 
-        public override double Power { get { return -VoltageDiff * mCurrent; } }
+        public override double CirPower { get { return -CirVoltageDiff * mCirCurrent; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.CURRENT; } }
 
@@ -76,12 +76,12 @@ namespace Circuit.Elements.Input {
         public void stampCurrentSource(bool broken) {
             if (broken) {
                 /* no current path; stamping a current source would cause a matrix error. */
-                mCir.StampResistor(Nodes[0], Nodes[1], 1e8);
-                mCurrent = 0;
+                mCir.StampResistor(CirNodes[0], CirNodes[1], 1e8);
+                mCirCurrent = 0;
             } else {
                 /* ok to stamp a current source */
-                mCir.StampCurrentSource(Nodes[0], Nodes[1], mCurrentValue);
-                mCurrent = mCurrentValue;
+                mCir.StampCurrentSource(CirNodes[0], CirNodes[1], mCurrentValue);
+                mCirCurrent = mCurrentValue;
             }
         }
 

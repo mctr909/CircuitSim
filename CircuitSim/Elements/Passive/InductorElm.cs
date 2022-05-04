@@ -11,50 +11,50 @@ namespace Circuit.Elements.Passive {
             mInd = new Inductor(mCir);
             Inductance = 0.001;
             ReferenceName = "L";
-            mInd.Setup(Inductance, mCurrent, mFlags);
+            mInd.Setup(Inductance, mCirCurrent, mFlags);
         }
 
         public InductorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             mInd = new Inductor(mCir);
             try {
                 Inductance = st.nextTokenDouble();
-                mCurrent = st.nextTokenDouble();
+                mCirCurrent = st.nextTokenDouble();
                 ReferenceName = st.nextToken();
             } catch { }
-            mInd.Setup(Inductance, mCurrent, mFlags);
+            mInd.Setup(Inductance, mCirCurrent, mFlags);
         }
 
         public double Inductance { get; set; }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.INDUCTOR; } }
 
-        public override bool NonLinear { get { return mInd.NonLinear(); } }
+        public override bool CirNonLinear { get { return mInd.NonLinear(); } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.INDUCTOR; } }
 
         protected override string dump() {
-            return Inductance + " " + mCurrent + " " + ReferenceName;
+            return Inductance + " " + mCirCurrent + " " + ReferenceName;
         }
 
-        protected override void calculateCurrent() {
-            var voltdiff = Volts[0] - Volts[1];
-            mCurrent = mInd.CalculateCurrent(voltdiff);
+        protected override void cirCalculateCurrent() {
+            var voltdiff = CirVolts[0] - CirVolts[1];
+            mCirCurrent = mInd.CalculateCurrent(voltdiff);
         }
 
-        public override void Stamp() { mInd.Stamp(Nodes[0], Nodes[1]); }
+        public override void CirStamp() { mInd.Stamp(CirNodes[0], CirNodes[1]); }
 
-        public override void StartIteration() {
-            double voltdiff = Volts[0] - Volts[1];
+        public override void CirStartIteration() {
+            double voltdiff = CirVolts[0] - CirVolts[1];
             mInd.StartIteration(voltdiff);
         }
 
-        public override void DoStep() {
-            double voltdiff = Volts[0] - Volts[1];
+        public override void CirDoStep() {
+            double voltdiff = CirVolts[0] - CirVolts[1];
             mInd.DoStep(voltdiff);
         }
 
-        public override void Reset() {
-            mCurrent = Volts[0] = Volts[1] = mCurCount = 0;
+        public override void CirReset() {
+            mCirCurrent = CirVolts[0] = CirVolts[1] = mCirCurCount = 0;
             mInd.Reset();
         }
 
@@ -81,8 +81,8 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            double v1 = Volts[0];
-            double v2 = Volts[1];
+            double v1 = CirVolts[0];
+            double v2 = CirVolts[1];
             int hs = 8;
             setBbox(mPoint1, mPoint2, hs);
 
@@ -100,7 +100,7 @@ namespace Circuit.Elements.Passive {
             arr[0] = string.IsNullOrEmpty(ReferenceName) ? "コイル" : ReferenceName;
             getBasicInfo(arr);
             arr[3] = "L = " + Utils.UnitText(Inductance, "H");
-            arr[4] = "P = " + Utils.UnitText(Power, "W");
+            arr[4] = "P = " + Utils.UnitText(CirPower, "W");
         }
 
         public override ElementInfo GetElementInfo(int n) {
@@ -138,7 +138,7 @@ namespace Circuit.Elements.Passive {
                     mFlags |= Inductor.FLAG_BACK_EULER;
                 }
             }
-            mInd.Setup(Inductance, mCurrent, mFlags);
+            mInd.Setup(Inductance, mCirCurrent, mFlags);
         }
     }
 }

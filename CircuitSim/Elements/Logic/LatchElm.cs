@@ -24,9 +24,9 @@ namespace Circuit.Elements.Logic {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.LATCH; } }
 
-        public override int PostCount { get { return bits * 2 + 1; } }
+        public override int CirPostCount { get { return bits * 2 + 1; } }
 
-        public override int VoltageSourceCount { get { return bits; } }
+        public override int CirVoltageSourceCount { get { return bits; } }
 
         string getChipName() { return "Latch"; }
 
@@ -37,7 +37,7 @@ namespace Circuit.Elements.Logic {
         public override void SetupPins() {
             sizeX = 2;
             sizeY = bits + 1;
-            pins = new Pin[PostCount];
+            pins = new Pin[CirPostCount];
             for (var i = 0; i != bits; i++) {
                 pins[i] = new Pin(this, bits - 1 - i, SIDE_W, "I" + i);
             }
@@ -47,7 +47,7 @@ namespace Circuit.Elements.Logic {
                 pins[i + bits].state = (mFlags & FLAG_STATE) != 0;
             }
             pins[loadPin = bits * 2] = new Pin(this, bits, SIDE_W, "Ld");
-            allocNodes();
+            cirAllocNodes();
         }
 
         public override ElementInfo GetElementInfo(int n) {

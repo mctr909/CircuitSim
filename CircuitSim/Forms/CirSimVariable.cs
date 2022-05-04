@@ -60,8 +60,9 @@ namespace Circuit {
         public float[] Transform { get; private set; }
         public bool DcAnalysisFlag { get; private set; }
         public double Time { get; private set; }
-        
+
         public List<CircuitElm> ElmList { get; private set; }
+        public int ElmCount { get { return null == ElmList ? 0 : ElmList.Count; } }
         public CircuitElm PlotXElm { get; private set; }
         public CircuitElm PlotYElm { get; private set; }
         public CircuitElm DragElm { get; private set; }

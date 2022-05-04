@@ -39,7 +39,7 @@ namespace Circuit.Elements.Active {
             return dumpWithMask(0);
         }
 
-        public override bool GetConnection(int n1, int n2) {
+        public override bool CirGetConnection(int n1, int n2) {
             return n1 / 2 == n2 / 2;
         }
 
@@ -73,8 +73,8 @@ namespace Circuit.Elements.Active {
             mStubs[n] = new Point((int)(xa + dax * mCspc), (int)(ya + day * mCspc));
         }
 
-        public override void Reset() {
-            base.Reset();
+        public override void CirReset() {
+            base.CirReset();
             mCurCounts = new double[4];
         }
 
@@ -137,7 +137,7 @@ namespace Circuit.Elements.Active {
                 var a = posts[i];
                 var b = mStubs[i];
                 drawLead(a, b);
-                mCurCounts[i] = updateDotCount(-GetCurrentIntoNode(i), mCurCounts[i]);
+                mCurCounts[i] = cirUpdateDotCount(-CirGetCurrentIntoNode(i), mCurCounts[i]);
                 drawDots(a, b, mCurCounts[i]);
             }
 
@@ -161,8 +161,8 @@ namespace Circuit.Elements.Active {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "optocoupler";
-            arr[1] = "Iin = " + Utils.CurrentText(GetCurrentIntoNode(0));
-            arr[2] = "Iout = " + Utils.CurrentText(GetCurrentIntoNode(2));
+            arr[1] = "Iin = " + Utils.CurrentText(CirGetCurrentIntoNode(0));
+            arr[2] = "Iout = " + Utils.CurrentText(CirGetCurrentIntoNode(2));
         }
     }
 }

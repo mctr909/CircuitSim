@@ -24,23 +24,23 @@ namespace Circuit.Elements.Output {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.DATA_RECORDER; } }
 
-        public override int PostCount { get { return 1; } }
+        public override int CirPostCount { get { return 1; } }
 
-        public override double VoltageDiff { get { return Volts[0]; } }
+        public override double CirVoltageDiff { get { return CirVolts[0]; } }
 
         protected override string dump() {
             return mDataCount.ToString();
         }
 
-        public override void StepFinished() {
-            mData[mDataPtr++] = Volts[0];
+        public override void CirStepFinished() {
+            mData[mDataPtr++] = CirVolts[0];
             if (mDataPtr >= mDataCount) {
                 mDataPtr = 0;
                 mDataFull = true;
             }
         }
 
-        public override void Reset() {
+        public override void CirReset() {
             mDataPtr = 0;
             mDataFull = false;
         }
@@ -63,7 +63,7 @@ namespace Circuit.Elements.Output {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "data export";
-            arr[1] = "V = " + Utils.VoltageText(Volts[0]);
+            arr[1] = "V = " + Utils.VoltageText(CirVolts[0]);
             arr[2] = (mDataFull ? mDataCount : mDataPtr) + "/" + mDataCount;
         }
 

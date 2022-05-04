@@ -16,9 +16,9 @@ namespace Circuit.Elements.Logic {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.FLIP_FLOP_D; } }
 
-        public override int PostCount { get { return 4 + (hasReset ? 1 : 0) + (hasSet ? 1 : 0); } }
+        public override int CirPostCount { get { return 4 + (hasReset ? 1 : 0) + (hasSet ? 1 : 0); } }
 
-        public override int VoltageSourceCount { get { return 2; } }
+        public override int CirVoltageSourceCount { get { return 2; } }
 
         string getChipName() { return "D flip-flop"; }
 
@@ -29,7 +29,7 @@ namespace Circuit.Elements.Logic {
         public override void SetupPins() {
             sizeX = 2;
             sizeY = 3;
-            pins = new Pin[PostCount];
+            pins = new Pin[CirPostCount];
             pins[0] = new Pin(this, 0, SIDE_W, "D");
             pins[1] = new Pin(this, 0, SIDE_E, "Q");
             pins[1].output = pins[1].state = true;
@@ -48,9 +48,9 @@ namespace Circuit.Elements.Logic {
             }
         }
 
-        public override void Reset() {
-            base.Reset();
-            Volts[2] = 5;
+        public override void CirReset() {
+            base.CirReset();
+            CirVolts[2] = 5;
             pins[2].value = true;
         }
 
@@ -84,7 +84,7 @@ namespace Circuit.Elements.Logic {
                     mFlags &= ~FLAG_RESET | FLAG_SET;
                 }
                 SetupPins();
-                allocNodes();
+                cirAllocNodes();
                 SetPoints();
             }
             if (n == 3) {
@@ -94,7 +94,7 @@ namespace Circuit.Elements.Logic {
                     mFlags &= ~FLAG_SET;
                 }
                 SetupPins();
-                allocNodes();
+                cirAllocNodes();
                 SetPoints();
             }
             base.SetElementValue(n, ei);

@@ -33,31 +33,31 @@ namespace Circuit.Elements.Custom {
 
         public CompositeElm(Point pos, string s, int[] externalNodes) : base(pos) {
             loadComposite(null, s, externalNodes);
-            allocNodes();
+            cirAllocNodes();
         }
 
         public CompositeElm(Point p1, Point p2, int f, StringTokenizer st, string s, int[] externalNodes) : base(p1, p2, f) {
             loadComposite(st, s, externalNodes);
-            allocNodes();
+            cirAllocNodes();
         }
 
         public override bool CanViewInScope { get { return false; } }
 
-        public override double Power {
+        public override double CirPower {
             get {
                 double power = 0.0;
                 for (int i = 0; i < compElmList.Count; i++) {
-                    power += compElmList[i].Power;
+                    power += compElmList[i].CirPower;
                 }
                 return power;
             }
         }
 
-        public override int VoltageSourceCount { get { return voltageSources.Count; } }
+        public override int CirVoltageSourceCount { get { return voltageSources.Count; } }
 
-        public override int InternalNodeCount { get { return numNodes - numPosts; } }
+        public override int CirInternalNodeCount { get { return numNodes - numPosts; } }
 
-        public override bool NonLinear {
+        public override bool CirNonLinear {
             get {
                 /* Lets assume that any useful composite elements are
                  * non-linear */
@@ -65,7 +65,7 @@ namespace Circuit.Elements.Custom {
             }
         }
 
-        public override int PostCount { get { return numPosts; } }
+        public override int CirPostCount { get { return numPosts; } }
 
         public override abstract DUMP_ID DumpType { get; }
 
@@ -174,10 +174,10 @@ namespace Circuit.Elements.Custom {
             /* allocate more nodes for sub-elements' internal nodes */
             for (int i = 0; i != compElmList.Count; i++) {
                 var ce = compElmList[i];
-                int inodes = ce.InternalNodeCount;
+                int inodes = ce.CirInternalNodeCount;
                 for (int j = 0; j != inodes; j++) {
                     cnLink = new CircuitNodeLink();
-                    cnLink.Num = j + ce.PostCount;
+                    cnLink.Num = j + ce.CirPostCount;
                     cnLink.Elm = ce;
                     cn = new CircuitNode();
                     cn.Links.Add(cnLink);
@@ -196,7 +196,7 @@ namespace Circuit.Elements.Custom {
 
             /* Enumerate voltage sources */
             for (int i = 0; i < compElmList.Count; i++) {
-                int cnt = compElmList[i].VoltageSourceCount;
+                int cnt = compElmList[i].CirVoltageSourceCount;
                 for (int j = 0; j < cnt; j++) {
                     vsRecord = new VoltageSourceRecord();
                     vsRecord.elm = compElmList[i];
@@ -210,7 +210,7 @@ namespace Circuit.Elements.Custom {
         }
 
         /* are n1 and n2 connected internally somehow? */
-        public override bool GetConnection(int n1, int n2) {
+        public override bool CirGetConnection(int n1, int n2) {
             var cnLinks1 = compNodeList[n1].Links;
             var cnLinks2 = compNodeList[n2].Links;
 
@@ -219,7 +219,7 @@ namespace Circuit.Elements.Custom {
                 CircuitNodeLink link1 = cnLinks1[i];
                 for (int j = 0; j < cnLinks2.Count; j++) {
                     CircuitNodeLink link2 = cnLinks2[j];
-                    if (link1.Elm == link2.Elm && link1.Elm.GetConnection(link1.Num, link2.Num)) {
+                    if (link1.Elm == link2.Elm && link1.Elm.CirGetConnection(link1.Num, link2.Num)) {
                         return true;
                     }
                 }
@@ -228,20 +228,20 @@ namespace Circuit.Elements.Custom {
         }
 
         /* is n1 connected to ground somehow? */
-        public override bool HasGroundConnection(int n1) {
+        public override bool CirHasGroundConnection(int n1) {
             List<CircuitNodeLink> cnLinks;
             cnLinks = compNodeList[n1].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
-                if (cnLinks[i].Elm.HasGroundConnection(cnLinks[i].Num)) {
+                if (cnLinks[i].Elm.CirHasGroundConnection(cnLinks[i].Num)) {
                     return true;
                 }
             }
             return false;
         }
 
-        public override void Reset() {
+        public override void CirReset() {
             for (int i = 0; i < compElmList.Count; i++) {
-                compElmList[i].Reset();
+                compElmList[i].CirReset();
             }
         }
 
@@ -258,51 +258,51 @@ namespace Circuit.Elements.Custom {
             posts[n].Y = y;
         }
 
-        public override void Stamp() {
+        public override void CirStamp() {
             for (int i = 0; i < compElmList.Count; i++) {
                 var ce = compElmList[i];
                 /* current sources need special stamp method */
                 if (ce is CurrentElm) {
                     ((CurrentElm)ce).stampCurrentSource(false);
                 } else {
-                    ce.Stamp();
+                    ce.CirStamp();
                 }
             }
         }
 
-        public override void StartIteration() {
+        public override void CirStartIteration() {
             for (int i = 0; i < compElmList.Count; i++) {
-                compElmList[i].StartIteration();
+                compElmList[i].CirStartIteration();
             }
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             for (int i = 0; i < compElmList.Count; i++) {
-                compElmList[i].DoStep();
+                compElmList[i].CirDoStep();
             }
         }
 
-        public override void StepFinished() {
+        public override void CirStepFinished() {
             for (int i = 0; i < compElmList.Count; i++) {
-                compElmList[i].StepFinished();
+                compElmList[i].CirStepFinished();
             }
         }
 
-        public override void SetNode(int p, int n) {
-            base.SetNode(p, n);
+        public override void CirSetNode(int p, int n) {
+            base.CirSetNode(p, n);
             var cnLinks = compNodeList[p].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
-                cnLinks[i].Elm.SetNode(cnLinks[i].Num, n);
+                cnLinks[i].Elm.CirSetNode(cnLinks[i].Num, n);
             }
         }
 
-        public override void SetNodeVoltage(int n, double c) {
-            base.SetNodeVoltage(n, c);
+        public override void CirSetNodeVoltage(int n, double c) {
+            base.CirSetNodeVoltage(n, c);
             var cnLinks = compNodeList[n].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
-                cnLinks[i].Elm.SetNodeVoltage(cnLinks[i].Num, c);
+                cnLinks[i].Elm.CirSetNodeVoltage(cnLinks[i].Num, c);
             }
-            Volts[n] = c;
+            CirVolts[n] = c;
         }
 
         public override void Delete() {
@@ -315,25 +315,25 @@ namespace Circuit.Elements.Custom {
         /* Find the component with the nth voltage
          * and set the
          * appropriate source in that component */
-        public override void SetVoltageSource(int n, int v) {
+        public override void CirSetVoltageSource(int n, int v) {
             var vsr = voltageSources[n];
-            vsr.elm.SetVoltageSource(vsr.vsNumForElement, v);
+            vsr.elm.CirSetVoltageSource(vsr.vsNumForElement, v);
             vsr.vsNode = v;
         }
 
-        public override void SetCurrent(int vsn, double c) {
+        public override void CirSetCurrent(int vsn, double c) {
             for (int i = 0; i < voltageSources.Count; i++) {
                 if (voltageSources[i].vsNode == vsn) {
-                    voltageSources[i].elm.SetCurrent(vsn, c);
+                    voltageSources[i].elm.CirSetCurrent(vsn, c);
                 }
             }
         }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             double c = 0;
             var cnLinks = compNodeList[n].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
-                c += cnLinks[i].Elm.GetCurrentIntoNode(cnLinks[i].Num);
+                c += cnLinks[i].Elm.CirGetCurrentIntoNode(cnLinks[i].Num);
             }
             return c;
         }

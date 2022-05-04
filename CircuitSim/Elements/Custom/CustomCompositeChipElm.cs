@@ -8,9 +8,9 @@ namespace Circuit.Elements.Custom {
             setSize(2);
         }
 
-        public override int VoltageSourceCount { get { return 0; } }
+        public override int CirVoltageSourceCount { get { return 0; } }
 
-        public override int PostCount { get { return null == pins ? 1 : pins.Length; } }
+        public override int CirPostCount { get { return null == pins ? 1 : pins.Length; } }
 
         protected override bool needsBits() { return false; }
 
@@ -22,7 +22,7 @@ namespace Circuit.Elements.Custom {
 
         public void allocPins(int n) {
             pins = new Pin[n];
-            allocNodes();
+            cirAllocNodes();
         }
 
         public void setPin(int n, int p, int s, string t) {

@@ -13,13 +13,13 @@ namespace Circuit.Elements.Input {
 
         protected override int NumHandles { get { return 1; } }
 
-        public override double VoltageDiff { get { return Volts[0]; } }
+        public override double CirVoltageDiff { get { return CirVolts[0]; } }
 
-        public override int PostCount { get { return 1; } }
+        public override int CirPostCount { get { return 1; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.RAIL; } }
 
-        public override bool HasGroundConnection(int n1) { return true; }
+        public override bool CirHasGroundConnection(int n1) { return true; }
 
         public override void SetPoints() {
             base.SetPoints();
@@ -30,17 +30,17 @@ namespace Circuit.Elements.Input {
             return null;
         }
 
-        public override void Stamp() {
+        public override void CirStamp() {
             if (waveform == WAVEFORM.DC) {
-                mCir.StampVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
+                mCir.StampVoltageSource(0, CirNodes[0], mCirVoltSource, getVoltage());
             } else {
-                mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
+                mCir.StampVoltageSource(0, CirNodes[0], mCirVoltSource);
             }
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             if (waveform != WAVEFORM.DC) {
-                mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
+                mCir.UpdateVoltageSource(0, CirNodes[0], mCirVoltSource, getVoltage());
             }
         }
 
@@ -60,9 +60,9 @@ namespace Circuit.Elements.Input {
             drawLead(mPoint1, mLead1);
             drawRail(g);
             drawPosts();
-            mCurCount = updateDotCount(-mCurrent, mCurCount);
+            mCirCurCount = cirUpdateDotCount(-mCirCurrent, mCirCurCount);
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mLead1, mCurCount);
+                drawDots(mPoint1, mLead1, mCirCurCount);
             }
         }
 

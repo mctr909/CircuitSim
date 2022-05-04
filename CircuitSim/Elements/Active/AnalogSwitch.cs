@@ -34,16 +34,16 @@ namespace Circuit.Elements.Active {
             return mR_on + " " + mR_off;
         }
 
-        protected override void calculateCurrent() {
-            mCurrent = (Volts[0] - Volts[1]) / mResistance;
+        protected override void cirCalculateCurrent() {
+            mCirCurrent = (CirVolts[0] - CirVolts[1]) / mResistance;
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.ANALOG_SW; } }
 
         // we need this to be able to change the matrix for each step
-        public override bool NonLinear { get { return true; } }
+        public override bool CirNonLinear { get { return true; } }
 
-        public override int PostCount { get { return 3; } }
+        public override int CirPostCount { get { return 3; } }
 
         public override Point GetPost(int n) {
             return (0 == n) ? mPoint1 : (1 == n) ? mPoint2 : mPoint3;
@@ -51,26 +51,26 @@ namespace Circuit.Elements.Active {
 
         // we have to just assume current will flow either way, even though that
         // might cause singular matrix errors
-        public override bool GetConnection(int n1, int n2) {
+        public override bool CirGetConnection(int n1, int n2) {
             if (n1 == 2 || n2 == 2) {
                 return false;
             }
             return true;
         }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             if (n == 0) {
-                return -mCurrent;
+                return -mCirCurrent;
             }
             if (n == 2) {
                 return 0;
             }
-            return mCurrent;
+            return mCirCurrent;
         }
 
-        public override void Stamp() {
-            mCir.StampNonLinear(Nodes[0]);
-            mCir.StampNonLinear(Nodes[1]);
+        public override void CirStamp() {
+            mCir.StampNonLinear(CirNodes[0]);
+            mCir.StampNonLinear(CirNodes[1]);
         }
 
         public override void Drag(Point pos) {
@@ -116,21 +116,21 @@ namespace Circuit.Elements.Active {
             drawPosts();
         }
 
-        public override void DoStep() {
-            mIsOpen = Volts[2] < 2.5;
+        public override void CirDoStep() {
+            mIsOpen = CirVolts[2] < 2.5;
             if ((mFlags & FLAG_INVERT) != 0) {
                 mIsOpen = !mIsOpen;
             }
             mResistance = mIsOpen ? mR_off : mR_on;
-            mCir.StampResistor(Nodes[0], Nodes[1], mResistance);
+            mCir.StampResistor(CirNodes[0], CirNodes[1], mResistance);
         }
 
         public override void GetInfo(string[] arr) {
             arr[0] = "analog switch";
             arr[1] = mIsOpen ? "open" : "closed";
-            arr[2] = "Vd = " + Utils.VoltageAbsText(VoltageDiff);
-            arr[3] = "I = " + Utils.CurrentAbsText(Current);
-            arr[4] = "Vc = " + Utils.VoltageText(Volts[2]);
+            arr[2] = "Vd = " + Utils.VoltageAbsText(CirVoltageDiff);
+            arr[3] = "I = " + Utils.CurrentAbsText(CirCurrent);
+            arr[4] = "Vc = " + Utils.VoltageText(CirVolts[2]);
         }
 
         public override ElementInfo GetElementInfo(int n) {

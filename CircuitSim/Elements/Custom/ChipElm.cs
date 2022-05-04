@@ -142,12 +142,12 @@ namespace Circuit.Elements.Custom {
             SetupPins();
             setSize(1);
             int i;
-            for (i = 0; i != PostCount; i++) {
+            for (i = 0; i != CirPostCount; i++) {
                 if (pins == null) {
-                    Volts[i] = st.nextTokenDouble();
+                    CirVolts[i] = st.nextTokenDouble();
                 } else if (pins[i].state) {
-                    Volts[i] = st.nextTokenDouble();
-                    pins[i].value = Volts[i] > 2.5;
+                    CirVolts[i] = st.nextTokenDouble();
+                    pins[i].value = CirVolts[i] > 2.5;
                 }
             }
         }
@@ -159,9 +159,9 @@ namespace Circuit.Elements.Custom {
             if (needsBits()) {
                 s = string.Join(" ", s, bits);
             }
-            for (int i = 0; i != PostCount; i++) {
+            for (int i = 0; i != CirPostCount; i++) {
                 if (pins[i].state) {
-                    s = string.Join(" ", s, Volts[i]);
+                    s = string.Join(" ", s, CirVolts[i]);
                 }
             }
             return s;
@@ -184,12 +184,12 @@ namespace Circuit.Elements.Custom {
         }
 
         public void drawChip(CustomGraphics g) {
-            for (int i = 0; i != PostCount; i++) {
+            for (int i = 0; i != CirPostCount; i++) {
                 var p = pins[i];
                 var a = p.post;
                 var b = p.stub;
                 drawLead(a, b);
-                p.curcount = updateDotCount(p.current, p.curcount);
+                p.curcount = cirUpdateDotCount(p.current, p.curcount);
                 drawDots(b, a, p.curcount);
                 if (p.bubble) {
                     g.LineColor = Color.White;
@@ -251,7 +251,7 @@ namespace Circuit.Elements.Custom {
                 new Point(r.X, r.Y + ys)
             };
             setBbox(r, rectPoints[2]);
-            for (int i = 0; i != PostCount; i++) {
+            for (int i = 0; i != CirPostCount; i++) {
                 var p = pins[i];
                 switch (p.side) {
                 case SIDE_N:
@@ -300,7 +300,7 @@ namespace Circuit.Elements.Custom {
                 return false;
             }
 
-            for (int i = 0; i != PostCount; i++) {
+            for (int i = 0; i != CirPostCount; i++) {
                 if (pin == i) {
                     continue;
                 }
@@ -315,8 +315,8 @@ namespace Circuit.Elements.Custom {
             return pins[n].post;
         }
 
-        public override void SetVoltageSource(int j, int vs) {
-            for (int i = 0; i != PostCount; i++) {
+        public override void CirSetVoltageSource(int j, int vs) {
+            for (int i = 0; i != CirPostCount; i++) {
                 var p = pins[i];
                 if (p.output && j-- == 0) {
                     p.voltSource = vs;
@@ -326,39 +326,39 @@ namespace Circuit.Elements.Custom {
             Console.WriteLine("setVoltageSource failed for " + this);
         }
 
-        public override void Stamp() {
-            for (int i = 0; i != PostCount; i++) {
+        public override void CirStamp() {
+            for (int i = 0; i != CirPostCount; i++) {
                 var p = pins[i];
                 if (p.output) {
-                    mCir.StampVoltageSource(0, Nodes[i], p.voltSource);
+                    mCir.StampVoltageSource(0, CirNodes[i], p.voltSource);
                 }
             }
         }
 
         protected virtual void execute() { }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             int i;
-            for (i = 0; i != PostCount; i++) {
+            for (i = 0; i != CirPostCount; i++) {
                 var p = pins[i];
                 if (!p.output) {
-                    p.value = Volts[i] > 2.5;
+                    p.value = CirVolts[i] > 2.5;
                 }
             }
             execute();
-            for (i = 0; i != PostCount; i++) {
+            for (i = 0; i != CirPostCount; i++) {
                 var p = pins[i];
                 if (p.output) {
-                    mCir.UpdateVoltageSource(0, Nodes[i], p.voltSource, p.value ? 5 : 0);
+                    mCir.UpdateVoltageSource(0, CirNodes[i], p.voltSource, p.value ? 5 : 0);
                 }
             }
         }
 
-        public override void Reset() {
-            for (int i = 0; i != PostCount; i++) {
+        public override void CirReset() {
+            for (int i = 0; i != CirPostCount; i++) {
                 pins[i].value = false;
                 pins[i].curcount = 0;
-                Volts[i] = 0;
+                CirVolts[i] = 0;
             }
             lastClock = false;
         }
@@ -366,7 +366,7 @@ namespace Circuit.Elements.Custom {
         public override void GetInfo(string[] arr) {
             arr[0] = getChipName();
             int a = 1;
-            for (int i = 0; i != PostCount; i++) {
+            for (int i = 0; i != CirPostCount; i++) {
                 var p = pins[i];
                 if (arr[a] != null) {
                     arr[a] += "; ";
@@ -380,15 +380,15 @@ namespace Circuit.Elements.Custom {
                 if (p.clock) {
                     t = "Clk";
                 }
-                arr[a] += t + " = " + Utils.VoltageText(Volts[i]);
+                arr[a] += t + " = " + Utils.VoltageText(CirVolts[i]);
                 if (i % 2 == 1) {
                     a++;
                 }
             }
         }
 
-        public override void SetCurrent(int x, double c) {
-            for (int i = 0; i != PostCount; i++) {
+        public override void CirSetCurrent(int x, double c) {
+            for (int i = 0; i != CirPostCount; i++) {
                 if (pins[i].output && pins[i].voltSource == x) {
                     pins[i].current = c;
                 }
@@ -397,13 +397,13 @@ namespace Circuit.Elements.Custom {
 
         string getChipName() { return "chip"; }
 
-        public override bool GetConnection(int n1, int n2) { return false; }
+        public override bool CirGetConnection(int n1, int n2) { return false; }
 
-        public override bool HasGroundConnection(int n1) {
+        public override bool CirHasGroundConnection(int n1) {
             return pins[n1].output;
         }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             return pins[n].current;
         }
 

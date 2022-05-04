@@ -22,9 +22,9 @@ namespace Circuit.Elements.Output {
             }
         }
 
-        public override double VoltageDiff { get { return Volts[0]; } }
+        public override double CirVoltageDiff { get { return CirVolts[0]; } }
 
-        public override int PostCount { get { return 1; } }
+        public override int CirPostCount { get { return 1; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.LOGIC_O; } }
 
@@ -38,9 +38,9 @@ namespace Circuit.Elements.Output {
 
         bool needsPullDown() { return (mFlags & FLAG_PULLDOWN) != 0; }
 
-        public override void Stamp() {
+        public override void CirStamp() {
             if (needsPullDown()) {
-                mCir.StampResistor(Nodes[0], 0, 1e6);
+                mCir.StampResistor(CirNodes[0], 0, 1e6);
             }
         }
 
@@ -50,17 +50,17 @@ namespace Circuit.Elements.Output {
         }
 
         public override void Draw(CustomGraphics g) {
-            string s = (Volts[0] < mThreshold) ? "L" : "H";
+            string s = (CirVolts[0] < mThreshold) ? "L" : "H";
             if (isTernary()) {
-                if (Volts[0] > 3.75) {
+                if (CirVolts[0] > 3.75) {
                     s = "2";
-                } else if (Volts[0] > 1.25) {
+                } else if (CirVolts[0] > 1.25) {
                     s = "1";
                 } else {
                     s = "0";
                 }
             } else if (isNumeric()) {
-                s = (Volts[0] < mThreshold) ? "0" : "1";
+                s = (CirVolts[0] < mThreshold) ? "0" : "1";
             }
             mValue = s;
             setBbox(mPoint1, mLead1, 0);
@@ -71,11 +71,11 @@ namespace Circuit.Elements.Output {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "logic output";
-            arr[1] = (Volts[0] < mThreshold) ? "low" : "high";
+            arr[1] = (CirVolts[0] < mThreshold) ? "low" : "high";
             if (isNumeric()) {
                 arr[1] = mValue;
             }
-            arr[2] = "V = " + Utils.VoltageText(Volts[0]);
+            arr[2] = "V = " + Utils.VoltageText(CirVolts[0]);
         }
 
         public override ElementInfo GetElementInfo(int n) {

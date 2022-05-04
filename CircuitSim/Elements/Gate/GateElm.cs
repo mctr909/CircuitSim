@@ -65,9 +65,9 @@ namespace Circuit.Elements.Gate {
             mFlags |= FLAG_SMALL;
         }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int CirVoltageSourceCount { get { return 1; } }
 
-        public override int PostCount { get { return mInputCount + 1; } }
+        public override int CirPostCount { get { return mInputCount + 1; } }
 
         public static bool useAnsiGates() { return ControlPanel.ChkUseAnsiSymbols.Checked; }
 
@@ -76,7 +76,7 @@ namespace Circuit.Elements.Gate {
         protected virtual bool isInverting() { return false; }
 
         protected override string dump() {
-            return mInputCount + " " + Volts[mInputCount] + " " + mHighVoltage;
+            return mInputCount + " " + CirVolts[mInputCount] + " " + mHighVoltage;
         }
 
         public override Point GetPost(int n) {
@@ -88,24 +88,24 @@ namespace Circuit.Elements.Gate {
 
         /* there is no current path through the gate inputs,
          * but there is an indirect path through the output to ground. */
-        public override bool GetConnection(int n1, int n2) { return false; }
+        public override bool CirGetConnection(int n1, int n2) { return false; }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             if (n == mInputCount) {
-                return mCurrent;
+                return mCirCurrent;
             }
             return 0;
         }
 
-        public override bool HasGroundConnection(int n1) {
+        public override bool CirHasGroundConnection(int n1) {
             return (n1 == mInputCount);
         }
 
         protected bool getInput(int x) {
             if (!hasSchmittInputs()) {
-                return Volts[x] > mHighVoltage * .5;
+                return CirVolts[x] > mHighVoltage * .5;
             }
-            bool res = Volts[x] > mHighVoltage * (mInputStates[x] ? .35 : .55);
+            bool res = CirVolts[x] > mHighVoltage * (mInputStates[x] ? .35 : .55);
             mInputStates[x] = res;
             return res;
         }
@@ -118,11 +118,11 @@ namespace Circuit.Elements.Gate {
 
         protected virtual string getGateText() { return null; }
 
-        public override void Stamp() {
-            mCir.StampVoltageSource(0, Nodes[mInputCount], mVoltSource);
+        public override void CirStamp() {
+            mCir.StampVoltageSource(0, CirNodes[mInputCount], mCirVoltSource);
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             bool f = calcFunction();
             if (isInverting()) {
                 f = !f;
@@ -142,7 +142,7 @@ namespace Circuit.Elements.Gate {
             }
             mLastOutput = f;
             double res = f ? mHighVoltage : 0;
-            mCir.UpdateVoltageSource(0, Nodes[mInputCount], mVoltSource, res);
+            mCir.UpdateVoltageSource(0, CirNodes[mInputCount], mCirVoltSource, res);
         }
 
         public override void SetPoints() {
@@ -160,7 +160,7 @@ namespace Circuit.Elements.Gate {
             calcLeads(mWw * 2);
             mInPosts = new Point[mInputCount];
             mInGates = new Point[mInputCount];
-            allocNodes();
+            cirAllocNodes();
             int i0 = -mInputCount / 2;
             for (i = 0; i != mInputCount; i++, i0++) {
                 if (i0 == 0 && (mInputCount & 1) == 0) {
@@ -168,7 +168,7 @@ namespace Circuit.Elements.Gate {
                 }
                 interpPoint(ref mInPosts[i], 0, hs * i0);
                 interpLead(ref mInGates[i], 0, hs * i0);
-                Volts[i] = (mLastOutput ^ isInverting()) ? 5 : 0;
+                CirVolts[i] = (mLastOutput ^ isInverting()) ? 5 : 0;
             }
             mHs2 = G_WIDTH * (mInputCount / 2 + 1);
             setBbox(mPoint1, mPoint2, mHs2);
@@ -203,15 +203,15 @@ namespace Circuit.Elements.Gate {
             if (isInverting()) {
                 g.DrawCircle(mCirclePos, CIRCLE_SIZE);
             }
-            mCurCount = updateDotCount(mCurrent, mCurCount);
-            drawDots(mLead2, mPoint2, mCurCount);
+            mCirCurCount = cirUpdateDotCount(mCirCurrent, mCirCurCount);
+            drawDots(mLead2, mPoint2, mCirCurCount);
             drawPosts();
         }
 
         public override void GetInfo(string[] arr) {
             arr[0] = getGateName();
-            arr[1] = "Vout = " + Utils.VoltageText(Volts[mInputCount]);
-            arr[2] = "Iout = " + Utils.CurrentText(mCurrent);
+            arr[1] = "Vout = " + Utils.VoltageText(CirVolts[mInputCount]);
+            arr[2] = "Iout = " + Utils.CurrentText(mCirCurrent);
         }
 
         public override ElementInfo GetElementInfo(int n) {

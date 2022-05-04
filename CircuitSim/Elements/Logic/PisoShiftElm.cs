@@ -14,9 +14,9 @@ namespace Circuit.Elements.Logic {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.SHIFT_REGISTER_PISO; } }
 
-        public override int PostCount { get { return 11; } }
+        public override int CirPostCount { get { return 11; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int CirVoltageSourceCount { get { return 1; } }
 
         string getChipName() { return "PISO shift register"; }
 
@@ -25,7 +25,7 @@ namespace Circuit.Elements.Logic {
         public override void SetupPins() {
             sizeX = 10;
             sizeY = 3;
-            pins = new Pin[PostCount];
+            pins = new Pin[CirPostCount];
 
             pins[0] = new Pin(this, 1, SIDE_W, "L");
             pins[1] = new Pin(this, 2, SIDE_W, "");

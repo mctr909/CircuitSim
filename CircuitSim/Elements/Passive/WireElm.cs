@@ -10,11 +10,11 @@ namespace Circuit.Elements.Passive {
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.WIRE; } }
 
-        public override bool IsWire { get { return true; } }
+        public override bool CirIsWire { get { return true; } }
 
-        public override double VoltageDiff { get { return Volts[0]; } }
+        public override double CirVoltageDiff { get { return CirVolts[0]; } }
 
-        public override double Power { get { return 0; } }
+        public override double CirPower { get { return 0; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.WIRE; } }
 
@@ -33,8 +33,8 @@ namespace Circuit.Elements.Passive {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "ワイヤ";
-            arr[1] = "I = " + Utils.CurrentAbsText(mCurrent);
-            arr[2] = "V = " + Utils.VoltageText(Volts[0]);
+            arr[1] = "I = " + Utils.CurrentAbsText(mCirCurrent);
+            arr[2] = "V = " + Utils.VoltageText(CirVolts[0]);
         }
     }
 }

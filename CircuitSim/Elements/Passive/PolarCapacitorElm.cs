@@ -37,8 +37,8 @@ namespace Circuit.Elements.Passive {
             }
         }
 
-        public override void StepFinished() {
-            if (VoltageDiff < 0 && VoltageDiff < -mMaxNegativeVoltage) {
+        public override void CirStepFinished() {
+            if (CirVoltageDiff < 0 && CirVoltageDiff < -mMaxNegativeVoltage) {
                 mCir.Stop("耐逆電圧" + Utils.VoltageText(mMaxNegativeVoltage) + "を超えました", this);
             }
         }

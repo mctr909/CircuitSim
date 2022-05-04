@@ -10,9 +10,9 @@ namespace Circuit.Elements.Gate {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.FULL_ADDER; } }
 
-        public override int PostCount { get { return 5; } }
+        public override int CirPostCount { get { return 5; } }
 
-        public override int VoltageSourceCount { get { return 2; } }
+        public override int CirVoltageSourceCount { get { return 2; } }
 
         string getChipName() { return "Full Adder"; }
 
@@ -21,7 +21,7 @@ namespace Circuit.Elements.Gate {
         public override void SetupPins() {
             sizeX = 2;
             sizeY = 3;
-            pins = new Pin[PostCount];
+            pins = new Pin[CirPostCount];
             pins[0] = new Pin(this, 2, SIDE_E, "S");
             pins[0].output = true;
             pins[1] = new Pin(this, 0, SIDE_E, "C");

@@ -14,9 +14,9 @@ namespace Circuit.Elements.Logic {
             mJustLoaded = true;
         }
 
-        public override int VoltageSourceCount { get { return bits; } }
+        public override int CirVoltageSourceCount { get { return bits; } }
 
-        public override int PostCount { get { return bits + 2; } }
+        public override int CirPostCount { get { return bits + 2; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.RING_COUNTER; } }
 
@@ -27,7 +27,7 @@ namespace Circuit.Elements.Logic {
         public override void SetupPins() {
             sizeX = bits > 2 ? bits : 2;
             sizeY = 2;
-            pins = new Pin[PostCount];
+            pins = new Pin[CirPostCount];
             pins[0] = new Pin(this, 1, SIDE_W, "");
             pins[0].clock = true;
             pins[1] = new Pin(this, sizeX - 1, SIDE_S, "R");
@@ -38,7 +38,7 @@ namespace Circuit.Elements.Logic {
                 pins[ii] = new Pin(this, i, SIDE_N, "Q" + i);
                 pins[ii].output = pins[ii].state = true;
             }
-            allocNodes();
+            cirAllocNodes();
         }
 
         protected override void execute() {

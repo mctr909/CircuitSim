@@ -15,20 +15,20 @@ namespace Circuit.Elements.Input {
             parseExpr();
         }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int CirVoltageSourceCount { get { return 1; } }
 
-        public override int PostCount { get { return 4; } }
+        public override int CirPostCount { get { return 4; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.CCCS; } }
 
-        public override void SetCurrent(int vn, double c) {
+        public override void CirSetCurrent(int vn, double c) {
             if (pins[1].voltSource == vn) {
                 pins[0].current = -c;
                 pins[1].current = c;
             }
         }
 
-        public override bool GetConnection(int n1, int n2) {
+        public override bool CirGetConnection(int n1, int n2) {
             if (comparePair(0, 1, n1, n2)) {
                 return true;
             }
@@ -55,22 +55,22 @@ namespace Circuit.Elements.Input {
 
         string getChipName() { return "CCCS"; }
 
-        public override void Stamp() {
+        public override void CirStamp() {
             /* voltage source (0V) between C+ and C- so we can measure current */
             int vn1 = pins[1].voltSource;
-            mCir.StampVoltageSource(Nodes[0], Nodes[1], vn1, 0);
+            mCir.StampVoltageSource(CirNodes[0], CirNodes[1], vn1, 0);
 
-            mCir.StampNonLinear(Nodes[2]);
-            mCir.StampNonLinear(Nodes[3]);
+            mCir.StampNonLinear(CirNodes[2]);
+            mCir.StampNonLinear(CirNodes[3]);
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             /* no current path?  give up */
             if (mBroken) {
                 pins[mInputCount].current = 0;
                 pins[mInputCount + 1].current = 0;
                 /* avoid singular matrix errors */
-                mCir.StampResistor(Nodes[mInputCount], Nodes[mInputCount + 1], 1e8);
+                mCir.StampResistor(CirNodes[mInputCount], CirNodes[mInputCount + 1], 1e8);
                 return;
             }
 
@@ -101,11 +101,11 @@ namespace Circuit.Elements.Input {
                 if (Math.Abs(dx) < 1e-6) {
                     dx = sign(dx, 1e-6);
                 }
-                mCir.StampCCCS(Nodes[3], Nodes[2], pins[1].voltSource, dx);
+                mCir.StampCCCS(CirNodes[3], CirNodes[2], pins[1].voltSource, dx);
                 /* adjust right side */
                 rs -= dx * cur;
                 /*Console.WriteLine("ccedx " + cur + " " + dx + " " + rs); */
-                mCir.StampCurrentSource(Nodes[3], Nodes[2], rs);
+                mCir.StampCurrentSource(CirNodes[3], CirNodes[2], rs);
             }
 
             mLastCurrent = cur;
