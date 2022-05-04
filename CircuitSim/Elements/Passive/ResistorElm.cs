@@ -16,33 +16,23 @@ namespace Circuit.Elements.Passive {
         Point[] mRect4;
 
         public ResistorElm(Point pos) : base(pos) {
-            Resistance = 1000;
+            CirElm = new ResistorElmE();
             ReferenceName = "R";
         }
 
         public ResistorElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
-                Resistance = st.nextTokenDouble();
+                CirElm = new ResistorElmE(st.nextTokenDouble());
                 ReferenceName = st.nextToken();
             } catch { }
         }
-
-        public double Resistance { get; set; }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.RESISTOR; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.RESISTOR; } }
 
         protected override string dump() {
-            return Resistance + " " + ReferenceName;
-        }
-
-        protected override void cirCalculateCurrent() {
-            mCirCurrent = (CirVolts[0] - CirVolts[1]) / Resistance;
-        }
-
-        public override void CirStamp() {
-            mCir.StampResistor(CirNodes[0], CirNodes[1], Resistance);
+            return CirElm.Resistance + " " + ReferenceName;
         }
 
         public override void SetPoints() {
@@ -55,7 +45,7 @@ namespace Circuit.Elements.Passive {
         void setTextPos() {
             mNameV = mPoint1.X == mPoint2.X;
             if (mPoint1.Y == mPoint2.Y) {
-                var wv = Context.GetTextSize(Utils.UnitText(Resistance, "")).Width * 0.5;
+                var wv = Context.GetTextSize(Utils.UnitText(CirElm.Resistance, "")).Width * 0.5;
                 var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
                 interpPoint(ref mValuePos, 0.5 - wv / mLen * mDsign, -11 * mDsign);
                 interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 10 * mDsign);
@@ -115,9 +105,6 @@ namespace Circuit.Elements.Passive {
 
             draw2Leads();
 
-            double v1 = CirVolts[0];
-            double v2 = CirVolts[1];
-
             if (ControlPanel.ChkUseAnsiSymbols.Checked) {
                 /* draw zigzag */
                 for (int i = 0; i < SEGMENTS; i++) {
@@ -133,7 +120,7 @@ namespace Circuit.Elements.Passive {
                 drawLead(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
             }
 
-            drawValue(Resistance);
+            drawValue(CirElm.Resistance);
             drawName();
 
             doDots();
@@ -143,17 +130,17 @@ namespace Circuit.Elements.Passive {
         public override void GetInfo(string[] arr) {
             arr[0] = string.IsNullOrEmpty(ReferenceName) ? "抵抗" : ReferenceName;
             getBasicInfo(arr);
-            arr[3] = "R = " + Utils.UnitText(Resistance, CirSim.OHM_TEXT);
-            arr[4] = "P = " + Utils.UnitText(CirPower, "W");
+            arr[3] = "R = " + Utils.UnitText(CirElm.Resistance, CirSim.OHM_TEXT);
+            arr[4] = "P = " + Utils.UnitText(CirElm.CirPower, "W");
         }
 
         public override string GetScopeText(Scope.VAL v) {
-            return "resistor, " + Utils.UnitText(Resistance, CirSim.OHM_TEXT);
+            return "resistor, " + Utils.UnitText(CirElm.Resistance, CirSim.OHM_TEXT);
         }
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
-                return new ElementInfo("レジスタンス(Ω)", Resistance, 0, 0);
+                return new ElementInfo("レジスタンス(Ω)", CirElm.Resistance, 0, 0);
             }
             if (n == 1) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
@@ -165,7 +152,7 @@ namespace Circuit.Elements.Passive {
 
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0 && 0 < ei.Value) {
-                Resistance = ei.Value;
+                CirElm.Resistance = ei.Value;
                 setTextPos();
             }
             if (n == 1) {

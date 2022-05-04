@@ -4,17 +4,15 @@ namespace Circuit.Elements.Passive {
     class WireElm : CircuitElm {
         public bool HasWireInfo; /* used in CirSim to calculate wire currents */
 
-        public WireElm(Point pos) : base(pos) { }
+        public WireElm(Point pos) : base(pos) {
+            CirElm = new BaseElement();
+        }
 
-        public WireElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) { }
+        public WireElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
+            CirElm = new BaseElement();
+        }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.WIRE; } }
-
-        public override bool CirIsWire { get { return true; } }
-
-        public override double CirVoltageDiff { get { return CirVolts[0]; } }
-
-        public override double CirPower { get { return 0; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.WIRE; } }
 
@@ -33,8 +31,8 @@ namespace Circuit.Elements.Passive {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "ワイヤ";
-            arr[1] = "I = " + Utils.CurrentAbsText(mCirCurrent);
-            arr[2] = "V = " + Utils.VoltageText(CirVolts[0]);
+            arr[1] = "I = " + Utils.CurrentAbsText(CirElm.mCirCurrent);
+            arr[2] = "V = " + Utils.VoltageText(CirElm.CirVolts[0]);
         }
     }
 }

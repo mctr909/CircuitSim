@@ -7,31 +7,19 @@ namespace Circuit.Elements.Passive {
         Point mP1;
         Point mP2;
 
-        public GroundElm(Point pos) : base(pos) { }
+        public GroundElm(Point pos) : base(pos) {
+            CirElm = new GroundElmE();
+        }
 
-        public GroundElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) { }
+        public GroundElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
+            CirElm = new GroundElmE();
+        }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.GROUND; } }
-
-        public override double CirVoltageDiff { get { return 0; } }
-
-        public override int CirVoltageSourceCount { get { return 1; } }
-
-        public override int CirPostCount { get { return 1; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.GROUND; } }
 
         protected override string dump() { return ""; }
-
-        public override bool CirHasGroundConnection(int n1) { return true; }
-
-        public override double CirGetCurrentIntoNode(int n) { return -mCirCurrent; }
-
-        public override void CirSetCurrent(int x, double c) { mCirCurrent = -c; }
-
-        public override void CirStamp() {
-            mCir.StampVoltageSource(0, CirNodes[0], mCirVoltSource, 0);
-        }
 
         public override void Draw(CustomGraphics g) {
             drawLead(mPoint1, mPoint2);
@@ -48,7 +36,7 @@ namespace Circuit.Elements.Passive {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "ground";
-            arr[1] = "I = " + Utils.CurrentText(mCirCurrent);
+            arr[1] = "I = " + Utils.CurrentText(CirElm.mCirCurrent);
         }
     }
 }

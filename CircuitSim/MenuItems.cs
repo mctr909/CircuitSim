@@ -5,11 +5,11 @@ using System.Windows.Forms;
 
 using Circuit.Elements;
 using Circuit.Elements.Passive;
-using Circuit.Elements.Active;
+//using Circuit.Elements.Active;
 using Circuit.Elements.Input;
 using Circuit.Elements.Output;
-using Circuit.Elements.Gate;
-using Circuit.Elements.Logic;
+//using Circuit.Elements.Gate;
+//using Circuit.Elements.Logic;
 using Circuit.Elements.Custom;
 
 namespace Circuit {
@@ -594,67 +594,67 @@ namespace Circuit {
                 return new WireElm(pos);
             case ELEMENTS.GROUND:
                 return new GroundElm(pos);
-            case ELEMENTS.SWITCH:
-                return new SwitchElm(pos);
-            case ELEMENTS.SWITCH_PUSH:
-                return new PushSwitchElm(pos);
-            case ELEMENTS.SWITCH_TERM:
-                return new Switch2Elm(pos);
+            //case ELEMENTS.SWITCH:
+            //    return new SwitchElm(pos);
+            //case ELEMENTS.SWITCH_PUSH:
+            //    return new PushSwitchElm(pos);
+            //case ELEMENTS.SWITCH_TERM:
+            //    return new Switch2Elm(pos);
             case ELEMENTS.RESISTOR:
                 return new ResistorElm(pos);
-            case ELEMENTS.POT:
-                return new PotElm(pos);
+            //case ELEMENTS.POT:
+            //    return new PotElm(pos);
             case ELEMENTS.CAPACITOR:
                 return new CapacitorElm(pos);
-            case ELEMENTS.CAPACITOR_POLER:
-                return new PolarCapacitorElm(pos);
+            //case ELEMENTS.CAPACITOR_POLER:
+            //    return new PolarCapacitorElm(pos);
             case ELEMENTS.INDUCTOR:
                 return new InductorElm(pos);
-            case ELEMENTS.TRANSFORMER:
-                return new TransformerElm(pos);
-            case ELEMENTS.CRYSTAL:
-                return new CrystalElm(pos);
+            //case ELEMENTS.TRANSFORMER:
+            //    return new TransformerElm(pos);
+            //case ELEMENTS.CRYSTAL:
+            //    return new CrystalElm(pos);
             #endregion
 
             #region Active Components
-            case ELEMENTS.DIODE:
-                return new DiodeElm(pos);
-            case ELEMENTS.ZENER:
-                return new ZenerElm(pos);
-            case ELEMENTS.LED:
-                return new LEDElm(pos);
-            case ELEMENTS.TRANSISTOR:
-            case ELEMENTS.TRANSISTOR_N:
-                return new NTransistorElm(pos);
-            case ELEMENTS.TRANSISTOR_P:
-                return new PTransistorElm(pos);
-            case ELEMENTS.MOSFET:
-            case ELEMENTS.MOSFET_N:
-                return new NMosfetElm(pos);
-            case ELEMENTS.MOSFET_P:
-                return new PMosfetElm(pos);
-            case ELEMENTS.JfetElm:
-            case ELEMENTS.NJfetElm:
-                return null; //(CircuitElm)new NJfetElm(x1, y1);
-            case ELEMENTS.PJfetElm:
-                return null; //(CircuitElm)new PJfetElm(x1, y1);
-            case ELEMENTS.SCRElm:
-                return null; //(CircuitElm)new SCRElm(x1, y1);
-            case ELEMENTS.DiacElm:
-                return null; //(CircuitElm)new DiacElm(x1, y1);
-            case ELEMENTS.TriacElm:
-                return null; //(CircuitElm)new TriacElm(x1, y1);
-            case ELEMENTS.DarlingtonElm:
-            case ELEMENTS.NDarlingtonElm:
-                return null; //(CircuitElm)new NDarlingtonElm(x1, y1);
-            case ELEMENTS.PDarlingtonElm:
-                return null; //(CircuitElm)new PDarlingtonElm(x1, y1);
-            case ELEMENTS.VARACTOR:
-                return new VaractorElm(pos);
-            case ELEMENTS.TunnelDiodeElm:
-                return null; //(CircuitElm)new TunnelDiodeElm(x1, y1);
-            case ELEMENTS.TriodeElm:
-                return null; //(CircuitElm)new TriodeElm(x1, y1);
+            //case ELEMENTS.DIODE:
+            //    return new DiodeElm(pos);
+            //case ELEMENTS.ZENER:
+            //    return new ZenerElm(pos);
+            //case ELEMENTS.LED:
+            //    return new LEDElm(pos);
+            //case ELEMENTS.TRANSISTOR:
+            //case ELEMENTS.TRANSISTOR_N:
+            //    return new NTransistorElm(pos);
+            //case ELEMENTS.TRANSISTOR_P:
+            //    return new PTransistorElm(pos);
+            //case ELEMENTS.MOSFET:
+            //case ELEMENTS.MOSFET_N:
+            //    return new NMosfetElm(pos);
+            //case ELEMENTS.MOSFET_P:
+            //    return new PMosfetElm(pos);
+            //case ELEMENTS.JfetElm:
+            //case ELEMENTS.NJfetElm:
+            //    return null; //(CircuitElm)new NJfetElm(x1, y1);
+            //case ELEMENTS.PJfetElm:
+            //    return null; //(CircuitElm)new PJfetElm(x1, y1);
+            //case ELEMENTS.SCRElm:
+            //    return null; //(CircuitElm)new SCRElm(x1, y1);
+            //case ELEMENTS.DiacElm:
+            //    return null; //(CircuitElm)new DiacElm(x1, y1);
+            //case ELEMENTS.TriacElm:
+            //    return null; //(CircuitElm)new TriacElm(x1, y1);
+            //case ELEMENTS.DarlingtonElm:
+            //case ELEMENTS.NDarlingtonElm:
+            //    return null; //(CircuitElm)new NDarlingtonElm(x1, y1);
+            //case ELEMENTS.PDarlingtonElm:
+            //    return null; //(CircuitElm)new PDarlingtonElm(x1, y1);
+            //case ELEMENTS.VARACTOR:
+            //    return new VaractorElm(pos);
+            //case ELEMENTS.TunnelDiodeElm:
+            //    return null; //(CircuitElm)new TunnelDiodeElm(x1, y1);
+            //case ELEMENTS.TriodeElm:
+            //    return null; //(CircuitElm)new TriodeElm(x1, y1);
             #endregion
 
             #region Inputs and Sources
@@ -670,14 +670,14 @@ namespace Circuit {
                 return null; //(CircuitElm)new SquareRailElm(x1, y1);
             case ELEMENTS.CLOCK:
                 return new ClockElm(pos);
-            case ELEMENTS.SWEEP:
-                return new SweepElm(pos);
+            //case ELEMENTS.SWEEP:
+            //    return new SweepElm(pos);
             case ELEMENTS.AntennaElm:
                 return null; //(CircuitElm)new AntennaElm(x1, y1);
-            case ELEMENTS.OSC_AM:
-                return new AMElm(pos);
-            case ELEMENTS.OSC_FM:
-                return new FMElm(pos);
+            //case ELEMENTS.OSC_AM:
+            //    return new AMElm(pos);
+            //case ELEMENTS.OSC_FM:
+            //    return new FMElm(pos);
             case ELEMENTS.CURRENT:
                 return new CurrentElm(pos);
             case ELEMENTS.NOISE:
@@ -687,128 +687,128 @@ namespace Circuit {
             #endregion
 
             #region Outputs and Labels
-            case ELEMENTS.OUTPUT:
-                return new LabeledNodeElm(pos);
-            case ELEMENTS.VOLTMETER:
-                return new VoltMeterElm(pos);
-            case ELEMENTS.AMMETER:
-                return new AmmeterElm(pos);
-            case ELEMENTS.DataRecorderElm:
-                return new DataRecorderElm(pos);
-            case ELEMENTS.OUTPUT_AUDIO:
-                return new AudioOutputElm(pos);
-            case ELEMENTS.LampElm:
-                return null; //(CircuitElm)new LampElm(x1, y1);
-            case ELEMENTS.TestPointElm:
-                return null; //new TestPointElm(x1, y1);
-            case ELEMENTS.LEDArrayElm:
-                return null; //(CircuitElm)new LEDArrayElm(x1, y1);
-            case ELEMENTS.StopTriggerElm:
-                return null; //(CircuitElm)new StopTriggerElm(x1, y1);
+            //case ELEMENTS.OUTPUT:
+            //    return new LabeledNodeElm(pos);
+            //case ELEMENTS.VOLTMETER:
+            //    return new VoltMeterElm(pos);
+            //case ELEMENTS.AMMETER:
+            //    return new AmmeterElm(pos);
+            //case ELEMENTS.DataRecorderElm:
+            //    return new DataRecorderElm(pos);
+            //case ELEMENTS.OUTPUT_AUDIO:
+            //    return new AudioOutputElm(pos);
+            //case ELEMENTS.LampElm:
+            //    return null; //(CircuitElm)new LampElm(x1, y1);
+            //case ELEMENTS.TestPointElm:
+            //    return null; //new TestPointElm(x1, y1);
+            //case ELEMENTS.LEDArrayElm:
+            //    return null; //(CircuitElm)new LEDArrayElm(x1, y1);
+            //case ELEMENTS.StopTriggerElm:
+            //    return null; //(CircuitElm)new StopTriggerElm(x1, y1);
             case ELEMENTS.SCOPE:
                 return new ScopeElm(pos);
             #endregion
 
             #region Active Building Blocks
-            case ELEMENTS.OPAMP:
-                return new OpAmpElm(pos);
-            case ELEMENTS.OPAMP_SWAP:
-                return new OpAmpSwapElm(pos);
-            case ELEMENTS.OpAmpRealElm:
-                return null; //(CircuitElm)new OpAmpRealElm(x1, y1);
-            case ELEMENTS.ANALOG_SWITCH:
-                return new AnalogSwitchElm(pos);
-            case ELEMENTS.AnalogSwitch2Elm:
-                return null; //(CircuitElm)new AnalogSwitch2Elm(x1, y1);
-            case ELEMENTS.CC2Elm:
-                return null; //(CircuitElm)new CC2Elm(x1, y1);
-            case ELEMENTS.CC2NegElm:
-                return null; //(CircuitElm)new CC2NegElm(x1, y1);
-            case ELEMENTS.ComparatorElm:
-                return null; //new ComparatorElm(x1, y1);
-            case ELEMENTS.ComparatorSwapElm:
-                return null; //new ComparatorSwapElm(x1, y1);
-            case ELEMENTS.OTAElm:
-                return null; //(CircuitElm)new OTAElm(x1, y1);
-            case ELEMENTS.VCVSElm:
-                return null; //(CircuitElm)new VCVSElm(x1, y1);
-            case ELEMENTS.VCCSElm:
-                return new VCCSElm(pos);
-            case ELEMENTS.CCVSElm:
-                return null; //(CircuitElm)new CCVSElm(x1, y1);
-            case ELEMENTS.CCCS:
-                return new CCCSElm(pos);
-            case ELEMENTS.OPTOCOUPLER:
-                return new OptocouplerElm(pos);
-            case ELEMENTS.CustomCompositeElm:
-                return new CustomCompositeElm(pos);
+            //case ELEMENTS.OPAMP:
+            //    return new OpAmpElm(pos);
+            //case ELEMENTS.OPAMP_SWAP:
+            //    return new OpAmpSwapElm(pos);
+            //case ELEMENTS.OpAmpRealElm:
+            //    return null; //(CircuitElm)new OpAmpRealElm(x1, y1);
+            //case ELEMENTS.ANALOG_SWITCH:
+            //    return new AnalogSwitchElm(pos);
+            //case ELEMENTS.AnalogSwitch2Elm:
+            //    return null; //(CircuitElm)new AnalogSwitch2Elm(x1, y1);
+            //case ELEMENTS.CC2Elm:
+            //    return null; //(CircuitElm)new CC2Elm(x1, y1);
+            //case ELEMENTS.CC2NegElm:
+            //    return null; //(CircuitElm)new CC2NegElm(x1, y1);
+            //case ELEMENTS.ComparatorElm:
+            //    return null; //new ComparatorElm(x1, y1);
+            //case ELEMENTS.ComparatorSwapElm:
+            //    return null; //new ComparatorSwapElm(x1, y1);
+            //case ELEMENTS.OTAElm:
+            //    return null; //(CircuitElm)new OTAElm(x1, y1);
+            //case ELEMENTS.VCVSElm:
+            //    return null; //(CircuitElm)new VCVSElm(x1, y1);
+            //case ELEMENTS.VCCSElm:
+            //    return new VCCSElm(pos);
+            //case ELEMENTS.CCVSElm:
+            //    return null; //(CircuitElm)new CCVSElm(x1, y1);
+            //case ELEMENTS.CCCS:
+            //    return new CCCSElm(pos);
+            //case ELEMENTS.OPTOCOUPLER:
+            //    return new OptocouplerElm(pos);
+            //case ELEMENTS.CustomCompositeElm:
+            //    return new CustomCompositeElm(pos);
             #endregion
 
             #region Logic Gates
-            case ELEMENTS.LOGIC_INPUT:
-                return new LogicInputElm(pos);
-            case ELEMENTS.LOGIC_OUTPUT:
-                return new LogicOutputElm(pos);
-            case ELEMENTS.TRISTATE:
-                return new TriStateElm(pos);
-            case ELEMENTS.NOT_GATE:
-                return new InverterElm(pos);
-            case ELEMENTS.AND_GATE:
-                return new AndGateElm(pos);
-            case ELEMENTS.NAND_GATE:
-                return new NandGateElm(pos);
-            case ELEMENTS.OR_GATE:
-                return new OrGateElm(pos);
-            case ELEMENTS.NOR_GATE:
-                return new NorGateElm(pos);
-            case ELEMENTS.XOR_GATE:
-                return new XorGateElm(pos);
+            //case ELEMENTS.LOGIC_INPUT:
+            //    return new LogicInputElm(pos);
+            //case ELEMENTS.LOGIC_OUTPUT:
+            //    return new LogicOutputElm(pos);
+            //case ELEMENTS.TRISTATE:
+            //    return new TriStateElm(pos);
+            //case ELEMENTS.NOT_GATE:
+            //    return new InverterElm(pos);
+            //case ELEMENTS.AND_GATE:
+            //    return new AndGateElm(pos);
+            //case ELEMENTS.NAND_GATE:
+            //    return new NandGateElm(pos);
+            //case ELEMENTS.OR_GATE:
+            //    return new OrGateElm(pos);
+            //case ELEMENTS.NOR_GATE:
+            //    return new NorGateElm(pos);
+            //case ELEMENTS.XOR_GATE:
+            //    return new XorGateElm(pos);
             #endregion
 
             #region Digital Chips
-            case ELEMENTS.SCHMITT:
-                return new SchmittElm(pos);
-            case ELEMENTS.SCHMITT_INV:
-                return new InvertingSchmittElm(pos);
-            case ELEMENTS.DFlipFlopElm:
-                return new DFlipFlopElm(pos);
-            case ELEMENTS.JKFlipFlopElm:
-                return new JKFlipFlopElm(pos);
-            case ELEMENTS.TFlipFlopElm:
-                return new TFlipFlopElm(pos);
-            case ELEMENTS.SevenSegElm:
-                return null; //(CircuitElm)new SevenSegElm(x1, y1);
-            case ELEMENTS.SevenSegDecoderElm:
-                return null; //(CircuitElm)new SevenSegDecoderElm(x1, y1);
-            case ELEMENTS.MultiplexerElm:
-                return new MultiplexerElm(pos);
-            case ELEMENTS.DeMultiplexerElm:
-                return new DeMultiplexerElm(pos);
-            case ELEMENTS.SipoShiftElm:
-                return new SipoShiftElm(pos);
-            case ELEMENTS.PisoShiftElm:
-                return new PisoShiftElm(pos);
-            case ELEMENTS.CounterElm:
-                return new CounterElm(pos);
-            /* if you take out DecadeElm, it will break the menus and people's saved shortcuts */
-            /* if you take out RingCounterElm, it will break subcircuits */
-            case ELEMENTS.DecadeElm:
-            case ELEMENTS.RingCounterElm:
-                return new RingCounterElm(pos);
-            case ELEMENTS.LatchElm:
-                return new LatchElm(pos);
-            case ELEMENTS.SeqGenElm:
-                return null; //(CircuitElm)new SeqGenElm(x1, y1);
-            case ELEMENTS.FullAdderElm:
-                return new FullAdderElm(pos);
-            case ELEMENTS.HalfAdderElm:
-                return new HalfAdderElm(pos);
-            /* if you take out UserDefinedLogicElm, it will break people's saved shortcuts */
-            case ELEMENTS.CUSTOM_LOGIC:
-            case ELEMENTS.UserDefinedLogicElm:
-                return new CustomLogicElm(pos);
-            case ELEMENTS.SRAMElm:
-                return new SRAMElm(pos);
+            //case ELEMENTS.SCHMITT:
+            //    return new SchmittElm(pos);
+            //case ELEMENTS.SCHMITT_INV:
+            //    return new InvertingSchmittElm(pos);
+            //case ELEMENTS.DFlipFlopElm:
+            //    return new DFlipFlopElm(pos);
+            //case ELEMENTS.JKFlipFlopElm:
+            //    return new JKFlipFlopElm(pos);
+            //case ELEMENTS.TFlipFlopElm:
+            //    return new TFlipFlopElm(pos);
+            //case ELEMENTS.SevenSegElm:
+            //    return null; //(CircuitElm)new SevenSegElm(x1, y1);
+            //case ELEMENTS.SevenSegDecoderElm:
+            //    return null; //(CircuitElm)new SevenSegDecoderElm(x1, y1);
+            //case ELEMENTS.MultiplexerElm:
+            //    return new MultiplexerElm(pos);
+            //case ELEMENTS.DeMultiplexerElm:
+            //    return new DeMultiplexerElm(pos);
+            //case ELEMENTS.SipoShiftElm:
+            //    return new SipoShiftElm(pos);
+            //case ELEMENTS.PisoShiftElm:
+            //    return new PisoShiftElm(pos);
+            //case ELEMENTS.CounterElm:
+            //    return new CounterElm(pos);
+            ///* if you take out DecadeElm, it will break the menus and people's saved shortcuts */
+            ///* if you take out RingCounterElm, it will break subcircuits */
+            //case ELEMENTS.DecadeElm:
+            //case ELEMENTS.RingCounterElm:
+            //    return new RingCounterElm(pos);
+            //case ELEMENTS.LatchElm:
+            //    return new LatchElm(pos);
+            //case ELEMENTS.SeqGenElm:
+            //    return null; //(CircuitElm)new SeqGenElm(x1, y1);
+            //case ELEMENTS.FullAdderElm:
+            //    return new FullAdderElm(pos);
+            //case ELEMENTS.HalfAdderElm:
+            //    return new HalfAdderElm(pos);
+            ///* if you take out UserDefinedLogicElm, it will break people's saved shortcuts */
+            //case ELEMENTS.CUSTOM_LOGIC:
+            //case ELEMENTS.UserDefinedLogicElm:
+            //    return new CustomLogicElm(pos);
+            //case ELEMENTS.SRAMElm:
+            //    return new SRAMElm(pos);
             #endregion
 
             #region Analog and Hybrid Chips
@@ -843,45 +843,45 @@ namespace Circuit {
                 return new WireElm(p1, p2, f, st);
             case DUMP_ID.GROUND:
                 return new GroundElm(p1, p2, f, st);
-            case DUMP_ID.SWITCH:
-                return new SwitchElm(p1, p2, f, st);
-            case DUMP_ID.SWITCH2:
-                return new Switch2Elm(p1, p2, f, st);
+            //case DUMP_ID.SWITCH:
+            //    return new SwitchElm(p1, p2, f, st);
+            //case DUMP_ID.SWITCH2:
+            //    return new Switch2Elm(p1, p2, f, st);
             case DUMP_ID.RESISTOR:
                 return new ResistorElm(p1, p2, f, st);
-            case DUMP_ID.POT:
-                return new PotElm(p1, p2, f, st);
+            //case DUMP_ID.POT:
+            //    return new PotElm(p1, p2, f, st);
             case DUMP_ID.CAPACITOR:
                 return new CapacitorElm(p1, p2, f, st);
-            case DUMP_ID.CAPACITOR_POLAR:
-                return new PolarCapacitorElm(p1, p2, f, st);
+            //case DUMP_ID.CAPACITOR_POLAR:
+            //    return new PolarCapacitorElm(p1, p2, f, st);
             case DUMP_ID.INDUCTOR:
                 return new InductorElm(p1, p2, f, st);
-            case DUMP_ID.TRANSFORMER:
-                return new TransformerElm(p1, p2, f, st);
-            case DUMP_ID.CRYSTAL:
-                return new CrystalElm(p1, p2, f, st);
+            //case DUMP_ID.TRANSFORMER:
+            //    return new TransformerElm(p1, p2, f, st);
+            //case DUMP_ID.CRYSTAL:
+            //    return new CrystalElm(p1, p2, f, st);
             #endregion
 
             #region Active Components
-            case DUMP_ID.DIODE:
-                return new DiodeElm(p1, p2, f, st);
-            case DUMP_ID.ZENER:
-                return new ZenerElm(p1, p2, f, st);
-            case DUMP_ID.VARACTOR:
-                return new VaractorElm(p1, p2, f, st);
-            case DUMP_ID.LED:
-                return new LEDElm(p1, p2, f, st);
-            case DUMP_ID.TRANSISTOR:
-                return new TransistorElm(p1, p2, f, st);
-            case DUMP_ID.MOSFET:
-                return new MosfetElm(p1, p2, f, st);
-            case DUMP_ID.OPAMP:
-                return new OpAmpElm(p1, p2, f, st);
-            case DUMP_ID.OPTO_COUPLER:
-                return new OptocouplerElm(p1, p2, f, st);
-            case DUMP_ID.ANALOG_SW:
-                return new AnalogSwitchElm(p1, p2, f, st);
+            //case DUMP_ID.DIODE:
+            //    return new DiodeElm(p1, p2, f, st);
+            //case DUMP_ID.ZENER:
+            //    return new ZenerElm(p1, p2, f, st);
+            //case DUMP_ID.VARACTOR:
+            //    return new VaractorElm(p1, p2, f, st);
+            //case DUMP_ID.LED:
+            //    return new LEDElm(p1, p2, f, st);
+            //case DUMP_ID.TRANSISTOR:
+            //    return new TransistorElm(p1, p2, f, st);
+            //case DUMP_ID.MOSFET:
+            //    return new MosfetElm(p1, p2, f, st);
+            //case DUMP_ID.OPAMP:
+            //    return new OpAmpElm(p1, p2, f, st);
+            //case DUMP_ID.OPTO_COUPLER:
+            //    return new OptocouplerElm(p1, p2, f, st);
+            //case DUMP_ID.ANALOG_SW:
+            //    return new AnalogSwitchElm(p1, p2, f, st);
             #endregion
 
             #region Inputs and Sources
@@ -891,87 +891,87 @@ namespace Circuit {
                 return new CurrentElm(p1, p2, f, st);
             case DUMP_ID.RAIL:
                 return new RailElm(p1, p2, f, st);
-            case DUMP_ID.VCCS:
-                return new VCCSElm(p1, p2, f, st);
-            case DUMP_ID.CCCS:
-                return new CCCSElm(p1, p2, f, st);
-            case DUMP_ID.SWEEP:
-                return new SweepElm(p1, p2, f, st);
-            case DUMP_ID.AM:
-                return new AMElm(p1, p2, f, st);
-            case DUMP_ID.FM:
-                return new FMElm(p1, p2, f, st);
+            //case DUMP_ID.VCCS:
+            //    return new VCCSElm(p1, p2, f, st);
+            //case DUMP_ID.CCCS:
+            //    return new CCCSElm(p1, p2, f, st);
+            //case DUMP_ID.SWEEP:
+            //    return new SweepElm(p1, p2, f, st);
+            //case DUMP_ID.AM:
+            //    return new AMElm(p1, p2, f, st);
+            //case DUMP_ID.FM:
+            //    return new FMElm(p1, p2, f, st);
             #endregion
 
             #region Outputs and Labels
-            case DUMP_ID.VOLTMETER:
-                return new VoltMeterElm(p1, p2, f, st);
-            case DUMP_ID.AMMETER:
-                return new AmmeterElm(p1, p2, f, st);
-            case DUMP_ID.LABELED_NODE:
-                return new LabeledNodeElm(p1, p2, f, st);
-            case DUMP_ID.WAVE_OUT:
-                return new AudioOutputElm(p1, p2, f, st);
-            case DUMP_ID.DATA_RECORDER:
-                return new DataRecorderElm(p1, p2, f, st);
+            //case DUMP_ID.VOLTMETER:
+            //    return new VoltMeterElm(p1, p2, f, st);
+            //case DUMP_ID.AMMETER:
+            //    return new AmmeterElm(p1, p2, f, st);
+            //case DUMP_ID.LABELED_NODE:
+            //    return new LabeledNodeElm(p1, p2, f, st);
+            //case DUMP_ID.WAVE_OUT:
+            //    return new AudioOutputElm(p1, p2, f, st);
+            //case DUMP_ID.DATA_RECORDER:
+            //    return new DataRecorderElm(p1, p2, f, st);
             case DUMP_ID.SCOPE:
                 return new ScopeElm(p1, p2, f, st);
             #endregion
 
             #region Logic Gates
-            case DUMP_ID.LOGIC_I:
-                return new LogicInputElm(p1, p2, f, st);
-            case DUMP_ID.LOGIC_O:
-                return new LogicOutputElm(p1, p2, f, st);
-            case DUMP_ID.TRISTATE:
-                return new TriStateElm(p1, p2, f, st);
-            case DUMP_ID.AND_GATE:
-                return new AndGateElm(p1, p2, f, st);
-            case DUMP_ID.NAND_GATE:
-                return new NandGateElm(p1, p2, f, st);
-            case DUMP_ID.OR_GATE:
-                return new OrGateElm(p1, p2, f, st);
-            case DUMP_ID.NOR_GATE:
-                return new NorGateElm(p1, p2, f, st);
-            case DUMP_ID.XOR_GATE:
-                return new XorGateElm(p1, p2, f, st);
-            case DUMP_ID.INVERT:
-                return new InverterElm(p1, p2, f, st);
-            case DUMP_ID.HALF_ADDER:
-                return new HalfAdderElm(p1, p2, f, st);
-            case DUMP_ID.FULL_ADDER:
-                return new FullAdderElm(p1, p2, f, st);
+            //case DUMP_ID.LOGIC_I:
+            //    return new LogicInputElm(p1, p2, f, st);
+            //case DUMP_ID.LOGIC_O:
+            //    return new LogicOutputElm(p1, p2, f, st);
+            //case DUMP_ID.TRISTATE:
+            //    return new TriStateElm(p1, p2, f, st);
+            //case DUMP_ID.AND_GATE:
+            //    return new AndGateElm(p1, p2, f, st);
+            //case DUMP_ID.NAND_GATE:
+            //    return new NandGateElm(p1, p2, f, st);
+            //case DUMP_ID.OR_GATE:
+            //    return new OrGateElm(p1, p2, f, st);
+            //case DUMP_ID.NOR_GATE:
+            //    return new NorGateElm(p1, p2, f, st);
+            //case DUMP_ID.XOR_GATE:
+            //    return new XorGateElm(p1, p2, f, st);
+            //case DUMP_ID.INVERT:
+            //    return new InverterElm(p1, p2, f, st);
+            //case DUMP_ID.HALF_ADDER:
+            //    return new HalfAdderElm(p1, p2, f, st);
+            //case DUMP_ID.FULL_ADDER:
+            //    return new FullAdderElm(p1, p2, f, st);
             #endregion
 
             #region Digital Chips
-            case DUMP_ID.SCHMITT:
-                return new SchmittElm(p1, p2, f, st);
-            case DUMP_ID.INVERT_SCHMITT:
-                return new InvertingSchmittElm(p1, p2, f, st);
-            case DUMP_ID.FLIP_FLOP_D:
-                return new DFlipFlopElm(p1, p2, f, st);
-            case DUMP_ID.FLIP_FLOP_JK:
-                return new JKFlipFlopElm(p1, p2, f, st);
-            case DUMP_ID.FLIP_FLOP_T:
-                return new TFlipFlopElm(p1, p2, f, st);
-            case DUMP_ID.SHIFT_REGISTER_PISO:
-                return new PisoShiftElm(p1, p2, f, st);
-            case DUMP_ID.SHIFT_REGISTER_SIPO:
-                return new SipoShiftElm(p1, p2, f, st);
-            case DUMP_ID.RING_COUNTER:
-                return new RingCounterElm(p1, p2, f, st);
-            case DUMP_ID.COUNTER:
-                return new CounterElm(p1, p2, f, st);
-            case DUMP_ID.LATCH:
-                return new LatchElm(p1, p2, f, st);
-            case DUMP_ID.MULTIPLEXER:
-                return new MultiplexerElm(p1, p2, f, st);
-            case DUMP_ID.DEMULTIPLEXER:
-                return new DeMultiplexerElm(p1, p2, f, st);
-            case DUMP_ID.SRAM:
-                return new SRAMElm(p1, p2, f, st);
-            case DUMP_ID.CUSTOM_LOGIC:
-                return new CustomLogicElm(p1, p2, f, st);
+            //case DUMP_ID.SCHMITT:
+            //    return new SchmittElm(p1, p2, f, st);
+            //case DUMP_ID.INVERT_SCHMITT:
+            //    return new InvertingSchmittElm(p1, p2, f, st);
+            //case DUMP_ID.FLIP_FLOP_D:
+            //    return new DFlipFlopElm(p1, p2, f, st);
+            //case DUMP_ID.FLIP_FLOP_JK:
+            //    return new JKFlipFlopElm(p1, p2, f, st);
+            //case DUMP_ID.FLIP_FLOP_T:
+            //    return new TFlipFlopElm(p1, p2, f, st);
+            //case DUMP_ID.SHIFT_REGISTER_PISO:
+            //    return new PisoShiftElm(p1, p2, f, st);
+            //case DUMP_ID.SHIFT_REGISTER_SIPO:
+            //    return new SipoShiftElm(p1, p2, f, st);
+            //case DUMP_ID.RING_COUNTER:
+            //    return new RingCounterElm(p1, p2, f, st);
+            //case DUMP_ID.COUNTER:
+            //    return new CounterElm(p1, p2, f, st);
+            //case DUMP_ID.LATCH:
+            //    return new LatchElm(p1, p2, f, st);
+            //case DUMP_ID.MULTIPLEXER:
+            //    return new MultiplexerElm(p1, p2, f, st);
+            //case DUMP_ID.DEMULTIPLEXER:
+            //    return new DeMultiplexerElm(p1, p2, f, st);
+            //case DUMP_ID.SRAM:
+            //    return new SRAMElm(p1, p2, f, st);
+            //case DUMP_ID.CUSTOM_LOGIC:
+            //    return new CustomLogicElm(p1, p2, f, st);
             #endregion
 
             case DUMP_ID.BOX:
@@ -1016,8 +1016,8 @@ namespace Circuit {
             //case 406: return new CustomTransformerElm(x1, y1, x2, y2, f, st);
             //case 408: return new StopTriggerElm(x1, y1, x2, y2, f, st);
             //case 409: return new OpAmpRealElm(x1, y1, x2, y2, f, st);
-            case DUMP_ID.CUSTOM_COMPOSITE:
-                return new CustomCompositeElm(p1, p2, f, st);
+            //case DUMP_ID.CUSTOM_COMPOSITE:
+            //    return new CustomCompositeElm(p1, p2, f, st);
                 //case 411: return new AudioInputElm(x1, y1, x2, y2, f, st);
             }
             return null;

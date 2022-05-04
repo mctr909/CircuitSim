@@ -47,80 +47,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Elements\Active\AnalogSwitch.cs" />
-    <Compile Include="Elements\Active\VaractorElm.cs" />
+    <Compile Include="Elements\BaseElement.cs" />
     <Compile Include="Elements\Custom\BoxElm.cs" />
     <Compile Include="Elements\Custom\GraphicElm.cs" />
     <Compile Include="Elements\Custom\TextElm.cs" />
+    <Compile Include="Elements\Input\CurrentElmE.cs" />
+    <Compile Include="Elements\Input\LogicInputElmE.cs" />
     <Compile Include="Elements\Input\NoiseElm.cs" />
-    <Compile Include="Elements\Output\DataRecorderElm.cs" />
-    <Compile Include="Elements\Passive\CrystalElm.cs" />
-    <Compile Include="Elements\Output\LabeledNodeElm.cs" />
+    <Compile Include="Elements\Input\RailElmE.cs" />
+    <Compile Include="Elements\Input\VoltageElmE.cs" />
+    <Compile Include="Elements\Output\ScopeElmE.cs" />
+    <Compile Include="Elements\Passive\CapacitorElmE.cs" />
     <Compile Include="Elements\Input\RailElm.cs" />
-    <Compile Include="Elements\Passive\Switch2Elm.cs" />
-    <Compile Include="Elements\Input\VCCSElm.cs" />
-    <Compile Include="Elements\Active\ZenerElm.cs" />
+    <Compile Include="Elements\Passive\GroundElmE.cs" />
+    <Compile Include="Elements\Passive\InductorElmE.cs" />
+    <Compile Include="Elements\Passive\ResistorElmE.cs" />
     <Compile Include="Elements\Input\ACRailElm.cs" />
     <Compile Include="Elements\Input\ACVoltageElm.cs" />
-    <Compile Include="Elements\Input\AMElm.cs" />
-    <Compile Include="Elements\Gate\AndGateElm.cs" />
-    <Compile Include="Elements\Input\CCCSElm.cs" />
     <Compile Include="Elements\Input\ClockElm.cs" />
-    <Compile Include="Elements\Custom\CompositeElm.cs" />
-    <Compile Include="Elements\Custom\CustomCompositeChipElm.cs" />
-    <Compile Include="Elements\Custom\CustomCompositeElm.cs" />
-    <Compile Include="Elements\Custom\CustomCompositeModel.cs" />
-    <Compile Include="Elements\Custom\CustomLogicElm.cs" />
     <Compile Include="Elements\Input\DCVoltageElm.cs" />
-    <Compile Include="Elements\Logic\DeMultiplexerElm.cs" />
-    <Compile Include="Elements\Logic\CounterElm.cs" />
-    <Compile Include="Elements\Logic\SRAMElm.cs" />
-    <Compile Include="Elements\Logic\PisoShiftElm.cs" />
-    <Compile Include="Elements\Logic\SipoShiftElm.cs" />
-    <Compile Include="Elements\Logic\MultiplexerElm.cs" />
-    <Compile Include="Elements\Logic\LatchElm.cs" />
-    <Compile Include="Elements\Logic\JKFlipFlopElm.cs" />
-    <Compile Include="Elements\Logic\TFlipFlopElm.cs" />
-    <Compile Include="Elements\Input\FMElm.cs" />
-    <Compile Include="Elements\Logic\DFlipFlopElm.cs" />
-    <Compile Include="Elements\Gate\HalfAdderElm.cs" />
-    <Compile Include="Elements\Gate\FullAdderElm.cs" />
-    <Compile Include="Elements\Gate\GateElm.cs" />
-    <Compile Include="Elements\Gate\InverterElm.cs" />
-    <Compile Include="Elements\Logic\InvertingSchmittElm.cs" />
-    <Compile Include="Elements\Active\LEDElm.cs" />
-    <Compile Include="Elements\Gate\NandGateElm.cs" />
-    <Compile Include="Elements\Active\NMosfetElm.cs" />
-    <Compile Include="Elements\Gate\NorGateElm.cs" />
-    <Compile Include="Elements\Active\NTransistorElm.cs" />
-    <Compile Include="Elements\Active\OpAmpElm.cs" />
-    <Compile Include="Elements\Active\OpAmpSwapElm.cs" />
-    <Compile Include="Elements\Active\OptocouplerElm.cs" />
-    <Compile Include="Elements\Gate\OrGateElm.cs" />
-    <Compile Include="Elements\Active\PMosfetElm.cs" />
-    <Compile Include="Elements\Passive\PolarCapacitorElm.cs" />
-    <Compile Include="Elements\Active\PTransistorElm.cs" />
-    <Compile Include="Elements\Passive\PushSwitchElm.cs" />
-    <Compile Include="Elements\Logic\RingCounterElm.cs" />
-    <Compile Include="Elements\Logic\SchmittElm.cs" />
-    <Compile Include="Elements\Passive\TransformerElm.cs" />
-    <Compile Include="Elements\Logic\TriStateElm.cs" />
-    <Compile Include="Elements\Gate\XorGateElm.cs" />
+    <Compile Include="Elements\Passive\WireElmE.cs" />
     <Compile Include="Forms\CirSimMain.cs" />
     <Compile Include="Forms\CirSimVariable.cs" />
     <Compile Include="Common\CustomGraphics.cs" />
     <Compile Include="Common\Scope.cs" />
     <Compile Include="Common\Utils.cs" />
-    <Compile Include="Elements\Output\AmmeterElm.cs" />
-    <Compile Include="Elements\Input\SweepElm.cs" />
     <Compile Include="Forms\ControlPanel.cs" />
     <Compile Include="Common\Diode.cs" />
-    <Compile Include="Elements\Active\DiodeElm.cs" />
     <Compile Include="Common\DiodeModel.cs" />
-    <Compile Include="Elements\Active\MosfetElm.cs" />
-    <Compile Include="Forms\EditCompositeModelDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Forms\ElementPopupMenu.cs" />
     <Compile Include="Forms\InputDialog.cs">
       <SubType>Form</SubType>
@@ -144,7 +98,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Common\StringTokenizer.cs" />
-    <Compile Include="Elements\Output\AudioOutputElm.cs" />
     <Compile Include="Elements\Passive\CapacitorElm.cs" />
     <Compile Include="Elements\CircuitElm.cs" />
     <Compile Include="Forms\CirSimForm.cs" />
@@ -152,15 +105,8 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\ElementInfo.cs" />
-    <Compile Include="Elements\Custom\ChipElm.cs" />
     <Compile Include="Elements\Input\CurrentElm.cs" />
     <Compile Include="Elements\Passive\GroundElm.cs" />
-    <Compile Include="Elements\Input\LogicInputElm.cs" />
-    <Compile Include="Elements\Output\LogicOutputElm.cs" />
-    <Compile Include="Elements\Passive\PotElm.cs" />
-    <Compile Include="Elements\Output\VoltMeterElm.cs" />
-    <Compile Include="Elements\Passive\SwitchElm.cs" />
-    <Compile Include="Elements\Active\TransistorElm.cs" />
     <Compile Include="Elements\Input\VoltageElm.cs" />
     <Compile Include="Elements\Passive\WireElm.cs" />
     <Compile Include="CircuitSim.cs">
@@ -180,9 +126,6 @@
     <Compile Include="Shortcut.cs" />
     <EmbeddedResource Include="CircuitSim.resx">
       <DependentUpon>CircuitSim.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\EditCompositeModelDialog.resx">
-      <DependentUpon>EditCompositeModelDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -206,6 +149,10 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Elements\Active\" />
+    <Folder Include="Elements\Gate\" />
+    <Folder Include="Elements\Logic\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

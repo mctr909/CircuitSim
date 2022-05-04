@@ -6,7 +6,7 @@ using System.Drawing.Drawing2D;
 
 using Circuit.Elements;
 using Circuit.Elements.Passive;
-using Circuit.Elements.Active;
+//using Circuit.Elements.Active;
 
 namespace Circuit {
     class Scope {
@@ -291,11 +291,12 @@ namespace Circuit {
 
         public void SetElm(CircuitElm ce) {
             mPlots = new List<ScopePlot>();
-            if (null != ce && (ce is TransistorElm)) {
-                _setValue(VAL.VCE, ce);
-            } else {
+            // Todo: TransistorElm
+            //if (null != ce && (ce is TransistorElm)) {
+            //    _setValue(VAL.VCE, ce);
+            //} else {
                 _setValue(0, ce);
-            }
+            //}
             _initialize();
         }
 
@@ -416,7 +417,7 @@ namespace Circuit {
                 return;
             }
 
-            var ce = CirSim.Sim.getElm(e);
+            var ce = CirSim.Sim.getElm(e).Item1;
             SetElm(ce);
             Speed = st.nextTokenInt();
             var value = st.nextTokenEnum<VAL>();
@@ -443,7 +444,7 @@ namespace Circuit {
                     for (int i = 0; i != sz; i++) {
                         var eleNum = st.nextTokenInt();
                         var val = st.nextTokenEnum<VAL>();
-                        var elm = CirSim.Sim.getElm(eleNum);
+                        var elm = CirSim.Sim.getElm(eleNum).Item1;
                         mPlots.Add(new ScopePlot(elm, val));
                     }
                     while (st.hasMoreTokens()) {

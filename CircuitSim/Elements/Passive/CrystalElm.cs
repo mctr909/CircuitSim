@@ -36,25 +36,25 @@ namespace Circuit.Elements.Passive {
 
         public CrystalElm(Point a, Point b, int f, StringTokenizer st) : base(a, b, f, st, MODEL_STRING, EXTERNAL_NODES) {
             var c1 = (CapacitorElm)compElmList[0];
-            mParallelCapacitance = c1.Capacitance;
+            mParallelCapacitance = c1.CirElm.Capacitance;
             var c2 = (CapacitorElm)compElmList[1];
-            mSeriesCapacitance = c2.Capacitance;
+            mSeriesCapacitance = c2.CirElm.Capacitance;
             var i1 = (InductorElm)compElmList[2];
-            mInductance = i1.Inductance;
+            mInductance = i1.CirElm.Inductance;
             var r1 = (ResistorElm)compElmList[3];
-            mResistance = r1.Resistance;
+            mResistance = r1.CirElm.Resistance;
             initCrystal();
         }
 
         void initCrystal() {
             var c1 = (CapacitorElm)compElmList[0];
-            c1.Capacitance = mParallelCapacitance;
+            c1.CirElm.Capacitance = mParallelCapacitance;
             var c2 = (CapacitorElm)compElmList[1];
-            c2.Capacitance = mSeriesCapacitance;
+            c2.CirElm.Capacitance = mSeriesCapacitance;
             var i1 = (InductorElm)compElmList[2];
-            i1.Inductance = mInductance;
+            i1.CirElm.Inductance = mInductance;
             var r1 = (ResistorElm)compElmList[3];
-            r1.Resistance = mResistance;
+            r1.CirElm.Resistance = mResistance;
         }
 
         protected override void cirCalculateCurrent() {

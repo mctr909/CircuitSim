@@ -2,11 +2,13 @@
 
 namespace Circuit.Elements.Custom {
     class GraphicElm : CircuitElm {
-        public GraphicElm(Point pos) : base(pos) { }
+        public GraphicElm(Point pos) : base(pos) {
+            CirElm = new BaseElement();
+        }
 
-        public GraphicElm(Point a, Point b, int flags) : base(a, b, flags) { }
-
-        public override int CirPostCount { get { return 0; } }
+        public GraphicElm(Point a, Point b, int flags) : base(a, b, flags) {
+            CirElm = new BaseElement();
+        }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.INVALID; } }
 

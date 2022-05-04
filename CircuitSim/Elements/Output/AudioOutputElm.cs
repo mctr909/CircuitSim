@@ -143,7 +143,7 @@ namespace Circuit.Elements.Output {
                 return 0;
             }
             for (i = 0; i != CirSim.Sim.ElmCount; i++) {
-                var ce = CirSim.Sim.getElm(i);
+                var ce = CirSim.Sim.getElm(i).Item1;
                 if (!(ce is AudioOutputElm)) {
                     continue;
                 }

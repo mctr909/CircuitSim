@@ -10,6 +10,7 @@ namespace Circuit.Elements.Output {
             P2.X = P1.X + 128;
             P2.Y = P1.Y + 64;
             elmScope = new Scope();
+            CirElm = new ScopeElmE(elmScope);
             SetPoints();
         }
 
@@ -24,8 +25,6 @@ namespace Circuit.Elements.Output {
         }
 
         public override bool CanViewInScope { get { return false; } }
-
-        public override int CirPostCount { get { return 0; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.SCOPE; } }
 
@@ -62,11 +61,6 @@ namespace Circuit.Elements.Output {
 
         public void stepScope() {
             elmScope.TimeStep();
-        }
-
-        public override void CirReset() {
-            base.CirReset();
-            elmScope.ResetGraph(true);
         }
 
         public void clearElmScope() {

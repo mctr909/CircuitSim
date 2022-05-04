@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-using Circuit.Elements.Active;
+//using Circuit.Elements.Active;
 
 namespace Circuit {
     enum SCOPE_MENU {
@@ -75,7 +75,9 @@ namespace Circuit {
             scope = s;
 
             var elm = scope.SingleElm;
-            bool transistor = elm != null && (elm is TransistorElm);
+            // Todo: TransistorElm
+            //bool transistor = elm != null && (elm is TransistorElm);
+            bool transistor = false;
 
             SuspendLayout();
             Text = "Scope Properties";

@@ -260,12 +260,12 @@ namespace Circuit.Elements.Custom {
 
         public override void CirStamp() {
             for (int i = 0; i < compElmList.Count; i++) {
-                var ce = compElmList[i];
+                var cee = compElmList[i].CirElm;
                 /* current sources need special stamp method */
-                if (ce is CurrentElm) {
-                    ((CurrentElm)ce).stampCurrentSource(false);
+                if (cee is CurrentElmE) {
+                    ((CurrentElmE)cee).stampCurrentSource(false);
                 } else {
-                    ce.CirStamp();
+                    cee.CirStamp();
                 }
             }
         }

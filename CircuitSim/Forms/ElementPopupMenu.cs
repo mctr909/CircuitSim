@@ -81,7 +81,7 @@ namespace Circuit {
             mScope.Enabled = mouseElm.CanViewInScope;
             mFloatScope.Enabled = mouseElm.CanViewInScope;
             mEdit.Enabled = mouseElm.GetElementInfo(0) != null;
-            mFlip.Enabled = 2 == mouseElm.CirPostCount;
+            mFlip.Enabled = 2 == mouseElm.CirElm.CirPostCount;
             mSplit.Enabled = canSplit(mouseElm);
             mSlider.Enabled = sliderItemEnabled(mouseElm);
 
@@ -104,9 +104,10 @@ namespace Circuit {
         }
 
         bool sliderItemEnabled(CircuitElm elm) {
-            if (elm is PotElm) {
-                return false;
-            }
+            // Todo: PotElm
+            //if (elm is PotElm) {
+            //    return false;
+            //}
             for (int i = 0; ; i++) {
                 var ei = elm.GetElementInfo(i);
                 if (ei == null) {

@@ -2,6 +2,6 @@
 
 namespace Circuit.Elements.Input {
     class NoiseElm : RailElm {
-        public NoiseElm(Point pos) : base(pos, WAVEFORM.NOISE) { }
+        public NoiseElm(Point pos) : base(pos, VoltageElmE.WAVEFORM.NOISE) { }
     }
 }

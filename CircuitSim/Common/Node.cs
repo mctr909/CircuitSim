@@ -39,14 +39,14 @@ namespace Circuit {
     class PathInfo {
         PathType mType;
         int mDest;
-        CircuitElm mFirstElm;
-        List<CircuitElm> mElmList;
+        BaseElement mFirstElm;
+        List<Tuple<CircuitElm, BaseElement>> mElmList;
         bool[] mVisited;
 
         /* State object to help find loops in circuit subject to various conditions (depending on type)
          * elm = source and destination element.
          * dest = destination node. */
-        public PathInfo(PathType type, CircuitElm elm, int dest, List<CircuitElm> elmList, int nodeCount) {
+        public PathInfo(PathType type, BaseElement elm, int dest, List<Tuple<CircuitElm, BaseElement>> elmList, int nodeCount) {
             mDest = dest;
             mType = type;
             mFirstElm = elm;
@@ -68,20 +68,20 @@ namespace Circuit {
 
             mVisited[n1] = true;
             for (int i = 0; i != mElmList.Count; i++) {
-                var ce = mElmList[i];
+                var ce = mElmList[i].Item2;
                 if (ce == mFirstElm) {
                     continue;
                 }
                 switch (mType) {
                 case PathType.INDUCTOR:
                     /* inductors need a path free of current sources */
-                    if (ce is CurrentElm) {
+                    if (ce is CurrentElmE) {
                         continue;
                     }
                     break;
                 case PathType.VOLTAGE:
                     /* when checking for voltage loops, we only care about voltage sources/wires/ground */
-                    if (!(ce.CirIsWire || (ce is VoltageElm) || (ce is GroundElm))) {
+                    if (!(ce.CirIsWire || (ce is VoltageElmE) || (ce is GroundElmE))) {
                         continue;
                     }
                     break;
@@ -93,7 +93,7 @@ namespace Circuit {
                     break;
                 case PathType.CAPACITOR_V:
                     /* checking for capacitor/voltage source loops */
-                    if (!(ce.CirIsWire || (ce is CapacitorElm) || (ce is VoltageElm))) {
+                    if (!(ce.CirIsWire || (ce is CapacitorElmE) || (ce is VoltageElmE))) {
                         continue;
                     }
                     break;
@@ -122,7 +122,7 @@ namespace Circuit {
                     return true;
                 }
 
-                if (mType == PathType.INDUCTOR && (ce is InductorElm)) {
+                if (mType == PathType.INDUCTOR && (ce is InductorElmE)) {
                     /* inductors can use paths with other inductors of matching current */
                     double c = ce.CirCurrent;
                     if (nodeA == 0) {

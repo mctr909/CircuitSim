@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 using Circuit.Elements;
 using Circuit.Elements.Passive;
-using Circuit.Elements.Active;
+//using Circuit.Elements.Active;
 using Circuit.Elements.Output;
 using Circuit.Elements.Custom;
 
@@ -28,7 +28,7 @@ namespace Circuit {
             mParent.KeyDown += onKeyDown;
             mParent.KeyUp += onKeyUp;
 
-            ElmList = new List<CircuitElm>();
+            ElmList = new List<Tuple<CircuitElm, BaseElement>>();
             mRedoItem = new MenuItem();
             mUndoItem = new MenuItem();
             mPasteItem = new MenuItem();
@@ -40,7 +40,7 @@ namespace Circuit {
 
             setTimer();
 
-            CircuitElm.InitClass(mCir);
+            BaseElement.InitClass(mCir);
 
             mMenuBar = new MenuStrip();
             {
@@ -248,7 +248,7 @@ namespace Circuit {
 
             if (item == ELEMENT_MENU_ITEM.VIEW_IN_FLOAT_SCOPE && mMenuElm != null) {
                 var newScope = new ScopeElm(SnapGrid(mMenuElm.P1.X + 50, mMenuElm.P1.Y + 50));
-                ElmList.Add(newScope);
+                ElmList.Add(new Tuple<CircuitElm, BaseElement>(newScope, null));
                 newScope.setScopeElm(mMenuElm);
             }
 
@@ -286,7 +286,7 @@ namespace Circuit {
 
             if (item == SCOPE_MENU_ITEM.UNDOCK && 0 <= mMenuScope) {
                 var newScope = new ScopeElm(SnapGrid(mMenuElm.P1.X + 50, mMenuElm.P1.Y + 50));
-                ElmList.Add(newScope);
+                ElmList.Add(new Tuple<CircuitElm, BaseElement>(newScope, null));
                 newScope.setElmScope(mScopes[mMenuScope]);
                 /* remove scope from list.  setupScopes() will fix the positions */
                 for (int i = mMenuScope; i < mScopeCount; i++) {
@@ -334,114 +334,115 @@ namespace Circuit {
             deleteUnusedScopeElms();
         }
 
-        public CustomCompositeModel GetCircuitAsComposite() {
-            string nodeDump = "";
-            string dump = "";
-            CustomLogicModel.clearDumpedFlags();
-            DiodeModel.ClearDumpedFlags();
-            var extList = new List<ExtListEntry>();
+        // Todo: GetCircuitAsComposite
+        //public CustomCompositeModel GetCircuitAsComposite() {
+        //    string nodeDump = "";
+        //    string dump = "";
+        //    CustomLogicModel.clearDumpedFlags();
+        //    DiodeModel.ClearDumpedFlags();
+        //    var extList = new List<ExtListEntry>();
 
-            bool sel = isSelection();
+        //    bool sel = isSelection();
 
-            // mapping of node labels -> node numbers
-            var nodeNameHash = new Dictionary<string, int>();
+        //    // mapping of node labels -> node numbers
+        //    var nodeNameHash = new Dictionary<string, int>();
 
-            // mapping of node numbers -> equivalent node numbers (if they both have the same label)
-            var nodeNumberHash = new Dictionary<int, int>();
+        //    // mapping of node numbers -> equivalent node numbers (if they both have the same label)
+        //    var nodeNumberHash = new Dictionary<int, int>();
 
-            var used = new bool[mCir.NodeList.Count];
+        //    var used = new bool[mCir.NodeList.Count];
 
-            // find all the labeled nodes, get a list of them, and create a node number map
-            for (int i = 0; i != ElmCount; i++) {
-                var ce = getElm(i);
-                if (sel && !ce.IsSelected) {
-                    continue;
-                }
-                if (ce is LabeledNodeElm) {
-                    var lne = (LabeledNodeElm)ce;
-                    var label = lne.Text;
-                    // this node name already seen?  map the new node number to the old one
-                    if (nodeNameHash.ContainsKey(label)) {
-                        var map = nodeNameHash[label];
-                        if (nodeNumberHash.ContainsKey(lne.CirNodes[0]) && nodeNumberHash[lne.CirNodes[0]] != map) {
-                            MessageBox.Show("Can't have a node with two labels!");
-                            return null;
-                        }
-                        nodeNumberHash.Add(lne.CirNodes[0], map);
-                        continue;
-                    }
-                    nodeNameHash.Add(label, lne.CirNodes[0]);
-                    // put an entry in nodeNumberHash so we can detect if we try to map it to something else later
-                    nodeNumberHash.Add(lne.CirNodes[0], lne.CirNodes[0]);
-                    if (lne.IsInternal) {
-                        continue;
-                    }
-                    // create ext list entry for external nodes
-                    var ent = new ExtListEntry(label, ce.CirNodes[0]);
-                    extList.Add(ent);
-                }
-            }
+        //    // find all the labeled nodes, get a list of them, and create a node number map
+        //    for (int i = 0; i != ElmCount; i++) {
+        //        var ce = getElm(i).Item1;
+        //        if (sel && !ce.IsSelected) {
+        //            continue;
+        //        }
+        //        if (ce is LabeledNodeElm) {
+        //            var lne = (LabeledNodeElm)ce;
+        //            var label = lne.Text;
+        //            // this node name already seen?  map the new node number to the old one
+        //            if (nodeNameHash.ContainsKey(label)) {
+        //                var map = nodeNameHash[label];
+        //                if (nodeNumberHash.ContainsKey(lne.CirNodes[0]) && nodeNumberHash[lne.CirNodes[0]] != map) {
+        //                    MessageBox.Show("Can't have a node with two labels!");
+        //                    return null;
+        //                }
+        //                nodeNumberHash.Add(lne.CirNodes[0], map);
+        //                continue;
+        //            }
+        //            nodeNameHash.Add(label, lne.CirNodes[0]);
+        //            // put an entry in nodeNumberHash so we can detect if we try to map it to something else later
+        //            nodeNumberHash.Add(lne.CirNodes[0], lne.CirNodes[0]);
+        //            if (lne.IsInternal) {
+        //                continue;
+        //            }
+        //            // create ext list entry for external nodes
+        //            var ent = new ExtListEntry(label, ce.CirNodes[0]);
+        //            extList.Add(ent);
+        //        }
+        //    }
 
-            // output all the elements
-            for (int i = 0; i != ElmCount; i++) {
-                var ce = getElm(i);
-                if (sel && !ce.IsSelected) {
-                    continue;
-                }
-                // don't need these elements dumped
-                if ((ce is WireElm) || (ce is ScopeElm)) {
-                    continue;
-                }
-                if (nodeDump.Length > 0) {
-                    nodeDump += "\r";
-                }
-                // TODO: GetCircuitAsComposite
-                nodeDump += ELEMENTS.RAIL_AC;
-                for (int j = 0; j != ce.CirPostCount; j++) {
-                    int n = ce.CirNodes[j];
-                    int n0 = nodeNumberHash.ContainsKey(n) ? nodeNumberHash[n] : n;
-                    used[n0] = true;
-                    nodeDump += " " + n0;
-                }
+        //    // output all the elements
+        //    for (int i = 0; i != ElmCount; i++) {
+        //        var ce = getElm(i).Item1;
+        //        if (sel && !ce.IsSelected) {
+        //            continue;
+        //        }
+        //        // don't need these elements dumped
+        //        if ((ce is WireElm) || (ce is ScopeElm)) {
+        //            continue;
+        //        }
+        //        if (nodeDump.Length > 0) {
+        //            nodeDump += "\r";
+        //        }
+        //        // TODO: GetCircuitAsComposite
+        //        nodeDump += ELEMENTS.RAIL_AC;
+        //        for (int j = 0; j != ce.CirPostCount; j++) {
+        //            int n = ce.CirNodes[j];
+        //            int n0 = nodeNumberHash.ContainsKey(n) ? nodeNumberHash[n] : n;
+        //            used[n0] = true;
+        //            nodeDump += " " + n0;
+        //        }
 
-                // save positions
-                int x1 = ce.P1.X;
-                int y1 = ce.P1.Y;
-                int x2 = ce.P2.X;
-                int y2 = ce.P2.Y;
+        //        // save positions
+        //        int x1 = ce.P1.X;
+        //        int y1 = ce.P1.Y;
+        //        int x2 = ce.P2.X;
+        //        int y2 = ce.P2.Y;
 
-                // set them to 0 so they're easy to remove
-                ce.P1.X = ce.P1.Y = ce.P2.X = ce.P2.Y = 0;
+        //        // set them to 0 so they're easy to remove
+        //        ce.P1.X = ce.P1.Y = ce.P2.X = ce.P2.Y = 0;
 
-                string tstring = ce.Dump;
-                var rg = new Regex("[A-Za-z0-9]+ 0 0 0 0 ");
-                tstring = rg.Replace(tstring, "", 1); // remove unused tint_x1 y1 x2 y2 coords for internal components
+        //        string tstring = ce.Dump;
+        //        var rg = new Regex("[A-Za-z0-9]+ 0 0 0 0 ");
+        //        tstring = rg.Replace(tstring, "", 1); // remove unused tint_x1 y1 x2 y2 coords for internal components
 
-                // restore positions
-                ce.P1.X = x1;
-                ce.P1.Y = y1;
-                ce.P2.X = x2;
-                ce.P2.Y = y2;
-                if (dump.Length > 0) {
-                    dump += " ";
-                }
-                dump += CustomLogicModel.escape(tstring);
-            }
+        //        // restore positions
+        //        ce.P1.X = x1;
+        //        ce.P1.Y = y1;
+        //        ce.P2.X = x2;
+        //        ce.P2.Y = y2;
+        //        if (dump.Length > 0) {
+        //            dump += " ";
+        //        }
+        //        dump += CustomLogicModel.escape(tstring);
+        //    }
 
-            for (int i = 0; i != extList.Count; i++) {
-                var ent = extList[i];
-                if (!used[ent.node]) {
-                    MessageBox.Show("Node \"" + ent.name + "\" is not used!");
-                    return null;
-                }
-            }
+        //    for (int i = 0; i != extList.Count; i++) {
+        //        var ent = extList[i];
+        //        if (!used[ent.node]) {
+        //            MessageBox.Show("Node \"" + ent.name + "\" is not used!");
+        //            return null;
+        //        }
+        //    }
 
-            var ccm = new CustomCompositeModel();
-            ccm.NodeList = nodeDump;
-            ccm.ElmDump = dump;
-            ccm.ExtList = extList;
-            return ccm;
-        }
+        //    var ccm = new CustomCompositeModel();
+        //    ccm.NodeList = nodeDump;
+        //    ccm.ElmDump = dump;
+        //    ccm.ExtList = extList;
+        //    return ccm;
+        //}
 
         #region Public method
         public void SetSimRunning(bool s) {
@@ -498,7 +499,7 @@ namespace Circuit {
 
         public int LocateElm(CircuitElm elm) {
             for (int i = 0; i != ElmCount; i++) {
-                if (elm == ElmList[i]) {
+                if (elm == ElmList[i].Item1) {
                     return i;
                 }
             }
@@ -532,13 +533,13 @@ namespace Circuit {
 
         public void UpdateModels() {
             for (int i = 0; i != ElmCount; i++) {
-                ElmList[i].UpdateModels();
+                ElmList[i].Item1.UpdateModels();
             }
         }
 
         public void ResetButton_onClick() {
             for (int i = 0; i != ElmCount; i++) {
-                getElm(i).CirReset();
+                getElm(i).Item2.CirReset();
             }
             for (int i = 0; i != mScopeCount; i++) {
                 mScopes[i].ResetGraph(true);
@@ -664,7 +665,10 @@ namespace Circuit {
             if (mMouseElm == null) {
                 return;
             }
-            if (mMouseElm is SwitchElm || mMouseElm is GroundElm || mMouseElm is OptocouplerElm) {
+            // Todo: SwitchElm
+            // Todo: OptocouplerElm
+            //if (mMouseElm is SwitchElm || mMouseElm is GroundElm || mMouseElm is OptocouplerElm) {
+            if (mMouseElm is GroundElm) {
                 return;
             }
             doEdit(mMouseElm, new Point(
@@ -784,11 +788,12 @@ namespace Circuit {
             TempMouseMode = MouseMode;
             mSelectedArea = new Rectangle();
             bool circuitChanged = false;
-            if (mHeldSwitchElm != null) {
-                mHeldSwitchElm.MouseUp();
-                mHeldSwitchElm = null;
-                circuitChanged = true;
-            }
+            // Todo: SwitchElm
+            //if (mHeldSwitchElm != null) {
+            //    mHeldSwitchElm.MouseUp();
+            //    mHeldSwitchElm = null;
+            //    circuitChanged = true;
+            //}
             if (DragElm != null) {
                 /* if the element is zero size then don't create it */
                 /* IES - and disable any previous selection */
@@ -798,7 +803,7 @@ namespace Circuit {
                         clearSelection();
                     }
                 } else {
-                    ElmList.Add(DragElm);
+                    ElmList.Add(new Tuple<CircuitElm, BaseElement>(DragElm, DragElm.CirElm));
                     DragElm.DraggingDone();
                     circuitChanged = true;
                     writeRecoveryToStorage();
@@ -928,7 +933,7 @@ namespace Circuit {
             int i;
             int minx = 1000, maxx = 0, miny = 1000, maxy = 0;
             for (i = 0; i != ElmCount; i++) {
-                var ce = getElm(i);
+                var ce = getElm(i).Item1;
                 /* centered text causes problems when trying to center the circuit, */
                 /* so we special-case it here */
                 if (!ce.IsCenteredText) {
@@ -1041,13 +1046,14 @@ namespace Circuit {
         }
 
         void doCreateSubcircuit() {
-            var dlg = new EditCompositeModelDialog();
-            if (!dlg.CreateModel()) {
-                return;
-            }
-            dlg.CreateDialog();
-            DialogShowing = dlg;
-            DialogShowing.Show();
+            // Todo: doCreateSubcircuit
+            //var dlg = new EditCompositeModelDialog();
+            //if (!dlg.CreateModel()) {
+            //    return;
+            //}
+            //dlg.CreateDialog();
+            //DialogShowing = dlg;
+            //DialogShowing.Show();
         }
 
         void doOpenFile() {
@@ -1081,7 +1087,8 @@ namespace Circuit {
 
         string dumpCircuit() {
             CustomLogicModel.clearDumpedFlags();
-            CustomCompositeModel.ClearDumpedFlags();
+            // Todo: CustomCompositeModel
+            //CustomCompositeModel.ClearDumpedFlags();
             DiodeModel.ClearDumpedFlags();
 
             int f = ControlPanel.ChkShowDots.Checked ? 1 : 0;
@@ -1095,7 +1102,7 @@ namespace Circuit {
 
             int i;
             for (i = 0; i != ElmCount; i++) {
-                var ce = getElm(i);
+                var ce = getElm(i).Item1;
                 string m = ce.DumpModel();
                 if (!string.IsNullOrEmpty(m)) {
                     dump += m + "\n";
@@ -1135,7 +1142,7 @@ namespace Circuit {
             if ((flags & RC_RETAIN) == 0) {
                 clearMouseElm();
                 for (i = 0; i != ElmCount; i++) {
-                    var ce = getElm(i);
+                    var ce = getElm(i).Item1;
                     ce.Delete();
                 }
                 ElmList.Clear();
@@ -1208,7 +1215,8 @@ namespace Circuit {
                             break;
                         }
                         if (tint == '.') {
-                            CustomCompositeModel.UndumpModel(st);
+                            // Todo: CustomCompositeModel
+                            //CustomCompositeModel.UndumpModel(st);
                             break;
                         }
                         var p1 = new Point(
@@ -1225,7 +1233,7 @@ namespace Circuit {
                             break;
                         }
                         newce.SetPoints();
-                        ElmList.Add(newce);
+                        ElmList.Add(new Tuple<CircuitElm, BaseElement>(newce, newce.CirElm));
                     } catch (Exception ee) {
                         Console.WriteLine("exception while undumping " + ee);
                         Console.WriteLine(ee.StackTrace);
@@ -1272,19 +1280,21 @@ namespace Circuit {
         }
 
         bool doSwitch(Point pos) {
-            if (mMouseElm == null || !(mMouseElm is SwitchElm)) {
-                return false;
-            }
-            var se = (SwitchElm)mMouseElm;
-            if (!se.GetSwitchRect().Contains(pos)) {
-                return false;
-            }
-            se.Toggle();
-            if (se.Momentary) {
-                mHeldSwitchElm = se;
-            }
-            NeedAnalyze();
-            return true;
+            // Todo: doSwitch
+            return false;
+            //if (mMouseElm == null || !(mMouseElm is SwitchElm)) {
+            //    return false;
+            //}
+            //var se = (SwitchElm)mMouseElm;
+            //if (!se.GetSwitchRect().Contains(pos)) {
+            //    return false;
+            //}
+            //se.Toggle();
+            //if (se.Momentary) {
+            //    mHeldSwitchElm = se;
+            //}
+            //NeedAnalyze();
+            //return true;
         }
 
         void mouseDragged() {
@@ -1392,7 +1402,7 @@ namespace Circuit {
                 return;
             }
             for (int i = 0; i != ElmCount; i++) {
-                var ce = getElm(i);
+                var ce = getElm(i).Item1;
                 if (ce.P1.Y == mDragGrid.Y) {
                     ce.MovePoint(0, 0, dy);
                 }
@@ -1409,7 +1419,7 @@ namespace Circuit {
                 return;
             }
             for (int i = 0; i != ElmCount; i++) {
-                var ce = getElm(i);
+                var ce = getElm(i).Item1;
                 if (ce.P1.X == mDragGrid.X) {
                     ce.MovePoint(0, dx, 0);
                 }
@@ -1442,14 +1452,14 @@ namespace Circuit {
             /* check if moves are allowed */
             bool allowed = true;
             for (i = 0; allowed && i != ElmCount; i++) {
-                var ce = getElm(i);
+                var ce = getElm(i).Item1;
                 if (ce.IsSelected && !ce.AllowMove(dx, dy)) {
                     allowed = false;
                 }
             }
             if (allowed) {
                 for (i = 0; i != ElmCount; i++) {
-                    var ce = getElm(i);
+                    var ce = getElm(i).Item1;
                     if (ce.IsSelected) {
                         ce.Move(dx, dy);
                     }
@@ -1485,7 +1495,7 @@ namespace Circuit {
                 return false;
             }
             for (int i = 0; i != ElmCount; i++) {
-                var ce = getElm(i);
+                var ce = getElm(i).Item1;
                 if (ce.IsSelected) {
                     return false;
                 }
@@ -1515,7 +1525,7 @@ namespace Circuit {
             var newWire = new WireElm(pos);
             newWire.Drag(ce.P2);
             ce.Drag(pos);
-            ElmList.Add(newWire);
+            ElmList.Add(new Tuple<CircuitElm, BaseElement>(newWire, newWire.CirElm));
             NeedAnalyze();
         }
 
@@ -1526,7 +1536,7 @@ namespace Circuit {
             int y2 = Math.Max(pos.Y, mInitDragGrid.Y);
             mSelectedArea = new Rectangle(x1, y1, x2 - x1, y2 - y1);
             for (int i = 0; i != ElmCount; i++) {
-                var ce = getElm(i);
+                var ce = getElm(i).Item1;
                 ce.SelectRect(mSelectedArea);
             }
         }
@@ -1545,7 +1555,7 @@ namespace Circuit {
 
         void removeZeroLengthElements() {
             for (int i = ElmCount - 1; i >= 0; i--) {
-                var ce = getElm(i);
+                var ce = getElm(i).Item1;
                 if (ce.P1.X == ce.P2.X && ce.P1.Y == ce.P2.Y) {
                     ElmList.RemoveAt(i);
                     /*Console.WriteLine("delete element: {0} {1}\t{2} {3}\t{4}", ce.GetType(), ce.x1, ce.y1, ce.x2, ce.y2); */
@@ -1610,7 +1620,7 @@ namespace Circuit {
 
             double minDistance = 8;
             for (int i = 0; i != ElmCount; i++) {
-                var ce = getElm(i);
+                var ce = getElm(i).Item1;
                 var distance = ce.Distance(gx, gy);
                 if (distance < minDistance) {
                     newMouseElm = ce;
@@ -1630,14 +1640,14 @@ namespace Circuit {
                 /* the mouse pointer was not in any of the bounding boxes, but we
                 /* might still be close to a post */
                 for (int i = 0; i != ElmCount; i++) {
-                    var ce = getElm(i);
+                    var ce = getElm(i).Item1;
                     if (MouseMode == MOUSE_MODE.DRAG_POST) {
                         if (ce.GetHandleGrabbedClose(gx, gy, POSTGRABSQ, 0) > 0) {
                             newMouseElm = ce;
                             break;
                         }
                     }
-                    int jn = ce.CirPostCount;
+                    int jn = ce.CirElm.CirPostCount;
                     for (int j = 0; j != jn; j++) {
                         var pt = ce.GetPost(j);
                         if (Utils.Distance(pt, gx, gy) < 26) {
@@ -1650,7 +1660,7 @@ namespace Circuit {
             } else {
                 mMousePost = -1;
                 /* look for post close to the mouse pointer */
-                for (int i = 0; i != newMouseElm.CirPostCount; i++) {
+                for (int i = 0; i != newMouseElm.CirElm.CirPostCount; i++) {
                     var pt = newMouseElm.GetPost(i);
                     if (Utils.Distance(pt, gx, gy) < 26) {
                         mMousePost = i;
@@ -1788,7 +1798,7 @@ namespace Circuit {
             setMenuSelection();
             mClipboard = "";
             for (i = ElmCount - 1; i >= 0; i--) {
-                var ce = getElm(i);
+                var ce = getElm(i).Item1;
                 /* ScopeElms don't cut-paste well because their reference to a parent
                 /* elm by number get's messed up in the dump. For now we will just ignore them
                 /* until I can be bothered to come up with something better */
@@ -1838,7 +1848,7 @@ namespace Circuit {
         void deleteUnusedScopeElms() {
             /* Remove any scopeElms for elements that no longer exist */
             for (int i = ElmCount - 1; 0 <= i; i--) {
-                var ce = getElm(i);
+                var ce = getElm(i).Item1;
                 if ((ce is ScopeElm) && ((ScopeElm)ce).elmScope.NeedToRemove) {
                     ce.Delete();
                     ElmList.RemoveAt(i);
@@ -1854,7 +1864,7 @@ namespace Circuit {
             bool hasDeleted = false;
 
             for (i = ElmCount - 1; i >= 0; i--) {
-                var ce = getElm(i);
+                var ce = getElm(i).Item1;
                 if (willDelete(ce)) {
                     if (ce.IsMouseElm) {
                         setMouseElm(null);
@@ -1885,10 +1895,11 @@ namespace Circuit {
         string copyOfSelectedElms() {
             string r = "";
             CustomLogicModel.clearDumpedFlags();
-            CustomCompositeModel.ClearDumpedFlags();
+            // Todo: CustomCompositeModel
+            //CustomCompositeModel.ClearDumpedFlags();
             DiodeModel.ClearDumpedFlags();
             for (int i = ElmCount - 1; i >= 0; i--) {
-                var ce = getElm(i);
+                var ce = getElm(i).Item1;
                 string m = ce.DumpModel();
                 if (!string.IsNullOrEmpty(m)) {
                     r += m + "\n";
@@ -1936,7 +1947,7 @@ namespace Circuit {
             /* get old bounding box */
             var oldbb = new RectangleF();
             for (i = 0; i != ElmCount; i++) {
-                var ce = getElm(i);
+                var ce = getElm(i).Item1;
                 var bb = ce.BoundingBox;
                 if (0 == i) {
                     oldbb = bb;
@@ -1957,7 +1968,7 @@ namespace Circuit {
             /* select new items and get their bounding box */
             var newbb = new RectangleF();
             for (i = oldsz; i != ElmCount; i++) {
-                var ce = getElm(i);
+                var ce = getElm(i).Item1;
                 ce.IsSelected = true;
                 var bb = ce.BoundingBox;
                 if (0 == i) {
@@ -1986,7 +1997,7 @@ namespace Circuit {
                     int mdx = SnapGrid((int)(gx - (newbb.X + newbb.Width / 2)));
                     int mdy = SnapGrid((int)(gy - (newbb.Y + newbb.Height / 2)));
                     for (i = oldsz; i != ElmCount; i++) {
-                        if (!getElm(i).AllowMove(mdx, mdy)) {
+                        if (!getElm(i).Item1.AllowMove(mdx, mdy)) {
                             break;
                         }
                     }
@@ -1998,7 +2009,7 @@ namespace Circuit {
 
                 /* move the new items */
                 for (i = oldsz; i != ElmCount; i++) {
-                    var ce = getElm(i);
+                    var ce = getElm(i).Item1;
                     ce.Move(dx, dy);
                 }
             }
@@ -2008,21 +2019,22 @@ namespace Circuit {
 
         void clearSelection() {
             for (int i = 0; i != ElmCount; i++) {
-                var ce = getElm(i);
+                var ce = getElm(i).Item1;
                 ce.IsSelected = false;
             }
         }
 
         void doSelectAll() {
             for (int i = 0; i != ElmCount; i++) {
-                var ce = getElm(i);
+                var ce = getElm(i).Item1;
                 ce.IsSelected = true;
             }
         }
 
         bool anySelectedButMouse() {
             for (int i = 0; i != ElmCount; i++) {
-                if (getElm(i) != mMouseElm && getElm(i).IsSelected) {
+                var ce = getElm(i).Item1;
+                if (ce != mMouseElm && ce.IsSelected) {
                     return true;
                 }
             }
@@ -2037,23 +2049,24 @@ namespace Circuit {
             string cs;
             Console.WriteLine("Elm list Dump");
             for (i = 0; i < ElmCount; i++) {
-                e = ElmList[i];
+                e = ElmList[i].Item1;
                 cs = e.ToString();
                 int p = cs.LastIndexOf('.');
                 cs = cs.Substring(p + 1);
                 if (cs == "WireElm") {
                     continue;
                 }
-                if (cs == "TransistorElm") {
-                    if (((TransistorElm)e).NPN == -1) {
-                        cs = "PTransistorElm";
-                    } else {
-                        cs = "NTransistorElm";
-                    }
-                }
+                // Todo: TransistorElm
+                //if (cs == "TransistorElm") {
+                //    if (((TransistorElm)e).NPN == -1) {
+                //        cs = "PTransistorElm";
+                //    } else {
+                //        cs = "NTransistorElm";
+                //    }
+                //}
                 s = cs;
-                for (j = 0; j < e.CirPostCount; j++) {
-                    s = s + " " + e.CirNodes[j];
+                for (j = 0; j < e.CirElm.CirPostCount; j++) {
+                    s = s + " " + e.CirElm.CirNodes[j];
                 }
                 Console.WriteLine(s);
             }
@@ -2066,7 +2079,7 @@ namespace Circuit {
 
         bool isSelection() {
             for (int i = 0; i != ElmCount; i++) {
-                if (getElm(i).IsSelected) {
+                if (getElm(i).Item1.IsSelected) {
                     return true;
                 }
             }
