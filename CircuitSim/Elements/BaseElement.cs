@@ -11,8 +11,8 @@
         }
 
         #region [variable]
-        public double mCurrent { get; protected set; }
         public double CurCount;
+        protected double mCurrent;
         protected int mVoltSource;
         #endregion
 

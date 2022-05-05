@@ -217,7 +217,7 @@ namespace Circuit.Elements.Input {
                 arr[0] = elm.waveform.ToString(); break;
             }
 
-            arr[1] = "I = " + Utils.CurrentText(elm.mCurrent);
+            arr[1] = "I = " + Utils.CurrentText(elm.Current);
             arr[2] = ((this is RailElm) ? "V = " : "Vd = ") + Utils.VoltageText(elm.VoltageDiff);
             int i = 3;
             if (elm.waveform != VoltageElmE.WAVEFORM.DC && elm.waveform != VoltageElmE.WAVEFORM.NOISE) {
@@ -232,8 +232,8 @@ namespace Circuit.Elements.Input {
                     arr[i++] = "wavelength = " + Utils.UnitText(2.9979e8 / elm.mFrequency, "m");
                 }
             }
-            if (elm.waveform == VoltageElmE.WAVEFORM.DC && elm.mCurrent != 0 && BaseElement.mCir.ShowResistanceInVoltageSources) {
-                arr[i++] = "(R = " + Utils.UnitText(elm.mMaxVoltage / elm.mCurrent, CirSim.OHM_TEXT) + ")";
+            if (elm.waveform == VoltageElmE.WAVEFORM.DC && elm.Current != 0 && BaseElement.mCir.ShowResistanceInVoltageSources) {
+                arr[i++] = "(R = " + Utils.UnitText(elm.mMaxVoltage / elm.Current, CirSim.OHM_TEXT) + ")";
             }
             arr[i++] = "P = " + Utils.UnitText(elm.Power, "W");
         }

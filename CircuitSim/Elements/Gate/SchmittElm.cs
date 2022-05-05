@@ -19,7 +19,7 @@ namespace Circuit.Elements.Gate {
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.DrawPolygon(gatePoly);
             g.DrawPolygon(symbolPoly);
-            ce.CurCount = ce.cirUpdateDotCount(ce.mCurrent, ce.CurCount);
+            ce.CurCount = ce.cirUpdateDotCount(ce.Current, ce.CurCount);
             drawDots(mLead2, mPoint2, ce.CurCount);
         }
 

@@ -42,7 +42,7 @@ namespace Circuit.Elements.Input {
             drawCenteredText(s, P2, true);
             drawWaveform(g, mPoint2);
             drawPosts();
-            ce.CurCount = ce.cirUpdateDotCount(-ce.mCurrent, ce.CurCount);
+            ce.CurCount = ce.cirUpdateDotCount(-ce.Current, ce.CurCount);
             if (CirSim.Sim.DragElm != this) {
                 drawDots(mPoint1, mLead1, ce.CurCount);
             }

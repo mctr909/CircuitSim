@@ -31,7 +31,7 @@ namespace Circuit.Elements.Passive {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "ワイヤ";
-            arr[1] = "I = " + Utils.CurrentAbsText(CirElm.mCurrent);
+            arr[1] = "I = " + Utils.CurrentAbsText(CirElm.Current);
             arr[2] = "V = " + Utils.VoltageText(CirElm.Volts[0]);
         }
     }

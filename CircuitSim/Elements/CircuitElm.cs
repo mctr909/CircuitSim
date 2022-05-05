@@ -225,7 +225,7 @@ namespace Circuit.Elements {
         }
 
         protected int getBasicInfo(string[] arr) {
-            arr[1] = "I = " + Utils.CurrentAbsText(CirElm.mCurrent);
+            arr[1] = "I = " + Utils.CurrentAbsText(CirElm.Current);
             arr[2] = "Vd = " + Utils.VoltageAbsText(CirElm.VoltageDiff);
             return 3;
         }

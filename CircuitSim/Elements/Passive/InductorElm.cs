@@ -23,7 +23,7 @@ namespace Circuit.Elements.Passive {
 
         protected override string dump() {
             var ce = (InductorElmE)CirElm;
-            return ce.Inductance + " " + ce.mCurrent + " " + ReferenceName;
+            return ce.Inductance + " " + ce.Current + " " + ReferenceName;
         }
 
         public override void SetPoints() {
@@ -111,7 +111,7 @@ namespace Circuit.Elements.Passive {
                     mFlags |= Inductor.FLAG_BACK_EULER;
                 }
             }
-            ce.Ind.Setup(ce.Inductance, CirElm.mCurrent, mFlags);
+            ce.Ind.Setup(ce.Inductance, CirElm.Current, mFlags);
         }
     }
 }

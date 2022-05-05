@@ -103,7 +103,7 @@ namespace Circuit.Elements.Active {
             } else {
                 arr[0] = "diode (" + ce.mModelName + ")";
             }
-            arr[1] = "I = " + Utils.CurrentText(ce.mCurrent);
+            arr[1] = "I = " + Utils.CurrentText(ce.Current);
             arr[2] = "Vd = " + Utils.VoltageText(ce.VoltageDiff);
             arr[3] = "P = " + Utils.UnitText(ce.Power, "W");
             if (ce.mModel.OldStyle) {

@@ -56,7 +56,7 @@ namespace Circuit.Elements.Input {
                 arr[1] = 0 != ce.Position ? "1" : "0";
             }
             arr[1] += " (" + Utils.VoltageText(ce.Volts[0]) + ")";
-            arr[2] = "I = " + Utils.CurrentText(ce.mCurrent);
+            arr[2] = "I = " + Utils.CurrentText(ce.Current);
         }
 
         public override ElementInfo GetElementInfo(int n) {

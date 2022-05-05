@@ -105,7 +105,7 @@ namespace Circuit.Elements.Passive {
             var ce = (Switch2ElmE)CirElm;
             arr[0] = "switch (" + (ce.mLink == 0 ? "S" : "D")
                 + "P" + ((ce.mThrowCount > 2) ? ce.mThrowCount + "T)" : "DT)");
-            arr[1] = "I = " + Utils.CurrentAbsText(ce.mCurrent);
+            arr[1] = "I = " + Utils.CurrentAbsText(ce.Current);
         }
 
         public override ElementInfo GetElementInfo(int n) {

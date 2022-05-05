@@ -57,7 +57,7 @@ namespace Circuit.Elements.Active {
             drawCenteredLText("+", mTextp[1], true);
 
             var ce = (OpAmpElmE)CirElm;
-            ce.CurCount = ce.cirUpdateDotCount(ce.mCurrent, ce.CurCount);
+            ce.CurCount = ce.cirUpdateDotCount(ce.Current, ce.CurCount);
             drawDots(mPoint2, mLead2, ce.CurCount);
             drawPosts();
         }
@@ -101,7 +101,7 @@ namespace Circuit.Elements.Active {
              * to make convergence easier.  so we hide that here. */
             double vo = Math.Max(Math.Min(ce.Volts[OpAmpElmE.V_O], ce.MaxOut), ce.MinOut);
             arr[3] = "Vout = " + Utils.VoltageText(vo);
-            arr[4] = "Iout = " + Utils.CurrentText(-ce.mCurrent);
+            arr[4] = "Iout = " + Utils.CurrentText(-ce.Current);
             arr[5] = "range = " + Utils.VoltageText(ce.MinOut)
                 + " to " + Utils.VoltageText(ce.MaxOut);
         }

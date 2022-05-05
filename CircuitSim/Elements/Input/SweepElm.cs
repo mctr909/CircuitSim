@@ -87,7 +87,7 @@ namespace Circuit.Elements.Input {
             }
 
             drawPosts();
-            ce.CurCount = ce.cirUpdateDotCount(-ce.mCurrent, ce.CurCount);
+            ce.CurCount = ce.cirUpdateDotCount(-ce.Current, ce.CurCount);
             if (CirSim.Sim.DragElm != this) {
                 drawDots(mPoint1, mLead1, ce.CurCount);
             }
@@ -96,7 +96,7 @@ namespace Circuit.Elements.Input {
         public override void GetInfo(string[] arr) {
             var ce = (SweepElmE)CirElm;
             arr[0] = "sweep " + (((mFlags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
-            arr[1] = "I = " + Utils.CurrentAbsText(ce.mCurrent);
+            arr[1] = "I = " + Utils.CurrentAbsText(ce.Current);
             arr[2] = "V = " + Utils.VoltageText(ce.Volts[0]);
             arr[3] = "f = " + Utils.UnitText(ce.Frequency, "Hz");
             arr[4] = "range = " + Utils.UnitText(ce.MinF, "Hz") + " .. " + Utils.UnitText(ce.MaxF, "Hz");

@@ -122,7 +122,7 @@ namespace Circuit.Elements.Gate {
             if (ce.IsInverting) {
                 g.DrawCircle(mCirclePos, CIRCLE_SIZE);
             }
-            ce.CurCount = ce.cirUpdateDotCount(ce.mCurrent, ce.CurCount);
+            ce.CurCount = ce.cirUpdateDotCount(ce.Current, ce.CurCount);
             drawDots(mLead2, mPoint2, ce.CurCount);
             drawPosts();
         }
@@ -131,7 +131,7 @@ namespace Circuit.Elements.Gate {
             var ce = (GateElmE)CirElm;
             arr[0] = gateName;
             arr[1] = "Vout = " + Utils.VoltageText(ce.Volts[ce.InputCount]);
-            arr[2] = "Iout = " + Utils.CurrentText(ce.mCurrent);
+            arr[2] = "Iout = " + Utils.CurrentText(ce.Current);
         }
 
         public override ElementInfo GetElementInfo(int n) {

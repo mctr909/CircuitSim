@@ -86,7 +86,7 @@ namespace Circuit.Elements.Passive {
             } else {
                 arr[1] = "closed";
                 arr[2] = "V = " + Utils.VoltageText(ce.Volts[0]);
-                arr[3] = "I = " + Utils.CurrentAbsText(ce.mCurrent);
+                arr[3] = "I = " + Utils.CurrentAbsText(ce.Current);
             }
         }
 

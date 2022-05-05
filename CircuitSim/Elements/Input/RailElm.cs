@@ -48,7 +48,7 @@ namespace Circuit.Elements.Input {
             drawLead(mPoint1, mLead1);
             drawRail(g);
             drawPosts();
-            CirElm.CurCount = CirElm.cirUpdateDotCount(-CirElm.mCurrent, CirElm.CurCount);
+            CirElm.CurCount = CirElm.cirUpdateDotCount(-CirElm.Current, CirElm.CurCount);
             if (CirSim.Sim.DragElm != this) {
                 drawDots(mPoint1, mLead1, CirElm.CurCount);
             }

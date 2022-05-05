@@ -59,7 +59,7 @@ namespace Circuit.Elements.Output {
             string s = "A";
             switch (ce.Meter) {
             case AmmeterElmE.AM_VOL:
-                s = Utils.UnitTextWithScale(ce.mCurrent, "A", ce.Scale);
+                s = Utils.UnitTextWithScale(ce.Current, "A", ce.Scale);
                 break;
             case AmmeterElmE.AM_RMS:
                 s = Utils.UnitTextWithScale(ce.RmsI, "A(rms)", ce.Scale);
@@ -78,7 +78,7 @@ namespace Circuit.Elements.Output {
             arr[0] = "Ammeter";
             switch (ce.Meter) {
             case AmmeterElmE.AM_VOL:
-                arr[1] = "I = " + Utils.UnitText(ce.mCurrent, "A");
+                arr[1] = "I = " + Utils.UnitText(ce.Current, "A");
                 break;
             case AmmeterElmE.AM_RMS:
                 arr[1] = "Irms = " + Utils.UnitText(ce.RmsI, "A");

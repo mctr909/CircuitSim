@@ -80,7 +80,7 @@ namespace Circuit.Elements.Active {
 
             var ce = (DiodeElmE)CirElm;
 
-            double w = ce.mCurrent / mMaxBrightnessCurrent;
+            double w = ce.Current / mMaxBrightnessCurrent;
             if (0 < w) {
                 w = 255 * (1 + .2 * Math.Log(w));
             }
