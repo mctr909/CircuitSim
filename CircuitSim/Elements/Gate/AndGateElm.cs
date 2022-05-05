@@ -3,26 +3,23 @@ using System.Drawing;
 
 namespace Circuit.Elements.Gate {
     class AndGateElm : GateElm {
-        public AndGateElm(Point pos) : base(pos) { }
+        public AndGateElm(Point pos) : base(pos) {
+            CirElm = new AndGateElmE();
+        }
 
-        public AndGateElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) { }
+        public AndGateElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
+            CirElm = new AndGateElmE(st);
+        }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.AND_GATE; } }
 
-        protected override string getGateText() { return "&"; }
+        protected override string gateText { get { return "&"; } }
 
-        protected override string getGateName() { return "AND gate"; }
-
-        protected override bool calcFunction() {
-            bool f = true;
-            for (int i = 0; i != mInputCount; i++) {
-                f &= getInput(i);
-            }
-            return f;
-        }
+        protected override string gateName { get { return "AND gate"; } }
 
         public override void SetPoints() {
             base.SetPoints();
+            var ce = (GateElmE)CirElm;
 
             createEuroGatePolygon();
 
@@ -40,7 +37,7 @@ namespace Circuit.Elements.Gate {
             }
             mGatePolyAnsi[11] = mLead2;
 
-            if (isInverting()) {
+            if (ce.IsInverting) {
                 interpPoint(ref mCirclePos, 0.5 + (mWw + 3) / mLen);
                 setLead2(0.5 + (mWw + 6) / mLen);
             }

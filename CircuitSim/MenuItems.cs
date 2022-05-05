@@ -8,7 +8,7 @@ using Circuit.Elements.Passive;
 using Circuit.Elements.Active;
 using Circuit.Elements.Input;
 using Circuit.Elements.Output;
-//using Circuit.Elements.Gate;
+using Circuit.Elements.Gate;
 //using Circuit.Elements.Logic;
 using Circuit.Elements.Custom;
 
@@ -513,30 +513,31 @@ namespace Circuit {
             #endregion
 
             #region Logic Gates
-            //var gateMenuBar = new ToolStripMenuItem();
-            //gateMenuBar.Text = "論理ゲート(G)";
-            //gateMenuBar.Font = menuFont;
-            //addElementItem(gateMenuBar, "入力", ELEMENTS.LOGIC_INPUT);
-            //addElementItem(gateMenuBar, "出力", ELEMENTS.LOGIC_OUTPUT);
-            //gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            //addElementItem(gateMenuBar, "AND", ELEMENTS.AND_GATE);
-            //addElementItem(gateMenuBar, "OR", ELEMENTS.OR_GATE);
-            //addElementItem(gateMenuBar, "XOR", ELEMENTS.XOR_GATE);
-            //addElementItem(gateMenuBar, "NOT", ELEMENTS.NOT_GATE);
-            //addElementItem(gateMenuBar, "NAND", ELEMENTS.NAND_GATE);
-            //addElementItem(gateMenuBar, "NOR", ELEMENTS.NOR_GATE);
-            //addElementItem(gateMenuBar, "全加算器", ELEMENTS.FullAdderElm);
-            //addElementItem(gateMenuBar, "半加算器", ELEMENTS.HalfAdderElm);
-            //mainMenuBar.Items.Add(gateMenuBar);
+            var gateMenuBar = new ToolStripMenuItem();
+            gateMenuBar.Text = "論理ゲート(G)";
+            gateMenuBar.Font = menuFont;
+            addElementItem(gateMenuBar, "入力", ELEMENTS.LOGIC_INPUT);
+            addElementItem(gateMenuBar, "出力", ELEMENTS.LOGIC_OUTPUT);
+            gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(gateMenuBar, "3ステートバッファ", ELEMENTS.TRISTATE);
+            addElementItem(gateMenuBar, "シュミットトリガ", ELEMENTS.SCHMITT);
+            addElementItem(gateMenuBar, "シュミットトリガ(NOT)", ELEMENTS.SCHMITT_INV);
+            gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(gateMenuBar, "AND", ELEMENTS.AND_GATE);
+            addElementItem(gateMenuBar, "OR", ELEMENTS.OR_GATE);
+            addElementItem(gateMenuBar, "NOT", ELEMENTS.NOT_GATE);
+            addElementItem(gateMenuBar, "NAND", ELEMENTS.NAND_GATE);
+            addElementItem(gateMenuBar, "NOR", ELEMENTS.NOR_GATE);
+            addElementItem(gateMenuBar, "XOR", ELEMENTS.XOR_GATE);
+            addElementItem(gateMenuBar, "全加算器", ELEMENTS.FullAdderElm);
+            addElementItem(gateMenuBar, "半加算器", ELEMENTS.HalfAdderElm);
+            mainMenuBar.Items.Add(gateMenuBar);
             #endregion
 
             #region Logic ICs
             //var logicIcMenuBar = new ToolStripMenuItem();
             //logicIcMenuBar.Text = "論理IC(L)";
             //logicIcMenuBar.Font = menuFont;
-            //addElementItem(logicIcMenuBar, "シュミットトリガ", ELEMENTS.SCHMITT);
-            //addElementItem(logicIcMenuBar, "シュミットトリガ(NOT)", ELEMENTS.SCHMITT_INV);
-            //addElementItem(logicIcMenuBar, "3ステートバッファ", ELEMENTS.TRISTATE);
             //logicIcMenuBar.DropDownItems.Add(new ToolStripSeparator());
             //addElementItem(logicIcMenuBar, "ラッチ", ELEMENTS.LatchElm);
             //addElementItem(logicIcMenuBar, "マルチプレクサ", ELEMENTS.MultiplexerElm);
@@ -745,31 +746,31 @@ namespace Circuit {
             #endregion
 
             #region Logic Gates
-            //case ELEMENTS.LOGIC_INPUT:
-            //    return new LogicInputElm(pos);
-            //case ELEMENTS.LOGIC_OUTPUT:
-            //    return new LogicOutputElm(pos);
-            //case ELEMENTS.TRISTATE:
-            //    return new TriStateElm(pos);
-            //case ELEMENTS.NOT_GATE:
-            //    return new InverterElm(pos);
-            //case ELEMENTS.AND_GATE:
-            //    return new AndGateElm(pos);
-            //case ELEMENTS.NAND_GATE:
-            //    return new NandGateElm(pos);
-            //case ELEMENTS.OR_GATE:
-            //    return new OrGateElm(pos);
-            //case ELEMENTS.NOR_GATE:
-            //    return new NorGateElm(pos);
-            //case ELEMENTS.XOR_GATE:
-            //    return new XorGateElm(pos);
+            case ELEMENTS.LOGIC_INPUT:
+                return new LogicInputElm(pos);
+            case ELEMENTS.LOGIC_OUTPUT:
+                return new LogicOutputElm(pos);
+            case ELEMENTS.TRISTATE:
+                return new TriStateElm(pos);
+            case ELEMENTS.SCHMITT_INV:
+                return new InvertingSchmittElm(pos);
+            case ELEMENTS.SCHMITT:
+                return new SchmittElm(pos);
+            case ELEMENTS.NOT_GATE:
+                return new InverterElm(pos);
+            case ELEMENTS.AND_GATE:
+                return new AndGateElm(pos);
+            case ELEMENTS.NAND_GATE:
+                return new NandGateElm(pos);
+            case ELEMENTS.OR_GATE:
+                return new OrGateElm(pos);
+            case ELEMENTS.NOR_GATE:
+                return new NorGateElm(pos);
+            case ELEMENTS.XOR_GATE:
+                return new XorGateElm(pos);
             #endregion
 
             #region Digital Chips
-            //case ELEMENTS.SCHMITT:
-            //    return new SchmittElm(pos);
-            //case ELEMENTS.SCHMITT_INV:
-            //    return new InvertingSchmittElm(pos);
             //case ELEMENTS.DFlipFlopElm:
             //    return new DFlipFlopElm(pos);
             //case ELEMENTS.JKFlipFlopElm:
@@ -919,24 +920,28 @@ namespace Circuit {
             #endregion
 
             #region Logic Gates
-            //case DUMP_ID.LOGIC_I:
-            //    return new LogicInputElm(p1, p2, f, st);
-            //case DUMP_ID.LOGIC_O:
-            //    return new LogicOutputElm(p1, p2, f, st);
-            //case DUMP_ID.TRISTATE:
-            //    return new TriStateElm(p1, p2, f, st);
-            //case DUMP_ID.AND_GATE:
-            //    return new AndGateElm(p1, p2, f, st);
-            //case DUMP_ID.NAND_GATE:
-            //    return new NandGateElm(p1, p2, f, st);
-            //case DUMP_ID.OR_GATE:
-            //    return new OrGateElm(p1, p2, f, st);
-            //case DUMP_ID.NOR_GATE:
-            //    return new NorGateElm(p1, p2, f, st);
-            //case DUMP_ID.XOR_GATE:
-            //    return new XorGateElm(p1, p2, f, st);
-            //case DUMP_ID.INVERT:
-            //    return new InverterElm(p1, p2, f, st);
+            case DUMP_ID.LOGIC_I:
+                return new LogicInputElm(p1, p2, f, st);
+            case DUMP_ID.LOGIC_O:
+                return new LogicOutputElm(p1, p2, f, st);
+            case DUMP_ID.TRISTATE:
+                return new TriStateElm(p1, p2, f, st);
+            case DUMP_ID.INVERT_SCHMITT:
+                return new InvertingSchmittElm(p1, p2, f, st);
+            case DUMP_ID.SCHMITT:
+                return new SchmittElm(p1, p2, f, st);
+            case DUMP_ID.AND_GATE:
+                return new AndGateElm(p1, p2, f, st);
+            case DUMP_ID.NAND_GATE:
+                return new NandGateElm(p1, p2, f, st);
+            case DUMP_ID.OR_GATE:
+                return new OrGateElm(p1, p2, f, st);
+            case DUMP_ID.NOR_GATE:
+                return new NorGateElm(p1, p2, f, st);
+            case DUMP_ID.XOR_GATE:
+                return new XorGateElm(p1, p2, f, st);
+            case DUMP_ID.INVERT:
+                return new InverterElm(p1, p2, f, st);
             //case DUMP_ID.HALF_ADDER:
             //    return new HalfAdderElm(p1, p2, f, st);
             //case DUMP_ID.FULL_ADDER:
@@ -944,10 +949,6 @@ namespace Circuit {
             #endregion
 
             #region Digital Chips
-            //case DUMP_ID.SCHMITT:
-            //    return new SchmittElm(p1, p2, f, st);
-            //case DUMP_ID.INVERT_SCHMITT:
-            //    return new InvertingSchmittElm(p1, p2, f, st);
             //case DUMP_ID.FLIP_FLOP_D:
             //    return new DFlipFlopElm(p1, p2, f, st);
             //case DUMP_ID.FLIP_FLOP_JK:

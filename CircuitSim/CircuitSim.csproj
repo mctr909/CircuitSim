@@ -70,23 +70,44 @@
     <Compile Include="Elements\Custom\BoxElm.cs" />
     <Compile Include="Elements\Custom\GraphicElm.cs" />
     <Compile Include="Elements\Custom\TextElm.cs" />
+    <Compile Include="Elements\Gate\AndGateElmE.cs" />
+    <Compile Include="Elements\Gate\AndGateElm.cs" />
+    <Compile Include="Elements\Gate\GateElmE.cs" />
+    <Compile Include="Elements\Gate\GateElm.cs" />
+    <Compile Include="Elements\Gate\InverterElmE.cs" />
+    <Compile Include="Elements\Gate\InverterElm.cs" />
+    <Compile Include="Elements\Gate\InvertingSchmittElmE.cs" />
+    <Compile Include="Elements\Gate\NandGateElm.cs" />
+    <Compile Include="Elements\Gate\NorGateElm.cs" />
+    <Compile Include="Elements\Gate\OrGateElmE.cs" />
+    <Compile Include="Elements\Gate\OrGateElm.cs" />
+    <Compile Include="Elements\Gate\SchmittElmE.cs" />
+    <Compile Include="Elements\Gate\XorGateElmE.cs" />
+    <Compile Include="Elements\Gate\XorGateElm.cs" />
     <Compile Include="Elements\Input\AMElmE.cs" />
     <Compile Include="Elements\Input\AMElm.cs" />
     <Compile Include="Elements\Input\CurrentElmE.cs" />
     <Compile Include="Elements\Input\FMElmE.cs" />
     <Compile Include="Elements\Input\FMElm.cs" />
+    <Compile Include="Elements\Input\LogicInputElm.cs" />
     <Compile Include="Elements\Input\LogicInputElmE.cs" />
     <Compile Include="Elements\Input\NoiseElm.cs" />
     <Compile Include="Elements\Input\RailElmE.cs" />
     <Compile Include="Elements\Input\SweepElmE.cs" />
     <Compile Include="Elements\Input\SweepElm.cs" />
     <Compile Include="Elements\Input\VoltageElmE.cs" />
+    <Compile Include="Elements\Gate\TriStateElmE.cs" />
+    <Compile Include="Elements\Gate\TriStateElm.cs" />
+    <Compile Include="Elements\Gate\InvertingSchmittElm.cs" />
+    <Compile Include="Elements\Gate\SchmittElm.cs" />
     <Compile Include="Elements\Output\AmmeterElmE.cs" />
     <Compile Include="Elements\Output\AmmeterElm.cs" />
     <Compile Include="Elements\Output\DataRecorderElmE.cs" />
     <Compile Include="Elements\Output\DataRecorderElm.cs" />
     <Compile Include="Elements\Output\LabeledNodeElmE.cs" />
     <Compile Include="Elements\Output\LabeledNodeElm.cs" />
+    <Compile Include="Elements\Output\LogicOutputElmE.cs" />
+    <Compile Include="Elements\Output\LogicOutputElm.cs" />
     <Compile Include="Elements\Output\ScopeElmE.cs" />
     <Compile Include="Elements\Output\VoltMeterElmE.cs" />
     <Compile Include="Elements\Output\VoltMeterElm.cs" />
@@ -192,7 +213,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Elements\Gate\" />
     <Folder Include="Elements\Logic\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

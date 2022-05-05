@@ -7,15 +7,14 @@ namespace Circuit.Elements.Input {
     class LogicInputElm : SwitchElm {
         const int FLAG_NUMERIC = 2;
 
-        public LogicInputElm(Point pos) : base(pos, false) {
+        bool isNumeric { get { return (mFlags & (FLAG_NUMERIC)) != 0; } }
+
+        public LogicInputElm(Point pos) : base(pos, 0) {
             CirElm = new LogicInputElmE();
         }
 
-        public LogicInputElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
-            try {
-                CirElm = new LogicInputElmE(st);
-            } catch {
-            }
+        public LogicInputElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
+            CirElm = new LogicInputElmE(st);
         }
 
         protected override int NumHandles { get { return 1; } }
@@ -25,8 +24,6 @@ namespace Circuit.Elements.Input {
         protected override string dump() {
             return " " + ((LogicInputElmE)CirElm).mHiV + " " + ((LogicInputElmE)CirElm).mLoV;
         }
-
-        bool isNumeric() { return (mFlags & (FLAG_NUMERIC)) != 0; }
 
         public override Rectangle GetSwitchRect() {
             return new Rectangle(P2.X - 10, P2.Y - 10, 20, 20);
@@ -38,34 +35,37 @@ namespace Circuit.Elements.Input {
         }
 
         public override void Draw(CustomGraphics g) {
-            string s = Position == 0 ? "L" : "H";
-            if (isNumeric()) {
-                s = "" + Position;
+            var ce = (LogicInputElmE)CirElm;
+            string s = 0 != ce.Position ? "H" : "L";
+            if (isNumeric) {
+                s = "" + ce.Position;
             }
             setBbox(mPoint1, mLead1, 0);
             drawCenteredLText(s, P2, true);
             drawLead(mPoint1, mLead1);
-            cirUpdateDotCount();
-            drawDots(mPoint1, mLead1, mCirCurCount);
+            ce.cirUpdateDotCount();
+            drawDots(mPoint1, mLead1, ce.mCirCurCount);
             drawPosts();
         }
 
         public override void GetInfo(string[] arr) {
+            var ce = (LogicInputElmE)CirElm;
             arr[0] = "logic input";
-            arr[1] = (Position == 0) ? "low" : "high";
-            if (isNumeric()) {
-                arr[1] = "" + Position;
+            arr[1] = 0 != ce.Position ? "high" : "low";
+            if (isNumeric) {
+                arr[1] = 0 != ce.Position ? "1" : "0";
             }
-            arr[1] += " (" + Utils.VoltageText(CirVolts[0]) + ")";
-            arr[2] = "I = " + Utils.CurrentText(mCirCurrent);
+            arr[1] += " (" + Utils.VoltageText(ce.CirVolts[0]) + ")";
+            arr[2] = "I = " + Utils.CurrentText(ce.mCirCurrent);
         }
 
         public override ElementInfo GetElementInfo(int n) {
+            var ce = (LogicInputElmE)CirElm;
             if (n == 0) {
                 var ei = new ElementInfo("", 0, 0, 0);
                 ei.CheckBox = new CheckBox() {
                     Text = "モーメンタリ",
-                    Checked = Momentary
+                    Checked = ce.Momentary
                 };
                 return ei;
             }
@@ -79,7 +79,7 @@ namespace Circuit.Elements.Input {
                 var ei = new ElementInfo("", 0, 0, 0);
                 ei.CheckBox = new CheckBox() {
                     Text = "数値表示",
-                    Checked = isNumeric()
+                    Checked = isNumeric
                 };
                 return ei;
             }
@@ -87,8 +87,9 @@ namespace Circuit.Elements.Input {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
+            var ce = (LogicInputElmE)CirElm;
             if (n == 0) {
-                Momentary = ei.CheckBox.Checked;
+                ce.Momentary = ei.CheckBox.Checked;
             }
             if (n == 1) {
                 ((LogicInputElmE)CirElm).mHiV = ei.Value;

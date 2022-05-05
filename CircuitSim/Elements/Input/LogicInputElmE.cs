@@ -1,9 +1,9 @@
-﻿namespace Circuit.Elements.Input {
-    class LogicInputElmE : BaseElement {
+﻿using Circuit.Elements.Passive;
+
+namespace Circuit.Elements.Input {
+    class LogicInputElmE : SwitchElmE {
         public double mHiV;
         public double mLoV;
-
-        public bool Position { get; set; }
 
         public LogicInputElmE() {
             mHiV = 5;
@@ -35,7 +35,7 @@
         public override void CirSetCurrent(int vs, double c) { mCirCurrent = -c; }
 
         public override void CirStamp() {
-            double v = Position ? mHiV : mLoV;
+            double v = 0 != Position ? mHiV : mLoV;
             mCir.StampVoltageSource(0, CirNodes[0], mCirVoltSource, v);
         }
     }
