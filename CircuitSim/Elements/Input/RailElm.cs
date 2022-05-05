@@ -34,8 +34,8 @@ namespace Circuit.Elements.Input {
             var elm = (VoltageElmE)CirElm;
             var rt = getRailText();
             double w = rt == null ? (BODY_LEN * 0.5) : g.GetTextSize(rt).Width / 2;
-            if (w > mLen * .8) {
-                w = mLen * .8;
+            if (w > mLen * 0.8) {
+                w = mLen * 0.8;
             }
             if (elm.waveform == VoltageElmE.WAVEFORM.SQUARE
                 && (mFlags & FLAG_CLOCK) != 0 || elm.waveform == VoltageElmE.WAVEFORM.DC) {

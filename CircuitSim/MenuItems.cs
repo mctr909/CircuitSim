@@ -114,7 +114,7 @@ namespace Circuit {
         BoxElm,
         TestPointElm,
         LEDArrayElm,
-        StopTriggerElm,
+        STOP_TRIGGER,
         #endregion
 
         #region Active Building Blocks
@@ -249,6 +249,7 @@ namespace Circuit {
         COMPARATOR = 401,
         SCOPE = 403,
         OPTO_COUPLER = 407,
+        STOP_TRIGGER = 408,
         CUSTOM_COMPOSITE = 410,
         CRYSTAL = 412,
         SRAM = 413,
@@ -505,10 +506,10 @@ namespace Circuit {
             outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(outputMenuBar, "データ出力", ELEMENTS.DataRecorderElm);
             addElementItem(outputMenuBar, "音声ファイル出力", ELEMENTS.OUTPUT_AUDIO);
-            //outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             //addElementItem(outputMenuBar, "Add Lamp", ELEMENTS.LampElm);
             //addElementItem(outputMenuBar, "Add Test Point", ELEMENTS.TestPointElm);
-            //addElementItem(outputMenuBar, "Add Stop Trigger", ELEMENTS.StopTriggerElm);
+            addElementItem(outputMenuBar, "停止トリガー", ELEMENTS.STOP_TRIGGER);
             mainMenuBar.Items.Add(outputMenuBar);
             #endregion
 
@@ -529,8 +530,6 @@ namespace Circuit {
             addElementItem(gateMenuBar, "NAND", ELEMENTS.NAND_GATE);
             addElementItem(gateMenuBar, "NOR", ELEMENTS.NOR_GATE);
             addElementItem(gateMenuBar, "XOR", ELEMENTS.XOR_GATE);
-            addElementItem(gateMenuBar, "全加算器", ELEMENTS.FullAdderElm);
-            addElementItem(gateMenuBar, "半加算器", ELEMENTS.HalfAdderElm);
             mainMenuBar.Items.Add(gateMenuBar);
             #endregion
 
@@ -538,6 +537,8 @@ namespace Circuit {
             //var logicIcMenuBar = new ToolStripMenuItem();
             //logicIcMenuBar.Text = "論理IC(L)";
             //logicIcMenuBar.Font = menuFont;
+            //addElementItem(logicIcMenuBar, "全加算器", ELEMENTS.FullAdderElm);
+            //addElementItem(logicIcMenuBar, "半加算器", ELEMENTS.HalfAdderElm);
             //logicIcMenuBar.DropDownItems.Add(new ToolStripSeparator());
             //addElementItem(logicIcMenuBar, "ラッチ", ELEMENTS.LatchElm);
             //addElementItem(logicIcMenuBar, "マルチプレクサ", ELEMENTS.MultiplexerElm);
@@ -704,8 +705,8 @@ namespace Circuit {
             //    return null; //new TestPointElm(x1, y1);
             //case ELEMENTS.LEDArrayElm:
             //    return null; //(CircuitElm)new LEDArrayElm(x1, y1);
-            //case ELEMENTS.StopTriggerElm:
-            //    return null; //(CircuitElm)new StopTriggerElm(x1, y1);
+            case ELEMENTS.STOP_TRIGGER:
+                return new StopTriggerElm(pos);
             case ELEMENTS.SCOPE:
                 return new ScopeElm(pos);
             #endregion
@@ -917,6 +918,8 @@ namespace Circuit {
                 return new DataRecorderElm(p1, p2, f, st);
             case DUMP_ID.SCOPE:
                 return new ScopeElm(p1, p2, f, st);
+            case DUMP_ID.STOP_TRIGGER:
+                return new StopTriggerElm(p1, p2, f, st);
             #endregion
 
             #region Logic Gates
@@ -1015,7 +1018,6 @@ namespace Circuit {
             //case 404: return new FuseElm(x1, y1, x2, y2, f, st);
             //case 405: return new LEDArrayElm(x1, y1, x2, y2, f, st);
             //case 406: return new CustomTransformerElm(x1, y1, x2, y2, f, st);
-            //case 408: return new StopTriggerElm(x1, y1, x2, y2, f, st);
             //case 409: return new OpAmpRealElm(x1, y1, x2, y2, f, st);
             //case DUMP_ID.CUSTOM_COMPOSITE:
             //    return new CustomCompositeElm(p1, p2, f, st);

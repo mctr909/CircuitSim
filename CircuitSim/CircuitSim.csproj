@@ -109,6 +109,8 @@
     <Compile Include="Elements\Output\LogicOutputElmE.cs" />
     <Compile Include="Elements\Output\LogicOutputElm.cs" />
     <Compile Include="Elements\Output\ScopeElmE.cs" />
+    <Compile Include="Elements\Output\StopTriggerElmE.cs" />
+    <Compile Include="Elements\Output\StopTriggerElm.cs" />
     <Compile Include="Elements\Output\VoltMeterElmE.cs" />
     <Compile Include="Elements\Output\VoltMeterElm.cs" />
     <Compile Include="Elements\Passive\CapacitorElmE.cs" />
