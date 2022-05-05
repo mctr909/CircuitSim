@@ -1,5 +1,4 @@
-﻿using System.Windows.Forms;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace Circuit.Elements.Passive {
     class InductorUI : BaseUI {
@@ -84,13 +83,6 @@ namespace Circuit.Elements.Passive {
                 ei.Text = ReferenceName;
                 return ei;
             }
-            if (n == 2) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox();
-                ei.CheckBox.Text = "台形近似";
-                ei.CheckBox.Checked = ((InductorElm)CirElm).Ind.IsTrapezoidal;
-                return ei;
-            }
             return null;
         }
 
@@ -104,14 +96,7 @@ namespace Circuit.Elements.Passive {
                 ReferenceName = ei.Textf.Text;
                 setTextPos();
             }
-            if (n == 2) {
-                if (ei.CheckBox.Checked) {
-                    mFlags &= ~Inductor.FLAG_BACK_EULER;
-                } else {
-                    mFlags |= Inductor.FLAG_BACK_EULER;
-                }
-            }
-            ce.Ind.Setup(ce.Inductance, CirElm.Current, mFlags);
+            ce.Ind.Setup(ce.Inductance, CirElm.Current);
         }
     }
 }

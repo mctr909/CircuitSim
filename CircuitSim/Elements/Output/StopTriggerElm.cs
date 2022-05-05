@@ -26,7 +26,7 @@
 			Triggered = false;
 		}
 
-		public override void StepFinished() {
+		public override void CirStepFinished() {
 			Stopped = false;
 			if (!Triggered && ((Type == 0 && Volts[0] >= TriggerVoltage) || (Type == 1 && Volts[0] <= TriggerVoltage))) {
 				Triggered = true;

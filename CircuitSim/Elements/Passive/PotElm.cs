@@ -30,7 +30,7 @@
 
         public override int PostCount { get { return 3; } }
 
-        protected override void calcCurrent() {
+        protected override void cirCalcCurrent() {
             if (Resistance1 == 0) {
                 return; /* avoid NaN */
             }
@@ -49,7 +49,7 @@
             return -Current3;
         }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             Resistance1 = MaxResistance * Position;
             Resistance2 = MaxResistance * (1 - Position);
             mCir.StampResistor(Nodes[0], Nodes[2], Resistance1);

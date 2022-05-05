@@ -44,7 +44,7 @@ namespace Circuit.Elements.Active {
 
         public override bool NonLinear { get { return true; } }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             if (mHasResistance) {
                 /* create diode from node 0 to internal node */
                 mDiode.Stamp(Nodes[0], Nodes[2]);
@@ -56,11 +56,11 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             mDiode.DoStep(Volts[0] - Volts[mDiodeEndNode]);
         }
 
-        public override void StepFinished() {
+        public override void CirStepFinished() {
             /* stop for huge currents that make simulator act weird */
             if (Math.Abs(mCurrent) > 1e12) {
                 mCir.Stop("max current exceeded", this);
@@ -75,7 +75,7 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        protected override void calcCurrent() {
+        protected override void cirCalcCurrent() {
             mCurrent = mDiode.CalculateCurrent(Volts[0] - Volts[mDiodeEndNode]);
         }
 

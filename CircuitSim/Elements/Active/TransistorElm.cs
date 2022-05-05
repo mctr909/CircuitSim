@@ -63,13 +63,13 @@ namespace Circuit.Elements.Active {
             return -Ie;
         }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             mCir.StampNonLinear(Nodes[V_B]);
             mCir.StampNonLinear(Nodes[V_C]);
             mCir.StampNonLinear(Nodes[V_E]);
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             double vbc = Volts[V_B] - Volts[V_C]; /* typically negative */
             double vbe = Volts[V_B] - Volts[V_E]; /* typically positive */
             if (Math.Abs(vbc - mLastVbc) > .01 || /* .01 */
@@ -137,7 +137,7 @@ namespace Circuit.Elements.Active {
             mCir.StampRightSide(Nodes[V_E], -Ie + gee * vbe + gec * vbc);
         }
 
-        public override void StepFinished() {
+        public override void CirStepFinished() {
             /* stop for huge currents that make simulator act weird */
             if (Math.Abs(Ic) > 1e12 || Math.Abs(Ib) > 1e12) {
                 mCir.Stop("max current exceeded", this);

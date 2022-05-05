@@ -61,7 +61,7 @@ namespace Circuit.Elements.Input {
             CurCount = 0;
         }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             if (waveform == WAVEFORM.DC) {
                 mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
             } else {
@@ -69,13 +69,13 @@ namespace Circuit.Elements.Input {
             }
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             if (waveform != WAVEFORM.DC) {
                 mCir.UpdateVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
             }
         }
 
-        public override void StepFinished() {
+        public override void CirStepFinished() {
             if (waveform == WAVEFORM.NOISE) {
                 mNoiseValue = (CirSim.Random.NextDouble() * 2 - 1) * mMaxVoltage + mBias;
             }

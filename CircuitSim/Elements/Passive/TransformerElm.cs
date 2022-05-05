@@ -11,7 +11,6 @@ namespace Circuit.Elements.Passive {
         public double Ratio;
         public double CouplingCoef;
         public int Polarity;
-        public bool IsTrapezoidal;
         public double[] CurCounts;
 
         public double[] Currents { get; private set; }
@@ -51,11 +50,15 @@ namespace Circuit.Elements.Passive {
 
         public override int PostCount { get { return 4; } }
 
-        protected override void calcCurrent() {
-            double voltdiff1 = Volts[PRI_T] - Volts[PRI_B];
-            double voltdiff2 = Volts[SEC_T] - Volts[SEC_B];
-            Currents[0] = voltdiff1 * mA1 + voltdiff2 * mA2 + mCurSourceValue1;
-            Currents[1] = voltdiff1 * mA3 + voltdiff2 * mA4 + mCurSourceValue2;
+        public override void Reset() {
+            /* need to set current-source values here in case one of the nodes is node 0.  In that case
+             * calculateCurrent() may get called (from setNodeVoltage()) when analyzing circuit, before
+             * startIteration() gets called */
+            Currents[0] = Currents[1] = 0;
+            Volts[PRI_T] = Volts[PRI_B] = 0;
+            Volts[SEC_T] = Volts[SEC_B] = 0;
+            CurCounts[0] = CurCounts[1] = 0;
+            mCurSourceValue1 = mCurSourceValue2 = 0;
         }
 
         public override double GetCurrentIntoNode(int n) {
@@ -65,7 +68,7 @@ namespace Circuit.Elements.Passive {
             return Currents[n - 2];
         }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             /* equations for transformer:
              *   v1 = L1 di1/dt + M  di2/dt
              *   v2 = M  di1/dt + L2 di2/dt
@@ -98,7 +101,7 @@ namespace Circuit.Elements.Passive {
             double m = CouplingCoef * Math.Sqrt(l1 * l2);
             /* build inverted matrix */
             double deti = 1 / (l1 * l2 - m * m);
-            double ts = IsTrapezoidal ? ControlPanel.TimeStep / 2 : ControlPanel.TimeStep;
+            double ts = ControlPanel.TimeStep / 2;
             mA1 = l2 * deti * ts; /* we multiply dt/2 into a1..a4 here */
             mA2 = -m * deti * ts;
             mA3 = -m * deti * ts;
@@ -113,32 +116,24 @@ namespace Circuit.Elements.Passive {
             mCir.StampRightSide(Nodes[3]);
         }
 
-        public override void StartIteration() {
-            double voltdiff1 = Volts[PRI_T] - Volts[PRI_B];
-            double voltdiff2 = Volts[SEC_T] - Volts[SEC_B];
-            if (IsTrapezoidal) {
-                mCurSourceValue1 = voltdiff1 * mA1 + voltdiff2 * mA2 + Currents[0];
-                mCurSourceValue2 = voltdiff1 * mA3 + voltdiff2 * mA4 + Currents[1];
-            } else {
-                mCurSourceValue1 = Currents[0];
-                mCurSourceValue2 = Currents[1];
-            }
-        }
-
-        public override void DoStep() {
+        public override void CirDoStep() {
             mCir.StampCurrentSource(Nodes[0], Nodes[2], mCurSourceValue1);
             mCir.StampCurrentSource(Nodes[1], Nodes[3], mCurSourceValue2);
         }
 
-        public override void Reset() {
-            /* need to set current-source values here in case one of the nodes is node 0.  In that case
-             * calculateCurrent() may get called (from setNodeVoltage()) when analyzing circuit, before
-             * startIteration() gets called */
-            Currents[0] = Currents[1] = 0;
-            Volts[PRI_T] = Volts[PRI_B] = 0;
-            Volts[SEC_T] = Volts[SEC_B] = 0;
-            CurCounts[0] = CurCounts[1] = 0;
-            mCurSourceValue1 = mCurSourceValue2 = 0;
+        public override void CirStartIteration() {
+            double voltdiff1 = Volts[PRI_T] - Volts[PRI_B];
+            double voltdiff2 = Volts[SEC_T] - Volts[SEC_B];
+            mCurSourceValue1 = voltdiff1 * mA1 + voltdiff2 * mA2 + Currents[0];
+            mCurSourceValue2 = voltdiff1 * mA3 + voltdiff2 * mA4 + Currents[1];
+        }
+
+        public override void CirSetNodeVoltage(int n, double c) {
+            Volts[n] = c;
+            double voltdiff1 = Volts[PRI_T] - Volts[PRI_B];
+            double voltdiff2 = Volts[SEC_T] - Volts[SEC_B];
+            Currents[0] = voltdiff1 * mA1 + voltdiff2 * mA2 + mCurSourceValue1;
+            Currents[1] = voltdiff1 * mA3 + voltdiff2 * mA4 + mCurSourceValue2;
         }
     }
 }

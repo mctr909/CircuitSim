@@ -42,9 +42,9 @@ namespace Circuit.Elements.Input {
 
         public override int PostCount { get { return 1; } }
 
-        public override bool HasGroundConnection(int n1) { return true; }
+        public override bool AnaHasGroundConnection(int n1) { return true; }
 
-        public override void StartIteration() {
+        public override void CirStartIteration() {
             /* has timestep been changed? */
             if (ControlPanel.TimeStep != mSavedTimeStep) {
                 setParams();
@@ -68,11 +68,11 @@ namespace Circuit.Elements.Input {
             }
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, mVolt);
         }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
         }
 

@@ -44,7 +44,7 @@ namespace Circuit.Elements.Output {
 
         public override int VoltageSourceCount { get { return 1; } }
 
-        public override void StepFinished() {
+        public override void CirStepFinished() {
             mCount++; /*how many counts are in a cycle */
             mTotal += mCurrent * mCurrent; /* sum of squares */
             if (mCurrent > mMaxI && mIncreasingI) {
@@ -117,7 +117,7 @@ namespace Circuit.Elements.Output {
             }
         }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
         }
 

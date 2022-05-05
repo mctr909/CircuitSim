@@ -21,7 +21,7 @@
 
         public override int PostCount { get { return 1; } }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             if (needsPullDown) {
                 mCir.StampResistor(Nodes[0], 0, 1e6);
             }

@@ -73,11 +73,6 @@
         }
 
         /// <summary>
-        /// calculate current in response to node voltages changing
-        /// </summary>
-        protected virtual void calcCurrent() { }
-
-        /// <summary>
         /// handle reset button
         /// </summary>
         public virtual void Reset() {
@@ -87,23 +82,14 @@
             CurCount = 0;
         }
 
-        public virtual void Shorted() { }
-
-        /// <summary>
-        /// stamp matrix values for linear elements.
-        /// for non-linear elements, use this to stamp values that don't change each iteration,
-        /// and call stampRightSide() or stampNonLinear() as needed
-        /// </summary>
-        public virtual void Stamp() { }
+        public virtual void CirStartIteration() { }
 
         /// <summary>
         /// stamp matrix values for non-linear elements
         /// </summary>
-        public virtual void DoStep() { }
+        public virtual void CirDoStep() { }
 
-        public virtual void StartIteration() { }
-
-        public virtual void StepFinished() { }
+        public virtual void CirStepFinished() { }
 
         /// <summary>
         /// set current for voltage source vn to c.
@@ -111,7 +97,32 @@
         /// </summary>
         /// <param name="vn"></param>
         /// <param name="c"></param>
-        public virtual void SetCurrent(int vn, double c) { mCurrent = c; }
+        public virtual void CirSetCurrent(int vn, double c) { mCurrent = c; }
+
+        /// <summary>
+        /// set voltage of x'th node, called by simulator logic
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="c"></param>
+        public virtual void CirSetNodeVoltage(int n, double c) {
+            if (Volts.Length <= n) {
+                return;
+            }
+            Volts[n] = c;
+            cirCalcCurrent();
+        }
+
+        /// <summary>
+        /// calculate current in response to node voltages changing
+        /// </summary>
+        protected virtual void cirCalcCurrent() { }
+
+        /// <summary>
+        /// stamp matrix values for linear elements.
+        /// for non-linear elements, use this to stamp values that don't change each iteration,
+        /// and call stampRightSide() or stampNonLinear() as needed
+        /// </summary>
+        public virtual void AnaStamp() { }
 
         /// <summary>
         /// notify this element that its pth node is n.
@@ -119,7 +130,7 @@
         /// </summary>
         /// <param name="p"></param>
         /// <param name="n"></param>
-        public virtual void SetNode(int p, int n) {
+        public virtual void AnaSetNode(int p, int n) {
             if (p < Nodes.Length) {
                 Nodes[p] = n;
             }
@@ -132,24 +143,28 @@
         /// </summary>
         /// <param name="n"></param>
         /// <param name="v"></param>
-        public virtual void SetVoltageSource(int n, int v) {
+        public virtual void AnaSetVoltageSource(int n, int v) {
             /* default implementation only makes sense for subclasses with one voltage source.
              * If we have 0 this isn't used, if we have >1 this won't work */
             mVoltSource = v;
         }
 
         /// <summary>
-        /// set voltage of x'th node, called by simulator logic
+        /// get nodes that can be passed to getConnection(), to test if this element connects
+        /// those two nodes; this is the same as getNode() for all but labeled nodes.
         /// </summary>
         /// <param name="n"></param>
-        /// <param name="c"></param>
-        public virtual void SetNodeVoltage(int n, double c) {
-            if (Volts.Length <= n) {
-                return;
-            }
-            Volts[n] = c;
-            calcCurrent();
-        }
+        /// <returns></returns>
+        public virtual int AnaGetConnectionNode(int n) { return Nodes[n]; }
+
+        /// <summary>
+        /// is n1 connected to ground somehow?
+        /// </summary>
+        /// <param name="n1"></param>
+        /// <returns></returns>
+        public virtual bool AnaHasGroundConnection(int n1) { return false; }
+
+        public virtual void AnaShorted() { }
 
         public virtual double GetCurrentIntoNode(int n) {
             /* if we take out the getPostCount() == 2 it gives the wrong value for rails */
@@ -159,21 +174,6 @@
                 return mCurrent;
             }
         }
-
-        /// <summary>
-        /// get nodes that can be passed to getConnection(), to test if this element connects
-        /// those two nodes; this is the same as getNode() for all but labeled nodes.
-        /// </summary>
-        /// <param name="n"></param>
-        /// <returns></returns>
-        public virtual int GetConnectionNode(int n) { return Nodes[n]; }
-
-        /// <summary>
-        /// is n1 connected to ground somehow?
-        /// </summary>
-        /// <param name="n1"></param>
-        /// <returns></returns>
-        public virtual bool HasGroundConnection(int n1) { return false; }
 
         public virtual double GetScopeValue(Scope.VAL x) {
             return VoltageDiff;

@@ -43,13 +43,13 @@ namespace Circuit.Elements.Input {
             CurCount = 0;
         }
 
-        public override bool HasGroundConnection(int n1) { return true; }
+        public override bool AnaHasGroundConnection(int n1) { return true; }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
         }
 

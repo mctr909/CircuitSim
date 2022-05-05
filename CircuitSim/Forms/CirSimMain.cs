@@ -269,18 +269,13 @@ namespace Circuit {
 
             int iter;
             for (iter = 1; ; iter++) {
-                for (int i = 0; i != ElmCount; i++) {
-                    var ce = getElmE(i);
-                    ce.StartIteration();
-                }
-
                 if (!mCir.Run(debugprint)) {
                     break;
                 }
 
                 Time += ControlPanel.TimeStep;
                 for (int i = 0; i != ElmCount; i++) {
-                    getElmE(i).StepFinished();
+                    ElmList[i].CirElm.CirStepFinished();
                 }
                 if (!delayWireProcessing) {
                     mCir.CalcWireCurrents();

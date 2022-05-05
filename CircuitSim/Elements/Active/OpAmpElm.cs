@@ -48,13 +48,13 @@ namespace Circuit.Elements.Active {
 
         public override int PostCount { get { return 3; } }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             int vn = mCir.NodeList.Count + mVoltSource;
             mCir.StampNonLinear(vn);
             mCir.StampMatrix(Nodes[2], vn, 1);
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             double vd = Volts[V_P] - Volts[V_N];
             if (Math.Abs(mLastVd - vd) > .1) {
                 mCir.Converged = false;
@@ -84,7 +84,7 @@ namespace Circuit.Elements.Active {
             mLastVd = vd;
         }
 
-        public override bool HasGroundConnection(int n1) { return n1 == 2; }
+        public override bool AnaHasGroundConnection(int n1) { return n1 == 2; }
 
         public override double GetCurrentIntoNode(int n) {
             if (n == 2) {

@@ -166,14 +166,6 @@ namespace Circuit.Elements.Passive {
             if (n == 4) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
-                    Text = "台形近似",
-                    Checked = ce.IsTrapezoidal
-                };
-                return ei;
-            }
-            if (n == 5) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox() {
                     Text = "極性反転",
                     Checked = ce.Polarity == -1
                 };
@@ -198,14 +190,6 @@ namespace Circuit.Elements.Passive {
                 setNamePos();
             }
             if (n == 4) {
-                if (ei.CheckBox.Checked) {
-                    mFlags &= ~Inductor.FLAG_BACK_EULER;
-                } else {
-                    mFlags |= Inductor.FLAG_BACK_EULER;
-                }
-                ce.IsTrapezoidal = 0 != (mFlags & Inductor.FLAG_BACK_EULER);
-            }
-            if (n == 5) {
                 ce.Polarity = ei.CheckBox.Checked ? -1 : 1;
                 if (ei.CheckBox.Checked) {
                     mFlags |= FLAG_REVERSE;

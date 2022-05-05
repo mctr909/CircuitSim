@@ -40,15 +40,15 @@
             return 0;
         }
 
-        public override bool HasGroundConnection(int n1) {
+        public override bool AnaHasGroundConnection(int n1) {
             return (n1 == InputCount);
         }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             mCir.StampVoltageSource(0, Nodes[InputCount], mVoltSource);
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             bool f = calcFunction();
             if (IsInverting) {
                 f = !f;

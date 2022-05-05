@@ -22,7 +22,7 @@
             } catch { }
         }
 
-        protected override void calcCurrent() {
+        protected override void cirCalcCurrent() {
             mCurrent = (Volts[0] - Volts[1]) / mResistance;
         }
 
@@ -41,12 +41,12 @@
             return mCurrent;
         }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             mCir.StampNonLinear(Nodes[0]);
             mCir.StampNonLinear(Nodes[1]);
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             IsOpen = Volts[2] < 2.5;
             if (Invert) {
                 IsOpen = !IsOpen;

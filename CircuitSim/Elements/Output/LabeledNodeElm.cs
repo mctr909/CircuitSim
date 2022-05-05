@@ -46,7 +46,7 @@ namespace Circuit.Elements.Output {
 
         // get connection node (which is the same as regular nodes for all elements but this one).
         // node 0 is the terminal, node 1 is the internal node shared by all nodes with same name
-        public override int GetConnectionNode(int n) {
+        public override int AnaGetConnectionNode(int n) {
             if (n == 0) {
                 return Nodes[0];
             }
@@ -55,14 +55,14 @@ namespace Circuit.Elements.Output {
 
         public override double GetCurrentIntoNode(int n) { return -mCurrent; }
 
-        public override void SetCurrent(int x, double c) { mCurrent = -c; }
+        public override void CirSetCurrent(int x, double c) { mCurrent = -c; }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             mCir.StampVoltageSource(mNodeNumber, Nodes[0], mVoltSource, 0);
         }
 
-        public override void SetNode(int p, int n) {
-            base.SetNode(p, n);
+        public override void AnaSetNode(int p, int n) {
+            base.AnaSetNode(p, n);
             if (p == 1) {
                 // assign new node
                 mNodeList.Add(Text, n);

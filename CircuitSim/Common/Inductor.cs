@@ -1,17 +1,12 @@
 ﻿namespace Circuit {
     class Inductor {
-        public static readonly int FLAG_BACK_EULER = 2;
-
         int[] nodes;
-        int flags;
         Circuit cir;
 
         double inductance;
         double compResistance;
         double current;
         double curSourceValue;
-
-        public bool IsTrapezoidal { get { return (flags & FLAG_BACK_EULER) == 0; } }
 
         public virtual bool NonLinear() { return false; }
 
@@ -20,10 +15,9 @@
             nodes = new int[2];
         }
 
-        public void Setup(double ic, double cr, int f) {
+        public void Setup(double ic, double cr) {
             inductance = ic;
             current = cr;
-            flags = f;
         }
 
         public void Reset() {
@@ -41,22 +35,14 @@
              * The oscillation is a real problem in circuits with switches. */
             nodes[0] = n0;
             nodes[1] = n1;
-            if (IsTrapezoidal) {
-                compResistance = 2 * inductance / ControlPanel.TimeStep;
-            } else { /* backward euler */
-                compResistance = inductance / ControlPanel.TimeStep;
-            }
+            compResistance = 2 * inductance / ControlPanel.TimeStep;
             cir.StampResistor(nodes[0], nodes[1], compResistance);
             cir.StampRightSide(nodes[0]);
             cir.StampRightSide(nodes[1]);
         }
 
         public void StartIteration(double voltdiff) {
-            if (IsTrapezoidal) {
-                curSourceValue = voltdiff / compResistance + current;
-            } else { /* backward euler */
-                curSourceValue = current;
-            }
+            curSourceValue = voltdiff / compResistance + current;
         }
 
         public double CalculateCurrent(double voltdiff) {

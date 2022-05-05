@@ -26,32 +26,32 @@ namespace Circuit.Elements.Active {
 
         public override int InternalNodeCount { get { return 1; } }
 
-        public override void SetCurrent(int x, double c) { mCapCurrent = c; }
+        public override void CirSetCurrent(int x, double c) { mCapCurrent = c; }
 
-        protected override void calcCurrent() {
-            base.calcCurrent();
+        protected override void cirCalcCurrent() {
+            base.cirCalcCurrent();
             mCurrent += mCapCurrent;
         }
 
-        public override void SetNodeVoltage(int n, double c) {
-            base.SetNodeVoltage(n, c);
+        public override void CirSetNodeVoltage(int n, double c) {
+            base.CirSetNodeVoltage(n, c);
             mCapVoltDiff = Volts[0] - Volts[1];
         }
 
-        public override void Stamp() {
-            base.Stamp();
+        public override void AnaStamp() {
+            base.AnaStamp();
             mCir.StampVoltageSource(Nodes[0], Nodes[2], mVoltSource);
             mCir.StampNonLinear(Nodes[2]);
         }
 
-        public override void DoStep() {
-            base.DoStep();
+        public override void CirDoStep() {
+            base.CirDoStep();
             mCir.StampResistor(Nodes[2], Nodes[1], mCompResistance);
             mCir.UpdateVoltageSource(Nodes[0], Nodes[2], mVoltSource, mVoltSourceValue);
         }
 
-        public override void StartIteration() {
-            base.StartIteration();
+        public override void CirStartIteration() {
+            base.CirStartIteration();
             // capacitor companion model using trapezoidal approximation
             // (Thevenin equivalent) consists of a voltage source in
             // series with a resistor

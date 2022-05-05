@@ -81,7 +81,7 @@ namespace Circuit.Elements.Active {
             return -Ids + DiodeCurrent2;
         }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             mCir.StampNonLinear(Nodes[1]);
             mCir.StampNonLinear(Nodes[2]);
 
@@ -100,11 +100,11 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             calculate(false);
         }
 
-        public override void StepFinished() {
+        public override void CirStepFinished() {
             calculate(true);
 
             /* fix current if body is connected to source or drain */

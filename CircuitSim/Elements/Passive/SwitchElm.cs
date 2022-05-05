@@ -31,13 +31,13 @@
         public override bool IsWire { get { return Position == 0; } }
         public override int VoltageSourceCount { get { return (1 == Position) ? 0 : 1; } }
 
-        protected override void calcCurrent() {
+        protected override void cirCalcCurrent() {
             if (Position == 1) {
                 mCurrent = 0;
             }
         }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             if (Position == 0) {
                 mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
             }

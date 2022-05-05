@@ -28,7 +28,7 @@ namespace Circuit.Elements.Gate {
 
         public override int VoltageSourceCount { get { return 1; } }
 
-        public override bool HasGroundConnection(int n1) { return n1 == 1; }
+        public override bool AnaHasGroundConnection(int n1) { return n1 == 1; }
 
         public override double GetCurrentIntoNode(int n) {
             if (n == 1) {
@@ -37,15 +37,15 @@ namespace Circuit.Elements.Gate {
             return 0;
         }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             mCir.StampVoltageSource(0, Nodes[1], mVoltSource);
         }
 
-        public override void StartIteration() {
+        public override void CirStartIteration() {
             mLastOutputVoltage = Volts[1];
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             double v = Volts[0] > HighVoltage * .5 ? 0 : HighVoltage;
             double maxStep = SlewRate * ControlPanel.TimeStep * 1e9;
             v = Math.Max(Math.Min(mLastOutputVoltage + maxStep, v), mLastOutputVoltage - maxStep);

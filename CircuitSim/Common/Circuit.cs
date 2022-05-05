@@ -51,7 +51,8 @@ namespace Circuit {
         public double[,] Matrix { get; set; }
 
         public int VoltageSourceCount { get; private set; }
-        public BaseUI[] VoltageSources { get; private set; }
+
+        private BaseUI[] mVoltageSources;
 
         public bool CircuitNonLinear { get; private set; }
 
@@ -598,9 +599,9 @@ namespace Circuit {
                     cur += ce.CirElm.GetCurrentIntoNode(n);
                 }
                 if (wi.Post == 0) {
-                    wi.Wire.CirElm.SetCurrent(-1, cur);
+                    wi.Wire.CirElm.CirSetCurrent(-1, cur);
                 } else {
-                    wi.Wire.CirElm.SetCurrent(-1, -cur);
+                    wi.Wire.CirElm.CirSetCurrent(-1, -cur);
                 }
             }
         }
@@ -697,7 +698,7 @@ namespace Circuit {
                         cnl.Num = j;
                         cnl.Elm = ce;
                         cn.Links.Add(cnl);
-                        cee.SetNode(j, NodeList.Count);
+                        cee.AnaSetNode(j, NodeList.Count);
                         if (ccln) {
                             cln.Node = NodeList.Count;
                         } else {
@@ -710,11 +711,11 @@ namespace Circuit {
                         cnl.Num = j;
                         cnl.Elm = ce;
                         getCircuitNode(n).Links.Add(cnl);
-                        cee.SetNode(j, n);
+                        cee.AnaSetNode(j, n);
                         /* if it's the ground node, make sure the node voltage is 0,
                         /* cause it may not get set later */
                         if (n == 0) {
-                            cee.SetNodeVoltage(j, 0);
+                            cee.CirSetNodeVoltage(j, 0);
                         }
                     }
                 }
@@ -725,7 +726,7 @@ namespace Circuit {
                     cnl.Num = j + posts;
                     cnl.Elm = ce;
                     cn.Links.Add(cnl);
-                    cee.SetNode(cnl.Num, NodeList.Count);
+                    cee.AnaSetNode(cnl.Num, NodeList.Count);
                     NodeList.Add(cn);
                 }
                 vscount += ivs;
@@ -737,7 +738,7 @@ namespace Circuit {
             }
             mNodeMap = null; /* done with this */
 
-            VoltageSources = new BaseUI[vscount];
+            mVoltageSources = new BaseUI[vscount];
             vscount = 0;
             CircuitNonLinear = false;
             if (debug) Console.WriteLine("ac3");
@@ -751,8 +752,8 @@ namespace Circuit {
                 }
                 int ivs = cee.VoltageSourceCount;
                 for (int j = 0; j != ivs; j++) {
-                    VoltageSources[vscount] = ce;
-                    cee.SetVoltageSource(j, vscount++);
+                    mVoltageSources[vscount] = ce;
+                    cee.AnaSetVoltageSource(j, vscount++);
                 }
             }
             VoltageSourceCount = vscount;
@@ -773,7 +774,7 @@ namespace Circuit {
             /* stamp linear circuit elements */
             for (int i = 0; i != mSim.ElmCount; i++) {
                 var cee = mSim.getElmE(i);
-                cee.Stamp();
+                cee.AnaStamp();
             }
             if (debug) Console.WriteLine("ac4");
 
@@ -792,9 +793,9 @@ namespace Circuit {
                     /* loop through all ce's nodes to see if they are connected
                     /* to other nodes not in closure */
                     for (int j = 0; j < cee.ConnectionNodeCount; j++) {
-                        if (!closure[cee.GetConnectionNode(j)]) {
-                            if (cee.HasGroundConnection(j)) {
-                                closure[cee.GetConnectionNode(j)] = changed = true;
+                        if (!closure[cee.AnaGetConnectionNode(j)]) {
+                            if (cee.AnaHasGroundConnection(j)) {
+                                closure[cee.AnaGetConnectionNode(j)] = changed = true;
                             }
                             continue;
                         }
@@ -803,7 +804,7 @@ namespace Circuit {
                             if (j == k) {
                                 continue;
                             }
-                            int kn = cee.GetConnectionNode(k);
+                            int kn = cee.AnaGetConnectionNode(k);
                             if (ce.GetConnection(j, k) && !closure[kn]) {
                                 closure[kn] = true;
                                 changed = true;
@@ -887,7 +888,7 @@ namespace Circuit {
                     var fpi = new PathInfo(PathType.SHORT, cee, cee.Nodes[1], elmList, NodeList.Count);
                     if (fpi.FindPath(cee.Nodes[0])) {
                         Console.WriteLine(cee + " shorted");
-                        cee.Shorted();
+                        cee.AnaShorted();
                     } else {
                         /* a capacitor loop used to cause a matrix error. but we changed the capacitor model
                         /* so it works fine now. The only issue is if a capacitor is added in parallel with
@@ -951,6 +952,11 @@ namespace Circuit {
             const int subiterCount = 5000;
             int i, j, k, subiter;
 
+            for (i = 0; i != mSim.ElmCount; i++) {
+                var ce = mSim.ElmList[i].CirElm;
+                ce.CirStartIteration();
+            }
+
             for (subiter = 0; subiter != subiterCount; subiter++) {
                 Converged = true;
                 SubIterations = subiter;
@@ -965,8 +971,8 @@ namespace Circuit {
                     }
                 }
                 for (i = 0; i != mSim.ElmCount; i++) {
-                    var ce = mSim.getElmE(i);
-                    ce.DoStep();
+                    var ce = mSim.ElmList[i].CirElm;
+                    ce.CirDoStep();
                 }
                 if (StopMessage != null) {
                     return false;
@@ -1023,12 +1029,12 @@ namespace Circuit {
                         var cn = getCircuitNode(j + 1);
                         for (k = 0; k != cn.Links.Count; k++) {
                             var cnl = cn.Links[k];
-                            cnl.Elm.CirElm.SetNodeVoltage(cnl.Num, res);
+                            cnl.Elm.CirElm.CirSetNodeVoltage(cnl.Num, res);
                         }
                     } else {
                         int ji = j - (NodeList.Count - 1);
                         /*Console.WriteLine("setting vsrc " + ji + " to " + res); */
-                        VoltageSources[ji].CirElm.SetCurrent(ji, res);
+                        mVoltageSources[ji].CirElm.CirSetCurrent(ji, res);
                     }
                 }
                 if (!CircuitNonLinear) {

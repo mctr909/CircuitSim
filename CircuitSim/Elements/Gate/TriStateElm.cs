@@ -38,24 +38,24 @@
             return 0;
         }
 
-        protected override void calcCurrent() {
+        protected override void cirCalcCurrent() {
             mCurrent = (Volts[0] - Volts[1]) / mResistance;
         }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             mCir.StampVoltageSource(0, Nodes[3], mVoltSource);
             mCir.StampNonLinear(Nodes[3]);
             mCir.StampNonLinear(Nodes[1]);
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             Open = Volts[2] < 2.5;
             mResistance = Open ? Roff : Ron;
             mCir.StampResistor(Nodes[3], Nodes[1], mResistance);
             mCir.UpdateVoltageSource(0, Nodes[3], mVoltSource, Volts[0] > 2.5 ? 5 : 0);
         }
 
-        public override bool HasGroundConnection(int n1) {
+        public override bool AnaHasGroundConnection(int n1) {
             return n1 == 1;
         }
     }

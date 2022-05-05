@@ -26,15 +26,15 @@ namespace Circuit.Elements.Input {
 
         public override int PostCount { get { return 1; } }
 
-        public override bool HasGroundConnection(int n1) { return true; }
+        public override bool AnaHasGroundConnection(int n1) { return true; }
 
         public override double GetCurrentIntoNode(int n) {
             return -mCurrent;
         }
 
-        public override void SetCurrent(int vs, double c) { mCurrent = -c; }
+        public override void CirSetCurrent(int vs, double c) { mCurrent = -c; }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             double v = 0 != Position ? mHiV : mLoV;
             mCir.StampVoltageSource(0, Nodes[0], mVoltSource, v);
         }

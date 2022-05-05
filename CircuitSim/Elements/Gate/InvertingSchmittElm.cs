@@ -41,11 +41,11 @@ namespace Circuit.Elements.Gate {
 
         public override int VoltageSourceCount { get { return 1; } }
 
-        public override void Stamp() {
+        public override void AnaStamp() {
             mCir.StampVoltageSource(0, Nodes[1], mVoltSource);
         }
 
-        public override void DoStep() {
+        public override void CirDoStep() {
             double v0 = Volts[1];
             double _out;
             if (mState) {//Output is high
@@ -70,7 +70,7 @@ namespace Circuit.Elements.Gate {
             mCir.UpdateVoltageSource(0, Nodes[1], mVoltSource, _out);
         }
 
-        public override bool HasGroundConnection(int n1) { return n1 == 1; }
+        public override bool AnaHasGroundConnection(int n1) { return n1 == 1; }
 
         public override double GetCurrentIntoNode(int n) {
             if (n == 1) {
