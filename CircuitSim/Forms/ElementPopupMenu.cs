@@ -77,7 +77,7 @@ namespace Circuit {
             });
         }
 
-        public ContextMenuStrip Show(int px, int py, CircuitElm mouseElm) {
+        public ContextMenuStrip Show(int px, int py, BaseUI mouseElm) {
             mScope.Enabled = mouseElm.CanViewInScope;
             mFloatScope.Enabled = mouseElm.CanViewInScope;
             mEdit.Enabled = mouseElm.GetElementInfo(0) != null;
@@ -92,19 +92,19 @@ namespace Circuit {
             return popupMenu;
         }
 
-        bool canSplit(CircuitElm ce) {
-            if (!(ce is WireElm)) {
+        bool canSplit(BaseUI ce) {
+            if (!(ce is WireUI)) {
                 return false;
             }
-            var we = (WireElm)ce;
+            var we = (WireUI)ce;
             if (we.P1.X == we.P2.X || we.P1.Y == we.P2.Y) {
                 return true;
             }
             return false;
         }
 
-        bool sliderItemEnabled(CircuitElm elm) {
-            if (elm is PotElm) {
+        bool sliderItemEnabled(BaseUI elm) {
+            if (elm is PotUI) {
                 return false;
             }
             for (int i = 0; ; i++) {

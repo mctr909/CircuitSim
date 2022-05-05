@@ -1,81 +1,41 @@
-﻿using System.Drawing;
-using System.Windows.Forms;
+﻿namespace Circuit.Elements.Output {
+    class StopTriggerElm : BaseElement {
+		public double TriggerVoltage;
+		public int Type;
+		public double Delay;
 
-namespace Circuit.Elements.Output {
-    class StopTriggerElm : CircuitElm {
-		public StopTriggerElm(Point pos) : base(pos) {
-			CirElm = new StopTriggerElmE();
+		public bool Triggered { get; private set; }
+		public bool Stopped { get; private set; }
+		public double TriggerTime { get; private set; }
+
+		public StopTriggerElm() : base() {
+			TriggerVoltage = 1;
 		}
 
-		public StopTriggerElm(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-			CirElm = new StopTriggerElmE(st);
+		public StopTriggerElm(StringTokenizer st) : base() {
+			TriggerVoltage = st.nextTokenDouble();
+			Type = st.nextTokenInt();
+			Delay = st.nextTokenDouble();
 		}
 
-		public override DUMP_ID DumpType { get { return DUMP_ID.STOP_TRIGGER; } }
+		public override int PostCount { get { return 1; } }
 
-		protected override string dump() {
-			var ce = (StopTriggerElmE)CirElm; 
-			return ce.TriggerVoltage + " " + ce.Type + " " + ce.Delay;
+		public override double VoltageDiff { get { return Volts[0]; } }
+
+		public override void Reset() {
+			Triggered = false;
 		}
 
-	 	public override void SetPoints() {
-			base.SetPoints();
-			mLead1 = new Point();
-		}
-
-		public override void Draw(CustomGraphics g) {
-			string s = "trigger";
-			double w = g.GetTextSize(s).Width / 2;
-			if (w > mLen * 0.8) {
-				w = mLen * 0.8;
+		public override void StepFinished() {
+			Stopped = false;
+			if (!Triggered && ((Type == 0 && Volts[0] >= TriggerVoltage) || (Type == 1 && Volts[0] <= TriggerVoltage))) {
+				Triggered = true;
+				TriggerTime = CirSim.Sim.Time;
 			}
-			setLead1(1 - w / mLen);
-			setBbox(mPoint1, mLead1, 0);
-			drawCenteredText(s, P2, true);
-			drawLead(mPoint1, mLead1);
-			drawPosts();
-		}
-
-		public override void GetInfo(string[] arr) {
-			var ce = (StopTriggerElmE)CirElm;
-			arr[0] = "stop trigger";
-			arr[1] = "V = " + Utils.VoltageText(ce.Volts[0]);
-			arr[2] = "Vtrigger = " + Utils.VoltageText(ce.TriggerVoltage);
-			arr[3] = ce.Triggered ? ("stopping in "
-				+ Utils.UnitText(ce.TriggerTime + ce.Delay - CirSim.Sim.Time, "s")) : ce.Stopped ? "stopped" : "waiting";
-		}
-
-		public override ElementInfo GetElementInfo(int n) {
-			var ce = (StopTriggerElmE)CirElm;
-			if (n == 0) {
-				var ei = new ElementInfo("閾値電圧(V)", ce.TriggerVoltage);
-				return ei;
-			}
-			if (n == 1) {
-				var ei = new ElementInfo("トリガータイプ", ce.Type, -1, -1);
-				ei.Choice = new ComboBox();
-				ei.Choice.Items.Add(">=");
-				ei.Choice.Items.Add("<=");
-				ei.Choice.SelectedIndex = ce.Type;
-				return ei;
-			}
-			if (n == 2) {
-				var ei = new ElementInfo("遅延(s)", ce.Delay);
-				return ei;
-			}
-			return null;
-		}
-
-		public override void SetElementValue(int n, ElementInfo ei) {
-			var ce = (StopTriggerElmE)CirElm;
-			if (n == 0) {
-				ce.TriggerVoltage = ei.Value;
-			}
-			if (n == 1) {
-				ce.Type = ei.Choice.SelectedIndex;
-			}
-			if (n == 2) {
-				ce.Delay = ei.Value;
+			if (Triggered && CirSim.Sim.Time >= TriggerTime + Delay) {
+				Triggered = false;
+				Stopped = true;
+				CirSim.Sim.SetSimRunning(false);
 			}
 		}
 	}

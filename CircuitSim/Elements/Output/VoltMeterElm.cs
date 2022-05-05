@@ -1,154 +1,164 @@
-﻿using System.Drawing;
-using System.Windows.Forms;
+﻿using System;
 
 namespace Circuit.Elements.Output {
-    class VoltMeterElm : CircuitElm {
+    class VoltMeterElm : BaseElement {
         const int FLAG_SHOWVOLTAGE = 1;
 
-        Point mCenter;
-        Point mPlusPoint;
+        public const int TP_VOL = 0;
+        public const int TP_RMS = 1;
+        public const int TP_MAX = 2;
+        public const int TP_MIN = 3;
+        public const int TP_P2P = 4;
+        public const int TP_BIN = 5;
+        public const int TP_FRQ = 6;
+        public const int TP_PER = 7;
+        public const int TP_PWI = 8;
+        public const int TP_DUT = 9; /* mark to space ratio */
 
-        public VoltMeterElm(Point pos) : base(pos) {
-            CirElm = new VoltMeterElmE();
-            /* default for new elements */
-            mFlags = FLAG_SHOWVOLTAGE;
+        public int Meter;
+        public E_SCALE Scale;
+
+        public double RmsV { get; private set; } = 0;
+        public double BinaryLevel { get; private set; } = 0; /*0 or 1 - double because we only pass doubles back to the web page */
+        public double LastMaxV { get; private set; }
+        public double LastMinV { get; private set; }
+        public double Frequency { get; private set; } = 0;
+        public double Period { get; private set; } = 0;
+        public double PulseWidth { get; private set; } = 0;
+        public double DutyCycle { get; private set; } = 0;
+        public double SelectedValue { get; private set; } = 0;
+
+        double mTotal;
+        double mCount;
+        int mZeroCount = 0;
+        double mMaxV = 0;
+        double mMinV = 0;
+
+        bool mIncreasingV = true;
+        bool mDecreasingV = true;
+
+        long mPeriodStart; /* time between consecutive max values */
+        long mPeriodLength;
+        long mPulseStart;
+
+        public VoltMeterElm() : base() {
+            Meter = TP_VOL;
+            Scale = E_SCALE.AUTO;
         }
 
-        public VoltMeterElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new VoltMeterElmE(st);
+        public VoltMeterElm(StringTokenizer st) : base() {
+            Meter = TP_VOL;
+            Scale = E_SCALE.AUTO;
+            try {
+                Meter = st.nextTokenInt(); /* get meter type from saved dump */
+                Scale = st.nextTokenEnum<E_SCALE>();
+            } catch { }
         }
 
-        public override DUMP_ID Shortcut { get { return DUMP_ID.VOLTMETER; } }
+        public override int PostCount { get { return 2; } }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.VOLTMETER; } }
+        public override void StepFinished() {
+            mCount++; /*how many counts are in a cycle */
+            double v = VoltageDiff;
+            mTotal += v * v;
 
-        protected override string dump() {
-            var ce = (VoltMeterElmE)CirElm;
-            return ce.Meter + " " + ce.Scale;
-        }
-
-        public override bool GetConnection(int n1, int n2) { return false; }
-
-        public override void SetPoints() {
-            base.SetPoints();
-            interpPoint(ref mCenter, 0.5, 12 * mDsign);
-            interpPoint(ref mPlusPoint, 8.0 / mLen, 6 * mDsign);
-        }
-
-        public override void Draw(CustomGraphics g) {
-            var ce = (VoltMeterElmE)CirElm;
-            int hs = 8;
-            setBbox(mPoint1, mPoint2, hs);
-            bool selected = NeedsHighlight;
-            double len = (selected || CirSim.Sim.DragElm == this || mustShowVoltage()) ? 16 : mLen - 32;
-            calcLeads((int)len);
-
-            if (selected) {
-                g.LineColor = CustomGraphics.SelectColor;
+            if (v < 2.5) {
+                BinaryLevel = 0;
             } else {
-                g.LineColor = CustomGraphics.GrayColor;
-            }
-            drawLead(mPoint1, mLead1);
-
-            if (selected) {
-                g.LineColor = CustomGraphics.SelectColor;
-            } else {
-                g.LineColor = CustomGraphics.GrayColor;
-            }
-            drawLead(mLead2, mPoint2);
-
-            if (this == CirSim.Sim.PlotXElm) {
-                drawCenteredLText("X", mCenter, true);
-            }
-            if (this == CirSim.Sim.PlotYElm) {
-                drawCenteredLText("Y", mCenter, true);
+                BinaryLevel = 1;
             }
 
-            if (mustShowVoltage()) {
-                string s = "";
-                switch (ce.Meter) {
-                case VoltMeterElmE.TP_VOL:
-                    s = Utils.UnitTextWithScale(ce.VoltageDiff, "V", ce.Scale);
-                    break;
-                case VoltMeterElmE.TP_RMS:
-                    s = Utils.UnitTextWithScale(ce.RmsV, "V(rms)", ce.Scale);
-                    break;
-                case VoltMeterElmE.TP_MAX:
-                    s = Utils.UnitTextWithScale(ce.LastMaxV, "Vpk", ce.Scale);
-                    break;
-                case VoltMeterElmE.TP_MIN:
-                    s = Utils.UnitTextWithScale(ce.LastMinV, "Vmin", ce.Scale);
-                    break;
-                case VoltMeterElmE.TP_P2P:
-                    s = Utils.UnitTextWithScale(ce.LastMaxV - ce.LastMinV, "Vp2p", ce.Scale);
-                    break;
-                case VoltMeterElmE.TP_BIN:
-                    s = ce.BinaryLevel + "";
-                    break;
-                case VoltMeterElmE.TP_FRQ:
-                    s = Utils.UnitText(ce.Frequency, "Hz");
-                    break;
-                case VoltMeterElmE.TP_PER:
-                    s = "percent:" + ce.Period + " " + ControlPanel.TimeStep + " " + CirSim.Sim.Time + " " + CirSim.Sim.getIterCount();
-                    break;
-                case VoltMeterElmE.TP_PWI:
-                    s = Utils.UnitText(ce.PulseWidth, "S");
-                    break;
-                case VoltMeterElmE.TP_DUT:
-                    s = ce.DutyCycle.ToString("0.000");
-                    break;
+            /* V going up, track maximum value with */
+            if (v > mMaxV && mIncreasingV) {
+                mMaxV = v;
+                mIncreasingV = true;
+                mDecreasingV = false;
+            }
+
+            if (v < mMaxV && mIncreasingV) { /* change of direction V now going down - at start of waveform */
+                LastMaxV = mMaxV; /* capture last maximum */
+                                   /* capture time between */
+                var now = DateTime.Now.ToFileTimeUtc();
+                mPeriodLength = now - mPeriodStart;
+                mPeriodStart = now;
+                Period = mPeriodLength;
+                PulseWidth = now - mPulseStart;
+                DutyCycle = PulseWidth / mPeriodLength;
+                mMinV = v; /* track minimum value with V */
+                mIncreasingV = false;
+                mDecreasingV = true;
+
+                /* rms data */
+                mTotal = mTotal / mCount;
+                RmsV = Math.Sqrt(mTotal);
+                if (double.IsNaN(RmsV)) {
+                    RmsV = 0;
                 }
-                drawCenteredText(s, mCenter, true);
+                mCount = 0;
+                mTotal = 0;
             }
-            drawCenteredLText("+", mPlusPoint, true);
-            drawPosts();
-        }
 
-        public override void GetInfo(string[] arr) {
-            var ce = (VoltMeterElmE)CirElm;
-            arr[0] = "voltmeter";
-            arr[1] = "Vd = " + Utils.VoltageText(ce.VoltageDiff);
-        }
+            if (v < mMinV && mDecreasingV) { /* V going down, track minimum value with V */
+                mMinV = v;
+                mIncreasingV = false;
+                mDecreasingV = true;
+            }
 
-        public override ElementInfo GetElementInfo(int n) {
-            var ce = (VoltMeterElmE)CirElm;
-            if (n == 0) {
-                var ei = new ElementInfo("表示", ce.SelectedValue, -1, -1);
-                ei.Choice = new ComboBox();
-                ei.Choice.Items.Add("瞬時値");
-                ei.Choice.Items.Add("実効値");
-                ei.Choice.Items.Add("最大値");
-                ei.Choice.Items.Add("最小値");
-                ei.Choice.Items.Add("P-P");
-                ei.Choice.Items.Add("2値");
-                ei.Choice.SelectedIndex = ce.Meter;
-                return ei;
-            }
-            if (n == 1) {
-                var ei = new ElementInfo("スケール", 0);
-                ei.Choice = new ComboBox();
-                ei.Choice.Items.Add("自動");
-                ei.Choice.Items.Add("V");
-                ei.Choice.Items.Add("mV");
-                ei.Choice.Items.Add("uV");
-                ei.Choice.SelectedIndex = (int)ce.Scale;
-                return ei;
-            }
-            return null;
-        }
+            if (v > mMinV && mDecreasingV) { /* change of direction V now going up */
+                LastMinV = mMinV; /* capture last minimum */
+                mPulseStart = DateTime.Now.ToFileTimeUtc();
+                mMaxV = v;
+                mIncreasingV = true;
+                mDecreasingV = false;
 
-        public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (VoltMeterElmE)CirElm;
-            if (n == 0) {
-                ce.Meter = ei.Choice.SelectedIndex;
+                /* rms data */
+                mTotal = mTotal / mCount;
+                RmsV = Math.Sqrt(mTotal);
+                if (double.IsNaN(RmsV)) {
+                    RmsV = 0;
+                }
+                mCount = 0;
+                mTotal = 0;
             }
-            if (n == 1) {
-                ce.Scale = (E_SCALE)ei.Choice.SelectedIndex;
+
+            /* need to zero the rms value if it stays at 0 for a while */
+            if (v == 0) {
+                mZeroCount++;
+                if (mZeroCount > 5) {
+                    mTotal = 0;
+                    RmsV = 0;
+                    mMaxV = 0;
+                    mMinV = 0;
+                }
+            } else {
+                mZeroCount = 0;
             }
         }
 
-        bool mustShowVoltage() {
-            return (mFlags & FLAG_SHOWVOLTAGE) != 0;
+        public string getMeter() {
+            switch (Meter) {
+            case TP_VOL:
+                return "V";
+            case TP_RMS:
+                return "V(rms)";
+            case TP_MAX:
+                return "Vmax";
+            case TP_MIN:
+                return "Vmin";
+            case TP_P2P:
+                return "Peak to peak";
+            case TP_BIN:
+                return "Binary";
+            case TP_FRQ:
+                return "Frequency";
+            case TP_PER:
+                return "Period";
+            case TP_PWI:
+                return "Pulse width";
+            case TP_DUT:
+                return "Duty cycle";
+            }
+            return "";
         }
     }
 }

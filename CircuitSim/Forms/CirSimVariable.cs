@@ -61,11 +61,11 @@ namespace Circuit {
         public bool DcAnalysisFlag { get; private set; }
         public double Time { get; private set; }
 
-        public List<CircuitElm> ElmList { get; private set; }
+        public List<BaseUI> ElmList { get; private set; }
         public int ElmCount { get { return null == ElmList ? 0 : ElmList.Count; } }
-        public CircuitElm PlotXElm { get; private set; }
-        public CircuitElm PlotYElm { get; private set; }
-        public CircuitElm DragElm { get; private set; }
+        public BaseUI PlotXElm { get; private set; }
+        public BaseUI PlotYElm { get; private set; }
+        public BaseUI DragElm { get; private set; }
         public List<Adjustable> Adjustables { get; private set; } = new List<Adjustable>();
         #endregion
 
@@ -93,9 +93,9 @@ namespace Circuit {
         MenuItem mPasteItem;
 
         Circuit mCir;
-        CircuitElm mMenuElm;
-        CircuitElm mMouseElm = null;
-        SwitchElm mHeldSwitchElm;
+        BaseUI mMenuElm;
+        BaseUI mMouseElm = null;
+        SwitchUI mHeldSwitchElm;
 
         List<string> mUndoStack = new List<string>();
         List<string> mRedoStack = new List<string>();

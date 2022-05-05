@@ -97,7 +97,7 @@ namespace Circuit {
         public bool ShowRMS { get; private set; }
 
         /* get scope element, returning null if there's more than one */
-        public CircuitElm SingleElm {
+        public BaseUI SingleElm {
             get {
                 var elm = mPlots[0].Elm;
                 for (int i = 1; i < mPlots.Count; i++) {
@@ -108,7 +108,7 @@ namespace Circuit {
                 return elm;
             }
         }
-        public CircuitElm Elm {
+        public BaseUI Elm {
             get {
                 if (0 <= SelectedPlot && SelectedPlot < mVisiblePlots.Count) {
                     return mVisiblePlots[SelectedPlot].Elm;
@@ -123,7 +123,7 @@ namespace Circuit {
         public bool ViewingWire {
             get {
                 foreach (var plot in mPlots) {
-                    if (plot.Elm is WireElm) {
+                    if (plot.Elm is WireUI) {
                         return true;
                     }
                 }
@@ -289,9 +289,9 @@ namespace Circuit {
             }
         }
 
-        public void SetElm(CircuitElm ce) {
+        public void SetElm(BaseUI ce) {
             mPlots = new List<ScopePlot>();
-            if (null != ce && (ce is TransistorElm)) {
+            if (null != ce && (ce is TransistorUI)) {
                 _setValue(VAL.VCE, ce);
             } else {
                 _setValue(0, ce);
@@ -640,7 +640,7 @@ namespace Circuit {
             _setValue(val, ce);
         }
 
-        void _setValue(VAL val, CircuitElm ce) {
+        void _setValue(VAL val, BaseUI ce) {
             mPlots = new List<ScopePlot>();
             if (val == VAL.INVALID) {
                 mPlots.Add(new ScopePlot(ce, 0));

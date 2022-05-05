@@ -75,7 +75,7 @@ namespace Circuit {
             scope = s;
 
             var elm = scope.SingleElm;
-            bool transistor = elm != null && (elm is TransistorElm);
+            bool transistor = elm != null && (elm is TransistorUI);
 
             SuspendLayout();
             Text = "Scope Properties";

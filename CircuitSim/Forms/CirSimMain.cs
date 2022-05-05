@@ -7,7 +7,7 @@ using Circuit.Elements.Output;
 
 namespace Circuit {
     partial class CirSim {
-        public CircuitElm getElm(int n) {
+        public BaseUI getElm(int n) {
             if (n >= ElmList.Count) {
                 return null;
             }
@@ -33,7 +33,7 @@ namespace Circuit {
             }
             setupScopes();
 
-            var g = CircuitElm.Context;
+            var g = BaseUI.Context;
 
             if (ControlPanel.ChkPrintable.Checked) {
                 CustomGraphics.WhiteColor = Color.Gray;
@@ -231,7 +231,7 @@ namespace Circuit {
 
             mBmp = new Bitmap(g.Width, g.Height);
             mContext = Graphics.FromImage(mBmp);
-            CircuitElm.Context.CopyTo(mContext);
+            BaseUI.Context.CopyTo(mContext);
             mPixCir.Image = mBmp;
 
             /* if we did DC analysis, we need to re-analyze the circuit with that flag cleared. */
@@ -289,8 +289,8 @@ namespace Circuit {
                     mScopes[i].TimeStep();
                 }
                 for (int i = 0; i != ElmCount; i++) {
-                    if (getElm(i) is ScopeElm) {
-                        ((ScopeElm)getElm(i)).stepScope();
+                    if (getElm(i) is ScopeUI) {
+                        ((ScopeUI)getElm(i)).stepScope();
                     }
                 }
 
@@ -337,7 +337,7 @@ namespace Circuit {
                 mScopeCount--;
             }
 
-            int h = CircuitElm.Context.Height - mCircuitArea.Height;
+            int h = BaseUI.Context.Height - mCircuitArea.Height;
             pos = 0;
             for (int i = 0; i != mScopeCount; i++) {
                 mScopeColCount[i] = 0;
@@ -351,7 +351,7 @@ namespace Circuit {
             if (colct <= 2) {
                 iw = iw * 3 / 2;
             }
-            int w = (CircuitElm.Context.Width - iw) / colct;
+            int w = (BaseUI.Context.Width - iw) / colct;
             int marg = 10;
             if (w < marg * 2) {
                 w = marg * 2;
@@ -374,7 +374,7 @@ namespace Circuit {
                     s.Speed = speed;
                     s.ResetGraph();
                 }
-                var r = new Rectangle(pos * w, CircuitElm.Context.Height - h + colh * row, w - marg, colh);
+                var r = new Rectangle(pos * w, BaseUI.Context.Height - h + colh * row, w - marg, colh);
                 row++;
                 if (!r.Equals(s.BoundingBox)) {
                     s.SetRect(r);
@@ -400,7 +400,7 @@ namespace Circuit {
                 }
             }
             for (i = 0; i != ElmCount; i++) {
-                if ((getElm(i) is ScopeElm) && ((ScopeElm)getElm(i)).elmScope.ViewingWire) {
+                if ((getElm(i) is ScopeUI) && ((ScopeUI)getElm(i)).elmScope.ViewingWire) {
                     return false;
                 }
             }

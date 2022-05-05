@@ -10,7 +10,7 @@ namespace Circuit {
     class SliderDialog : Form {
         const int barmax = 1000;
 
-        CircuitElm elm;
+        BaseUI elm;
         CirSim sim;
         Button applyButton;
         Button okButton;
@@ -20,7 +20,7 @@ namespace Circuit {
         Panel vp;
         Panel hp;
 
-        public SliderDialog(CircuitElm ce, CirSim f) : base() {
+        public SliderDialog(BaseUI ce, CirSim f) : base() {
             Text = "Add Sliders";
             sim = f;
             elm = ce;

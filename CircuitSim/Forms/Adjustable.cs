@@ -20,7 +20,7 @@ namespace Circuit {
         }
 
         public Label Label;
-        public CircuitElm Elm;
+        public BaseUI Elm;
         public double MinValue;
         public double MaxValue;
         public string SliderText;
@@ -28,7 +28,7 @@ namespace Circuit {
         TrackBar mSlider;
         bool mSettingValue;
 
-        public Adjustable(CircuitElm ce, int item) {
+        public Adjustable(BaseUI ce, int item) {
             MinValue = 1;
             MaxValue = 1000;
             Elm = ce;
@@ -66,24 +66,24 @@ namespace Circuit {
                 Width = 175,
                 Height = 23
             });
-            if (Elm is ResistorElm) {
+            if (Elm is ResistorUI) {
                 mSlider.ValueChanged += new EventHandler((s, e) => {
                     var trb = (TrackBar)s;
-                    ((ResistorElmE)Elm.CirElm).Resistance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
+                    ((ResistorElm)Elm.CirElm).Resistance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
                     CirSim.Sim.NeedAnalyze();
                 });
             }
-            if (Elm is CapacitorElm) {
+            if (Elm is CapacitorUI) {
                 mSlider.ValueChanged += new EventHandler((s, e) => {
                     var trb = (TrackBar)s;
-                    ((CapacitorElmE)Elm.CirElm).Capacitance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
+                    ((CapacitorElm)Elm.CirElm).Capacitance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
                     CirSim.Sim.NeedAnalyze();
                 });
             }
-            if (Elm is InductorElm) {
+            if (Elm is InductorUI) {
                 mSlider.ValueChanged += new EventHandler((s, e) => {
                     var trb = (TrackBar)s;
-                    ((InductorElmE)Elm.CirElm).Inductance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
+                    ((InductorElm)Elm.CirElm).Inductance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
                     CirSim.Sim.NeedAnalyze();
                 });
             }

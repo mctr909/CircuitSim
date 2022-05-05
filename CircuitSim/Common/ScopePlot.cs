@@ -11,7 +11,7 @@ namespace Circuit {
             Color.FromArgb(0x00, 0x00, 0xFF)
         };
 
-        public CircuitElm Elm;
+        public BaseUI Elm;
 
         public double[] MinValues { get; private set; }
         public double[] MaxValues { get; private set; }
@@ -24,11 +24,11 @@ namespace Circuit {
         int mScopePointCount;
         int mCounter;
 
-        public ScopePlot(CircuitElm e) {
+        public ScopePlot(BaseUI e) {
             Elm = e;
         }
 
-        public ScopePlot(CircuitElm e, Scope.VAL v) {
+        public ScopePlot(BaseUI e, Scope.VAL v) {
             Elm = e;
             Value = v;
         }

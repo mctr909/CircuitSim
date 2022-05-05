@@ -589,52 +589,52 @@ namespace Circuit {
             #endregion
         }
 
-        public static CircuitElm ConstructElement(ELEMENTS n, Point pos = new Point()) {
+        public static BaseUI ConstructElement(ELEMENTS n, Point pos = new Point()) {
             switch (n) {
             #region Passive Components
             case ELEMENTS.WIRE:
-                return new WireElm(pos);
+                return new WireUI(pos);
             case ELEMENTS.GROUND:
-                return new GroundElm(pos);
+                return new GroundUI(pos);
             case ELEMENTS.SWITCH:
-                return new SwitchElm(pos);
+                return new SwitchUI(pos);
             case ELEMENTS.SWITCH_PUSH:
-                return new PushSwitchElm(pos);
+                return new SwitchUIPush(pos);
             case ELEMENTS.SWITCH_TERM:
-                return new Switch2Elm(pos);
+                return new SwitchUI2(pos);
             case ELEMENTS.RESISTOR:
-                return new ResistorElm(pos);
+                return new ResistorUI(pos);
             case ELEMENTS.POT:
-                return new PotElm(pos);
+                return new PotUI(pos);
             case ELEMENTS.CAPACITOR:
-                return new CapacitorElm(pos);
+                return new CapacitorUI(pos);
             //case ELEMENTS.CAPACITOR_POLER:
             //    return new PolarCapacitorElm(pos);
             case ELEMENTS.INDUCTOR:
-                return new InductorElm(pos);
+                return new InductorUI(pos);
             case ELEMENTS.TRANSFORMER:
-                return new TransformerElm(pos);
+                return new TransformerUI(pos);
             //case ELEMENTS.CRYSTAL:
             //    return new CrystalElm(pos);
             #endregion
 
             #region Active Components
             case ELEMENTS.DIODE:
-                return new DiodeElm(pos, "D");
+                return new DiodeUI(pos, "D");
             case ELEMENTS.ZENER:
-                return new ZenerElm(pos);
+                return new DiodeUIZener(pos);
             case ELEMENTS.LED:
-                return new LEDElm(pos);
+                return new DiodeUILED(pos);
             case ELEMENTS.TRANSISTOR:
             case ELEMENTS.TRANSISTOR_N:
-                return new NTransistorElm(pos);
+                return new TransistorUIN(pos);
             case ELEMENTS.TRANSISTOR_P:
-                return new PTransistorElm(pos);
+                return new TransistorUIP(pos);
             case ELEMENTS.MOSFET:
             case ELEMENTS.MOSFET_N:
-                return new NMosfetElm(pos);
+                return new MosfetUIN(pos);
             case ELEMENTS.MOSFET_P:
-                return new PMosfetElm(pos);
+                return new MosfetUIP(pos);
             //case ELEMENTS.JfetElm:
             //case ELEMENTS.NJfetElm:
             //    return null; //(CircuitElm)new NJfetElm(x1, y1);
@@ -652,7 +652,7 @@ namespace Circuit {
             //case ELEMENTS.PDarlingtonElm:
             //    return null; //(CircuitElm)new PDarlingtonElm(x1, y1);
             case ELEMENTS.VARACTOR:
-                return new VaractorElm(pos);
+                return new DiodeUIVaractor(pos);
             //case ELEMENTS.TunnelDiodeElm:
             //    return null; //(CircuitElm)new TunnelDiodeElm(x1, y1);
             //case ELEMENTS.TriodeElm:
@@ -661,42 +661,42 @@ namespace Circuit {
 
             #region Inputs and Sources
             case ELEMENTS.VOLTAGE_DC:
-                return new DCVoltageElm(pos);
+                return new VoltageUIDC(pos);
             case ELEMENTS.VOLTAGE_AC:
-                return new ACVoltageElm(pos);
+                return new VoltageUIAC(pos);
             case ELEMENTS.RAIL_DC:
-                return new RailElm(pos);
+                return new RailUI(pos);
             case ELEMENTS.RAIL_AC:
-                return new ACRailElm(pos);
+                return new RailUIAC(pos);
             case ELEMENTS.SquareRailElm:
                 return null; //(CircuitElm)new SquareRailElm(x1, y1);
             case ELEMENTS.CLOCK:
-                return new ClockElm(pos);
+                return new RailUIClock(pos);
             case ELEMENTS.SWEEP:
-                return new SweepElm(pos);
+                return new SweepUI(pos);
             case ELEMENTS.AntennaElm:
                 return null; //(CircuitElm)new AntennaElm(x1, y1);
             case ELEMENTS.OSC_AM:
-                return new AMElm(pos);
+                return new AMUI(pos);
             case ELEMENTS.OSC_FM:
-                return new FMElm(pos);
+                return new FMUI(pos);
             case ELEMENTS.CURRENT:
-                return new CurrentElm(pos);
+                return new CurrentUI(pos);
             case ELEMENTS.NOISE:
-                return new NoiseElm(pos);
+                return new RailUINoise(pos);
             case ELEMENTS.AudioInputElm:
                 return null; //(CircuitElm)new AudioInputElm(x1, y1);
             #endregion
 
             #region Outputs and Labels
             case ELEMENTS.OUTPUT:
-                return new LabeledNodeElm(pos);
+                return new LabeledNodeUI(pos);
             case ELEMENTS.VOLTMETER:
-                return new VoltMeterElm(pos);
+                return new VoltMeterUI(pos);
             case ELEMENTS.AMMETER:
-                return new AmmeterElm(pos);
+                return new AmmeterUI(pos);
             case ELEMENTS.DataRecorderElm:
-                return new DataRecorderElm(pos);
+                return new DataRecorderUI(pos);
             //case ELEMENTS.OUTPUT_AUDIO:
             //    return new AudioOutputElm(pos);
             //case ELEMENTS.LampElm:
@@ -706,20 +706,20 @@ namespace Circuit {
             //case ELEMENTS.LEDArrayElm:
             //    return null; //(CircuitElm)new LEDArrayElm(x1, y1);
             case ELEMENTS.STOP_TRIGGER:
-                return new StopTriggerElm(pos);
+                return new StopTriggerUI(pos);
             case ELEMENTS.SCOPE:
-                return new ScopeElm(pos);
+                return new ScopeUI(pos);
             #endregion
 
             #region Active Building Blocks
             case ELEMENTS.OPAMP:
-                return new OpAmpElm(pos);
+                return new OpAmpUI(pos);
             case ELEMENTS.OPAMP_SWAP:
-                return new OpAmpSwapElm(pos);
+                return new OpAmpUISwap(pos);
             //case ELEMENTS.OpAmpRealElm:
             //    return null; //(CircuitElm)new OpAmpRealElm(x1, y1);
             case ELEMENTS.ANALOG_SWITCH:
-                return new AnalogSwitchElm(pos);
+                return new AnalogSwitchUI(pos);
             //case ELEMENTS.AnalogSwitch2Elm:
             //    return null; //(CircuitElm)new AnalogSwitch2Elm(x1, y1);
             //case ELEMENTS.CC2Elm:
@@ -748,27 +748,27 @@ namespace Circuit {
 
             #region Logic Gates
             case ELEMENTS.LOGIC_INPUT:
-                return new LogicInputElm(pos);
+                return new LogicInputUI(pos);
             case ELEMENTS.LOGIC_OUTPUT:
-                return new LogicOutputElm(pos);
+                return new LogicOutputUI(pos);
             case ELEMENTS.TRISTATE:
-                return new TriStateElm(pos);
+                return new TriStateUI(pos);
             case ELEMENTS.SCHMITT_INV:
-                return new InvertingSchmittElm(pos);
+                return new InvertingSchmittUI(pos);
             case ELEMENTS.SCHMITT:
-                return new SchmittElm(pos);
+                return new SchmittUI(pos);
             case ELEMENTS.NOT_GATE:
-                return new InverterElm(pos);
+                return new InverterUI(pos);
             case ELEMENTS.AND_GATE:
-                return new AndGateElm(pos);
+                return new GateUIAnd(pos);
             case ELEMENTS.NAND_GATE:
-                return new NandGateElm(pos);
+                return new GateUINand(pos);
             case ELEMENTS.OR_GATE:
-                return new OrGateElm(pos);
+                return new GateUIOr(pos);
             case ELEMENTS.NOR_GATE:
-                return new NorGateElm(pos);
+                return new GateUINor(pos);
             case ELEMENTS.XOR_GATE:
-                return new XorGateElm(pos);
+                return new GateUIXor(pos);
             #endregion
 
             #region Digital Chips
@@ -829,122 +829,122 @@ namespace Circuit {
             #endregion
 
             case ELEMENTS.BoxElm:
-                return new BoxElm(pos);
+                return new BoxUI(pos);
             case ELEMENTS.TextElm:
-                return new TextElm(pos);
+                return new TextUI(pos);
 
             default:
                 return null;
             }
         }
 
-        public static CircuitElm CreateCe(DUMP_ID tint, Point p1, Point p2, int f, StringTokenizer st) {
+        public static BaseUI CreateCe(DUMP_ID tint, Point p1, Point p2, int f, StringTokenizer st) {
             switch (tint) {
             #region Passive Components
             case DUMP_ID.WIRE:
-                return new WireElm(p1, p2, f, st);
+                return new WireUI(p1, p2, f, st);
             case DUMP_ID.GROUND:
-                return new GroundElm(p1, p2, f, st);
+                return new GroundUI(p1, p2, f, st);
             case DUMP_ID.SWITCH:
-                return new SwitchElm(p1, p2, f, st);
+                return new SwitchUI(p1, p2, f, st);
             case DUMP_ID.SWITCH2:
-                return new Switch2Elm(p1, p2, f, st);
+                return new SwitchUI2(p1, p2, f, st);
             case DUMP_ID.RESISTOR:
-                return new ResistorElm(p1, p2, f, st);
+                return new ResistorUI(p1, p2, f, st);
             case DUMP_ID.POT:
-                return new PotElm(p1, p2, f, st);
+                return new PotUI(p1, p2, f, st);
             case DUMP_ID.CAPACITOR:
-                return new CapacitorElm(p1, p2, f, st);
+                return new CapacitorUI(p1, p2, f, st);
             //case DUMP_ID.CAPACITOR_POLAR:
             //    return new PolarCapacitorElm(p1, p2, f, st);
             case DUMP_ID.INDUCTOR:
-                return new InductorElm(p1, p2, f, st);
+                return new InductorUI(p1, p2, f, st);
             case DUMP_ID.TRANSFORMER:
-                return new TransformerElm(p1, p2, f, st);
+                return new TransformerUI(p1, p2, f, st);
             //case DUMP_ID.CRYSTAL:
             //    return new CrystalElm(p1, p2, f, st);
             #endregion
 
             #region Active Components
             case DUMP_ID.DIODE:
-                return new DiodeElm(p1, p2, f, st);
+                return new DiodeUI(p1, p2, f, st);
             case DUMP_ID.ZENER:
-                return new ZenerElm(p1, p2, f, st);
+                return new DiodeUIZener(p1, p2, f, st);
             case DUMP_ID.VARACTOR:
-                return new VaractorElm(p1, p2, f, st);
+                return new DiodeUIVaractor(p1, p2, f, st);
             case DUMP_ID.LED:
-                return new LEDElm(p1, p2, f, st);
+                return new DiodeUILED(p1, p2, f, st);
             case DUMP_ID.TRANSISTOR:
-                return new TransistorElm(p1, p2, f, st);
+                return new TransistorUI(p1, p2, f, st);
             case DUMP_ID.MOSFET:
-                return new MosfetElm(p1, p2, f, st);
+                return new MosfetUI(p1, p2, f, st);
             case DUMP_ID.OPAMP:
-                return new OpAmpElm(p1, p2, f, st);
+                return new OpAmpUI(p1, p2, f, st);
             //case DUMP_ID.OPTO_COUPLER:
             //    return new OptocouplerElm(p1, p2, f, st);
             case DUMP_ID.ANALOG_SW:
-                return new AnalogSwitchElm(p1, p2, f, st);
+                return new AnalogSwitchUI(p1, p2, f, st);
             #endregion
 
             #region Inputs and Sources
             case DUMP_ID.VOLTAGE:
-                return new VoltageElm(p1, p2, f, st);
+                return new VoltageUI(p1, p2, f, st);
             case DUMP_ID.CURRENT:
-                return new CurrentElm(p1, p2, f, st);
+                return new CurrentUI(p1, p2, f, st);
             case DUMP_ID.RAIL:
-                return new RailElm(p1, p2, f, st);
+                return new RailUI(p1, p2, f, st);
             //case DUMP_ID.VCCS:
             //    return new VCCSElm(p1, p2, f, st);
             //case DUMP_ID.CCCS:
             //    return new CCCSElm(p1, p2, f, st);
             case DUMP_ID.SWEEP:
-                return new SweepElm(p1, p2, f, st);
+                return new SweepUI(p1, p2, f, st);
             case DUMP_ID.AM:
-                return new AMElm(p1, p2, f, st);
+                return new AMUI(p1, p2, f, st);
             case DUMP_ID.FM:
-                return new FMElm(p1, p2, f, st);
+                return new FMUI(p1, p2, f, st);
             #endregion
 
             #region Outputs and Labels
             case DUMP_ID.VOLTMETER:
-                return new VoltMeterElm(p1, p2, f, st);
+                return new VoltMeterUI(p1, p2, f, st);
             case DUMP_ID.AMMETER:
-                return new AmmeterElm(p1, p2, f, st);
+                return new AmmeterUI(p1, p2, f, st);
             case DUMP_ID.LABELED_NODE:
-                return new LabeledNodeElm(p1, p2, f, st);
+                return new LabeledNodeUI(p1, p2, f, st);
             //case DUMP_ID.WAVE_OUT:
             //    return new AudioOutputElm(p1, p2, f, st);
             case DUMP_ID.DATA_RECORDER:
-                return new DataRecorderElm(p1, p2, f, st);
+                return new DataRecorderUI(p1, p2, f, st);
             case DUMP_ID.SCOPE:
-                return new ScopeElm(p1, p2, f, st);
+                return new ScopeUI(p1, p2, f, st);
             case DUMP_ID.STOP_TRIGGER:
-                return new StopTriggerElm(p1, p2, f, st);
+                return new StopTriggerUI(p1, p2, f, st);
             #endregion
 
             #region Logic Gates
             case DUMP_ID.LOGIC_I:
-                return new LogicInputElm(p1, p2, f, st);
+                return new LogicInputUI(p1, p2, f, st);
             case DUMP_ID.LOGIC_O:
-                return new LogicOutputElm(p1, p2, f, st);
+                return new LogicOutputUI(p1, p2, f, st);
             case DUMP_ID.TRISTATE:
-                return new TriStateElm(p1, p2, f, st);
+                return new TriStateUI(p1, p2, f, st);
             case DUMP_ID.INVERT_SCHMITT:
-                return new InvertingSchmittElm(p1, p2, f, st);
+                return new InvertingSchmittUI(p1, p2, f, st);
             case DUMP_ID.SCHMITT:
-                return new SchmittElm(p1, p2, f, st);
+                return new SchmittUI(p1, p2, f, st);
             case DUMP_ID.AND_GATE:
-                return new AndGateElm(p1, p2, f, st);
+                return new GateUIAnd(p1, p2, f, st);
             case DUMP_ID.NAND_GATE:
-                return new NandGateElm(p1, p2, f, st);
+                return new GateUINand(p1, p2, f, st);
             case DUMP_ID.OR_GATE:
-                return new OrGateElm(p1, p2, f, st);
+                return new GateUIOr(p1, p2, f, st);
             case DUMP_ID.NOR_GATE:
-                return new NorGateElm(p1, p2, f, st);
+                return new GateUINor(p1, p2, f, st);
             case DUMP_ID.XOR_GATE:
-                return new XorGateElm(p1, p2, f, st);
+                return new GateUIXor(p1, p2, f, st);
             case DUMP_ID.INVERT:
-                return new InverterElm(p1, p2, f, st);
+                return new InverterUI(p1, p2, f, st);
             //case DUMP_ID.HALF_ADDER:
             //    return new HalfAdderElm(p1, p2, f, st);
             //case DUMP_ID.FULL_ADDER:
@@ -979,9 +979,9 @@ namespace Circuit {
             #endregion
 
             case DUMP_ID.BOX:
-                return new BoxElm(p1, p2, f, st);
+                return new BoxUI(p1, p2, f, st);
             case DUMP_ID.TEXT:
-                return new TextElm(p1, p2, f, st);
+                return new TextUI(p1, p2, f, st);
 
             //case 'A': return new AntennaElm(x1, y1, x2, y2, f, st);
             //case 'j': return new JfetElm(x1, y1, x2, y2, f, st);

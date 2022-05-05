@@ -28,7 +28,7 @@ namespace Circuit {
             mParent.KeyDown += onKeyDown;
             mParent.KeyUp += onKeyUp;
 
-            ElmList = new List<CircuitElm>();
+            ElmList = new List<BaseUI>();
             mRedoItem = new MenuItem();
             mUndoItem = new MenuItem();
             mPasteItem = new MenuItem();
@@ -112,7 +112,7 @@ namespace Circuit {
                 doDCAnalysis();
             }
             if (item == MENU_ITEM.PRINT) {
-                CircuitElm.Context.Print();
+                BaseUI.Context.Print();
             }
             if (item == MENU_ITEM.RECOVER) {
                 doRecover();
@@ -247,7 +247,7 @@ namespace Circuit {
             }
 
             if (item == ELEMENT_MENU_ITEM.VIEW_IN_FLOAT_SCOPE && mMenuElm != null) {
-                var newScope = new ScopeElm(SnapGrid(mMenuElm.P1.X + 50, mMenuElm.P1.Y + 50));
+                var newScope = new ScopeUI(SnapGrid(mMenuElm.P1.X + 50, mMenuElm.P1.Y + 50));
                 ElmList.Add(newScope);
                 newScope.setScopeElm(mMenuElm);
             }
@@ -266,8 +266,8 @@ namespace Circuit {
             if (mMenuScope != -1) {
                 s = mScopes[mMenuScope];
             } else {
-                if (mMouseElm is ScopeElm) {
-                    s = ((ScopeElm)mMouseElm).elmScope;
+                if (mMouseElm is ScopeUI) {
+                    s = ((ScopeUI)mMouseElm).elmScope;
                 } else {
                     return;
                 }
@@ -277,15 +277,15 @@ namespace Circuit {
                 if (mScopeCount == mScopes.Length) {
                     return;
                 }
-                mScopes[mScopeCount] = ((ScopeElm)mMouseElm).elmScope;
-                ((ScopeElm)mMouseElm).clearElmScope();
+                mScopes[mScopeCount] = ((ScopeUI)mMouseElm).elmScope;
+                ((ScopeUI)mMouseElm).clearElmScope();
                 mScopes[mScopeCount].Position = mScopeCount;
                 mScopeCount++;
                 doDelete(false);
             }
 
             if (item == SCOPE_MENU_ITEM.UNDOCK && 0 <= mMenuScope) {
-                var newScope = new ScopeElm(SnapGrid(mMenuElm.P1.X + 50, mMenuElm.P1.Y + 50));
+                var newScope = new ScopeUI(SnapGrid(mMenuElm.P1.X + 50, mMenuElm.P1.Y + 50));
                 ElmList.Add(newScope);
                 newScope.setElmScope(mScopes[mMenuScope]);
                 /* remove scope from list.  setupScopes() will fix the positions */
@@ -473,7 +473,7 @@ namespace Circuit {
             Repaint();
         }
 
-        public Adjustable FindAdjustable(CircuitElm elm, int item) {
+        public Adjustable FindAdjustable(BaseUI elm, int item) {
             for (int i = 0; i != Adjustables.Count; i++) {
                 var a = Adjustables[i];
                 if (a.Elm == elm && a.EditItem == item) {
@@ -484,7 +484,7 @@ namespace Circuit {
         }
 
         /* delete sliders for an element */
-        public void DeleteSliders(CircuitElm elm) {
+        public void DeleteSliders(BaseUI elm) {
             if (Adjustables == null) {
                 return;
             }
@@ -497,7 +497,7 @@ namespace Circuit {
             }
         }
 
-        public int LocateElm(CircuitElm elm) {
+        public int LocateElm(BaseUI elm) {
             for (int i = 0; i != ElmCount; i++) {
                 if (elm == ElmList[i]) {
                     return i;
@@ -667,7 +667,7 @@ namespace Circuit {
             }
             // Todo: OptocouplerElm
             //if (mMouseElm is SwitchElm || mMouseElm is GroundElm || mMouseElm is OptocouplerElm) {
-            if (mMouseElm is SwitchElm || mMouseElm is GroundElm) {
+            if (mMouseElm is SwitchUI || mMouseElm is GroundUI) {
                 return;
             }
             doEdit(mMouseElm, new Point(
@@ -722,13 +722,13 @@ namespace Circuit {
             }
 
             if ((ScopeSelected != -1 && mScopes[ScopeSelected].CursorInSettingsWheel) ||
-                (ScopeSelected == -1 && mMouseElm != null && (mMouseElm is ScopeElm) && ((ScopeElm)mMouseElm).elmScope.CursorInSettingsWheel)) {
+                (ScopeSelected == -1 && mMouseElm != null && (mMouseElm is ScopeUI) && ((ScopeUI)mMouseElm).elmScope.CursorInSettingsWheel)) {
                 Console.WriteLine("Doing something");
                 Scope s;
                 if (ScopeSelected != -1) {
                     s = mScopes[ScopeSelected];
                 } else {
-                    s = ((ScopeElm)mMouseElm).elmScope;
+                    s = ((ScopeUI)mMouseElm).elmScope;
                 }
                 s.Properties(mParent);
                 clearSelection();
@@ -888,10 +888,10 @@ namespace Circuit {
 
             mPixCir.Width = width;
             mPixCir.Height = height;
-            if (CircuitElm.Context != null) {
-                CircuitElm.Context.Dispose();
+            if (BaseUI.Context != null) {
+                BaseUI.Context.Dispose();
             }
-            CircuitElm.Context = CustomGraphics.FromImage(width, height);
+            BaseUI.Context = CustomGraphics.FromImage(width, height);
             setCircuitArea();
             SetSimRunning(isRunning);
         }
@@ -1032,7 +1032,7 @@ namespace Circuit {
             EditDialog.Show(location.X, location.Y);
         }
 
-        void doSliders(CircuitElm ce, Point location) {
+        void doSliders(BaseUI ce, Point location) {
             clearSelection();
             PushUndo();
             if (SliderDialog != null) {
@@ -1278,15 +1278,15 @@ namespace Circuit {
         }
 
         bool doSwitch(Point pos) {
-            if (mMouseElm == null || !(mMouseElm is SwitchElm)) {
+            if (mMouseElm == null || !(mMouseElm is SwitchUI)) {
                 return false;
             }
-            var se = (SwitchElm)mMouseElm;
+            var se = (SwitchUI)mMouseElm;
             if (!se.GetSwitchRect().Contains(pos)) {
                 return false;
             }
             se.Toggle();
-            if (((SwitchElmE)se.CirElm).Momentary) {
+            if (((SwitchElm)se.CirElm).Momentary) {
                 mHeldSwitchElm = se;
             }
             NeedAnalyze();
@@ -1504,9 +1504,9 @@ namespace Circuit {
             NeedAnalyze();
         }
 
-        void doSplit(CircuitElm ce) {
+        void doSplit(BaseUI ce) {
             var pos = SnapGrid(inverseTransform(mMenuPos));
-            if (ce == null || !(ce is WireElm)) {
+            if (ce == null || !(ce is WireUI)) {
                 return;
             }
             if (ce.P1.X == ce.P2.X) {
@@ -1518,7 +1518,7 @@ namespace Circuit {
             if (pos.X == ce.P1.X && pos.Y == ce.P1.Y || pos.X == ce.P2.X && pos.Y == ce.P2.Y) {
                 return;
             }
-            var newWire = new WireElm(pos);
+            var newWire = new WireUI(pos);
             newWire.Drag(ce.P2);
             ce.Drag(pos);
             ElmList.Add(newWire);
@@ -1537,7 +1537,7 @@ namespace Circuit {
             }
         }
 
-        void setMouseElm(CircuitElm ce) {
+        void setMouseElm(BaseUI ce) {
             if (ce != mMouseElm) {
                 if (mMouseElm != null) {
                     mMouseElm.SetMouseElm(false);
@@ -1593,7 +1593,7 @@ namespace Circuit {
         /* need to break this out into a separate routine to handle selection, */
         /* since we don't get mouse move events on mobile */
         void mouseSelect() {
-            CircuitElm newMouseElm = null;
+            BaseUI newMouseElm = null;
             int mx = MouseCursorX;
             int my = MouseCursorY;
             int gx = inverseTransformX(mx);
@@ -1686,11 +1686,11 @@ namespace Circuit {
                     mContextMenuLocation = mContextMenu.Location;
                 }
             } else if (mMouseElm != null) {
-                if (!(mMouseElm is ScopeElm)) {
+                if (!(mMouseElm is ScopeUI)) {
                     mContextMenu = mElementPopupMenu.Show(mMenuClient.X, mMenuClient.Y, mMouseElm);
                     mContextMenuLocation = mContextMenu.Location;
                 } else {
-                    var s = (ScopeElm)mMouseElm;
+                    var s = (ScopeUI)mMouseElm;
                     if (s.elmScope.CanMenu) {
                         mMenuPlot = s.elmScope.SelectedPlot;
                         mContextMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, true);
@@ -1727,7 +1727,7 @@ namespace Circuit {
 
         void scrollValues(int deltay) {
             if (mMouseElm != null && !DialogIsShowing() && ScopeSelected == -1) {
-                if ((mMouseElm is ResistorElm) || (mMouseElm is CapacitorElm) || (mMouseElm is InductorElm)) {
+                if ((mMouseElm is ResistorUI) || (mMouseElm is CapacitorUI) || (mMouseElm is InductorUI)) {
                     mScrollValuePopup = new ScrollValuePopup(deltay, mMouseElm, this);
                     mScrollValuePopup.Show(
                         mParent.Location.X + MouseCursorX,
@@ -1798,7 +1798,7 @@ namespace Circuit {
                 /* ScopeElms don't cut-paste well because their reference to a parent
                 /* elm by number get's messed up in the dump. For now we will just ignore them
                 /* until I can be bothered to come up with something better */
-                if (willDelete(ce) && !(ce is ScopeElm)) {
+                if (willDelete(ce) && !(ce is ScopeUI)) {
                     mClipboard += ce.Dump + "\n";
                 }
             }
@@ -1845,7 +1845,7 @@ namespace Circuit {
             /* Remove any scopeElms for elements that no longer exist */
             for (int i = ElmCount - 1; 0 <= i; i--) {
                 var ce = getElm(i);
-                if ((ce is ScopeElm) && ((ScopeElm)ce).elmScope.NeedToRemove) {
+                if ((ce is ScopeUI) && ((ScopeUI)ce).elmScope.NeedToRemove) {
                     ce.Delete();
                     ElmList.RemoveAt(i);
                 }
@@ -1877,7 +1877,7 @@ namespace Circuit {
             }
         }
 
-        bool willDelete(CircuitElm ce) {
+        bool willDelete(BaseUI ce) {
             /* Is this element in the list to be deleted.
             /* This changes the logic from the previous version which would initially only
             /* delete selected elements (which could include the mouseElm) and then delete the
@@ -1901,7 +1901,7 @@ namespace Circuit {
                     r += m + "\n";
                 }
                 /* See notes on do cut why we don't copy ScopeElms. */
-                if (ce.IsSelected && !(ce is ScopeElm)) {
+                if (ce.IsSelected && !(ce is ScopeUI)) {
                     r += ce.Dump + "\n";
                 }
             }
@@ -2039,7 +2039,7 @@ namespace Circuit {
 
         /* For debugging */
         void dumpNodelist() {
-            CircuitElm e;
+            BaseUI e;
             int i, j;
             string s;
             string cs;
@@ -2053,7 +2053,7 @@ namespace Circuit {
                     continue;
                 }
                 if (cs == "TransistorElm") {
-                    if (((TransistorElmE)e.CirElm).NPN == -1) {
+                    if (((TransistorElm)e.CirElm).NPN == -1) {
                         cs = "PTransistorElm";
                     } else {
                         cs = "NTransistorElm";

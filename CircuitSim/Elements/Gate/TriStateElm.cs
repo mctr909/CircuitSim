@@ -1,114 +1,62 @@
-﻿using System;
-using System.Drawing;
+﻿namespace Circuit.Elements.Gate {
+    class TriStateElm : BaseElement {
+        double mResistance;
+        public double Ron;
+        public double Roff;
 
-namespace Circuit.Elements.Gate {
-    class TriStateElm : CircuitElm {
-        const int BODY_LEN = 32;
+        public bool Open { get; private set; }
 
-        Point point3;
-        Point lead3;
-        Point[] gatePoly;
-
-        public TriStateElm(Point pos) : base(pos) {
-            CirElm = new TriStateElmE();
+        public TriStateElm() : base() {
+            Ron = 0.1;
+            Roff = 1e10;
         }
 
-        public TriStateElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new TriStateElmE(st);
+        public TriStateElm(StringTokenizer st) : base() {
+            Ron = 0.1;
+            Roff = 1e10;
+            try {
+                Ron = st.nextTokenDouble();
+                Roff = st.nextTokenDouble();
+            } catch { }
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.TRISTATE; } }
-
-        protected override string dump() {
-            var ce = (TriStateElmE)CirElm;
-            return ce.Ron + " " + ce.Roff;
+        /* we need this to be able to change the matrix for each step */
+        public override bool NonLinear {
+            get { return true; }
         }
 
-        public override void SetPoints() {
-            base.SetPoints();
-            calcLeads(BODY_LEN);
-            int hs = BODY_LEN / 2;
-            int ww = BODY_LEN / 2;
-            if (ww > mLen / 2) {
-                ww = (int)(mLen / 2);
-            }
-            gatePoly = new Point[3];
-            interpLeadAB(ref gatePoly[0], ref gatePoly[1], 0, hs);
-            interpPoint(ref gatePoly[2], 0.5 + ww / mLen);
-            interpPoint(ref point3, 0.5, -hs);
-            interpPoint(ref lead3, 0.5, -hs / 2);
-        }
+        public override int PostCount { get { return 3; } }
 
-        public override void Draw(CustomGraphics g) {
-            var ce = (TriStateElmE)CirElm;
-            int hs = 16;
-            setBbox(mPoint1, mPoint2, hs);
+        public override int InternalNodeCount { get { return 1; } }
 
-            draw2Leads();
+        public override int VoltageSourceCount { get { return 1; } }
 
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            g.DrawPolygon(gatePoly);
-            drawLead(point3, lead3);
-            ce.CurCount = ce.cirUpdateDotCount(ce.Current, ce.CurCount);
-            drawDots(mLead2, mPoint2, ce.CurCount);
-            drawPosts();
-        }
-
-        public override void Drag(Point pos) {
-            pos = CirSim.Sim.SnapGrid(pos);
-            if (Math.Abs(P1.X - pos.X) < Math.Abs(P1.Y - pos.Y)) {
-                pos.X = P1.X;
-            } else {
-                pos.Y = P1.Y;
-            }
-            int q1 = Math.Abs(P1.X - pos.X) + Math.Abs(P1.Y - pos.Y);
-            int q2 = (q1 / 2) % CirSim.GRID_SIZE;
-            if (q2 != 0) {
-                return;
-            }
-            P2.X = pos.X;
-            P2.Y = pos.Y;
-            SetPoints();
-        }
-
-        public override Point GetPost(int n) {
-            return (n == 0) ? mPoint1 : (n == 1) ? mPoint2 : point3;
-        }
-
-        public override void GetInfo(string[] arr) {
-            var ce = (TriStateElmE)CirElm;
-            arr[0] = "tri-state buffer";
-            arr[1] = ce.Open ? "open" : "closed";
-            arr[2] = "Vd = " + Utils.VoltageAbsText(ce.VoltageDiff);
-            arr[3] = "I = " + Utils.CurrentAbsText(ce.Current);
-            arr[4] = "Vc = " + Utils.VoltageText(ce.Volts[2]);
-        }
-
-        /* there is no current path through the input, but there
-         * is an indirect path through the output to ground. */
-        public override bool GetConnection(int n1, int n2) {
-            return false;
-        }
-
-        public override ElementInfo GetElementInfo(int n) {
-            var ce = (TriStateElmE)CirElm;
-            if (n == 0) {
-                return new ElementInfo("オン抵抗(Ω)", ce.Ron, 0, 0);
-            }
+        public override double GetCurrentIntoNode(int n) {
             if (n == 1) {
-                return new ElementInfo("オフ抵抗(Ω)", ce.Roff, 0, 0);
+                return mCurrent;
             }
-            return null;
+            return 0;
         }
 
-        public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (TriStateElmE)CirElm;
-            if (n == 0 && ei.Value > 0) {
-                ce.Ron = ei.Value;
-            }
-            if (n == 1 && ei.Value > 0) {
-                ce.Roff = ei.Value;
-            }
+        protected override void calcCurrent() {
+            mCurrent = (Volts[0] - Volts[1]) / mResistance;
+        }
+
+        public override void Stamp() {
+            mCir.StampVoltageSource(0, Nodes[3], mVoltSource);
+            mCir.StampNonLinear(Nodes[3]);
+            mCir.StampNonLinear(Nodes[1]);
+        }
+
+        public override void DoStep() {
+            Open = Volts[2] < 2.5;
+            mResistance = Open ? Roff : Ron;
+            mCir.StampResistor(Nodes[3], Nodes[1], mResistance);
+            mCir.UpdateVoltageSource(0, Nodes[3], mVoltSource, Volts[0] > 2.5 ? 5 : 0);
+        }
+
+        public override bool HasGroundConnection(int n1) {
+            return n1 == 1;
         }
     }
 }

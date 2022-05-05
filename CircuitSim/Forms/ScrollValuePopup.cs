@@ -23,7 +23,7 @@ namespace Circuit {
         int mLastIdx;
 
         CirSim mSim;
-        CircuitElm mMyElm;
+        BaseUI mMyElm;
         ElementInfo mInfo;
         Panel mPnlV;
         Label mLabels;
@@ -32,7 +32,7 @@ namespace Circuit {
         string mName;
         string mUnit;
 
-        public ScrollValuePopup(int dy, CircuitElm e, CirSim s) : base() {
+        public ScrollValuePopup(int dy, BaseUI e, CirSim s) : base() {
             mMyElm = e;
             mDeltaY = 0;
             mSim = s;
@@ -99,17 +99,17 @@ namespace Circuit {
         }
 
         void setupValues() {
-            if (mMyElm is ResistorElm) {
+            if (mMyElm is ResistorUI) {
                 mMinPow = 0;
                 mMaxPow = 6;
                 mUnit = "Ω";
             }
-            if (mMyElm is CapacitorElm) {
+            if (mMyElm is CapacitorUI) {
                 mMinPow = -11;
                 mMaxPow = -3;
                 mUnit = "F";
             }
-            if (mMyElm is InductorElm) {
+            if (mMyElm is InductorUI) {
                 mMinPow = -6;
                 mMaxPow = 0;
                 mUnit = "H";

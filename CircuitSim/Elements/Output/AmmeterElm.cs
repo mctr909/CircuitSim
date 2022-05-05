@@ -1,126 +1,134 @@
-﻿using System.Drawing;
-using System.Windows.Forms;
+﻿using System;
 
 namespace Circuit.Elements.Output {
-    class AmmeterElm : CircuitElm {
-        const int FLAG_SHOWCURRENT = 1;
+    class AmmeterElm : BaseElement {
+        public const int AM_VOL = 0;
+        public const int AM_RMS = 1;
 
-        Point mMid;
-        Point[] mArrowPoly;
-        Point mTextPos;
+        public int Meter;
+        public E_SCALE Scale;
 
-        public AmmeterElm(Point pos) : base(pos) {
-            CirElm = new AmmeterElmE();
-            mFlags = FLAG_SHOWCURRENT;
+        public double SelectedValue { get; private set; } = 0;
+        public double RmsI { get; private set; } = 0;
+
+        double mTotal;
+        double mCount;
+        double mMaxI = 0;
+        double mLastMaxI;
+        double mMinI = 0;
+        double mLastMinI;
+        int mZeroCount = 0;
+        bool mIncreasingI = true;
+        bool mDecreasingI = true;
+
+        public AmmeterElm() : base() {
+            Scale = E_SCALE.AUTO;
         }
 
-        public AmmeterElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new AmmeterElmE(st);
+        public AmmeterElm(StringTokenizer st) : base() {
+            Meter = st.nextTokenInt();
+            try {
+                Scale = st.nextTokenEnum<E_SCALE>();
+            } catch {
+                Scale = E_SCALE.AUTO;
+            }
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.AMMETER; } }
+        public override int PostCount { get { return 2; } }
 
-        protected override string dump() {
-            var ce = (AmmeterElmE)CirElm;
-            return ce.Meter + " " + ce.Scale;
-        }
+        public override bool IsWire { get { return true; } }
 
-        public override void SetPoints() {
-            base.SetPoints();
-            interpPoint(ref mMid, 0.5 + 4 / mLen);
-            Utils.CreateArrow(mPoint1, mMid, out mArrowPoly, 9, 5);
-            int sign;
-            mNameV = mPoint1.X == mPoint2.X;
-            if (mNameV) {
-                sign = -mDsign;
-                if (mPoint1.Y < mPoint2.Y) {
-                    interpPoint(ref mTextPos, (mLen - 5) / mLen, 21 * sign);
-                } else {
-                    interpPoint(ref mTextPos, 5 / mLen, 21 * sign);
+        public override double VoltageDiff { get { return Volts[0]; } }
+
+        public override double Power { get { return 0; } }
+
+        public override int VoltageSourceCount { get { return 1; } }
+
+        public override void StepFinished() {
+            mCount++; /*how many counts are in a cycle */
+            mTotal += mCurrent * mCurrent; /* sum of squares */
+            if (mCurrent > mMaxI && mIncreasingI) {
+                mMaxI = mCurrent;
+                mIncreasingI = true;
+                mDecreasingI = false;
+            }
+
+            if (mCurrent < mMaxI && mIncreasingI) { /* change of direction I now going down - at start of waveform */
+                mLastMaxI = mMaxI; /* capture last maximum */
+                                 /* capture time between */
+                mMinI = mCurrent; /* track minimum value */
+                mIncreasingI = false;
+                mDecreasingI = true;
+
+                /* rms data */
+                mTotal = mTotal / mCount;
+                RmsI = Math.Sqrt(mTotal);
+                if (double.IsNaN(RmsI)) {
+                    RmsI = 0;
+                }
+                mCount = 0;
+                mTotal = 0;
+
+            }
+
+            if (mCurrent < mMinI && mDecreasingI) { /* I going down, track minimum value */
+                mMinI = mCurrent;
+                mIncreasingI = false;
+                mDecreasingI = true;
+            }
+
+            if (mCurrent > mMinI && mDecreasingI) { /* change of direction I now going up */
+                mLastMinI = mMinI; /* capture last minimum */
+
+                mMaxI = mCurrent;
+                mIncreasingI = true;
+                mDecreasingI = false;
+
+                /* rms data */
+                mTotal = mTotal / mCount;
+                RmsI = Math.Sqrt(mTotal);
+                if (double.IsNaN(RmsI)) {
+                    RmsI = 0;
+                }
+                mCount = 0;
+                mTotal = 0;
+            }
+
+            /* need to zero the rms value if it stays at 0 for a while */
+            if (mCurrent == 0) {
+                mZeroCount++;
+                if (mZeroCount > 5) {
+                    mTotal = 0;
+                    RmsI = 0;
+                    mMaxI = 0;
+                    mMinI = 0;
                 }
             } else {
-                sign = mDsign;
-                if(mPoint1.X < mPoint2.X) {
-                    interpPoint(ref mTextPos, (mLen - 5) / mLen, 12 * sign);
-                } else {
-                    interpPoint(ref mTextPos, 5 / mLen, 12 * sign);
-                }
+                mZeroCount = 0;
             }
-        }
 
-        public override void Draw(CustomGraphics g) {
-            base.Draw(g); /* BC required for highlighting */
-            var ce = (AmmeterElmE)CirElm;
-
-            drawLead(mPoint1, mPoint2);
-            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, mArrowPoly);
-            doDots();
-            setBbox(mPoint1, mPoint2, 3);
-            string s = "A";
-            switch (ce.Meter) {
-            case AmmeterElmE.AM_VOL:
-                s = Utils.UnitTextWithScale(ce.Current, "A", ce.Scale);
+            switch (Meter) {
+            case AM_VOL:
+                SelectedValue = mCurrent;
                 break;
-            case AmmeterElmE.AM_RMS:
-                s = Utils.UnitTextWithScale(ce.RmsI, "A(rms)", ce.Scale);
-                break;
-            }
-            if (mNameV) {
-                g.DrawRightVText(s, mTextPos.X, mTextPos.Y);
-            } else {
-                g.DrawRightText(s, mTextPos.X, mTextPos.Y);
-            }
-            drawPosts();
-        }
-
-        public override void GetInfo(string[] arr) {
-            var ce = (AmmeterElmE)CirElm;
-            arr[0] = "Ammeter";
-            switch (ce.Meter) {
-            case AmmeterElmE.AM_VOL:
-                arr[1] = "I = " + Utils.UnitText(ce.Current, "A");
-                break;
-            case AmmeterElmE.AM_RMS:
-                arr[1] = "Irms = " + Utils.UnitText(ce.RmsI, "A");
+            case AM_RMS:
+                SelectedValue = RmsI;
                 break;
             }
         }
 
-        public override ElementInfo GetElementInfo(int n) {
-            var ce = (AmmeterElmE)CirElm;
-            if (n == 0) {
-                var ei = new ElementInfo("表示", ce.SelectedValue, -1, -1);
-                ei.Choice = new ComboBox();
-                ei.Choice.Items.Add("瞬時値");
-                ei.Choice.Items.Add("実効値");
-                ei.Choice.SelectedIndex = ce.Meter;
-                return ei;
-            }
-            if (n == 1) {
-                var ei = new ElementInfo("スケール", 0);
-                ei.Choice = new ComboBox();
-                ei.Choice.Items.Add("自動");
-                ei.Choice.Items.Add("A");
-                ei.Choice.Items.Add("mA");
-                ei.Choice.Items.Add("uA");
-                ei.Choice.SelectedIndex = (int)ce.Scale;
-                return ei;
-            }
-            return null;
+        public override void Stamp() {
+            mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
         }
 
-        public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (AmmeterElmE)CirElm;
-            if (n == 0) {
-                ce.Meter = ei.Choice.SelectedIndex;
+        public string getMeter() {
+            switch (Meter) {
+            case AM_VOL:
+                return "I";
+            case AM_RMS:
+                return "Irms";
             }
-            if (n == 1) {
-                ce.Scale = (E_SCALE)ei.Choice.SelectedIndex;
-            }
-        }
-
-        bool mustShowCurrent() {
-            return (mFlags & FLAG_SHOWCURRENT) != 0;
+            return "";
         }
     }
 }

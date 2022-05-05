@@ -176,8 +176,8 @@ namespace Circuit {
                 mElm.SetElementValue(i, ei);
 
                 /* update slider if any */
-                if (mElm is CircuitElm) {
-                    var adj = CirSim.Sim.FindAdjustable((CircuitElm)mElm, i);
+                if (mElm is BaseUI) {
+                    var adj = CirSim.Sim.FindAdjustable((BaseUI)mElm, i);
                     if (adj != null) {
                         adj.Value = ei.Value;
                     }
@@ -334,7 +334,7 @@ namespace Circuit {
 
         string unitString(ElementInfo ei) {
             /* for voltage elements, express values in rms if that would be shorter */
-            if (mElm != null && (mElm is VoltageElm)
+            if (mElm != null && (mElm is VoltageUI)
                 && Math.Abs(ei.Value) > 1e-4
                 && diffFromInteger(ei.Value * 1e4) > diffFromInteger(ei.Value * 1e4 / ROOT2)) {
                 return UnitString(ei, ei.Value / ROOT2) + "rms";

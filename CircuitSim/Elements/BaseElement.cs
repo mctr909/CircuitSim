@@ -73,28 +73,6 @@
         }
 
         /// <summary>
-        /// update dot positions (curcount) for drawing current (simple case for single current)
-        /// </summary>
-        public void cirUpdateDotCount() {
-            CurCount = cirUpdateDotCount(mCurrent, CurCount);
-        }
-
-        /// <summary>
-        ///  update dot positions (curcount) for drawing current (general case for multiple currents)
-        /// </summary>
-        /// <param name="cur"></param>
-        /// <param name="cc"></param>
-        /// <returns></returns>
-        public double cirUpdateDotCount(double cur, double cc) {
-            if (!CirSim.Sim.IsRunning) {
-                return cc;
-            }
-            double cadd = cur * CirSim.CurrentMult;
-            cadd %= 8;
-            return cc + cadd;
-        }
-
-        /// <summary>
         /// calculate current in response to node voltages changing
         /// </summary>
         protected virtual void calcCurrent() { }

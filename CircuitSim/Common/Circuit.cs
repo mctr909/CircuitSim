@@ -40,7 +40,7 @@ namespace Circuit {
         #endregion
 
         #region property
-        public CircuitElm StopElm { get; set; }
+        public BaseUI StopElm { get; set; }
         public BaseElement StopElmE { get; set; }
         public string StopMessage { get; set; }
 
@@ -51,7 +51,7 @@ namespace Circuit {
         public double[,] Matrix { get; set; }
 
         public int VoltageSourceCount { get; private set; }
-        public CircuitElm[] VoltageSources { get; private set; }
+        public BaseUI[] VoltageSources { get; private set; }
 
         public bool CircuitNonLinear { get; private set; }
 
@@ -291,10 +291,10 @@ namespace Circuit {
             mWireInfoList = new List<WireInfo>();
             for (int i = 0; i != mSim.ElmCount; i++) {
                 var ce = mSim.getElm(i);
-                if (!(ce is WireElm)) {
+                if (!(ce is WireUI)) {
                     continue;
                 }
-                var we = (WireElm)ce;
+                var we = (WireUI)ce;
                 we.HasWireInfo = false;
                 mWireInfoList.Add(new WireInfo(we));
                 var p1 = ce.GetPost(0);
@@ -352,8 +352,8 @@ namespace Circuit {
                 var cn1 = NodeList[wire.CirElm.Nodes[0]];  /* both ends of wire have same node # */
                 int j;
 
-                var neighbors0 = new List<CircuitElm>();
-                var neighbors1 = new List<CircuitElm>();
+                var neighbors0 = new List<BaseUI>();
+                var neighbors1 = new List<BaseUI>();
                 bool isReady0 = true;
                 bool isReady1 = true;
 
@@ -369,7 +369,7 @@ namespace Circuit {
 
                     /* is this a wire that doesn't have wire info yet?  If so we can't use it.
                     /* That would create a circular dependency */
-                    bool notReady = (ce is WireElm) && !((WireElm)ce).HasWireInfo;
+                    bool notReady = (ce is WireUI) && !((WireUI)ce).HasWireInfo;
 
                     /* which post does this element connect to, if any? */
                     if (pt.X == wire.P1.X && pt.Y == wire.P1.Y) {
@@ -622,7 +622,7 @@ namespace Circuit {
             mPostCountMap = new Dictionary<Point, int>();
             bool gotGround = false;
             bool gotRail = false;
-            CircuitElm volt = null;
+            BaseUI volt = null;
 
             calculateWireClosure();
 
@@ -630,15 +630,15 @@ namespace Circuit {
             /* look for voltage or ground element */
             for (int i = 0; i != mSim.ElmCount; i++) {
                 var ce = mSim.getElm(i);
-                if (ce is GroundElm) {
+                if (ce is GroundUI) {
                     gotGround = true;
                     break;
                 }
 
-                if (ce is RailElm) {
+                if (ce is RailUI) {
                     gotRail = true;
                 }
-                if (volt == null && (ce is VoltageElm)) {
+                if (volt == null && (ce is VoltageUI)) {
                     volt = ce;
                 }
             }
@@ -663,7 +663,7 @@ namespace Circuit {
             if (debug) Console.WriteLine("ac2");
 
             /* allocate nodes and voltage sources */
-            LabeledNodeElmE.ResetNodeList();
+            LabeledNodeElm.ResetNodeList();
             for (int i = 0; i != mSim.ElmCount; i++) {
                 var ce = mSim.getElm(i);
                 var cee = ce.CirElm;
@@ -737,7 +737,7 @@ namespace Circuit {
             }
             mNodeMap = null; /* done with this */
 
-            VoltageSources = new CircuitElm[vscount];
+            VoltageSources = new BaseUI[vscount];
             vscount = 0;
             CircuitNonLinear = false;
             if (debug) Console.WriteLine("ac3");
@@ -786,7 +786,7 @@ namespace Circuit {
                 for (int i = 0; i != mSim.ElmCount; i++) {
                     var ce = mSim.getElm(i);
                     var cee = ce.CirElm;
-                    if (cee is WireElmE) {
+                    if (cee is WireElm) {
                         continue;
                     }
                     /* loop through all ce's nodes to see if they are connected
@@ -833,7 +833,7 @@ namespace Circuit {
                 var cee = ce.CirElm;
 
                 /* look for inductors with no current path */
-                if (cee is InductorElmE) {
+                if (cee is InductorElm) {
                     var fpi = new PathInfo(PathType.INDUCTOR, cee, cee.Nodes[1], elmList, NodeList.Count);
                     if (!fpi.FindPath(cee.Nodes[0])) {
                         if (debug) Console.WriteLine(cee + " no path");
@@ -842,8 +842,8 @@ namespace Circuit {
                 }
 
                 /* look for current sources with no current path */
-                if (cee is CurrentElmE) {
-                    var cur = (CurrentElmE)cee;
+                if (cee is CurrentElm) {
+                    var cur = (CurrentElm)cee;
                     var fpi = new PathInfo(PathType.INDUCTOR, cee, cee.Nodes[1], elmList, NodeList.Count);
                     if (!fpi.FindPath(cee.Nodes[0])) {
                         cur.stampCurrentSource(true);
@@ -855,14 +855,14 @@ namespace Circuit {
                 /* look for voltage source or wire loops.  we do this for voltage sources or wire-like elements (not actual wires
                 /* because those are optimized out, so the findPath won't work) */
                 if (2 == cee.PostCount) {
-                    if ((cee is VoltageElmE) || (cee.IsWire && !(cee is WireElmE))) {
+                    if ((cee is VoltageElm) || (cee.IsWire && !(cee is WireElm))) {
                         var fpi = new PathInfo(PathType.VOLTAGE, cee, cee.Nodes[1], elmList, NodeList.Count);
                         if (fpi.FindPath(cee.Nodes[0])) {
                             Stop("Voltage source/wire loop with no resistance!", cee);
                             return;
                         }
                     }
-                } else if (cee is Switch2ElmE) {
+                } else if (cee is SwitchElm2) {
                     /* for Switch2Elms we need to do extra work to look for wire loops */
                     var fpi = new PathInfo(PathType.VOLTAGE, cee, cee.Nodes[0], elmList, NodeList.Count);
                     for (int j = 1; j < cee.PostCount; j++) {
@@ -874,7 +874,7 @@ namespace Circuit {
                 }
 
                 /* look for path from rail to ground */
-                if ((cee is RailElmE) || (cee is LogicInputElmE)) {
+                if ((cee is RailElm) || (cee is LogicInputElm)) {
                     var fpi = new PathInfo(PathType.VOLTAGE, cee, cee.Nodes[0], elmList, NodeList.Count);
                     if (fpi.FindPath(0)) {
                         Stop("Path to ground with no resistance!", cee);
@@ -883,7 +883,7 @@ namespace Circuit {
                 }
 
                 /* look for shorted caps, or caps w/ voltage but no R */
-                if (cee is CapacitorElmE) {
+                if (cee is CapacitorElm) {
                     var fpi = new PathInfo(PathType.SHORT, cee, cee.Nodes[1], elmList, NodeList.Count);
                     if (fpi.FindPath(cee.Nodes[0])) {
                         Console.WriteLine(cee + " shorted");
@@ -937,7 +937,7 @@ namespace Circuit {
             ShowResistanceInVoltageSources = true;
             for (int i = 0; i != mSim.ElmCount; i++) {
                 var ce = mSim.getElm(i);
-                if (ce is VoltageElm) {
+                if (ce is VoltageUI) {
                     if (gotVoltageSource) {
                         ShowResistanceInVoltageSources = false;
                     } else {
@@ -1056,7 +1056,7 @@ namespace Circuit {
             mSim.SetSimRunning(false);
         }
 
-        public void Stop(string s, CircuitElm ce) {
+        public void Stop(string s, BaseUI ce) {
             StopMessage = s;
             Matrix = null;  /* causes an exception */
             StopElm = ce;
