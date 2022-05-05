@@ -49,26 +49,26 @@ namespace Circuit.Elements.Active {
                 Vt = st.nextTokenDouble();
                 Hfe = st.nextTokenDouble();
             } catch { }
-            cirAllocNodes(); /* make sure volts[] has the right number of elements when hasBodyTerminal() is true */
+            AllocNodes(); /* make sure volts[] has the right number of elements when hasBodyTerminal() is true */
         }
 
-        public override double CirCurrent { get { return Ids; } }
+        public override double Current { get { return Ids; } }
 
-        public override double CirVoltageDiff { get { return CirVolts[V_D] - CirVolts[V_S]; } }
+        public override double VoltageDiff { get { return Volts[V_D] - Volts[V_S]; } }
 
-        public override double CirPower {
+        public override double Power {
             get {
-                return Ids * (CirVolts[V_D] - CirVolts[V_S])
-                    - DiodeCurrent1 * (CirVolts[V_S] - CirVolts[BodyTerminal])
-                    - DiodeCurrent2 * (CirVolts[V_D] - CirVolts[BodyTerminal]);
+                return Ids * (Volts[V_D] - Volts[V_S])
+                    - DiodeCurrent1 * (Volts[V_S] - Volts[BodyTerminal])
+                    - DiodeCurrent2 * (Volts[V_D] - Volts[BodyTerminal]);
             }
         }
 
-        public override bool CirNonLinear { get { return true; } }
+        public override bool NonLinear { get { return true; } }
 
-        public override int CirPostCount { get { return 3; } }
+        public override int PostCount { get { return 3; } }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
                 return 0;
             }
@@ -81,30 +81,30 @@ namespace Circuit.Elements.Active {
             return -Ids + DiodeCurrent2;
         }
 
-        public override void CirStamp() {
-            mCir.StampNonLinear(CirNodes[1]);
-            mCir.StampNonLinear(CirNodes[2]);
+        public override void Stamp() {
+            mCir.StampNonLinear(Nodes[1]);
+            mCir.StampNonLinear(Nodes[2]);
 
             BodyTerminal = (Pnp == -1) ? 2 : 1;
 
             if (DoBodyDiode) {
                 if (Pnp == -1) {
                     /* pnp: diodes conduct when S or D are higher than body */
-                    mDiodeB1.Stamp(CirNodes[1], CirNodes[BodyTerminal]);
-                    mDiodeB2.Stamp(CirNodes[2], CirNodes[BodyTerminal]);
+                    mDiodeB1.Stamp(Nodes[1], Nodes[BodyTerminal]);
+                    mDiodeB2.Stamp(Nodes[2], Nodes[BodyTerminal]);
                 } else {
                     /* npn: diodes conduct when body is higher than S or D */
-                    mDiodeB1.Stamp(CirNodes[BodyTerminal], CirNodes[1]);
-                    mDiodeB2.Stamp(CirNodes[BodyTerminal], CirNodes[2]);
+                    mDiodeB1.Stamp(Nodes[BodyTerminal], Nodes[1]);
+                    mDiodeB2.Stamp(Nodes[BodyTerminal], Nodes[2]);
                 }
             }
         }
 
-        public override void CirDoStep() {
+        public override void DoStep() {
             calculate(false);
         }
 
-        public override void CirStepFinished() {
+        public override void StepFinished() {
             calculate(true);
 
             /* fix current if body is connected to source or drain */
@@ -116,10 +116,10 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override void CirReset() {
+        public override void Reset() {
             mLastV1 = mLastV2 = 0;
-            CirVolts[V_G] = CirVolts[V_S] = CirVolts[V_D] = 0;
-            mCirCurCount = 0;
+            Volts[V_G] = Volts[V_S] = Volts[V_D] = 0;
+            CurCount = 0;
             mDiodeB1.Reset();
             mDiodeB2.Reset();
         }
@@ -139,13 +139,13 @@ namespace Circuit.Elements.Active {
         void calculate(bool finished) {
             double[] vs;
             if (finished) {
-                vs = CirVolts;
+                vs = Volts;
             } else {
                 /* limit voltage changes to .5V */
                 vs = new double[3];
-                vs[0] = CirVolts[V_G];
-                vs[1] = CirVolts[V_S];
-                vs[2] = CirVolts[V_D];
+                vs[0] = Volts[V_G];
+                vs[1] = Volts[V_S];
+                vs[2] = Volts[V_D];
                 if (vs[1] > mLastV1 + .5) {
                     vs[1] = mLastV1 + .5;
                 }
@@ -207,10 +207,10 @@ namespace Circuit.Elements.Active {
             }
 
             if (DoBodyDiode) {
-                mDiodeB1.DoStep(Pnp * (CirVolts[BodyTerminal] - CirVolts[V_S]));
-                DiodeCurrent1 = mDiodeB1.CalculateCurrent(Pnp * (CirVolts[BodyTerminal] - CirVolts[V_S])) * Pnp;
-                mDiodeB2.DoStep(Pnp * (CirVolts[BodyTerminal] - CirVolts[V_D]));
-                DiodeCurrent2 = mDiodeB2.CalculateCurrent(Pnp * (CirVolts[BodyTerminal] - CirVolts[V_D])) * Pnp;
+                mDiodeB1.DoStep(Pnp * (Volts[BodyTerminal] - Volts[V_S]));
+                DiodeCurrent1 = mDiodeB1.CalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[V_S])) * Pnp;
+                mDiodeB2.DoStep(Pnp * (Volts[BodyTerminal] - Volts[V_D]));
+                DiodeCurrent2 = mDiodeB2.CalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[V_D])) * Pnp;
             } else {
                 DiodeCurrent1 = DiodeCurrent2 = 0;
             }
@@ -227,16 +227,16 @@ namespace Circuit.Elements.Active {
             }
 
             double rs = -Pnp * ids0 + Gds * realvds + Gm * realvgs;
-            mCir.StampMatrix(CirNodes[drain], CirNodes[drain], Gds);
-            mCir.StampMatrix(CirNodes[drain], CirNodes[source], -Gds - Gm);
-            mCir.StampMatrix(CirNodes[drain], CirNodes[gate], Gm);
+            mCir.StampMatrix(Nodes[drain], Nodes[drain], Gds);
+            mCir.StampMatrix(Nodes[drain], Nodes[source], -Gds - Gm);
+            mCir.StampMatrix(Nodes[drain], Nodes[gate], Gm);
 
-            mCir.StampMatrix(CirNodes[source], CirNodes[drain], -Gds);
-            mCir.StampMatrix(CirNodes[source], CirNodes[source], Gds + Gm);
-            mCir.StampMatrix(CirNodes[source], CirNodes[gate], -Gm);
+            mCir.StampMatrix(Nodes[source], Nodes[drain], -Gds);
+            mCir.StampMatrix(Nodes[source], Nodes[source], Gds + Gm);
+            mCir.StampMatrix(Nodes[source], Nodes[gate], -Gm);
 
-            mCir.StampRightSide(CirNodes[drain], rs);
-            mCir.StampRightSide(CirNodes[source], -rs);
+            mCir.StampRightSide(Nodes[drain], rs);
+            mCir.StampRightSide(Nodes[source], -rs);
         }
 
         bool nonConvergence(double last, double now) {

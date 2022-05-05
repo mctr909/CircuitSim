@@ -21,41 +21,41 @@
         }
 
         /* we need this to be able to change the matrix for each step */
-        public override bool CirNonLinear {
+        public override bool NonLinear {
             get { return true; }
         }
 
-        public override int CirPostCount { get { return 3; } }
+        public override int PostCount { get { return 3; } }
 
-        public override int CirInternalNodeCount { get { return 1; } }
+        public override int InternalNodeCount { get { return 1; } }
 
-        public override int CirVoltageSourceCount { get { return 1; } }
+        public override int VoltageSourceCount { get { return 1; } }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 1) {
-                return mCirCurrent;
+                return mCurrent;
             }
             return 0;
         }
 
-        protected override void cirCalculateCurrent() {
-            mCirCurrent = (CirVolts[0] - CirVolts[1]) / mResistance;
+        protected override void calcCurrent() {
+            mCurrent = (Volts[0] - Volts[1]) / mResistance;
         }
 
-        public override void CirStamp() {
-            mCir.StampVoltageSource(0, CirNodes[3], mCirVoltSource);
-            mCir.StampNonLinear(CirNodes[3]);
-            mCir.StampNonLinear(CirNodes[1]);
+        public override void Stamp() {
+            mCir.StampVoltageSource(0, Nodes[3], mVoltSource);
+            mCir.StampNonLinear(Nodes[3]);
+            mCir.StampNonLinear(Nodes[1]);
         }
 
-        public override void CirDoStep() {
-            Open = CirVolts[2] < 2.5;
+        public override void DoStep() {
+            Open = Volts[2] < 2.5;
             mResistance = Open ? Roff : Ron;
-            mCir.StampResistor(CirNodes[3], CirNodes[1], mResistance);
-            mCir.UpdateVoltageSource(0, CirNodes[3], mCirVoltSource, CirVolts[0] > 2.5 ? 5 : 0);
+            mCir.StampResistor(Nodes[3], Nodes[1], mResistance);
+            mCir.UpdateVoltageSource(0, Nodes[3], mVoltSource, Volts[0] > 2.5 ? 5 : 0);
         }
 
-        public override bool CirHasGroundConnection(int n1) {
+        public override bool HasGroundConnection(int n1) {
             return n1 == 1;
         }
     }

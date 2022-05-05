@@ -16,7 +16,7 @@ namespace Circuit.Elements.Input {
             SignalFreq = 40;
             Depth = 0.1;
             Phase = 0.0;
-            CirReset();
+            Reset();
         }
 
         public AMElmE(StringTokenizer st) : base() {
@@ -27,30 +27,30 @@ namespace Circuit.Elements.Input {
                 Phase = st.nextTokenDouble();
                 Depth = st.nextTokenDouble();
             } catch { }
-            CirReset();
+            Reset();
         }
 
-        public override int CirPostCount { get { return 1; } }
+        public override int PostCount { get { return 1; } }
 
-        public override double CirVoltageDiff { get { return CirVolts[0]; } }
+        public override double VoltageDiff { get { return Volts[0]; } }
 
-        public override int CirVoltageSourceCount { get { return 1; } }
+        public override int VoltageSourceCount { get { return 1; } }
 
-        public override double CirPower { get { return -CirVoltageDiff * mCirCurrent; } }
+        public override double Power { get { return -VoltageDiff * mCurrent; } }
 
-        public override void CirReset() {
+        public override void Reset() {
             mFreqTimeZero = 0;
-            mCirCurCount = 0;
+            CurCount = 0;
         }
 
-        public override bool CirHasGroundConnection(int n1) { return true; }
+        public override bool HasGroundConnection(int n1) { return true; }
 
-        public override void CirStamp() {
-            mCir.StampVoltageSource(0, CirNodes[0], mCirVoltSource);
+        public override void Stamp() {
+            mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
         }
 
-        public override void CirDoStep() {
-            mCir.UpdateVoltageSource(0, CirNodes[0], mCirVoltSource, getVoltage());
+        public override void DoStep() {
+            mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
         }
 
         double getVoltage() {

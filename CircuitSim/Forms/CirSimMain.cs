@@ -271,7 +271,7 @@ namespace Circuit {
             for (iter = 1; ; iter++) {
                 for (int i = 0; i != ElmCount; i++) {
                     var ce = getElmE(i);
-                    ce.CirStartIteration();
+                    ce.StartIteration();
                 }
 
                 if (!mCir.Run(debugprint)) {
@@ -280,7 +280,7 @@ namespace Circuit {
 
                 Time += ControlPanel.TimeStep;
                 for (int i = 0; i != ElmCount; i++) {
-                    getElmE(i).CirStepFinished();
+                    getElmE(i).StepFinished();
                 }
                 if (!delayWireProcessing) {
                     mCir.CalcWireCurrents();

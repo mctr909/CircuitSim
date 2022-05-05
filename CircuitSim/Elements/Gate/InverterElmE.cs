@@ -22,32 +22,34 @@ namespace Circuit.Elements.Gate {
             }
         }
 
-        public override double CirVoltageDiff { get { return CirVolts[0]; } }
+        public override int PostCount { get { return 2; } }
 
-        public override int CirVoltageSourceCount { get { return 1; } }
+        public override double VoltageDiff { get { return Volts[0]; } }
 
-        public override bool CirHasGroundConnection(int n1) { return n1 == 1; }
+        public override int VoltageSourceCount { get { return 1; } }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override bool HasGroundConnection(int n1) { return n1 == 1; }
+
+        public override double GetCurrentIntoNode(int n) {
             if (n == 1) {
-                return mCirCurrent;
+                return mCurrent;
             }
             return 0;
         }
 
-        public override void CirStamp() {
-            mCir.StampVoltageSource(0, CirNodes[1], mCirVoltSource);
+        public override void Stamp() {
+            mCir.StampVoltageSource(0, Nodes[1], mVoltSource);
         }
 
-        public override void CirStartIteration() {
-            mLastOutputVoltage = CirVolts[1];
+        public override void StartIteration() {
+            mLastOutputVoltage = Volts[1];
         }
 
-        public override void CirDoStep() {
-            double v = CirVolts[0] > HighVoltage * .5 ? 0 : HighVoltage;
+        public override void DoStep() {
+            double v = Volts[0] > HighVoltage * .5 ? 0 : HighVoltage;
             double maxStep = SlewRate * ControlPanel.TimeStep * 1e9;
             v = Math.Max(Math.Min(mLastOutputVoltage + maxStep, v), mLastOutputVoltage - maxStep);
-            mCir.UpdateVoltageSource(0, CirNodes[1], mCirVoltSource, v);
+            mCir.UpdateVoltageSource(0, Nodes[1], mVoltSource, v);
         }
     }
 }

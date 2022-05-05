@@ -17,13 +17,13 @@
             }
         }
 
-        public override double CirVoltageDiff { get { return CirVolts[0]; } }
+        public override double VoltageDiff { get { return Volts[0]; } }
 
-        public override int CirPostCount { get { return 1; } }
+        public override int PostCount { get { return 1; } }
 
-        public override void CirStamp() {
+        public override void Stamp() {
             if (needsPullDown) {
-                mCir.StampResistor(CirNodes[0], 0, 1e6);
+                mCir.StampResistor(Nodes[0], 0, 1e6);
             }
         }
     }

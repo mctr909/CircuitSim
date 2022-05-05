@@ -49,8 +49,8 @@ namespace Circuit.Elements.Gate {
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.DrawPolygon(gatePoly);
             drawLead(point3, lead3);
-            ce.mCirCurCount = ce.cirUpdateDotCount(ce.mCirCurrent, ce.mCirCurCount);
-            drawDots(mLead2, mPoint2, ce.mCirCurCount);
+            ce.CurCount = ce.cirUpdateDotCount(ce.mCurrent, ce.CurCount);
+            drawDots(mLead2, mPoint2, ce.CurCount);
             drawPosts();
         }
 
@@ -79,9 +79,9 @@ namespace Circuit.Elements.Gate {
             var ce = (TriStateElmE)CirElm;
             arr[0] = "tri-state buffer";
             arr[1] = ce.Open ? "open" : "closed";
-            arr[2] = "Vd = " + Utils.VoltageAbsText(ce.CirVoltageDiff);
-            arr[3] = "I = " + Utils.CurrentAbsText(ce.CirCurrent);
-            arr[4] = "Vc = " + Utils.VoltageText(ce.CirVolts[2]);
+            arr[2] = "Vd = " + Utils.VoltageAbsText(ce.VoltageDiff);
+            arr[3] = "I = " + Utils.CurrentAbsText(ce.Current);
+            arr[4] = "Vc = " + Utils.VoltageText(ce.Volts[2]);
         }
 
         /* there is no current path through the input, but there

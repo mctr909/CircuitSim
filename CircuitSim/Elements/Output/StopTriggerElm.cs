@@ -39,7 +39,7 @@ namespace Circuit.Elements.Output {
 		public override void GetInfo(string[] arr) {
 			var ce = (StopTriggerElmE)CirElm;
 			arr[0] = "stop trigger";
-			arr[1] = "V = " + Utils.VoltageText(ce.CirVolts[0]);
+			arr[1] = "V = " + Utils.VoltageText(ce.Volts[0]);
 			arr[2] = "Vtrigger = " + Utils.VoltageText(ce.TriggerVoltage);
 			arr[3] = ce.Triggered ? ("stopping in "
 				+ Utils.UnitText(ce.TriggerTime + ce.Delay - CirSim.Sim.Time, "s")) : ce.Stopped ? "stopped" : "waiting";

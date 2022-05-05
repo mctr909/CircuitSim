@@ -47,7 +47,7 @@ namespace Circuit.Elements.Gate {
 
         protected override string dump() {
             var ce = (GateElmE)CirElm;
-            return ce.InputCount + " " + ce.CirVolts[ce.InputCount] + " " + ce.HighVoltage;
+            return ce.InputCount + " " + ce.Volts[ce.InputCount] + " " + ce.HighVoltage;
         }
 
         public override Point GetPost(int n) {
@@ -78,7 +78,7 @@ namespace Circuit.Elements.Gate {
             calcLeads(mWw * 2);
             mInPosts = new Point[ce.InputCount];
             mInGates = new Point[ce.InputCount];
-            ce.cirAllocNodes();
+            ce.AllocNodes();
             int i0 = -ce.InputCount / 2;
             for (i = 0; i != ce.InputCount; i++, i0++) {
                 if (i0 == 0 && (ce.InputCount & 1) == 0) {
@@ -86,7 +86,7 @@ namespace Circuit.Elements.Gate {
                 }
                 interpPoint(ref mInPosts[i], 0, hs * i0);
                 interpLead(ref mInGates[i], 0, hs * i0);
-                ce.CirVolts[i] = (ce.LastOutput ^ ce.IsInverting) ? 5 : 0;
+                ce.Volts[i] = (ce.LastOutput ^ ce.IsInverting) ? 5 : 0;
             }
             mHs2 = G_WIDTH * (ce.InputCount / 2 + 1);
             setBbox(mPoint1, mPoint2, mHs2);
@@ -122,16 +122,16 @@ namespace Circuit.Elements.Gate {
             if (ce.IsInverting) {
                 g.DrawCircle(mCirclePos, CIRCLE_SIZE);
             }
-            ce.mCirCurCount = ce.cirUpdateDotCount(ce.mCirCurrent, ce.mCirCurCount);
-            drawDots(mLead2, mPoint2, ce.mCirCurCount);
+            ce.CurCount = ce.cirUpdateDotCount(ce.mCurrent, ce.CurCount);
+            drawDots(mLead2, mPoint2, ce.CurCount);
             drawPosts();
         }
 
         public override void GetInfo(string[] arr) {
             var ce = (GateElmE)CirElm;
             arr[0] = gateName;
-            arr[1] = "Vout = " + Utils.VoltageText(ce.CirVolts[ce.InputCount]);
-            arr[2] = "Iout = " + Utils.CurrentText(ce.mCirCurrent);
+            arr[1] = "Vout = " + Utils.VoltageText(ce.Volts[ce.InputCount]);
+            arr[2] = "Iout = " + Utils.CurrentText(ce.mCurrent);
         }
 
         public override ElementInfo GetElementInfo(int n) {

@@ -27,18 +27,19 @@
             } catch { }
         }
 
-        public override bool CirIsWire { get { return Position == 0; } }
-        public override int CirVoltageSourceCount { get { return (1 == Position) ? 0 : 1; } }
+        public override int PostCount { get { return 2; } }
+        public override bool IsWire { get { return Position == 0; } }
+        public override int VoltageSourceCount { get { return (1 == Position) ? 0 : 1; } }
 
-        protected override void cirCalculateCurrent() {
+        protected override void calcCurrent() {
             if (Position == 1) {
-                mCirCurrent = 0;
+                mCurrent = 0;
             }
         }
 
-        public override void CirStamp() {
+        public override void Stamp() {
             if (Position == 0) {
-                mCir.StampVoltageSource(CirNodes[0], CirNodes[1], mCirVoltSource, 0);
+                mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
             }
         }
     }

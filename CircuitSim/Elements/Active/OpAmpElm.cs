@@ -38,8 +38,8 @@ namespace Circuit.Elements.Active {
             return ce.MaxOut
                 + " " + ce.MinOut
                 + " " + ce.Gbw
-                + " " + ce.CirVolts[OpAmpElmE.V_N]
-                + " " + ce.CirVolts[OpAmpElmE.V_P]
+                + " " + ce.Volts[OpAmpElmE.V_N]
+                + " " + ce.Volts[OpAmpElmE.V_P]
                 + " " + ce.Gain;
         }
 
@@ -57,8 +57,8 @@ namespace Circuit.Elements.Active {
             drawCenteredLText("+", mTextp[1], true);
 
             var ce = (OpAmpElmE)CirElm;
-            ce.mCirCurCount = ce.cirUpdateDotCount(ce.mCirCurrent, ce.mCirCurCount);
-            drawDots(mPoint2, mLead2, ce.mCirCurCount);
+            ce.CurCount = ce.cirUpdateDotCount(ce.mCurrent, ce.CurCount);
+            drawDots(mPoint2, mLead2, ce.CurCount);
             drawPosts();
         }
 
@@ -95,13 +95,13 @@ namespace Circuit.Elements.Active {
         public override void GetInfo(string[] arr) {
             var ce = (OpAmpElmE)CirElm;
             arr[0] = "op-amp";
-            arr[1] = "V+ = " + Utils.VoltageText(ce.CirVolts[OpAmpElmE.V_P]);
-            arr[2] = "V- = " + Utils.VoltageText(ce.CirVolts[OpAmpElmE.V_N]);
+            arr[1] = "V+ = " + Utils.VoltageText(ce.Volts[OpAmpElmE.V_P]);
+            arr[2] = "V- = " + Utils.VoltageText(ce.Volts[OpAmpElmE.V_N]);
             /* sometimes the voltage goes slightly outside range,
              * to make convergence easier.  so we hide that here. */
-            double vo = Math.Max(Math.Min(ce.CirVolts[OpAmpElmE.V_O], ce.MaxOut), ce.MinOut);
+            double vo = Math.Max(Math.Min(ce.Volts[OpAmpElmE.V_O], ce.MaxOut), ce.MinOut);
             arr[3] = "Vout = " + Utils.VoltageText(vo);
-            arr[4] = "Iout = " + Utils.CurrentText(-ce.mCirCurrent);
+            arr[4] = "Iout = " + Utils.CurrentText(-ce.mCurrent);
             arr[5] = "range = " + Utils.VoltageText(ce.MinOut)
                 + " to " + Utils.VoltageText(ce.MaxOut);
         }

@@ -28,7 +28,7 @@ namespace Circuit.Elements.Input {
             mMaxVoltage = 5;
             mFrequency = 40;
             mDutyCycle = .5;
-            CirReset();
+            Reset();
         }
 
         public VoltageElmE(StringTokenizer st) {
@@ -46,34 +46,36 @@ namespace Circuit.Elements.Input {
                 mDutyCycle = st.nextTokenDouble();
             } catch { }
 
-            CirReset();
+            Reset();
         }
 
-        public override double CirVoltageDiff { get { return CirVolts[1] - CirVolts[0]; } }
+        public override int PostCount { get { return 2; } }
 
-        public override double CirPower { get { return -CirVoltageDiff * mCirCurrent; } }
+        public override double VoltageDiff { get { return Volts[1] - Volts[0]; } }
 
-        public override int CirVoltageSourceCount { get { return 1; } }
+        public override double Power { get { return -VoltageDiff * mCurrent; } }
 
-        public override void CirReset() {
-            mCirCurCount = 0;
+        public override int VoltageSourceCount { get { return 1; } }
+
+        public override void Reset() {
+            CurCount = 0;
         }
 
-        public override void CirStamp() {
+        public override void Stamp() {
             if (waveform == WAVEFORM.DC) {
-                mCir.StampVoltageSource(CirNodes[0], CirNodes[1], mCirVoltSource, getVoltage());
+                mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
             } else {
-                mCir.StampVoltageSource(CirNodes[0], CirNodes[1], mCirVoltSource);
+                mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource);
             }
         }
 
-        public override void CirDoStep() {
+        public override void DoStep() {
             if (waveform != WAVEFORM.DC) {
-                mCir.UpdateVoltageSource(CirNodes[0], CirNodes[1], mCirVoltSource, getVoltage());
+                mCir.UpdateVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
             }
         }
 
-        public override void CirStepFinished() {
+        public override void StepFinished() {
             if (waveform == WAVEFORM.NOISE) {
                 mNoiseValue = (CirSim.Random.NextDouble() * 2 - 1) * mMaxVoltage + mBias;
             }

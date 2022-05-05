@@ -2,10 +2,12 @@
     class WireElmE : BaseElement {
         public WireElmE() { }
 
-        public override bool CirIsWire { get { return true; } }
+        public override int PostCount { get { return 2; } }
 
-        public override double CirVoltageDiff { get { return CirVolts[0]; } }
+        public override bool IsWire { get { return true; } }
 
-        public override double CirPower { get { return 0; } }
+        public override double VoltageDiff { get { return Volts[0]; } }
+
+        public override double Power { get { return 0; } }
     }
 }

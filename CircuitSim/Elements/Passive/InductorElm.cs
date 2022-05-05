@@ -23,7 +23,7 @@ namespace Circuit.Elements.Passive {
 
         protected override string dump() {
             var ce = (InductorElmE)CirElm;
-            return ce.Inductance + " " + ce.mCirCurrent + " " + ReferenceName;
+            return ce.Inductance + " " + ce.mCurrent + " " + ReferenceName;
         }
 
         public override void SetPoints() {
@@ -51,8 +51,8 @@ namespace Circuit.Elements.Passive {
 
         public override void Draw(CustomGraphics g) {
             var ce = (InductorElmE)CirElm;
-            double v1 = CirElm.CirVolts[0];
-            double v2 = CirElm.CirVolts[1];
+            double v1 = CirElm.Volts[0];
+            double v2 = CirElm.Volts[1];
             int hs = 8;
             setBbox(mPoint1, mPoint2, hs);
 
@@ -71,7 +71,7 @@ namespace Circuit.Elements.Passive {
             arr[0] = string.IsNullOrEmpty(ReferenceName) ? "コイル" : ReferenceName;
             getBasicInfo(arr);
             arr[3] = "L = " + Utils.UnitText(ce.Inductance, "H");
-            arr[4] = "P = " + Utils.UnitText(ce.CirPower, "W");
+            arr[4] = "P = " + Utils.UnitText(ce.Power, "W");
         }
 
         public override ElementInfo GetElementInfo(int n) {
@@ -111,7 +111,7 @@ namespace Circuit.Elements.Passive {
                     mFlags |= Inductor.FLAG_BACK_EULER;
                 }
             }
-            ce.Ind.Setup(ce.Inductance, CirElm.mCirCurrent, mFlags);
+            ce.Ind.Setup(ce.Inductance, CirElm.mCurrent, mFlags);
         }
     }
 }

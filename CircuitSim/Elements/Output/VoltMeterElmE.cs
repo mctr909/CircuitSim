@@ -55,9 +55,11 @@ namespace Circuit.Elements.Output {
             } catch { }
         }
 
-        public override void CirStepFinished() {
+        public override int PostCount { get { return 2; } }
+
+        public override void StepFinished() {
             mCount++; /*how many counts are in a cycle */
-            double v = CirVoltageDiff;
+            double v = VoltageDiff;
             mTotal += v * v;
 
             if (v < 2.5) {

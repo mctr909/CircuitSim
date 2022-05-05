@@ -88,9 +88,9 @@ namespace Circuit.Elements.Active {
             var ce = (AnalogSwitchElmE)CirElm;
             arr[0] = "analog switch";
             arr[1] = ce.IsOpen ? "open" : "closed";
-            arr[2] = "Vd = " + Utils.VoltageAbsText(ce.CirVoltageDiff);
-            arr[3] = "I = " + Utils.CurrentAbsText(ce.CirCurrent);
-            arr[4] = "Vc = " + Utils.VoltageText(ce.CirVolts[2]);
+            arr[2] = "Vd = " + Utils.VoltageAbsText(ce.VoltageDiff);
+            arr[3] = "I = " + Utils.CurrentAbsText(ce.Current);
+            arr[4] = "Vc = " + Utils.VoltageText(ce.Volts[2]);
         }
 
         public override ElementInfo GetElementInfo(int n) {

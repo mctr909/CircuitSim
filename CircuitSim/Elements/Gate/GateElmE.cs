@@ -29,26 +29,26 @@
             LastOutput = HighVoltage * 0.5 < lastOutputVoltage;
         }
 
-        public override int CirVoltageSourceCount { get { return 1; } }
+        public override int VoltageSourceCount { get { return 1; } }
 
-        public override int CirPostCount { get { return InputCount + 1; } }
+        public override int PostCount { get { return InputCount + 1; } }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == InputCount) {
-                return mCirCurrent;
+                return mCurrent;
             }
             return 0;
         }
 
-        public override bool CirHasGroundConnection(int n1) {
+        public override bool HasGroundConnection(int n1) {
             return (n1 == InputCount);
         }
 
-        public override void CirStamp() {
-            mCir.StampVoltageSource(0, CirNodes[InputCount], mCirVoltSource);
+        public override void Stamp() {
+            mCir.StampVoltageSource(0, Nodes[InputCount], mVoltSource);
         }
 
-        public override void CirDoStep() {
+        public override void DoStep() {
             bool f = calcFunction();
             if (IsInverting) {
                 f = !f;
@@ -68,14 +68,14 @@
             }
             LastOutput = f;
             double res = f ? HighVoltage : 0;
-            mCir.UpdateVoltageSource(0, CirNodes[InputCount], mCirVoltSource, res);
+            mCir.UpdateVoltageSource(0, Nodes[InputCount], mVoltSource, res);
         }
 
         protected bool getInput(int x) {
             if (!HasSchmittInputs) {
-                return CirVolts[x] > HighVoltage * 0.5;
+                return Volts[x] > HighVoltage * 0.5;
             }
-            bool res = CirVolts[x] > HighVoltage * (InputStates[x] ? 0.35 : 0.55);
+            bool res = Volts[x] > HighVoltage * (InputStates[x] ? 0.35 : 0.55);
             InputStates[x] = res;
             return res;
         }

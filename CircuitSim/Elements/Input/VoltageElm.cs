@@ -98,10 +98,10 @@ namespace Circuit.Elements.Input {
 
             if (CirSim.Sim.DragElm != this) {
                 if (elm.waveform == VoltageElmE.WAVEFORM.DC) {
-                    drawDots(mPoint1, mPoint2, CirElm.mCirCurCount);
+                    drawDots(mPoint1, mPoint2, CirElm.CurCount);
                 } else {
-                    drawDots(mPoint1, mLead1, CirElm.mCirCurCount);
-                    drawDots(mPoint2, mLead2, -CirElm.mCirCurCount);
+                    drawDots(mPoint1, mLead1, CirElm.CurCount);
+                    drawDots(mPoint2, mLead2, -CirElm.CurCount);
                 }
             }
             drawPosts();
@@ -217,8 +217,8 @@ namespace Circuit.Elements.Input {
                 arr[0] = elm.waveform.ToString(); break;
             }
 
-            arr[1] = "I = " + Utils.CurrentText(elm.mCirCurrent);
-            arr[2] = ((this is RailElm) ? "V = " : "Vd = ") + Utils.VoltageText(elm.CirVoltageDiff);
+            arr[1] = "I = " + Utils.CurrentText(elm.mCurrent);
+            arr[2] = ((this is RailElm) ? "V = " : "Vd = ") + Utils.VoltageText(elm.VoltageDiff);
             int i = 3;
             if (elm.waveform != VoltageElmE.WAVEFORM.DC && elm.waveform != VoltageElmE.WAVEFORM.NOISE) {
                 arr[i++] = "f = " + Utils.UnitText(elm.mFrequency, "Hz");
@@ -232,10 +232,10 @@ namespace Circuit.Elements.Input {
                     arr[i++] = "wavelength = " + Utils.UnitText(2.9979e8 / elm.mFrequency, "m");
                 }
             }
-            if (elm.waveform == VoltageElmE.WAVEFORM.DC && elm.mCirCurrent != 0 && BaseElement.mCir.ShowResistanceInVoltageSources) {
-                arr[i++] = "(R = " + Utils.UnitText(elm.mMaxVoltage / elm.mCirCurrent, CirSim.OHM_TEXT) + ")";
+            if (elm.waveform == VoltageElmE.WAVEFORM.DC && elm.mCurrent != 0 && BaseElement.mCir.ShowResistanceInVoltageSources) {
+                arr[i++] = "(R = " + Utils.UnitText(elm.mMaxVoltage / elm.mCurrent, CirSim.OHM_TEXT) + ")";
             }
-            arr[i++] = "P = " + Utils.UnitText(elm.CirPower, "W");
+            arr[i++] = "P = " + Utils.UnitText(elm.Power, "W");
         }
 
         public override ElementInfo GetElementInfo(int n) {

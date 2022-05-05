@@ -109,8 +109,8 @@ namespace Circuit.Elements.Passive {
             drawLead(mPtEnds[2], mPtCoil[2]);
             drawLead(mPtEnds[3], mPtCoil[3]);
 
-            drawCoil(mPtCoil[0], mPtCoil[2], ce.CirVolts[TransformerElmE.PRI_T], ce.CirVolts[TransformerElmE.PRI_B], 90 * mDsign);
-            drawCoil(mPtCoil[1], mPtCoil[3], ce.CirVolts[TransformerElmE.SEC_T], ce.CirVolts[TransformerElmE.SEC_B], -90 * mDsign * ce.Polarity);
+            drawCoil(mPtCoil[0], mPtCoil[2], ce.Volts[TransformerElmE.PRI_T], ce.Volts[TransformerElmE.PRI_B], 90 * mDsign);
+            drawCoil(mPtCoil[1], mPtCoil[3], ce.Volts[TransformerElmE.SEC_T], ce.Volts[TransformerElmE.SEC_B], -90 * mDsign * ce.Polarity);
 
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.DrawLine(mPtCore[0], mPtCore[2]);
@@ -141,8 +141,8 @@ namespace Circuit.Elements.Passive {
             arr[0] = "トランス";
             arr[1] = "L = " + Utils.UnitText(ce.PInductance, "H");
             arr[2] = "Ratio = 1:" + ce.Ratio;
-            arr[3] = "Vd1 = " + Utils.VoltageText(ce.CirVolts[TransformerElmE.PRI_T] - ce.CirVolts[TransformerElmE.PRI_B]);
-            arr[4] = "Vd2 = " + Utils.VoltageText(ce.CirVolts[TransformerElmE.SEC_T] - ce.CirVolts[TransformerElmE.SEC_B]);
+            arr[3] = "Vd1 = " + Utils.VoltageText(ce.Volts[TransformerElmE.PRI_T] - ce.Volts[TransformerElmE.PRI_B]);
+            arr[4] = "Vd2 = " + Utils.VoltageText(ce.Volts[TransformerElmE.SEC_T] - ce.Volts[TransformerElmE.SEC_B]);
             arr[5] = "I1 = " + Utils.CurrentText(ce.Currents[0]);
             arr[6] = "I2 = " + Utils.CurrentText(ce.Currents[1]);
         }

@@ -5,7 +5,7 @@
 
         public Switch2ElmE() : base(false) {
             mThrowCount = 2;
-            cirAllocNodes();
+            AllocNodes();
         }
 
         public Switch2ElmE(StringTokenizer st) : base(st) {
@@ -14,29 +14,29 @@
             try {
                 mThrowCount = st.nextTokenInt();
             } catch { }
-            cirAllocNodes();
+            AllocNodes();
         }
 
-        public override bool CirIsWire { get { return true; } }
+        public override bool IsWire { get { return true; } }
 
-        public override int CirVoltageSourceCount { get { return 1; } }
+        public override int VoltageSourceCount { get { return 1; } }
 
-        public override int CirPostCount { get { return 1 + mThrowCount; } }
+        public override int PostCount { get { return 1 + mThrowCount; } }
 
-        protected override void cirCalculateCurrent() { }
+        protected override void calcCurrent() { }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
-                return -mCirCurrent;
+                return -mCurrent;
             }
             if (n == Position + 1) {
-                return mCirCurrent;
+                return mCurrent;
             }
             return 0;
         }
 
-        public override void CirStamp() {
-            mCir.StampVoltageSource(CirNodes[0], CirNodes[Position + 1], mCirVoltSource, 0);
+        public override void Stamp() {
+            mCir.StampVoltageSource(Nodes[0], Nodes[Position + 1], mVoltSource, 0);
         }
     }
 }

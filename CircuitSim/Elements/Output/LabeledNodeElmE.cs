@@ -16,14 +16,14 @@ namespace Circuit.Elements.Output {
             Text = CustomLogicModel.unescape(Text);
         }
 
-        public override int CirPostCount { get { return 1; } }
+        public override int PostCount { get { return 1; } }
 
-        public override int CirConnectionNodeCount { get { return 2; } }
+        public override int ConnectionNodeCount { get { return 2; } }
 
         // this is basically a wire, since it just connects two nodes together
-        public override bool CirIsWire { get { return true; } }
+        public override bool IsWire { get { return true; } }
 
-        public override int CirInternalNodeCount {
+        public override int InternalNodeCount {
             get {
                 // this can happen at startup
                 if (mNodeList == null) {
@@ -40,29 +40,29 @@ namespace Circuit.Elements.Output {
             }
         }
 
-        public override double CirVoltageDiff { get { return CirVolts[0]; } }
+        public override double VoltageDiff { get { return Volts[0]; } }
 
-        public override int CirVoltageSourceCount { get { return 1; } }
+        public override int VoltageSourceCount { get { return 1; } }
 
         // get connection node (which is the same as regular nodes for all elements but this one).
         // node 0 is the terminal, node 1 is the internal node shared by all nodes with same name
-        public override int CirGetConnectionNode(int n) {
+        public override int GetConnectionNode(int n) {
             if (n == 0) {
-                return CirNodes[0];
+                return Nodes[0];
             }
             return mNodeNumber;
         }
 
-        public override double CirGetCurrentIntoNode(int n) { return -mCirCurrent; }
+        public override double GetCurrentIntoNode(int n) { return -mCurrent; }
 
-        public override void CirSetCurrent(int x, double c) { mCirCurrent = -c; }
+        public override void SetCurrent(int x, double c) { mCurrent = -c; }
 
-        public override void CirStamp() {
-            mCir.StampVoltageSource(mNodeNumber, CirNodes[0], mCirVoltSource, 0);
+        public override void Stamp() {
+            mCir.StampVoltageSource(mNodeNumber, Nodes[0], mVoltSource, 0);
         }
 
-        public override void CirSetNode(int p, int n) {
-            base.CirSetNode(p, n);
+        public override void SetNode(int p, int n) {
+            base.SetNode(p, n);
             if (p == 1) {
                 // assign new node
                 mNodeList.Add(Text, n);

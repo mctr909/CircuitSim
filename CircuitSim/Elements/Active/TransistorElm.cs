@@ -40,8 +40,8 @@ namespace Circuit.Elements.Active {
         protected override string dump() {
             var ce = (TransistorElmE)CirElm;
             return ce.NPN
-                + " " + (ce.CirVolts[TransistorElmE.V_B] - ce.CirVolts[TransistorElmE.V_C])
-                + " " + (ce.CirVolts[TransistorElmE.V_B] - ce.CirVolts[TransistorElmE.V_E])
+                + " " + (ce.Volts[TransistorElmE.V_B] - ce.Volts[TransistorElmE.V_C])
+                + " " + (ce.Volts[TransistorElmE.V_B] - ce.Volts[TransistorElmE.V_E])
                 + " " + ce.Hfe
                 + " " + ReferenceName;
         }
@@ -165,9 +165,9 @@ namespace Circuit.Elements.Active {
         public override void GetInfo(string[] arr) {
             var ce = (TransistorElmE)CirElm;
             arr[0] = "transistor (" + ((ce.NPN == -1) ? "PNP)" : "NPN)") + " hfe=" + ce.Hfe.ToString("0.000");
-            double vbc = ce.CirVolts[TransistorElmE.V_B] - ce.CirVolts[TransistorElmE.V_C];
-            double vbe = ce.CirVolts[TransistorElmE.V_B] - ce.CirVolts[TransistorElmE.V_E];
-            double vce = ce.CirVolts[TransistorElmE.V_C] - ce.CirVolts[TransistorElmE.V_E];
+            double vbc = ce.Volts[TransistorElmE.V_B] - ce.Volts[TransistorElmE.V_C];
+            double vbe = ce.Volts[TransistorElmE.V_B] - ce.Volts[TransistorElmE.V_E];
+            double vce = ce.Volts[TransistorElmE.V_C] - ce.Volts[TransistorElmE.V_E];
             if (vbc * ce.NPN > .2) {
                 arr[1] = vbe * ce.NPN > .2 ? "saturation" : "reverse active";
             } else {
@@ -179,7 +179,7 @@ namespace Circuit.Elements.Active {
             arr[4] = "Vbe = " + Utils.VoltageText(vbe);
             arr[5] = "Vbc = " + Utils.VoltageText(vbc);
             arr[6] = "Vce = " + Utils.VoltageText(vce);
-            arr[7] = "P = " + Utils.UnitText(ce.CirPower, "W");
+            arr[7] = "P = " + Utils.UnitText(ce.Power, "W");
         }
 
         public override ElementInfo GetElementInfo(int n) {

@@ -42,17 +42,17 @@ namespace Circuit.Elements.Input {
             drawCenteredText(s, P2, true);
             drawWaveform(g, mPoint2);
             drawPosts();
-            ce.mCirCurCount = ce.cirUpdateDotCount(-ce.mCirCurrent, ce.mCirCurCount);
+            ce.CurCount = ce.cirUpdateDotCount(-ce.mCurrent, ce.CurCount);
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mLead1, ce.mCirCurCount);
+                drawDots(mPoint1, mLead1, ce.CurCount);
             }
         }
 
         public override void GetInfo(string[] arr) {
             var ce = (AMElmE)CirElm;
             arr[0] = "AM Source";
-            arr[1] = "I = " + Utils.CurrentText(ce.CirCurrent);
-            arr[2] = "V = " + Utils.VoltageText(ce.CirVoltageDiff);
+            arr[1] = "I = " + Utils.CurrentText(ce.Current);
+            arr[2] = "V = " + Utils.VoltageText(ce.VoltageDiff);
             arr[3] = "cf = " + Utils.UnitText(ce.CarrierFreq, "Hz");
             arr[4] = "sf = " + Utils.UnitText(ce.SignalFreq, "Hz");
             arr[5] = "Vmax = " + Utils.VoltageText(ce.MaxVoltage);

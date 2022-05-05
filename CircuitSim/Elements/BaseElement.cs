@@ -1,5 +1,5 @@
 ﻿namespace Circuit.Elements {
-    internal class BaseElement {
+    abstract class BaseElement {
         public static Circuit mCir;
 
         public static void InitClass(Circuit c) {
@@ -7,68 +7,68 @@
         }
 
         public BaseElement() {
-            cirAllocNodes();
+            AllocNodes();
         }
 
         #region [variable]
-        public double mCirCurrent { get; protected set; }
-        public double mCirCurCount;
-        protected int mCirVoltSource;
+        public double mCurrent { get; protected set; }
+        public double CurCount;
+        protected int mVoltSource;
         #endregion
 
         #region [property]
-        public int[] CirNodes { get; protected set; }
+        public int[] Nodes { get; protected set; }
 
         /// <summary>
         /// voltages at each node
         /// </summary>
-        public double[] CirVolts { get; protected set; }
+        public double[] Volts { get; protected set; }
 
-        /// <summary>
-        /// is this a wire or equivalent to a wire?
-        /// </summary>
-        /// <returns></returns>
-        public virtual bool CirIsWire { get { return false; } }
-
-        public virtual double CirCurrent { get { return mCirCurrent; } }
-
-        public virtual double CirVoltageDiff { get { return CirVolts[0] - CirVolts[1]; } }
-
-        public virtual double CirPower { get { return CirVoltageDiff * mCirCurrent; } }
+        public abstract int PostCount { get; }
 
         /// <summary>
         /// number of voltage sources this element needs
         /// </summary>
         /// <returns></returns>
-        public virtual int CirVoltageSourceCount { get { return 0; } }
+        public virtual int VoltageSourceCount { get { return 0; } }
 
         /// <summary>
         /// number of internal nodes (nodes not visible in UI that are needed for implementation)
         /// </summary>
         /// <returns></returns>
-        public virtual int CirInternalNodeCount { get { return 0; } }
-
-        public virtual bool CirNonLinear { get { return false; } }
-
-        public virtual int CirPostCount { get { return 2; } }
+        public virtual int InternalNodeCount { get { return 0; } }
 
         /// <summary>
         /// get number of nodes that can be retrieved by ConnectionNode
         /// </summary>
         /// <returns></returns>
-        public virtual int CirConnectionNodeCount { get { return CirPostCount; } }
+        public virtual int ConnectionNodeCount { get { return PostCount; } }
+
+        /// <summary>
+        /// is this a wire or equivalent to a wire?
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool IsWire { get { return false; } }
+
+        public virtual double Current { get { return mCurrent; } }
+
+        public virtual double VoltageDiff { get { return Volts[0] - Volts[1]; } }
+
+        public virtual double Power { get { return VoltageDiff * mCurrent; } }
+
+        public virtual bool NonLinear { get { return false; } }
         #endregion
 
         #region [method]
         /// <summary>
         /// allocate nodes/volts arrays we need
         /// </summary>
-        public void cirAllocNodes() {
-            int n = CirPostCount + CirInternalNodeCount;
+        public void AllocNodes() {
+            int n = PostCount + InternalNodeCount;
             /* preserve voltages if possible */
-            if (CirNodes == null || CirNodes.Length != n) {
-                CirNodes = new int[n];
-                CirVolts = new double[n];
+            if (Nodes == null || Nodes.Length != n) {
+                Nodes = new int[n];
+                Volts = new double[n];
             }
         }
 
@@ -76,7 +76,7 @@
         /// update dot positions (curcount) for drawing current (simple case for single current)
         /// </summary>
         public void cirUpdateDotCount() {
-            mCirCurCount = cirUpdateDotCount(mCirCurrent, mCirCurCount);
+            CurCount = cirUpdateDotCount(mCurrent, CurCount);
         }
 
         /// <summary>
@@ -97,35 +97,35 @@
         /// <summary>
         /// calculate current in response to node voltages changing
         /// </summary>
-        protected virtual void cirCalculateCurrent() { }
+        protected virtual void calcCurrent() { }
 
         /// <summary>
         /// handle reset button
         /// </summary>
-        public virtual void CirReset() {
-            for (int i = 0; i != CirPostCount + CirInternalNodeCount; i++) {
-                CirVolts[i] = 0;
+        public virtual void Reset() {
+            for (int i = 0; i != PostCount + InternalNodeCount; i++) {
+                Volts[i] = 0;
             }
-            mCirCurCount = 0;
+            CurCount = 0;
         }
 
-        public virtual void CirShorted() { }
+        public virtual void Shorted() { }
 
         /// <summary>
         /// stamp matrix values for linear elements.
         /// for non-linear elements, use this to stamp values that don't change each iteration,
         /// and call stampRightSide() or stampNonLinear() as needed
         /// </summary>
-        public virtual void CirStamp() { }
+        public virtual void Stamp() { }
 
         /// <summary>
         /// stamp matrix values for non-linear elements
         /// </summary>
-        public virtual void CirDoStep() { }
+        public virtual void DoStep() { }
 
-        public virtual void CirStartIteration() { }
+        public virtual void StartIteration() { }
 
-        public virtual void CirStepFinished() { }
+        public virtual void StepFinished() { }
 
         /// <summary>
         /// set current for voltage source vn to c.
@@ -133,7 +133,7 @@
         /// </summary>
         /// <param name="vn"></param>
         /// <param name="c"></param>
-        public virtual void CirSetCurrent(int vn, double c) { mCirCurrent = c; }
+        public virtual void SetCurrent(int vn, double c) { mCurrent = c; }
 
         /// <summary>
         /// notify this element that its pth node is n.
@@ -141,9 +141,9 @@
         /// </summary>
         /// <param name="p"></param>
         /// <param name="n"></param>
-        public virtual void CirSetNode(int p, int n) {
-            if (p < CirNodes.Length) {
-                CirNodes[p] = n;
+        public virtual void SetNode(int p, int n) {
+            if (p < Nodes.Length) {
+                Nodes[p] = n;
             }
         }
 
@@ -154,10 +154,10 @@
         /// </summary>
         /// <param name="n"></param>
         /// <param name="v"></param>
-        public virtual void CirSetVoltageSource(int n, int v) {
+        public virtual void SetVoltageSource(int n, int v) {
             /* default implementation only makes sense for subclasses with one voltage source.
              * If we have 0 this isn't used, if we have >1 this won't work */
-            mCirVoltSource = v;
+            mVoltSource = v;
         }
 
         /// <summary>
@@ -165,17 +165,20 @@
         /// </summary>
         /// <param name="n"></param>
         /// <param name="c"></param>
-        public virtual void CirSetNodeVoltage(int n, double c) {
-            CirVolts[n] = c;
-            cirCalculateCurrent();
+        public virtual void SetNodeVoltage(int n, double c) {
+            if (Volts.Length <= n) {
+                return;
+            }
+            Volts[n] = c;
+            calcCurrent();
         }
 
-        public virtual double CirGetCurrentIntoNode(int n) {
+        public virtual double GetCurrentIntoNode(int n) {
             /* if we take out the getPostCount() == 2 it gives the wrong value for rails */
-            if (n == 0 && CirPostCount == 2) {
-                return -mCirCurrent;
+            if (n == 0 && PostCount == 2) {
+                return -mCurrent;
             } else {
-                return mCirCurrent;
+                return mCurrent;
             }
         }
 
@@ -185,17 +188,17 @@
         /// </summary>
         /// <param name="n"></param>
         /// <returns></returns>
-        public virtual int CirGetConnectionNode(int n) { return CirNodes[n]; }
+        public virtual int GetConnectionNode(int n) { return Nodes[n]; }
 
         /// <summary>
         /// is n1 connected to ground somehow?
         /// </summary>
         /// <param name="n1"></param>
         /// <returns></returns>
-        public virtual bool CirHasGroundConnection(int n1) { return false; }
+        public virtual bool HasGroundConnection(int n1) { return false; }
 
-        public virtual double CirGetScopeValue(Scope.VAL x) {
-            return CirVoltageDiff;
+        public virtual double GetScopeValue(Scope.VAL x) {
+            return VoltageDiff;
         }
         #endregion
     }

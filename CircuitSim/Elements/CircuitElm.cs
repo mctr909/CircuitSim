@@ -63,7 +63,7 @@ namespace Circuit.Elements {
         /// <returns></returns>
         public virtual bool IsCenteredText { get { return false; } }
 
-        public virtual bool CanViewInScope { get { return CirElm.CirPostCount <= 2; } }
+        public virtual bool CanViewInScope { get { return CirElm.PostCount <= 2; } }
 
         public virtual int DefaultFlags { get { return 0; } }
 
@@ -220,13 +220,13 @@ namespace Circuit.Elements {
         protected void doDots() {
             CirElm.cirUpdateDotCount();
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mPoint2, CirElm.mCirCurCount);
+                drawDots(mPoint1, mPoint2, CirElm.CurCount);
             }
         }
 
         protected int getBasicInfo(string[] arr) {
-            arr[1] = "I = " + Utils.CurrentAbsText(CirElm.mCirCurrent);
-            arr[2] = "Vd = " + Utils.VoltageAbsText(CirElm.CirVoltageDiff);
+            arr[1] = "I = " + Utils.CurrentAbsText(CirElm.mCurrent);
+            arr[2] = "Vd = " + Utils.VoltageAbsText(CirElm.VoltageDiff);
             return 3;
         }
 
@@ -326,7 +326,7 @@ namespace Circuit.Elements {
             if (CirSim.Sim.MouseMode == CirSim.MOUSE_MODE.DRAG_ROW || CirSim.Sim.MouseMode == CirSim.MOUSE_MODE.DRAG_COLUMN) {
                 return;
             }
-            for (int i = 0; i != CirElm.CirPostCount; i++) {
+            for (int i = 0; i != CirElm.PostCount; i++) {
                 var p = GetPost(i);
                 Context.DrawPost(p);
             }
@@ -617,10 +617,10 @@ namespace Circuit.Elements {
         }
 
         public int GetNodeAtPoint(int xp, int yp) {
-            if (CirElm.CirPostCount == 2) {
+            if (CirElm.PostCount == 2) {
                 return (P1.X == xp && P1.Y == yp) ? 0 : 1;
             }
-            for (int i = 0; i != CirElm.CirPostCount; i++) {
+            for (int i = 0; i != CirElm.PostCount; i++) {
                 var p = GetPost(i);
                 if (p.X == xp && p.Y == yp) {
                     return i;
@@ -630,8 +630,8 @@ namespace Circuit.Elements {
         }
 
         public string DispPostVoltage(int x) {
-            if (x < CirElm.CirVolts.Length) {
-                return Utils.UnitText(CirElm.CirVolts[x], "V");
+            if (x < CirElm.Volts.Length) {
+                return Utils.UnitText(CirElm.Volts[x], "V");
             } else {
                 return "";
             }

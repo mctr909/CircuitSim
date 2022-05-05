@@ -6,23 +6,23 @@
 
         public RailElmE(StringTokenizer st): base(st) { }
 
-        public override double CirVoltageDiff { get { return CirVolts[0]; } }
+        public override double VoltageDiff { get { return Volts[0]; } }
 
-        public override int CirPostCount { get { return 1; } }
+        public override int PostCount { get { return 1; } }
 
-        public override bool CirHasGroundConnection(int n1) { return true; }
+        public override bool HasGroundConnection(int n1) { return true; }
 
-        public override void CirStamp() {
+        public override void Stamp() {
             if (waveform == WAVEFORM.DC) {
-                mCir.StampVoltageSource(0, CirNodes[0], mCirVoltSource, getVoltage());
+                mCir.StampVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
             } else {
-                mCir.StampVoltageSource(0, CirNodes[0], mCirVoltSource);
+                mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
             }
         }
 
-        public override void CirDoStep() {
+        public override void DoStep() {
             if (waveform != WAVEFORM.DC) {
-                mCir.UpdateVoltageSource(0, CirNodes[0], mCirVoltSource, getVoltage());
+                mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
             }
         }
     }

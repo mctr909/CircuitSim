@@ -68,7 +68,7 @@ namespace Circuit.Elements.Output {
                 string s = "";
                 switch (ce.Meter) {
                 case VoltMeterElmE.TP_VOL:
-                    s = Utils.UnitTextWithScale(ce.CirVoltageDiff, "V", ce.Scale);
+                    s = Utils.UnitTextWithScale(ce.VoltageDiff, "V", ce.Scale);
                     break;
                 case VoltMeterElmE.TP_RMS:
                     s = Utils.UnitTextWithScale(ce.RmsV, "V(rms)", ce.Scale);
@@ -107,7 +107,7 @@ namespace Circuit.Elements.Output {
         public override void GetInfo(string[] arr) {
             var ce = (VoltMeterElmE)CirElm;
             arr[0] = "voltmeter";
-            arr[1] = "Vd = " + Utils.VoltageText(ce.CirVoltageDiff);
+            arr[1] = "Vd = " + Utils.VoltageText(ce.VoltageDiff);
         }
 
         public override ElementInfo GetElementInfo(int n) {

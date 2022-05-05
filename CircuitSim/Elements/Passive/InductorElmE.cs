@@ -7,37 +7,39 @@
         public InductorElmE() {
             Ind = new Inductor(mCir);
             Inductance = 0.001;
-            Ind.Setup(Inductance, mCirCurrent, 0);
+            Ind.Setup(Inductance, mCurrent, 0);
         }
 
         public InductorElmE(double inductance, double current, int flags) {
             Ind = new Inductor(mCir);
             Inductance = inductance;
-            mCirCurrent = current;
-            Ind.Setup(Inductance, mCirCurrent, flags);
+            mCurrent = current;
+            Ind.Setup(Inductance, mCurrent, flags);
         }
 
-        public override bool CirNonLinear { get { return Ind.NonLinear(); } }
+        public override int PostCount { get { return 2; } }
 
-        protected override void cirCalculateCurrent() {
-            var voltdiff = CirVolts[0] - CirVolts[1];
-            mCirCurrent = Ind.CalculateCurrent(voltdiff);
+        public override bool NonLinear { get { return Ind.NonLinear(); } }
+
+        protected override void calcCurrent() {
+            var voltdiff = Volts[0] - Volts[1];
+            mCurrent = Ind.CalculateCurrent(voltdiff);
         }
 
-        public override void CirStamp() { Ind.Stamp(CirNodes[0], CirNodes[1]); }
+        public override void Stamp() { Ind.Stamp(Nodes[0], Nodes[1]); }
 
-        public override void CirStartIteration() {
-            double voltdiff = CirVolts[0] - CirVolts[1];
+        public override void StartIteration() {
+            double voltdiff = Volts[0] - Volts[1];
             Ind.StartIteration(voltdiff);
         }
 
-        public override void CirDoStep() {
-            double voltdiff = CirVolts[0] - CirVolts[1];
+        public override void DoStep() {
+            double voltdiff = Volts[0] - Volts[1];
             Ind.DoStep(voltdiff);
         }
 
-        public override void CirReset() {
-            mCirCurrent = CirVolts[0] = CirVolts[1] = mCirCurCount = 0;
+        public override void Reset() {
+            mCurrent = Volts[0] = Volts[1] = CurCount = 0;
             Ind.Reset();
         }
     }

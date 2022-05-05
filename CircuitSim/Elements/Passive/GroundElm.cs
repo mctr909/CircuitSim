@@ -36,7 +36,7 @@ namespace Circuit.Elements.Passive {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "ground";
-            arr[1] = "I = " + Utils.CurrentText(CirElm.mCirCurrent);
+            arr[1] = "I = " + Utils.CurrentText(CirElm.mCurrent);
         }
     }
 }

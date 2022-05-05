@@ -34,27 +34,29 @@ namespace Circuit.Elements.Output {
             }
         }
 
-        public override bool CirIsWire { get { return true; } }
+        public override int PostCount { get { return 2; } }
 
-        public override double CirVoltageDiff { get { return CirVolts[0]; } }
+        public override bool IsWire { get { return true; } }
 
-        public override double CirPower { get { return 0; } }
+        public override double VoltageDiff { get { return Volts[0]; } }
 
-        public override int CirVoltageSourceCount { get { return 1; } }
+        public override double Power { get { return 0; } }
 
-        public override void CirStepFinished() {
+        public override int VoltageSourceCount { get { return 1; } }
+
+        public override void StepFinished() {
             mCount++; /*how many counts are in a cycle */
-            mTotal += mCirCurrent * mCirCurrent; /* sum of squares */
-            if (mCirCurrent > mMaxI && mIncreasingI) {
-                mMaxI = mCirCurrent;
+            mTotal += mCurrent * mCurrent; /* sum of squares */
+            if (mCurrent > mMaxI && mIncreasingI) {
+                mMaxI = mCurrent;
                 mIncreasingI = true;
                 mDecreasingI = false;
             }
 
-            if (mCirCurrent < mMaxI && mIncreasingI) { /* change of direction I now going down - at start of waveform */
+            if (mCurrent < mMaxI && mIncreasingI) { /* change of direction I now going down - at start of waveform */
                 mLastMaxI = mMaxI; /* capture last maximum */
                                  /* capture time between */
-                mMinI = mCirCurrent; /* track minimum value */
+                mMinI = mCurrent; /* track minimum value */
                 mIncreasingI = false;
                 mDecreasingI = true;
 
@@ -69,16 +71,16 @@ namespace Circuit.Elements.Output {
 
             }
 
-            if (mCirCurrent < mMinI && mDecreasingI) { /* I going down, track minimum value */
-                mMinI = mCirCurrent;
+            if (mCurrent < mMinI && mDecreasingI) { /* I going down, track minimum value */
+                mMinI = mCurrent;
                 mIncreasingI = false;
                 mDecreasingI = true;
             }
 
-            if (mCirCurrent > mMinI && mDecreasingI) { /* change of direction I now going up */
+            if (mCurrent > mMinI && mDecreasingI) { /* change of direction I now going up */
                 mLastMinI = mMinI; /* capture last minimum */
 
-                mMaxI = mCirCurrent;
+                mMaxI = mCurrent;
                 mIncreasingI = true;
                 mDecreasingI = false;
 
@@ -93,7 +95,7 @@ namespace Circuit.Elements.Output {
             }
 
             /* need to zero the rms value if it stays at 0 for a while */
-            if (mCirCurrent == 0) {
+            if (mCurrent == 0) {
                 mZeroCount++;
                 if (mZeroCount > 5) {
                     mTotal = 0;
@@ -107,7 +109,7 @@ namespace Circuit.Elements.Output {
 
             switch (Meter) {
             case AM_VOL:
-                SelectedValue = mCirCurrent;
+                SelectedValue = mCurrent;
                 break;
             case AM_RMS:
                 SelectedValue = RmsI;
@@ -115,8 +117,8 @@ namespace Circuit.Elements.Output {
             }
         }
 
-        public override void CirStamp() {
-            mCir.StampVoltageSource(CirNodes[0], CirNodes[1], mCirVoltSource, 0);
+        public override void Stamp() {
+            mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
         }
 
         public string getMeter() {

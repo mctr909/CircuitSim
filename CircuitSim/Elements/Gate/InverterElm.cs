@@ -62,15 +62,15 @@ namespace Circuit.Elements.Gate {
                 drawCenteredLText("1", mCenter, true);
             }
             g.DrawCircle(mPcircle, 3);
-            ce.mCirCurCount = ce.cirUpdateDotCount(ce.mCirCurrent, ce.mCirCurCount);
-            drawDots(mLead2, mPoint2, ce.mCirCurCount);
+            ce.CurCount = ce.cirUpdateDotCount(ce.mCurrent, ce.CurCount);
+            drawDots(mLead2, mPoint2, ce.CurCount);
         }
 
         public override void GetInfo(string[] arr) {
             var ce = (InverterElmE)CirElm;
             arr[0] = "inverter";
-            arr[1] = "Vi = " + Utils.VoltageText(ce.CirVolts[0]);
-            arr[2] = "Vo = " + Utils.VoltageText(ce.CirVolts[1]);
+            arr[1] = "Vi = " + Utils.VoltageText(ce.Volts[0]);
+            arr[2] = "Vo = " + Utils.VoltageText(ce.Volts[1]);
         }
 
         public override ElementInfo GetElementInfo(int n) {

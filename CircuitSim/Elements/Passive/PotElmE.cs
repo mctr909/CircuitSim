@@ -28,18 +28,18 @@
             } catch { }
         }
 
-        public override int CirPostCount { get { return 3; } }
+        public override int PostCount { get { return 3; } }
 
-        protected override void cirCalculateCurrent() {
+        protected override void calcCurrent() {
             if (Resistance1 == 0) {
                 return; /* avoid NaN */
             }
-            Current1 = (CirVolts[V_L] - CirVolts[V_S]) / Resistance1;
-            Current2 = (CirVolts[V_R] - CirVolts[V_S]) / Resistance2;
+            Current1 = (Volts[V_L] - Volts[V_S]) / Resistance1;
+            Current2 = (Volts[V_R] - Volts[V_S]) / Resistance2;
             Current3 = -Current1 - Current2;
         }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
                 return -Current1;
             }
@@ -49,16 +49,16 @@
             return -Current3;
         }
 
-        public override void CirStamp() {
+        public override void Stamp() {
             Resistance1 = MaxResistance * Position;
             Resistance2 = MaxResistance * (1 - Position);
-            mCir.StampResistor(CirNodes[0], CirNodes[2], Resistance1);
-            mCir.StampResistor(CirNodes[2], CirNodes[1], Resistance2);
+            mCir.StampResistor(Nodes[0], Nodes[2], Resistance1);
+            mCir.StampResistor(Nodes[2], Nodes[1], Resistance2);
         }
 
-        public override void CirReset() {
+        public override void Reset() {
             CurCount1 = CurCount2 = CurCount3 = 0;
-            base.CirReset();
+            base.Reset();
         }
     }
 }

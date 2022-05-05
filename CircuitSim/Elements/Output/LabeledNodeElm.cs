@@ -53,8 +53,8 @@ namespace Circuit.Elements.Output {
                     g.DrawLine(P2.X - sw / 2, ya, P2.X + sw / 2, ya);
                 }
             }
-            ce.mCirCurCount = ce.cirUpdateDotCount(ce.mCirCurrent, ce.mCirCurCount);
-            drawDots(mPoint1, mLead1, ce.mCirCurCount);
+            ce.CurCount = ce.cirUpdateDotCount(ce.mCurrent, ce.CurCount);
+            drawDots(mPoint1, mLead1, ce.CurCount);
             interpPoint(ref mPos, 1 + 11.0 / mLen);
             setBbox(mPoint1, mPos, CircleSize);
             drawPosts();
@@ -63,8 +63,8 @@ namespace Circuit.Elements.Output {
         public override void GetInfo(string[] arr) {
             var ce = (LabeledNodeElmE)CirElm;
             arr[0] = ce.Text;
-            arr[1] = "I = " + Utils.CurrentText(ce.mCirCurrent);
-            arr[2] = "V = " + Utils.VoltageText(ce.CirVolts[0]);
+            arr[1] = "I = " + Utils.CurrentText(ce.mCurrent);
+            arr[2] = "V = " + Utils.VoltageText(ce.Volts[0]);
         }
 
         public override ElementInfo GetElementInfo(int n) {

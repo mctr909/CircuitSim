@@ -80,7 +80,7 @@ namespace Circuit.Elements.Active {
 
             var ce = (DiodeElmE)CirElm;
 
-            double w = ce.mCirCurrent / mMaxBrightnessCurrent;
+            double w = ce.mCurrent / mMaxBrightnessCurrent;
             if (0 < w) {
                 w = 255 * (1 + .2 * Math.Log(w));
             }
@@ -96,8 +96,8 @@ namespace Circuit.Elements.Active {
 
             setBbox(mPoint1, mPoint2, CR_INNER);
             ce.cirUpdateDotCount();
-            drawDots(mPoint1, mLedLead1, ce.mCirCurCount);
-            drawDots(mPoint2, mLedLead2, -ce.mCirCurCount);
+            drawDots(mPoint1, mLedLead1, ce.CurCount);
+            drawDots(mPoint2, mLedLead2, -ce.CurCount);
             drawPosts();
         }
 

@@ -113,9 +113,9 @@ namespace Circuit.Elements.Passive {
 
         public override void Draw(CustomGraphics g) {
             var ce = (PotElmE)CirElm;
-            double vl = ce.CirVolts[PotElmE.V_L];
-            double vr = ce.CirVolts[PotElmE.V_R];
-            double vs = ce.CirVolts[PotElmE.V_S];
+            double vl = ce.Volts[PotElmE.V_L];
+            double vr = ce.Volts[PotElmE.V_R];
+            double vs = ce.Volts[PotElmE.V_S];
             setBbox(mPoint1, mPoint2, HS);
             draw2Leads();
 
@@ -198,7 +198,7 @@ namespace Circuit.Elements.Passive {
         public override void GetInfo(string[] arr) {
             var ce = (PotElmE)CirElm;
             arr[0] = "可変抵抗";
-            arr[1] = "Vd = " + Utils.VoltageAbsText(ce.CirVoltageDiff);
+            arr[1] = "Vd = " + Utils.VoltageAbsText(ce.VoltageDiff);
             arr[2] = "R1 = " + Utils.UnitText(ce.Resistance1, CirSim.OHM_TEXT);
             arr[3] = "R2 = " + Utils.UnitText(ce.Resistance2, CirSim.OHM_TEXT);
             arr[4] = "I1 = " + Utils.CurrentAbsText(ce.Current1);

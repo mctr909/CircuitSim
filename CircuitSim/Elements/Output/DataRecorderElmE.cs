@@ -13,19 +13,19 @@
             setDataCount(int.Parse(st.nextToken()));
         }
 
-        public override int CirPostCount { get { return 1; } }
+        public override int PostCount { get { return 1; } }
 
-        public override double CirVoltageDiff { get { return CirVolts[0]; } }
+        public override double VoltageDiff { get { return Volts[0]; } }
 
-        public override void CirStepFinished() {
-            Data[DataPtr++] = CirVolts[0];
+        public override void StepFinished() {
+            Data[DataPtr++] = Volts[0];
             if (DataPtr >= DataCount) {
                 DataPtr = 0;
                 DataFull = true;
             }
         }
 
-        public override void CirReset() {
+        public override void Reset() {
             DataPtr = 0;
             DataFull = false;
         }

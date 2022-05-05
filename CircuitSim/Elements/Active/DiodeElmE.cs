@@ -38,43 +38,45 @@ namespace Circuit.Elements.Active {
             Setup();
         }
 
-        public override int CirInternalNodeCount { get { return mHasResistance ? 1 : 0; } }
+        public override int PostCount { get { return 2; } }
 
-        public override bool CirNonLinear { get { return true; } }
+        public override int InternalNodeCount { get { return mHasResistance ? 1 : 0; } }
 
-        public override void CirStamp() {
+        public override bool NonLinear { get { return true; } }
+
+        public override void Stamp() {
             if (mHasResistance) {
                 /* create diode from node 0 to internal node */
-                mDiode.Stamp(CirNodes[0], CirNodes[2]);
+                mDiode.Stamp(Nodes[0], Nodes[2]);
                 /* create resistor from internal node to node 1 */
-                mCir.StampResistor(CirNodes[1], CirNodes[2], mModel.SeriesResistance);
+                mCir.StampResistor(Nodes[1], Nodes[2], mModel.SeriesResistance);
             } else {
                 /* don't need any internal nodes if no series resistance */
-                mDiode.Stamp(CirNodes[0], CirNodes[1]);
+                mDiode.Stamp(Nodes[0], Nodes[1]);
             }
         }
 
-        public override void CirDoStep() {
-            mDiode.DoStep(CirVolts[0] - CirVolts[mDiodeEndNode]);
+        public override void DoStep() {
+            mDiode.DoStep(Volts[0] - Volts[mDiodeEndNode]);
         }
 
-        public override void CirStepFinished() {
+        public override void StepFinished() {
             /* stop for huge currents that make simulator act weird */
-            if (Math.Abs(mCirCurrent) > 1e12) {
+            if (Math.Abs(mCurrent) > 1e12) {
                 mCir.Stop("max current exceeded", this);
             }
         }
 
-        public override void CirReset() {
+        public override void Reset() {
             mDiode.Reset();
-            CirVolts[0] = CirVolts[1] = mCirCurCount = 0;
+            Volts[0] = Volts[1] = CurCount = 0;
             if (mHasResistance) {
-                CirVolts[2] = 0;
+                Volts[2] = 0;
             }
         }
 
-        protected override void cirCalculateCurrent() {
-            mCirCurrent = mDiode.CalculateCurrent(CirVolts[0] - CirVolts[mDiodeEndNode]);
+        protected override void calcCurrent() {
+            mCurrent = mDiode.CalculateCurrent(Volts[0] - Volts[mDiodeEndNode]);
         }
 
         public void Setup() {
@@ -83,7 +85,7 @@ namespace Circuit.Elements.Active {
             mDiode.Setup(mModel);
             mHasResistance = 0 < mModel.SeriesResistance;
             mDiodeEndNode = mHasResistance ? 2 : 1;
-            cirAllocNodes();
+            AllocNodes();
         }
     }
 }

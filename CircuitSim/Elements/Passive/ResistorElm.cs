@@ -135,7 +135,7 @@ namespace Circuit.Elements.Passive {
             arr[0] = string.IsNullOrEmpty(ReferenceName) ? "抵抗" : ReferenceName;
             getBasicInfo(arr);
             arr[3] = "R = " + Utils.UnitText(ce.Resistance, CirSim.OHM_TEXT);
-            arr[4] = "P = " + Utils.UnitText(ce.CirPower, "W");
+            arr[4] = "P = " + Utils.UnitText(ce.Power, "W");
         }
 
         public override string GetScopeText(Scope.VAL v) {

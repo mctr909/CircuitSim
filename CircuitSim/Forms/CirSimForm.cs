@@ -539,7 +539,7 @@ namespace Circuit {
 
         public void ResetButton_onClick() {
             for (int i = 0; i != ElmCount; i++) {
-                getElmE(i).CirReset();
+                getElmE(i).Reset();
             }
             for (int i = 0; i != mScopeCount; i++) {
                 mScopes[i].ResetGraph(true);
@@ -1643,7 +1643,7 @@ namespace Circuit {
                             break;
                         }
                     }
-                    int jn = ce.CirElm.CirPostCount;
+                    int jn = ce.CirElm.PostCount;
                     for (int j = 0; j != jn; j++) {
                         var pt = ce.GetPost(j);
                         if (Utils.Distance(pt, gx, gy) < 26) {
@@ -1656,7 +1656,7 @@ namespace Circuit {
             } else {
                 mMousePost = -1;
                 /* look for post close to the mouse pointer */
-                for (int i = 0; i != newMouseElm.CirElm.CirPostCount; i++) {
+                for (int i = 0; i != newMouseElm.CirElm.PostCount; i++) {
                     var pt = newMouseElm.GetPost(i);
                     if (Utils.Distance(pt, gx, gy) < 26) {
                         mMousePost = i;
@@ -2060,8 +2060,8 @@ namespace Circuit {
                     }
                 }
                 s = cs;
-                for (j = 0; j < e.CirElm.CirPostCount; j++) {
-                    s = s + " " + e.CirElm.CirNodes[j];
+                for (j = 0; j < e.CirElm.PostCount; j++) {
+                    s = s + " " + e.CirElm.Nodes[j];
                 }
                 Console.WriteLine(s);
             }

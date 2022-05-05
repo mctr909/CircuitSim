@@ -4,10 +4,10 @@
 
         public ScopeElmE(Scope scope) { mScope = scope; }
 
-        public override int CirPostCount { get { return 0; } }
+        public override int PostCount { get { return 0; } }
 
-        public override void CirReset() {
-            base.CirReset();
+        public override void Reset() {
+            base.Reset();
             mScope.ResetGraph(true);
         }
     }

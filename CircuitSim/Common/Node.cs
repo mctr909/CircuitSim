@@ -82,19 +82,19 @@ namespace Circuit {
                     break;
                 case PathType.VOLTAGE:
                     /* when checking for voltage loops, we only care about voltage sources/wires/ground */
-                    if (!(cee.CirIsWire || (cee is VoltageElmE) || (cee is GroundElmE))) {
+                    if (!(cee.IsWire || (cee is VoltageElmE) || (cee is GroundElmE))) {
                         continue;
                     }
                     break;
                 /* when checking for shorts, just check wires */
                 case PathType.SHORT:
-                    if (!cee.CirIsWire) {
+                    if (!cee.IsWire) {
                         continue;
                     }
                     break;
                 case PathType.CAPACITOR_V:
                     /* checking for capacitor/voltage source loops */
-                    if (!(cee.CirIsWire || (cee is CapacitorElmE) || (cee is VoltageElmE))) {
+                    if (!(cee.IsWire || (cee is CapacitorElmE) || (cee is VoltageElmE))) {
                         continue;
                     }
                     break;
@@ -103,42 +103,42 @@ namespace Circuit {
                 if (n1 == 0) {
                     /* look for posts which have a ground connection;
                     /* our path can go through ground */
-                    for (int j = 0; j != cee.CirConnectionNodeCount; j++) {
-                        if (cee.CirHasGroundConnection(j) && FindPath(cee.CirGetConnectionNode(j))) {
+                    for (int j = 0; j != cee.ConnectionNodeCount; j++) {
+                        if (cee.HasGroundConnection(j) && FindPath(cee.GetConnectionNode(j))) {
                             return true;
                         }
                     }
                 }
 
                 int nodeA;
-                for (nodeA = 0; nodeA != cee.CirConnectionNodeCount; nodeA++) {
-                    if (cee.CirGetConnectionNode(nodeA) == n1) {
+                for (nodeA = 0; nodeA != cee.ConnectionNodeCount; nodeA++) {
+                    if (cee.GetConnectionNode(nodeA) == n1) {
                         break;
                     }
                 }
-                if (nodeA == cee.CirConnectionNodeCount) {
+                if (nodeA == cee.ConnectionNodeCount) {
                     continue;
                 }
-                if (cee.CirHasGroundConnection(nodeA) && FindPath(0)) {
+                if (cee.HasGroundConnection(nodeA) && FindPath(0)) {
                     return true;
                 }
 
                 if (mType == PathType.INDUCTOR && (cee is InductorElmE)) {
                     /* inductors can use paths with other inductors of matching current */
-                    double c = cee.CirCurrent;
+                    double c = cee.Current;
                     if (nodeA == 0) {
                         c = -c;
                     }
-                    if (Math.Abs(c - mFirstElm.CirCurrent) > 1e-10) {
+                    if (Math.Abs(c - mFirstElm.Current) > 1e-10) {
                         continue;
                     }
                 }
 
-                for (int nodeB = 0; nodeB != cee.CirConnectionNodeCount; nodeB++) {
+                for (int nodeB = 0; nodeB != cee.ConnectionNodeCount; nodeB++) {
                     if (nodeA == nodeB) {
                         continue;
                     }
-                    if (ce.GetConnection(nodeA, nodeB) && FindPath(cee.CirGetConnectionNode(nodeB))) {
+                    if (ce.GetConnection(nodeA, nodeB) && FindPath(cee.GetConnectionNode(nodeB))) {
                         /*Console.WriteLine("got findpath " + n1); */
                         return true;
                     }

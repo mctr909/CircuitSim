@@ -34,17 +34,17 @@ namespace Circuit.Elements.Output {
 
         public override void Draw(CustomGraphics g) {
             var ce = (LogicOutputElmE)CirElm;
-            string s = (ce.CirVolts[0] < ce.mThreshold) ? "L" : "H";
+            string s = (ce.Volts[0] < ce.mThreshold) ? "L" : "H";
             if (isTernary) {
-                if (ce.CirVolts[0] > 3.75) {
+                if (ce.Volts[0] > 3.75) {
                     s = "2";
-                } else if (ce.CirVolts[0] > 1.25) {
+                } else if (ce.Volts[0] > 1.25) {
                     s = "1";
                 } else {
                     s = "0";
                 }
             } else if (isNumeric) {
-                s = (ce.CirVolts[0] < ce.mThreshold) ? "0" : "1";
+                s = (ce.Volts[0] < ce.mThreshold) ? "0" : "1";
             }
             ce.mValue = s;
             setBbox(mPoint1, mLead1, 0);
@@ -56,11 +56,11 @@ namespace Circuit.Elements.Output {
         public override void GetInfo(string[] arr) {
             var ce = (LogicOutputElmE)CirElm;
             arr[0] = "logic output";
-            arr[1] = (ce.CirVolts[0] < ce.mThreshold) ? "low" : "high";
+            arr[1] = (ce.Volts[0] < ce.mThreshold) ? "low" : "high";
             if (isNumeric) {
                 arr[1] = ce.mValue;
             }
-            arr[2] = "V = " + Utils.VoltageText(ce.CirVolts[0]);
+            arr[2] = "V = " + Utils.VoltageText(ce.Volts[0]);
         }
 
         public override ElementInfo GetElementInfo(int n) {

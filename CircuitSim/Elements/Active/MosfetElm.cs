@@ -204,10 +204,10 @@ namespace Circuit.Elements.Active {
                 string s = "" + (ce.Vt * ce.Pnp);
                 drawCenteredLText(s, P2, false);
             }
-            ce.mCirCurCount = ce.cirUpdateDotCount(-ce.Ids, ce.mCirCurCount);
-            drawDots(mSrc[0], mSrc[1], ce.mCirCurCount);
-            drawDots(mDrn[1], mDrn[0], ce.mCirCurCount);
-            drawDots(mSrc[1], mDrn[1], ce.mCirCurCount);
+            ce.CurCount = ce.cirUpdateDotCount(-ce.Ids, ce.CurCount);
+            drawDots(mSrc[0], mSrc[1], ce.CurCount);
+            drawDots(mDrn[1], mDrn[0], ce.CurCount);
+            drawDots(mSrc[1], mDrn[1], ce.CurCount);
 
             if (ShowBulk) {
                 mCurcountBody1 = ce.cirUpdateDotCount(ce.DiodeCurrent1, mCurcountBody1);
@@ -237,11 +237,11 @@ namespace Circuit.Elements.Active {
             arr[0] += " (Vt=" + Utils.VoltageText(ce.Pnp * ce.Vt);
             arr[0] += ", \u03b2=" + ce.Hfe + ")";
             arr[1] = ((ce.Pnp == 1) ? "Ids = " : "Isd = ") + Utils.CurrentText(ce.Ids);
-            arr[2] = "Vgs = " + Utils.VoltageText(ce.CirVolts[MosfetElmE.V_G] - ce.CirVolts[ce.Pnp == -1 ? MosfetElmE.V_D : MosfetElmE.V_S]);
-            arr[3] = ((ce.Pnp == 1) ? "Vds = " : "Vsd = ") + Utils.VoltageText(ce.CirVolts[MosfetElmE.V_D] - ce.CirVolts[MosfetElmE.V_S]);
+            arr[2] = "Vgs = " + Utils.VoltageText(ce.Volts[MosfetElmE.V_G] - ce.Volts[ce.Pnp == -1 ? MosfetElmE.V_D : MosfetElmE.V_S]);
+            arr[3] = ((ce.Pnp == 1) ? "Vds = " : "Vsd = ") + Utils.VoltageText(ce.Volts[MosfetElmE.V_D] - ce.Volts[MosfetElmE.V_S]);
             arr[4] = (ce.Mode == 0) ? "off" : (ce.Mode == 1) ? "linear" : "saturation";
             arr[5] = "gm = " + Utils.UnitText(ce.Gm, "A/V");
-            arr[6] = "P = " + Utils.UnitText(ce.CirPower, "W");
+            arr[6] = "P = " + Utils.UnitText(ce.Power, "W");
             if (ShowBulk) {
                 arr[7] = "Ib = " + Utils.UnitText(
                     ce.BodyTerminal == 1 ? -ce.DiodeCurrent1 :

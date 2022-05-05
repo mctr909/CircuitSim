@@ -41,7 +41,7 @@ namespace Circuit.Elements.Output {
         public override void GetInfo(string[] arr) {
             var ce = (DataRecorderElmE)CirElm;
             arr[0] = "data export";
-            arr[1] = "V = " + Utils.VoltageText(ce.CirVolts[0]);
+            arr[1] = "V = " + Utils.VoltageText(ce.Volts[0]);
             arr[2] = (ce.DataFull ? ce.DataCount : ce.DataPtr) + "/" + ce.DataCount;
         }
 

@@ -35,19 +35,21 @@ namespace Circuit.Elements.Gate {
             }
         }
 
-        public override double CirVoltageDiff { get { return CirVolts[0]; } }
+        public override int PostCount { get { return 2; } }
 
-        public override int CirVoltageSourceCount { get { return 1; } }
+        public override double VoltageDiff { get { return Volts[0]; } }
 
-        public override void CirStamp() {
-            mCir.StampVoltageSource(0, CirNodes[1], mCirVoltSource);
+        public override int VoltageSourceCount { get { return 1; } }
+
+        public override void Stamp() {
+            mCir.StampVoltageSource(0, Nodes[1], mVoltSource);
         }
 
-        public override void CirDoStep() {
-            double v0 = CirVolts[1];
+        public override void DoStep() {
+            double v0 = Volts[1];
             double _out;
             if (mState) {//Output is high
-                if (CirVolts[0] > UpperTrigger)//Input voltage high enough to set output low
+                if (Volts[0] > UpperTrigger)//Input voltage high enough to set output low
                 {
                     mState = false;
                     _out = LogicOffLevel;
@@ -55,7 +57,7 @@ namespace Circuit.Elements.Gate {
                     _out = LogicOnLevel;
                 }
             } else {//Output is low
-                if (CirVolts[0] < LowerTrigger)//Input voltage low enough to set output high
+                if (Volts[0] < LowerTrigger)//Input voltage low enough to set output high
                 {
                     mState = true;
                     _out = LogicOnLevel;
@@ -65,14 +67,14 @@ namespace Circuit.Elements.Gate {
             }
             double maxStep = SlewRate * ControlPanel.TimeStep * 1e9;
             _out = Math.Max(Math.Min(v0 + maxStep, _out), v0 - maxStep);
-            mCir.UpdateVoltageSource(0, CirNodes[1], mCirVoltSource, _out);
+            mCir.UpdateVoltageSource(0, Nodes[1], mVoltSource, _out);
         }
 
-        public override bool CirHasGroundConnection(int n1) { return n1 == 1; }
+        public override bool HasGroundConnection(int n1) { return n1 == 1; }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 1) {
-                return mCirCurrent;
+                return mCurrent;
             }
             return 0;
         }

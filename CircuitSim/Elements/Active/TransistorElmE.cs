@@ -38,22 +38,22 @@ namespace Circuit.Elements.Active {
             try {
                 mLastVbe = st.nextTokenDouble();
                 mLastVbc = st.nextTokenDouble();
-                CirVolts[V_B] = 0;
-                CirVolts[V_C] = -mLastVbe;
-                CirVolts[V_E] = -mLastVbc;
+                Volts[V_B] = 0;
+                Volts[V_C] = -mLastVbe;
+                Volts[V_E] = -mLastVbc;
                 Hfe = st.nextTokenDouble();
             } catch { }
         }
 
-        public override double CirPower {
-            get { return (CirVolts[V_B] - CirVolts[V_E]) * Ib + (CirVolts[V_C] - CirVolts[V_E]) * Ic; }
+        public override double Power {
+            get { return (Volts[V_B] - Volts[V_E]) * Ib + (Volts[V_C] - Volts[V_E]) * Ic; }
         }
 
-        public override bool CirNonLinear { get { return true; } }
+        public override bool NonLinear { get { return true; } }
 
-        public override int CirPostCount { get { return 3; } }
+        public override int PostCount { get { return 3; } }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
                 return -Ib;
             }
@@ -63,15 +63,15 @@ namespace Circuit.Elements.Active {
             return -Ie;
         }
 
-        public override void CirStamp() {
-            mCir.StampNonLinear(CirNodes[V_B]);
-            mCir.StampNonLinear(CirNodes[V_C]);
-            mCir.StampNonLinear(CirNodes[V_E]);
+        public override void Stamp() {
+            mCir.StampNonLinear(Nodes[V_B]);
+            mCir.StampNonLinear(Nodes[V_C]);
+            mCir.StampNonLinear(Nodes[V_E]);
         }
 
-        public override void CirDoStep() {
-            double vbc = CirVolts[V_B] - CirVolts[V_C]; /* typically negative */
-            double vbe = CirVolts[V_B] - CirVolts[V_E]; /* typically positive */
+        public override void DoStep() {
+            double vbc = Volts[V_B] - Volts[V_C]; /* typically negative */
+            double vbe = Volts[V_B] - Volts[V_E]; /* typically positive */
             if (Math.Abs(vbc - mLastVbc) > .01 || /* .01 */
                 Math.Abs(vbe - mLastVbe) > .01) {
                 mCir.Converged = false;
@@ -119,44 +119,44 @@ namespace Circuit.Elements.Active {
              * node 0 is the base,
              * node 1 the collector,
              * node 2 the emitter. */
-            mCir.StampMatrix(CirNodes[V_B], CirNodes[V_B], -gee - gec - gce - gcc);
-            mCir.StampMatrix(CirNodes[V_B], CirNodes[V_C], gec + gcc);
-            mCir.StampMatrix(CirNodes[V_B], CirNodes[V_E], gee + gce);
-            mCir.StampMatrix(CirNodes[V_C], CirNodes[V_B], gce + gcc);
-            mCir.StampMatrix(CirNodes[V_C], CirNodes[V_C], -gcc);
-            mCir.StampMatrix(CirNodes[V_C], CirNodes[V_E], -gce);
-            mCir.StampMatrix(CirNodes[V_E], CirNodes[V_B], gee + gec);
-            mCir.StampMatrix(CirNodes[V_E], CirNodes[V_C], -gec);
-            mCir.StampMatrix(CirNodes[V_E], CirNodes[V_E], -gee);
+            mCir.StampMatrix(Nodes[V_B], Nodes[V_B], -gee - gec - gce - gcc);
+            mCir.StampMatrix(Nodes[V_B], Nodes[V_C], gec + gcc);
+            mCir.StampMatrix(Nodes[V_B], Nodes[V_E], gee + gce);
+            mCir.StampMatrix(Nodes[V_C], Nodes[V_B], gce + gcc);
+            mCir.StampMatrix(Nodes[V_C], Nodes[V_C], -gcc);
+            mCir.StampMatrix(Nodes[V_C], Nodes[V_E], -gce);
+            mCir.StampMatrix(Nodes[V_E], Nodes[V_B], gee + gec);
+            mCir.StampMatrix(Nodes[V_E], Nodes[V_C], -gec);
+            mCir.StampMatrix(Nodes[V_E], Nodes[V_E], -gee);
 
             /* we are solving for v(k+1), not delta v, so we use formula
              * 10.5.13 (from Pillage), multiplying J by v(k) */
 
-            mCir.StampRightSide(CirNodes[V_B], -Ib - (gec + gcc) * vbc - (gee + gce) * vbe);
-            mCir.StampRightSide(CirNodes[V_C], -Ic + gce * vbe + gcc * vbc);
-            mCir.StampRightSide(CirNodes[V_E], -Ie + gee * vbe + gec * vbc);
+            mCir.StampRightSide(Nodes[V_B], -Ib - (gec + gcc) * vbc - (gee + gce) * vbe);
+            mCir.StampRightSide(Nodes[V_C], -Ic + gce * vbe + gcc * vbc);
+            mCir.StampRightSide(Nodes[V_E], -Ie + gee * vbe + gec * vbc);
         }
 
-        public override void CirStepFinished() {
+        public override void StepFinished() {
             /* stop for huge currents that make simulator act weird */
             if (Math.Abs(Ic) > 1e12 || Math.Abs(Ib) > 1e12) {
                 mCir.Stop("max current exceeded", this);
             }
         }
 
-        public override void CirReset() {
-            CirVolts[V_B] = CirVolts[V_C] = CirVolts[V_E] = 0;
+        public override void Reset() {
+            Volts[V_B] = Volts[V_C] = Volts[V_E] = 0;
             mLastVbc = mLastVbe = 0;
         }
 
-        public override double CirGetScopeValue(Scope.VAL x) {
+        public override double GetScopeValue(Scope.VAL x) {
             switch (x) {
             case Scope.VAL.VBE:
-                return CirVolts[V_B] - CirVolts[V_E];
+                return Volts[V_B] - Volts[V_E];
             case Scope.VAL.VBC:
-                return CirVolts[V_B] - CirVolts[V_C];
+                return Volts[V_B] - Volts[V_C];
             case Scope.VAL.VCE:
-                return CirVolts[V_C] - CirVolts[V_E];
+                return Volts[V_C] - Volts[V_E];
             }
             return 0;
         }

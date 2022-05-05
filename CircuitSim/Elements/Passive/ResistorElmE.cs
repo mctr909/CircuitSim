@@ -10,12 +10,14 @@
             Resistance = resistance;
         }
 
-        protected override void cirCalculateCurrent() {
-            mCirCurrent = (CirVolts[0] - CirVolts[1]) / Resistance;
+        public override int PostCount { get { return 2; } }
+
+        protected override void calcCurrent() {
+            mCurrent = (Volts[0] - Volts[1]) / Resistance;
         }
 
-        public override void CirStamp() {
-            mCir.StampResistor(CirNodes[0], CirNodes[1], Resistance);
+        public override void Stamp() {
+            mCir.StampResistor(Nodes[0], Nodes[1], Resistance);
         }
     }
 }

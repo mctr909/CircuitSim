@@ -82,11 +82,11 @@ namespace Circuit.Elements.Passive {
             arr[0] = (ce.Momentary) ? "push switch (SPST)" : "switch (SPST)";
             if (ce.Position == 1) {
                 arr[1] = "open";
-                arr[2] = "Vd = " + Utils.VoltageAbsText(ce.CirVoltageDiff);
+                arr[2] = "Vd = " + Utils.VoltageAbsText(ce.VoltageDiff);
             } else {
                 arr[1] = "closed";
-                arr[2] = "V = " + Utils.VoltageText(ce.CirVolts[0]);
-                arr[3] = "I = " + Utils.CurrentAbsText(ce.mCirCurrent);
+                arr[2] = "V = " + Utils.VoltageText(ce.Volts[0]);
+                arr[3] = "I = " + Utils.CurrentAbsText(ce.mCurrent);
             }
         }
 

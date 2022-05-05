@@ -69,6 +69,7 @@
     <Compile Include="Elements\BaseElement.cs" />
     <Compile Include="Elements\Custom\BoxElm.cs" />
     <Compile Include="Elements\Custom\GraphicElm.cs" />
+    <Compile Include="Elements\Custom\GraphicElmE.cs" />
     <Compile Include="Elements\Custom\TextElm.cs" />
     <Compile Include="Elements\Gate\AndGateElmE.cs" />
     <Compile Include="Elements\Gate\AndGateElm.cs" />

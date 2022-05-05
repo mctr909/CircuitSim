@@ -18,17 +18,17 @@
 			Delay = st.nextTokenDouble();
 		}
 
-		public override int CirPostCount { get { return 1; } }
+		public override int PostCount { get { return 1; } }
 
-		public override double CirVoltageDiff { get { return CirVolts[0]; } }
+		public override double VoltageDiff { get { return Volts[0]; } }
 
-		public override void CirReset() {
+		public override void Reset() {
 			Triggered = false;
 		}
 
-		public override void CirStepFinished() {
+		public override void StepFinished() {
 			Stopped = false;
-			if (!Triggered && ((Type == 0 && CirVolts[0] >= TriggerVoltage) || (Type == 1 && CirVolts[0] <= TriggerVoltage))) {
+			if (!Triggered && ((Type == 0 && Volts[0] >= TriggerVoltage) || (Type == 1 && Volts[0] <= TriggerVoltage))) {
 				Triggered = true;
 				TriggerTime = CirSim.Sim.Time;
 			}

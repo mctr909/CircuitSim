@@ -44,7 +44,7 @@ namespace Circuit.Elements.Input {
             drawCenteredLText(s, P2, true);
             drawLead(mPoint1, mLead1);
             ce.cirUpdateDotCount();
-            drawDots(mPoint1, mLead1, ce.mCirCurCount);
+            drawDots(mPoint1, mLead1, ce.CurCount);
             drawPosts();
         }
 
@@ -55,8 +55,8 @@ namespace Circuit.Elements.Input {
             if (isNumeric) {
                 arr[1] = 0 != ce.Position ? "1" : "0";
             }
-            arr[1] += " (" + Utils.VoltageText(ce.CirVolts[0]) + ")";
-            arr[2] = "I = " + Utils.CurrentText(ce.mCirCurrent);
+            arr[1] += " (" + Utils.VoltageText(ce.Volts[0]) + ")";
+            arr[2] = "I = " + Utils.CurrentText(ce.mCurrent);
         }
 
         public override ElementInfo GetElementInfo(int n) {

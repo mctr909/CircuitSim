@@ -94,9 +94,9 @@ namespace Circuit.Elements.Passive {
             g.DrawLine(mLead1, mSwPoles[ce.Position]);
 
             ce.cirUpdateDotCount();
-            drawDots(mPoint1, mLead1, ce.mCirCurCount);
+            drawDots(mPoint1, mLead1, ce.CurCount);
             if (ce.Position != 2) {
-                drawDots(mSwPoles[ce.Position], mSwPosts[ce.Position], ce.mCirCurCount);
+                drawDots(mSwPoles[ce.Position], mSwPosts[ce.Position], ce.CurCount);
             }
             drawPosts();
         }
@@ -105,7 +105,7 @@ namespace Circuit.Elements.Passive {
             var ce = (Switch2ElmE)CirElm;
             arr[0] = "switch (" + (ce.mLink == 0 ? "S" : "D")
                 + "P" + ((ce.mThrowCount > 2) ? ce.mThrowCount + "T)" : "DT)");
-            arr[1] = "I = " + Utils.CurrentAbsText(ce.mCirCurrent);
+            arr[1] = "I = " + Utils.CurrentAbsText(ce.mCurrent);
         }
 
         public override ElementInfo GetElementInfo(int n) {
@@ -130,7 +130,7 @@ namespace Circuit.Elements.Passive {
                 if (ce.mThrowCount > 2) {
                     ce.Momentary = false;
                 }
-                ce.cirAllocNodes();
+                ce.AllocNodes();
                 SetPoints();
             } else {
                 base.SetElementValue(n, ei);

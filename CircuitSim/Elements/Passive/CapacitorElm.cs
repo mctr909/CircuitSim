@@ -75,8 +75,8 @@ namespace Circuit.Elements.Passive {
 
             ce.cirUpdateDotCount();
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mLead1, ce.mCirCurCount);
-                drawDots(mPoint2, mLead2, -ce.mCirCurCount);
+                drawDots(mPoint1, mLead1, ce.CurCount);
+                drawDots(mPoint2, mLead2, -ce.CurCount);
             }
             drawPosts();
 
@@ -89,7 +89,7 @@ namespace Circuit.Elements.Passive {
             arr[0] = string.IsNullOrEmpty(ReferenceName) ? "コンデンサ" : ReferenceName;
             getBasicInfo(arr);
             arr[3] = "C = " + Utils.UnitText(ce.Capacitance, "F");
-            arr[4] = "P = " + Utils.UnitText(ce.CirPower, "W");
+            arr[4] = "P = " + Utils.UnitText(ce.Power, "W");
         }
 
         public override string GetScopeText(Scope.VAL v) {
