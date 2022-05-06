@@ -187,7 +187,6 @@
     <Compile Include="CircuitSim.Designer.cs">
       <DependentUpon>CircuitSim.cs</DependentUpon>
     </Compile>
-    <Compile Include="Common\Inductor.cs" />
     <Compile Include="Elements\Passive\InductorUI.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

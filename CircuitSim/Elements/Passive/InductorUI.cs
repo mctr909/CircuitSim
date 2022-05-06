@@ -102,7 +102,7 @@ namespace Circuit.Elements.Passive {
                 mLastReferenceName = ReferenceName;
                 setTextPos();
             }
-            ce.Ind.Setup(ce.Inductance, CirElm.Current);
+            ce.Setup(ce.Inductance, CirElm.Current);
         }
     }
 }

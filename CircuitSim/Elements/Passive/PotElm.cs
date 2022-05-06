@@ -30,7 +30,20 @@
 
         public override int PostCount { get { return 3; } }
 
-        protected override void cirCalcCurrent() {
+        public override void Reset() {
+            CurCount1 = CurCount2 = CurCount3 = 0;
+            base.Reset();
+        }
+
+        public override void AnaStamp() {
+            Resistance1 = MaxResistance * Position;
+            Resistance2 = MaxResistance * (1 - Position);
+            mCir.StampResistor(Nodes[0], Nodes[2], Resistance1);
+            mCir.StampResistor(Nodes[2], Nodes[1], Resistance2);
+        }
+
+        public override void CirSetNodeVoltage(int n, double c) {
+            Volts[n] = c;
             if (Resistance1 == 0) {
                 return; /* avoid NaN */
             }
@@ -47,18 +60,6 @@
                 return -Current2;
             }
             return -Current3;
-        }
-
-        public override void AnaStamp() {
-            Resistance1 = MaxResistance * Position;
-            Resistance2 = MaxResistance * (1 - Position);
-            mCir.StampResistor(Nodes[0], Nodes[2], Resistance1);
-            mCir.StampResistor(Nodes[2], Nodes[1], Resistance2);
-        }
-
-        public override void Reset() {
-            CurCount1 = CurCount2 = CurCount3 = 0;
-            base.Reset();
         }
     }
 }

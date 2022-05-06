@@ -1,46 +1,54 @@
 ﻿namespace Circuit.Elements.Passive {
     class InductorElm : BaseElement {
-        public Inductor Ind;
+        double mCompResistance;
+        double mCurSourceValue;
 
         public double Inductance { get; set; }
 
-        public InductorElm() {
-            Ind = new Inductor(mCir);
+        public InductorElm() : base() {
             Inductance = 0.001;
-            Ind.Setup(Inductance, mCurrent);
         }
 
-        public InductorElm(StringTokenizer st) {
-            Ind = new Inductor(mCir);
+        public InductorElm(StringTokenizer st) : base() {
             Inductance = st.nextTokenDouble();
             mCurrent = st.nextTokenDouble();
-            Ind.Setup(Inductance, mCurrent);
         }
 
         public override int PostCount { get { return 2; } }
 
-        public override bool NonLinear { get { return Ind.NonLinear(); } }
+        public override bool NonLinear { get { return false; } }
 
         public override void Reset() {
-            mCurrent = Volts[0] = Volts[1] = CurCount = 0;
-            Ind.Reset();
+            mCurrent = Volts[0] = Volts[1] = CurCount = mCurSourceValue = 0;
         }
 
-        public override void AnaStamp() { Ind.Stamp(Nodes[0], Nodes[1]); }
+        public override void AnaStamp() {
+            mCompResistance = 2 * Inductance / ControlPanel.TimeStep;
+            mCir.StampResistor(Nodes[0], Nodes[1], mCompResistance);
+            mCir.StampRightSide(Nodes[0]);
+            mCir.StampRightSide(Nodes[1]);
+        }
 
         public override void CirDoStep() {
-            double voltdiff = Volts[0] - Volts[1];
-            Ind.DoStep(voltdiff);
+            mCir.StampCurrentSource(Nodes[0], Nodes[1], mCurSourceValue);
         }
 
         public override void CirStartIteration() {
             double voltdiff = Volts[0] - Volts[1];
-            Ind.StartIteration(voltdiff);
+            mCurSourceValue = voltdiff / mCompResistance + mCurrent;
         }
 
-        protected override void cirCalcCurrent() {
+        public override void CirSetNodeVoltage(int n, double c) {
+            Volts[n] = c;
             var voltdiff = Volts[0] - Volts[1];
-            mCurrent = Ind.CalculateCurrent(voltdiff);
+            if (mCompResistance > 0) {
+                mCurrent = voltdiff / mCompResistance + mCurSourceValue;
+            }
+        }
+
+        public void Setup(double ic, double cr) {
+            Inductance = ic;
+            mCurrent = cr;
         }
     }
 }

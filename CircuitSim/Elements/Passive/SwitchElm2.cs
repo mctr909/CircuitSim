@@ -23,7 +23,9 @@
 
         public override int PostCount { get { return 1 + mThrowCount; } }
 
-        protected override void cirCalcCurrent() { }
+        public override void AnaStamp() {
+            mCir.StampVoltageSource(Nodes[0], Nodes[Position + 1], mVoltSource, 0);
+        }
 
         public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
@@ -33,10 +35,6 @@
                 return mCurrent;
             }
             return 0;
-        }
-
-        public override void AnaStamp() {
-            mCir.StampVoltageSource(Nodes[0], Nodes[Position + 1], mVoltSource, 0);
         }
     }
 }
