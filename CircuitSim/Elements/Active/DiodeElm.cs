@@ -7,19 +7,19 @@ namespace Circuit.Elements.Active {
         public string mModelName;
         public DiodeModel mModel;
 
-        global::Circuit.Diode mDiode;
+        Diode mDiode;
         bool mHasResistance;
         int mDiodeEndNode;
 
         public DiodeElm() : base() {
             mModelName = lastModelName;
-            mDiode = new global::Circuit.Diode(mCir);
+            mDiode = new Diode(mCir);
             Setup();
         }
 
         public DiodeElm(StringTokenizer st, bool forwardDrop = false, bool model = false) : base() {
             const double defaultdrop = 0.805904783;
-            mDiode = new global::Circuit.Diode(mCir);
+            mDiode = new Diode(mCir);
             double fwdrop = defaultdrop;
             double zvoltage = 0;
             if (model) {

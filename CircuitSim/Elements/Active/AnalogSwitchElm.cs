@@ -22,10 +22,6 @@
             } catch { }
         }
 
-        protected override void cirCalcCurrent() {
-            mCurrent = (Volts[0] - Volts[1]) / mResistance;
-        }
-
         // we need this to be able to change the matrix for each step
         public override bool NonLinear { get { return true; } }
 
@@ -53,6 +49,11 @@
             }
             mResistance = IsOpen ? Roff : Ron;
             mCir.StampResistor(Nodes[0], Nodes[1], mResistance);
+        }
+
+        public override void CirSetNodeVoltage(int n, double c) {
+            Volts[n] = c;
+            mCurrent = (Volts[0] - Volts[1]) / mResistance;
         }
     }
 }

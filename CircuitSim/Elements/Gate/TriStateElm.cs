@@ -38,8 +38,8 @@
             return 0;
         }
 
-        protected override void cirCalcCurrent() {
-            mCurrent = (Volts[0] - Volts[1]) / mResistance;
+        public override bool AnaHasGroundConnection(int n1) {
+            return n1 == 1;
         }
 
         public override void AnaStamp() {
@@ -55,8 +55,9 @@
             mCir.UpdateVoltageSource(0, Nodes[3], mVoltSource, Volts[0] > 2.5 ? 5 : 0);
         }
 
-        public override bool AnaHasGroundConnection(int n1) {
-            return n1 == 1;
+        public override void CirSetNodeVoltage(int n, double c) {
+            Volts[n] = c;
+            mCurrent = (Volts[0] - Volts[1]) / mResistance;
         }
     }
 }
