@@ -8,7 +8,8 @@ using Circuit.Elements.Input;
 namespace Circuit {
     class CircuitNodeLink {
         public int Num;
-        public BaseUI Elm;
+        public BaseUI UI;
+        public BaseElement Elm;
     }
 
     class CircuitNode {
@@ -68,7 +69,7 @@ namespace Circuit {
 
             mVisited[n1] = true;
             for (int i = 0; i != mElmList.Count; i++) {
-                var cee = mElmList[i].CirElm;
+                var cee = mElmList[i].Elm;
                 if (cee == mFirstElm) {
                     continue;
                 }

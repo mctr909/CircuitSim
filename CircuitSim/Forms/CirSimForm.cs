@@ -476,7 +476,7 @@ namespace Circuit {
         public Adjustable FindAdjustable(BaseUI elm, int item) {
             for (int i = 0; i != Adjustables.Count; i++) {
                 var a = Adjustables[i];
-                if (a.Elm == elm && a.EditItem == item) {
+                if (a.UI == elm && a.EditItem == item) {
                     return a;
                 }
             }
@@ -490,7 +490,7 @@ namespace Circuit {
             }
             for (int i = Adjustables.Count - 1; i >= 0; i--) {
                 var adj = Adjustables[i];
-                if (adj.Elm == elm) {
+                if (adj.UI == elm) {
                     adj.DeleteSlider();
                     Adjustables.RemoveAt(i);
                 }
@@ -539,7 +539,7 @@ namespace Circuit {
 
         public void ResetButton_onClick() {
             for (int i = 0; i != ElmCount; i++) {
-                getElm(i).CirElm.Reset();
+                getElm(i).Elm.Reset();
             }
             for (int i = 0; i != mScopeCount; i++) {
                 mScopes[i].ResetGraph(true);
@@ -1286,7 +1286,7 @@ namespace Circuit {
                 return false;
             }
             se.Toggle();
-            if (((SwitchElm)se.CirElm).Momentary) {
+            if (((SwitchElm)se.Elm).Momentary) {
                 mHeldSwitchElm = se;
             }
             NeedAnalyze();
@@ -1643,7 +1643,7 @@ namespace Circuit {
                             break;
                         }
                     }
-                    int jn = ce.CirElm.PostCount;
+                    int jn = ce.Elm.PostCount;
                     for (int j = 0; j != jn; j++) {
                         var pt = ce.GetPost(j);
                         if (Utils.Distance(pt, gx, gy) < 26) {
@@ -1656,7 +1656,7 @@ namespace Circuit {
             } else {
                 mMousePost = -1;
                 /* look for post close to the mouse pointer */
-                for (int i = 0; i != newMouseElm.CirElm.PostCount; i++) {
+                for (int i = 0; i != newMouseElm.Elm.PostCount; i++) {
                     var pt = newMouseElm.GetPost(i);
                     if (Utils.Distance(pt, gx, gy) < 26) {
                         mMousePost = i;
@@ -2053,15 +2053,15 @@ namespace Circuit {
                     continue;
                 }
                 if (cs == "TransistorElm") {
-                    if (((TransistorElm)e.CirElm).NPN == -1) {
+                    if (((TransistorElm)e.Elm).NPN == -1) {
                         cs = "PTransistorElm";
                     } else {
                         cs = "NTransistorElm";
                     }
                 }
                 s = cs;
-                for (j = 0; j < e.CirElm.PostCount; j++) {
-                    s = s + " " + e.CirElm.Nodes[j];
+                for (j = 0; j < e.Elm.PostCount; j++) {
+                    s = s + " " + e.Elm.Nodes[j];
                 }
                 Console.WriteLine(s);
             }

@@ -12,36 +12,36 @@ namespace Circuit.Elements.Passive {
         public SwitchUI(Point pos, int dummy) : base(pos) { }
 
         public SwitchUI(Point pos) : base(pos) {
-            CirElm = new SwitchElm();
+            Elm = new SwitchElm();
         }
 
         public SwitchUI(Point pos, bool mm) : base(pos) {
-            CirElm = new SwitchElm(mm);
+            Elm = new SwitchElm(mm);
         }
 
         public SwitchUI(Point p1, Point p2, int f) : base(p1, p2, f) { }
 
         public SwitchUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new SwitchElm(st);
+            Elm = new SwitchElm(st);
         }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.SWITCH; } }
         public override DUMP_ID DumpType { get { return DUMP_ID.SWITCH; } }
 
         protected override string dump() {
-            var ce = (SwitchElm)CirElm;
+            var ce = (SwitchElm)Elm;
             return ce.Position + " " + ce.Momentary;
         }
 
         public void MouseUp() {
-            var ce = (SwitchElm)CirElm;
+            var ce = (SwitchElm)Elm;
             if (ce.Momentary) {
                 Toggle();
             }
         }
 
         public virtual void Toggle() {
-            var ce = (SwitchElm)CirElm;
+            var ce = (SwitchElm)Elm;
             ce.Position++;
             if (ce.PosCount <= ce.Position) {
                 ce.Position = 0;
@@ -62,7 +62,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (SwitchElm)CirElm;
+            var ce = (SwitchElm)Elm;
             int hs1 = (ce.Position == 1) ? 0 : 2;
             int hs2 = (ce.Position == 1) ? OPEN_HS : 2;
             setBbox(mPost1, mPost2, OPEN_HS);
@@ -78,7 +78,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (SwitchElm)CirElm;
+            var ce = (SwitchElm)Elm;
             arr[0] = (ce.Momentary) ? "push switch (SPST)" : "switch (SPST)";
             if (ce.Position == 1) {
                 arr[1] = "open";
@@ -91,7 +91,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (SwitchElm)CirElm;
+            var ce = (SwitchElm)Elm;
             if (n == 0) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
@@ -103,7 +103,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (SwitchElm)CirElm;
+            var ce = (SwitchElm)Elm;
             if (n == 0) {
                 ce.Momentary = ei.CheckBox.Checked;
             }

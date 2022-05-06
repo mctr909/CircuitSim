@@ -14,14 +14,14 @@ namespace Circuit.Elements.Passive {
         Point[] mDots;
 
         public TransformerUI(Point pos) : base(pos) {
-            CirElm = new TransformerElm();
+            Elm = new TransformerElm();
             mNoDiagonal = true;
             ReferenceName = "T";
         }
 
         public TransformerUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
-                CirElm = new TransformerElm(st, (mFlags & FLAG_REVERSE) != 0);
+                Elm = new TransformerElm(st, (mFlags & FLAG_REVERSE) != 0);
                 ReferenceName = st.nextToken();
             } catch (Exception ex) {
                 throw new Exception("Transformer load error:{0}", ex);
@@ -32,7 +32,7 @@ namespace Circuit.Elements.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.TRANSFORMER; } }
 
         protected override string dump() {
-            var ce = (TransformerElm)CirElm;
+            var ce = (TransformerElm)Elm;
             return ce.PInductance
                 + " " + ce.Ratio
                 + " " + ce.Currents[0]
@@ -53,7 +53,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void SetPoints() {
-            var elm = (TransformerElm)CirElm;
+            var elm = (TransformerElm)Elm;
             var width = Math.Max(BODY_LEN, Math.Abs(P2.X - P1.X));
             var height = Math.Max(BODY_LEN, Math.Abs(P2.Y - P1.Y));
             if (P2.X == P1.X) {
@@ -94,7 +94,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (TransformerElm)CirElm;
+            var ce = (TransformerElm)Elm;
 
             drawLead(mPtEnds[0], mPtCoil[0]);
             drawLead(mPtEnds[1], mPtCoil[1]);
@@ -129,7 +129,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (TransformerElm)CirElm;
+            var ce = (TransformerElm)Elm;
             arr[0] = "トランス";
             arr[1] = "L = " + Utils.UnitText(ce.PInductance, "H");
             arr[2] = "Ratio = 1:" + ce.Ratio;
@@ -140,7 +140,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (TransformerElm)CirElm;
+            var ce = (TransformerElm)Elm;
             if (n == 0) {
                 return new ElementInfo("一次側インダクタンス(H)", ce.PInductance, .01, 5);
             }
@@ -167,7 +167,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (TransformerElm)CirElm;
+            var ce = (TransformerElm)Elm;
             if (n == 0 && ei.Value > 0) {
                 ce.PInductance = ei.Value;
             }

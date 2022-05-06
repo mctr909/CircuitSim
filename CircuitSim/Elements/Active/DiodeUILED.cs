@@ -18,7 +18,7 @@ namespace Circuit.Elements.Active {
         Point mLedCenter;
 
         public DiodeUILED(Point pos) : base(pos, "D") {
-            var ce = (DiodeElm)CirElm;
+            var ce = (DiodeElm)Elm;
             ce.mModelName = mLastLEDModelName;
             setup();
             mMaxBrightnessCurrent = .01;
@@ -27,7 +27,7 @@ namespace Circuit.Elements.Active {
         }
 
         public DiodeUILED(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
-            var ce = (DiodeElm)CirElm;
+            var ce = (DiodeElm)Elm;
             if ((f & (FLAG_MODEL | FLAG_FWDROP)) == 0) {
                 const double fwdrop = 2.1024259;
                 ce.mModel = DiodeModel.GetModelWithParameters(fwdrop, 0);
@@ -78,7 +78,7 @@ namespace Circuit.Elements.Active {
             g.LineColor = CustomGraphics.GrayColor;
             g.DrawCircle(mLedCenter, CR);
 
-            var ce = (DiodeElm)CirElm;
+            var ce = (DiodeElm)Elm;
 
             double w = ce.Current / mMaxBrightnessCurrent;
             if (0 < w) {
@@ -103,7 +103,7 @@ namespace Circuit.Elements.Active {
 
         public override void GetInfo(string[] arr) {
             base.GetInfo(arr);
-            var ce = (DiodeElm)CirElm;
+            var ce = (DiodeElm)Elm;
             if (ce.mModel.OldStyle) {
                 arr[0] = "LED";
             } else {

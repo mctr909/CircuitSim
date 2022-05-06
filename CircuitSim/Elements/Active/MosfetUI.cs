@@ -34,7 +34,7 @@ namespace Circuit.Elements.Active {
         Point[] mPs2;
 
         public MosfetUI(Point pos, bool pnpflag) : base(pos) {
-            CirElm = new MosfetElm(pnpflag);
+            Elm = new MosfetElm(pnpflag);
             mFlags = pnpflag ? FLAG_PNP : 0;
             mFlags |= FLAG_BODY_DIODE;
             mNoDiagonal = true;
@@ -42,7 +42,7 @@ namespace Circuit.Elements.Active {
         }
 
         public MosfetUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new MosfetElm((f & FLAG_PNP) != 0, st);
+            Elm = new MosfetElm((f & FLAG_PNP) != 0, st);
             mNoDiagonal = true;
             try {
                 ReferenceName = st.nextToken();
@@ -55,7 +55,7 @@ namespace Circuit.Elements.Active {
         public override DUMP_ID DumpType { get { return DUMP_ID.MOSFET; } }
 
         protected override string dump() {
-            var ce = (MosfetElm)CirElm;
+            var ce = (MosfetElm)Elm;
             return ce.Vt
                 + " " + ce.Hfe
                 + " " + ReferenceName;
@@ -102,7 +102,7 @@ namespace Circuit.Elements.Active {
                 Utils.InterpPoint(mSrc[1], mDrn[1], ref mBody[1], .5);
             }
 
-            var ce = (MosfetElm)CirElm;
+            var ce = (MosfetElm)Elm;
 
             if (!DrawDigital) {
                 if (ce.Pnp == 1) {
@@ -163,7 +163,7 @@ namespace Circuit.Elements.Active {
             drawLead(mSrc[0], mSrc[1]);
             drawLead(mDrn[0], mDrn[1]);
 
-            var ce = (MosfetElm)CirElm;
+            var ce = (MosfetElm)Elm;
 
             /* draw line connecting source and drain */
             bool enhancement = ce.Vt > 0 && ShowBulk;
@@ -228,7 +228,7 @@ namespace Circuit.Elements.Active {
         }
 
         void getFetInfo(string[] arr, string n) {
-            var ce = (MosfetElm)CirElm;
+            var ce = (MosfetElm)Elm;
             arr[0] = ((ce.Pnp == -1) ? "p-" : "n-") + n;
             arr[0] += " (Vt=" + Utils.VoltageText(ce.Pnp * ce.Vt);
             arr[0] += ", \u03b2=" + ce.Hfe + ")";
@@ -247,11 +247,11 @@ namespace Circuit.Elements.Active {
         }
 
         public override string GetScopeText(Scope.VAL v) {
-            return ((((MosfetElm)CirElm).Pnp == -1) ? "p-" : "n-") + "MOSFET";
+            return ((((MosfetElm)Elm).Pnp == -1) ? "p-" : "n-") + "MOSFET";
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (MosfetElm)CirElm;
+            var ce = (MosfetElm)Elm;
             if (n == 0) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
                 ei.Text = ReferenceName;
@@ -303,7 +303,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (MosfetElm)CirElm;
+            var ce = (MosfetElm)Elm;
             if (n == 0) {
                 ReferenceName = ei.Textf.Text;
                 setTextPos();

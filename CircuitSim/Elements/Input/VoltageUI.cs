@@ -17,19 +17,19 @@ namespace Circuit.Elements.Input {
         Point mTextPos;
 
         protected VoltageUI(Point pos, VoltageElm.WAVEFORM wf) : base(pos) {
-            CirElm = new VoltageElm(wf);
+            Elm = new VoltageElm(wf);
         }
 
         public VoltageUI(Point p1, Point p2, int f) : base(p1, p2, f) { }
 
         public VoltageUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new VoltageElm(st);
+            Elm = new VoltageElm(st);
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.VOLTAGE; } }
 
         protected override string dump() {
-            var elm = (VoltageElm)CirElm;
+            var elm = (VoltageElm)Elm;
             /* set flag so we know if duty cycle is correct for pulse waveforms */
             if (elm.waveform == VoltageElm.WAVEFORM.PULSE) {
                 mFlags |= FLAG_PULSE_DUTY;
@@ -49,7 +49,7 @@ namespace Circuit.Elements.Input {
         public override void SetPoints() {
             base.SetPoints();
 
-            var elm = (VoltageElm)CirElm;
+            var elm = (VoltageElm)Elm;
             calcLeads((elm.waveform == VoltageElm.WAVEFORM.DC) ? BODY_LEN_DC : BODY_LEN);
 
             int sign;
@@ -68,7 +68,7 @@ namespace Circuit.Elements.Input {
         public override void Draw(CustomGraphics g) {
             setBbox(P1, P2);
             draw2Leads();
-            var elm = (VoltageElm)CirElm;
+            var elm = (VoltageElm)Elm;
             if (elm.waveform == VoltageElm.WAVEFORM.DC) {
                 int hs = 12;
                 setBbox(mPost1, mPost2, hs);
@@ -98,10 +98,10 @@ namespace Circuit.Elements.Input {
 
             if (CirSim.Sim.DragElm != this) {
                 if (elm.waveform == VoltageElm.WAVEFORM.DC) {
-                    drawDots(mPost1, mPost2, CirElm.CurCount);
+                    drawDots(mPost1, mPost2, Elm.CurCount);
                 } else {
-                    drawDots(mPost1, mLead1, CirElm.CurCount);
-                    drawDots(mPost2, mLead2, -CirElm.CurCount);
+                    drawDots(mPost1, mLead1, Elm.CurCount);
+                    drawDots(mPost2, mLead2, -Elm.CurCount);
                 }
             }
             drawPosts();
@@ -110,7 +110,7 @@ namespace Circuit.Elements.Input {
         protected void drawWaveform(CustomGraphics g, Point center) {
             var x = center.X;
             var y = center.Y;
-            var elm = (VoltageElm)CirElm;
+            var elm = (VoltageElm)Elm;
 
             if (elm.waveform != VoltageElm.WAVEFORM.NOISE) {
                 g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
@@ -204,7 +204,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override void GetInfo(string[] arr) {
-            var elm = (VoltageElm)CirElm;
+            var elm = (VoltageElm)Elm;
             switch (elm.waveform) {
             case VoltageElm.WAVEFORM.DC:
             case VoltageElm.WAVEFORM.AC:
@@ -239,7 +239,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var elm = (VoltageElm)CirElm;
+            var elm = (VoltageElm)Elm;
             if (n == 0) {
                 return new ElementInfo(elm.waveform == VoltageElm.WAVEFORM.DC ? "電圧(V)" : "振幅(V)", elm.mMaxVoltage, -20, 20);
             }
@@ -282,7 +282,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var elm = (VoltageElm)CirElm;
+            var elm = (VoltageElm)Elm;
             if (n == 0) {
                 elm.mMaxVoltage = ei.Value;
             }

@@ -15,14 +15,14 @@ namespace Circuit.Elements.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.CRYSTAL; } }
 
         public CrystalUI(Point pos) : base(pos) {
-            CirElm = new CrystalElm();
-            mPosts = new Point[((CrystalElm)CirElm).numPosts];
+            Elm = new CrystalElm();
+            mPosts = new Point[((CrystalElm)Elm).numPosts];
             ReferenceName = "X";
         }
 
         public CrystalUI(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-            CirElm = new CrystalElm(st);
-            mPosts = new Point[((CrystalElm)CirElm).numPosts];
+            Elm = new CrystalElm(st);
+            mPosts = new Point[((CrystalElm)Elm).numPosts];
             ReferenceName = "X";
         }
 
@@ -64,7 +64,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (CrystalElm)CirElm;
+            var ce = (CrystalElm)Elm;
             setBbox(mPost1, mPost2, HS);
 
             // draw first lead and plate
@@ -95,7 +95,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (CrystalElm)CirElm;
+            var ce = (CrystalElm)Elm;
             if (n == 0) {
                 return new ElementInfo(ElementInfo.MakeLink("crystal.html", "並列静電容量(F)"), ce.ParallelCapacitance);
             }
@@ -117,7 +117,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (CrystalElm)CirElm;
+            var ce = (CrystalElm)Elm;
             if (n == 0 && 0 < ei.Value) {
                 ce.ParallelCapacitance = ei.Value;
             }

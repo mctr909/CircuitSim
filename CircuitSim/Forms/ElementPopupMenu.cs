@@ -81,7 +81,7 @@ namespace Circuit {
             mScope.Enabled = mouseElm.CanViewInScope;
             mFloatScope.Enabled = mouseElm.CanViewInScope;
             mEdit.Enabled = mouseElm.GetElementInfo(0) != null;
-            mFlip.Enabled = 2 == mouseElm.CirElm.PostCount;
+            mFlip.Enabled = 2 == mouseElm.Elm.PostCount;
             mSplit.Enabled = canSplit(mouseElm);
             mSlider.Enabled = sliderItemEnabled(mouseElm);
 

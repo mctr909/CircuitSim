@@ -5,13 +5,13 @@ namespace Circuit.Elements.Gate {
         public GateUIOr(Point pos, int dummy) : base(pos) { }
 
         public GateUIOr(Point pos) : base(pos) {
-            CirElm = new GateElmOr();
+            Elm = new GateElmOr();
         }
 
         public GateUIOr(Point p1, Point p2, int f, StringTokenizer st, int dummy) : base(p1, p2, f, st) { }
 
         public GateUIOr(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
-            CirElm = new GateElmOr(st);
+            Elm = new GateElmOr(st);
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.OR_GATE; } }
@@ -22,7 +22,7 @@ namespace Circuit.Elements.Gate {
 
         public override void SetPoints() {
             base.SetPoints();
-            var ce = (GateElmOr)CirElm;
+            var ce = (GateElmOr)Elm;
             createEuroGatePolygon();
 
             /* 0-15  = top curve,

@@ -3,17 +3,17 @@
 namespace Circuit.Elements.Gate {
     class SchmittUI : InvertingSchmittUI {
         public SchmittUI(Point pos) : base(pos) {
-            CirElm = new SchmittElm();
+            Elm = new SchmittElm();
         }
 
         public SchmittUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new SchmittElm(st);
+            Elm = new SchmittElm(st);
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.SCHMITT; } }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (SchmittElm)CirElm;
+            var ce = (SchmittElm)Elm;
             drawPosts();
             draw2Leads();
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;

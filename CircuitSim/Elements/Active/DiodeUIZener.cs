@@ -10,14 +10,14 @@ namespace Circuit.Elements.Active {
         Point[] mWing;
 
         public DiodeUIZener(Point pos) : base(pos, "Z") {
-            var ce = (DiodeElm)CirElm;
+            var ce = (DiodeElm)Elm;
             ce.mModelName = mLastZenerModelName;
             setup();
         }
 
         public DiodeUIZener(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
             if ((f & FLAG_MODEL) == 0) {
-                var ce = (DiodeElm)CirElm;
+                var ce = (DiodeElm)Elm;
                 double zvoltage = st.nextTokenDouble();
                 ce.mModel = DiodeModel.GetModelWithParameters(ce.mModel.FwDrop, zvoltage);
                 ce.mModelName = ce.mModel.Name;
@@ -62,14 +62,14 @@ namespace Circuit.Elements.Active {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (DiodeElm)CirElm;
+            var ce = (DiodeElm)Elm;
             base.GetInfo(arr);
             arr[0] = "Zener diode";
             arr[5] = "Vz = " + Utils.VoltageText(ce.mModel.BreakdownVoltage);
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (DiodeElm)CirElm;
+            var ce = (DiodeElm)Elm;
             if (n == 2) {
                 return new ElementInfo("ブレークダウン電圧(V)", ce.mModel.BreakdownVoltage, 0, 0);
             }

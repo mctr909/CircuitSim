@@ -9,13 +9,13 @@ namespace Circuit.Elements.Output {
         Point mPlusPoint;
 
         public VoltMeterUI(Point pos) : base(pos) {
-            CirElm = new VoltMeterElm();
+            Elm = new VoltMeterElm();
             /* default for new elements */
             mFlags = FLAG_SHOWVOLTAGE;
         }
 
         public VoltMeterUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new VoltMeterElm(st);
+            Elm = new VoltMeterElm(st);
         }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.VOLTMETER; } }
@@ -23,7 +23,7 @@ namespace Circuit.Elements.Output {
         public override DUMP_ID DumpType { get { return DUMP_ID.VOLTMETER; } }
 
         protected override string dump() {
-            var ce = (VoltMeterElm)CirElm;
+            var ce = (VoltMeterElm)Elm;
             return ce.Meter + " " + ce.Scale;
         }
 
@@ -34,7 +34,7 @@ namespace Circuit.Elements.Output {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (VoltMeterElm)CirElm;
+            var ce = (VoltMeterElm)Elm;
             int hs = 8;
             setBbox(mPost1, mPost2, hs);
             bool selected = NeedsHighlight;
@@ -103,13 +103,13 @@ namespace Circuit.Elements.Output {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (VoltMeterElm)CirElm;
+            var ce = (VoltMeterElm)Elm;
             arr[0] = "voltmeter";
             arr[1] = "Vd = " + Utils.VoltageText(ce.VoltageDiff);
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (VoltMeterElm)CirElm;
+            var ce = (VoltMeterElm)Elm;
             if (n == 0) {
                 var ei = new ElementInfo("表示", ce.SelectedValue, -1, -1);
                 ei.Choice = new ComboBox();
@@ -136,7 +136,7 @@ namespace Circuit.Elements.Output {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (VoltMeterElm)CirElm;
+            var ce = (VoltMeterElm)Elm;
             if (n == 0) {
                 ce.Meter = ei.Choice.SelectedIndex;
             }

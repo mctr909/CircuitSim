@@ -14,7 +14,7 @@ namespace Circuit.Elements.Gate {
         }
 
         public InvertingSchmittUI(Point pos) : base(pos) {
-            CirElm = new InvertingSchmittElm();
+            Elm = new InvertingSchmittElm();
             mNoDiagonal = true;
         }
 
@@ -23,14 +23,14 @@ namespace Circuit.Elements.Gate {
         }
 
         public InvertingSchmittUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new InvertingSchmittElm(st);
+            Elm = new InvertingSchmittElm(st);
             mNoDiagonal = true;
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.INVERT_SCHMITT; } }
 
         protected override string dump() {
-            var ce = (InvertingSchmittElm)CirElm;
+            var ce = (InvertingSchmittElm)Elm;
             return ce.SlewRate
                 + " " + ce.LowerTrigger
                 + " " + ce.UpperTrigger
@@ -39,7 +39,7 @@ namespace Circuit.Elements.Gate {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (InvertingSchmittElm)CirElm;
+            var ce = (InvertingSchmittElm)Elm;
             drawPosts();
             draw2Leads();
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
@@ -68,14 +68,14 @@ namespace Circuit.Elements.Gate {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (InvertingSchmittElm)CirElm;
+            var ce = (InvertingSchmittElm)Elm;
             arr[0] = "inverting Schmitt trigger";
             arr[1] = "Vi = " + Utils.VoltageText(ce.Volts[0]);
             arr[2] = "Vo = " + Utils.VoltageText(ce.Volts[1]);
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (InvertingSchmittElm)CirElm;
+            var ce = (InvertingSchmittElm)Elm;
             if (n == 0) {
                 dlt = ce.LowerTrigger;
                 return new ElementInfo("Lower threshold (V)", ce.LowerTrigger, 0.01, 5);
@@ -97,7 +97,7 @@ namespace Circuit.Elements.Gate {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (InvertingSchmittElm)CirElm;
+            var ce = (InvertingSchmittElm)Elm;
             if (n == 0) {
                 dlt = ei.Value;
             }

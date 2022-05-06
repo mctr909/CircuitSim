@@ -6,15 +6,15 @@ namespace Circuit.Elements.Input {
         protected const int FLAG_CLOCK = 1;
 
         public RailUI(Point pos) : base(pos, VoltageElm.WAVEFORM.DC) {
-            CirElm = new RailElm(VoltageElm.WAVEFORM.DC);
+            Elm = new RailElm(VoltageElm.WAVEFORM.DC);
         }
 
         public RailUI(Point pos, VoltageElm.WAVEFORM wf) : base(pos, wf) {
-            CirElm = new RailElm(wf);
+            Elm = new RailElm(wf);
         }
 
         public RailUI(Point p1, Point p2, int f, StringTokenizer st): base(p1, p2, f) {
-            CirElm = new RailElm(st);
+            Elm = new RailElm(st);
         }
 
         protected override int NumHandles { get { return 1; } }
@@ -31,7 +31,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override void Draw(CustomGraphics g) {
-            var elm = (VoltageElm)CirElm;
+            var elm = (VoltageElm)Elm;
             var rt = getRailText();
             double w = rt == null ? (BODY_LEN * 0.5) : g.GetTextSize(rt).Width / 2;
             if (w > mLen * 0.8) {
@@ -48,14 +48,14 @@ namespace Circuit.Elements.Input {
             drawLead(mPost1, mLead1);
             drawRail(g);
             drawPosts();
-            CirElm.CurCount = updateDotCount(-CirElm.Current, CirElm.CurCount);
+            Elm.CurCount = updateDotCount(-Elm.Current, Elm.CurCount);
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPost1, mLead1, CirElm.CurCount);
+                drawDots(mPost1, mLead1, Elm.CurCount);
             }
         }
 
         void drawRail(CustomGraphics g) {
-            var elm = (VoltageElm)CirElm;
+            var elm = (VoltageElm)Elm;
             if (elm.waveform == VoltageElm.WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
                 drawCenteredText("CLK", P2, true);
             } else if (elm.waveform == VoltageElm.WAVEFORM.DC) {

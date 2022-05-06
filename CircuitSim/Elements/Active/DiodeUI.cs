@@ -18,7 +18,7 @@ namespace Circuit.Elements.Active {
         public DiodeUI(Point pos) : base(pos) { }
 
         public DiodeUI(Point pos, string referenceName) : base(pos) {
-            CirElm = new DiodeElm();
+            Elm = new DiodeElm();
             ReferenceName = referenceName;
             setup();
         }
@@ -29,7 +29,7 @@ namespace Circuit.Elements.Active {
             try {
                 ReferenceName = st.nextToken();
             } catch { }
-            CirElm = new DiodeElm(st, 0 != (f & FLAG_FWDROP), 0 != (f & FLAG_MODEL));
+            Elm = new DiodeElm(st, 0 != (f & FLAG_FWDROP), 0 != (f & FLAG_MODEL));
             setup();
         }
 
@@ -39,7 +39,7 @@ namespace Circuit.Elements.Active {
 
         protected override string dump() {
             mFlags |= FLAG_MODEL;
-            var ce = (DiodeElm)CirElm;
+            var ce = (DiodeElm)Elm;
             return ReferenceName + " " + CustomLogicModel.escape(ce.mModelName);
         }
 
@@ -48,7 +48,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override string DumpModel() {
-            var ce = (DiodeElm)CirElm;
+            var ce = (DiodeElm)Elm;
             if (ce.mModel.BuiltIn || ce.mModel.Dumped) {
                 return null;
             }
@@ -97,7 +97,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (DiodeElm)CirElm;
+            var ce = (DiodeElm)Elm;
             if (ce.mModel.OldStyle) {
                 arr[0] = "diode";
             } else {
@@ -112,7 +112,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (DiodeElm)CirElm;
+            var ce = (DiodeElm)Elm;
             if (n == 0) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
                 ei.Text = ReferenceName;
@@ -135,7 +135,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (DiodeElm)CirElm;
+            var ce = (DiodeElm)Elm;
             if (n == 0) {
                 ReferenceName = ei.Textf.Text;
                 setTextPos();
@@ -157,7 +157,7 @@ namespace Circuit.Elements.Active {
         }
 
         protected void setup() {
-            ((DiodeElm)CirElm).Setup();
+            ((DiodeElm)Elm).Setup();
         }
 
         void setLastModelName(string n) {

@@ -19,13 +19,13 @@ namespace Circuit.Elements.Passive {
         Point[] mRect4;
 
         public ResistorUI(Point pos) : base(pos) {
-            CirElm = new ResistorElm();
+            Elm = new ResistorElm();
             ReferenceName = mLastReferenceName;
         }
 
         public ResistorUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
-                CirElm = new ResistorElm(st);
+                Elm = new ResistorElm(st);
                 ReferenceName = st.nextToken();
             } catch(Exception ex) {
                 throw new Exception("Resistor load error:{0}", ex);
@@ -37,7 +37,7 @@ namespace Circuit.Elements.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.RESISTOR; } }
 
         protected override string dump() {
-            var ce = (ResistorElm)CirElm;
+            var ce = (ResistorElm)Elm;
             return ce.Resistance + " " + ReferenceName;
         }
 
@@ -49,7 +49,7 @@ namespace Circuit.Elements.Passive {
         }
 
         void setTextPos() {
-            var ce = (ResistorElm)CirElm;
+            var ce = (ResistorElm)Elm;
             mNameV = mPost1.X == mPost2.X;
             if (mPost1.Y == mPost2.Y) {
                 var wv = Context.GetTextSize(Utils.UnitText(ce.Resistance, "")).Width * 0.5;
@@ -102,7 +102,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (ResistorElm)CirElm;
+            var ce = (ResistorElm)Elm;
             var len = (float)Utils.Distance(mLead1, mLead2);
             if (0 == len) {
                 return;
@@ -136,7 +136,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (ResistorElm)CirElm;
+            var ce = (ResistorElm)Elm;
             arr[0] = string.IsNullOrEmpty(ReferenceName) ? "抵抗" : ReferenceName;
             getBasicInfo(arr);
             arr[3] = "R = " + Utils.UnitText(ce.Resistance, CirSim.OHM_TEXT);
@@ -144,12 +144,12 @@ namespace Circuit.Elements.Passive {
         }
 
         public override string GetScopeText(Scope.VAL v) {
-            var ce = (ResistorElm)CirElm;
+            var ce = (ResistorElm)Elm;
             return "resistor, " + Utils.UnitText(ce.Resistance, CirSim.OHM_TEXT);
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (ResistorElm)CirElm;
+            var ce = (ResistorElm)Elm;
             if (n == 0) {
                 return new ElementInfo("レジスタンス(Ω)", ce.Resistance, 0, 0);
             }
@@ -162,7 +162,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (ResistorElm)CirElm;
+            var ce = (ResistorElm)Elm;
             if (n == 0 && 0 < ei.Value) {
                 ce.Resistance = ei.Value;
                 setTextPos();

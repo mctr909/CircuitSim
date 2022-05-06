@@ -8,7 +8,7 @@ namespace Circuit.Elements {
     abstract class BaseUI : Editable {
         static BaseUI mMouseElmRef = null;
         public static CustomGraphics Context;
-        public BaseElement CirElm;
+        public BaseElement Elm;
 
         #region [property]
         public string ReferenceName { get; set; }
@@ -63,7 +63,7 @@ namespace Circuit.Elements {
         /// <returns></returns>
         public virtual bool IsCenteredText { get { return false; } }
 
-        public virtual bool CanViewInScope { get { return CirElm.PostCount <= 2; } }
+        public virtual bool CanViewInScope { get { return Elm.PostCount <= 2; } }
 
         public virtual int DefaultFlags { get { return 0; } }
 
@@ -220,7 +220,7 @@ namespace Circuit.Elements {
         protected void doDots() {
             updateDotCount();
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPost1, mPost2, CirElm.CurCount);
+                drawDots(mPost1, mPost2, Elm.CurCount);
             }
         }
 
@@ -243,12 +243,12 @@ namespace Circuit.Elements {
         /// update dot positions (curcount) for drawing current (simple case for single current)
         /// </summary>
         protected void updateDotCount() {
-            CirElm.CurCount = updateDotCount(CirElm.Current, CirElm.CurCount);
+            Elm.CurCount = updateDotCount(Elm.Current, Elm.CurCount);
         }
 
         protected int getBasicInfo(string[] arr) {
-            arr[1] = "I = " + Utils.CurrentAbsText(CirElm.Current);
-            arr[2] = "Vd = " + Utils.VoltageAbsText(CirElm.VoltageDiff);
+            arr[1] = "I = " + Utils.CurrentAbsText(Elm.Current);
+            arr[2] = "Vd = " + Utils.VoltageAbsText(Elm.VoltageDiff);
             return 3;
         }
 
@@ -344,7 +344,7 @@ namespace Circuit.Elements {
             if (CirSim.Sim.MouseMode == CirSim.MOUSE_MODE.DRAG_ROW || CirSim.Sim.MouseMode == CirSim.MOUSE_MODE.DRAG_COLUMN) {
                 return;
             }
-            for (int i = 0; i != CirElm.PostCount; i++) {
+            for (int i = 0; i != Elm.PostCount; i++) {
                 var p = GetPost(i);
                 Context.DrawPost(p);
             }
@@ -635,10 +635,10 @@ namespace Circuit.Elements {
         }
 
         public int GetNodeAtPoint(int xp, int yp) {
-            if (CirElm.PostCount == 2) {
+            if (Elm.PostCount == 2) {
                 return (P1.X == xp && P1.Y == yp) ? 0 : 1;
             }
-            for (int i = 0; i != CirElm.PostCount; i++) {
+            for (int i = 0; i != Elm.PostCount; i++) {
                 var p = GetPost(i);
                 if (p.X == xp && p.Y == yp) {
                     return i;
@@ -648,8 +648,8 @@ namespace Circuit.Elements {
         }
 
         public string DispPostVoltage(int x) {
-            if (x < CirElm.Volts.Length) {
-                return Utils.UnitText(CirElm.Volts[x], "V");
+            if (x < Elm.Volts.Length) {
+                return Utils.UnitText(Elm.Volts[x], "V");
             } else {
                 return "";
             }

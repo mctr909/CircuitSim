@@ -12,19 +12,19 @@ namespace Circuit.Elements.Input {
         Point mTextPos;
 
         public SweepUI(Point pos) : base(pos) {
-            CirElm = new SweepElm();
+            Elm = new SweepElm();
             mFlags = FLAG_BIDIR;
-            ((SweepElm)CirElm).BothSides = 0 != (mFlags & FLAG_BIDIR);
+            ((SweepElm)Elm).BothSides = 0 != (mFlags & FLAG_BIDIR);
         }
 
         public SweepUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new SweepElm(st);
+            Elm = new SweepElm(st);
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.SWEEP; } }
 
         protected override string dump() {
-            var ce = (SweepElm)CirElm;
+            var ce = (SweepElm)Elm;
             return ce.MinF
                 + " " + ce.MaxF
                 + " " + ce.MaxV
@@ -38,7 +38,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (SweepElm)CirElm;
+            var ce = (SweepElm)Elm;
             setBbox(mPost1, mPost2, SIZE);
 
             drawLead(mPost1, mLead1);
@@ -94,7 +94,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (SweepElm)CirElm;
+            var ce = (SweepElm)Elm;
             arr[0] = "sweep " + (((mFlags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
             arr[1] = "I = " + Utils.CurrentAbsText(ce.Current);
             arr[2] = "V = " + Utils.VoltageText(ce.Volts[0]);
@@ -104,7 +104,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (SweepElm)CirElm;
+            var ce = (SweepElm)Elm;
             if (n == 0) {
                 return new ElementInfo("振幅(V)", ce.MaxV, 0, 0);
             }
@@ -139,7 +139,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (SweepElm)CirElm;
+            var ce = (SweepElm)Elm;
             double maxfreq = 1 / (8 * ControlPanel.TimeStep);
             if (n == 0) {
                 ce.MaxV = ei.Value;

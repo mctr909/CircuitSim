@@ -8,11 +8,11 @@ namespace Circuit.Elements.Output {
         const int FLAG_PULLDOWN = 4;
 
         public LogicOutputUI(Point pos) : base(pos) {
-            CirElm = new LogicOutputElm();
+            Elm = new LogicOutputElm();
         }
 
         public LogicOutputUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new LogicOutputElm(st);
+            Elm = new LogicOutputElm(st);
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.LOGIC_O; } }
@@ -33,7 +33,7 @@ namespace Circuit.Elements.Output {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (LogicOutputElm)CirElm;
+            var ce = (LogicOutputElm)Elm;
             string s = (ce.Volts[0] < ce.mThreshold) ? "L" : "H";
             if (isTernary) {
                 if (ce.Volts[0] > 3.75) {
@@ -54,7 +54,7 @@ namespace Circuit.Elements.Output {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (LogicOutputElm)CirElm;
+            var ce = (LogicOutputElm)Elm;
             arr[0] = "logic output";
             arr[1] = (ce.Volts[0] < ce.mThreshold) ? "low" : "high";
             if (isNumeric) {
@@ -64,7 +64,7 @@ namespace Circuit.Elements.Output {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (LogicOutputElm)CirElm;
+            var ce = (LogicOutputElm)Elm;
             if (n == 0) {
                 return new ElementInfo("閾値(V)", ce.mThreshold, 10, -10);
             }
@@ -87,7 +87,7 @@ namespace Circuit.Elements.Output {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (LogicOutputElm)CirElm;
+            var ce = (LogicOutputElm)Elm;
             if (n == 0) {
                 ce.mThreshold = ei.Value;
             }

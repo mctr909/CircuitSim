@@ -4,11 +4,11 @@ using System.Drawing;
 namespace Circuit.Elements.Gate {
     class GateUIAnd : GateUI {
         public GateUIAnd(Point pos) : base(pos) {
-            CirElm = new GateElmAnd();
+            Elm = new GateElmAnd();
         }
 
         public GateUIAnd(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
-            CirElm = new GateElmAnd(st);
+            Elm = new GateElmAnd(st);
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.AND_GATE; } }
@@ -19,7 +19,7 @@ namespace Circuit.Elements.Gate {
 
         public override void SetPoints() {
             base.SetPoints();
-            var ce = (GateElm)CirElm;
+            var ce = (GateElm)Elm;
 
             createEuroGatePolygon();
 

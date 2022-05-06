@@ -4,17 +4,17 @@ using System.Windows.Forms;
 namespace Circuit.Elements.Output {
     class StopTriggerUI : BaseUI {
 		public StopTriggerUI(Point pos) : base(pos) {
-			CirElm = new StopTriggerElm();
+			Elm = new StopTriggerElm();
 		}
 
 		public StopTriggerUI(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-			CirElm = new StopTriggerElm(st);
+			Elm = new StopTriggerElm(st);
 		}
 
 		public override DUMP_ID DumpType { get { return DUMP_ID.STOP_TRIGGER; } }
 
 		protected override string dump() {
-			var ce = (StopTriggerElm)CirElm; 
+			var ce = (StopTriggerElm)Elm; 
 			return ce.TriggerVoltage + " " + ce.Type + " " + ce.Delay;
 		}
 
@@ -37,7 +37,7 @@ namespace Circuit.Elements.Output {
 		}
 
 		public override void GetInfo(string[] arr) {
-			var ce = (StopTriggerElm)CirElm;
+			var ce = (StopTriggerElm)Elm;
 			arr[0] = "stop trigger";
 			arr[1] = "V = " + Utils.VoltageText(ce.Volts[0]);
 			arr[2] = "Vtrigger = " + Utils.VoltageText(ce.TriggerVoltage);
@@ -46,7 +46,7 @@ namespace Circuit.Elements.Output {
 		}
 
 		public override ElementInfo GetElementInfo(int n) {
-			var ce = (StopTriggerElm)CirElm;
+			var ce = (StopTriggerElm)Elm;
 			if (n == 0) {
 				var ei = new ElementInfo("閾値電圧(V)", ce.TriggerVoltage);
 				return ei;
@@ -67,7 +67,7 @@ namespace Circuit.Elements.Output {
 		}
 
 		public override void SetElementValue(int n, ElementInfo ei) {
-			var ce = (StopTriggerElm)CirElm;
+			var ce = (StopTriggerElm)Elm;
 			if (n == 0) {
 				ce.TriggerVoltage = ei.Value;
 			}

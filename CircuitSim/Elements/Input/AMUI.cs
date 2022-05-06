@@ -7,11 +7,11 @@ namespace Circuit.Elements.Input {
         const int SIZE = 28;
 
         public AMUI(Point pos) : base(pos) {
-            CirElm = new AMElm();
+            Elm = new AMElm();
         }
 
         public AMUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new AMElm(st);
+            Elm = new AMElm(st);
             if ((mFlags & FLAG_COS) != 0) {
                 mFlags &= ~FLAG_COS;
             }
@@ -20,7 +20,7 @@ namespace Circuit.Elements.Input {
         public override DUMP_ID DumpType { get { return DUMP_ID.AM; } }
 
         protected override string dump() {
-            var ce = (AMElm)CirElm;
+            var ce = (AMElm)Elm;
             return ce.CarrierFreq
                 + " " + ce.SignalFreq
                 + " " + ce.MaxVoltage
@@ -34,7 +34,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (AMElm)CirElm;
+            var ce = (AMElm)Elm;
             setBbox(mPost1, mPost2, SIZE);
             drawLead(mPost1, mLead1);
 
@@ -49,7 +49,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (AMElm)CirElm;
+            var ce = (AMElm)Elm;
             arr[0] = "AM Source";
             arr[1] = "I = " + Utils.CurrentText(ce.Current);
             arr[2] = "V = " + Utils.VoltageText(ce.VoltageDiff);
@@ -59,7 +59,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (AMElm)CirElm;
+            var ce = (AMElm)Elm;
             if (n == 0) {
                 return new ElementInfo("振幅(V)", ce.MaxVoltage, -20, 20);
             }
@@ -79,7 +79,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (AMElm)CirElm;
+            var ce = (AMElm)Elm;
             if (n == 0) {
                 ce.MaxVoltage = ei.Value;
             }

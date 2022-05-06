@@ -12,12 +12,12 @@ namespace Circuit.Elements.Input {
         double mCurrentValue;
 
         public CurrentUI(Point pos) : base(pos) {
-            CirElm = new CurrentElm();
+            Elm = new CurrentElm();
         }
 
         public CurrentUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
-                CirElm = new CurrentElm(st.nextTokenDouble());
+                Elm = new CurrentElm(st.nextTokenDouble());
             } catch {
             }
         }

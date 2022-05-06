@@ -6,11 +6,11 @@ namespace Circuit.Elements.Input {
         const int SIZE = 28;
 
         public FMUI(Point pos) : base(pos) {
-            CirElm = new FMElm();
+            Elm = new FMElm();
         }
 
         public FMUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new FMElm(st);
+            Elm = new FMElm(st);
             if ((mFlags & FLAG_COS) != 0) {
                 mFlags &= ~FLAG_COS;
             }
@@ -19,7 +19,7 @@ namespace Circuit.Elements.Input {
         public override DUMP_ID DumpType { get { return DUMP_ID.FM; } }
 
         protected override string dump() {
-            var ce = (FMElm)CirElm;
+            var ce = (FMElm)Elm;
             return ce.CarrierFreq + " " + ce.Signalfreq + " " + ce.MaxVoltage + " " + ce.Deviation;
         }
 
@@ -29,7 +29,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (FMElm)CirElm;
+            var ce = (FMElm)Elm;
             setBbox(mPost1, mPost2, SIZE);
             drawLead(mPost1, mLead1);
 
@@ -52,7 +52,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (FMElm)CirElm;
+            var ce = (FMElm)Elm;
             arr[0] = "FM Source";
             arr[1] = "I = " + Utils.CurrentText(ce.Current);
             arr[2] = "V = " + Utils.VoltageText(ce.VoltageDiff);
@@ -63,7 +63,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (FMElm)CirElm;
+            var ce = (FMElm)Elm;
             if (n == 0) {
                 return new ElementInfo("振幅(V)", ce.MaxVoltage, -20, 20);
             }
@@ -80,7 +80,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (FMElm)CirElm;
+            var ce = (FMElm)Elm;
             if (n == 0) {
                 ce.MaxVoltage = ei.Value;
             }

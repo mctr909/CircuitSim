@@ -13,15 +13,15 @@ namespace Circuit.Elements.Active {
         Point mLead3;
 
         public AnalogSwitchUI(Point pos) : base(pos) {
-            CirElm = new AnalogSwitchElm();
+            Elm = new AnalogSwitchElm();
         }
 
         public AnalogSwitchUI(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-            CirElm = new AnalogSwitchElm(st);
+            Elm = new AnalogSwitchElm(st);
         }
 
         protected override string dump() {
-            var ce = (AnalogSwitchElm)CirElm;
+            var ce = (AnalogSwitchElm)Elm;
             return ce.Ron + " " + ce.Roff;
         }
 
@@ -57,7 +57,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (AnalogSwitchElm)CirElm;
+            var ce = (AnalogSwitchElm)Elm;
             int hs = ce.IsOpen ? OPEN_HS : 0;
             setBbox(mPost1, mPost2, OPEN_HS);
 
@@ -76,7 +76,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (AnalogSwitchElm)CirElm;
+            var ce = (AnalogSwitchElm)Elm;
             arr[0] = "analog switch";
             arr[1] = ce.IsOpen ? "open" : "closed";
             arr[2] = "Vd = " + Utils.VoltageAbsText(ce.VoltageDiff);
@@ -85,7 +85,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (AnalogSwitchElm)CirElm;
+            var ce = (AnalogSwitchElm)Elm;
             if (n == 0) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
@@ -104,7 +104,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (AnalogSwitchElm)CirElm;
+            var ce = (AnalogSwitchElm)Elm;
             if (n == 0) {
                 mFlags = ei.CheckBox.Checked ? (mFlags | FLAG_INVERT) : (mFlags & ~FLAG_INVERT);
                 ce.Invert = 0 != (mFlags & FLAG_INVERT);

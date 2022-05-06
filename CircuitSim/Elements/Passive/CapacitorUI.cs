@@ -17,7 +17,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public CapacitorUI(Point pos) : base(pos) {
-            CirElm = new CapacitorElm();
+            Elm = new CapacitorElm();
             ReferenceName = mLastReferenceName;
         }
 
@@ -27,7 +27,7 @@ namespace Circuit.Elements.Passive {
 
         public CapacitorUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
-                CirElm = new CapacitorElm(st);
+                Elm = new CapacitorElm(st);
                 ReferenceName = st.nextToken();
             } catch (Exception ex) {
                 throw new Exception("Capacitor load error:{0}", ex);
@@ -39,7 +39,7 @@ namespace Circuit.Elements.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.CAPACITOR; } }
 
         protected override string dump() {
-            var ce = (CapacitorElm)CirElm;
+            var ce = (CapacitorElm)Elm;
             return ce.Capacitance + " " + ce.VoltDiff + " " + ReferenceName;
         }
 
@@ -58,7 +58,7 @@ namespace Circuit.Elements.Passive {
         }
 
         void setTextPos() {
-            var ce = (CapacitorElm)CirElm;
+            var ce = (CapacitorElm)Elm;
             mNameV = mPost1.X == mPost2.X;
             if (mPost1.Y == mPost2.Y) {
                 var wv = Context.GetTextSize(Utils.UnitText(ce.Capacitance, "")).Width * 0.5;
@@ -75,7 +75,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (CapacitorElm)CirElm;
+            var ce = (CapacitorElm)Elm;
             setBbox(mPost1, mPost2, HS);
 
             /* draw first lead and plate */
@@ -97,7 +97,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (CapacitorElm)CirElm;
+            var ce = (CapacitorElm)Elm;
             arr[0] = string.IsNullOrEmpty(ReferenceName) ? "コンデンサ" : ReferenceName;
             getBasicInfo(arr);
             arr[3] = "C = " + Utils.UnitText(ce.Capacitance, "F");
@@ -106,12 +106,12 @@ namespace Circuit.Elements.Passive {
 
         public override string GetScopeText(Scope.VAL v) {
             base.GetScopeText(v);
-            var ce = (CapacitorElm)CirElm;
+            var ce = (CapacitorElm)Elm;
             return "capacitor, " + Utils.UnitText(ce.Capacitance, "F");
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (CapacitorElm)CirElm;
+            var ce = (CapacitorElm)Elm;
             if (n == 0) {
                 return new ElementInfo("静電容量(F)", ce.Capacitance, 0, 0);
             }
@@ -124,7 +124,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (CapacitorElm)CirElm;
+            var ce = (CapacitorElm)Elm;
             if (n == 0 && ei.Value > 0) {
                 ce.Capacitance = ei.Value;
                 setTextPos();

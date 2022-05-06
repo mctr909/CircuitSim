@@ -8,12 +8,12 @@ namespace Circuit.Elements.Gate {
         Point mPcircle;
 
         public InverterUI(Point pos) : base(pos) {
-            CirElm = new InverterElm();
+            Elm = new InverterElm();
             mNoDiagonal = true;
         }
 
         public InverterUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new InverterElm(st);
+            Elm = new InverterElm(st);
             mNoDiagonal = true;
         }
 
@@ -47,7 +47,7 @@ namespace Circuit.Elements.Gate {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (InverterElm)CirElm;
+            var ce = (InverterElm)Elm;
             drawPosts();
             draw2Leads();
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
@@ -63,14 +63,14 @@ namespace Circuit.Elements.Gate {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (InverterElm)CirElm;
+            var ce = (InverterElm)Elm;
             arr[0] = "inverter";
             arr[1] = "Vi = " + Utils.VoltageText(ce.Volts[0]);
             arr[2] = "Vo = " + Utils.VoltageText(ce.Volts[1]);
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (InverterElm)CirElm;
+            var ce = (InverterElm)Elm;
             if (n == 0) {
                 return new ElementInfo("Slew Rate (V/ns)", ce.SlewRate, 0, 0);
             }
@@ -81,7 +81,7 @@ namespace Circuit.Elements.Gate {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (InverterElm)CirElm;
+            var ce = (InverterElm)Elm;
             if (n == 0) {
                 ce.SlewRate = ei.Value;
             }

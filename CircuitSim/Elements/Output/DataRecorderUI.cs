@@ -8,17 +8,17 @@ namespace Circuit.Elements.Output {
         string mName = "";
 
         public DataRecorderUI(Point pos) : base(pos) {
-            CirElm = new DataRecorderElm();
+            Elm = new DataRecorderElm();
         }
 
         public DataRecorderUI(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-            CirElm = new DataRecorderElm(st);
+            Elm = new DataRecorderElm(st);
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.DATA_RECORDER; } }
 
         protected override string dump() {
-            var ce = (DataRecorderElm)CirElm;
+            var ce = (DataRecorderElm)Elm;
             return ce.DataCount.ToString();
         }
 
@@ -39,14 +39,14 @@ namespace Circuit.Elements.Output {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (DataRecorderElm)CirElm;
+            var ce = (DataRecorderElm)Elm;
             arr[0] = "data export";
             arr[1] = "V = " + Utils.VoltageText(ce.Volts[0]);
             arr[2] = (ce.DataFull ? ce.DataCount : ce.DataPtr) + "/" + ce.DataCount;
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (DataRecorderElm)CirElm;
+            var ce = (DataRecorderElm)Elm;
             if (n == 0) {
                 return new ElementInfo("サンプル数", ce.DataCount, -1, -1).SetDimensionless();
             }
@@ -84,7 +84,7 @@ namespace Circuit.Elements.Output {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (DataRecorderElm)CirElm;
+            var ce = (DataRecorderElm)Elm;
             if (n == 0 && 0 < ei.Value) {
                 ce.setDataCount((int)ei.Value);
             }

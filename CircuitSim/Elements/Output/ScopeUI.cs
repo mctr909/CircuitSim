@@ -10,7 +10,7 @@ namespace Circuit.Elements.Output {
             P2.X = P1.X + 128;
             P2.Y = P1.Y + 64;
             elmScope = new Scope();
-            CirElm = new ScopeElm(elmScope);
+            Elm = new ScopeElm(elmScope);
             SetPoints();
         }
 

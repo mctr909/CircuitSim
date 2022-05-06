@@ -9,11 +9,11 @@ namespace Circuit.Elements.Output {
         Point mPos;
 
         public LabeledNodeUI(Point pos) : base(pos) {
-            CirElm = new LabeledNodeElm();
+            Elm = new LabeledNodeElm();
         }
 
         public LabeledNodeUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new LabeledNodeElm(st);
+            Elm = new LabeledNodeElm(st);
         }
 
         public bool IsInternal { get { return (mFlags & FLAG_INTERNAL) != 0; } }
@@ -21,12 +21,12 @@ namespace Circuit.Elements.Output {
         public override DUMP_ID DumpType { get { return DUMP_ID.LABELED_NODE; } }
 
         protected override string dump() {
-            return ((LabeledNodeElm)CirElm).Text;
+            return ((LabeledNodeElm)Elm).Text;
         }
 
         public override void SetPoints() {
             base.SetPoints();
-            var ce = (LabeledNodeElm)CirElm;
+            var ce = (LabeledNodeElm)Elm;
             if (mPost1.X == mPost2.X) {
                 setLead1(1 - 0.5 * Context.GetTextSize(ce.Text).Height / mLen);
             } else {
@@ -35,7 +35,7 @@ namespace Circuit.Elements.Output {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (LabeledNodeElm)CirElm;
+            var ce = (LabeledNodeElm)Elm;
             drawLead(mPost1, mLead1);
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             var str = ce.Text;
@@ -61,14 +61,14 @@ namespace Circuit.Elements.Output {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (LabeledNodeElm)CirElm;
+            var ce = (LabeledNodeElm)Elm;
             arr[0] = ce.Text;
             arr[1] = "I = " + Utils.CurrentText(ce.Current);
             arr[2] = "V = " + Utils.VoltageText(ce.Volts[0]);
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (LabeledNodeElm)CirElm;
+            var ce = (LabeledNodeElm)Elm;
             if (n == 0) {
                 var ei = new ElementInfo("名前", 0, -1, -1);
                 ei.Text = ce.Text;
@@ -83,7 +83,7 @@ namespace Circuit.Elements.Output {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (LabeledNodeElm)CirElm;
+            var ce = (LabeledNodeElm)Elm;
             if (n == 0) {
                 ce.Text = ei.Textf.Text;
             }

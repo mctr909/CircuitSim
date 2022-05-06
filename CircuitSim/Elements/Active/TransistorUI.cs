@@ -20,13 +20,13 @@ namespace Circuit.Elements.Active {
         Point[] mArrowPoly;
 
         public TransistorUI(Point pos, bool pnpflag) : base(pos) {
-            CirElm = new TransistorElm(pnpflag);
+            Elm = new TransistorElm(pnpflag);
             ReferenceName = "Tr";
             setup();
         }
 
         public TransistorUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new TransistorElm(st);
+            Elm = new TransistorElm(st);
             try {
                 ReferenceName = st.nextToken();
             } catch { }
@@ -38,7 +38,7 @@ namespace Circuit.Elements.Active {
         public override DUMP_ID DumpType { get { return DUMP_ID.TRANSISTOR; } }
 
         protected override string dump() {
-            var ce = (TransistorElm)CirElm;
+            var ce = (TransistorElm)Elm;
             return ce.NPN
                 + " " + (ce.Volts[TransistorElm.V_B] - ce.Volts[TransistorElm.V_C])
                 + " " + (ce.Volts[TransistorElm.V_B] - ce.Volts[TransistorElm.V_E])
@@ -51,18 +51,18 @@ namespace Circuit.Elements.Active {
         }
 
         public void SetHfe(double hfe) {
-            ((TransistorElm)CirElm).Hfe = hfe;
+            ((TransistorElm)Elm).Hfe = hfe;
             setup();
         }
 
         void setup() {
-            ((TransistorElm)CirElm).Setup();
+            ((TransistorElm)Elm).Setup();
             mNoDiagonal = true;
         }
 
         public override void SetPoints() {
             base.SetPoints();
-            var ce = (TransistorElm)CirElm;
+            var ce = (TransistorElm)Elm;
 
             if ((mFlags & FLAG_FLIP) != 0) {
                 mDsign = -mDsign;
@@ -130,7 +130,7 @@ namespace Circuit.Elements.Active {
             drawLead(mPost1, mTbase);
 
             /* draw dots */
-            var ce = (TransistorElm)CirElm;
+            var ce = (TransistorElm)Elm;
             mCurCount_b = updateDotCount(-ce.Ib, mCurCount_b);
             drawDots(mTbase, mPost1, mCurCount_b);
             mCurCount_c = updateDotCount(-ce.Ic, mCurCount_c);
@@ -163,7 +163,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (TransistorElm)CirElm;
+            var ce = (TransistorElm)Elm;
             arr[0] = "transistor (" + ((ce.NPN == -1) ? "PNP)" : "NPN)") + " hfe=" + ce.Hfe.ToString("0.000");
             double vbc = ce.Volts[TransistorElm.V_B] - ce.Volts[TransistorElm.V_C];
             double vbe = ce.Volts[TransistorElm.V_B] - ce.Volts[TransistorElm.V_E];
@@ -189,7 +189,7 @@ namespace Circuit.Elements.Active {
                 return ei;
             }
             if (n == 1) {
-                return new ElementInfo("hfe", ((TransistorElm)CirElm).Hfe, 10, 1000).SetDimensionless();
+                return new ElementInfo("hfe", ((TransistorElm)Elm).Hfe, 10, 1000).SetDimensionless();
             }
             if (n == 2) {
                 var ei = new ElementInfo("", 0, -1, -1);
@@ -207,7 +207,7 @@ namespace Circuit.Elements.Active {
                 setTextPos();
             }
             if (n == 1) {
-                ((TransistorElm)CirElm).Hfe = ei.Value;
+                ((TransistorElm)Elm).Hfe = ei.Value;
                 setup();
             }
             if (n == 2) {

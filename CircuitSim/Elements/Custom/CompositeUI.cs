@@ -21,7 +21,7 @@ namespace Circuit.Elements.Custom {
         }
 
         protected string dumpElements() {
-            var ce = (CompositeElm)CirElm;
+            var ce = (CompositeElm)Elm;
             string dumpStr = "";
             for (int i = 0; i < ce.compElmList.Count; i++) {
                 string tstring = ce.compElmList[i].Dump;
@@ -43,7 +43,7 @@ namespace Circuit.Elements.Custom {
         }
 
         protected string dumpElements(int mask) {
-            var ce = (CompositeElm)CirElm;
+            var ce = (CompositeElm)Elm;
             string dumpStr = "";
             for (int i = 0; i < ce.compElmList.Count; i++) {
                 if ((mask & (1 << i)) == 0) {
@@ -73,7 +73,7 @@ namespace Circuit.Elements.Custom {
         }
 
         public override void Delete() {
-            var ce = (CompositeElm)CirElm;
+            var ce = (CompositeElm)Elm;
             for (int i = 0; i < ce.compElmList.Count; i++) {
                 ce.compElmList[i].Delete();
             }

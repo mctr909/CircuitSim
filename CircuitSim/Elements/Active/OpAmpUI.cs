@@ -20,11 +20,11 @@ namespace Circuit.Elements.Active {
             mNoDiagonal = true;
             mFlags = FLAG_GAIN; /* need to do this before setSize() */
             mFlags |= FLAG_SMALL;
-            CirElm = new OpAmpElm();
+            Elm = new OpAmpElm();
         }
 
         public OpAmpUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new OpAmpElm(st);
+            Elm = new OpAmpElm(st);
             mNoDiagonal = true;
             mFlags |= FLAG_SMALL;
             setGain();
@@ -33,7 +33,7 @@ namespace Circuit.Elements.Active {
         public override DUMP_ID DumpType { get { return DUMP_ID.OPAMP; } }
 
         protected override string dump() {
-            var ce = (OpAmpElm)CirElm;
+            var ce = (OpAmpElm)Elm;
             mFlags |= FLAG_GAIN;
             return ce.MaxOut
                 + " " + ce.MinOut
@@ -56,7 +56,7 @@ namespace Circuit.Elements.Active {
             drawCenteredLText("-", mTextp[0], true);
             drawCenteredLText("+", mTextp[1], true);
 
-            var ce = (OpAmpElm)CirElm;
+            var ce = (OpAmpElm)Elm;
             ce.CurCount = updateDotCount(ce.Current, ce.CurCount);
             drawDots(mPost2, mLead2, ce.CurCount);
             drawPosts();
@@ -89,7 +89,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (OpAmpElm)CirElm;
+            var ce = (OpAmpElm)Elm;
             arr[0] = "op-amp";
             arr[1] = "V+ = " + Utils.VoltageText(ce.Volts[OpAmpElm.V_P]);
             arr[2] = "V- = " + Utils.VoltageText(ce.Volts[OpAmpElm.V_N]);
@@ -103,7 +103,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (OpAmpElm)CirElm;
+            var ce = (OpAmpElm)Elm;
             if (n == 0) {
                 return new ElementInfo("+電源(V)", ce.MaxOut, 1, 20);
             }
@@ -117,7 +117,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (OpAmpElm)CirElm;
+            var ce = (OpAmpElm)Elm;
             if (n == 0) {
                 ce.MaxOut = ei.Value;
             }
@@ -133,7 +133,7 @@ namespace Circuit.Elements.Active {
             if ((mFlags & FLAG_GAIN) != 0) {
                 return;
             }
-            var ce = (OpAmpElm)CirElm;
+            var ce = (OpAmpElm)Elm;
             /* gain of 100000 breaks e-amp-dfdx.txt
              * gain was 1000, but it broke amp-schmitt.txt */
             ce.Gain = ((mFlags & FLAG_LOWGAIN) != 0) ? 1000 : 100000;

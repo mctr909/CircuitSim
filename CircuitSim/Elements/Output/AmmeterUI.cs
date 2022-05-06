@@ -10,18 +10,18 @@ namespace Circuit.Elements.Output {
         Point mTextPos;
 
         public AmmeterUI(Point pos) : base(pos) {
-            CirElm = new AmmeterElm();
+            Elm = new AmmeterElm();
             mFlags = FLAG_SHOWCURRENT;
         }
 
         public AmmeterUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new AmmeterElm(st);
+            Elm = new AmmeterElm(st);
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.AMMETER; } }
 
         protected override string dump() {
-            var ce = (AmmeterElm)CirElm;
+            var ce = (AmmeterElm)Elm;
             return ce.Meter + " " + ce.Scale;
         }
 
@@ -50,7 +50,7 @@ namespace Circuit.Elements.Output {
 
         public override void Draw(CustomGraphics g) {
             base.Draw(g); /* BC required for highlighting */
-            var ce = (AmmeterElm)CirElm;
+            var ce = (AmmeterElm)Elm;
 
             drawLead(mPost1, mPost2);
             g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, mArrowPoly);
@@ -74,7 +74,7 @@ namespace Circuit.Elements.Output {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (AmmeterElm)CirElm;
+            var ce = (AmmeterElm)Elm;
             arr[0] = "Ammeter";
             switch (ce.Meter) {
             case AmmeterElm.AM_VOL:
@@ -87,7 +87,7 @@ namespace Circuit.Elements.Output {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (AmmeterElm)CirElm;
+            var ce = (AmmeterElm)Elm;
             if (n == 0) {
                 var ei = new ElementInfo("表示", ce.SelectedValue, -1, -1);
                 ei.Choice = new ComboBox();
@@ -110,7 +110,7 @@ namespace Circuit.Elements.Output {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (AmmeterElm)CirElm;
+            var ce = (AmmeterElm)Elm;
             if (n == 0) {
                 ce.Meter = ei.Choice.SelectedIndex;
             }

@@ -21,8 +21,9 @@ namespace Circuit {
                 mAnalyzeFlag = false;
             }
 
-            if (mCir.StopElm != null && mCir.StopElm != mMouseElm) {
-                mCir.StopElm.SetMouseElm(true);
+            if (mCir.StopElm != null && mCir.StopElm != mMouseElm.Elm) {
+                // Todo: SetMouseElm
+                //mCir.StopElm.SetMouseElm(true);
             }
             setupScopes();
 
@@ -204,8 +205,9 @@ namespace Circuit {
                 }
             }
 
-            if (mCir.StopElm != null && mCir.StopElm != mMouseElm) {
-                mCir.StopElm.SetMouseElm(false);
+            if (mCir.StopElm != null && mCir.StopElm != mMouseElm.Elm) {
+                // Todo: SetMouseElm
+                //mCir.StopElm.SetMouseElm(false);
             }
 
             if (null != mPixCir.Image) {

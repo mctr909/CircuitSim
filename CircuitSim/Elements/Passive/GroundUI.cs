@@ -8,11 +8,11 @@ namespace Circuit.Elements.Passive {
         Point mP2;
 
         public GroundUI(Point pos) : base(pos) {
-            CirElm = new GroundElm();
+            Elm = new GroundElm();
         }
 
         public GroundUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new GroundElm();
+            Elm = new GroundElm();
         }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.GROUND; } }
@@ -36,7 +36,7 @@ namespace Circuit.Elements.Passive {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "ground";
-            arr[1] = "I = " + Utils.CurrentText(CirElm.Current);
+            arr[1] = "I = " + Utils.CurrentText(Elm.Current);
         }
     }
 }

@@ -46,12 +46,12 @@ namespace Circuit.Elements.Gate {
         public static bool UseAnsiGates() { return ControlPanel.ChkUseAnsiSymbols.Checked; }
 
         protected override string dump() {
-            var ce = (GateElm)CirElm;
+            var ce = (GateElm)Elm;
             return ce.InputCount + " " + ce.Volts[ce.InputCount] + " " + ce.HighVoltage;
         }
 
         public override Point GetPost(int n) {
-            var ce = (GateElm)CirElm;
+            var ce = (GateElm)Elm;
             if (n == ce.InputCount) {
                 return mPost2;
             }
@@ -60,7 +60,7 @@ namespace Circuit.Elements.Gate {
 
         public override void SetPoints() {
             base.SetPoints();
-            var ce = (GateElm)CirElm;
+            var ce = (GateElm)Elm;
             ce.InputStates = new bool[ce.InputCount];
             int hs = G_HEIGHT;
             int i;
@@ -92,7 +92,7 @@ namespace Circuit.Elements.Gate {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (GateElm)CirElm;
+            var ce = (GateElm)Elm;
             for (int i = 0; i != ce.InputCount; i++) {
                 drawLead(mInPosts[i], mInGates[i]);
             }
@@ -124,14 +124,14 @@ namespace Circuit.Elements.Gate {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (GateElm)CirElm;
+            var ce = (GateElm)Elm;
             arr[0] = gateName;
             arr[1] = "Vout = " + Utils.VoltageText(ce.Volts[ce.InputCount]);
             arr[2] = "Iout = " + Utils.CurrentText(ce.Current);
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (GateElm)CirElm;
+            var ce = (GateElm)Elm;
             if (n == 0) {
                 return new ElementInfo("入力数", ce.InputCount, 1, 8).SetDimensionless();
             }
@@ -150,7 +150,7 @@ namespace Circuit.Elements.Gate {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (GateElm)CirElm;
+            var ce = (GateElm)Elm;
             if (n == 0 && ei.Value >= 1) {
                 ce.InputCount = (int)ei.Value;
                 SetPoints();

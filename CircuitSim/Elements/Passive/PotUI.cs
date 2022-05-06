@@ -28,7 +28,7 @@ namespace Circuit.Elements.Passive {
         Label mLabel;
 
         public PotUI(Point pos) : base(pos) {
-            CirElm = new PotElm();
+            Elm = new PotElm();
             mFlags = FLAG_SHOW_VALUES;
             ReferenceName = "VR";
             createSlider();
@@ -36,7 +36,7 @@ namespace Circuit.Elements.Passive {
 
         public PotUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
-                CirElm = new PotElm(st);
+                Elm = new PotElm(st);
                 ReferenceName = st.nextToken();
                 while (st.hasMoreTokens()) {
                     ReferenceName += ' ' + st.nextToken();
@@ -50,7 +50,7 @@ namespace Circuit.Elements.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.POT; } }
 
         protected override string dump() {
-            var ce = (PotElm)CirElm;
+            var ce = (PotElm)Elm;
             return ce.MaxResistance + " " + ce.Position + " " + ReferenceName;
         }
 
@@ -98,7 +98,7 @@ namespace Circuit.Elements.Passive {
             calcLeads(BODY_LEN);
 
             /* set slider */
-            var ce = (PotElm)CirElm;
+            var ce = (PotElm)Elm;
             ce.Position = mSlider.Value * 0.0099 + 0.0001;
             int soff = (int)((ce.Position - 0.5) * BODY_LEN);
             interpPoint(ref mPost3, 0.5, offset);
@@ -114,7 +114,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (PotElm)CirElm;
+            var ce = (PotElm)Elm;
             double vl = ce.Volts[PotElm.V_L];
             double vr = ce.Volts[PotElm.V_R];
             double vs = ce.Volts[PotElm.V_S];
@@ -198,7 +198,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (PotElm)CirElm;
+            var ce = (PotElm)Elm;
             arr[0] = "可変抵抗";
             arr[1] = "Vd = " + Utils.VoltageAbsText(ce.VoltageDiff);
             arr[2] = "R1 = " + Utils.UnitText(ce.Resistance1, CirSim.OHM_TEXT);
@@ -208,7 +208,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (PotElm)CirElm;
+            var ce = (PotElm)Elm;
             if (n == 0) {
                 return new ElementInfo("レジスタンス(Ω)", ce.MaxResistance, 0, 0);
             }
@@ -228,7 +228,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (PotElm)CirElm;
+            var ce = (PotElm)Elm;
             if (n == 0) {
                 ce.MaxResistance = ei.Value;
             }
@@ -303,7 +303,7 @@ namespace Circuit.Elements.Passive {
         }
 
         void createSlider() {
-            var ce = (PotElm)CirElm;
+            var ce = (PotElm)Elm;
             ControlPanel.AddSlider(mLabel = new Label() {
                 TextAlign = ContentAlignment.BottomLeft,
                 Text = ReferenceName

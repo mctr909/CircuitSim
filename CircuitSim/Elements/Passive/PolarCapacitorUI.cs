@@ -5,11 +5,11 @@ namespace Circuit.Elements.Passive {
         Point mPlusPoint;
 
         public PolarCapacitorUI(Point pos) : base(pos) {
-            CirElm = new PolarCapacitorElm();
+            Elm = new PolarCapacitorElm();
         }
 
         public PolarCapacitorUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new PolarCapacitorElm(st);
+            Elm = new PolarCapacitorElm(st);
         }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }
@@ -17,7 +17,7 @@ namespace Circuit.Elements.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.CAPACITOR_POLAR; } }
 
         protected override string dump() {
-            return ((PolarCapacitorElm)CirElm).MaxNegativeVoltage + "";
+            return ((PolarCapacitorElm)Elm).MaxNegativeVoltage + "";
         }
 
         public override void SetPoints() {
@@ -49,14 +49,14 @@ namespace Circuit.Elements.Passive {
 
         public override ElementInfo GetElementInfo(int n) {
             if (n == 2) {
-                return new ElementInfo("耐逆電圧(V)", ((PolarCapacitorElm)CirElm).MaxNegativeVoltage, 0, 0);
+                return new ElementInfo("耐逆電圧(V)", ((PolarCapacitorElm)Elm).MaxNegativeVoltage, 0, 0);
             }
             return base.GetElementInfo(n);
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 2 && ei.Value >= 0) {
-                ((PolarCapacitorElm)CirElm).MaxNegativeVoltage = ei.Value;
+                ((PolarCapacitorElm)Elm).MaxNegativeVoltage = ei.Value;
             }
             base.SetElementValue(n, ei);
         }

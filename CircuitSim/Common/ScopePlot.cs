@@ -67,7 +67,7 @@ namespace Circuit {
             if (Elm == null) {
                 return;
             }
-            double v = Elm.CirElm.GetScopeValue(Value);
+            double v = Elm.Elm.GetScopeValue(Value);
             if (v < MinValues[Pointer]) {
                 MinValues[Pointer] = v;
             }

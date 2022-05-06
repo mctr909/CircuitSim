@@ -10,17 +10,17 @@ namespace Circuit.Elements.Gate {
         Point[] mGatePoly;
 
         public TriStateUI(Point pos) : base(pos) {
-            CirElm = new TriStateElm();
+            Elm = new TriStateElm();
         }
 
         public TriStateUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new TriStateElm(st);
+            Elm = new TriStateElm(st);
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.TRISTATE; } }
 
         protected override string dump() {
-            var ce = (TriStateElm)CirElm;
+            var ce = (TriStateElm)Elm;
             return ce.Ron + " " + ce.Roff;
         }
 
@@ -40,7 +40,7 @@ namespace Circuit.Elements.Gate {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (TriStateElm)CirElm;
+            var ce = (TriStateElm)Elm;
             int hs = 16;
             setBbox(mPost1, mPost2, hs);
 
@@ -76,7 +76,7 @@ namespace Circuit.Elements.Gate {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (TriStateElm)CirElm;
+            var ce = (TriStateElm)Elm;
             arr[0] = "tri-state buffer";
             arr[1] = ce.Open ? "open" : "closed";
             arr[2] = "Vd = " + Utils.VoltageAbsText(ce.VoltageDiff);
@@ -85,7 +85,7 @@ namespace Circuit.Elements.Gate {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (TriStateElm)CirElm;
+            var ce = (TriStateElm)Elm;
             if (n == 0) {
                 return new ElementInfo("オン抵抗(Ω)", ce.Ron, 0, 0);
             }
@@ -96,7 +96,7 @@ namespace Circuit.Elements.Gate {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (TriStateElm)CirElm;
+            var ce = (TriStateElm)Elm;
             if (n == 0 && ei.Value > 0) {
                 ce.Ron = ei.Value;
             }

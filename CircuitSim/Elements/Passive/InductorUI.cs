@@ -8,13 +8,13 @@ namespace Circuit.Elements.Passive {
         const int BODY_LEN = 24;
 
         public InductorUI(Point pos) : base(pos) {
-            CirElm = new InductorElm();
+            Elm = new InductorElm();
             ReferenceName = mLastReferenceName;
         }
 
         public InductorUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
-                CirElm = new InductorElm(st);
+                Elm = new InductorElm(st);
                 ReferenceName = st.nextToken();
             } catch (Exception ex) {
                 throw new Exception("Inductor load error:{0}", ex);
@@ -26,7 +26,7 @@ namespace Circuit.Elements.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.INDUCTOR; } }
 
         protected override string dump() {
-            var ce = (InductorElm)CirElm;
+            var ce = (InductorElm)Elm;
             return ce.Inductance + " " + ce.Current + " " + ReferenceName;
         }
 
@@ -37,7 +37,7 @@ namespace Circuit.Elements.Passive {
         }
 
         void setTextPos() {
-            var ce = (InductorElm)CirElm;
+            var ce = (InductorElm)Elm;
             mNameV = mPost1.X == mPost2.X;
             if (mPost1.Y == mPost2.Y) {
                 var wv = Context.GetTextSize(Utils.UnitText(ce.Inductance, "")).Width * 0.5;
@@ -54,9 +54,9 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (InductorElm)CirElm;
-            double v1 = CirElm.Volts[0];
-            double v2 = CirElm.Volts[1];
+            var ce = (InductorElm)Elm;
+            double v1 = Elm.Volts[0];
+            double v2 = Elm.Volts[1];
             int hs = 8;
             setBbox(mPost1, mPost2, hs);
 
@@ -71,7 +71,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (InductorElm)CirElm;
+            var ce = (InductorElm)Elm;
             arr[0] = string.IsNullOrEmpty(ReferenceName) ? "コイル" : ReferenceName;
             getBasicInfo(arr);
             arr[3] = "L = " + Utils.UnitText(ce.Inductance, "H");
@@ -79,7 +79,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override ElementInfo GetElementInfo(int n) {
-            var ce = (InductorElm)CirElm;
+            var ce = (InductorElm)Elm;
             if (n == 0) {
                 return new ElementInfo("インダクタンス(H)", ce.Inductance, 0, 0);
             }
@@ -92,7 +92,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
-            var ce = (InductorElm)CirElm;
+            var ce = (InductorElm)Elm;
             if (n == 0 && ei.Value > 0) {
                 ce.Inductance = ei.Value;
                 setTextPos();
@@ -102,7 +102,7 @@ namespace Circuit.Elements.Passive {
                 mLastReferenceName = ReferenceName;
                 setTextPos();
             }
-            ce.Setup(ce.Inductance, CirElm.Current);
+            ce.Setup(ce.Inductance, Elm.Current);
         }
     }
 }
