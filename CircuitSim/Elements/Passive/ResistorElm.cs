@@ -6,8 +6,8 @@
             Resistance = 1000;
         }
 
-        public ResistorElm(double resistance) {
-            Resistance = resistance;
+        public ResistorElm(StringTokenizer st) {
+            Resistance = st.nextTokenDouble();
         }
 
         public override int PostCount { get { return 2; } }

@@ -68,6 +68,8 @@
     <Compile Include="Elements\Active\DiodeUIZener.cs" />
     <Compile Include="Elements\BaseElement.cs" />
     <Compile Include="Elements\Custom\BoxUI.cs" />
+    <Compile Include="Elements\Custom\CompositeElm.cs" />
+    <Compile Include="Elements\Custom\CompositeUI.cs" />
     <Compile Include="Elements\Custom\GraphicUI.cs" />
     <Compile Include="Elements\Custom\GraphicElm.cs" />
     <Compile Include="Elements\Custom\TextUI.cs" />
@@ -116,6 +118,8 @@
     <Compile Include="Elements\Output\VoltMeterUI.cs" />
     <Compile Include="Elements\Passive\CapacitorElm.cs" />
     <Compile Include="Elements\Input\RailUI.cs" />
+    <Compile Include="Elements\Passive\CrystalUI.cs" />
+    <Compile Include="Elements\Passive\CrystalElm.cs" />
     <Compile Include="Elements\Passive\GroundElm.cs" />
     <Compile Include="Elements\Passive\InductorElm.cs" />
     <Compile Include="Elements\Passive\PotElm.cs" />

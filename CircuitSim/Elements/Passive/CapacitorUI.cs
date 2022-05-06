@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace Circuit.Elements.Passive {
     class CapacitorUI : BaseUI {
@@ -17,9 +18,11 @@ namespace Circuit.Elements.Passive {
 
         public CapacitorUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
-                CirElm = new CapacitorElm(st.nextTokenDouble(), st.nextTokenDouble());
+                CirElm = new CapacitorElm(st);
                 ReferenceName = st.nextToken();
-            } catch { }
+            } catch (Exception ex) {
+                throw new Exception("Capacitor load error:{0}", ex);
+            }
         }
         
         public override DUMP_ID Shortcut { get { return DUMP_ID.CAPACITOR; } }

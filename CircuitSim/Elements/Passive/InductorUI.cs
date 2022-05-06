@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace Circuit.Elements.Passive {
     class InductorUI : BaseUI {
@@ -11,9 +12,11 @@ namespace Circuit.Elements.Passive {
 
         public InductorUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
-                CirElm = new InductorElm(st.nextTokenDouble(), st.nextTokenDouble(), mFlags);
+                CirElm = new InductorElm(st);
                 ReferenceName = st.nextToken();
-            } catch { }
+            } catch (Exception ex) {
+                throw new Exception("Inductor load error:{0}", ex);
+            }
         }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.INDUCTOR; } }

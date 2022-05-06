@@ -11,9 +11,9 @@
             Capacitance = 1e-5;
         }
 
-        public CapacitorElm(double capacitance, double voltDiff) {
-            Capacitance = capacitance;
-            VoltDiff = voltDiff;
+        public CapacitorElm(StringTokenizer st) {
+            Capacitance = st.nextTokenDouble();
+            VoltDiff = st.nextTokenDouble();
         }
 
         public override int PostCount { get { return 2; } }

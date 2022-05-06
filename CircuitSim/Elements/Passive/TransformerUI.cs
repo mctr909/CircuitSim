@@ -20,10 +20,12 @@ namespace Circuit.Elements.Passive {
         }
 
         public TransformerUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            CirElm = new TransformerElm(st, (mFlags & FLAG_REVERSE) != 0);
             try {
+                CirElm = new TransformerElm(st, (mFlags & FLAG_REVERSE) != 0);
                 ReferenceName = st.nextToken();
-            } catch { }
+            } catch (Exception ex) {
+                throw new Exception("Transformer load error:{0}", ex);
+            }
             mNoDiagonal = true;
         }
 

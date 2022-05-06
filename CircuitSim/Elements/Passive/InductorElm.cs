@@ -10,10 +10,10 @@
             Ind.Setup(Inductance, mCurrent);
         }
 
-        public InductorElm(double inductance, double current, int flags) {
+        public InductorElm(StringTokenizer st) {
             Ind = new Inductor(mCir);
-            Inductance = inductance;
-            mCurrent = current;
+            Inductance = st.nextTokenDouble();
+            mCurrent = st.nextTokenDouble();
             Ind.Setup(Inductance, mCurrent);
         }
 

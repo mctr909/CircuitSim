@@ -614,8 +614,8 @@ namespace Circuit {
                 return new InductorUI(pos);
             case ELEMENTS.TRANSFORMER:
                 return new TransformerUI(pos);
-            //case ELEMENTS.CRYSTAL:
-            //    return new CrystalElm(pos);
+            case ELEMENTS.CRYSTAL:
+                return new CrystalUI(pos);
             #endregion
 
             #region Active Components
@@ -861,8 +861,8 @@ namespace Circuit {
                 return new InductorUI(p1, p2, f, st);
             case DUMP_ID.TRANSFORMER:
                 return new TransformerUI(p1, p2, f, st);
-            //case DUMP_ID.CRYSTAL:
-            //    return new CrystalElm(p1, p2, f, st);
+            case DUMP_ID.CRYSTAL:
+                return new CrystalUI(p1, p2, f, st);
             #endregion
 
             #region Active Components

@@ -41,7 +41,9 @@ namespace Circuit.Elements.Passive {
                 while (st.hasMoreTokens()) {
                     ReferenceName += ' ' + st.nextToken();
                 }
-            } catch { }
+            } catch (Exception ex) {
+                throw new Exception("Pot load error:{0}", ex);
+            }
             createSlider();
         }
 

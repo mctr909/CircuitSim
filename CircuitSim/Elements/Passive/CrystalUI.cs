@@ -1,0 +1,140 @@
+﻿using System.Drawing;
+
+using Circuit.Elements.Custom;
+
+namespace Circuit.Elements.Passive {
+    class CrystalUI : CompositeUI {
+        const int HS = 12;
+
+        Point[] mPlate1;
+        Point[] mPlate2;
+        Point[] mSandwichPoints;
+
+        public override bool CanViewInScope { get { return true; } }
+
+        public override DUMP_ID DumpType { get { return DUMP_ID.CRYSTAL; } }
+
+        public CrystalUI(Point pos) : base(pos) {
+            CirElm = new CrystalElm();
+            mPosts = new Point[((CrystalElm)CirElm).numPosts];
+            ReferenceName = "X";
+        }
+
+        public CrystalUI(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
+            CirElm = new CrystalElm(st);
+            mPosts = new Point[((CrystalElm)CirElm).numPosts];
+            ReferenceName = "X";
+        }
+
+        public override void SetPoints() {
+            base.SetPoints();
+            double f = (mLen / 2 - 6) / mLen;
+
+            // calc leads
+            setLead1(f);
+            setLead2(1 - f);
+
+            // calc plates
+            mPlate1 = new Point[2];
+            mPlate2 = new Point[2];
+            interpPointAB(ref mPlate1[0], ref mPlate1[1], f, 6);
+            interpPointAB(ref mPlate2[0], ref mPlate2[1], 1 - f, 6);
+
+            double f2 = (mLen / 2 - 3) / mLen;
+            mSandwichPoints = new Point[4];
+            interpPointAB(ref mSandwichPoints[0], ref mSandwichPoints[1], f2, 8);
+            interpPointAB(ref mSandwichPoints[3], ref mSandwichPoints[2], 1 - f2, 8);
+
+            // need to do this explicitly for CompositeElms
+            setPost(0, mPoint1);
+            setPost(1, mPoint2);
+
+            setTextPos();
+        }
+
+        void setTextPos() {
+            if (mPoint1.Y == mPoint2.Y) {
+                var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
+                interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 16 * mDsign);
+            } else if (mPoint1.X == mPoint2.X) {
+                interpPoint(ref mNamePos, 0.5, -8 * mDsign);
+            } else {
+                interpPoint(ref mNamePos, 0.5, -12 * mDsign);
+            }
+        }
+
+        public override void Draw(CustomGraphics g) {
+            var ce = (CrystalElm)CirElm;
+            setBbox(mPoint1, mPoint2, HS);
+
+            // draw first lead and plate
+            drawLead(mPoint1, mLead1);
+            drawLead(mPlate1[0], mPlate1[1]);
+
+            // draw second lead and plate
+            drawLead(mPoint2, mLead2);
+            drawLead(mPlate2[0], mPlate2[1]);
+
+            for (int i = 0; i != 4; i++) {
+                drawLead(mSandwichPoints[i], mSandwichPoints[(i + 1) % 4]);
+            }
+
+            updateDotCount();
+            if (CirSim.Sim.DragElm != this) {
+                drawDots(mPoint1, mLead1, ce.CurCount);
+                drawDots(mPoint2, mLead2, -ce.CurCount);
+            }
+            drawPosts();
+
+            drawName();
+        }
+
+        public override void GetInfo(string[] arr) {
+            arr[0] = "crystal";
+            getBasicInfo(arr);
+        }
+
+        public override ElementInfo GetElementInfo(int n) {
+            var ce = (CrystalElm)CirElm;
+            if (n == 0) {
+                return new ElementInfo(ElementInfo.MakeLink("crystal.html", "並列静電容量(F)"), ce.ParallelCapacitance);
+            }
+            if (n == 1) {
+                return new ElementInfo("直列静電容量(F)", ce.SeriesCapacitance);
+            }
+            if (n == 2) {
+                return new ElementInfo("インダクタンス(H)", ce.Inductance, 0, 0);
+            }
+            if (n == 3) {
+                return new ElementInfo("レジスタンス(Ω)", ce.Resistance, 0, 0);
+            }
+            if (n == 4) {
+                var ei = new ElementInfo("名前", 0, 0, 0);
+                ei.Text = ReferenceName;
+                return ei;
+            }
+            return null;
+        }
+
+        public override void SetElementValue(int n, ElementInfo ei) {
+            var ce = (CrystalElm)CirElm;
+            if (n == 0 && 0 < ei.Value) {
+                ce.ParallelCapacitance = ei.Value;
+            }
+            if (n == 1 && 0 < ei.Value) {
+                ce.SeriesCapacitance = ei.Value;
+            }
+            if (n == 2 && 0 < ei.Value) {
+                ce.Inductance = ei.Value;
+            }
+            if (n == 3 && 0 < ei.Value) {
+                ce.Resistance = ei.Value;
+            }
+            if (n == 4) {
+                ReferenceName = ei.Textf.Text;
+                setTextPos();
+            }
+            ce.initCrystal();
+        }
+    }
+}

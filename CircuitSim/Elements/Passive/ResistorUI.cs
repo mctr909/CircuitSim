@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace Circuit.Elements.Passive {
     class ResistorUI : BaseUI {
@@ -22,9 +23,11 @@ namespace Circuit.Elements.Passive {
 
         public ResistorUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
-                CirElm = new ResistorElm(st.nextTokenDouble());
+                CirElm = new ResistorElm(st);
                 ReferenceName = st.nextToken();
-            } catch { }
+            } catch(Exception ex) {
+                throw new Exception("Resistor load error:{0}", ex);
+            }
         }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.RESISTOR; } }
