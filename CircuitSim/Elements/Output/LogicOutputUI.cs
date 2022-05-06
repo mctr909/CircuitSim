@@ -47,9 +47,9 @@ namespace Circuit.Elements.Output {
                 s = (ce.Volts[0] < ce.mThreshold) ? "0" : "1";
             }
             ce.mValue = s;
-            setBbox(mPoint1, mLead1, 0);
+            setBbox(mPost1, mLead1, 0);
             drawCenteredLText(s, P2, true);
-            drawLead(mPoint1, mLead1);
+            drawLead(mPost1, mLead1);
             drawPosts();
         }
 

@@ -41,6 +41,10 @@ namespace Circuit.Elements.Gate {
 
         public override int VoltageSourceCount { get { return 1; } }
 
+        // there is no current path through the InvertingSchmitt input, but there
+        // is an indirect path through the output to ground.
+        public override bool GetConnection(int n1, int n2) { return false; }
+
         public override void AnaStamp() {
             mCir.StampVoltageSource(0, Nodes[1], mVoltSource);
         }

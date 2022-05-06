@@ -44,7 +44,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            setBbox(mPoint1, mPoint2, HS);
+            setBbox(mPost1, mPost2, HS);
 
             draw2Leads();
 

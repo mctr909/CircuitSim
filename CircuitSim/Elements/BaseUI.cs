@@ -97,9 +97,9 @@ namespace Circuit.Elements {
         /* direction of element */
         protected PointF mDir;
 
-        /* Point objects */
-        protected Point mPoint1;
-        protected Point mPoint2;
+        /* post of objects */
+        protected Point mPost1;
+        protected Point mPost2;
 
         /* lead points (ends of wire stubs for simple two-terminal elements) */
         protected Point mLead1;
@@ -151,8 +151,8 @@ namespace Circuit.Elements {
         /// <param name="len"></param>
         protected void calcLeads(int len) {
             if (mLen < len || len == 0) {
-                mLead1 = mPoint1;
-                mLead2 = mPoint2;
+                mLead1 = mPost1;
+                mLead2 = mPost2;
                 return;
             }
             setLead1((mLen - len) / (2 * mLen));
@@ -220,7 +220,7 @@ namespace Circuit.Elements {
         protected void doDots() {
             updateDotCount();
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mPoint2, CirElm.CurCount);
+                drawDots(mPost1, mPost2, CirElm.CurCount);
             }
         }
 
@@ -252,10 +252,6 @@ namespace Circuit.Elements {
             return 3;
         }
 
-        protected bool comparePair(int x1, int x2, int y1, int y2) {
-            return (x1 == y1 && x2 == y2) || (x1 == y2 && x2 == y1);
-        }
-
         protected void setLead1(double w) {
             interpPoint(ref mLead1, w);
         }
@@ -265,39 +261,39 @@ namespace Circuit.Elements {
         }
 
         protected void interpPoint(ref Point p, double f) {
-            p.X = (int)Math.Floor(mPoint1.X * (1 - f) + mPoint2.X * f + 0.5);
-            p.Y = (int)Math.Floor(mPoint1.Y * (1 - f) + mPoint2.Y * f + 0.5);
+            p.X = (int)Math.Floor(mPost1.X * (1 - f) + mPost2.X * f + 0.5);
+            p.Y = (int)Math.Floor(mPost1.Y * (1 - f) + mPost2.Y * f + 0.5);
         }
 
         protected void interpPoint(ref Point p, double f, double g) {
-            var gx = mPoint2.Y - mPoint1.Y;
-            var gy = mPoint1.X - mPoint2.X;
+            var gx = mPost2.Y - mPost1.Y;
+            var gy = mPost1.X - mPost2.X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                p.X = mPoint1.X;
-                p.Y = mPoint1.Y;
+                p.X = mPost1.X;
+                p.Y = mPost1.Y;
             } else {
                 g /= r;
-                p.X = (int)Math.Floor(mPoint1.X * (1 - f) + mPoint2.X * f + g * gx + 0.5);
-                p.Y = (int)Math.Floor(mPoint1.Y * (1 - f) + mPoint2.Y * f + g * gy + 0.5);
+                p.X = (int)Math.Floor(mPost1.X * (1 - f) + mPost2.X * f + g * gx + 0.5);
+                p.Y = (int)Math.Floor(mPost1.Y * (1 - f) + mPost2.Y * f + g * gy + 0.5);
             }
         }
 
         protected void interpPointAB(ref Point a, ref Point b, double f, double g) {
-            var gx = mPoint2.Y - mPoint1.Y;
-            var gy = mPoint1.X - mPoint2.X;
+            var gx = mPost2.Y - mPost1.Y;
+            var gy = mPost1.X - mPost2.X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                a.X = mPoint1.X;
-                a.Y = mPoint1.Y;
-                b.X = mPoint2.X;
-                b.Y = mPoint2.Y;
+                a.X = mPost1.X;
+                a.Y = mPost1.Y;
+                b.X = mPost2.X;
+                b.Y = mPost2.Y;
             } else {
                 g /= r;
-                a.X = (int)Math.Floor(mPoint1.X * (1 - f) + mPoint2.X * f + g * gx + 0.5);
-                a.Y = (int)Math.Floor(mPoint1.Y * (1 - f) + mPoint2.Y * f + g * gy + 0.5);
-                b.X = (int)Math.Floor(mPoint1.X * (1 - f) + mPoint2.X * f - g * gx + 0.5);
-                b.Y = (int)Math.Floor(mPoint1.Y * (1 - f) + mPoint2.Y * f - g * gy + 0.5);
+                a.X = (int)Math.Floor(mPost1.X * (1 - f) + mPost2.X * f + g * gx + 0.5);
+                a.Y = (int)Math.Floor(mPost1.Y * (1 - f) + mPost2.Y * f + g * gy + 0.5);
+                b.X = (int)Math.Floor(mPost1.X * (1 - f) + mPost2.X * f - g * gx + 0.5);
+                b.Y = (int)Math.Floor(mPost1.Y * (1 - f) + mPost2.Y * f - g * gy + 0.5);
             }
         }
 
@@ -362,9 +358,9 @@ namespace Circuit.Elements {
         protected void draw2Leads() {
             Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             /* draw first lead */
-            Context.DrawLine(mPoint1, mLead1);
+            Context.DrawLine(mPost1, mLead1);
             /* draw second lead */
-            Context.DrawLine(mLead2, mPoint2);
+            Context.DrawLine(mLead2, mPost2);
         }
 
         /// <summary>
@@ -704,8 +700,8 @@ namespace Circuit.Elements {
             mDiff.X = P2.X - P1.X;
             mDiff.Y = P2.Y - P1.Y;
             mLen = Math.Sqrt(mDiff.X * mDiff.X + mDiff.Y * mDiff.Y);
-            var sx = mPoint2.X - mPoint1.X;
-            var sy = mPoint2.Y - mPoint1.Y;
+            var sx = mPost2.X - mPost1.X;
+            var sy = mPost2.Y - mPost1.Y;
             var r = (float)Math.Sqrt(sx * sx + sy * sy);
             if (r == 0) {
                 mDir.X = 0;
@@ -715,8 +711,8 @@ namespace Circuit.Elements {
                 mDir.Y = -sx / r;
             }
             mDsign = (mDiff.Y == 0) ? Math.Sign(mDiff.X) : Math.Sign(mDiff.Y);
-            mPoint1 = new Point(P1.X, P1.Y);
-            mPoint2 = new Point(P2.X, P2.Y);
+            mPost1 = new Point(P1.X, P1.Y);
+            mPost2 = new Point(P2.X, P2.Y);
         }
 
         public virtual void SetMouseElm(bool v) {
@@ -733,17 +729,8 @@ namespace Circuit.Elements {
         /// <param name="n"></param>
         /// <returns></returns>
         public virtual Point GetPost(int n) {
-            return (n == 0) ? mPoint1 : (n == 1) ? mPoint2 : new Point();
+            return (n == 0) ? mPost1 : (n == 1) ? mPost2 : new Point();
         }
-
-        /// <summary>
-        /// are n1 and n2 connected by this element?  this is used to determine
-        /// unconnected nodes, and look for loops
-        /// </summary>
-        /// <param name="n1"></param>
-        /// <param name="n2"></param>
-        /// <returns></returns>
-        public virtual bool GetConnection(int n1, int n2) { return true; }
 
         /// <summary>
         /// get component info for display in lower right

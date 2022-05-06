@@ -53,14 +53,10 @@ namespace Circuit.Elements.Gate {
         public override Point GetPost(int n) {
             var ce = (GateElm)CirElm;
             if (n == ce.InputCount) {
-                return mPoint2;
+                return mPost2;
             }
             return mInPosts[n];
         }
-
-        /* there is no current path through the gate inputs,
-         * but there is an indirect path through the output to ground. */
-        public override bool GetConnection(int n1, int n2) { return false; }
 
         public override void SetPoints() {
             base.SetPoints();
@@ -89,7 +85,7 @@ namespace Circuit.Elements.Gate {
                 ce.Volts[i] = (ce.LastOutput ^ ce.IsInverting) ? 5 : 0;
             }
             mHs2 = G_WIDTH * (ce.InputCount / 2 + 1);
-            setBbox(mPoint1, mPoint2, mHs2);
+            setBbox(mPost1, mPost2, mHs2);
             if (ce.HasSchmittInputs) {
                 Utils.CreateSchmitt(mLead1, mLead2, out mSchmittPoly, 1, .47f);
             }
@@ -100,7 +96,7 @@ namespace Circuit.Elements.Gate {
             for (int i = 0; i != ce.InputCount; i++) {
                 drawLead(mInPosts[i], mInGates[i]);
             }
-            drawLead(mLead2, mPoint2);
+            drawLead(mLead2, mPost2);
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             if (UseAnsiGates()) {
                 g.DrawPolygon(mGatePolyAnsi);
@@ -123,7 +119,7 @@ namespace Circuit.Elements.Gate {
                 g.DrawCircle(mCirclePos, CIRCLE_SIZE);
             }
             ce.CurCount = updateDotCount(ce.Current, ce.CurCount);
-            drawDots(mLead2, mPoint2, ce.CurCount);
+            drawDots(mLead2, mPost2, ce.CurCount);
             drawPosts();
         }
 

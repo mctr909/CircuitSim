@@ -70,7 +70,7 @@ namespace Circuit.Elements.Output {
         public override void Draw(CustomGraphics g) {
             setScopeRect();
             elmScope.Draw(g);
-            setBbox(mPoint1, mPoint2, 0);
+            setBbox(mPost1, mPost2, 0);
             drawPosts();
         }
     }

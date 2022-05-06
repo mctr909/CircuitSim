@@ -68,8 +68,7 @@ namespace Circuit {
 
             mVisited[n1] = true;
             for (int i = 0; i != mElmList.Count; i++) {
-                var ce = mElmList[i];
-                var cee = ce.CirElm;
+                var cee = mElmList[i].CirElm;
                 if (cee == mFirstElm) {
                     continue;
                 }
@@ -138,7 +137,7 @@ namespace Circuit {
                     if (nodeA == nodeB) {
                         continue;
                     }
-                    if (ce.GetConnection(nodeA, nodeB) && FindPath(cee.AnaGetConnectionNode(nodeB))) {
+                    if (cee.GetConnection(nodeA, nodeB) && FindPath(cee.AnaGetConnectionNode(nodeB))) {
                         /*Console.WriteLine("got findpath " + n1); */
                         return true;
                     }

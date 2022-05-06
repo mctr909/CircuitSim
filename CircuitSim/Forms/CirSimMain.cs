@@ -14,13 +14,6 @@ namespace Circuit {
             return ElmList[n];
         }
 
-        public BaseElement getElmE(int n) {
-            if (n >= ElmList.Count) {
-                return null;
-            }
-            return ElmList[n].CirElm;
-        }
-
         public void updateCircuit() {
             bool didAnalyze = mAnalyzeFlag;
             if (mAnalyzeFlag || DcAnalysisFlag) {

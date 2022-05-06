@@ -30,16 +30,16 @@ namespace Circuit.Elements.Input {
 
         public override void Draw(CustomGraphics g) {
             var ce = (FMElm)CirElm;
-            setBbox(mPoint1, mPoint2, SIZE);
-            drawLead(mPoint1, mLead1);
+            setBbox(mPost1, mPost2, SIZE);
+            drawLead(mPost1, mLead1);
 
             string s = "FM";
             drawCenteredText(s, P2, true);
-            drawWaveform(g, mPoint2);
+            drawWaveform(g, mPost2);
             drawPosts();
             ce.CurCount = updateDotCount(-ce.Current, ce.CurCount);
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mLead1, ce.CurCount);
+                drawDots(mPost1, mLead1, ce.CurCount);
             }
         }
 

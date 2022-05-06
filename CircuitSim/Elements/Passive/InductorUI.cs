@@ -38,8 +38,8 @@ namespace Circuit.Elements.Passive {
 
         void setTextPos() {
             var ce = (InductorElm)CirElm;
-            mNameV = mPoint1.X == mPoint2.X;
-            if (mPoint1.Y == mPoint2.Y) {
+            mNameV = mPost1.X == mPost2.X;
+            if (mPost1.Y == mPost2.Y) {
                 var wv = Context.GetTextSize(Utils.UnitText(ce.Inductance, "")).Width * 0.5;
                 var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
                 interpPoint(ref mValuePos, 0.5 - wv / mLen * mDsign, -11 * mDsign);
@@ -58,7 +58,7 @@ namespace Circuit.Elements.Passive {
             double v1 = CirElm.Volts[0];
             double v2 = CirElm.Volts[1];
             int hs = 8;
-            setBbox(mPoint1, mPoint2, hs);
+            setBbox(mPost1, mPost2, hs);
 
             draw2Leads();
             drawCoil(mLead1, mLead2, v1, v2);

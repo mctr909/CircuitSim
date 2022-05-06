@@ -28,19 +28,19 @@ namespace Circuit.Elements.Output {
         public override void SetPoints() {
             base.SetPoints();
             interpPoint(ref mMid, 0.5 + 4 / mLen);
-            Utils.CreateArrow(mPoint1, mMid, out mArrowPoly, 9, 5);
+            Utils.CreateArrow(mPost1, mMid, out mArrowPoly, 9, 5);
             int sign;
-            mNameV = mPoint1.X == mPoint2.X;
+            mNameV = mPost1.X == mPost2.X;
             if (mNameV) {
                 sign = -mDsign;
-                if (mPoint1.Y < mPoint2.Y) {
+                if (mPost1.Y < mPost2.Y) {
                     interpPoint(ref mTextPos, (mLen - 5) / mLen, 21 * sign);
                 } else {
                     interpPoint(ref mTextPos, 5 / mLen, 21 * sign);
                 }
             } else {
                 sign = mDsign;
-                if(mPoint1.X < mPoint2.X) {
+                if(mPost1.X < mPost2.X) {
                     interpPoint(ref mTextPos, (mLen - 5) / mLen, 12 * sign);
                 } else {
                     interpPoint(ref mTextPos, 5 / mLen, 12 * sign);
@@ -52,10 +52,10 @@ namespace Circuit.Elements.Output {
             base.Draw(g); /* BC required for highlighting */
             var ce = (AmmeterElm)CirElm;
 
-            drawLead(mPoint1, mPoint2);
+            drawLead(mPost1, mPost2);
             g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, mArrowPoly);
             doDots();
-            setBbox(mPoint1, mPoint2, 3);
+            setBbox(mPost1, mPost2, 3);
             string s = "A";
             switch (ce.Meter) {
             case AmmeterElm.AM_VOL:

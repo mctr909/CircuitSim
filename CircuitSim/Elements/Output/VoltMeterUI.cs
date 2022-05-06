@@ -27,8 +27,6 @@ namespace Circuit.Elements.Output {
             return ce.Meter + " " + ce.Scale;
         }
 
-        public override bool GetConnection(int n1, int n2) { return false; }
-
         public override void SetPoints() {
             base.SetPoints();
             interpPoint(ref mCenter, 0.5, 12 * mDsign);
@@ -38,7 +36,7 @@ namespace Circuit.Elements.Output {
         public override void Draw(CustomGraphics g) {
             var ce = (VoltMeterElm)CirElm;
             int hs = 8;
-            setBbox(mPoint1, mPoint2, hs);
+            setBbox(mPost1, mPost2, hs);
             bool selected = NeedsHighlight;
             double len = (selected || CirSim.Sim.DragElm == this || mustShowVoltage()) ? 16 : mLen - 32;
             calcLeads((int)len);
@@ -48,14 +46,14 @@ namespace Circuit.Elements.Output {
             } else {
                 g.LineColor = CustomGraphics.GrayColor;
             }
-            drawLead(mPoint1, mLead1);
+            drawLead(mPost1, mLead1);
 
             if (selected) {
                 g.LineColor = CustomGraphics.SelectColor;
             } else {
                 g.LineColor = CustomGraphics.GrayColor;
             }
-            drawLead(mLead2, mPoint2);
+            drawLead(mLead2, mPost2);
 
             if (this == CirSim.Sim.PlotXElm) {
                 drawCenteredLText("X", mCenter, true);

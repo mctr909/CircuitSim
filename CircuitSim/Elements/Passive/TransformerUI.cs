@@ -45,16 +45,6 @@ namespace Circuit.Elements.Passive {
             return mPtEnds[n];
         }
 
-        public override bool GetConnection(int n1, int n2) {
-            if (comparePair(n1, n2, 0, 2)) {
-                return true;
-            }
-            if (comparePair(n1, n2, 1, 3)) {
-                return true;
-            }
-            return false;
-        }
-
         public override void Drag(Point pos) {
             pos = CirSim.Sim.SnapGrid(pos);
             P2.X = pos.X;
@@ -70,12 +60,12 @@ namespace Circuit.Elements.Passive {
                 P2.Y = P1.Y;
             }
             base.SetPoints();
-            mPoint2.Y = mPoint1.Y;
+            mPost2.Y = mPost1.Y;
             mPtEnds = new Point[4];
             mPtCoil = new Point[4];
             mPtCore = new Point[4];
-            mPtEnds[0] = mPoint1;
-            mPtEnds[1] = mPoint2;
+            mPtEnds[0] = mPost1;
+            mPtEnds[1] = mPost2;
             interpPoint(ref mPtEnds[2], 0, -mDsign * height);
             interpPoint(ref mPtEnds[3], 1, -mDsign * height);
             var ce = 0.5 - 10.0 / width;

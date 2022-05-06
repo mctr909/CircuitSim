@@ -31,6 +31,10 @@
 
         public override int VoltageSourceCount { get { return 1; } }
 
+        /* there is no current path through the input, but there
+         * is an indirect path through the output to ground. */
+        public override bool GetConnection(int n1, int n2) { return false; }
+
         public override double GetCurrentIntoNode(int n) {
             if (n == 1) {
                 return mCurrent;

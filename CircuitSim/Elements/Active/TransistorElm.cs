@@ -140,7 +140,7 @@ namespace Circuit.Elements.Active {
         public override void CirStepFinished() {
             /* stop for huge currents that make simulator act weird */
             if (Math.Abs(Ic) > 1e12 || Math.Abs(Ib) > 1e12) {
-                mCir.Stop("max current exceeded", this);
+                mCir.Stop("max current exceeded", null);
             }
         }
 

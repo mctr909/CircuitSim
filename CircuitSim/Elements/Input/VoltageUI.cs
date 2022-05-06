@@ -53,7 +53,7 @@ namespace Circuit.Elements.Input {
             calcLeads((elm.waveform == VoltageElm.WAVEFORM.DC) ? BODY_LEN_DC : BODY_LEN);
 
             int sign;
-            if (mPoint1.Y == mPoint2.Y) {
+            if (mPost1.Y == mPost2.Y) {
                 sign = -mDsign;
             } else {
                 sign = mDsign;
@@ -71,7 +71,7 @@ namespace Circuit.Elements.Input {
             var elm = (VoltageElm)CirElm;
             if (elm.waveform == VoltageElm.WAVEFORM.DC) {
                 int hs = 12;
-                setBbox(mPoint1, mPoint2, hs);
+                setBbox(mPost1, mPost2, hs);
 
                 interpLeadAB(ref mPs1, ref mPs2, 0, hs * 0.5);
                 drawLead(mPs1, mPs2);
@@ -82,7 +82,7 @@ namespace Circuit.Elements.Input {
                 string s = Utils.UnitText(elm.mMaxVoltage, "V");
                 g.DrawRightText(s, mTextPos.X, mTextPos.Y);
             } else {
-                setBbox(mPoint1, mPoint2, BODY_LEN);
+                setBbox(mPost1, mPost2, BODY_LEN);
                 interpLead(ref mPs1, 0.5);
                 drawWaveform(g, mPs1);
                 string inds;
@@ -98,10 +98,10 @@ namespace Circuit.Elements.Input {
 
             if (CirSim.Sim.DragElm != this) {
                 if (elm.waveform == VoltageElm.WAVEFORM.DC) {
-                    drawDots(mPoint1, mPoint2, CirElm.CurCount);
+                    drawDots(mPost1, mPost2, CirElm.CurCount);
                 } else {
-                    drawDots(mPoint1, mLead1, CirElm.CurCount);
-                    drawDots(mPoint2, mLead2, -CirElm.CurCount);
+                    drawDots(mPost1, mLead1, CirElm.CurCount);
+                    drawDots(mPost2, mLead2, -CirElm.CurCount);
                 }
             }
             drawPosts();

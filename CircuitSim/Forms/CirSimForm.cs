@@ -539,7 +539,7 @@ namespace Circuit {
 
         public void ResetButton_onClick() {
             for (int i = 0; i != ElmCount; i++) {
-                getElmE(i).Reset();
+                getElm(i).CirElm.Reset();
             }
             for (int i = 0; i != mScopeCount; i++) {
                 mScopes[i].ResetGraph(true);

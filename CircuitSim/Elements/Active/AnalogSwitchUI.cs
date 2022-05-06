@@ -9,7 +9,7 @@ namespace Circuit.Elements.Active {
         const int BODY_LEN = 24;
 
         Point mPs;
-        Point mPoint3;
+        Point mPost3;
         Point mLead3;
 
         public AnalogSwitchUI(Point pos) : base(pos) {
@@ -28,16 +28,7 @@ namespace Circuit.Elements.Active {
         public override DUMP_ID DumpType { get { return DUMP_ID.ANALOG_SW; } }
 
         public override Point GetPost(int n) {
-            return (0 == n) ? mPoint1 : (1 == n) ? mPoint2 : mPoint3;
-        }
-
-        // we have to just assume current will flow either way, even though that
-        // might cause singular matrix errors
-        public override bool GetConnection(int n1, int n2) {
-            if (n1 == 2 || n2 == 2) {
-                return false;
-            }
-            return true;
+            return (0 == n) ? mPost1 : (1 == n) ? mPost2 : mPost3;
         }
 
         public override void Drag(Point pos) {
@@ -61,14 +52,14 @@ namespace Circuit.Elements.Active {
             base.SetPoints();
             calcLeads(BODY_LEN);
             mPs = new Point();
-            interpPoint(ref mPoint3, 0.5, -OPEN_HS);
+            interpPoint(ref mPost3, 0.5, -OPEN_HS);
             interpPoint(ref mLead3, 0.5, -OPEN_HS / 2);
         }
 
         public override void Draw(CustomGraphics g) {
             var ce = (AnalogSwitchElm)CirElm;
             int hs = ce.IsOpen ? OPEN_HS : 0;
-            setBbox(mPoint1, mPoint2, OPEN_HS);
+            setBbox(mPost1, mPost2, OPEN_HS);
 
             draw2Leads();
 
@@ -76,7 +67,7 @@ namespace Circuit.Elements.Active {
             g.LineColor = CustomGraphics.WhiteColor;
             g.DrawLine(mLead1, mPs);
 
-            drawLead(mPoint3, mLead3);
+            drawLead(mPost3, mLead3);
 
             if (!ce.IsOpen) {
                 doDots();

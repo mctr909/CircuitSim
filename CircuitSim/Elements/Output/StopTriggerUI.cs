@@ -30,9 +30,9 @@ namespace Circuit.Elements.Output {
 				w = mLen * 0.8;
 			}
 			setLead1(1 - w / mLen);
-			setBbox(mPoint1, mLead1, 0);
+			setBbox(mPost1, mLead1, 0);
 			drawCenteredText(s, P2, true);
-			drawLead(mPoint1, mLead1);
+			drawLead(mPost1, mLead1);
 			drawPosts();
 		}
 

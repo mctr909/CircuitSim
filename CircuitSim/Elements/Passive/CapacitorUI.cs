@@ -59,8 +59,8 @@ namespace Circuit.Elements.Passive {
 
         void setTextPos() {
             var ce = (CapacitorElm)CirElm;
-            mNameV = mPoint1.X == mPoint2.X;
-            if (mPoint1.Y == mPoint2.Y) {
+            mNameV = mPost1.X == mPost2.X;
+            if (mPost1.Y == mPost2.Y) {
                 var wv = Context.GetTextSize(Utils.UnitText(ce.Capacitance, "")).Width * 0.5;
                 var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
                 interpPoint(ref mValuePos, 0.5 - wv / mLen * mDsign, -12 * mDsign);
@@ -76,19 +76,19 @@ namespace Circuit.Elements.Passive {
 
         public override void Draw(CustomGraphics g) {
             var ce = (CapacitorElm)CirElm;
-            setBbox(mPoint1, mPoint2, HS);
+            setBbox(mPost1, mPost2, HS);
 
             /* draw first lead and plate */
-            drawLead(mPoint1, mLead1);
+            drawLead(mPost1, mLead1);
             drawLead(mPlate1[0], mPlate1[1]);
             /* draw second lead and plate */
-            drawLead(mPoint2, mLead2);
+            drawLead(mPost2, mLead2);
             drawLead(mPlate2[0], mPlate2[1]);
 
             updateDotCount();
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mLead1, ce.CurCount);
-                drawDots(mPoint2, mLead2, -ce.CurCount);
+                drawDots(mPost1, mLead1, ce.CurCount);
+                drawDots(mPost2, mLead2, -ce.CurCount);
             }
             drawPosts();
 

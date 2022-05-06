@@ -28,6 +28,10 @@ namespace Circuit.Elements.Gate {
 
         public override int VoltageSourceCount { get { return 1; } }
 
+        /* there is no current path through the inverter input,
+         * but there is an indirect path through the output to ground. */
+        public override bool GetConnection(int n1, int n2) { return false; }
+
         public override bool AnaHasGroundConnection(int n1) { return n1 == 1; }
 
         public override double GetCurrentIntoNode(int n) {

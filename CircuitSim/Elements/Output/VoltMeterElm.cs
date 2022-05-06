@@ -135,6 +135,8 @@ namespace Circuit.Elements.Output {
             }
         }
 
+        public override bool GetConnection(int n1, int n2) { return false; }
+
         public string getMeter() {
             switch (Meter) {
             case TP_VOL:

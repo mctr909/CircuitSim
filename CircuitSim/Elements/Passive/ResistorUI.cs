@@ -50,8 +50,8 @@ namespace Circuit.Elements.Passive {
 
         void setTextPos() {
             var ce = (ResistorElm)CirElm;
-            mNameV = mPoint1.X == mPoint2.X;
-            if (mPoint1.Y == mPoint2.Y) {
+            mNameV = mPost1.X == mPost2.X;
+            if (mPost1.Y == mPost2.Y) {
                 var wv = Context.GetTextSize(Utils.UnitText(ce.Resistance, "")).Width * 0.5;
                 var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
                 interpPoint(ref mValuePos, 0.5 - wv / mLen * mDsign, -11 * mDsign);
@@ -109,7 +109,7 @@ namespace Circuit.Elements.Passive {
             }
 
             int hs = ControlPanel.ChkUseAnsiSymbols.Checked ? ANSI_HEIGHT : EU_HEIGHT;
-            setBbox(mPoint1, mPoint2, hs);
+            setBbox(mPost1, mPost2, hs);
 
             draw2Leads();
 

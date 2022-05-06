@@ -47,7 +47,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? mPoint1 : (n == 1) ? mColl[0] : mEmit[0];
+            return (n == 0) ? mPost1 : (n == 1) ? mColl[0] : mEmit[0];
         }
 
         public void SetHfe(double hfe) {
@@ -103,22 +103,22 @@ namespace Circuit.Elements.Active {
         void setTextPos() {
             var txtW = Context.GetTextSize(ReferenceName).Width;
             var swap = 0 < (mFlags & FLAG_FLIP) ? -1 : 1;
-            mNameV = mPoint1.Y == mPoint2.Y;
+            mNameV = mPost1.Y == mPost2.Y;
             if (mNameV) {
                 if (0 < mDsign * swap) {
-                    mNamePos = new Point(mPoint2.X - 1, mPoint2.Y);
+                    mNamePos = new Point(mPost2.X - 1, mPost2.Y);
                 } else {
-                    mNamePos = new Point(mPoint2.X - 17, mPoint2.Y);
+                    mNamePos = new Point(mPost2.X - 17, mPost2.Y);
                 }
-            } else if (mPoint1.X == mPoint2.X) {
-                mNamePos = new Point(mPoint2.X - (int)(txtW / 2), mPoint2.Y + HS * swap * mDsign * 2 / 3);
+            } else if (mPost1.X == mPost2.X) {
+                mNamePos = new Point(mPost2.X - (int)(txtW / 2), mPost2.Y + HS * swap * mDsign * 2 / 3);
             } else {
                 interpPoint(ref mNamePos, 0.5, 10 * mDsign);
             }
         }
 
         public override void Draw(CustomGraphics g) {
-            setBbox(mPoint1, mPoint2, 16);
+            setBbox(mPost1, mPost2, 16);
 
             /* draw collector */
             drawLead(mColl[0], mColl[1]);
@@ -127,12 +127,12 @@ namespace Circuit.Elements.Active {
             /* draw arrow */
             g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, mArrowPoly);
             /* draw base */
-            drawLead(mPoint1, mTbase);
+            drawLead(mPost1, mTbase);
 
             /* draw dots */
             var ce = (TransistorElm)CirElm;
             mCurCount_b = updateDotCount(-ce.Ib, mCurCount_b);
-            drawDots(mTbase, mPoint1, mCurCount_b);
+            drawDots(mTbase, mPost1, mCurCount_b);
             mCurCount_c = updateDotCount(-ce.Ic, mCurCount_c);
             drawDots(mColl[1], mColl[0], mCurCount_c);
             mCurCount_e = updateDotCount(-ce.Ie, mCurCount_e);

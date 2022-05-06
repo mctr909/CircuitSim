@@ -46,17 +46,17 @@ namespace Circuit.Elements.Passive {
             interpPointAB(ref mSandwichPoints[3], ref mSandwichPoints[2], 1 - f2, 8);
 
             // need to do this explicitly for CompositeElms
-            setPost(0, mPoint1);
-            setPost(1, mPoint2);
+            setPost(0, mPost1);
+            setPost(1, mPost2);
 
             setTextPos();
         }
 
         void setTextPos() {
-            if (mPoint1.Y == mPoint2.Y) {
+            if (mPost1.Y == mPost2.Y) {
                 var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
                 interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 16 * mDsign);
-            } else if (mPoint1.X == mPoint2.X) {
+            } else if (mPost1.X == mPost2.X) {
                 interpPoint(ref mNamePos, 0.5, -8 * mDsign);
             } else {
                 interpPoint(ref mNamePos, 0.5, -12 * mDsign);
@@ -65,14 +65,14 @@ namespace Circuit.Elements.Passive {
 
         public override void Draw(CustomGraphics g) {
             var ce = (CrystalElm)CirElm;
-            setBbox(mPoint1, mPoint2, HS);
+            setBbox(mPost1, mPost2, HS);
 
             // draw first lead and plate
-            drawLead(mPoint1, mLead1);
+            drawLead(mPost1, mLead1);
             drawLead(mPlate1[0], mPlate1[1]);
 
             // draw second lead and plate
-            drawLead(mPoint2, mLead2);
+            drawLead(mPost2, mLead2);
             drawLead(mPlate2[0], mPlate2[1]);
 
             for (int i = 0; i != 4; i++) {
@@ -81,8 +81,8 @@ namespace Circuit.Elements.Passive {
 
             updateDotCount();
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mLead1, ce.CurCount);
-                drawDots(mPoint2, mLead2, -ce.CurCount);
+                drawDots(mPost1, mLead1, ce.CurCount);
+                drawDots(mPost2, mLead2, -ce.CurCount);
             }
             drawPosts();
 

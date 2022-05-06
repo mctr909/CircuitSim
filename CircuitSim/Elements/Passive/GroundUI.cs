@@ -22,7 +22,7 @@ namespace Circuit.Elements.Passive {
         protected override string dump() { return ""; }
 
         public override void Draw(CustomGraphics g) {
-            drawLead(mPoint1, mPoint2);
+            drawLead(mPost1, mPost2);
             for (int i = 0; i != 3; i++) {
                 var a = BODY_LEN - i * 4;
                 var b = i * BODY_LEN * 0.5;
@@ -30,7 +30,7 @@ namespace Circuit.Elements.Passive {
                 drawLead(mP1, mP2);
             }
             doDots();
-            setBbox(mPoint1, mP1, 11);
+            setBbox(mPost1, mP1, 11);
             drawPosts();
         }
 

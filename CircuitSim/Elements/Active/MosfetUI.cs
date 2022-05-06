@@ -71,11 +71,7 @@ namespace Circuit.Elements.Active {
          * 3 = body (if present)
          * for PNP, 1 is drain, 2 is source */
         public override Point GetPost(int n) {
-            return (n == 0) ? mPoint1 : (n == 1) ? mSrc[0] : (n == 2) ? mDrn[0] : mBody[0];
-        }
-
-        public override bool GetConnection(int n1, int n2) {
-            return !(n1 == 0 || n2 == 0);
+            return (n == 0) ? mPost1 : (n == 1) ? mSrc[0] : (n == 2) ? mDrn[0] : mBody[0];
         }
 
         public override void SetPoints() {
@@ -140,16 +136,16 @@ namespace Circuit.Elements.Active {
         }
 
         void setTextPos() {
-            mNameV = mPoint1.Y == mPoint2.Y;
+            mNameV = mPost1.Y == mPost2.Y;
             var txtW = Context.GetTextSize(ReferenceName).Width;
             if (mNameV) {
                 if (0 < mDsign) {
-                    mNamePos = mPoint2;
+                    mNamePos = mPost2;
                 } else {
-                    mNamePos = new Point((int)(mPoint2.X - txtW - 2), mPoint2.Y);
+                    mNamePos = new Point((int)(mPost2.X - txtW - 2), mPost2.Y);
                 }
-            } else if (mPoint1.X == mPoint2.X) {
-                mNamePos = new Point(mPoint2.X - (int)(txtW / 2), mPoint2.Y + HS * mDsign * 2 / 3);
+            } else if (mPost1.X == mPost2.X) {
+                mNamePos = new Point(mPost2.X - (int)(txtW / 2), mPost2.Y + HS * mDsign * 2 / 3);
             } else {
                 interpPoint(ref mNamePos, 0.5, 10 * mDsign);
             }
@@ -161,7 +157,7 @@ namespace Circuit.Elements.Active {
                 SetPoints();
             }
 
-            setBbox(mPoint1, mPoint2, HS);
+            setBbox(mPost1, mPost2, HS);
 
             /* draw source/drain terminals */
             drawLead(mSrc[0], mSrc[1]);
@@ -194,7 +190,7 @@ namespace Circuit.Elements.Active {
             }
 
             /* draw gate */
-            drawLead(mPoint1, mGate[1]);
+            drawLead(mPost1, mGate[1]);
             drawLead(mGate[0], mGate[2]);
             if (DrawDigital && ce.Pnp == -1) {
                 g.DrawCircle(mPcircle, mPcircler);

@@ -59,7 +59,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? mPoint1 : (n == 1) ? mPoint2 : mPost3;
+            return (n == 0) ? mPost1 : (n == 1) ? mPost2 : mPost3;
         }
 
         public override void Delete() {
@@ -78,22 +78,22 @@ namespace Circuit.Elements.Passive {
                 myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDiff.Y)
                     * ((Math.Abs(mDiff.Y) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
                 if (mDiff.Y != 0) {
-                    mPoint2.Y = mPoint1.Y + myLen;
+                    mPost2.Y = mPost1.Y + myLen;
                     offset = (0 < mDiff.Y) ? mDiff.X : -mDiff.X;
-                    mPoint2.X = mPoint1.X;
+                    mPost2.X = mPost1.X;
                 }
             } else {
                 /* horizontal */
                 myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDiff.X)
                     * ((Math.Abs(mDiff.X) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
-                mPoint2.X = mPoint1.X + myLen;
+                mPost2.X = mPost1.X + myLen;
                 offset = (mDiff.X < 0) ? mDiff.Y : -mDiff.Y;
-                mPoint2.Y = mPoint1.Y;
+                mPost2.Y = mPost1.Y;
             }
             if (offset < CirSim.GRID_SIZE) {
                 offset = CirSim.GRID_SIZE;
             }
-            mLen = Utils.Distance(mPoint1, mPoint2);
+            mLen = Utils.Distance(mPost1, mPost2);
 
             calcLeads(BODY_LEN);
 
@@ -118,7 +118,7 @@ namespace Circuit.Elements.Passive {
             double vl = ce.Volts[PotElm.V_L];
             double vr = ce.Volts[PotElm.V_R];
             double vs = ce.Volts[PotElm.V_S];
-            setBbox(mPoint1, mPoint2, HS);
+            setBbox(mPost1, mPost2, HS);
             draw2Leads();
 
             int divide = (int)(SEGMENTS * ce.Position);
@@ -157,8 +157,8 @@ namespace Circuit.Elements.Passive {
             ce.CurCount2 = updateDotCount(ce.Current2, ce.CurCount2);
             ce.CurCount3 = updateDotCount(ce.Current3, ce.CurCount3);
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mMidPoint, ce.CurCount1);
-                drawDots(mPoint2, mMidPoint, ce.CurCount2);
+                drawDots(mPost1, mMidPoint, ce.CurCount1);
+                drawDots(mPost2, mMidPoint, ce.CurCount2);
                 drawDots(mPost3, mCorner2, ce.CurCount3);
                 drawDots(mCorner2, mMidPoint, ce.CurCount3 + Utils.Distance(mPost3, mCorner2));
             }

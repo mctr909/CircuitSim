@@ -59,25 +59,6 @@ namespace Circuit.Elements.Custom {
 
         bool useEscape() { return (mFlags & FLAG_ESCAPE) != 0; }
 
-        /* are n1 and n2 connected internally somehow? */
-        public override bool GetConnection(int n1, int n2) {
-            var ce = (CompositeElm)CirElm;
-            var cnLinks1 = ce.compNodeList[n1].Links;
-            var cnLinks2 = ce.compNodeList[n2].Links;
-
-            /* see if any elements are connected to both n1 and n2, then call getConnection() on those */
-            for (int i = 0; i < cnLinks1.Count; i++) {
-                CircuitNodeLink link1 = cnLinks1[i];
-                for (int j = 0; j < cnLinks2.Count; j++) {
-                    CircuitNodeLink link2 = cnLinks2[j];
-                    if (link1.Elm == link2.Elm && link1.Elm.GetConnection(link1.Num, link2.Num)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
         public override Point GetPost(int n) {
             return mPosts[n];
         }

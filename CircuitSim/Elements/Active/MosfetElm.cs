@@ -27,8 +27,8 @@ namespace Circuit.Elements.Active {
             get { return LastHfe == 0 ? BackwardCompatibilityHfe : LastHfe; }
         }
 
-        global::Circuit.Diode mDiodeB1;
-        global::Circuit.Diode mDiodeB2;
+        Diode mDiodeB1;
+        Diode mDiodeB2;
         double mLastV0;
         double mLastV1;
         double mLastV2;
@@ -67,6 +67,8 @@ namespace Circuit.Elements.Active {
         public override bool NonLinear { get { return true; } }
 
         public override int PostCount { get { return 3; } }
+
+        public override bool GetConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
 
         public override double GetCurrentIntoNode(int n) {
             if (n == 0) {

@@ -21,10 +21,6 @@ namespace Circuit.Elements.Gate {
 
         protected override string dump() { return ""; }
 
-        /* there is no current path through the inverter input,
-         * but there is an indirect path through the output to ground. */
-        public override bool GetConnection(int n1, int n2) { return false; }
-
         public override void SetPoints() {
             base.SetPoints();
             int hs = 16;
@@ -47,7 +43,7 @@ namespace Circuit.Elements.Gate {
             Utils.InterpPoint(mLead1, l2, ref mGatePolyEuro[3], ref mGatePolyEuro[2], 1, hs);
             Utils.InterpPoint(mLead1, l2, ref mCenter, .5);
 
-            setBbox(mPoint1, mPoint2, hs);
+            setBbox(mPost1, mPost2, hs);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -63,7 +59,7 @@ namespace Circuit.Elements.Gate {
             }
             g.DrawCircle(mPcircle, 3);
             ce.CurCount = updateDotCount(ce.Current, ce.CurCount);
-            drawDots(mLead2, mPoint2, ce.CurCount);
+            drawDots(mLead2, mPost2, ce.CurCount);
         }
 
         public override void GetInfo(string[] arr) {

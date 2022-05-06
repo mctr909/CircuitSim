@@ -5,9 +5,9 @@ namespace Circuit.Elements.Gate {
     class TriStateUI : BaseUI {
         const int BODY_LEN = 32;
 
-        Point point3;
-        Point lead3;
-        Point[] gatePoly;
+        Point mPost3;
+        Point mLead3;
+        Point[] mGatePoly;
 
         public TriStateUI(Point pos) : base(pos) {
             CirElm = new TriStateElm();
@@ -32,25 +32,25 @@ namespace Circuit.Elements.Gate {
             if (ww > mLen / 2) {
                 ww = (int)(mLen / 2);
             }
-            gatePoly = new Point[3];
-            interpLeadAB(ref gatePoly[0], ref gatePoly[1], 0, hs);
-            interpPoint(ref gatePoly[2], 0.5 + ww / mLen);
-            interpPoint(ref point3, 0.5, -hs);
-            interpPoint(ref lead3, 0.5, -hs / 2);
+            mGatePoly = new Point[3];
+            interpLeadAB(ref mGatePoly[0], ref mGatePoly[1], 0, hs);
+            interpPoint(ref mGatePoly[2], 0.5 + ww / mLen);
+            interpPoint(ref mPost3, 0.5, -hs);
+            interpPoint(ref mLead3, 0.5, -hs / 2);
         }
 
         public override void Draw(CustomGraphics g) {
             var ce = (TriStateElm)CirElm;
             int hs = 16;
-            setBbox(mPoint1, mPoint2, hs);
+            setBbox(mPost1, mPost2, hs);
 
             draw2Leads();
 
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            g.DrawPolygon(gatePoly);
-            drawLead(point3, lead3);
+            g.DrawPolygon(mGatePoly);
+            drawLead(mPost3, mLead3);
             ce.CurCount = updateDotCount(ce.Current, ce.CurCount);
-            drawDots(mLead2, mPoint2, ce.CurCount);
+            drawDots(mLead2, mPost2, ce.CurCount);
             drawPosts();
         }
 
@@ -72,7 +72,7 @@ namespace Circuit.Elements.Gate {
         }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? mPoint1 : (n == 1) ? mPoint2 : point3;
+            return (n == 0) ? mPost1 : (n == 1) ? mPost2 : mPost3;
         }
 
         public override void GetInfo(string[] arr) {
@@ -82,12 +82,6 @@ namespace Circuit.Elements.Gate {
             arr[2] = "Vd = " + Utils.VoltageAbsText(ce.VoltageDiff);
             arr[3] = "I = " + Utils.CurrentAbsText(ce.Current);
             arr[4] = "Vc = " + Utils.VoltageText(ce.Volts[2]);
-        }
-
-        /* there is no current path through the input, but there
-         * is an indirect path through the output to ground. */
-        public override bool GetConnection(int n1, int n2) {
-            return false;
         }
 
         public override ElementInfo GetElementInfo(int n) {

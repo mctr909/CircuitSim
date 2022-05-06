@@ -20,7 +20,7 @@ namespace Circuit.Elements.Gate {
             g.DrawPolygon(gatePoly);
             g.DrawPolygon(symbolPoly);
             ce.CurCount = updateDotCount(ce.Current, ce.CurCount);
-            drawDots(mLead2, mPoint2, ce.CurCount);
+            drawDots(mLead2, mPost2, ce.CurCount);
         }
 
         public override void SetPoints() {

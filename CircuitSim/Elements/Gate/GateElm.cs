@@ -33,6 +33,10 @@
 
         public override int PostCount { get { return InputCount + 1; } }
 
+        /* there is no current path through the gate inputs,
+         * but there is an indirect path through the output to ground. */
+        public override bool GetConnection(int n1, int n2) { return false; }
+
         public override double GetCurrentIntoNode(int n) {
             if (n == InputCount) {
                 return mCurrent;

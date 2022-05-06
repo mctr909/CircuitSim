@@ -34,20 +34,20 @@ namespace Circuit.Elements.Input {
         public override void SetPoints() {
             base.SetPoints();
             setLead1(1 - 0.5 * SIZE / mLen);
-            interpPoint(ref mTextPos, 1.0 + 0.66 * SIZE / Utils.Distance(mPoint1, mPoint2), 24 * mDsign);
+            interpPoint(ref mTextPos, 1.0 + 0.66 * SIZE / Utils.Distance(mPost1, mPost2), 24 * mDsign);
         }
 
         public override void Draw(CustomGraphics g) {
             var ce = (SweepElm)CirElm;
-            setBbox(mPoint1, mPoint2, SIZE);
+            setBbox(mPost1, mPost2, SIZE);
 
-            drawLead(mPoint1, mLead1);
+            drawLead(mPost1, mLead1);
 
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
 
-            int xc = mPoint2.X;
-            int yc = mPoint2.Y;
-            g.DrawCircle(mPoint2, SIZE / 2);
+            int xc = mPost2.X;
+            int yc = mPost2.Y;
+            g.DrawCircle(mPost2, SIZE / 2);
 
             adjustBbox(
                 xc - SIZE, yc - SIZE,
@@ -89,7 +89,7 @@ namespace Circuit.Elements.Input {
             drawPosts();
             ce.CurCount = updateDotCount(-ce.Current, ce.CurCount);
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mLead1, ce.CurCount);
+                drawDots(mPost1, mLead1, ce.CurCount);
             }
         }
 

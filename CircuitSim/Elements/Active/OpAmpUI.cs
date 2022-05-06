@@ -44,11 +44,11 @@ namespace Circuit.Elements.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            setBbox(mPoint1, mPoint2, mOpHeight * 2);
+            setBbox(mPost1, mPost2, mOpHeight * 2);
 
             drawLead(mIn1p[0], mIn1p[1]);
             drawLead(mIn2p[0], mIn2p[1]);
-            drawLead(mLead2, mPoint2);
+            drawLead(mLead2, mPost2);
 
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.DrawPolygon(mTriangle);
@@ -58,7 +58,7 @@ namespace Circuit.Elements.Active {
 
             var ce = (OpAmpElm)CirElm;
             ce.CurCount = updateDotCount(ce.Current, ce.CurCount);
-            drawDots(mPoint2, mLead2, ce.CurCount);
+            drawDots(mPost2, mLead2, ce.CurCount);
             drawPosts();
         }
 
@@ -85,12 +85,8 @@ namespace Circuit.Elements.Active {
         }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? mIn1p[0] : (n == 1) ? mIn2p[0] : mPoint2;
+            return (n == 0) ? mIn1p[0] : (n == 1) ? mIn2p[0] : mPost2;
         }
-
-        /* there is no current path through the op-amp inputs,
-         * but there is an indirect path through the output to ground. */
-        public override bool GetConnection(int n1, int n2) { return false; }
 
         public override void GetInfo(string[] arr) {
             var ce = (OpAmpElm)CirElm;

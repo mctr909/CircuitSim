@@ -27,6 +27,10 @@
 
         public override int PostCount { get { return 3; } }
 
+        // we have to just assume current will flow either way, even though that
+        // might cause singular matrix errors
+        public override bool GetConnection(int n1, int n2) { return !(n1 == 2 || n2 == 2); }
+
         public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
                 return -mCurrent;

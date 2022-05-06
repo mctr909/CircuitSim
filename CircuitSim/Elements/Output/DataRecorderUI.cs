@@ -31,10 +31,10 @@ namespace Circuit.Elements.Output {
             var str = "export";
 
             interpPoint(ref mLead1, 1 - ((int)g.GetTextSize(str).Width / 2) / mLen);
-            setBbox(mPoint1, mLead1, 0);
+            setBbox(mPost1, mLead1, 0);
 
             drawCenteredText(str, P2, true);
-            drawLead(mPoint1, mLead1);
+            drawLead(mPost1, mLead1);
             drawPosts();
         }
 

@@ -26,12 +26,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? mPoint1 : mSwPosts[n - 1];
-        }
-
-        public override bool GetConnection(int n1, int n2) {
-            var ce = (SwitchElm2)CirElm;
-            return comparePair(n1, n2, 0, 1 + ce.Position);
+            return (n == 0) ? mPost1 : mSwPosts[n - 1];
         }
 
         public override Rectangle GetSwitchRect() {
@@ -48,7 +43,7 @@ namespace Circuit.Elements.Passive {
             if (ce.mLink != 0) {
                 int i;
                 for (i = 0; i != CirSim.Sim.ElmCount; i++) {
-                    var o = CirSim.Sim.getElmE(i);
+                    var o = CirSim.Sim.getElm(i).CirElm;
                     if (o is SwitchElm2) {
                         var s2 = (SwitchElm2)o;
                         if (s2.mLink == ce.mLink) {
@@ -80,11 +75,11 @@ namespace Circuit.Elements.Passive {
 
         public override void Draw(CustomGraphics g) {
             var ce = (SwitchElm2)CirElm;
-            setBbox(mPoint1, mPoint2, OPEN_HS);
+            setBbox(mPost1, mPost2, OPEN_HS);
             adjustBbox(mSwPosts[0], mSwPosts[ce.mThrowCount - 1]);
 
             /* draw first lead */
-            drawLead(mPoint1, mLead1);
+            drawLead(mPost1, mLead1);
             /* draw other leads */
             for (int i = 0; i < ce.mThrowCount; i++) {
                 drawLead(mSwPoles[i], mSwPosts[i]);
@@ -94,7 +89,7 @@ namespace Circuit.Elements.Passive {
             g.DrawLine(mLead1, mSwPoles[ce.Position]);
 
             updateDotCount();
-            drawDots(mPoint1, mLead1, ce.CurCount);
+            drawDots(mPost1, mLead1, ce.CurCount);
             if (ce.Position != 2) {
                 drawDots(mSwPoles[ce.Position], mSwPosts[ce.Position], ce.CurCount);
             }

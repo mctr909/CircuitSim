@@ -27,7 +27,7 @@ namespace Circuit.Elements.Output {
         public override void SetPoints() {
             base.SetPoints();
             var ce = (LabeledNodeElm)CirElm;
-            if (mPoint1.X == mPoint2.X) {
+            if (mPost1.X == mPost2.X) {
                 setLead1(1 - 0.5 * Context.GetTextSize(ce.Text).Height / mLen);
             } else {
                 setLead1(1 - 0.5 * Context.GetTextSize(ce.Text).Width / mLen);
@@ -36,7 +36,7 @@ namespace Circuit.Elements.Output {
 
         public override void Draw(CustomGraphics g) {
             var ce = (LabeledNodeElm)CirElm;
-            drawLead(mPoint1, mLead1);
+            drawLead(mPost1, mLead1);
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             var str = ce.Text;
             var lineOver = false;
@@ -54,9 +54,9 @@ namespace Circuit.Elements.Output {
                 }
             }
             ce.CurCount = updateDotCount(ce.Current, ce.CurCount);
-            drawDots(mPoint1, mLead1, ce.CurCount);
+            drawDots(mPost1, mLead1, ce.CurCount);
             interpPoint(ref mPos, 1 + 11.0 / mLen);
-            setBbox(mPoint1, mPos, CircleSize);
+            setBbox(mPost1, mPos, CircleSize);
             drawPosts();
         }
 

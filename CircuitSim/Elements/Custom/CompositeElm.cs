@@ -15,15 +15,14 @@ namespace Circuit.Elements.Custom {
         /* list of elements contained in this subcircuit */
         public List<BaseUI> compElmList = new List<BaseUI>();
 
-        /* list of nodes, mapping each one to a list of elements that reference that node */
-        public List<CircuitNode> compNodeList;
-
         public int numPosts = 0;
+
+        /* list of nodes, mapping each one to a list of elements that reference that node */
+        protected List<CircuitNode> mCompNodeList;
+        protected List<VoltageSourceRecord> mVoltageSources;
 
         protected bool useEscape;
         protected int numNodes = 0;
-
-        protected List<VoltageSourceRecord> voltageSources;
 
         public CompositeElm() : base() { }
 
@@ -49,7 +48,7 @@ namespace Circuit.Elements.Custom {
             }
         }
 
-        public override int VoltageSourceCount { get { return voltageSources.Count; } }
+        public override int VoltageSourceCount { get { return mVoltageSources.Count; } }
 
         public override int InternalNodeCount { get { return numNodes - numPosts; } }
 
@@ -61,6 +60,24 @@ namespace Circuit.Elements.Custom {
             }
         }
 
+        /* are n1 and n2 connected internally somehow? */
+        public override bool GetConnection(int n1, int n2) {
+            var cnLinks1 = mCompNodeList[n1].Links;
+            var cnLinks2 = mCompNodeList[n2].Links;
+
+            /* see if any elements are connected to both n1 and n2, then call getConnection() on those */
+            for (int i = 0; i < cnLinks1.Count; i++) {
+                var link1 = cnLinks1[i];
+                for (int j = 0; j < cnLinks2.Count; j++) {
+                    var link2 = cnLinks2[j];
+                    if (link1.Elm == link2.Elm && link1.Elm.CirElm.GetConnection(link1.Num, link2.Num)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         public override void Reset() {
             for (int i = 0; i < compElmList.Count; i++) {
                 compElmList[i].CirElm.Reset();
@@ -70,7 +87,7 @@ namespace Circuit.Elements.Custom {
         /* is n1 connected to ground somehow? */
         public override bool AnaHasGroundConnection(int n1) {
             List<CircuitNodeLink> cnLinks;
-            cnLinks = compNodeList[n1].Links;
+            cnLinks = mCompNodeList[n1].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
                 if (cnLinks[i].Elm.CirElm.AnaHasGroundConnection(cnLinks[i].Num)) {
                     return true;
@@ -81,7 +98,7 @@ namespace Circuit.Elements.Custom {
 
         public override void AnaSetNode(int p, int n) {
             base.AnaSetNode(p, n);
-            var cnLinks = compNodeList[p].Links;
+            var cnLinks = mCompNodeList[p].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
                 cnLinks[i].Elm.CirElm.AnaSetNode(cnLinks[i].Num, n);
             }
@@ -103,7 +120,7 @@ namespace Circuit.Elements.Custom {
          * and set the
          * appropriate source in that component */
         public override void AnaSetVoltageSource(int n, int v) {
-            var vsr = voltageSources[n];
+            var vsr = mVoltageSources[n];
             vsr.elm.CirElm.AnaSetVoltageSource(vsr.vsNumForElement, v);
             vsr.vsNode = v;
         }
@@ -128,7 +145,7 @@ namespace Circuit.Elements.Custom {
 
         public override void CirSetNodeVoltage(int n, double c) {
             base.CirSetNodeVoltage(n, c);
-            var cnLinks = compNodeList[n].Links;
+            var cnLinks = mCompNodeList[n].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
                 cnLinks[i].Elm.CirElm.CirSetNodeVoltage(cnLinks[i].Num, c);
             }
@@ -136,16 +153,16 @@ namespace Circuit.Elements.Custom {
         }
 
         public override void CirSetCurrent(int vsn, double c) {
-            for (int i = 0; i < voltageSources.Count; i++) {
-                if (voltageSources[i].vsNode == vsn) {
-                    voltageSources[i].elm.CirElm.CirSetCurrent(vsn, c);
+            for (int i = 0; i < mVoltageSources.Count; i++) {
+                if (mVoltageSources[i].vsNode == vsn) {
+                    mVoltageSources[i].elm.CirElm.CirSetCurrent(vsn, c);
                 }
             }
         }
 
         public override double GetCurrentIntoNode(int n) {
             double c = 0;
-            var cnLinks = compNodeList[n].Links;
+            var cnLinks = mCompNodeList[n].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
                 c += cnLinks[i].Elm.CirElm.GetCurrentIntoNode(cnLinks[i].Num);
             }
@@ -160,8 +177,8 @@ namespace Circuit.Elements.Custom {
             VoltageSourceRecord vsRecord;
 
             compElmList = new List<BaseUI>();
-            compNodeList = new List<CircuitNode>();
-            voltageSources = new List<VoltageSourceRecord>();
+            mCompNodeList = new List<CircuitNode>();
+            mVoltageSources = new List<VoltageSourceRecord>();
 
             /* Build compElmList and compNodeHash from input string */
 
@@ -207,7 +224,7 @@ namespace Circuit.Elements.Custom {
             for (int i = 0; i < externalNodes.Length; i++) {
                 /* External Nodes First */
                 if (compNodeHash.ContainsKey(externalNodes[i])) {
-                    compNodeList.Add(compNodeHash[externalNodes[i]]);
+                    mCompNodeList.Add(compNodeHash[externalNodes[i]]);
                     compNodeHash.Remove(externalNodes[i]);
                 } else {
                     throw new Exception();
@@ -215,7 +232,7 @@ namespace Circuit.Elements.Custom {
             }
             foreach (var entry in compNodeHash) {
                 int key = entry.Key;
-                compNodeList.Add(compNodeHash[key]);
+                mCompNodeList.Add(compNodeHash[key]);
             }
 
             /* allocate more nodes for sub-elements' internal nodes */
@@ -228,11 +245,11 @@ namespace Circuit.Elements.Custom {
                     cnLink.Elm = ce;
                     cn = new CircuitNode();
                     cn.Links.Add(cnLink);
-                    compNodeList.Add(cn);
+                    mCompNodeList.Add(cn);
                 }
             }
 
-            numNodes = compNodeList.Count;
+            numNodes = mCompNodeList.Count;
 
             /*Console.WriteLine("Dumping compNodeList");
             for (int i = 0; i < numNodes; i++) {
@@ -246,7 +263,7 @@ namespace Circuit.Elements.Custom {
                     vsRecord = new VoltageSourceRecord();
                     vsRecord.elm = compElmList[i];
                     vsRecord.vsNumForElement = j;
-                    voltageSources.Add(vsRecord);
+                    mVoltageSources.Add(vsRecord);
                 }
             }
 

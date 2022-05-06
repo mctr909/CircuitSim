@@ -47,7 +47,7 @@ namespace Circuit.Elements.Gate {
             g.DrawPolygon(symbolPoly);
             g.DrawCircle(pcircle, 3);
             ce.CurCount = updateDotCount(ce.Current, ce.CurCount);
-            drawDots(mLead2, mPoint2, ce.CurCount);
+            drawDots(mLead2, mPost2, ce.CurCount);
         }
 
         public override void SetPoints() {
@@ -63,8 +63,8 @@ namespace Circuit.Elements.Gate {
             gatePoly = new Point[3];
             interpLeadAB(ref gatePoly[0], ref gatePoly[1], 0, hs);
             interpPoint(ref gatePoly[2], 0.5 + (ww - 5) / mLen);
-            Utils.CreateSchmitt(mPoint1, mPoint2, out symbolPoly, 1, .5 - (ww - 9) / mLen);
-            setBbox(mPoint1, mPoint2, hs);
+            Utils.CreateSchmitt(mPost1, mPost2, out symbolPoly, 1, .5 - (ww - 9) / mLen);
+            setBbox(mPost1, mPost2, hs);
         }
 
         public override void GetInfo(string[] arr) {
@@ -73,10 +73,6 @@ namespace Circuit.Elements.Gate {
             arr[1] = "Vi = " + Utils.VoltageText(ce.Volts[0]);
             arr[2] = "Vo = " + Utils.VoltageText(ce.Volts[1]);
         }
-
-        // there is no current path through the InvertingSchmitt input, but there
-        // is an indirect path through the output to ground.
-        public override bool GetConnection(int n1, int n2) { return false; }
 
         public override ElementInfo GetElementInfo(int n) {
             var ce = (InvertingSchmittElm)CirElm;

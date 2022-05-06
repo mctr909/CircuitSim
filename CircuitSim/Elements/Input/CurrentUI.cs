@@ -35,7 +35,7 @@ namespace Circuit.Elements.Input {
             interpLead(ref mAshaft2, 0.6);
             interpLead(ref mCenter, 0.5);
             int sign;
-            if (mPoint1.Y == mPoint2.Y) {
+            if (mPost1.Y == mPost2.Y) {
                 sign = mDsign;
             } else {
                 sign = -mDsign;
@@ -53,7 +53,7 @@ namespace Circuit.Elements.Input {
             drawLead(mAshaft1, mAshaft2);
             g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, mArrow);
 
-            setBbox(mPoint1, mPoint2, BODY_LEN);
+            setBbox(mPost1, mPost2, BODY_LEN);
             doDots();
             if (ControlPanel.ChkShowValues.Checked) {
                 string s = Utils.UnitText(mCurrentValue, "A");

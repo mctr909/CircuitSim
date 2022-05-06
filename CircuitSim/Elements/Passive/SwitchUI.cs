@@ -65,7 +65,7 @@ namespace Circuit.Elements.Passive {
             var ce = (SwitchElm)CirElm;
             int hs1 = (ce.Position == 1) ? 0 : 2;
             int hs2 = (ce.Position == 1) ? OPEN_HS : 2;
-            setBbox(mPoint1, mPoint2, OPEN_HS);
+            setBbox(mPost1, mPost2, OPEN_HS);
             draw2Leads();
             if (ce.Position == 0) {
                 doDots();
@@ -89,8 +89,6 @@ namespace Circuit.Elements.Passive {
                 arr[3] = "I = " + Utils.CurrentAbsText(ce.Current);
             }
         }
-
-        public override bool GetConnection(int n1, int n2) { return 0 == ((SwitchElm)CirElm).Position; }
 
         public override ElementInfo GetElementInfo(int n) {
             var ce = (SwitchElm)CirElm;

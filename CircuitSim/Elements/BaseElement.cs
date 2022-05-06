@@ -6,6 +6,10 @@
             mCir = c;
         }
 
+        protected static bool comparePair(int x1, int x2, int y1, int y2) {
+            return (x1 == y1 && x2 == y2) || (x1 == y2 && x2 == y1);
+        }
+
         public BaseElement() {
             AllocNodes();
         }
@@ -80,6 +84,28 @@
                 Volts[i] = 0;
             }
             CurCount = 0;
+        }
+
+        /// <summary>
+        /// are n1 and n2 connected by this element?  this is used to determine
+        /// unconnected nodes, and look for loops
+        /// </summary>
+        /// <param name="n1"></param>
+        /// <param name="n2"></param>
+        /// <returns></returns>
+        public virtual bool GetConnection(int n1, int n2) { return true; }
+
+        public virtual double GetCurrentIntoNode(int n) {
+            /* if we take out the getPostCount() == 2 it gives the wrong value for rails */
+            if (n == 0 && PostCount == 2) {
+                return -mCurrent;
+            } else {
+                return mCurrent;
+            }
+        }
+
+        public virtual double GetScopeValue(Scope.VAL x) {
+            return VoltageDiff;
         }
 
         public virtual void CirStartIteration() { }
@@ -159,19 +185,6 @@
         public virtual bool AnaHasGroundConnection(int n1) { return false; }
 
         public virtual void AnaShorted() { }
-
-        public virtual double GetCurrentIntoNode(int n) {
-            /* if we take out the getPostCount() == 2 it gives the wrong value for rails */
-            if (n == 0 && PostCount == 2) {
-                return -mCurrent;
-            } else {
-                return mCurrent;
-            }
-        }
-
-        public virtual double GetScopeValue(Scope.VAL x) {
-            return VoltageDiff;
-        }
         #endregion
     }
 }

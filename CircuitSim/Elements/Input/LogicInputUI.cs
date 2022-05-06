@@ -40,11 +40,11 @@ namespace Circuit.Elements.Input {
             if (isNumeric) {
                 s = "" + ce.Position;
             }
-            setBbox(mPoint1, mLead1, 0);
+            setBbox(mPost1, mLead1, 0);
             drawCenteredLText(s, P2, true);
-            drawLead(mPoint1, mLead1);
+            drawLead(mPost1, mLead1);
             updateDotCount();
-            drawDots(mPoint1, mLead1, ce.CurCount);
+            drawDots(mPost1, mLead1, ce.CurCount);
             drawPosts();
         }
 

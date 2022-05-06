@@ -67,8 +67,8 @@ namespace Circuit.Elements.Active {
         }
 
         protected void setTextPos() {
-            mNameV = mPoint1.X == mPoint2.X;
-            if (mPoint1.Y == mPoint2.Y) {
+            mNameV = mPost1.X == mPost2.X;
+            if (mPost1.Y == mPost2.Y) {
                 var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
                 interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 13 * mDsign);
             } else if (mNameV) {
@@ -86,7 +86,7 @@ namespace Circuit.Elements.Active {
         }
 
         protected void drawDiode(CustomGraphics g) {
-            setBbox(mPoint1, mPoint2, HS);
+            setBbox(mPost1, mPost2, HS);
 
             draw2Leads();
 

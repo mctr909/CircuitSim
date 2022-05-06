@@ -43,14 +43,14 @@ namespace Circuit.Elements.Input {
             } else {
                 setLead1(1 - w / mLen);
             }
-            setBbox(mPoint1, mPoint2, BODY_LEN);
+            setBbox(mPost1, mPost2, BODY_LEN);
 
-            drawLead(mPoint1, mLead1);
+            drawLead(mPost1, mLead1);
             drawRail(g);
             drawPosts();
             CirElm.CurCount = updateDotCount(-CirElm.Current, CirElm.CurCount);
             if (CirSim.Sim.DragElm != this) {
-                drawDots(mPoint1, mLead1, CirElm.CurCount);
+                drawDots(mPost1, mLead1, CirElm.CurCount);
             }
         }
 
@@ -72,7 +72,7 @@ namespace Circuit.Elements.Input {
                 }
                 drawCenteredText(s, P2, true);
             } else {
-                drawWaveform(g, mPoint2);
+                drawWaveform(g, mPost2);
             }
         }
     }

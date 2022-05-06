@@ -23,6 +23,10 @@
 
         public override int PostCount { get { return 1 + mThrowCount; } }
 
+        public override bool GetConnection(int n1, int n2) {
+            return comparePair(n1, n2, 0, 1 + Position);
+        }
+
         public override void AnaStamp() {
             mCir.StampVoltageSource(Nodes[0], Nodes[Position + 1], mVoltSource, 0);
         }
