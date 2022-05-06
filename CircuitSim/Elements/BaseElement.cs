@@ -109,13 +109,7 @@
                 return;
             }
             Volts[n] = c;
-            cirCalcCurrent();
         }
-
-        /// <summary>
-        /// calculate current in response to node voltages changing
-        /// </summary>
-        protected virtual void cirCalcCurrent() { }
 
         /// <summary>
         /// stamp matrix values for linear elements.

@@ -44,6 +44,23 @@ namespace Circuit.Elements.Active {
 
         public override bool NonLinear { get { return true; } }
 
+        public void Setup() {
+            mModel = DiodeModel.GetModelWithNameOrCopy(mModelName, mModel);
+            mModelName = mModel.Name;
+            mDiode.Setup(mModel);
+            mHasResistance = 0 < mModel.SeriesResistance;
+            mDiodeEndNode = mHasResistance ? 2 : 1;
+            AllocNodes();
+        }
+
+        public override void Reset() {
+            mDiode.Reset();
+            Volts[0] = Volts[1] = CurCount = 0;
+            if (mHasResistance) {
+                Volts[2] = 0;
+            }
+        }
+
         public override void AnaStamp() {
             if (mHasResistance) {
                 /* create diode from node 0 to internal node */
@@ -60,32 +77,16 @@ namespace Circuit.Elements.Active {
             mDiode.DoStep(Volts[0] - Volts[mDiodeEndNode]);
         }
 
+        public override void CirSetNodeVoltage(int n, double c) {
+            Volts[n] = c;
+            mCurrent = mDiode.CalculateCurrent(Volts[0] - Volts[mDiodeEndNode]);
+        }
+
         public override void CirStepFinished() {
             /* stop for huge currents that make simulator act weird */
             if (Math.Abs(mCurrent) > 1e12) {
                 mCir.Stop("max current exceeded", this);
             }
-        }
-
-        public override void Reset() {
-            mDiode.Reset();
-            Volts[0] = Volts[1] = CurCount = 0;
-            if (mHasResistance) {
-                Volts[2] = 0;
-            }
-        }
-
-        protected override void cirCalcCurrent() {
-            mCurrent = mDiode.CalculateCurrent(Volts[0] - Volts[mDiodeEndNode]);
-        }
-
-        public void Setup() {
-            mModel = DiodeModel.GetModelWithNameOrCopy(mModelName, mModel);
-            mModelName = mModel.Name;
-            mDiode.Setup(mModel);
-            mHasResistance = 0 < mModel.SeriesResistance;
-            mDiodeEndNode = mHasResistance ? 2 : 1;
-            AllocNodes();
         }
     }
 }

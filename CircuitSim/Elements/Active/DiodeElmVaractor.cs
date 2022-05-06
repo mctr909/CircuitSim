@@ -26,16 +26,9 @@ namespace Circuit.Elements.Active {
 
         public override int InternalNodeCount { get { return 1; } }
 
-        public override void CirSetCurrent(int x, double c) { mCapCurrent = c; }
-
-        protected override void cirCalcCurrent() {
-            base.cirCalcCurrent();
-            mCurrent += mCapCurrent;
-        }
-
-        public override void CirSetNodeVoltage(int n, double c) {
-            base.CirSetNodeVoltage(n, c);
-            mCapVoltDiff = Volts[0] - Volts[1];
+        public override void Reset() {
+            base.Reset();
+            mCapVoltDiff = 0;
         }
 
         public override void AnaStamp() {
@@ -65,9 +58,12 @@ namespace Circuit.Elements.Active {
             mVoltSourceValue = -mCapVoltDiff - mCapCurrent * mCompResistance;
         }
 
-        public override void Reset() {
-            base.Reset();
-            mCapVoltDiff = 0;
+        public override void CirSetNodeVoltage(int n, double c) {
+            base.CirSetNodeVoltage(n, c);
+            mCapVoltDiff = Volts[0] - Volts[1];
+            mCurrent += mCapCurrent;
         }
+
+        public override void CirSetCurrent(int x, double c) { mCapCurrent = c; }
     }
 }
