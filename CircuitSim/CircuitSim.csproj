@@ -122,6 +122,8 @@
     <Compile Include="Elements\Passive\CrystalElm.cs" />
     <Compile Include="Elements\Passive\GroundElm.cs" />
     <Compile Include="Elements\Passive\InductorElm.cs" />
+    <Compile Include="Elements\Passive\PolarCapacitorElm.cs" />
+    <Compile Include="Elements\Passive\PolarCapacitorUI.cs" />
     <Compile Include="Elements\Passive\PotElm.cs" />
     <Compile Include="Elements\Passive\PotUI.cs" />
     <Compile Include="Elements\Passive\SwitchUIPush.cs" />

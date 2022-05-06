@@ -4,6 +4,7 @@ using System.Drawing;
 namespace Circuit.Elements.Passive {
     class CapacitorUI : BaseUI {
         public static readonly int FLAG_BACK_EULER = 2;
+        protected static string mLastReferenceName = "C";
 
         const int BODY_LEN = 6;
         const int HS = 6;
@@ -11,9 +12,17 @@ namespace Circuit.Elements.Passive {
         Point[] mPlate1;
         Point[] mPlate2;
 
+        public CapacitorUI(Point pos, int dummy) : base(pos) {
+            ReferenceName = mLastReferenceName;
+        }
+
         public CapacitorUI(Point pos) : base(pos) {
             CirElm = new CapacitorElm();
-            ReferenceName = "C";
+            ReferenceName = mLastReferenceName;
+        }
+
+        public CapacitorUI(Point p1, Point p2, int f) : base(p1, p2, f) {
+            ReferenceName = mLastReferenceName;
         }
 
         public CapacitorUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -122,6 +131,7 @@ namespace Circuit.Elements.Passive {
             }
             if (n == 1) {
                 ReferenceName = ei.Textf.Text;
+                mLastReferenceName = ReferenceName;
                 setTextPos();
             }
         }

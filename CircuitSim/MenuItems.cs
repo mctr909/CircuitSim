@@ -608,8 +608,8 @@ namespace Circuit {
                 return new PotUI(pos);
             case ELEMENTS.CAPACITOR:
                 return new CapacitorUI(pos);
-            //case ELEMENTS.CAPACITOR_POLER:
-            //    return new PolarCapacitorElm(pos);
+            case ELEMENTS.CAPACITOR_POLER:
+                return new PolarCapacitorUI(pos);
             case ELEMENTS.INDUCTOR:
                 return new InductorUI(pos);
             case ELEMENTS.TRANSFORMER:
@@ -855,8 +855,8 @@ namespace Circuit {
                 return new PotUI(p1, p2, f, st);
             case DUMP_ID.CAPACITOR:
                 return new CapacitorUI(p1, p2, f, st);
-            //case DUMP_ID.CAPACITOR_POLAR:
-            //    return new PolarCapacitorElm(p1, p2, f, st);
+            case DUMP_ID.CAPACITOR_POLAR:
+                return new PolarCapacitorUI(p1, p2, f, st);
             case DUMP_ID.INDUCTOR:
                 return new InductorUI(p1, p2, f, st);
             case DUMP_ID.TRANSFORMER:

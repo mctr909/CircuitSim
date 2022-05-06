@@ -3,11 +3,13 @@ using System.Drawing;
 
 namespace Circuit.Elements.Passive {
     class InductorUI : BaseUI {
+        protected static string mLastReferenceName = "L";
+
         const int BODY_LEN = 24;
 
         public InductorUI(Point pos) : base(pos) {
             CirElm = new InductorElm();
-            ReferenceName = "L";
+            ReferenceName = mLastReferenceName;
         }
 
         public InductorUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -44,7 +46,7 @@ namespace Circuit.Elements.Passive {
                 interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 10 * mDsign);
             } else if (mNameV) {
                 interpPoint(ref mValuePos, 0.5, mDsign);
-                interpPoint(ref mNamePos, 0.5, -19 * mDsign);
+                interpPoint(ref mNamePos, 0.5, -20 * mDsign);
             } else {
                 interpPoint(ref mValuePos, 0.5, 8 * mDsign);
                 interpPoint(ref mNamePos, 0.5, -8 * mDsign);
@@ -97,6 +99,7 @@ namespace Circuit.Elements.Passive {
             }
             if (n == 1) {
                 ReferenceName = ei.Textf.Text;
+                mLastReferenceName = ReferenceName;
                 setTextPos();
             }
             ce.Ind.Setup(ce.Inductance, CirElm.Current);

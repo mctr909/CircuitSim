@@ -3,6 +3,8 @@ using System.Drawing;
 
 namespace Circuit.Elements.Passive {
     class ResistorUI : BaseUI {
+        protected static string mLastReferenceName = "R";
+
         const int BODY_LEN = 24;
         const int SEGMENTS = 12;
         const int ANSI_HEIGHT = 5;
@@ -18,7 +20,7 @@ namespace Circuit.Elements.Passive {
 
         public ResistorUI(Point pos) : base(pos) {
             CirElm = new ResistorElm();
-            ReferenceName = "R";
+            ReferenceName = mLastReferenceName;
         }
 
         public ResistorUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -56,7 +58,7 @@ namespace Circuit.Elements.Passive {
                 interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 10 * mDsign);
             } else if (mNameV) {
                 interpPoint(ref mValuePos, 0.5, 2 * mDsign);
-                interpPoint(ref mNamePos, 0.5, -19 * mDsign);
+                interpPoint(ref mNamePos, 0.5, -20 * mDsign);
             } else {
                 interpPoint(ref mValuePos, 0.5, 10 * mDsign);
                 interpPoint(ref mNamePos, 0.5, -10 * mDsign);
@@ -167,6 +169,7 @@ namespace Circuit.Elements.Passive {
             }
             if (n == 1) {
                 ReferenceName = ei.Textf.Text;
+                mLastReferenceName = ReferenceName;
                 setTextPos();
             }
         }
