@@ -274,9 +274,7 @@ namespace Circuit {
                 }
 
                 Time += ControlPanel.TimeStep;
-                for (int i = 0; i != ElmCount; i++) {
-                    ElmList[i].CirElm.CirStepFinished();
-                }
+
                 if (!delayWireProcessing) {
                     mCir.CalcWireCurrents();
                 }

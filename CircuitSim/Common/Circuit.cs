@@ -949,11 +949,13 @@ namespace Circuit {
         }
 
         public bool Run(bool debugprint) {
-            const int subiterCount = 5000;
+            const int subiterCount = 1000;
             int i, j, k, subiter;
+            int elmCount = mSim.ElmCount;
+            var elmList = mSim.ElmList;
 
-            for (i = 0; i != mSim.ElmCount; i++) {
-                var ce = mSim.ElmList[i].CirElm;
+            for (i = 0; i != elmCount; i++) {
+                var ce = elmList[i].CirElm;
                 ce.CirStartIteration();
             }
 
@@ -970,8 +972,8 @@ namespace Circuit {
                         }
                     }
                 }
-                for (i = 0; i != mSim.ElmCount; i++) {
-                    var ce = mSim.ElmList[i].CirElm;
+                for (i = 0; i != elmCount; i++) {
+                    var ce = elmList[i].CirElm;
                     ce.CirDoStep();
                 }
                 if (StopMessage != null) {
@@ -1049,6 +1051,10 @@ namespace Circuit {
             if (subiter == subiterCount) {
                 Stop("Convergence failed!");
                 return false;
+            }
+
+            for (i = 0; i != elmCount; i++) {
+                elmList[i].CirElm.CirStepFinished();
             }
 
             return true;
