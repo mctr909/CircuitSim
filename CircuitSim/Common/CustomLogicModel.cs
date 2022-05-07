@@ -252,7 +252,8 @@ namespace Circuit {
                 .Replace("=", "\\q")
                 .Replace("#", "\\h")
                 .Replace("&", "\\a")
-                .Replace("\r", "\\r");
+                .Replace("\r", "\\r")
+                .Replace(" ", "\\s");
         }
 
         public static string unescape(string s) {
