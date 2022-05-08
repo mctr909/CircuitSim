@@ -16,13 +16,13 @@ namespace Circuit.Elements.Passive {
 
         public CrystalUI(Point pos) : base(pos) {
             Elm = new CrystalElm();
-            mPosts = new Point[((CrystalElm)Elm).numPosts];
+            mPosts = new Point[((CrystalElm)Elm).NumPosts];
             ReferenceName = "X";
         }
 
         public CrystalUI(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
             Elm = new CrystalElm(st);
-            mPosts = new Point[((CrystalElm)Elm).numPosts];
+            mPosts = new Point[((CrystalElm)Elm).NumPosts];
             ReferenceName = "X";
         }
 

@@ -23,25 +23,25 @@ namespace Circuit.Elements.Passive {
         }
 
         public CrystalElm(StringTokenizer st) : base(st, MODEL_STRING, EXTERNAL_NODES) {
-            var c1 = (CapacitorElm)compElmList[0].Elm;
+            var c1 = (CapacitorElm)CompElmList[0].Elm;
             ParallelCapacitance = c1.Capacitance;
-            var c2 = (CapacitorElm)compElmList[1].Elm;
+            var c2 = (CapacitorElm)CompElmList[1].Elm;
             SeriesCapacitance = c2.Capacitance;
-            var i1 = (InductorElm)compElmList[2].Elm;
+            var i1 = (InductorElm)CompElmList[2].Elm;
             Inductance = i1.Inductance;
-            var r1 = (ResistorElm)compElmList[3].Elm;
+            var r1 = (ResistorElm)CompElmList[3].Elm;
             Resistance = r1.Resistance;
             initCrystal();
         }
 
         public void initCrystal() {
-            var c1 = (CapacitorElm)compElmList[0].Elm;
+            var c1 = (CapacitorElm)CompElmList[0].Elm;
             c1.Capacitance = ParallelCapacitance;
-            var c2 = (CapacitorElm)compElmList[1].Elm;
+            var c2 = (CapacitorElm)CompElmList[1].Elm;
             c2.Capacitance = SeriesCapacitance;
-            var i1 = (InductorElm)compElmList[2].Elm;
+            var i1 = (InductorElm)CompElmList[2].Elm;
             i1.Inductance = Inductance;
-            var r1 = (ResistorElm)compElmList[3].Elm;
+            var r1 = (ResistorElm)CompElmList[3].Elm;
             r1.Resistance = Resistance;
         }
 

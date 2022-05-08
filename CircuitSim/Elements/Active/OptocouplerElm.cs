@@ -31,9 +31,9 @@ namespace Circuit.Elements.Active {
         void initOptocoupler() {
             mCspc = 8 * 2;
             mCspc2 = mCspc * 2;
-            mDiode = (DiodeUI)compElmList[0];
+            mDiode = (DiodeUI)CompElmList[0];
 
-            var cccs = (CCCSElm)compElmList[1].Elm;
+            var cccs = (CCCSElm)CompElmList[1].Elm;
             cccs.SetExpr(@"max(0,
                 min(.0001,
                     select {i-0.003,
@@ -43,7 +43,7 @@ namespace Circuit.Elements.Active {
                 )
             )");
 
-            mTransistor = (TransistorUI)compElmList[2];
+            mTransistor = (TransistorUI)CompElmList[2];
             ((TransistorElm)mTransistor.Elm).SetHfe(700);
             mCurCounts = new double[4];
             mDiode.ReferenceName = "";

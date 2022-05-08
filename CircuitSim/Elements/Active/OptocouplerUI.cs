@@ -11,13 +11,13 @@ namespace Circuit.Elements.Active {
 
         public OptocouplerUI(Point pos) : base(pos) {
             Elm = new OptocouplerElm();
-            mPosts = new Point[((OptocouplerElm)Elm).numPosts];
+            mPosts = new Point[((OptocouplerElm)Elm).NumPosts];
             mNoDiagonal = true;
         }
 
         public OptocouplerUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new OptocouplerElm(st);
-            mPosts = new Point[((OptocouplerElm)Elm).numPosts];
+            mPosts = new Point[((OptocouplerElm)Elm).NumPosts];
             /* pass st=null since we don't need to undump any of the sub-elements */
             mNoDiagonal = true;
         }
