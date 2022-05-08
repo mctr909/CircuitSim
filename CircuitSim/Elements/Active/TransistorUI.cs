@@ -50,11 +50,6 @@ namespace Circuit.Elements.Active {
             return (n == 0) ? mPost1 : (n == 1) ? mColl[0] : mEmit[0];
         }
 
-        public void SetHfe(double hfe) {
-            ((TransistorElm)Elm).Hfe = hfe;
-            setup();
-        }
-
         void setup() {
             ((TransistorElm)Elm).Setup();
             mNoDiagonal = true;

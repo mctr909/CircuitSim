@@ -27,12 +27,12 @@ namespace Circuit.Elements.Active {
         double mLastVbc;
         double mLastVbe;
 
-        public TransistorElm(bool pnpflag) : base() {
+        public TransistorElm(bool pnpflag) {
             NPN = pnpflag ? -1 : 1;
             Hfe = 100;
         }
 
-        public TransistorElm(StringTokenizer st) : base() {
+        public TransistorElm(StringTokenizer st) {
             NPN = st.nextTokenInt();
             Hfe = 100;
             try {
@@ -52,6 +52,11 @@ namespace Circuit.Elements.Active {
         public override bool NonLinear { get { return true; } }
 
         public override int PostCount { get { return 3; } }
+
+        public void SetHfe(double hfe) {
+            Hfe = hfe;
+            Setup();
+        }
 
         public override double GetCurrentIntoNode(int n) {
             if (n == 0) {

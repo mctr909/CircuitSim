@@ -55,6 +55,8 @@
     <Compile Include="Elements\Active\MosfetElm.cs" />
     <Compile Include="Elements\Active\MosfetUI.cs" />
     <Compile Include="Elements\Active\MosfetUIN.cs" />
+    <Compile Include="Elements\Active\OptocouplerElm.cs" />
+    <Compile Include="Elements\Active\OptocouplerUI.cs" />
     <Compile Include="Elements\Active\TransistorUIN.cs" />
     <Compile Include="Elements\Active\OpAmpElm.cs" />
     <Compile Include="Elements\Active\OpAmpUI.cs" />
@@ -68,6 +70,8 @@
     <Compile Include="Elements\Active\DiodeUIZener.cs" />
     <Compile Include="Elements\BaseElement.cs" />
     <Compile Include="Elements\Custom\BoxUI.cs" />
+    <Compile Include="Elements\Custom\ChipElm.cs" />
+    <Compile Include="Elements\Custom\ChipUI.cs" />
     <Compile Include="Elements\Custom\CompositeElm.cs" />
     <Compile Include="Elements\Custom\CompositeUI.cs" />
     <Compile Include="Elements\Custom\GraphicUI.cs" />
@@ -89,6 +93,8 @@
     <Compile Include="Elements\Gate\GateUIXor.cs" />
     <Compile Include="Elements\Input\AMElm.cs" />
     <Compile Include="Elements\Input\AMUI.cs" />
+    <Compile Include="Elements\Input\CCCSElm.cs" />
+    <Compile Include="Elements\Input\CCCSUI.cs" />
     <Compile Include="Elements\Input\CurrentElm.cs" />
     <Compile Include="Elements\Input\FMElm.cs" />
     <Compile Include="Elements\Input\FMUI.cs" />
@@ -98,6 +104,8 @@
     <Compile Include="Elements\Input\RailElm.cs" />
     <Compile Include="Elements\Input\SweepElm.cs" />
     <Compile Include="Elements\Input\SweepUI.cs" />
+    <Compile Include="Elements\Input\VCCSElm.cs" />
+    <Compile Include="Elements\Input\VCCSUI.cs" />
     <Compile Include="Elements\Input\VoltageElm.cs" />
     <Compile Include="Elements\Gate\TriStateElm.cs" />
     <Compile Include="Elements\Gate\TriStateUI.cs" />

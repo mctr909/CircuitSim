@@ -1,323 +1,50 @@
 ﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
 
 namespace Circuit.Elements.Custom {
-    class ChipElm : CircuitElm {
-        const int FLAG_SMALL = 1;
-        protected const int FLAG_FLIP_X = 1024;
-        protected const int FLAG_FLIP_Y = 2048;
-
-        public const int SIDE_N = 0;
-        public const int SIDE_S = 1;
-        public const int SIDE_W = 2;
-        public const int SIDE_E = 3;
-
-        int csize;
-        int cspc;
-        int cspc2;
-
-        Point[] rectPoints;
-        Point[] clockPoints;
-        public Pin[] pins;
-        public int sizeX;
-        public int sizeY;
-
+    abstract class ChipElm : BaseElement {
         protected bool lastClock;
-        protected virtual int bits { get; set; } = 4;
 
-        public class Pin {
-            ChipElm mElm;
-            public int pos;
-            public int side;
-            public string text;
+        public ChipUI.Pin[] Pins { get; protected set; }
 
-            public Point post;
-            public Point stub;
-            public Point textloc { get; private set; }
+        public virtual int Bits { get; protected set; } = 4;
 
-            public int voltSource;
-            public Point bubblePos;
+        public ChipElm() : base() { }
 
-            public bool lineOver;
-            public bool bubble;
-            public bool clock;
-            public bool output;
-            public bool value;
-            public bool state = true;
-            public bool selected;
-            public double curcount;
-            public double current;
-
-            public Pin(ChipElm elm, int p, int s, string t) {
-                mElm = elm;
-                pos = p;
-                side = s;
-                text = t;
+        public ChipElm(StringTokenizer st) : base() {
+            if (NeedsBits()) {
+                Bits = st.nextTokenInt();
             }
-
-            public void setPoint(int px, int py, int dx, int dy, int dax, int day, int sx, int sy) {
-                if ((mElm.mFlags & FLAG_FLIP_X) != 0) {
-                    dx = -dx;
-                    dax = -dax;
-                    px += mElm.cspc2 * (mElm.sizeX - 1);
-                    sx = -sx;
-                }
-                if ((mElm.mFlags & FLAG_FLIP_Y) != 0) {
-                    dy = -dy;
-                    day = -day;
-                    py += mElm.cspc2 * (mElm.sizeY - 1);
-                    sy = -sy;
-                }
-                int xa = px + mElm.cspc2 * dx * pos + sx;
-                int ya = py + mElm.cspc2 * dy * pos + sy;
-                post = new Point(xa + dax * mElm.cspc2, ya + day * mElm.cspc2);
-                stub = new Point(xa + dax * mElm.cspc, ya + day * mElm.cspc);
-                textloc = new Point(xa, ya);
-                if (bubble) {
-                    bubblePos = new Point(xa + dax * 10 * mElm.csize, ya + day * 10 * mElm.csize);
-                }
-                if (clock) {
-                    mElm.clockPoints = new Point[3];
-                    mElm.clockPoints[0] = new Point(
-                        xa + dax * mElm.cspc - dx * mElm.cspc / 2,
-                        ya + day * mElm.cspc - dy * mElm.cspc / 2
-                    );
-                    mElm.clockPoints[1] = new Point(xa, ya);
-                    mElm.clockPoints[2] = new Point(
-                        xa + dax * mElm.cspc + dx * mElm.cspc / 2,
-                        ya + day * mElm.cspc + dy * mElm.cspc / 2
-                    );
-                }
-            }
-
-            /* convert position, side to a grid position (0=top left) so we can detect overlaps */
-            int toGrid(int p, int s) {
-                if (s == SIDE_N) {
-                    return p;
-                }
-                if (s == SIDE_S) {
-                    return p + mElm.sizeX * (mElm.sizeY - 1);
-                }
-                if (s == SIDE_W) {
-                    return p * mElm.sizeX;
-                }
-                if (s == SIDE_E) {
-                    return p * mElm.sizeX + mElm.sizeX - 1;
-                }
-                return -1;
-            }
-
-            public bool overlaps(int p, int s) {
-                int g = toGrid(p, s);
-                if (g == -1) {
-                    return true;
-                }
-                return toGrid(pos, side) == g;
-            }
-
-            public void fixName() {
-                if (text.StartsWith("/")) {
-                    text = text.Substring(1);
-                    lineOver = true;
-                }
-                if (text.CompareTo("clk") == 0) {
-                    text = "";
-                    clock = true;
-                }
-            }
-        }
-
-        public ChipElm(Point pos) : base(pos) {
-            mNoDiagonal = true;
-            SetupPins();
-            setSize(1);
-        }
-
-        public ChipElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            if (needsBits()) {
-                bits = st.nextTokenInt();
-            }
-            mNoDiagonal = true;
-            SetupPins();
-            setSize(1);
             int i;
-            for (i = 0; i != CirPostCount; i++) {
-                if (pins == null) {
-                    CirVolts[i] = st.nextTokenDouble();
-                } else if (pins[i].state) {
-                    CirVolts[i] = st.nextTokenDouble();
-                    pins[i].value = CirVolts[i] > 2.5;
+            for (i = 0; i != PostCount; i++) {
+                if (Pins == null) {
+                    Volts[i] = st.nextTokenDouble();
+                } else if (Pins[i].state) {
+                    Volts[i] = st.nextTokenDouble();
+                    Pins[i].value = Volts[i] > 2.5;
                 }
             }
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.INVALID; } }
+        public virtual bool NeedsBits() { return false; }
 
-        protected override string dump() {
-            string s = "";
-            if (needsBits()) {
-                s = string.Join(" ", s, bits);
+        public virtual void SetupPins(ChipUI ui) { }
+
+        public override void Reset() {
+            for (int i = 0; i != PostCount; i++) {
+                Pins[i].value = false;
+                Pins[i].curcount = 0;
+                Volts[i] = 0;
             }
-            for (int i = 0; i != CirPostCount; i++) {
-                if (pins[i].state) {
-                    s = string.Join(" ", s, CirVolts[i]);
-                }
-            }
-            return s;
+            lastClock = false;
         }
 
-        protected virtual bool needsBits() { return false; }
-
-        protected void setSize(int s) {
-            csize = s;
-            cspc = 8 * s;
-            cspc2 = cspc * 2;
-            mFlags &= ~FLAG_SMALL;
-            mFlags |= (s == 1) ? FLAG_SMALL : 0;
+        public override bool AnaHasGroundConnection(int n1) {
+            return Pins[n1].output;
         }
 
-        public virtual void SetupPins() { }
-
-        public override void Draw(CustomGraphics g) {
-            drawChip(g);
-        }
-
-        public void drawChip(CustomGraphics g) {
-            for (int i = 0; i != CirPostCount; i++) {
-                var p = pins[i];
-                var a = p.post;
-                var b = p.stub;
-                drawLead(a, b);
-                p.curcount = cirUpdateDotCount(p.current, p.curcount);
-                drawDots(b, a, p.curcount);
-                if (p.bubble) {
-                    g.LineColor = Color.White;
-                    g.DrawCircle(p.bubblePos, 1);
-                    g.LineColor = CustomGraphics.GrayColor;
-                    g.DrawCircle(p.bubblePos, 3);
-                }
-                g.LineColor = p.selected ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-                int fsz = 12 * csize;
-                var font = CustomGraphics.FontText;
-                while (true) {
-                    int sw = (int)g.GetTextSize(p.text, font).Width;
-                    /* scale font down if it's too big */
-                    if (sw > 12 * csize) {
-                        fsz--;
-                        font = new Font(CustomGraphics.FontText.Name, fsz);
-                        continue;
-                    }
-                    g.DrawCenteredText(p.text, p.textloc.X, p.textloc.Y, font);
-                    if (p.lineOver) {
-                        int ya = p.textloc.Y;
-                        g.DrawLine(p.textloc.X - sw / 2, ya, p.textloc.X + sw / 2, ya);
-                    }
-                    break;
-                }
-            }
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            g.DrawPolygon(rectPoints);
-            if (clockPoints != null) {
-                g.DrawPolygon(clockPoints);
-            }
-            drawPosts();
-        }
-
-        public override void Drag(Point pos) {
-            pos = CirSim.Sim.SnapGrid(pos);
-            if (pos.X < P1.X) {
-                pos.X = P1.X;
-                pos.Y = P1.Y;
-            } else {
-                P1.Y = P2.Y = pos.Y;
-                P2.X = CirSim.Sim.SnapGrid(pos.X);
-            }
-            SetPoints();
-        }
-
-        public override void SetPoints() {
-            clockPoints = null;
-            int hs = cspc;
-            int x0 = P1.X + cspc2;
-            int y0 = P1.Y;
-            var r = new Point(x0 - cspc, y0 - cspc);
-            int xs = sizeX * cspc2;
-            int ys = sizeY * cspc2;
-            rectPoints = new Point[] {
-                new Point(r.X, r.Y),
-                new Point(r.X + xs, r.Y),
-                new Point(r.X + xs, r.Y + ys),
-                new Point(r.X, r.Y + ys)
-            };
-            setBbox(r, rectPoints[2]);
-            for (int i = 0; i != CirPostCount; i++) {
-                var p = pins[i];
-                switch (p.side) {
-                case SIDE_N:
-                    p.setPoint(x0, y0, 1, 0, 0, -1, 0, 0); break;
-                case SIDE_S:
-                    p.setPoint(x0, y0, 1, 0, 0, 1, 0, ys - cspc2); break;
-                case SIDE_W:
-                    p.setPoint(x0, y0, 0, 1, -1, 0, 0, 0); break;
-                case SIDE_E:
-                    p.setPoint(x0, y0, 0, 1, 1, 0, xs - cspc2, 0); break;
-                }
-            }
-        }
-
-        /* see if we can move pin to position xp, yp, and return the new position */
-        public bool getPinPos(int xp, int yp, int pin, int[] pos) {
-            int x0 = P1.X + cspc2;
-            int y0 = P1.Y;
-            int xr = x0 - cspc;
-            int yr = y0 - cspc;
-            double xd = (xp - xr) / (double)cspc2 - .5;
-            double yd = (yp - yr) / (double)cspc2 - .5;
-            if (xd < .25 && yd > 0 && yd < sizeY - 1) {
-                pos[0] = (int)Math.Max(Math.Round(yd), 0);
-                pos[1] = SIDE_W;
-            } else if (xd > sizeX - .75) {
-                pos[0] = (int)Math.Min(Math.Round(yd), sizeY - 1);
-                pos[1] = SIDE_E;
-            } else if (yd < .25) {
-                pos[0] = (int)Math.Max(Math.Round(xd), 0);
-                pos[1] = SIDE_N;
-            } else if (yd > sizeY - .75) {
-                pos[0] = (int)Math.Min(Math.Round(xd), sizeX - 1);
-                pos[1] = SIDE_S;
-            } else {
-                return false;
-            }
-
-            if (pos[0] < 0) {
-                return false;
-            }
-            if ((pos[1] == SIDE_N || pos[1] == SIDE_S) && pos[0] >= sizeX) {
-                return false;
-            }
-            if ((pos[1] == SIDE_W || pos[1] == SIDE_E) && pos[0] >= sizeY) {
-                return false;
-            }
-
-            for (int i = 0; i != CirPostCount; i++) {
-                if (pin == i) {
-                    continue;
-                }
-                if (pins[i].overlaps(pos[0], pos[1])) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public override Point GetPost(int n) {
-            return pins[n].post;
-        }
-
-        public override void CirSetVoltageSource(int j, int vs) {
-            for (int i = 0; i != CirPostCount; i++) {
-                var p = pins[i];
+        public override void AnaSetVoltageSource(int j, int vs) {
+            for (int i = 0; i != PostCount; i++) {
+                var p = Pins[i];
                 if (p.output && j-- == 0) {
                     p.voltSource = vs;
                     return;
@@ -326,122 +53,46 @@ namespace Circuit.Elements.Custom {
             Console.WriteLine("setVoltageSource failed for " + this);
         }
 
-        public override void CirStamp() {
-            for (int i = 0; i != CirPostCount; i++) {
-                var p = pins[i];
+        public override void AnaStamp() {
+            for (int i = 0; i != PostCount; i++) {
+                var p = Pins[i];
                 if (p.output) {
-                    mCir.StampVoltageSource(0, CirNodes[i], p.voltSource);
+                    mCir.StampVoltageSource(0, Nodes[i], p.voltSource);
+                }
+            }
+        }
+
+        public override void CirDoStep() {
+            int i;
+            for (i = 0; i != PostCount; i++) {
+                var p = Pins[i];
+                if (!p.output) {
+                    p.value = Volts[i] > 2.5;
+                }
+            }
+            execute();
+            for (i = 0; i != PostCount; i++) {
+                var p = Pins[i];
+                if (p.output) {
+                    mCir.UpdateVoltageSource(0, Nodes[i], p.voltSource, p.value ? 5 : 0);
                 }
             }
         }
 
         protected virtual void execute() { }
 
-        public override void CirDoStep() {
-            int i;
-            for (i = 0; i != CirPostCount; i++) {
-                var p = pins[i];
-                if (!p.output) {
-                    p.value = CirVolts[i] > 2.5;
-                }
-            }
-            execute();
-            for (i = 0; i != CirPostCount; i++) {
-                var p = pins[i];
-                if (p.output) {
-                    mCir.UpdateVoltageSource(0, CirNodes[i], p.voltSource, p.value ? 5 : 0);
-                }
-            }
-        }
-
-        public override void CirReset() {
-            for (int i = 0; i != CirPostCount; i++) {
-                pins[i].value = false;
-                pins[i].curcount = 0;
-                CirVolts[i] = 0;
-            }
-            lastClock = false;
-        }
-
-        public override void GetInfo(string[] arr) {
-            arr[0] = getChipName();
-            int a = 1;
-            for (int i = 0; i != CirPostCount; i++) {
-                var p = pins[i];
-                if (arr[a] != null) {
-                    arr[a] += "; ";
-                } else {
-                    arr[a] = "";
-                }
-                string t = p.text;
-                if (p.lineOver) {
-                    t += '\'';
-                }
-                if (p.clock) {
-                    t = "Clk";
-                }
-                arr[a] += t + " = " + Utils.VoltageText(CirVolts[i]);
-                if (i % 2 == 1) {
-                    a++;
-                }
-            }
-        }
-
         public override void CirSetCurrent(int x, double c) {
-            for (int i = 0; i != CirPostCount; i++) {
-                if (pins[i].output && pins[i].voltSource == x) {
-                    pins[i].current = c;
+            for (int i = 0; i != PostCount; i++) {
+                if (Pins[i].output && Pins[i].voltSource == x) {
+                    Pins[i].current = c;
                 }
             }
         }
 
-        string getChipName() { return "chip"; }
+        public override bool GetConnection(int n1, int n2) { return false; }
 
-        public override bool CirGetConnection(int n1, int n2) { return false; }
-
-        public override bool CirHasGroundConnection(int n1) {
-            return pins[n1].output;
-        }
-
-        public override double CirGetCurrentIntoNode(int n) {
-            return pins[n].current;
-        }
-
-        public override ElementInfo GetElementInfo(int n) {
-            if (n == 0) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox();
-                ei.CheckBox.Text = "Flip X";
-                ei.CheckBox.Checked = (mFlags & FLAG_FLIP_X) != 0;
-                return ei;
-            }
-            if (n == 1) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox();
-                ei.CheckBox.Text = "Flip Y";
-                ei.CheckBox.Checked = (mFlags & FLAG_FLIP_Y) != 0;
-                return ei;
-            }
-            return null;
-        }
-
-        public override void SetElementValue(int n, ElementInfo ei) {
-            if (n == 0) {
-                if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_FLIP_X;
-                } else {
-                    mFlags &= ~FLAG_FLIP_X;
-                }
-                SetPoints();
-            }
-            if (n == 1) {
-                if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_FLIP_Y;
-                } else {
-                    mFlags &= ~FLAG_FLIP_Y;
-                }
-                SetPoints();
-            }
+        public override double GetCurrentIntoNode(int n) {
+            return Pins[n].current;
         }
     }
 }

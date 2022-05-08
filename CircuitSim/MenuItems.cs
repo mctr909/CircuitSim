@@ -132,7 +132,7 @@ namespace Circuit {
         ComparatorSwapElm,
         OTAElm,
         VCVSElm,
-        VCCSElm,
+        VCCS,
         CCVSElm,
         CCCS,
         OPTOCOUPLER,
@@ -568,7 +568,7 @@ namespace Circuit {
             //addElementItem(activeBlocMenuBar, "Add CCII-", ITEM.CC2NegElm);
             //addElementItem(activeBlocMenuBar, "Add OTA (LM13700 style)", ITEM.OTAElm);
             //addElementItem(activeBlocMenuBar, "Add Voltage-Controlled Voltage Source", ITEM.VCVSElm);
-            //addElementItem(activeBlockMenuBar, "Add Voltage-Controlled Current Source", ELEMENTS.VCCSElm);
+            //addElementItem(activeBlockMenuBar, "Add Voltage-Controlled Current Source", ELEMENTS.VCCS);
             //addElementItem(activeBlocMenuBar, "Add Current-Controlled Voltage Source", ITEM.CCVSElm);
             //addElementItem(activeBlockMenuBar, "Add Current-Controlled Current Source", ELEMENTS.CCCS);
             //addElementItem(activeBlockMenuBar, "カスタムモジュール", ELEMENTS.CustomCompositeElm);
@@ -734,14 +734,14 @@ namespace Circuit {
             //    return null; //(CircuitElm)new OTAElm(x1, y1);
             //case ELEMENTS.VCVSElm:
             //    return null; //(CircuitElm)new VCVSElm(x1, y1);
-            //case ELEMENTS.VCCSElm:
-            //    return new VCCSElm(pos);
+            case ELEMENTS.VCCS:
+                return new VCCSUI(pos);
             //case ELEMENTS.CCVSElm:
             //    return null; //(CircuitElm)new CCVSElm(x1, y1);
-            //case ELEMENTS.CCCS:
-            //    return new CCCSElm(pos);
-            //case ELEMENTS.OPTOCOUPLER:
-            //    return new OptocouplerElm(pos);
+            case ELEMENTS.CCCS:
+                return new CCCSUI(pos);
+            case ELEMENTS.OPTOCOUPLER:
+                return new OptocouplerUI(pos);
             //case ELEMENTS.CustomCompositeElm:
             //    return new CustomCompositeElm(pos);
             #endregion
@@ -880,8 +880,8 @@ namespace Circuit {
                 return new MosfetUI(p1, p2, f, st);
             case DUMP_ID.OPAMP:
                 return new OpAmpUI(p1, p2, f, st);
-            //case DUMP_ID.OPTO_COUPLER:
-            //    return new OptocouplerElm(p1, p2, f, st);
+            case DUMP_ID.OPTO_COUPLER:
+                return new OptocouplerUI(p1, p2, f, st);
             case DUMP_ID.ANALOG_SW:
                 return new AnalogSwitchUI(p1, p2, f, st);
             #endregion
@@ -893,10 +893,10 @@ namespace Circuit {
                 return new CurrentUI(p1, p2, f, st);
             case DUMP_ID.RAIL:
                 return new RailUI(p1, p2, f, st);
-            //case DUMP_ID.VCCS:
-            //    return new VCCSElm(p1, p2, f, st);
-            //case DUMP_ID.CCCS:
-            //    return new CCCSElm(p1, p2, f, st);
+            case DUMP_ID.VCCS:
+                return new VCCSUI(p1, p2, f, st);
+            case DUMP_ID.CCCS:
+                return new CCCSUI(p1, p2, f, st);
             case DUMP_ID.SWEEP:
                 return new SweepUI(p1, p2, f, st);
             case DUMP_ID.AM:

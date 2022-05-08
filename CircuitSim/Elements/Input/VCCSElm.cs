@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 
 using Circuit.Elements.Custom;
 
@@ -7,47 +6,128 @@ namespace Circuit.Elements.Input {
     class VCCSElm : ChipElm {
         public bool mBroken;
 
-        protected int mInputCount;
+        public int InputCount;
+        public string ExprString;
+
         protected Expr mExpr;
         protected ExprState mExprState;
-        protected string mExprString;
         double[] mLastVolts;
 
-        public VCCSElm(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
-            mInputCount = st.nextTokenInt();
-            mExprString = CustomLogicModel.unescape(st.nextToken());
-            parseExpr();
-            SetupPins();
+        public VCCSElm(ChipUI ui) : base() {
+            InputCount = 2;
+            ExprString = ".1*(a-b)";
+            ParseExpr();
+            SetupPins(ui);
         }
 
-        public VCCSElm(Point pos) : base(pos) {
-            mInputCount = 2;
-            mExprString = ".1*(a-b)";
-            parseExpr();
-            SetupPins();
+        public VCCSElm(ChipUI ui, StringTokenizer st) : base(st) {
+            InputCount = st.nextTokenInt();
+            ExprString = CustomLogicModel.unescape(st.nextToken());
+            ParseExpr();
+            SetupPins(ui);
         }
 
-        public override int CirVoltageSourceCount { get { return 0; } }
+        public override int VoltageSourceCount { get { return 0; } }
 
-        public override bool CirNonLinear { get { return true; } }
+        public override bool NonLinear { get { return true; } }
 
-        public override int CirPostCount { get { return mInputCount + 2; } }
+        public override int PostCount { get { return InputCount + 2; } }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.VCCS; } }
+        public override void SetupPins(ChipUI ui) {
+            ui.sizeX = 2;
+            ui.sizeY = InputCount > 2 ? InputCount : 2;
+            Pins = new ChipUI.Pin[InputCount + 2];
+            for (int i = 0; i != InputCount; i++) {
+                Pins[i] = new ChipUI.Pin(ui, i, ChipUI.SIDE_W, char.ToString((char)('A' + i)));
+            }
+            Pins[InputCount] = new ChipUI.Pin(ui, 0, ChipUI.SIDE_E, "C+");
+            Pins[InputCount + 1] = new ChipUI.Pin(ui, 1, ChipUI.SIDE_E, "C-");
+            mLastVolts = new double[InputCount];
+            mExprState = new ExprState(InputCount);
+        }
 
-        public virtual bool hasCurrentOutput() { return true; }
+        public override bool GetConnection(int n1, int n2) {
+            return comparePair(InputCount, InputCount + 1, n1, n2);
+        }
 
-        protected override string dump() {
-            return base.dump() + " " + mInputCount + " " + CustomLogicModel.escape(mExprString);
+        public override bool AnaHasGroundConnection(int n1) {
+            return false;
+        }
+
+        public override void AnaStamp() {
+            mCir.StampNonLinear(Nodes[InputCount]);
+            mCir.StampNonLinear(Nodes[InputCount + 1]);
+        }
+
+        public override void CirDoStep() {
+            int i;
+
+            /* no current path?  give up */
+            if (mBroken) {
+                Pins[InputCount].current = 0;
+                Pins[InputCount + 1].current = 0;
+                /* avoid singular matrix errors */
+                mCir.StampResistor(Nodes[InputCount], Nodes[InputCount + 1], 1e8);
+                return;
+            }
+
+            /* converged yet? */
+            double limitStep = getLimitStep();
+            double convergeLimit = getConvergeLimit();
+            for (i = 0; i != InputCount; i++) {
+                if (Math.Abs(Volts[i] - mLastVolts[i]) > convergeLimit) {
+                    mCir.Converged = false;
+                }
+                if (double.IsNaN(Volts[i])) {
+                    Volts[i] = 0;
+                }
+                if (Math.Abs(Volts[i] - mLastVolts[i]) > limitStep) {
+                    Volts[i] = mLastVolts[i] + sign(Volts[i] - mLastVolts[i], limitStep);
+                }
+            }
+
+            if (mExpr != null) {
+                /* calculate output */
+                for (i = 0; i != InputCount; i++) {
+                    mExprState.Values[i] = Volts[i];
+                }
+                mExprState.Time = CirSim.Sim.Time;
+                double v0 = -mExpr.Eval(mExprState);
+                /*if (Math.Abs(volts[inputCount] - v0) > Math.Abs(v0) * .01 && cir.SubIterations < 100) {
+                    cir.Converged = false;
+                }*/
+                double rs = v0;
+
+                /* calculate and stamp output derivatives */
+                for (i = 0; i != InputCount; i++) {
+                    double dv = 1e-6;
+                    mExprState.Values[i] = Volts[i] + dv;
+                    double v = -mExpr.Eval(mExprState);
+                    mExprState.Values[i] = Volts[i] - dv;
+                    double v2 = -mExpr.Eval(mExprState);
+                    double dx = (v - v2) / (dv * 2);
+                    if (Math.Abs(dx) < 1e-6) {
+                        dx = sign(dx, 1e-6);
+                    }
+                    mCir.StampVCCurrentSource(Nodes[InputCount], Nodes[InputCount + 1], Nodes[i], 0, dx);
+                    /*Console.WriteLine("ccedx " + i + " " + dx); */
+                    /* adjust right side */
+                    rs -= dx * Volts[i];
+                    mExprState.Values[i] = Volts[i];
+                }
+                /*Console.WriteLine("ccers " + rs);*/
+                mCir.StampCurrentSource(Nodes[InputCount], Nodes[InputCount + 1], rs);
+                Pins[InputCount].current = -v0;
+                Pins[InputCount + 1].current = v0;
+            }
+
+            for (i = 0; i != InputCount; i++) {
+                mLastVolts[i] = Volts[i];
+            }
         }
 
         protected double sign(double a, double b) {
             return a > 0 ? b : -b;
-        }
-
-        protected void parseExpr() {
-            var parser = new ExprParser(mExprString);
-            mExpr = parser.ParseExpression();
         }
 
         protected double getConvergeLimit() {
@@ -62,105 +142,7 @@ namespace Circuit.Elements.Input {
             return .1;
         }
 
-        public override bool CirGetConnection(int n1, int n2) {
-            return comparePair(mInputCount, mInputCount + 1, n1, n2);
-        }
-
-        public override bool CirHasGroundConnection(int n1) {
-            return false;
-        }
-
-        public override void SetupPins() {
-            sizeX = 2;
-            sizeY = mInputCount > 2 ? mInputCount : 2;
-            pins = new Pin[mInputCount + 2];
-            for (int i = 0; i != mInputCount; i++) {
-                pins[i] = new Pin(this, i, SIDE_W, char.ToString((char)('A' + i)));
-            }
-            pins[mInputCount] = new Pin(this, 0, SIDE_E, "C+");
-            pins[mInputCount + 1] = new Pin(this, 1, SIDE_E, "C-");
-            mLastVolts = new double[mInputCount];
-            mExprState = new ExprState(mInputCount);
-        }
-
-        string getChipName() { return "VCCS~"; } /* ~ is for localization */
-
-        public void SetExpr(string expr) {
-            mExprString = expr.Replace(" ", "").Replace("\r", "").Replace("\n", "");
-            parseExpr();
-        }
-
-        public override void CirStamp() {
-            mCir.StampNonLinear(CirNodes[mInputCount]);
-            mCir.StampNonLinear(CirNodes[mInputCount + 1]);
-        }
-
-        public override void CirDoStep() {
-            int i;
-
-            /* no current path?  give up */
-            if (mBroken) {
-                pins[mInputCount].current = 0;
-                pins[mInputCount + 1].current = 0;
-                /* avoid singular matrix errors */
-                mCir.StampResistor(CirNodes[mInputCount], CirNodes[mInputCount + 1], 1e8);
-                return;
-            }
-
-            /* converged yet? */
-            double limitStep = getLimitStep();
-            double convergeLimit = getConvergeLimit();
-            for (i = 0; i != mInputCount; i++) {
-                if (Math.Abs(CirVolts[i] - mLastVolts[i]) > convergeLimit) {
-                    mCir.Converged = false;
-                }
-                if (double.IsNaN(CirVolts[i])) {
-                    CirVolts[i] = 0;
-                }
-                if (Math.Abs(CirVolts[i] - mLastVolts[i]) > limitStep) {
-                    CirVolts[i] = mLastVolts[i] + sign(CirVolts[i] - mLastVolts[i], limitStep);
-                }
-            }
-
-            if (mExpr != null) {
-                /* calculate output */
-                for (i = 0; i != mInputCount; i++) {
-                    mExprState.Values[i] = CirVolts[i];
-                }
-                mExprState.Time = CirSim.Sim.Time;
-                double v0 = -mExpr.Eval(mExprState);
-                /*if (Math.Abs(volts[inputCount] - v0) > Math.Abs(v0) * .01 && cir.SubIterations < 100) {
-                    cir.Converged = false;
-                }*/
-                double rs = v0;
-
-                /* calculate and stamp output derivatives */
-                for (i = 0; i != mInputCount; i++) {
-                    double dv = 1e-6;
-                    mExprState.Values[i] = CirVolts[i] + dv;
-                    double v = -mExpr.Eval(mExprState);
-                    mExprState.Values[i] = CirVolts[i] - dv;
-                    double v2 = -mExpr.Eval(mExprState);
-                    double dx = (v - v2) / (dv * 2);
-                    if (Math.Abs(dx) < 1e-6) {
-                        dx = sign(dx, 1e-6);
-                    }
-                    mCir.StampVCCurrentSource(CirNodes[mInputCount], CirNodes[mInputCount + 1], CirNodes[i], 0, dx);
-                    /*Console.WriteLine("ccedx " + i + " " + dx); */
-                    /* adjust right side */
-                    rs -= dx * CirVolts[i];
-                    mExprState.Values[i] = CirVolts[i];
-                }
-                /*Console.WriteLine("ccers " + rs);*/
-                mCir.StampCurrentSource(CirNodes[mInputCount], CirNodes[mInputCount + 1], rs);
-                pins[mInputCount].current = -v0;
-                pins[mInputCount + 1].current = v0;
-            }
-
-            for (i = 0; i != mInputCount; i++) {
-                mLastVolts[i] = CirVolts[i];
-            }
-        }
+        public virtual bool hasCurrentOutput() { return true; }
 
         double getLimitStep() {
             /* get limit on changes in voltage per step.
@@ -180,50 +162,18 @@ namespace Circuit.Elements.Input {
             return .001;
         }
 
+        public void ParseExpr() {
+            var parser = new ExprParser(ExprString);
+            mExpr = parser.ParseExpression();
+        }
+
+        public void SetExpr(string expr) {
+            ExprString = expr.Replace(" ", "").Replace("\r", "").Replace("\n", "");
+            ParseExpr();
+        }
+
         public int getOutputNode(int n) {
-            return CirNodes[n + mInputCount];
-        }
-
-        public override void Draw(CustomGraphics g) {
-            drawChip(g);
-        }
-
-        public override void GetInfo(string[] arr) {
-            base.GetInfo(arr);
-            int i;
-            for (i = 0; arr[i] != null; i++)
-                ;
-            arr[i] = "I = " + Utils.CurrentText(pins[mInputCount].current);
-        }
-
-        public override ElementInfo GetElementInfo(int n) {
-            if (n == 0) {
-                var ei = new ElementInfo(ElementInfo.MakeLink("customfunction.html", "Output Function"), 0, -1, -1);
-                ei.Text = mExprString;
-                ei.DisallowSliders();
-                return ei;
-            }
-            if (n == 1) {
-                return new ElementInfo("入力数", mInputCount, 1, 8).SetDimensionless();
-            }
-            return null;
-        }
-
-        public override void SetElementValue(int n, ElementInfo ei) {
-            if (n == 0) {
-                mExprString = ei.Textf.Text.Replace(" ", "").Replace("\r", "").Replace("\n", "");
-                parseExpr();
-                return;
-            }
-            if (n == 1) {
-                if (ei.Value < 0 || ei.Value > 8) {
-                    return;
-                }
-                mInputCount = (int)ei.Value;
-                SetupPins();
-                cirAllocNodes();
-                SetPoints();
-            }
+            return Nodes[n + InputCount];
         }
     }
 }
