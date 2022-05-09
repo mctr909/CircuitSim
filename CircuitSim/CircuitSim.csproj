@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\PDF.cs" />
     <Compile Include="Elements\Active\AnalogSwitchElm.cs" />
     <Compile Include="Elements\Active\AnalogSwitchUI.cs" />
     <Compile Include="Elements\Active\DiodeElm.cs" />

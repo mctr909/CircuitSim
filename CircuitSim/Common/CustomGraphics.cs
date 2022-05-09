@@ -81,7 +81,7 @@ namespace Circuit {
             Width = 0.1f
         };
 
-        CustomGraphics() { }
+        public CustomGraphics() { }
         CustomGraphics(Bitmap image) {
             Width = image.Width;
             Height = image.Height;
@@ -134,7 +134,7 @@ namespace Circuit {
             g.DrawString(s, FontText, brushText, x, y, textLeft);
         }
 
-        public void DrawLeftTopText(string s, int x, int y) {
+        public virtual void DrawLeftTopText(string s, int x, int y) {
             g.DrawString(s, FontText, brushText, x, y, textLeftTop);
         }
 
@@ -162,11 +162,11 @@ namespace Circuit {
             g.DrawString(s, FontText, brushText, x, y, textCenterV);
         }
 
-        public void DrawLine(int ax, int ay, int bx, int by) {
+        public virtual void DrawLine(int ax, int ay, int bx, int by) {
             g.DrawLine(penLine, ax, ay, bx, by);
         }
 
-        public void DrawLine(Point a, Point b) {
+        public virtual void DrawLine(Point a, Point b) {
             g.DrawLine(penLine, a, b);
         }
 
@@ -189,7 +189,7 @@ namespace Circuit {
             g.DrawArc(penLine, p.X - md / 2, p.Y - md / 2, md, md, start, sweep);
         }
 
-        public void DrawPolygon(Point[] p) {
+        public virtual void DrawPolygon(Point[] p) {
             g.DrawPolygon(penLine, p);
         }
 
@@ -209,7 +209,7 @@ namespace Circuit {
             g.FillPie(brush, pos.X - radius, pos.Y - radius, radius * 2, radius * 2, 0, 360);
         }
 
-        public void FillPolygon(Color color, Point[] p) {
+        public virtual void FillPolygon(Color color, Point[] p) {
             penColor.Color = color;
             g.FillPolygon(penColor.Brush, p);
         }
