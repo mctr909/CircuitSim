@@ -28,6 +28,13 @@ namespace Circuit {
             setupScopes();
 
             var g = BaseUI.Context;
+            PDF.Page pdfG = null;
+            if (g.DoPrint) {
+                g.DoPrint = false;
+                pdfG = new PDF.Page(g.Width, g.Height);
+                g = pdfG;
+                BaseUI.Context = pdfG;
+            }
 
             if (ControlPanel.ChkPrintable.Checked) {
                 CustomGraphics.WhiteColor = Color.Gray;
@@ -224,10 +231,17 @@ namespace Circuit {
                 }
             }
 
-            mBmp = new Bitmap(g.Width, g.Height);
-            mContext = Graphics.FromImage(mBmp);
-            BaseUI.Context.CopyTo(mContext);
-            mPixCir.Image = mBmp;
+            if (null == pdfG) {
+                mBmp = new Bitmap(g.Width, g.Height);
+                mContext = Graphics.FromImage(mBmp);
+                BaseUI.Context.CopyTo(mContext);
+                mPixCir.Image = mBmp;
+            } else {
+                var pdf = new PDF();
+                pdf.AddPage(pdfG);
+                pdf.Save("C:\\Users\\user\\Desktop\\test.pdf");
+                BaseUI.Context = CustomGraphics.FromImage(g.Width, g.Height);
+            }
 
             /* if we did DC analysis, we need to re-analyze the circuit with that flag cleared. */
             if (DcAnalysisFlag) {

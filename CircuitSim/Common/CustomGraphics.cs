@@ -36,6 +36,8 @@ namespace Circuit {
             set { penLine.Color = value; }
         }
 
+        public bool DoPrint = false;
+
         public int Width { get; private set; }
         public int Height { get; private set; }
 
@@ -81,14 +83,14 @@ namespace Circuit {
             Width = 0.1f
         };
 
-        public CustomGraphics() { }
+        CustomGraphics() { }
         CustomGraphics(Bitmap image) {
             Width = image.Width;
             Height = image.Height;
             this.image = image;
             g = Graphics.FromImage(this.image);
         }
-        CustomGraphics(int width, int height) {
+        public CustomGraphics(int width, int height) {
             Width = width;
             Height = height;
             image = new Bitmap(Width, Height);
@@ -109,13 +111,14 @@ namespace Circuit {
         }
 
         public void Print() {
-            var p = new PrintDocument();
-            p.DefaultPageSettings.Landscape = true;
-            p.PrintPage += new PrintPageEventHandler((s, e) => {
-                e.Graphics.DrawImage(image, 0, 0, image.Width, image.Height);
-                e.HasMorePages = false;
-            });
-            p.Print();
+            //var p = new PrintDocument();
+            //p.DefaultPageSettings.Landscape = true;
+            //p.PrintPage += new PrintPageEventHandler((s, e) => {
+            //    e.Graphics.DrawImage(image, 0, 0, image.Width, image.Height);
+            //    e.HasMorePages = false;
+            //});
+            //p.Print();
+            DoPrint = true;
         }
 
         public static CustomGraphics FromImage(Bitmap image) {
@@ -126,11 +129,11 @@ namespace Circuit {
             return new CustomGraphics(width, height);
         }
 
-        public void DrawPost(PointF p) {
+        public virtual void DrawPost(PointF p) {
             g.FillPie(penPost.Brush, p.X - penPost.Width / 2, p.Y - penPost.Width / 2, penPost.Width, penPost.Width, 0, 360);
         }
 
-        public void DrawLeftText(string s, int x, int y) {
+        public virtual void DrawLeftText(string s, int x, int y) {
             g.DrawString(s, FontText, brushText, x, y, textLeft);
         }
 
@@ -138,12 +141,8 @@ namespace Circuit {
             g.DrawString(s, FontText, brushText, x, y, textLeftTop);
         }
 
-        public void DrawRightText(string s, int x, int y) {
+        public virtual void DrawRightText(string s, int x, int y) {
             g.DrawString(s, FontText, brushText, x, y, textRight);
-        }
-
-        public void DrawRightVText(string s, int x, int y) {
-            g.DrawString(s, FontText, brushText, x, y, textRightV);
         }
 
         public void DrawCenteredText(string s, int x, int y) {
@@ -158,7 +157,11 @@ namespace Circuit {
             g.DrawString(s, fontLText, brushText, x, y + 1, textCenter);
         }
 
-        public void DrawCenteredVText(string s, int x, int y) {
+        public virtual void DrawRightVText(string s, int x, int y) {
+            g.DrawString(s, FontText, brushText, x, y, textRightV);
+        }
+
+        public virtual void DrawCenteredVText(string s, int x, int y) {
             g.DrawString(s, FontText, brushText, x, y, textCenterV);
         }
 
@@ -201,11 +204,11 @@ namespace Circuit {
             g.FillRectangle(brush, x, y, width, height);
         }
 
-        public void FillCircle(int cx, int cy, float radius) {
+        public virtual void FillCircle(int cx, int cy, float radius) {
             g.FillPie(penLine.Brush, cx - radius, cy - radius, radius * 2, radius * 2, 0, 360);
         }
 
-        public void FillCircle(Brush brush, Point pos, float radius) {
+        public virtual void FillCircle(Brush brush, Point pos, float radius) {
             g.FillPie(brush, pos.X - radius, pos.Y - radius, radius * 2, radius * 2, 0, 360);
         }
 

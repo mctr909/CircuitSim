@@ -1,18 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
 using Circuit;
 
 class PDF {
-    const int Width = 595;
-    const int Height = 842;
+    const int Width = 842;
+    const int Height = 595;
 
     public class Page : CustomGraphics {
         MemoryStream mMs;
         StreamWriter mSw;
 
-        public Page() : base() {
+        public Page(int width, int height) : base(width, height) {
             mMs = new MemoryStream();
             mSw = new StreamWriter(mMs);
             mSw.WriteLine("0 w");
@@ -33,6 +34,22 @@ class PDF {
             mSw.WriteLine("({0}) Tj", s);
         }
 
+        public override void DrawLeftText(string s, int x, int y) {
+            DrawLeftTopText(s, x, y);
+        }
+
+        public override void DrawRightText(string s, int x, int y) {
+            DrawLeftTopText(s, x, y);
+        }
+
+        public override void DrawRightVText(string s, int x, int y) {
+            DrawLeftTopText(s, x, y);
+        }
+
+        public override void DrawCenteredVText(string s, int x, int y) {
+            DrawLeftTopText(s, x, y);
+        }
+
         public override void DrawLine(int ax, int ay, int bx, int by) {
             mSw.WriteLine("{0} {1} m", ax, Height - ay);
             mSw.WriteLine("{0} {1} l S", bx, Height - by);
@@ -49,9 +66,42 @@ class PDF {
                 p = poly[i];
                 mSw.WriteLine("{0} {1} l", p.X, Height - p.Y);
             }
+            p = poly[0];
+            mSw.WriteLine("{0} {1} l S", p.X, Height - p.Y);
         }
 
         public override void FillPolygon(Color color, Point[] poly) {
+            var p = poly[0];
+            mSw.WriteLine("{0} {1} m", p.X, Height - p.Y);
+            for (int i = 1; i < poly.Length; i++) {
+                p = poly[i];
+                mSw.WriteLine("{0} {1} l", p.X, Height - p.Y);
+            }
+            p = poly[0];
+            mSw.WriteLine("{0} {1} l b", p.X, Height - p.Y);
+        }
+
+        public override void FillCircle(int cx, int cy, float radius) {
+            FillCircleF(cx, cy, radius);
+        }
+
+        public override void FillCircle(Brush brush, Point pos, float radius) {
+            FillCircleF(pos.X, pos.Y, radius);
+        }
+
+        public override void DrawPost(PointF p) {
+            FillCircleF(p.X, p.Y, 2);
+        }
+
+        void FillCircleF(float cx, float cy, float radius) {
+            var poly = new PointF[16];
+            for (int i = 0; i < poly.Length; i++) {
+                var th = 2 * Math.PI * i / poly.Length;
+                poly[i] = new PointF(
+                    (float)(cx + radius * Math.Cos(th)),
+                    (float)(cy + radius * Math.Sin(th))
+                );
+            }
             var p = poly[0];
             mSw.WriteLine("{0} {1} m", p.X, Height - p.Y);
             for (int i = 1; i < poly.Length - 1; i++) {
