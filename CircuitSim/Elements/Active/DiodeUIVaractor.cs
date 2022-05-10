@@ -25,32 +25,33 @@ namespace Circuit.Elements.Active {
         }
 
         public override void SetPoints() {
+            BODY_LEN = 14;
             base.SetPoints();
-            double platef = 0.6;
+            var plate11 = (BODY_LEN - 5.0) / BODY_LEN;
+            var plate12 = (BODY_LEN - 6.0) / BODY_LEN;
+            var plate21 = (BODY_LEN - 1.0) / BODY_LEN;
             var pa = new Point[2];
             interpLeadAB(ref pa[0], ref pa[1], 0, HS);
-            interpLeadAB(ref mCathode[0], ref mCathode[1], platef, HS);
             var arrowPoint = new Point();
-            interpLead(ref arrowPoint, platef);
+            interpLead(ref arrowPoint, plate11);
             mPoly = new Point[] { pa[0], pa[1], arrowPoint };
             // calc plates
-            mPlate1 = new Point[2];
-            mPlate2 = new Point[2];
-            interpLeadAB(ref mPlate1[0], ref mPlate1[1], platef, HS);
-            interpLeadAB(ref mPlate2[0], ref mPlate2[1], 1, HS);
+            mPlate1 = new Point[4];
+            mPlate2 = new Point[4];
+            interpLeadAB(ref mPlate1[0], ref mPlate1[1], plate11, HS);
+            interpLeadAB(ref mPlate1[3], ref mPlate1[2], plate12, HS);
+            interpLeadAB(ref mPlate2[0], ref mPlate2[1], plate21, HS);
+            interpLeadAB(ref mPlate2[3], ref mPlate2[2], 1, HS);
             setTextPos();
         }
 
         public override void Draw(CustomGraphics g) {
             // draw leads and diode arrow
             drawDiode(g);
-
             // draw first plate
-            drawLead(mPlate1[0], mPlate1[1]);
-
+            g.FillPolygon(g.LineColor, mPlate1);
             // draw second plate
-            drawLead(mPlate2[0], mPlate2[1]);
-
+            g.FillPolygon(g.LineColor, mPlate2);
             doDots();
             drawPosts();
             drawName();

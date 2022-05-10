@@ -6,7 +6,7 @@ namespace Circuit.Elements.Passive {
         public static readonly int FLAG_BACK_EULER = 2;
         protected static string mLastReferenceName = "C";
 
-        const int BODY_LEN = 6;
+        const int BODY_LEN = 5;
         const int HS = 6;
 
         Point[] mPlate1;
@@ -45,15 +45,16 @@ namespace Circuit.Elements.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
-            double f = (mLen - BODY_LEN) * 0.5 / mLen;
+            var f1 = 0.5 - BODY_LEN * 0.5 / mLen;
+            var f2 = 1.0 - f1;
             /* calc leads */
-            setLead1(f);
-            setLead2(1 - f);
+            setLead1(f1);
+            setLead2(f2);
             /* calc plates */
             mPlate1 = new Point[2];
             mPlate2 = new Point[2];
-            interpPointAB(ref mPlate1[0], ref mPlate1[1], f, HS);
-            interpPointAB(ref mPlate2[0], ref mPlate2[1], 1 - f, HS);
+            interpPointAB(ref mPlate1[0], ref mPlate1[1], f1, HS);
+            interpPointAB(ref mPlate2[0], ref mPlate2[1], f2, HS);
             setTextPos();
         }
 

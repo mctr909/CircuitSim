@@ -6,8 +6,8 @@ using System.IO;
 using Circuit;
 
 class PDF {
-    const int Width = 842;
-    const int Height = 595;
+    const float Width = 841.92f;
+    const float Height = 595.32f;
     const string FontName = "Arial";
 
     public class Page : CustomGraphics {

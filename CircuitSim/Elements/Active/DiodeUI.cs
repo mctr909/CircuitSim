@@ -6,8 +6,8 @@ namespace Circuit.Elements.Active {
     class DiodeUI : BaseUI {
         public const int FLAG_FWDROP = 1;
         public const int FLAG_MODEL = 2;
-        protected const int BODY_LEN = 12;
-        protected const int HS = 6;
+        protected const int HS = 5;
+        protected int BODY_LEN = 10;
 
         protected Point[] mPoly;
         protected Point[] mCathode;
@@ -58,8 +58,9 @@ namespace Circuit.Elements.Active {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(BODY_LEN);
-            mCathode = new Point[2];
-            interpLeadAB(ref mCathode[0], ref mCathode[1], 1, HS);
+            mCathode = new Point[4];
+            interpLeadAB(ref mCathode[0], ref mCathode[1], (BODY_LEN - 1.0) / BODY_LEN, HS);
+            interpLeadAB(ref mCathode[3], ref mCathode[2], 1, HS);
             var pa = new Point[2];
             interpLeadAB(ref pa[0], ref pa[1], 0, HS);
             mPoly = new Point[] { pa[0], pa[1], mLead2 };
@@ -90,10 +91,15 @@ namespace Circuit.Elements.Active {
 
             draw2Leads();
 
+            var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             /* draw arrow thingy */
-            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, mPoly);
+            g.FillPolygon(color, mPoly);
             /* draw thing arrow is pointing to */
-            drawLead(mCathode[0], mCathode[1]);
+            if (mCathode.Length < 4) {
+                drawLead(mCathode[0], mCathode[1]);
+            } else {
+                g.FillPolygon(color, mCathode);
+            }
         }
 
         public override void GetInfo(string[] arr) {
