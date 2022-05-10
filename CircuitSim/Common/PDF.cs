@@ -8,7 +8,7 @@ using Circuit;
 class PDF {
     const int Width = 842;
     const int Height = 595;
-    const string FontName = "Times-Roman";
+    const string FontName = "Arial";
 
     public class Page : CustomGraphics {
         MemoryStream mMs;
@@ -30,27 +30,41 @@ class PDF {
         }
 
         public override void DrawLeftTopText(string s, int x, int y) {
-            mSw.WriteLine("/F0 {0} Tf", TextSize);
-            mSw.WriteLine("1 0 0 1 {0} {1} Tm", x, Height - y);
-            mSw.WriteLine("({0}) Tj", s);
+            drawText(s, x, y - TextSize);
         }
 
         public override void DrawLeftText(string s, int x, int y) {
-            DrawLeftTopText(s, x, y);
+            drawText(s, x, y);
         }
 
         public override void DrawRightText(string s, int x, int y) {
-            DrawLeftTopText(s, x, y);
+            drawText(s, x - GetTextSize(s).Width, y);
         }
 
         public override void DrawRightVText(string s, int x, int y) {
-            DrawCenteredVText(s, x, y);
+            drawTextV(s, x, y + GetTextSize(s).Width);
         }
 
         public override void DrawCenteredVText(string s, int x, int y) {
-            mSw.WriteLine("/F0 {0} Tf", TextSize);
-            mSw.WriteLine("0 1 -1 0 {0} {1} Tm", x + TextSize, Height - y);
+            drawTextV(s, x, y + GetTextSize(s).Width * 0.5f);
+        }
+
+        public override void DrawCenteredText(string s, int x, int y) {
+            drawText(s, x - GetTextSize(s).Width * 0.5f, y);
+        }
+
+        public override void DrawCenteredText(string s, int x, int y, Font font) {
+            drawText(s, x - GetTextSize(s).Width * 0.5f, y);
+        }
+
+        public override void DrawCenteredLText(string s, int x, int y) {
+            mSw.WriteLine("/F0 {0} Tf", fontLText.Size);
+            mSw.WriteLine("0 1 -1 0 {0} {1} Tm", x + GetLTextSize(s).Width * 0.5f, Height - y);
             mSw.WriteLine("({0}) Tj", s);
+        }
+
+        public override void DrawPost(PointF p) {
+            fillCircleF(p.X, p.Y, 2);
         }
 
         public override void DrawLine(int ax, int ay, int bx, int by) {
@@ -77,11 +91,11 @@ class PDF {
             var poly = polyCircle(c.X, c.Y, radius);
             var p = poly[0];
             mSw.WriteLine("{0} {1} m", p.X, Height - p.Y);
-            for (int i = 1; i < poly.Length - 1; i++) {
+            for (int i = 1; i < poly.Length; i++) {
                 p = poly[i];
                 mSw.WriteLine("{0} {1} l", p.X, Height - p.Y);
             }
-            p = poly[poly.Length - 1];
+            p = poly[0];
             mSw.WriteLine("{0} {1} l S", p.X, Height - p.Y);
         }
 
@@ -116,19 +130,27 @@ class PDF {
             fillCircleF(pos.X, pos.Y, radius);
         }
 
-        public override void DrawPost(PointF p) {
-            fillCircleF(p.X, p.Y, 2);
+        void drawText(string s, float x, float y) {
+            mSw.WriteLine("/F0 {0} Tf", TextSize);
+            mSw.WriteLine("1 0 0 1 {0} {1} Tm", x, Height - y);
+            mSw.WriteLine("({0}) Tj", s);
+        }
+
+        void drawTextV(string s, float x, float y) {
+            mSw.WriteLine("/F0 {0} Tf", TextSize);
+            mSw.WriteLine("0 1 -1 0 {0} {1} Tm", x + TextSize, Height - y);
+            mSw.WriteLine("({0}) Tj", s);
         }
 
         void fillCircleF(float cx, float cy, float radius) {
             var poly = polyCircle(cx, cy, radius);
             var p = poly[0];
             mSw.WriteLine("{0} {1} m", p.X, Height - p.Y);
-            for (int i = 1; i < poly.Length - 1; i++) {
+            for (int i = 1; i < poly.Length; i++) {
                 p = poly[i];
                 mSw.WriteLine("{0} {1} l", p.X, Height - p.Y);
             }
-            p = poly[poly.Length - 1];
+            p = poly[0];
             mSw.WriteLine("{0} {1} l b", p.X, Height - p.Y);
         }
 
@@ -154,6 +176,9 @@ class PDF {
     }
 
     public void Save(string path) {
+        if (string.IsNullOrEmpty(path) || !Directory.Exists(Path.GetDirectoryName(path))) {
+            return;
+        }
         var fs = new FileStream(path, FileMode.Create);
         var sw = new StreamWriter(fs);
         sw.WriteLine("%PDF-1.7");

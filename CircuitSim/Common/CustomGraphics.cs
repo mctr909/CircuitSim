@@ -3,7 +3,7 @@ using System.Drawing.Drawing2D;
 
 namespace Circuit {
     class CustomGraphics {
-        public static Font FontText = new Font("Segoe UI", 9.0f);
+        public static Font FontText = new Font("Arial", 9.0f);
         static Brush brushText = Brushes.Black;
         static Color colorText;
 
@@ -40,7 +40,7 @@ namespace Circuit {
         public int Width { get; private set; }
         public int Height { get; private set; }
 
-        static readonly Font fontLText = new Font("Segoe UI", 14.0f);
+        protected static readonly Font fontLText = new Font("Arial", 14.0f);
         static readonly StringFormat textLeft = new StringFormat() {
             Alignment = StringAlignment.Near,
             LineAlignment = StringAlignment.Center
@@ -137,15 +137,15 @@ namespace Circuit {
             g.DrawString(s, FontText, brushText, x, y, textRight);
         }
 
-        public void DrawCenteredText(string s, int x, int y) {
+        public virtual void DrawCenteredText(string s, int x, int y) {
             g.DrawString(s, FontText, brushText, x, y, textCenter);
         }
 
-        public void DrawCenteredText(string s, int x, int y, Font font) {
+        public virtual void DrawCenteredText(string s, int x, int y, Font font) {
             g.DrawString(s, font, brushText, x, y, textCenter);
         }
 
-        public void DrawCenteredLText(string s, int x, int y) {
+        public virtual void DrawCenteredLText(string s, int x, int y) {
             g.DrawString(s, fontLText, brushText, x, y + 1, textCenter);
         }
 
