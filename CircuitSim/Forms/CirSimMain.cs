@@ -83,6 +83,16 @@ namespace Circuit {
 
             g.SetTransform(new Matrix(Transform[0], Transform[1], Transform[2], Transform[3], Transform[4], Transform[5]));
             {
+                var pdfX0 = 0;
+                var pdfX1 = (int)PDF.Width;
+                var pdfY0 = 0;
+                var pdfY1 = (int)PDF.Height;
+                g.LineColor = Color.Yellow;
+                g.DrawLine(pdfX0, pdfY0, pdfX1, pdfY0);
+                g.DrawLine(pdfX1, pdfY0, pdfX1, pdfY1);
+                g.DrawLine(pdfX1, pdfY1, pdfX0, pdfY1);
+                g.DrawLine(pdfX0, pdfY1, pdfX0, pdfY0);
+
                 /* draw elements */
                 for (int i = 0; i != ElmCount; i++) {
                     ElmList[i].Draw(g);
@@ -192,11 +202,6 @@ namespace Circuit {
                         info[infoIdx] = s;
                     }
                 }
-                int x = 0;
-                if (ct != 0) {
-                    x = mScopes[ct - 1].RightEdge + 20;
-                }
-                x = Math.Max(x, g.Width * 2 / 3);
 
                 /* count lines of data */
                 {
@@ -207,6 +212,12 @@ namespace Circuit {
                         info[infoIdx++] = badnodes + ((badnodes == 1) ? " bad connection" : " bad connections");
                     }
                 }
+
+                int x = 0;
+                if (ct != 0) {
+                    x = mScopes[ct - 1].RightEdge + 20;
+                }
+                x = Math.Max(x, g.Width * 2 / 3);
                 int ybase = mCircuitArea.Height;
                 for (int i = 0; i < info.Length && info[i] != null; i++) {
                     g.DrawLeftText(info[i], x, ybase + 15 * (i + 1));

@@ -6,8 +6,8 @@ using System.IO;
 using Circuit;
 
 class PDF {
-    const float Width = 841.92f;
-    const float Height = 595.32f;
+    public const float Width = 841.92f;
+    public const float Height = 595.32f;
     const string FontName = "Arial";
 
     public class Page : CustomGraphics {
@@ -42,11 +42,11 @@ class PDF {
         }
 
         public override void DrawRightVText(string s, int x, int y) {
-            drawTextV(s, x, y + GetTextSize(s).Width);
+            drawTextV(s, x, y + GetTextSize(s).Width - TextSize * 0.5f);
         }
 
         public override void DrawCenteredVText(string s, int x, int y) {
-            drawTextV(s, x, y + GetTextSize(s).Width * 0.5f);
+            drawTextV(s, x, y + GetTextSize(s).Width * 0.5f - TextSize * 0.5f);
         }
 
         public override void DrawCenteredText(string s, int x, int y) {

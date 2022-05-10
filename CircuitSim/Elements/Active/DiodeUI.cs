@@ -7,7 +7,7 @@ namespace Circuit.Elements.Active {
         public const int FLAG_FWDROP = 1;
         public const int FLAG_MODEL = 2;
         protected const int HS = 5;
-        protected int BODY_LEN = 10;
+        protected int BODY_LEN = 9;
 
         protected Point[] mPoly;
         protected Point[] mCathode;
