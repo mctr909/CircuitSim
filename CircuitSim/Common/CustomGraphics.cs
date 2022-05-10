@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Printing;
 
 namespace Circuit {
     class CustomGraphics {
@@ -111,13 +110,6 @@ namespace Circuit {
         }
 
         public void Print() {
-            //var p = new PrintDocument();
-            //p.DefaultPageSettings.Landscape = true;
-            //p.PrintPage += new PrintPageEventHandler((s, e) => {
-            //    e.Graphics.DrawImage(image, 0, 0, image.Width, image.Height);
-            //    e.HasMorePages = false;
-            //});
-            //p.Print();
             DoPrint = true;
         }
 
@@ -183,11 +175,11 @@ namespace Circuit {
             penLine.DashStyle = DashStyle.Solid;
         }
 
-        public void DrawCircle(Point p, float radius) {
+        public virtual void DrawCircle(Point p, float radius) {
             g.DrawArc(penLine, p.X - radius, p.Y - radius, radius * 2, radius * 2, 0, 360);
         }
 
-        public void DrawArc(Point p, float diameter, float start, float sweep) {
+        public virtual void DrawArc(Point p, float diameter, float start, float sweep) {
             var md = diameter * .98f;
             g.DrawArc(penLine, p.X - md / 2, p.Y - md / 2, md, md, start, sweep);
         }

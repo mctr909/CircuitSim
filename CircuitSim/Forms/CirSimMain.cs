@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 
 using Circuit.Elements;
 using Circuit.Elements.Output;
@@ -239,7 +240,10 @@ namespace Circuit {
             } else {
                 var pdf = new PDF();
                 pdf.AddPage(pdfG);
-                pdf.Save("C:\\Users\\user\\Desktop\\test.pdf");
+                var saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "PDFファイル(*.pdf)|*.pdf";
+                saveFileDialog.ShowDialog();
+                pdf.Save(saveFileDialog.FileName);
                 BaseUI.Context = CustomGraphics.FromImage(g.Width, g.Height);
             }
 

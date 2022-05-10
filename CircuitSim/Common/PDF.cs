@@ -8,6 +8,7 @@ using Circuit;
 class PDF {
     const int Width = 842;
     const int Height = 595;
+    const string FontName = "Times-Roman";
 
     public class Page : CustomGraphics {
         MemoryStream mMs;
@@ -29,7 +30,7 @@ class PDF {
         }
 
         public override void DrawLeftTopText(string s, int x, int y) {
-            mSw.WriteLine("/F0 {0} Tf", (int)TextSize);
+            mSw.WriteLine("/F0 {0} Tf", TextSize);
             mSw.WriteLine("1 0 0 1 {0} {1} Tm", x, Height - y);
             mSw.WriteLine("({0}) Tj", s);
         }
@@ -43,11 +44,13 @@ class PDF {
         }
 
         public override void DrawRightVText(string s, int x, int y) {
-            DrawLeftTopText(s, x, y);
+            DrawCenteredVText(s, x, y);
         }
 
         public override void DrawCenteredVText(string s, int x, int y) {
-            DrawLeftTopText(s, x, y);
+            mSw.WriteLine("/F0 {0} Tf", TextSize);
+            mSw.WriteLine("0 1 -1 0 {0} {1} Tm", x + TextSize, Height - y);
+            mSw.WriteLine("({0}) Tj", s);
         }
 
         public override void DrawLine(int ax, int ay, int bx, int by) {
@@ -70,6 +73,30 @@ class PDF {
             mSw.WriteLine("{0} {1} l S", p.X, Height - p.Y);
         }
 
+        public override void DrawCircle(Point c, float radius) {
+            var poly = polyCircle(c.X, c.Y, radius);
+            var p = poly[0];
+            mSw.WriteLine("{0} {1} m", p.X, Height - p.Y);
+            for (int i = 1; i < poly.Length - 1; i++) {
+                p = poly[i];
+                mSw.WriteLine("{0} {1} l", p.X, Height - p.Y);
+            }
+            p = poly[poly.Length - 1];
+            mSw.WriteLine("{0} {1} l S", p.X, Height - p.Y);
+        }
+
+        public override void DrawArc(Point c, float diameter, float start, float sweep) {
+            var poly = polyCircle(c.X, c.Y, diameter * 0.5f, start, sweep);
+            var p = poly[0];
+            mSw.WriteLine("{0} {1} m", p.X, Height - p.Y);
+            for (int i = 1; i < poly.Length - 1; i++) {
+                p = poly[i];
+                mSw.WriteLine("{0} {1} l", p.X, Height - p.Y);
+            }
+            p = poly[poly.Length - 1];
+            mSw.WriteLine("{0} {1} l S", p.X, Height - p.Y);
+        }
+
         public override void FillPolygon(Color color, Point[] poly) {
             var p = poly[0];
             mSw.WriteLine("{0} {1} m", p.X, Height - p.Y);
@@ -82,26 +109,19 @@ class PDF {
         }
 
         public override void FillCircle(int cx, int cy, float radius) {
-            FillCircleF(cx, cy, radius);
+            fillCircleF(cx, cy, radius);
         }
 
         public override void FillCircle(Brush brush, Point pos, float radius) {
-            FillCircleF(pos.X, pos.Y, radius);
+            fillCircleF(pos.X, pos.Y, radius);
         }
 
         public override void DrawPost(PointF p) {
-            FillCircleF(p.X, p.Y, 2);
+            fillCircleF(p.X, p.Y, 2);
         }
 
-        void FillCircleF(float cx, float cy, float radius) {
-            var poly = new PointF[16];
-            for (int i = 0; i < poly.Length; i++) {
-                var th = 2 * Math.PI * i / poly.Length;
-                poly[i] = new PointF(
-                    (float)(cx + radius * Math.Cos(th)),
-                    (float)(cy + radius * Math.Sin(th))
-                );
-            }
+        void fillCircleF(float cx, float cy, float radius) {
+            var poly = polyCircle(cx, cy, radius);
             var p = poly[0];
             mSw.WriteLine("{0} {1} m", p.X, Height - p.Y);
             for (int i = 1; i < poly.Length - 1; i++) {
@@ -110,6 +130,20 @@ class PDF {
             }
             p = poly[poly.Length - 1];
             mSw.WriteLine("{0} {1} l b", p.X, Height - p.Y);
+        }
+
+        PointF[] polyCircle(float cx, float cy, float radius, float start = 0, float sweep = 360) {
+            var poly = new PointF[radius < 4 ? 8 : 16];
+            var sRad = Math.PI * start / 180;
+            var ssweep = sweep / 360.0;
+            for (int i = 0; i < poly.Length; i++) {
+                var th = 2 * Math.PI * (i + 0.5) * ssweep / poly.Length + sRad;
+                poly[i] = new PointF(
+                    (float)(cx + radius * Math.Cos(th)),
+                    (float)(cy + radius * Math.Sin(th))
+                );
+            }
+            return poly;
         }
     }
 
@@ -148,7 +182,7 @@ class PDF {
         sw.WriteLine("  /Font <<");
         sw.WriteLine("    /F0 <<");
         sw.WriteLine("      /Type /Font");
-        sw.WriteLine("      /BaseFont /Times-Roman");
+        sw.WriteLine("      /BaseFont /{0}", FontName);
         sw.WriteLine("      /Subtype /Type1");
         sw.WriteLine("    >>");
         sw.WriteLine("  >>");
