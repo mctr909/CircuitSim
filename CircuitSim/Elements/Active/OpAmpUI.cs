@@ -53,8 +53,9 @@ namespace Circuit.Elements.Active {
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.DrawPolygon(mTriangle);
 
-            drawCenteredLText("-", mTextp[0], true);
-            drawCenteredLText("+", mTextp[1], true);
+            drawLead(mTextp[0], mTextp[1]);
+            drawLead(mTextp[2], mTextp[3]);
+            drawLead(mTextp[4], mTextp[5]);
 
             var ce = (OpAmpElm)Elm;
             ce.CurCount = updateDotCount(ce.Current, ce.CurCount);
@@ -75,10 +76,20 @@ namespace Circuit.Elements.Active {
             }
             mIn1p = new Point[2];
             mIn2p = new Point[2];
-            mTextp = new Point[2];
             interpPointAB(ref mIn1p[0], ref mIn2p[0], 0, hs);
             interpLeadAB(ref mIn1p[1], ref mIn2p[1], 0, hs);
-            interpLeadAB(ref mTextp[0], ref mTextp[1], 0.2, hs);
+
+            var signp = new Point[2];
+            interpLeadAB(ref signp[0], ref signp[1], 0.2, hs);
+            mTextp = new Point[] {
+                new Point(signp[0].X - 3, signp[0].Y),
+                new Point(signp[0].X + 3, signp[0].Y),
+                new Point(signp[1].X - 3, signp[1].Y),
+                new Point(signp[1].X + 3, signp[1].Y),
+                new Point(signp[1].X, signp[1].Y - 3),
+                new Point(signp[1].X, signp[1].Y + 3)
+            };
+
             var tris = new Point[2];
             interpLeadAB(ref tris[0], ref tris[1], 0, hs * 2);
             mTriangle = new Point[] { tris[0], tris[1], mLead2 };

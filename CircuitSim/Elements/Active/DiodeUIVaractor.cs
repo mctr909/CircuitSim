@@ -25,10 +25,10 @@ namespace Circuit.Elements.Active {
         }
 
         public override void SetPoints() {
-            BODY_LEN = 14;
+            BODY_LEN = 12;
             base.SetPoints();
-            var plate11 = (BODY_LEN - 5.0) / BODY_LEN;
-            var plate12 = (BODY_LEN - 6.0) / BODY_LEN;
+            var plate11 = (BODY_LEN - 4.0) / BODY_LEN;
+            var plate12 = (BODY_LEN - 5.0) / BODY_LEN;
             var plate21 = (BODY_LEN - 1.0) / BODY_LEN;
             var pa = new Point[2];
             interpLeadAB(ref pa[0], ref pa[1], 0, HS);

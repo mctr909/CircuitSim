@@ -71,14 +71,14 @@ namespace Circuit.Elements.Active {
 
             /* calc rectangle edges */
             var rect = new Point[4];
-            interpPointAB(ref rect[0], ref rect[1], 1 - BODY_LEN / mLen, HS);
+            interpPointAB(ref rect[0], ref rect[1], 1 - (BODY_LEN - 1) / mLen, HS);
             interpPointAB(ref rect[2], ref rect[3], 1 - (BODY_LEN - 3) / mLen, HS);
 
             /* calc points where collector/emitter leads contact rectangle */
             interpPointAB(ref mColl[1], ref mEmit[1], 1 - (BODY_LEN - 3) / mLen, 6 * mDsign * ce.NPN);
 
             /* calc point where base lead contacts rectangle */
-            interpPoint(ref mTbase, 1 - BODY_LEN / mLen);
+            interpPoint(ref mTbase, 1 - (BODY_LEN - 1) / mLen);
 
             /* rectangle */
             mRectPoly = new Point[] { rect[0], rect[2], rect[3], rect[1] };
@@ -103,7 +103,7 @@ namespace Circuit.Elements.Active {
                 if (0 < mDsign * swap) {
                     mNamePos = new Point(mPost2.X - 1, mPost2.Y);
                 } else {
-                    mNamePos = new Point(mPost2.X - 17, mPost2.Y);
+                    mNamePos = new Point(mPost2.X - 16, mPost2.Y);
                 }
             } else if (mPost1.X == mPost2.X) {
                 mNamePos = new Point(mPost2.X - (int)(txtW / 2), mPost2.Y + HS * swap * mDsign * 2 / 3);
