@@ -63,8 +63,8 @@ class PDF {
             fillCircleF(p.X, p.Y, 2);
         }
 
-        public override void DrawHandle(Point p, float radius) {
-            fillCircleF(p.X, p.Y, radius);
+        public override void DrawHandle(Point p) {
+            fillCircleF(p.X, p.Y, 4);
         }
 
         public override void DrawLine(float ax, float ay, float bx, float by) {

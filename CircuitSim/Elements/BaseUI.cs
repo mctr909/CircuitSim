@@ -499,9 +499,9 @@ namespace Circuit.Elements {
 
         #region [public method]
         public void DrawHandles(CustomGraphics g) {
-            g.DrawHandle(P1, 4);
+            g.DrawHandle(P1);
             if (2 <= NumHandles) {
-                g.DrawHandle(P2, 4);
+                g.DrawHandle(P2);
             }
         }
 

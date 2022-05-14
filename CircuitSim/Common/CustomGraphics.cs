@@ -136,7 +136,8 @@ namespace Circuit {
             mG.FillPie(mPenPost.Brush, p.X - mPenPost.Width / 2, p.Y - mPenPost.Width / 2, mPenPost.Width, mPenPost.Width, 0, 360);
         }
 
-        public virtual void DrawHandle(Point p, float radius) {
+        public virtual void DrawHandle(Point p) {
+            var radius = 4;
             mG.FillPie(PenHandle, p.X - radius, p.Y - radius, radius * 2, radius * 2, 0, 360);
         }
 
