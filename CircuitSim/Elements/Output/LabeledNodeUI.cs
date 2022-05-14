@@ -46,7 +46,7 @@ namespace Circuit.Elements.Output {
             }
             drawCenteredText(str, P2, true);
             if (lineOver) {
-                int asc = (int)CustomGraphics.FontText.Size;
+                int asc = (int)(CustomGraphics.TextSize + 0.5);
                 if (lineOver) {
                     int ya = P2.Y - asc;
                     int sw = (int)g.GetTextSize(str).Width;

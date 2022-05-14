@@ -116,8 +116,8 @@ namespace Circuit {
                         g.DrawPost(ce.P1);
                         g.DrawPost(ce.P2);
                         if (ce != mMouseElm || TempMouseMode != MOUSE_MODE.DRAG_POST) {
-                            g.FillCircle(Brushes.Gray, ce.P1, 3.5f);
-                            g.FillCircle(Brushes.Gray, ce.P2, 3.5f);
+                            g.DrawHandle(ce.P1, 4);
+                            g.DrawHandle(ce.P2, 4);
                         } else {
                             ce.DrawHandles(g);
                         }
@@ -138,7 +138,7 @@ namespace Circuit {
                 /* draw bad connections.  do this last so they will not be overdrawn. */
                 for (int i = 0; i != mCir.BadConnectionList.Count; i++) {
                     var cn = mCir.BadConnectionList[i];
-                    g.FillCircle(Brushes.Red, cn, 3.5f);
+                    g.DrawHandle(cn, 5);
                 }
 
                 if (0 < mSelectedArea.Width) {

@@ -112,7 +112,7 @@ namespace Circuit {
                 doDCAnalysis();
             }
             if (item == MENU_ITEM.PRINT) {
-                BaseUI.Context.Print();
+                BaseUI.Context.DoPrint = true;
             }
             if (item == MENU_ITEM.RECOVER) {
                 doRecover();

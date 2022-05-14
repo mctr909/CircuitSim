@@ -179,23 +179,23 @@ namespace Circuit.Elements.Custom {
                     g.DrawCircle(p.bubblePos, 3);
                 }
                 g.LineColor = p.selected ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-                int fsz = 12 * csize;
-                var font = CustomGraphics.FontText;
+                var bkSize = CustomGraphics.TextSize;
+                CustomGraphics.TextSize = 12 * csize;
                 while (true) {
-                    int sw = (int)g.GetTextSize(p.text, font).Width;
+                    int txtW = (int)g.GetTextSize(p.text).Width;
                     /* scale font down if it's too big */
-                    if (sw > 12 * csize) {
-                        fsz--;
-                        font = new Font(CustomGraphics.FontText.Name, fsz);
+                    if (12 * csize < txtW) {
+                        CustomGraphics.TextSize -= 0.5f;
                         continue;
                     }
-                    g.DrawCenteredText(p.text, p.textloc.X, p.textloc.Y, font);
+                    g.DrawCenteredText(p.text, p.textloc.X, p.textloc.Y);
                     if (p.lineOver) {
                         int ya = p.textloc.Y;
-                        g.DrawLine(p.textloc.X - sw / 2, ya, p.textloc.X + sw / 2, ya);
+                        g.DrawLine(p.textloc.X - txtW / 2, ya, p.textloc.X + txtW / 2, ya);
                     }
                     break;
                 }
+                CustomGraphics.TextSize = bkSize;
             }
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             g.DrawPolygon(rectPoints);

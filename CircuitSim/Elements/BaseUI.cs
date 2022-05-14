@@ -406,7 +406,7 @@ namespace Circuit.Elements {
         }
 
         protected void drawCenteredLText(string s, Point p, bool cx) {
-            var fs = Context.GetLTextSize(s);
+            var fs = Context.GetTextSizeL(s);
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
             if (cx) {
@@ -499,17 +499,9 @@ namespace Circuit.Elements {
 
         #region [public method]
         public void DrawHandles(CustomGraphics g) {
-            if (mLastHandleGrabbed == -1) {
-                g.FillRectangle(CustomGraphics.PenHandle, P1.X - 3, P1.Y - 3, 7, 7);
-            } else if (mLastHandleGrabbed == 0) {
-                g.FillRectangle(CustomGraphics.PenHandle, P1.X - 4, P1.Y - 4, 9, 9);
-            }
-            if (NumHandles == 2) {
-                if (mLastHandleGrabbed == -1) {
-                    g.FillRectangle(CustomGraphics.PenHandle, P2.X - 3, P2.Y - 3, 7, 7);
-                } else if (mLastHandleGrabbed == 1) {
-                    g.FillRectangle(CustomGraphics.PenHandle, P2.X - 4, P2.Y - 4, 9, 9);
-                }
+            g.DrawHandle(P1, 4);
+            if (2 <= NumHandles) {
+                g.DrawHandle(P2, 4);
             }
         }
 

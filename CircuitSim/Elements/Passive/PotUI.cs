@@ -173,19 +173,20 @@ namespace Circuit.Elements.Passive {
                 bool rev = (mLead1.X == mLead2.X && mLead1.Y < mLead2.Y) || (mLead1.Y == mLead2.Y && mLead1.X > mLead2.X);
 
                 /* draw units */
-                string s1 = Utils.UnitText(rev ? ce.Resistance2 : ce.Resistance1, "");
-                string s2 = Utils.UnitText(rev ? ce.Resistance1 : ce.Resistance2, "");
-                int txtHeightH = CustomGraphics.FontText.Height / 2;
-                int txtWidth1 = (int)g.GetTextSize(s1).Width;
-                int txtWidth2 = (int)g.GetTextSize(s2).Width;
+                var s1 = Utils.UnitText(rev ? ce.Resistance2 : ce.Resistance1, "");
+                var s2 = Utils.UnitText(rev ? ce.Resistance1 : ce.Resistance2, "");
+                var txtHeightHalf = CustomGraphics.TextSize * 0.5f;
+                var txtWidth1 = (int)g.GetTextSize(s1).Width;
+                var txtWidth2 = (int)g.GetTextSize(s2).Width;
 
                 /* vertical? */
                 if (mLead1.X == mLead2.X) {
-                    g.DrawLeftTopText(s1, !reverseY ? mArrowPoint.X : mArrowPoint.X - txtWidth1, Math.Min(mArrow1.Y, mArrow2.Y) + 4 * txtHeightH);
-                    g.DrawLeftTopText(s2, !reverseY ? mArrowPoint.X : mArrowPoint.X - txtWidth2, Math.Max(mArrow1.Y, mArrow2.Y) - txtHeightH);
+                    g.DrawLeftText(s1, reverseY ? (mArrowPoint.X - txtWidth1) : mArrowPoint.X, (int)(Math.Min(mArrow1.Y, mArrow2.Y) + txtHeightHalf * 3));
+                    g.DrawLeftText(s2, reverseY ? (mArrowPoint.X - txtWidth2) : mArrowPoint.X, (int)(Math.Max(mArrow1.Y, mArrow2.Y) - txtHeightHalf * 3));
                 } else {
-                    g.DrawLeftTopText(s1, Math.Min(mArrow1.X, mArrow2.X) - txtWidth1, !reverseX ? (mArrowPoint.Y + txtHeightH + 10) : mArrowPoint.Y);
-                    g.DrawLeftTopText(s2, Math.Max(mArrow1.X, mArrow2.X), !reverseX ? (mArrowPoint.Y + txtHeightH + 10) : mArrowPoint.Y);
+                    var y = (int)(mArrowPoint.Y + (reverseX ? -txtHeightHalf : txtHeightHalf));
+                    g.DrawLeftText(s1, Math.Min(mArrow1.X, mArrow2.X) - txtWidth1, y);
+                    g.DrawLeftText(s2, Math.Max(mArrow1.X, mArrow2.X), y);
                 }
             }
             if (ControlPanel.ChkShowName.Checked) {

@@ -67,10 +67,10 @@ namespace Circuit.Elements.Input {
             }
 
             int x0 = 0;
-            int y0 = 0;
+            var y0 = 0.0f;
             g.LineColor = CustomGraphics.GrayColor;
             for (int i = -xl; i <= xl; i++) {
-                var yy = yc + (int)(0.95 * Math.Sin(i * Math.PI * w / xl) * wl);
+                var yy = yc + (float)(0.95 * Math.Sin(i * Math.PI * w / xl) * wl);
                 if (i == -xl) {
                     x0 = xc + i;
                     y0 = yy;

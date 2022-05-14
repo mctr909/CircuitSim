@@ -29,10 +29,6 @@ class PDF {
             }
         }
 
-        public override void DrawLeftTopText(string s, int x, int y) {
-            drawText(s, x, y - TextSize);
-        }
-
         public override void DrawLeftText(string s, int x, int y) {
             drawText(s, x, y);
         }
@@ -58,8 +54,8 @@ class PDF {
         }
 
         public override void DrawCenteredLText(string s, int x, int y) {
-            mSw.WriteLine("/F0 {0} Tf", fontLText.Size);
-            mSw.WriteLine("0 1 -1 0 {0} {1} Tm", x + GetLTextSize(s).Width * 0.5f, Height - y);
+            mSw.WriteLine("/F0 {0} Tf", mTextFontL.Size);
+            mSw.WriteLine("0 1 -1 0 {0} {1} Tm", x + GetTextSizeL(s).Width * 0.5f, Height - y);
             mSw.WriteLine("({0}) Tj", s);
         }
 
@@ -67,12 +63,16 @@ class PDF {
             fillCircleF(p.X, p.Y, 2);
         }
 
-        public override void DrawLine(int ax, int ay, int bx, int by) {
+        public override void DrawHandle(Point p, float radius) {
+            fillCircleF(p.X, p.Y, radius);
+        }
+
+        public override void DrawLine(float ax, float ay, float bx, float by) {
             mSw.WriteLine("{0} {1} m", ax, Height - ay);
             mSw.WriteLine("{0} {1} l S", bx, Height - by);
         }
 
-        public override void DrawLine(Point a, Point b) {
+        public override void DrawLine(PointF a, PointF b) {
             DrawLine(a.X, a.Y, b.X, b.Y);
         }
 
@@ -124,10 +124,6 @@ class PDF {
 
         public override void FillCircle(int cx, int cy, float radius) {
             fillCircleF(cx, cy, radius);
-        }
-
-        public override void FillCircle(Brush brush, Point pos, float radius) {
-            fillCircleF(pos.X, pos.Y, radius);
         }
 
         void drawText(string s, float x, float y) {

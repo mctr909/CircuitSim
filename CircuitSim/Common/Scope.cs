@@ -902,7 +902,7 @@ namespace Circuit {
                     if (ll != 0 && !showGridLines) {
                         continue;
                     }
-                    int yl = maxy - (int)((ll * mGridStepY - gridMid) * gridMult);
+                    var yl = (float)(maxy - (ll * mGridStepY - gridMid) * gridMult);
                     if (yl < 0 || yl >= BoundingBox.Height - 1) {
                         continue;
                     }
@@ -915,8 +915,8 @@ namespace Circuit {
                 double tx = CirSim.Sim.Time - (CirSim.Sim.Time % mGridStepX);
 
                 for (ll = 0; ; ll++) {
-                    double tl = tx - mGridStepX * ll;
-                    int gx = (int)((tl - tstart) / ts);
+                    var tl = tx - mGridStepX * ll;
+                    var gx = (float)((tl - tstart) / ts);
                     if (gx < 0) {
                         break;
                     }
@@ -1019,17 +1019,17 @@ namespace Circuit {
                     maxM = m;
                 }
             }
-            int prevX = 0;
+            var prevX = 0.0f;
             g.LineColor = Color.Red;
             if (!LogSpectrum) {
-                int prevHeight = 0;
+                var prevHeight = 0.0f;
                 int y = (BoundingBox.Height - 1) - 12;
                 for (int i = 0; i < mScopePointCount / 2; i++) {
-                    int x = 2 * i * BoundingBox.Width / mScopePointCount;
+                    var x = 2.0f * i * BoundingBox.Width / mScopePointCount;
                     /* rect.width may be greater than or less than scopePointCount/2,
                      * so x may be greater than or equal to prevX. */
                     double magnitude = mFft.Magnitude(real[i], imag[i]);
-                    int height = (int)((magnitude * y) / maxM);
+                    var height = (float)(magnitude * y / maxM);
                     if (x != prevX) {
                         g.DrawLine(prevX, y - prevHeight, x, y - height);
                     }
@@ -1038,19 +1038,19 @@ namespace Circuit {
                 }
             } else {
                 int y0 = 5;
-                int prevY = 0;
+                var prevY = 0.0f;
                 double ymult = BoundingBox.Height / 10;
                 double val0 = mScale * ymult;
                 for (int i = 0; i < mScopePointCount / 2; i++) {
-                    int x = 2 * i * BoundingBox.Width / mScopePointCount;
+                    var x = 2.0f * i * BoundingBox.Width / mScopePointCount;
                     /* rect.width may be greater than or less than scopePointCount/2,
                      * so x may be greater than or equal to prevX. */
                     var mag = mFft.Magnitude(real[i], imag[i]);
                     if (0 == mag) {
                         mag = 1;
                     }
-                    double val = Math.Log(mag);
-                    int y = y0 - (int)(val * ymult - val0);
+                    var val = Math.Log(mag);
+                    var y = y0 - (float)(val * ymult - val0);
                     if (x != prevX) {
                         g.DrawLine(prevX, prevY, x, y);
                     }
