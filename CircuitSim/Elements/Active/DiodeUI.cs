@@ -69,9 +69,9 @@ namespace Circuit.Elements.Active {
 
         protected void setTextPos() {
             mNameV = mPost1.X == mPost2.X;
-            if (mPost1.Y == mPost2.Y) {
-                var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
-                interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 13 * mDsign);
+            mNameH = mPost1.Y == mPost2.Y;
+            if (mNameH) {
+                interpPoint(ref mNamePos, 0.5, 13 * mDsign);
             } else if (mNameV) {
                 interpPoint(ref mNamePos, 0.5, -22 * mDsign);
             } else {

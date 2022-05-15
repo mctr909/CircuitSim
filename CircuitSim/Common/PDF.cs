@@ -30,32 +30,28 @@ class PDF {
         }
 
         public override void DrawLeftText(string s, int x, int y) {
-            drawText(s, x, y);
+            writeText(s, x, y);
         }
 
         public override void DrawRightText(string s, int x, int y) {
-            drawText(s, x - GetTextSize(s).Width, y);
+            writeText(s, x, y, GetTextSize(s).Width * 0.7f);
         }
 
         public override void DrawRightVText(string s, int x, int y) {
-            drawTextV(s, x, y + GetTextSize(s).Width - TextSize * 0.5f);
-        }
-
-        public override void DrawCenteredVText(string s, int x, int y) {
-            drawTextV(s, x, y + GetTextSize(s).Width * 0.5f - TextSize * 0.5f);
+            writeTextV(s, x, y, GetTextSize(s).Width * 0.7f - TextSize * 0.5f);
         }
 
         public override void DrawCenteredText(string s, int x, int y) {
-            drawText(s, x - GetTextSize(s).Width * 0.5f, y);
+            writeText(s, x, y, GetTextSize(s).Width * 0.7f * 0.5f);
         }
 
-        public override void DrawCenteredText(string s, int x, int y, Font font) {
-            drawText(s, x - GetTextSize(s).Width * 0.5f, y);
+        public override void DrawCenteredVText(string s, int x, int y) {
+            writeTextV(s, x, y, GetTextSize(s).Width * 0.85f * 0.5f - TextSize * 0.5f);
         }
 
         public override void DrawCenteredLText(string s, int x, int y) {
             mSw.WriteLine("/F0 {0} Tf", mTextFontL.Size);
-            mSw.WriteLine("0 1 -1 0 {0} {1} Tm", x + GetTextSizeL(s).Width * 0.5f, Height - y);
+            mSw.WriteLine("1 0 0 1 {0} {1} Tm", x + GetTextSizeL(s).Width * 0.5f, Height - y);
             mSw.WriteLine("({0}) Tj", s);
         }
 
@@ -68,8 +64,8 @@ class PDF {
         }
 
         public override void DrawLine(float ax, float ay, float bx, float by) {
-            mSw.WriteLine("{0} {1} m", ax, Height - ay);
-            mSw.WriteLine("{0} {1} l S", bx, Height - by);
+            writeM(ax, ay);
+            writeLS(bx, by);
         }
 
         public override void DrawLine(PointF a, PointF b) {
@@ -78,76 +74,64 @@ class PDF {
 
         public override void DrawPolygon(Point[] poly) {
             var p = poly[0];
-            mSw.WriteLine("{0} {1} m", p.X, Height - p.Y);
+            writeM(p.X, p.Y);
             for (int i = 1; i < poly.Length; i++) {
                 p = poly[i];
-                mSw.WriteLine("{0} {1} l", p.X, Height - p.Y);
+                writeL(p);
             }
             p = poly[0];
-            mSw.WriteLine("{0} {1} l S", p.X, Height - p.Y);
+            writeLS(p.X, p.Y);
         }
 
         public override void DrawCircle(Point c, float radius) {
             var poly = polyCircle(c.X, c.Y, radius);
             var p = poly[0];
-            mSw.WriteLine("{0} {1} m", p.X, Height - p.Y);
+            writeM(p.X, p.Y);
             for (int i = 1; i < poly.Length; i++) {
                 p = poly[i];
-                mSw.WriteLine("{0} {1} l", p.X, Height - p.Y);
+                writeL(p);
             }
             p = poly[0];
-            mSw.WriteLine("{0} {1} l S", p.X, Height - p.Y);
+            writeLS(p.X, p.Y);
         }
 
         public override void DrawArc(Point c, float diameter, float start, float sweep) {
             var poly = polyCircle(c.X, c.Y, diameter * 0.5f, start, sweep);
             var p = poly[0];
-            mSw.WriteLine("{0} {1} m", p.X, Height - p.Y);
+            writeM(p.X, p.Y);
             for (int i = 1; i < poly.Length - 1; i++) {
                 p = poly[i];
-                mSw.WriteLine("{0} {1} l", p.X, Height - p.Y);
+                writeL(p);
             }
             p = poly[poly.Length - 1];
-            mSw.WriteLine("{0} {1} l S", p.X, Height - p.Y);
+            writeLS(p.X, p.Y);
         }
 
         public override void FillPolygon(Color color, Point[] poly) {
             var p = poly[0];
-            mSw.WriteLine("{0} {1} m", p.X, Height - p.Y);
+            writeM(p.X, p.Y);
             for (int i = 1; i < poly.Length; i++) {
                 p = poly[i];
-                mSw.WriteLine("{0} {1} l", p.X, Height - p.Y);
+                writeL(p);
             }
             p = poly[0];
-            mSw.WriteLine("{0} {1} l b", p.X, Height - p.Y);
+            writeLB(p);
         }
 
         public override void FillCircle(int cx, int cy, float radius) {
             fillCircleF(cx, cy, radius);
         }
 
-        void drawText(string s, float x, float y) {
-            mSw.WriteLine("/F0 {0} Tf", TextSize);
-            mSw.WriteLine("1 0 0 1 {0} {1} Tm", x, Height - y);
-            mSw.WriteLine("({0}) Tj", s);
-        }
-
-        void drawTextV(string s, float x, float y) {
-            mSw.WriteLine("/F0 {0} Tf", TextSize);
-            mSw.WriteLine("0 1 -1 0 {0} {1} Tm", x + TextSize, Height - y);
-            mSw.WriteLine("({0}) Tj", s);
-        }
-
         void fillCircleF(float cx, float cy, float radius) {
             var poly = polyCircle(cx, cy, radius);
             var p = poly[0];
-            mSw.WriteLine("{0} {1} m", p.X, Height - p.Y);
+            writeM(p.X, p.Y);
             for (int i = 1; i < poly.Length; i++) {
                 p = poly[i];
-                mSw.WriteLine("{0} {1} l", p.X, Height - p.Y);
+                writeL(p);
             }
             p = poly[0];
-            mSw.WriteLine("{0} {1} l b", p.X, Height - p.Y);
+            writeLB(p);
         }
 
         PointF[] polyCircle(float cx, float cy, float radius, float start = 0, float sweep = 360) {
@@ -162,6 +146,34 @@ class PDF {
                 );
             }
             return poly;
+        }
+
+        void writeText(string s, float x, float y, float ofsX = 0.0f) {
+            mSw.WriteLine("/F0 {0} Tf", TextSize);
+            mSw.WriteLine("1 0 0 1 {0} {1} Tm", x - ofsX, Height - TextSize * 0.5f - y);
+            mSw.WriteLine("({0}) Tj", s);
+        }
+
+        void writeTextV(string s, float x, float y, float ofsY = 0.0f) {
+            mSw.WriteLine("/F0 {0} Tf", TextSize);
+            mSw.WriteLine("0 1 -1 0 {0} {1} Tm", x + TextSize * 1.3f, Height - ofsY - y);
+            mSw.WriteLine("({0}) Tj", s);
+        }
+
+        void writeM(float x, float y) {
+            mSw.WriteLine("{0} {1} m", x, Height - y);
+        }
+
+        void writeL(PointF p) {
+            mSw.WriteLine("{0} {1} l", p.X, Height - p.Y);
+        }
+
+        void writeLS(float x, float y) {
+            mSw.WriteLine("{0} {1} l S", x, Height - y);
+        }
+
+        void writeLB(PointF p) {
+            mSw.WriteLine("{0} {1} l b", p.X, Height - p.Y);
         }
     }
 

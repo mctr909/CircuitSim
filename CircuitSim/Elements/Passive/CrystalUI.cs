@@ -53,11 +53,12 @@ namespace Circuit.Elements.Passive {
         }
 
         void setTextPos() {
-            if (mPost1.Y == mPost2.Y) {
-                var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
-                interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 16 * mDsign);
-            } else if (mPost1.X == mPost2.X) {
-                interpPoint(ref mNamePos, 0.5, -8 * mDsign);
+            mNameV = mPost1.X == mPost2.X;
+            mNameH = mPost1.Y == mPost2.Y;
+            if (mNameH) {
+                interpPoint(ref mNamePos, 0.5, 16 * mDsign);
+            } else if (mNameV) {
+                interpPoint(ref mNamePos, 0.5, -23 * mDsign);
             } else {
                 interpPoint(ref mNamePos, 0.5, -12 * mDsign);
             }

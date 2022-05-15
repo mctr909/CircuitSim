@@ -106,7 +106,7 @@ namespace Circuit.Elements.Active {
                     mNamePos = new Point(mPost2.X - 16, mPost2.Y);
                 }
             } else if (mPost1.X == mPost2.X) {
-                mNamePos = new Point(mPost2.X - (int)(txtW / 2), mPost2.Y + HS * swap * mDsign * 2 / 3);
+                mNamePos = new Point(mPost2.X, mPost2.Y + HS * swap * mDsign * 2 / 3);
             } else {
                 interpPoint(ref mNamePos, 0.5, 10 * mDsign);
             }
@@ -142,7 +142,7 @@ namespace Circuit.Elements.Active {
                 if (mNameV) {
                     g.DrawCenteredVText(ReferenceName, mNamePos.X, mNamePos.Y);
                 } else {
-                    g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
+                    g.DrawCenteredText(ReferenceName, mNamePos.X, mNamePos.Y);
                 }
             }
         }

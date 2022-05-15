@@ -137,15 +137,14 @@ namespace Circuit.Elements.Active {
 
         void setTextPos() {
             mNameV = mPost1.Y == mPost2.Y;
-            var txtW = Context.GetTextSize(ReferenceName).Width;
             if (mNameV) {
                 if (0 < mDsign) {
-                    mNamePos = mPost2;
+                    mNamePos = new Point(mPost2.X - 1, mPost2.Y);
                 } else {
-                    mNamePos = new Point((int)(mPost2.X - txtW - 2), mPost2.Y);
+                    mNamePos = new Point(mPost2.X - 16, mPost2.Y);
                 }
             } else if (mPost1.X == mPost2.X) {
-                mNamePos = new Point(mPost2.X - (int)(txtW / 2), mPost2.Y + HS * mDsign * 2 / 3);
+                mNamePos = new Point(mPost2.X, mPost2.Y + HS * mDsign * 2 / 3);
             } else {
                 interpPoint(ref mNamePos, 0.5, 10 * mDsign);
             }
@@ -218,7 +217,7 @@ namespace Circuit.Elements.Active {
                 if (mNameV) {
                     g.DrawCenteredVText(ReferenceName, mNamePos.X, mNamePos.Y);
                 } else {
-                    g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
+                    g.DrawCenteredText(ReferenceName, mNamePos.X, mNamePos.Y);
                 }
             }
         }

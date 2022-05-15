@@ -59,13 +59,11 @@ namespace Circuit.Elements.Passive {
         }
 
         void setTextPos() {
-            var ce = (CapacitorElm)Elm;
             mNameV = mPost1.X == mPost2.X;
-            if (mPost1.Y == mPost2.Y) {
-                var wv = Context.GetTextSize(Utils.UnitText(ce.Capacitance, "")).Width * 0.5;
-                var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
-                interpPoint(ref mValuePos, 0.5 - wv / mLen * mDsign, -12 * mDsign);
-                interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 11 * mDsign);
+            mNameH = mPost1.Y == mPost2.Y;
+            if (mNameH) {
+                interpPoint(ref mValuePos, 0.5, -12 * mDsign);
+                interpPoint(ref mNamePos, 0.5, 11 * mDsign);
             } else if (mNameV) {
                 interpPoint(ref mValuePos, 0.5, 3 * mDsign);
                 interpPoint(ref mNamePos, 0.5, -20 * mDsign);

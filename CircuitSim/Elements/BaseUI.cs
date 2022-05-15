@@ -106,6 +106,7 @@ namespace Circuit.Elements {
         protected Point mLead2;
 
         protected bool mNameV;
+        protected bool mNameH;
         protected Point mNamePos;
         protected Point mValuePos;
 
@@ -444,6 +445,8 @@ namespace Circuit.Elements {
                 var s = Utils.UnitText(value);
                 if (mNameV) {
                     Context.DrawCenteredVText(s, mValuePos.X, mValuePos.Y);
+                } else if (mNameH) {
+                    Context.DrawCenteredText(s, mValuePos.X, mValuePos.Y);
                 } else {
                     Context.DrawLeftText(s, mValuePos.X, mValuePos.Y);
                 }
@@ -454,6 +457,8 @@ namespace Circuit.Elements {
             if (ControlPanel.ChkShowName.Checked) {
                 if (mNameV) {
                     Context.DrawCenteredVText(ReferenceName, mNamePos.X, mNamePos.Y);
+                } else if(mNameH) {
+                    Context.DrawCenteredText(ReferenceName, mNamePos.X, mNamePos.Y);
                 } else {
                     Context.DrawRightText(ReferenceName, mNamePos.X, mNamePos.Y);
                 }
