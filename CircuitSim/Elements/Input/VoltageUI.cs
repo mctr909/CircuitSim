@@ -10,7 +10,7 @@ namespace Circuit.Elements.Input {
         const double DEFAULT_PULSE_DUTY = 0.5 / Math.PI;
 
         protected const int BODY_LEN = 28;
-        const int BODY_LEN_DC = 8;
+        const int BODY_LEN_DC = 6;
 
         Point mPs1;
         Point mPs2;
@@ -70,7 +70,7 @@ namespace Circuit.Elements.Input {
             draw2Leads();
             var elm = (VoltageElm)Elm;
             if (elm.waveform == VoltageElm.WAVEFORM.DC) {
-                int hs = 12;
+                int hs = 10;
                 setBbox(mPost1, mPost2, hs);
 
                 interpLeadAB(ref mPs1, ref mPs2, 0, hs * 0.5);

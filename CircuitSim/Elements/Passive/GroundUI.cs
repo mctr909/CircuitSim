@@ -2,7 +2,7 @@
 
 namespace Circuit.Elements.Passive {
     class GroundUI : BaseUI {
-        const int BODY_LEN = 10;
+        const int BODY_LEN = 8;
 
         Point mP1;
         Point mP2;
@@ -24,7 +24,7 @@ namespace Circuit.Elements.Passive {
         public override void Draw(CustomGraphics g) {
             drawLead(mPost1, mPost2);
             for (int i = 0; i != 3; i++) {
-                var a = BODY_LEN - i * 4;
+                var a = BODY_LEN - i * 3;
                 var b = i * BODY_LEN * 0.5;
                 interpPointAB(ref mP1, ref mP2, 1 + b / mLen, a);
                 drawLead(mP1, mP2);
