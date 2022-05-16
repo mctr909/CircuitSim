@@ -29,22 +29,11 @@ namespace Circuit.Elements.Output {
             base.SetPoints();
             interpPoint(ref mMid, 0.5 + 4 / mLen);
             Utils.CreateArrow(mPost1, mMid, out mArrowPoly, 9, 5);
-            int sign;
             mNameV = mPost1.X == mPost2.X;
             if (mNameV) {
-                sign = -mDsign;
-                if (mPost1.Y < mPost2.Y) {
-                    interpPoint(ref mTextPos, (mLen - 5) / mLen, 21 * sign);
-                } else {
-                    interpPoint(ref mTextPos, 5 / mLen, 21 * sign);
-                }
+                interpPoint(ref mTextPos, 0.5, -21 * mDsign);
             } else {
-                sign = mDsign;
-                if(mPost1.X < mPost2.X) {
-                    interpPoint(ref mTextPos, (mLen - 5) / mLen, 12 * sign);
-                } else {
-                    interpPoint(ref mTextPos, 5 / mLen, 12 * sign);
-                }
+                interpPoint(ref mTextPos, 0.5, 12 * mDsign);
             }
         }
 
@@ -66,9 +55,9 @@ namespace Circuit.Elements.Output {
                 break;
             }
             if (mNameV) {
-                g.DrawRightVText(s, mTextPos.X, mTextPos.Y);
+                g.DrawCenteredVText(s, mTextPos.X, mTextPos.Y);
             } else {
-                g.DrawRightText(s, mTextPos.X, mTextPos.Y);
+                g.DrawCenteredText(s, mTextPos.X, mTextPos.Y);
             }
             drawPosts();
         }

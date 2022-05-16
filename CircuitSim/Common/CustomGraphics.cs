@@ -112,10 +112,6 @@ namespace Circuit {
             mG.DrawString(s, mTextFont, mTextBrush, x, y, mAlignRight);
         }
 
-        public virtual void DrawRightVText(string s, int x, int y) {
-            mG.DrawString(s, mTextFont, mTextBrush, x, y, mAlignRightV);
-        }
-
         public virtual void DrawCenteredText(string s, int x, int y) {
             mG.DrawString(s, mTextFont, mTextBrush, x, y, mAlignCenter);
         }

@@ -418,13 +418,8 @@ namespace Circuit {
             addElementItem(basicMenuBar, "配線", ELEMENTS.WIRE);
             addElementItem(basicMenuBar, "接地", ELEMENTS.GROUND);
             basicMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(basicMenuBar, "抵抗", ELEMENTS.RESISTOR);
-            addElementItem(basicMenuBar, "コンデンサ", ELEMENTS.CAPACITOR);
-            addElementItem(basicMenuBar, "コイル", ELEMENTS.INDUCTOR);
-            basicMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(basicMenuBar, "矩形", ELEMENTS.BoxElm);
             addElementItem(basicMenuBar, "テキスト", ELEMENTS.TextElm);
-            mainMenuBar.Items.Add(new ToolStripSeparator());
             mainMenuBar.Items.Add(basicMenuBar);
             #endregion
 
@@ -432,13 +427,18 @@ namespace Circuit {
             var passMenuBar = new ToolStripMenuItem();
             passMenuBar.Text = "受動素子(P)";
             passMenuBar.Font = menuFont;
-            addElementItem(passMenuBar, "スイッチ", ELEMENTS.SWITCH);
-            addElementItem(passMenuBar, "プッシュスイッチ", ELEMENTS.SWITCH_PUSH);
-            addElementItem(passMenuBar, "切り替えスイッチ", ELEMENTS.SWITCH_TERM);
+            addElementItem(passMenuBar, "抵抗", ELEMENTS.RESISTOR);
+            addElementItem(passMenuBar, "コンデンサ", ELEMENTS.CAPACITOR);
+            addElementItem(passMenuBar, "コイル", ELEMENTS.INDUCTOR);
             passMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(passMenuBar, "可変抵抗", ELEMENTS.POT);
             addElementItem(passMenuBar, "コンデンサ(有極性)", ELEMENTS.CAPACITOR_POLER);
             addElementItem(passMenuBar, "トランス", ELEMENTS.TRANSFORMER);
+            passMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(passMenuBar, "スイッチ", ELEMENTS.SWITCH);
+            addElementItem(passMenuBar, "プッシュスイッチ", ELEMENTS.SWITCH_PUSH);
+            addElementItem(passMenuBar, "切り替えスイッチ", ELEMENTS.SWITCH_TERM);
+            passMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(passMenuBar, "水晶振動子", ELEMENTS.CRYSTAL);
             mainMenuBar.Items.Add(passMenuBar);
             #endregion

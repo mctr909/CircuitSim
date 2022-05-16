@@ -37,10 +37,6 @@ class PDF {
             writeText(s, x, y, GetTextSize(s).Width * 0.7f);
         }
 
-        public override void DrawRightVText(string s, int x, int y) {
-            writeTextV(s, x, y, GetTextSize(s).Width * 0.7f - TextSize * 0.5f);
-        }
-
         public override void DrawCenteredText(string s, int x, int y) {
             writeText(s, x, y, GetTextSize(s).Width * 0.7f * 0.5f);
         }
