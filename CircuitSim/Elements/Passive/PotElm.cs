@@ -38,8 +38,8 @@
         public override void AnaStamp() {
             Resistance1 = MaxResistance * Position;
             Resistance2 = MaxResistance * (1 - Position);
-            mCir.StampResistor(Nodes[0], Nodes[2], Resistance1);
-            mCir.StampResistor(Nodes[2], Nodes[1], Resistance2);
+            Circuit.StampResistor(Nodes[0], Nodes[2], Resistance1);
+            Circuit.StampResistor(Nodes[2], Nodes[1], Resistance2);
         }
 
         public override void CirSetNodeVoltage(int n, double c) {

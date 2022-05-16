@@ -53,20 +53,20 @@ namespace Circuit.Elements.Active {
         public override bool GetConnection(int n1, int n2) { return false; }
 
         public override void AnaStamp() {
-            int vn = mCir.NodeList.Count + mVoltSource;
-            mCir.StampNonLinear(vn);
-            mCir.StampMatrix(Nodes[2], vn, 1);
+            int vn = Circuit.NodeList.Count + mVoltSource;
+            Circuit.StampNonLinear(vn);
+            Circuit.StampMatrix(Nodes[2], vn, 1);
         }
 
         public override void CirDoStep() {
             double vd = Volts[V_P] - Volts[V_N];
             if (Math.Abs(mLastVd - vd) > .1) {
-                mCir.Converged = false;
+                Circuit.Converged = false;
             } else if (Volts[V_O] > MaxOut + .1 || Volts[V_O] < MinOut - .1) {
-                mCir.Converged = false;
+                Circuit.Converged = false;
             }
             double x = 0;
-            int vn = mCir.NodeList.Count + mVoltSource;
+            int vn = Circuit.NodeList.Count + mVoltSource;
             double dx = 0;
             if (vd >= MaxOut / Gain && (mLastVd >= 0 || CirSim.Random.Next(4) == 1)) {
                 dx = 1e-4;
@@ -80,10 +80,10 @@ namespace Circuit.Elements.Active {
             /*Console.WriteLine("opamp " + vd + " " + Volts[V_O] + " " + dx + " "  + x + " " + lastvd + " " + Cir.Converged);*/
 
             /* newton-raphson */
-            mCir.StampMatrix(vn, Nodes[0], dx);
-            mCir.StampMatrix(vn, Nodes[1], -dx);
-            mCir.StampMatrix(vn, Nodes[2], 1);
-            mCir.StampRightSide(vn, x);
+            Circuit.StampMatrix(vn, Nodes[0], dx);
+            Circuit.StampMatrix(vn, Nodes[1], -dx);
+            Circuit.StampMatrix(vn, Nodes[2], 1);
+            Circuit.StampRightSide(vn, x);
 
             mLastVd = vd;
         }

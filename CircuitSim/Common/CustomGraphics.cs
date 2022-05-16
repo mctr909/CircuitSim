@@ -11,11 +11,6 @@ namespace Circuit {
             Alignment = StringAlignment.Far,
             LineAlignment = StringAlignment.Center
         };
-        static readonly StringFormat mAlignRightV = new StringFormat() {
-            Alignment = StringAlignment.Far,
-            LineAlignment = StringAlignment.Near,
-            FormatFlags = StringFormatFlags.DirectionVertical,
-        };
         static readonly StringFormat mAlignCenter = new StringFormat() {
             Alignment = StringAlignment.Center,
             LineAlignment = StringAlignment.Center

@@ -58,7 +58,7 @@ namespace Circuit.Elements.Output {
         public override void CirSetCurrent(int x, double c) { mCurrent = -c; }
 
         public override void AnaStamp() {
-            mCir.StampVoltageSource(mNodeNumber, Nodes[0], mVoltSource, 0);
+            Circuit.StampVoltageSource(mNodeNumber, Nodes[0], mVoltSource, 0);
         }
 
         public override void AnaSetNode(int p, int n) {

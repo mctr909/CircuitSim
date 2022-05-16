@@ -57,7 +57,7 @@ namespace Circuit.Elements.Custom {
             for (int i = 0; i != PostCount; i++) {
                 var p = Pins[i];
                 if (p.output) {
-                    mCir.StampVoltageSource(0, Nodes[i], p.voltSource);
+                    Circuit.StampVoltageSource(0, Nodes[i], p.voltSource);
                 }
             }
         }
@@ -74,7 +74,7 @@ namespace Circuit.Elements.Custom {
             for (i = 0; i != PostCount; i++) {
                 var p = Pins[i];
                 if (p.output) {
-                    mCir.UpdateVoltageSource(0, Nodes[i], p.voltSource, p.value ? 5 : 0);
+                    Circuit.UpdateVoltageSource(0, Nodes[i], p.voltSource, p.value ? 5 : 0);
                 }
             }
         }

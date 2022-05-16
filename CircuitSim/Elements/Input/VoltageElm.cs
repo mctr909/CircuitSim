@@ -63,15 +63,15 @@ namespace Circuit.Elements.Input {
 
         public override void AnaStamp() {
             if (waveform == WAVEFORM.DC) {
-                mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
+                Circuit.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
             } else {
-                mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource);
+                Circuit.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource);
             }
         }
 
         public override void CirDoStep() {
             if (waveform != WAVEFORM.DC) {
-                mCir.UpdateVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
+                Circuit.UpdateVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
             }
         }
 

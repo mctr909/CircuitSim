@@ -33,23 +33,23 @@
         public override void AnaStamp() {
             if (CirSim.Sim.DcAnalysisFlag) {
                 /* when finding DC operating point, replace cap with a 100M resistor */
-                mCir.StampResistor(Nodes[0], Nodes[1], 1e8);
+                Circuit.StampResistor(Nodes[0], Nodes[1], 1e8);
                 mCurSourceValue = 0;
                 return;
             }
 
             mCompResistance = ControlPanel.TimeStep / (2 * Capacitance);
 
-            mCir.StampResistor(Nodes[0], Nodes[1], mCompResistance);
-            mCir.StampRightSide(Nodes[0]);
-            mCir.StampRightSide(Nodes[1]);
+            Circuit.StampResistor(Nodes[0], Nodes[1], mCompResistance);
+            Circuit.StampRightSide(Nodes[0]);
+            Circuit.StampRightSide(Nodes[1]);
         }
 
         public override void CirDoStep() {
             if (CirSim.Sim.DcAnalysisFlag) {
                 return;
             }
-            mCir.StampCurrentSource(Nodes[0], Nodes[1], mCurSourceValue);
+            Circuit.StampCurrentSource(Nodes[0], Nodes[1], mCurSourceValue);
         }
 
         public override void CirStartIteration() {

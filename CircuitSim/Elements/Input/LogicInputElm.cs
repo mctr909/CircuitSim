@@ -36,7 +36,7 @@ namespace Circuit.Elements.Input {
 
         public override void AnaStamp() {
             double v = 0 != Position ? mHiV : mLoV;
-            mCir.StampVoltageSource(0, Nodes[0], mVoltSource, v);
+            Circuit.StampVoltageSource(0, Nodes[0], mVoltSource, v);
         }
     }
 }

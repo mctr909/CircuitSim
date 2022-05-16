@@ -66,10 +66,8 @@ namespace Circuit {
         ZENER,
         VARACTOR,
         LED,
-        TRANSISTOR,
         TRANSISTOR_N,
         TRANSISTOR_P,
-        MOSFET,
         MOSFET_N,
         MOSFET_P,
         JfetElm,
@@ -107,11 +105,11 @@ namespace Circuit {
         OUTPUT,
         VOLTMETER,
         AMMETER,
-        DataRecorderElm,
+        DATA_RECORDER,
         OUTPUT_AUDIO,
         LampElm,
-        TextElm,
-        BoxElm,
+        TEXT,
+        BOX,
         TestPointElm,
         LEDArrayElm,
         STOP_TRIGGER,
@@ -398,11 +396,9 @@ namespace Circuit {
             addMenuItem(editMenuBar, "全選択(A)", MENU_ITEM.SELECT_ALL, new SHORTCUT(Keys.A));
             addMenuItem(editMenuBar, "複製(D)", MENU_ITEM.DUPLICATE, new SHORTCUT(Keys.D));
             addMenuItem(editMenuBar, "削除(L)", MENU_ITEM.DELETE, new SHORTCUT(Keys.Delete, false));
-            /* */
             editMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addMenuItem(editMenuBar, "元に戻す(U)", MENU_ITEM.UNDO, new SHORTCUT(Keys.Z));
             addMenuItem(editMenuBar, "やり直し(R)", MENU_ITEM.REDO, new SHORTCUT(Keys.Y));
-            /* */
             editMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addMenuItem(editMenuBar, "拡大(I)", MENU_ITEM.ZOOM_IN, new SHORTCUT(Keys.Oemplus));
             addMenuItem(editMenuBar, "縮小(O)", MENU_ITEM.ZOOM_OUT, new SHORTCUT(Keys.OemMinus));
@@ -418,8 +414,8 @@ namespace Circuit {
             addElementItem(basicMenuBar, "配線", ELEMENTS.WIRE);
             addElementItem(basicMenuBar, "接地", ELEMENTS.GROUND);
             basicMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(basicMenuBar, "矩形", ELEMENTS.BoxElm);
-            addElementItem(basicMenuBar, "テキスト", ELEMENTS.TextElm);
+            addElementItem(basicMenuBar, "矩形", ELEMENTS.BOX);
+            addElementItem(basicMenuBar, "テキスト", ELEMENTS.TEXT);
             mainMenuBar.Items.Add(basicMenuBar);
             #endregion
 
@@ -456,17 +452,6 @@ namespace Circuit {
             addElementItem(activeMenuBar, "PNPトランジスタ", ELEMENTS.TRANSISTOR_P);
             addElementItem(activeMenuBar, "Nch MOSトランジスタ", ELEMENTS.MOSFET_N);
             addElementItem(activeMenuBar, "Pch MOSトランジスタ", ELEMENTS.MOSFET_P);
-            //addMenuItem(activeMenuBar, "Add JFET (N-Channel)", ELEMENTS.NJfetElm);
-            //addMenuItem(activeMenuBar, "Add JFET (P-Channel)", ELEMENTS.PJfetElm);
-            //addMenuItem(activeMenuBar, "Add SCR", ELEMENTS.SCRElm);
-            //addMenuItem(activeMenuBar, "Add DIAC", ELEMENTS.DiacElm);
-            //addMenuItem(activeMenuBar, "Add TRIAC", ELEMENTS.TriacElm);
-            //addMenuItem(activeMenuBar, "Add Darlington Pair (NPN)", ELEMENTS.NDarlingtonElm);
-            //addMenuItem(activeMenuBar, "Add Darlington Pair (PNP)", ELEMENTS.PDarlingtonElm);
-            //addMenuItem(activeMenuBar, "Add Tunnel Diode", ELEMENTS.TunnelDiodeElm);
-            //addMenuItem(activeMenuBar, "Add Triode", ELEMENTS.TriodeElm);
-            //addMenuItem(activeMenuBar, "Add Photoresistor", ELEMENTS.PhotoResistorElm);
-            //addMenuItem(activeMenuBar, "Add Thermistor", ELEMENTS.ThermistorElm);
             activeMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(activeMenuBar, "オペアンプ(-側が上)", ELEMENTS.OPAMP);
             addElementItem(activeMenuBar, "オペアンプ(+側が上)", ELEMENTS.OPAMP_SWAP);
@@ -504,11 +489,9 @@ namespace Circuit {
             addElementItem(outputMenuBar, "電圧計", ELEMENTS.VOLTMETER);
             addElementItem(outputMenuBar, "電流計", ELEMENTS.AMMETER);
             outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(outputMenuBar, "データ出力", ELEMENTS.DataRecorderElm);
+            addElementItem(outputMenuBar, "データ出力", ELEMENTS.DATA_RECORDER);
             addElementItem(outputMenuBar, "音声ファイル出力", ELEMENTS.OUTPUT_AUDIO);
             outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            //addElementItem(outputMenuBar, "Add Lamp", ELEMENTS.LampElm);
-            //addElementItem(outputMenuBar, "Add Test Point", ELEMENTS.TestPointElm);
             addElementItem(outputMenuBar, "停止トリガー", ELEMENTS.STOP_TRIGGER);
             mainMenuBar.Items.Add(outputMenuBar);
             #endregion
@@ -623,40 +606,26 @@ namespace Circuit {
                 return new DiodeUI(pos, "D");
             case ELEMENTS.ZENER:
                 return new DiodeUIZener(pos);
+            case ELEMENTS.VARACTOR:
+                return new DiodeUIVaractor(pos);
             case ELEMENTS.LED:
                 return new DiodeUILED(pos);
-            case ELEMENTS.TRANSISTOR:
             case ELEMENTS.TRANSISTOR_N:
                 return new TransistorUIN(pos);
             case ELEMENTS.TRANSISTOR_P:
                 return new TransistorUIP(pos);
-            case ELEMENTS.MOSFET:
             case ELEMENTS.MOSFET_N:
                 return new MosfetUIN(pos);
             case ELEMENTS.MOSFET_P:
                 return new MosfetUIP(pos);
-            //case ELEMENTS.JfetElm:
-            //case ELEMENTS.NJfetElm:
-            //    return null; //(CircuitElm)new NJfetElm(x1, y1);
-            //case ELEMENTS.PJfetElm:
-            //    return null; //(CircuitElm)new PJfetElm(x1, y1);
-            //case ELEMENTS.SCRElm:
-            //    return null; //(CircuitElm)new SCRElm(x1, y1);
-            //case ELEMENTS.DiacElm:
-            //    return null; //(CircuitElm)new DiacElm(x1, y1);
-            //case ELEMENTS.TriacElm:
-            //    return null; //(CircuitElm)new TriacElm(x1, y1);
-            //case ELEMENTS.DarlingtonElm:
-            //case ELEMENTS.NDarlingtonElm:
-            //    return null; //(CircuitElm)new NDarlingtonElm(x1, y1);
-            //case ELEMENTS.PDarlingtonElm:
-            //    return null; //(CircuitElm)new PDarlingtonElm(x1, y1);
-            case ELEMENTS.VARACTOR:
-                return new DiodeUIVaractor(pos);
-            //case ELEMENTS.TunnelDiodeElm:
-            //    return null; //(CircuitElm)new TunnelDiodeElm(x1, y1);
-            //case ELEMENTS.TriodeElm:
-            //    return null; //(CircuitElm)new TriodeElm(x1, y1);
+            case ELEMENTS.OPAMP:
+                return new OpAmpUI(pos);
+            case ELEMENTS.OPAMP_SWAP:
+                return new OpAmpUISwap(pos);
+            case ELEMENTS.ANALOG_SWITCH:
+                return new AnalogSwitchUI(pos);
+            case ELEMENTS.OPTOCOUPLER:
+                return new OptocouplerUI(pos);
             #endregion
 
             #region Inputs and Sources
@@ -664,28 +633,22 @@ namespace Circuit {
                 return new VoltageUIDC(pos);
             case ELEMENTS.VOLTAGE_AC:
                 return new VoltageUIAC(pos);
+            case ELEMENTS.CURRENT:
+                return new CurrentUI(pos);
             case ELEMENTS.RAIL_DC:
                 return new RailUI(pos);
             case ELEMENTS.RAIL_AC:
                 return new RailUIAC(pos);
-            case ELEMENTS.SquareRailElm:
-                return null; //(CircuitElm)new SquareRailElm(x1, y1);
             case ELEMENTS.CLOCK:
                 return new RailUIClock(pos);
             case ELEMENTS.SWEEP:
                 return new SweepUI(pos);
-            case ELEMENTS.AntennaElm:
-                return null; //(CircuitElm)new AntennaElm(x1, y1);
             case ELEMENTS.OSC_AM:
                 return new AMUI(pos);
             case ELEMENTS.OSC_FM:
                 return new FMUI(pos);
-            case ELEMENTS.CURRENT:
-                return new CurrentUI(pos);
             case ELEMENTS.NOISE:
                 return new RailUINoise(pos);
-            case ELEMENTS.AudioInputElm:
-                return null; //(CircuitElm)new AudioInputElm(x1, y1);
             #endregion
 
             #region Outputs and Labels
@@ -695,16 +658,8 @@ namespace Circuit {
                 return new VoltMeterUI(pos);
             case ELEMENTS.AMMETER:
                 return new AmmeterUI(pos);
-            case ELEMENTS.DataRecorderElm:
+            case ELEMENTS.DATA_RECORDER:
                 return new DataRecorderUI(pos);
-            //case ELEMENTS.OUTPUT_AUDIO:
-            //    return new AudioOutputElm(pos);
-            //case ELEMENTS.LampElm:
-            //    return null; //(CircuitElm)new LampElm(x1, y1);
-            //case ELEMENTS.TestPointElm:
-            //    return null; //new TestPointElm(x1, y1);
-            //case ELEMENTS.LEDArrayElm:
-            //    return null; //(CircuitElm)new LEDArrayElm(x1, y1);
             case ELEMENTS.STOP_TRIGGER:
                 return new StopTriggerUI(pos);
             case ELEMENTS.SCOPE:
@@ -712,14 +667,8 @@ namespace Circuit {
             #endregion
 
             #region Active Building Blocks
-            case ELEMENTS.OPAMP:
-                return new OpAmpUI(pos);
-            case ELEMENTS.OPAMP_SWAP:
-                return new OpAmpUISwap(pos);
             //case ELEMENTS.OpAmpRealElm:
             //    return null; //(CircuitElm)new OpAmpRealElm(x1, y1);
-            case ELEMENTS.ANALOG_SWITCH:
-                return new AnalogSwitchUI(pos);
             //case ELEMENTS.AnalogSwitch2Elm:
             //    return null; //(CircuitElm)new AnalogSwitch2Elm(x1, y1);
             //case ELEMENTS.CC2Elm:
@@ -736,12 +685,10 @@ namespace Circuit {
             //    return null; //(CircuitElm)new VCVSElm(x1, y1);
             case ELEMENTS.VCCS:
                 return new VCCSUI(pos);
-            //case ELEMENTS.CCVSElm:
-            //    return null; //(CircuitElm)new CCVSElm(x1, y1);
             case ELEMENTS.CCCS:
                 return new CCCSUI(pos);
-            case ELEMENTS.OPTOCOUPLER:
-                return new OptocouplerUI(pos);
+            //case ELEMENTS.CCVSElm:
+            //    return null; //(CircuitElm)new CCVSElm(x1, y1);
             //case ELEMENTS.CustomCompositeElm:
             //    return new CustomCompositeElm(pos);
             #endregion
@@ -813,24 +760,9 @@ namespace Circuit {
             //    return new SRAMElm(pos);
             #endregion
 
-            #region Analog and Hybrid Chips
-            case ELEMENTS.TimerElm:
-                return null; //(CircuitElm)new TimerElm(x1, y1);
-            case ELEMENTS.PhaseCompElm:
-                return null; //(CircuitElm)new PhaseCompElm(x1, y1);
-            case ELEMENTS.DACElm:
-                return null; //(CircuitElm)new DACElm(x1, y1);
-            case ELEMENTS.ADCElm:
-                return null; //(CircuitElm)new ADCElm(x1, y1);
-            case ELEMENTS.VCOElm:
-                return null; //(CircuitElm)new VCOElm(x1, y1);
-            case ELEMENTS.MonostableElm:
-                return null; //(CircuitElm)new MonostableElm(x1, y1);
-            #endregion
-
-            case ELEMENTS.BoxElm:
+            case ELEMENTS.BOX:
                 return new BoxUI(pos);
-            case ELEMENTS.TextElm:
+            case ELEMENTS.TEXT:
                 return new TextUI(pos);
 
             default:

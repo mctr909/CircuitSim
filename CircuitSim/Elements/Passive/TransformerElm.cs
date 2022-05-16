@@ -116,19 +116,19 @@ namespace Circuit.Elements.Passive {
             mA2 = -m * deti * ts;
             mA3 = -m * deti * ts;
             mA4 = l1 * deti * ts;
-            mCir.StampConductance(Nodes[0], Nodes[2], mA1);
-            mCir.StampVCCurrentSource(Nodes[0], Nodes[2], Nodes[1], Nodes[3], mA2);
-            mCir.StampVCCurrentSource(Nodes[1], Nodes[3], Nodes[0], Nodes[2], mA3);
-            mCir.StampConductance(Nodes[1], Nodes[3], mA4);
-            mCir.StampRightSide(Nodes[0]);
-            mCir.StampRightSide(Nodes[1]);
-            mCir.StampRightSide(Nodes[2]);
-            mCir.StampRightSide(Nodes[3]);
+            Circuit.StampConductance(Nodes[0], Nodes[2], mA1);
+            Circuit.StampVCCurrentSource(Nodes[0], Nodes[2], Nodes[1], Nodes[3], mA2);
+            Circuit.StampVCCurrentSource(Nodes[1], Nodes[3], Nodes[0], Nodes[2], mA3);
+            Circuit.StampConductance(Nodes[1], Nodes[3], mA4);
+            Circuit.StampRightSide(Nodes[0]);
+            Circuit.StampRightSide(Nodes[1]);
+            Circuit.StampRightSide(Nodes[2]);
+            Circuit.StampRightSide(Nodes[3]);
         }
 
         public override void CirDoStep() {
-            mCir.StampCurrentSource(Nodes[0], Nodes[2], mCurSourceValue1);
-            mCir.StampCurrentSource(Nodes[1], Nodes[3], mCurSourceValue2);
+            Circuit.StampCurrentSource(Nodes[0], Nodes[2], mCurSourceValue1);
+            Circuit.StampCurrentSource(Nodes[1], Nodes[3], mCurSourceValue2);
         }
 
         public override void CirStartIteration() {

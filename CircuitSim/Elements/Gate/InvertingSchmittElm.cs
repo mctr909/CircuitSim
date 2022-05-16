@@ -46,7 +46,7 @@ namespace Circuit.Elements.Gate {
         public override bool GetConnection(int n1, int n2) { return false; }
 
         public override void AnaStamp() {
-            mCir.StampVoltageSource(0, Nodes[1], mVoltSource);
+            Circuit.StampVoltageSource(0, Nodes[1], mVoltSource);
         }
 
         public override void CirDoStep() {
@@ -71,7 +71,7 @@ namespace Circuit.Elements.Gate {
             }
             double maxStep = SlewRate * ControlPanel.TimeStep * 1e9;
             _out = Math.Max(Math.Min(v0 + maxStep, _out), v0 - maxStep);
-            mCir.UpdateVoltageSource(0, Nodes[1], mVoltSource, _out);
+            Circuit.UpdateVoltageSource(0, Nodes[1], mVoltSource, _out);
         }
 
         public override bool AnaHasGroundConnection(int n1) { return n1 == 1; }

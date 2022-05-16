@@ -14,15 +14,15 @@
 
         public override void AnaStamp() {
             if (waveform == WAVEFORM.DC) {
-                mCir.StampVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
+                Circuit.StampVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
             } else {
-                mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
+                Circuit.StampVoltageSource(0, Nodes[0], mVoltSource);
             }
         }
 
         public override void CirDoStep() {
             if (waveform != WAVEFORM.DC) {
-                mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
+                Circuit.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
             }
         }
     }

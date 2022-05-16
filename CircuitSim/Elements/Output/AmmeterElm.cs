@@ -118,7 +118,7 @@ namespace Circuit.Elements.Output {
         }
 
         public override void AnaStamp() {
-            mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
+            Circuit.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
         }
 
         public string getMeter() {

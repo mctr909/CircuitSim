@@ -18,11 +18,11 @@ namespace Circuit {
         public void updateCircuit() {
             bool didAnalyze = mAnalyzeFlag;
             if (mAnalyzeFlag || DcAnalysisFlag) {
-                mCir.AnalyzeCircuit();
+                Circuit.AnalyzeCircuit();
                 mAnalyzeFlag = false;
             }
 
-            if (null != mMouseElm && null != mCir.StopElm && mCir.StopElm != mMouseElm.Elm) {
+            if (null != mMouseElm && null != Circuit.StopElm && Circuit.StopElm != mMouseElm.Elm) {
                 // Todo: SetMouseElm
                 //mCir.StopElm.SetMouseElm(true);
             }
@@ -54,6 +54,8 @@ namespace Circuit {
                 g.PostColor = Color.Red;
                 g.Clear(Color.Black);
             }
+
+            Circuit.SetSim(this);
 
             if (IsRunning) {
                 try {
@@ -100,8 +102,8 @@ namespace Circuit {
 
                 /* draw posts normally */
                 if (MouseMode != MOUSE_MODE.DRAG_ROW && MouseMode != MOUSE_MODE.DRAG_COLUMN) {
-                    for (int i = 0; i != mCir.PostDrawList.Count; i++) {
-                        g.DrawPost(mCir.PostDrawList[i]);
+                    for (int i = 0; i != Circuit.PostDrawList.Count; i++) {
+                        g.DrawPost(Circuit.PostDrawList[i]);
                     }
                 }
 
@@ -136,8 +138,8 @@ namespace Circuit {
                 }
 
                 /* draw bad connections.  do this last so they will not be overdrawn. */
-                for (int i = 0; i != mCir.BadConnectionList.Count; i++) {
-                    var cn = mCir.BadConnectionList[i];
+                for (int i = 0; i != Circuit.BadConnectionList.Count; i++) {
+                    var cn = Circuit.BadConnectionList[i];
                     g.DrawHandle(cn);
                 }
 
@@ -170,7 +172,7 @@ namespace Circuit {
             g.DrawLine(0, mCircuitArea.Height - 2, mCircuitArea.Width, mCircuitArea.Height - 2);
 
             int ct = mScopeCount;
-            if (mCir.StopMessage != null) {
+            if (Circuit.StopMessage != null) {
                 ct = 0;
             }
             for (int i = 0; i != ct; i++) {
@@ -178,8 +180,8 @@ namespace Circuit {
             }
             g.ClearTransform();
 
-            if (mCir.StopMessage != null) {
-                g.DrawLeftText(mCir.StopMessage, 10, mCircuitArea.Height - 10);
+            if (Circuit.StopMessage != null) {
+                g.DrawLeftText(Circuit.StopMessage, 10, mCircuitArea.Height - 10);
             } else {
                 var info = new string[10];
                 if (mMouseElm != null) {
@@ -207,7 +209,7 @@ namespace Circuit {
                 {
                     int infoIdx;
                     for (infoIdx = 0; infoIdx < info.Length - 1 && info[infoIdx] != null; infoIdx++) ;
-                    int badnodes = mCir.BadConnectionList.Count;
+                    int badnodes = Circuit.BadConnectionList.Count;
                     if (badnodes > 0) {
                         info[infoIdx++] = badnodes + ((badnodes == 1) ? " bad connection" : " bad connections");
                     }
@@ -224,7 +226,7 @@ namespace Circuit {
                 }
             }
 
-            if (null != mMouseElm && null != mCir.StopElm && mCir.StopElm != mMouseElm.Elm) {
+            if (null != mMouseElm && null != Circuit.StopElm && Circuit.StopElm != mMouseElm.Elm) {
                 // Todo: SetMouseElm
                 //mCir.StopElm.SetMouseElm(false);
             }
@@ -268,8 +270,8 @@ namespace Circuit {
         }
 
         void runCircuit(bool didAnalyze) {
-            if (mCir.Matrix == null || ElmCount == 0) {
-                mCir.Matrix = null;
+            if (Circuit.Matrix == null || ElmCount == 0) {
+                Circuit.Matrix = null;
                 return;
             }
 
@@ -293,14 +295,14 @@ namespace Circuit {
 
             int iter;
             for (iter = 1; ; iter++) {
-                if (!mCir.Run(debugprint)) {
+                if (!Circuit.Run(debugprint)) {
                     break;
                 }
 
                 Time += ControlPanel.TimeStep;
 
                 if (!delayWireProcessing) {
-                    mCir.CalcWireCurrents();
+                    Circuit.CalcWireCurrents();
                 }
                 for (int i = 0; i != mScopeCount; i++) {
                     mScopes[i].TimeStep();
@@ -325,7 +327,7 @@ namespace Circuit {
 
             mLastIterTime = lit;
             if (delayWireProcessing) {
-                mCir.CalcWireCurrents();
+                Circuit.CalcWireCurrents();
             }
             /* Console.WriteLine((DateTime.Now.ToFileTimeUtc() - lastFrameTime) / (double)iter); */
         }

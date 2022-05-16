@@ -23,7 +23,7 @@
 
         public override void AnaStamp() {
             if (needsPullDown) {
-                mCir.StampResistor(Nodes[0], 0, 1e6);
+                Circuit.StampResistor(Nodes[0], 0, 1e6);
             }
         }
     }

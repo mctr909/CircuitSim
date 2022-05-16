@@ -92,7 +92,6 @@ namespace Circuit {
         MenuItem mRedoItem;
         MenuItem mPasteItem;
 
-        Circuit mCir;
         BaseUI mMenuElm;
         BaseUI mMouseElm = null;
         SwitchUI mHeldSwitchElm;

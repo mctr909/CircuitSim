@@ -1,11 +1,5 @@
 ﻿namespace Circuit.Elements {
     abstract class BaseElement {
-        public static Circuit mCir;
-
-        public static void InitClass(Circuit c) {
-            mCir = c;
-        }
-
         protected static bool comparePair(int x1, int x2, int y1, int y2) {
             return (x1 == y1 && x2 == y2) || (x1 == y2 && x2 == y1);
         }

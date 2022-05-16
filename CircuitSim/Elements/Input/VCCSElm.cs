@@ -55,8 +55,8 @@ namespace Circuit.Elements.Input {
         }
 
         public override void AnaStamp() {
-            mCir.StampNonLinear(Nodes[InputCount]);
-            mCir.StampNonLinear(Nodes[InputCount + 1]);
+            Circuit.StampNonLinear(Nodes[InputCount]);
+            Circuit.StampNonLinear(Nodes[InputCount + 1]);
         }
 
         public override void CirDoStep() {
@@ -67,7 +67,7 @@ namespace Circuit.Elements.Input {
                 Pins[InputCount].current = 0;
                 Pins[InputCount + 1].current = 0;
                 /* avoid singular matrix errors */
-                mCir.StampResistor(Nodes[InputCount], Nodes[InputCount + 1], 1e8);
+                Circuit.StampResistor(Nodes[InputCount], Nodes[InputCount + 1], 1e8);
                 return;
             }
 
@@ -76,7 +76,7 @@ namespace Circuit.Elements.Input {
             double convergeLimit = getConvergeLimit();
             for (i = 0; i != InputCount; i++) {
                 if (Math.Abs(Volts[i] - mLastVolts[i]) > convergeLimit) {
-                    mCir.Converged = false;
+                    Circuit.Converged = false;
                 }
                 if (double.IsNaN(Volts[i])) {
                     Volts[i] = 0;
@@ -109,14 +109,14 @@ namespace Circuit.Elements.Input {
                     if (Math.Abs(dx) < 1e-6) {
                         dx = sign(dx, 1e-6);
                     }
-                    mCir.StampVCCurrentSource(Nodes[InputCount], Nodes[InputCount + 1], Nodes[i], 0, dx);
+                    Circuit.StampVCCurrentSource(Nodes[InputCount], Nodes[InputCount + 1], Nodes[i], 0, dx);
                     /*Console.WriteLine("ccedx " + i + " " + dx); */
                     /* adjust right side */
                     rs -= dx * Volts[i];
                     mExprState.Values[i] = Volts[i];
                 }
                 /*Console.WriteLine("ccers " + rs);*/
-                mCir.StampCurrentSource(Nodes[InputCount], Nodes[InputCount + 1], rs);
+                Circuit.StampCurrentSource(Nodes[InputCount], Nodes[InputCount + 1], rs);
                 Pins[InputCount].current = -v0;
                 Pins[InputCount + 1].current = v0;
             }
@@ -133,13 +133,13 @@ namespace Circuit.Elements.Input {
         protected double getConvergeLimit() {
             /* get maximum change in voltage per step when testing for convergence.
              * be more lenient over time */
-            if (mCir.SubIterations < 10) {
-                return .001;
+            if (Circuit.SubIterations < 10) {
+                return 0.001;
             }
-            if (mCir.SubIterations < 200) {
-                return .01;
+            if (Circuit.SubIterations < 200) {
+                return 0.01;
             }
-            return .1;
+            return 0.1;
         }
 
         public virtual bool hasCurrentOutput() { return true; }
@@ -147,19 +147,19 @@ namespace Circuit.Elements.Input {
         double getLimitStep() {
             /* get limit on changes in voltage per step.
              * be more lenient the more iterations we do */
-            if (mCir.SubIterations < 4) {
+            if (Circuit.SubIterations < 4) {
                 return 10;
             }
-            if (mCir.SubIterations < 10) {
+            if (Circuit.SubIterations < 10) {
                 return 1;
             }
-            if (mCir.SubIterations < 20) {
-                return .1;
+            if (Circuit.SubIterations < 20) {
+                return 0.1;
             }
-            if (mCir.SubIterations < 40) {
-                return .01;
+            if (Circuit.SubIterations < 40) {
+                return 0.01;
             }
-            return .001;
+            return 0.001;
         }
 
         public void ParseExpr() {

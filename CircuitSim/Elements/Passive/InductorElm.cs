@@ -24,13 +24,13 @@
 
         public override void AnaStamp() {
             mCompResistance = 2 * Inductance / ControlPanel.TimeStep;
-            mCir.StampResistor(Nodes[0], Nodes[1], mCompResistance);
-            mCir.StampRightSide(Nodes[0]);
-            mCir.StampRightSide(Nodes[1]);
+            Circuit.StampResistor(Nodes[0], Nodes[1], mCompResistance);
+            Circuit.StampRightSide(Nodes[0]);
+            Circuit.StampRightSide(Nodes[1]);
         }
 
         public override void CirDoStep() {
-            mCir.StampCurrentSource(Nodes[0], Nodes[1], mCurSourceValue);
+            Circuit.StampCurrentSource(Nodes[0], Nodes[1], mCurSourceValue);
         }
 
         public override void CirStartIteration() {

@@ -35,7 +35,7 @@
 
         public override void AnaStamp() {
             if (Position == 0) {
-                mCir.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
+                Circuit.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
             }
         }
 

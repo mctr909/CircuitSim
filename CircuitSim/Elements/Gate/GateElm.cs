@@ -49,7 +49,7 @@
         }
 
         public override void AnaStamp() {
-            mCir.StampVoltageSource(0, Nodes[InputCount], mVoltSource);
+            Circuit.StampVoltageSource(0, Nodes[InputCount], mVoltSource);
         }
 
         public override void CirDoStep() {
@@ -72,7 +72,7 @@
             }
             LastOutput = f;
             double res = f ? HighVoltage : 0;
-            mCir.UpdateVoltageSource(0, Nodes[InputCount], mVoltSource, res);
+            Circuit.UpdateVoltageSource(0, Nodes[InputCount], mVoltSource, res);
         }
 
         protected bool getInput(int x) {

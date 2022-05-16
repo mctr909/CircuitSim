@@ -42,8 +42,8 @@
         }
 
         public override void AnaStamp() {
-            mCir.StampNonLinear(Nodes[0]);
-            mCir.StampNonLinear(Nodes[1]);
+            Circuit.StampNonLinear(Nodes[0]);
+            Circuit.StampNonLinear(Nodes[1]);
         }
 
         public override void CirDoStep() {
@@ -52,7 +52,7 @@
                 IsOpen = !IsOpen;
             }
             mResistance = IsOpen ? Roff : Ron;
-            mCir.StampResistor(Nodes[0], Nodes[1], mResistance);
+            Circuit.StampResistor(Nodes[0], Nodes[1], mResistance);
         }
 
         public override void CirSetNodeVoltage(int n, double c) {

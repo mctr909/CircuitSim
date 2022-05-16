@@ -84,8 +84,8 @@ namespace Circuit.Elements.Active {
         }
 
         public override void AnaStamp() {
-            mCir.StampNonLinear(Nodes[1]);
-            mCir.StampNonLinear(Nodes[2]);
+            Circuit.StampNonLinear(Nodes[1]);
+            Circuit.StampNonLinear(Nodes[2]);
 
             BodyTerminal = (Pnp == -1) ? 2 : 1;
 
@@ -129,10 +129,10 @@ namespace Circuit.Elements.Active {
         /* set up body diodes */
         void setupDiodes() {
             /* diode from node 1 to body terminal */
-            mDiodeB1 = new global::Circuit.Diode(mCir);
+            mDiodeB1 = new Diode();
             mDiodeB1.SetupForDefaultModel();
             /* diode from node 2 to body terminal */
-            mDiodeB2 = new global::Circuit.Diode(mCir);
+            mDiodeB2 = new Diode();
             mDiodeB2.SetupForDefaultModel();
         }
 
@@ -175,7 +175,7 @@ namespace Circuit.Elements.Active {
             double vgs = vs[gate] - vs[source];
             double vds = vs[drain] - vs[source];
             if (!finished && (nonConvergence(mLastV1, vs[1]) || nonConvergence(mLastV2, vs[2]) || nonConvergence(mLastV0, vs[0]))) {
-                mCir.Converged = false;
+                Circuit.Converged = false;
             }
             mLastV0 = vs[0];
             mLastV1 = vs[1];
@@ -229,16 +229,16 @@ namespace Circuit.Elements.Active {
             }
 
             double rs = -Pnp * ids0 + Gds * realvds + Gm * realvgs;
-            mCir.StampMatrix(Nodes[drain], Nodes[drain], Gds);
-            mCir.StampMatrix(Nodes[drain], Nodes[source], -Gds - Gm);
-            mCir.StampMatrix(Nodes[drain], Nodes[gate], Gm);
+            Circuit.StampMatrix(Nodes[drain], Nodes[drain], Gds);
+            Circuit.StampMatrix(Nodes[drain], Nodes[source], -Gds - Gm);
+            Circuit.StampMatrix(Nodes[drain], Nodes[gate], Gm);
 
-            mCir.StampMatrix(Nodes[source], Nodes[drain], -Gds);
-            mCir.StampMatrix(Nodes[source], Nodes[source], Gds + Gm);
-            mCir.StampMatrix(Nodes[source], Nodes[gate], -Gm);
+            Circuit.StampMatrix(Nodes[source], Nodes[drain], -Gds);
+            Circuit.StampMatrix(Nodes[source], Nodes[source], Gds + Gm);
+            Circuit.StampMatrix(Nodes[source], Nodes[gate], -Gm);
 
-            mCir.StampRightSide(Nodes[drain], rs);
-            mCir.StampRightSide(Nodes[source], -rs);
+            Circuit.StampRightSide(Nodes[drain], rs);
+            Circuit.StampRightSide(Nodes[source], -rs);
         }
 
         bool nonConvergence(double last, double now) {
@@ -255,11 +255,11 @@ namespace Circuit.Elements.Active {
                 return false;
             }
             /* larger differences are fine if value is large */
-            if (mCir.SubIterations > 10 && diff < Math.Abs(now) * .001) {
+            if (Circuit.SubIterations > 10 && diff < Math.Abs(now) * .001) {
                 return false;
             }
             /* if we're having trouble converging, get more lenient */
-            if (mCir.SubIterations > 100 && diff < .01 + (mCir.SubIterations - 100) * .0001) {
+            if (Circuit.SubIterations > 100 && diff < .01 + (Circuit.SubIterations - 100) * .0001) {
                 return false;
             }
             return true;

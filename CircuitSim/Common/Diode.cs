@@ -11,7 +11,6 @@ namespace Circuit {
          * vzcoef is the multiplicative equivalent of dividing by vt (for speed). */
         const double VZ_COEF = 1 / VT;
 
-        Circuit mCir;
         int[] mNodes;
 
         /* The diode's "scale voltage", the voltage increase which will raise current by a factor of e. */
@@ -32,8 +31,7 @@ namespace Circuit {
         double vzcrit;
         double lastvoltdiff;
 
-        public Diode(Circuit c) {
-            mCir = c;
+        public Diode() {
             mNodes = new int[2];
         }
 
@@ -68,14 +66,14 @@ namespace Circuit {
         public void Stamp(int n0, int n1) {
             mNodes[0] = n0;
             mNodes[1] = n1;
-            mCir.StampNonLinear(mNodes[0]);
-            mCir.StampNonLinear(mNodes[1]);
+            Circuit.StampNonLinear(mNodes[0]);
+            Circuit.StampNonLinear(mNodes[1]);
         }
 
         public void DoStep(double voltdiff) {
-            /* used to have .1 here, but needed .01 for peak detector */
-            if (Math.Abs(voltdiff - lastvoltdiff) > .01) {
-                mCir.Converged = false;
+            /* used to have 0.1 here, but needed 0.01 for peak detector */
+            if (0.01 < Math.Abs(voltdiff - lastvoltdiff)) {
+                Circuit.Converged = false;
             }
             voltdiff = limitStep(voltdiff, lastvoltdiff);
             lastvoltdiff = voltdiff;
@@ -83,12 +81,12 @@ namespace Circuit {
             /* To prevent a possible singular matrix or other numeric issues, put a tiny conductance
              * in parallel with each P-N junction. */
             double gmin = leakage * 0.01;
-            if (mCir.SubIterations > 100) {
+            if (Circuit.SubIterations > 100) {
                 /* if we have trouble converging, put a conductance in parallel with the diode.
                  * Gradually increase the conductance value for each iteration. */
-                gmin = Math.Exp(-9 * Math.Log(10) * (1 - mCir.SubIterations / 3000.0));
-                if (gmin > .1) {
-                    gmin = .1;
+                gmin = Math.Exp(-9 * Math.Log(10) * (1 - Circuit.SubIterations / 3000.0));
+                if (0.1 < gmin) {
+                    gmin = 0.1;
                 }
             }
 
@@ -97,8 +95,8 @@ namespace Circuit {
                 double eval = Math.Exp(voltdiff * vdcoef);
                 double geq = vdcoef * leakage * eval + gmin;
                 double nc = (eval - 1) * leakage - geq * voltdiff;
-                mCir.StampConductance(mNodes[0], mNodes[1], geq);
-                mCir.StampCurrentSource(mNodes[0], mNodes[1], nc);
+                Circuit.StampConductance(mNodes[0], mNodes[1], geq);
+                Circuit.StampCurrentSource(mNodes[0], mNodes[1], nc);
             } else {
                 /* Zener diode */
 
@@ -124,8 +122,8 @@ namespace Circuit {
                     - 1
                 ) + geq * (-voltdiff);
 
-                mCir.StampConductance(mNodes[0], mNodes[1], geq);
-                mCir.StampCurrentSource(mNodes[0], mNodes[1], nc);
+                Circuit.StampConductance(mNodes[0], mNodes[1], geq);
+                Circuit.StampCurrentSource(mNodes[0], mNodes[1], nc);
             }
         }
 
@@ -162,7 +160,7 @@ namespace Circuit {
                      * (1/vscale = slope of load line) */
                     vnew = vscale * Math.Log(vnew / vscale);
                 }
-                mCir.Converged = false;
+                Circuit.Converged = false;
                 /*Console.WriteLine(vnew + " " + oo + " " + vold);*/
             } else if (vnew < 0 && zoffset != 0) {
                 /* for Zener breakdown, use the same logic but translate the values,
@@ -183,7 +181,7 @@ namespace Circuit {
                     } else {
                         vnew = VT * Math.Log(vnew / VT);
                     }
-                    mCir.Converged = false;
+                    Circuit.Converged = false;
                 }
                 vnew = -(vnew + zoffset);
             }

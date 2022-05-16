@@ -28,7 +28,7 @@
         }
 
         public override void AnaStamp() {
-            mCir.StampVoltageSource(Nodes[0], Nodes[Position + 1], mVoltSource, 0);
+            Circuit.StampVoltageSource(Nodes[0], Nodes[Position + 1], mVoltSource, 0);
         }
 
         public override double GetCurrentIntoNode(int n) {

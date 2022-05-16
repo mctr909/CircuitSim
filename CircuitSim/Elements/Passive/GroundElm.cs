@@ -13,7 +13,7 @@
         public override bool AnaHasGroundConnection(int n1) { return true; }
 
         public override void AnaStamp() {
-            mCir.StampVoltageSource(0, Nodes[0], mVoltSource, 0);
+            Circuit.StampVoltageSource(0, Nodes[0], mVoltSource, 0);
         }
 
         public override void CirSetCurrent(int x, double c) { mCurrent = -c; }

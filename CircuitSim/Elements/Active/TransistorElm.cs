@@ -69,9 +69,9 @@ namespace Circuit.Elements.Active {
         }
 
         public override void AnaStamp() {
-            mCir.StampNonLinear(Nodes[V_B]);
-            mCir.StampNonLinear(Nodes[V_C]);
-            mCir.StampNonLinear(Nodes[V_E]);
+            Circuit.StampNonLinear(Nodes[V_B]);
+            Circuit.StampNonLinear(Nodes[V_C]);
+            Circuit.StampNonLinear(Nodes[V_E]);
         }
 
         public override void CirDoStep() {
@@ -79,17 +79,17 @@ namespace Circuit.Elements.Active {
             double vbe = Volts[V_B] - Volts[V_E]; /* typically positive */
             if (Math.Abs(vbc - mLastVbc) > .01 || /* .01 */
                 Math.Abs(vbe - mLastVbe) > .01) {
-                mCir.Converged = false;
+                Circuit.Converged = false;
             }
             /* To prevent a possible singular matrix,
              * put a tiny conductance in parallel with each P-N junction. */
             mGmin = LEAKAGE * 0.01;
-            if (mCir.SubIterations > 100) {
+            if (100 < Circuit.SubIterations) {
                 /* if we have trouble converging, put a conductance in parallel with all P-N junctions.
                  * Gradually increase the conductance value for each iteration. */
-                mGmin = Math.Exp(-9 * Math.Log(10) * (1 - mCir.SubIterations / 300.0));
-                if (mGmin > .1) {
-                    mGmin = .1;
+                mGmin = Math.Exp(-9 * Math.Log(10) * (1 - Circuit.SubIterations / 300.0));
+                if (0.1 < mGmin) {
+                    mGmin = 0.1;
                 }
                 /*Console.WriteLine("gmin " + gmin + " vbc " + vbc + " vbe " + vbe); */
             }
@@ -124,28 +124,28 @@ namespace Circuit.Elements.Active {
              * node 0 is the base,
              * node 1 the collector,
              * node 2 the emitter. */
-            mCir.StampMatrix(Nodes[V_B], Nodes[V_B], -gee - gec - gce - gcc);
-            mCir.StampMatrix(Nodes[V_B], Nodes[V_C], gec + gcc);
-            mCir.StampMatrix(Nodes[V_B], Nodes[V_E], gee + gce);
-            mCir.StampMatrix(Nodes[V_C], Nodes[V_B], gce + gcc);
-            mCir.StampMatrix(Nodes[V_C], Nodes[V_C], -gcc);
-            mCir.StampMatrix(Nodes[V_C], Nodes[V_E], -gce);
-            mCir.StampMatrix(Nodes[V_E], Nodes[V_B], gee + gec);
-            mCir.StampMatrix(Nodes[V_E], Nodes[V_C], -gec);
-            mCir.StampMatrix(Nodes[V_E], Nodes[V_E], -gee);
+            Circuit.StampMatrix(Nodes[V_B], Nodes[V_B], -gee - gec - gce - gcc);
+            Circuit.StampMatrix(Nodes[V_B], Nodes[V_C], gec + gcc);
+            Circuit.StampMatrix(Nodes[V_B], Nodes[V_E], gee + gce);
+            Circuit.StampMatrix(Nodes[V_C], Nodes[V_B], gce + gcc);
+            Circuit.StampMatrix(Nodes[V_C], Nodes[V_C], -gcc);
+            Circuit.StampMatrix(Nodes[V_C], Nodes[V_E], -gce);
+            Circuit.StampMatrix(Nodes[V_E], Nodes[V_B], gee + gec);
+            Circuit.StampMatrix(Nodes[V_E], Nodes[V_C], -gec);
+            Circuit.StampMatrix(Nodes[V_E], Nodes[V_E], -gee);
 
             /* we are solving for v(k+1), not delta v, so we use formula
              * 10.5.13 (from Pillage), multiplying J by v(k) */
 
-            mCir.StampRightSide(Nodes[V_B], -Ib - (gec + gcc) * vbc - (gee + gce) * vbe);
-            mCir.StampRightSide(Nodes[V_C], -Ic + gce * vbe + gcc * vbc);
-            mCir.StampRightSide(Nodes[V_E], -Ie + gee * vbe + gec * vbc);
+            Circuit.StampRightSide(Nodes[V_B], -Ib - (gec + gcc) * vbc - (gee + gce) * vbe);
+            Circuit.StampRightSide(Nodes[V_C], -Ic + gce * vbe + gcc * vbc);
+            Circuit.StampRightSide(Nodes[V_E], -Ie + gee * vbe + gec * vbc);
         }
 
         public override void CirStepFinished() {
             /* stop for huge currents that make simulator act weird */
             if (Math.Abs(Ic) > 1e12 || Math.Abs(Ib) > 1e12) {
-                mCir.Stop("max current exceeded", this);
+                Circuit.Stop("max current exceeded", this);
             }
         }
 
@@ -187,7 +187,7 @@ namespace Circuit.Elements.Active {
                 } else {
                     vnew = VT * Math.Log(vnew / VT);
                 }
-                mCir.Converged = false;
+                Circuit.Converged = false;
                 /*Console.WriteLine(vnew + " " + oo + " " + vold);*/
             }
             return vnew;

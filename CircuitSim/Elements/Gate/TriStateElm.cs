@@ -47,16 +47,16 @@
         }
 
         public override void AnaStamp() {
-            mCir.StampVoltageSource(0, Nodes[3], mVoltSource);
-            mCir.StampNonLinear(Nodes[3]);
-            mCir.StampNonLinear(Nodes[1]);
+            Circuit.StampVoltageSource(0, Nodes[3], mVoltSource);
+            Circuit.StampNonLinear(Nodes[3]);
+            Circuit.StampNonLinear(Nodes[1]);
         }
 
         public override void CirDoStep() {
             Open = Volts[2] < 2.5;
             mResistance = Open ? Roff : Ron;
-            mCir.StampResistor(Nodes[3], Nodes[1], mResistance);
-            mCir.UpdateVoltageSource(0, Nodes[3], mVoltSource, Volts[0] > 2.5 ? 5 : 0);
+            Circuit.StampResistor(Nodes[3], Nodes[1], mResistance);
+            Circuit.UpdateVoltageSource(0, Nodes[3], mVoltSource, Volts[0] > 2.5 ? 5 : 0);
         }
 
         public override void CirSetNodeVoltage(int n, double c) {

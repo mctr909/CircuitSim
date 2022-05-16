@@ -232,7 +232,7 @@ namespace Circuit.Elements.Input {
                     arr[i++] = "wavelength = " + Utils.UnitText(2.9979e8 / elm.mFrequency, "m");
                 }
             }
-            if (elm.waveform == VoltageElm.WAVEFORM.DC && elm.Current != 0 && BaseElement.mCir.ShowResistanceInVoltageSources) {
+            if (elm.waveform == VoltageElm.WAVEFORM.DC && elm.Current != 0 && Circuit.ShowResistanceInVoltageSources) {
                 arr[i++] = "(R = " + Utils.UnitText(elm.mMaxVoltage / elm.Current, CirSim.OHM_TEXT) + ")";
             }
             arr[i++] = "P = " + Utils.UnitText(elm.Power, "W");

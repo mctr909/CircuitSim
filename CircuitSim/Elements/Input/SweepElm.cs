@@ -69,11 +69,11 @@ namespace Circuit.Elements.Input {
         }
 
         public override void CirDoStep() {
-            mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, mVolt);
+            Circuit.UpdateVoltageSource(0, Nodes[0], mVoltSource, mVolt);
         }
 
         public override void AnaStamp() {
-            mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
+            Circuit.StampVoltageSource(0, Nodes[0], mVoltSource);
         }
 
         public override void Reset() {

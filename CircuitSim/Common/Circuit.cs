@@ -8,7 +8,7 @@ using Circuit.Elements.Input;
 using Circuit.Elements.Output;
 
 namespace Circuit {
-    class Circuit {
+    static class Circuit {
         class RowInfo {
             public bool IsConst;
             public int MapCol;
@@ -20,50 +20,46 @@ namespace Circuit {
         }
 
         #region private varidate
-        CirSim mSim;
+        static CirSim mSim;
 
-        Dictionary<Point, NodeMapEntry> mNodeMap;
-        Dictionary<Point, int> mPostCountMap;
+        static Dictionary<Point, NodeMapEntry> mNodeMap;
+        static Dictionary<Point, int> mPostCountMap;
 
         /* info about each wire and its neighbors, used to calculate wire currents */
-        List<WireInfo> mWireInfoList;
+        static List<WireInfo> mWireInfoList;
 
-        bool mCircuitNeedsMap;
+        static bool mCircuitNeedsMap;
 
-        int mMatrixSize;
-        int mMatrixFullSize;
-        double[] mOrigRightSide;
-        double[,] mOrigMatrix;
-        double[] mRightSide;
-        int[] mPermute;
-        RowInfo[] mRowInfo;
+        static int mMatrixSize;
+        static int mMatrixFullSize;
+        static double[] mOrigRightSide;
+        static double[,] mOrigMatrix;
+        static double[] mRightSide;
+        static int[] mPermute;
+        static RowInfo[] mRowInfo;
         #endregion
 
         #region property
-        public BaseElement StopElm { get; set; }
-        public string StopMessage { get; set; }
+        public static BaseElement StopElm { get; set; }
+        public static string StopMessage { get; set; }
 
-        public List<Point> PostDrawList { get; private set; } = new List<Point>();
-        public List<Point> BadConnectionList { get; private set; } = new List<Point>();
+        public static List<Point> PostDrawList { get; private set; } = new List<Point>();
+        public static List<Point> BadConnectionList { get; private set; } = new List<Point>();
 
-        public List<CircuitNode> NodeList { get; private set; }
-        public double[,] Matrix { get; set; }
+        public static List<CircuitNode> NodeList { get; private set; }
+        public static double[,] Matrix { get; set; }
 
-        public int VoltageSourceCount { get; private set; }
+        public static int VoltageSourceCount { get; private set; }
 
-        private BaseElement[] mVoltageSources;
+        private static BaseElement[] mVoltageSources;
 
-        public bool CircuitNonLinear { get; private set; }
+        public static bool CircuitNonLinear { get; private set; }
 
-        public bool ShowResistanceInVoltageSources { get; private set; }
+        public static bool ShowResistanceInVoltageSources { get; private set; }
 
-        public bool Converged { get; set; }
-        public int SubIterations { get; private set; }
+        public static bool Converged { get; set; }
+        public static int SubIterations { get; private set; }
         #endregion
-
-        public Circuit(CirSim sim) {
-            mSim = sim;
-        }
 
         /* factors a matrix into upper and lower triangular matrices by
         /* gaussian elimination.  On entry, a[0..n-1][0..n-1] is the
@@ -176,7 +172,7 @@ namespace Circuit {
         }
 
         /* simplify the matrix; this speeds things up quite a bit, especially for digital circuits */
-        bool simplifyMatrix(int matrixSize) {
+        static bool simplifyMatrix(int matrixSize) {
             int matRow;
             int matCol;
             for (matRow = 0; matRow != matrixSize; matRow++) {
@@ -285,7 +281,7 @@ namespace Circuit {
 
         /* find groups of nodes connected by wires and map them to the same node.  this speeds things
         /* up considerably by reducing the size of the matrix */
-        void calculateWireClosure() {
+        static void calculateWireClosure() {
             int mergeCount = 0;
             mNodeMap = new Dictionary<Point, NodeMapEntry>();
             mWireInfoList = new List<WireInfo>();
@@ -343,7 +339,7 @@ namespace Circuit {
         /* So we create a list of WireInfo objects instead to help us calculate the wire currents instead,
         /* so we make the matrix less complex, and we only calculate the wire currents when we need them
         /* (once per frame, not once per subiteration) */
-        bool calcWireInfo() {
+        static bool calcWireInfo() {
             int wireIdx;
             int moved = 0;
             for (wireIdx = 0; wireIdx != mWireInfoList.Count; wireIdx++) {
@@ -415,7 +411,7 @@ namespace Circuit {
         /* make list of posts we need to draw.  posts shared by 2 elements should be hidden, all
         /* others should be drawn.  We can't use the node list anymore because wires have the same
         /* node number at both ends. */
-        void makePostDrawList() {
+        static void makePostDrawList() {
             PostDrawList = new List<Point>();
             BadConnectionList = new List<Point>();
             foreach (var entry in mPostCountMap) {
@@ -453,15 +449,19 @@ namespace Circuit {
             mPostCountMap = null;
         }
 
-        CircuitNode getCircuitNode(int n) {
+        static CircuitNode getCircuitNode(int n) {
             if (n >= NodeList.Count) {
                 return null;
             }
             return NodeList[n];
         }
 
+        static public void SetSim(CirSim sim) {
+            mSim = sim;
+        }
+
         /* stamp independent voltage source #vs, from n1 to n2, amount v */
-        public void StampVoltageSource(int n1, int n2, int vs, double v) {
+        static public void StampVoltageSource(int n1, int n2, int vs, double v) {
             int vn = NodeList.Count + vs;
             StampMatrix(vn, n1, -1);
             StampMatrix(vn, n2, 1);
@@ -471,7 +471,7 @@ namespace Circuit {
         }
 
         /* use this if the amount of voltage is going to be updated in doStep(), by updateVoltageSource() */
-        public void StampVoltageSource(int n1, int n2, int vs) {
+        static public void StampVoltageSource(int n1, int n2, int vs) {
             int vn = NodeList.Count + vs;
             StampMatrix(vn, n1, -1);
             StampMatrix(vn, n2, 1);
@@ -481,12 +481,12 @@ namespace Circuit {
         }
 
         /* update voltage source in doStep() */
-        public void UpdateVoltageSource(int n1, int n2, int vs, double v) {
+        static public void UpdateVoltageSource(int n1, int n2, int vs, double v) {
             int vn = NodeList.Count + vs;
             StampRightSide(vn, v);
         }
 
-        public void StampResistor(int n1, int n2, double r) {
+        static public void StampResistor(int n1, int n2, double r) {
             double r0 = 1 / r;
             if (double.IsNaN(r0) || double.IsInfinity(r0)) {
                 Console.WriteLine("bad resistance " + r + " " + r0 + "\n");
@@ -498,7 +498,7 @@ namespace Circuit {
             StampMatrix(n2, n1, -r0);
         }
 
-        public void StampConductance(int n1, int n2, double r0) {
+        static public void StampConductance(int n1, int n2, double r0) {
             StampMatrix(n1, n1, r0);
             StampMatrix(n2, n2, r0);
             StampMatrix(n1, n2, -r0);
@@ -506,20 +506,20 @@ namespace Circuit {
         }
 
         /* current from cn1 to cn2 is equal to voltage from vn1 to 2, divided by g */
-        public void StampVCCurrentSource(int cn1, int cn2, int vn1, int vn2, double g) {
+        static public void StampVCCurrentSource(int cn1, int cn2, int vn1, int vn2, double g) {
             StampMatrix(cn1, vn1, g);
             StampMatrix(cn2, vn2, g);
             StampMatrix(cn1, vn2, -g);
             StampMatrix(cn2, vn1, -g);
         }
 
-        public void StampCurrentSource(int n1, int n2, double i) {
+        static public void StampCurrentSource(int n1, int n2, double i) {
             StampRightSide(n1, -i);
             StampRightSide(n2, i);
         }
 
         /* stamp a current source from n1 to n2 depending on current through vs */
-        public void StampCCCS(int n1, int n2, int vs, double gain) {
+        static public void StampCCCS(int n1, int n2, int vs, double gain) {
             int vn = NodeList.Count + vs;
             StampMatrix(n1, vn, gain);
             StampMatrix(n2, vn, -gain);
@@ -532,7 +532,7 @@ namespace Circuit {
         /// <param name="i">row</param>
         /// <param name="j">column</param>
         /// <param name="x">stamp value in row, column</param>
-        public void StampMatrix(int i, int j, double x) {
+        static public void StampMatrix(int i, int j, double x) {
             if (i > 0 && j > 0) {
                 if (mCircuitNeedsMap) {
                     i = mRowInfo[i - 1].MapRow;
@@ -554,7 +554,7 @@ namespace Circuit {
 
         /* stamp value x on the right side of row i, representing an
         /* independent current source flowing into node i */
-        public void StampRightSide(int i, double x) {
+        static public void StampRightSide(int i, double x) {
             if (i > 0) {
                 if (mCircuitNeedsMap) {
                     i = mRowInfo[i - 1].MapRow;
@@ -567,7 +567,7 @@ namespace Circuit {
         }
 
         /* indicate that the value on the right side of row i changes in doStep() */
-        public void StampRightSide(int i) {
+        static public void StampRightSide(int i) {
             /*Console.WriteLine("rschanges true " + (i-1)); */
             if (i > 0) {
                 mRowInfo[i - 1].RightChanges = true;
@@ -575,7 +575,7 @@ namespace Circuit {
         }
 
         /* indicate that the values on the left side of row i change in doStep() */
-        public void StampNonLinear(int i) {
+        static public void StampNonLinear(int i) {
             if (i > 0) {
                 mRowInfo[i - 1].LeftChanges = true;
             }
@@ -583,7 +583,7 @@ namespace Circuit {
 
         /* we removed wires from the matrix to speed things up.  in order to display wire currents,
         /* we need to calculate them now. */
-        public void CalcWireCurrents() {
+        static public void CalcWireCurrents() {
             /* for debugging */
             /*for (int i = 0; i != mWireInfoList.Count; i++) {
                 mWireInfoList[i].wire.setCurrent(-1, 1.23);
@@ -605,7 +605,7 @@ namespace Circuit {
             }
         }
 
-        public void AnalyzeCircuit() {
+        static public void AnalyzeCircuit() {
             bool debug = false;
             var elmList = mSim.ElmList;
             if (0 == mSim.ElmCount) {
@@ -949,7 +949,7 @@ namespace Circuit {
             }
         }
 
-        public bool Run(bool debugprint) {
+        static public bool Run(bool debugprint) {
             const int subiterCount = 1000;
             int i, j, k, subiter;
             int elmCount = mSim.ElmCount;
@@ -1061,14 +1061,14 @@ namespace Circuit {
             return true;
         }
 
-        public void Stop(string s) {
+        static public void Stop(string s) {
             StopMessage = s;
             Matrix = null;  /* causes an exception */
             StopElm = null;
             mSim.SetSimRunning(false);
         }
 
-        public void Stop(string s, BaseElement ce) {
+        static public void Stop(string s, BaseElement ce) {
             StopMessage = s;
             Matrix = null;  /* causes an exception */
             StopElm = ce;

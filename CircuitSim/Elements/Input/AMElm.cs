@@ -46,11 +46,11 @@ namespace Circuit.Elements.Input {
         public override bool AnaHasGroundConnection(int n1) { return true; }
 
         public override void AnaStamp() {
-            mCir.StampVoltageSource(0, Nodes[0], mVoltSource);
+            Circuit.StampVoltageSource(0, Nodes[0], mVoltSource);
         }
 
         public override void CirDoStep() {
-            mCir.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
+            Circuit.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
         }
 
         double getVoltage() {

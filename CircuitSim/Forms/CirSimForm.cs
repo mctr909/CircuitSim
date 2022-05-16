@@ -4,7 +4,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 using Circuit.Elements;
@@ -17,7 +16,6 @@ namespace Circuit {
     partial class CirSim {
         public CirSim() {
             Sim = this;
-            mCir = new Circuit(this);
             mMenuItems = new MenuItems(this);
             ControlPanel.Init(this);
         }
@@ -39,8 +37,6 @@ namespace Circuit {
             mScopeCount = 0;
 
             setTimer();
-
-            BaseElement.InitClass(mCir);
 
             mMenuBar = new MenuStrip();
             {
@@ -447,7 +443,7 @@ namespace Circuit {
         #region Public method
         public void SetSimRunning(bool s) {
             if (s) {
-                if (mCir.StopMessage != null) {
+                if (Circuit.StopMessage != null) {
                     return;
                 }
                 IsRunning = true;
@@ -676,7 +672,7 @@ namespace Circuit {
         }
 
         void onMouseDown(MouseEventArgs e) {
-            mCir.StopElm = null; /* if stopped, allow user to select other elements to fix circuit */
+            Circuit.StopElm = null; /* if stopped, allow user to select other elements to fix circuit */
             mMenuPos.X = mMenuClient.X = MouseCursorX = e.X;
             mMenuPos.Y = mMenuClient.Y = MouseCursorY = e.Y;
             mMouseButton = e.Button;

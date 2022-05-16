@@ -12,7 +12,7 @@
 
         public override void CirStepFinished() {
             if (VoltageDiff < 0 && VoltageDiff < -MaxNegativeVoltage) {
-                mCir.Stop("耐逆電圧" + Utils.VoltageText(MaxNegativeVoltage) + "を超えました", this);
+                Circuit.Stop("耐逆電圧" + Utils.VoltageText(MaxNegativeVoltage) + "を超えました", this);
             }
         }
     }

@@ -13,7 +13,7 @@
         public override int PostCount { get { return 2; } }
 
         public override void AnaStamp() {
-            mCir.StampResistor(Nodes[0], Nodes[1], Resistance);
+            Circuit.StampResistor(Nodes[0], Nodes[1], Resistance);
         }
 
         public override void CirSetNodeVoltage(int n, double c) {

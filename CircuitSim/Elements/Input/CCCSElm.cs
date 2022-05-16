@@ -48,10 +48,10 @@ namespace Circuit.Elements.Input {
         public override void AnaStamp() {
             /* voltage source (0V) between C+ and C- so we can measure current */
             int vn1 = Pins[1].voltSource;
-            mCir.StampVoltageSource(Nodes[0], Nodes[1], vn1, 0);
+            Circuit.StampVoltageSource(Nodes[0], Nodes[1], vn1, 0);
 
-            mCir.StampNonLinear(Nodes[2]);
-            mCir.StampNonLinear(Nodes[3]);
+            Circuit.StampNonLinear(Nodes[2]);
+            Circuit.StampNonLinear(Nodes[3]);
         }
 
         public override void CirDoStep() {
@@ -60,7 +60,7 @@ namespace Circuit.Elements.Input {
                 Pins[InputCount].current = 0;
                 Pins[InputCount + 1].current = 0;
                 /* avoid singular matrix errors */
-                mCir.StampResistor(Nodes[InputCount], Nodes[InputCount + 1], 1e8);
+                Circuit.StampResistor(Nodes[InputCount], Nodes[InputCount + 1], 1e8);
                 return;
             }
 
@@ -70,9 +70,9 @@ namespace Circuit.Elements.Input {
 
             double cur = Pins[1].current;
             if (Math.Abs(cur - mLastCurrent) > convergeLimit) {
-                mCir.Converged = false;
+                Circuit.Converged = false;
             }
-            int vn1 = Pins[1].voltSource + mCir.NodeList.Count;
+            int vn1 = Pins[1].voltSource + Circuit.NodeList.Count;
             if (mExpr != null) {
                 /* calculate output */
                 mExprState.Values[8] = cur;  /* I = current */
@@ -91,11 +91,11 @@ namespace Circuit.Elements.Input {
                 if (Math.Abs(dx) < 1e-6) {
                     dx = sign(dx, 1e-6);
                 }
-                mCir.StampCCCS(Nodes[3], Nodes[2], Pins[1].voltSource, dx);
+                Circuit.StampCCCS(Nodes[3], Nodes[2], Pins[1].voltSource, dx);
                 /* adjust right side */
                 rs -= dx * cur;
                 /*Console.WriteLine("ccedx " + cur + " " + dx + " " + rs); */
-                mCir.StampCurrentSource(Nodes[3], Nodes[2], rs);
+                Circuit.StampCurrentSource(Nodes[3], Nodes[2], rs);
             }
 
             mLastCurrent = cur;
