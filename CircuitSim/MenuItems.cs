@@ -31,9 +31,6 @@ namespace Circuit {
         DELETE,
         UNDO,
         REDO,
-        ZOOM_IN,
-        ZOOM_OUT,
-        ZOOM_100,
         CENTER_CIRCUIT,
 
         STACK_ALL,
@@ -400,9 +397,6 @@ namespace Circuit {
             addMenuItem(editMenuBar, "元に戻す(U)", MENU_ITEM.UNDO, new SHORTCUT(Keys.Z));
             addMenuItem(editMenuBar, "やり直し(R)", MENU_ITEM.REDO, new SHORTCUT(Keys.Y));
             editMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addMenuItem(editMenuBar, "拡大(I)", MENU_ITEM.ZOOM_IN, new SHORTCUT(Keys.Oemplus));
-            addMenuItem(editMenuBar, "縮小(O)", MENU_ITEM.ZOOM_OUT, new SHORTCUT(Keys.OemMinus));
-            addMenuItem(editMenuBar, "原寸大(L)", MENU_ITEM.ZOOM_100, new SHORTCUT(Keys.D0));
             addMenuItem(editMenuBar, "中心に移動(E)", MENU_ITEM.CENTER_CIRCUIT, new SHORTCUT(Keys.E));
             mainMenuBar.Items.Add(editMenuBar);
             #endregion

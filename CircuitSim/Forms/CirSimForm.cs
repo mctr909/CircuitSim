@@ -149,15 +149,6 @@ namespace Circuit {
                 doSelectAll();
             }
 
-            if (item == MENU_ITEM.ZOOM_IN) {
-                zoomCircuit(20);
-            }
-            if (item == MENU_ITEM.ZOOM_OUT) {
-                zoomCircuit(-20);
-            }
-            if (item == MENU_ITEM.ZOOM_100) {
-                setCircuitScale(1);
-            }
             if (item == MENU_ITEM.CENTER_CIRCUIT) {
                 PushUndo();
                 centreCircuit();
@@ -815,22 +806,6 @@ namespace Circuit {
         }
 
         void onMouseWheel(Control sender, MouseEventArgs e) {
-            /* once we start zooming, don't allow other uses of mouse wheel for a while */
-            /* so we don't accidentally edit a resistor value while zooming */
-            bool zoomOnly = DateTime.Now.ToFileTimeUtc() < mZoomTime + 1000;
-
-            if (!zoomOnly) {
-                scrollValues(e.Delta);
-            }
-            // TODO: onMouseWheel
-            //if ((mouseElm is MouseWheelHandler) && !zoomOnly) {
-            //    ((MouseWheelHandler)mouseElm).onMouseWheel(e);
-            //}
-            if (!DialogIsShowing()) {
-                zoomCircuit(-e.Delta);
-                mZoomTime = DateTime.Now.ToFileTimeUtc();
-            }
-            Repaint();
         }
 
         void onMouseMove(MouseEventArgs e) {
@@ -901,23 +876,12 @@ namespace Circuit {
 
         void centreCircuit() {
             var bounds = getCircuitBounds();
-
-            double scale = 1;
-
-            if (0 < bounds.Width) {
-                /* add some space on edges because bounds calculation is not perfect */
-                scale = Math.Min(
-                    mCircuitArea.Width / (double)(bounds.Width + 140),
-                    mCircuitArea.Height / (double)(bounds.Height + 100));
-            }
-            scale = Math.Min(scale, 1.5); // Limit scale so we don't create enormous circuits in big windows
-
             /* calculate transform so circuit fills most of screen */
-            Transform[0] = Transform[3] = (float)scale;
+            Transform[0] = Transform[3] = 1;
             Transform[1] = Transform[2] = Transform[4] = Transform[5] = 0;
             if (0 < bounds.Width) {
-                Transform[4] = (float)((mCircuitArea.Width - bounds.Width * scale) / 2 - bounds.X * scale);
-                Transform[5] = (float)((mCircuitArea.Height - bounds.Height * scale) / 2 - bounds.Y * scale);
+                Transform[4] = (mCircuitArea.Width - bounds.Width) / 2 - bounds.X;
+                Transform[5] = (mCircuitArea.Height - bounds.Height) / 2 - bounds.Y;
             }
         }
 
@@ -1710,25 +1674,6 @@ namespace Circuit {
             ScopeSelected = -1;
             setMouseElm(null);
             PlotXElm = PlotYElm = null;
-        }
-
-        void zoomCircuit(int dy) {
-            double newScale;
-            double oldScale = Transform[0];
-            double val = dy * .01;
-            newScale = Math.Max(oldScale + val, .2);
-            newScale = Math.Min(newScale, 2.5);
-            setCircuitScale(newScale);
-        }
-
-        void setCircuitScale(double newScale) {
-            int cx = inverseTransformX(mCircuitArea.Width / 2);
-            int cy = inverseTransformY(mCircuitArea.Height / 2);
-            Transform[0] = Transform[3] = (float)newScale;
-            /* adjust translation to keep center of screen constant
-            /* inverse transform = (x-t4)/t0 */
-            Transform[4] = (float)(mCircuitArea.Width / 2 - cx * newScale);
-            Transform[5] = (float)(mCircuitArea.Height / 2 - cy * newScale);
         }
 
         void scrollValues(int deltay) {
