@@ -1622,13 +1622,6 @@ namespace Circuit {
 
             ScopeSelected = -1;
             if (newMouseElm == null) {
-                for (int i = 0; i != mScopeCount; i++) {
-                    var s = mScopes[i];
-                    if (s.BoundingBox.Contains(mx, my)) {
-                        newMouseElm = s.Elm;
-                        ScopeSelected = i;
-                    }
-                }
                 /* the mouse pointer was not in any of the bounding boxes, but we
                 /* might still be close to a post */
                 for (int i = 0; i != ElmCount; i++) {
@@ -1640,13 +1633,30 @@ namespace Circuit {
                         }
                     }
                     int jn = ce.Elm.PostCount;
-                    for (int j = 0; j != jn; j++) {
-                        var pt = ce.GetPost(j);
-                        if (Utils.Distance(pt, gx, gy) < 26) {
+                    if (2 == jn) {
+                        var p1 = ce.GetPost(0);
+                        var p2 = ce.GetPost(1);
+                        if (Utils.DistanceOnLine(p1.X, p1.Y, p2.X, p2.Y, gx, gy) < 16) {
                             newMouseElm = ce;
-                            mMousePost = j;
                             break;
                         }
+                    } else {
+                        for (int j = 0; j != jn; j++) {
+                            var pt = ce.GetPost(j);
+                            if (Utils.Distance(pt, gx, gy) < 16) {
+                                newMouseElm = ce;
+                                mMousePost = j;
+                                break;
+                            }
+                        }
+                    }
+                }
+                for (int i = 0; i != mScopeCount; i++) {
+                    var s = mScopes[i];
+                    if (s.BoundingBox.Contains(mx, my)) {
+                        newMouseElm = s.Elm;
+                        ScopeSelected = i;
+                        break;
                     }
                 }
             } else {
@@ -1654,7 +1664,7 @@ namespace Circuit {
                 /* look for post close to the mouse pointer */
                 for (int i = 0; i != newMouseElm.Elm.PostCount; i++) {
                     var pt = newMouseElm.GetPost(i);
-                    if (Utils.Distance(pt, gx, gy) < 26) {
+                    if (Utils.Distance(pt, gx, gy) < 16) {
                         mMousePost = i;
                     }
                 }
