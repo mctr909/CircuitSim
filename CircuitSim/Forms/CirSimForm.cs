@@ -88,30 +88,32 @@ namespace Circuit {
         }
 
         public void Performed(MENU_ITEM item) {
-            if (item == MENU_ITEM.OPEN_NEW) {
+            switch (item) {
+            case MENU_ITEM.OPEN_NEW:
                 readCircuit("");
                 writeRecoveryToStorage();
                 readRecovery();
-            }
-            if (item == MENU_ITEM.OPEN_FILE) {
+                break;
+            case MENU_ITEM.OPEN_FILE:
                 doOpenFile();
                 writeRecoveryToStorage();
                 readRecovery();
-            }
-            if (item == MENU_ITEM.SAVE_FILE) {
+                break;
+            case MENU_ITEM.SAVE_FILE:
                 doSaveFile();
-            }
-            if (item == MENU_ITEM.CREATE_MODULE) {
+                break;
+            case MENU_ITEM.CREATE_MODULE:
                 doCreateSubcircuit();
-            }
-            if (item == MENU_ITEM.DC_ANALYSIS) {
+                break;
+            case MENU_ITEM.DC_ANALYSIS:
                 doDCAnalysis();
-            }
-            if (item == MENU_ITEM.PRINT) {
+                break;
+            case MENU_ITEM.PRINT:
                 BaseUI.Context.DoPrint = true;
-            }
-            if (item == MENU_ITEM.RECOVER) {
+                break;
+            case MENU_ITEM.RECOVER:
                 doRecover();
+                break;
             }
 
             if (mMouseElm != null) {
@@ -119,52 +121,55 @@ namespace Circuit {
                 return;
             }
 
-            if (item == MENU_ITEM.UNDO) {
+            switch (item) {
+            case MENU_ITEM.UNDO:
                 doUndo();
-            }
-            if (item == MENU_ITEM.REDO) {
+                break;
+            case MENU_ITEM.REDO:
                 doRedo();
-            }
-            if (item == MENU_ITEM.CUT) {
+                break;
+            case MENU_ITEM.CUT:
                 mMenuElm = null;
                 doCut();
-            }
-            if (item == MENU_ITEM.COPY) {
+                break;
+            case MENU_ITEM.COPY:
                 mMenuElm = null;
                 doCopy();
-            }
-            if (item == MENU_ITEM.PASTE) {
+                break;
+            case MENU_ITEM.PASTE:
                 doPaste(null);
-            }
-            if (item == MENU_ITEM.DELETE) {
+                break;
+            case MENU_ITEM.DELETE:
                 mMenuElm = null;
                 PushUndo();
                 doDelete(true);
-            }
-            if (item == MENU_ITEM.DUPLICATE) {
+                break;
+            case MENU_ITEM.DUPLICATE:
                 mMenuElm = null;
                 doDuplicate();
-            }
-            if (item == MENU_ITEM.SELECT_ALL) {
+                break;
+            case MENU_ITEM.SELECT_ALL:
                 doSelectAll();
-            }
-
-            if (item == MENU_ITEM.CENTER_CIRCUIT) {
+                break;
+            case MENU_ITEM.CENTER_CIRCUIT:
                 PushUndo();
                 centreCircuit();
+                break;
             }
 
-            if (item == MENU_ITEM.STACK_ALL) {
+            switch (item) {
+            case MENU_ITEM.STACK_ALL:
                 stackAll();
-            }
-            if (item == MENU_ITEM.UNSTACK_ALL) {
+                break;
+            case MENU_ITEM.UNSTACK_ALL:
                 unstackAll();
-            }
-            if (item == MENU_ITEM.COMBINE_ALL) {
+                break;
+            case MENU_ITEM.COMBINE_ALL:
                 combineAll();
-            }
-            if (item == MENU_ITEM.SEPARATE_ALL) {
+                break;
+            case MENU_ITEM.SEPARATE_ALL:
                 separateAll();
+                break;
             }
 
             Repaint();
