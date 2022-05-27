@@ -2,30 +2,30 @@
 
 namespace Circuit {
     class Storage {
-        static Storage ins = null;
+        static Storage mIns = null;
 
-        Dictionary<string, string> data = new Dictionary<string, string>();
+        Dictionary<string, string> mData = new Dictionary<string, string>();
 
         private Storage() { }
 
-        public static Storage getLocalStorageIfSupported() {
-            if (null == ins) {
-                ins = new Storage();
+        public static Storage GetInstance() {
+            if (null == mIns) {
+                mIns = new Storage();
             }
-            return ins;
+            return mIns;
         }
 
-        public void setItem(string k, string v) {
-            if (data.ContainsKey(k)) {
-                data[k] = v;
+        public void SetItem(string k, string v) {
+            if (mData.ContainsKey(k)) {
+                mData[k] = v;
             } else {
-                data.Add(k, v);
+                mData.Add(k, v);
             }
         }
 
-        public string getItem(string k) {
-            if (data.ContainsKey(k)) {
-                return data[k];
+        public string GetItem(string k) {
+            if (mData.ContainsKey(k)) {
+                return mData[k];
             } else {
                 return "";
             }

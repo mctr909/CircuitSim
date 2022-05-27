@@ -473,18 +473,6 @@ namespace Circuit {
             return gsx;
         }
 
-        public void SaveAsDefault() {
-            var stor = Storage.getLocalStorageIfSupported();
-            if (stor == null) {
-                return;
-            }
-            var vPlot = mPlots[0];
-            var flags = mFlags;
-            /* store current scope settings as default.  1 is a version code */
-            stor.setItem("scopeDefaults", "1 " + flags + " " + vPlot.Speed);
-            Console.WriteLine("saved defaults " + flags);
-        }
-
         public void HandleMenu(SCOPE_MENU mi, bool state) {
             switch (mi) {
 
@@ -623,10 +611,7 @@ namespace Circuit {
             ShowV = false;
             ShowScale = ShowFreq = LockScale = ShowMin = false;
             ShowFFT = false;
-            if (!_loadDefaults()) {
-                /* set showV and showI appropriately depending on what plots are present */
-                ShowV = true;
-            }
+            ShowV = true;
         }
 
         void _setValue(VAL val) {
@@ -748,21 +733,6 @@ namespace Circuit {
                 }
             }
             SelectedPlot = best;
-        }
-
-        bool _loadDefaults() {
-            var stor = Storage.getLocalStorageIfSupported();
-            if (stor == null) {
-                return false;
-            }
-            string str = stor.getItem("scopeDefaults");
-            if (string.IsNullOrEmpty(str)) {
-                return false;
-            }
-            var arr = str.Split(' ');
-            mFlags = int.Parse(arr[1]);
-            Speed = int.Parse(arr[2]);
-            return true;
         }
         #endregion
 

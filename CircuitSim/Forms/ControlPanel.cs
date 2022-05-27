@@ -104,9 +104,6 @@ namespace Circuit {
 
             /* ANSI */
             ChkUseAnsiSymbols = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "ANSI" };
-            ChkUseAnsiSymbols.CheckedChanged += new EventHandler((s, e) => {
-                setOptionInStorage("ansiResistors", ChkUseAnsiSymbols.Checked);
-            });
             VerticalPanel.Controls.Add(ChkUseAnsiSymbols);
             ofsY += ChkUseAnsiSymbols.Height + 4;
 
@@ -116,16 +113,12 @@ namespace Circuit {
                 for (int i = 0; i < sim.mScopeCount; i++) {
                     sim.mScopes[i].SetRect(sim.mScopes[i].BoundingBox);
                 }
-                setOptionInStorage("whiteBackground", ChkPrintable.Checked);
             });
             VerticalPanel.Controls.Add(ChkPrintable);
             ofsY += ChkPrintable.Height + 4;
 
             /* Show Cursor Cross Hairs */
             ChkCrossHair = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "ポインターを表示" };
-            ChkCrossHair.CheckedChanged += new EventHandler((s, e) => {
-                setOptionInStorage("crossHair", ChkCrossHair.Checked);
-            });
             VerticalPanel.Controls.Add(ChkCrossHair);
             ofsY += ChkCrossHair.Height + 4;
 
@@ -212,14 +205,6 @@ namespace Circuit {
             }
             mSliderPanel.ResumeLayout(false);
             SetSliderPanelHeight();
-        }
-
-        static void setOptionInStorage(string key, bool val) {
-            var stor = Storage.getLocalStorageIfSupported();
-            if (stor == null) {
-                return;
-            }
-            stor.setItem(key, val ? "true" : "false");
         }
     }
 }

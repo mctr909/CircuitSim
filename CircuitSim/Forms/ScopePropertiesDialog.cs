@@ -66,7 +66,6 @@ namespace Circuit {
 
         Button btnOk;
         Button btnApply;
-        Button btnSaveAsDefault;
 
         Scope scope;
         int gridY;
@@ -225,18 +224,11 @@ namespace Circuit {
                 btnApply.Width = 50;
                 btnApply.Top = 4;
                 pnl.Controls.Add(btnApply);
-                /* Save as Default */
-                btnSaveAsDefault = new Button() { Text = "Save as Default" };
-                btnSaveAsDefault.Click += new EventHandler((sender, e) => { scope.SaveAsDefault(); });
-                btnSaveAsDefault.Left = btnApply.Right + 4;
-                btnSaveAsDefault.Width = 100;
-                btnSaveAsDefault.Top = 4;
-                pnl.Controls.Add(btnSaveAsDefault);
                 /* */
                 pnl.Left = pnlPlots.Left;
                 pnl.Top = pnlPlots.Bottom;
-                pnl.Width = btnSaveAsDefault.Right + 4;
-                pnl.Height = btnSaveAsDefault.Bottom + 8;
+                pnl.Width = btnApply.Right + 4;
+                pnl.Height = btnApply.Bottom + 8;
                 Controls.Add(pnl);
             }
 

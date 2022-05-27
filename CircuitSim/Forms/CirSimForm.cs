@@ -1764,37 +1764,21 @@ namespace Circuit {
         }
 
         void writeClipboardToStorage() {
-            var stor = Storage.getLocalStorageIfSupported();
-            if (stor == null) {
-                return;
-            }
-            stor.setItem("circuitClipboard", mClipboard);
+            Storage.GetInstance().SetItem("circuitClipboard", mClipboard);
         }
 
         void readClipboardFromStorage() {
-            var stor = Storage.getLocalStorageIfSupported();
-            if (stor == null) {
-                return;
-            }
-            mClipboard = stor.getItem("circuitClipboard");
+            mClipboard = Storage.GetInstance().GetItem("circuitClipboard");
         }
 
         void writeRecoveryToStorage() {
             Console.WriteLine("write recovery");
-            var stor = Storage.getLocalStorageIfSupported();
-            if (stor == null) {
-                return;
-            }
-            string s = dumpCircuit();
-            stor.setItem("circuitRecovery", s);
+            var s = dumpCircuit();
+            Storage.GetInstance().SetItem("circuitRecovery", s);
         }
 
         void readRecovery() {
-            var stor = Storage.getLocalStorageIfSupported();
-            if (stor == null) {
-                return;
-            }
-            mRecovery = stor.getItem("circuitRecovery");
+            mRecovery = Storage.GetInstance().GetItem("circuitRecovery");
         }
 
         void deleteUnusedScopeElms() {
