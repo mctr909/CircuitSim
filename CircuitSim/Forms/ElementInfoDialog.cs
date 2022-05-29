@@ -10,12 +10,12 @@ using Circuit.Elements;
 using Circuit.Elements.Input;
 
 namespace Circuit {
-    interface Editable {
+    public interface Editable {
         ElementInfo GetElementInfo(int n);
         void SetElementValue(int n, ElementInfo ei);
     }
 
-    class ElementInfoDialog : Form {
+    public class ElementInfoDialog : Form {
         const double ROOT2 = 1.41421356237309504880;
 
         Editable mElm;

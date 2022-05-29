@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using Circuit.Elements;
 
 namespace Circuit {
-    class SliderDialog : Form {
+    public class SliderDialog : Form {
         const int barmax = 1000;
 
         BaseUI elm;

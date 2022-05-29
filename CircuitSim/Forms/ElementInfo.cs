@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
 
 namespace Circuit {
-    class ElementInfo {
+    public class ElementInfo {
         public string Name { get; private set; }
         public string Text { get; set; }
         public double Value { get; set; }

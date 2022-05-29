@@ -14,16 +14,154 @@ using Circuit.Elements.Output;
 using Circuit.Elements.Custom;
 
 namespace Circuit {
-    partial class CirSimForm {
-        public CirSimForm(Form parent) {
+    public partial class CirSimForm : Form {
+        #region CONST
+        public static readonly Font FONT_TEXT = new Font("Meiryo UI", 9.0f);
+        public static readonly Brush BRUSH_TEXT = Brushes.Red;
+
+        public static readonly string OHM_TEXT = "Ω";
+
+        public enum MOUSE_MODE {
+            ADD_ELM,
+            DRAG_ALL,
+            DRAG_ROW,
+            DRAG_COLUMN,
+            DRAG_SELECTED,
+            DRAG_POST,
+            SELECT,
+            DRAG_SPLITTER
+        }
+
+        public const int GRID_SIZE = 8;
+        public const int POSTGRABSQ = 25;
+        public const int MINPOSTGRABSIZE = 256;
+
+        public const int RC_RETAIN = 1;
+        public const int RC_NO_CENTER = 2;
+        public const int RC_SUBCIRCUITS = 4;
+
+        const int INFO_WIDTH = 120;
+        const int GRID_MASK = ~(GRID_SIZE - 1);
+        const int GRID_ROUND = GRID_SIZE / 2 - 1;
+        #endregion
+
+        #region Static Property
+        public static CirSimForm Sim { get; private set; } = null;
+        public static ElementInfoDialog EditDialog { get; set; }
+        public static ElementInfoDialog CustomLogicEditDialog { get; set; }
+        public static ElementInfoDialog DiodeModelEditDialog { get; set; }
+        public static SliderDialog SliderDialog { get; set; }
+        public static Form DialogShowing { get; set; } = null;
+        public static Random Random { get; set; } = new Random();
+        public static double CurrentMult { get; set; } = 0;
+        #endregion
+
+        #region Property
+        public bool IsRunning { get; private set; }
+        public MOUSE_MODE MouseMode { get; private set; } = MOUSE_MODE.SELECT;
+        public MOUSE_MODE TempMouseMode { get; private set; } = MOUSE_MODE.SELECT;
+        public Point DisplayLocation { get { return Location; } }
+        public int ScopeSelected { get; private set; } = -1;
+        public int MouseCursorX { get; private set; } = -1;
+        public int MouseCursorY { get; private set; } = -1;
+        public float[] Transform { get; private set; }
+        public bool DcAnalysisFlag { get; private set; }
+        public double Time { get; private set; }
+
+        public List<BaseUI> ElmList { get; private set; }
+        public int ElmCount { get { return null == ElmList ? 0 : ElmList.Count; } }
+        public BaseUI PlotXElm { get; private set; }
+        public BaseUI PlotYElm { get; private set; }
+        public BaseUI DragElm { get; private set; }
+        public List<Adjustable> Adjustables { get; private set; } = new List<Adjustable>();
+        #endregion
+
+        #region Variable
+        static ScrollValuePopup mScrollValuePopup;
+
+        Timer mTimer;
+
+        MenuStrip mMenuBar;
+        MenuItems mMenuItems;
+        SplitContainer mSplitContainer;
+
+        ContextMenuStrip mContextMenu = null;
+        Point mContextMenuLocation;
+        ElementPopupMenu mElementPopupMenu;
+        ScopePopupMenu mScopePopupMenu;
+
+        PictureBox mPixCir;
+        Bitmap mBmp = null;
+        Graphics mContext;
+
+        MenuItem mUndoItem;
+        MenuItem mRedoItem;
+        MenuItem mPasteItem;
+
+        BaseUI mMenuElm;
+        BaseUI mMouseElm = null;
+        SwitchUI mHeldSwitchElm;
+
+        List<string> mUndoStack = new List<string>();
+        List<string> mRedoStack = new List<string>();
+
+        string mRecovery;
+        string mClipboard = "";
+
+        double mScopeHeightFraction = 0.2;
+        public int mScopeCount { get; set; }
+        public Scope[] mScopes { get; set; }
+        int[] mScopeColCount;
+
+        ELEMENTS mMouseMode = ELEMENTS.INVALID;
+        MouseButtons mMouseButton = MouseButtons.None;
+        DateTime mLastMouseMove = DateTime.Now;
+        bool mouseDragging = false;
+        bool mMouseWasOverSplitter = false;
+        int mMousePost = -1;
+
+        int mDraggingPost;
+        Point mDragGrid;
+        Point mDragScreen;
+        Point mInitDragGrid;
+
+        bool mIsPressShift;
+        bool mIsPressCtrl;
+        bool mIsPressAlt;
+
+        Point mMenuClient;
+        Point mMenuPos;
+        int mMenuScope = -1;
+        int mMenuPlot = -1;
+
+        long mMouseDownTime;
+        long mZoomTime;
+
+        Rectangle mSelectedArea;
+        Rectangle mCircuitArea;
+
+        long mLastTime = 0;
+        long mLastFrameTime;
+        long mLastIterTime;
+        long mLastSysTime = 0;
+
+        bool mNeedsRepaint;
+        bool mAnalyzeFlag;
+        bool mDumpMatrix;
+        #endregion
+
+        CirSimForm sim;
+
+        public CirSimForm() {
+            InitializeComponent();
+
             Sim = this;
-            mParent = parent;
             mMenuItems = new MenuItems(this);
             ControlPanel.Init(this);
 
-            mParent.KeyPreview = true;
-            mParent.KeyDown += onKeyDown;
-            mParent.KeyUp += onKeyUp;
+            KeyPreview = true;
+            KeyDown += onKeyDown;
+            KeyUp += onKeyUp;
 
             ElmList = new List<BaseUI>();
             mRedoItem = new MenuItem();
@@ -40,7 +178,7 @@ namespace Circuit {
             mMenuBar = new MenuStrip();
             {
                 mMenuItems.ComposeMainMenu(mMenuBar);
-                mParent.Controls.Add(mMenuBar);
+                Controls.Add(mMenuBar);
             }
 
             mPixCir = new PictureBox() { Left = 0, Top = mMenuBar.Height };
@@ -69,7 +207,7 @@ namespace Circuit {
                         setCanvasSize();
                     }
                 });
-                mParent.Controls.Add(mSplitContainer);
+                Controls.Add(mSplitContainer);
             }
 
             readCircuit("");
@@ -84,6 +222,11 @@ namespace Circuit {
             mScopePopupMenu = new ScopePopupMenu(this);
 
             SetSimRunning(true);
+        }
+
+        private void Form1_Load(object sender, EventArgs e) {
+            Width = 800;
+            Height = 600;
         }
 
         public void Performed(MENU_ITEM item) {
@@ -319,7 +462,7 @@ namespace Circuit {
                 s.ResetGraph(true);
             }
             if (item == SCOPE_MENU_ITEM.PROPERTIES) {
-                s.Properties(mParent);
+                s.Properties(this);
             }
 
             deleteUnusedScopeElms();
@@ -589,7 +732,7 @@ namespace Circuit {
             mIsPressShift = false;
             mIsPressCtrl = false;
             mIsPressAlt = false;
-            mParent.Cursor = Cursors.Arrow;
+            Cursor = Cursors.Arrow;
             keyUpPerformed(e);
         }
 
@@ -662,8 +805,8 @@ namespace Circuit {
                 return;
             }
             doEdit(mMouseElm, new Point(
-                mParent.Location.X + mMenuClient.X,
-                mParent.Location.Y + mMenuClient.Y));
+                Location.X + mMenuClient.X,
+                Location.Y + mMenuClient.Y));
         }
 
         void onMouseDown(MouseEventArgs e) {
@@ -696,19 +839,19 @@ namespace Circuit {
                 TempMouseMode = MouseMode;
                 if (mIsPressCtrl && mIsPressShift) {
                     TempMouseMode = MOUSE_MODE.DRAG_COLUMN;
-                    mParent.Cursor = Cursors.SizeWE;
+                    Cursor = Cursors.SizeWE;
                 } else if (mIsPressCtrl && mIsPressAlt) {
                     TempMouseMode = MOUSE_MODE.DRAG_ROW;
-                    mParent.Cursor = Cursors.SizeNS;
+                    Cursor = Cursors.SizeNS;
                 } else if (mIsPressCtrl) {
                     TempMouseMode = MOUSE_MODE.DRAG_POST;
-                    mParent.Cursor = Cursors.Arrow;
+                    Cursor = Cursors.Arrow;
                 } else if (mIsPressAlt) {
                     TempMouseMode = MOUSE_MODE.DRAG_ALL;
-                    mParent.Cursor = Cursors.NoMove2D;
+                    Cursor = Cursors.NoMove2D;
                 } else {
                     TempMouseMode = MOUSE_MODE.SELECT;
-                    mParent.Cursor = Cursors.SizeAll;
+                    Cursor = Cursors.SizeAll;
                 }
             }
 
@@ -721,7 +864,7 @@ namespace Circuit {
                 } else {
                     s = ((ScopeUI)mMouseElm).elmScope;
                 }
-                s.Properties(mParent);
+                s.Properties(this);
                 clearSelection();
                 mouseDragging = false;
                 return;
@@ -1519,7 +1662,7 @@ namespace Circuit {
                 && (y <= mCircuitArea.Height + 5);
             if (isOverSplitter != mMouseWasOverSplitter) {
                 if (isOverSplitter) {
-                    mParent.Cursor = Cursors.HSplit;
+                    Cursor = Cursors.HSplit;
                 } else {
                     setMouseMode(MouseMode);
                 }
@@ -1629,8 +1772,8 @@ namespace Circuit {
         }
 
         void onContextMenu(Control ctrl, MouseEventArgs e) {
-            mMenuClient.X = mParent.Location.X + e.X;
-            mMenuClient.Y = mParent.Location.Y + e.Y;
+            mMenuClient.X = Location.X + e.X;
+            mMenuClient.Y = Location.Y + e.Y;
             doPopupMenu();
         }
 
@@ -1672,8 +1815,8 @@ namespace Circuit {
                 if ((mMouseElm is ResistorUI) || (mMouseElm is CapacitorUI) || (mMouseElm is InductorUI)) {
                     mScrollValuePopup = new ScrollValuePopup(deltay, mMouseElm, this);
                     mScrollValuePopup.Show(
-                        mParent.Location.X + MouseCursorX,
-                        mParent.Location.Y + MouseCursorY
+                        Location.X + MouseCursorX,
+                        Location.Y + MouseCursorY
                     );
                 }
             }
@@ -1714,9 +1857,9 @@ namespace Circuit {
         void setMouseMode(MOUSE_MODE mode) {
             MouseMode = mode;
             if (mode == MOUSE_MODE.ADD_ELM) {
-                mParent.Cursor = Cursors.Cross;
+                Cursor = Cursors.Cross;
             } else {
-                mParent.Cursor = Cursors.Arrow;
+                Cursor = Cursors.Arrow;
             }
         }
 

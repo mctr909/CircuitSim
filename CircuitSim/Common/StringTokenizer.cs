@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace Circuit {
-    class StringTokenizer {
+    public class StringTokenizer {
         int mIndex;
         string mValue;
         string[] mList;

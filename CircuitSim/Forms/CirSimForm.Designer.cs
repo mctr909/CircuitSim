@@ -1,5 +1,5 @@
 ﻿namespace Circuit {
-    partial class CircuitSim {
+    partial class CirSimForm {
         /// <summary>
         /// 必要なデザイナー変数です。
         /// </summary>

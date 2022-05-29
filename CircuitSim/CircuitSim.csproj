@@ -148,7 +148,6 @@
     <Compile Include="Elements\Passive\TransformerElm.cs" />
     <Compile Include="Elements\Passive\TransformerUI.cs" />
     <Compile Include="Elements\Passive\WireElm.cs" />
-    <Compile Include="Forms\CirSimVariable.cs" />
     <Compile Include="Common\CustomGraphics.cs" />
     <Compile Include="Common\Scope.cs" />
     <Compile Include="Common\Utils.cs" />
@@ -175,7 +174,6 @@
     <Compile Include="Common\StringTokenizer.cs" />
     <Compile Include="Elements\Passive\CapacitorUI.cs" />
     <Compile Include="Elements\BaseUI.cs" />
-    <Compile Include="Forms\CirSimForm.cs" />
     <Compile Include="Forms\ElementInfoDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -184,11 +182,11 @@
     <Compile Include="Elements\Passive\GroundUI.cs" />
     <Compile Include="Elements\Input\VoltageUI.cs" />
     <Compile Include="Elements\Passive\WireUI.cs" />
-    <Compile Include="Forms\CircuitSim.cs">
+    <Compile Include="Forms\CirSimForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\CircuitSim.Designer.cs">
-      <DependentUpon>CircuitSim.cs</DependentUpon>
+    <Compile Include="Forms\CirSimForm.Designer.cs">
+      <DependentUpon>CirSimForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Elements\Passive\InductorUI.cs" />
     <Compile Include="Program.cs" />
@@ -198,8 +196,8 @@
     <Compile Include="Elements\Passive\ResistorUI.cs" />
     <Compile Include="Common\Storage.cs" />
     <Compile Include="Shortcut.cs" />
-    <EmbeddedResource Include="Forms\CircuitSim.resx">
-      <DependentUpon>CircuitSim.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\CirSimForm.resx">
+      <DependentUpon>CirSimForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

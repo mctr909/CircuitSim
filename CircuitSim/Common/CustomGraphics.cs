@@ -2,7 +2,7 @@
 using System.Drawing.Drawing2D;
 
 namespace Circuit {
-    class CustomGraphics {
+    public class CustomGraphics {
         static readonly StringFormat mAlignLeft = new StringFormat() {
             Alignment = StringAlignment.Near,
             LineAlignment = StringAlignment.Center

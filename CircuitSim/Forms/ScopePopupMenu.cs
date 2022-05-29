@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit {
-    enum SCOPE_MENU_ITEM {
+    public enum SCOPE_MENU_ITEM {
         DOCK,
         UNDOCK,
         REMOVE_SCOPE,
@@ -19,7 +19,7 @@ namespace Circuit {
         PROPERTIES
     }
 
-    class ScopePopupMenu {
+    public class ScopePopupMenu {
         List<ToolStripMenuItem> mMenuItems;
         ToolStripMenuItem mRemoveScope;
         ToolStripMenuItem mMaxScale;

@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using Circuit.Elements.Active;
 
 namespace Circuit {
-    enum SCOPE_MENU {
+    public enum SCOPE_MENU {
         MAX_SCALE,
         MANUAL_SCALE,
 

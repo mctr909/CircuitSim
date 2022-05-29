@@ -9,7 +9,7 @@ using Circuit.Elements.Passive;
 using Circuit.Elements.Active;
 
 namespace Circuit {
-    class Scope {
+    public class Scope {
         #region CONST
         /* bunch of other flags go here, see dump() */
         const int FLAG_PLOTS = 4096;  /* new-style dump with multiple plots */

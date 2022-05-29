@@ -5,7 +5,7 @@ using Circuit.Elements.Input;
 using Circuit.Elements.Output;
 
 namespace Circuit.Elements {
-    abstract class BaseUI : Editable {
+    public abstract class BaseUI : Editable {
         static BaseUI mMouseElmRef = null;
         public static CustomGraphics Context;
         public BaseElement Elm;

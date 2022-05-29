@@ -5,7 +5,7 @@ using Circuit.Elements;
 using Circuit.Elements.Passive;
 
 namespace Circuit {
-    class Adjustable {
+    public class Adjustable {
         /* index of value in getEditInfo() list that this slider controls */
         public int EditItem { get; private set; }
 

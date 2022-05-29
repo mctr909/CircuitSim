@@ -13,7 +13,7 @@ namespace Circuit {
         static void Main() {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new CircuitSim());
+            Application.Run(new CirSimForm());
         }
     }
 }

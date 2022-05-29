@@ -13,7 +13,7 @@ using Circuit.Elements.Gate;
 using Circuit.Elements.Custom;
 
 namespace Circuit {
-    enum MENU_ITEM {
+    public enum MENU_ITEM {
         OPEN_NEW,
         OPEN_FILE,
         SAVE_FILE,
@@ -39,7 +39,7 @@ namespace Circuit {
         SEPARATE_ALL
     }
 
-    enum ELEMENTS {
+    public enum ELEMENTS {
         INVALID,
         SCOPE,
 
@@ -177,7 +177,7 @@ namespace Circuit {
         #endregion
     }
 
-    enum DUMP_ID {
+    public enum DUMP_ID {
         INVALID = 0,
         OPAMP = 'a',
         BOX = 'b',
@@ -250,7 +250,7 @@ namespace Circuit {
         SRAM = 413,
     }
 
-    class MenuItems {
+    public class MenuItems {
         CirSimForm mSim;
         List<ToolStripMenuItem> mMainMenuItems = new List<ToolStripMenuItem>();
         Font menuFont = new Font("Segoe UI", 9.0f);

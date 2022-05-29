@@ -7,7 +7,7 @@ using Circuit.Elements;
 using Circuit.Elements.Passive;
 
 namespace Circuit {
-    enum ELEMENT_MENU_ITEM {
+    public enum ELEMENT_MENU_ITEM {
         CUT,
         COPY,
         DUPLICATE,
@@ -20,7 +20,7 @@ namespace Circuit {
         VIEW_IN_FLOAT_SCOPE
     }
 
-    class ElementPopupMenu {
+    public class ElementPopupMenu {
         List<ToolStripMenuItem> mMenuItems;
         ToolStripMenuItem mEdit;
         ToolStripMenuItem mScope;
