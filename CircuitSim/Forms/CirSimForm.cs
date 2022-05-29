@@ -1049,7 +1049,8 @@ namespace Circuit {
         }
 
         string dumpCircuit() {
-            CustomLogicModel.clearDumpedFlags();
+            // Todo: CustomLogicModel
+            //CustomLogicModel.clearDumpedFlags();
             // Todo: CustomCompositeModel
             //CustomCompositeModel.ClearDumpedFlags();
             DiodeModel.ClearDumpedFlags();
@@ -1082,10 +1083,6 @@ namespace Circuit {
                 var adj = Adjustables[i];
                 dump += "38 " + adj.Dump() + "\n";
             }
-            if (Hint.Type != -1) {
-                dump += "h " + Hint.Type + " " + Hint.Item1 + " " +
-                Hint.Item2 + "\n";
-            }
 
             return dump;
         }
@@ -1109,7 +1106,6 @@ namespace Circuit {
                     ce.Delete();
                 }
                 ElmList.Clear();
-                Hint.Type = -1;
                 ControlPanel.Reset();
                 mScopeCount = 0;
                 mLastIterTime = 0;
@@ -1146,16 +1142,13 @@ namespace Circuit {
                             mScopes[mScopeCount++] = sc;
                             break;
                         }
-                        if (tint == 'h') {
-                            readHint(st);
-                            break;
-                        }
                         if (tint == '$') {
                             readOptions(st);
                             break;
                         }
                         if (tint == '!') {
-                            CustomLogicModel.undumpModel(st);
+                            // Todo: CustomLogicModel
+                            //CustomLogicModel.undumpModel(st);
                             break;
                         }
                         if (tint == '%' || tint == '?') {
@@ -1222,12 +1215,6 @@ namespace Circuit {
             }
             // TODO: readCircuit
             //AudioInputElm.clearCache();  /* to save memory */
-        }
-
-        void readHint(StringTokenizer st) {
-            Hint.Type = st.nextTokenInt();
-            Hint.Item1 = st.nextTokenInt();
-            Hint.Item2 = st.nextTokenInt();
         }
 
         void readOptions(StringTokenizer st) {
@@ -1830,7 +1817,8 @@ namespace Circuit {
 
         string copyOfSelectedElms() {
             string r = "";
-            CustomLogicModel.clearDumpedFlags();
+            // Todo: CustomLogicModel
+            //CustomLogicModel.clearDumpedFlags();
             // Todo: CustomCompositeModel
             //CustomCompositeModel.ClearDumpedFlags();
             DiodeModel.ClearDumpedFlags();

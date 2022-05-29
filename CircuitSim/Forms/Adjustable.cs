@@ -44,7 +44,7 @@ namespace Circuit {
             EditItem = st.nextTokenInt();
             MinValue = st.nextTokenDouble();
             MaxValue = st.nextTokenDouble();
-            SliderText = CustomLogicModel.unescape(st.nextToken());
+            SliderText = Utils.Unescape(st.nextToken());
         }
 
         public void CreateSlider() {
@@ -110,7 +110,7 @@ namespace Circuit {
                 + " " + EditItem
                 + " " + MinValue
                 + " " + MaxValue
-                + " " + CustomLogicModel.escape(SliderText);
+                + " " + Utils.Escape(SliderText);
         }
     }
 }

@@ -157,9 +157,6 @@
     <Compile Include="Common\Diode.cs" />
     <Compile Include="Common\DiodeModel.cs" />
     <Compile Include="Forms\ElementPopupMenu.cs" />
-    <Compile Include="Forms\InputDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Forms\ScopePopupMenu.cs" />
     <Compile Include="MenuItems.cs" />
     <Compile Include="Forms\SliderDialog.cs">
@@ -169,12 +166,10 @@
     <Compile Include="Common\Circuit.cs" />
     <Compile Include="Common\Expr.cs" />
     <Compile Include="Common\FFT.cs" />
-    <Compile Include="Common\Hint.cs" />
     <Compile Include="Common\Node.cs" />
     <Compile Include="Forms\ScopePropertiesDialog.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Common\CustomLogicModel.cs" />
     <Compile Include="Forms\ScrollValuePopup.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -190,10 +185,10 @@
     <Compile Include="Elements\Passive\GroundUI.cs" />
     <Compile Include="Elements\Input\VoltageUI.cs" />
     <Compile Include="Elements\Passive\WireUI.cs" />
-    <Compile Include="CircuitSim.cs">
+    <Compile Include="Forms\CircuitSim.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CircuitSim.Designer.cs">
+    <Compile Include="Forms\CircuitSim.Designer.cs">
       <DependentUpon>CircuitSim.cs</DependentUpon>
     </Compile>
     <Compile Include="Elements\Passive\InductorUI.cs" />
@@ -204,7 +199,7 @@
     <Compile Include="Elements\Passive\ResistorUI.cs" />
     <Compile Include="Common\Storage.cs" />
     <Compile Include="Shortcut.cs" />
-    <EmbeddedResource Include="CircuitSim.resx">
+    <EmbeddedResource Include="Forms\CircuitSim.resx">
       <DependentUpon>CircuitSim.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

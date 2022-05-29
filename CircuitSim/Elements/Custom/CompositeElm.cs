@@ -188,7 +188,7 @@ namespace Circuit.Elements.Custom {
                 if (stIn != null) {
                     var tint = newce.DumpType;
                     string dumpedCe = stIn.nextToken();
-                    dumpedCe = CustomLogicModel.unescape(dumpedCe);
+                    dumpedCe = Utils.Unescape(dumpedCe);
                     var stCe = new StringTokenizer(dumpedCe, "_");
                     // TODO: CompositeElm loadComposite
                     //int flags = stCe.nextTokenInt();

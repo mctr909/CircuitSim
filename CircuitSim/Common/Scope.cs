@@ -403,7 +403,7 @@ namespace Circuit {
                 x += " " + CirSim.Sim.LocateElm(p.Elm) + " " + p.Value;
             }
             if (Text != null) {
-                x += " " + CustomLogicModel.escape(Text);
+                x += " " + Utils.Escape(Text);
             }
             return x;
         }
@@ -458,7 +458,7 @@ namespace Circuit {
                 }
             }
             if (Text != null) {
-                Text = CustomLogicModel.unescape(Text);
+                Text = Utils.Unescape(Text);
             }
             mFlags = flags;
         }

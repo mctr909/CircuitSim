@@ -6,13 +6,10 @@ using Circuit.Elements.Passive;
 
 namespace Circuit {
     class ScrollValuePopup : Form {
-        static readonly double[] E24 = {
-            1.0, 1.1, 1.2, 1.3,
-            1.5, 1.6, 1.8, 2.0,
-            2.2, 2.4, 2.7, 3.0,
-            3.3, 3.6, 3.9, 4.3,
-            4.7, 5.1, 5.6, 6.2,
-            6.8, 7.5, 8.2, 9.1
+        static readonly double[] E12 = {
+            1.0, 1.2, 1.5, 1.8,
+            2.2, 2.7, 3.3, 3.9,
+            4.7, 5.6, 6.8, 8.2
         };
 
         double[] mValues;
@@ -46,20 +43,24 @@ namespace Circuit {
                 mPnlV.Left = 4;
                 mPnlV.Top = 4;
                 int ofsY = 0;
+
                 /* label */
-                mLabels = new Label() { Text = "---" };
-                mLabels.AutoSize = true;
-                mLabels.Left = 4;
-                mLabels.Top = ofsY;
+                mLabels = new Label() {
+                    Text = "---",
+                    AutoSize = true,
+                    Left = 4,
+                    Top = ofsY
+                };
                 mPnlV.Controls.Add(mLabels);
                 ofsY += mLabels.Height;
+
                 /* trbValue */
                 mTrbValue = new TrackBar() {
                     Minimum = 0,
                     Maximum = mNValues - 1,
                     SmallChange = 1,
                     LargeChange = 1,
-                    TickFrequency = mNValues / 24,
+                    TickFrequency = mNValues / 12,
                     TickStyle = TickStyle.TopLeft,
                     Width = 300,
                     Height = 21,
@@ -100,7 +101,7 @@ namespace Circuit {
 
         void setupValues() {
             if (mMyElm is ResistorUI) {
-                mMinPow = 0;
+                mMinPow = -2;
                 mMaxPow = 6;
                 mUnit = "Ω";
             }
@@ -114,11 +115,13 @@ namespace Circuit {
                 mMaxPow = 0;
                 mUnit = "H";
             }
-            mValues = new double[2 + (mMaxPow - mMinPow) * 24];
+            var valDiv = 12;
+            var valArr = E12;
+            mValues = new double[2 + (mMaxPow - mMinPow) * valDiv];
             int ptr = 0;
             for (int i = mMinPow; i <= mMaxPow; i++) {
-                for (int j = 0; j < ((i != mMaxPow) ? 24 : 1); j++, ptr++) {
-                    mValues[ptr] = Math.Pow(10.0, i) * E24[j];
+                for (int j = 0; j < ((i != mMaxPow) ? valDiv : 1); j++, ptr++) {
+                    mValues[ptr] = Math.Pow(10.0, i) * valArr[j];
                 }
             }
             mNValues = ptr;
@@ -143,9 +146,6 @@ namespace Circuit {
             }
             mName = mInfo.Name;
             mLastIdx = mCurrentIdx;
-            /*for (int i = 0; i < nvalues; i++) {
-                Console.WriteLine("i=" + i + " values=" + values[i] + " current? " + (i == currentidx));
-            }*/
         }
 
         void setupLabels() {

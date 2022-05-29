@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 
 namespace Circuit {
     enum E_SCALE {
@@ -151,6 +152,49 @@ namespace Circuit {
             InterpPoint(a, b, ref ret[3], ctr + h2 / len, -hs);
             InterpPoint(a, b, ref ret[4], ctr - h1 / len, -hs);
             InterpPoint(a, b, ref ret[5], ctr - h1 / len, hs);
+        }
+
+        public static string Escape(string s) {
+            if (s.Length == 0) {
+                return "\\0";
+            }
+            return s.Replace("\\", "\\\\")
+                .Replace("\n", "\\n")
+                .Replace("+", "\\p")
+                .Replace("=", "\\q")
+                .Replace("#", "\\h")
+                .Replace("&", "\\a")
+                .Replace("\r", "\\r")
+                .Replace(" ", "\\s");
+        }
+
+        public static string Unescape(string s) {
+            if (s == "\\0") {
+                return "";
+            }
+            for (int i = 0; i < s.Length; i++) {
+                if (s.ElementAt(i) == '\\') {
+                    char c = s.ElementAt(i + 1);
+                    if (c == 'n') {
+                        s = s.Substring(0, i) + "\n" + s.Substring(i + 2);
+                    } else if (c == 'r') {
+                        s = s.Substring(0, i) + "\r" + s.Substring(i + 2);
+                    } else if (c == 's') {
+                        s = s.Substring(0, i) + " " + s.Substring(i + 2);
+                    } else if (c == 'p') {
+                        s = s.Substring(0, i) + "+" + s.Substring(i + 2);
+                    } else if (c == 'q') {
+                        s = s.Substring(0, i) + "=" + s.Substring(i + 2);
+                    } else if (c == 'h') {
+                        s = s.Substring(0, i) + "#" + s.Substring(i + 2);
+                    } else if (c == 'a') {
+                        s = s.Substring(0, i) + "&" + s.Substring(i + 2);
+                    } else {
+                        s = s.Substring(0, i) + s.Substring(i + 1);
+                    }
+                }
+            }
+            return s;
         }
 
         public static string VoltageText(double v) {

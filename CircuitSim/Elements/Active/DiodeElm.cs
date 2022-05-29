@@ -24,7 +24,7 @@ namespace Circuit.Elements.Active {
             double zvoltage = 0;
             if (model) {
                 try {
-                    mModelName = CustomLogicModel.unescape(st.nextToken());
+                    mModelName = Utils.Unescape(st.nextToken());
                 } catch { }
             } else {
                 if (forwardDrop) {
@@ -74,12 +74,12 @@ namespace Circuit.Elements.Active {
         }
 
         public override void CirDoStep() {
-            mDiode.DoStep(Volts[0] - Volts[mDiodeEndNode]);
+            mDiode.CirDoStep(Volts[0] - Volts[mDiodeEndNode]);
         }
 
         public override void CirSetNodeVoltage(int n, double c) {
             Volts[n] = c;
-            mCurrent = mDiode.CalculateCurrent(Volts[0] - Volts[mDiodeEndNode]);
+            mCurrent = mDiode.CirCalculateCurrent(Volts[0] - Volts[mDiodeEndNode]);
         }
 
         public override void CirStepFinished() {

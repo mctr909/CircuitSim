@@ -18,14 +18,14 @@ namespace Circuit.Elements.Custom {
         public TextUI(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
             mSize = int.Parse(st.nextToken());
             mText = st.nextToken();
-            mText = CustomLogicModel.unescape(mText);
+            mText = Utils.Unescape(mText);
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.TEXT; } }
 
         protected override string dump() {
             mFlags |= FLAG_ESCAPE;
-            return mSize + " " + CustomLogicModel.escape(mText);
+            return mSize + " " + Utils.Escape(mText);
         }
 
         public override double Distance(double x, double y) {

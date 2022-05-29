@@ -13,7 +13,7 @@ namespace Circuit.Elements.Output {
 
         public LabeledNodeElm(StringTokenizer st) : base() {
             Text = st.nextToken();
-            Text = CustomLogicModel.unescape(Text);
+            Text = Utils.Unescape(Text);
         }
 
         public override int PostCount { get { return 1; } }

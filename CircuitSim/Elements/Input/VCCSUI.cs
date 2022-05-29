@@ -23,7 +23,7 @@ namespace Circuit.Elements.Input {
         protected override string dump() {
             var ce = (VCCSElm)Elm;
             var baseStr = base.dump();
-            return baseStr + " " + ce.InputCount + " " + CustomLogicModel.escape(ce.ExprString);
+            return baseStr + " " + ce.InputCount + " " + Utils.Escape(ce.ExprString);
         }
 
         public override void Draw(CustomGraphics g) {

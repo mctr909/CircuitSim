@@ -40,7 +40,7 @@ namespace Circuit.Elements.Active {
         protected override string dump() {
             mFlags |= FLAG_MODEL;
             var ce = (DiodeElm)Elm;
-            return ReferenceName + " " + CustomLogicModel.escape(ce.mModelName);
+            return ReferenceName + " " + Utils.Escape(ce.mModelName);
         }
 
         public override void UpdateModels() {

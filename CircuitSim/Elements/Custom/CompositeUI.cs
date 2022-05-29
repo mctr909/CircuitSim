@@ -28,9 +28,9 @@ namespace Circuit.Elements.Custom {
                 var rg = new Regex("[A-Za-z0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+ ");
                 var rgstring = rg.Replace(tstring, "", 1).Replace(" ", "_"); /* remove unused tint x1 y1 x2 y2 coords for internal components */
                 if ("" == dumpStr) {
-                    dumpStr = CustomLogicModel.escape(rgstring);
+                    dumpStr = Utils.Escape(rgstring);
                 } else {
-                    dumpStr = string.Join(" ", dumpStr, CustomLogicModel.escape(rgstring));
+                    dumpStr = string.Join(" ", dumpStr, Utils.Escape(rgstring));
                 }
             }
             return dumpStr;
@@ -53,9 +53,9 @@ namespace Circuit.Elements.Custom {
                 var rg = new Regex("[A-Za-z0-9]+ 0 0 0 0 0 ");
                 tstring = rg.Replace(tstring, "", 1).Replace(" ", "_"); /* remove unused tint x1 y1 x2 y2 coords for internal components */
                 if ("" == dumpStr) {
-                    dumpStr = CustomLogicModel.escape(tstring);
+                    dumpStr = Utils.Escape(tstring);
                 } else {
-                    dumpStr = string.Join(" ", dumpStr, CustomLogicModel.escape(tstring));
+                    dumpStr = string.Join(" ", dumpStr, Utils.Escape(tstring));
                 }
             }
             return dumpStr;

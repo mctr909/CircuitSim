@@ -209,10 +209,10 @@ namespace Circuit.Elements.Active {
             }
 
             if (DoBodyDiode) {
-                mDiodeB1.DoStep(Pnp * (Volts[BodyTerminal] - Volts[V_S]));
-                DiodeCurrent1 = mDiodeB1.CalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[V_S])) * Pnp;
-                mDiodeB2.DoStep(Pnp * (Volts[BodyTerminal] - Volts[V_D]));
-                DiodeCurrent2 = mDiodeB2.CalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[V_D])) * Pnp;
+                mDiodeB1.CirDoStep(Pnp * (Volts[BodyTerminal] - Volts[V_S]));
+                DiodeCurrent1 = mDiodeB1.CirCalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[V_S])) * Pnp;
+                mDiodeB2.CirDoStep(Pnp * (Volts[BodyTerminal] - Volts[V_D]));
+                DiodeCurrent2 = mDiodeB2.CirCalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[V_D])) * Pnp;
             } else {
                 DiodeCurrent1 = DiodeCurrent2 = 0;
             }

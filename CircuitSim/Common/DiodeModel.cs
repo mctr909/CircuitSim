@@ -181,7 +181,7 @@ namespace Circuit {
         }
 
         public static void UndumpModel(StringTokenizer st) {
-            string name = CustomLogicModel.unescape(st.nextToken());
+            string name = Utils.Unescape(st.nextToken());
             var dm = getModelWithName(name);
             dm.undump(st);
         }
@@ -260,7 +260,7 @@ namespace Circuit {
 
         public string Dump() {
             Dumped = true;
-            return "34 " + CustomLogicModel.escape(Name)
+            return "34 " + Utils.Escape(Name)
                 + " " + flags
                 + " " + SaturationCurrent
                 + " " + SeriesResistance

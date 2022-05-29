@@ -14,44 +14,44 @@ namespace Circuit {
         int[] mNodes;
 
         /* The diode's "scale voltage", the voltage increase which will raise current by a factor of e. */
-        double vscale;
+        double mVscale;
         /* The multiplicative equivalent of dividing by vscale (for speed). */
-        double vdcoef;
+        double mVdCoef;
         /* User-specified diode parameters for Zener voltage. */
-        double zvoltage;
+        double mZvoltage;
 
         /* The diode current's scale factor, calculated from the user-specified forward voltage drop. */
-        double leakage;
+        double mLeakage;
 
         /* Voltage offset for Zener breakdown exponential, calculated from user-specified Zener voltage. */
-        double zoffset;
+        double mZoffset;
 
         /* Critical voltages for limiting the normal diode and Zener breakdown exponentials. */
-        double vcrit;
-        double vzcrit;
-        double lastvoltdiff;
+        double mVcrit;
+        double mVzCrit;
+        double mLastVoltDiff;
 
         public Diode() {
             mNodes = new int[2];
         }
 
         public void Setup(DiodeModel model) {
-            leakage = model.SaturationCurrent;
-            zvoltage = model.BreakdownVoltage;
-            vscale = model.VScale;
-            vdcoef = model.VdCoef;
+            mLeakage = model.SaturationCurrent;
+            mZvoltage = model.BreakdownVoltage;
+            mVscale = model.VScale;
+            mVdCoef = model.VdCoef;
 
             /* critical voltage for limiting; current is vscale/sqrt(2) at this voltage */
-            vcrit = vscale * Math.Log(vscale / (Math.Sqrt(2) * leakage));
+            mVcrit = mVscale * Math.Log(mVscale / (Math.Sqrt(2) * mLeakage));
             /* translated, *positive* critical voltage for limiting in Zener breakdown region;
              * limitstep() uses this with translated voltages in an analogous fashion to vcrit. */
-            vzcrit = VT * Math.Log(VT / (Math.Sqrt(2) * leakage));
-            if (zvoltage == 0) {
-                zoffset = 0;
+            mVzCrit = VT * Math.Log(VT / (Math.Sqrt(2) * mLeakage));
+            if (mZvoltage == 0) {
+                mZoffset = 0;
             } else {
                 /* calculate offset which will give us 5mA at zvoltage */
                 double i = -0.005;
-                zoffset = zvoltage - Math.Log(-(1 + i / leakage)) / VZ_COEF;
+                mZoffset = mZvoltage - Math.Log(-(1 + i / mLeakage)) / VZ_COEF;
             }
         }
 
@@ -60,7 +60,7 @@ namespace Circuit {
         }
 
         public void Reset() {
-            lastvoltdiff = 0;
+            mLastVoltDiff = 0;
         }
 
         public void Stamp(int n0, int n1) {
@@ -70,17 +70,17 @@ namespace Circuit {
             Circuit.StampNonLinear(mNodes[1]);
         }
 
-        public void DoStep(double voltdiff) {
+        public void CirDoStep(double voltdiff) {
             /* used to have 0.1 here, but needed 0.01 for peak detector */
-            if (0.01 < Math.Abs(voltdiff - lastvoltdiff)) {
+            if (0.01 < Math.Abs(voltdiff - mLastVoltDiff)) {
                 Circuit.Converged = false;
             }
-            voltdiff = limitStep(voltdiff, lastvoltdiff);
-            lastvoltdiff = voltdiff;
+            voltdiff = limitStep(voltdiff, mLastVoltDiff);
+            mLastVoltDiff = voltdiff;
 
             /* To prevent a possible singular matrix or other numeric issues, put a tiny conductance
              * in parallel with each P-N junction. */
-            double gmin = leakage * 0.01;
+            double gmin = mLeakage * 0.01;
             if (Circuit.SubIterations > 100) {
                 /* if we have trouble converging, put a conductance in parallel with the diode.
                  * Gradually increase the conductance value for each iteration. */
@@ -90,16 +90,15 @@ namespace Circuit {
                 }
             }
 
-            if (voltdiff >= 0 || zvoltage == 0) {
+            if (voltdiff >= 0 || mZvoltage == 0) {
                 /* regular diode or forward-biased zener */
-                double eval = Math.Exp(voltdiff * vdcoef);
-                double geq = vdcoef * leakage * eval + gmin;
-                double nc = (eval - 1) * leakage - geq * voltdiff;
+                double eval = Math.Exp(voltdiff * mVdCoef);
+                double geq = mVdCoef * mLeakage * eval + gmin;
+                double nc = (eval - 1) * mLeakage - geq * voltdiff;
                 Circuit.StampConductance(mNodes[0], mNodes[1], geq);
                 Circuit.StampCurrentSource(mNodes[0], mNodes[1], nc);
             } else {
                 /* Zener diode */
-
                 /* For reverse-biased Zener diodes, mimic the Zener breakdown curve with an
                  * exponential similar to the ideal Shockley curve. (The real breakdown curve
                  * isn't a simple exponential, but this approximation should be OK.) */
@@ -111,14 +110,14 @@ namespace Circuit {
                  * nc is I(Vd) + I'(Vd)*(-Vd)
                  */
 
-                double geq = leakage * (
-                    vdcoef * Math.Exp(voltdiff * vdcoef)
-                    + VZ_COEF * Math.Exp((-voltdiff - zoffset) * VZ_COEF)
+                double geq = mLeakage * (
+                    mVdCoef * Math.Exp(voltdiff * mVdCoef)
+                    + VZ_COEF * Math.Exp((-voltdiff - mZoffset) * VZ_COEF)
                 ) + gmin;
 
-                double nc = leakage * (
-                    Math.Exp(voltdiff * vdcoef)
-                    - Math.Exp((-voltdiff - zoffset) * VZ_COEF)
+                double nc = mLeakage * (
+                    Math.Exp(voltdiff * mVdCoef)
+                    - Math.Exp((-voltdiff - mZoffset) * VZ_COEF)
                     - 1
                 ) + geq * (-voltdiff);
 
@@ -127,13 +126,13 @@ namespace Circuit {
             }
         }
 
-        public double CalculateCurrent(double voltdiff) {
-            if (voltdiff >= 0 || zvoltage == 0) {
-                return leakage * (Math.Exp(voltdiff * vdcoef) - 1);
+        public double CirCalculateCurrent(double voltdiff) {
+            if (voltdiff >= 0 || mZvoltage == 0) {
+                return mLeakage * (Math.Exp(voltdiff * mVdCoef) - 1);
             }
-            return leakage * (
-                Math.Exp(voltdiff * vdcoef)
-                - Math.Exp((-voltdiff - zoffset) * VZ_COEF)
+            return mLeakage * (
+                Math.Exp(voltdiff * mVdCoef)
+                - Math.Exp((-voltdiff - mZoffset) * VZ_COEF)
                 - 1
             );
         }
@@ -143,47 +142,47 @@ namespace Circuit {
             double oo = vnew;
 
             /* check new voltage; has current changed by factor of e^2? */
-            if (vnew > vcrit && Math.Abs(vnew - vold) > (vscale + vscale)) {
+            if (vnew > mVcrit && Math.Abs(vnew - vold) > (mVscale + mVscale)) {
                 if (vold > 0) {
-                    arg = 1 + (vnew - vold) / vscale;
+                    arg = 1 + (vnew - vold) / mVscale;
                     if (arg > 0) {
                         /* adjust vnew so that the current is the same
                          * as in linearized model from previous iteration.
                          * current at vnew = old current * arg */
-                        vnew = vold + vscale * Math.Log(arg);
+                        vnew = vold + mVscale * Math.Log(arg);
                     } else {
-                        vnew = vcrit;
+                        vnew = mVcrit;
                     }
                 } else {
                     /* adjust vnew so that the current is the same
                      * as in linearized model from previous iteration.
                      * (1/vscale = slope of load line) */
-                    vnew = vscale * Math.Log(vnew / vscale);
+                    vnew = mVscale * Math.Log(vnew / mVscale);
                 }
                 Circuit.Converged = false;
                 /*Console.WriteLine(vnew + " " + oo + " " + vold);*/
-            } else if (vnew < 0 && zoffset != 0) {
+            } else if (vnew < 0 && mZoffset != 0) {
                 /* for Zener breakdown, use the same logic but translate the values,
                  * and replace the normal values with the Zener-specific ones to
                  * account for the steeper exponential of our Zener breakdown curve. */
-                vnew = -vnew - zoffset;
-                vold = -vold - zoffset;
+                vnew = -vnew - mZoffset;
+                vold = -vold - mZoffset;
 
-                if (vnew > vzcrit && Math.Abs(vnew - vold) > (VT + VT)) {
+                if (vnew > mVzCrit && Math.Abs(vnew - vold) > (VT + VT)) {
                     if (vold > 0) {
                         arg = 1 + (vnew - vold) / VT;
                         if (arg > 0) {
                             vnew = vold + VT * Math.Log(arg);
                             /*Console.WriteLine(oo + " " + vnew);*/
                         } else {
-                            vnew = vzcrit;
+                            vnew = mVzCrit;
                         }
                     } else {
                         vnew = VT * Math.Log(vnew / VT);
                     }
                     Circuit.Converged = false;
                 }
-                vnew = -(vnew + zoffset);
+                vnew = -(vnew + mZoffset);
             }
             return vnew;
         }

@@ -194,16 +194,6 @@ namespace Circuit {
                     info[0] = "t = " + Utils.TimeText(Time);
                     info[1] = "time step = " + Utils.TimeText(ControlPanel.TimeStep);
                 }
-                if (Hint.Type != -1) {
-                    int infoIdx;
-                    for (infoIdx = 0; info[infoIdx] != null; infoIdx++) ;
-                    var s = Hint.getHint(ElmList);
-                    if (s == null) {
-                        Hint.Type = -1;
-                    } else {
-                        info[infoIdx] = s;
-                    }
-                }
 
                 /* count lines of data */
                 {
