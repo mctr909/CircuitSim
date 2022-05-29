@@ -1,6 +1,6 @@
 ﻿namespace Circuit.Elements {
     abstract class BaseElement {
-        protected static bool comparePair(int x1, int x2, int y1, int y2) {
+        protected static bool ComparePair(int x1, int x2, int y1, int y2) {
             return (x1 == y1 && x2 == y2) || (x1 == y2 && x2 == y1);
         }
 
@@ -8,21 +8,20 @@
             AllocNodes();
         }
 
-        #region [variable]
-        public double CurCount;
         protected double mCurrent;
         protected int mVoltSource;
-        #endregion
 
         #region [property]
+        public abstract int PostCount { get; }
+
+        public double CurCount { get; set; }
+
         public int[] Nodes { get; protected set; }
 
         /// <summary>
         /// voltages at each node
         /// </summary>
         public double[] Volts { get; protected set; }
-
-        public abstract int PostCount { get; }
 
         /// <summary>
         /// number of voltage sources this element needs
@@ -102,35 +101,6 @@
             return VoltageDiff;
         }
 
-        public virtual void CirStartIteration() { }
-
-        /// <summary>
-        /// stamp matrix values for non-linear elements
-        /// </summary>
-        public virtual void CirDoStep() { }
-
-        public virtual void CirStepFinished() { }
-
-        /// <summary>
-        /// set current for voltage source vn to c.
-        /// vn will be the same value as in a previous call to setVoltageSource(n, vn)
-        /// </summary>
-        /// <param name="vn"></param>
-        /// <param name="c"></param>
-        public virtual void CirSetCurrent(int vn, double c) { mCurrent = c; }
-
-        /// <summary>
-        /// set voltage of x'th node, called by simulator logic
-        /// </summary>
-        /// <param name="n"></param>
-        /// <param name="c"></param>
-        public virtual void CirSetNodeVoltage(int n, double c) {
-            if (Volts.Length <= n) {
-                return;
-            }
-            Volts[n] = c;
-        }
-
         /// <summary>
         /// stamp matrix values for linear elements.
         /// for non-linear elements, use this to stamp values that don't change each iteration,
@@ -179,6 +149,35 @@
         public virtual bool AnaHasGroundConnection(int n1) { return false; }
 
         public virtual void AnaShorted() { }
+
+        public virtual void CirStartIteration() { }
+
+        /// <summary>
+        /// stamp matrix values for non-linear elements
+        /// </summary>
+        public virtual void CirDoStep() { }
+
+        public virtual void CirStepFinished() { }
+
+        /// <summary>
+        /// set current for voltage source vn to c.
+        /// vn will be the same value as in a previous call to setVoltageSource(n, vn)
+        /// </summary>
+        /// <param name="vn"></param>
+        /// <param name="c"></param>
+        public virtual void CirSetCurrent(int vn, double c) { mCurrent = c; }
+
+        /// <summary>
+        /// set voltage of x'th node, called by simulator logic
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="c"></param>
+        public virtual void CirSetNodeVoltage(int n, double c) {
+            if (Volts.Length <= n) {
+                return;
+            }
+            Volts[n] = c;
+        }
         #endregion
     }
 }

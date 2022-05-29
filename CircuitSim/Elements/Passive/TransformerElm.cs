@@ -62,10 +62,10 @@ namespace Circuit.Elements.Passive {
         }
 
         public override bool GetConnection(int n1, int n2) {
-            if (comparePair(n1, n2, 0, 2)) {
+            if (ComparePair(n1, n2, 0, 2)) {
                 return true;
             }
-            if (comparePair(n1, n2, 1, 3)) {
+            if (ComparePair(n1, n2, 1, 3)) {
                 return true;
             }
             return false;

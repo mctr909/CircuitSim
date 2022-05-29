@@ -34,10 +34,10 @@ namespace Circuit.Elements.Input {
         }
 
         public override bool GetConnection(int n1, int n2) {
-            if (comparePair(0, 1, n1, n2)) {
+            if (ComparePair(0, 1, n1, n2)) {
                 return true;
             }
-            if (comparePair(2, 3, n1, n2)) {
+            if (ComparePair(2, 3, n1, n2)) {
                 return true;
             }
             return false;

@@ -47,7 +47,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override bool GetConnection(int n1, int n2) {
-            return comparePair(InputCount, InputCount + 1, n1, n2);
+            return ComparePair(InputCount, InputCount + 1, n1, n2);
         }
 
         public override bool AnaHasGroundConnection(int n1) {
