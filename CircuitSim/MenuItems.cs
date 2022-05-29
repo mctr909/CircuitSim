@@ -17,6 +17,7 @@ namespace Circuit {
         OPEN_NEW,
         OPEN_FILE,
         SAVE_FILE,
+        OVERWRITE,
         CREATE_MODULE,
         DC_ANALYSIS,
         PRINT,
@@ -374,7 +375,7 @@ namespace Circuit {
             addMenuItem(fileMenuBar, "開く(O)", MENU_ITEM.OPEN_FILE, new SHORTCUT(Keys.O));
             addMenuItem(fileMenuBar, "再読み込み(R)", MENU_ITEM.RECOVER, new SHORTCUT(Keys.None));
             fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addMenuItem(fileMenuBar, "上書き保存(S)", MENU_ITEM.SAVE_FILE, new SHORTCUT(Keys.S));
+            addMenuItem(fileMenuBar, "上書き保存(S)", MENU_ITEM.OVERWRITE, new SHORTCUT(Keys.S));
             addMenuItem(fileMenuBar, "名前を付けて保存(A)", MENU_ITEM.SAVE_FILE, new SHORTCUT(Keys.None));
             fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addMenuItem(fileMenuBar, "モジュールを作成(M)", MENU_ITEM.CREATE_MODULE, new SHORTCUT(Keys.None));

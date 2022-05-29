@@ -239,8 +239,11 @@ namespace Circuit {
                 writeRecoveryToStorage();
                 readRecovery();
                 break;
+            case MENU_ITEM.OVERWRITE:
+                doSaveFile(true);
+                break;
             case MENU_ITEM.SAVE_FILE:
-                doSaveFile();
+                doSaveFile(false);
                 break;
             case MENU_ITEM.CREATE_MODULE:
                 doCreateSubcircuit();
@@ -1169,20 +1172,31 @@ namespace Circuit {
             PushUndo();
             var fs = new StreamReader(open.FileName);
             var data = fs.ReadToEnd();
+            Text = open.FileName;
             fs.Close();
             fs.Dispose();
             readCircuit(data);
         }
 
-        void doSaveFile() {
-            var save = new SaveFileDialog();
-            save.Filter = "テキストファイル(*.txt)|*.txt";
-            save.ShowDialog();
-            if (string.IsNullOrEmpty(save.FileName) || !Directory.Exists(Path.GetDirectoryName(save.FileName))) {
-                return;
+        void doSaveFile(bool overWrite) {
+            var filePath = "";
+            if (overWrite) {
+                filePath = Text;
             }
+
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) {
+                var save = new SaveFileDialog();
+                save.Filter = "テキストファイル(*.txt)|*.txt";
+                save.ShowDialog();
+                if (string.IsNullOrEmpty(save.FileName) || !Directory.Exists(Path.GetDirectoryName(save.FileName))) {
+                    return;
+                }
+                filePath = save.FileName;
+                Text = filePath;
+            }
+
             string dump = dumpCircuit();
-            var fs = new StreamWriter(save.FileName);
+            var fs = new StreamWriter(filePath);
             fs.Write(dump);
             fs.Close();
             fs.Dispose();
