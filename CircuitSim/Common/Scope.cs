@@ -416,7 +416,7 @@ namespace Circuit {
                 return;
             }
 
-            var ce = CirSim.Sim.getElm(e);
+            var ce = CirSim.Sim.GetElm(e);
             SetElm(ce);
             Speed = st.nextTokenInt();
             var value = st.nextTokenEnum<VAL>();
@@ -443,7 +443,7 @@ namespace Circuit {
                     for (int i = 0; i != sz; i++) {
                         var eleNum = st.nextTokenInt();
                         var val = st.nextTokenEnum<VAL>();
-                        var elm = CirSim.Sim.getElm(eleNum);
+                        var elm = CirSim.Sim.GetElm(eleNum);
                         mPlots.Add(new ScopePlot(elm, val));
                     }
                     while (st.hasMoreTokens()) {

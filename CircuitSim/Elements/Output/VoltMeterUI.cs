@@ -87,7 +87,7 @@ namespace Circuit.Elements.Output {
                     s = Utils.UnitText(ce.Frequency, "Hz");
                     break;
                 case VoltMeterElm.TP_PER:
-                    s = "percent:" + ce.Period + " " + ControlPanel.TimeStep + " " + CirSim.Sim.Time + " " + CirSim.Sim.getIterCount();
+                    s = "percent:" + ce.Period + " " + ControlPanel.TimeStep + " " + CirSim.Sim.Time + " " + ControlPanel.IterCount;
                     break;
                 case VoltMeterElm.TP_PWI:
                     s = Utils.UnitText(ce.PulseWidth, "S");

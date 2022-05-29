@@ -148,7 +148,6 @@
     <Compile Include="Elements\Passive\TransformerElm.cs" />
     <Compile Include="Elements\Passive\TransformerUI.cs" />
     <Compile Include="Elements\Passive\WireElm.cs" />
-    <Compile Include="Forms\CirSimMain.cs" />
     <Compile Include="Forms\CirSimVariable.cs" />
     <Compile Include="Common\CustomGraphics.cs" />
     <Compile Include="Common\Scope.cs" />

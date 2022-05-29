@@ -40,7 +40,7 @@ namespace Circuit {
             if (e == -1) {
                 return;
             }
-            UI = sim.getElm(e);
+            UI = sim.GetElm(e);
             EditItem = st.nextTokenInt();
             MinValue = st.nextTokenDouble();
             MaxValue = st.nextTokenDouble();

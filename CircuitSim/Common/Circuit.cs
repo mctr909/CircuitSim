@@ -286,7 +286,7 @@ namespace Circuit {
             mNodeMap = new Dictionary<Point, NodeMapEntry>();
             mWireInfoList = new List<WireInfo>();
             for (int i = 0; i != mSim.ElmCount; i++) {
-                var ce = mSim.getElm(i);
+                var ce = mSim.GetElm(i);
                 if (!(ce is WireUI)) {
                     continue;
                 }
@@ -424,7 +424,7 @@ namespace Circuit {
                     bool bad = false;
                     var cn = entry.Key;
                     for (int j = 0; j != mSim.ElmCount && !bad; j++) {
-                        var ce = mSim.getElm(j);
+                        var ce = mSim.GetElm(j);
                         /* does this post intersect elm's bounding box? */
                         if (!ce.BoundingBox.Contains(cn.X, cn.Y)) {
                             continue;
@@ -629,7 +629,7 @@ namespace Circuit {
             if (debug) Console.WriteLine("ac1");
             /* look for voltage or ground element */
             for (int i = 0; i != mSim.ElmCount; i++) {
-                var ce = mSim.getElm(i);
+                var ce = mSim.GetElm(i);
                 if (ce is GroundUI) {
                     gotGround = true;
                     break;
@@ -665,7 +665,7 @@ namespace Circuit {
             /* allocate nodes and voltage sources */
             LabeledNodeElm.ResetNodeList();
             for (int i = 0; i != mSim.ElmCount; i++) {
-                var ce = mSim.getElm(i);
+                var ce = mSim.GetElm(i);
                 var cee = ce.Elm;
                 int inodes = cee.InternalNodeCount;
                 int ivs = cee.VoltageSourceCount;
@@ -747,7 +747,7 @@ namespace Circuit {
 
             /* determine if circuit is nonlinear */
             for (int i = 0; i != mSim.ElmCount; i++) {
-                var ce = mSim.getElm(i);
+                var ce = mSim.GetElm(i);
                 var cee = ce.Elm;
                 if (cee.NonLinear) {
                     CircuitNonLinear = true;
@@ -775,7 +775,7 @@ namespace Circuit {
 
             /* stamp linear circuit elements */
             for (int i = 0; i != mSim.ElmCount; i++) {
-                var cee = mSim.getElm(i).Elm;
+                var cee = mSim.GetElm(i).Elm;
                 cee.AnaStamp();
             }
             if (debug) Console.WriteLine("ac4");
@@ -787,7 +787,7 @@ namespace Circuit {
             while (changed) {
                 changed = false;
                 for (int i = 0; i != mSim.ElmCount; i++) {
-                    var cee = mSim.getElm(i).Elm;
+                    var cee = mSim.GetElm(i).Elm;
                     if (cee is WireElm) {
                         continue;
                     }
@@ -831,7 +831,7 @@ namespace Circuit {
             if (debug) Console.WriteLine("ac5");
 
             for (int i = 0; i != mSim.ElmCount; i++) {
-                var ce = mSim.getElm(i);
+                var ce = mSim.GetElm(i);
                 var cee = ce.Elm;
 
                 /* look for inductors with no current path */
@@ -938,7 +938,7 @@ namespace Circuit {
             bool gotVoltageSource = false;
             ShowResistanceInVoltageSources = true;
             for (int i = 0; i != mSim.ElmCount; i++) {
-                var ce = mSim.getElm(i);
+                var ce = mSim.GetElm(i);
                 if (ce is VoltageUI) {
                     if (gotVoltageSource) {
                         ShowResistanceInVoltageSources = false;

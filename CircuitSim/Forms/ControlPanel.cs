@@ -15,6 +15,15 @@ namespace Circuit {
         public static CheckBox ChkPrintable { get; private set; }
         public static CheckBox ChkCrossHair { get; private set; }
 
+        public static double IterCount {
+            get {
+                if (TrbSpeed.Value == 0) {
+                    return 0;
+                }
+                return 1.0 * TrbSpeed.Value / TrbSpeed.Maximum;
+            }
+        }
+
         public static double TimeStep {
             get { return mTimeStep; }
             set {
