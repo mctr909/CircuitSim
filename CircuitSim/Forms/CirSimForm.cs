@@ -150,8 +150,6 @@ namespace Circuit {
         bool mDumpMatrix;
         #endregion
 
-        CirSimForm sim;
-
         public CirSimForm() {
             InitializeComponent();
 
