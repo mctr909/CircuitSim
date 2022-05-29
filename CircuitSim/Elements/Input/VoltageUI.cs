@@ -96,7 +96,7 @@ namespace Circuit.Elements.Input {
 
             updateDotCount();
 
-            if (CirSim.Sim.DragElm != this) {
+            if (CirSimForm.Sim.DragElm != this) {
                 if (elm.waveform == VoltageElm.WAVEFORM.DC) {
                     drawDots(mPost1, mPost2, Elm.CurCount);
                 } else {
@@ -233,7 +233,7 @@ namespace Circuit.Elements.Input {
                 }
             }
             if (elm.waveform == VoltageElm.WAVEFORM.DC && elm.Current != 0 && Circuit.ShowResistanceInVoltageSources) {
-                arr[i++] = "(R = " + Utils.UnitText(elm.mMaxVoltage / elm.Current, CirSim.OHM_TEXT) + ")";
+                arr[i++] = "(R = " + Utils.UnitText(elm.mMaxVoltage / elm.Current, CirSimForm.OHM_TEXT) + ")";
             }
             arr[i++] = "P = " + Utils.UnitText(elm.Power, "W");
         }

@@ -14,15 +14,13 @@ using Circuit.Elements.Output;
 using Circuit.Elements.Custom;
 
 namespace Circuit {
-    partial class CirSim {
-        public CirSim() {
+    partial class CirSimForm {
+        public CirSimForm(Form parent) {
             Sim = this;
+            mParent = parent;
             mMenuItems = new MenuItems(this);
             ControlPanel.Init(this);
-        }
 
-        public void Init(Form parent) {
-            mParent = parent;
             mParent.KeyPreview = true;
             mParent.KeyDown += onKeyDown;
             mParent.KeyUp += onKeyUp;
@@ -42,7 +40,7 @@ namespace Circuit {
             mMenuBar = new MenuStrip();
             {
                 mMenuItems.ComposeMainMenu(mMenuBar);
-                parent.Controls.Add(mMenuBar);
+                mParent.Controls.Add(mMenuBar);
             }
 
             mPixCir = new PictureBox() { Left = 0, Top = mMenuBar.Height };
@@ -71,7 +69,7 @@ namespace Circuit {
                         setCanvasSize();
                     }
                 });
-                parent.Controls.Add(mSplitContainer);
+                mParent.Controls.Add(mSplitContainer);
             }
 
             readCircuit("");

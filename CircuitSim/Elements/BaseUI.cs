@@ -220,7 +220,7 @@ namespace Circuit.Elements {
         /// </summary>
         protected void doDots() {
             updateDotCount();
-            if (CirSim.Sim.DragElm != this) {
+            if (CirSimForm.Sim.DragElm != this) {
                 drawDots(mPost1, mPost2, Elm.CurCount);
             }
         }
@@ -232,10 +232,10 @@ namespace Circuit.Elements {
         /// <param name="cc"></param>
         /// <returns></returns>
         protected double updateDotCount(double cur, double cc) {
-            if (!CirSim.Sim.IsRunning) {
+            if (!CirSimForm.Sim.IsRunning) {
                 return cc;
             }
-            double cadd = cur * CirSim.CurrentMult;
+            double cadd = cur * CirSimForm.CurrentMult;
             cadd %= 8;
             return cc + cadd;
         }
@@ -339,10 +339,10 @@ namespace Circuit.Elements {
             /* we normally do this in updateCircuit() now because the logic is more complicated.
              * we only handle the case where we have to draw all the posts.  That happens when
              * this element is selected or is being created */
-            if (CirSim.Sim.DragElm == null && !NeedsHighlight) {
+            if (CirSimForm.Sim.DragElm == null && !NeedsHighlight) {
                 return;
             }
-            if (CirSim.Sim.MouseMode == CirSim.MOUSE_MODE.DRAG_ROW || CirSim.Sim.MouseMode == CirSim.MOUSE_MODE.DRAG_COLUMN) {
+            if (CirSimForm.Sim.MouseMode == CirSimForm.MOUSE_MODE.DRAG_ROW || CirSimForm.Sim.MouseMode == CirSimForm.MOUSE_MODE.DRAG_COLUMN) {
                 return;
             }
             for (int i = 0; i != Elm.PostCount; i++) {
@@ -371,13 +371,13 @@ namespace Circuit.Elements {
         /// <param name="b"></param>
         /// <param name="pos"></param>
         protected void drawDots(Point a, Point b, double pos) {
-            if ((!CirSim.Sim.IsRunning) || pos == 0 || !ControlPanel.ChkShowDots.Checked) {
+            if ((!CirSimForm.Sim.IsRunning) || pos == 0 || !ControlPanel.ChkShowDots.Checked) {
                 return;
             }
             var dx = b.X - a.X;
             var dy = b.Y - a.Y;
             var dr = Math.Sqrt(dx * dx + dy * dy);
-            int ds = CirSim.GRID_SIZE * 2;
+            int ds = CirSimForm.GRID_SIZE * 2;
             pos %= ds;
             if (pos < 0) {
                 pos += ds;
@@ -546,8 +546,8 @@ namespace Circuit.Elements {
             int ny = P1.Y + dy;
             int nx2 = P2.X + dx;
             int ny2 = P2.Y + dy;
-            for (int i = 0; i != CirSim.Sim.ElmCount; i++) {
-                var ce = CirSim.Sim.GetElm(i);
+            for (int i = 0; i != CirSimForm.Sim.ElmCount; i++) {
+                var ce = CirSimForm.Sim.GetElm(i);
                 if (ce.P1.X == nx && ce.P1.Y == ny && ce.P2.X == nx2 && ce.P2.Y == ny2) {
                     return false;
                 }
@@ -658,8 +658,8 @@ namespace Circuit.Elements {
             if (mMouseElmRef == this) {
                 mMouseElmRef = null;
             }
-            if (null != CirSim.Sim) {
-                CirSim.Sim.DeleteSliders(this);
+            if (null != CirSimForm.Sim) {
+                CirSimForm.Sim.DeleteSliders(this);
             }
         }
 
@@ -670,7 +670,7 @@ namespace Circuit.Elements {
         /// </summary>
         /// <param name="pos"></param>
         public virtual void Drag(Point pos) {
-            pos = CirSim.Sim.SnapGrid(pos);
+            pos = CirSimForm.Sim.SnapGrid(pos);
             if (mNoDiagonal) {
                 if (Math.Abs(P1.X - pos.X) < Math.Abs(P1.Y - pos.Y)) {
                     pos.X = P1.X;

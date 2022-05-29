@@ -136,7 +136,7 @@ namespace Circuit {
                 bool removed = false;
                 for (int i = 0; i != mPlots.Count; i++) {
                     var plot = mPlots[i];
-                    if (CirSim.Sim.LocateElm(plot.Elm) < 0) {
+                    if (CirSimForm.Sim.LocateElm(plot.Elm) < 0) {
                         mPlots.RemoveAt(i--);
                         removed = true;
                     } else {
@@ -152,10 +152,10 @@ namespace Circuit {
         public bool CursorInSettingsWheel {
             get {
                 return mShowSettingsWheel
-                    && BoundingBox.X <= CirSim.Sim.MouseCursorX
-                    && BoundingBox.Y + BoundingBox.Height - 24 <= CirSim.Sim.MouseCursorY
-                    && CirSim.Sim.MouseCursorX <= BoundingBox.X + 24
-                    && CirSim.Sim.MouseCursorY <= BoundingBox.Y + BoundingBox.Height;
+                    && BoundingBox.X <= CirSimForm.Sim.MouseCursorX
+                    && BoundingBox.Y + BoundingBox.Height - 24 <= CirSimForm.Sim.MouseCursorY
+                    && CirSimForm.Sim.MouseCursorX <= BoundingBox.X + 24
+                    && CirSimForm.Sim.MouseCursorY <= BoundingBox.Y + BoundingBox.Height;
             }
         }
         #endregion
@@ -361,7 +361,7 @@ namespace Circuit {
         public void Properties(Form parent) {
             var fm = new ScopePropertiesDialog(this);
             fm.Show(parent);
-            CirSim.DialogShowing = fm;
+            CirSimForm.DialogShowing = fm;
         }
 
         public void SpeedUp() {
@@ -386,7 +386,7 @@ namespace Circuit {
                 return null;
             }
             var flags = mFlags;
-            var eno = CirSim.Sim.LocateElm(elm);
+            var eno = CirSimForm.Sim.LocateElm(elm);
             if (eno < 0) {
                 return null;
             }
@@ -400,7 +400,7 @@ namespace Circuit {
                 + " " + mPlots.Count;
             for (int i = 0; i < mPlots.Count; i++) {
                 var p = mPlots[i];
-                x += " " + CirSim.Sim.LocateElm(p.Elm) + " " + p.Value;
+                x += " " + CirSimForm.Sim.LocateElm(p.Elm) + " " + p.Value;
             }
             if (Text != null) {
                 x += " " + Utils.Escape(Text);
@@ -416,7 +416,7 @@ namespace Circuit {
                 return;
             }
 
-            var ce = CirSim.Sim.GetElm(e);
+            var ce = CirSimForm.Sim.GetElm(e);
             SetElm(ce);
             Speed = st.nextTokenInt();
             var value = st.nextTokenEnum<VAL>();
@@ -443,7 +443,7 @@ namespace Circuit {
                     for (int i = 0; i != sz; i++) {
                         var eleNum = st.nextTokenInt();
                         var val = st.nextTokenEnum<VAL>();
-                        var elm = CirSim.Sim.GetElm(eleNum);
+                        var elm = CirSimForm.Sim.GetElm(eleNum);
                         mPlots.Add(new ScopePlot(elm, val));
                     }
                     while (st.hasMoreTokens()) {
@@ -551,7 +551,7 @@ namespace Circuit {
             for (int si = 0; si != mVisiblePlots.Count; si++) {
                 var plot = mVisiblePlots[si];
                 _calcPlotScale(plot);
-                if (CirSim.Sim.ScopeSelected == -1 && plot.Elm != null && plot.Elm.IsMouseElm) {
+                if (CirSimForm.Sim.ScopeSelected == -1 && plot.Elm != null && plot.Elm.IsMouseElm) {
                     mSomethingSelected = true;
                 }
                 mReduceRange = true;
@@ -588,9 +588,9 @@ namespace Circuit {
             _drawCrosshairs(g);
 
             g.SetTransform(new Matrix(
-                CirSim.Sim.Transform[0], CirSim.Sim.Transform[1],
-                CirSim.Sim.Transform[2], CirSim.Sim.Transform[3],
-                CirSim.Sim.Transform[4], CirSim.Sim.Transform[5]
+                CirSimForm.Sim.Transform[0], CirSimForm.Sim.Transform[1],
+                CirSimForm.Sim.Transform[2], CirSimForm.Sim.Transform[3],
+                CirSimForm.Sim.Transform[4], CirSimForm.Sim.Transform[5]
             ));
 
             if (5 < mPlots[0].Pointer && !LockScale) {
@@ -707,15 +707,15 @@ namespace Circuit {
 
         /* find selected plot */
         void _checkForSelection() {
-            if (CirSim.Sim.DialogIsShowing()) {
+            if (CirSimForm.Sim.DialogIsShowing()) {
                 return;
             }
-            if (!BoundingBox.Contains(CirSim.Sim.MouseCursorX, CirSim.Sim.MouseCursorY)) {
+            if (!BoundingBox.Contains(CirSimForm.Sim.MouseCursorX, CirSimForm.Sim.MouseCursorY)) {
                 SelectedPlot = -1;
                 return;
             }
             int ipa = mPlots[0].StartIndex(BoundingBox.Width);
-            int ip = (CirSim.Sim.MouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
+            int ip = (CirSimForm.Sim.MouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
             int maxy = (BoundingBox.Height - 1) / 2;
             int y = maxy;
             int i;
@@ -726,7 +726,7 @@ namespace Circuit {
                 var plot = mVisiblePlots[i];
                 var scale = mScale;
                 int maxvy = (int)(maxy / scale * plot.MaxValues[ip]);
-                int dist = Math.Abs(CirSim.Sim.MouseCursorY - (BoundingBox.Y + y - maxvy));
+                int dist = Math.Abs(CirSimForm.Sim.MouseCursorY - (BoundingBox.Y + y - maxvy));
                 if (dist < bestdist) {
                     bestdist = dist;
                     best = i;
@@ -744,10 +744,10 @@ namespace Circuit {
         }
 
         void _drawCrosshairs(CustomGraphics g) {
-            if (CirSim.Sim.DialogIsShowing()) {
+            if (CirSimForm.Sim.DialogIsShowing()) {
                 return;
             }
-            if (!BoundingBox.Contains(CirSim.Sim.MouseCursorX, CirSim.Sim.MouseCursorY)) {
+            if (!BoundingBox.Contains(CirSimForm.Sim.MouseCursorX, CirSimForm.Sim.MouseCursorY)) {
                 return;
             }
             if (SelectedPlot < 0 && !ShowFFT) {
@@ -755,7 +755,7 @@ namespace Circuit {
             }
             var info = new string[4];
             int ipa = mPlots[0].StartIndex(BoundingBox.Width);
-            int ip = (CirSim.Sim.MouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
+            int ip = (CirSimForm.Sim.MouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
             int ct = 0;
             int maxy = (BoundingBox.Height - 1) / 2;
             int y = maxy;
@@ -764,14 +764,14 @@ namespace Circuit {
                 info[ct++] = plot.GetUnitText(plot.MaxValues[ip]);
                 int maxvy = (int)(mMainGridMult * (plot.MaxValues[ip] - mMainGridMid));
                 g.LineColor = plot.Color;
-                g.FillCircle(CirSim.Sim.MouseCursorX, BoundingBox.Y + y - maxvy, 2.5f);
+                g.FillCircle(CirSimForm.Sim.MouseCursorX, BoundingBox.Y + y - maxvy, 2.5f);
             }
             if (ShowFFT) {
                 double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * 2);
-                info[ct++] = Utils.UnitText(maxFrequency * (CirSim.Sim.MouseCursorX - BoundingBox.X) / BoundingBox.Width, "Hz");
+                info[ct++] = Utils.UnitText(maxFrequency * (CirSimForm.Sim.MouseCursorX - BoundingBox.X) / BoundingBox.Width, "Hz");
             }
             if (mVisiblePlots.Count > 0) {
-                double t = CirSim.Sim.Time - ControlPanel.TimeStep * Speed * (BoundingBox.X + BoundingBox.Width - CirSim.Sim.MouseCursorX);
+                double t = CirSimForm.Sim.Time - ControlPanel.TimeStep * Speed * (BoundingBox.X + BoundingBox.Width - CirSimForm.Sim.MouseCursorX);
                 info[ct++] = Utils.TimeText(t);
             }
 
@@ -784,9 +784,9 @@ namespace Circuit {
             }
 
             g.LineColor = CustomGraphics.WhiteColor;
-            g.DrawLine(CirSim.Sim.MouseCursorX, BoundingBox.Y, CirSim.Sim.MouseCursorX, BoundingBox.Y + BoundingBox.Height);
+            g.DrawLine(CirSimForm.Sim.MouseCursorX, BoundingBox.Y, CirSimForm.Sim.MouseCursorX, BoundingBox.Y + BoundingBox.Height);
 
-            int bx = CirSim.Sim.MouseCursorX;
+            int bx = CirSimForm.Sim.MouseCursorX;
             if (bx < szw / 2) {
                 bx = szw / 2;
             }
@@ -811,7 +811,7 @@ namespace Circuit {
             int y = maxy;
 
             var color = (mSomethingSelected) ? Color.FromArgb(0xA0, 0xA0, 0xA0) : plot.Color;
-            if (selected || (CirSim.Sim.ScopeSelected == -1 && plot.Elm.IsMouseElm)) {
+            if (selected || (CirSimForm.Sim.ScopeSelected == -1 && plot.Elm.IsMouseElm)) {
                 color = CustomGraphics.SelectColor;
             } else if (ControlPanel.ChkPrintable.Checked) {
                 color = CustomGraphics.GrayColor;
@@ -881,8 +881,8 @@ namespace Circuit {
                 }
 
                 /* vertical gridlines */
-                double tstart = CirSim.Sim.Time - ControlPanel.TimeStep * Speed * BoundingBox.Width;
-                double tx = CirSim.Sim.Time - (CirSim.Sim.Time % mGridStepX);
+                double tstart = CirSimForm.Sim.Time - ControlPanel.TimeStep * Speed * BoundingBox.Width;
+                double tx = CirSimForm.Sim.Time - (CirSimForm.Sim.Time % mGridStepX);
 
                 for (ll = 0; ; ll++) {
                     var tl = tx - mGridStepX * ll;

@@ -91,7 +91,7 @@ namespace Circuit {
 
         public new void Close() {
             base.Close();
-            CirSim.EditDialog = null;
+            CirSimForm.EditDialog = null;
         }
 
         public void EnterPressed() {
@@ -177,13 +177,13 @@ namespace Circuit {
 
                 /* update slider if any */
                 if (mElm is BaseUI) {
-                    var adj = CirSim.Sim.FindAdjustable((BaseUI)mElm, i);
+                    var adj = CirSimForm.Sim.FindAdjustable((BaseUI)mElm, i);
                     if (adj != null) {
                         adj.Value = ei.Value;
                     }
                 }
             }
-            CirSim.Sim.NeedAnalyze();
+            CirSimForm.Sim.NeedAnalyze();
         }
 
         void itemStateChanged(object sender) {
@@ -201,7 +201,7 @@ namespace Circuit {
                     if (ei.NewDialog) {
                         changed = true;
                     }
-                    CirSim.Sim.NeedAnalyze();
+                    CirSimForm.Sim.NeedAnalyze();
                 }
             }
             if (changed) {

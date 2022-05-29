@@ -206,13 +206,13 @@ namespace Circuit.Elements.Custom {
         }
 
         public override void Drag(Point pos) {
-            pos = CirSim.Sim.SnapGrid(pos);
+            pos = CirSimForm.Sim.SnapGrid(pos);
             if (pos.X < P1.X) {
                 pos.X = P1.X;
                 pos.Y = P1.Y;
             } else {
                 P1.Y = P2.Y = pos.Y;
-                P2.X = CirSim.Sim.SnapGrid(pos.X);
+                P2.X = CirSimForm.Sim.SnapGrid(pos.X);
             }
             SetPoints();
         }

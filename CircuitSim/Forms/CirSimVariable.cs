@@ -7,7 +7,7 @@ using Circuit.Elements;
 using Circuit.Elements.Passive;
 
 namespace Circuit {
-    partial class CirSim {
+    partial class CirSimForm {
         #region CONST
         public static readonly Font FONT_TEXT = new Font("Meiryo UI", 9.0f);
         public static readonly Brush BRUSH_TEXT = Brushes.Red;
@@ -39,7 +39,7 @@ namespace Circuit {
         #endregion
 
         #region Static Property
-        public static CirSim Sim { get; private set; } = null;
+        public static CirSimForm Sim { get; private set; } = null;
         public static ElementInfoDialog EditDialog { get; set; }
         public static ElementInfoDialog CustomLogicEditDialog { get; set; }
         public static ElementInfoDialog DiodeModelEditDialog { get; set; }

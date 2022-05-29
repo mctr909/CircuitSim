@@ -35,7 +35,7 @@ namespace Circuit {
             EditItem = item;
         }
 
-        public Adjustable(StringTokenizer st, CirSim sim) {
+        public Adjustable(StringTokenizer st, CirSimForm sim) {
             int e = st.nextTokenInt();
             if (e == -1) {
                 return;
@@ -70,21 +70,21 @@ namespace Circuit {
                 mSlider.ValueChanged += new EventHandler((s, e) => {
                     var trb = (TrackBar)s;
                     ((ResistorElm)UI.Elm).Resistance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
-                    CirSim.Sim.NeedAnalyze();
+                    CirSimForm.Sim.NeedAnalyze();
                 });
             }
             if (UI is CapacitorUI) {
                 mSlider.ValueChanged += new EventHandler((s, e) => {
                     var trb = (TrackBar)s;
                     ((CapacitorElm)UI.Elm).Capacitance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
-                    CirSim.Sim.NeedAnalyze();
+                    CirSimForm.Sim.NeedAnalyze();
                 });
             }
             if (UI is InductorUI) {
                 mSlider.ValueChanged += new EventHandler((s, e) => {
                     var trb = (TrackBar)s;
                     ((InductorElm)UI.Elm).Inductance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
-                    CirSim.Sim.NeedAnalyze();
+                    CirSimForm.Sim.NeedAnalyze();
                 });
             }
         }
@@ -95,18 +95,18 @@ namespace Circuit {
         }
 
         public void Execute() {
-            CirSim.Sim.NeedAnalyze();
+            CirSimForm.Sim.NeedAnalyze();
             if (mSettingValue) {
                 return;
             }
             var ei = UI.GetElementInfo(EditItem);
             ei.Value = Value;
             UI.SetElementValue(EditItem, ei);
-            CirSim.Sim.Repaint();
+            CirSimForm.Sim.Repaint();
         }
 
         public string Dump() {
-            return CirSim.Sim.LocateElm(UI)
+            return CirSimForm.Sim.LocateElm(UI)
                 + " " + EditItem
                 + " " + MinValue
                 + " " + MaxValue

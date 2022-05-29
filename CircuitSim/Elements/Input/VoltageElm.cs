@@ -77,16 +77,16 @@ namespace Circuit.Elements.Input {
 
         public override void CirStepFinished() {
             if (waveform == WAVEFORM.NOISE) {
-                mNoiseValue = (CirSim.Random.NextDouble() * 2 - 1) * mMaxVoltage + mBias;
+                mNoiseValue = (CirSimForm.Random.NextDouble() * 2 - 1) * mMaxVoltage + mBias;
             }
         }
 
         public virtual double getVoltage() {
-            if (waveform != WAVEFORM.DC && CirSim.Sim.DcAnalysisFlag) {
+            if (waveform != WAVEFORM.DC && CirSimForm.Sim.DcAnalysisFlag) {
                 return mBias;
             }
 
-            double t = 2 * Math.PI * CirSim.Sim.Time;
+            double t = 2 * Math.PI * CirSimForm.Sim.Time;
             double wt = t * mFrequency + mPhaseShift;
 
             switch (waveform) {

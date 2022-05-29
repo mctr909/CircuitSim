@@ -137,13 +137,13 @@ namespace Circuit.Elements.Passive {
             var ce = (ResistorElm)Elm;
             arr[0] = string.IsNullOrEmpty(ReferenceName) ? "抵抗" : ReferenceName;
             getBasicInfo(arr);
-            arr[3] = "R = " + Utils.UnitText(ce.Resistance, CirSim.OHM_TEXT);
+            arr[3] = "R = " + Utils.UnitText(ce.Resistance, CirSimForm.OHM_TEXT);
             arr[4] = "P = " + Utils.UnitText(ce.Power, "W");
         }
 
         public override string GetScopeText(Scope.VAL v) {
             var ce = (ResistorElm)Elm;
-            return "resistor, " + Utils.UnitText(ce.Resistance, CirSim.OHM_TEXT);
+            return "resistor, " + Utils.UnitText(ce.Resistance, CirSimForm.OHM_TEXT);
         }
 
         public override ElementInfo GetElementInfo(int n) {

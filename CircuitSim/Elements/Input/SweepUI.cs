@@ -62,7 +62,7 @@ namespace Circuit.Elements.Input {
                 tm = 2000 - tm;
             }
             double w = 1 + tm * 0.002;
-            if (CirSim.Sim.IsRunning) {
+            if (CirSimForm.Sim.IsRunning) {
                 w = 1 + 3 * (ce.Frequency - ce.MinF) / (ce.MaxF - ce.MinF);
             }
 
@@ -88,7 +88,7 @@ namespace Circuit.Elements.Input {
 
             drawPosts();
             ce.CurCount = updateDotCount(-ce.Current, ce.CurCount);
-            if (CirSim.Sim.DragElm != this) {
+            if (CirSimForm.Sim.DragElm != this) {
                 drawDots(mPost1, mLead1, ce.CurCount);
             }
         }

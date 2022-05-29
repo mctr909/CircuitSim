@@ -20,7 +20,7 @@ namespace Circuit {
         }
 
         #region private varidate
-        static CirSim mSim;
+        static CirSimForm mSim;
 
         static Dictionary<Point, NodeMapEntry> mNodeMap;
         static Dictionary<Point, int> mPostCountMap;
@@ -456,7 +456,7 @@ namespace Circuit {
             return NodeList[n];
         }
 
-        static public void SetSim(CirSim sim) {
+        static public void SetSim(CirSimForm sim) {
             mSim = sim;
         }
 

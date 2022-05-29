@@ -29,7 +29,7 @@ namespace Circuit {
         ToolStripMenuItem mSplit;
         ToolStripMenuItem mSlider;
 
-        public ElementPopupMenu(CirSim sim) {
+        public ElementPopupMenu(CirSimForm sim) {
             mMenuItems = new List<ToolStripMenuItem>();
             mMenuItems.Add(mEdit = new ToolStripMenuItem() { Text = "Edit..." });
             mEdit.Click += new EventHandler((s, e) => {

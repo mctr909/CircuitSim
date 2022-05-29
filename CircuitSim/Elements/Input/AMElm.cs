@@ -54,7 +54,7 @@ namespace Circuit.Elements.Input {
         }
 
         double getVoltage() {
-            double w = 2 * Math.PI * (CirSim.Sim.Time - mFreqTimeZero);
+            double w = 2 * Math.PI * (CirSimForm.Sim.Time - mFreqTimeZero);
             return (Math.Sin(w * SignalFreq + Phase) * Depth + 2 - Depth) / 2 * Math.Sin(w * CarrierFreq) * MaxVoltage;
         }
     }

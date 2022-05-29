@@ -68,10 +68,10 @@ namespace Circuit.Elements.Active {
             double x = 0;
             int vn = Circuit.NodeList.Count + mVoltSource;
             double dx = 0;
-            if (vd >= MaxOut / Gain && (mLastVd >= 0 || CirSim.Random.Next(4) == 1)) {
+            if (vd >= MaxOut / Gain && (mLastVd >= 0 || CirSimForm.Random.Next(4) == 1)) {
                 dx = 1e-4;
                 x = MaxOut - dx * MaxOut / Gain;
-            } else if (vd <= MinOut / Gain && (mLastVd <= 0 || CirSim.Random.Next(4) == 1)) {
+            } else if (vd <= MinOut / Gain && (mLastVd <= 0 || CirSimForm.Random.Next(4) == 1)) {
                 dx = 1e-4;
                 x = MinOut - dx * MinOut / Gain;
             } else {

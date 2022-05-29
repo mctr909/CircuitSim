@@ -49,7 +49,7 @@ namespace Circuit.Elements.Input {
             drawRail(g);
             drawPosts();
             Elm.CurCount = updateDotCount(-Elm.Current, Elm.CurCount);
-            if (CirSim.Sim.DragElm != this) {
+            if (CirSimForm.Sim.DragElm != this) {
                 drawDots(mPost1, mLead1, Elm.CurCount);
             }
         }

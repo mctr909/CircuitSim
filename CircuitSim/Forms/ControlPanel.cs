@@ -38,7 +38,7 @@ namespace Circuit {
         static double mTimeStep;
         static Panel mSliderPanel;
 
-        public static void Init(CirSim sim) {
+        public static void Init(CirSimForm sim) {
             int ofsY = 0;
             VerticalPanel = new Panel();
 

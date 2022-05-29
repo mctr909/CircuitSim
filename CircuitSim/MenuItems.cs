@@ -251,11 +251,11 @@ namespace Circuit {
     }
 
     class MenuItems {
-        CirSim mSim;
+        CirSimForm mSim;
         List<ToolStripMenuItem> mMainMenuItems = new List<ToolStripMenuItem>();
         Font menuFont = new Font("Segoe UI", 9.0f);
 
-        public MenuItems(CirSim sim) {
+        public MenuItems(CirSimForm sim) {
             mSim = sim;
         }
 

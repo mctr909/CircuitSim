@@ -43,7 +43,7 @@ namespace Circuit.Elements.Input {
             drawWaveform(g, mPost2);
             drawPosts();
             ce.CurCount = updateDotCount(-ce.Current, ce.CurCount);
-            if (CirSim.Sim.DragElm != this) {
+            if (CirSimForm.Sim.DragElm != this) {
                 drawDots(mPost1, mLead1, ce.CurCount);
             }
         }

@@ -38,7 +38,7 @@ namespace Circuit.Elements.Output {
             int hs = 8;
             setBbox(mPost1, mPost2, hs);
             bool selected = NeedsHighlight;
-            double len = (selected || CirSim.Sim.DragElm == this || mustShowVoltage()) ? 16 : mLen - 32;
+            double len = (selected || CirSimForm.Sim.DragElm == this || mustShowVoltage()) ? 16 : mLen - 32;
             calcLeads((int)len);
 
             if (selected) {
@@ -55,10 +55,10 @@ namespace Circuit.Elements.Output {
             }
             drawLead(mLead2, mPost2);
 
-            if (this == CirSim.Sim.PlotXElm) {
+            if (this == CirSimForm.Sim.PlotXElm) {
                 drawCenteredLText("X", mCenter, true);
             }
-            if (this == CirSim.Sim.PlotYElm) {
+            if (this == CirSimForm.Sim.PlotYElm) {
                 drawCenteredLText("Y", mCenter, true);
             }
 
@@ -87,7 +87,7 @@ namespace Circuit.Elements.Output {
                     s = Utils.UnitText(ce.Frequency, "Hz");
                     break;
                 case VoltMeterElm.TP_PER:
-                    s = "percent:" + ce.Period + " " + ControlPanel.TimeStep + " " + CirSim.Sim.Time + " " + ControlPanel.IterCount;
+                    s = "percent:" + ce.Period + " " + ControlPanel.TimeStep + " " + CirSimForm.Sim.Time + " " + ControlPanel.IterCount;
                     break;
                 case VoltMeterElm.TP_PWI:
                     s = Utils.UnitText(ce.PulseWidth, "S");

@@ -85,7 +85,7 @@ namespace Circuit.Elements.Passive {
             drawLead(mPlate2[0], mPlate2[1]);
 
             updateDotCount();
-            if (CirSim.Sim.DragElm != this) {
+            if (CirSimForm.Sim.DragElm != this) {
                 drawDots(mPost1, mLead1, ce.CurCount);
                 drawDots(mPost2, mLead2, -ce.CurCount);
             }
@@ -112,7 +112,7 @@ namespace Circuit.Elements.Passive {
         public override ElementInfo GetElementInfo(int n) {
             var ce = (CapacitorElm)Elm;
             if (n == 0) {
-                return new ElementInfo("静電容量(F)", ce.Capacitance, 0, 0);
+                return new ElementInfo("キャパシタンス(F)", ce.Capacitance, 0, 0);
             }
             if (n == 1) {
                 var ei = new ElementInfo("名前", 0, 0, 0);

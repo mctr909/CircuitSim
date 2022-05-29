@@ -75,8 +75,8 @@ namespace Circuit.Elements.Passive {
             mNameV = Math.Abs(mDiff.X) <= Math.Abs(mDiff.Y);
             if (mNameV) {
                 /* vertical */
-                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDiff.Y)
-                    * ((Math.Abs(mDiff.Y) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
+                myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(mDiff.Y)
+                    * ((Math.Abs(mDiff.Y) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
                 if (mDiff.Y != 0) {
                     mPost2.Y = mPost1.Y + myLen;
                     offset = (0 < mDiff.Y) ? mDiff.X : -mDiff.X;
@@ -84,14 +84,14 @@ namespace Circuit.Elements.Passive {
                 }
             } else {
                 /* horizontal */
-                myLen = 2 * CirSim.GRID_SIZE * Math.Sign(mDiff.X)
-                    * ((Math.Abs(mDiff.X) + 2 * CirSim.GRID_SIZE - 1) / (2 * CirSim.GRID_SIZE));
+                myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(mDiff.X)
+                    * ((Math.Abs(mDiff.X) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
                 mPost2.X = mPost1.X + myLen;
                 offset = (mDiff.X < 0) ? mDiff.Y : -mDiff.Y;
                 mPost2.Y = mPost1.Y;
             }
-            if (offset < CirSim.GRID_SIZE) {
-                offset = CirSim.GRID_SIZE;
+            if (offset < CirSimForm.GRID_SIZE) {
+                offset = CirSimForm.GRID_SIZE;
             }
             mLen = Utils.Distance(mPost1, mPost2);
 
@@ -156,7 +156,7 @@ namespace Circuit.Elements.Passive {
             ce.CurCount1 = updateDotCount(ce.Current1, ce.CurCount1);
             ce.CurCount2 = updateDotCount(ce.Current2, ce.CurCount2);
             ce.CurCount3 = updateDotCount(ce.Current3, ce.CurCount3);
-            if (CirSim.Sim.DragElm != this) {
+            if (CirSimForm.Sim.DragElm != this) {
                 drawDots(mPost1, mMidPoint, ce.CurCount1);
                 drawDots(mPost2, mMidPoint, ce.CurCount2);
                 drawDots(mPost3, mCorner2, ce.CurCount3);
@@ -202,8 +202,8 @@ namespace Circuit.Elements.Passive {
             var ce = (PotElm)Elm;
             arr[0] = "可変抵抗";
             arr[1] = "Vd = " + Utils.VoltageAbsText(ce.VoltageDiff);
-            arr[2] = "R1 = " + Utils.UnitText(ce.Resistance1, CirSim.OHM_TEXT);
-            arr[3] = "R2 = " + Utils.UnitText(ce.Resistance2, CirSim.OHM_TEXT);
+            arr[2] = "R1 = " + Utils.UnitText(ce.Resistance1, CirSimForm.OHM_TEXT);
+            arr[3] = "R2 = " + Utils.UnitText(ce.Resistance2, CirSimForm.OHM_TEXT);
             arr[4] = "I1 = " + Utils.CurrentAbsText(ce.Current1);
             arr[5] = "I2 = " + Utils.CurrentAbsText(ce.Current2);
         }
@@ -324,7 +324,7 @@ namespace Circuit.Elements.Passive {
 
         void execute() {
             SetPoints();
-            CirSim.Sim.NeedAnalyze();
+            CirSimForm.Sim.NeedAnalyze();
         }
     }
 }

@@ -255,7 +255,7 @@ namespace Circuit {
                 BreakdownVoltage = Math.Abs(ei.Value);
             }
             updateModel();
-            CirSim.Sim.UpdateModels();
+            CirSimForm.Sim.UpdateModels();
         }
 
         public string Dump() {

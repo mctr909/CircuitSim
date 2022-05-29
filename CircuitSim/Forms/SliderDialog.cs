@@ -11,7 +11,7 @@ namespace Circuit {
         const int barmax = 1000;
 
         BaseUI elm;
-        CirSim sim;
+        CirSimForm sim;
         Button applyButton;
         Button okButton;
         Button cancelButton;
@@ -20,7 +20,7 @@ namespace Circuit {
         Panel vp;
         Panel hp;
 
-        public SliderDialog(BaseUI ce, CirSim f) : base() {
+        public SliderDialog(BaseUI ce, CirSimForm f) : base() {
             Text = "Add Sliders";
             sim = f;
             elm = ce;
@@ -185,7 +185,7 @@ namespace Circuit {
 
         public void closeDialog() {
             Close();
-            CirSim.SliderDialog = null;
+            CirSimForm.SliderDialog = null;
         }
 
         void ctrlInsert(Panel p, Control ctrl) {

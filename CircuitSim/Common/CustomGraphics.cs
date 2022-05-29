@@ -142,6 +142,7 @@ namespace Circuit {
 
         public void DrawDashRectangle(int x, int y, int w, int h) {
             mPenLine.DashStyle = DashStyle.Dash;
+            mPenLine.DashPattern = new float[] { 3, 5 };
             mG.DrawRectangle(mPenLine, new Rectangle(x, y, w, h));
             mPenLine.DashStyle = DashStyle.Solid;
         }

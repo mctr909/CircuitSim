@@ -32,7 +32,7 @@ namespace Circuit {
         ToolStripMenuItem mUndock;
         ToolStripMenuItem mProperties;
 
-        public ScopePopupMenu(CirSim sim) {
+        public ScopePopupMenu(CirSimForm sim) {
             mMenuItems = new List<ToolStripMenuItem>();
             /* */
             mMenuItems.Add(mRemoveScope = new ToolStripMenuItem() { Text = "Remove Scope" });

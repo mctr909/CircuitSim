@@ -32,14 +32,14 @@ namespace Circuit.Elements.Active {
         }
 
         public override void Drag(Point pos) {
-            pos = CirSim.Sim.SnapGrid(pos);
+            pos = CirSimForm.Sim.SnapGrid(pos);
             if (Math.Abs(P1.X - pos.X) < Math.Abs(P1.Y - pos.Y)) {
                 pos.X = P1.X;
             } else {
                 pos.Y = P1.Y;
             }
             int q1 = Math.Abs(P1.X - pos.X) + Math.Abs(P1.Y - pos.Y);
-            int q2 = (q1 / 2) % CirSim.GRID_SIZE;
+            int q2 = (q1 / 2) % CirSimForm.GRID_SIZE;
             if (q2 != 0) {
                 return;
             }
