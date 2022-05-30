@@ -7,6 +7,7 @@ using System.Drawing.Drawing2D;
 using Circuit.Elements;
 using Circuit.Elements.Passive;
 using Circuit.Elements.Active;
+using Circuit.Forms;
 
 namespace Circuit {
     public class Scope {
@@ -52,6 +53,8 @@ namespace Circuit {
         bool mSomethingSelected;
         bool mMaxScale;
         bool mShowNegative;
+        bool mShowV;
+        bool mShowFFT;
         #endregion
 
         #region [public property]
@@ -82,19 +85,34 @@ namespace Circuit {
                 mScale = Math.Max(1e-4, value);
             }
         }
-
         public string Text { get; set; }
         public int SelectedPlot { get; private set; }
-
         public bool ShowMax { get; set; }
         public bool ShowMin { get; set; }
-        public bool ShowV { get; private set; }
-        public bool ShowScale { get; private set; }
-        public bool ShowFreq { get; private set; }
-        public bool LockScale { get; private set; }
-        public bool ShowFFT { get; private set; }
-        public bool LogSpectrum { get; private set; }
-        public bool ShowRMS { get; private set; }
+        public bool ShowScale { get; set; }
+        public bool ShowFreq { get; set; }
+        public bool ManualScale { get; set; }
+        public bool LogSpectrum { get; set; }
+        public bool ShowRMS { get; set; }
+        public bool ShowVoltage {
+            get { return mShowV; }
+            set {
+                mShowV = value;
+                if (mShowV && !mShowingVoltageAndMaybeCurrent) {
+                    _setValue(0);
+                }
+                _calcVisiblePlots();
+            }
+        }
+        public bool ShowFFT {
+            get { return mShowFFT; }
+            set {
+                mShowFFT = value;
+                if (!mShowFFT) {
+                    mFft = null;
+                }
+            }
+        }
 
         /* get scope element, returning null if there's more than one */
         public BaseUI SingleElm {
@@ -166,23 +184,6 @@ namespace Circuit {
                 return 0 < mPlots.Count && mPlots[0].Elm != null;
             }
         }
-        bool mShowVoltage {
-            set {
-                ShowV = value;
-                if (ShowV && !mShowingVoltageAndMaybeCurrent) {
-                    _setValue(0);
-                }
-                _calcVisiblePlots();
-            }
-        }
-        bool mShowFFT {
-            set {
-                ShowFFT = value;
-                if (!ShowFFT) {
-                    mFft = null;
-                }
-            }
-        }
 
         /* returns true if we have a plot of voltage and nothing else (except current).
         /* The default case is a plot of voltage and current, so we're basically checking if that case is true. */
@@ -226,26 +227,26 @@ namespace Circuit {
         }
         int mFlags {
             set {
-                ShowV = (value & 2) != 0;
+                mShowV = (value & 2) != 0;
                 ShowMax = (value & 4) == 0;
                 ShowFreq = (value & 8) != 0;
-                LockScale = (value & 16) != 0;
+                ManualScale = (value & 16) != 0;
                 ShowMin = (value & 256) != 0;
                 ShowScale = (value & 512) != 0;
-                mShowFFT = (value & 1024) != 0;
+                ShowFFT = (value & 1024) != 0;
                 mMaxScale = (value & 8192) != 0;
                 ShowRMS = (value & 16384) != 0;
                 LogSpectrum = (value & 65536) != 0;
             }
             get {
                 int flags
-                    = (ShowV ? 2 : 0)
+                    = (mShowV ? 2 : 0)
                     | (ShowMax ? 0 : 4)   /* showMax used to be always on */
                     | (ShowFreq ? 8 : 0)
-                    | (LockScale ? 16 : 0)
+                    | (ManualScale ? 16 : 0)
                     | (ShowMin ? 256 : 0)
                     | (ShowScale ? 512 : 0)
-                    | (ShowFFT ? 1024 : 0)
+                    | (mShowFFT ? 1024 : 0)
                     | (mMaxScale ? 8192 : 0)
                     | (ShowRMS ? 16384 : 0)
                     | (LogSpectrum ? 65536 : 0);
@@ -359,7 +360,7 @@ namespace Circuit {
         }
 
         public void Properties(Form parent) {
-            var fm = new ScopePropertiesDialog(this);
+            var fm = new ScopeProperties(this);
             fm.Show(parent);
             CirSimForm.DialogShowing = fm;
         }
@@ -473,53 +474,6 @@ namespace Circuit {
             return gsx;
         }
 
-        public void HandleMenu(SCOPE_MENU mi, bool state) {
-            switch (mi) {
-
-            case SCOPE_MENU.MAX_SCALE:
-                MaxScale();
-                break;
-            case SCOPE_MENU.MANUAL_SCALE:
-                LockScale = state;
-                break;
-
-            case SCOPE_MENU.SHOW_VOLTAGE:
-                mShowVoltage = state;
-                break;
-            case SCOPE_MENU.SHOW_SCALE:
-                ShowScale = state;
-                break;
-            case SCOPE_MENU.SHOW_PEAK:
-                ShowMax = state;
-                break;
-            case SCOPE_MENU.SHOW_NEG_PEAK:
-                ShowMin = state;
-                break;
-            case SCOPE_MENU.SHOW_FREQ:
-                ShowFreq = state;
-                break;
-            case SCOPE_MENU.SHOW_FFT:
-                mShowFFT = state;
-                break;
-            case SCOPE_MENU.LOG_SPECTRUM:
-                LogSpectrum = state;
-                break;
-            case SCOPE_MENU.SHOW_RMS:
-                ShowRMS = state;
-                break;
-
-            case SCOPE_MENU.SHOW_VBE:
-                _setValue(VAL.VBE);
-                break;
-            case SCOPE_MENU.SHOW_VBC:
-                _setValue(VAL.VBC);
-                break;
-            case SCOPE_MENU.SHOW_VCE:
-                _setValue(VAL.VCE);
-                break;
-            }
-        }
-
         public void Draw(CustomGraphics g) {
             if (mPlots.Count == 0) {
                 return;
@@ -537,7 +491,7 @@ namespace Circuit {
 
             g.SetTransform(new Matrix(1, 0, 0, 1, BoundingBox.X, BoundingBox.Y));
 
-            if (ShowFFT) {
+            if (mShowFFT) {
                 _drawFFTVerticalGridLines(g);
                 _drawFFT(g);
             }
@@ -567,7 +521,7 @@ namespace Circuit {
                 _calcMaxAndMin();
             }
 
-            if (ShowV) {
+            if (mShowV) {
                 /* draw volts on top (last), then current underneath, then everything else */
                 for (int i = 0; i != mVisiblePlots.Count; i++) {
                     if (i != SelectedPlot) {
@@ -593,7 +547,7 @@ namespace Circuit {
                 CirSimForm.Sim.Transform[4], CirSimForm.Sim.Transform[5]
             ));
 
-            if (5 < mPlots[0].Pointer && !LockScale) {
+            if (5 < mPlots[0].Pointer && !ManualScale) {
                 if (1e-4 < mScale && mReduceRange) {
                     mScale /= 2;
                 }
@@ -608,10 +562,10 @@ namespace Circuit {
             mScale = 0.1;
             Speed = 64;
             ShowMax = true;
-            ShowV = false;
-            ShowScale = ShowFreq = LockScale = ShowMin = false;
-            ShowFFT = false;
-            ShowV = true;
+            mShowV = false;
+            ShowScale = ShowFreq = ManualScale = ShowMin = false;
+            mShowFFT = false;
+            mShowV = true;
         }
 
         void _setValue(VAL val) {
@@ -631,7 +585,7 @@ namespace Circuit {
                 mPlots.Add(new ScopePlot(ce, 0));
             } else {
                 mPlots.Add(new ScopePlot(ce, val));
-                ShowV = true;
+                mShowV = true;
             }
             _calcVisiblePlots();
             ResetGraph();
@@ -643,7 +597,7 @@ namespace Circuit {
             int oc = 0;
             for (int i = 0; i != mPlots.Count; i++) {
                 var plot = mPlots[i];
-                if (ShowV) {
+                if (mShowV) {
                     mVisiblePlots.Add(plot);
                     plot.AssignColor(vc++);
                 } else {
@@ -676,7 +630,7 @@ namespace Circuit {
 
         /* adjust scale of a plot */
         void _calcPlotScale(ScopePlot plot) {
-            if (LockScale) {
+            if (ManualScale) {
                 return;
             }
             int ipa = plot.StartIndex(BoundingBox.Width);
@@ -750,7 +704,7 @@ namespace Circuit {
             if (!BoundingBox.Contains(CirSimForm.Sim.MouseCursorX, CirSimForm.Sim.MouseCursorY)) {
                 return;
             }
-            if (SelectedPlot < 0 && !ShowFFT) {
+            if (SelectedPlot < 0 && !mShowFFT) {
                 return;
             }
             var info = new string[4];
@@ -766,7 +720,7 @@ namespace Circuit {
                 g.LineColor = plot.Color;
                 g.FillCircle(CirSimForm.Sim.MouseCursorX, BoundingBox.Y + y - maxvy, 2.5f);
             }
-            if (ShowFFT) {
+            if (mShowFFT) {
                 double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * 2);
                 info[ct++] = Utils.UnitText(maxFrequency * (CirSimForm.Sim.MouseCursorX - BoundingBox.X) / BoundingBox.Width, "Hz");
             }
@@ -1193,7 +1147,7 @@ namespace Circuit {
             var plot = mVisiblePlots[0];
             if (ShowScale) {
                 string vScaleText = "";
-                if (mGridStepY != 0 && (!ShowV)) {
+                if (mGridStepY != 0 && (!mShowV)) {
                     vScaleText = " V=" + plot.GetUnitText(mGridStepY) + "/div";
                 }
                 _drawInfoText(g, "H=" + Utils.UnitText(mGridStepX, "s") + "/div" + vScaleText);

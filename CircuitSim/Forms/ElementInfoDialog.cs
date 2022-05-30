@@ -75,7 +75,7 @@ namespace Circuit {
 
         public void Show(int x, int y) {
             Visible = false;
-            FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            FormBorderStyle = FormBorderStyle.SizableToolWindow;
             Show();
 
             x -= Width / 2;

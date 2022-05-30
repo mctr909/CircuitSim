@@ -63,7 +63,7 @@ namespace Circuit.Elements.Custom {
                 ei.TextArea = new TextBox() {
                     Multiline = true,
                     Height = 100,
-                    Width = 150,
+                    Width = 250,
                     ScrollBars = ScrollBars.Vertical,
                     Text = mText
                 };

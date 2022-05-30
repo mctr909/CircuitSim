@@ -156,6 +156,12 @@
     <Compile Include="Common\DiodeModel.cs" />
     <Compile Include="Forms\ElementPopupMenu.cs" />
     <Compile Include="Forms\ScopePopupMenu.cs" />
+    <Compile Include="Forms\ScopeProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ScopeProperties.Designer.cs">
+      <DependentUpon>ScopeProperties.cs</DependentUpon>
+    </Compile>
     <Compile Include="MenuItems.cs" />
     <Compile Include="Forms\SliderDialog.cs">
       <SubType>Form</SubType>
@@ -165,9 +171,6 @@
     <Compile Include="Common\Expr.cs" />
     <Compile Include="Common\FFT.cs" />
     <Compile Include="Common\Node.cs" />
-    <Compile Include="Forms\ScopePropertiesDialog.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Forms\ScrollValuePopup.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -198,6 +201,9 @@
     <Compile Include="Shortcut.cs" />
     <EmbeddedResource Include="Forms\CirSimForm.resx">
       <DependentUpon>CirSimForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ScopeProperties.resx">
+      <DependentUpon>ScopeProperties.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

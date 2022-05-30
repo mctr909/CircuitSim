@@ -230,6 +230,7 @@ namespace Circuit {
         public void Performed(MENU_ITEM item) {
             switch (item) {
             case MENU_ITEM.OPEN_NEW:
+                Text = "";
                 readCircuit("");
                 writeRecoveryToStorage();
                 readRecovery();
