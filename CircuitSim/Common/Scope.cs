@@ -900,7 +900,7 @@ namespace Circuit {
         void _drawFFTVerticalGridLines(CustomGraphics g) {
             /* Draw x-grid lines and label the frequencies in the FFT that they point to. */
             int prevEnd = 0;
-            int divs = 20;
+            int divs = 40;
             double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * divs * 2);
             g.LineColor = Color.FromArgb(0x88, 0x00, 0x00);
             for (int i = 0; i < divs; i++) {
@@ -908,13 +908,13 @@ namespace Circuit {
                 if (x < prevEnd) {
                     continue;
                 }
-                string s = ((int)Math.Round(i * maxFrequency)) + "Hz";
+                string s = Utils.UnitText((int)Math.Round(i * maxFrequency), "Hz");
                 int sWidth = (int)Math.Ceiling(g.GetTextSize(s).Width);
                 prevEnd = x + sWidth + 4;
                 if (i > 0) {
                     g.DrawLine(x, 0, x, BoundingBox.Height);
                 }
-                g.DrawLeftText(s, x + 2, BoundingBox.Height - 12);
+                g.DrawLeftText(s, x, BoundingBox.Height - 12);
             }
         }
 
@@ -932,7 +932,7 @@ namespace Circuit {
                 int ii = (ptr - i + mScopePointCount) & (mScopePointCount - 1);
                 /* need to average max and min or else it could cause average of function to be > 0, which
                 /* produces spike at 0 Hz that hides rest of spectrum */
-                real[i] = .5 * (maxV[ii] + minV[ii]);
+                real[i] = 0.5 * (maxV[ii] + minV[ii]) * (0.5 - 0.5 * Math.Cos(2.0 * Math.PI * i / mScopePointCount));
                 imag[i] = 0;
             }
             mFft.Exec(real, imag);
@@ -945,7 +945,28 @@ namespace Circuit {
             }
             var prevX = 0.0f;
             g.LineColor = Color.Red;
-            if (!LogSpectrum) {
+            if (LogSpectrum) {
+                int y0 = 5;
+                var prevY = 0.0f;
+                double ymult = BoundingBox.Height / 100.0;
+                double val0 = mScale * ymult;
+                for (int i = 0; i < mScopePointCount / 2; i++) {
+                    var x = 2.0f * i * BoundingBox.Width / mScopePointCount;
+                    /* rect.width may be greater than or less than scopePointCount/2,
+                     * so x may be greater than or equal to prevX. */
+                    var mag = mFft.Magnitude(real[i], imag[i]);
+                    if (0 == mag) {
+                        mag = 1;
+                    }
+                    var val = 20 * Math.Log10(mag / maxM);
+                    var y = y0 - (float)(val * ymult - val0);
+                    if (x != prevX) {
+                        g.DrawLine(prevX, prevY, x, y);
+                    }
+                    prevY = y;
+                    prevX = x;
+                }
+            } else {
                 var prevHeight = 0.0f;
                 int y = (BoundingBox.Height - 1) - 12;
                 for (int i = 0; i < mScopePointCount / 2; i++) {
@@ -958,27 +979,6 @@ namespace Circuit {
                         g.DrawLine(prevX, y - prevHeight, x, y - height);
                     }
                     prevHeight = height;
-                    prevX = x;
-                }
-            } else {
-                int y0 = 5;
-                var prevY = 0.0f;
-                double ymult = BoundingBox.Height / 10;
-                double val0 = mScale * ymult;
-                for (int i = 0; i < mScopePointCount / 2; i++) {
-                    var x = 2.0f * i * BoundingBox.Width / mScopePointCount;
-                    /* rect.width may be greater than or less than scopePointCount/2,
-                     * so x may be greater than or equal to prevX. */
-                    var mag = mFft.Magnitude(real[i], imag[i]);
-                    if (0 == mag) {
-                        mag = 1;
-                    }
-                    var val = Math.Log(mag);
-                    var y = y0 - (float)(val * ymult - val0);
-                    if (x != prevX) {
-                        g.DrawLine(prevX, prevY, x, y);
-                    }
-                    prevY = y;
                     prevX = x;
                 }
             }
