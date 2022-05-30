@@ -13,7 +13,7 @@ namespace Circuit.Forms {
         public void Show(Form parent) {
             Visible = false;
             Show();
-            Left = parent.Left;
+            Left = parent.Left + parent.Width / 2 - Width;
             Top = parent.Bottom - Height;
             Visible = true;
         }

@@ -35,43 +35,43 @@ namespace Circuit {
         public ScopePopupMenu(CirSimForm sim) {
             mMenuItems = new List<ToolStripMenuItem>();
             /* */
-            mMenuItems.Add(mRemoveScope = new ToolStripMenuItem() { Text = "Remove Scope" });
+            mMenuItems.Add(mRemoveScope = new ToolStripMenuItem() { Text = "削除" });
             mRemoveScope.Click += new EventHandler((s, e) => {
                 sim.Performed(SCOPE_MENU_ITEM.REMOVE_SCOPE);
-            });
-            mMenuItems.Add(mDock = new ToolStripMenuItem() { Text = "Dock Scope" });
-            mDock.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.DOCK);
-            });
-            mMenuItems.Add(mUndock = new ToolStripMenuItem() { Text = "Undock Scope" });
-            mUndock.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.UNDOCK);
-            });
-            mMenuItems.Add(mMaxScale = new ToolStripMenuItem() { Text = "Max Scale" });
-            mMaxScale.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.MAX_SCALE);
-            });
-            mMenuItems.Add(mStack = new ToolStripMenuItem() { Text = "Stack" });
-            mStack.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.STACK);
-            });
-            mMenuItems.Add(mUnstack = new ToolStripMenuItem() { Text = "Unstack" });
-            mUnstack.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.UNSTACK);
-            });
-            mMenuItems.Add(mCombine = new ToolStripMenuItem() { Text = "Combine" });
-            mCombine.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.COMBINE);
             });
             mMenuItems.Add(mRemovePlot = new ToolStripMenuItem() { Text = "Remove Plot" });
             mRemovePlot.Click += new EventHandler((s, e) => {
                 sim.Performed(SCOPE_MENU_ITEM.REMOVE_PLOT);
             });
-            mMenuItems.Add(mReset = new ToolStripMenuItem() { Text = "Reset" });
+            mMenuItems.Add(mDock = new ToolStripMenuItem() { Text = "画面下部に表示" });
+            mDock.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.DOCK);
+            });
+            mMenuItems.Add(mUndock = new ToolStripMenuItem() { Text = "任意の場所に表示" });
+            mUndock.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.UNDOCK);
+            });
+            mMenuItems.Add(mCombine = new ToolStripMenuItem() { Text = "左のスコープに重ねる" });
+            mCombine.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.COMBINE);
+            });
+            mMenuItems.Add(mStack = new ToolStripMenuItem() { Text = "左のスコープの下に並べる" });
+            mStack.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.STACK);
+            });
+            mMenuItems.Add(mUnstack = new ToolStripMenuItem() { Text = "右横に並べる" });
+            mUnstack.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.UNSTACK);
+            });
+            mMenuItems.Add(mMaxScale = new ToolStripMenuItem() { Text = "振幅の最大化" });
+            mMaxScale.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.MAX_SCALE);
+            });
+            mMenuItems.Add(mReset = new ToolStripMenuItem() { Text = "リセット" });
             mReset.Click += new EventHandler((s, e) => {
                 sim.Performed(SCOPE_MENU_ITEM.RESET);
             });
-            mMenuItems.Add(mProperties = new ToolStripMenuItem() { Text = "Properties..." });
+            mMenuItems.Add(mProperties = new ToolStripMenuItem() { Text = "詳細設定" });
             mProperties.Click += new EventHandler((s, e) => {
                 sim.Performed(SCOPE_MENU_ITEM.PROPERTIES);
             });
@@ -82,7 +82,7 @@ namespace Circuit {
             var popupMenu = new ContextMenuStrip();
             popupMenu.Items.AddRange(mMenuItems.ToArray());
             popupMenu.Show();
-            popupMenu.Location = new Point(px, py);
+            popupMenu.Location = new Point(px, py - popupMenu.Height - 8);
             return popupMenu;
         }
 

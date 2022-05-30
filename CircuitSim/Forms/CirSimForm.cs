@@ -1798,8 +1798,7 @@ namespace Circuit {
                 if (mScopes[ScopeSelected].CanMenu) {
                     mMenuScope = ScopeSelected;
                     mMenuPlot = mScopes[ScopeSelected].SelectedPlot;
-                    var y = Math.Max(0, Math.Min(mMenuClient.Y, mBmp.Height - 160));
-                    mContextMenu = mScopePopupMenu.Show(mMenuClient.X, y, false);
+                    mContextMenu = mScopePopupMenu.Show(mMenuClient.X, Bottom, false);
                     mContextMenuLocation = mContextMenu.Location;
                 }
             } else if (mMouseElm != null) {
