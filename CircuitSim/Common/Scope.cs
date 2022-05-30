@@ -900,11 +900,12 @@ namespace Circuit {
         void _drawFFTVerticalGridLines(CustomGraphics g) {
             /* Draw x-grid lines and label the frequencies in the FFT that they point to. */
             int prevEnd = 0;
-            int divs = 40;
-            double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * divs * 2);
+            int xDivs = 40;
+            int yDivs = 5;
+            double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * xDivs * 2);
             g.LineColor = Color.FromArgb(0x88, 0x00, 0x00);
-            for (int i = 0; i < divs; i++) {
-                int x = BoundingBox.Width * i / divs;
+            for (int i = 0; i < xDivs; i++) {
+                int x = BoundingBox.Width * i / xDivs;
                 if (x < prevEnd) {
                     continue;
                 }
@@ -915,6 +916,19 @@ namespace Circuit {
                     g.DrawLine(x, 0, x, BoundingBox.Height);
                 }
                 g.DrawLeftText(s, x, BoundingBox.Height - 12);
+            }
+            for (int i = 0; i < yDivs; i++) {
+                int y = BoundingBox.Height * i / yDivs;
+                string s;
+                if (LogSpectrum) {
+                    s = (-i * 20).ToString() + "db";
+                } else {
+                    s = (1.0 * (yDivs - i) / yDivs).ToString();
+                }
+                if (i > 0) {
+                    g.DrawLine(0, y, BoundingBox.Width, y);
+                }
+                g.DrawLeftText(s, 0, y + 8);
             }
         }
 
@@ -946,7 +960,6 @@ namespace Circuit {
             var prevX = 0.0f;
             g.LineColor = Color.Red;
             if (LogSpectrum) {
-                int y0 = 5;
                 var prevY = 0.0f;
                 double ymult = BoundingBox.Height / 100.0;
                 double val0 = mScale * ymult;
@@ -959,7 +972,7 @@ namespace Circuit {
                         mag = 1;
                     }
                     var val = 20 * Math.Log10(mag / maxM);
-                    var y = y0 - (float)(val * ymult - val0);
+                    var y = (float)(-val * ymult - val0);
                     if (x != prevX) {
                         g.DrawLine(prevX, prevY, x, y);
                     }
