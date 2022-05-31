@@ -33,9 +33,7 @@ namespace Circuit.Elements.Active {
 
         Diode mDiodeB1;
         Diode mDiodeB2;
-        double mLastV0;
-        double mLastV1;
-        double mLastV2;
+        double[] mLastV = new double[] { 0.0, 0.0, 0.0 };
 
         public MosfetElm(bool pnpflag) : base() {
             Pnp = pnpflag ? -1 : 1;
@@ -123,7 +121,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override void Reset() {
-            mLastV1 = mLastV2 = 0;
+            mLastV[1] = mLastV[2] = 0;
             Volts[IdxG] = Volts[IdxS] = Volts[IdxD] = 0;
             CurCount = 0;
             mDiodeB1.Reset();
@@ -143,51 +141,51 @@ namespace Circuit.Elements.Active {
         /* this is called in doStep to stamp the matrix,
          * and also called in stepFinished() to calculate the current */
         void calculate(bool finished) {
-            double[] vs;
+            double[] tmpV;
             if (finished) {
-                vs = Volts;
+                tmpV = Volts;
             } else {
-                /* limit voltage changes to .5V */
-                vs = new double[3];
-                vs[0] = Volts[IdxG];
-                vs[1] = Volts[IdxS];
-                vs[2] = Volts[IdxD];
-                if (vs[1] > mLastV1 + .5) {
-                    vs[1] = mLastV1 + .5;
+                /* limit voltage changes to 0.5V */
+                tmpV = new double[3];
+                tmpV[IdxG] = Volts[IdxG];
+                tmpV[IdxS] = Volts[IdxS];
+                tmpV[IdxD] = Volts[IdxD];
+                if (tmpV[IdxS] > mLastV[IdxS] + 0.5) {
+                    tmpV[IdxS] = mLastV[IdxS] + 0.5;
                 }
-                if (vs[1] < mLastV1 - .5) {
-                    vs[1] = mLastV1 - .5;
+                if (tmpV[IdxS] < mLastV[IdxS] - 0.5) {
+                    tmpV[IdxS] = mLastV[IdxS] - 0.5;
                 }
-                if (vs[2] > mLastV2 + .5) {
-                    vs[2] = mLastV2 + .5;
+                if (tmpV[IdxD] > mLastV[IdxD] + 0.5) {
+                    tmpV[IdxD] = mLastV[IdxD] + 0.5;
                 }
-                if (vs[2] < mLastV2 - .5) {
-                    vs[2] = mLastV2 - .5;
+                if (tmpV[IdxD] < mLastV[IdxD] - 0.5) {
+                    tmpV[IdxD] = mLastV[IdxD] - 0.5;
                 }
             }
 
-            int source = 1;
-            int drain = 2;
-
-            /* if source voltage > drain (for NPN), swap source and drain
-             * (opposite for PNP) */
-            if (Pnp * vs[1] > Pnp * vs[2]) {
-                source = 2;
-                drain = 1;
-            }
-            int gate = 0;
-            double vgs = vs[gate] - vs[source];
-            double vds = vs[drain] - vs[source];
-            if (!finished && (nonConvergence(mLastV1, vs[1]) || nonConvergence(mLastV2, vs[2]) || nonConvergence(mLastV0, vs[0]))) {
+            if (!finished && (nonConvergence(mLastV[IdxS], tmpV[IdxS]) || nonConvergence(mLastV[IdxD], tmpV[IdxD]) || nonConvergence(mLastV[IdxG], tmpV[IdxG]))) {
                 Circuit.Converged = false;
             }
-            mLastV0 = vs[0];
-            mLastV1 = vs[1];
-            mLastV2 = vs[2];
-            double realvgs = vgs;
-            double realvds = vds;
+            mLastV[IdxG] = tmpV[IdxG];
+            mLastV[IdxS] = tmpV[IdxS];
+            mLastV[IdxD] = tmpV[IdxD];
+
+            /* if drain < source voltage, swap source and drain.
+             * (opposite for PNP) */
+            int idxS = IdxS;
+            int idxD = IdxD;
+            if (Pnp * tmpV[idxD] < Pnp * tmpV[idxS]) {
+                idxS = IdxD;
+                idxD = IdxS;
+            }
+            double vgs = tmpV[IdxG] - tmpV[idxS];
+            double vds = tmpV[idxD] - tmpV[idxS];
+            double realVgs = vgs;
+            double realVds = vds;
             vgs *= Pnp;
             vds *= Pnp;
+
             Ids = 0;
             Gm = 0;
             double Gds = 0;
@@ -199,7 +197,7 @@ namespace Circuit.Elements.Active {
                 Mode = 0;
             } else if (vds < vgs - Vt) {
                 /* linear */
-                Ids = Hfe * ((vgs - Vt) * vds - vds * vds * .5);
+                Ids = Hfe * ((vgs - Vt) * vds - vds * vds * 0.5);
                 Gm = Hfe * vds;
                 Gds = Hfe * (vgs - vds - Vt);
                 Mode = 1;
@@ -208,7 +206,7 @@ namespace Circuit.Elements.Active {
                 Gm = Hfe * (vgs - Vt);
                 /* use very small Gds to avoid nonconvergence */
                 Gds = 1e-8;
-                Ids = .5 * Hfe * (vgs - Vt) * (vgs - Vt) + (vds - (vgs - Vt)) * Gds;
+                Ids = 0.5 * Hfe * (vgs - Vt) * (vgs - Vt) + (vds - (vgs - Vt)) * Gds;
                 Mode = 2;
             }
 
@@ -224,7 +222,7 @@ namespace Circuit.Elements.Active {
             double ids0 = Ids;
 
             /* flip ids if we swapped source and drain above */
-            if (source == 2 && Pnp == 1 || source == 1 && Pnp == -1) {
+            if (idxS == 2 && Pnp == 1 || idxS == 1 && Pnp == -1) {
                 Ids = -Ids;
             }
 
@@ -232,17 +230,16 @@ namespace Circuit.Elements.Active {
                 return;
             }
 
-            double rs = -Pnp * ids0 + Gds * realvds + Gm * realvgs;
-            Circuit.StampMatrix(Nodes[drain], Nodes[drain], Gds);
-            Circuit.StampMatrix(Nodes[drain], Nodes[source], -Gds - Gm);
-            Circuit.StampMatrix(Nodes[drain], Nodes[gate], Gm);
+            Circuit.StampMatrix(Nodes[idxD], Nodes[idxD], Gds);
+            Circuit.StampMatrix(Nodes[idxD], Nodes[idxS], -Gds - Gm);
+            Circuit.StampMatrix(Nodes[idxD], Nodes[IdxG], Gm);
+            Circuit.StampMatrix(Nodes[idxS], Nodes[idxD], -Gds);
+            Circuit.StampMatrix(Nodes[idxS], Nodes[idxS], Gds + Gm);
+            Circuit.StampMatrix(Nodes[idxS], Nodes[IdxG], -Gm);
 
-            Circuit.StampMatrix(Nodes[source], Nodes[drain], -Gds);
-            Circuit.StampMatrix(Nodes[source], Nodes[source], Gds + Gm);
-            Circuit.StampMatrix(Nodes[source], Nodes[gate], -Gm);
-
-            Circuit.StampRightSide(Nodes[drain], rs);
-            Circuit.StampRightSide(Nodes[source], -rs);
+            double rs = -Pnp * ids0 + Gds * realVds + Gm * realVgs;
+            Circuit.StampRightSide(Nodes[idxD], rs);
+            Circuit.StampRightSide(Nodes[idxS], -rs);
         }
 
         bool nonConvergence(double last, double now) {
