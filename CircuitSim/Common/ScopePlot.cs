@@ -5,10 +5,10 @@ using Circuit.Elements;
 namespace Circuit {
     class ScopePlot {
         static readonly Color[] COLORS = {
-            Color.FromArgb(0xFF, 0x00, 0x00),
-            Color.FromArgb(0xFF, 0xFF, 0x00),
-            Color.FromArgb(0x00, 0xFF, 0x00),
-            Color.FromArgb(0x00, 0x00, 0xFF)
+            Color.FromArgb(0xBF, 0x00, 0x00),
+            Color.FromArgb(0xCF, 0xCF, 0x00),
+            Color.FromArgb(0x00, 0xBF, 0x00),
+            Color.FromArgb(0x2F, 0x2F, 0xBF)
         };
 
         public BaseUI Elm;
@@ -92,7 +92,7 @@ namespace Circuit {
                 Color = COLORS[(count - 1) % COLORS.Length];
                 return;
             }
-            Color = Color.FromArgb(0x00, 0xFF, 0x00);
+            Color = COLORS[2];
         }
     }
 }

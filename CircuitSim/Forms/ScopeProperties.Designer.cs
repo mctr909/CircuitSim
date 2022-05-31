@@ -25,13 +25,11 @@
         private void InitializeComponent() {
             this.chkScale = new System.Windows.Forms.CheckBox();
             this.chkManualScale = new System.Windows.Forms.CheckBox();
-            this.chkVoltage = new System.Windows.Forms.CheckBox();
             this.chkPeak = new System.Windows.Forms.CheckBox();
             this.chkNegPeak = new System.Windows.Forms.CheckBox();
             this.chkFreq = new System.Windows.Forms.CheckBox();
             this.chkLogSpectrum = new System.Windows.Forms.CheckBox();
             this.chkRms = new System.Windows.Forms.CheckBox();
-            this.chkSpectrum = new System.Windows.Forms.CheckBox();
             this.txtManualScale = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -40,6 +38,8 @@
             this.tbSpeed = new System.Windows.Forms.TrackBar();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.lblScopeSpeed = new System.Windows.Forms.Label();
+            this.rbVoltage = new System.Windows.Forms.RadioButton();
+            this.rbSpectrum = new System.Windows.Forms.RadioButton();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbSpeed)).BeginInit();
@@ -68,25 +68,14 @@
             this.chkManualScale.UseVisualStyleBackColor = true;
             this.chkManualScale.CheckedChanged += new System.EventHandler(this.chkManualScale_CheckedChanged);
             // 
-            // chkVoltage
-            // 
-            this.chkVoltage.AutoSize = true;
-            this.chkVoltage.Location = new System.Drawing.Point(6, 18);
-            this.chkVoltage.Name = "chkVoltage";
-            this.chkVoltage.Size = new System.Drawing.Size(72, 16);
-            this.chkVoltage.TabIndex = 2;
-            this.chkVoltage.Text = "電圧波形";
-            this.chkVoltage.UseVisualStyleBackColor = true;
-            this.chkVoltage.CheckedChanged += new System.EventHandler(this.chkVoltage_CheckedChanged);
-            // 
             // chkPeak
             // 
             this.chkPeak.AutoSize = true;
             this.chkPeak.Location = new System.Drawing.Point(94, 18);
             this.chkPeak.Name = "chkPeak";
-            this.chkPeak.Size = new System.Drawing.Size(73, 16);
+            this.chkPeak.Size = new System.Drawing.Size(60, 16);
             this.chkPeak.TabIndex = 3;
-            this.chkPeak.Text = "正のピーク";
+            this.chkPeak.Text = "最大値";
             this.chkPeak.UseVisualStyleBackColor = true;
             this.chkPeak.CheckedChanged += new System.EventHandler(this.chkPeak_CheckedChanged);
             // 
@@ -95,9 +84,9 @@
             this.chkNegPeak.AutoSize = true;
             this.chkNegPeak.Location = new System.Drawing.Point(94, 40);
             this.chkNegPeak.Name = "chkNegPeak";
-            this.chkNegPeak.Size = new System.Drawing.Size(73, 16);
+            this.chkNegPeak.Size = new System.Drawing.Size(60, 16);
             this.chkNegPeak.TabIndex = 4;
-            this.chkNegPeak.Text = "負のピーク";
+            this.chkNegPeak.Text = "最小値";
             this.chkNegPeak.UseVisualStyleBackColor = true;
             this.chkNegPeak.CheckedChanged += new System.EventHandler(this.chkNegPeak_CheckedChanged);
             // 
@@ -134,17 +123,6 @@
             this.chkRms.UseVisualStyleBackColor = true;
             this.chkRms.CheckedChanged += new System.EventHandler(this.chkRms_CheckedChanged);
             // 
-            // chkSpectrum
-            // 
-            this.chkSpectrum.AutoSize = true;
-            this.chkSpectrum.Location = new System.Drawing.Point(6, 40);
-            this.chkSpectrum.Name = "chkSpectrum";
-            this.chkSpectrum.Size = new System.Drawing.Size(77, 16);
-            this.chkSpectrum.TabIndex = 6;
-            this.chkSpectrum.Text = "スペクトラム";
-            this.chkSpectrum.UseVisualStyleBackColor = true;
-            this.chkSpectrum.CheckedChanged += new System.EventHandler(this.chkSpectrum_CheckedChanged);
-            // 
             // txtManualScale
             // 
             this.txtManualScale.Location = new System.Drawing.Point(6, 69);
@@ -155,8 +133,8 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.chkVoltage);
-            this.groupBox1.Controls.Add(this.chkSpectrum);
+            this.groupBox1.Controls.Add(this.rbSpectrum);
+            this.groupBox1.Controls.Add(this.rbVoltage);
             this.groupBox1.Controls.Add(this.chkLogSpectrum);
             this.groupBox1.Location = new System.Drawing.Point(4, 106);
             this.groupBox1.Name = "groupBox1";
@@ -227,6 +205,30 @@
             this.lblScopeSpeed.TabIndex = 13;
             this.lblScopeSpeed.Text = "999.99uS/div";
             // 
+            // rbVoltage
+            // 
+            this.rbVoltage.AutoSize = true;
+            this.rbVoltage.Location = new System.Drawing.Point(6, 18);
+            this.rbVoltage.Name = "rbVoltage";
+            this.rbVoltage.Size = new System.Drawing.Size(71, 16);
+            this.rbVoltage.TabIndex = 8;
+            this.rbVoltage.TabStop = true;
+            this.rbVoltage.Text = "電圧波形";
+            this.rbVoltage.UseVisualStyleBackColor = true;
+            this.rbVoltage.CheckedChanged += new System.EventHandler(this.rbVoltage_CheckedChanged);
+            // 
+            // rbSpectrum
+            // 
+            this.rbSpectrum.AutoSize = true;
+            this.rbSpectrum.Location = new System.Drawing.Point(6, 40);
+            this.rbSpectrum.Name = "rbSpectrum";
+            this.rbSpectrum.Size = new System.Drawing.Size(76, 16);
+            this.rbSpectrum.TabIndex = 9;
+            this.rbSpectrum.TabStop = true;
+            this.rbSpectrum.Text = "スペクトラム";
+            this.rbSpectrum.UseVisualStyleBackColor = true;
+            this.rbSpectrum.CheckedChanged += new System.EventHandler(this.rbSpectrum_CheckedChanged);
+            // 
             // ScopeProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -254,13 +256,11 @@
 
         private System.Windows.Forms.CheckBox chkScale;
         private System.Windows.Forms.CheckBox chkManualScale;
-        private System.Windows.Forms.CheckBox chkVoltage;
         private System.Windows.Forms.CheckBox chkPeak;
         private System.Windows.Forms.CheckBox chkNegPeak;
         private System.Windows.Forms.CheckBox chkFreq;
         private System.Windows.Forms.CheckBox chkLogSpectrum;
         private System.Windows.Forms.CheckBox chkRms;
-        private System.Windows.Forms.CheckBox chkSpectrum;
         private System.Windows.Forms.TextBox txtManualScale;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
@@ -269,5 +269,7 @@
         private System.Windows.Forms.TextBox txtLabel;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblScopeSpeed;
+        private System.Windows.Forms.RadioButton rbSpectrum;
+        private System.Windows.Forms.RadioButton rbVoltage;
     }
 }

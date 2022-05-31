@@ -13,6 +13,8 @@ namespace Circuit.Forms {
         public void Show(Form parent) {
             Visible = false;
             Show();
+            rbVoltage.Checked = mScope.ShowVoltage;
+            rbSpectrum.Checked = mScope.ShowFFT;
             Left = parent.Left + parent.Width / 2 - Width;
             Top = parent.Bottom - Height;
             Visible = true;
@@ -22,16 +24,13 @@ namespace Circuit.Forms {
             chkScale.Checked = mScope.ShowScale;
             chkPeak.Checked = mScope.ShowMax;
             chkNegPeak.Checked = mScope.ShowMin;
-            chkRms.Checked = mScope.ShowRMS;
-            chkFreq.Checked = mScope.ShowFreq;
             
             chkScale.Enabled = mScope.ShowVoltage;
             chkPeak.Enabled = mScope.ShowVoltage;
             chkNegPeak.Enabled = mScope.ShowVoltage;
-            chkRms.Enabled = mScope.ShowVoltage;
 
-            chkVoltage.Checked = mScope.ShowVoltage;
-            chkSpectrum.Checked = mScope.ShowFFT;
+            chkRms.Checked = mScope.ShowRMS;
+            chkFreq.Checked = mScope.ShowFreq;
 
             tbSpeed.Value = tbSpeed.Maximum - (int)Math.Round(Math.Log(mScope.Speed) / Math.Log(2));
             txtManualScale.Text = ElementInfoDialog.UnitString(null, mScope.ScaleValue);
@@ -93,14 +92,14 @@ namespace Circuit.Forms {
             mScope.ShowFreq = chkFreq.Checked;
         }
 
-        private void chkVoltage_CheckedChanged(object sender, EventArgs e) {
-            mScope.ShowVoltage = chkVoltage.Checked;
+        private void rbVoltage_CheckedChanged(object sender, EventArgs e) {
+            mScope.ShowVoltage = rbVoltage.Checked;
             ScopeProperties_Load(sender, e);
         }
 
-        private void chkSpectrum_CheckedChanged(object sender, EventArgs e) {
-            mScope.ShowFFT = chkSpectrum.Checked;
-            chkLogSpectrum.Enabled = chkSpectrum.Checked;
+        private void rbSpectrum_CheckedChanged(object sender, EventArgs e) {
+            mScope.ShowFFT = rbSpectrum.Checked;
+            chkLogSpectrum.Enabled = rbSpectrum.Checked;
         }
 
         private void chkLogSpectrum_CheckedChanged(object sender, EventArgs e) {

@@ -1181,10 +1181,10 @@ namespace Circuit {
                 drawInfoText(g, plot.GetUnitText(mMaxValue));
             }
             if (mShowV && ShowMin) {
-                int ym = BoundingBox.Height - 5;
+                int ym = BoundingBox.Height - 12;
                 g.DrawLeftText(plot.GetUnitText(mMinValue), 0, ym);
             }
-            if (mShowV && ShowRMS) {
+            if (ShowRMS) {
                 drawRMS(g);
             }
             if (ShowFreq) {
