@@ -19,16 +19,22 @@ namespace Circuit.Forms {
         }
 
         private void ScopeProperties_Load(object sender, EventArgs e) {
-            tbSpeed.Value = tbSpeed.Maximum - (int)Math.Round(Math.Log(mScope.Speed) / Math.Log(2));
-            if (chkVoltage != null) {
-                chkVoltage.Checked = mScope.ShowVoltage;
-            }
             chkScale.Checked = mScope.ShowScale;
             chkPeak.Checked = mScope.ShowMax;
             chkNegPeak.Checked = mScope.ShowMin;
             chkFreq.Checked = mScope.ShowFreq;
-            chkSpectrum.Checked = mScope.ShowFFT;
             chkRms.Checked = mScope.ShowRMS;
+
+            chkScale.Enabled = mScope.ShowVoltage;
+            chkPeak.Enabled = mScope.ShowVoltage;
+            chkNegPeak.Enabled = mScope.ShowVoltage;
+            chkFreq.Enabled = mScope.ShowVoltage;
+            chkRms.Enabled = mScope.ShowVoltage;
+
+            chkVoltage.Checked = mScope.ShowVoltage;
+            chkSpectrum.Checked = mScope.ShowFFT;
+
+            tbSpeed.Value = tbSpeed.Maximum - (int)Math.Round(Math.Log(mScope.Speed) / Math.Log(2));
             txtManualScale.Text = ElementInfoDialog.UnitString(null, mScope.ScaleValue);
             chkManualScale.Checked = mScope.ManualScale;
             txtManualScale.Enabled = mScope.ManualScale;
@@ -90,6 +96,7 @@ namespace Circuit.Forms {
 
         private void chkVoltage_CheckedChanged(object sender, EventArgs e) {
             mScope.ShowVoltage = chkVoltage.Checked;
+            ScopeProperties_Load(sender, e);
         }
 
         private void chkSpectrum_CheckedChanged(object sender, EventArgs e) {

@@ -18,8 +18,10 @@ namespace Circuit {
 
         readonly double[] MULTA = new double[] { 1.5, 2.0, 1.5 };
 
+        const double Mindb = -100.0;
+
         public enum VAL {
-            INVALID
+            VOLTAGE
         }
         #endregion
 
@@ -59,6 +61,8 @@ namespace Circuit {
         #region [public property]
         public int Position { get; set; }
         public Rectangle BoundingBox { get; private set; }
+        public Rectangle FFTBoundingBox { get; private set; }
+
         public int RightEdge { get { return BoundingBox.X + BoundingBox.Width; } }
         public int Speed {
             get { return mSpeed; }
@@ -287,6 +291,7 @@ namespace Circuit {
             if (BoundingBox.Width != w) {
                 ResetGraph();
             }
+            FFTBoundingBox = new Rectangle(r.X + 40, r.Y, r.Width - 40, r.Height - 16);
         }
 
         public void SetElm(BaseUI ce) {
@@ -487,7 +492,7 @@ namespace Circuit {
             g.SetTransform(new Matrix(1, 0, 0, 1, BoundingBox.X, BoundingBox.Y));
 
             if (mShowFFT) {
-                drawFFTVerticalGridLines(g);
+                drawFFTGridLines(g);
                 drawFFT(g);
             }
 
@@ -529,8 +534,19 @@ namespace Circuit {
                 }
             }
 
+
             if (mVisiblePlots.Count > 0) {
-                drawInfoTexts(g);
+                string t = Text;
+                if (t == null) {
+                    t = mScopeText;
+                }
+                mTextY = 10;
+                if (t != null) {
+                    drawInfoText(g, t);
+                }
+                if (mShowV) {
+                    drawInfoTexts(g);
+                }
             }
 
             g.ClearTransform();
@@ -729,20 +745,24 @@ namespace Circuit {
             int ct = 0;
             int maxy = (BoundingBox.Height - 1) / 2;
             int y = maxy;
-            if (SelectedPlot >= 0 && mShowV) {
+            if (mShowV && SelectedPlot >= 0) {
                 var plot = mVisiblePlots[SelectedPlot];
                 info[ct++] = plot.GetUnitText(plot.MaxValues[ip]);
                 int maxvy = (int)(mMainGridMult * (plot.MaxValues[ip] - mMainGridMid));
                 g.LineColor = plot.Color;
                 g.FillCircle(CirSimForm.Sim.MouseCursorX, BoundingBox.Y + y - maxvy, 3);
             }
-            if (mShowFFT) {
-                double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * 2);
-                info[ct++] = Utils.UnitText(maxFrequency * (CirSimForm.Sim.MouseCursorX - BoundingBox.X) / BoundingBox.Width, "Hz");
-            }
-            if (mVisiblePlots.Count > 0) {
+            if (mShowV && mVisiblePlots.Count > 0) {
                 double t = CirSimForm.Sim.Time - ControlPanel.TimeStep * Speed * (BoundingBox.X + BoundingBox.Width - CirSimForm.Sim.MouseCursorX);
                 info[ct++] = Utils.TimeText(t);
+            }
+            if (mShowFFT) {
+                double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * 2);
+                var posX = CirSimForm.Sim.MouseCursorX - FFTBoundingBox.X;
+                if (posX < 0) {
+                    posX = 0;
+                }
+                info[ct++] = Utils.UnitText(maxFrequency * posX / FFTBoundingBox.Width, "Hz");
             }
 
             int szw = 0, szh = 15 * ct;
@@ -913,15 +933,15 @@ namespace Circuit {
             }
         }
 
-        void drawFFTVerticalGridLines(CustomGraphics g) {
-            /* Draw x-grid lines and label the frequencies in the FFT that they point to. */
+        void drawFFTGridLines(CustomGraphics g) {
+            const int xDivs = 20;
+            const int yDivs = 5;
             int prevEnd = 0;
-            int xDivs = 40;
-            int yDivs = 5;
             double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * xDivs * 2);
-            g.LineColor = Color.FromArgb(0x88, 0x00, 0x00);
+            g.LineColor = CustomGraphics.GrayColor;
+            g.DrawLine(FFTBoundingBox.X, 0, FFTBoundingBox.X, BoundingBox.Height);
             for (int i = 0; i < xDivs; i++) {
-                int x = BoundingBox.Width * i / xDivs;
+                int x = FFTBoundingBox.X + FFTBoundingBox.Width * i / xDivs;
                 if (x < prevEnd) {
                     continue;
                 }
@@ -931,18 +951,18 @@ namespace Circuit {
                 if (i > 0) {
                     g.DrawLine(x, 0, x, BoundingBox.Height);
                 }
-                g.DrawLeftText(s, x, BoundingBox.Height - 12);
+                g.DrawLeftText(s, x, BoundingBox.Height - 10);
             }
-            for (int i = 0; i < yDivs; i++) {
-                int y = BoundingBox.Height * i / yDivs;
+            for (int i = 1; i < yDivs; i++) {
+                int y = FFTBoundingBox.Height * i / yDivs;
                 string s;
                 if (LogSpectrum) {
-                    s = (-i * 20).ToString() + "db";
+                    s = (Mindb * i / yDivs).ToString() + "db";
                 } else {
                     s = (1.0 * (yDivs - i) / yDivs).ToString();
                 }
                 if (i > 0) {
-                    g.DrawLine(0, y, BoundingBox.Width, y);
+                    g.DrawLine(BoundingBox.X, y, BoundingBox.Width, y);
                 }
                 g.DrawLeftText(s, 0, y + 8);
             }
@@ -973,42 +993,46 @@ namespace Circuit {
                     maxM = m;
                 }
             }
-            var prevX = 0.0f;
+            var scaleX = 2.0f * FFTBoundingBox.Width / mScopePointCount;
+            var x0 = 1.0f * FFTBoundingBox.X;
+            var x1 = x0;
+            var y0 = 0.0f;
             g.LineColor = Color.Red;
             if (LogSpectrum) {
-                var prevY = 0.0f;
-                double ymult = BoundingBox.Height / 100.0;
-                double val0 = mScale * ymult;
+                var ymult = -FFTBoundingBox.Height / Mindb;
+                var y_0db = mScale * ymult;
                 for (int i = 0; i < mScopePointCount / 2; i++) {
-                    var x = 2.0f * i * BoundingBox.Width / mScopePointCount;
-                    /* rect.width may be greater than or less than scopePointCount/2,
-                     * so x may be greater than or equal to prevX. */
                     var mag = mFft.Magnitude(real[i], imag[i]);
                     if (0 == mag) {
                         mag = 1;
                     }
-                    var val = 20 * Math.Log10(mag / maxM);
-                    var y = (float)(-val * ymult - val0);
-                    if (x != prevX) {
-                        g.DrawLine(prevX, prevY, x, y);
+                    var db = 20 * Math.Log10(mag / maxM);
+                    if (db < Mindb) {
+                        db = Mindb;
                     }
-                    prevY = y;
-                    prevX = x;
+                    var y1 = (float)(-db * ymult - y_0db);
+                    x1 += scaleX;
+                    if (0 == i) {
+                        g.DrawLine(x0, y1, x1, y1);
+                    } else {
+                        g.DrawLine(x0, y0, x1, y1);
+                    }
+                    y0 = y1;
+                    x0 = x1;
                 }
             } else {
-                var prevHeight = 0.0f;
-                int y = (BoundingBox.Height - 1) - 12;
+                var bottom = FFTBoundingBox.Height - 1;
                 for (int i = 0; i < mScopePointCount / 2; i++) {
-                    var x = 2.0f * i * BoundingBox.Width / mScopePointCount;
-                    /* rect.width may be greater than or less than scopePointCount/2,
-                     * so x may be greater than or equal to prevX. */
-                    double magnitude = mFft.Magnitude(real[i], imag[i]);
-                    var height = (float)(magnitude * y / maxM);
-                    if (x != prevX) {
-                        g.DrawLine(prevX, y - prevHeight, x, y - height);
+                    var mag = mFft.Magnitude(real[i], imag[i]);
+                    var y1 = bottom - (float)(mag * bottom / maxM);
+                    x1 += scaleX;
+                    if (0 == i) {
+                        g.DrawLine(x0, y1, x1, y1);
+                    } else {
+                        g.DrawLine(x0, y0, x1, y1);
                     }
-                    prevHeight = height;
-                    prevX = x;
+                    y0 = y1;
+                    x0 = x1;
                 }
             }
         }
@@ -1147,12 +1171,11 @@ namespace Circuit {
         }
 
         void drawInfoTexts(CustomGraphics g) {
-            mTextY = 10;
             var plot = mVisiblePlots[0];
             if (ShowScale) {
                 string vScaleText = "";
-                if (mGridStepY != 0 && (!mShowV)) {
-                    vScaleText = " V=" + plot.GetUnitText(mGridStepY) + "/div";
+                if (mGridStepY != 0) {
+                    vScaleText = ", V=" + plot.GetUnitText(mGridStepY) + "/div";
                 }
                 drawInfoText(g, "H=" + Utils.UnitText(mGridStepX, "s") + "/div" + vScaleText);
             }
@@ -1165,13 +1188,6 @@ namespace Circuit {
             }
             if (ShowRMS) {
                 drawRMS(g);
-            }
-            string t = Text;
-            if (t == null) {
-                t = mScopeText;
-            }
-            if (t != null) {
-                drawInfoText(g, t);
             }
             if (ShowFreq) {
                 drawFrequency(g);

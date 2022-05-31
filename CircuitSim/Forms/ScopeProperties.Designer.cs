@@ -51,9 +51,9 @@
             this.chkScale.AutoSize = true;
             this.chkScale.Location = new System.Drawing.Point(6, 18);
             this.chkScale.Name = "chkScale";
-            this.chkScale.Size = new System.Drawing.Size(86, 16);
+            this.chkScale.Size = new System.Drawing.Size(62, 16);
             this.chkScale.TabIndex = 0;
-            this.chkScale.Text = "時間スケール";
+            this.chkScale.Text = "スケール";
             this.chkScale.UseVisualStyleBackColor = true;
             this.chkScale.CheckedChanged += new System.EventHandler(this.chkScale_CheckedChanged);
             // 
@@ -158,7 +158,7 @@
             this.groupBox1.Controls.Add(this.chkVoltage);
             this.groupBox1.Controls.Add(this.chkSpectrum);
             this.groupBox1.Controls.Add(this.chkLogSpectrum);
-            this.groupBox1.Location = new System.Drawing.Point(4, 215);
+            this.groupBox1.Location = new System.Drawing.Point(4, 106);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(201, 66);
             this.groupBox1.TabIndex = 10;
@@ -174,7 +174,7 @@
             this.groupBox2.Controls.Add(this.chkRms);
             this.groupBox2.Controls.Add(this.chkNegPeak);
             this.groupBox2.Controls.Add(this.chkPeak);
-            this.groupBox2.Location = new System.Drawing.Point(4, 106);
+            this.groupBox2.Location = new System.Drawing.Point(4, 178);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(201, 103);
             this.groupBox2.TabIndex = 11;
@@ -231,7 +231,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(210, 285);
+            this.ClientSize = new System.Drawing.Size(210, 284);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
