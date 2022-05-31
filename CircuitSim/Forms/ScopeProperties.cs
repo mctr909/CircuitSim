@@ -22,13 +22,12 @@ namespace Circuit.Forms {
             chkScale.Checked = mScope.ShowScale;
             chkPeak.Checked = mScope.ShowMax;
             chkNegPeak.Checked = mScope.ShowMin;
-            chkFreq.Checked = mScope.ShowFreq;
             chkRms.Checked = mScope.ShowRMS;
-
+            chkFreq.Checked = mScope.ShowFreq;
+            
             chkScale.Enabled = mScope.ShowVoltage;
             chkPeak.Enabled = mScope.ShowVoltage;
             chkNegPeak.Enabled = mScope.ShowVoltage;
-            chkFreq.Enabled = mScope.ShowVoltage;
             chkRms.Enabled = mScope.ShowVoltage;
 
             chkVoltage.Checked = mScope.ShowVoltage;

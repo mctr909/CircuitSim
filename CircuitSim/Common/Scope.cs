@@ -536,17 +536,7 @@ namespace Circuit {
 
 
             if (mVisiblePlots.Count > 0) {
-                string t = Text;
-                if (t == null) {
-                    t = mScopeText;
-                }
-                mTextY = 10;
-                if (t != null) {
-                    drawInfoText(g, t);
-                }
-                if (mShowV) {
-                    drawInfoTexts(g);
-                }
+                drawInfoTexts(g);
             }
 
             g.ClearTransform();
@@ -1167,26 +1157,34 @@ namespace Circuit {
                 return;
             }
             g.DrawLeftText(text, 0, mTextY);
-            mTextY += 15;
+            mTextY += 12;
         }
 
         void drawInfoTexts(CustomGraphics g) {
+            string t = Text;
+            if (t == null) {
+                t = mScopeText;
+            }
+            mTextY = 10;
+            if (t != null) {
+                drawInfoText(g, t);
+            }
             var plot = mVisiblePlots[0];
-            if (ShowScale) {
+            if (mShowV && ShowScale) {
                 string vScaleText = "";
                 if (mGridStepY != 0) {
                     vScaleText = ", V=" + plot.GetUnitText(mGridStepY) + "/div";
                 }
                 drawInfoText(g, "H=" + Utils.UnitText(mGridStepX, "s") + "/div" + vScaleText);
             }
-            if (ShowMax) {
+            if (mShowV && ShowMax) {
                 drawInfoText(g, plot.GetUnitText(mMaxValue));
             }
-            if (ShowMin) {
+            if (mShowV && ShowMin) {
                 int ym = BoundingBox.Height - 5;
                 g.DrawLeftText(plot.GetUnitText(mMinValue), 0, ym);
             }
-            if (ShowRMS) {
+            if (mShowV && ShowRMS) {
                 drawRMS(g);
             }
             if (ShowFreq) {
