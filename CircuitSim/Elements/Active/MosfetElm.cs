@@ -2,9 +2,9 @@
 
 namespace Circuit.Elements.Active {
     class MosfetElm : BaseElement {
-        public const int V_G = 0;
-        public const int V_S = 1;
-        public const int V_D = 2;
+        const int IdxG = 0;
+        const int IdxS = 1;
+        const int IdxD = 2;
 
         const double DefaultThreshold = 1.5;
         const double BackwardCompatibilityHfe = 0.02;
@@ -17,11 +17,15 @@ namespace Circuit.Elements.Active {
 
         public int Pnp { get; private set; }
         public int BodyTerminal { get; private set; }
-        public double DiodeCurrent1 { get; private set; }
-        public double DiodeCurrent2 { get; private set; }
-        public double Ids { get; private set; }
         public int Mode { get; private set; } = 0;
         public double Gm { get; private set; } = 0;
+
+        public double Ids { get; private set; }
+        public double DiodeCurrent1 { get; private set; }
+        public double DiodeCurrent2 { get; private set; }
+        public double Vg { get { return Volts[IdxG]; } }
+        public double Vs { get { return Volts[IdxS]; } }
+        public double Vd { get { return Volts[IdxD]; } }
 
         double DefaultHfe {
             get { return LastHfe == 0 ? BackwardCompatibilityHfe : LastHfe; }
@@ -54,13 +58,13 @@ namespace Circuit.Elements.Active {
 
         public override double Current { get { return Ids; } }
 
-        public override double VoltageDiff { get { return Volts[V_D] - Volts[V_S]; } }
+        public override double VoltageDiff { get { return Volts[IdxD] - Volts[IdxS]; } }
 
         public override double Power {
             get {
-                return Ids * (Volts[V_D] - Volts[V_S])
-                    - DiodeCurrent1 * (Volts[V_S] - Volts[BodyTerminal])
-                    - DiodeCurrent2 * (Volts[V_D] - Volts[BodyTerminal]);
+                return Ids * (Volts[IdxD] - Volts[IdxS])
+                    - DiodeCurrent1 * (Volts[IdxS] - Volts[BodyTerminal])
+                    - DiodeCurrent2 * (Volts[IdxD] - Volts[BodyTerminal]);
             }
         }
 
@@ -120,7 +124,7 @@ namespace Circuit.Elements.Active {
 
         public override void Reset() {
             mLastV1 = mLastV2 = 0;
-            Volts[V_G] = Volts[V_S] = Volts[V_D] = 0;
+            Volts[IdxG] = Volts[IdxS] = Volts[IdxD] = 0;
             CurCount = 0;
             mDiodeB1.Reset();
             mDiodeB2.Reset();
@@ -145,9 +149,9 @@ namespace Circuit.Elements.Active {
             } else {
                 /* limit voltage changes to .5V */
                 vs = new double[3];
-                vs[0] = Volts[V_G];
-                vs[1] = Volts[V_S];
-                vs[2] = Volts[V_D];
+                vs[0] = Volts[IdxG];
+                vs[1] = Volts[IdxS];
+                vs[2] = Volts[IdxD];
                 if (vs[1] > mLastV1 + .5) {
                     vs[1] = mLastV1 + .5;
                 }
@@ -209,10 +213,10 @@ namespace Circuit.Elements.Active {
             }
 
             if (DoBodyDiode) {
-                mDiodeB1.CirDoStep(Pnp * (Volts[BodyTerminal] - Volts[V_S]));
-                DiodeCurrent1 = mDiodeB1.CirCalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[V_S])) * Pnp;
-                mDiodeB2.CirDoStep(Pnp * (Volts[BodyTerminal] - Volts[V_D]));
-                DiodeCurrent2 = mDiodeB2.CirCalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[V_D])) * Pnp;
+                mDiodeB1.CirDoStep(Pnp * (Volts[BodyTerminal] - Volts[IdxS]));
+                DiodeCurrent1 = mDiodeB1.CirCalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[IdxS])) * Pnp;
+                mDiodeB2.CirDoStep(Pnp * (Volts[BodyTerminal] - Volts[IdxD]));
+                DiodeCurrent2 = mDiodeB2.CirCalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[IdxD])) * Pnp;
             } else {
                 DiodeCurrent1 = DiodeCurrent2 = 0;
             }

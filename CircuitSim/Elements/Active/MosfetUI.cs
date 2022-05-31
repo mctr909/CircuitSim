@@ -232,8 +232,8 @@ namespace Circuit.Elements.Active {
             arr[0] += " (Vt=" + Utils.VoltageText(ce.Pnp * ce.Vt);
             arr[0] += ", \u03b2=" + ce.Hfe + ")";
             arr[1] = ((ce.Pnp == 1) ? "Ids = " : "Isd = ") + Utils.CurrentText(ce.Ids);
-            arr[2] = "Vgs = " + Utils.VoltageText(ce.Volts[MosfetElm.V_G] - ce.Volts[ce.Pnp == -1 ? MosfetElm.V_D : MosfetElm.V_S]);
-            arr[3] = ((ce.Pnp == 1) ? "Vds = " : "Vsd = ") + Utils.VoltageText(ce.Volts[MosfetElm.V_D] - ce.Volts[MosfetElm.V_S]);
+            arr[2] = "Vgs = " + Utils.VoltageText(ce.Vg - (ce.Pnp == -1 ? ce.Vd : ce.Vs));
+            arr[3] = ((ce.Pnp == 1) ? "Vds = " : "Vsd = ") + Utils.VoltageText(ce.Vd - ce.Vs);
             arr[4] = (ce.Mode == 0) ? "off" : (ce.Mode == 1) ? "linear" : "saturation";
             arr[5] = "gm = " + Utils.UnitText(ce.Gm, "A/V");
             arr[6] = "P = " + Utils.UnitText(ce.Power, "W");
