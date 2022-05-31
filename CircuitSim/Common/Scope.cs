@@ -220,7 +220,7 @@ namespace Circuit {
                 if (plot.Elm == null) {
                     return "";
                 } else {
-                    return plot.Elm.GetScopeText(plot.Value);
+                    return plot.Elm.GetScopeText();
                 }
             }
         }

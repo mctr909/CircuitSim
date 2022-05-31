@@ -52,6 +52,8 @@ namespace Circuit.Elements.Active {
             get { return (Volts[IdxB] - Volts[IdxE]) * Ib + (Volts[IdxC] - Volts[IdxE]) * Ic; }
         }
 
+        public override double VoltageDiff { get { return Volts[IdxC] - Volts[IdxE]; } }
+
         public override bool NonLinear { get { return true; } }
 
         public override int PostCount { get { return 3; } }

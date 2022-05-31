@@ -245,8 +245,9 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override string GetScopeText(Scope.VAL v) {
-            return ((((MosfetElm)Elm).Pnp == -1) ? "p-" : "n-") + "MOSFET";
+        public override string GetScopeText() {
+            return (string.IsNullOrEmpty(ReferenceName) ? "MOSFET" : ReferenceName) + " "
+                + ((((MosfetElm)Elm).Pnp == 1) ? "Vds(nCh.)" : "Vds(pCh.)");
         }
 
         public override ElementInfo GetElementInfo(int n) {

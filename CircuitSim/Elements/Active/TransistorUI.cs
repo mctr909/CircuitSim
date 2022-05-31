@@ -147,8 +147,10 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override string GetScopeText(Scope.VAL v) {
-            return "transistor ";
+        public override string GetScopeText() {
+            var ce = (TransistorElm)Elm;
+            return (string.IsNullOrEmpty(ReferenceName) ? "トランジスタ" : ReferenceName)
+                + " Vce(" + (1 == ce.NPN ? "npn)" : " pnp)");
         }
 
         public override void GetInfo(string[] arr) {

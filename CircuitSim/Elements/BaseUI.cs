@@ -737,7 +737,7 @@ namespace Circuit.Elements {
 
         public virtual bool CanShowValueInScope(int v) { return false; }
 
-        public virtual string GetScopeText(Scope.VAL v) {
+        public virtual string GetScopeText() {
             var info = new string[10];
             GetInfo(info);
             return info[0];

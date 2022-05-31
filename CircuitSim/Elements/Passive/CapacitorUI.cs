@@ -103,10 +103,10 @@ namespace Circuit.Elements.Passive {
             arr[4] = "P = " + Utils.UnitText(ce.Power, "W");
         }
 
-        public override string GetScopeText(Scope.VAL v) {
-            base.GetScopeText(v);
+        public override string GetScopeText() {
             var ce = (CapacitorElm)Elm;
-            return "capacitor, " + Utils.UnitText(ce.Capacitance, "F");
+            return (string.IsNullOrEmpty(ReferenceName) ? "コンデンサ" : ReferenceName) + " "
+                + Utils.UnitText(ce.Capacitance, "F");
         }
 
         public override ElementInfo GetElementInfo(int n) {

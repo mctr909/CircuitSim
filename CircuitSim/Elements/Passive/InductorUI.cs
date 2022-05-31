@@ -76,6 +76,12 @@ namespace Circuit.Elements.Passive {
             arr[4] = "P = " + Utils.UnitText(ce.Power, "W");
         }
 
+        public override string GetScopeText() {
+            var ce = (InductorElm)Elm;
+            return (string.IsNullOrEmpty(ReferenceName) ? "コイル" : ReferenceName) + " "
+                + Utils.UnitText(ce.Inductance, "H");
+        }
+
         public override ElementInfo GetElementInfo(int n) {
             var ce = (InductorElm)Elm;
             if (n == 0) {
