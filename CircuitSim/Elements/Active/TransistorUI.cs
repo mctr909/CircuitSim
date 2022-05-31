@@ -8,9 +8,9 @@ namespace Circuit.Elements.Active {
         const int BODY_LEN = 16;
         const int HS = 16;
 
-        double mCurCount_c;
-        double mCurCount_e;
-        double mCurCount_b;
+        double mCurCountC;
+        double mCurCountE;
+        double mCurCountB;
 
         Point[] mColl;
         Point[] mEmit;
@@ -40,8 +40,8 @@ namespace Circuit.Elements.Active {
         protected override string dump() {
             var ce = (TransistorElm)Elm;
             return ce.NPN
-                + " " + (ce.Volts[TransistorElm.V_B] - ce.Volts[TransistorElm.V_C])
-                + " " + (ce.Volts[TransistorElm.V_B] - ce.Volts[TransistorElm.V_E])
+                + " " + (ce.Vb - ce.Vc)
+                + " " + (ce.Vb - ce.Ve)
                 + " " + ce.Hfe
                 + " " + ReferenceName;
         }
@@ -126,12 +126,12 @@ namespace Circuit.Elements.Active {
 
             /* draw dots */
             var ce = (TransistorElm)Elm;
-            mCurCount_b = updateDotCount(-ce.Ib, mCurCount_b);
-            drawDots(mTbase, mPost1, mCurCount_b);
-            mCurCount_c = updateDotCount(-ce.Ic, mCurCount_c);
-            drawDots(mColl[1], mColl[0], mCurCount_c);
-            mCurCount_e = updateDotCount(-ce.Ie, mCurCount_e);
-            drawDots(mEmit[1], mEmit[0], mCurCount_e);
+            mCurCountB = updateDotCount(-ce.Ib, mCurCountB);
+            drawDots(mTbase, mPost1, mCurCountB);
+            mCurCountC = updateDotCount(-ce.Ic, mCurCountC);
+            drawDots(mColl[1], mColl[0], mCurCountC);
+            mCurCountE = updateDotCount(-ce.Ie, mCurCountE);
+            drawDots(mEmit[1], mEmit[0], mCurCountE);
 
             /* draw base rectangle */
             g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, mRectPoly);
@@ -147,22 +147,16 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override string GetScopeText(Scope.VAL x) {
-            string t = "";
-            switch (x) {
-            case Scope.VAL.VBE: t = "Vbe"; break;
-            case Scope.VAL.VBC: t = "Vbc"; break;
-            case Scope.VAL.VCE: t = "Vce"; break;
-            }
-            return "transistor, " + t;
+        public override string GetScopeText(Scope.VAL v) {
+            return "transistor ";
         }
 
         public override void GetInfo(string[] arr) {
             var ce = (TransistorElm)Elm;
             arr[0] = "transistor (" + ((ce.NPN == -1) ? "PNP)" : "NPN)") + " hfe=" + ce.Hfe.ToString("0.000");
-            double vbc = ce.Volts[TransistorElm.V_B] - ce.Volts[TransistorElm.V_C];
-            double vbe = ce.Volts[TransistorElm.V_B] - ce.Volts[TransistorElm.V_E];
-            double vce = ce.Volts[TransistorElm.V_C] - ce.Volts[TransistorElm.V_E];
+            double vbc = ce.Vb - ce.Vc;
+            double vbe = ce.Vb - ce.Ve;
+            double vce = ce.Vc - ce.Ve;
             if (vbc * ce.NPN > .2) {
                 arr[1] = vbe * ce.NPN > .2 ? "saturation" : "reverse active";
             } else {

@@ -2,9 +2,9 @@
 
 namespace Circuit.Elements.Active {
     class TransistorElm : BaseElement {
-        public const int V_B = 0;
-        public const int V_C = 1;
-        public const int V_E = 2;
+        const int IdxB = 0;
+        const int IdxC = 1;
+        const int IdxE = 2;
 
         const double VT = 0.025865;
         const double LEAKAGE = 1e-13; /* 1e-6; */
@@ -19,6 +19,9 @@ namespace Circuit.Elements.Active {
         public double Ic { get; private set; }
         public double Ie { get; private set; }
         public double Ib { get; private set; }
+        public double Vb { get { return Volts[IdxB]; } }
+        public double Vc { get { return Volts[IdxC]; } }
+        public double Ve { get { return Volts[IdxE]; } }
 
         double mFgain;
         double mInv_fgain;
@@ -38,15 +41,15 @@ namespace Circuit.Elements.Active {
             try {
                 mLastVbe = st.nextTokenDouble();
                 mLastVbc = st.nextTokenDouble();
-                Volts[V_B] = 0;
-                Volts[V_C] = -mLastVbe;
-                Volts[V_E] = -mLastVbc;
+                Volts[IdxB] = 0;
+                Volts[IdxC] = -mLastVbe;
+                Volts[IdxE] = -mLastVbc;
                 Hfe = st.nextTokenDouble();
             } catch { }
         }
 
         public override double Power {
-            get { return (Volts[V_B] - Volts[V_E]) * Ib + (Volts[V_C] - Volts[V_E]) * Ic; }
+            get { return (Volts[IdxB] - Volts[IdxE]) * Ib + (Volts[IdxC] - Volts[IdxE]) * Ic; }
         }
 
         public override bool NonLinear { get { return true; } }
@@ -69,18 +72,19 @@ namespace Circuit.Elements.Active {
         }
 
         public override void AnaStamp() {
-            Circuit.StampNonLinear(Nodes[V_B]);
-            Circuit.StampNonLinear(Nodes[V_C]);
-            Circuit.StampNonLinear(Nodes[V_E]);
+            Circuit.StampNonLinear(Nodes[IdxB]);
+            Circuit.StampNonLinear(Nodes[IdxC]);
+            Circuit.StampNonLinear(Nodes[IdxE]);
         }
 
         public override void CirDoStep() {
-            double vbc = Volts[V_B] - Volts[V_C]; /* typically negative */
-            double vbe = Volts[V_B] - Volts[V_E]; /* typically positive */
-            if (Math.Abs(vbc - mLastVbc) > .01 || /* .01 */
-                Math.Abs(vbe - mLastVbe) > .01) {
+            double vbc = Volts[IdxB] - Volts[IdxC]; /* typically negative */
+            double vbe = Volts[IdxB] - Volts[IdxE]; /* typically positive */
+            if (0.01 < Math.Abs(vbc - mLastVbc) || 0.01 < Math.Abs(vbe - mLastVbe)) {
+                /* not converge 0.01 */
                 Circuit.Converged = false;
             }
+
             /* To prevent a possible singular matrix,
              * put a tiny conductance in parallel with each P-N junction. */
             mGmin = LEAKAGE * 0.01;
@@ -101,16 +105,13 @@ namespace Circuit.Elements.Active {
             mLastVbe = vbe;
             double pcoef = VD_COEF * NPN;
             double expbc = Math.Exp(vbc * pcoef);
-            /*if (expbc > 1e13 || Double.isInfinite(expbc))
-             * expbc = 1e13;*/
             double expbe = Math.Exp(vbe * pcoef);
-            /*if (expbe > 1e13 || Double.isInfinite(expbe))
-             * expbe = 1e13;*/
             Ie = NPN * LEAKAGE * (-mInv_fgain * (expbe - 1) + (expbc - 1));
             Ic = NPN * LEAKAGE * ((expbe - 1) - INV_R_GAIN * (expbc - 1));
             Ib = -(Ie + Ic);
             /*Console.WriteLine("gain " + ic/ib);
             Console.WriteLine("T " + vbc + " " + vbe + " " + ie + " " + ic + "\n"); */
+
             double gee = -LEAKAGE * VD_COEF * expbe * mInv_fgain;
             double gec = LEAKAGE * VD_COEF * expbc;
             double gce = -gee * mFgain;
@@ -120,26 +121,21 @@ namespace Circuit.Elements.Active {
             gcc -= mGmin;
             gee -= mGmin;
 
-            /* stamps from page 302 of Pillage.
-             * node 0 is the base,
-             * node 1 the collector,
-             * node 2 the emitter. */
-            Circuit.StampMatrix(Nodes[V_B], Nodes[V_B], -gee - gec - gce - gcc);
-            Circuit.StampMatrix(Nodes[V_B], Nodes[V_C], gec + gcc);
-            Circuit.StampMatrix(Nodes[V_B], Nodes[V_E], gee + gce);
-            Circuit.StampMatrix(Nodes[V_C], Nodes[V_B], gce + gcc);
-            Circuit.StampMatrix(Nodes[V_C], Nodes[V_C], -gcc);
-            Circuit.StampMatrix(Nodes[V_C], Nodes[V_E], -gce);
-            Circuit.StampMatrix(Nodes[V_E], Nodes[V_B], gee + gec);
-            Circuit.StampMatrix(Nodes[V_E], Nodes[V_C], -gec);
-            Circuit.StampMatrix(Nodes[V_E], Nodes[V_E], -gee);
+            Circuit.StampMatrix(Nodes[IdxB], Nodes[IdxB], -gee - gec - gce - gcc);
+            Circuit.StampMatrix(Nodes[IdxB], Nodes[IdxC], gec + gcc);
+            Circuit.StampMatrix(Nodes[IdxB], Nodes[IdxE], gee + gce);
+            Circuit.StampMatrix(Nodes[IdxC], Nodes[IdxB], gce + gcc);
+            Circuit.StampMatrix(Nodes[IdxC], Nodes[IdxC], -gcc);
+            Circuit.StampMatrix(Nodes[IdxC], Nodes[IdxE], -gce);
+            Circuit.StampMatrix(Nodes[IdxE], Nodes[IdxB], gee + gec);
+            Circuit.StampMatrix(Nodes[IdxE], Nodes[IdxC], -gec);
+            Circuit.StampMatrix(Nodes[IdxE], Nodes[IdxE], -gee);
 
             /* we are solving for v(k+1), not delta v, so we use formula
-             * 10.5.13 (from Pillage), multiplying J by v(k) */
-
-            Circuit.StampRightSide(Nodes[V_B], -Ib - (gec + gcc) * vbc - (gee + gce) * vbe);
-            Circuit.StampRightSide(Nodes[V_C], -Ic + gce * vbe + gcc * vbc);
-            Circuit.StampRightSide(Nodes[V_E], -Ie + gee * vbe + gec * vbc);
+             * multiplying J by v(k) */
+            Circuit.StampRightSide(Nodes[IdxB], -Ib - (gec + gcc) * vbc - (gee + gce) * vbe);
+            Circuit.StampRightSide(Nodes[IdxC], -Ic + gce * vbe + gcc * vbc);
+            Circuit.StampRightSide(Nodes[IdxE], -Ie + gee * vbe + gec * vbc);
         }
 
         public override void CirStepFinished() {
@@ -150,20 +146,8 @@ namespace Circuit.Elements.Active {
         }
 
         public override void Reset() {
-            Volts[V_B] = Volts[V_C] = Volts[V_E] = 0;
+            Volts[IdxB] = Volts[IdxC] = Volts[IdxE] = 0;
             mLastVbc = mLastVbe = 0;
-        }
-
-        public override double GetScopeValue(Scope.VAL x) {
-            switch (x) {
-            case Scope.VAL.VBE:
-                return Volts[V_B] - Volts[V_E];
-            case Scope.VAL.VBC:
-                return Volts[V_B] - Volts[V_C];
-            case Scope.VAL.VCE:
-                return Volts[V_C] - Volts[V_E];
-            }
-            return 0;
         }
 
         public void Setup() {
