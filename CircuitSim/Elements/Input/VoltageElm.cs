@@ -86,8 +86,8 @@ namespace Circuit.Elements.Input {
                 return mBias;
             }
 
-            double t = 2 * Math.PI * CirSimForm.Sim.Time;
-            double wt = t * mFrequency + mPhaseShift;
+            double t = CirSimForm.Sim.Time;
+            double wt = 2 * Math.PI * mFrequency * t + mPhaseShift;
 
             switch (waveform) {
             case WAVEFORM.DC:
@@ -103,8 +103,8 @@ namespace Circuit.Elements.Input {
             case WAVEFORM.PULSE:
                 return ((wt % (2 * Math.PI)) < ((2 * Math.PI) * mDutyCycle)) ? mMaxVoltage + mBias : mBias;
             case WAVEFORM.PWM_BOTH: {
-                var maxfreq = 1 / (32 * ControlPanel.TimeStep);
-                var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % (2 * Math.PI));
+                var maxwt = 2 * Math.PI * t / (32 * ControlPanel.TimeStep);
+                var cr = 0.5 - 0.5 * triangleFunc(maxwt % (2 * Math.PI));
                 var sg = mDutyCycle * Math.Sin(wt);
                 if (0.0 <= sg) {
                     return mBias + (cr < sg ? mMaxVoltage : 0);
@@ -113,8 +113,8 @@ namespace Circuit.Elements.Input {
                 }
             }
             case WAVEFORM.PWM_POSITIVE: {
-                var maxfreq = 1 / (32 * ControlPanel.TimeStep);
-                var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % (2 * Math.PI));
+                var maxwt = 2 * Math.PI * t / (32 * ControlPanel.TimeStep);
+                var cr = 0.5 - 0.5 * triangleFunc(maxwt % (2 * Math.PI));
                 var sg = mDutyCycle * Math.Sin(wt);
                 if (0.0 <= sg) {
                     return mBias + (cr < sg ? mMaxVoltage : 0);
@@ -123,8 +123,8 @@ namespace Circuit.Elements.Input {
                 }
             }
             case WAVEFORM.PWM_NEGATIVE: {
-                var maxfreq = 1 / (32 * ControlPanel.TimeStep);
-                var cr = 0.5 - 0.5 * triangleFunc(t * maxfreq % (2 * Math.PI));
+                var maxwt = 2 * Math.PI * t / (32 * ControlPanel.TimeStep);
+                var cr = 0.5 - 0.5 * triangleFunc(maxwt % (2 * Math.PI));
                 var sg = mDutyCycle * Math.Sin(wt);
                 if (0.0 <= sg) {
                     return mBias;
