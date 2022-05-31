@@ -19,8 +19,7 @@ namespace Circuit {
         readonly double[] MULTA = new double[] { 1.5, 2.0, 1.5 };
 
         public enum VAL {
-            INVALID,
-            VBE, VBC, VCE,
+            INVALID
         }
         #endregion
 
@@ -99,9 +98,9 @@ namespace Circuit {
             set {
                 mShowV = value;
                 if (mShowV && !mShowingVoltageAndMaybeCurrent) {
-                    _setValue(0);
+                    setValue();
                 }
-                _calcVisiblePlots();
+                calcVisiblePlots();
             }
         }
         public bool ShowFFT {
@@ -162,7 +161,7 @@ namespace Circuit {
                     }
                 }
                 if (removed) {
-                    _calcVisiblePlots();
+                    calcVisiblePlots();
                 }
                 return ret;
             }
@@ -258,8 +257,8 @@ namespace Circuit {
         public Scope() {
             BoundingBox = new Rectangle(0, 0, 1, 1);
 
-            _allocImage();
-            _initialize();
+            allocImage();
+            initialize();
         }
 
         #region [public method]
@@ -277,9 +276,9 @@ namespace Circuit {
             for (int i = 0; i != mPlots.Count; i++) {
                 mPlots[i].Reset(mScopePointCount, Speed, full);
             }
-            _calcVisiblePlots();
+            calcVisiblePlots();
             mScopeTimeStep = ControlPanel.TimeStep;
-            _allocImage();
+            allocImage();
         }
 
         public void SetRect(Rectangle r) {
@@ -292,12 +291,8 @@ namespace Circuit {
 
         public void SetElm(BaseUI ce) {
             mPlots = new List<ScopePlot>();
-            if (null != ce && (ce is TransistorUI)) {
-                _setValue(VAL.VCE, ce);
-            } else {
-                _setValue(0, ce);
-            }
-            _initialize();
+            setValue(ce);
+            initialize();
         }
 
         public bool ShowingValue(VAL v) {
@@ -313,7 +308,7 @@ namespace Circuit {
             mPlots = mVisiblePlots;
             mPlots.AddRange(s.mVisiblePlots);
             s.mPlots.Clear();
-            _calcVisiblePlots();
+            calcVisiblePlots();
         }
 
         /* separate this scope's plots into separate scopes and return them in arr[pos], arr[pos+1], etc.
@@ -325,7 +320,7 @@ namespace Circuit {
                 }
                 var s = new Scope();
                 var sp = mVisiblePlots[i];
-                s._setValue(sp.Value, sp.Elm);
+                s.setValue(sp.Elm);
                 s.Position = pos;
                 arr[pos++] = s;
                 s.mFlags = mFlags;
@@ -338,7 +333,7 @@ namespace Circuit {
             if (plot < mVisiblePlots.Count) {
                 var p = mVisiblePlots[plot];
                 mPlots.Remove(p);
-                _calcVisiblePlots();
+                calcVisiblePlots();
             }
         }
 
@@ -410,7 +405,7 @@ namespace Circuit {
         }
 
         public void Undump(StringTokenizer st) {
-            _initialize();
+            initialize();
 
             int e = st.nextTokenInt();
             if (e == -1) {
@@ -435,7 +430,7 @@ namespace Circuit {
                     Position = st.nextTokenInt();
                     int sz = st.nextTokenInt();
 
-                    _setValue(value);
+                    setValue();
                     /* setValue(0) creates an extra plot for current, so remove that */
                     while (1 < mPlots.Count) {
                         mPlots.RemoveAt(1);
@@ -485,15 +480,15 @@ namespace Circuit {
                 ResetGraph();
             }
 
-            _drawSettingsWheel(g);
+            drawSettingsWheel(g);
 
             g.LineColor = Color.Red;
 
             g.SetTransform(new Matrix(1, 0, 0, 1, BoundingBox.X, BoundingBox.Y));
 
             if (mShowFFT) {
-                _drawFFTVerticalGridLines(g);
-                _drawFFT(g);
+                drawFFTVerticalGridLines(g);
+                drawFFT(g);
             }
 
             if (mMaxScale) {
@@ -504,42 +499,42 @@ namespace Circuit {
 
             for (int si = 0; si != mVisiblePlots.Count; si++) {
                 var plot = mVisiblePlots[si];
-                _calcPlotScale(plot);
+                calcPlotScale(plot);
                 if (CirSimForm.Sim.ScopeSelected == -1 && plot.Elm != null && plot.Elm.IsMouseElm) {
                     mSomethingSelected = true;
                 }
                 mReduceRange = true;
             }
 
-            _checkForSelection();
+            checkForSelection();
             if (SelectedPlot >= 0) {
                 mSomethingSelected = true;
             }
 
             mDrawGridLines = true;
             if ((ShowMax || ShowMin) && mVisiblePlots.Count > 0) {
-                _calcMaxAndMin();
+                calcMaxAndMin();
             }
 
             if (mShowV) {
                 /* draw volts on top (last), then current underneath, then everything else */
                 for (int i = 0; i != mVisiblePlots.Count; i++) {
                     if (i != SelectedPlot) {
-                        _drawPlot(g, mVisiblePlots[i], false);
+                        drawPlot(g, mVisiblePlots[i], false);
                     }
                 }
                 /* draw selection on top.  only works if selection chosen from scope */
                 if (SelectedPlot >= 0 && SelectedPlot < mVisiblePlots.Count) {
-                    _drawPlot(g, mVisiblePlots[SelectedPlot], true);
+                    drawPlot(g, mVisiblePlots[SelectedPlot], true);
                 }
             }
 
             if (mVisiblePlots.Count > 0) {
-                _drawInfoTexts(g);
+                drawInfoTexts(g);
             }
 
             g.ClearTransform();
-            _drawCrosshairs(g);
+            drawCrosshairs(g);
 
             g.SetTransform(new Matrix(
                 CirSimForm.Sim.Transform[0], CirSimForm.Sim.Transform[1],
@@ -556,7 +551,7 @@ namespace Circuit {
         #endregion
 
         #region [private method]
-        void _initialize() {
+        void initialize() {
             ResetGraph();
             mScale = 5;
             mScale = 0.1;
@@ -568,7 +563,7 @@ namespace Circuit {
             mShowV = true;
         }
 
-        void _setValue(VAL val) {
+        void setValue() {
             if (mPlots.Count > 2 || mPlots.Count == 0) {
                 return;
             }
@@ -576,22 +571,18 @@ namespace Circuit {
             if (mPlots.Count == 2 && !mPlots[1].Elm.Equals(ce)) {
                 return;
             }
-            _setValue(val, ce);
+            setValue(ce);
         }
 
-        void _setValue(VAL val, BaseUI ce) {
+        void setValue(BaseUI ce) {
             mPlots = new List<ScopePlot>();
-            if (val == VAL.INVALID) {
-                mPlots.Add(new ScopePlot(ce, 0));
-            } else {
-                mPlots.Add(new ScopePlot(ce, val));
-                mShowV = true;
-            }
-            _calcVisiblePlots();
+            mPlots.Add(new ScopePlot(ce, 0));
+            mShowV = true;
+            calcVisiblePlots();
             ResetGraph();
         }
 
-        void _calcVisiblePlots() {
+        void calcVisiblePlots() {
             mVisiblePlots = new List<ScopePlot>();
             int vc = 0;
             int oc = 0;
@@ -608,7 +599,7 @@ namespace Circuit {
         }
 
         /* calculate maximum and minimum values for all plots of given units */
-        void _calcMaxAndMin() {
+        void calcMaxAndMin() {
             mMaxValue = -1e8;
             mMinValue = 1e8;
             for (int si = 0; si != mVisiblePlots.Count; si++) {
@@ -629,7 +620,7 @@ namespace Circuit {
         }
 
         /* adjust scale of a plot */
-        void _calcPlotScale(ScopePlot plot) {
+        void calcPlotScale(ScopePlot plot) {
             if (ManualScale) {
                 return;
             }
@@ -660,7 +651,7 @@ namespace Circuit {
         }
 
         /* find selected plot */
-        void _checkForSelection() {
+        void checkForSelection() {
             if (CirSimForm.Sim.DialogIsShowing()) {
                 return;
             }
@@ -691,13 +682,38 @@ namespace Circuit {
         #endregion
 
         #region Draw Utils
-        void _allocImage() {
+        void allocImage() {
             if (mContext == null) {
                 mContext = CustomGraphics.FromImage(BoundingBox.Width, BoundingBox.Height);
             }
         }
 
-        void _drawCrosshairs(CustomGraphics g) {
+        void drawSettingsWheel(CustomGraphics g) {
+            const int outR = 6 * 18 / 16;
+            const int inR = 4 * 18 / 16;
+            const int inR45 = 3 * 18 / 16;
+            const int outR45 = 4 * 18 / 16;
+            if (mShowSettingsWheel) {
+                if (CursorInSettingsWheel) {
+                    g.LineColor = Color.Cyan;
+                } else {
+                    g.LineColor = Color.DarkGray;
+                }
+                g.SetTransform(new Matrix(1, 0, 0, 1, BoundingBox.X + 12, BoundingBox.Y + BoundingBox.Height - 16));
+                g.DrawCircle(new Point(), inR);
+                g.DrawLine(-outR, 0, -inR, 0);
+                g.DrawLine(outR, 0, inR, 0);
+                g.DrawLine(0, -outR, 0, -inR);
+                g.DrawLine(0, outR, 0, inR);
+                g.DrawLine(-outR45, -outR45, -inR45, -inR45);
+                g.DrawLine(outR45, -outR45, inR45, -inR45);
+                g.DrawLine(-outR45, outR45, -inR45, inR45);
+                g.DrawLine(outR45, outR45, inR45, inR45);
+                g.ClearTransform();
+            }
+        }
+
+        void drawCrosshairs(CustomGraphics g) {
             if (CirSimForm.Sim.DialogIsShowing()) {
                 return;
             }
@@ -713,12 +729,12 @@ namespace Circuit {
             int ct = 0;
             int maxy = (BoundingBox.Height - 1) / 2;
             int y = maxy;
-            if (SelectedPlot >= 0) {
+            if (SelectedPlot >= 0 && mShowV) {
                 var plot = mVisiblePlots[SelectedPlot];
                 info[ct++] = plot.GetUnitText(plot.MaxValues[ip]);
                 int maxvy = (int)(mMainGridMult * (plot.MaxValues[ip] - mMainGridMid));
                 g.LineColor = plot.Color;
-                g.FillCircle(CirSimForm.Sim.MouseCursorX, BoundingBox.Y + y - maxvy, 2.5f);
+                g.FillCircle(CirSimForm.Sim.MouseCursorX, BoundingBox.Y + y - maxvy, 3);
             }
             if (mShowFFT) {
                 double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * 2);
@@ -754,7 +770,7 @@ namespace Circuit {
             }
         }
 
-        void _drawPlot(CustomGraphics g, ScopePlot plot, bool selected) {
+        void drawPlot(CustomGraphics g, ScopePlot plot, bool selected) {
             if (plot.Elm == null) {
                 return;
             }
@@ -897,7 +913,7 @@ namespace Circuit {
             }
         }
 
-        void _drawFFTVerticalGridLines(CustomGraphics g) {
+        void drawFFTVerticalGridLines(CustomGraphics g) {
             /* Draw x-grid lines and label the frequencies in the FFT that they point to. */
             int prevEnd = 0;
             int xDivs = 40;
@@ -932,7 +948,7 @@ namespace Circuit {
             }
         }
 
-        void _drawFFT(CustomGraphics g) {
+        void drawFFT(CustomGraphics g) {
             if (mFft == null || mFft.Size != mScopePointCount) {
                 mFft = new FFT(mScopePointCount);
             }
@@ -997,33 +1013,8 @@ namespace Circuit {
             }
         }
 
-        void _drawSettingsWheel(CustomGraphics g) {
-            const int outR = 6 * 18 / 16;
-            const int inR = 4 * 18 / 16;
-            const int inR45 = 3 * 18 / 16;
-            const int outR45 = 4 * 18 / 16;
-            if (mShowSettingsWheel) {
-                if (CursorInSettingsWheel) {
-                    g.LineColor = Color.Cyan;
-                } else {
-                    g.LineColor = Color.DarkGray;
-                }
-                g.SetTransform(new Matrix(1, 0, 0, 1, BoundingBox.X + 12, BoundingBox.Y + BoundingBox.Height - 16));
-                g.DrawCircle(new Point(), inR);
-                g.DrawLine(-outR, 0, -inR, 0);
-                g.DrawLine(outR, 0, inR, 0);
-                g.DrawLine(0, -outR, 0, -inR);
-                g.DrawLine(0, outR, 0, inR);
-                g.DrawLine(-outR45, -outR45, -inR45, -inR45);
-                g.DrawLine(outR45, -outR45, inR45, -inR45);
-                g.DrawLine(-outR45, outR45, -inR45, inR45);
-                g.DrawLine(outR45, outR45, inR45, inR45);
-                g.ClearTransform();
-            }
-        }
-
         /* calc RMS and display it */
-        void _drawRMS(CustomGraphics g) {
+        void drawRMS(CustomGraphics g) {
             var plot = mVisiblePlots[0];
             int i;
             double avg = 0;
@@ -1083,12 +1074,12 @@ namespace Circuit {
             double rms;
             if (waveCount > 1) {
                 rms = Math.Sqrt(endAvg / (end - start));
-                _drawInfoText(g, plot.GetUnitText(rms) + "rms");
+                drawInfoText(g, plot.GetUnitText(rms) + "rms");
             }
         }
 
         /* calc frequency if possible and display it */
-        void _drawFrequency(CustomGraphics g) {
+        void drawFrequency(CustomGraphics g) {
             /* try to get frequency
              * get average */
             double avg = 0;
@@ -1143,11 +1134,11 @@ namespace Circuit {
             }
             /* Console.WriteLine(freq + " " + periodstd + " " + periodct); */
             if (freq != 0) {
-                _drawInfoText(g, Utils.UnitText(freq, "Hz"));
+                drawInfoText(g, Utils.UnitText(freq, "Hz"));
             }
         }
 
-        void _drawInfoText(CustomGraphics g, string text) {
+        void drawInfoText(CustomGraphics g, string text) {
             if (BoundingBox.Y + BoundingBox.Height <= mTextY + 5) {
                 return;
             }
@@ -1155,7 +1146,7 @@ namespace Circuit {
             mTextY += 15;
         }
 
-        void _drawInfoTexts(CustomGraphics g) {
+        void drawInfoTexts(CustomGraphics g) {
             mTextY = 10;
             var plot = mVisiblePlots[0];
             if (ShowScale) {
@@ -1163,27 +1154,27 @@ namespace Circuit {
                 if (mGridStepY != 0 && (!mShowV)) {
                     vScaleText = " V=" + plot.GetUnitText(mGridStepY) + "/div";
                 }
-                _drawInfoText(g, "H=" + Utils.UnitText(mGridStepX, "s") + "/div" + vScaleText);
+                drawInfoText(g, "H=" + Utils.UnitText(mGridStepX, "s") + "/div" + vScaleText);
             }
             if (ShowMax) {
-                _drawInfoText(g, plot.GetUnitText(mMaxValue));
+                drawInfoText(g, plot.GetUnitText(mMaxValue));
             }
             if (ShowMin) {
                 int ym = BoundingBox.Height - 5;
                 g.DrawLeftText(plot.GetUnitText(mMinValue), 0, ym);
             }
             if (ShowRMS) {
-                _drawRMS(g);
+                drawRMS(g);
             }
             string t = Text;
             if (t == null) {
                 t = mScopeText;
             }
             if (t != null) {
-                _drawInfoText(g, t);
+                drawInfoText(g, t);
             }
             if (ShowFreq) {
-                _drawFrequency(g);
+                drawFrequency(g);
             }
         }
         #endregion
