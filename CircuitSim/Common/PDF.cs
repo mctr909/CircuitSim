@@ -9,6 +9,9 @@ class PDF {
     public const float Width = 841.92f;
     public const float Height = 595.32f;
     const string FontName = "Arial";
+    const float SCALE = 0.5f;
+    const float TEXT_SCALE_X = SCALE * 0.65f;
+    const float TEXT_SCALE_Y = SCALE * 1.3f;
 
     public class Page : CustomGraphics {
         MemoryStream mMs;
@@ -34,21 +37,19 @@ class PDF {
         }
 
         public override void DrawRightText(string s, int x, int y) {
-            writeText(s, x, y, GetTextSize(s).Width * 0.7f);
+            writeText(s, x, y, GetTextSize(s).Width * TEXT_SCALE_X);
         }
 
         public override void DrawCenteredText(string s, int x, int y) {
-            writeText(s, x, y, GetTextSize(s).Width * 0.7f * 0.5f);
-        }
-
-        public override void DrawCenteredVText(string s, int x, int y) {
-            writeTextV(s, x, y, GetTextSize(s).Width * 0.85f * 0.5f - TextSize * 0.5f);
+            writeText(s, x, y, GetTextSize(s).Width * TEXT_SCALE_X * 0.5f);
         }
 
         public override void DrawCenteredLText(string s, int x, int y) {
-            mSw.WriteLine("/F0 {0} Tf", mTextFontL.Size);
-            mSw.WriteLine("1 0 0 1 {0} {1} Tm", x + GetTextSizeL(s).Width * 0.5f, Height - y);
-            mSw.WriteLine("({0}) Tj", s);
+            writeTextL(s, x, y, GetTextSizeL(s).Width * TEXT_SCALE_X * 0.5f);
+        }
+
+        public override void DrawCenteredVText(string s, int x, int y) {
+            writeTextV(s, x, y, GetTextSize(s).Width * TEXT_SCALE_X * 0.5f);
         }
 
         public override void DrawPost(PointF p) {
@@ -145,31 +146,45 @@ class PDF {
         }
 
         void writeText(string s, float x, float y, float ofsX = 0.0f) {
-            mSw.WriteLine("/F0 {0} Tf", TextSize);
-            mSw.WriteLine("1 0 0 1 {0} {1} Tm", x - ofsX, Height - TextSize * 0.5f - y);
-            mSw.WriteLine("({0}) Tj", s);
+            writeFontSize(TextSize);
+            mSw.WriteLine("1 0 0 1 {0} {1} Tm", x * SCALE - ofsX, Height - TextSize * TEXT_SCALE_X * 0.5f - y * SCALE);
+            writeText(s);
+        }
+
+        void writeTextL(string s, float x, float y, float ofsX = 0.0f) {
+            writeFontSize(LTextSize);
+            mSw.WriteLine("1 0 0 1 {0} {1} Tm", x * SCALE - ofsX, Height - LTextSize * TEXT_SCALE_X * 0.5f - y * SCALE);
+            writeText(s);
         }
 
         void writeTextV(string s, float x, float y, float ofsY = 0.0f) {
-            mSw.WriteLine("/F0 {0} Tf", TextSize);
-            mSw.WriteLine("0 1 -1 0 {0} {1} Tm", x + TextSize * 1.3f, Height - ofsY - y);
-            mSw.WriteLine("({0}) Tj", s);
+            writeFontSize(TextSize);
+            mSw.WriteLine("0 1 -1 0 {0} {1} Tm", x * SCALE + TextSize * TEXT_SCALE_Y, Height - ofsY - y * SCALE);
+            writeText(s);
+        }
+
+        void writeFontSize(float size) {
+            mSw.WriteLine("/F0 {0} Tf", size * SCALE);
+        }
+
+        void writeText(string text) {
+            mSw.WriteLine("({0}) Tj", text);
         }
 
         void writeM(float x, float y) {
-            mSw.WriteLine("{0} {1} m", x, Height - y);
+            mSw.WriteLine("{0} {1} m", x * SCALE, Height - y * SCALE);
         }
 
         void writeL(PointF p) {
-            mSw.WriteLine("{0} {1} l", p.X, Height - p.Y);
+            mSw.WriteLine("{0} {1} l", p.X * SCALE, Height - p.Y * SCALE);
         }
 
         void writeLS(float x, float y) {
-            mSw.WriteLine("{0} {1} l S", x, Height - y);
+            mSw.WriteLine("{0} {1} l S", x * SCALE, Height - y * SCALE);
         }
 
         void writeLB(PointF p) {
-            mSw.WriteLine("{0} {1} l b", p.X, Height - p.Y);
+            mSw.WriteLine("{0} {1} l b", p.X * SCALE, Height - p.Y * SCALE);
         }
     }
 

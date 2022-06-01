@@ -12,21 +12,20 @@ using Circuit.Forms;
 namespace Circuit {
     public class Scope {
         #region CONST
-        /* bunch of other flags go here, see dump() */
-        const int FLAG_PLOTS = 4096;  /* new-style dump with multiple plots */
-        /* other flags go here too, see dump() */
+        const int FLAG_PLOTS = 4096;
+        const double Mindb = -100.0;
 
         readonly double[] MULTA = new double[] { 1.5, 2.0, 1.5 };
 
-        const double Mindb = -100.0;
-
         public enum VAL {
-            VOLTAGE
+            VOLTAGE,
+            CURRENT
         }
         #endregion
 
         #region dynamic variable
         FFT mFft;
+        Rectangle mFFTBoundingBox;
 
         CustomGraphics mContext;
 
@@ -48,8 +47,6 @@ namespace Circuit {
         double mMainGridMult;
         double mMainGridMid;
 
-        int mTextY;
-
         bool mDrawGridLines;
         bool mSomethingSelected;
         bool mMaxScale;
@@ -61,8 +58,6 @@ namespace Circuit {
         #region [public property]
         public int Position { get; set; }
         public Rectangle BoundingBox { get; private set; }
-        public Rectangle FFTBoundingBox { get; private set; }
-
         public int RightEdge { get { return BoundingBox.X + BoundingBox.Width; } }
         public int Speed {
             get { return mSpeed; }
@@ -260,7 +255,6 @@ namespace Circuit {
 
         public Scope() {
             BoundingBox = new Rectangle(0, 0, 1, 1);
-
             allocImage();
             initialize();
         }
@@ -291,7 +285,7 @@ namespace Circuit {
             if (BoundingBox.Width != w) {
                 ResetGraph();
             }
-            FFTBoundingBox = new Rectangle(40, 0, r.Width - 40, r.Height - 16);
+            mFFTBoundingBox = new Rectangle(40, 0, r.Width - 40, r.Height - 16);
         }
 
         public void SetElm(BaseUI ce) {
@@ -342,7 +336,6 @@ namespace Circuit {
             }
         }
 
-        /* called for each timestep */
         public void TimeStep() {
             for (int i = 0; i != mPlots.Count; i++) {
                 mPlots[i].TimeStep();
@@ -350,11 +343,6 @@ namespace Circuit {
         }
 
         public void MaxScale() {
-            /* toggle max scale.  This isn't on by default because, for the examples, we sometimes want two plots
-             * matched to the same scale so we can show one is larger.  Also, for some fast-moving scopes
-             * (like for AM detector), the amplitude varies over time but you can't see that if the scale is
-             * constantly adjusting.  It's also nice to set the default scale to hide noise and to avoid
-             * having the scale moving around a lot when a circuit starts up. */
             mMaxScale = !mMaxScale;
             mShowNegative = false;
         }
@@ -743,11 +731,11 @@ namespace Circuit {
             }
             if (mShowFFT) {
                 double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * 2);
-                var posX = CirSimForm.Sim.MouseCursorX - FFTBoundingBox.X;
+                var posX = CirSimForm.Sim.MouseCursorX - mFFTBoundingBox.X;
                 if (posX < 0) {
                     posX = 0;
                 }
-                info[ct++] = Utils.UnitText(maxFrequency * posX / FFTBoundingBox.Width, "Hz");
+                info[ct++] = Utils.UnitText(maxFrequency * posX / mFFTBoundingBox.Width, "Hz");
             }
 
             int szw = 0, szh = 15 * ct;
@@ -923,13 +911,13 @@ namespace Circuit {
             const int yDivs = 5;
             int prevEnd = 0;
             double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * xDivs * 2);
-            var gridBottom = FFTBoundingBox.Height - 1;
+            var gridBottom = mFFTBoundingBox.Height - 1;
             g.LineColor = CustomGraphics.GrayColor;
             g.DrawLine(0, 0, BoundingBox.Width, 0);
             g.DrawLine(0, gridBottom, BoundingBox.Width, gridBottom);
-            g.DrawLine(FFTBoundingBox.X, 0, FFTBoundingBox.X, BoundingBox.Height);
+            g.DrawLine(mFFTBoundingBox.X, 0, mFFTBoundingBox.X, BoundingBox.Height);
             for (int i = 0; i < xDivs; i++) {
-                int x = FFTBoundingBox.X + FFTBoundingBox.Width * i / xDivs;
+                int x = mFFTBoundingBox.X + mFFTBoundingBox.Width * i / xDivs;
                 if (x < prevEnd) {
                     continue;
                 }
@@ -942,7 +930,7 @@ namespace Circuit {
                 g.DrawLeftText(s, x, BoundingBox.Height - 10);
             }
             for (int i = 1; i < yDivs; i++) {
-                int y = FFTBoundingBox.Height * i / yDivs;
+                int y = mFFTBoundingBox.Height * i / yDivs;
                 string s;
                 if (LogSpectrum) {
                     s = (Mindb * i / yDivs).ToString() + "db";
@@ -981,9 +969,9 @@ namespace Circuit {
                     maxM = m;
                 }
             }
-            var bottom = FFTBoundingBox.Height - 1;
-            var scaleX = 2.0f * FFTBoundingBox.Width / mScopePointCount;
-            var x0 = 1.0f * FFTBoundingBox.X;
+            var bottom = mFFTBoundingBox.Height - 1;
+            var scaleX = 2.0f * mFFTBoundingBox.Width / mScopePointCount;
+            var x0 = 1.0f * mFFTBoundingBox.X;
             var x1 = x0;
             var y0 = 0.0f;
             g.LineColor = Color.Red;
@@ -1024,8 +1012,7 @@ namespace Circuit {
             }
         }
 
-        /* calc RMS and display it */
-        void drawRMS(CustomGraphics g) {
+        string calcRMS() {
             var plot = mVisiblePlots[0];
             int i;
             double avg = 0;
@@ -1078,19 +1065,19 @@ namespace Circuit {
                     }
                 }
                 if (waveCount > 0) {
-                    double m = (maxV[ip] + minV[ip]) * .5;
+                    var m = (maxV[ip] + minV[ip]) * .5;
                     avg += m * m;
                 }
             }
-            double rms;
-            if (waveCount > 1) {
-                rms = Math.Sqrt(endAvg / (end - start));
-                drawInfoText(g, plot.GetUnitText(rms) + "rms");
+            if (1 < waveCount) {
+                var rms = Math.Sqrt(endAvg / (end - start));
+                return plot.GetUnitText(rms) + "rms";
+            } else {
+                return "";
             }
         }
 
-        /* calc frequency if possible and display it */
-        void drawFrequency(CustomGraphics g) {
+        string calcFrequency() {
             /* try to get frequency
              * get average */
             double avg = 0;
@@ -1144,27 +1131,22 @@ namespace Circuit {
                 freq = 0;
             }
             /* Console.WriteLine(freq + " " + periodstd + " " + periodct); */
-            if (freq != 0) {
-                drawInfoText(g, Utils.UnitText(freq, "Hz"));
+            if (0 == freq) {
+                return "";
+            } else {
+                return Utils.UnitText(freq, "Hz");
             }
-        }
-
-        void drawInfoText(CustomGraphics g, string text) {
-            if (BoundingBox.Y + BoundingBox.Height <= mTextY + 5) {
-                return;
-            }
-            g.DrawLeftText(text, 0, mTextY);
-            mTextY += 12;
         }
 
         void drawInfoTexts(CustomGraphics g) {
             string t = Text;
-            if (t == null) {
+            if (string.IsNullOrEmpty(t)) {
                 t = mScopeText;
             }
-            mTextY = 10;
-            if (t != null) {
-                drawInfoText(g, t);
+            var textY = 8;
+            if (!string.IsNullOrEmpty(t)) {
+                g.DrawLeftText(t, 0, textY);
+                textY += 12;
             }
             var plot = mVisiblePlots[0];
             if (mShowV && ShowScale) {
@@ -1172,20 +1154,23 @@ namespace Circuit {
                 if (mGridStepY != 0) {
                     vScaleText = ", V=" + plot.GetUnitText(mGridStepY) + "/div";
                 }
-                drawInfoText(g, "H=" + Utils.UnitText(mGridStepX, "s") + "/div" + vScaleText);
+                g.DrawLeftText("H=" + Utils.UnitText(mGridStepX, "s") + "/div" + vScaleText, 0, textY);
+                textY += 12;
             }
             if (mShowV && ShowMax) {
-                drawInfoText(g, plot.GetUnitText(mMaxValue));
+                g.DrawLeftText(plot.GetUnitText(mMaxValue), 0, textY);
+                textY += 12;
             }
             if (mShowV && ShowMin) {
-                int ym = BoundingBox.Height - 12;
+                int ym = BoundingBox.Height - 8;
                 g.DrawLeftText(plot.GetUnitText(mMinValue), 0, ym);
             }
             if (ShowRMS) {
-                drawRMS(g);
+                g.DrawLeftText(calcRMS(), 0, textY);
+                textY += 12;
             }
             if (ShowFreq) {
-                drawFrequency(g);
+                g.DrawLeftText(calcFrequency(), 0, textY);
             }
         }
         #endregion

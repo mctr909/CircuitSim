@@ -21,7 +21,7 @@ namespace Circuit {
             FormatFlags = StringFormatFlags.DirectionVertical,
         };
 
-        protected static readonly Font mTextFontL = new Font("Arial", 11.0f);
+        protected static Font mTextFontL = new Font("Arial", 11.0f);
 
         static Font mTextFont = new Font("Arial", 9.0f);
         static Brush mTextBrush = Brushes.Black;
@@ -59,7 +59,12 @@ namespace Circuit {
                 mTextFont = new Font(mTextFont.Name, value);
             }
         }
-
+        public static float LTextSize {
+            get { return mTextFontL.Size; }
+            set {
+                mTextFontL = new Font(mTextFontL.Name, value);
+            }
+        }
         public bool DoPrint { get; set; } = false;
         public Color PostColor {
             get { return mPenPost.Color; }

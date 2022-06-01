@@ -2242,9 +2242,9 @@ namespace Circuit {
             g.SetTransform(new Matrix(Transform[0], Transform[1], Transform[2], Transform[3], Transform[4], Transform[5]));
             {
                 var pdfX0 = 0;
-                var pdfX1 = (int)PDF.Width;
+                var pdfX1 = (int)PDF.Width * 2;
                 var pdfY0 = 0;
-                var pdfY1 = (int)PDF.Height;
+                var pdfY1 = (int)PDF.Height * 2;
                 g.LineColor = Color.Yellow;
                 g.DrawLine(pdfX0, pdfY0, pdfX1, pdfY0);
                 g.DrawLine(pdfX1, pdfY0, pdfX1, pdfY1);
@@ -2402,6 +2402,7 @@ namespace Circuit {
                 pdf.AddPage(pdfG);
                 var saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Filter = "PDFファイル(*.pdf)|*.pdf";
+                saveFileDialog.FileName = Path.GetFileNameWithoutExtension(Text);
                 saveFileDialog.ShowDialog();
                 pdf.Save(saveFileDialog.FileName);
                 BaseUI.Context = CustomGraphics.FromImage(g.Width, g.Height);

@@ -198,19 +198,19 @@ namespace Circuit {
         }
 
         public static string VoltageText(double v) {
-            return unitText(v, "V");
+            return unitText(v, "V", false);
         }
 
         public static string VoltageAbsText(double v) {
-            return unitText(Math.Abs(v), "V");
+            return unitText(Math.Abs(v), "V", false);
         }
 
         public static string CurrentText(double i) {
-            return unitText(i, "A");
+            return unitText(i, "A", false);
         }
 
         public static string CurrentAbsText(double i) {
-            return unitText(Math.Abs(i), "A");
+            return unitText(Math.Abs(i), "A", false);
         }
 
         public static string UnitText(double v, string u = "") {
@@ -228,7 +228,7 @@ namespace Circuit {
                 }
                 return h + ":" + ((m >= 10) ? "" : "0") + m + ":" + ((v >= 10) ? "" : "0") + v.ToString("0.00");
             }
-            return unitText(v, "s");
+            return unitText(v, "s", false);
         }
 
         public static string UnitTextWithScale(double val, string utext, E_SCALE scale) {
