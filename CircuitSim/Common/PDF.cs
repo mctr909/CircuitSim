@@ -9,18 +9,24 @@ class PDF {
     public const float Width = 841.92f;
     public const float Height = 595.32f;
     const string FontName = "Arial";
-    const float SCALE = 0.5f;
-    const float TEXT_SCALE_X = SCALE * 0.65f;
-    const float TEXT_SCALE_Y = SCALE * 1.3f;
-
+    
     public class Page : CustomGraphics {
+        public float Scale { get; private set; }
+        readonly float FONT_SCALE;
+        readonly float TEXT_SCALE_X;
+        readonly float TEXT_SCALE_Y;
+        
         MemoryStream mMs;
         StreamWriter mSw;
 
-        public Page(int width, int height) : base(width, height) {
+        public Page(int width, int height, float scale = 0.75f) : base(width, height) {
             mMs = new MemoryStream();
             mSw = new StreamWriter(mMs);
             mSw.WriteLine("0 w");
+            Scale = scale;
+            FONT_SCALE = Scale * 1.25f;
+            TEXT_SCALE_X = FONT_SCALE * 0.65f;
+            TEXT_SCALE_Y = FONT_SCALE * 1.2f;
         }
 
         internal void Flush(StreamWriter sw) {
@@ -147,24 +153,24 @@ class PDF {
 
         void writeText(string s, float x, float y, float ofsX = 0.0f) {
             writeFontSize(TextSize);
-            mSw.WriteLine("1 0 0 1 {0} {1} Tm", x * SCALE - ofsX, Height - TextSize * TEXT_SCALE_X * 0.5f - y * SCALE);
+            mSw.WriteLine("1 0 0 1 {0} {1} Tm", x * Scale - ofsX, Height - TextSize * TEXT_SCALE_X * 0.5f - y * Scale);
             writeText(s);
         }
 
         void writeTextL(string s, float x, float y, float ofsX = 0.0f) {
             writeFontSize(LTextSize);
-            mSw.WriteLine("1 0 0 1 {0} {1} Tm", x * SCALE - ofsX, Height - LTextSize * TEXT_SCALE_X * 0.5f - y * SCALE);
+            mSw.WriteLine("1 0 0 1 {0} {1} Tm", x * Scale - ofsX, Height - LTextSize * TEXT_SCALE_X * 0.5f - y * Scale);
             writeText(s);
         }
 
         void writeTextV(string s, float x, float y, float ofsY = 0.0f) {
             writeFontSize(TextSize);
-            mSw.WriteLine("0 1 -1 0 {0} {1} Tm", x * SCALE + TextSize * TEXT_SCALE_Y, Height - ofsY - y * SCALE);
+            mSw.WriteLine("0 1 -1 0 {0} {1} Tm", x * Scale + TextSize * TEXT_SCALE_Y, Height - ofsY - y * Scale);
             writeText(s);
         }
 
         void writeFontSize(float size) {
-            mSw.WriteLine("/F0 {0} Tf", size * SCALE);
+            mSw.WriteLine("/F0 {0} Tf", size * FONT_SCALE);
         }
 
         void writeText(string text) {
@@ -172,19 +178,19 @@ class PDF {
         }
 
         void writeM(float x, float y) {
-            mSw.WriteLine("{0} {1} m", x * SCALE, Height - y * SCALE);
+            mSw.WriteLine("{0} {1} m", x * Scale, Height - y * Scale);
         }
 
         void writeL(PointF p) {
-            mSw.WriteLine("{0} {1} l", p.X * SCALE, Height - p.Y * SCALE);
+            mSw.WriteLine("{0} {1} l", p.X * Scale, Height - p.Y * Scale);
         }
 
         void writeLS(float x, float y) {
-            mSw.WriteLine("{0} {1} l S", x * SCALE, Height - y * SCALE);
+            mSw.WriteLine("{0} {1} l S", x * Scale, Height - y * Scale);
         }
 
         void writeLB(PointF p) {
-            mSw.WriteLine("{0} {1} l b", p.X * SCALE, Height - p.Y * SCALE);
+            mSw.WriteLine("{0} {1} l b", p.X * Scale, Height - p.Y * Scale);
         }
     }
 

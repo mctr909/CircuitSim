@@ -8,10 +8,6 @@ using Circuit.Elements.Passive;
 
 namespace Circuit {
     public enum ELEMENT_MENU_ITEM {
-        CUT,
-        COPY,
-        DUPLICATE,
-        DELETE,
         EDIT,
         SLIDERS,
         FLIP,
@@ -21,7 +17,7 @@ namespace Circuit {
     }
 
     public class ElementPopupMenu {
-        List<ToolStripMenuItem> mMenuItems;
+        List<ToolStripItem> mMenuItems;
         ToolStripMenuItem mEdit;
         ToolStripMenuItem mScope;
         ToolStripMenuItem mFloatScope;
@@ -30,48 +26,34 @@ namespace Circuit {
         ToolStripMenuItem mSlider;
 
         public ElementPopupMenu(CirSimForm sim) {
-            mMenuItems = new List<ToolStripMenuItem>();
-            mMenuItems.Add(mEdit = new ToolStripMenuItem() { Text = "Edit..." });
+            mMenuItems = new List<ToolStripItem>();
+            mMenuItems.Add(mEdit = new ToolStripMenuItem() { Text = "編集" });
             mEdit.Click += new EventHandler((s, e) => {
                 sim.Performed(ELEMENT_MENU_ITEM.EDIT);
             });
-            var cut = new ToolStripMenuItem() { Text = "Cut" };
-            mMenuItems.Add(cut);
-            cut.Click += new EventHandler((s, e) => {
-                sim.Performed(ELEMENT_MENU_ITEM.CUT);
-            });
-            var copy = new ToolStripMenuItem() { Text = "Copy" };
-            mMenuItems.Add(copy);
-            copy.Click += new EventHandler((s, e) => {
-                sim.Performed(ELEMENT_MENU_ITEM.COPY);
-            });
-            var delete = new ToolStripMenuItem() { Text = "Delete" };
-            mMenuItems.Add(delete);
-            delete.Click += new EventHandler((s, e) => {
-                sim.Performed(ELEMENT_MENU_ITEM.DELETE);
-            });
-            var dup = new ToolStripMenuItem() { Text = "Duplicate" };
-            mMenuItems.Add(dup);
-            dup.Click += new EventHandler((s, e) => {
-                sim.Performed(ELEMENT_MENU_ITEM.DUPLICATE);
-            });
-            mMenuItems.Add(mScope = new ToolStripMenuItem() { Text = "View in Scope" });
-            mScope.Click += new EventHandler((s, e) => {
-                sim.Performed(ELEMENT_MENU_ITEM.VIEW_IN_SCOPE);
-            });
-            mMenuItems.Add(mFloatScope = new ToolStripMenuItem() { Text = "View in Undocked Scope" });
-            mFloatScope.Click += new EventHandler((s, e) => {
-                sim.Performed(ELEMENT_MENU_ITEM.VIEW_IN_FLOAT_SCOPE);
-            });
-            mMenuItems.Add(mFlip = new ToolStripMenuItem() { Text = "Swap Terminals" });
-            mFlip.Click += new EventHandler((s, e) => {
-                sim.Performed(ELEMENT_MENU_ITEM.FLIP);
-            });
-            mMenuItems.Add(mSplit = new ToolStripMenuItem() { Text = "Split Wire" });
+            mMenuItems.Add(new ToolStripSeparator());
+
+            mMenuItems.Add(mSplit = new ToolStripMenuItem() { Text = "線の分割" });
             mSplit.Click += new EventHandler((s, e) => {
                 sim.Performed(ELEMENT_MENU_ITEM.SPLIT);
             });
-            mMenuItems.Add(mSlider = new ToolStripMenuItem() { Text = "Sliders..." });
+            mMenuItems.Add(mFlip = new ToolStripMenuItem() { Text = "端子の入れ替え" });
+            mFlip.Click += new EventHandler((s, e) => {
+                sim.Performed(ELEMENT_MENU_ITEM.FLIP);
+            });
+            mMenuItems.Add(new ToolStripSeparator());
+
+            mMenuItems.Add(mScope = new ToolStripMenuItem() { Text = "画面下部にスコープを表示" });
+            mScope.Click += new EventHandler((s, e) => {
+                sim.Performed(ELEMENT_MENU_ITEM.VIEW_IN_SCOPE);
+            });
+            mMenuItems.Add(mFloatScope = new ToolStripMenuItem() { Text = "任意の場所にスコープを表示" });
+            mFloatScope.Click += new EventHandler((s, e) => {
+                sim.Performed(ELEMENT_MENU_ITEM.VIEW_IN_FLOAT_SCOPE);
+            });
+            mMenuItems.Add(new ToolStripSeparator());
+
+            mMenuItems.Add(mSlider = new ToolStripMenuItem() { Text = "スライダーを作成" });
             mSlider.Click += new EventHandler((s, e) => {
                 sim.Performed(ELEMENT_MENU_ITEM.SLIDERS);
             });

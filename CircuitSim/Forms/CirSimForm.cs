@@ -288,10 +288,6 @@ namespace Circuit {
                 PushUndo();
                 doDelete(true);
                 break;
-            case MENU_ITEM.DUPLICATE:
-                mMenuElm = null;
-                doDuplicate();
-                break;
             case MENU_ITEM.SELECT_ALL:
                 doSelectAll();
                 break;
@@ -337,25 +333,11 @@ namespace Circuit {
             if (item == ELEMENT_MENU_ITEM.EDIT) {
                 doEdit(mMenuElm, mContextMenuLocation);
             }
-            if (item == ELEMENT_MENU_ITEM.CUT) {
-                doCut();
-            }
-            if (item == ELEMENT_MENU_ITEM.COPY) {
-                doCopy();
-            }
-            if (item == ELEMENT_MENU_ITEM.DELETE) {
-                PushUndo();
-                doDelete(true);
-            }
-            if (item == ELEMENT_MENU_ITEM.DUPLICATE) {
-                doDuplicate();
-            }
-
-            if (item == ELEMENT_MENU_ITEM.FLIP) {
-                doFlip();
-            }
             if (item == ELEMENT_MENU_ITEM.SPLIT) {
                 doSplit(mMenuElm);
+            }
+            if (item == ELEMENT_MENU_ITEM.FLIP) {
+                doFlip();
             }
             if (item == ELEMENT_MENU_ITEM.SLIDERS) {
                 doSliders(mMenuElm, mContextMenuLocation);
@@ -2009,12 +1991,6 @@ namespace Circuit {
                 readClipboardFromStorage();
             }
             mPasteItem.Enabled = !string.IsNullOrEmpty(mClipboard);
-        }
-
-        void doDuplicate() {
-            setMenuSelection();
-            string s = copyOfSelectedElms();
-            doPaste(s);
         }
 
         void doPaste(string dump) {

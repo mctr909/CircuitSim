@@ -28,7 +28,6 @@ namespace Circuit {
         COPY,
         PASTE,
         SELECT_ALL,
-        DUPLICATE,
         DELETE,
         UNDO,
         REDO,
@@ -388,11 +387,10 @@ namespace Circuit {
             var editMenuBar = new ToolStripMenuItem();
             editMenuBar.Text = "編集(E)";
             editMenuBar.Font = menuFont;
+            addMenuItem(editMenuBar, "全選択(A)", MENU_ITEM.SELECT_ALL, new SHORTCUT(Keys.A));
             addMenuItem(editMenuBar, "切り取り(T)", MENU_ITEM.CUT, new SHORTCUT(Keys.X));
             addMenuItem(editMenuBar, "コピー(C)", MENU_ITEM.COPY, new SHORTCUT(Keys.C));
             addMenuItem(editMenuBar, "貼り付け(P)", MENU_ITEM.PASTE, new SHORTCUT(Keys.V));
-            addMenuItem(editMenuBar, "全選択(A)", MENU_ITEM.SELECT_ALL, new SHORTCUT(Keys.A));
-            addMenuItem(editMenuBar, "複製(D)", MENU_ITEM.DUPLICATE, new SHORTCUT(Keys.D));
             addMenuItem(editMenuBar, "削除(L)", MENU_ITEM.DELETE, new SHORTCUT(Keys.Delete, false));
             editMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addMenuItem(editMenuBar, "元に戻す(U)", MENU_ITEM.UNDO, new SHORTCUT(Keys.Z));
