@@ -291,7 +291,7 @@ namespace Circuit {
             if (BoundingBox.Width != w) {
                 ResetGraph();
             }
-            FFTBoundingBox = new Rectangle(r.X + 40, r.Y, r.Width - 40, r.Height - 16);
+            FFTBoundingBox = new Rectangle(40, 0, r.Width - 40, r.Height - 16);
         }
 
         public void SetElm(BaseUI ce) {
@@ -487,15 +487,6 @@ namespace Circuit {
 
             drawSettingsWheel(g);
 
-            g.LineColor = Color.Red;
-
-            g.SetTransform(new Matrix(1, 0, 0, 1, BoundingBox.X, BoundingBox.Y));
-
-            if (mShowFFT) {
-                drawFFTGridLines(g);
-                drawFFT(g);
-            }
-
             if (mMaxScale) {
                 mScale = 1e-4;
             }
@@ -521,24 +512,28 @@ namespace Circuit {
                 calcMaxAndMin();
             }
 
-            if (mShowV) {
-                /* draw volts on top (last), then current underneath, then everything else */
-                for (int i = 0; i != mVisiblePlots.Count; i++) {
-                    if (i != SelectedPlot) {
-                        drawPlot(g, mVisiblePlots[i], false);
+            g.SetTransform(new Matrix(1, 0, 0, 1, BoundingBox.X, BoundingBox.Y));
+            {
+                if (mShowFFT) {
+                    drawFFTGridLines(g);
+                    drawFFT(g);
+                }
+                if (mShowV) {
+                    /* draw volts on top (last), then current underneath, then everything else */
+                    for (int i = 0; i != mVisiblePlots.Count; i++) {
+                        if (i != SelectedPlot) {
+                            drawPlot(g, mVisiblePlots[i], false);
+                        }
+                    }
+                    /* draw selection on top.  only works if selection chosen from scope */
+                    if (SelectedPlot >= 0 && SelectedPlot < mVisiblePlots.Count) {
+                        drawPlot(g, mVisiblePlots[SelectedPlot], true);
                     }
                 }
-                /* draw selection on top.  only works if selection chosen from scope */
-                if (SelectedPlot >= 0 && SelectedPlot < mVisiblePlots.Count) {
-                    drawPlot(g, mVisiblePlots[SelectedPlot], true);
+                if (mVisiblePlots.Count > 0) {
+                    drawInfoTexts(g);
                 }
             }
-
-
-            if (mVisiblePlots.Count > 0) {
-                drawInfoTexts(g);
-            }
-
             g.ClearTransform();
             drawCrosshairs(g);
 
@@ -928,7 +923,10 @@ namespace Circuit {
             const int yDivs = 5;
             int prevEnd = 0;
             double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * xDivs * 2);
+            var gridBottom = FFTBoundingBox.Height - 1;
             g.LineColor = CustomGraphics.GrayColor;
+            g.DrawLine(0, 0, BoundingBox.Width, 0);
+            g.DrawLine(0, gridBottom, BoundingBox.Width, gridBottom);
             g.DrawLine(FFTBoundingBox.X, 0, FFTBoundingBox.X, BoundingBox.Height);
             for (int i = 0; i < xDivs; i++) {
                 int x = FFTBoundingBox.X + FFTBoundingBox.Width * i / xDivs;
@@ -952,7 +950,7 @@ namespace Circuit {
                     s = (1.0 * (yDivs - i) / yDivs).ToString();
                 }
                 if (i > 0) {
-                    g.DrawLine(BoundingBox.X, y, BoundingBox.Width, y);
+                    g.DrawLine(0, y, BoundingBox.Width, y);
                 }
                 g.DrawLeftText(s, 0, y + 8);
             }
@@ -983,14 +981,14 @@ namespace Circuit {
                     maxM = m;
                 }
             }
+            var bottom = FFTBoundingBox.Height - 1;
             var scaleX = 2.0f * FFTBoundingBox.Width / mScopePointCount;
             var x0 = 1.0f * FFTBoundingBox.X;
             var x1 = x0;
             var y0 = 0.0f;
             g.LineColor = Color.Red;
             if (LogSpectrum) {
-                var ymult = -FFTBoundingBox.Height / Mindb;
-                var y_0db = mScale * ymult;
+                var ymult = -bottom / Mindb;
                 for (int i = 0; i < mScopePointCount / 2; i++) {
                     var mag = mFft.Magnitude(real[i], imag[i]);
                     if (0 == mag) {
@@ -1000,7 +998,7 @@ namespace Circuit {
                     if (db < Mindb) {
                         db = Mindb;
                     }
-                    var y1 = (float)(-db * ymult - y_0db);
+                    var y1 = (float)(-db * ymult);
                     x1 += scaleX;
                     if (0 == i) {
                         g.DrawLine(x0, y1, x1, y1);
@@ -1011,7 +1009,6 @@ namespace Circuit {
                     x0 = x1;
                 }
             } else {
-                var bottom = FFTBoundingBox.Height - 1;
                 for (int i = 0; i < mScopePointCount / 2; i++) {
                     var mag = mFft.Magnitude(real[i], imag[i]);
                     var y1 = bottom - (float)(mag * bottom / maxM);
