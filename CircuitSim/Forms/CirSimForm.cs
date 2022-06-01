@@ -2164,7 +2164,7 @@ namespace Circuit {
             PDF.Page pdfG = null;
             if (g.DoPrint) {
                 g.DoPrint = false;
-                pdfG = new PDF.Page(g.Width, g.Height);
+                pdfG = new PDF.Page(g.Width, g.Height, 0.66f);
                 g = pdfG;
                 BaseUI.Context = pdfG;
             }

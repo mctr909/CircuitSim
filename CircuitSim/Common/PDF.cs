@@ -19,7 +19,7 @@ class PDF {
         MemoryStream mMs;
         StreamWriter mSw;
 
-        public Page(int width, int height, float scale = 0.75f) : base(width, height) {
+        public Page(int width, int height, float scale = 1.0f) : base(width, height) {
             mMs = new MemoryStream();
             mSw = new StreamWriter(mMs);
             mSw.WriteLine("0 w");
