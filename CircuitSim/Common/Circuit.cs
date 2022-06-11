@@ -61,116 +61,6 @@ namespace Circuit {
         public static int SubIterations { get; private set; }
         #endregion
 
-        /* factors a matrix into upper and lower triangular matrices by
-        /* gaussian elimination.  On entry, a[0..n-1][0..n-1] is the
-        /* matrix to be factored.  ipvt[] returns an integer vector of pivot
-        /* indices, used in the lu_solve() routine. */
-        static bool luFactor(double[,] a, int n, int[] ipvt) {
-            /* check for a possible singular matrix by scanning for rows that
-            /* are all zeroes */
-            for (int i = 0; i != n; i++) {
-                bool row_all_zeros = true;
-                for (int j = 0; j != n; j++) {
-                    if (a[i, j] != 0) {
-                        row_all_zeros = false;
-                        break;
-                    }
-                }
-                /* if all zeros, it's a singular matrix */
-                if (row_all_zeros) {
-                    return false;
-                }
-            }
-
-            /* use Crout's method; loop through the columns */
-            for (int j = 0; j != n; j++) {
-                /* calculate upper triangular elements for this column */
-                for (int i = 0; i != j; i++) {
-                    double q = a[i, j];
-                    for (int k = 0; k != i; k++) {
-                        q -= a[i, k] * a[k, j];
-                    }
-                    a[i, j] = q;
-                }
-                /* calculate lower triangular elements for this column */
-                double largest = 0;
-                int largestRow = -1;
-                for (int i = j; i != n; i++) {
-                    double q = a[i, j];
-                    for (int k = 0; k != j; k++) {
-                        q -= a[i, k] * a[k, j];
-                    }
-                    a[i, j] = q;
-                    double x = Math.Abs(q);
-                    if (x >= largest) {
-                        largest = x;
-                        largestRow = i;
-                    }
-                }
-                /* pivoting */
-                if (j != largestRow) {
-                    double x;
-                    for (int k = 0; k != n; k++) {
-                        x = a[largestRow, k];
-                        a[largestRow, k] = a[j, k];
-                        a[j, k] = x;
-                    }
-                }
-                /* keep track of row interchanges */
-                ipvt[j] = largestRow;
-                /* avoid zeros */
-                if (a[j, j] == 0.0) {
-                    Console.WriteLine("avoided zero");
-                    a[j, j] = 1e-18;
-                }
-                if (j != n - 1) {
-                    double mult = 1.0 / a[j, j];
-                    for (int i = j + 1; i != n; i++) {
-                        a[i, j] *= mult;
-                    }
-                }
-            }
-            return true;
-        }
-
-        /* Solves the set of n linear equations using a LU factorization
-        /* previously performed by lu_factor.  On input, b[0..n-1] is the right
-        /* hand side of the equations, and on output, contains the solution. */
-        static void luSolve(double[,] a, int n, int[] ipvt, double[] b) {
-            int i;
-
-            /* find first nonzero b element */
-            for (i = 0; i != n; i++) {
-                int row = ipvt[i];
-                double swap = b[row];
-                b[row] = b[i];
-                b[i] = swap;
-                if (swap != 0) {
-                    break;
-                }
-            }
-
-            int bi = i++;
-            for (; i < n; i++) {
-                int row = ipvt[i];
-                double tot = b[row];
-                b[row] = b[i];
-                /* forward substitution using the lower triangular matrix */
-                for (int j = bi; j < i; j++) {
-                    tot -= a[i, j] * b[j];
-                }
-                b[i] = tot;
-            }
-            for (i = n - 1; i >= 0; i--) {
-                double tot = b[i];
-                /* back-substitution using the upper triangular matrix */
-                for (int j = i + 1; j != n; j++) {
-                    tot -= a[i, j] * b[j];
-                }
-                b[i] = tot / a[i, i];
-            }
-        }
-
         /* simplify the matrix; this speeds things up quite a bit, especially for digital circuits */
         static bool simplifyMatrix(int matrixSize) {
             int matRow;
@@ -928,7 +818,7 @@ namespace Circuit {
             /* if a matrix is linear, we can do the lu_factor here instead of
             /* needing to do it every frame */
             if (!CircuitNonLinear) {
-                if (!luFactor(Matrix, mMatrixSize, mPermute)) {
+                if (!Utils.luFactor(Matrix, mMatrixSize, mPermute)) {
                     Stop("Singular matrix!");
                     return;
                 }
@@ -950,7 +840,7 @@ namespace Circuit {
         }
 
         static public bool Run(bool debugprint) {
-            const int subiterCount = 1000;
+            const int subiterCount = 64;
             int i, j, k, subiter;
             int elmCount = mSim.ElmCount;
             var elmList = mSim.ElmList;
@@ -1007,12 +897,12 @@ namespace Circuit {
                     if (Converged && subiter > 0) {
                         break;
                     }
-                    if (!luFactor(Matrix, mMatrixSize, mPermute)) {
+                    if (!Utils.luFactor(Matrix, mMatrixSize, mPermute)) {
                         Stop("Singular matrix!");
                         return false;
                     }
                 }
-                luSolve(Matrix, mMatrixSize, mPermute, mRightSide);
+                Utils.luSolve(Matrix, mMatrixSize, mPermute, mRightSide);
 
                 for (j = 0; j != mMatrixFullSize; j++) {
                     var ri = mRowInfo[j];
