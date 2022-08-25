@@ -9,6 +9,7 @@ namespace Circuit.Elements.Input {
             TRIANGLE,
             SAWTOOTH,
             PULSE,
+            PULSE_BOTH,
             PWM_BOTH,
             PWM_POSITIVE,
             PWM_NEGATIVE,
@@ -88,6 +89,8 @@ namespace Circuit.Elements.Input {
 
             double t = CirSimForm.Sim.Time;
             double wt = 2 * Math.PI * mFrequency * t + mPhaseShift;
+            double duty = 2 * Math.PI *mDutyCycle;
+            double cycle = wt % (2 * Math.PI);
 
             switch (waveform) {
             case WAVEFORM.DC:
@@ -95,13 +98,19 @@ namespace Circuit.Elements.Input {
             case WAVEFORM.AC:
                 return Math.Sin(wt) * mMaxVoltage + mBias;
             case WAVEFORM.SQUARE:
-                return mBias + ((wt % (2 * Math.PI) > ((2 * Math.PI) * mDutyCycle)) ? -mMaxVoltage : mMaxVoltage);
+                return mBias + (cycle > duty ? -mMaxVoltage : mMaxVoltage);
             case WAVEFORM.TRIANGLE:
-                return mBias + triangleFunc(wt % (2 * Math.PI)) * mMaxVoltage;
+                return mBias + triangleFunc(cycle) * mMaxVoltage;
             case WAVEFORM.SAWTOOTH:
-                return mBias + (wt % (2 * Math.PI)) * (mMaxVoltage / Math.PI) - mMaxVoltage;
+                return mBias + cycle * (mMaxVoltage / Math.PI) - mMaxVoltage;
             case WAVEFORM.PULSE:
-                return ((wt % (2 * Math.PI)) < ((2 * Math.PI) * mDutyCycle)) ? mMaxVoltage + mBias : mBias;
+                return cycle < duty ? (mMaxVoltage + mBias) : mBias;
+            case WAVEFORM.PULSE_BOTH:
+                if (cycle < Math.PI) {
+                    return 2 * cycle < duty ? (mBias + mMaxVoltage) : mBias;
+                } else {
+                    return 2 * (cycle - Math.PI) < duty ? (mBias - mMaxVoltage) : mBias;
+                }
             case WAVEFORM.PWM_BOTH: {
                 var maxwt = 2 * Math.PI * t / (32 * ControlPanel.TimeStep);
                 var cr = 0.5 - 0.5 * triangleFunc(maxwt % (2 * Math.PI));

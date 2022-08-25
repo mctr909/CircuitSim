@@ -31,7 +31,8 @@ namespace Circuit.Elements.Input {
         protected override string dump() {
             var elm = (VoltageElm)Elm;
             /* set flag so we know if duty cycle is correct for pulse waveforms */
-            if (elm.waveform == VoltageElm.WAVEFORM.PULSE) {
+            if (elm.waveform == VoltageElm.WAVEFORM.PULSE ||
+                elm.waveform == VoltageElm.WAVEFORM.PULSE_BOTH) {
                 mFlags |= FLAG_PULSE_DUTY;
             } else {
                 mFlags &= ~FLAG_PULSE_DUTY;
@@ -86,7 +87,8 @@ namespace Circuit.Elements.Input {
                 interpLead(ref mPs1, 0.5);
                 drawWaveform(g, mPs1);
                 string inds;
-                if (0 < elm.mBias || (0 == elm.mBias && VoltageElm.WAVEFORM.PULSE == elm.waveform)) {
+                if (0 < elm.mBias || (0 == elm.mBias &&
+                    (VoltageElm.WAVEFORM.PULSE == elm.waveform || VoltageElm.WAVEFORM.PULSE_BOTH == elm.waveform))) {
                     inds = "+";
                 } else {
                     inds = "*";
@@ -162,6 +164,21 @@ namespace Circuit.Elements.Input {
                     g.DrawLine(x + h, y    , x + h, y    );
                 }
                 break;
+            case VoltageElm.WAVEFORM.PULSE_BOTH:
+                if (elm.mMaxVoltage < 0) {
+                    g.DrawLine(x + h, y, x + h, y);
+                    g.DrawLine(x + h, y, xd, y);
+                    g.DrawLine(xd, y + h, xd, y);
+                    g.DrawLine(x - h, y + h, xd, y + h);
+                    g.DrawLine(x - h, y + h, x - h, y);
+                } else {
+                    g.DrawLine(x - h, y - h, x - h, y);
+                    g.DrawLine(x - h, y - h, xd, y - h);
+                    g.DrawLine(xd, y - h, xd, y);
+                    g.DrawLine(x + h, y, xd, y);
+                    g.DrawLine(x + h, y, x + h, y);
+                }
+                break;
             case VoltageElm.WAVEFORM.SAWTOOTH:
                 g.DrawLine(x, y - h, x - h, y    );
                 g.DrawLine(x, y - h, x    , y + h);
@@ -210,6 +227,7 @@ namespace Circuit.Elements.Input {
             case VoltageElm.WAVEFORM.AC:
             case VoltageElm.WAVEFORM.SQUARE:
             case VoltageElm.WAVEFORM.PULSE:
+            case VoltageElm.WAVEFORM.PULSE_BOTH:
             case VoltageElm.WAVEFORM.SAWTOOTH:
             case VoltageElm.WAVEFORM.TRIANGLE:
             case VoltageElm.WAVEFORM.NOISE:
@@ -252,6 +270,7 @@ namespace Circuit.Elements.Input {
                 ei.Choice.Items.Add(VoltageElm.WAVEFORM.TRIANGLE);
                 ei.Choice.Items.Add(VoltageElm.WAVEFORM.SAWTOOTH);
                 ei.Choice.Items.Add(VoltageElm.WAVEFORM.PULSE);
+                ei.Choice.Items.Add(VoltageElm.WAVEFORM.PULSE_BOTH);
                 ei.Choice.Items.Add(VoltageElm.WAVEFORM.PWM_BOTH);
                 ei.Choice.Items.Add(VoltageElm.WAVEFORM.PWM_POSITIVE);
                 ei.Choice.Items.Add(VoltageElm.WAVEFORM.PWM_NEGATIVE);
@@ -272,6 +291,7 @@ namespace Circuit.Elements.Input {
                 return new ElementInfo("位相(degrees)", double.Parse((elm.mPhaseShift * 180 / Math.PI).ToString("0.00")), -180, 180).SetDimensionless();
             }
             if (n == 5 && (elm.waveform == VoltageElm.WAVEFORM.PULSE
+                || elm.waveform == VoltageElm.WAVEFORM.PULSE_BOTH
                 || elm.waveform == VoltageElm.WAVEFORM.SQUARE
                 || elm.waveform == VoltageElm.WAVEFORM.PWM_BOTH
                 || elm.waveform == VoltageElm.WAVEFORM.PWM_POSITIVE
