@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace Circuit.Elements.Passive {
     class SwitchUI2 : SwitchUI {
@@ -20,9 +21,13 @@ namespace Circuit.Elements.Passive {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.SWITCH2; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (SwitchElm2)Elm;
-            return base.dump() + " " + ce.mLink + " " + ce.mThrowCount;
+            var baseList = new List<object>();
+            base.dump(baseList);
+            optionList.AddRange(baseList);
+            optionList.Add(ce.mLink);
+            optionList.Add(ce.mThrowCount);
         }
 
         public override Point GetPost(int n) {

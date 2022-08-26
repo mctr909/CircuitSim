@@ -19,8 +19,6 @@ namespace Circuit.Elements.Passive {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.GROUND; } }
 
-        protected override string dump() { return ""; }
-
         public override void Draw(CustomGraphics g) {
             drawLead(mPost1, mPost2);
             for (int i = 0; i != 3; i++) {

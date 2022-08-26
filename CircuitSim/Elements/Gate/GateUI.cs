@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit.Elements.Gate {
@@ -45,9 +46,11 @@ namespace Circuit.Elements.Gate {
 
         public static bool UseAnsiGates() { return ControlPanel.ChkUseAnsiSymbols.Checked; }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (GateElm)Elm;
-            return ce.InputCount + " " + ce.Volts[ce.InputCount] + " " + ce.HighVoltage;
+            optionList.Add(ce.InputCount);
+            optionList.Add(ce.Volts[ce.InputCount]);
+            optionList.Add(ce.HighVoltage);
         }
 
         public override Point GetPost(int n) {

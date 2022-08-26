@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit.Elements.Active {
@@ -37,12 +38,12 @@ namespace Circuit.Elements.Active {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.TRANSISTOR; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (TransistorElm)Elm;
-            return ce.NPN
-                + " " + (ce.Vb - ce.Vc).ToString("0.000000")
-                + " " + (ce.Vb - ce.Ve).ToString("0.000000")
-                + " " + ce.Hfe;
+            optionList.Add(ce.NPN);
+            optionList.Add((ce.Vb - ce.Vc).ToString("0.000000"));
+            optionList.Add((ce.Vb - ce.Ve).ToString("0.000000"));
+            optionList.Add(ce.Hfe);
         }
 
         public override Point GetPost(int n) {

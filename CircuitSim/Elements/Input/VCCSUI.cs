@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 using Circuit.Elements.Custom;
 
@@ -22,11 +23,13 @@ namespace Circuit.Elements.Input {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.VCCS; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (VCCSElm)Elm;
-            var baseStr = base.dump();
-            //return baseStr + " " + ce.InputCount + " " + Utils.Escape(ce.ExprString);
-            return baseStr + " " + ce.InputCount;
+            var baseList = new List<object>();
+            base.dump(baseList);
+            /// TODO: baseList + " " + ce.InputCount + " " + Utils.Escape(ce.ExprString);
+            optionList.AddRange(baseList);
+            optionList.Add(ce.InputCount);
         }
 
         public override void Draw(CustomGraphics g) {

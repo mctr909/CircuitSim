@@ -23,7 +23,7 @@ namespace Circuit.Elements.Custom {
         }
 
         public override void Drag(Point p) {
-            DumpInfo.P2 = p;
+            DumpInfo.SetP2(p);
         }
 
         public override void Draw(CustomGraphics g) {

@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace Circuit.Elements.Gate {
     class InvertingSchmittUI : BaseUI {
@@ -29,13 +30,13 @@ namespace Circuit.Elements.Gate {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.INVERT_SCHMITT; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (InvertingSchmittElm)Elm;
-            return ce.SlewRate
-                + " " + ce.LowerTrigger
-                + " " + ce.UpperTrigger
-                + " " + ce.LogicOnLevel
-                + " " + ce.LogicOffLevel;
+            optionList.Add(ce.SlewRate);
+            optionList.Add(ce.LowerTrigger);
+            optionList.Add(ce.UpperTrigger);
+            optionList.Add(ce.LogicOnLevel);
+            optionList.Add(ce.LogicOffLevel);
         }
 
         public override void Draw(CustomGraphics g) {

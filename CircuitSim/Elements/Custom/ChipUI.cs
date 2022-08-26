@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -136,23 +137,16 @@ namespace Circuit.Elements.Custom {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.INVALID; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (ChipElm)Elm;
-            string s = "";
             if (ce.NeedsBits()) {
-                s = ce.Bits.ToString();
+                optionList.Add(ce.Bits);
             }
             for (int i = 0; i != ce.PostCount; i++) {
                 if (ce.Pins[i].state) {
-                    var strVolt = ce.Volts[i].ToString("0.000000");
-                    if (string.IsNullOrWhiteSpace(s)) {
-                        s = strVolt;
-                    } else {
-                        s = string.Join(" ", s, strVolt);
-                    }
+                    optionList.Add(ce.Volts[i].ToString("0.000000"));
                 }
             }
-            return s;
         }
 
         protected void setSize(int s) {

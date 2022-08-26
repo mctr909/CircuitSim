@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace Circuit.Elements.Input {
     class FMUI : BaseUI {
@@ -18,9 +19,12 @@ namespace Circuit.Elements.Input {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.FM; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (FMElm)Elm;
-            return ce.CarrierFreq + " " + ce.Signalfreq + " " + ce.MaxVoltage + " " + ce.Deviation;
+            optionList.Add(ce.CarrierFreq);
+            optionList.Add(ce.Signalfreq);
+            optionList.Add(ce.MaxVoltage);
+            optionList.Add(ce.Deviation);
         }
 
         public override void SetPoints() {

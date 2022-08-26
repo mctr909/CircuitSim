@@ -17,10 +17,6 @@ namespace Circuit.Elements.Output {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.LOGIC_O; } }
 
-        protected override string dump() {
-            return "";
-        }
-
         bool isTernary { get { return (DumpInfo.Flags & FLAG_TERNARY) != 0; } }
 
         bool isNumeric { get { return (DumpInfo.Flags & (FLAG_TERNARY | FLAG_NUMERIC)) != 0; } }

@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace Circuit.Elements.Passive {
     class PolarCapacitorUI : CapacitorUI {
@@ -16,8 +17,8 @@ namespace Circuit.Elements.Passive {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.CAPACITOR_POLAR; } }
 
-        protected override string dump() {
-            return ((PolarCapacitorElm)Elm).MaxNegativeVoltage + "";
+        protected override void dump(List<object> optionList) {
+            optionList.Add(((PolarCapacitorElm)Elm).MaxNegativeVoltage);
         }
 
         public override void SetPoints() {

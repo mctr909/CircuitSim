@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Circuit.Elements.Gate {
@@ -19,9 +20,10 @@ namespace Circuit.Elements.Gate {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.TRISTATE; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (TriStateElm)Elm;
-            return ce.Ron + " " + ce.Roff;
+            optionList.Add(ce.Ron);
+            optionList.Add(ce.Roff);
         }
 
         public override void SetPoints() {

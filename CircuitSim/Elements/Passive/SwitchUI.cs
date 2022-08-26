@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit.Elements.Passive {
@@ -28,9 +29,10 @@ namespace Circuit.Elements.Passive {
         public override DUMP_ID Shortcut { get { return DUMP_ID.SWITCH; } }
         public override DUMP_ID DumpType { get { return DUMP_ID.SWITCH; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (SwitchElm)Elm;
-            return ce.Position + " " + ce.Momentary;
+            optionList.Add(ce.Position);
+            optionList.Add(ce.Momentary);
         }
 
         public void MouseUp() {

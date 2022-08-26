@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit.Elements.Output {
@@ -22,9 +23,10 @@ namespace Circuit.Elements.Output {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.VOLTMETER; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (VoltMeterElm)Elm;
-            return ce.Meter + " " + ce.Scale;
+            optionList.Add(ce.Meter);
+            optionList.Add(ce.Scale);
         }
 
         public override void SetPoints() {

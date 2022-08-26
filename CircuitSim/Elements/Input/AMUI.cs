@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Circuit.Elements.Input {
@@ -19,13 +20,13 @@ namespace Circuit.Elements.Input {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.AM; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (AMElm)Elm;
-            return ce.CarrierFreq
-                + " " + ce.SignalFreq
-                + " " + ce.MaxVoltage
-                + " " + ce.Phase
-                + " " + ce.Depth;
+            optionList.Add(ce.CarrierFreq);
+            optionList.Add(ce.SignalFreq);
+            optionList.Add(ce.MaxVoltage);
+            optionList.Add(ce.Phase);
+            optionList.Add(ce.Depth);
         }
 
         public override void SetPoints() {

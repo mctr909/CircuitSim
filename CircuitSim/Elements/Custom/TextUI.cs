@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -23,9 +23,10 @@ namespace Circuit.Elements.Custom {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.TEXT; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             DumpInfo.Flags |= FLAG_ESCAPE;
-            return mSize + " " + Utils.Escape(mText);
+            optionList.Add(mSize);
+            optionList.Add(Utils.Escape(mText));
         }
 
         public override double Distance(int x, int y) {

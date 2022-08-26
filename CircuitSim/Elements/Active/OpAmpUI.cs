@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Circuit.Elements.Active {
@@ -32,15 +33,15 @@ namespace Circuit.Elements.Active {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.OPAMP; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (OpAmpElm)Elm;
             DumpInfo.Flags |= FLAG_GAIN;
-            return ce.MaxOut
-                + " " + ce.MinOut
-                + " " + ce.Gbw
-                + " " + ce.Volts[OpAmpElm.V_N]
-                + " " + ce.Volts[OpAmpElm.V_P]
-                + " " + ce.Gain;
+            optionList.Add(ce.MaxOut);
+            optionList.Add(ce.MinOut);
+            optionList.Add(ce.Gbw);
+            optionList.Add(ce.Volts[OpAmpElm.V_N].ToString("0.000000"));
+            optionList.Add(ce.Volts[OpAmpElm.V_P].ToString("0.000000"));
+            optionList.Add(ce.Gain);
         }
 
         public override void Draw(CustomGraphics g) {

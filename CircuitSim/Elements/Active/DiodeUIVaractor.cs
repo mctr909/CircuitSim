@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace Circuit.Elements.Active {
     class DiodeUIVaractor : DiodeUI {
@@ -21,9 +22,13 @@ namespace Circuit.Elements.Active {
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.VARACTOR; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (DiodeElmVaractor)Elm;
-            return base.dump() + " " + ce.mCapVoltDiff + " " + ce.mBaseCapacitance;
+            var baseList = new List<object>();
+            base.dump(baseList);
+            optionList.AddRange(baseList);
+            optionList.Add(ce.mCapVoltDiff);
+            optionList.Add(ce.mBaseCapacitance);
         }
 
         public override void SetPoints() {

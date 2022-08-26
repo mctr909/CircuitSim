@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Windows.Forms;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace Circuit.Elements.Passive {
     class PotUI : BaseUI {
@@ -49,9 +50,10 @@ namespace Circuit.Elements.Passive {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.POT; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (PotElm)Elm;
-            return ce.MaxResistance + " " + ce.Position;
+            optionList.Add(ce.MaxResistance);
+            optionList.Add(ce.Position);
         }
 
         public override void SetMouseElm(bool v) {

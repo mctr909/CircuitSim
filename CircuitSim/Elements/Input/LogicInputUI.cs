@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 using Circuit.Elements.Passive;
@@ -21,8 +22,9 @@ namespace Circuit.Elements.Input {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.LOGIC_I; } }
 
-        protected override string dump() {
-            return " " + ((LogicInputElm)Elm).mHiV + " " + ((LogicInputElm)Elm).mLoV;
+        protected override void dump(List<object> optionList) {
+            optionList.Add(((LogicInputElm)Elm).mHiV);
+            optionList.Add(((LogicInputElm)Elm).mLoV);
         }
 
         public override Rectangle GetSwitchRect() {

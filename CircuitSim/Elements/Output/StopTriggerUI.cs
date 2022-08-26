@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit.Elements.Output {
@@ -13,9 +14,11 @@ namespace Circuit.Elements.Output {
 
 		public override DUMP_ID DumpType { get { return DUMP_ID.STOP_TRIGGER; } }
 
-		protected override string dump() {
-			var ce = (StopTriggerElm)Elm; 
-			return ce.TriggerVoltage + " " + ce.Type + " " + ce.Delay;
+		protected override void dump(List<object> optionList) {
+			var ce = (StopTriggerElm)Elm;
+			optionList.Add(ce.TriggerVoltage);
+			optionList.Add(ce.Type);
+			optionList.Add(ce.Delay);
 		}
 
 	 	public override void SetPoints() {

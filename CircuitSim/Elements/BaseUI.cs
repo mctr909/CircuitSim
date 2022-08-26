@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 using Circuit.Elements.Input;
@@ -6,11 +7,13 @@ using Circuit.Elements.Output;
 
 namespace Circuit.Elements {
     public abstract class BaseUI : Editable {
-        static BaseUI mMouseElmRef = null;
-        public static CustomGraphics Context;
         public BaseElement Elm;
+        public static CustomGraphics Context;
+        static BaseUI mMouseElmRef = null;
 
         #region [property]
+        public abstract DUMP_ID DumpType { get; }
+
         public DumpInfo DumpInfo { get; protected set; }
 
         public bool IsSelected { get; set; }
@@ -28,7 +31,11 @@ namespace Circuit.Elements {
         /// dump component state for export/undo
         /// </summary>
         public string Dump {
-            get { return DumpInfo.GetValue(DumpType, dump()); }
+            get {
+                var optionList = new List<object>();
+                dump(optionList);
+                return DumpInfo.GetValue(DumpType, optionList);
+            }
         }
 
         public bool NeedsShortcut { get { return Shortcut > 0 && (int)Shortcut <= 127; } }
@@ -111,11 +118,9 @@ namespace Circuit.Elements {
             DumpInfo = new DumpInfo(p1, p2, f);
         }
 
-        public abstract DUMP_ID DumpType { get; }
-
-        protected abstract string dump();
-
         #region [protected method]
+        protected virtual void dump(List<object> optionList) { }
+
         /// <summary>
         /// calculate lead points for an element of length len.  Handy for simple two-terminal elements.
         /// Posts are where the user connects wires; leads are ends of wire stubs drawn inside the element.

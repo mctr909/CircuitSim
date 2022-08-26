@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Circuit.Elements.Passive {
@@ -38,9 +39,10 @@ namespace Circuit.Elements.Passive {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.CAPACITOR; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (CapacitorElm)Elm;
-            return ce.Capacitance + " " + ce.VoltDiff;
+            optionList.Add(ce.Capacitance);
+            optionList.Add(ce.VoltDiff.ToString("0.000000"));
         }
 
         public override void SetPoints() {

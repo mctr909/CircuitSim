@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace Circuit.Elements.Input {
     class CurrentUI : BaseUI {
@@ -24,8 +25,8 @@ namespace Circuit.Elements.Input {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.CURRENT; } }
 
-        protected override string dump() {
-            return mCurrentValue.ToString();
+        protected override void dump(List<object> optionList) {
+            optionList.Add(mCurrentValue);
         }
 
         public override void SetPoints() {

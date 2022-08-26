@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit.Elements.Active {
@@ -54,9 +55,10 @@ namespace Circuit.Elements.Active {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.MOSFET; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (MosfetElm)Elm;
-            return ce.Vt + " " + ce.Hfe;
+            optionList.Add(ce.Vt);
+            optionList.Add(ce.Hfe);
         }
 
         bool DrawDigital { get { return (DumpInfo.Flags & FLAG_DIGITAL) != 0; } }

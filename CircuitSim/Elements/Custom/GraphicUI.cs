@@ -11,7 +11,5 @@ namespace Circuit.Elements.Custom {
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.INVALID; } }
-
-        protected override string dump() { return ""; }
     }
 }

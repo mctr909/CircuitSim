@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -31,13 +32,13 @@ namespace Circuit.Elements.Passive {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.TRANSFORMER; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (TransformerElm)Elm;
-            return ce.PInductance
-                + " " + ce.Ratio
-                + " " + ce.Currents[0]
-                + " " + ce.Currents[1]
-                + " " + ce.CouplingCoef;
+            optionList.Add(ce.PInductance);
+            optionList.Add(ce.Ratio);
+            optionList.Add(ce.Currents[0].ToString("0.000000"));
+            optionList.Add(ce.Currents[1].ToString("0.000000"));
+            optionList.Add(ce.CouplingCoef);
         }
 
         public override Point GetPost(int n) {

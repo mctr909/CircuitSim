@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Circuit.Elements {
@@ -148,25 +149,15 @@ namespace Circuit.Elements {
             )));
         }
 
-        public string GetValue(DUMP_ID type, string value) {
-            if (string.IsNullOrWhiteSpace(ReferenceName)) {
-                return string.Format("{0} {1} {2} {3} {4} {5} {6}",
-                    type,
-                    P1.X, P1.Y,
-                    P2.X, P2.Y,
-                    Flags,
-                    value
-                );
-            } else {
-                return string.Format("{0} {1} {2} {3} {4} {5} {6} {7}",
-                    type,
-                    P1.X, P1.Y,
-                    P2.X, P2.Y,
-                    Flags,
-                    value,
-                    ReferenceName
-                );
+        public string GetValue(DUMP_ID type, List<object> optionList) {
+            var ret = string.Format("{0} {1} {2} {3} {4} {5}", type, P1.X, P1.Y, P2.X, P2.Y, Flags);
+            if (0 < optionList.Count) {
+                ret += " " + string.Join(" ", optionList.ToArray());
             }
+            if (!string.IsNullOrWhiteSpace(ReferenceName)) {
+                ret += " " + ReferenceName;
+            }
+            return ret;
         }
 
         Rectangle getBoundingBox() {

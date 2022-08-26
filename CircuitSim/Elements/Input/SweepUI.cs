@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -23,12 +24,12 @@ namespace Circuit.Elements.Input {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.SWEEP; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (SweepElm)Elm;
-            return ce.MinF
-                + " " + ce.MaxF
-                + " " + ce.MaxV
-                + " " + ce.SweepTime;
+            optionList.Add(ce.MinF);
+            optionList.Add(ce.MaxF);
+            optionList.Add(ce.MaxV);
+            optionList.Add(ce.SweepTime);
         }
 
         public override void SetPoints() {

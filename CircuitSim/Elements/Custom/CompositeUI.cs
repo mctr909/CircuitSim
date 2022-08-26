@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Text.RegularExpressions;
 
 namespace Circuit.Elements.Custom {
@@ -16,25 +17,15 @@ namespace Circuit.Elements.Custom {
 
         public override abstract DUMP_ID DumpType { get; }
 
-        protected override string dump() {
-            return dumpElements();
-        }
-
-        protected string dumpElements() {
+        protected override void dump(List<object> optionList) {
             var ce = (CompositeElm)Elm;
-            string dumpStr = "";
             for (int i = 0; i < ce.CompElmList.Count; i++) {
                 string tstring = ce.CompElmList[i].Dump;
                 var rg = new Regex("[A-Za-z0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+ ");
-                var rgstring = rg.Replace(tstring, "", 1).Replace(" ", "_"); /* remove unused tint x1 y1 x2 y2 coords for internal components */
-                var escstring = Utils.Escape(rgstring);
-                if ("" == dumpStr) {
-                    dumpStr = escstring;
-                } else {
-                    dumpStr = string.Join(" ", dumpStr, escstring);
-                }
+                var rgString = rg.Replace(tstring, "", 1).Replace(" ", "_"); /* remove unused tint x1 y1 x2 y2 coords for internal components */
+                var escString = Utils.Escape(rgString);
+                optionList.Add(escString);
             }
-            return dumpStr;
         }
 
         /* dump subset of elements

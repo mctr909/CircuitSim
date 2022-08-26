@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Circuit.Elements.Passive {
@@ -25,9 +26,10 @@ namespace Circuit.Elements.Passive {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.INDUCTOR; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (InductorElm)Elm;
-            return ce.Inductance + " " + ce.Current;
+            optionList.Add(ce.Inductance);
+            optionList.Add(ce.Current.ToString("0.000000"));
         }
 
         public override void SetPoints() {

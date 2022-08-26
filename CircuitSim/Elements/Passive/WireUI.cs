@@ -16,8 +16,6 @@ namespace Circuit.Elements.Passive {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.WIRE; } }
 
-        protected override string dump() { return ""; }
-
         public override void SetPoints() {
             base.SetPoints();
         }

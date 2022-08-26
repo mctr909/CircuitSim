@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -28,7 +29,7 @@ namespace Circuit.Elements.Input {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.VOLTAGE; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var elm = (VoltageElm)Elm;
             /* set flag so we know if duty cycle is correct for pulse waveforms */
             if (elm.waveform == VoltageElm.WAVEFORM.PULSE ||
@@ -37,14 +38,12 @@ namespace Circuit.Elements.Input {
             } else {
                 DumpInfo.Flags &= ~FLAG_PULSE_DUTY;
             }
-
-            return elm.waveform
-                + " " + elm.mFrequency
-                + " " + elm.mMaxVoltage
-                + " " + elm.mBias
-                + " " + elm.mPhaseShift
-                + " " + elm.mDutyCycle;
-            /* VarRailElm adds text at the end */
+            optionList.Add(elm.waveform);
+            optionList.Add(elm.mFrequency);
+            optionList.Add(elm.mMaxVoltage);
+            optionList.Add(elm.mBias);
+            optionList.Add(elm.mPhaseShift);
+            optionList.Add(elm.mDutyCycle);
         }
 
         public override void SetPoints() {

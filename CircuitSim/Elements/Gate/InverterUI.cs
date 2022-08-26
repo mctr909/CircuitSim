@@ -19,8 +19,6 @@ namespace Circuit.Elements.Gate {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.INVERT; } }
 
-        protected override string dump() { return ""; }
-
         public override void SetPoints() {
             base.SetPoints();
             int hs = 16;

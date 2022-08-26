@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -20,9 +21,10 @@ namespace Circuit.Elements.Active {
             Elm = new AnalogSwitchElm(st);
         }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (AnalogSwitchElm)Elm;
-            return ce.Ron + " " + ce.Roff;
+            optionList.Add(ce.Ron);
+            optionList.Add(ce.Roff);
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.ANALOG_SW; } }

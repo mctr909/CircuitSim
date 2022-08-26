@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
@@ -17,9 +18,9 @@ namespace Circuit.Elements.Output {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.DATA_RECORDER; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (DataRecorderElm)Elm;
-            return ce.DataCount.ToString();
+            optionList.Add(ce.DataCount);
         }
 
         public override void SetPoints() {

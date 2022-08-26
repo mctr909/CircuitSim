@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Circuit.Elements.Active {
@@ -51,12 +52,14 @@ namespace Circuit.Elements.Active {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.LED; } }
 
-        protected override string dump() {
-            return base.dump()
-                + " " + mColorR
-                + " " + mColorG
-                + " " + mColorB
-                + " " + mMaxBrightnessCurrent;
+        protected override void dump(List<object> optionList) {
+            var baseList = new List<object>();
+            base.dump(baseList);
+            optionList.AddRange(baseList);
+            optionList.Add(mColorR);
+            optionList.Add(mColorG);
+            optionList.Add(mColorB);
+            optionList.Add(mMaxBrightnessCurrent);
         }
 
         public override void SetPoints() {

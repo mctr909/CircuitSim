@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Circuit.Elements.Output {
@@ -27,10 +28,10 @@ namespace Circuit.Elements.Output {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.SCOPE; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             string sStr = elmScope.Dump().Replace(' ', '_');
             sStr = sStr.Replace("o_", ""); /* remove unused prefix for embedded Scope */
-            return sStr;
+            optionList.Add(sStr);
         }
 
         public void setScopeElm(BaseUI e) {

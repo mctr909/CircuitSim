@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Circuit.Elements.Passive {
@@ -36,9 +37,9 @@ namespace Circuit.Elements.Passive {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.RESISTOR; } }
 
-        protected override string dump() {
+        protected override void dump(List<object> optionList) {
             var ce = (ResistorElm)Elm;
-            return ce.Resistance.ToString();
+            optionList.Add(ce.Resistance);
         }
 
         public override void SetPoints() {
