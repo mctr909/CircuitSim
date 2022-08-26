@@ -53,9 +53,7 @@ namespace Circuit.Elements.Active {
         public override DUMP_ID DumpType { get { return DUMP_ID.LED; } }
 
         protected override void dump(List<object> optionList) {
-            var baseList = new List<object>();
-            base.dump(baseList);
-            optionList.AddRange(baseList);
+            base.dump(optionList);
             optionList.Add(mColorR);
             optionList.Add(mColorG);
             optionList.Add(mColorB);

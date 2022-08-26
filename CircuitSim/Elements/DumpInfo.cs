@@ -150,12 +150,13 @@ namespace Circuit.Elements {
         }
 
         public string GetValue(DUMP_ID type, List<object> optionList) {
-            var ret = string.Format("{0} {1} {2} {3} {4} {5}", type, P1.X, P1.Y, P2.X, P2.Y, Flags);
+            var separator = " ";
+            var ret = string.Join(separator, type, P1.X, P1.Y, P2.X, P2.Y, Flags);
             if (0 < optionList.Count) {
-                ret += " " + string.Join(" ", optionList.ToArray());
+                ret += separator + string.Join(separator, optionList.ToArray());
             }
             if (!string.IsNullOrWhiteSpace(ReferenceName)) {
-                ret += " " + ReferenceName;
+                ret += separator + ReferenceName;
             }
             return ret;
         }

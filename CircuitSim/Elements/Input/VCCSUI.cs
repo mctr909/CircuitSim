@@ -25,10 +25,8 @@ namespace Circuit.Elements.Input {
 
         protected override void dump(List<object> optionList) {
             var ce = (VCCSElm)Elm;
-            var baseList = new List<object>();
-            base.dump(baseList);
             /// TODO: baseList + " " + ce.InputCount + " " + Utils.Escape(ce.ExprString);
-            optionList.AddRange(baseList);
+            base.dump(optionList);
             optionList.Add(ce.InputCount);
         }
 

@@ -24,9 +24,7 @@ namespace Circuit.Elements.Active {
 
         protected override void dump(List<object> optionList) {
             var ce = (DiodeElmVaractor)Elm;
-            var baseList = new List<object>();
-            base.dump(baseList);
-            optionList.AddRange(baseList);
+            base.dump(optionList);
             optionList.Add(ce.mCapVoltDiff);
             optionList.Add(ce.mBaseCapacitance);
         }

@@ -23,9 +23,7 @@ namespace Circuit.Elements.Passive {
 
         protected override void dump(List<object> optionList) {
             var ce = (SwitchElm2)Elm;
-            var baseList = new List<object>();
-            base.dump(baseList);
-            optionList.AddRange(baseList);
+            base.dump(optionList);
             optionList.Add(ce.mLink);
             optionList.Add(ce.mThrowCount);
         }
