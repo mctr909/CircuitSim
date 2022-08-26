@@ -3,6 +3,7 @@ using System.Windows.Forms;
 
 using Circuit.Elements;
 using Circuit.Elements.Passive;
+using Circuit.Elements.Input;
 
 namespace Circuit {
     public class Adjustable {
@@ -48,12 +49,12 @@ namespace Circuit {
         }
 
         public void CreateSlider() {
-            double value = UI.GetElementInfo(EditItem).Value;
-            CreateSlider(value);
+            var ei = UI.GetElementInfo(EditItem);
+            CreateSlider(ei);
         }
 
-        public void CreateSlider(double value) {
-            int intValue = (int)((value - MinValue) * 100 / (MaxValue - MinValue));
+        public void CreateSlider(ElementInfo ei) {
+            int intValue = (int)((ei.Value - MinValue) * 100 / (MaxValue - MinValue));
             ControlPanel.AddSlider(Label = new Label() { Text = SliderText });
             ControlPanel.AddSlider(mSlider = new TrackBar() {
                 SmallChange = 1,
@@ -84,6 +85,34 @@ namespace Circuit {
                 mSlider.ValueChanged += new EventHandler((s, e) => {
                     var trb = (TrackBar)s;
                     ((InductorElm)UI.Elm).Inductance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
+                    CirSimForm.Sim.NeedAnalyze();
+                });
+            }
+            if (UI is VoltageUI) {
+                mSlider.ValueChanged += new EventHandler((s, e) => {
+                    var trb = (TrackBar)s;
+                    var val = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
+                    switch (ei.Name) {
+                    case VoltageUI.VALUE_NAME_V:
+                    case VoltageUI.VALUE_NAME_AMP:
+                        ((VoltageElm)UI.Elm).MaxVoltage = val;
+                        break;
+                    case VoltageUI.VALUE_NAME_V_OFS:
+                        ((VoltageElm)UI.Elm).Bias = val;
+                        break;
+                    case VoltageUI.VALUE_NAME_HZ:
+                        ((VoltageElm)UI.Elm).Frequency = val;
+                        break;
+                    case VoltageUI.VALUE_NAME_PHASE:
+                        ((VoltageElm)UI.Elm).Phase = val * Math.PI / 180;
+                        break;
+                    case VoltageUI.VALUE_NAME_PHASE_OFS:
+                        ((VoltageElm)UI.Elm).PhaseOffset = val * Math.PI / 180;
+                        break;
+                    case VoltageUI.VALUE_NAME_DUTY:
+                        ((VoltageElm)UI.Elm).DutyCycle = val * 0.01;
+                        break;
+                    }
                     CirSimForm.Sim.NeedAnalyze();
                 });
             }

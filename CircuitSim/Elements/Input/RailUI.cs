@@ -37,8 +37,8 @@ namespace Circuit.Elements.Input {
             if (w > mLen * 0.8) {
                 w = mLen * 0.8;
             }
-            if (elm.waveform == VoltageElm.WAVEFORM.SQUARE
-                && (DumpInfo.Flags & FLAG_CLOCK) != 0 || elm.waveform == VoltageElm.WAVEFORM.DC) {
+            if (elm.WaveForm == VoltageElm.WAVEFORM.SQUARE
+                && (DumpInfo.Flags & FLAG_CLOCK) != 0 || elm.WaveForm == VoltageElm.WAVEFORM.DC) {
                 setLead1(1 - (w - 5) / mLen);
             } else {
                 setLead1(1 - w / mLen);
@@ -56,9 +56,9 @@ namespace Circuit.Elements.Input {
 
         void drawRail(CustomGraphics g) {
             var elm = (VoltageElm)Elm;
-            if (elm.waveform == VoltageElm.WAVEFORM.SQUARE && (DumpInfo.Flags & FLAG_CLOCK) != 0) {
+            if (elm.WaveForm == VoltageElm.WAVEFORM.SQUARE && (DumpInfo.Flags & FLAG_CLOCK) != 0) {
                 drawCenteredText("CLK", DumpInfo.P2, true);
-            } else if (elm.waveform == VoltageElm.WAVEFORM.DC) {
+            } else if (elm.WaveForm == VoltageElm.WAVEFORM.DC) {
                 var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
                 double v = elm.getVoltage();
                 string s;

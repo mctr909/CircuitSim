@@ -16,35 +16,37 @@ namespace Circuit.Elements.Input {
             NOISE
         }
 
-        public double mFrequency;
-        public double mMaxVoltage;
-        public double mBias;
-        public double mPhaseShift;
-        public double mDutyCycle;
-        public double mNoiseValue;
-        public WAVEFORM waveform;      
+        public double Frequency;
+        public double MaxVoltage;
+        public double Bias;
+        public double Phase;
+        public double PhaseOffset;
+        public double DutyCycle;
+        public double NoiseValue;
+        public WAVEFORM WaveForm;      
 
         public VoltageElm(WAVEFORM wf) {
-            waveform = wf;
-            mMaxVoltage = 5;
-            mFrequency = 40;
-            mDutyCycle = .5;
+            WaveForm = wf;
+            MaxVoltage = 5;
+            Frequency = 40;
+            DutyCycle = .5;
             Reset();
         }
 
         public VoltageElm(StringTokenizer st) {
-            mMaxVoltage = 5;
-            mFrequency = 40;
-            waveform = WAVEFORM.DC;
-            mDutyCycle = .5;
+            MaxVoltage = 5;
+            Frequency = 40;
+            WaveForm = WAVEFORM.DC;
+            DutyCycle = .5;
 
             try {
-                waveform = st.nextTokenEnum<WAVEFORM>();
-                mFrequency = st.nextTokenDouble();
-                mMaxVoltage = st.nextTokenDouble();
-                mBias = st.nextTokenDouble();
-                mPhaseShift = st.nextTokenDouble() * Math.PI / 180;
-                mDutyCycle = st.nextTokenDouble();
+                WaveForm = st.nextTokenEnum<WAVEFORM>();
+                Frequency = st.nextTokenDouble();
+                MaxVoltage = st.nextTokenDouble();
+                Bias = st.nextTokenDouble();
+                Phase = st.nextTokenDouble() * Math.PI / 180;
+                PhaseOffset = st.nextTokenDouble() * Math.PI / 180;
+                DutyCycle = st.nextTokenDouble();
             } catch { }
 
             Reset();
@@ -63,7 +65,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override void AnaStamp() {
-            if (waveform == WAVEFORM.DC) {
+            if (WaveForm == WAVEFORM.DC) {
                 Circuit.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
             } else {
                 Circuit.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource);
@@ -71,78 +73,78 @@ namespace Circuit.Elements.Input {
         }
 
         public override void CirDoStep() {
-            if (waveform != WAVEFORM.DC) {
+            if (WaveForm != WAVEFORM.DC) {
                 Circuit.UpdateVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
             }
         }
 
         public override void CirStepFinished() {
-            if (waveform == WAVEFORM.NOISE) {
-                mNoiseValue = (CirSimForm.Random.NextDouble() * 2 - 1) * mMaxVoltage + mBias;
+            if (WaveForm == WAVEFORM.NOISE) {
+                NoiseValue = (CirSimForm.Random.NextDouble() * 2 - 1) * MaxVoltage + Bias;
             }
         }
 
         public virtual double getVoltage() {
-            if (waveform != WAVEFORM.DC && CirSimForm.Sim.DcAnalysisFlag) {
-                return mBias;
+            if (WaveForm != WAVEFORM.DC && CirSimForm.Sim.DcAnalysisFlag) {
+                return Bias;
             }
 
             double t = CirSimForm.Sim.Time;
-            double wt = 2 * Math.PI * mFrequency * t + mPhaseShift;
-            double duty = 2 * Math.PI * mDutyCycle;
+            double wt = 2 * Math.PI * Frequency * t + Phase + PhaseOffset;
+            double duty = 2 * Math.PI * DutyCycle;
             double cycle = wt % (2 * Math.PI);
 
-            switch (waveform) {
+            switch (WaveForm) {
             case WAVEFORM.DC:
-                return mMaxVoltage + mBias;
+                return MaxVoltage + Bias;
             case WAVEFORM.AC:
-                return Math.Sin(wt) * mMaxVoltage + mBias;
+                return Math.Sin(wt) * MaxVoltage + Bias;
             case WAVEFORM.SQUARE:
-                return mBias + (cycle > duty ? -mMaxVoltage : mMaxVoltage);
+                return Bias + (cycle > duty ? -MaxVoltage : MaxVoltage);
             case WAVEFORM.TRIANGLE:
-                return mBias + triangleFunc(cycle) * mMaxVoltage;
+                return Bias + triangleFunc(cycle) * MaxVoltage;
             case WAVEFORM.SAWTOOTH:
-                return mBias + cycle * (mMaxVoltage / Math.PI) - mMaxVoltage;
+                return Bias + cycle * (MaxVoltage / Math.PI) - MaxVoltage;
             case WAVEFORM.PULSE:
-                return cycle < duty ? (mMaxVoltage + mBias) : mBias;
+                return cycle < duty ? (MaxVoltage + Bias) : Bias;
             case WAVEFORM.PULSE_BOTH:
                 if (cycle < Math.PI) {
-                    return 2 * cycle < duty ? (mBias + mMaxVoltage) : mBias;
+                    return 2 * cycle < duty ? (Bias + MaxVoltage) : Bias;
                 } else {
-                    return 2 * (cycle - Math.PI) < duty ? (mBias - mMaxVoltage) : mBias;
+                    return 2 * (cycle - Math.PI) < duty ? (Bias - MaxVoltage) : Bias;
                 }
             case WAVEFORM.PWM_BOTH: {
                 var maxwt = 2 * Math.PI * t / (32 * ControlPanel.TimeStep);
                 var cr = 0.5 - 0.5 * triangleFunc(maxwt % (2 * Math.PI));
-                var sg = mDutyCycle * Math.Sin(wt);
+                var sg = DutyCycle * Math.Sin(wt);
                 if (0.0 <= sg) {
-                    return mBias + (cr < sg ? mMaxVoltage : 0);
+                    return Bias + (cr < sg ? MaxVoltage : 0);
                 } else {
-                    return mBias - (sg < -cr ? mMaxVoltage : 0);
+                    return Bias - (sg < -cr ? MaxVoltage : 0);
                 }
             }
             case WAVEFORM.PWM_POSITIVE: {
                 var maxwt = 2 * Math.PI * t / (32 * ControlPanel.TimeStep);
                 var cr = 0.5 - 0.5 * triangleFunc(maxwt % (2 * Math.PI));
-                var sg = mDutyCycle * Math.Sin(wt);
+                var sg = DutyCycle * Math.Sin(wt);
                 if (0.0 <= sg) {
-                    return mBias + (cr < sg ? mMaxVoltage : 0);
+                    return Bias + (cr < sg ? MaxVoltage : 0);
                 } else {
-                    return mBias;
+                    return Bias;
                 }
             }
             case WAVEFORM.PWM_NEGATIVE: {
                 var maxwt = 2 * Math.PI * t / (32 * ControlPanel.TimeStep);
                 var cr = 0.5 - 0.5 * triangleFunc(maxwt % (2 * Math.PI));
-                var sg = mDutyCycle * Math.Sin(wt);
+                var sg = DutyCycle * Math.Sin(wt);
                 if (0.0 <= sg) {
-                    return mBias;
+                    return Bias;
                 } else {
-                    return mBias + (sg < -cr ? mMaxVoltage : 0);
+                    return Bias + (sg < -cr ? MaxVoltage : 0);
                 }
             }
             case WAVEFORM.NOISE:
-                return mNoiseValue;
+                return NoiseValue;
             default: return 0;
             }
         }

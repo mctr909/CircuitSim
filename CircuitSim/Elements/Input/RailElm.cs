@@ -13,7 +13,7 @@
         public override bool AnaHasGroundConnection(int n1) { return true; }
 
         public override void AnaStamp() {
-            if (waveform == WAVEFORM.DC) {
+            if (WaveForm == WAVEFORM.DC) {
                 Circuit.StampVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
             } else {
                 Circuit.StampVoltageSource(0, Nodes[0], mVoltSource);
@@ -21,7 +21,7 @@
         }
 
         public override void CirDoStep() {
-            if (waveform != WAVEFORM.DC) {
+            if (WaveForm != WAVEFORM.DC) {
                 Circuit.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
             }
         }

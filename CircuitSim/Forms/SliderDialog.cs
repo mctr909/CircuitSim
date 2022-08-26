@@ -157,7 +157,7 @@ namespace Circuit {
                         var adj = new Adjustable(elm, i);
                         var rg = new Regex(" \\(.*\\)$");
                         adj.SliderText = rg.Replace(ei.Name, "");
-                        adj.CreateSlider(ei.Value);
+                        adj.CreateSlider(ei);
                         sim.Adjustables.Add(adj);
                     } else {
                         var adj = findAdjustable(i);
