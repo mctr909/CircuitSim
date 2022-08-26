@@ -28,14 +28,14 @@ namespace Circuit.Elements.Input {
         public VoltageElm(WAVEFORM wf) {
             WaveForm = wf;
             MaxVoltage = 5;
-            Frequency = 40;
+            Frequency = 100;
             DutyCycle = .5;
             Reset();
         }
 
         public VoltageElm(StringTokenizer st) {
             MaxVoltage = 5;
-            Frequency = 40;
+            Frequency = 100;
             WaveForm = WAVEFORM.DC;
             DutyCycle = .5;
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Windows.Forms;
 
 namespace Circuit.Elements.Passive {
     class ResistorUI : BaseUI {
@@ -178,7 +177,7 @@ namespace Circuit.Elements.Passive {
         public override EventHandler CreateSlider(ElementInfo ei, Adjustable adj) {
             var ce = (ResistorElm)Elm;
             return new EventHandler((s, e) => {
-                var trb = (TrackBar)s;
+                var trb = adj.Slider;
                 ce.Resistance = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
                 CirSimForm.Sim.NeedAnalyze();
             });

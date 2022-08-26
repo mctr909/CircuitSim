@@ -366,9 +366,40 @@ namespace Circuit.Elements.Input {
         }
 
         public override EventHandler CreateSlider(ElementInfo ei, Adjustable adj) {
+            var trb = adj.Slider;
             var ce = (VoltageElm)Elm;
+            switch (ei.Name) {
+            case VALUE_NAME_V:
+            case VALUE_NAME_AMP:
+                adj.MinValue = 0;
+                adj.MaxValue = 5;
+                break;
+            case VALUE_NAME_V_OFS:
+                adj.MinValue = 0;
+                adj.MaxValue = 5;
+                break;
+            case VALUE_NAME_HZ:
+                adj.MinValue = 0;
+                adj.MaxValue = 100;
+                break;
+            case VALUE_NAME_PHASE:
+                adj.MinValue = -180;
+                adj.MaxValue = 180;
+                trb.Maximum = 360;
+                trb.TickFrequency = 30;
+                break;
+            case VALUE_NAME_PHASE_OFS:
+                adj.MinValue = -180;
+                adj.MaxValue = 180;
+                trb.Maximum = 360;
+                trb.TickFrequency = 30;
+                break;
+            case VALUE_NAME_DUTY:
+                adj.MinValue = 0;
+                adj.MaxValue = 1;
+                break;
+            }
             return new EventHandler((s, e) => {
-                var trb = (TrackBar)s;
                 var val = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
                 switch (ei.Name) {
                 case VALUE_NAME_V:

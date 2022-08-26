@@ -11,22 +11,22 @@ namespace Circuit {
         public int EditItem { get; private set; }
 
         public double Value {
-            get { return MinValue + (MaxValue - MinValue) * mSlider.Value / 100; }
+            get { return MinValue + (MaxValue - MinValue) * Slider.Value / 100; }
             set {
                 int intValue = (int)((value - MinValue) * 100 / (MaxValue - MinValue));
                 mSettingValue = true; /* don't recursively set value again in execute() */
-                mSlider.Value = intValue;
+                Slider.Value = intValue;
                 mSettingValue = false;
             }
         }
 
+        public TrackBar Slider;
         public Label Label;
         public BaseUI UI;
         public double MinValue;
         public double MaxValue;
         public string SliderText;
 
-        TrackBar mSlider;
         bool mSettingValue;
 
         public Adjustable(BaseUI ce, int item) {
@@ -56,23 +56,23 @@ namespace Circuit {
         public void CreateSlider(ElementInfo ei) {
             int intValue = (int)((ei.Value - MinValue) * 100 / (MaxValue - MinValue));
             ControlPanel.AddSlider(Label = new Label() { Text = SliderText });
-            ControlPanel.AddSlider(mSlider = new TrackBar() {
+            ControlPanel.AddSlider(Slider = new TrackBar() {
                 SmallChange = 1,
                 LargeChange = 10,
                 TickFrequency = 10,
                 TickStyle = TickStyle.TopLeft,
+                Value = (intValue < 0) ? 0 : (100 < intValue) ? 100 : intValue,
                 Minimum = 0,
                 Maximum = 100,
-                Value = (100 < intValue) ? 100 : intValue,
                 Width = 175,
                 Height = 23
             });
-            mSlider.ValueChanged += UI.CreateSlider(ei, this);
+            Slider.ValueChanged += UI.CreateSlider(ei, this);
         }
 
         public void DeleteSlider() {
             ControlPanel.RemoveSlider(Label);
-            ControlPanel.RemoveSlider(mSlider);
+            ControlPanel.RemoveSlider(Slider);
         }
 
         public void Execute() {
