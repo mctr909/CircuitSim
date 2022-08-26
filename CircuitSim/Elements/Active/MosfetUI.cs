@@ -38,14 +38,14 @@ namespace Circuit.Elements.Active {
             DumpInfo.Flags = pnpflag ? FLAG_PNP : 0;
             DumpInfo.Flags |= FLAG_BODY_DIODE;
             mNoDiagonal = true;
-            ReferenceName = "Tr";
+            DumpInfo.ReferenceName = "Tr";
         }
 
         public MosfetUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new MosfetElm((f & FLAG_PNP) != 0, st);
             mNoDiagonal = true;
             try {
-                ReferenceName = st.nextToken();
+                DumpInfo.ReferenceName = st.nextToken();
             } catch { }
             mGlobalFlags = DumpInfo.Flags & (FLAGS_GLOBAL);
         }
@@ -56,9 +56,7 @@ namespace Circuit.Elements.Active {
 
         protected override string dump() {
             var ce = (MosfetElm)Elm;
-            return ce.Vt
-                + " " + ce.Hfe
-                + " " + ReferenceName;
+            return ce.Vt + " " + ce.Hfe;
         }
 
         bool DrawDigital { get { return (DumpInfo.Flags & FLAG_DIGITAL) != 0; } }
@@ -215,9 +213,9 @@ namespace Circuit.Elements.Active {
 
             if (ControlPanel.ChkShowName.Checked) {
                 if (mNameV) {
-                    g.DrawCenteredVText(ReferenceName, mNamePos.X, mNamePos.Y);
+                    g.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
                 } else {
-                    g.DrawCenteredText(ReferenceName, mNamePos.X, mNamePos.Y);
+                    g.DrawCenteredText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
                 }
             }
         }
@@ -246,7 +244,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override string GetScopeText() {
-            return (string.IsNullOrEmpty(ReferenceName) ? "MOSFET" : ReferenceName) + " "
+            return (string.IsNullOrEmpty(DumpInfo.ReferenceName) ? "MOSFET" : DumpInfo.ReferenceName) + " "
                 + ((((MosfetElm)Elm).Pnp == 1) ? "Vds(nCh.)" : "Vds(pCh.)");
         }
 
@@ -254,7 +252,7 @@ namespace Circuit.Elements.Active {
             var ce = (MosfetElm)Elm;
             if (n == 0) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = ReferenceName;
+                ei.Text = DumpInfo.ReferenceName;
                 return ei;
             }
             if (n == 1) {
@@ -305,7 +303,7 @@ namespace Circuit.Elements.Active {
         public override void SetElementValue(int n, ElementInfo ei) {
             var ce = (MosfetElm)Elm;
             if (n == 0) {
-                ReferenceName = ei.Textf.Text;
+                DumpInfo.ReferenceName = ei.Textf.Text;
                 setTextPos();
             }
             if (n == 1) {

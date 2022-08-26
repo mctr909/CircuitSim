@@ -9,13 +9,15 @@ namespace Circuit.Elements.Input {
         public VCCSUI(Point p1, Point p2, int f) : base(p1, p2, f) { }
 
         public VCCSUI(Point pos) : base(pos) {
-            ReferenceName = "VCCS";
             Elm = new VCCSElm(this);
+            DumpInfo.ReferenceName = "VCCS";
         }
 
         public VCCSUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            ReferenceName = st.nextToken();
             Elm = new VCCSElm(this, st);
+            try {
+                DumpInfo.ReferenceName = st.nextToken();
+            } catch { }
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.VCCS; } }

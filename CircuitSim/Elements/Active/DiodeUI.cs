@@ -19,17 +19,17 @@ namespace Circuit.Elements.Active {
 
         public DiodeUI(Point pos, string referenceName) : base(pos) {
             Elm = new DiodeElm();
-            ReferenceName = referenceName;
+            DumpInfo.ReferenceName = referenceName;
             setup();
         }
 
         public DiodeUI(Point p1, Point p2, int f) : base(p1, p2, f) { }
 
         public DiodeUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            try {
-                ReferenceName = st.nextToken();
-            } catch { }
             Elm = new DiodeElm(st, 0 != (f & FLAG_FWDROP), 0 != (f & FLAG_MODEL));
+            try {
+                DumpInfo.ReferenceName = st.nextToken();
+            } catch { }
             setup();
         }
 
@@ -40,7 +40,7 @@ namespace Circuit.Elements.Active {
         protected override string dump() {
             DumpInfo.Flags |= FLAG_MODEL;
             var ce = (DiodeElm)Elm;
-            return ReferenceName + " " + Utils.Escape(ce.mModelName);
+            return Utils.Escape(ce.mModelName);
         }
 
         public override void UpdateModels() {
@@ -121,7 +121,7 @@ namespace Circuit.Elements.Active {
             var ce = (DiodeElm)Elm;
             if (n == 0) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = ReferenceName;
+                ei.Text = DumpInfo.ReferenceName;
                 return ei;
             }
             if (!mCustomModelUI && n == 1) {
@@ -143,7 +143,7 @@ namespace Circuit.Elements.Active {
         public override void SetElementValue(int n, ElementInfo ei) {
             var ce = (DiodeElm)Elm;
             if (n == 0) {
-                ReferenceName = ei.Textf.Text;
+                DumpInfo.ReferenceName = ei.Textf.Text;
                 setTextPos();
             }
             if (!mCustomModelUI && n == 1) {

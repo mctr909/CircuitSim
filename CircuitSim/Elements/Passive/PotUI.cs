@@ -30,16 +30,16 @@ namespace Circuit.Elements.Passive {
         public PotUI(Point pos) : base(pos) {
             Elm = new PotElm();
             DumpInfo.Flags = FLAG_SHOW_VALUES;
-            ReferenceName = "VR";
+            DumpInfo.ReferenceName = "VR";
             createSlider();
         }
 
         public PotUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
                 Elm = new PotElm(st);
-                ReferenceName = st.nextToken();
+                DumpInfo.ReferenceName = st.nextToken();
                 while (st.hasMoreTokens()) {
-                    ReferenceName += ' ' + st.nextToken();
+                    DumpInfo.ReferenceName += ' ' + st.nextToken();
                 }
             } catch (Exception ex) {
                 throw new Exception("Pot load error:{0}", ex);
@@ -51,7 +51,7 @@ namespace Circuit.Elements.Passive {
 
         protected override string dump() {
             var ce = (PotElm)Elm;
-            return ce.MaxResistance + " " + ce.Position + " " + ReferenceName;
+            return ce.MaxResistance + " " + ce.Position;
         }
 
         public override void SetMouseElm(bool v) {
@@ -191,9 +191,9 @@ namespace Circuit.Elements.Passive {
             }
             if (ControlPanel.ChkShowName.Checked) {
                 if (mNameV) {
-                    g.DrawCenteredVText(ReferenceName, mNamePos.X, mNamePos.Y);
+                    g.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
                 } else {
-                    g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
+                    g.DrawLeftText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
                 }
             }
         }
@@ -215,7 +215,7 @@ namespace Circuit.Elements.Passive {
             }
             if (n == 1) {
                 var ei = new ElementInfo("名前", 0, -1, -1);
-                ei.Text = ReferenceName;
+                ei.Text = DumpInfo.ReferenceName;
                 return ei;
             }
             if (n == 2) {
@@ -234,8 +234,8 @@ namespace Circuit.Elements.Passive {
                 ce.MaxResistance = ei.Value;
             }
             if (n == 1) {
-                ReferenceName = ei.Textf.Text;
-                mLabel.Text = ReferenceName;
+                DumpInfo.ReferenceName = ei.Textf.Text;
+                mLabel.Text = DumpInfo.ReferenceName;
                 ControlPanel.SetSliderPanelHeight();
                 setNamePos();
             }
@@ -281,7 +281,7 @@ namespace Circuit.Elements.Passive {
         }
 
         void setNamePos() {
-            var wn = Context.GetTextSize(ReferenceName).Width * 0.5;
+            var wn = Context.GetTextSize(DumpInfo.ReferenceName).Width * 0.5;
             if (Math.Abs(mDiff.Y) < Math.Abs(mDiff.X)) {
                 if (0 < mDiff.X) {
                     /* upper slider */
@@ -307,7 +307,7 @@ namespace Circuit.Elements.Passive {
             var ce = (PotElm)Elm;
             ControlPanel.AddSlider(mLabel = new Label() {
                 TextAlign = ContentAlignment.BottomLeft,
-                Text = ReferenceName
+                Text = DumpInfo.ReferenceName
             });
             int value = (int)(ce.Position * 100);
             ControlPanel.AddSlider(mSlider = new TrackBar() {

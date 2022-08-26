@@ -16,13 +16,13 @@ namespace Circuit.Elements.Passive {
         public TransformerUI(Point pos) : base(pos) {
             Elm = new TransformerElm();
             mNoDiagonal = true;
-            ReferenceName = "T";
+            DumpInfo.ReferenceName = "T";
         }
 
         public TransformerUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
                 Elm = new TransformerElm(st, (DumpInfo.Flags & FLAG_REVERSE) != 0);
-                ReferenceName = st.nextToken();
+                DumpInfo.ReferenceName = st.nextToken();
             } catch (Exception ex) {
                 throw new Exception("Transformer load error:{0}", ex);
             }
@@ -37,8 +37,7 @@ namespace Circuit.Elements.Passive {
                 + " " + ce.Ratio
                 + " " + ce.Currents[0]
                 + " " + ce.Currents[1]
-                + " " + ce.CouplingCoef
-                + " " + ReferenceName;
+                + " " + ce.CouplingCoef;
         }
 
         public override Point GetPost(int n) {
@@ -123,7 +122,7 @@ namespace Circuit.Elements.Passive {
             setBbox(mPtEnds[0], mPtEnds[ce.Polarity == 1 ? 3 : 1], 0);
 
             if (ControlPanel.ChkShowName.Checked) {
-                g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
+                g.DrawLeftText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
             }
         }
 
@@ -151,7 +150,7 @@ namespace Circuit.Elements.Passive {
             }
             if (n == 3) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = ReferenceName;
+                ei.Text = DumpInfo.ReferenceName;
                 return ei;
             }
             if (n == 4) {
@@ -177,7 +176,7 @@ namespace Circuit.Elements.Passive {
                 ce.CouplingCoef = ei.Value;
             }
             if (n == 3) {
-                ReferenceName = ei.Textf.Text;
+                DumpInfo.ReferenceName = ei.Textf.Text;
                 setNamePos();
             }
             if (n == 4) {
@@ -192,7 +191,7 @@ namespace Circuit.Elements.Passive {
         }
 
         void setNamePos() {
-            var wn = Context.GetTextSize(ReferenceName).Width;
+            var wn = Context.GetTextSize(DumpInfo.ReferenceName).Width;
             mNamePos = new Point((int)(mPtCore[0].X - wn / 2 + 2), mPtCore[0].Y - 8);
         }
     }

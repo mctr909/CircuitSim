@@ -20,13 +20,13 @@ namespace Circuit.Elements.Passive {
 
         public ResistorUI(Point pos) : base(pos) {
             Elm = new ResistorElm();
-            ReferenceName = mLastReferenceName;
+            DumpInfo.ReferenceName = mLastReferenceName;
         }
 
         public ResistorUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
                 Elm = new ResistorElm(st);
-                ReferenceName = st.nextToken();
+                DumpInfo.ReferenceName = st.nextToken();
             } catch(Exception ex) {
                 throw new Exception("Resistor load error:{0}", ex);
             }
@@ -38,7 +38,7 @@ namespace Circuit.Elements.Passive {
 
         protected override string dump() {
             var ce = (ResistorElm)Elm;
-            return ce.Resistance + " " + ReferenceName;
+            return ce.Resistance.ToString();
         }
 
         public override void SetPoints() {
@@ -135,7 +135,7 @@ namespace Circuit.Elements.Passive {
 
         public override void GetInfo(string[] arr) {
             var ce = (ResistorElm)Elm;
-            arr[0] = string.IsNullOrEmpty(ReferenceName) ? "抵抗" : ReferenceName;
+            arr[0] = string.IsNullOrEmpty(DumpInfo.ReferenceName) ? "抵抗" : DumpInfo.ReferenceName;
             getBasicInfo(arr);
             arr[3] = "R = " + Utils.UnitText(ce.Resistance, CirSimForm.OHM_TEXT);
             arr[4] = "P = " + Utils.UnitText(ce.Power, "W");
@@ -143,7 +143,7 @@ namespace Circuit.Elements.Passive {
 
         public override string GetScopeText() {
             var ce = (ResistorElm)Elm;
-            return (string.IsNullOrEmpty(ReferenceName) ? "抵抗" : ReferenceName) + " "
+            return (string.IsNullOrEmpty(DumpInfo.ReferenceName) ? "抵抗" : DumpInfo.ReferenceName) + " "
                 + Utils.UnitText(ce.Resistance, CirSimForm.OHM_TEXT);
         }
 
@@ -154,7 +154,7 @@ namespace Circuit.Elements.Passive {
             }
             if (n == 1) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = ReferenceName;
+                ei.Text = DumpInfo.ReferenceName;
                 return ei;
             }
             return null;
@@ -167,8 +167,8 @@ namespace Circuit.Elements.Passive {
                 setTextPos();
             }
             if (n == 1) {
-                ReferenceName = ei.Textf.Text;
-                mLastReferenceName = ReferenceName;
+                DumpInfo.ReferenceName = ei.Textf.Text;
+                mLastReferenceName = DumpInfo.ReferenceName;
                 setTextPos();
             }
         }

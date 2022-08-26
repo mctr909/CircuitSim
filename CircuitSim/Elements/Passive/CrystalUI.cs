@@ -17,13 +17,15 @@ namespace Circuit.Elements.Passive {
         public CrystalUI(Point pos) : base(pos) {
             Elm = new CrystalElm();
             mPosts = new Point[((CrystalElm)Elm).NumPosts];
-            ReferenceName = "X";
+            DumpInfo.ReferenceName = "X";
         }
 
         public CrystalUI(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
             Elm = new CrystalElm(st);
             mPosts = new Point[((CrystalElm)Elm).NumPosts];
-            ReferenceName = "X";
+            try {
+                DumpInfo.ReferenceName = st.nextToken();
+            } catch { }
         }
 
         public override void SetPoints() {
@@ -111,7 +113,7 @@ namespace Circuit.Elements.Passive {
             }
             if (n == 4) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = ReferenceName;
+                ei.Text = DumpInfo.ReferenceName;
                 return ei;
             }
             return null;
@@ -132,7 +134,7 @@ namespace Circuit.Elements.Passive {
                 ce.Resistance = ei.Value;
             }
             if (n == 4) {
-                ReferenceName = ei.Textf.Text;
+                DumpInfo.ReferenceName = ei.Textf.Text;
                 setTextPos();
             }
             ce.initCrystal();

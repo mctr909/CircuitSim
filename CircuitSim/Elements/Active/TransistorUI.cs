@@ -21,14 +21,14 @@ namespace Circuit.Elements.Active {
 
         public TransistorUI(Point pos, bool pnpflag) : base(pos) {
             Elm = new TransistorElm(pnpflag);
-            ReferenceName = "Tr";
+            DumpInfo.ReferenceName = "Tr";
             setup();
         }
 
         public TransistorUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new TransistorElm(st);
             try {
-                ReferenceName = st.nextToken();
+                DumpInfo.ReferenceName = st.nextToken();
             } catch { }
             setup();
         }
@@ -42,8 +42,7 @@ namespace Circuit.Elements.Active {
             return ce.NPN
                 + " " + (ce.Vb - ce.Vc)
                 + " " + (ce.Vb - ce.Ve)
-                + " " + ce.Hfe
-                + " " + ReferenceName;
+                + " " + ce.Hfe;
         }
 
         public override Point GetPost(int n) {
@@ -96,7 +95,7 @@ namespace Circuit.Elements.Active {
         }
 
         void setTextPos() {
-            var txtW = Context.GetTextSize(ReferenceName).Width;
+            var txtW = Context.GetTextSize(DumpInfo.ReferenceName).Width;
             var swap = 0 < (DumpInfo.Flags & FLAG_FLIP) ? -1 : 1;
             mNameV = mPost1.Y == mPost2.Y;
             if (mNameV) {
@@ -140,16 +139,16 @@ namespace Circuit.Elements.Active {
 
             if (ControlPanel.ChkShowName.Checked) {
                 if (mNameV) {
-                    g.DrawCenteredVText(ReferenceName, mNamePos.X, mNamePos.Y);
+                    g.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
                 } else {
-                    g.DrawCenteredText(ReferenceName, mNamePos.X, mNamePos.Y);
+                    g.DrawCenteredText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
                 }
             }
         }
 
         public override string GetScopeText() {
             var ce = (TransistorElm)Elm;
-            return (string.IsNullOrEmpty(ReferenceName) ? "トランジスタ" : ReferenceName)
+            return (string.IsNullOrEmpty(DumpInfo.ReferenceName) ? "トランジスタ" : DumpInfo.ReferenceName)
                 + " Vce(" + (1 == ce.NPN ? "npn)" : " pnp)");
         }
 
@@ -176,7 +175,7 @@ namespace Circuit.Elements.Active {
         public override ElementInfo GetElementInfo(int n) {
             if (n == 0) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = ReferenceName;
+                ei.Text = DumpInfo.ReferenceName;
                 return ei;
             }
             if (n == 1) {
@@ -194,7 +193,7 @@ namespace Circuit.Elements.Active {
 
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
-                ReferenceName = ei.Textf.Text;
+                DumpInfo.ReferenceName = ei.Textf.Text;
                 setTextPos();
             }
             if (n == 1) {

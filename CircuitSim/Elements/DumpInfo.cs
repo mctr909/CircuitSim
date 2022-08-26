@@ -5,8 +5,9 @@ namespace Circuit.Elements {
     public class DumpInfo {
         public Point P1;
         public Point P2;
-        public Rectangle BoundingBox;
         public int Flags;
+        public string ReferenceName;
+        public Rectangle BoundingBox;
 
         public bool IsCreationFailed {
             get { return P1.X == P2.X && P1.Y == P2.Y; }
@@ -148,7 +149,14 @@ namespace Circuit.Elements {
         }
 
         public string GetValue(DUMP_ID type, string value) {
-            return string.Format("{0} {1} {2} {3} {4} {5} {6}", type, P1.X, P1.Y, P2.X, P2.Y, Flags, value);
+            return string.Format("{0} {1} {2} {3} {4} {5} {6} {7}",
+                type,
+                P1.X, P1.Y,
+                P2.X, P2.Y,
+                Flags,
+                value,
+                ReferenceName
+            );
         }
 
         Rectangle getBoundingBox() {

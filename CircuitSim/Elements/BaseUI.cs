@@ -13,8 +13,6 @@ namespace Circuit.Elements {
         #region [property]
         public DumpInfo DumpInfo { get; protected set; }
 
-        public string ReferenceName { get; set; }
-
         public bool IsSelected { get; set; }
 
         public bool IsMouseElm {
@@ -390,11 +388,11 @@ namespace Circuit.Elements {
         protected void drawName() {
             if (ControlPanel.ChkShowName.Checked) {
                 if (mNameV) {
-                    Context.DrawCenteredVText(ReferenceName, mNamePos.X, mNamePos.Y);
+                    Context.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
                 } else if(mNameH) {
-                    Context.DrawCenteredText(ReferenceName, mNamePos.X, mNamePos.Y);
+                    Context.DrawCenteredText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
                 } else {
-                    Context.DrawRightText(ReferenceName, mNamePos.X, mNamePos.Y);
+                    Context.DrawRightText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
                 }
             }
         }

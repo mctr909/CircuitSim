@@ -46,8 +46,8 @@ namespace Circuit.Elements.Active {
             mTransistor = (TransistorUI)CompElmList[2];
             ((TransistorElm)mTransistor.Elm).SetHfe(700);
             mCurCounts = new double[4];
-            mDiode.ReferenceName = "";
-            mTransistor.ReferenceName = "";
+            mDiode.DumpInfo.ReferenceName = "";
+            mTransistor.DumpInfo.ReferenceName = "";
         }
 
         public override void Reset() {
