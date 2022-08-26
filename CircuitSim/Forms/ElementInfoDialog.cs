@@ -68,7 +68,9 @@ namespace Circuit {
                 mPnlV.Controls.Add(mPnlH);
             }
 
+            Visible = false;
             buildDialog();
+            Visible = true;
 
             ResumeLayout(false);
         }
@@ -212,7 +214,9 @@ namespace Circuit {
                 }
                 SuspendLayout();
                 clear();
+                Visible = false;
                 buildDialog();
+                Visible = true;
                 ResumeLayout(false);
             }
         }

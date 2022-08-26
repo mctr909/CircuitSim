@@ -43,7 +43,7 @@ namespace Circuit.Elements.Input {
                 mFrequency = st.nextTokenDouble();
                 mMaxVoltage = st.nextTokenDouble();
                 mBias = st.nextTokenDouble();
-                mPhaseShift = st.nextTokenDouble();
+                mPhaseShift = st.nextTokenDouble() * Math.PI / 180;
                 mDutyCycle = st.nextTokenDouble();
             } catch { }
 
@@ -89,7 +89,7 @@ namespace Circuit.Elements.Input {
 
             double t = CirSimForm.Sim.Time;
             double wt = 2 * Math.PI * mFrequency * t + mPhaseShift;
-            double duty = 2 * Math.PI *mDutyCycle;
+            double duty = 2 * Math.PI * mDutyCycle;
             double cycle = wt % (2 * Math.PI);
 
             switch (waveform) {

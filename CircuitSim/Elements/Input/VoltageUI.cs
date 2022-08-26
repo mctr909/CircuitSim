@@ -8,7 +8,7 @@ namespace Circuit.Elements.Input {
         const int FLAG_COS = 2;
         const int FLAG_PULSE_DUTY = 4;
 
-        const double DEFAULT_PULSE_DUTY = 0.5 / Math.PI;
+        const double DEFAULT_PULSE_DUTY = 0.5;
 
         protected const int BODY_LEN = 28;
         const int BODY_LEN_DC = 6;
@@ -42,8 +42,8 @@ namespace Circuit.Elements.Input {
             optionList.Add(elm.mFrequency);
             optionList.Add(elm.mMaxVoltage);
             optionList.Add(elm.mBias);
-            optionList.Add(elm.mPhaseShift);
-            optionList.Add(elm.mDutyCycle);
+            optionList.Add((elm.mPhaseShift * 180 / Math.PI).ToString("0"));
+            optionList.Add(elm.mDutyCycle.ToString("0.00"));
         }
 
         public override void SetPoints() {
