@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace Circuit.Elements.Passive {
     class CapacitorUI : BaseUI {
@@ -135,6 +136,15 @@ namespace Circuit.Elements.Passive {
                 mLastReferenceName = DumpInfo.ReferenceName;
                 setTextPos();
             }
+        }
+
+        public override EventHandler CreateSlider(ElementInfo ei, Adjustable adj) {
+            var ce = (CapacitorElm)Elm;
+            return new EventHandler((s, e) => {
+                var trb = (TrackBar)s;
+                ce.Capacitance = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
+                CirSimForm.Sim.NeedAnalyze();
+            });
         }
     }
 }

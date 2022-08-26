@@ -364,5 +364,35 @@ namespace Circuit.Elements.Input {
                 elm.DutyCycle = ei.Value * .01;
             }
         }
+
+        public override EventHandler CreateSlider(ElementInfo ei, Adjustable adj) {
+            var ce = (VoltageElm)Elm;
+            return new EventHandler((s, e) => {
+                var trb = (TrackBar)s;
+                var val = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
+                switch (ei.Name) {
+                case VALUE_NAME_V:
+                case VALUE_NAME_AMP:
+                    ce.MaxVoltage = val;
+                    break;
+                case VALUE_NAME_V_OFS:
+                    ce.Bias = val;
+                    break;
+                case VALUE_NAME_HZ:
+                    ce.Frequency = val;
+                    break;
+                case VALUE_NAME_PHASE:
+                    ce.Phase = val * Math.PI / 180;
+                    break;
+                case VALUE_NAME_PHASE_OFS:
+                    ce.PhaseOffset = val * Math.PI / 180;
+                    break;
+                case VALUE_NAME_DUTY:
+                    ce.DutyCycle = val * 0.01;
+                    break;
+                }
+                CirSimForm.Sim.NeedAnalyze();
+            });
+        }
     }
 }

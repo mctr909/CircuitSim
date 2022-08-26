@@ -67,55 +67,7 @@ namespace Circuit {
                 Width = 175,
                 Height = 23
             });
-            if (UI is ResistorUI) {
-                mSlider.ValueChanged += new EventHandler((s, e) => {
-                    var trb = (TrackBar)s;
-                    ((ResistorElm)UI.Elm).Resistance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
-                    CirSimForm.Sim.NeedAnalyze();
-                });
-            }
-            if (UI is CapacitorUI) {
-                mSlider.ValueChanged += new EventHandler((s, e) => {
-                    var trb = (TrackBar)s;
-                    ((CapacitorElm)UI.Elm).Capacitance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
-                    CirSimForm.Sim.NeedAnalyze();
-                });
-            }
-            if (UI is InductorUI) {
-                mSlider.ValueChanged += new EventHandler((s, e) => {
-                    var trb = (TrackBar)s;
-                    ((InductorElm)UI.Elm).Inductance = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
-                    CirSimForm.Sim.NeedAnalyze();
-                });
-            }
-            if (UI is VoltageUI) {
-                mSlider.ValueChanged += new EventHandler((s, e) => {
-                    var trb = (TrackBar)s;
-                    var val = MinValue + (MaxValue - MinValue) * trb.Value / trb.Maximum;
-                    switch (ei.Name) {
-                    case VoltageUI.VALUE_NAME_V:
-                    case VoltageUI.VALUE_NAME_AMP:
-                        ((VoltageElm)UI.Elm).MaxVoltage = val;
-                        break;
-                    case VoltageUI.VALUE_NAME_V_OFS:
-                        ((VoltageElm)UI.Elm).Bias = val;
-                        break;
-                    case VoltageUI.VALUE_NAME_HZ:
-                        ((VoltageElm)UI.Elm).Frequency = val;
-                        break;
-                    case VoltageUI.VALUE_NAME_PHASE:
-                        ((VoltageElm)UI.Elm).Phase = val * Math.PI / 180;
-                        break;
-                    case VoltageUI.VALUE_NAME_PHASE_OFS:
-                        ((VoltageElm)UI.Elm).PhaseOffset = val * Math.PI / 180;
-                        break;
-                    case VoltageUI.VALUE_NAME_DUTY:
-                        ((VoltageElm)UI.Elm).DutyCycle = val * 0.01;
-                        break;
-                    }
-                    CirSimForm.Sim.NeedAnalyze();
-                });
-            }
+            mSlider.ValueChanged += UI.CreateSlider(ei, this);
         }
 
         public void DeleteSlider() {

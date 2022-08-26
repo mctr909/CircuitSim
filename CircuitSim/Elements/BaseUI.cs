@@ -649,6 +649,8 @@ namespace Circuit.Elements {
         public virtual ElementInfo GetElementInfo(int n) { return null; }
 
         public virtual void SetElementValue(int n, ElementInfo ei) { }
+
+        public virtual EventHandler CreateSlider(ElementInfo ei, Adjustable adj) { return null; }
         #endregion
     }
 }
