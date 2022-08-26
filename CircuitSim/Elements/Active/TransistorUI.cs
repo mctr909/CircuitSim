@@ -40,8 +40,8 @@ namespace Circuit.Elements.Active {
         protected override string dump() {
             var ce = (TransistorElm)Elm;
             return ce.NPN
-                + " " + (ce.Vb - ce.Vc)
-                + " " + (ce.Vb - ce.Ve)
+                + " " + (ce.Vb - ce.Vc).ToString("0.000000")
+                + " " + (ce.Vb - ce.Ve).ToString("0.000000")
                 + " " + ce.Hfe;
         }
 

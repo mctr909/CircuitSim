@@ -8,6 +8,14 @@ namespace Circuit.Elements.Active {
             = ELEMENTS.DIODE + " 6 1\r"
             + ELEMENTS.CCCS +" 1 2 3 4\r"
             + ELEMENTS.TRANSISTOR_N + " 3 4 5";
+        static readonly string EXPR = @"max(0,
+    min(.0001,
+        select {i-0.003,
+            ( -80000000000*i^5 +800000000*i^4 -3000000*i^3 +5177.20*i^2 +0.2453*i -0.00005 )*1.040/700,
+            (      9000000*i^5    -998113*i^4   +42174*i^3  -861.32*i^2 +9.0836*i -0.00780 )*0.945/700
+        }
+    )
+)";
 
         public int mCspc;
         public int mCspc2;
@@ -34,15 +42,7 @@ namespace Circuit.Elements.Active {
             mDiode = (DiodeUI)CompElmList[0];
 
             var cccs = (CCCSElm)CompElmList[1].Elm;
-            cccs.SetExpr(@"max(0,
-                min(.0001,
-                    select {i-0.003,
-                        ( -80000000000*i^5 +800000000*i^4 -3000000*i^3 +5177.20*i^2 +0.2453*i -0.00005 )*1.040/700,
-                        (      9000000*i^5    -998113*i^4   +42174*i^3  -861.32*i^2 +9.0836*i -0.00780 )*0.945/700
-                    }
-                )
-            )");
-
+            cccs.SetExpr(EXPR);
             mTransistor = (TransistorUI)CompElmList[2];
             ((TransistorElm)mTransistor.Elm).SetHfe(700);
             mCurCounts = new double[4];

@@ -140,11 +140,16 @@ namespace Circuit.Elements.Custom {
             var ce = (ChipElm)Elm;
             string s = "";
             if (ce.NeedsBits()) {
-                s = string.Join(" ", s, ce.Bits);
+                s = ce.Bits.ToString();
             }
             for (int i = 0; i != ce.PostCount; i++) {
                 if (ce.Pins[i].state) {
-                    s = string.Join(" ", s, ce.Volts[i]);
+                    var strVolt = ce.Volts[i].ToString("0.000000");
+                    if (string.IsNullOrWhiteSpace(s)) {
+                        s = strVolt;
+                    } else {
+                        s = string.Join(" ", s, strVolt);
+                    }
                 }
             }
             return s;

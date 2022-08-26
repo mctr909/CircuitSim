@@ -27,10 +27,11 @@ namespace Circuit.Elements.Custom {
                 string tstring = ce.CompElmList[i].Dump;
                 var rg = new Regex("[A-Za-z0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+ ");
                 var rgstring = rg.Replace(tstring, "", 1).Replace(" ", "_"); /* remove unused tint x1 y1 x2 y2 coords for internal components */
+                var escstring = Utils.Escape(rgstring);
                 if ("" == dumpStr) {
-                    dumpStr = Utils.Escape(rgstring);
+                    dumpStr = escstring;
                 } else {
-                    dumpStr = string.Join(" ", dumpStr, Utils.Escape(rgstring));
+                    dumpStr = string.Join(" ", dumpStr, escstring);
                 }
             }
             return dumpStr;

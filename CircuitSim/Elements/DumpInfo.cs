@@ -149,14 +149,24 @@ namespace Circuit.Elements {
         }
 
         public string GetValue(DUMP_ID type, string value) {
-            return string.Format("{0} {1} {2} {3} {4} {5} {6} {7}",
-                type,
-                P1.X, P1.Y,
-                P2.X, P2.Y,
-                Flags,
-                value,
-                ReferenceName
-            );
+            if (string.IsNullOrWhiteSpace(ReferenceName)) {
+                return string.Format("{0} {1} {2} {3} {4} {5} {6}",
+                    type,
+                    P1.X, P1.Y,
+                    P2.X, P2.Y,
+                    Flags,
+                    value
+                );
+            } else {
+                return string.Format("{0} {1} {2} {3} {4} {5} {6} {7}",
+                    type,
+                    P1.X, P1.Y,
+                    P2.X, P2.Y,
+                    Flags,
+                    value,
+                    ReferenceName
+                );
+            }
         }
 
         Rectangle getBoundingBox() {

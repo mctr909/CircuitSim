@@ -840,7 +840,7 @@ namespace Circuit {
         }
 
         static public bool Run(bool debugprint) {
-            const int subiterCount = 64;
+            const int subiterCount = 256;
             int i, j, k, subiter;
             int elmCount = mSim.ElmCount;
             var elmList = mSim.ElmList;

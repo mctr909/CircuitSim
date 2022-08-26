@@ -17,8 +17,8 @@ namespace Circuit {
     enum EXPR_TYPE {
         E_ADD = 1,
         E_SUB = 2,
-        E_T = 3,
-        E_VAL = 6,
+        E_TIME = 3,
+        E_VALUE = 6,
         E_MUL = 7,
         E_DIV = 8,
         E_POW = 9,
@@ -40,13 +40,24 @@ namespace Circuit {
         E_MOD = 25,
         E_STEP = 26,
         E_SELECT = 27,
-        E_A = 28, /* should be at end */
+        E_VARIABLE = 28, /* should be at end */
     }
 
     class Expr {
         EXPR_TYPE type;
         double value;
         public List<Expr> Children;
+
+        public string VariableName {
+            get {
+                if (EXPR_TYPE.E_VARIABLE <= type) {
+                    var ch = (char)('a' + type - EXPR_TYPE.E_VARIABLE);
+                    return "" + ch;
+                } else {
+                    return "Not Variable";
+                }
+            }
+        }
 
         public Expr(Expr e1, Expr e2, EXPR_TYPE v) {
             Children = new List<Expr>();
@@ -88,9 +99,9 @@ namespace Circuit {
                 return Math.Pow(left.Eval(es), right.Eval(es));
             case EXPR_TYPE.E_UMINUS:
                 return -left.Eval(es);
-            case EXPR_TYPE.E_VAL:
+            case EXPR_TYPE.E_VALUE:
                 return value;
-            case EXPR_TYPE.E_T:
+            case EXPR_TYPE.E_TIME:
                 return es.Time;
             case EXPR_TYPE.E_SIN:
                 return Math.Sin(left.Eval(es));
@@ -148,8 +159,8 @@ namespace Circuit {
             case EXPR_TYPE.E_PWL:
                 return pwl(es, Children);
             default:
-                if (type >= EXPR_TYPE.E_A) {
-                    return es.Values[type - EXPR_TYPE.E_A];
+                if (type >= EXPR_TYPE.E_VARIABLE) {
+                    return es.Values[type - EXPR_TYPE.E_VARIABLE];
                 }
                 Console.WriteLine("unknown\n");
                 break;
@@ -206,7 +217,7 @@ namespace Circuit {
 
         public Expr ParseExpression() {
             if (token.Length == 0) {
-                return new Expr(EXPR_TYPE.E_VAL, 0.0);
+                return new Expr(EXPR_TYPE.E_VALUE, 0.0);
             }
             var e = parse();
             if (token.Length > 0) {
@@ -345,19 +356,19 @@ namespace Circuit {
                 return e;
             }
             if (skip("t")) {
-                return new Expr(EXPR_TYPE.E_T);
+                return new Expr(EXPR_TYPE.E_TIME);
             }
             if (token.Length == 1) {
                 char c = token.ElementAt(0);
                 if (c >= 'a' && c <= 'i') {
                     getToken();
-                    return new Expr(EXPR_TYPE.E_A + (c - 'a'));
+                    return new Expr(EXPR_TYPE.E_VARIABLE + (c - 'a'));
                 }
             }
-            if (skip("pi"))
-                return new Expr(EXPR_TYPE.E_VAL, 3.14159265358979323846);
             /*if (skip("e"))
-                return new Expr(EXPR_TYPE.E_VAL, 2.7182818284590452354);*/
+                return new Expr(EXPR_TYPE.E_VALUE, 2.7182818284590452354);*/
+            if (skip("pi"))
+                return new Expr(EXPR_TYPE.E_VALUE, 3.14159265358979323846);
             if (skip("sin"))
                 return parseFunc(EXPR_TYPE.E_SIN);
             if (skip("cos"))
@@ -391,7 +402,7 @@ namespace Circuit {
             if (skip("clamp"))
                 return parseFuncMulti(EXPR_TYPE.E_CLAMP, 3, 3);
             try {
-                var e = new Expr(EXPR_TYPE.E_VAL, double.Parse(token));
+                var e = new Expr(EXPR_TYPE.E_VALUE, double.Parse(token));
                 getToken();
                 return e;
             } catch (Exception e) {
@@ -399,7 +410,7 @@ namespace Circuit {
                 Console.WriteLine("unrecognized token: " + token);
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
-                return new Expr(EXPR_TYPE.E_VAL, 0);
+                return new Expr(EXPR_TYPE.E_VALUE, 0);
             }
         }
     }

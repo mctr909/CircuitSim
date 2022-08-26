@@ -22,8 +22,10 @@ namespace Circuit.Elements.Input {
 
         public VCCSElm(ChipUI ui, StringTokenizer st) : base(st) {
             InputCount = st.nextTokenInt();
-            ExprString = Utils.Unescape(st.nextToken());
-            ParseExpr();
+            try {
+                ExprString = Utils.Unescape(st.nextToken());
+                ParseExpr();
+            } catch { }
             SetupPins(ui);
         }
 
