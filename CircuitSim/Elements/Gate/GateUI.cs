@@ -33,14 +33,14 @@ namespace Circuit.Elements.Gate {
         public GateUI(Point pos) : base(pos) {
             mNoDiagonal = true;
             if (mLastSchmitt) {
-                mFlags |= FLAG_SCHMITT;
+                DumpInfo.Flags |= FLAG_SCHMITT;
             }
-            mFlags |= FLAG_SMALL;
+            DumpInfo.Flags |= FLAG_SMALL;
         }
 
         public GateUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             mNoDiagonal = true;
-            mFlags |= FLAG_SMALL;
+            DumpInfo.Flags |= FLAG_SMALL;
         }
 
         public static bool UseAnsiGates() { return ControlPanel.ChkUseAnsiSymbols.Checked; }
@@ -160,11 +160,11 @@ namespace Circuit.Elements.Gate {
             }
             if (n == 2) {
                 if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_SCHMITT;
+                    DumpInfo.Flags |= FLAG_SCHMITT;
                 } else {
-                    mFlags &= ~FLAG_SCHMITT;
+                    DumpInfo.Flags &= ~FLAG_SCHMITT;
                 }
-                mLastSchmitt = ce.HasSchmittInputs = 0 != (mFlags & FLAG_SCHMITT);
+                mLastSchmitt = ce.HasSchmittInputs = 0 != (DumpInfo.Flags & FLAG_SCHMITT);
                 SetPoints();
             }
         }

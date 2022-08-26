@@ -29,7 +29,7 @@ namespace Circuit.Elements.Passive {
 
         public PotUI(Point pos) : base(pos) {
             Elm = new PotElm();
-            mFlags = FLAG_SHOW_VALUES;
+            DumpInfo.Flags = FLAG_SHOW_VALUES;
             ReferenceName = "VR";
             createSlider();
         }
@@ -164,7 +164,7 @@ namespace Circuit.Elements.Passive {
             }
             drawPosts();
 
-            if (ControlPanel.ChkShowValues.Checked && ce.Resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
+            if (ControlPanel.ChkShowValues.Checked && ce.Resistance1 > 0 && (DumpInfo.Flags & FLAG_SHOW_VALUES) != 0) {
                 /* check for vertical pot with 3rd terminal on left */
                 bool reverseY = (mPost3.X < mLead1.X && mLead1.X == mLead2.X);
                 /* check for horizontal pot with 3rd terminal on top */
@@ -222,7 +222,7 @@ namespace Circuit.Elements.Passive {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "値を表示";
-                ei.CheckBox.Checked = (mFlags & FLAG_SHOW_VALUES) != 0;
+                ei.CheckBox.Checked = (DumpInfo.Flags & FLAG_SHOW_VALUES) != 0;
                 return ei;
             }
             return null;
@@ -240,7 +240,7 @@ namespace Circuit.Elements.Passive {
                 setNamePos();
             }
             if (n == 2) {
-                mFlags = ei.ChangeFlag(mFlags, FLAG_SHOW_VALUES);
+                DumpInfo.Flags = ei.ChangeFlag(DumpInfo.Flags, FLAG_SHOW_VALUES);
             }
         }
 

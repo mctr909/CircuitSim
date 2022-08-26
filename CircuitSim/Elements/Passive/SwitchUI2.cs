@@ -76,7 +76,7 @@ namespace Circuit.Elements.Passive {
         public override void Draw(CustomGraphics g) {
             var ce = (SwitchElm2)Elm;
             setBbox(mPost1, mPost2, OPEN_HS);
-            adjustBbox(mSwPosts[0], mSwPosts[ce.mThrowCount - 1]);
+            DumpInfo.AdjustBbox(mSwPosts[0], mSwPosts[ce.mThrowCount - 1]);
 
             /* draw first lead */
             drawLead(mPost1, mLead1);

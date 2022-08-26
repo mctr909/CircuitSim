@@ -38,7 +38,7 @@ namespace Circuit.Elements.Active {
         public override DUMP_ID DumpType { get { return DUMP_ID.DIODE; } }
 
         protected override string dump() {
-            mFlags |= FLAG_MODEL;
+            DumpInfo.Flags |= FLAG_MODEL;
             var ce = (DiodeElm)Elm;
             return ReferenceName + " " + Utils.Escape(ce.mModelName);
         }

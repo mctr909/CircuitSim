@@ -31,7 +31,7 @@ namespace Circuit.Elements.Output {
 			}
 			setLead1(1 - w / mLen);
 			setBbox(mPost1, mLead1, 0);
-			drawCenteredText(s, P2, true);
+			drawCenteredText(s, DumpInfo.P2, true);
 			drawLead(mPost1, mLead1);
 			drawPosts();
 		}

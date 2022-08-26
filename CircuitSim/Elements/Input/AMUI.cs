@@ -12,8 +12,8 @@ namespace Circuit.Elements.Input {
 
         public AMUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new AMElm(st);
-            if ((mFlags & FLAG_COS) != 0) {
-                mFlags &= ~FLAG_COS;
+            if ((DumpInfo.Flags & FLAG_COS) != 0) {
+                DumpInfo.Flags &= ~FLAG_COS;
             }
         }
 
@@ -39,7 +39,7 @@ namespace Circuit.Elements.Input {
             drawLead(mPost1, mLead1);
 
             string s = "AM";
-            drawCenteredText(s, P2, true);
+            drawCenteredText(s, DumpInfo.P2, true);
             drawWaveform(g, mPost2);
             drawPosts();
             ce.CurCount = updateDotCount(-ce.Current, ce.CurCount);
@@ -102,7 +102,7 @@ namespace Circuit.Elements.Input {
             int xc = center.X;
             int yc = center.Y;
             g.DrawCircle(center, SIZE / 2);
-            adjustBbox(xc - SIZE, yc - SIZE, xc + SIZE, yc + SIZE);
+            DumpInfo.AdjustBbox(xc - SIZE, yc - SIZE, xc + SIZE, yc + SIZE);
         }
     }
 }

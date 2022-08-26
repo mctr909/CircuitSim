@@ -24,23 +24,16 @@ namespace Circuit.Elements.Custom {
         public override DUMP_ID DumpType { get { return DUMP_ID.TEXT; } }
 
         protected override string dump() {
-            mFlags |= FLAG_ESCAPE;
+            DumpInfo.Flags |= FLAG_ESCAPE;
             return mSize + " " + Utils.Escape(mText);
         }
 
-        public override double Distance(double x, double y) {
-            return BoundingBox.Contains((int)x, (int)y) ? 0 : Math.Min(
-                Utils.DistanceOnLine(P1.X, P1.Y, P2.X, P1.Y, x, y), Math.Min(
-                Utils.DistanceOnLine(P2.X, P1.Y, P2.X, P2.Y, x, y), Math.Min(
-                Utils.DistanceOnLine(P2.X, P2.Y, P1.X, P2.Y, x, y), 
-                Utils.DistanceOnLine(P1.X, P2.Y, P1.X, P1.Y, x, y)
-            )));
+        public override double Distance(int x, int y) {
+            return DumpInfo.BoxDistance(DumpInfo.BoundingBox, x, y);
         }
 
         public override void Drag(Point p) {
-            P1 = p;
-            P2.X = p.X + 16;
-            P2.Y = p.Y;
+            DumpInfo.SetPosition(p.X, p.Y, p.X + 16, p.Y);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -49,10 +42,12 @@ namespace Circuit.Elements.Custom {
             CustomGraphics.TextColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             CustomGraphics.TextSize = mSize;
             var size = g.GetTextSize(mText);
-            P2.X = (int)(P1.X + size.Width);
-            P2.Y = (int)(P1.Y + size.Height);
-            g.DrawLeftText(mText, P1.X, (int)(P1.Y + size.Height / 2));
-            setBbox(P1, P2);
+            DumpInfo.SetP2(
+                (int)(DumpInfo.P1.X + size.Width),
+                (int)(DumpInfo.P1.Y + size.Height)
+            );
+            g.DrawLeftText(mText, DumpInfo.P1.X, (int)(DumpInfo.P1.Y + size.Height / 2));
+            DumpInfo.SetBbox(DumpInfo.P1, DumpInfo.P2);
             CustomGraphics.TextColor = bkColor;
             CustomGraphics.TextSize = bkSize;
         }

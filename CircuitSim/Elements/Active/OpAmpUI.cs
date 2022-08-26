@@ -18,15 +18,15 @@ namespace Circuit.Elements.Active {
 
         public OpAmpUI(Point pos) : base(pos) {
             mNoDiagonal = true;
-            mFlags = FLAG_GAIN; /* need to do this before setSize() */
-            mFlags |= FLAG_SMALL;
+            DumpInfo.Flags = FLAG_GAIN; /* need to do this before setSize() */
+            DumpInfo.Flags |= FLAG_SMALL;
             Elm = new OpAmpElm();
         }
 
         public OpAmpUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new OpAmpElm(st);
             mNoDiagonal = true;
-            mFlags |= FLAG_SMALL;
+            DumpInfo.Flags |= FLAG_SMALL;
             setGain();
         }
 
@@ -34,7 +34,7 @@ namespace Circuit.Elements.Active {
 
         protected override string dump() {
             var ce = (OpAmpElm)Elm;
-            mFlags |= FLAG_GAIN;
+            DumpInfo.Flags |= FLAG_GAIN;
             return ce.MaxOut
                 + " " + ce.MinOut
                 + " " + ce.Gbw
@@ -71,7 +71,7 @@ namespace Circuit.Elements.Active {
             }
             calcLeads(ww * 2);
             int hs = mOpHeight * mDsign;
-            if ((mFlags & FLAG_SWAP) != 0) {
+            if ((DumpInfo.Flags & FLAG_SWAP) != 0) {
                 hs = -hs;
             }
             mIn1p = new Point[2];
@@ -141,13 +141,13 @@ namespace Circuit.Elements.Active {
         }
 
         void setGain() {
-            if ((mFlags & FLAG_GAIN) != 0) {
+            if ((DumpInfo.Flags & FLAG_GAIN) != 0) {
                 return;
             }
             var ce = (OpAmpElm)Elm;
             /* gain of 100000 breaks e-amp-dfdx.txt
              * gain was 1000, but it broke amp-schmitt.txt */
-            ce.Gain = ((mFlags & FLAG_LOWGAIN) != 0) ? 1000 : 100000;
+            ce.Gain = ((DumpInfo.Flags & FLAG_LOWGAIN) != 0) ? 1000 : 100000;
         }
     }
 }

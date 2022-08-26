@@ -48,14 +48,11 @@ namespace Circuit.Elements.Active {
 
         public override int PostCount { get { return 3; } }
 
-        /* there is no current path through the op-amp inputs,
-         * but there is an indirect path through the output to ground. */
-        public override bool GetConnection(int n1, int n2) { return false; }
-
-        public override void AnaStamp() {
-            int vn = Circuit.NodeList.Count + mVoltSource;
-            Circuit.StampNonLinear(vn);
-            Circuit.StampMatrix(Nodes[2], vn, 1);
+        public override double GetCurrentIntoNode(int n) {
+            if (n == 2) {
+                return -mCurrent;
+            }
+            return 0;
         }
 
         public override void CirDoStep() {
@@ -88,13 +85,16 @@ namespace Circuit.Elements.Active {
             mLastVd = vd;
         }
 
-        public override bool AnaHasGroundConnection(int n1) { return n1 == 2; }
+        /* there is no current path through the op-amp inputs,
+         * but there is an indirect path through the output to ground. */
+        public override bool AnaGetConnection(int n1, int n2) { return false; }
 
-        public override double GetCurrentIntoNode(int n) {
-            if (n == 2) {
-                return -mCurrent;
-            }
-            return 0;
+        public override void AnaStamp() {
+            int vn = Circuit.NodeList.Count + mVoltSource;
+            Circuit.StampNonLinear(vn);
+            Circuit.StampMatrix(Nodes[2], vn, 1);
         }
+
+        public override bool AnaHasGroundConnection(int n1) { return n1 == 2; }
     }
 }

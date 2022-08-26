@@ -33,18 +33,17 @@ namespace Circuit.Elements.Active {
 
         public override void Drag(Point pos) {
             pos = CirSimForm.Sim.SnapGrid(pos);
-            if (Math.Abs(P1.X - pos.X) < Math.Abs(P1.Y - pos.Y)) {
-                pos.X = P1.X;
+            if (Math.Abs(DumpInfo.P1.X - pos.X) < Math.Abs(DumpInfo.P1.Y - pos.Y)) {
+                pos.X = DumpInfo.P1.X;
             } else {
-                pos.Y = P1.Y;
+                pos.Y = DumpInfo.P1.Y;
             }
-            int q1 = Math.Abs(P1.X - pos.X) + Math.Abs(P1.Y - pos.Y);
+            int q1 = Math.Abs(DumpInfo.P1.X - pos.X) + Math.Abs(DumpInfo.P1.Y - pos.Y);
             int q2 = (q1 / 2) % CirSimForm.GRID_SIZE;
             if (q2 != 0) {
                 return;
             }
-            P2.X = pos.X;
-            P2.Y = pos.Y;
+            DumpInfo.SetP2(pos);
             SetPoints();
         }
 
@@ -90,7 +89,7 @@ namespace Circuit.Elements.Active {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     Text = "ノーマリクローズ",
-                    Checked = (mFlags & FLAG_INVERT) != 0
+                    Checked = (DumpInfo.Flags & FLAG_INVERT) != 0
                 };
                 return ei;
             }
@@ -106,8 +105,8 @@ namespace Circuit.Elements.Active {
         public override void SetElementValue(int n, ElementInfo ei) {
             var ce = (AnalogSwitchElm)Elm;
             if (n == 0) {
-                mFlags = ei.CheckBox.Checked ? (mFlags | FLAG_INVERT) : (mFlags & ~FLAG_INVERT);
-                ce.Invert = 0 != (mFlags & FLAG_INVERT);
+                DumpInfo.Flags = ei.CheckBox.Checked ? (DumpInfo.Flags | FLAG_INVERT) : (DumpInfo.Flags & ~FLAG_INVERT);
+                ce.Invert = 0 != (DumpInfo.Flags & FLAG_INVERT);
             }
             if (n == 1 && 0 < ei.Value) {
                 ce.Ron = ei.Value;

@@ -13,8 +13,8 @@ namespace Circuit.Elements.Input {
 
         public SweepUI(Point pos) : base(pos) {
             Elm = new SweepElm();
-            mFlags = FLAG_BIDIR;
-            ((SweepElm)Elm).BothSides = 0 != (mFlags & FLAG_BIDIR);
+            DumpInfo.Flags = FLAG_BIDIR;
+            ((SweepElm)Elm).BothSides = 0 != (DumpInfo.Flags & FLAG_BIDIR);
         }
 
         public SweepUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -49,7 +49,7 @@ namespace Circuit.Elements.Input {
             int yc = mPost2.Y;
             g.DrawCircle(mPost2, SIZE / 2);
 
-            adjustBbox(
+            DumpInfo.AdjustBbox(
                 xc - SIZE, yc - SIZE,
                 xc + SIZE, yc + SIZE
             );
@@ -95,7 +95,7 @@ namespace Circuit.Elements.Input {
 
         public override void GetInfo(string[] arr) {
             var ce = (SweepElm)Elm;
-            arr[0] = "sweep " + (((mFlags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
+            arr[0] = "sweep " + (((DumpInfo.Flags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
             arr[1] = "I = " + Utils.CurrentAbsText(ce.Current);
             arr[2] = "V = " + Utils.VoltageText(ce.Volts[0]);
             arr[3] = "f = " + Utils.UnitText(ce.Frequency, "Hz");
@@ -122,7 +122,7 @@ namespace Circuit.Elements.Input {
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = "周波数対数変化",
-                    Checked = (mFlags & FLAG_LOG) != 0
+                    Checked = (DumpInfo.Flags & FLAG_LOG) != 0
                 };
                 return ei;
             }
@@ -131,7 +131,7 @@ namespace Circuit.Elements.Input {
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = "双方向周波数遷移",
-                    Checked = (mFlags & FLAG_BIDIR) != 0
+                    Checked = (DumpInfo.Flags & FLAG_BIDIR) != 0
                 };
                 return ei;
             }
@@ -160,18 +160,18 @@ namespace Circuit.Elements.Input {
                 ce.SweepTime = ei.Value;
             }
             if (n == 4) {
-                mFlags &= ~FLAG_LOG;
+                DumpInfo.Flags &= ~FLAG_LOG;
                 if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_LOG;
+                    DumpInfo.Flags |= FLAG_LOG;
                 }
-                ce.IsLog = 0 != (mFlags & FLAG_LOG);
+                ce.IsLog = 0 != (DumpInfo.Flags & FLAG_LOG);
             }
             if (n == 5) {
-                mFlags &= ~FLAG_BIDIR;
+                DumpInfo.Flags &= ~FLAG_BIDIR;
                 if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_BIDIR;
+                    DumpInfo.Flags |= FLAG_BIDIR;
                 }
-                ce.BothSides = 0 != (mFlags & FLAG_BIDIR);
+                ce.BothSides = 0 != (DumpInfo.Flags & FLAG_BIDIR);
             }
             ce.setParams();
         }

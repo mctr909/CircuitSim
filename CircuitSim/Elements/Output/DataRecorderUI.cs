@@ -33,7 +33,7 @@ namespace Circuit.Elements.Output {
             interpPoint(ref mLead1, 1 - ((int)g.GetTextSize(str).Width / 2) / mLen);
             setBbox(mPost1, mLead1, 0);
 
-            drawCenteredText(str, P2, true);
+            drawCenteredText(str, DumpInfo.P2, true);
             drawLead(mPost1, mLead1);
             drawPosts();
         }

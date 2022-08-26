@@ -31,7 +31,7 @@
         public override bool IsWire { get { return Position == 0; } }
         public override int VoltageSourceCount { get { return (1 == Position) ? 0 : 1; } }
 
-        public override bool GetConnection(int n1, int n2) { return 0 == Position; }
+        public override bool AnaGetConnection(int n1, int n2) { return 0 == Position; }
 
         public override void AnaStamp() {
             if (Position == 0) {

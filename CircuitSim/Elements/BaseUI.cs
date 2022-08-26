@@ -11,6 +11,8 @@ namespace Circuit.Elements {
         public BaseElement Elm;
 
         #region [property]
+        public DumpInfo DumpInfo { get; protected set; }
+
         public string ReferenceName { get; set; }
 
         public bool IsSelected { get; set; }
@@ -28,10 +30,7 @@ namespace Circuit.Elements {
         /// dump component state for export/undo
         /// </summary>
         public string Dump {
-            get {
-                var type = DumpType;
-                return string.Format("{0} {1} {2} {3} {4} {5} {6}", type, P1.X, P1.Y, P2.X, P2.Y, mFlags, dump());
-            }
+            get { return DumpInfo.GetValue(DumpType, dump()); }
         }
 
         public bool NeedsShortcut { get { return Shortcut > 0 && (int)Shortcut <= 127; } }
@@ -53,7 +52,7 @@ namespace Circuit.Elements {
         /// called when an element is done being dragged out;
         /// </summary>
         /// <returns>returns true if it's zero size and should be deleted</returns>
-        public virtual bool IsCreationFailed { get { return P1.X == P2.X && P1.Y == P2.Y; } }
+        public virtual bool IsCreationFailed { get { return DumpInfo.IsCreationFailed; } }
 
         public virtual bool IsGraphicElmt { get { return false; } }
 
@@ -71,20 +70,6 @@ namespace Circuit.Elements {
         #endregion
 
         #region [variable]
-        /// <summary>
-        /// initial point where user created element.
-        /// For simple two-terminal elements, this is the first node/post.
-        /// </summary>
-        public Point P1;
-
-        /// <summary>
-        /// point to which user dragged out element.
-        /// For simple two-terminal elements, this is the second node/post
-        /// </summary>
-        public Point P2;
-
-        public Rectangle BoundingBox;
-
         int mLastHandleGrabbed = -1;
 
         /* length along x and y axes, and sign of difference */
@@ -112,37 +97,25 @@ namespace Circuit.Elements {
 
         /* if subclasses set this to true, element will be horizontal or vertical only */
         protected bool mNoDiagonal;
-
-        protected int mFlags;
         #endregion
 
         /// <summary>
         /// create new element with one post at pos, to be dragged out by user
         /// </summary>
         protected BaseUI(Point pos) {
-            P1.X = P2.X = pos.X;
-            P1.Y = P2.Y = pos.Y;
-            mFlags = DefaultFlags;
-            initBoundingBox();
+            DumpInfo = new DumpInfo(pos, DefaultFlags);
         }
 
         /// <summary>
         /// create element between p1 and p2 from undump
         /// </summary>
         protected BaseUI(Point p1, Point p2, int f) {
-            P1 = p1;
-            P2 = p2;
-            mFlags = f;
-            initBoundingBox();
+            DumpInfo = new DumpInfo(p1, p2, f);
         }
 
         public abstract DUMP_ID DumpType { get; }
 
         protected abstract string dump();
-
-        void initBoundingBox() {
-            BoundingBox = new Rectangle(Math.Min(P1.X, P2.X), Math.Min(P1.Y, P2.Y), Math.Abs(P2.X - P1.X) + 1, Math.Abs(P2.Y - P1.Y) + 1);
-        }
 
         #region [protected method]
         /// <summary>
@@ -161,58 +134,19 @@ namespace Circuit.Elements {
         }
 
         /// <summary>
-        /// set/adjust bounding box used for selecting elements.
-        /// getCircuitBounds() does not use this!
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        protected void setBbox(Point a, Point b) {
-            if (a.X > b.X) { var q = a.X; a.X = b.X; b.X = q; }
-            if (a.Y > b.Y) { var q = a.Y; a.Y = b.Y; b.Y = q; }
-            BoundingBox.X = a.X;
-            BoundingBox.Y = a.Y;
-            BoundingBox.Width = b.X - a.X + 1;
-            BoundingBox.Height = b.Y - a.Y + 1;
-        }
-
-        /// <summary>
         /// set bounding box for an element from a to b with width w
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <param name="w"></param>
         protected void setBbox(Point a, Point b, double w) {
-            setBbox(a, b);
+            DumpInfo.SetBbox(a, b);
             var dpx = (int)(mDir.X * w);
             var dpy = (int)(mDir.Y * w);
-            adjustBbox(
+            DumpInfo.AdjustBbox(
                 a.X + dpx, a.Y + dpy,
                 a.X - dpx, a.Y - dpy
             );
-        }
-
-        /// <summary>
-        /// enlarge bbox to contain an additional rectangle
-        /// </summary>
-        /// <param name="x1"></param>
-        /// <param name="y1"></param>
-        /// <param name="x2"></param>
-        /// <param name="y2"></param>
-        protected void adjustBbox(int x1, int y1, int x2, int y2) {
-            if (x1 > x2) { var q = x1; x1 = x2; x2 = q; }
-            if (y1 > y2) { var q = y1; y1 = y2; y2 = q; }
-            x1 = Math.Min(BoundingBox.X, x1);
-            y1 = Math.Min(BoundingBox.Y, y1);
-            x2 = Math.Max(BoundingBox.X + BoundingBox.Width, x2);
-            y2 = Math.Max(BoundingBox.Y + BoundingBox.Height, y2);
-            BoundingBox.X = x1;
-            BoundingBox.Y = y1;
-            BoundingBox.Width = x2 - x1;
-            BoundingBox.Height = y2 - y1;
-        }
-
-        protected void adjustBbox(Point a, Point b) {
-            adjustBbox(a.X, a.Y, b.X, b.Y);
         }
 
         /// <summary>
@@ -399,9 +333,9 @@ namespace Circuit.Elements {
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
             if (cx) {
-                adjustBbox(p.X - w / 2, p.Y - h2, p.X + w / 2, p.Y + h2);
+                DumpInfo.AdjustBbox(p.X - w / 2, p.Y - h2, p.X + w / 2, p.Y + h2);
             } else {
-                adjustBbox(p.X, p.Y - h2, p.X + w, p.Y + h2);
+                DumpInfo.AdjustBbox(p.X, p.Y - h2, p.X + w, p.Y + h2);
             }
             Context.DrawCenteredText(s, p.X, p.Y);
         }
@@ -411,9 +345,9 @@ namespace Circuit.Elements {
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
             if (cx) {
-                adjustBbox(p.X - w / 2, p.Y - h2, p.X + w / 2, p.Y + h2);
+                DumpInfo.AdjustBbox(p.X - w / 2, p.Y - h2, p.X + w / 2, p.Y + h2);
             } else {
-                adjustBbox(p.X, p.Y - h2, p.X + w, p.Y + h2);
+                DumpInfo.AdjustBbox(p.X, p.Y - h2, p.X + w, p.Y + h2);
             }
             Context.DrawCenteredLText(s, p.X, p.Y);
         }
@@ -431,11 +365,11 @@ namespace Circuit.Elements {
             // Todo: drawValues
             //if ((this is RailElm) || (this is SweepElm)) {
             if (this is RailUI) {
-                xc = P2.X;
-                yc = P2.Y;
+                xc = DumpInfo.P2.X;
+                yc = DumpInfo.P2.Y;
             } else {
-                xc = (P2.X + P1.X) / 2;
-                yc = (P2.Y + P1.Y) / 2;
+                xc = (DumpInfo.P2.X + DumpInfo.P1.X) / 2;
+                yc = (DumpInfo.P2.Y + DumpInfo.P1.Y) / 2;
             }
             Context.DrawRightText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
         }
@@ -504,9 +438,9 @@ namespace Circuit.Elements {
 
         #region [public method]
         public void DrawHandles(CustomGraphics g) {
-            g.DrawHandle(P1);
+            g.DrawHandle(DumpInfo.P1);
             if (2 <= NumHandles) {
-                g.DrawHandle(P2);
+                g.DrawHandle(DumpInfo.P2);
             }
         }
 
@@ -518,20 +452,22 @@ namespace Circuit.Elements {
         /// <param name="bx"></param>
         /// <param name="by"></param>
         public void SetPosition(int ax, int ay, int bx, int by) {
-            P1.X = ax;
-            P1.Y = ay;
-            P2.X = bx;
-            P2.Y = by;
+            DumpInfo.SetPosition(ax, ay, bx, by);
             SetPoints();
         }
 
         public void Move(int dx, int dy) {
-            P1.X += dx;
-            P1.Y += dy;
-            P2.X += dx;
-            P2.Y += dy;
-            BoundingBox.X += dx;
-            BoundingBox.Y += dy;
+            DumpInfo.Move(dx, dy);
+            SetPoints();
+        }
+
+        public void MovePoint(int n, int dx, int dy) {
+            DumpInfo.MovePoint(n, dx, dy);
+            SetPoints();
+        }
+
+        public void FlipPosts() {
+            DumpInfo.FlipPosts();
             SetPoints();
         }
 
@@ -542,68 +478,37 @@ namespace Circuit.Elements {
         /// <param name="dy"></param>
         /// <returns></returns>
         public bool AllowMove(int dx, int dy) {
-            int nx = P1.X + dx;
-            int ny = P1.Y + dy;
-            int nx2 = P2.X + dx;
-            int ny2 = P2.Y + dy;
+            int nx = DumpInfo.P1.X + dx;
+            int ny = DumpInfo.P1.Y + dy;
+            int nx2 = DumpInfo.P2.X + dx;
+            int ny2 = DumpInfo.P2.Y + dy;
             for (int i = 0; i != CirSimForm.Sim.ElmCount; i++) {
                 var ce = CirSimForm.Sim.GetElm(i);
-                if (ce.P1.X == nx && ce.P1.Y == ny && ce.P2.X == nx2 && ce.P2.Y == ny2) {
+                var ceP1 = ce.DumpInfo.P1;
+                var ceP2 = ce.DumpInfo.P2;
+                if (ceP1.X == nx && ceP1.Y == ny && ceP2.X == nx2 && ceP2.Y == ny2) {
                     return false;
                 }
-                if (ce.P1.X == nx2 && ce.P1.Y == ny2 && ce.P2.X == nx && ce.P2.Y == ny) {
+                if (ceP1.X == nx2 && ceP1.Y == ny2 && ceP2.X == nx && ceP2.Y == ny) {
                     return false;
                 }
             }
             return true;
         }
 
-        public void MovePoint(int n, int dx, int dy) {
-            /* modified by IES to prevent the user dragging points to create zero sized nodes
-            /* that then render improperly */
-            int oldx = P1.X;
-            int oldy = P1.Y;
-            int oldx2 = P2.X;
-            int oldy2 = P2.Y;
-            if (n == 0) {
-                P1.X += dx;
-                P1.Y += dy;
-            } else {
-                P2.X += dx;
-                P2.Y += dy;
-            }
-            if (P1.X == P2.X && P1.Y == P2.Y) {
-                P1.X = oldx;
-                P1.Y = oldy;
-                P2.X = oldx2;
-                P2.Y = oldy2;
-            }
-            SetPoints();
-        }
-
-        public void FlipPosts() {
-            int oldx = P1.X;
-            int oldy = P1.Y;
-            P1.X = P2.X;
-            P1.Y = P2.Y;
-            P2.X = oldx;
-            P2.Y = oldy;
-            SetPoints();
-        }
-
         public void SelectRect(RectangleF r) {
-            IsSelected = r.IntersectsWith(BoundingBox);
+            IsSelected = r.IntersectsWith(DumpInfo.BoundingBox);
         }
 
         public int GetHandleGrabbedClose(int xtest, int ytest, int deltaSq, int minSize) {
             mLastHandleGrabbed = -1;
-            var x12 = P2.X - P1.X;
-            var y12 = P2.Y - P1.Y;
+            var x12 = DumpInfo.P2.X - DumpInfo.P1.X;
+            var y12 = DumpInfo.P2.Y - DumpInfo.P1.Y;
             if (Math.Sqrt(x12 * x12 + y12 * y12) >= minSize) {
-                var x1t = xtest - P1.X;
-                var y1t = ytest - P1.Y;
-                var x2t = xtest - P2.X;
-                var y2t = ytest - P2.Y;
+                var x1t = xtest - DumpInfo.P1.X;
+                var y1t = ytest - DumpInfo.P1.Y;
+                var x2t = xtest - DumpInfo.P2.X;
+                var y2t = ytest - DumpInfo.P2.Y;
                 if (Math.Sqrt(x1t * x1t + y1t * y1t) <= deltaSq) {
                     mLastHandleGrabbed = 0;
                 } else if (Math.Sqrt(x2t * x2t + y2t * y2t) <= deltaSq) {
@@ -615,13 +520,13 @@ namespace Circuit.Elements {
 
         public int GetHandleGrabbedClose(Point testp, int deltaSq, int minSize) {
             mLastHandleGrabbed = -1;
-            var x12 = P2.X - P1.X;
-            var y12 = P2.Y - P1.Y;
+            var x12 = DumpInfo.P2.X - DumpInfo.P1.X;
+            var y12 = DumpInfo.P2.Y - DumpInfo.P1.Y;
             if (Math.Sqrt(x12 * x12 + y12 * y12) >= minSize) {
-                var x1t = testp.X - P1.X;
-                var y1t = testp.Y - P1.Y;
-                var x2t = testp.X - P2.X;
-                var y2t = testp.Y - P2.Y;
+                var x1t = testp.X - DumpInfo.P1.X;
+                var y1t = testp.Y - DumpInfo.P1.Y;
+                var x2t = testp.X - DumpInfo.P2.X;
+                var y2t = testp.Y - DumpInfo.P2.Y;
                 if (Math.Sqrt(x1t * x1t + y1t * y1t) <= deltaSq) {
                     mLastHandleGrabbed = 0;
                 } else if (Math.Sqrt(x2t * x2t + y2t * y2t) <= deltaSq) {
@@ -633,7 +538,7 @@ namespace Circuit.Elements {
 
         public int GetNodeAtPoint(int xp, int yp) {
             if (Elm.PostCount == 2) {
-                return (P1.X == xp && P1.Y == yp) ? 0 : 1;
+                return (DumpInfo.P1.X == xp && DumpInfo.P1.Y == yp) ? 0 : 1;
             }
             for (int i = 0; i != Elm.PostCount; i++) {
                 var p = GetPost(i);
@@ -654,6 +559,10 @@ namespace Circuit.Elements {
         #endregion
 
         #region [virtual method]
+        public virtual double Distance(int x, int y) {
+            return DumpInfo.Distance(x, y);
+        }
+
         public virtual void Delete() {
             if (mMouseElmRef == this) {
                 mMouseElmRef = null;
@@ -670,21 +579,8 @@ namespace Circuit.Elements {
         /// </summary>
         /// <param name="pos"></param>
         public virtual void Drag(Point pos) {
-            pos = CirSimForm.Sim.SnapGrid(pos);
-            if (mNoDiagonal) {
-                if (Math.Abs(P1.X - pos.X) < Math.Abs(P1.Y - pos.Y)) {
-                    pos.X = P1.X;
-                } else {
-                    pos.Y = P1.Y;
-                }
-            }
-            P2.X = pos.X;
-            P2.Y = pos.Y;
+            DumpInfo.Drag(pos, mNoDiagonal);
             SetPoints();
-        }
-
-        public virtual double Distance(double x, double y) {
-            return Utils.DistanceOnLine(P1.X, P1.Y, P2.X, P2.Y, x, y);
         }
 
         public virtual void DraggingDone() { }
@@ -694,8 +590,8 @@ namespace Circuit.Elements {
         /// Called when element is moved
         /// </summary>
         public virtual void SetPoints() {
-            mDiff.X = P2.X - P1.X;
-            mDiff.Y = P2.Y - P1.Y;
+            mDiff.X = DumpInfo.P2.X - DumpInfo.P1.X;
+            mDiff.Y = DumpInfo.P2.Y - DumpInfo.P1.Y;
             mLen = Math.Sqrt(mDiff.X * mDiff.X + mDiff.Y * mDiff.Y);
             var sx = mPost2.X - mPost1.X;
             var sy = mPost2.Y - mPost1.Y;
@@ -708,8 +604,8 @@ namespace Circuit.Elements {
                 mDir.Y = -sx / r;
             }
             mDsign = (mDiff.Y == 0) ? Math.Sign(mDiff.X) : Math.Sign(mDiff.Y);
-            mPost1 = new Point(P1.X, P1.Y);
-            mPost2 = new Point(P2.X, P2.Y);
+            mPost1 = new Point(DumpInfo.P1.X, DumpInfo.P1.Y);
+            mPost2 = new Point(DumpInfo.P2.X, DumpInfo.P2.Y);
         }
 
         public virtual void SetMouseElm(bool v) {

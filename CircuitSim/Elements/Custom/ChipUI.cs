@@ -21,7 +21,6 @@ namespace Circuit.Elements.Custom {
         Point[] clockPoints;
         public int sizeX;
         public int sizeY;
-        public string ReferenceName = "";
 
         public class Pin {
             ChipUI mElm;
@@ -54,13 +53,13 @@ namespace Circuit.Elements.Custom {
             }
 
             public void setPoint(int px, int py, int dx, int dy, int dax, int day, int sx, int sy) {
-                if ((mElm.mFlags & FLAG_FLIP_X) != 0) {
+                if ((mElm.DumpInfo.Flags & FLAG_FLIP_X) != 0) {
                     dx = -dx;
                     dax = -dax;
                     px += mElm.cspc2 * (mElm.sizeX - 1);
                     sx = -sx;
                 }
-                if ((mElm.mFlags & FLAG_FLIP_Y) != 0) {
+                if ((mElm.DumpInfo.Flags & FLAG_FLIP_Y) != 0) {
                     dy = -dy;
                     day = -day;
                     py += mElm.cspc2 * (mElm.sizeY - 1);
@@ -155,8 +154,8 @@ namespace Circuit.Elements.Custom {
             csize = s;
             cspc = 8 * s;
             cspc2 = cspc * 2;
-            mFlags &= ~FLAG_SMALL;
-            mFlags |= (s == 1) ? FLAG_SMALL : 0;
+            DumpInfo.Flags &= ~FLAG_SMALL;
+            DumpInfo.Flags |= (s == 1) ? FLAG_SMALL : 0;
         }
 
         public override void Draw(CustomGraphics g) {
@@ -207,12 +206,14 @@ namespace Circuit.Elements.Custom {
 
         public override void Drag(Point pos) {
             pos = CirSimForm.Sim.SnapGrid(pos);
-            if (pos.X < P1.X) {
-                pos.X = P1.X;
-                pos.Y = P1.Y;
+            if (pos.X < DumpInfo.P1.X) {
+                pos.X = DumpInfo.P1.X;
+                pos.Y = DumpInfo.P1.Y;
             } else {
-                P1.Y = P2.Y = pos.Y;
-                P2.X = CirSimForm.Sim.SnapGrid(pos.X);
+                DumpInfo.SetPosition(
+                    DumpInfo.P1.X, pos.Y,
+                    CirSimForm.Sim.SnapGrid(pos.X), pos.Y
+                );
             }
             SetPoints();
         }
@@ -221,8 +222,8 @@ namespace Circuit.Elements.Custom {
             var ce = (ChipElm)Elm;
             clockPoints = null;
             int hs = cspc;
-            int x0 = P1.X + cspc2;
-            int y0 = P1.Y;
+            int x0 = DumpInfo.P1.X + cspc2;
+            int y0 = DumpInfo.P1.Y;
             var r = new Point(x0 - cspc, y0 - cspc);
             int xs = sizeX * cspc2;
             int ys = sizeY * cspc2;
@@ -232,7 +233,7 @@ namespace Circuit.Elements.Custom {
                 new Point(r.X + xs, r.Y + ys),
                 new Point(r.X, r.Y + ys)
             };
-            setBbox(r, rectPoints[2]);
+            DumpInfo.SetBbox(r, rectPoints[2]);
             for (int i = 0; i != ce.PostCount; i++) {
                 var p = ce.Pins[i];
                 switch (p.side) {
@@ -255,8 +256,8 @@ namespace Circuit.Elements.Custom {
         /* see if we can move pin to position xp, yp, and return the new position */
         public bool getPinPos(int xp, int yp, int pin, int[] pos) {
             var ce = (ChipElm)Elm;
-            int x0 = P1.X + cspc2;
-            int y0 = P1.Y;
+            int x0 = DumpInfo.P1.X + cspc2;
+            int y0 = DumpInfo.P1.Y;
             int xr = x0 - cspc;
             int yr = y0 - cspc;
             double xd = (xp - xr) / (double)cspc2 - .5;
@@ -335,14 +336,14 @@ namespace Circuit.Elements.Custom {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "Flip X";
-                ei.CheckBox.Checked = (mFlags & FLAG_FLIP_X) != 0;
+                ei.CheckBox.Checked = (DumpInfo.Flags & FLAG_FLIP_X) != 0;
                 return ei;
             }
             if (n == 1) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "Flip Y";
-                ei.CheckBox.Checked = (mFlags & FLAG_FLIP_Y) != 0;
+                ei.CheckBox.Checked = (DumpInfo.Flags & FLAG_FLIP_Y) != 0;
                 return ei;
             }
             return null;
@@ -351,17 +352,17 @@ namespace Circuit.Elements.Custom {
         public override void SetElementValue(int n, ElementInfo ei) {
             if (n == 0) {
                 if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_FLIP_X;
+                    DumpInfo.Flags |= FLAG_FLIP_X;
                 } else {
-                    mFlags &= ~FLAG_FLIP_X;
+                    DumpInfo.Flags &= ~FLAG_FLIP_X;
                 }
                 SetPoints();
             }
             if (n == 1) {
                 if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_FLIP_Y;
+                    DumpInfo.Flags |= FLAG_FLIP_Y;
                 } else {
-                    mFlags &= ~FLAG_FLIP_Y;
+                    DumpInfo.Flags &= ~FLAG_FLIP_Y;
                 }
                 SetPoints();
             }

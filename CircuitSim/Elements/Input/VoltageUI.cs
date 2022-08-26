@@ -33,9 +33,9 @@ namespace Circuit.Elements.Input {
             /* set flag so we know if duty cycle is correct for pulse waveforms */
             if (elm.waveform == VoltageElm.WAVEFORM.PULSE ||
                 elm.waveform == VoltageElm.WAVEFORM.PULSE_BOTH) {
-                mFlags |= FLAG_PULSE_DUTY;
+                DumpInfo.Flags |= FLAG_PULSE_DUTY;
             } else {
-                mFlags &= ~FLAG_PULSE_DUTY;
+                DumpInfo.Flags &= ~FLAG_PULSE_DUTY;
             }
 
             return elm.waveform
@@ -67,7 +67,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override void Draw(CustomGraphics g) {
-            setBbox(P1, P2);
+            DumpInfo.SetBbox(DumpInfo.P1, DumpInfo.P2);
             draw2Leads();
             var elm = (VoltageElm)Elm;
             if (elm.waveform == VoltageElm.WAVEFORM.DC) {
@@ -119,7 +119,7 @@ namespace Circuit.Elements.Input {
                 g.DrawCircle(center, BODY_LEN / 2);
             }
 
-            adjustBbox(
+            DumpInfo.AdjustBbox(
                 x - BODY_LEN, y - BODY_LEN,
                 x + BODY_LEN, y + BODY_LEN
             );

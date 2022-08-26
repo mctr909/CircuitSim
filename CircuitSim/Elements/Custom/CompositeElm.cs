@@ -58,8 +58,14 @@ namespace Circuit.Elements.Custom {
             }
         }
 
+        public override void Reset() {
+            for (int i = 0; i < CompElmList.Count; i++) {
+                CompElmList[i].Elm.Reset();
+            }
+        }
+
         /* are n1 and n2 connected internally somehow? */
-        public override bool GetConnection(int n1, int n2) {
+        public override bool AnaGetConnection(int n1, int n2) {
             var cnLinks1 = mCompNodeList[n1].Links;
             var cnLinks2 = mCompNodeList[n2].Links;
 
@@ -68,18 +74,12 @@ namespace Circuit.Elements.Custom {
                 var link1 = cnLinks1[i];
                 for (int j = 0; j < cnLinks2.Count; j++) {
                     var link2 = cnLinks2[j];
-                    if (link1.Elm == link2.Elm && link1.Elm.GetConnection(link1.Num, link2.Num)) {
+                    if (link1.Elm == link2.Elm && link1.Elm.AnaGetConnection(link1.Num, link2.Num)) {
                         return true;
                     }
                 }
             }
             return false;
-        }
-
-        public override void Reset() {
-            for (int i = 0; i < CompElmList.Count; i++) {
-                CompElmList[i].Elm.Reset();
-            }
         }
 
         /* is n1 connected to ground somehow? */

@@ -138,7 +138,7 @@ namespace Circuit {
                     if (nodeA == nodeB) {
                         continue;
                     }
-                    if (cee.GetConnection(nodeA, nodeB) && FindPath(cee.AnaGetConnectionNode(nodeB))) {
+                    if (cee.AnaGetConnection(nodeA, nodeB) && FindPath(cee.AnaGetConnectionNode(nodeB))) {
                         /*Console.WriteLine("got findpath " + n1); */
                         return true;
                     }

@@ -7,7 +7,7 @@ namespace Circuit.Elements.Input {
             elm.mMaxVoltage = 2.5;
             elm.mBias = 2.5;
             elm.mFrequency = 100;
-            mFlags |= FLAG_CLOCK;
+            DumpInfo.Flags |= FLAG_CLOCK;
         }
     }
 }

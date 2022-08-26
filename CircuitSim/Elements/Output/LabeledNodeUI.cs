@@ -16,7 +16,7 @@ namespace Circuit.Elements.Output {
             Elm = new LabeledNodeElm(st);
         }
 
-        public bool IsInternal { get { return (mFlags & FLAG_INTERNAL) != 0; } }
+        public bool IsInternal { get { return (DumpInfo.Flags & FLAG_INTERNAL) != 0; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.LABELED_NODE; } }
 
@@ -44,13 +44,13 @@ namespace Circuit.Elements.Output {
                 lineOver = true;
                 str = str.Substring(1);
             }
-            drawCenteredText(str, P2, true);
+            drawCenteredText(str, DumpInfo.P2, true);
             if (lineOver) {
                 int asc = (int)(CustomGraphics.TextSize + 0.5);
                 if (lineOver) {
-                    int ya = P2.Y - asc;
+                    int ya = DumpInfo.P2.Y - asc;
                     int sw = (int)g.GetTextSize(str).Width;
-                    g.DrawLine(P2.X - sw / 2, ya, P2.X + sw / 2, ya);
+                    g.DrawLine(DumpInfo.P2.X - sw / 2, ya, DumpInfo.P2.X + sw / 2, ya);
                 }
             }
             ce.CurCount = updateDotCount(ce.Current, ce.CurCount);
@@ -88,7 +88,7 @@ namespace Circuit.Elements.Output {
                 ce.Text = ei.Textf.Text;
             }
             if (n == 1) {
-                mFlags = ei.ChangeFlag(mFlags, FLAG_INTERNAL);
+                DumpInfo.Flags = ei.ChangeFlag(DumpInfo.Flags, FLAG_INTERNAL);
             }
         }
     }

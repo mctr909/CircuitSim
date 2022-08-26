@@ -35,8 +35,8 @@ namespace Circuit.Elements.Active {
 
         public MosfetUI(Point pos, bool pnpflag) : base(pos) {
             Elm = new MosfetElm(pnpflag);
-            mFlags = pnpflag ? FLAG_PNP : 0;
-            mFlags |= FLAG_BODY_DIODE;
+            DumpInfo.Flags = pnpflag ? FLAG_PNP : 0;
+            DumpInfo.Flags |= FLAG_BODY_DIODE;
             mNoDiagonal = true;
             ReferenceName = "Tr";
         }
@@ -47,7 +47,7 @@ namespace Circuit.Elements.Active {
             try {
                 ReferenceName = st.nextToken();
             } catch { }
-            mGlobalFlags = mFlags & (FLAGS_GLOBAL);
+            mGlobalFlags = DumpInfo.Flags & (FLAGS_GLOBAL);
         }
 
         public override bool CanViewInScope { get { return true; } }
@@ -61,9 +61,9 @@ namespace Circuit.Elements.Active {
                 + " " + ReferenceName;
         }
 
-        bool DrawDigital { get { return (mFlags & FLAG_DIGITAL) != 0; } }
+        bool DrawDigital { get { return (DumpInfo.Flags & FLAG_DIGITAL) != 0; } }
 
-        bool ShowBulk { get { return (mFlags & (FLAG_DIGITAL | FLAG_HIDE_BULK)) == 0; } }
+        bool ShowBulk { get { return (DumpInfo.Flags & (FLAG_DIGITAL | FLAG_HIDE_BULK)) == 0; } }
 
         /* post 0 = gate,
          * 1 = source for NPN,
@@ -78,12 +78,12 @@ namespace Circuit.Elements.Active {
             base.SetPoints();
 
             /* these two flags apply to all mosfets */
-            mFlags &= ~FLAGS_GLOBAL;
-            mFlags |= mGlobalFlags;
+            DumpInfo.Flags &= ~FLAGS_GLOBAL;
+            DumpInfo.Flags |= mGlobalFlags;
 
             /* find the coordinates of the various points we need to draw the MOSFET. */
             int hs2 = HS * mDsign;
-            if ((mFlags & FLAG_FLIP) != 0) {
+            if ((DumpInfo.Flags & FLAG_FLIP) != 0) {
                 hs2 = -hs2;
             }
             mSrc = new Point[3];
@@ -152,7 +152,7 @@ namespace Circuit.Elements.Active {
 
         public override void Draw(CustomGraphics g) {
             /* pick up global flags changes */
-            if ((mFlags & FLAGS_GLOBAL) != mGlobalFlags) {
+            if ((DumpInfo.Flags & FLAGS_GLOBAL) != mGlobalFlags) {
                 SetPoints();
             }
 
@@ -195,9 +195,9 @@ namespace Circuit.Elements.Active {
                 g.DrawCircle(mPcircle, mPcircler);
             }
 
-            if ((mFlags & FLAG_SHOWVT) != 0) {
+            if ((DumpInfo.Flags & FLAG_SHOWVT) != 0) {
                 string s = "" + (ce.Vt * ce.Pnp);
-                drawCenteredLText(s, P2, false);
+                drawCenteredLText(s, DumpInfo.P2, false);
             }
             ce.CurCount = updateDotCount(-ce.Ids, ce.CurCount);
             drawDots(mSrc[0], mSrc[1], ce.CurCount);
@@ -277,7 +277,7 @@ namespace Circuit.Elements.Active {
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = "ドレイン/ソース 入れ替え",
-                    Checked = (mFlags & FLAG_FLIP) != 0
+                    Checked = (DumpInfo.Flags & FLAG_FLIP) != 0
                 };
                 return ei;
             }
@@ -295,7 +295,7 @@ namespace Circuit.Elements.Active {
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = "還流ダイオード",
-                    Checked = (mFlags & FLAG_BODY_DIODE) != 0
+                    Checked = (DumpInfo.Flags & FLAG_BODY_DIODE) != 0
                 };
                 return ei;
             }
@@ -321,8 +321,8 @@ namespace Circuit.Elements.Active {
                 ei.NewDialog = true;
             }
             if (n == 4) {
-                mFlags = ei.CheckBox.Checked
-                    ? (mFlags | FLAG_FLIP) : (mFlags & ~FLAG_FLIP);
+                DumpInfo.Flags = ei.CheckBox.Checked
+                    ? (DumpInfo.Flags | FLAG_FLIP) : (DumpInfo.Flags & ~FLAG_FLIP);
                 SetPoints();
             }
             if (n == 5 && !ShowBulk) {
@@ -331,8 +331,8 @@ namespace Circuit.Elements.Active {
                 SetPoints();
             }
             if (n == 5 && ShowBulk) {
-                mFlags = ei.ChangeFlag(mFlags, FLAG_BODY_DIODE);
-                ce.DoBodyDiode = 0 != (mFlags & FLAG_BODY_DIODE);
+                DumpInfo.Flags = ei.ChangeFlag(DumpInfo.Flags, FLAG_BODY_DIODE);
+                ce.DoBodyDiode = 0 != (DumpInfo.Flags & FLAG_BODY_DIODE);
             }
         }
     }

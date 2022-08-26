@@ -33,7 +33,9 @@ namespace Circuit.Elements.Input {
             mExprState = new ExprState(1);
         }
 
-        public override bool GetConnection(int n1, int n2) {
+        public override bool hasCurrentOutput() { return true; }
+
+        public override bool AnaGetConnection(int n1, int n2) {
             if (ComparePair(0, 1, n1, n2)) {
                 return true;
             }
@@ -42,8 +44,6 @@ namespace Circuit.Elements.Input {
             }
             return false;
         }
-
-        public override bool hasCurrentOutput() { return true; }
 
         public override void AnaStamp() {
             /* voltage source (0V) between C+ and C- so we can measure current */

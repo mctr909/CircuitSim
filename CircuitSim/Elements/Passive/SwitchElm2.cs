@@ -23,7 +23,7 @@
 
         public override int PostCount { get { return 1 + mThrowCount; } }
 
-        public override bool GetConnection(int n1, int n2) {
+        public override bool AnaGetConnection(int n1, int n2) {
             return ComparePair(n1, n2, 0, 1 + Position);
         }
 

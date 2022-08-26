@@ -7,7 +7,7 @@ namespace Circuit.Elements.Input {
     class LogicInputUI : SwitchUI {
         const int FLAG_NUMERIC = 2;
 
-        bool isNumeric { get { return (mFlags & (FLAG_NUMERIC)) != 0; } }
+        bool isNumeric { get { return (DumpInfo.Flags & (FLAG_NUMERIC)) != 0; } }
 
         public LogicInputUI(Point pos) : base(pos, 0) {
             Elm = new LogicInputElm();
@@ -26,7 +26,7 @@ namespace Circuit.Elements.Input {
         }
 
         public override Rectangle GetSwitchRect() {
-            return new Rectangle(P2.X - 10, P2.Y - 10, 20, 20);
+            return new Rectangle(DumpInfo.P2.X - 10, DumpInfo.P2.Y - 10, 20, 20);
         }
 
         public override void SetPoints() {
@@ -41,7 +41,7 @@ namespace Circuit.Elements.Input {
                 s = "" + ce.Position;
             }
             setBbox(mPost1, mLead1, 0);
-            drawCenteredLText(s, P2, true);
+            drawCenteredLText(s, DumpInfo.P2, true);
             drawLead(mPost1, mLead1);
             updateDotCount();
             drawDots(mPost1, mLead1, ce.CurCount);
@@ -99,9 +99,9 @@ namespace Circuit.Elements.Input {
             }
             if (n == 3) {
                 if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_NUMERIC;
+                    DumpInfo.Flags |= FLAG_NUMERIC;
                 } else {
-                    mFlags &= ~FLAG_NUMERIC;
+                    DumpInfo.Flags &= ~FLAG_NUMERIC;
                 }
             }
         }

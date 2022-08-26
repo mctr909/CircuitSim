@@ -46,7 +46,7 @@ namespace Circuit.Elements.Input {
             mExprState = new ExprState(InputCount);
         }
 
-        public override bool GetConnection(int n1, int n2) {
+        public override bool AnaGetConnection(int n1, int n2) {
             return ComparePair(InputCount, InputCount + 1, n1, n2);
         }
 

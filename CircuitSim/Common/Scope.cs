@@ -16,11 +16,6 @@ namespace Circuit {
         const double Mindb = -100.0;
 
         readonly double[] MULTA = new double[] { 1.5, 2.0, 1.5 };
-
-        public enum VAL {
-            VOLTAGE,
-            CURRENT
-        }
         #endregion
 
         #region dynamic variable
@@ -96,7 +91,7 @@ namespace Circuit {
             get { return mShowV; }
             set {
                 mShowV = value;
-                if (mShowV && !mShowingVoltageAndMaybeCurrent) {
+                if (mShowV) {
                     setValue();
                 }
                 calcVisiblePlots();
@@ -183,19 +178,6 @@ namespace Circuit {
             }
         }
 
-        /* returns true if we have a plot of voltage and nothing else (except current).
-        /* The default case is a plot of voltage and current, so we're basically checking if that case is true. */
-        bool mShowingVoltageAndMaybeCurrent {
-            get {
-                bool gotv = false;
-                foreach (var plot in mPlots) {
-                    if (plot.Value == 0) {
-                        gotv = true;
-                    }
-                }
-                return gotv;
-            }
-        }
         bool mShowSettingsWheel {
             get {
                 return 50 < BoundingBox.Height && 50 < BoundingBox.Width;
@@ -294,15 +276,6 @@ namespace Circuit {
             initialize();
         }
 
-        public bool ShowingValue(VAL v) {
-            foreach (var sp in mPlots) {
-                if (sp.Value != v) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
         public void Combine(Scope s) {
             mPlots = mVisiblePlots;
             mPlots.AddRange(s.mVisiblePlots);
@@ -381,7 +354,7 @@ namespace Circuit {
             }
             string x = "o " + eno
                 + " " + vPlot.Speed
-                + " " + vPlot.Value
+                + " "
                 + " " + flags
                 + " " + mScale
                 + " "
@@ -389,7 +362,7 @@ namespace Circuit {
                 + " " + mPlots.Count;
             for (int i = 0; i < mPlots.Count; i++) {
                 var p = mPlots[i];
-                x += " " + CirSimForm.Sim.LocateElm(p.Elm) + " " + p.Value;
+                x += " " + CirSimForm.Sim.LocateElm(p.Elm) + " ";
             }
             if (Text != null) {
                 x += " " + Utils.Escape(Text);
@@ -408,7 +381,7 @@ namespace Circuit {
             var ce = CirSimForm.Sim.GetElm(e);
             SetElm(ce);
             Speed = st.nextTokenInt();
-            var value = st.nextTokenEnum<VAL>();
+            var value = st.nextTokenEnum<string>();
 
             var flags = st.nextTokenInt();
             mScale = st.nextTokenDouble();
@@ -431,9 +404,9 @@ namespace Circuit {
 
                     for (int i = 0; i != sz; i++) {
                         var eleNum = st.nextTokenInt();
-                        var val = st.nextTokenEnum<VAL>();
+                        var val = st.nextTokenEnum<string>();
                         var elm = CirSimForm.Sim.GetElm(eleNum);
-                        mPlots.Add(new ScopePlot(elm, val));
+                        mPlots.Add(new ScopePlot(elm));
                     }
                     while (st.hasMoreTokens()) {
                         if (Text == null) {
@@ -565,7 +538,7 @@ namespace Circuit {
 
         void setValue(BaseUI ce) {
             mPlots = new List<ScopePlot>();
-            mPlots.Add(new ScopePlot(ce, 0));
+            mPlots.Add(new ScopePlot(ce));
             mShowV = true;
             calcVisiblePlots();
             ResetGraph();

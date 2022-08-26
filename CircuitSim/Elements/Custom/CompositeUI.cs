@@ -61,7 +61,7 @@ namespace Circuit.Elements.Custom {
             return dumpStr;
         }
 
-        bool useEscape() { return (mFlags & FLAG_ESCAPE) != 0; }
+        bool useEscape() { return (DumpInfo.Flags & FLAG_ESCAPE) != 0; }
 
         public override Point GetPost(int n) {
             return mPosts[n];

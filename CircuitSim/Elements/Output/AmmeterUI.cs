@@ -11,7 +11,7 @@ namespace Circuit.Elements.Output {
 
         public AmmeterUI(Point pos) : base(pos) {
             Elm = new AmmeterElm();
-            mFlags = FLAG_SHOWCURRENT;
+            DumpInfo.Flags = FLAG_SHOWCURRENT;
         }
 
         public AmmeterUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -109,7 +109,7 @@ namespace Circuit.Elements.Output {
         }
 
         bool mustShowCurrent() {
-            return (mFlags & FLAG_SHOWCURRENT) != 0;
+            return (DumpInfo.Flags & FLAG_SHOWCURRENT) != 0;
         }
     }
 }

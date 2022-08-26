@@ -258,12 +258,12 @@ namespace Circuit {
                     bool notReady = (ce is WireUI) && !((WireUI)ce).HasWireInfo;
 
                     /* which post does this element connect to, if any? */
-                    if (pt.X == wire.P1.X && pt.Y == wire.P1.Y) {
+                    if (pt.X == wire.DumpInfo.P1.X && pt.Y == wire.DumpInfo.P1.Y) {
                         neighbors0.Add(ce);
                         if (notReady) {
                             isReady0 = false;
                         }
-                    } else if (pt.X == wire.P2.X && pt.Y == wire.P2.Y) {
+                    } else if (pt.X == wire.DumpInfo.P2.X && pt.Y == wire.DumpInfo.P2.Y) {
                         neighbors1.Add(ce);
                         if (notReady) {
                             isReady1 = false;
@@ -316,7 +316,7 @@ namespace Circuit {
                     for (int j = 0; j != mSim.ElmCount && !bad; j++) {
                         var ce = mSim.GetElm(j);
                         /* does this post intersect elm's bounding box? */
-                        if (!ce.BoundingBox.Contains(cn.X, cn.Y)) {
+                        if (!ce.DumpInfo.BoundingBox.Contains(cn.X, cn.Y)) {
                             continue;
                         }
                         /* does this post belong to the elm? */
@@ -696,7 +696,7 @@ namespace Circuit {
                                 continue;
                             }
                             int kn = cee.AnaGetConnectionNode(k);
-                            if (cee.GetConnection(j, k) && !closure[kn]) {
+                            if (cee.AnaGetConnection(j, k) && !closure[kn]) {
                                 closure[kn] = true;
                                 changed = true;
                             }
@@ -758,7 +758,7 @@ namespace Circuit {
                     /* for Switch2Elms we need to do extra work to look for wire loops */
                     var fpi = new PathInfo(PathType.VOLTAGE, cee, cee.Nodes[0], elmList, NodeList.Count);
                     for (int j = 1; j < cee.PostCount; j++) {
-                        if (cee.GetConnection(0, j) && fpi.FindPath(cee.Nodes[j])) {
+                        if (cee.AnaGetConnection(0, j) && fpi.FindPath(cee.Nodes[j])) {
                             Stop("Voltage source/wire loop with no resistance!", cee);
                             return;
                         }

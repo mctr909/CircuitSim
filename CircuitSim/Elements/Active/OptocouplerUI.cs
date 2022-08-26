@@ -39,8 +39,8 @@ namespace Circuit.Elements.Active {
 
             // adapted from ChipElm
             int hs = ce.mCspc;
-            int x0 = P1.X + ce.mCspc;
-            int y0 = P1.Y;
+            int x0 = DumpInfo.P1.X + ce.mCspc;
+            int y0 = DumpInfo.P1.Y;
             var r = new Point(x0 - ce.mCspc, y0 - ce.mCspc / 2);
             int sizeX = 2;
             int sizeY = 2;
@@ -52,7 +52,7 @@ namespace Circuit.Elements.Active {
                 new Point(r.X + xs, r.Y + ys),
                 new Point(r.X, r.Y + ys)
             };
-            setBbox(r, mRectPoints[2]);
+            DumpInfo.SetBbox(r, mRectPoints[2]);
 
             mStubs = new Point[4];
             setPin(0, x0, y0, 0, 1, -0.5, 0, 0, 0);

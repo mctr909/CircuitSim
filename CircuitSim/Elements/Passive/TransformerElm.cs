@@ -61,7 +61,14 @@ namespace Circuit.Elements.Passive {
             mCurSourceValue1 = mCurSourceValue2 = 0;
         }
 
-        public override bool GetConnection(int n1, int n2) {
+        public override double GetCurrentIntoNode(int n) {
+            if (n < 2) {
+                return -Currents[n];
+            }
+            return Currents[n - 2];
+        }
+
+        public override bool AnaGetConnection(int n1, int n2) {
             if (ComparePair(n1, n2, 0, 2)) {
                 return true;
             }
@@ -69,13 +76,6 @@ namespace Circuit.Elements.Passive {
                 return true;
             }
             return false;
-        }
-
-        public override double GetCurrentIntoNode(int n) {
-            if (n < 2) {
-                return -Currents[n];
-            }
-            return Currents[n - 2];
         }
 
         public override void AnaStamp() {

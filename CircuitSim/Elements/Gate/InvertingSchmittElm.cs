@@ -43,11 +43,13 @@ namespace Circuit.Elements.Gate {
 
         // there is no current path through the InvertingSchmitt input, but there
         // is an indirect path through the output to ground.
-        public override bool GetConnection(int n1, int n2) { return false; }
+        public override bool AnaGetConnection(int n1, int n2) { return false; }
 
         public override void AnaStamp() {
             Circuit.StampVoltageSource(0, Nodes[1], mVoltSource);
         }
+
+        public override bool AnaHasGroundConnection(int n1) { return n1 == 1; }
 
         public override void CirDoStep() {
             double v0 = Volts[1];
@@ -73,8 +75,6 @@ namespace Circuit.Elements.Gate {
             _out = Math.Max(Math.Min(v0 + maxStep, _out), v0 - maxStep);
             Circuit.UpdateVoltageSource(0, Nodes[1], mVoltSource, _out);
         }
-
-        public override bool AnaHasGroundConnection(int n1) { return n1 == 1; }
 
         public override double GetCurrentIntoNode(int n) {
             if (n == 1) {

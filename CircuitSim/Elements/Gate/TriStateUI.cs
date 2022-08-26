@@ -56,18 +56,17 @@ namespace Circuit.Elements.Gate {
 
         public override void Drag(Point pos) {
             pos = CirSimForm.Sim.SnapGrid(pos);
-            if (Math.Abs(P1.X - pos.X) < Math.Abs(P1.Y - pos.Y)) {
-                pos.X = P1.X;
+            if (Math.Abs(DumpInfo.P1.X - pos.X) < Math.Abs(DumpInfo.P1.Y - pos.Y)) {
+                pos.X = DumpInfo.P1.X;
             } else {
-                pos.Y = P1.Y;
+                pos.Y = DumpInfo.P1.Y;
             }
-            int q1 = Math.Abs(P1.X - pos.X) + Math.Abs(P1.Y - pos.Y);
+            int q1 = Math.Abs(DumpInfo.P1.X - pos.X) + Math.Abs(DumpInfo.P1.Y - pos.Y);
             int q2 = (q1 / 2) % CirSimForm.GRID_SIZE;
             if (q2 != 0) {
                 return;
             }
-            P2.X = pos.X;
-            P2.Y = pos.Y;
+            DumpInfo.SetP2(pos);
             SetPoints();
         }
 

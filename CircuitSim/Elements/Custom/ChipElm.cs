@@ -89,7 +89,7 @@ namespace Circuit.Elements.Custom {
             }
         }
 
-        public override bool GetConnection(int n1, int n2) { return false; }
+        public override bool AnaGetConnection(int n1, int n2) { return false; }
 
         public override double GetCurrentIntoNode(int n) {
             return Pins[n].current;

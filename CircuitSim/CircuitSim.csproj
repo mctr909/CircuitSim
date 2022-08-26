@@ -78,6 +78,7 @@
     <Compile Include="Elements\Custom\GraphicUI.cs" />
     <Compile Include="Elements\Custom\GraphicElm.cs" />
     <Compile Include="Elements\Custom\TextUI.cs" />
+    <Compile Include="Elements\DumpInfo.cs" />
     <Compile Include="Elements\Gate\GateElmAnd.cs" />
     <Compile Include="Elements\Gate\GateUIAnd.cs" />
     <Compile Include="Elements\Gate\GateElm.cs" />

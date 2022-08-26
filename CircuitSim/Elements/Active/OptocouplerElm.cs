@@ -24,7 +24,7 @@ namespace Circuit.Elements.Active {
             initOptocoupler();
         }
 
-        public override bool GetConnection(int n1, int n2) {
+        public override bool AnaGetConnection(int n1, int n2) {
             return n1 / 2 == n2 / 2;
         }
 

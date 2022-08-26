@@ -18,9 +18,6 @@
 
         public int[] Nodes { get; protected set; }
 
-        /// <summary>
-        /// voltages at each node
-        /// </summary>
         public double[] Volts { get; protected set; }
 
         /// <summary>
@@ -79,6 +76,16 @@
             CurCount = 0;
         }
 
+        public virtual double GetCurrentIntoNode(int n) {
+            if (n == 0 && PostCount == 2) {
+                return -mCurrent;
+            } else {
+                return mCurrent;
+            }
+        }
+        #endregion
+
+        #region [method(Analyze)]
         /// <summary>
         /// are n1 and n2 connected by this element?  this is used to determine
         /// unconnected nodes, and look for loops
@@ -86,20 +93,7 @@
         /// <param name="n1"></param>
         /// <param name="n2"></param>
         /// <returns></returns>
-        public virtual bool GetConnection(int n1, int n2) { return true; }
-
-        public virtual double GetCurrentIntoNode(int n) {
-            /* if we take out the getPostCount() == 2 it gives the wrong value for rails */
-            if (n == 0 && PostCount == 2) {
-                return -mCurrent;
-            } else {
-                return mCurrent;
-            }
-        }
-
-        public virtual double GetScopeValue(Scope.VAL x) {
-            return VoltageDiff;
-        }
+        public virtual bool AnaGetConnection(int n1, int n2) { return true; }
 
         /// <summary>
         /// stamp matrix values for linear elements.
@@ -149,7 +143,9 @@
         public virtual bool AnaHasGroundConnection(int n1) { return false; }
 
         public virtual void AnaShorted() { }
+        #endregion
 
+        #region [method(Circuit)]
         public virtual void CirStartIteration() { }
 
         /// <summary>

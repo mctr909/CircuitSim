@@ -59,7 +59,7 @@ namespace Circuit.Elements.Active {
             base.SetPoints();
             var ce = (TransistorElm)Elm;
 
-            if ((mFlags & FLAG_FLIP) != 0) {
+            if ((DumpInfo.Flags & FLAG_FLIP) != 0) {
                 mDsign = -mDsign;
             }
             int hs2 = HS * mDsign * ce.NPN;
@@ -97,7 +97,7 @@ namespace Circuit.Elements.Active {
 
         void setTextPos() {
             var txtW = Context.GetTextSize(ReferenceName).Width;
-            var swap = 0 < (mFlags & FLAG_FLIP) ? -1 : 1;
+            var swap = 0 < (DumpInfo.Flags & FLAG_FLIP) ? -1 : 1;
             mNameV = mPost1.Y == mPost2.Y;
             if (mNameV) {
                 if (0 < mDsign * swap) {
@@ -186,7 +186,7 @@ namespace Circuit.Elements.Active {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "エミッタ/コレクタ 入れ替え";
-                ei.CheckBox.Checked = (mFlags & FLAG_FLIP) != 0;
+                ei.CheckBox.Checked = (DumpInfo.Flags & FLAG_FLIP) != 0;
                 return ei;
             }
             return null;
@@ -203,9 +203,9 @@ namespace Circuit.Elements.Active {
             }
             if (n == 2) {
                 if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_FLIP;
+                    DumpInfo.Flags |= FLAG_FLIP;
                 } else {
-                    mFlags &= ~FLAG_FLIP;
+                    DumpInfo.Flags &= ~FLAG_FLIP;
                 }
                 SetPoints();
             }

@@ -16,7 +16,6 @@ namespace Circuit {
         public double[] MinValues { get; private set; }
         public double[] MaxValues { get; private set; }
         public int Pointer { get; private set; }
-        public Scope.VAL Value { get; private set; }
         public int Speed { get; private set; }
         public double LastValue { get; private set; }
         public Color Color { get; private set; }
@@ -26,11 +25,6 @@ namespace Circuit {
 
         public ScopePlot(BaseUI e) {
             Elm = e;
-        }
-
-        public ScopePlot(BaseUI e, Scope.VAL v) {
-            Elm = e;
-            Value = v;
         }
 
         public int StartIndex(int w) {
@@ -67,7 +61,7 @@ namespace Circuit {
             if (Elm == null) {
                 return;
             }
-            double v = Elm.Elm.GetScopeValue(Value);
+            double v = Elm.Elm.VoltageDiff;
             if (v < MinValues[Pointer]) {
                 MinValues[Pointer] = v;
             }

@@ -21,11 +21,11 @@ namespace Circuit.Elements.Output {
             return "";
         }
 
-        bool isTernary { get { return (mFlags & FLAG_TERNARY) != 0; } }
+        bool isTernary { get { return (DumpInfo.Flags & FLAG_TERNARY) != 0; } }
 
-        bool isNumeric { get { return (mFlags & (FLAG_TERNARY | FLAG_NUMERIC)) != 0; } }
+        bool isNumeric { get { return (DumpInfo.Flags & (FLAG_TERNARY | FLAG_NUMERIC)) != 0; } }
 
-        bool needsPullDown { get { return (mFlags & FLAG_PULLDOWN) != 0; } }
+        bool needsPullDown { get { return (DumpInfo.Flags & FLAG_PULLDOWN) != 0; } }
 
         public override void SetPoints() {
             base.SetPoints();
@@ -48,7 +48,7 @@ namespace Circuit.Elements.Output {
             }
             ce.mValue = s;
             setBbox(mPost1, mLead1, 0);
-            drawCenteredLText(s, P2, true);
+            drawCenteredLText(s, DumpInfo.P2, true);
             drawLead(mPost1, mLead1);
             drawPosts();
         }
@@ -93,24 +93,24 @@ namespace Circuit.Elements.Output {
             }
             if (n == 1) {
                 if (ei.CheckBox.Checked) {
-                    mFlags = FLAG_PULLDOWN;
+                    DumpInfo.Flags = FLAG_PULLDOWN;
                 } else {
-                    mFlags &= ~FLAG_PULLDOWN;
+                    DumpInfo.Flags &= ~FLAG_PULLDOWN;
                 }
                 ce.needsPullDown = needsPullDown;
             }
             if (n == 2) {
                 if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_NUMERIC;
+                    DumpInfo.Flags |= FLAG_NUMERIC;
                 } else {
-                    mFlags &= ~FLAG_NUMERIC;
+                    DumpInfo.Flags &= ~FLAG_NUMERIC;
                 }
             }
             if (n == 3) {
                 if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_TERNARY;
+                    DumpInfo.Flags |= FLAG_TERNARY;
                 } else {
-                    mFlags &= ~FLAG_TERNARY;
+                    DumpInfo.Flags &= ~FLAG_TERNARY;
                 }
             }
         }

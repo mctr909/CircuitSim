@@ -21,7 +21,7 @@ namespace Circuit.Elements.Passive {
 
         public TransformerUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
-                Elm = new TransformerElm(st, (mFlags & FLAG_REVERSE) != 0);
+                Elm = new TransformerElm(st, (DumpInfo.Flags & FLAG_REVERSE) != 0);
                 ReferenceName = st.nextToken();
             } catch (Exception ex) {
                 throw new Exception("Transformer load error:{0}", ex);
@@ -47,17 +47,16 @@ namespace Circuit.Elements.Passive {
 
         public override void Drag(Point pos) {
             pos = CirSimForm.Sim.SnapGrid(pos);
-            P2.X = pos.X;
-            P2.Y = pos.Y;
+            DumpInfo.SetP2(pos);
             SetPoints();
         }
 
         public override void SetPoints() {
             var elm = (TransformerElm)Elm;
-            var width = Math.Max(BODY_LEN, Math.Abs(P2.X - P1.X));
-            var height = Math.Max(BODY_LEN, Math.Abs(P2.Y - P1.Y));
-            if (P2.X == P1.X) {
-                P2.Y = P1.Y;
+            var width = Math.Max(BODY_LEN, Math.Abs(DumpInfo.P2.X - DumpInfo.P1.X));
+            var height = Math.Max(BODY_LEN, Math.Abs(DumpInfo.P2.Y - DumpInfo.P1.Y));
+            if (DumpInfo.P2.X == DumpInfo.P1.X) {
+                DumpInfo.SetP2(DumpInfo.P2.X, DumpInfo.P1.Y);
             }
             base.SetPoints();
             mPost2.Y = mPost1.Y;
@@ -184,9 +183,9 @@ namespace Circuit.Elements.Passive {
             if (n == 4) {
                 ce.Polarity = ei.CheckBox.Checked ? -1 : 1;
                 if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_REVERSE;
+                    DumpInfo.Flags |= FLAG_REVERSE;
                 } else {
-                    mFlags &= ~FLAG_REVERSE;
+                    DumpInfo.Flags &= ~FLAG_REVERSE;
                 }
                 SetPoints();
             }

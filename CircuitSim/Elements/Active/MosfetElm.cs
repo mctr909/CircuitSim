@@ -70,8 +70,6 @@ namespace Circuit.Elements.Active {
 
         public override int PostCount { get { return 3; } }
 
-        public override bool GetConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
-
         public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
                 return 0;
@@ -84,6 +82,8 @@ namespace Circuit.Elements.Active {
             }
             return -Ids + DiodeCurrent2;
         }
+
+        public override bool AnaGetConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
 
         public override void AnaStamp() {
             Circuit.StampNonLinear(Nodes[1]);
