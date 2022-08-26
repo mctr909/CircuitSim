@@ -33,6 +33,7 @@ namespace Circuit.Elements.Passive {
             var ce = (SwitchElm)Elm;
             optionList.Add(ce.Position);
             optionList.Add(ce.Momentary);
+            optionList.Add(ce.Link);
         }
 
         public void MouseUp() {
@@ -47,6 +48,18 @@ namespace Circuit.Elements.Passive {
             ce.Position++;
             if (ce.PosCount <= ce.Position) {
                 ce.Position = 0;
+            }
+            if (ce.Link != 0) {
+                int i;
+                for (i = 0; i != CirSimForm.Sim.ElmCount; i++) {
+                    var o = CirSimForm.Sim.GetElm(i).Elm;
+                    if (o is SwitchElm) {
+                        var s2 = (SwitchElm)o;
+                        if (s2.Link == ce.Link) {
+                            s2.Position = ce.Position;
+                        }
+                    }
+                }
             }
         }
 
@@ -101,6 +114,9 @@ namespace Circuit.Elements.Passive {
                 ei.CheckBox.Checked = ce.Momentary;
                 return ei;
             }
+            if (n == 1) {
+                return new ElementInfo("グループ", ce.Link, 0, 100).SetDimensionless();
+            }
             return null;
         }
 
@@ -108,6 +124,9 @@ namespace Circuit.Elements.Passive {
             var ce = (SwitchElm)Elm;
             if (n == 0) {
                 ce.Momentary = ei.CheckBox.Checked;
+            }
+            if (n == 1) {
+                ce.Link = (int)ei.Value;
             }
         }
     }

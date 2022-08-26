@@ -3,27 +3,32 @@
         public bool Momentary;
         public int Position;
         public int PosCount;
+        public int Link;
 
         public SwitchElm() : base() {
             Momentary = false;
             Position = 0;
             PosCount = 2;
+            Link = 0;
         }
 
         public SwitchElm(bool mm) : base() {
             Position = mm ? 1 : 0;
             Momentary = mm;
             PosCount = 2;
+            Link = 0;
         }
 
         public SwitchElm(StringTokenizer st) : base() {
             Position = 0;
             Momentary = false;
             PosCount = 2;
+            Link = 0;
             try {
                 string str = st.nextToken();
                 Position = int.Parse(str);
                 Momentary = st.nextTokenBool();
+                Link = st.nextTokenInt();
             } catch { }
         }
 

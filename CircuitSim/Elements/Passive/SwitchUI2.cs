@@ -24,8 +24,7 @@ namespace Circuit.Elements.Passive {
         protected override void dump(List<object> optionList) {
             var ce = (SwitchElm2)Elm;
             base.dump(optionList);
-            optionList.Add(ce.mLink);
-            optionList.Add(ce.mThrowCount);
+            optionList.Add(ce.ThrowCount);
         }
 
         public override Point GetPost(int n) {
@@ -36,20 +35,20 @@ namespace Circuit.Elements.Passive {
             var ce = (SwitchElm2)Elm;
             var l1 = new Rectangle(mLead1.X, mLead1.Y, 0, 0);
             var s0 = new Rectangle(mSwPoles[0].X, mSwPoles[0].Y, 0, 0);
-            var s1 = new Rectangle(mSwPoles[ce.mThrowCount - 1].X, mSwPoles[ce.mThrowCount - 1].Y, 0, 0);
+            var s1 = new Rectangle(mSwPoles[ce.ThrowCount - 1].X, mSwPoles[ce.ThrowCount - 1].Y, 0, 0);
             return Rectangle.Union(l1, Rectangle.Union(s0, s1));
         }
 
         public override void Toggle() {
             base.Toggle();
             var ce = (SwitchElm2)Elm;
-            if (ce.mLink != 0) {
+            if (ce.Link != 0) {
                 int i;
                 for (i = 0; i != CirSimForm.Sim.ElmCount; i++) {
                     var o = CirSimForm.Sim.GetElm(i).Elm;
                     if (o is SwitchElm2) {
                         var s2 = (SwitchElm2)o;
-                        if (s2.mLink == ce.mLink) {
+                        if (s2.Link == ce.Link) {
                             s2.Position = ce.Position;
                         }
                     }
@@ -61,30 +60,30 @@ namespace Circuit.Elements.Passive {
             base.SetPoints();
             var ce = (SwitchElm2)Elm;
             calcLeads(BODY_LEN);
-            mSwPosts = new Point[ce.mThrowCount];
-            mSwPoles = new Point[2 + ce.mThrowCount];
+            mSwPosts = new Point[ce.ThrowCount];
+            mSwPoles = new Point[2 + ce.ThrowCount];
             int i;
-            for (i = 0; i != ce.mThrowCount; i++) {
-                int hs = -OPEN_HS * (i - (ce.mThrowCount - 1) / 2);
-                if (ce.mThrowCount == 2 && i == 0) {
+            for (i = 0; i != ce.ThrowCount; i++) {
+                int hs = -OPEN_HS * (i - (ce.ThrowCount - 1) / 2);
+                if (ce.ThrowCount == 2 && i == 0) {
                     hs = OPEN_HS;
                 }
                 interpLead(ref mSwPoles[i], 1, hs);
                 interpPoint(ref mSwPosts[i], 1, hs);
             }
             mSwPoles[i] = mLead2; /* for center off */
-            ce.PosCount = ce.mThrowCount;
+            ce.PosCount = ce.ThrowCount;
         }
 
         public override void Draw(CustomGraphics g) {
             var ce = (SwitchElm2)Elm;
             setBbox(mPost1, mPost2, OPEN_HS);
-            DumpInfo.AdjustBbox(mSwPosts[0], mSwPosts[ce.mThrowCount - 1]);
+            DumpInfo.AdjustBbox(mSwPosts[0], mSwPosts[ce.ThrowCount - 1]);
 
             /* draw first lead */
             drawLead(mPost1, mLead1);
             /* draw other leads */
-            for (int i = 0; i < ce.mThrowCount; i++) {
+            for (int i = 0; i < ce.ThrowCount; i++) {
                 drawLead(mSwPoles[i], mSwPosts[i]);
             }
             /* draw switch */
@@ -101,31 +100,26 @@ namespace Circuit.Elements.Passive {
 
         public override void GetInfo(string[] arr) {
             var ce = (SwitchElm2)Elm;
-            arr[0] = "switch (" + (ce.mLink == 0 ? "S" : "D")
-                + "P" + ((ce.mThrowCount > 2) ? ce.mThrowCount + "T)" : "DT)");
+            arr[0] = "switch (" + (ce.Link == 0 ? "S" : "D")
+                + "P" + ((ce.ThrowCount > 2) ? ce.ThrowCount + "T)" : "DT)");
             arr[1] = "I = " + Utils.CurrentAbsText(ce.Current);
         }
 
         public override ElementInfo GetElementInfo(int n) {
             var ce = (SwitchElm2)Elm;
-            if (n == 1) {
-                return new ElementInfo("グループ", ce.mLink, 0, 100).SetDimensionless();
-            }
             if (n == 2) {
-                return new ElementInfo("分岐数", ce.mThrowCount, 2, 10).SetDimensionless();
+                return new ElementInfo("分岐数", ce.ThrowCount, 2, 10).SetDimensionless();
             }
             return base.GetElementInfo(n);
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {
             var ce = (SwitchElm2)Elm;
-            if (n == 1) {
-                ce.mLink = (int)ei.Value;
-            } else if (n == 2) {
+            if (n == 2) {
                 if (ei.Value >= 2) {
-                    ce.mThrowCount = (int)ei.Value;
+                    ce.ThrowCount = (int)ei.Value;
                 }
-                if (ce.mThrowCount > 2) {
+                if (ce.ThrowCount > 2) {
                     ce.Momentary = false;
                 }
                 ce.AllocNodes();
