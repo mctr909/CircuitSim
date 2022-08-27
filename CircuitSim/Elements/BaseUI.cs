@@ -365,9 +365,7 @@ namespace Circuit.Elements {
             }
             var textSize = Context.GetTextSize(s);
             int xc, yc;
-            // Todo: drawValues
-            //if ((this is RailElm) || (this is SweepElm)) {
-            if (this is RailUI) {
+            if (this is RailUI || this is SweepUI) {
                 xc = DumpInfo.P2.X;
                 yc = DumpInfo.P2.Y;
             } else {
@@ -375,6 +373,26 @@ namespace Circuit.Elements {
                 yc = (DumpInfo.P2.Y + DumpInfo.P1.Y) / 2;
             }
             Context.DrawRightText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
+        }
+
+        /// <summary>
+        /// draw component name
+        /// </summary>
+        /// <param name="s"></param>
+        protected void drawName(string s, int offsetX = 0, int offsetY = 0) {
+            if (s == null) {
+                return;
+            }
+            var textSize = Context.GetTextSize(s);
+            int xc, yc;
+            if (this is RailUI) {
+                xc = DumpInfo.P2.X;
+                yc = DumpInfo.P2.Y;
+            } else {
+                xc = (DumpInfo.P2.X + DumpInfo.P1.X) / 2;
+                yc = (DumpInfo.P2.Y + DumpInfo.P1.Y) / 2;
+            }
+            Context.DrawLeftText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
         }
 
         protected void drawValue(double value) {

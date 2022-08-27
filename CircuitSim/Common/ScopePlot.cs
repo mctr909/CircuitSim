@@ -1,15 +1,31 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 using Circuit.Elements;
 
 namespace Circuit {
     class ScopePlot {
+        public static readonly Color RED = Color.FromArgb(0xBF, 0x00, 0x00);
+        public static readonly Color YELLOW = Color.FromArgb(0xCF, 0xCF, 0x00);
+        public static readonly Color GREEN = Color.FromArgb(0x00, 0xBF, 0x00);
+        public static readonly Color BLUE = Color.FromArgb(0x2F, 0x2F, 0xCF);
+        public static readonly Color PURPLE = Color.FromArgb(0xBF, 0x00, 0xBF);
+        public static readonly Color GRAY = Color.FromArgb(0xA0, 0xA0, 0xA0);
+
         static readonly Color[] COLORS = {
-            Color.FromArgb(0xBF, 0x00, 0x00),
-            Color.FromArgb(0xCF, 0xCF, 0x00),
-            Color.FromArgb(0x00, 0xBF, 0x00),
-            Color.FromArgb(0x2F, 0x2F, 0xBF)
+            GREEN,
+            YELLOW,
+            RED,
+            BLUE,
+            PURPLE
         };
+        public enum E_COLOR : int {
+            GREEN,
+            YELLOW,
+            RED,
+            BLUE,
+            PURPLE
+        }
 
         public BaseUI Elm;
 
@@ -19,6 +35,7 @@ namespace Circuit {
         public int Speed { get; private set; }
         public double LastValue { get; private set; }
         public Color Color { get; private set; }
+        public E_COLOR ColorIndex { get; private set; }
 
         int mScopePointCount;
         int mCounter;
@@ -81,12 +98,13 @@ namespace Circuit {
             return Utils.VoltageText(v);
         }
 
-        public void AssignColor(int count) {
-            if (count > 0) {
-                Color = COLORS[(count - 1) % COLORS.Length];
-                return;
+        public void SetColor(int index) {
+            if (0 <= index) {
+                ColorIndex = (E_COLOR)(index % COLORS.Length);
+            } else {
+                ColorIndex = E_COLOR.GREEN;
             }
-            Color = COLORS[2];
+            Color = COLORS[(int)ColorIndex];
         }
     }
 }

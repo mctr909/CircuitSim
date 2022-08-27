@@ -6,7 +6,6 @@ using System.Drawing.Drawing2D;
 
 using Circuit.Elements;
 using Circuit.Elements.Passive;
-using Circuit.Elements.Active;
 using Circuit.Forms;
 
 namespace Circuit {
@@ -94,7 +93,7 @@ namespace Circuit {
                 if (mShowV) {
                     setValue();
                 }
-                calcVisiblePlots();
+                setVisiblePlots();
             }
         }
         public bool ShowFFT {
@@ -155,7 +154,7 @@ namespace Circuit {
                     }
                 }
                 if (removed) {
-                    calcVisiblePlots();
+                    setVisiblePlots();
                 }
                 return ret;
             }
@@ -255,8 +254,9 @@ namespace Circuit {
             mShowNegative = false;
             for (int i = 0; i != mPlots.Count; i++) {
                 mPlots[i].Reset(mScopePointCount, Speed, full);
+                mPlots[i].SetColor(i);
             }
-            calcVisiblePlots();
+            setVisiblePlots();
             mScopeTimeStep = ControlPanel.TimeStep;
             allocImage();
         }
@@ -278,9 +278,13 @@ namespace Circuit {
 
         public void Combine(Scope s) {
             mPlots = mVisiblePlots;
-            mPlots.AddRange(s.mVisiblePlots);
+            var oc = mPlots.Count;
+            foreach (var p in s.mVisiblePlots) {
+                p.SetColor(oc++);
+                mPlots.Add(p);
+            }
             s.mPlots.Clear();
-            calcVisiblePlots();
+            setVisiblePlots();
         }
 
         /* separate this scope's plots into separate scopes and return them in arr[pos], arr[pos+1], etc.
@@ -305,7 +309,7 @@ namespace Circuit {
             if (plot < mVisiblePlots.Count) {
                 var p = mVisiblePlots[plot];
                 mPlots.Remove(p);
-                calcVisiblePlots();
+                setVisiblePlots();
             }
         }
 
@@ -348,65 +352,63 @@ namespace Circuit {
                 return null;
             }
             var flags = mFlags;
-            var eno = CirSimForm.Sim.LocateElm(elm);
-            if (eno < 0) {
+            var elmNum = CirSimForm.Sim.LocateElm(elm);
+            if (elmNum < 0) {
                 return null;
             }
-            string x = "o " + eno
-                + " " + vPlot.Speed
-                + " "
-                + " " + flags
-                + " " + mScale
-                + " "
-                + " " + Position
-                + " " + mPlots.Count;
+            var dumpList = new List<object>();
+            dumpList.Add("o");
+            dumpList.Add(elmNum);
+            dumpList.Add(vPlot.Speed);
+            dumpList.Add(flags);
+            dumpList.Add(mScale);
+            dumpList.Add(Position);
+            dumpList.Add(mPlots.Count);
             for (int i = 0; i < mPlots.Count; i++) {
                 var p = mPlots[i];
-                x += " " + CirSimForm.Sim.LocateElm(p.Elm) + " ";
+                dumpList.Add(CirSimForm.Sim.LocateElm(p.Elm) + "_" + p.ColorIndex);
             }
             if (Text != null) {
-                x += " " + Utils.Escape(Text);
+                dumpList.Add(Utils.Escape(Text));
             }
-            return x;
+            return string.Join(" ", dumpList.ToArray());
         }
 
         public void Undump(StringTokenizer st) {
             initialize();
 
-            int e = st.nextTokenInt();
-            if (e == -1) {
+            int elmNum = st.nextTokenInt();
+            if (elmNum == -1) {
                 return;
             }
-
-            var ce = CirSimForm.Sim.GetElm(e);
+            var ce = CirSimForm.Sim.GetElm(elmNum);
             SetElm(ce);
-            Speed = st.nextTokenInt();
-            var value = st.nextTokenEnum<string>();
 
+            Speed = st.nextTokenInt();
             var flags = st.nextTokenInt();
             mScale = st.nextTokenDouble();
-            st.nextTokenDouble();
-
             if (mScale == 0) {
                 mScale = 0.5;
             }
+            Position = st.nextTokenInt();
+            int plotCount = st.nextTokenInt();
+
             Text = null;
             if ((flags & FLAG_PLOTS) != 0) {
                 try {
-                    Position = st.nextTokenInt();
-                    int sz = st.nextTokenInt();
-
                     setValue();
                     /* setValue(0) creates an extra plot for current, so remove that */
                     while (1 < mPlots.Count) {
                         mPlots.RemoveAt(1);
                     }
-
-                    for (int i = 0; i != sz; i++) {
-                        var eleNum = st.nextTokenInt();
-                        var val = st.nextTokenEnum<string>();
-                        var elm = CirSimForm.Sim.GetElm(eleNum);
-                        mPlots.Add(new ScopePlot(elm));
+                    for (int i = 0; i != plotCount; i++) {
+                        var subElm = st.nextToken().Split('_');
+                        var subElmNum = int.Parse(subElm[0]);
+                        var color = (int)Enum.Parse(typeof(ScopePlot.E_COLOR), subElm[1]);
+                        var elm = CirSimForm.Sim.GetElm(subElmNum);
+                        var p = new ScopePlot(elm);
+                        p.SetColor(color);
+                        mPlots.Add(p);
                     }
                     while (st.HasMoreTokens) {
                         if (Text == null) {
@@ -540,23 +542,14 @@ namespace Circuit {
             mPlots = new List<ScopePlot>();
             mPlots.Add(new ScopePlot(ce));
             mShowV = true;
-            calcVisiblePlots();
+            setVisiblePlots();
             ResetGraph();
         }
 
-        void calcVisiblePlots() {
+        void setVisiblePlots() {
             mVisiblePlots = new List<ScopePlot>();
-            int vc = 0;
-            int oc = 0;
-            for (int i = 0; i != mPlots.Count; i++) {
-                var plot = mPlots[i];
-                if (mShowV) {
-                    mVisiblePlots.Add(plot);
-                    plot.AssignColor(vc++);
-                } else {
-                    mVisiblePlots.Add(plot);
-                    plot.AssignColor(oc++);
-                }
+            foreach (var p in mPlots) {
+                mVisiblePlots.Add(p);
             }
         }
 
@@ -746,7 +739,7 @@ namespace Circuit {
             int maxy = (BoundingBox.Height - 1) / 2;
             int y = maxy;
 
-            var color = (mSomethingSelected) ? Color.FromArgb(0xA0, 0xA0, 0xA0) : plot.Color;
+            var color = mSomethingSelected ? ScopePlot.GRAY : plot.Color;
             if (selected || (CirSimForm.Sim.ScopeSelected == -1 && plot.Elm.IsMouseElm)) {
                 color = CustomGraphics.SelectColor;
             } else if (ControlPanel.ChkPrintable.Checked) {

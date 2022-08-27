@@ -1,9 +1,6 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 using Circuit.Elements;
-using Circuit.Elements.Passive;
-using Circuit.Elements.Input;
 
 namespace Circuit {
     public class Adjustable {
@@ -15,7 +12,8 @@ namespace Circuit {
             set {
                 int intValue = (int)((value - MinValue) * 100 / (MaxValue - MinValue));
                 mSettingValue = true; /* don't recursively set value again in execute() */
-                Slider.Value = intValue;
+                Slider.Value = (intValue < Slider.Minimum) ? Slider.Minimum :
+                    (Slider.Maximum < intValue) ? Slider.Maximum : intValue;
                 mSettingValue = false;
             }
         }

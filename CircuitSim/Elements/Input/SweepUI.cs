@@ -64,7 +64,7 @@ namespace Circuit.Elements.Input {
             }
             double w = 1 + tm * 0.002;
             if (CirSimForm.Sim.IsRunning) {
-                w = 1 + 3 * (ce.Frequency - ce.MinF) / (ce.MaxF - ce.MinF);
+                w = 1.01 + (ce.Frequency - ce.MinF) / (ce.MaxF - ce.MinF);
             }
 
             int x0 = 0;

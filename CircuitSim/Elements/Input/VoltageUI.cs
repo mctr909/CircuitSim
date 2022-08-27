@@ -27,6 +27,7 @@ namespace Circuit.Elements.Input {
 
         protected VoltageUI(Point pos, VoltageElm.WAVEFORM wf) : base(pos) {
             Elm = new VoltageElm(wf);
+            DumpInfo.ReferenceName = "";
         }
 
         public VoltageUI(Point p1, Point p2, int f) : base(p1, p2, f) { }
@@ -70,7 +71,7 @@ namespace Circuit.Elements.Input {
             if (elm.WaveForm == VoltageElm.WAVEFORM.DC) {
                 interpPoint(ref mTextPos, 0.5, -2 * BODY_LEN_DC * sign);
             } else {
-                interpPoint(ref mTextPos, (mLen / 2 + 0.7 * BODY_LEN) / mLen, 10 * sign);
+                interpPoint(ref mTextPos, (mLen / 2 + 0.6 * BODY_LEN) / mLen, 7 * sign);
             }
         }
 
@@ -135,6 +136,7 @@ namespace Circuit.Elements.Input {
             var h = 7;
             var xd = (int)(h * 2 * elm.DutyCycle - h + x);
             xd = Math.Max(x - h + 1, Math.Min(x + h - 1, xd));
+            var hd = (int)(h * elm.DutyCycle - h + x);
 
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
 
@@ -173,19 +175,14 @@ namespace Circuit.Elements.Input {
                 }
                 break;
             case VoltageElm.WAVEFORM.PULSE_BOTH:
-                if (elm.MaxVoltage < 0) {
-                    g.DrawLine(x + h, y, x + h, y);
-                    g.DrawLine(x + h, y, xd, y);
-                    g.DrawLine(xd, y + h, xd, y);
-                    g.DrawLine(x - h, y + h, xd, y + h);
-                    g.DrawLine(x - h, y + h, x - h, y);
-                } else {
-                    g.DrawLine(x - h, y - h, x - h, y);
-                    g.DrawLine(x - h, y - h, xd, y - h);
-                    g.DrawLine(xd, y - h, xd, y);
-                    g.DrawLine(x + h, y, xd, y);
-                    g.DrawLine(x + h, y, x + h, y);
-                }
+                g.DrawLine(x - h , y - h, x - h , y);
+                g.DrawLine(x - h , y - h, hd    , y - h);
+                g.DrawLine(hd    , y - h, hd    , y);
+                g.DrawLine(hd    , y    , x     , y);
+                g.DrawLine(x     , y    , x     , y + h);
+                g.DrawLine(x     , y + h, hd + h, y + h);
+                g.DrawLine(hd + h, y + h, hd + h, y);
+                g.DrawLine(hd + h, y    , x + h , y);
                 break;
             case VoltageElm.WAVEFORM.SAWTOOTH:
                 g.DrawLine(x, y - h, x - h, y    );
@@ -220,11 +217,16 @@ namespace Circuit.Elements.Input {
             }
             }
 
-            if (ControlPanel.ChkShowValues.Checked && elm.WaveForm != VoltageElm.WAVEFORM.NOISE) {
-                var s = Utils.UnitText(elm.MaxVoltage, "V\r\n");
-                s += Utils.UnitText(elm.Frequency, "Hz\r\n");
-                s += Utils.UnitText(elm.Phase * 180 / Math.PI, "°");
-                drawValues(s, 0, 5);
+            if (elm.WaveForm != VoltageElm.WAVEFORM.NOISE) {
+                if (ControlPanel.ChkShowValues.Checked) {
+                    var s = Utils.UnitText(elm.MaxVoltage, "V\r\n");
+                    s += Utils.UnitText(elm.Frequency, "Hz\r\n");
+                    s += Utils.UnitText(elm.Phase * 180 / Math.PI, "°");
+                    drawValues(s, 0, 5);
+                }
+                if (ControlPanel.ChkShowName.Checked) {
+                    drawName(DumpInfo.ReferenceName, 0, -11);
+                }
             }
         }
 
@@ -284,24 +286,29 @@ namespace Circuit.Elements.Input {
                 return ei;
             }
             if (n == 1) {
-                return new ElementInfo(elm.WaveForm == VoltageElm.WAVEFORM.DC ? VALUE_NAME_V : VALUE_NAME_AMP, elm.MaxVoltage, -20, 20);
+                var ei = new ElementInfo("名前", 0, 0, 0);
+                ei.Text = DumpInfo.ReferenceName;
+                return ei;
             }
             if (n == 2) {
+                return new ElementInfo(elm.WaveForm == VoltageElm.WAVEFORM.DC ? VALUE_NAME_V : VALUE_NAME_AMP, elm.MaxVoltage, -20, 20);
+            }
+            if (n == 3) {
                 return new ElementInfo(VALUE_NAME_V_OFS, elm.Bias, -20, 20);
             }
             if (elm.WaveForm == VoltageElm.WAVEFORM.DC || elm.WaveForm == VoltageElm.WAVEFORM.NOISE) {
                 return null;
             }
-            if (n == 3) {
+            if (n == 4) {
                 return new ElementInfo(VALUE_NAME_HZ, elm.Frequency, 4, 500);
             }
-            if (n == 4) {
+            if (n == 5) {
                 return new ElementInfo(VALUE_NAME_PHASE, double.Parse((elm.Phase * 180 / Math.PI).ToString("0.00")), -180, 180).SetDimensionless();
             }
-            if (n == 5) {
+            if (n == 6) {
                 return new ElementInfo(VALUE_NAME_PHASE_OFS, double.Parse((elm.PhaseOffset * 180 / Math.PI).ToString("0.00")), -180, 180).SetDimensionless();
             }
-            if (n == 6 && (elm.WaveForm == VoltageElm.WAVEFORM.PULSE
+            if (n == 7 && (elm.WaveForm == VoltageElm.WAVEFORM.PULSE
                 || elm.WaveForm == VoltageElm.WAVEFORM.PULSE_BOTH
                 || elm.WaveForm == VoltageElm.WAVEFORM.SQUARE
                 || elm.WaveForm == VoltageElm.WAVEFORM.PWM_BOTH
@@ -334,12 +341,15 @@ namespace Circuit.Elements.Input {
                 SetPoints();
             }
             if (n == 1) {
-                elm.MaxVoltage = ei.Value;
+                DumpInfo.ReferenceName = ei.Textf.Text;
             }
             if (n == 2) {
-                elm.Bias = ei.Value;
+                elm.MaxVoltage = ei.Value;
             }
             if (n == 3) {
+                elm.Bias = ei.Value;
+            }
+            if (n == 4) {
                 /* adjust time zero to maintain continuity ind the waveform
                  * even though the frequency has changed. */
                 double oldfreq = elm.Frequency;
@@ -352,15 +362,14 @@ namespace Circuit.Elements.Input {
                         elm.Frequency = maxfreq;
                     }
                 }
-                double adj = elm.Frequency - oldfreq;
-            }
-            if (n == 4) {
-                elm.Phase = ei.Value * Math.PI / 180;
             }
             if (n == 5) {
-                elm.PhaseOffset = ei.Value * Math.PI / 180;
+                elm.Phase = ei.Value * Math.PI / 180;
             }
             if (n == 6) {
+                elm.PhaseOffset = ei.Value * Math.PI / 180;
+            }
+            if (n == 7) {
                 elm.DutyCycle = ei.Value * .01;
             }
         }
@@ -419,7 +428,7 @@ namespace Circuit.Elements.Input {
                     ce.PhaseOffset = val * Math.PI / 180;
                     break;
                 case VALUE_NAME_DUTY:
-                    ce.DutyCycle = val * 0.01;
+                    ce.DutyCycle = val;
                     break;
                 }
                 CirSimForm.Sim.NeedAnalyze();
