@@ -253,8 +253,11 @@ namespace Circuit {
             }
             mShowNegative = false;
             for (int i = 0; i != mPlots.Count; i++) {
-                mPlots[i].Reset(mScopePointCount, Speed, full);
-                mPlots[i].SetColor(i);
+                var p = mPlots[i];
+                p.Reset(mScopePointCount, Speed, full);
+                if (p.ColorIndex == ScopePlot.E_COLOR.INVALID) {
+                    p.SetColor(i);
+                }
             }
             setVisiblePlots();
             mScopeTimeStep = ControlPanel.TimeStep;

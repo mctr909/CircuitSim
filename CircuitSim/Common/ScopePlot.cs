@@ -24,7 +24,8 @@ namespace Circuit {
             YELLOW,
             RED,
             BLUE,
-            PURPLE
+            PURPLE,
+            INVALID
         }
 
         public BaseUI Elm;
@@ -35,7 +36,7 @@ namespace Circuit {
         public int Speed { get; private set; }
         public double LastValue { get; private set; }
         public Color Color { get; private set; }
-        public E_COLOR ColorIndex { get; private set; }
+        public E_COLOR ColorIndex { get; private set; } = E_COLOR.INVALID;
 
         int mScopePointCount;
         int mCounter;
