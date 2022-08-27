@@ -8,6 +8,8 @@ namespace Circuit {
         string[] mList;
         char[] mDelimiter;
 
+        public bool HasMoreTokens { get { return mIndex < mList.Length; } }
+
         public StringTokenizer(string value, string delimiter) {
             mValue = value;
             mDelimiter = delimiter.ToArray();
@@ -45,10 +47,6 @@ namespace Circuit {
             } catch {
                 return 0;
             }
-        }
-
-        public bool hasMoreTokens() {
-            return mIndex < mList.Length;
         }
     }
 }

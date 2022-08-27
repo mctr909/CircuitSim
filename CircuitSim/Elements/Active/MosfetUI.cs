@@ -45,9 +45,6 @@ namespace Circuit.Elements.Active {
         public MosfetUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new MosfetElm((f & FLAG_PNP) != 0, st);
             mNoDiagonal = true;
-            try {
-                DumpInfo.ReferenceName = st.nextToken();
-            } catch { }
             mGlobalFlags = DumpInfo.Flags & (FLAGS_GLOBAL);
         }
 

@@ -13,9 +13,6 @@ namespace Circuit.Elements.Active {
 
         public DiodeUIVaractor(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
             Elm = new DiodeElmVaractor(st);
-            try {
-                DumpInfo.ReferenceName = st.nextToken();
-            } catch { }
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.VARACTOR; } }

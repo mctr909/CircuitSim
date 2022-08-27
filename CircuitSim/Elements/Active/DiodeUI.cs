@@ -27,9 +27,6 @@ namespace Circuit.Elements.Active {
 
         public DiodeUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new DiodeElm(st, 0 != (f & FLAG_FWDROP), 0 != (f & FLAG_MODEL));
-            try {
-                DumpInfo.ReferenceName = st.nextToken();
-            } catch { }
             setup();
         }
 

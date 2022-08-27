@@ -28,9 +28,6 @@ namespace Circuit.Elements.Active {
 
         public TransistorUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new TransistorElm(st);
-            try {
-                DumpInfo.ReferenceName = st.nextToken();
-            } catch { }
             setup();
         }
 

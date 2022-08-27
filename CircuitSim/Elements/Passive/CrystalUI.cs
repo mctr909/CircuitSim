@@ -23,9 +23,6 @@ namespace Circuit.Elements.Passive {
         public CrystalUI(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
             Elm = new CrystalElm(st);
             mPosts = new Point[((CrystalElm)Elm).NumPosts];
-            try {
-                DumpInfo.ReferenceName = st.nextToken();
-            } catch { }
         }
 
         public override void SetPoints() {

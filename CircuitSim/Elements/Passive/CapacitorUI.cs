@@ -29,7 +29,6 @@ namespace Circuit.Elements.Passive {
         public CapacitorUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
                 Elm = new CapacitorElm(st);
-                DumpInfo.ReferenceName = st.nextToken();
             } catch (Exception ex) {
                 throw new Exception("Capacitor load error:{0}", ex);
             }

@@ -408,7 +408,7 @@ namespace Circuit {
                         var elm = CirSimForm.Sim.GetElm(eleNum);
                         mPlots.Add(new ScopePlot(elm));
                     }
-                    while (st.hasMoreTokens()) {
+                    while (st.HasMoreTokens) {
                         if (Text == null) {
                             Text = st.nextToken();
                         } else {

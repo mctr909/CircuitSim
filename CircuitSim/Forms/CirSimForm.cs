@@ -1264,7 +1264,7 @@ namespace Circuit {
                 }
                 string line = Encoding.UTF8.GetString(b, p, linelen);
                 var st = new StringTokenizer(line, " +\t\n\r\f");
-                while (st.hasMoreTokens()) {
+                while (st.HasMoreTokens) {
                     string type = st.nextToken();
                     int tint = type.ElementAt(0);
                     try {
@@ -1320,6 +1320,13 @@ namespace Circuit {
                         int f = st.nextTokenInt();
                         var dumpId = MenuItems.GetDumpIdFromString(type);
                         var newce = MenuItems.CreateCe(dumpId, p1, p2, f, st);
+                        try {
+                            if (st.HasMoreTokens) {
+                                newce.DumpInfo.ReferenceName = Utils.Unescape(st.nextToken());
+                            } else {
+                                newce.DumpInfo.ReferenceName = "";
+                            }
+                        } catch { }
                         if (newce == null) {
                             Console.WriteLine("unrecognized dump type: " + type);
                             break;

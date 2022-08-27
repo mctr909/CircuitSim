@@ -23,7 +23,6 @@ namespace Circuit.Elements.Passive {
         public TransformerUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
                 Elm = new TransformerElm(st, (DumpInfo.Flags & FLAG_REVERSE) != 0);
-                DumpInfo.ReferenceName = st.nextToken();
             } catch (Exception ex) {
                 throw new Exception("Transformer load error:{0}", ex);
             }

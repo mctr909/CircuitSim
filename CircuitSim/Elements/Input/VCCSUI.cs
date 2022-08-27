@@ -16,9 +16,6 @@ namespace Circuit.Elements.Input {
 
         public VCCSUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new VCCSElm(this, st);
-            try {
-                DumpInfo.ReferenceName = st.nextToken();
-            } catch { }
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.VCCS; } }

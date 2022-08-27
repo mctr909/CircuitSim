@@ -156,7 +156,7 @@ namespace Circuit.Elements {
                 ret += separator + string.Join(separator, optionList.ToArray());
             }
             if (!string.IsNullOrWhiteSpace(ReferenceName)) {
-                ret += separator + ReferenceName;
+                ret += separator + Utils.Escape(ReferenceName);
             }
             return ret;
         }

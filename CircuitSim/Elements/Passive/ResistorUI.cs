@@ -27,8 +27,7 @@ namespace Circuit.Elements.Passive {
         public ResistorUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
                 Elm = new ResistorElm(st);
-                DumpInfo.ReferenceName = st.nextToken();
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 throw new Exception("Resistor load error:{0}", ex);
             }
         }

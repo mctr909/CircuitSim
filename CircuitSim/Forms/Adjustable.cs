@@ -61,9 +61,9 @@ namespace Circuit {
                 LargeChange = 10,
                 TickFrequency = 10,
                 TickStyle = TickStyle.TopLeft,
-                Value = (intValue < 0) ? 0 : (100 < intValue) ? 100 : intValue,
                 Minimum = 0,
                 Maximum = 100,
+                Value = (intValue < 0) ? 0 : (100 < intValue) ? 100 : intValue,
                 Width = 175,
                 Height = 23
             });

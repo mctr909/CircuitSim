@@ -180,7 +180,7 @@ namespace Circuit.Elements.Custom {
 
             /* Build compElmList and compNodeHash from input string */
 
-            while (modelLinet.hasMoreTokens()) {
+            while (modelLinet.HasMoreTokens) {
                 string line = modelLinet.nextToken();
                 var stModel = new StringTokenizer(line, " +\t\n\r\f");
                 var ceType = MenuItems.GetItemFromString(stModel.nextToken());
@@ -198,7 +198,7 @@ namespace Circuit.Elements.Custom {
                 CompElmList.Add(newce);
 
                 int thisPost = 0;
-                while (stModel.hasMoreTokens()) {
+                while (stModel.HasMoreTokens) {
                     int nodeOfThisPost = stModel.nextTokenInt();
                     cnLink = new CircuitNodeLink();
                     cnLink.Num = thisPost;
