@@ -17,8 +17,9 @@ namespace Circuit.Elements.Output {
         public ScopeUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             mNoDiagonal = false;
             string sStr = st.nextToken();
-            var sst = new StringTokenizer(sStr, "_");
+            var sst = new StringTokenizer(sStr, "\t");
             elmScope = new Scope();
+            Elm = new ScopeElm(elmScope);
             elmScope.Undump(sst);
             SetPoints();
             elmScope.ResetGraph();
@@ -29,8 +30,8 @@ namespace Circuit.Elements.Output {
         public override DUMP_ID DumpType { get { return DUMP_ID.SCOPE; } }
 
         protected override void dump(List<object> optionList) {
-            string sStr = elmScope.Dump().Replace(' ', '_');
-            sStr = sStr.Replace("o_", ""); /* remove unused prefix for embedded Scope */
+            string sStr = elmScope.Dump().Replace(' ', '\t');
+            sStr = sStr.Replace("o\t", ""); /* remove unused prefix for embedded Scope */
             optionList.Add(sStr);
         }
 
@@ -69,8 +70,8 @@ namespace Circuit.Elements.Output {
 
         public override void Draw(CustomGraphics g) {
             setScopeRect();
-            elmScope.Draw(g);
             setBbox(mPost1, mPost2, 0);
+            elmScope.Draw(g, true);
             drawPosts();
         }
     }

@@ -64,7 +64,8 @@ namespace Circuit {
         public int ScopeSelected { get; private set; } = -1;
         public int MouseCursorX { get; private set; } = -1;
         public int MouseCursorY { get; private set; } = -1;
-        public float[] Transform { get; private set; }
+        public int OfsX { get; private set; }
+        public int OfsY { get; private set; }
         public bool DcAnalysisFlag { get; private set; }
         public double Time { get; private set; }
 
@@ -164,7 +165,8 @@ namespace Circuit {
             mRedoItem = new MenuItem();
             mUndoItem = new MenuItem();
             mPasteItem = new MenuItem();
-            Transform = new float[] { 1, 0, 0, 1, 0, 0 };
+            OfsX = 0;
+            OfsY = 0;
 
             mScopes = new Scope[20];
             mScopeColCount = new int[20];
@@ -697,10 +699,10 @@ namespace Circuit {
 
         /* convert grid coordinates to screen coordinates */
         public int TransformX(double x) {
-            return (int)((x * Transform[0]) + Transform[4]);
+            return (int)(x + OfsX);
         }
         public int TransformY(double y) {
-            return (int)((y * Transform[3]) + Transform[5]);
+            return (int)(y + OfsY);
         }
         #endregion
 
@@ -1007,11 +1009,10 @@ namespace Circuit {
         void centreCircuit() {
             var bounds = getCircuitBounds();
             /* calculate transform so circuit fills most of screen */
-            Transform[0] = Transform[3] = 1;
-            Transform[1] = Transform[2] = Transform[4] = Transform[5] = 0;
+            OfsX = OfsY = 0;
             if (0 < bounds.Width) {
-                Transform[4] = (mCircuitArea.Width - bounds.Width) / 2 - bounds.X;
-                Transform[5] = (mCircuitArea.Height - bounds.Height) / 2 - bounds.Y;
+                OfsX = (mCircuitArea.Width - bounds.Width) / 2 - bounds.X;
+                OfsY = (mCircuitArea.Height - bounds.Height) / 2 - bounds.Y;
             }
         }
 
@@ -1481,8 +1482,8 @@ namespace Circuit {
             if (dx == 0 && dy == 0) {
                 return;
             }
-            Transform[4] += dx;
-            Transform[5] += dy;
+            OfsX += dx;
+            OfsY += dy;
             mDragScreen.X = x;
             mDragScreen.Y = y;
         }
@@ -1674,15 +1675,13 @@ namespace Circuit {
 
         /* convert screen coordinates to grid coordinates by inverting circuit transform */
         int inverseTransformX(double x) {
-            return (int)((x - Transform[4]) / Transform[0]);
+            return (int)(x - OfsX);
         }
         int inverseTransformY(double y) {
-            return (int)((y - Transform[5]) / Transform[3]);
+            return (int)(y - OfsY);
         }
         Point inverseTransform(Point pos) {
-            return new Point(
-                (int)((pos.X - Transform[4]) / Transform[0]),
-                (int)((pos.Y - Transform[5]) / Transform[3]));
+            return new Point(pos.X - OfsX, pos.Y - OfsY);
         }
 
         /* need to break this out into a separate routine to handle selection, */
@@ -2170,7 +2169,7 @@ namespace Circuit {
             PDF.Page pdfG = null;
             if (g.DoPrint) {
                 g.DoPrint = false;
-                pdfG = new PDF.Page(g.Width, g.Height, 0.66f);
+                pdfG = new PDF.Page(g.Width, g.Height);
                 g = pdfG;
                 BaseUI.Context = pdfG;
             }
@@ -2221,7 +2220,7 @@ namespace Circuit {
                 mLastSysTime = sysTime;
             }
 
-            g.SetTransform(new Matrix(Transform[0], Transform[1], Transform[2], Transform[3], Transform[4], Transform[5]));
+            g.ScrollBoard(OfsX, OfsY);
             {
                 var pdfX0 = 0;
                 var pdfX1 = (int)PDF.Width * 2;
@@ -2235,7 +2234,11 @@ namespace Circuit {
 
                 /* draw elements */
                 for (int i = 0; i != ElmCount; i++) {
-                    ElmList[i].Draw(g);
+                    var ui = ElmList[i];
+                    ui.Draw(g);
+                    if (ui is ScopeUI) {
+                        g.ScrollBoard(OfsX, OfsY);
+                    }
                 }
 
                 /* draw posts normally */
@@ -2307,7 +2310,12 @@ namespace Circuit {
             g.FillRectangle(bCircuitArea, 0, mCircuitArea.Height, mCircuitArea.Width, g.Height - mCircuitArea.Height);
 
             g.LineColor = mMouseWasOverSplitter ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-            g.DrawLine(0, mCircuitArea.Height - 2, mCircuitArea.Width, mCircuitArea.Height - 2);
+
+            g.SetPlotBottom(0, mCircuitArea.Height - 2);
+            {
+                g.DrawLine(0, 0, mCircuitArea.Width, 0);
+            }
+            g.ClearTransform();
 
             int ct = mScopeCount;
             if (Circuit.StopMessage != null) {
@@ -2316,7 +2324,6 @@ namespace Circuit {
             for (int i = 0; i != ct; i++) {
                 mScopes[i].Draw(g);
             }
-            g.ClearTransform();
 
             if (Circuit.StopMessage != null) {
                 g.DrawLeftText(Circuit.StopMessage, 10, mCircuitArea.Height - 10);
@@ -2349,10 +2356,13 @@ namespace Circuit {
                     x = mScopes[ct - 1].RightEdge + 20;
                 }
                 x = Math.Max(x, g.Width * 2 / 3);
-                int ybase = mCircuitArea.Height;
-                for (int i = 0; i < info.Length && info[i] != null; i++) {
-                    g.DrawLeftText(info[i], x, ybase + 15 * (i + 1));
+                g.SetPlotBottom(x, mCircuitArea.Height);
+                {
+                    for (int i = 0; i < info.Length && info[i] != null; i++) {
+                        g.DrawLeftText(info[i], 0, 15 * (i + 1));
+                    }
                 }
+                g.ClearTransform();
             }
 
             if (null != mMouseElm && null != Circuit.StopElm && Circuit.StopElm != mMouseElm.Elm) {

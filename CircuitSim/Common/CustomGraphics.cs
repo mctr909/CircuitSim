@@ -38,7 +38,7 @@ namespace Circuit {
             Width = 0.1f
         };
 
-        Bitmap mImage;
+        protected Bitmap mImage;
         Graphics mG;
 
         public static Brush PenHandle { get; set; }
@@ -141,7 +141,7 @@ namespace Circuit {
             mG.DrawLine(mPenLine, a, b);
         }
 
-        public void DrawRectangle(Rectangle rect) {
+        public virtual void DrawRectangle(Rectangle rect) {
             mG.DrawRectangle(mPenLine, rect);
         }
 
@@ -182,20 +182,28 @@ namespace Circuit {
             mG.FillPolygon(mPenColor.Brush, p);
         }
 
+        public virtual void ScrollBoard(int x, int y) {
+            mG.Transform = new Matrix(1, 0, 0, 1, x, y);
+        }
+
+        public virtual void SetPlotBottom(int x, int y) {
+            mG.Transform = new Matrix(1, 0, 0, 1, x, y);
+        }
+
+        public virtual void SetPlotFloat(int x, int y) {
+            mG.Transform = new Matrix(1, 0, 0, 1, x, y);
+        }
+
+        public virtual void ClearTransform() {
+            mG.Transform = new Matrix(1, 0, 0, 1, 0, 0);
+        }
+
         public SizeF GetTextSize(string s) {
             return mG.MeasureString(s, mTextFont);
         }
 
         public SizeF GetTextSizeL(string s) {
             return mG.MeasureString(s, mTextFontL);
-        }
-
-        public void SetTransform(Matrix matrix) {
-            mG.Transform = matrix;
-        }
-
-        public void ClearTransform() {
-            mG.Transform = new Matrix(1, 0, 0, 1, 0, 0);
         }
 
         public void Clear(Color color) {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 
 using Circuit;
@@ -11,22 +12,31 @@ class PDF {
     const string FontName = "Arial";
     
     public class Page : CustomGraphics {
-        public float Scale { get; private set; }
         readonly float FONT_SCALE;
         readonly float TEXT_SCALE_X;
         readonly float TEXT_SCALE_Y;
-        
+        readonly float SCALE_X = 0.65f;
+        readonly float SCALE_Y = 1.2f;
+
         MemoryStream mMs;
         StreamWriter mSw;
+        double mOfsX;
+        double mOfsY;
+        double mBoardOfsX;
+        double mBoardOfsY;
 
-        public Page(int width, int height, float scale = 1.0f) : base(width, height) {
+        public Page(int width, int height) : base(width, height) {
             mMs = new MemoryStream();
             mSw = new StreamWriter(mMs);
             mSw.WriteLine("0 w");
-            Scale = scale;
-            FONT_SCALE = Scale * 1.25f;
-            TEXT_SCALE_X = FONT_SCALE * 0.65f;
-            TEXT_SCALE_Y = FONT_SCALE * 1.2f;
+            mSw.WriteLine("0.5 0 0 -0.5 0 {0} cm", PDF.Height);
+            mOfsX = 0.0;
+            mOfsY = 0.0;
+            mBoardOfsX = 0.0;
+            mBoardOfsY = 0.0;
+            FONT_SCALE = 1.25f;
+            TEXT_SCALE_X = FONT_SCALE * SCALE_X;
+            TEXT_SCALE_Y = FONT_SCALE * SCALE_Y;
         }
 
         internal void Flush(StreamWriter sw) {
@@ -73,6 +83,17 @@ class PDF {
 
         public override void DrawLine(PointF a, PointF b) {
             DrawLine(a.X, a.Y, b.X, b.Y);
+        }
+
+        public override void DrawRectangle(Rectangle rect) {
+            var x0 = rect.X;
+            var x1 = x0 + rect.Width - 1;
+            var y0 = rect.Y;
+            var y1 = y0 + rect.Height - 1;
+            DrawLine(x0, y0, x1, y0);
+            DrawLine(x1, y0, x1, y1);
+            DrawLine(x1, y1, x0, y1);
+            DrawLine(x0, y1, x0, y0);
         }
 
         public override void DrawPolygon(Point[] poly) {
@@ -151,24 +172,6 @@ class PDF {
             return poly;
         }
 
-        void writeText(string s, float x, float y, float ofsX = 0.0f) {
-            writeFontSize(TextSize);
-            mSw.WriteLine("1 0 0 1 {0} {1} Tm", x * Scale - ofsX, Height - TextSize * TEXT_SCALE_X * 0.5f - y * Scale);
-            writeText(s);
-        }
-
-        void writeTextL(string s, float x, float y, float ofsX = 0.0f) {
-            writeFontSize(LTextSize);
-            mSw.WriteLine("1 0 0 1 {0} {1} Tm", x * Scale - ofsX, Height - LTextSize * TEXT_SCALE_X * 0.5f - y * Scale);
-            writeText(s);
-        }
-
-        void writeTextV(string s, float x, float y, float ofsY = 0.0f) {
-            writeFontSize(TextSize);
-            mSw.WriteLine("0 1 -1 0 {0} {1} Tm", x * Scale + TextSize * TEXT_SCALE_Y, Height - ofsY - y * Scale);
-            writeText(s);
-        }
-
         void writeFontSize(float size) {
             mSw.WriteLine("/F0 {0} Tf", size * FONT_SCALE);
         }
@@ -177,20 +180,67 @@ class PDF {
             mSw.WriteLine("({0}) Tj", text);
         }
 
+        void writeText(string s, float x, float y, float ofsX = 0.0f) {
+            writeFontSize(TextSize);
+            mSw.WriteLine("1 0 0 -1 {0} {1} Tm",
+                x + mOfsX - ofsX,
+                y + mOfsY + TextSize * TEXT_SCALE_X * 0.5f
+            );
+            writeText(s);
+        }
+
+        void writeTextL(string s, float x, float y, float ofsX = 0.0f) {
+            writeFontSize(LTextSize);
+            mSw.WriteLine("1 0 0 -1 {0} {1} Tm",
+                x + mOfsX - ofsX,
+                y + mOfsY + LTextSize * TEXT_SCALE_X * 0.5f
+            );
+            writeText(s);
+        }
+
+        void writeTextV(string s, float x, float y, float ofsY = 0.0f) {
+            writeFontSize(TextSize);
+            mSw.WriteLine("0 -1 -1 0 {0} {1} Tm",
+                x + mOfsX + TextSize * TEXT_SCALE_Y,
+                y + mOfsY + ofsY
+            );
+            writeText(s);
+        }
+
         void writeM(float x, float y) {
-            mSw.WriteLine("{0} {1} m", x * Scale, Height - y * Scale);
+            mSw.WriteLine("{0} {1} m", x + mOfsX, y + mOfsY);
         }
 
         void writeL(PointF p) {
-            mSw.WriteLine("{0} {1} l", p.X * Scale, Height - p.Y * Scale);
+            mSw.WriteLine("{0} {1} l", p.X + mOfsX, p.Y + mOfsY);
         }
 
         void writeLS(float x, float y) {
-            mSw.WriteLine("{0} {1} l S", x * Scale, Height - y * Scale);
+            mSw.WriteLine("{0} {1} l S", x + mOfsX, y + mOfsY);
         }
 
         void writeLB(PointF p) {
-            mSw.WriteLine("{0} {1} l b", p.X * Scale, Height - p.Y * Scale);
+            mSw.WriteLine("{0} {1} l b", p.X + mOfsX, p.Y + mOfsY);
+        }
+
+        public override void ScrollBoard(int x, int y) {
+            mBoardOfsX = x;
+            mBoardOfsY = y;
+        }
+
+        public override void SetPlotBottom(int x, int y) {
+            mOfsX = x;
+            mOfsY = 2 * PDF.Height - (mImage.Height - y);
+        }
+
+        public override void SetPlotFloat(int x, int y) {
+            mOfsX = x - mBoardOfsX;
+            mOfsY = y - mBoardOfsY;
+        }
+
+        public override void ClearTransform() {
+            mOfsX = 0.0;
+            mOfsY = 0.0;
         }
     }
 
