@@ -38,6 +38,7 @@ namespace Circuit.Forms {
             txtManualScale.Enabled = mScope.ManualScale;
             chkLogSpectrum.Checked = mScope.LogSpectrum;
             chkLogSpectrum.Enabled = mScope.ShowFFT;
+            txtLabel.Text = mScope.Text;
             setScopeSpeedLabel();
         }
 

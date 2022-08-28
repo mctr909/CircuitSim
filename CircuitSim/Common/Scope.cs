@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 
 using Circuit.Elements;
 using Circuit.Elements.Passive;
@@ -40,7 +39,7 @@ namespace Circuit {
         double mMainGridMult;
         double mMainGridMid;
 
-        bool mDrawGridLines;
+        bool mDrewGridlines;
         bool mSomethingSelected;
         bool mMaxScale;
         bool mShowNegative;
@@ -143,7 +142,7 @@ namespace Circuit {
                 bool ret = true;
                 for (int i = 0; i != mPlots.Count; i++) {
                     var plot = mPlots[i];
-                    if (CirSimForm.Sim.LocateElm(plot.Elm) < 0) {
+                    if (CirSimForm.Sim.GetElmIndex(plot.Elm) < 0) {
                         mPlots.RemoveAt(i--);
                     } else {
                         ret = false;
@@ -330,23 +329,17 @@ namespace Circuit {
             if (elm == null) {
                 return null;
             }
-            var flags = mFlags;
-            var elmNum = CirSimForm.Sim.LocateElm(elm);
-            if (elmNum < 0) {
-                return null;
-            }
             var dumpList = new List<object>();
             dumpList.Add("o");
-            dumpList.Add(elmNum);
             dumpList.Add(vPlot.Speed);
-            dumpList.Add(flags);
-            dumpList.Add(mScale);
+            dumpList.Add(mFlags);
+            dumpList.Add(mScale.ToString("0.000000"));
             dumpList.Add(Position);
             dumpList.Add(mPlots.Count);
             foreach (var p in mPlots) {
-                dumpList.Add(CirSimForm.Sim.LocateElm(p.Elm) + "_" + p.ColorIndex);
+                dumpList.Add(CirSimForm.Sim.GetElmIndex(p.Elm) + "_" + p.ColorIndex);
             }
-            if (Text != null) {
+            if (!string.IsNullOrWhiteSpace(Text)) {
                 dumpList.Add(Utils.Escape(Text));
             }
             return string.Join(" ", dumpList.ToArray());
@@ -354,62 +347,43 @@ namespace Circuit {
 
         public void Undump(StringTokenizer st) {
             initialize();
-
-            int elmNum = st.nextTokenInt();
-            if (elmNum == -1) {
-                return;
-            }
-            var ce = CirSimForm.Sim.GetElm(elmNum);
-            SetElm(ce);
+            mPlots = new List<ScopePlot>();
 
             Speed = st.nextTokenInt();
-            var flags = st.nextTokenInt();
+            mFlags = st.nextTokenInt();
             mScale = st.nextTokenDouble();
             Position = st.nextTokenInt();
-            int plotCount = st.nextTokenInt();
 
-            Text = null;
-            if ((flags & FLAG_PLOTS) != 0) {
-                try {
-                    setValue();
-                    /* setValue(0) creates an extra plot for current, so remove that */
-                    while (1 < mPlots.Count) {
-                        mPlots.RemoveAt(1);
-                    }
-                    for (int i = 0; i != plotCount; i++) {
-                        var subElm = st.nextToken().Split('_');
-                        var subElmNum = int.Parse(subElm[0]);
-                        var color = (int)Enum.Parse(typeof(ScopePlot.E_COLOR), subElm[1]);
-                        var elm = CirSimForm.Sim.GetElm(subElmNum);
-                        var p = new ScopePlot(elm);
-                        p.SetColor(color);
-                        mPlots.Add(p);
-                    }
-                    while (st.HasMoreTokens) {
-                        if (Text == null) {
-                            Text = st.nextToken();
-                        } else {
-                            Text += " " + st.nextToken();
-                        }
-                    }
-                } catch (Exception ex) {
-                    throw ex;
+            try {
+                int plotCount = st.nextTokenInt();
+                for (int i = 0; i != plotCount; i++) {
+                    var subElmCol = st.nextToken().Split('_');
+                    var subElmIdx = int.Parse(subElmCol[0]);
+                    var subElm = CirSimForm.Sim.GetElm(subElmIdx);
+                    var color = (int)Enum.Parse(typeof(ScopePlot.E_COLOR), subElmCol[1]);
+                    var p = new ScopePlot(subElm);
+                    p.SetColor(color);
+                    mPlots.Add(p);
                 }
+            } catch (Exception ex) {
+                throw ex;
             }
-            if (Text != null) {
-                Text = Utils.Unescape(Text);
+
+            if (st.HasMoreTokens) {
+                Text = Utils.Unescape(st.nextToken());
+            } else {
+                Text = "";
             }
-            mFlags = flags;
         }
 
         public double CalcGridStepX() {
-            int multptr = 0;
-            var gsx = 1e-15;
-            var ts = ControlPanel.TimeStep * Speed;
-            while (gsx < ts * 20) {
-                gsx *= MULTA[(multptr++) % 3];
+            int multIdx = 0;
+            var step = 1e-9;
+            var baseT = ControlPanel.TimeStep * Speed;
+            while (step < baseT * 20) {
+                step *= MULTA[(multIdx++) % 3];
             }
-            return gsx;
+            return step;
         }
 
         public void Draw(CustomGraphics g, bool isFloat = false) {
@@ -444,7 +418,7 @@ namespace Circuit {
                 mSomethingSelected = true;
             }
 
-            mDrawGridLines = true;
+            mDrewGridlines = false;
             if ((ShowMax || ShowMin) && mPlots.Count > 0) {
                 calcMaxAndMin();
             }
@@ -461,6 +435,9 @@ namespace Circuit {
                     drawFFT(g);
                 }
                 if (mShowV) {
+                    /* Vertical (T) gridlines */
+                    mGridStepX = CalcGridStepX();
+
                     /* draw volts on top (last), then current underneath, then everything else */
                     for (int i = 0; i != mPlots.Count; i++) {
                         if (i != SelectedPlot) {
@@ -705,10 +682,86 @@ namespace Circuit {
             if (plot.Elm == null) {
                 return;
             }
-            int i;
-            int multptr = 0;
-            int x = 0;
+
             int maxY = (BoundingBox.Height - 1) / 2;
+            int minRangeLo;
+            int minRangeHi;
+            double gridMid;
+            double gridMult;
+            {
+                /* if we don't have overlapping scopes of different units, we can move zero around.
+                 * Put it at the bottom if the scope is never negative. */
+                var mx = mScale;
+                var mn = 0.0;
+                if (mMaxScale) {
+                    /* scale is maxed out, so fix boundaries of scope at maximum and minimum. */
+                    mx = mMaxValue;
+                    mn = mMinValue;
+                } else if (mShowNegative || mMinValue < (mx + mn) * .5 - (mx - mn) * .55) {
+                    mn = -mScale;
+                    mShowNegative = true;
+                }
+                var gridMax = (mx - mn) * 0.55;  /* leave space at top and bottom */
+                gridMid = (mx + mn) * 0.5;
+                gridMult = maxY / gridMax;
+                if (selected) {
+                    mMainGridMult = gridMult;
+                    mMainGridMid = gridMid;
+                }
+                minRangeLo = -10 - (int)(gridMid * gridMult);
+                minRangeHi = 10 - (int)(gridMid * gridMult);
+
+                int multIdx = 0;
+                mGridStepY = 1e-8;
+                while (mGridStepY < 20 * gridMax / maxY) {
+                    mGridStepY *= MULTA[(multIdx++) % 3];
+                }
+            }
+
+            if (!mDrewGridlines) {
+                mDrewGridlines = true;
+                var minorDiv = Color.FromArgb(0x30, 0x30, 0x30);
+                var majorDiv = Color.FromArgb(0xA0, 0xA0, 0xA0);
+                if (ControlPanel.ChkPrintable.Checked) {
+                    minorDiv = Color.FromArgb(0xD0, 0xD0, 0xD0);
+                    majorDiv = Color.FromArgb(0x80, 0x80, 0x80);
+                }
+
+                /* horizontal gridlines */
+                var showGridlines = mGridStepY != 0;
+                for (int ll = -100; ll <= 100; ll++) {
+                    if (ll != 0 && !showGridlines) {
+                        continue;
+                    }
+                    var ly = (float)(maxY - (ll * mGridStepY - gridMid) * gridMult);
+                    if (ly < 0 || BoundingBox.Height <= ly) {
+                        continue;
+                    }
+                    g.LineColor = ll == 0 ? majorDiv : minorDiv;
+                    g.DrawLine(0, ly, BoundingBox.Width - 1, ly);
+                }
+
+                /* vertical gridlines */
+                var baseT = ControlPanel.TimeStep * Speed;
+                var beginT = CirSimForm.Sim.Time - BoundingBox.Width * baseT;
+                var endT = CirSimForm.Sim.Time - (CirSimForm.Sim.Time % mGridStepX);
+                for (int ll = 0; ; ll++) {
+                    var t = endT - mGridStepX * ll;
+                    var lx = (float)((t - beginT) / baseT);
+                    if (lx < 0) {
+                        break;
+                    }
+                    if (t < 0 || BoundingBox.Width <= lx) {
+                        continue;
+                    }
+                    if (((t + mGridStepX / 4) % (mGridStepX * 10)) < mGridStepX) {
+                        g.LineColor = majorDiv;
+                    } else {
+                        g.LineColor = minorDiv;
+                    }
+                    g.DrawLine(lx, 0, lx, BoundingBox.Height - 1);
+                }
+            }
 
             var color = mSomethingSelected ? ScopePlot.GRAY : plot.Color;
             if (selected || (CirSimForm.Sim.ScopeSelected == -1 && plot.Elm.IsMouseElm)) {
@@ -716,104 +769,19 @@ namespace Circuit {
             } else if (ControlPanel.ChkPrintable.Checked) {
                 color = CustomGraphics.GrayColor;
             }
+            g.LineColor = color;
 
-            var ipa = plot.StartIndex(BoundingBox.Width);
+            var idxBegin = plot.StartIndex(BoundingBox.Width);
+            var idx0 = idxBegin & (mScopePointCount - 1);
             var arrMaxV = plot.MaxValues;
             var arrMinV = plot.MinValues;
-            var gridMax = mScale;
-
-            /* if we don't have overlapping scopes of different units, we can move zero around.
-             * Put it at the bottom if the scope is never negative. */
-            double mx = gridMax;
-            double mn = 0;
-            if (mMaxScale) {
-                /* scale is maxed out, so fix boundaries of scope at maximum and minimum. */
-                mx = mMaxValue;
-                mn = mMinValue;
-            } else if (mShowNegative || mMinValue < (mx + mn) * .5 - (mx - mn) * .55) {
-                mn = -gridMax;
-                mShowNegative = true;
-            }
-            var gridMid = (mx + mn) * .5;
-            gridMax = (mx - mn) * .55;  /* leave space at top and bottom */
-
-            double gridMult = maxY / gridMax;
-            if (selected) {
-                mMainGridMult = gridMult;
-                mMainGridMid = gridMid;
-            }
-            int minRangeLo = -10 - (int)(gridMid * gridMult);
-            int minRangeHi = 10 - (int)(gridMid * gridMult);
-
-            mGridStepY = 1e-8;
-            while (mGridStepY < 20 * gridMax / maxY) {
-                mGridStepY *= MULTA[(multptr++) % 3];
-            }
-
-            /* Horizontal gridlines */
-            int ll;
-            var minorDiv = Color.FromArgb(0x30, 0x30, 0x30);
-            var majorDiv = Color.FromArgb(0xA0, 0xA0, 0xA0);
-            if (ControlPanel.ChkPrintable.Checked) {
-                minorDiv = Color.FromArgb(0xD0, 0xD0, 0xD0);
-                majorDiv = Color.FromArgb(0x80, 0x80, 0x80);
-            }
-
-            /* Vertical (T) gridlines */
-            double ts = ControlPanel.TimeStep * Speed;
-            mGridStepX = CalcGridStepX();
-
-            if (mDrawGridLines) {
-                /* horizontal gridlines */
-                bool showGridLines = (mGridStepY != 0);
-                for (ll = -100; ll <= 100; ll++) {
-                    if (ll != 0 && !showGridLines) {
-                        continue;
-                    }
-                    var yl = (float)(maxY - (ll * mGridStepY - gridMid) * gridMult);
-                    if (yl < 0 || yl >= BoundingBox.Height - 1) {
-                        continue;
-                    }
-                    g.LineColor = ll == 0 ? majorDiv : minorDiv;
-                    g.DrawLine(0, yl, BoundingBox.Width - 1, yl);
-                }
-
-                /* vertical gridlines */
-                double tstart = CirSimForm.Sim.Time - ControlPanel.TimeStep * Speed * BoundingBox.Width;
-                double tx = CirSimForm.Sim.Time - (CirSimForm.Sim.Time % mGridStepX);
-                for (ll = 0; ; ll++) {
-                    var tl = tx - mGridStepX * ll;
-                    var gx = (float)((tl - tstart) / ts);
-                    if (gx < 0) {
-                        break;
-                    }
-                    if (gx >= BoundingBox.Width) {
-                        continue;
-                    }
-                    if (tl < 0) {
-                        continue;
-                    }
-                    if (((tl + mGridStepX / 4) % (mGridStepX * 10)) < mGridStepX) {
-                        g.LineColor = majorDiv;
-                    } else {
-                        g.LineColor = minorDiv;
-                    }
-                    g.DrawLine(gx, 0, gx, BoundingBox.Height - 1);
-                }
-            }
-
-            /* only need gridlines drawn once */
-            mDrawGridLines = false;
-
-            g.LineColor = color;
-            int ox = x;
-            int max_o = 0;
-            int min_o = 0;
-            for (i = 0; i != BoundingBox.Width; i++) {
-                int px = x + i;
-                int idx = (i + ipa) & (mScopePointCount - 1);
-                var min_n = (int)(gridMult * (arrMinV[idx] - gridMid));
+            var max_o = (int)(gridMult * (arrMaxV[idx0] - gridMid));
+            var min_o = (int)(gridMult * (arrMinV[idx0] - gridMid));
+            int ox = 0;
+            for (int px = 0; px != BoundingBox.Width; px++) {
+                int idx = (px + idxBegin) & (mScopePointCount - 1);
                 var max_n = (int)(gridMult * (arrMaxV[idx] - gridMid));
+                var min_n = (int)(gridMult * (arrMinV[idx] - gridMid));
                 if (min_n < minRangeLo || max_n > minRangeHi) {
                     mReduceRange = false;
                     minRangeLo = -1000;

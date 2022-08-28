@@ -616,7 +616,7 @@ namespace Circuit {
             }
         }
 
-        public int LocateElm(BaseUI elm) {
+        public int GetElmIndex(BaseUI elm) {
             for (int i = 0; i != ElmCount; i++) {
                 if (elm == ElmList[i]) {
                     return i;

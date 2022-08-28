@@ -85,7 +85,7 @@ namespace Circuit {
         }
 
         public string Dump() {
-            return CirSimForm.Sim.LocateElm(UI)
+            return CirSimForm.Sim.GetElmIndex(UI)
                 + " " + EditItem
                 + " " + MinValue
                 + " " + MaxValue
