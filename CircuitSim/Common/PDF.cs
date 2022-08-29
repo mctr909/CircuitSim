@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.IO;
 
 using Circuit;
@@ -15,8 +14,6 @@ class PDF {
         readonly float FONT_SCALE;
         readonly float TEXT_SCALE_X;
         readonly float TEXT_SCALE_Y;
-        readonly float SCALE_X = 0.65f;
-        readonly float SCALE_Y = 1.2f;
 
         MemoryStream mMs;
         StreamWriter mSw;
@@ -39,8 +36,8 @@ class PDF {
             mBoardOfsX = 0.0;
             mBoardOfsY = 0.0;
             FONT_SCALE = 1.25f;
-            TEXT_SCALE_X = FONT_SCALE * SCALE_X;
-            TEXT_SCALE_Y = FONT_SCALE * SCALE_Y;
+            TEXT_SCALE_X = FONT_SCALE * 1.2f;
+            TEXT_SCALE_Y = FONT_SCALE * 0.65f;
         }
 
         internal void Flush(StreamWriter sw) {
@@ -57,19 +54,19 @@ class PDF {
         }
 
         public override void DrawRightText(string s, int x, int y) {
-            writeText(s, x, y, GetTextSize(s).Width * TEXT_SCALE_X);
+            writeText(s, x, y, GetTextSize(s).Width * TEXT_SCALE_Y);
         }
 
         public override void DrawCenteredText(string s, int x, int y) {
-            writeText(s, x, y, GetTextSize(s).Width * TEXT_SCALE_X * 0.5f);
+            writeText(s, x, y, GetTextSize(s).Width * TEXT_SCALE_Y * 0.5f);
         }
 
         public override void DrawCenteredLText(string s, int x, int y) {
-            writeTextL(s, x, y, GetTextSizeL(s).Width * TEXT_SCALE_X * 0.5f);
+            writeTextL(s, x, y, GetTextSizeL(s).Width * TEXT_SCALE_Y * 0.5f);
         }
 
         public override void DrawCenteredVText(string s, int x, int y) {
-            writeTextV(s, x, y, GetTextSize(s).Width * TEXT_SCALE_X * 0.5f);
+            writeTextV(s, x, y, GetTextSize(s).Width * TEXT_SCALE_Y * 0.5f);
         }
 
         public override void DrawPost(PointF p) {
@@ -186,18 +183,23 @@ class PDF {
 
         void writeText(string s, float x, float y, float ofsX = 0.0f) {
             writeFontSize(TextSize);
-            mSw.WriteLine("1 0 0 -1 {0} {1} Tm",
-                x + mOfsX - ofsX,
-                y + mOfsY + TextSize * TEXT_SCALE_X * 0.5f
-            );
-            writeText(s);
+            var ofsY = TextSize * TEXT_SCALE_Y * 0.5f;
+            var strs = s.Split('\n');
+            foreach (var str in strs) {
+                mSw.WriteLine("1 0 0 -1 {0} {1} Tm",
+                    x + mOfsX - ofsX,
+                    y + mOfsY + ofsY
+                );
+                writeText(str);
+                ofsY += TextSize * (TEXT_SCALE_Y + 0.2f);
+            }
         }
 
         void writeTextL(string s, float x, float y, float ofsX = 0.0f) {
             writeFontSize(LTextSize);
             mSw.WriteLine("1 0 0 -1 {0} {1} Tm",
                 x + mOfsX - ofsX,
-                y + mOfsY + LTextSize * TEXT_SCALE_X * 0.5f
+                y + mOfsY + LTextSize * TEXT_SCALE_Y * 0.5f
             );
             writeText(s);
         }
@@ -205,7 +207,7 @@ class PDF {
         void writeTextV(string s, float x, float y, float ofsY = 0.0f) {
             writeFontSize(TextSize);
             mSw.WriteLine("0 -1 -1 0 {0} {1} Tm",
-                x + mOfsX + TextSize * TEXT_SCALE_Y,
+                x + mOfsX + TextSize * TEXT_SCALE_X,
                 y + mOfsY + ofsY
             );
             writeText(s);

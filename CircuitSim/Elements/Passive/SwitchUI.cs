@@ -115,7 +115,7 @@ namespace Circuit.Elements.Passive {
                 return ei;
             }
             if (n == 1) {
-                return new ElementInfo("グループ", ce.Link, 0, 100).SetDimensionless();
+                return new ElementInfo("連動グループ", ce.Link, 0, 100).SetDimensionless();
             }
             return null;
         }

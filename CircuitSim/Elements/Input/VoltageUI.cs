@@ -221,7 +221,7 @@ namespace Circuit.Elements.Input {
                 if (ControlPanel.ChkShowValues.Checked) {
                     var s = Utils.UnitText(elm.MaxVoltage, "V\r\n");
                     s += Utils.UnitText(elm.Frequency, "Hz\r\n");
-                    s += Utils.UnitText(elm.Phase * 180 / Math.PI, "°");
+                    s += Utils.UnitText(elm.Phase * 180 / Math.PI, "deg");
                     drawValues(s, 0, 5);
                 }
                 if (ControlPanel.ChkShowName.Checked) {
