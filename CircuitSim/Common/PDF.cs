@@ -184,13 +184,13 @@ class PDF {
         void writeText(string s, float x, float y, float ofsX = 0.0f) {
             writeFontSize(TextSize);
             var ofsY = TextSize * TEXT_SCALE_Y * 0.5f;
-            var strs = s.Split('\n');
+            var strs = s.Replace("\r", "").Split('\n');
             foreach (var str in strs) {
                 mSw.WriteLine("1 0 0 -1 {0} {1} Tm",
-                    x + mOfsX - ofsX,
-                    y + mOfsY + ofsY
+                    (x + mOfsX - ofsX).ToString("0.00"),
+                    (y + mOfsY + ofsY).ToString("0.00")
                 );
-                writeText(str);
+                writeText(str.Replace("\n", ""));
                 ofsY += TextSize * (TEXT_SCALE_Y + 0.2f);
             }
         }
@@ -198,8 +198,8 @@ class PDF {
         void writeTextL(string s, float x, float y, float ofsX = 0.0f) {
             writeFontSize(LTextSize);
             mSw.WriteLine("1 0 0 -1 {0} {1} Tm",
-                x + mOfsX - ofsX,
-                y + mOfsY + LTextSize * TEXT_SCALE_Y * 0.5f
+                (x + mOfsX - ofsX).ToString("0.00"),
+                (y + mOfsY + LTextSize * TEXT_SCALE_Y * 0.5f).ToString("0.00")
             );
             writeText(s);
         }
@@ -207,26 +207,38 @@ class PDF {
         void writeTextV(string s, float x, float y, float ofsY = 0.0f) {
             writeFontSize(TextSize);
             mSw.WriteLine("0 -1 -1 0 {0} {1} Tm",
-                x + mOfsX + TextSize * TEXT_SCALE_X,
-                y + mOfsY + ofsY
+                (x + mOfsX + TextSize * TEXT_SCALE_X).ToString("0.00"),
+                (y + mOfsY + ofsY).ToString("0.00")
             );
             writeText(s);
         }
 
         void writeM(float x, float y) {
-            mSw.WriteLine("{0} {1} m", x + mOfsX, y + mOfsY);
+            mSw.WriteLine("{0} {1} m",
+                (x + mOfsX).ToString("0.00"),
+                (y + mOfsY).ToString("0.00")
+            );
         }
 
         void writeL(PointF p) {
-            mSw.WriteLine("{0} {1} l", p.X + mOfsX, p.Y + mOfsY);
+            mSw.WriteLine("{0} {1} l",
+                (p.X + mOfsX).ToString("0.00"),
+                (p.Y + mOfsY).ToString("0.00")
+            );
         }
 
         void writeLS(float x, float y) {
-            mSw.WriteLine("{0} {1} l S", x + mOfsX, y + mOfsY);
+            mSw.WriteLine("{0} {1} l S",
+                (x + mOfsX).ToString("0.00"),
+                (y + mOfsY).ToString("0.00")
+            );
         }
 
         void writeLB(PointF p) {
-            mSw.WriteLine("{0} {1} l b", p.X + mOfsX, p.Y + mOfsY);
+            mSw.WriteLine("{0} {1} l b",
+                (p.X + mOfsX).ToString("0.00"),
+                (p.Y + mOfsY).ToString("0.00")
+            );
         }
 
         public override void ScrollBoard(int x, int y) {
