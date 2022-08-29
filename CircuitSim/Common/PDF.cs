@@ -12,8 +12,8 @@ class PDF {
     
     public class Page : CustomGraphics {
         readonly float FONT_SCALE;
-        readonly float TEXT_SCALE_X;
-        readonly float TEXT_SCALE_Y;
+        readonly float TEXT_SCALE;
+        readonly float PIX_SCALE;
 
         MemoryStream mMs;
         StreamWriter mSw;
@@ -23,7 +23,13 @@ class PDF {
         double mBoardOfsY;
 
         public override Color LineColor {
-            set { mSw.WriteLine("{0} {1} {2} RG", value.R / 255.0, value.G / 255.0, value.B / 255.0); }
+            set {
+                mSw.WriteLine("{0} {1} {2} RG",
+                    (value.R / 255.0).ToString("0.##"),
+                    (value.G / 255.0).ToString("0.##"),
+                    (value.B / 255.0).ToString("0.##")
+                );
+            }
         }
 
         public Page(int width, int height) : base(width, height) {
@@ -35,9 +41,9 @@ class PDF {
             mOfsY = 0.0;
             mBoardOfsX = 0.0;
             mBoardOfsY = 0.0;
-            FONT_SCALE = 1.25f;
-            TEXT_SCALE_X = FONT_SCALE * 1.2f;
-            TEXT_SCALE_Y = FONT_SCALE * 0.65f;
+            FONT_SCALE = 1.2f;
+            TEXT_SCALE = FONT_SCALE * 1.2f;
+            PIX_SCALE = FONT_SCALE * 0.65f;
         }
 
         internal void Flush(StreamWriter sw) {
@@ -54,19 +60,19 @@ class PDF {
         }
 
         public override void DrawRightText(string s, int x, int y) {
-            writeText(s, x, y, GetTextSize(s).Width * TEXT_SCALE_Y);
+            writeText(s, x, y, GetTextSize(s).Width);
         }
 
         public override void DrawCenteredText(string s, int x, int y) {
-            writeText(s, x, y, GetTextSize(s).Width * TEXT_SCALE_Y * 0.5f);
+            writeText(s, x, y, GetTextSize(s).Width * 0.5f);
         }
 
         public override void DrawCenteredLText(string s, int x, int y) {
-            writeTextL(s, x, y, GetTextSizeL(s).Width * TEXT_SCALE_Y * 0.5f);
+            writeTextL(s, x, y, GetTextSizeL(s).Width * 0.5f);
         }
 
         public override void DrawCenteredVText(string s, int x, int y) {
-            writeTextV(s, x, y, GetTextSize(s).Width * TEXT_SCALE_Y * 0.5f);
+            writeTextV(s, x, y, GetTextSize(s).Width * 0.5f);
         }
 
         public override void DrawPost(PointF p) {
@@ -174,7 +180,7 @@ class PDF {
         }
 
         void writeFontSize(float size) {
-            mSw.WriteLine("/F0 {0} Tf", size * FONT_SCALE);
+            mSw.WriteLine("/F0 {0} Tf", (size * FONT_SCALE).ToString("0.##"));
         }
 
         void writeText(string text) {
@@ -183,23 +189,23 @@ class PDF {
 
         void writeText(string s, float x, float y, float ofsX = 0.0f) {
             writeFontSize(TextSize);
-            var ofsY = TextSize * TEXT_SCALE_Y * 0.5f;
+            var ofsY = TextSize * PIX_SCALE * 0.5f;
             var strs = s.Replace("\r", "").Split('\n');
             foreach (var str in strs) {
                 mSw.WriteLine("1 0 0 -1 {0} {1} Tm",
-                    (x + mOfsX - ofsX).ToString("0.00"),
-                    (y + mOfsY + ofsY).ToString("0.00")
+                    (x + mOfsX - ofsX * PIX_SCALE).ToString("0.##"),
+                    (y + mOfsY + ofsY).ToString("0.##")
                 );
                 writeText(str.Replace("\n", ""));
-                ofsY += TextSize * (TEXT_SCALE_Y + 0.2f);
+                ofsY += TextSize * (PIX_SCALE + 0.2f);
             }
         }
 
         void writeTextL(string s, float x, float y, float ofsX = 0.0f) {
             writeFontSize(LTextSize);
             mSw.WriteLine("1 0 0 -1 {0} {1} Tm",
-                (x + mOfsX - ofsX).ToString("0.00"),
-                (y + mOfsY + LTextSize * TEXT_SCALE_Y * 0.5f).ToString("0.00")
+                (x + mOfsX - ofsX * PIX_SCALE).ToString("0.##"),
+                (y + mOfsY + LTextSize * PIX_SCALE * 0.5f).ToString("0.##")
             );
             writeText(s);
         }
@@ -207,37 +213,37 @@ class PDF {
         void writeTextV(string s, float x, float y, float ofsY = 0.0f) {
             writeFontSize(TextSize);
             mSw.WriteLine("0 -1 -1 0 {0} {1} Tm",
-                (x + mOfsX + TextSize * TEXT_SCALE_X).ToString("0.00"),
-                (y + mOfsY + ofsY).ToString("0.00")
+                (x + mOfsX + TextSize * TEXT_SCALE).ToString("0.##"),
+                (y + mOfsY + ofsY * PIX_SCALE).ToString("0.##")
             );
             writeText(s);
         }
 
         void writeM(float x, float y) {
             mSw.WriteLine("{0} {1} m",
-                (x + mOfsX).ToString("0.00"),
-                (y + mOfsY).ToString("0.00")
+                (x + mOfsX).ToString("0.##"),
+                (y + mOfsY).ToString("0.##")
             );
         }
 
         void writeL(PointF p) {
             mSw.WriteLine("{0} {1} l",
-                (p.X + mOfsX).ToString("0.00"),
-                (p.Y + mOfsY).ToString("0.00")
+                (p.X + mOfsX).ToString("0.##"),
+                (p.Y + mOfsY).ToString("0.##")
             );
         }
 
         void writeLS(float x, float y) {
             mSw.WriteLine("{0} {1} l S",
-                (x + mOfsX).ToString("0.00"),
-                (y + mOfsY).ToString("0.00")
+                (x + mOfsX).ToString("0.##"),
+                (y + mOfsY).ToString("0.##")
             );
         }
 
         void writeLB(PointF p) {
             mSw.WriteLine("{0} {1} l b",
-                (p.X + mOfsX).ToString("0.00"),
-                (p.Y + mOfsY).ToString("0.00")
+                (p.X + mOfsX).ToString("0.##"),
+                (p.Y + mOfsY).ToString("0.##")
             );
         }
 
