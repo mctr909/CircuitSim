@@ -7,9 +7,6 @@ namespace Circuit.Elements.Passive {
         const int OPEN_HS = 16;
         const int BODY_LEN = 28;
 
-        Point mP1;
-        Point mP2;
-
         public SwitchUI(Point pos, int dummy) : base(pos) { }
 
         public SwitchUI(Point pos) : base(pos) {
@@ -64,10 +61,11 @@ namespace Circuit.Elements.Passive {
         }
 
         public virtual Rectangle GetSwitchRect() {
-            interpLead(ref mP1, 0, OPEN_HS);
+            var p1 = new Point();
+            interpLead(ref p1, 0, 24);
             var l1 = new Rectangle(mLead1.X, mLead1.Y, 0, 0);
             var l2 = new Rectangle(mLead2.X, mLead2.Y, 0, 0);
-            var p = new Rectangle(mP1.X, mP1.Y, 0, 0);
+            var p = new Rectangle(p1.X, p1.Y, 0, 0);
             return Rectangle.Union(l1, Rectangle.Union(l2, p));
         }
 
@@ -78,17 +76,19 @@ namespace Circuit.Elements.Passive {
 
         public override void Draw(CustomGraphics g) {
             var ce = (SwitchElm)Elm;
-            int hs1 = (ce.Position == 1) ? 0 : 2;
-            int hs2 = (ce.Position == 1) ? OPEN_HS : 2;
             setBbox(mPost1, mPost2, OPEN_HS);
             draw2Leads();
+            g.FillCircle(mLead1.X, mLead1.Y, 2);
+            g.FillCircle(mLead2.X, mLead2.Y, 2);
+            var p2 = new Point();
             if (ce.Position == 0) {
+                interpLead(ref p2, 1, 2);
                 doDots();
+            } else {
+                interpLead(ref p2, (OPEN_HS - 2.0) / OPEN_HS, OPEN_HS);
             }
-            interpLead(ref mP1, 0, hs1);
-            interpLead(ref mP2, 1, hs2);
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
-            g.DrawLine(mP1, mP2);
+            g.DrawLine(mLead1, p2);
             drawPosts();
         }
 

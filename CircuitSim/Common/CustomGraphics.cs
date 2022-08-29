@@ -70,7 +70,7 @@ namespace Circuit {
             get { return mPenPost.Color; }
             set { mPenPost.Color = value; }
         }
-        public Color LineColor {
+        public virtual Color LineColor {
             get { return mPenLine.Color; }
             set { mPenLine.Color = value; }
         }

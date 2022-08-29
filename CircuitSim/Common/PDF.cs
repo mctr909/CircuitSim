@@ -25,6 +25,10 @@ class PDF {
         double mBoardOfsX;
         double mBoardOfsY;
 
+        public override Color LineColor {
+            set { mSw.WriteLine("{0} {1} {2} RG", value.R / 255.0, value.G / 255.0, value.B / 255.0); }
+        }
+
         public Page(int width, int height) : base(width, height) {
             mMs = new MemoryStream();
             mSw = new StreamWriter(mMs);

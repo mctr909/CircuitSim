@@ -82,9 +82,12 @@ namespace Circuit.Elements.Passive {
 
             /* draw first lead */
             drawLead(mPost1, mLead1);
+            g.FillCircle(mLead1.X, mLead1.Y, 2);
             /* draw other leads */
             for (int i = 0; i < ce.ThrowCount; i++) {
-                drawLead(mSwPoles[i], mSwPosts[i]);
+                var pole = mSwPoles[i];
+                drawLead(pole, mSwPosts[i]);
+                g.FillCircle(pole.X, pole.Y, 2);
             }
             /* draw switch */
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
