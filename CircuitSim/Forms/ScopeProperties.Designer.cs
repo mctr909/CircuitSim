@@ -73,7 +73,7 @@
             // chkPeak
             // 
             this.chkPeak.AutoSize = true;
-            this.chkPeak.Location = new System.Drawing.Point(94, 18);
+            this.chkPeak.Location = new System.Drawing.Point(84, 18);
             this.chkPeak.Name = "chkPeak";
             this.chkPeak.Size = new System.Drawing.Size(60, 16);
             this.chkPeak.TabIndex = 3;
@@ -84,7 +84,7 @@
             // chkNegPeak
             // 
             this.chkNegPeak.AutoSize = true;
-            this.chkNegPeak.Location = new System.Drawing.Point(94, 40);
+            this.chkNegPeak.Location = new System.Drawing.Point(84, 40);
             this.chkNegPeak.Name = "chkNegPeak";
             this.chkNegPeak.Size = new System.Drawing.Size(60, 16);
             this.chkNegPeak.TabIndex = 4;
@@ -106,7 +106,7 @@
             // chkLogSpectrum
             // 
             this.chkLogSpectrum.AutoSize = true;
-            this.chkLogSpectrum.Location = new System.Drawing.Point(90, 18);
+            this.chkLogSpectrum.Location = new System.Drawing.Point(84, 18);
             this.chkLogSpectrum.Name = "chkLogSpectrum";
             this.chkLogSpectrum.Size = new System.Drawing.Size(105, 16);
             this.chkLogSpectrum.TabIndex = 7;
@@ -142,7 +142,7 @@
             this.groupBox1.Controls.Add(this.chkLogSpectrum);
             this.groupBox1.Location = new System.Drawing.Point(4, 106);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(201, 86);
+            this.groupBox1.Size = new System.Drawing.Size(195, 86);
             this.groupBox1.TabIndex = 10;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "表示するグラフ";
@@ -150,16 +150,16 @@
             // cmbColor
             // 
             this.cmbColor.FormattingEnabled = true;
-            this.cmbColor.Location = new System.Drawing.Point(90, 60);
+            this.cmbColor.Location = new System.Drawing.Point(84, 57);
             this.cmbColor.Name = "cmbColor";
-            this.cmbColor.Size = new System.Drawing.Size(104, 20);
+            this.cmbColor.Size = new System.Drawing.Size(100, 20);
             this.cmbColor.TabIndex = 12;
             this.cmbColor.SelectedIndexChanged += new System.EventHandler(this.cmbColor_SelectedIndexChanged);
             // 
             // lblColor
             // 
             this.lblColor.AutoSize = true;
-            this.lblColor.Location = new System.Drawing.Point(88, 42);
+            this.lblColor.Location = new System.Drawing.Point(82, 42);
             this.lblColor.Name = "lblColor";
             this.lblColor.Size = new System.Drawing.Size(51, 12);
             this.lblColor.TabIndex = 11;
@@ -200,7 +200,7 @@
             this.groupBox2.Controls.Add(this.chkPeak);
             this.groupBox2.Location = new System.Drawing.Point(4, 198);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(201, 103);
+            this.groupBox2.Size = new System.Drawing.Size(195, 103);
             this.groupBox2.TabIndex = 11;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "表示する値";
@@ -208,7 +208,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(92, 62);
+            this.label1.Location = new System.Drawing.Point(82, 63);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(79, 12);
             this.label1.TabIndex = 10;
@@ -216,7 +216,7 @@
             // 
             // txtLabel
             // 
-            this.txtLabel.Location = new System.Drawing.Point(94, 77);
+            this.txtLabel.Location = new System.Drawing.Point(84, 78);
             this.txtLabel.Name = "txtLabel";
             this.txtLabel.Size = new System.Drawing.Size(100, 19);
             this.txtLabel.TabIndex = 9;
@@ -238,14 +238,14 @@
             this.groupBox3.Controls.Add(this.tbSpeed);
             this.groupBox3.Location = new System.Drawing.Point(4, 4);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(201, 96);
+            this.groupBox3.Size = new System.Drawing.Size(195, 96);
             this.groupBox3.TabIndex = 13;
             this.groupBox3.TabStop = false;
             // 
             // lblScopeSpeed
             // 
             this.lblScopeSpeed.AutoSize = true;
-            this.lblScopeSpeed.Location = new System.Drawing.Point(124, 51);
+            this.lblScopeSpeed.Location = new System.Drawing.Point(118, 51);
             this.lblScopeSpeed.Name = "lblScopeSpeed";
             this.lblScopeSpeed.Size = new System.Drawing.Size(71, 12);
             this.lblScopeSpeed.TabIndex = 13;
@@ -255,7 +255,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(210, 308);
+            this.ClientSize = new System.Drawing.Size(203, 304);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
