@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Windows.Forms;
 
 namespace Circuit.Elements.Output {
     class LabeledNodeUI : BaseUI {
@@ -11,6 +10,7 @@ namespace Circuit.Elements.Output {
 
         public LabeledNodeUI(Point pos) : base(pos) {
             Elm = new LabeledNodeElm();
+            DumpInfo.ReferenceName = "label";
         }
 
         public LabeledNodeUI(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -74,14 +74,10 @@ namespace Circuit.Elements.Output {
                 return null;
             }
             if (r == 0) {
-                var ei = new ElementInfo("名前", 0, -1, -1);
-                ei.Text = ce.Text;
-                return ei;
+                return new ElementInfo("名前", ce.Text);
             }
             if (r == 1) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox() { Text = "内部端子", Checked = IsInternal };
-                return ei;
+                return new ElementInfo("内部端子", IsInternal);
             }
             return null;
         }

@@ -215,16 +215,10 @@ namespace Circuit.Elements.Passive {
                 return new ElementInfo("レジスタンス(Ω)", ce.MaxResistance, 0, 0);
             }
             if (r == 1) {
-                var ei = new ElementInfo("名前", 0, -1, -1);
-                ei.Text = DumpInfo.ReferenceName;
-                return ei;
+                return new ElementInfo("名前", DumpInfo.ReferenceName);
             }
             if (r == 2) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox();
-                ei.CheckBox.Text = "値を表示";
-                ei.CheckBox.Checked = (DumpInfo.Flags & FLAG_SHOW_VALUES) != 0;
-                return ei;
+                return new ElementInfo("値を表示", (DumpInfo.Flags & FLAG_SHOW_VALUES) != 0);
             }
             return null;
         }

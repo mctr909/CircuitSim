@@ -88,14 +88,7 @@ namespace Circuit.Elements.Output {
                 return ei;
             }
             if (r == 1) {
-                var ei = new ElementInfo("スケール", 0);
-                ei.Choice = new ComboBox();
-                ei.Choice.Items.Add("自動");
-                ei.Choice.Items.Add("A");
-                ei.Choice.Items.Add("mA");
-                ei.Choice.Items.Add("uA");
-                ei.Choice.SelectedIndex = (int)ce.Scale;
-                return ei;
+                return new ElementInfo("スケール", (int)ce.Scale, "自動", "A", "mA", "uA");
             }
             return null;
         }

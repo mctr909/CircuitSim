@@ -122,22 +122,10 @@ namespace Circuit.Elements.Input {
                 return new ElementInfo("スウィープ時間(sec)", ce.SweepTime, 0, 0);
             }
             if (r == 4) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox() {
-                    AutoSize = true,
-                    Text = "周波数対数変化",
-                    Checked = (DumpInfo.Flags & FLAG_LOG) != 0
-                };
-                return ei;
+                return new ElementInfo("周波数対数変化", (DumpInfo.Flags & FLAG_LOG) != 0);
             }
             if (r == 5) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox() {
-                    AutoSize = true,
-                    Text = "双方向周波数遷移",
-                    Checked = (DumpInfo.Flags & FLAG_BIDIR) != 0
-                };
-                return ei;
+                return new ElementInfo("双方向周波数遷移", (DumpInfo.Flags & FLAG_BIDIR) != 0);
             }
             return null;
         }

@@ -145,12 +145,7 @@ namespace Circuit.Elements.Gate {
                 return new ElementInfo("閾値(V)", ce.HighVoltage, 1, 10);
             }
             if (r == 2) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox() {
-                    Text = "シュミットトリガー",
-                    Checked = ce.HasSchmittInputs
-                };
-                return ei;
+                return new ElementInfo("シュミットトリガー", ce.HasSchmittInputs);
             }
             return null;
         }

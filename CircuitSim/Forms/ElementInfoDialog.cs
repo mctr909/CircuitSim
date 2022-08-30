@@ -23,9 +23,12 @@ namespace Circuit {
         ElementInfo[] mEInfos;
 
         int mEInfoCount;
+        int mMaxX = 0;
+        int mOfsX = 0;
+        int mOfsY = 0;
 
-        Panel mPnlV;
-        Panel mPnlH;
+        Panel mPnlCustomCtrl;
+        Panel mPnlCommonButtons;
         bool mCloseOnEnter = true;
 
         public ElementInfoDialog(Editable ce) : base() {
@@ -35,14 +38,12 @@ namespace Circuit {
             mEInfos = new ElementInfo[10];
 
             SuspendLayout();
+            Visible = false;
 
-            mPnlV = new Panel();
-            Controls.Add(mPnlV);
-
-            mPnlH = new Panel();
+            mPnlCommonButtons = new Panel();
             {
                 /* Apply */
-                mPnlH.Controls.Add(mBtnApply = new Button() {
+                mPnlCommonButtons.Controls.Add(mBtnApply = new Button() {
                     AutoSize = true,
                     Width = 50,
                     Text = "Apply"
@@ -52,7 +53,7 @@ namespace Circuit {
                     Close();
                 });
                 /* Cancel */
-                mPnlH.Controls.Add(mBtnCancel = new Button() {
+                mPnlCommonButtons.Controls.Add(mBtnCancel = new Button() {
                     AutoSize = true,
                     Width = 50,
                     Left = mBtnApply.Right + 4,
@@ -62,12 +63,15 @@ namespace Circuit {
                     Close();
                 });
                 /* */
-                mPnlH.Width = mBtnCancel.Right;
-                mPnlH.Height = mBtnCancel.Height;
-                mPnlV.Controls.Add(mPnlH);
+                mPnlCommonButtons.Width = mBtnCancel.Right;
+                mPnlCommonButtons.Height = mBtnCancel.Height;
+                Controls.Add(mPnlCommonButtons);
             }
 
-            Visible = false;
+            mPnlCustomCtrl = new Panel();
+            mPnlCustomCtrl.Width = 0;
+            mPnlCustomCtrl.Height = 0;
+            Controls.Add(mPnlCustomCtrl);
             buildDialog();
 
             ResumeLayout(false);
@@ -226,8 +230,8 @@ namespace Circuit {
         }
 
         void clear() {
-            while (mPnlV.Controls[0] != mPnlH) {
-                mPnlV.Controls.RemoveAt(0);
+            while (0 < mPnlCustomCtrl.Controls.Count && mPnlCustomCtrl.Controls[0] != mPnlCommonButtons) {
+                mPnlCustomCtrl.Controls.RemoveAt(0);
             }
         }
 
@@ -236,90 +240,90 @@ namespace Circuit {
             int iRow = 0;
             int iCol = 0;
 
+            mOfsX = 0;
+            mOfsY = 0;
+            mMaxX = 0;
+            mPnlCustomCtrl.Controls.Clear();
+            mPnlCustomCtrl.Width = 0;
+            mPnlCustomCtrl.Height = 0;
+
             for (; ; iRow++) {
-                mEInfos[++infoIdx] = mElm.GetElementInfo(iRow, iCol);
-                if (mEInfos[infoIdx] == null) {
+                var ei = mElm.GetElementInfo(iRow, iCol);
+                if (ei == null) {
                     if (0 == iRow) {
                         break;
                     }
+                    mOfsX = mMaxX + 4;
+                    mOfsY = 0;
+                    mMaxX = 0;
                     iRow = -1;
                     iCol++;
                     continue;
                 }
-
-                var ei = mEInfos[infoIdx];
-                var idx = mPnlV.Controls.IndexOf(mPnlH);
-
-                insertCtrl(mPnlV, new Label() {
-                    Text = ei.Name,
-                    AutoSize = true,
-                    TextAlign = ContentAlignment.BottomLeft
-                }, idx);
-
-                idx = mPnlV.Controls.IndexOf(mPnlH);
                 if (ei.Choice != null) {
                     ei.Choice.AutoSize = true;
                     ei.Choice.SelectedValueChanged += new EventHandler((s, e) => {
                         itemStateChanged(s);
                     });
-                    insertCtrl(mPnlV, ei.Choice, idx);
+                    insertCtrl(mPnlCustomCtrl, ei.Name, ei.Choice);
                 } else if (ei.CheckBox != null) {
-                    ei.CheckBox.AutoSize = true;
                     ei.CheckBox.CheckedChanged += new EventHandler((s, e) => {
                         itemStateChanged(s);
                     });
-                    insertCtrl(mPnlV, ei.CheckBox, idx);
+                    insertCtrl(mPnlCustomCtrl, ei.Name, ei.CheckBox);
                 } else if (ei.Button != null) {
                     ei.Button.AutoSize = true;
                     ei.Button.Click += new EventHandler((s, e) => {
                         itemStateChanged(s);
                     });
-                    insertCtrl(mPnlV, ei.Button, idx);
+                    insertCtrl(mPnlCustomCtrl, ei.Name, ei.Button);
                 } else if (ei.TextArea != null) {
-                    insertCtrl(mPnlV, ei.TextArea, idx);
+                    insertCtrl(mPnlCustomCtrl, ei.Name, ei.TextArea);
                     mCloseOnEnter = false;
-                } else {
-                    insertCtrl(mPnlV, ei.Textf = new TextBox(), idx);
-                    if (ei.Text != null) {
-                        ei.Textf.Text = ei.Text;
-                    }
+                } else if (ei.Textf != null) {
+                    insertCtrl(mPnlCustomCtrl, ei.Name, ei.Textf);
                     if (ei.Text == null) {
                         ei.Textf.Text = unitString(ei);
                     }
+                } else {
+                    mOfsY += 36;
+                    continue;
                 }
+                mEInfos[++infoIdx] = ei;
+                mEInfoCount = infoIdx;
             }
-            mEInfoCount = iRow;
-            Width = mPnlV.Width + 20;
-            Height = mPnlV.Height + 35;
+
+            mPnlCommonButtons.Left = 4;
+            mPnlCommonButtons.Top = mPnlCustomCtrl.Bottom + 4;
+            Width = mPnlCustomCtrl.Width + 21;
+            Height = mPnlCommonButtons.Bottom + 42;
         }
 
-        void insertCtrl(Control parent, Control ctrl, int idx) {
-            var tmp = new List<Control>();
-            for (int i = 0; i < idx; i++) {
-                tmp.Add(parent.Controls[i]);
+        void insertCtrl(Control parent, string name, Control ctrl) {
+            if (!(ctrl is CheckBox)) {
+                var lbl = new Label() {
+                    Left = mOfsX + 4,
+                    Top = mOfsY,
+                    AutoSize = true,
+                    Text = name,
+                    TextAlign = ContentAlignment.BottomLeft
+                };
+                parent.Controls.Add(lbl);
+                mMaxX = Math.Max(mMaxX, lbl.Right);
             }
-            tmp.Add(ctrl);
-            for (int i = idx; i < parent.Controls.Count; i++) {
-                tmp.Add(parent.Controls[i]);
+            ctrl.Left = mOfsX + 4;
+            ctrl.Top = mOfsY + 12;
+            parent.Controls.Add(ctrl);
+
+            mOfsY += 36;
+            mMaxX = Math.Max(mMaxX, ctrl.Right);
+
+            if (parent.Width < mMaxX) {
+                parent.Width = mMaxX;
             }
-            /* */
-            int ofsY = 0;
-            int maxX = 0;
-            parent.Controls.Clear();
-            foreach (var c in tmp) {
-                c.Left = 4;
-                c.Top = ofsY;
-                parent.Controls.Add(c);
-                if (c is Label) {
-                    ofsY += c.Height;
-                } else {
-                    ofsY += c.Height + 8;
-                }
-                maxX = Math.Max(maxX, c.Right);
+            if (parent.Height < mOfsY) {
+                parent.Height = mOfsY;
             }
-            parent.Width = maxX;
-            parent.Height = ofsY;
-            tmp.Clear();
         }
 
         double diffFromInteger(double x) {

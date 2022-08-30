@@ -30,15 +30,52 @@ namespace Circuit {
 
         public ElementInfo() { }
 
-        public ElementInfo(string n, double val, double mn, double mx) {
-            Name = n;
-            Value = val;
-            Dimensionless = false;
-        }
-
         public ElementInfo(string n, double val) {
             Name = n;
             Value = val;
+            Textf = new TextBox() {
+                Text = val.ToString()
+            };
+            Dimensionless = false;
+        }
+
+        public ElementInfo(string n, double val, double mn, double mx) {
+            Name = n;
+            Value = val;
+            Textf = new TextBox() {
+                Text = val.ToString()
+            };
+            Dimensionless = false;
+        }
+
+        public ElementInfo(string n, bool val) {
+            Name = n;
+            Value = 0;
+            CheckBox = new CheckBox() {
+                AutoSize = true,
+                Text = n,
+                Checked = val
+            };
+            Dimensionless = false;
+        }
+
+        public ElementInfo(string n, string val) {
+            Name = n;
+            Value = 0;
+            Text = val;
+            Textf = new TextBox();
+            Textf.Text = val;
+            Dimensionless = false;
+        }
+
+        public ElementInfo(string n, int index, params string[] val) {
+            Name = n;
+            Value = 0;
+            Choice = new ComboBox();
+            foreach (var s in val) {
+                Choice.Items.Add(s);
+            }
+            Choice.SelectedIndex = index;
             Dimensionless = false;
         }
 

@@ -253,9 +253,7 @@ namespace Circuit.Elements.Active {
                 return null;
             }
             if (r == 0) {
-                var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = DumpInfo.ReferenceName;
-                return ei;
+                return new ElementInfo("名前", DumpInfo.ReferenceName);
             }
             if (r == 1) {
                 return new ElementInfo("閾値電圧", ce.Pnp * ce.Vt, .01, 5);
@@ -264,40 +262,16 @@ namespace Circuit.Elements.Active {
                 return new ElementInfo("hfe", ce.Hfe, .01, 5);
             }
             if (r == 3) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox() {
-                    AutoSize = true,
-                    Text = "バルク表示",
-                    Checked = ShowBulk
-                };
-                return ei;
+                return new ElementInfo("バルク表示", ShowBulk);
             }
             if (r == 4) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox() {
-                    AutoSize = true,
-                    Text = "ドレイン/ソース 入れ替え",
-                    Checked = (DumpInfo.Flags & FLAG_FLIP) != 0
-                };
-                return ei;
+                return new ElementInfo("ドレイン/ソース 入れ替え", (DumpInfo.Flags & FLAG_FLIP) != 0);
             }
             if (r == 5 && !ShowBulk) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox() {
-                    AutoSize = true,
-                    Text = "デジタル",
-                    Checked = DrawDigital
-                };
-                return ei;
+                return new ElementInfo("デジタル", DrawDigital);
             }
             if (r == 5 && ShowBulk) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox() {
-                    AutoSize = true,
-                    Text = "還流ダイオード",
-                    Checked = (DumpInfo.Flags & FLAG_BODY_DIODE) != 0
-                };
-                return ei;
+                return new ElementInfo("還流ダイオード", (DumpInfo.Flags & FLAG_BODY_DIODE) != 0);
             }
             return null;
         }

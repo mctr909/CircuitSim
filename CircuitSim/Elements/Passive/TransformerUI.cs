@@ -152,17 +152,10 @@ namespace Circuit.Elements.Passive {
                 return new ElementInfo("結合係数", ce.CouplingCoef, 0, 1).SetDimensionless();
             }
             if (r == 3) {
-                var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = DumpInfo.ReferenceName;
-                return ei;
+                return new ElementInfo("名前", DumpInfo.ReferenceName);
             }
             if (r == 4) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox() {
-                    Text = "極性反転",
-                    Checked = ce.Polarity == -1
-                };
-                return ei;
+                return new ElementInfo("極性反転", ce.Polarity == -1);
             }
             return null;
         }

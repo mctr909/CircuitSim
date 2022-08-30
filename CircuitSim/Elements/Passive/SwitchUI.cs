@@ -111,11 +111,7 @@ namespace Circuit.Elements.Passive {
                 return null;
             }
             if (r == 0) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox();
-                ei.CheckBox.Text = "モーメンタリ";
-                ei.CheckBox.Checked = ce.Momentary;
-                return ei;
+                return new ElementInfo("モーメンタリ", ce.Momentary);
             }
             if (r == 1) {
                 return new ElementInfo("連動グループ", ce.Link, 0, 100).SetDimensionless();

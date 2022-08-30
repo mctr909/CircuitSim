@@ -68,19 +68,13 @@ namespace Circuit.Elements.Output {
                 return new ElementInfo("閾値(V)", ce.mThreshold, 10, -10);
             }
             if (r == 1) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox() { Text = "プルダウン", Checked = needsPullDown };
-                return ei;
+                return new ElementInfo("プルダウン", needsPullDown);
             }
             if (r == 2) {
-                var ei = new ElementInfo("", 0, 0, 0);
-                ei.CheckBox = new CheckBox() { Text = "数値表示", Checked = isNumeric };
-                return ei;
+                return new ElementInfo("数値表示", isNumeric);
             }
             if (r == 3) {
-                var ei = new ElementInfo("", 0, 0, 0);
-                ei.CheckBox = new CheckBox() { Text = "3値", Checked = isTernary };
-                return ei;
+                return new ElementInfo("3値", isTernary);
             }
             return null;
         }

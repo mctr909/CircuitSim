@@ -55,9 +55,7 @@ namespace Circuit.Elements.Output {
                 return new ElementInfo("サンプル数", ce.DataCount, -1, -1).SetDimensionless();
             }
             if (r == 1) {
-                var ei = new ElementInfo("列名", 0, -1, -1);
-                ei.Text = mName;
-                return ei;
+                return new ElementInfo("列名", mName);
             }
             if (r == 2) {
                 var ei = new ElementInfo("", 0, -1, -1);

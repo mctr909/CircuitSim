@@ -67,12 +67,7 @@ namespace Circuit.Elements.Input {
                 return null;
             }
             if (r == 0) {
-                var ei = new ElementInfo("", 0, 0, 0);
-                ei.CheckBox = new CheckBox() {
-                    Text = "モーメンタリ",
-                    Checked = ce.Momentary
-                };
-                return ei;
+                return new ElementInfo("モーメンタリ", ce.Momentary);
             }
             if (r == 1) {
                 return new ElementInfo("H電圧(V)", ((LogicInputElm)Elm).mHiV, 10, -10);
@@ -81,12 +76,7 @@ namespace Circuit.Elements.Input {
                 return new ElementInfo("L電圧(V)", ((LogicInputElm)Elm).mLoV, 10, -10);
             }
             if (r == 3) {
-                var ei = new ElementInfo("", 0, 0, 0);
-                ei.CheckBox = new CheckBox() {
-                    Text = "数値表示",
-                    Checked = isNumeric
-                };
-                return ei;
+                return new ElementInfo("数値表示", isNumeric);
             }
             return null;
         }

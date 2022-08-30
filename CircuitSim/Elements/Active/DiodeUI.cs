@@ -120,9 +120,7 @@ namespace Circuit.Elements.Active {
                 return null;
             }
             if (r == 0) {
-                var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = DumpInfo.ReferenceName;
-                return ei;
+                return new ElementInfo("名前", DumpInfo.ReferenceName);
             }
             if (!mCustomModelUI && r == 1) {
                 var ei = new ElementInfo("モデル", 0, -1, -1);

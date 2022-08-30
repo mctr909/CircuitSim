@@ -91,12 +91,7 @@ namespace Circuit.Elements.Active {
                 return null;
             }
             if (r == 0) {
-                var ei = new ElementInfo("", 0, -1, -1);
-                ei.CheckBox = new CheckBox() {
-                    Text = "ノーマリクローズ",
-                    Checked = (DumpInfo.Flags & FLAG_INVERT) != 0
-                };
-                return ei;
+                return new ElementInfo("ノーマリクローズ", (DumpInfo.Flags & FLAG_INVERT) != 0);
             }
             if (r == 1) {
                 return new ElementInfo("オン抵抗(Ω)", ce.Ron, 0, 0);

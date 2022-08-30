@@ -268,56 +268,64 @@ namespace Circuit.Elements.Input {
 
         public override ElementInfo GetElementInfo(int r, int c) {
             var elm = (VoltageElm)Elm;
-            if (c != 0) {
-                return null;
+
+            if (c == 0) {
+                if (r == 0) {
+                    var ei = new ElementInfo("波形", (int)elm.WaveForm, -1, -1);
+                    ei.Choice = new ComboBox();
+                    ei.Choice.Items.Add(VoltageElm.WAVEFORM.DC);
+                    ei.Choice.Items.Add(VoltageElm.WAVEFORM.AC);
+                    ei.Choice.Items.Add(VoltageElm.WAVEFORM.SQUARE);
+                    ei.Choice.Items.Add(VoltageElm.WAVEFORM.TRIANGLE);
+                    ei.Choice.Items.Add(VoltageElm.WAVEFORM.SAWTOOTH);
+                    ei.Choice.Items.Add(VoltageElm.WAVEFORM.PULSE);
+                    ei.Choice.Items.Add(VoltageElm.WAVEFORM.PULSE_BOTH);
+                    ei.Choice.Items.Add(VoltageElm.WAVEFORM.PWM_BOTH);
+                    ei.Choice.Items.Add(VoltageElm.WAVEFORM.PWM_POSITIVE);
+                    ei.Choice.Items.Add(VoltageElm.WAVEFORM.PWM_NEGATIVE);
+                    ei.Choice.Items.Add(VoltageElm.WAVEFORM.NOISE);
+                    ei.Choice.SelectedIndex = (int)elm.WaveForm;
+                    return ei;
+                }
+                if (r == 1) {
+                    return new ElementInfo("名前", DumpInfo.ReferenceName);
+                }
+                if (r == 2) {
+                    return new ElementInfo(elm.WaveForm == VoltageElm.WAVEFORM.DC ? VALUE_NAME_V : VALUE_NAME_AMP, elm.MaxVoltage, -20, 20);
+                }
+                if (r == 3) {
+                    if (elm.WaveForm == VoltageElm.WAVEFORM.DC || elm.WaveForm == VoltageElm.WAVEFORM.NOISE) {
+                        return null;
+                    } else {
+                        return new ElementInfo(VALUE_NAME_HZ, elm.Frequency, 4, 500);
+                    }
+                }
+                if (r == 4) {
+                    return new ElementInfo(VALUE_NAME_PHASE, double.Parse((elm.Phase * 180 / Math.PI).ToString("0.00")), -180, 180).SetDimensionless();
+                }
+                if (r == 5 && (elm.WaveForm == VoltageElm.WAVEFORM.PULSE
+                    || elm.WaveForm == VoltageElm.WAVEFORM.PULSE_BOTH
+                    || elm.WaveForm == VoltageElm.WAVEFORM.SQUARE
+                    || elm.WaveForm == VoltageElm.WAVEFORM.PWM_BOTH
+                    || elm.WaveForm == VoltageElm.WAVEFORM.PWM_POSITIVE
+                    || elm.WaveForm == VoltageElm.WAVEFORM.PWM_NEGATIVE)) {
+                    return new ElementInfo(VALUE_NAME_DUTY, elm.DutyCycle * 100, 0, 100).SetDimensionless();
+                }
             }
-            if (r == 0) {
-                var ei = new ElementInfo("波形", (int)elm.WaveForm, -1, -1);
-                ei.Choice = new ComboBox();
-                ei.Choice.Items.Add(VoltageElm.WAVEFORM.DC);
-                ei.Choice.Items.Add(VoltageElm.WAVEFORM.AC);
-                ei.Choice.Items.Add(VoltageElm.WAVEFORM.SQUARE);
-                ei.Choice.Items.Add(VoltageElm.WAVEFORM.TRIANGLE);
-                ei.Choice.Items.Add(VoltageElm.WAVEFORM.SAWTOOTH);
-                ei.Choice.Items.Add(VoltageElm.WAVEFORM.PULSE);
-                ei.Choice.Items.Add(VoltageElm.WAVEFORM.PULSE_BOTH);
-                ei.Choice.Items.Add(VoltageElm.WAVEFORM.PWM_BOTH);
-                ei.Choice.Items.Add(VoltageElm.WAVEFORM.PWM_POSITIVE);
-                ei.Choice.Items.Add(VoltageElm.WAVEFORM.PWM_NEGATIVE);
-                ei.Choice.Items.Add(VoltageElm.WAVEFORM.NOISE);
-                ei.Choice.SelectedIndex = (int)elm.WaveForm;
-                return ei;
-            }
-            if (r == 1) {
-                var ei = new ElementInfo("名前", 0, 0, 0);
-                ei.Text = DumpInfo.ReferenceName;
-                return ei;
-            }
-            if (r == 2) {
-                return new ElementInfo(elm.WaveForm == VoltageElm.WAVEFORM.DC ? VALUE_NAME_V : VALUE_NAME_AMP, elm.MaxVoltage, -20, 20);
-            }
-            if (r == 3) {
-                return new ElementInfo(VALUE_NAME_V_OFS, elm.Bias, -20, 20);
-            }
-            if (elm.WaveForm == VoltageElm.WAVEFORM.DC || elm.WaveForm == VoltageElm.WAVEFORM.NOISE) {
-                return null;
-            }
-            if (r == 4) {
-                return new ElementInfo(VALUE_NAME_HZ, elm.Frequency, 4, 500);
-            }
-            if (r == 5) {
-                return new ElementInfo(VALUE_NAME_PHASE, double.Parse((elm.Phase * 180 / Math.PI).ToString("0.00")), -180, 180).SetDimensionless();
-            }
-            if (r == 6) {
-                return new ElementInfo(VALUE_NAME_PHASE_OFS, double.Parse((elm.PhaseOffset * 180 / Math.PI).ToString("0.00")), -180, 180).SetDimensionless();
-            }
-            if (r == 7 && (elm.WaveForm == VoltageElm.WAVEFORM.PULSE
-                || elm.WaveForm == VoltageElm.WAVEFORM.PULSE_BOTH
-                || elm.WaveForm == VoltageElm.WAVEFORM.SQUARE
-                || elm.WaveForm == VoltageElm.WAVEFORM.PWM_BOTH
-                || elm.WaveForm == VoltageElm.WAVEFORM.PWM_POSITIVE
-                || elm.WaveForm == VoltageElm.WAVEFORM.PWM_NEGATIVE)) {
-                return new ElementInfo(VALUE_NAME_DUTY, elm.DutyCycle * 100, 0, 100).SetDimensionless();
+            if (c == 1) {
+                if (r == 2) {
+                    return new ElementInfo(VALUE_NAME_V_OFS, elm.Bias, -20, 20);
+                }
+                if (r == 4) {
+                    if (elm.WaveForm == VoltageElm.WAVEFORM.DC || elm.WaveForm == VoltageElm.WAVEFORM.NOISE) {
+                        return null;
+                    } else {
+                        return new ElementInfo(VALUE_NAME_PHASE_OFS, double.Parse((elm.PhaseOffset * 180 / Math.PI).ToString("0.00")), -180, 180).SetDimensionless();
+                    }
+                }
+                if (r < 4) {
+                    return new ElementInfo();
+                }
             }
             return null;
         }
