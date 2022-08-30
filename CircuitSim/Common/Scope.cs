@@ -723,8 +723,8 @@ namespace Circuit {
                 var minorDiv = Color.FromArgb(0x30, 0x30, 0x30);
                 var majorDiv = Color.FromArgb(0xA0, 0xA0, 0xA0);
                 if (ControlPanel.ChkPrintable.Checked) {
-                    minorDiv = Color.FromArgb(0xD0, 0xD0, 0xD0);
-                    majorDiv = Color.FromArgb(0x80, 0x80, 0x80);
+                    minorDiv = Color.FromArgb(0xDF, 0xDF, 0xDF);
+                    majorDiv = Color.FromArgb(0x7F, 0x7F, 0x7F);
                 }
 
                 /* horizontal gridlines */
@@ -763,13 +763,15 @@ namespace Circuit {
                 }
             }
 
-            var color = mSomethingSelected ? ScopePlot.GRAY : plot.Color;
-            if (selected || (CirSimForm.Sim.ScopeSelected == -1 && plot.Elm.IsMouseElm)) {
-                color = CustomGraphics.SelectColor;
-            } else if (ControlPanel.ChkPrintable.Checked) {
-                color = CustomGraphics.GrayColor;
+            if (ControlPanel.ChkPrintable.Checked) {
+                g.LineColor = plot.Color;
+            } else {
+                if (selected || (CirSimForm.Sim.ScopeSelected == -1 && plot.Elm.IsMouseElm)) {
+                    g.LineColor = CustomGraphics.SelectColor;
+                } else {
+                    g.LineColor = mSomethingSelected ? ScopePlot.GRAY : plot.Color;
+                }
             }
-            g.LineColor = color;
 
             var idxBegin = plot.StartIndex(BoundingBox.Width);
             var idx0 = idxBegin & (mScopePointCount - 1);
