@@ -206,17 +206,20 @@ namespace Circuit.Elements.Passive {
             arr[5] = "I2 = " + Utils.CurrentAbsText(ce.Current2);
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (PotElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 return new ElementInfo("レジスタンス(Ω)", ce.MaxResistance, 0, 0);
             }
-            if (n == 1) {
+            if (r == 1) {
                 var ei = new ElementInfo("名前", 0, -1, -1);
                 ei.Text = DumpInfo.ReferenceName;
                 return ei;
             }
-            if (n == 2) {
+            if (r == 2) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "値を表示";

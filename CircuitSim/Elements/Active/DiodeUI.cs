@@ -114,14 +114,17 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (DiodeElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
                 ei.Text = DumpInfo.ReferenceName;
                 return ei;
             }
-            if (!mCustomModelUI && n == 1) {
+            if (!mCustomModelUI && r == 1) {
                 var ei = new ElementInfo("モデル", 0, -1, -1);
                 mModels = DiodeModel.GetModelList(this is DiodeUIZener);
                 ei.Choice = new ComboBox();
@@ -134,7 +137,7 @@ namespace Circuit.Elements.Active {
                 }
                 return ei;
             }
-            return base.GetElementInfo(n);
+            return base.GetElementInfo(r, c);
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {

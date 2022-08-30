@@ -59,22 +59,25 @@ namespace Circuit.Elements.Output {
             arr[2] = "V = " + Utils.VoltageText(ce.Volts[0]);
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (LogicOutputElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 return new ElementInfo("閾値(V)", ce.mThreshold, 10, -10);
             }
-            if (n == 1) {
+            if (r == 1) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() { Text = "プルダウン", Checked = needsPullDown };
                 return ei;
             }
-            if (n == 2) {
+            if (r == 2) {
                 var ei = new ElementInfo("", 0, 0, 0);
                 ei.CheckBox = new CheckBox() { Text = "数値表示", Checked = isNumeric };
                 return ei;
             }
-            if (n == 3) {
+            if (r == 3) {
                 var ei = new ElementInfo("", 0, 0, 0);
                 ei.CheckBox = new CheckBox() { Text = "3値", Checked = isTernary };
                 return ei;

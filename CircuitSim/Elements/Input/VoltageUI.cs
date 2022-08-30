@@ -266,9 +266,12 @@ namespace Circuit.Elements.Input {
             arr[i++] = "P = " + Utils.UnitText(elm.Power, "W");
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var elm = (VoltageElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 var ei = new ElementInfo("波形", (int)elm.WaveForm, -1, -1);
                 ei.Choice = new ComboBox();
                 ei.Choice.Items.Add(VoltageElm.WAVEFORM.DC);
@@ -285,30 +288,30 @@ namespace Circuit.Elements.Input {
                 ei.Choice.SelectedIndex = (int)elm.WaveForm;
                 return ei;
             }
-            if (n == 1) {
+            if (r == 1) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
                 ei.Text = DumpInfo.ReferenceName;
                 return ei;
             }
-            if (n == 2) {
+            if (r == 2) {
                 return new ElementInfo(elm.WaveForm == VoltageElm.WAVEFORM.DC ? VALUE_NAME_V : VALUE_NAME_AMP, elm.MaxVoltage, -20, 20);
             }
-            if (n == 3) {
+            if (r == 3) {
                 return new ElementInfo(VALUE_NAME_V_OFS, elm.Bias, -20, 20);
             }
             if (elm.WaveForm == VoltageElm.WAVEFORM.DC || elm.WaveForm == VoltageElm.WAVEFORM.NOISE) {
                 return null;
             }
-            if (n == 4) {
+            if (r == 4) {
                 return new ElementInfo(VALUE_NAME_HZ, elm.Frequency, 4, 500);
             }
-            if (n == 5) {
+            if (r == 5) {
                 return new ElementInfo(VALUE_NAME_PHASE, double.Parse((elm.Phase * 180 / Math.PI).ToString("0.00")), -180, 180).SetDimensionless();
             }
-            if (n == 6) {
+            if (r == 6) {
                 return new ElementInfo(VALUE_NAME_PHASE_OFS, double.Parse((elm.PhaseOffset * 180 / Math.PI).ToString("0.00")), -180, 180).SetDimensionless();
             }
-            if (n == 7 && (elm.WaveForm == VoltageElm.WAVEFORM.PULSE
+            if (r == 7 && (elm.WaveForm == VoltageElm.WAVEFORM.PULSE
                 || elm.WaveForm == VoltageElm.WAVEFORM.PULSE_BOTH
                 || elm.WaveForm == VoltageElm.WAVEFORM.SQUARE
                 || elm.WaveForm == VoltageElm.WAVEFORM.PWM_BOTH

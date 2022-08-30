@@ -46,7 +46,7 @@ namespace Circuit.Elements.Custom {
 
         public override void GetInfo(string[] arr) { }
 
-        public override ElementInfo GetElementInfo(int n) { return null; }
+        public override ElementInfo GetElementInfo(int r, int c) { return null; }
 
         public override void SetElementValue(int n, ElementInfo ei) { }
     }

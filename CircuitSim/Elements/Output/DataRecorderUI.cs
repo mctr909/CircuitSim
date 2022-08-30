@@ -46,17 +46,20 @@ namespace Circuit.Elements.Output {
             arr[2] = (ce.DataFull ? ce.DataCount : ce.DataPtr) + "/" + ce.DataCount;
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (DataRecorderElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 return new ElementInfo("サンプル数", ce.DataCount, -1, -1).SetDimensionless();
             }
-            if (n == 1) {
+            if (r == 1) {
                 var ei = new ElementInfo("列名", 0, -1, -1);
                 ei.Text = mName;
                 return ei;
             }
-            if (n == 2) {
+            if (r == 2) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.Button = new Button() {
                     Text = "ファイルに保存"

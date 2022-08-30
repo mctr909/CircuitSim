@@ -40,15 +40,18 @@ namespace Circuit.Elements.Input {
             arr[i] = "I = " + Utils.CurrentText(ce.Pins[ce.InputCount].current);
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (VCCSElm)Elm;
-            if (n == 0) {
-                var ei = new ElementInfo(ElementInfo.MakeLink("customfunction.html", "Output Function"), 0, -1, -1);
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
+                var ei = new ElementInfo("Output Function", 0, -1, -1);
                 ei.Text = ce.ExprString;
                 ei.DisallowSliders();
                 return ei;
             }
-            if (n == 1) {
+            if (r == 1) {
                 return new ElementInfo("入力数", ce.InputCount, 1, 8).SetDimensionless();
             }
             return null;

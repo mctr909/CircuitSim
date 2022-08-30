@@ -330,15 +330,18 @@ namespace Circuit.Elements.Custom {
 
         string getChipName() { return "chip"; }
 
-        public override ElementInfo GetElementInfo(int n) {
-            if (n == 0) {
+        public override ElementInfo GetElementInfo(int r, int c) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "Flip X";
                 ei.CheckBox.Checked = (DumpInfo.Flags & FLAG_FLIP_X) != 0;
                 return ei;
             }
-            if (n == 1) {
+            if (r == 1) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "Flip Y";

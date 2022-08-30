@@ -110,9 +110,12 @@ namespace Circuit.Elements.Output {
             arr[1] = "Vd = " + Utils.VoltageText(ce.VoltageDiff);
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (VoltMeterElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 var ei = new ElementInfo("表示", ce.SelectedValue, -1, -1);
                 ei.Choice = new ComboBox();
                 ei.Choice.Items.Add("瞬時値");
@@ -124,7 +127,7 @@ namespace Circuit.Elements.Output {
                 ei.Choice.SelectedIndex = ce.Meter;
                 return ei;
             }
-            if (n == 1) {
+            if (r == 1) {
                 var ei = new ElementInfo("スケール", 0);
                 ei.Choice = new ComboBox();
                 ei.Choice.Items.Add("自動");

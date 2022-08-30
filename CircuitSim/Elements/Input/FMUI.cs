@@ -66,18 +66,21 @@ namespace Circuit.Elements.Input {
             arr[6] = "Vmax = " + Utils.VoltageText(ce.MaxVoltage);
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (FMElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 return new ElementInfo("振幅(V)", ce.MaxVoltage, -20, 20);
             }
-            if (n == 1) {
+            if (r == 1) {
                 return new ElementInfo("搬送波周波数(Hz)", ce.CarrierFreq, 4, 500);
             }
-            if (n == 2) {
+            if (r == 2) {
                 return new ElementInfo("信号周波数(Hz)", ce.Signalfreq, 4, 500);
             }
-            if (n == 3) {
+            if (r == 3) {
                 return new ElementInfo("周波数偏移(Hz)", ce.Deviation, 4, 500);
             }
             return null;

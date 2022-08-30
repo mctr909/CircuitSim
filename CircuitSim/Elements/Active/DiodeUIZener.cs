@@ -68,12 +68,15 @@ namespace Circuit.Elements.Active {
             arr[5] = "Vz = " + Utils.VoltageText(ce.mModel.BreakdownVoltage);
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (DiodeElm)Elm;
-            if (n == 2) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 2) {
                 return new ElementInfo("ブレークダウン電圧(V)", ce.mModel.BreakdownVoltage, 0, 0);
             }
-            return base.GetElementInfo(n);
+            return base.GetElementInfo(r, c);
         }
 
         void setLastModelName(string n) {

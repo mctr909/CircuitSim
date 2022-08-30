@@ -85,12 +85,15 @@ namespace Circuit.Elements.Gate {
             arr[4] = "Vc = " + Utils.VoltageText(ce.Volts[2]);
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (TriStateElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 return new ElementInfo("オン抵抗(Ω)", ce.Ron, 0, 0);
             }
-            if (n == 1) {
+            if (r == 1) {
                 return new ElementInfo("オフ抵抗(Ω)", ce.Roff, 0, 0);
             }
             return null;

@@ -664,7 +664,7 @@ namespace Circuit.Elements {
 
         public virtual void UpdateModels() { }
 
-        public virtual ElementInfo GetElementInfo(int n) { return null; }
+        public virtual ElementInfo GetElementInfo(int r, int c) { return null; }
 
         public virtual void SetElementValue(int n, ElementInfo ei) { }
 

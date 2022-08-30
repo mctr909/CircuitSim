@@ -13,12 +13,12 @@ namespace Circuit.Elements.Input {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.CCCS; } }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             /* can't set number of inputs */
-            if (n == 1) {
+            if (r == 1) {
                 return null;
             }
-            return base.GetElementInfo(n);
+            return base.GetElementInfo(r, c);
         }
     }
 }

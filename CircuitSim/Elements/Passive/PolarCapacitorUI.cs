@@ -48,11 +48,14 @@ namespace Circuit.Elements.Passive {
             arr[0] = "capacitor (polarized)";
         }
 
-        public override ElementInfo GetElementInfo(int n) {
-            if (n == 2) {
+        public override ElementInfo GetElementInfo(int r, int c) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 2) {
                 return new ElementInfo("耐逆電圧(V)", ((PolarCapacitorElm)Elm).MaxNegativeVoltage, 0, 0);
             }
-            return base.GetElementInfo(n);
+            return base.GetElementInfo(r, c);
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {

@@ -170,16 +170,19 @@ namespace Circuit.Elements.Active {
             arr[7] = "P = " + Utils.UnitText(ce.Power, "W");
         }
 
-        public override ElementInfo GetElementInfo(int n) {
-            if (n == 0) {
+        public override ElementInfo GetElementInfo(int r, int c) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
                 ei.Text = DumpInfo.ReferenceName;
                 return ei;
             }
-            if (n == 1) {
+            if (r == 1) {
                 return new ElementInfo("hfe", ((TransistorElm)Elm).Hfe, 10, 1000).SetDimensionless();
             }
-            if (n == 2) {
+            if (r == 2) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "エミッタ/コレクタ 入れ替え";

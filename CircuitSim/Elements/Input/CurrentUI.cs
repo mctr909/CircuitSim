@@ -68,8 +68,11 @@ namespace Circuit.Elements.Input {
             getBasicInfo(arr);
         }
 
-        public override ElementInfo GetElementInfo(int n) {
-            if (n == 0) {
+        public override ElementInfo GetElementInfo(int r, int c) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 return new ElementInfo("電流(A)", mCurrentValue, 0, .1);
             }
             return null;

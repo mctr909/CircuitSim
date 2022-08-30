@@ -68,14 +68,17 @@ namespace Circuit.Elements.Output {
             arr[2] = "V = " + Utils.VoltageText(ce.Volts[0]);
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (LabeledNodeElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 var ei = new ElementInfo("名前", 0, -1, -1);
                 ei.Text = ce.Text;
                 return ei;
             }
-            if (n == 1) {
+            if (r == 1) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() { Text = "内部端子", Checked = IsInternal };
                 return ei;

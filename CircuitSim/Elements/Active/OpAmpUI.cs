@@ -114,15 +114,18 @@ namespace Circuit.Elements.Active {
                 + " to " + Utils.VoltageText(ce.MaxOut);
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (OpAmpElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 return new ElementInfo("+電源(V)", ce.MaxOut, 1, 20);
             }
-            if (n == 1) {
+            if (r == 1) {
                 return new ElementInfo("-電源(V)", ce.MinOut, -20, 0);
             }
-            if (n == 2) {
+            if (r == 2) {
                 return new ElementInfo("ゲイン(db)", 20 * Math.Log10(ce.Gain), 10, 1000000);
             }
             return null;

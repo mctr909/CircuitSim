@@ -66,12 +66,15 @@ namespace Circuit.Elements.Active {
             arr[5] = "C = " + Utils.UnitText(ce.mCapacitance, "F");
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (DiodeElmVaractor)Elm;
-            if (n == 2) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 2) {
                 return new ElementInfo("静電容量(F) @ 0V", ce.mBaseCapacitance, 10, 1000);
             }
-            return base.GetElementInfo(n);
+            return base.GetElementInfo(r, c);
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {

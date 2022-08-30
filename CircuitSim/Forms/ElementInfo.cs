@@ -60,9 +60,5 @@ namespace Circuit {
                 && TextArea == null
                 && !NoSliders;
         }
-
-        public static string MakeLink(string file, string text) {
-            return "<a href=\"" + file + "\" target=\"_blank\">" + text + "</a>";
-        }
     }
 }

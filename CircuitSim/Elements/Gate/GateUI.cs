@@ -133,15 +133,18 @@ namespace Circuit.Elements.Gate {
             arr[2] = "Iout = " + Utils.CurrentText(ce.Current);
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (GateElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 return new ElementInfo("入力数", ce.InputCount, 1, 8).SetDimensionless();
             }
-            if (n == 1) {
+            if (r == 1) {
                 return new ElementInfo("閾値(V)", ce.HighVoltage, 1, 10);
             }
-            if (n == 2) {
+            if (r == 2) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     Text = "シュミットトリガー",

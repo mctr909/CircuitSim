@@ -247,20 +247,23 @@ namespace Circuit.Elements.Active {
                 + ((((MosfetElm)Elm).Pnp == 1) ? "Vds(nCh.)" : "Vds(pCh.)");
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (MosfetElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
                 ei.Text = DumpInfo.ReferenceName;
                 return ei;
             }
-            if (n == 1) {
+            if (r == 1) {
                 return new ElementInfo("閾値電圧", ce.Pnp * ce.Vt, .01, 5);
             }
-            if (n == 2) {
+            if (r == 2) {
                 return new ElementInfo("hfe", ce.Hfe, .01, 5);
             }
-            if (n == 3) {
+            if (r == 3) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
@@ -269,7 +272,7 @@ namespace Circuit.Elements.Active {
                 };
                 return ei;
             }
-            if (n == 4) {
+            if (r == 4) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
@@ -278,7 +281,7 @@ namespace Circuit.Elements.Active {
                 };
                 return ei;
             }
-            if (n == 5 && !ShowBulk) {
+            if (r == 5 && !ShowBulk) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
@@ -287,7 +290,7 @@ namespace Circuit.Elements.Active {
                 };
                 return ei;
             }
-            if (n == 5 && ShowBulk) {
+            if (r == 5 && ShowBulk) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,

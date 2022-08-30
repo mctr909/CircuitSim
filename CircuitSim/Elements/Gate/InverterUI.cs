@@ -67,12 +67,15 @@ namespace Circuit.Elements.Gate {
             arr[2] = "Vo = " + Utils.VoltageText(ce.Volts[1]);
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (InverterElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 return new ElementInfo("Slew Rate (V/ns)", ce.SlewRate, 0, 0);
             }
-            if (n == 1) {
+            if (r == 1) {
                 return new ElementInfo("High Voltage (V)", ce.HighVoltage, 1, 10);
             }
             return null;

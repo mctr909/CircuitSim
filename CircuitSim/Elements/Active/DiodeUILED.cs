@@ -112,20 +112,23 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override ElementInfo GetElementInfo(int n) {
-            if (n == 0) {
+        public override ElementInfo GetElementInfo(int r, int c) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 return new ElementInfo("赤(0～1)", mColorR, 0, 1).SetDimensionless();
             }
-            if (n == 1) {
+            if (r == 1) {
                 return new ElementInfo("緑(0～1)", mColorG, 0, 1).SetDimensionless();
             }
-            if (n == 2) {
+            if (r == 2) {
                 return new ElementInfo("青(0～1)", mColorB, 0, 1).SetDimensionless();
             }
-            if (n == 3) {
+            if (r == 3) {
                 return new ElementInfo("最大輝度電流(A)", mMaxBrightnessCurrent, 0, .1);
             }
-            return base.GetElementInfo(n - 4);
+            return base.GetElementInfo(r - 4, c);
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {

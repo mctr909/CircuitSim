@@ -48,13 +48,16 @@ namespace Circuit.Elements.Output {
 				+ Utils.UnitText(ce.TriggerTime + ce.Delay - CirSimForm.Sim.Time, "s")) : ce.Stopped ? "stopped" : "waiting";
 		}
 
-		public override ElementInfo GetElementInfo(int n) {
+		public override ElementInfo GetElementInfo(int r, int c) {
 			var ce = (StopTriggerElm)Elm;
-			if (n == 0) {
+			if (c != 0) {
+				return null;
+			}
+			if (r == 0) {
 				var ei = new ElementInfo("閾値電圧(V)", ce.TriggerVoltage);
 				return ei;
 			}
-			if (n == 1) {
+			if (r == 1) {
 				var ei = new ElementInfo("トリガータイプ", ce.Type, -1, -1);
 				ei.Choice = new ComboBox();
 				ei.Choice.Items.Add(">=");
@@ -62,7 +65,7 @@ namespace Circuit.Elements.Output {
 				ei.Choice.SelectedIndex = ce.Type;
 				return ei;
 			}
-			if (n == 2) {
+			if (r == 2) {
 				var ei = new ElementInfo("遅延(s)", ce.Delay);
 				return ei;
 			}

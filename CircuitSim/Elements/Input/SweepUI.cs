@@ -104,21 +104,24 @@ namespace Circuit.Elements.Input {
             arr[5] = "time = " + Utils.UnitText(ce.SweepTime, "s");
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (SweepElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 return new ElementInfo("振幅(V)", ce.MaxV, 0, 0);
             }
-            if (n == 1) {
+            if (r == 1) {
                 return new ElementInfo("最小周波数(Hz)", ce.MinF, 0, 0);
             }
-            if (n == 2) {
+            if (r == 2) {
                 return new ElementInfo("最大周波数(Hz)", ce.MaxF, 0, 0);
             }
-            if (n == 3) {
+            if (r == 3) {
                 return new ElementInfo("スウィープ時間(sec)", ce.SweepTime, 0, 0);
             }
-            if (n == 4) {
+            if (r == 4) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
@@ -127,7 +130,7 @@ namespace Circuit.Elements.Input {
                 };
                 return ei;
             }
-            if (n == 5) {
+            if (r == 5) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,

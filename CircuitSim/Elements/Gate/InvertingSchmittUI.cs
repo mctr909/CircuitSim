@@ -75,23 +75,26 @@ namespace Circuit.Elements.Gate {
             arr[2] = "Vo = " + Utils.VoltageText(ce.Volts[1]);
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (InvertingSchmittElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 dlt = ce.LowerTrigger;
                 return new ElementInfo("Lower threshold (V)", ce.LowerTrigger, 0.01, 5);
             }
-            if (n == 1) {
+            if (r == 1) {
                 dut = ce.UpperTrigger;
                 return new ElementInfo("Upper threshold (V)", ce.UpperTrigger, 0.01, 5);
             }
-            if (n == 2) {
+            if (r == 2) {
                 return new ElementInfo("Slew Rate (V/ns)", ce.SlewRate, 0, 0);
             }
-            if (n == 3) {
+            if (r == 3) {
                 return new ElementInfo("High Voltage (V)", ce.LogicOnLevel, 0, 0);
             }
-            if (n == 4) {
+            if (r == 4) {
                 return new ElementInfo("Low Voltage (V)", ce.LogicOffLevel, 0, 0);
             }
             return null;

@@ -83,12 +83,15 @@ namespace Circuit.Elements.Passive {
                 + Utils.UnitText(ce.Inductance, "H");
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (InductorElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 return new ElementInfo("インダクタンス(H)", ce.Inductance, 0, 0);
             }
-            if (n == 1) {
+            if (r == 1) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
                 ei.Text = DumpInfo.ReferenceName;
                 return ei;

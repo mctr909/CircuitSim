@@ -137,23 +137,26 @@ namespace Circuit.Elements.Passive {
             arr[6] = "I2 = " + Utils.CurrentText(ce.Currents[1]);
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (TransformerElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 return new ElementInfo("一次側インダクタンス(H)", ce.PInductance, .01, 5);
             }
-            if (n == 1) {
+            if (r == 1) {
                 return new ElementInfo("二次側巻数比", ce.Ratio, 1, 10).SetDimensionless();
             }
-            if (n == 2) {
+            if (r == 2) {
                 return new ElementInfo("結合係数", ce.CouplingCoef, 0, 1).SetDimensionless();
             }
-            if (n == 3) {
+            if (r == 3) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
                 ei.Text = DumpInfo.ReferenceName;
                 return ei;
             }
-            if (n == 4) {
+            if (r == 4) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox() {
                     Text = "極性反転",

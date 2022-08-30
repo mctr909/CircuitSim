@@ -108,12 +108,15 @@ namespace Circuit.Elements.Passive {
             arr[1] = "I = " + Utils.CurrentAbsText(ce.Current);
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (SwitchElm2)Elm;
-            if (n == 2) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 2) {
                 return new ElementInfo("分岐数", ce.ThrowCount, 2, 10).SetDimensionless();
             }
-            return base.GetElementInfo(n);
+            return base.GetElementInfo(r, c);
         }
 
         public override void SetElementValue(int n, ElementInfo ei) {

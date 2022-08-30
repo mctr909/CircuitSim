@@ -53,8 +53,11 @@ namespace Circuit.Elements.Custom {
             CustomGraphics.TextSize = bkSize;
         }
 
-        public override ElementInfo GetElementInfo(int n) {
-            if (n == 0) {
+        public override ElementInfo GetElementInfo(int r, int c) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 var ei = new ElementInfo("テキスト", 0, -1, -1);
                 ei.TextArea = new TextBox() {
                     Multiline = true,
@@ -65,7 +68,7 @@ namespace Circuit.Elements.Custom {
                 };
                 return ei;
             }
-            if (n == 1) {
+            if (r == 1) {
                 return new ElementInfo("サイズ", mSize, 5, 100);
             }
             return null;

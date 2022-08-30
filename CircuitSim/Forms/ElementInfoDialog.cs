@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -11,7 +10,7 @@ using Circuit.Elements.Input;
 
 namespace Circuit {
     public interface Editable {
-        ElementInfo GetElementInfo(int n);
+        ElementInfo GetElementInfo(int r, int c);
         void SetElementValue(int n, ElementInfo ei);
     }
 
@@ -70,7 +69,6 @@ namespace Circuit {
 
             Visible = false;
             buildDialog();
-            Visible = true;
 
             ResumeLayout(false);
         }
@@ -88,7 +86,13 @@ namespace Circuit {
                 y = 0;
             }
             Location = new Point(x, y);
-            Visible = true;
+            
+            if (null == mEInfos[0]) {
+                Close();
+                Visible = false;
+            } else {
+                Visible = true;
+            }
         }
 
         public new void Close() {
@@ -228,44 +232,30 @@ namespace Circuit {
         }
 
         void buildDialog() {
-            int idx;
-            int i;
-            for (i = 0; ; i++) {
-                mEInfos[i] = mElm.GetElementInfo(i);
-                if (mEInfos[i] == null) {
-                    break;
-                }
-                var ei = mEInfos[i];
-                idx = mPnlV.Controls.IndexOf(mPnlH);
-                if (0 <= ei.Name.IndexOf("<a")) {
-                    var name = ei.Name.Replace(" ", "");
-                    string title = "";
-                    var title0 = name.IndexOf(">") + ">".Length;
-                    if (0 <= title0) {
-                        var title1 = name.IndexOf("</a>", title0);
-                        title = name.Substring(title0, title1 - title0);
+            int infoIdx = -1;
+            int iRow = 0;
+            int iCol = 0;
+
+            for (; ; iRow++) {
+                mEInfos[++infoIdx] = mElm.GetElementInfo(iRow, iCol);
+                if (mEInfos[infoIdx] == null) {
+                    if (0 == iRow) {
+                        break;
                     }
-                    var label = new LinkLabel() {
-                        Text = title,
-                        AutoSize = true,
-                        TextAlign = ContentAlignment.BottomLeft
-                    };
-                    var href0 = name.IndexOf("href=\"") + "href=\"".Length;
-                    if (0 <= href0) {
-                        var href1 = name.IndexOf("\"", href0);
-                        var href = name.Substring(href0, href1 - href0);
-                        label.Click += new EventHandler((s, e) => {
-                            Process.Start(href);
-                        });
-                    }
-                    insertCtrl(mPnlV, label, idx);
-                } else {
-                    insertCtrl(mPnlV, new Label() {
-                        Text = ei.Name,
-                        AutoSize = true,
-                        TextAlign = ContentAlignment.BottomLeft
-                    }, idx);
+                    iRow = -1;
+                    iCol++;
+                    continue;
                 }
+
+                var ei = mEInfos[infoIdx];
+                var idx = mPnlV.Controls.IndexOf(mPnlH);
+
+                insertCtrl(mPnlV, new Label() {
+                    Text = ei.Name,
+                    AutoSize = true,
+                    TextAlign = ContentAlignment.BottomLeft
+                }, idx);
+
                 idx = mPnlV.Controls.IndexOf(mPnlH);
                 if (ei.Choice != null) {
                     ei.Choice.AutoSize = true;
@@ -298,7 +288,7 @@ namespace Circuit {
                     }
                 }
             }
-            mEInfoCount = i;
+            mEInfoCount = iRow;
             Width = mPnlV.Width + 20;
             Height = mPnlV.Height + 35;
         }

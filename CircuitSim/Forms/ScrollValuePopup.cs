@@ -126,7 +126,7 @@ namespace Circuit {
             }
             mNValues = ptr;
             mValues[mNValues] = 1E99;
-            mInfo = mMyElm.GetElementInfo(0);
+            mInfo = mMyElm.GetElementInfo(0, 0);
             double currentvalue = mInfo.Value;
             for (int i = 0; i < mNValues + 1; i++) {
                 if (Utils.UnitText(currentvalue, "") == Utils.UnitText(mValues[i], "")) { /* match to an existing value */

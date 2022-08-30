@@ -94,21 +94,24 @@ namespace Circuit.Elements.Passive {
             getBasicInfo(arr);
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (CrystalElm)Elm;
-            if (n == 0) {
-                return new ElementInfo(ElementInfo.MakeLink("crystal.html", "並列静電容量(F)"), ce.ParallelCapacitance);
+            if (c != 0) {
+                return null;
             }
-            if (n == 1) {
+            if (r == 0) {
+                return new ElementInfo("並列静電容量(F)", ce.ParallelCapacitance);
+            }
+            if (r == 1) {
                 return new ElementInfo("直列静電容量(F)", ce.SeriesCapacitance);
             }
-            if (n == 2) {
+            if (r == 2) {
                 return new ElementInfo("インダクタンス(H)", ce.Inductance, 0, 0);
             }
-            if (n == 3) {
+            if (r == 3) {
                 return new ElementInfo("レジスタンス(Ω)", ce.Resistance, 0, 0);
             }
-            if (n == 4) {
+            if (r == 4) {
                 var ei = new ElementInfo("名前", 0, 0, 0);
                 ei.Text = DumpInfo.ReferenceName;
                 return ei;

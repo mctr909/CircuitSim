@@ -105,16 +105,19 @@ namespace Circuit.Elements.Passive {
             }
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (SwitchElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 var ei = new ElementInfo("", 0, -1, -1);
                 ei.CheckBox = new CheckBox();
                 ei.CheckBox.Text = "モーメンタリ";
                 ei.CheckBox.Checked = ce.Momentary;
                 return ei;
             }
-            if (n == 1) {
+            if (r == 1) {
                 return new ElementInfo("連動グループ", ce.Link, 0, 100).SetDimensionless();
             }
             return null;

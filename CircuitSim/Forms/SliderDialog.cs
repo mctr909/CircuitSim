@@ -75,7 +75,7 @@ namespace Circuit {
             int idx;
             vp.SuspendLayout();
             for (i = 0; ; i++) {
-                einfos[i] = elm.GetElementInfo(i);
+                einfos[i] = elm.GetElementInfo(i, 0);
                 if (einfos[i] == null) {
                     break;
                 }

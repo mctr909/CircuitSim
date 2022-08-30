@@ -62,7 +62,7 @@ namespace Circuit {
         public ContextMenuStrip Show(int px, int py, BaseUI mouseElm) {
             mScope.Enabled = mouseElm.CanViewInScope;
             mFloatScope.Enabled = mouseElm.CanViewInScope;
-            mEdit.Enabled = mouseElm.GetElementInfo(0) != null;
+            mEdit.Enabled = mouseElm.GetElementInfo(0, 0) != null;
             mFlip.Enabled = 2 == mouseElm.Elm.PostCount;
             mSplit.Enabled = canSplit(mouseElm);
             mSlider.Enabled = sliderItemEnabled(mouseElm);
@@ -90,7 +90,7 @@ namespace Circuit {
                 return false;
             }
             for (int i = 0; ; i++) {
-                var ei = elm.GetElementInfo(i);
+                var ei = elm.GetElementInfo(i, 0);
                 if (ei == null) {
                     return false;
                 }

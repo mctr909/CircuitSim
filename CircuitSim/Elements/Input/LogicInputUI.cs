@@ -61,9 +61,12 @@ namespace Circuit.Elements.Input {
             arr[2] = "I = " + Utils.CurrentText(ce.Current);
         }
 
-        public override ElementInfo GetElementInfo(int n) {
+        public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (LogicInputElm)Elm;
-            if (n == 0) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 var ei = new ElementInfo("", 0, 0, 0);
                 ei.CheckBox = new CheckBox() {
                     Text = "モーメンタリ",
@@ -71,13 +74,13 @@ namespace Circuit.Elements.Input {
                 };
                 return ei;
             }
-            if (n == 1) {
+            if (r == 1) {
                 return new ElementInfo("H電圧(V)", ((LogicInputElm)Elm).mHiV, 10, -10);
             }
-            if (n == 2) {
+            if (r == 2) {
                 return new ElementInfo("L電圧(V)", ((LogicInputElm)Elm).mLoV, 10, -10);
             }
-            if (n == 3) {
+            if (r == 3) {
                 var ei = new ElementInfo("", 0, 0, 0);
                 ei.CheckBox = new CheckBox() {
                     Text = "数値表示",

@@ -225,17 +225,20 @@ namespace Circuit {
             return Name + " (" + description + ")";
         }
 
-        public ElementInfo GetElementInfo(int n) {
-            if (n == 0) {
+        public ElementInfo GetElementInfo(int r, int c) {
+            if (c != 0) {
+                return null;
+            }
+            if (r == 0) {
                 return new ElementInfo("Saturation Current", SaturationCurrent, -1, -1);
             }
-            if (n == 1) {
+            if (r == 1) {
                 return new ElementInfo("Series Resistance", SeriesResistance, -1, -1);
             }
-            if (n == 2) {
-                return new ElementInfo(ElementInfo.MakeLink("diodecalc.html", "Emission Coefficient"), EmissionCoefficient, -1, -1);
+            if (r == 2) {
+                return new ElementInfo("Emission Coefficient", EmissionCoefficient, -1, -1);
             }
-            if (n == 3) {
+            if (r == 3) {
                 return new ElementInfo("Breakdown Voltage", BreakdownVoltage, -1, -1);
             }
             return null;

@@ -47,7 +47,7 @@ namespace Circuit {
         }
 
         public void CreateSlider() {
-            var ei = UI.GetElementInfo(EditItem);
+            var ei = UI.GetElementInfo(EditItem, 0);
             CreateSlider(ei);
         }
 
@@ -78,7 +78,7 @@ namespace Circuit {
             if (mSettingValue) {
                 return;
             }
-            var ei = UI.GetElementInfo(EditItem);
+            var ei = UI.GetElementInfo(EditItem, 0);
             ei.Value = Value;
             UI.SetElementValue(EditItem, ei);
             CirSimForm.Sim.Repaint();
