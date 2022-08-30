@@ -32,14 +32,16 @@
             this.chkRms = new System.Windows.Forms.CheckBox();
             this.txtManualScale = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cmbColor = new System.Windows.Forms.ComboBox();
+            this.lblColor = new System.Windows.Forms.Label();
+            this.rbSpectrum = new System.Windows.Forms.RadioButton();
+            this.rbVoltage = new System.Windows.Forms.RadioButton();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
             this.txtLabel = new System.Windows.Forms.TextBox();
             this.tbSpeed = new System.Windows.Forms.TrackBar();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.lblScopeSpeed = new System.Windows.Forms.Label();
-            this.rbVoltage = new System.Windows.Forms.RadioButton();
-            this.rbSpectrum = new System.Windows.Forms.RadioButton();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbSpeed)).BeginInit();
@@ -104,7 +106,7 @@
             // chkLogSpectrum
             // 
             this.chkLogSpectrum.AutoSize = true;
-            this.chkLogSpectrum.Location = new System.Drawing.Point(94, 40);
+            this.chkLogSpectrum.Location = new System.Drawing.Point(90, 18);
             this.chkLogSpectrum.Name = "chkLogSpectrum";
             this.chkLogSpectrum.Size = new System.Drawing.Size(105, 16);
             this.chkLogSpectrum.TabIndex = 7;
@@ -133,15 +135,59 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cmbColor);
+            this.groupBox1.Controls.Add(this.lblColor);
             this.groupBox1.Controls.Add(this.rbSpectrum);
             this.groupBox1.Controls.Add(this.rbVoltage);
             this.groupBox1.Controls.Add(this.chkLogSpectrum);
             this.groupBox1.Location = new System.Drawing.Point(4, 106);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(201, 66);
+            this.groupBox1.Size = new System.Drawing.Size(201, 86);
             this.groupBox1.TabIndex = 10;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "表示するグラフ";
+            // 
+            // cmbColor
+            // 
+            this.cmbColor.FormattingEnabled = true;
+            this.cmbColor.Location = new System.Drawing.Point(90, 60);
+            this.cmbColor.Name = "cmbColor";
+            this.cmbColor.Size = new System.Drawing.Size(104, 20);
+            this.cmbColor.TabIndex = 12;
+            this.cmbColor.SelectedIndexChanged += new System.EventHandler(this.cmbColor_SelectedIndexChanged);
+            // 
+            // lblColor
+            // 
+            this.lblColor.AutoSize = true;
+            this.lblColor.Location = new System.Drawing.Point(88, 42);
+            this.lblColor.Name = "lblColor";
+            this.lblColor.Size = new System.Drawing.Size(51, 12);
+            this.lblColor.TabIndex = 11;
+            this.lblColor.Text = "波形の色";
+            // 
+            // rbSpectrum
+            // 
+            this.rbSpectrum.AutoSize = true;
+            this.rbSpectrum.Location = new System.Drawing.Point(6, 18);
+            this.rbSpectrum.Name = "rbSpectrum";
+            this.rbSpectrum.Size = new System.Drawing.Size(76, 16);
+            this.rbSpectrum.TabIndex = 9;
+            this.rbSpectrum.TabStop = true;
+            this.rbSpectrum.Text = "スペクトラム";
+            this.rbSpectrum.UseVisualStyleBackColor = true;
+            this.rbSpectrum.CheckedChanged += new System.EventHandler(this.rbSpectrum_CheckedChanged);
+            // 
+            // rbVoltage
+            // 
+            this.rbVoltage.AutoSize = true;
+            this.rbVoltage.Location = new System.Drawing.Point(6, 40);
+            this.rbVoltage.Name = "rbVoltage";
+            this.rbVoltage.Size = new System.Drawing.Size(71, 16);
+            this.rbVoltage.TabIndex = 8;
+            this.rbVoltage.TabStop = true;
+            this.rbVoltage.Text = "電圧波形";
+            this.rbVoltage.UseVisualStyleBackColor = true;
+            this.rbVoltage.CheckedChanged += new System.EventHandler(this.rbVoltage_CheckedChanged);
             // 
             // groupBox2
             // 
@@ -152,7 +198,7 @@
             this.groupBox2.Controls.Add(this.chkRms);
             this.groupBox2.Controls.Add(this.chkNegPeak);
             this.groupBox2.Controls.Add(this.chkPeak);
-            this.groupBox2.Location = new System.Drawing.Point(4, 178);
+            this.groupBox2.Location = new System.Drawing.Point(4, 198);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(201, 103);
             this.groupBox2.TabIndex = 11;
@@ -205,35 +251,11 @@
             this.lblScopeSpeed.TabIndex = 13;
             this.lblScopeSpeed.Text = "999.99uS/div";
             // 
-            // rbVoltage
-            // 
-            this.rbVoltage.AutoSize = true;
-            this.rbVoltage.Location = new System.Drawing.Point(6, 18);
-            this.rbVoltage.Name = "rbVoltage";
-            this.rbVoltage.Size = new System.Drawing.Size(71, 16);
-            this.rbVoltage.TabIndex = 8;
-            this.rbVoltage.TabStop = true;
-            this.rbVoltage.Text = "電圧波形";
-            this.rbVoltage.UseVisualStyleBackColor = true;
-            this.rbVoltage.CheckedChanged += new System.EventHandler(this.rbVoltage_CheckedChanged);
-            // 
-            // rbSpectrum
-            // 
-            this.rbSpectrum.AutoSize = true;
-            this.rbSpectrum.Location = new System.Drawing.Point(6, 40);
-            this.rbSpectrum.Name = "rbSpectrum";
-            this.rbSpectrum.Size = new System.Drawing.Size(76, 16);
-            this.rbSpectrum.TabIndex = 9;
-            this.rbSpectrum.TabStop = true;
-            this.rbSpectrum.Text = "スペクトラム";
-            this.rbSpectrum.UseVisualStyleBackColor = true;
-            this.rbSpectrum.CheckedChanged += new System.EventHandler(this.rbSpectrum_CheckedChanged);
-            // 
             // ScopeProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(210, 284);
+            this.ClientSize = new System.Drawing.Size(210, 308);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -271,5 +293,7 @@
         private System.Windows.Forms.Label lblScopeSpeed;
         private System.Windows.Forms.RadioButton rbSpectrum;
         private System.Windows.Forms.RadioButton rbVoltage;
+        private System.Windows.Forms.ComboBox cmbColor;
+        private System.Windows.Forms.Label lblColor;
     }
 }

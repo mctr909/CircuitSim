@@ -3,7 +3,7 @@
 using Circuit.Elements;
 
 namespace Circuit {
-    class ScopePlot {
+    public class ScopePlot {
         public static readonly Color RED = Color.FromArgb(0xBF, 0x00, 0x00);
         public static readonly Color YELLOW = Color.FromArgb(0xCF, 0xCF, 0x00);
         public static readonly Color GREEN = Color.FromArgb(0x00, 0xBF, 0x00);

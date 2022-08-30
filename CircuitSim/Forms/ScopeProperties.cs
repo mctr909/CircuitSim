@@ -28,6 +28,8 @@ namespace Circuit.Forms {
             chkScale.Enabled = mScope.ShowVoltage;
             chkPeak.Enabled = mScope.ShowVoltage;
             chkNegPeak.Enabled = mScope.ShowVoltage;
+            cmbColor.Enabled = mScope.ShowVoltage;
+            lblColor.Enabled = mScope.ShowVoltage;
 
             chkRms.Checked = mScope.ShowRMS;
             chkFreq.Checked = mScope.ShowFreq;
@@ -39,6 +41,17 @@ namespace Circuit.Forms {
             chkLogSpectrum.Checked = mScope.LogSpectrum;
             chkLogSpectrum.Enabled = mScope.ShowFFT;
             txtLabel.Text = mScope.Text;
+
+            cmbColor.Items.Clear();
+            foreach (var c in Enum.GetValues(typeof(ScopePlot.E_COLOR))) {
+                if ((ScopePlot.E_COLOR)c == ScopePlot.E_COLOR.INVALID) {
+                    continue;
+                }
+                cmbColor.Items.Add(c);
+            }
+            var plotIdx = mScope.SelectedPlot;
+            cmbColor.SelectedIndex = (int)mScope.Plots[plotIdx].ColorIndex;
+
             setScopeSpeedLabel();
         }
 
@@ -101,6 +114,11 @@ namespace Circuit.Forms {
         private void rbSpectrum_CheckedChanged(object sender, EventArgs e) {
             mScope.ShowFFT = rbSpectrum.Checked;
             chkLogSpectrum.Enabled = rbSpectrum.Checked;
+        }
+
+        private void cmbColor_SelectedIndexChanged(object sender, EventArgs e) {
+            var plotIdx = mScope.SelectedPlot;
+            mScope.Plots[plotIdx].SetColor(cmbColor.SelectedIndex);
         }
 
         private void chkLogSpectrum_CheckedChanged(object sender, EventArgs e) {
