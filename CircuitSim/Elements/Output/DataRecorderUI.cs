@@ -80,7 +80,7 @@ namespace Circuit.Elements.Output {
             return null;
         }
 
-        public override void SetElementValue(int n, ElementInfo ei) {
+        public override void SetElementValue(int n, int c, ElementInfo ei) {
             var ce = (DataRecorderElm)Elm;
             if (n == 0 && 0 < ei.Value) {
                 ce.setDataCount((int)ei.Value);

@@ -102,7 +102,7 @@ namespace Circuit.Elements.Active {
             return null;
         }
 
-        public override void SetElementValue(int n, ElementInfo ei) {
+        public override void SetElementValue(int n, int c, ElementInfo ei) {
             var ce = (AnalogSwitchElm)Elm;
             if (n == 0) {
                 DumpInfo.Flags = ei.CheckBox.Checked ? (DumpInfo.Flags | FLAG_INVERT) : (DumpInfo.Flags & ~FLAG_INVERT);

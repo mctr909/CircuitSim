@@ -58,11 +58,11 @@ namespace Circuit.Elements.Passive {
             return base.GetElementInfo(r, c);
         }
 
-        public override void SetElementValue(int n, ElementInfo ei) {
+        public override void SetElementValue(int n, int c, ElementInfo ei) {
             if (n == 2 && ei.Value >= 0) {
                 ((PolarCapacitorElm)Elm).MaxNegativeVoltage = ei.Value;
             }
-            base.SetElementValue(n, ei);
+            base.SetElementValue(n, c, ei);
         }
     }
 }

@@ -119,7 +119,7 @@ namespace Circuit.Elements.Passive {
             return base.GetElementInfo(r, c);
         }
 
-        public override void SetElementValue(int n, ElementInfo ei) {
+        public override void SetElementValue(int n, int c, ElementInfo ei) {
             var ce = (SwitchElm2)Elm;
             if (n == 2) {
                 if (ei.Value >= 2) {
@@ -131,7 +131,7 @@ namespace Circuit.Elements.Passive {
                 ce.AllocNodes();
                 SetPoints();
             } else {
-                base.SetElementValue(n, ei);
+                base.SetElementValue(n, c, ei);
             }
         }
     }

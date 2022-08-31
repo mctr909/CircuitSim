@@ -131,7 +131,7 @@ namespace Circuit.Elements.Active {
             return base.GetElementInfo(r - 4, c);
         }
 
-        public override void SetElementValue(int n, ElementInfo ei) {
+        public override void SetElementValue(int n, int c, ElementInfo ei) {
             if (n == 0) {
                 mColorR = ei.Value;
             }
@@ -144,7 +144,7 @@ namespace Circuit.Elements.Active {
             if (n == 3) {
                 mMaxBrightnessCurrent = ei.Value;
             }
-            base.SetElementValue(n - 4, ei);
+            base.SetElementValue(n - 4, c, ei);
         }
 
         void setLastModelName(string n) {

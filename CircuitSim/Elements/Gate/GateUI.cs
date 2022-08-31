@@ -150,7 +150,7 @@ namespace Circuit.Elements.Gate {
             return null;
         }
 
-        public override void SetElementValue(int n, ElementInfo ei) {
+        public override void SetElementValue(int n, int c, ElementInfo ei) {
             var ce = (GateElm)Elm;
             if (n == 0 && ei.Value >= 1) {
                 ce.InputCount = (int)ei.Value;

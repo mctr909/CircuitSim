@@ -117,7 +117,7 @@ namespace Circuit.Elements.Passive {
             return null;
         }
 
-        public override void SetElementValue(int n, ElementInfo ei) {
+        public override void SetElementValue(int n, int c, ElementInfo ei) {
             var ce = (CrystalElm)Elm;
             if (n == 0 && 0 < ei.Value) {
                 ce.ParallelCapacitance = ei.Value;

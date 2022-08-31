@@ -343,7 +343,7 @@ namespace Circuit.Elements.Custom {
             return null;
         }
 
-        public override void SetElementValue(int n, ElementInfo ei) {
+        public override void SetElementValue(int n, int c, ElementInfo ei) {
             if (n == 0) {
                 if (ei.CheckBox.Checked) {
                     DumpInfo.Flags |= FLAG_FLIP_X;

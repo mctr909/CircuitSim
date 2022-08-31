@@ -595,7 +595,7 @@ namespace Circuit {
         public Adjustable FindAdjustable(BaseUI elm, int item) {
             for (int i = 0; i != Adjustables.Count; i++) {
                 var a = Adjustables[i];
-                if (a.UI == elm && a.EditItem == item) {
+                if (a.UI == elm && a.EditItemR == item) {
                     return a;
                 }
             }

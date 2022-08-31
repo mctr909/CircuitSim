@@ -5,7 +5,8 @@ using Circuit.Elements;
 namespace Circuit {
     public class Adjustable {
         /* index of value in getEditInfo() list that this slider controls */
-        public int EditItem { get; private set; }
+        public int EditItemR { get; private set; }
+        public int EditItemC { get; private set; }
 
         public double Value {
             get { return MinValue + (MaxValue - MinValue) * Slider.Value / 100; }
@@ -27,11 +28,12 @@ namespace Circuit {
 
         bool mSettingValue;
 
-        public Adjustable(BaseUI ce, int item) {
+        public Adjustable(BaseUI ce, int itemR) {
             MinValue = 1;
             MaxValue = 1000;
             UI = ce;
-            EditItem = item;
+            EditItemR = itemR;
+            EditItemC = 0;
         }
 
         public Adjustable(StringTokenizer st, CirSimForm sim) {
@@ -40,14 +42,15 @@ namespace Circuit {
                 return;
             }
             UI = sim.GetElm(e);
-            EditItem = st.nextTokenInt();
+            EditItemR = st.nextTokenInt();
+            EditItemC = 0;
             MinValue = st.nextTokenDouble();
             MaxValue = st.nextTokenDouble();
             SliderText = Utils.Unescape(st.nextToken());
         }
 
         public void CreateSlider() {
-            var ei = UI.GetElementInfo(EditItem, 0);
+            var ei = UI.GetElementInfo(EditItemR, EditItemC);
             CreateSlider(ei);
         }
 
@@ -78,15 +81,15 @@ namespace Circuit {
             if (mSettingValue) {
                 return;
             }
-            var ei = UI.GetElementInfo(EditItem, 0);
+            var ei = UI.GetElementInfo(EditItemR, EditItemC);
             ei.Value = Value;
-            UI.SetElementValue(EditItem, ei);
+            UI.SetElementValue(EditItemR, EditItemC, ei);
             CirSimForm.Sim.Repaint();
         }
 
         public string Dump() {
             return CirSimForm.Sim.GetElmIndex(UI)
-                + " " + EditItem
+                + " " + EditItemR
                 + " " + MinValue
                 + " " + MaxValue
                 + " " + Utils.Escape(SliderText);

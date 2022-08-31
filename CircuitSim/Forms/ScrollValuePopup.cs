@@ -184,7 +184,7 @@ namespace Circuit {
             mCurrentIdx = tr.Value;
             int thissel = getSelIdx();
             mInfo.Value = mValues[thissel];
-            mMyElm.SetElementValue(0, mInfo);
+            mMyElm.SetElementValue(0, 0, mInfo);
             mSim.NeedAnalyze();
             mLabels.Text = Utils.UnitText(mValues[thissel], mUnit);
         }
@@ -194,7 +194,7 @@ namespace Circuit {
                 mTrbValue.Value = i;
                 mLastIdx = i;
                 mInfo.Value = mValues[i];
-                mMyElm.SetElementValue(0, mInfo);
+                mMyElm.SetElementValue(0, 0, mInfo);
                 mSim.NeedAnalyze();
             }
         }

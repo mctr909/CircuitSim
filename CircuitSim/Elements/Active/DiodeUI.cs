@@ -138,7 +138,7 @@ namespace Circuit.Elements.Active {
             return base.GetElementInfo(r, c);
         }
 
-        public override void SetElementValue(int n, ElementInfo ei) {
+        public override void SetElementValue(int n, int c, ElementInfo ei) {
             var ce = (DiodeElm)Elm;
             if (n == 0) {
                 DumpInfo.ReferenceName = ei.Textf.Text;
@@ -157,7 +157,7 @@ namespace Circuit.Elements.Active {
                 setup();
                 return;
             }
-            base.SetElementValue(n, ei);
+            base.SetElementValue(n, c, ei);
         }
 
         protected void setup() {

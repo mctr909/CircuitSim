@@ -82,7 +82,7 @@ namespace Circuit.Elements.Input {
             return null;
         }
 
-        public override void SetElementValue(int n, ElementInfo ei) {
+        public override void SetElementValue(int n, int c, ElementInfo ei) {
             var ce = (AMElm)Elm;
             if (n == 0) {
                 ce.MaxVoltage = ei.Value;

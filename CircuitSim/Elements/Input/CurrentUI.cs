@@ -78,7 +78,7 @@ namespace Circuit.Elements.Input {
             return null;
         }
 
-        public override void SetElementValue(int n, ElementInfo ei) {
+        public override void SetElementValue(int n, int c, ElementInfo ei) {
             mCurrentValue = ei.Value;
         }
     }

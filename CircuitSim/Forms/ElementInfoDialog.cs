@@ -10,7 +10,7 @@ using Circuit.Elements.Input;
 namespace Circuit {
     public interface Editable {
         ElementInfo GetElementInfo(int r, int c);
-        void SetElementValue(int n, ElementInfo ei);
+        void SetElementValue(int r, int c, ElementInfo ei);
     }
 
     public class ElementInfoDialog : Form {
@@ -19,9 +19,8 @@ namespace Circuit {
         Editable mElm;
         Button mBtnApply;
         Button mBtnCancel;
-        ElementInfo[] mEInfos;
+        ElementInfo[,] mEInfos;
 
-        int mEInfoCount;
         int mMaxX = 0;
         int mOfsX = 0;
         int mOfsY = 0;
@@ -34,7 +33,7 @@ namespace Circuit {
             Text = "Edit Component";
             mElm = ce;
 
-            mEInfos = new ElementInfo[24];
+            mEInfos = new ElementInfo[16, 16];
 
             SuspendLayout();
             Visible = false;
@@ -90,7 +89,7 @@ namespace Circuit {
             }
             Location = new Point(x, y);
             
-            if (null == mEInfos[0]) {
+            if (null == mEInfos[0, 0]) {
                 Close();
                 Visible = false;
             } else {
@@ -167,28 +166,32 @@ namespace Circuit {
         }
 
         void apply() {
-            for (int i = 0; i != mEInfoCount; i++) {
-                var ei = mEInfos[i];
-                if (ei.Textf != null && ei.Text == null) {
-                    try {
-                        double d = parseUnits(ei);
-                        ei.Value = d;
-                    } catch (FormatException ex) {
-                        MessageBox.Show(ex.Message);
-                    } catch (Exception ex) {
-                        throw ex;
+            for (int c = 0; c < 16; c++) {
+                for (int r = 0; r != 16; r++) {
+                    var ei = mEInfos[r, c];
+                    if (ei == null) {
+                        continue;
                     }
-                }
-                if (ei.Button != null) {
-                    continue;
-                }
-                mElm.SetElementValue(i, ei);
+                    if (ei.Textf != null && ei.Text == null) {
+                        try {
+                            ei.Value = parseUnits(ei);
+                        } catch (FormatException ex) {
+                            MessageBox.Show(ex.Message);
+                        } catch (Exception ex) {
+                            throw ex;
+                        }
+                    }
+                    if (ei.Button != null) {
+                        continue;
+                    }
+                    mElm.SetElementValue(r, c, ei);
 
-                /* update slider if any */
-                if (mElm is BaseUI) {
-                    var adj = CirSimForm.Sim.FindAdjustable((BaseUI)mElm, i);
-                    if (adj != null) {
-                        adj.Value = ei.Value;
+                    /* update slider if any */
+                    if (mElm is BaseUI) {
+                        var adj = CirSimForm.Sim.FindAdjustable((BaseUI)mElm, r);
+                        if (adj != null) {
+                            adj.Value = ei.Value;
+                        }
                     }
                 }
             }
@@ -198,19 +201,24 @@ namespace Circuit {
         void itemStateChanged(object sender) {
             bool changed = false;
             bool applied = false;
-            for (int i = 0; i != mEInfoCount; i++) {
-                var ei = mEInfos[i];
-                if (ei.Choice == sender || ei.CheckBox == sender || ei.Button == sender) {
-                    /* if we're pressing a button, make sure to apply changes first */
-                    if (ei.Button == sender && !ei.NewDialog) {
-                        apply();
-                        applied = true;
+            for (int c = 0; c < 16; c++) {
+                for (int r = 0; r < 16; r++) {
+                    var ei = mEInfos[r, c];
+                    if (ei == null) {
+                        continue;
                     }
-                    mElm.SetElementValue(i, ei);
-                    if (ei.NewDialog) {
-                        changed = true;
+                    if (ei.Choice == sender || ei.CheckBox == sender || ei.Button == sender) {
+                        /* if we're pressing a button, make sure to apply changes first */
+                        if (ei.Button == sender && !ei.NewDialog) {
+                            apply();
+                            applied = true;
+                        }
+                        mElm.SetElementValue(r, c, ei);
+                        if (ei.NewDialog) {
+                            changed = true;
+                        }
+                        CirSimForm.Sim.NeedAnalyze();
                     }
-                    CirSimForm.Sim.NeedAnalyze();
                 }
             }
             if (changed) {
@@ -235,7 +243,6 @@ namespace Circuit {
         }
 
         void buildDialog() {
-            int infoIdx = -1;
             int iRow = 0;
             int iCol = 0;
 
@@ -287,8 +294,7 @@ namespace Circuit {
                     mOfsY += 37;
                     continue;
                 }
-                mEInfos[++infoIdx] = ei;
-                mEInfoCount = infoIdx + 1;
+                mEInfos[iRow, iCol] = ei;
             }
 
             mPnlCommonButtons.Left = 4;

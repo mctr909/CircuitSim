@@ -161,7 +161,7 @@ namespace Circuit.Elements.Passive {
             return null;
         }
 
-        public override void SetElementValue(int n, ElementInfo ei) {
+        public override void SetElementValue(int n, int c, ElementInfo ei) {
             var ce = (ResistorElm)Elm;
             if (n == 0 && 0 < ei.Value) {
                 ce.Resistance = ei.Value;

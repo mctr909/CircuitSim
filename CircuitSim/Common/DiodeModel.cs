@@ -244,7 +244,7 @@ namespace Circuit {
             return null;
         }
 
-        public void SetElementValue(int n, ElementInfo ei) {
+        public void SetElementValue(int n, int c, ElementInfo ei) {
             if (n == 0) {
                 SaturationCurrent = ei.Value;
             }

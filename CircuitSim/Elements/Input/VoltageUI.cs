@@ -333,76 +333,72 @@ namespace Circuit.Elements.Input {
             return null;
         }
 
-        public override void SetElementValue(int n, ElementInfo ei) {
+        public override void SetElementValue(int r, int c, ElementInfo ei) {
             var elm = (VoltageElm)Elm;
-            if (n == 0) {
-                var ow = elm.WaveForm;
-                elm.WaveForm = (VoltageElm.WAVEFORM)ei.Choice.SelectedIndex;
-                if (elm.WaveForm == VoltageElm.WAVEFORM.DC && ow != VoltageElm.WAVEFORM.DC) {
-                    ei.NewDialog = true;
-                    elm.Bias = 0;
-                } else if (elm.WaveForm != ow) {
-                    ei.NewDialog = true;
-                }
+            if (c == 0) {
+                if (r == 0) {
+                    var ow = elm.WaveForm;
+                    elm.WaveForm = (VoltageElm.WAVEFORM)ei.Choice.SelectedIndex;
+                    if (elm.WaveForm == VoltageElm.WAVEFORM.DC && ow != VoltageElm.WAVEFORM.DC) {
+                        ei.NewDialog = true;
+                        elm.Bias = 0;
+                    } else if (elm.WaveForm != ow) {
+                        ei.NewDialog = true;
+                    }
 
-                /* change duty cycle if we're changing to or from pulse */
-                if (elm.WaveForm == VoltageElm.WAVEFORM.PULSE && ow != VoltageElm.WAVEFORM.PULSE) {
-                    elm.DutyCycle = DEFAULT_PULSE_DUTY;
-                } else if (ow == VoltageElm.WAVEFORM.PULSE && elm.WaveForm != VoltageElm.WAVEFORM.PULSE) {
-                    elm.DutyCycle = .5;
-                }
+                    /* change duty cycle if we're changing to or from pulse */
+                    if (elm.WaveForm == VoltageElm.WAVEFORM.PULSE && ow != VoltageElm.WAVEFORM.PULSE) {
+                        elm.DutyCycle = DEFAULT_PULSE_DUTY;
+                    } else if (ow == VoltageElm.WAVEFORM.PULSE && elm.WaveForm != VoltageElm.WAVEFORM.PULSE) {
+                        elm.DutyCycle = .5;
+                    }
 
-                SetPoints();
-            }
-            if (n == 1) {
-                DumpInfo.ReferenceName = ei.Textf.Text;
-            }
-            if (n == 2) {
-                elm.MaxVoltage = ei.Value;
-            }
-            if (n == 3) {
-                elm.Bias = ei.Value;
-            }
-            if (n == 4) {
-                /* adjust time zero to maintain continuity ind the waveform
-                 * even though the frequency has changed. */
-                double oldfreq = elm.Frequency;
-                elm.Frequency = ei.Value;
-                double maxfreq = 1 / (8 * ControlPanel.TimeStep);
-                if (maxfreq < elm.Frequency) {
-                    if (MessageBox.Show("Adjust timestep to allow for higher frequencies?", "", MessageBoxButtons.OKCancel) == DialogResult.OK) {
-                        ControlPanel.TimeStep = 1 / (32 * elm.Frequency);
-                    } else {
-                        elm.Frequency = maxfreq;
+                    SetPoints();
+                }
+                if (r == 1) {
+                    DumpInfo.ReferenceName = ei.Textf.Text;
+                }
+                if (r == 2) {
+                    elm.MaxVoltage = ei.Value;
+                }
+                if (r == 3) {
+                    elm.Bias = ei.Value;
+                }
+                if (r == 4) {
+                    /* adjust time zero to maintain continuity ind the waveform
+                     * even though the frequency has changed. */
+                    double oldfreq = elm.Frequency;
+                    elm.Frequency = ei.Value;
+                    double maxfreq = 1 / (8 * ControlPanel.TimeStep);
+                    if (maxfreq < elm.Frequency) {
+                        if (MessageBox.Show("Adjust timestep to allow for higher frequencies?", "", MessageBoxButtons.OKCancel) == DialogResult.OK) {
+                            ControlPanel.TimeStep = 1 / (32 * elm.Frequency);
+                        } else {
+                            elm.Frequency = maxfreq;
+                        }
+                    }
+                }
+                if (r == 5) {
+                    elm.Phase = ei.Value * Math.PI / 180;
+                }
+                if (r == 6) {
+                    elm.PhaseOffset = ei.Value * Math.PI / 180;
+                }
+                if (elm.WaveForm == VoltageElm.WAVEFORM.PULSE
+                   || elm.WaveForm == VoltageElm.WAVEFORM.PULSE_BOTH
+                   || elm.WaveForm == VoltageElm.WAVEFORM.SQUARE
+                   || elm.WaveForm == VoltageElm.WAVEFORM.PWM
+                   || elm.WaveForm == VoltageElm.WAVEFORM.PWM_BOTH) {
+                    if (r == 7) {
+                        elm.DutyCycle = ei.Value * .01;
                     }
                 }
             }
-            if (n == 5) {
-                elm.Phase = ei.Value * Math.PI / 180;
-            }
-            if (n == 6) {
-                elm.PhaseOffset = ei.Value * Math.PI / 180;
-            }
-            
-            if (elm.WaveForm == VoltageElm.WAVEFORM.PULSE
-                || elm.WaveForm == VoltageElm.WAVEFORM.PULSE_BOTH
-                || elm.WaveForm == VoltageElm.WAVEFORM.SQUARE
-                || elm.WaveForm == VoltageElm.WAVEFORM.PWM
-                || elm.WaveForm == VoltageElm.WAVEFORM.PWM_BOTH) {
-                if (n == 7) {
-                    elm.DutyCycle = ei.Value * .01;
-                }
-                if (n == 8) {
+            if (c == 1) {
+                if (r == 3) {
                     elm.LinkBias = (int)ei.Value;
                 }
-                if (n == 9) {
-                    elm.LinkPhaseOffset = (int)ei.Value;
-                }
-            } else {
-                if (n == 7) {
-                    elm.LinkBias = (int)ei.Value;
-                }
-                if (n == 8) {
+                if (r == 6) {
                     elm.LinkPhaseOffset = (int)ei.Value;
                 }
             }
