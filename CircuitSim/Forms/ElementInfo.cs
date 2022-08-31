@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 namespace Circuit {
     public class ElementInfo {
@@ -32,6 +33,14 @@ namespace Circuit {
             Name = n;
         }
 
+        public ElementInfo(string n, EventHandler e) {
+            Button = new Button() {
+                AutoSize = true,
+                Text = n
+            };
+            Button.Click += e;
+        }
+
         public ElementInfo(string n, double val) {
             Name = n;
             Value = val;
@@ -61,6 +70,18 @@ namespace Circuit {
             Dimensionless = false;
         }
 
+        public ElementInfo(string n, int index, string[] val) {
+            Name = n;
+            Value = 0;
+            Choice = new ComboBox();
+            Choice.AutoSize = true;
+            foreach (var s in val) {
+                Choice.Items.Add(s);
+            }
+            Choice.SelectedIndex = index;
+            Dimensionless = false;
+        }
+
         public ElementInfo(string n, string val, bool multiLine = false) {
             Name = n;
             Value = 0;
@@ -77,17 +98,6 @@ namespace Circuit {
                 Textf = new TextBox();
                 Textf.Text = val;
             }
-            Dimensionless = false;
-        }
-
-        public ElementInfo(string n, int index, string[] val) {
-            Name = n;
-            Value = 0;
-            Choice = new ComboBox();
-            foreach (var s in val) {
-                Choice.Items.Add(s);
-            }
-            Choice.SelectedIndex = index;
             Dimensionless = false;
         }
 

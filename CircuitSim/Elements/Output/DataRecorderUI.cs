@@ -58,11 +58,7 @@ namespace Circuit.Elements.Output {
                 return new ElementInfo("列名", mName);
             }
             if (r == 2) {
-                var ei = new ElementInfo();
-                ei.Button = new Button() {
-                    Text = "ファイルに保存"
-                };
-                ei.Button.Click += new System.EventHandler((s, e) => {
+                return new ElementInfo("ファイルに保存", new System.EventHandler((s, e) => {
                     saveFileDialog.Filter = "CSVファイル(*.csv)|*.csv";
                     saveFileDialog.ShowDialog();
                     var filePath = saveFileDialog.FileName;
@@ -79,8 +75,7 @@ namespace Circuit.Elements.Output {
                     }
                     fs.Close();
                     fs.Dispose();
-                });
-                return ei;
+                }));
             }
             return null;
         }

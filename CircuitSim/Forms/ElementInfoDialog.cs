@@ -272,7 +272,6 @@ namespace Circuit {
                     });
                     insertCtrl(mPnlCustomCtrl, ei.Name, ei.CheckBox);
                 } else if (ei.Button != null) {
-                    ei.Button.AutoSize = true;
                     ei.Button.Click += new EventHandler((s, e) => {
                         itemStateChanged(s);
                     });

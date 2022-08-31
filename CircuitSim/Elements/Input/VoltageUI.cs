@@ -146,55 +146,55 @@ namespace Circuit.Elements.Input {
             }
             case VoltageElm.WAVEFORM.SQUARE:
                 if (elm.MaxVoltage < 0) {
-                    g.DrawLine(x - h, y + h, x - h, y    );
-                    g.DrawLine(x - h, y + h, xd   , y + h);
-                    g.DrawLine(xd   , y + h, xd   , y - h);
-                    g.DrawLine(x + h, y - h, xd   , y - h);
-                    g.DrawLine(x + h, y    , x + h, y - h);
+                    g.DrawLine(x - h, y + h, x - h, y);
+                    g.DrawLine(x - h, y + h, xd, y + h);
+                    g.DrawLine(xd, y + h, xd, y - h);
+                    g.DrawLine(x + h, y - h, xd, y - h);
+                    g.DrawLine(x + h, y, x + h, y - h);
                 } else {
-                    g.DrawLine(x - h, y - h, x - h, y    );
-                    g.DrawLine(x - h, y - h, xd   , y - h);
-                    g.DrawLine(xd   , y - h, xd   , y + h);
-                    g.DrawLine(x + h, y + h, xd   , y + h);
-                    g.DrawLine(x + h, y    , x + h, y + h);
+                    g.DrawLine(x - h, y - h, x - h, y);
+                    g.DrawLine(x - h, y - h, xd, y - h);
+                    g.DrawLine(xd, y - h, xd, y + h);
+                    g.DrawLine(x + h, y + h, xd, y + h);
+                    g.DrawLine(x + h, y, x + h, y + h);
                 }
                 break;
             case VoltageElm.WAVEFORM.PULSE:
                 if (elm.MaxVoltage < 0) {
-                    g.DrawLine(x + h, y    , x + h, y    );
-                    g.DrawLine(x + h, y    , xd   , y    );
-                    g.DrawLine(xd   , y + h, xd   , y    );
-                    g.DrawLine(x - h, y + h, xd   , y + h);
-                    g.DrawLine(x - h, y + h, x - h, y    );
+                    g.DrawLine(x + h, y, x + h, y);
+                    g.DrawLine(x + h, y, xd, y);
+                    g.DrawLine(xd, y + h, xd, y);
+                    g.DrawLine(x - h, y + h, xd, y + h);
+                    g.DrawLine(x - h, y + h, x - h, y);
                 } else {
-                    g.DrawLine(x - h, y - h, x - h, y    );
-                    g.DrawLine(x - h, y - h, xd   , y - h);
-                    g.DrawLine(xd   , y - h, xd   , y    );
-                    g.DrawLine(x + h, y    , xd   , y    );
-                    g.DrawLine(x + h, y    , x + h, y    );
+                    g.DrawLine(x - h, y - h, x - h, y);
+                    g.DrawLine(x - h, y - h, xd, y - h);
+                    g.DrawLine(xd, y - h, xd, y);
+                    g.DrawLine(x + h, y, xd, y);
+                    g.DrawLine(x + h, y, x + h, y);
                 }
                 break;
             case VoltageElm.WAVEFORM.PULSE_BOTH:
-                g.DrawLine(x - h , y - h, x - h , y);
-                g.DrawLine(x - h , y - h, hd    , y - h);
-                g.DrawLine(hd    , y - h, hd    , y);
-                g.DrawLine(hd    , y    , x     , y);
-                g.DrawLine(x     , y    , x     , y + h);
-                g.DrawLine(x     , y + h, hd + h, y + h);
+                g.DrawLine(x - h, y - h, x - h, y);
+                g.DrawLine(x - h, y - h, hd, y - h);
+                g.DrawLine(hd, y - h, hd, y);
+                g.DrawLine(hd, y, x, y);
+                g.DrawLine(x, y, x, y + h);
+                g.DrawLine(x, y + h, hd + h, y + h);
                 g.DrawLine(hd + h, y + h, hd + h, y);
-                g.DrawLine(hd + h, y    , x + h , y);
+                g.DrawLine(hd + h, y, x + h, y);
                 break;
             case VoltageElm.WAVEFORM.SAWTOOTH:
-                g.DrawLine(x, y - h, x - h, y    );
-                g.DrawLine(x, y - h, x    , y + h);
-                g.DrawLine(x, y + h, x + h, y    );
+                g.DrawLine(x, y - h, x - h, y);
+                g.DrawLine(x, y - h, x, y + h);
+                g.DrawLine(x, y + h, x + h, y);
                 break;
             case VoltageElm.WAVEFORM.TRIANGLE: {
                 int xl = 5;
-                g.DrawLine(x - xl * 2, y    , x - xl    , y - h);
-                g.DrawLine(x - xl    , y - h, x         , y    );
-                g.DrawLine(x         , y    , x + xl    , y + h);
-                g.DrawLine(x + xl    , y + h, x + xl * 2, y    );
+                g.DrawLine(x - xl * 2, y, x - xl, y - h);
+                g.DrawLine(x - xl, y - h, x, y);
+                g.DrawLine(x, y, x + xl, y + h);
+                g.DrawLine(x + xl, y + h, x + xl * 2, y);
                 break;
             }
             case VoltageElm.WAVEFORM.NOISE: {
