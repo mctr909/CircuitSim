@@ -53,7 +53,7 @@ namespace Circuit.Elements.Passive {
                 return null;
             }
             if (r == 2) {
-                return new ElementInfo("耐逆電圧(V)", ((PolarCapacitorElm)Elm).MaxNegativeVoltage, 0, 0);
+                return new ElementInfo("耐逆電圧(V)", ((PolarCapacitorElm)Elm).MaxNegativeVoltage);
             }
             return base.GetElementInfo(r, c);
         }

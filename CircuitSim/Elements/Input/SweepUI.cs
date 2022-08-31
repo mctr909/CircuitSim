@@ -110,16 +110,16 @@ namespace Circuit.Elements.Input {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("振幅(V)", ce.MaxV, 0, 0);
+                return new ElementInfo("振幅(V)", ce.MaxV);
             }
             if (r == 1) {
-                return new ElementInfo("最小周波数(Hz)", ce.MinF, 0, 0);
+                return new ElementInfo("最小周波数(Hz)", ce.MinF);
             }
             if (r == 2) {
-                return new ElementInfo("最大周波数(Hz)", ce.MaxF, 0, 0);
+                return new ElementInfo("最大周波数(Hz)", ce.MaxF);
             }
             if (r == 3) {
-                return new ElementInfo("スウィープ時間(sec)", ce.SweepTime, 0, 0);
+                return new ElementInfo("スウィープ時間(sec)", ce.SweepTime);
             }
             if (r == 4) {
                 return new ElementInfo("周波数対数変化", (DumpInfo.Flags & FLAG_LOG) != 0);

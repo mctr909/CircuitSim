@@ -73,7 +73,7 @@ namespace Circuit.Elements.Input {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("電流(A)", mCurrentValue, 0, .1);
+                return new ElementInfo("電流(A)", mCurrentValue, 0, 0.1);
             }
             return null;
         }

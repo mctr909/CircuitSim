@@ -212,7 +212,7 @@ namespace Circuit.Elements.Passive {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("レジスタンス(Ω)", ce.MaxResistance, 0, 0);
+                return new ElementInfo("レジスタンス(Ω)", ce.MaxResistance);
             }
             if (r == 1) {
                 return new ElementInfo("名前", DumpInfo.ReferenceName);

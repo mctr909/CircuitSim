@@ -74,7 +74,7 @@ namespace Circuit.Elements.Active {
                 return null;
             }
             if (r == 2) {
-                return new ElementInfo("ブレークダウン電圧(V)", ce.mModel.BreakdownVoltage, 0, 0);
+                return new ElementInfo("ブレークダウン電圧(V)", ce.mModel.BreakdownVoltage);
             }
             return base.GetElementInfo(r, c);
         }

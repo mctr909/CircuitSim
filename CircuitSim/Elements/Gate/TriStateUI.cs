@@ -91,10 +91,10 @@ namespace Circuit.Elements.Gate {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("オン抵抗(Ω)", ce.Ron, 0, 0);
+                return new ElementInfo("オン抵抗(Ω)", ce.Ron);
             }
             if (r == 1) {
-                return new ElementInfo("オフ抵抗(Ω)", ce.Roff, 0, 0);
+                return new ElementInfo("オフ抵抗(Ω)", ce.Roff);
             }
             return null;
         }

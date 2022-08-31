@@ -94,10 +94,10 @@ namespace Circuit.Elements.Active {
                 return new ElementInfo("ノーマリクローズ", (DumpInfo.Flags & FLAG_INVERT) != 0);
             }
             if (r == 1) {
-                return new ElementInfo("オン抵抗(Ω)", ce.Ron, 0, 0);
+                return new ElementInfo("オン抵抗(Ω)", ce.Ron);
             }
             if (r == 2) {
-                return new ElementInfo("オフ抵抗(Ω)", ce.Roff, 0, 0);
+                return new ElementInfo("オフ抵抗(Ω)", ce.Roff);
             }
             return null;
         }

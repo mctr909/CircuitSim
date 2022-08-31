@@ -58,12 +58,7 @@ namespace Circuit.Elements.Output {
 				return ei;
 			}
 			if (r == 1) {
-				var ei = new ElementInfo("トリガータイプ", ce.Type, -1, -1);
-				ei.Choice = new ComboBox();
-				ei.Choice.Items.Add(">=");
-				ei.Choice.Items.Add("<=");
-				ei.Choice.SelectedIndex = ce.Type;
-				return ei;
+				return new ElementInfo("トリガータイプ", ce.Type, new string[] { ">=", "<=" });
 			}
 			if (r == 2) {
 				var ei = new ElementInfo("遅延(s)", ce.Delay);

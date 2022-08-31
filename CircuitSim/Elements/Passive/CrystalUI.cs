@@ -106,10 +106,10 @@ namespace Circuit.Elements.Passive {
                 return new ElementInfo("直列静電容量(F)", ce.SeriesCapacitance);
             }
             if (r == 2) {
-                return new ElementInfo("インダクタンス(H)", ce.Inductance, 0, 0);
+                return new ElementInfo("インダクタンス(H)", ce.Inductance);
             }
             if (r == 3) {
-                return new ElementInfo("レジスタンス(Ω)", ce.Resistance, 0, 0);
+                return new ElementInfo("レジスタンス(Ω)", ce.Resistance);
             }
             if (r == 4) {
                 return new ElementInfo("名前", DumpInfo.ReferenceName);

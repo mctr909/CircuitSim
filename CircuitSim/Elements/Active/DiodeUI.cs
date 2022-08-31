@@ -123,7 +123,7 @@ namespace Circuit.Elements.Active {
                 return new ElementInfo("名前", DumpInfo.ReferenceName);
             }
             if (!mCustomModelUI && r == 1) {
-                var ei = new ElementInfo("モデル", 0, -1, -1);
+                var ei = new ElementInfo("モデル");
                 mModels = DiodeModel.GetModelList(this is DiodeUIZener);
                 ei.Choice = new ComboBox();
                 for (int i = 0; i != mModels.Count; i++) {

@@ -153,7 +153,7 @@ namespace Circuit.Elements.Passive {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("レジスタンス(Ω)", ce.Resistance, 0, 0);
+                return new ElementInfo("レジスタンス(Ω)", ce.Resistance);
             }
             if (r == 1) {
                 return new ElementInfo("名前", DumpInfo.ReferenceName);

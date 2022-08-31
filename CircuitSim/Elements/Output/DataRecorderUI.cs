@@ -52,13 +52,13 @@ namespace Circuit.Elements.Output {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("サンプル数", ce.DataCount, -1, -1).SetDimensionless();
+                return new ElementInfo("サンプル数", ce.DataCount).SetDimensionless();
             }
             if (r == 1) {
                 return new ElementInfo("列名", mName);
             }
             if (r == 2) {
-                var ei = new ElementInfo("", 0, -1, -1);
+                var ei = new ElementInfo();
                 ei.Button = new Button() {
                     Text = "ファイルに保存"
                 };

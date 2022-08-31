@@ -126,7 +126,7 @@ namespace Circuit.Elements.Active {
                 return new ElementInfo("青(0～1)", mColorB, 0, 1).SetDimensionless();
             }
             if (r == 3) {
-                return new ElementInfo("最大輝度電流(A)", mMaxBrightnessCurrent, 0, .1);
+                return new ElementInfo("最大輝度電流(A)", mMaxBrightnessCurrent, 0, 0.1);
             }
             return base.GetElementInfo(r - 4, c);
         }

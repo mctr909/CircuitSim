@@ -58,18 +58,10 @@ namespace Circuit.Elements.Custom {
                 return null;
             }
             if (r == 0) {
-                var ei = new ElementInfo("テキスト", 0, -1, -1);
-                ei.TextArea = new TextBox() {
-                    Multiline = true,
-                    Height = 100,
-                    Width = 250,
-                    ScrollBars = ScrollBars.Vertical,
-                    Text = mText
-                };
-                return ei;
+                return new ElementInfo("テキスト", mText, true);
             }
             if (r == 1) {
-                return new ElementInfo("サイズ", mSize, 5, 100);
+                return new ElementInfo("サイズ", mSize, 7, 24);
             }
             return null;
         }

@@ -28,7 +28,9 @@ namespace Circuit {
         /// </summary>
         public TextBox LabelBox;
 
-        public ElementInfo() { }
+        public ElementInfo(string n = "") {
+            Name = n;
+        }
 
         public ElementInfo(string n, double val) {
             Name = n;
@@ -59,16 +61,26 @@ namespace Circuit {
             Dimensionless = false;
         }
 
-        public ElementInfo(string n, string val) {
+        public ElementInfo(string n, string val, bool multiLine = false) {
             Name = n;
             Value = 0;
             Text = val;
-            Textf = new TextBox();
-            Textf.Text = val;
+            if (multiLine) {
+                TextArea = new TextBox() {
+                    Multiline = true,
+                    Height = 100,
+                    Width = 250,
+                    ScrollBars = ScrollBars.Vertical,
+                    Text = val
+                };
+            } else {
+                Textf = new TextBox();
+                Textf.Text = val;
+            }
             Dimensionless = false;
         }
 
-        public ElementInfo(string n, int index, params string[] val) {
+        public ElementInfo(string n, int index, string[] val) {
             Name = n;
             Value = 0;
             Choice = new ComboBox();

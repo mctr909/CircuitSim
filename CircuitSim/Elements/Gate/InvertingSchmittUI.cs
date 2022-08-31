@@ -89,13 +89,13 @@ namespace Circuit.Elements.Gate {
                 return new ElementInfo("Upper threshold (V)", ce.UpperTrigger, 0.01, 5);
             }
             if (r == 2) {
-                return new ElementInfo("Slew Rate (V/ns)", ce.SlewRate, 0, 0);
+                return new ElementInfo("Slew Rate (V/ns)", ce.SlewRate);
             }
             if (r == 3) {
-                return new ElementInfo("High Voltage (V)", ce.LogicOnLevel, 0, 0);
+                return new ElementInfo("High Voltage (V)", ce.LogicOnLevel);
             }
             if (r == 4) {
-                return new ElementInfo("Low Voltage (V)", ce.LogicOffLevel, 0, 0);
+                return new ElementInfo("Low Voltage (V)", ce.LogicOffLevel);
             }
             return null;
         }

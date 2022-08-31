@@ -143,13 +143,13 @@ namespace Circuit.Elements.Passive {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("一次側インダクタンス(H)", ce.PInductance, .01, 5);
+                return new ElementInfo("一次側インダクタンス(H)", ce.PInductance, 0.01, 5);
             }
             if (r == 1) {
                 return new ElementInfo("二次側巻数比", ce.Ratio, 1, 10).SetDimensionless();
             }
             if (r == 2) {
-                return new ElementInfo("結合係数", ce.CouplingCoef, 0, 1).SetDimensionless();
+                return new ElementInfo("結合係数(0～1)", ce.CouplingCoef, 0, 1).SetDimensionless();
             }
             if (r == 3) {
                 return new ElementInfo("名前", DumpInfo.ReferenceName);

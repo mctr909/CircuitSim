@@ -230,16 +230,16 @@ namespace Circuit {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("Saturation Current", SaturationCurrent, -1, -1);
+                return new ElementInfo("Saturation Current", SaturationCurrent);
             }
             if (r == 1) {
-                return new ElementInfo("Series Resistance", SeriesResistance, -1, -1);
+                return new ElementInfo("Series Resistance", SeriesResistance);
             }
             if (r == 2) {
-                return new ElementInfo("Emission Coefficient", EmissionCoefficient, -1, -1);
+                return new ElementInfo("Emission Coefficient", EmissionCoefficient);
             }
             if (r == 3) {
-                return new ElementInfo("Breakdown Voltage", BreakdownVoltage, -1, -1);
+                return new ElementInfo("Breakdown Voltage", BreakdownVoltage);
             }
             return null;
         }

@@ -290,7 +290,7 @@ namespace Circuit {
                     continue;
                 }
                 mEInfos[++infoIdx] = ei;
-                mEInfoCount = infoIdx;
+                mEInfoCount = infoIdx + 1;
             }
 
             mPnlCommonButtons.Left = 4;
@@ -300,7 +300,9 @@ namespace Circuit {
         }
 
         void insertCtrl(Control parent, string name, Control ctrl) {
-            if (!(ctrl is CheckBox)) {
+            if (ctrl is CheckBox) {
+                ctrl.Top = mOfsY + 9;
+            } else {
                 var lbl = new Label() {
                     Left = mOfsX + 4,
                     Top = mOfsY,
@@ -310,12 +312,12 @@ namespace Circuit {
                 };
                 parent.Controls.Add(lbl);
                 mMaxX = Math.Max(mMaxX, lbl.Right);
+                ctrl.Top = mOfsY + 12;
             }
             ctrl.Left = mOfsX + 4;
-            ctrl.Top = mOfsY + 12;
             parent.Controls.Add(ctrl);
 
-            mOfsY += 36;
+            mOfsY += ctrl.Height + 16;
             mMaxX = Math.Max(mMaxX, ctrl.Right);
 
             if (parent.Width < mMaxX) {

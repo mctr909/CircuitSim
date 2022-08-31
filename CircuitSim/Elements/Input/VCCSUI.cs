@@ -46,7 +46,7 @@ namespace Circuit.Elements.Input {
                 return null;
             }
             if (r == 0) {
-                var ei = new ElementInfo("Output Function", 0, -1, -1);
+                var ei = new ElementInfo("Output Function");
                 ei.Text = ce.ExprString;
                 ei.DisallowSliders();
                 return ei;

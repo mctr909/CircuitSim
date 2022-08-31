@@ -116,19 +116,12 @@ namespace Circuit.Elements.Output {
                 return null;
             }
             if (r == 0) {
-                var ei = new ElementInfo("表示", ce.SelectedValue, -1, -1);
-                ei.Choice = new ComboBox();
-                ei.Choice.Items.Add("瞬時値");
-                ei.Choice.Items.Add("実効値");
-                ei.Choice.Items.Add("最大値");
-                ei.Choice.Items.Add("最小値");
-                ei.Choice.Items.Add("P-P");
-                ei.Choice.Items.Add("2値");
-                ei.Choice.SelectedIndex = ce.Meter;
-                return ei;
+                return new ElementInfo("表示", ce.Meter,
+                    new string[] { "瞬時値", "実効値", "最大値", "最小値", "P-P", "2値" }
+                );
             }
             if (r == 1) {
-                return new ElementInfo("スケール", (int)ce.Scale, "自動", "V", "mV", "uV");
+                return new ElementInfo("スケール", (int)ce.Scale, new string[] { "自動", "V", "mV", "uV" });
             }
             return null;
         }
