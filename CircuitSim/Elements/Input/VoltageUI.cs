@@ -273,6 +273,7 @@ namespace Circuit.Elements.Input {
                 if (r == 0) {
                     var ei = new ElementInfo("波形");
                     ei.Choice = new ComboBox();
+                    ei.Choice.Width = 100;
                     ei.Choice.Items.Add(VoltageElm.WAVEFORM.DC);
                     ei.Choice.Items.Add(VoltageElm.WAVEFORM.AC);
                     ei.Choice.Items.Add(VoltageElm.WAVEFORM.SQUARE);
@@ -280,9 +281,8 @@ namespace Circuit.Elements.Input {
                     ei.Choice.Items.Add(VoltageElm.WAVEFORM.SAWTOOTH);
                     ei.Choice.Items.Add(VoltageElm.WAVEFORM.PULSE);
                     ei.Choice.Items.Add(VoltageElm.WAVEFORM.PULSE_BOTH);
+                    ei.Choice.Items.Add(VoltageElm.WAVEFORM.PWM);
                     ei.Choice.Items.Add(VoltageElm.WAVEFORM.PWM_BOTH);
-                    ei.Choice.Items.Add(VoltageElm.WAVEFORM.PWM_POSITIVE);
-                    ei.Choice.Items.Add(VoltageElm.WAVEFORM.PWM_NEGATIVE);
                     ei.Choice.Items.Add(VoltageElm.WAVEFORM.NOISE);
                     ei.Choice.SelectedIndex = (int)elm.WaveForm;
                     return ei;
@@ -312,10 +312,20 @@ namespace Circuit.Elements.Input {
                 if (r == 7 && (elm.WaveForm == VoltageElm.WAVEFORM.PULSE
                     || elm.WaveForm == VoltageElm.WAVEFORM.PULSE_BOTH
                     || elm.WaveForm == VoltageElm.WAVEFORM.SQUARE
-                    || elm.WaveForm == VoltageElm.WAVEFORM.PWM_BOTH
-                    || elm.WaveForm == VoltageElm.WAVEFORM.PWM_POSITIVE
-                    || elm.WaveForm == VoltageElm.WAVEFORM.PWM_NEGATIVE)) {
+                    || elm.WaveForm == VoltageElm.WAVEFORM.PWM
+                    || elm.WaveForm == VoltageElm.WAVEFORM.PWM_BOTH)) {
                     return new ElementInfo(VALUE_NAME_DUTY, elm.DutyCycle * 100, 0, 100).SetDimensionless();
+                }
+            }
+            if (c == 1) {
+                if (r == 3) {
+                    return new ElementInfo("連動グループ", elm.LinkBias);
+                }
+                if (r == 6) {
+                    return new ElementInfo("連動グループ", elm.LinkPhaseOffset);
+                }
+                if (r < 7) {
+                    return new ElementInfo();
                 }
             }
             return null;
@@ -371,8 +381,28 @@ namespace Circuit.Elements.Input {
             if (n == 6) {
                 elm.PhaseOffset = ei.Value * Math.PI / 180;
             }
-            if (n == 7) {
-                elm.DutyCycle = ei.Value * .01;
+            
+            if (elm.WaveForm == VoltageElm.WAVEFORM.PULSE
+                || elm.WaveForm == VoltageElm.WAVEFORM.PULSE_BOTH
+                || elm.WaveForm == VoltageElm.WAVEFORM.SQUARE
+                || elm.WaveForm == VoltageElm.WAVEFORM.PWM
+                || elm.WaveForm == VoltageElm.WAVEFORM.PWM_BOTH) {
+                if (n == 7) {
+                    elm.DutyCycle = ei.Value * .01;
+                }
+                if (n == 8) {
+                    elm.LinkBias = (int)ei.Value;
+                }
+                if (n == 9) {
+                    elm.LinkPhaseOffset = (int)ei.Value;
+                }
+            } else {
+                if (n == 7) {
+                    elm.LinkBias = (int)ei.Value;
+                }
+                if (n == 8) {
+                    elm.LinkPhaseOffset = (int)ei.Value;
+                }
             }
         }
 
@@ -419,6 +449,17 @@ namespace Circuit.Elements.Input {
                     break;
                 case VALUE_NAME_V_OFS:
                     ce.Bias = val;
+                    if (ce.LinkBias != 0) {
+                        for (int i = 0; i != CirSimForm.Sim.ElmCount; i++) {
+                            var o = CirSimForm.Sim.GetElm(i).Elm;
+                            if (o is VoltageElm) {
+                                var s2 = (VoltageElm)o;
+                                if (s2.LinkBias == ce.LinkBias) {
+                                    s2.Bias = ce.Bias;
+                                }
+                            }
+                        }
+                    }
                     break;
                 case VALUE_NAME_HZ:
                     ce.Frequency = val;
@@ -428,6 +469,17 @@ namespace Circuit.Elements.Input {
                     break;
                 case VALUE_NAME_PHASE_OFS:
                     ce.PhaseOffset = val * Math.PI / 180;
+                    if (ce.LinkPhaseOffset != 0) {
+                        for (int i = 0; i != CirSimForm.Sim.ElmCount; i++) {
+                            var o = CirSimForm.Sim.GetElm(i).Elm;
+                            if (o is VoltageElm) {
+                                var s2 = (VoltageElm)o;
+                                if (s2.LinkPhaseOffset == ce.LinkPhaseOffset) {
+                                    s2.PhaseOffset = ce.PhaseOffset;
+                                }
+                            }
+                        }
+                    }
                     break;
                 case VALUE_NAME_DUTY:
                     ce.DutyCycle = val;

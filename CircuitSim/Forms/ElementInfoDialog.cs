@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -35,7 +34,7 @@ namespace Circuit {
             Text = "Edit Component";
             mElm = ce;
 
-            mEInfos = new ElementInfo[10];
+            mEInfos = new ElementInfo[24];
 
             SuspendLayout();
             Visible = false;
@@ -285,7 +284,7 @@ namespace Circuit {
                         ei.Textf.Text = unitString(ei);
                     }
                 } else {
-                    mOfsY += 36;
+                    mOfsY += 37;
                     continue;
                 }
                 mEInfos[++infoIdx] = ei;
@@ -316,7 +315,7 @@ namespace Circuit {
             ctrl.Left = mOfsX + 4;
             parent.Controls.Add(ctrl);
 
-            mOfsY += ctrl.Height + 16;
+            mOfsY += Math.Max(37, ctrl.Height + 16);
             mMaxX = Math.Max(mMaxX, ctrl.Right);
 
             if (parent.Width < mMaxX) {
