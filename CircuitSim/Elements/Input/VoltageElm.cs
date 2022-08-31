@@ -48,6 +48,8 @@ namespace Circuit.Elements.Input {
                 Phase = st.nextTokenDouble() * Math.PI / 180;
                 PhaseOffset = st.nextTokenDouble() * Math.PI / 180;
                 DutyCycle = st.nextTokenDouble();
+                LinkBias = st.nextTokenInt();
+                LinkPhaseOffset = st.nextTokenInt();
             } catch { }
 
             Reset();

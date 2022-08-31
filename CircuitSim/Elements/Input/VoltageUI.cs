@@ -54,6 +54,8 @@ namespace Circuit.Elements.Input {
             optionList.Add((elm.Phase * 180 / Math.PI).ToString("0"));
             optionList.Add((elm.PhaseOffset * 180 / Math.PI).ToString("0"));
             optionList.Add(elm.DutyCycle.ToString("0.00"));
+            optionList.Add(elm.LinkBias);
+            optionList.Add(elm.LinkPhaseOffset);
         }
 
         public override void SetPoints() {
