@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -8,7 +7,7 @@ namespace Circuit {
         DOCK,
         UNDOCK,
         REMOVE_SCOPE,
-        REMOVE_PLOT,
+        REMOVE_WAVE,
         SPEED_UP,
         SPEED_DOWN,
         MAX_SCALE,
@@ -20,78 +19,104 @@ namespace Circuit {
     }
 
     public class ScopePopupMenu {
-        List<ToolStripMenuItem> mMenuItems;
-        ToolStripMenuItem mRemoveScope;
-        ToolStripMenuItem mMaxScale;
-        ToolStripMenuItem mStack;
-        ToolStripMenuItem mUnstack;
-        ToolStripMenuItem mCombine;
-        ToolStripMenuItem mRemovePlot;
-        ToolStripMenuItem mReset;
+        ContextMenuStrip mPopupMenu;
         ToolStripMenuItem mDock;
         ToolStripMenuItem mUndock;
+        ToolStripSeparator mDockSeparator;
+        ToolStripMenuItem mCombine;
+        ToolStripMenuItem mStack;
+        ToolStripMenuItem mUnstack;
+        ToolStripSeparator mStackSeparator;
+        ToolStripMenuItem mRemoveScope;
+        ToolStripMenuItem mRemoveWave;
+        ToolStripMenuItem mMaxScale;
+        ToolStripMenuItem mReset;
         ToolStripMenuItem mProperties;
 
         public ScopePopupMenu(CirSimForm sim) {
-            mMenuItems = new List<ToolStripMenuItem>();
-            /* */
-            mMenuItems.Add(mRemoveScope = new ToolStripMenuItem() { Text = "削除" });
-            mRemoveScope.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.REMOVE_SCOPE);
-            });
-            mMenuItems.Add(mRemovePlot = new ToolStripMenuItem() { Text = "Remove Plot" });
-            mRemovePlot.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.REMOVE_PLOT);
-            });
-            mMenuItems.Add(mDock = new ToolStripMenuItem() { Text = "画面下部に表示" });
+            mPopupMenu = new ContextMenuStrip();
+            /* スコープの表示場所 */
+            mPopupMenu.Items.Add(mDock = new ToolStripMenuItem() { Text = "画面下部に表示" });
             mDock.Click += new EventHandler((s, e) => {
                 sim.Performed(SCOPE_MENU_ITEM.DOCK);
             });
-            mMenuItems.Add(mUndock = new ToolStripMenuItem() { Text = "任意の場所に表示" });
+            mPopupMenu.Items.Add(mUndock = new ToolStripMenuItem() { Text = "任意の場所に表示" });
             mUndock.Click += new EventHandler((s, e) => {
                 sim.Performed(SCOPE_MENU_ITEM.UNDOCK);
             });
-            mMenuItems.Add(mCombine = new ToolStripMenuItem() { Text = "左のスコープに重ねる" });
+            mPopupMenu.Items.Add(mDockSeparator = new ToolStripSeparator());
+            /* 波形の配置 */
+            mPopupMenu.Items.Add(mCombine = new ToolStripMenuItem() { Text = "左のスコープに重ねる" });
             mCombine.Click += new EventHandler((s, e) => {
                 sim.Performed(SCOPE_MENU_ITEM.COMBINE);
             });
-            mMenuItems.Add(mStack = new ToolStripMenuItem() { Text = "左のスコープの下に並べる" });
+            mPopupMenu.Items.Add(mStack = new ToolStripMenuItem() { Text = "左のスコープの下に並べる" });
             mStack.Click += new EventHandler((s, e) => {
                 sim.Performed(SCOPE_MENU_ITEM.STACK);
             });
-            mMenuItems.Add(mUnstack = new ToolStripMenuItem() { Text = "右横に並べる" });
+            mPopupMenu.Items.Add(mUnstack = new ToolStripMenuItem() { Text = "右横に並べる" });
             mUnstack.Click += new EventHandler((s, e) => {
                 sim.Performed(SCOPE_MENU_ITEM.UNSTACK);
             });
-            mMenuItems.Add(mMaxScale = new ToolStripMenuItem() { Text = "振幅の最大化" });
+            mPopupMenu.Items.Add(mStackSeparator = new ToolStripSeparator());
+            /* 削除 */
+            mPopupMenu.Items.Add(mRemoveScope = new ToolStripMenuItem() { Text = "スコープの削除" });
+            mRemoveScope.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.REMOVE_SCOPE);
+            });
+            mPopupMenu.Items.Add(mRemoveWave = new ToolStripMenuItem() { Text = "選択波形の削除" });
+            mRemoveWave.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.REMOVE_WAVE);
+            });
+            mPopupMenu.Items.Add(new ToolStripSeparator());
+            /* 波形の状態更新 */
+            mPopupMenu.Items.Add(mMaxScale = new ToolStripMenuItem() { Text = "振幅の最大化" });
             mMaxScale.Click += new EventHandler((s, e) => {
                 sim.Performed(SCOPE_MENU_ITEM.MAX_SCALE);
             });
-            mMenuItems.Add(mReset = new ToolStripMenuItem() { Text = "リセット" });
+            mPopupMenu.Items.Add(mReset = new ToolStripMenuItem() { Text = "リセット" });
             mReset.Click += new EventHandler((s, e) => {
                 sim.Performed(SCOPE_MENU_ITEM.RESET);
             });
-            mMenuItems.Add(mProperties = new ToolStripMenuItem() { Text = "詳細設定" });
+            mPopupMenu.Items.Add(new ToolStripSeparator());
+            /* 設定 */
+            mPopupMenu.Items.Add(mProperties = new ToolStripMenuItem() { Text = "詳細設定" });
             mProperties.Click += new EventHandler((s, e) => {
                 sim.Performed(SCOPE_MENU_ITEM.PROPERTIES);
             });
         }
 
-        public ContextMenuStrip Show(int px, int py, bool floating) {
-            doScopePopupChecks(floating);
-            var popupMenu = new ContextMenuStrip();
-            popupMenu.Items.AddRange(mMenuItems.ToArray());
-            popupMenu.Show();
-            popupMenu.Location = new Point(px, py - popupMenu.Height - 8);
-            return popupMenu;
+        public ContextMenuStrip Show(int px, int py, Scope[] scopes, int selectedScopeIndex, bool floating) {
+            doScopePopupChecks(scopes, selectedScopeIndex, floating);
+            mPopupMenu.Show();
+            mPopupMenu.Location = new Point(px, py - mPopupMenu.Height - 8);
+            return mPopupMenu;
         }
 
-        void doScopePopupChecks(bool floating) {
-            mStack.Visible = !floating;
-            mUnstack.Visible = !floating;
-            mCombine.Visible = !floating;
+        void doScopePopupChecks(Scope[] scopes, int selectedScopeIndex, bool floating) {
+            var hasStacks = false;
+            var hasLeft = false;
+            var selectedScope = scopes[selectedScopeIndex];
+            for (int i = 0; i < scopes.Length && null != scopes[i]; i++) {
+                if (i == selectedScopeIndex) {
+                    continue;
+                }
+                var scope = scopes[i];
+                if (scope.Position == selectedScope.Position) {
+                    hasStacks = true;
+                }
+                if (scope.Position < selectedScope.Position) {
+                    hasLeft = true;
+                }
+            }
             mDock.Visible = floating;
             mUndock.Visible = !floating;
+            mDockSeparator.Visible = !floating;
+            mCombine.Visible = !floating && hasLeft;
+            mStack.Visible = !floating && hasLeft;
+            mUnstack.Visible = !floating && hasStacks;
+            mStackSeparator.Visible = !floating && (hasLeft || hasStacks);
+            mRemoveWave.Visible = 1 < selectedScope.Plots.Count;
         }
     }
 }

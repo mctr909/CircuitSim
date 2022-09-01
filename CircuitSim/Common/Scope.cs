@@ -120,7 +120,7 @@ namespace Circuit {
                 if (0 <= SelectedPlot && SelectedPlot < Plots.Count) {
                     return Plots[SelectedPlot].Elm;
                 }
-                return 0 < Plots.Count ? Plots[0].Elm : Plots[0].Elm;
+                return 0 < Plots.Count ? Plots[0].Elm : null;
             }
         }
 
@@ -285,7 +285,7 @@ namespace Circuit {
             return pos;
         }
 
-        public void RemovePlot(int plot) {
+        public void RemoveWave(int plot) {
             if (plot < Plots.Count) {
                 var p = Plots[plot];
                 Plots.Remove(p);

@@ -133,7 +133,7 @@ namespace Circuit {
         Point mMenuClient;
         Point mMenuPos;
         int mMenuScope = -1;
-        int mMenuPlot = -1;
+        int mMenuPlotWave = -1;
 
         long mMouseDownTime;
 
@@ -422,8 +422,8 @@ namespace Circuit {
             if (item == SCOPE_MENU_ITEM.REMOVE_SCOPE) {
                 s.SetElm(null);  /* setupScopes() will clean this up */
             }
-            if (item == SCOPE_MENU_ITEM.REMOVE_PLOT) {
-                s.RemovePlot(mMenuPlot);
+            if (item == SCOPE_MENU_ITEM.REMOVE_WAVE) {
+                s.RemoveWave(mMenuPlotWave);
             }
             if (item == SCOPE_MENU_ITEM.SPEED_UP) {
                 s.SpeedUp();
@@ -1780,12 +1780,12 @@ namespace Circuit {
         void doPopupMenu() {
             mMenuElm = mMouseElm;
             mMenuScope = -1;
-            mMenuPlot = -1;
+            mMenuPlotWave = -1;
             if (ScopeSelected != -1) {
                 if (mScopes[ScopeSelected].CanMenu) {
                     mMenuScope = ScopeSelected;
-                    mMenuPlot = mScopes[ScopeSelected].SelectedPlot;
-                    mContextMenu = mScopePopupMenu.Show(mMenuClient.X, Bottom, false);
+                    mMenuPlotWave = mScopes[ScopeSelected].SelectedPlot;
+                    mContextMenu = mScopePopupMenu.Show(mMenuClient.X, Bottom, mScopes, ScopeSelected, false);
                     mContextMenuLocation = mContextMenu.Location;
                 }
             } else if (mMouseElm != null) {
@@ -1795,8 +1795,8 @@ namespace Circuit {
                 } else {
                     var s = (ScopeUI)mMouseElm;
                     if (s.elmScope.CanMenu) {
-                        mMenuPlot = s.elmScope.SelectedPlot;
-                        mContextMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, true);
+                        mMenuPlotWave = s.elmScope.SelectedPlot;
+                        mContextMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, new Scope[] { s.elmScope }, 0, true);
                         mContextMenuLocation = mContextMenu.Location;
                     }
                 }

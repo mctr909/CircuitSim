@@ -8,11 +8,8 @@ using Circuit.Elements;
 
 namespace Circuit {
     public class SliderDialog : Form {
-        const int barmax = 1000;
-
         BaseUI elm;
         CirSimForm sim;
-        Button applyButton;
         Button okButton;
         Button cancelButton;
         ElementInfo[] einfos;
@@ -32,29 +29,36 @@ namespace Circuit {
             {
                 hp.AutoSize = true;
                 /* Apply */
-                applyButton = new Button() { Text = "Apply" };
-                applyButton.Click += new EventHandler((sender, e) => { apply(); });
-                ctrlInsert(hp, applyButton);
-                /* OK */
-                okButton = new Button() { Text = "OK" };
+                okButton = new Button() {
+                    Left = 0,
+                    Width = 50,
+                    Text = "Apply"
+                };
                 okButton.Click += new EventHandler((sender, e) => {
                     apply();
                     closeDialog();
                 });
-                ctrlInsert(hp, okButton);
+                hp.Controls.Add(okButton);
                 /* Cancel */
-                cancelButton = new Button() { Text = "Cancel" };
+                cancelButton = new Button() {
+                    Left = okButton.Right + 4,
+                    Width = 50,
+                    Text = "Cancel"
+                };
                 cancelButton.Click += new EventHandler((sender, e) => {
                     closeDialog();
                 });
-                ctrlInsert(hp, cancelButton);
+                hp.Controls.Add(cancelButton);
             }
+
             /* */
-            ctrlInsert(vp, hp);
+            vp.Controls.Add(hp);
+
             /* */
             vp.Left = 4;
             vp.Top = 4;
             Controls.Add(vp);
+
             /* */
             buildDialog();
             Width = vp.Width + 24;
@@ -75,11 +79,12 @@ namespace Circuit {
             int idx;
             vp.SuspendLayout();
             for (i = 0; ; i++) {
-                einfos[i] = elm.GetElementInfo(i, 0);
-                if (einfos[i] == null) {
+                var ei = elm.GetElementInfo(i, 0);
+                if (ei == null) {
                     break;
                 }
-                var ei = einfos[i];
+                einfos[i] = ei;
+
                 if (!ei.CanCreateAdjustable()) {
                     continue;
                 }
@@ -87,9 +92,6 @@ namespace Circuit {
                 string name = ei.Name;
                 idx = vp.Controls.IndexOf(hp);
 
-                /* remove HTML */
-                var rg = new Regex("<[^>]*>");
-                name = rg.Replace(name, "");
                 ei.CheckBox = new CheckBox() {
                     AutoSize = true,
                     Text = name,
@@ -97,22 +99,35 @@ namespace Circuit {
                 };
                 ctrlInsert(vp, ei.CheckBox, idx++);
                 ei.CheckBox.CheckedChanged += new EventHandler((sender, e) => { itemStateChanged(sender); });
+
                 if (adj != null) {
-                    ctrlInsert(vp, new Label() { TextAlign = ContentAlignment.BottomLeft, Text = "Min Value" }, idx++);
-                    ei.MinBox = new TextBox() {
-                        Text = ElementInfoDialog.UnitString(ei, adj.MinValue)
-                    };
-                    ctrlInsert(vp, ei.MinBox, idx++);
-                    ctrlInsert(vp, new Label() { TextAlign = ContentAlignment.BottomLeft, Text = "Max Value" }, idx++);
-                    ei.MaxBox = new TextBox() {
-                        Text = ElementInfoDialog.UnitString(ei, adj.MaxValue)
-                    };
-                    ctrlInsert(vp, ei.MaxBox, idx++);
-                    ctrlInsert(vp, new Label() { TextAlign = ContentAlignment.BottomLeft, Text = "Label" }, idx++);
+                    ctrlInsert(vp, new Label() {
+                        TextAlign = ContentAlignment.BottomLeft,
+                        Text = "名前"
+                    }, idx++);
                     ei.LabelBox = new TextBox() {
-                        Text = adj.SliderText
+                        Text = adj.SliderText,
+                        Width = 120
                     };
                     ctrlInsert(vp, ei.LabelBox, idx++);
+                    ctrlInsert(vp, new Label() {
+                        TextAlign = ContentAlignment.BottomLeft,
+                        Text = "最小値"
+                    }, idx++);
+                    ei.MinBox = new TextBox() {
+                        Text = ElementInfoDialog.UnitString(ei, adj.MinValue),
+                        Width = 50
+                    };
+                    ctrlInsert(vp, ei.MinBox, idx++);
+                    ctrlInsert(vp, new Label() {
+                        TextAlign = ContentAlignment.BottomLeft,
+                        Text = "最大値"
+                    }, idx++);
+                    ei.MaxBox = new TextBox() {
+                        Text = ElementInfoDialog.UnitString(ei, adj.MaxValue),
+                        Width = 50
+                    };
+                    ctrlInsert(vp, ei.MaxBox, idx++);
                 }
             }
             vp.ResumeLayout(false);
@@ -186,22 +201,6 @@ namespace Circuit {
         public void closeDialog() {
             Close();
             CirSimForm.SliderDialog = null;
-        }
-
-        void ctrlInsert(Panel p, Control ctrl) {
-            var ofsY = 4;
-            var width = 0;
-            for (int i = 0; i < p.Controls.Count; i++) {
-                ofsY += p.Controls[i].Height;
-                if (width < p.Controls[i].Width) {
-                    width = p.Controls[i].Width;
-                }
-            }
-            ctrl.Left = 4;
-            ctrl.Top = ofsY;
-            p.Controls.Add(ctrl);
-            p.Width = width + 4;
-            p.Height = ofsY + 4;
         }
 
         void ctrlInsert(Panel p, Control ctrl, int idx) {
