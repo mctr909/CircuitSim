@@ -2309,10 +2309,9 @@ namespace Circuit {
             }
             g.FillRectangle(bCircuitArea, 0, mCircuitArea.Height, mCircuitArea.Width, g.Height - mCircuitArea.Height);
 
-            g.LineColor = mMouseWasOverSplitter ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
-
             g.SetPlotBottom(0, mCircuitArea.Height - 2);
             {
+                g.LineColor = mMouseWasOverSplitter ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
                 g.DrawLine(0, -2, mCircuitArea.Width, -2);
                 g.DrawLine(0, 0, mCircuitArea.Width, 0);
             }

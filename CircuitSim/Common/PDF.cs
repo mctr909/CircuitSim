@@ -85,7 +85,7 @@ class PDF {
         }
 
         public override void DrawPost(PointF p) {
-            fillCircleF(p.X, p.Y, 2);
+            fillCircleF(p.X, p.Y, 2.5f);
         }
 
         public override void DrawHandle(Point p) {
@@ -155,7 +155,7 @@ class PDF {
                 writeL(p);
             }
             p = poly[0];
-            writeLB(p);
+            writeLF(p);
         }
 
         public override void FillCircle(int cx, int cy, float radius) {
@@ -171,7 +171,7 @@ class PDF {
                 writeL(p);
             }
             p = poly[0];
-            writeLB(p);
+            writeLF(p);
         }
 
         PointF[] polyCircle(float cx, float cy, float radius, float start = 0, float sweep = 360) {
@@ -249,8 +249,8 @@ class PDF {
             );
         }
 
-        void writeLB(PointF p) {
-            mSw.WriteLine("{0} {1} l b",
+        void writeLF(PointF p) {
+            mSw.WriteLine("{0} {1} l f",
                 (p.X + mOfsX).ToString("0.##"),
                 (p.Y + mOfsY).ToString("0.##")
             );
