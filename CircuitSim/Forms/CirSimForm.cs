@@ -94,15 +94,15 @@ namespace Circuit {
         static Bitmap mBmp = null;
         static Graphics mContext;
 
-        MenuItem mUndoItem;
-        MenuItem mRedoItem;
+        static MenuItem mUndoItem;
+        static MenuItem mRedoItem;
         MenuItem mPasteItem;
 
         BaseUI mMenuElm;
         SwitchUI mHeldSwitchElm;
 
-        List<string> mUndoStack = new List<string>();
-        List<string> mRedoStack = new List<string>();
+        static List<string> mUndoStack = new List<string>();
+        static List<string> mRedoStack = new List<string>();
 
         string mRecovery;
         string mClipboard = "";
@@ -446,16 +446,6 @@ namespace Circuit {
             deleteUnusedScopeElms();
         }
 
-        public void PushUndo() {
-            mRedoStack.Clear();
-            string s = dumpCircuit();
-            if (mUndoStack.Count > 0 && s == mUndoStack[mUndoStack.Count - 1]) {
-                return;
-            }
-            mUndoStack.Add(s);
-            enableUndoRedo();
-        }
-
         // Todo: GetCircuitAsComposite
         //public CustomCompositeModel GetCircuitAsComposite() {
         //    string nodeDump = "";
@@ -678,6 +668,16 @@ namespace Circuit {
             } else {
                 Time = 0;
             }
+        }
+
+        public static void PushUndo() {
+            mRedoStack.Clear();
+            string s = dumpCircuit();
+            if (mUndoStack.Count > 0 && s == mUndoStack[mUndoStack.Count - 1]) {
+                return;
+            }
+            mUndoStack.Add(s);
+            enableUndoRedo();
         }
 
         public static int SnapGrid(int x) {
@@ -1177,7 +1177,7 @@ namespace Circuit {
             fs.Dispose();
         }
 
-        string dumpCircuit() {
+        static string dumpCircuit() {
             // Todo: CustomLogicModel
             //CustomLogicModel.clearDumpedFlags();
             // Todo: CustomCompositeModel
@@ -1804,7 +1804,7 @@ namespace Circuit {
         void scrollValues(int deltay) {
             if (mMouseElm != null && !DialogIsShowing() && SelectedScope == -1) {
                 if ((mMouseElm is ResistorUI) || (mMouseElm is CapacitorUI) || (mMouseElm is InductorUI)) {
-                    mScrollValuePopup = new ScrollValuePopup(deltay, mMouseElm, this);
+                    mScrollValuePopup = new ScrollValuePopup(deltay, mMouseElm);
                     mScrollValuePopup.Show(
                         Location.X + MouseCursorX,
                         Location.Y + MouseCursorY
@@ -1840,7 +1840,7 @@ namespace Circuit {
             readCircuit(mRecovery);
         }
 
-        void enableUndoRedo() {
+        static void enableUndoRedo() {
             mRedoItem.Enabled = mRedoStack.Count > 0;
             mUndoItem.Enabled = mUndoStack.Count > 0;
         }

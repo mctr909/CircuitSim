@@ -19,7 +19,6 @@ namespace Circuit {
         int mCurrentIdx;
         int mLastIdx;
 
-        CirSimForm mSim;
         BaseUI mMyElm;
         ElementInfo mInfo;
         Panel mPnlV;
@@ -29,11 +28,10 @@ namespace Circuit {
         string mName;
         string mUnit;
 
-        public ScrollValuePopup(int dy, BaseUI e, CirSimForm s) : base() {
+        public ScrollValuePopup(int dy, BaseUI e) : base() {
             mMyElm = e;
             mDeltaY = 0;
-            mSim = s;
-            mSim.PushUndo();
+            CirSimForm.PushUndo();
             setupValues();
 
             Text = mName;
