@@ -79,6 +79,17 @@ namespace Circuit {
                 sim.Performed(SCOPE_MENU_ITEM.RESET);
             });
             mPopupMenu.Items.Add(new ToolStripSeparator());
+            var speedUp = new ToolStripMenuItem() { Text = "速度(x2)" };
+            mPopupMenu.Items.Add(speedUp);
+            speedUp.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.SPEED_UP);
+            });
+            var speedDown = new ToolStripMenuItem() { Text = "速度(x0.5)" };
+            mPopupMenu.Items.Add(speedDown);
+            speedDown.Click += new EventHandler((s, e) => {
+                sim.Performed(SCOPE_MENU_ITEM.SPEED_DOWN);
+            });
+            mPopupMenu.Items.Add(new ToolStripSeparator());
             /* 設定 */
             mPopupMenu.Items.Add(mProperties = new ToolStripMenuItem() { Text = "詳細設定" });
             mProperties.Click += new EventHandler((s, e) => {
