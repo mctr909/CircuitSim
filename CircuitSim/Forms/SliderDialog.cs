@@ -8,28 +8,26 @@ using Circuit.Elements;
 
 namespace Circuit {
     public class SliderDialog : Form {
-        BaseUI elm;
-        CirSimForm sim;
-        Button okButton;
-        Button cancelButton;
-        ElementInfo[] einfos;
-        int einfocount;
-        Panel vp;
-        Panel hp;
+        BaseUI mElm;
+        CirSimForm mSim;
+        ElementInfo[] mEInfos;
+        int mEInfoCount;
+        Panel mPnlValues;
+        Panel mPnlButtons;
 
         public SliderDialog(BaseUI ce, CirSimForm f) : base() {
             Text = "Add Sliders";
-            sim = f;
-            elm = ce;
+            mSim = f;
+            mElm = ce;
 
-            vp = new Panel();
+            mPnlValues = new Panel();
 
-            einfos = new ElementInfo[10];
-            hp = new Panel();
+            mEInfos = new ElementInfo[10];
+            mPnlButtons = new Panel();
             {
-                hp.AutoSize = true;
+                mPnlButtons.AutoSize = true;
                 /* Apply */
-                okButton = new Button() {
+                var okButton = new Button() {
                     Left = 0,
                     Width = 50,
                     Text = "Apply"
@@ -38,9 +36,9 @@ namespace Circuit {
                     apply();
                     closeDialog();
                 });
-                hp.Controls.Add(okButton);
+                mPnlButtons.Controls.Add(okButton);
                 /* Cancel */
-                cancelButton = new Button() {
+                var cancelButton = new Button() {
                     Left = okButton.Right + 4,
                     Width = 50,
                     Text = "Cancel"
@@ -48,21 +46,21 @@ namespace Circuit {
                 cancelButton.Click += new EventHandler((sender, e) => {
                     closeDialog();
                 });
-                hp.Controls.Add(cancelButton);
+                mPnlButtons.Controls.Add(cancelButton);
+
+                mPnlValues.Controls.Add(mPnlButtons);
             }
 
             /* */
-            vp.Controls.Add(hp);
-
-            /* */
-            vp.Left = 4;
-            vp.Top = 4;
-            Controls.Add(vp);
+            mPnlValues.Left = 4;
+            mPnlValues.Top = 4;
+            Controls.Add(mPnlValues);
 
             /* */
             buildDialog();
-            Width = vp.Width + 24;
-            Height = vp.Height + 64;
+            Width = mPnlValues.Right + 2;
+            Height = mPnlValues.Bottom + 2;
+
             Visible = false;
         }
 
@@ -77,75 +75,104 @@ namespace Circuit {
         void buildDialog() {
             int i;
             int idx;
-            vp.SuspendLayout();
+            mPnlValues.SuspendLayout();
             for (i = 0; ; i++) {
-                var ei = elm.GetElementInfo(i, 0);
+                var ei = mElm.GetElementInfo(i, 0);
                 if (ei == null) {
                     break;
                 }
-                einfos[i] = ei;
+                mEInfos[i] = ei;
 
                 if (!ei.CanCreateAdjustable()) {
                     continue;
                 }
                 var adj = findAdjustable(i);
                 string name = ei.Name;
-                idx = vp.Controls.IndexOf(hp);
+                idx = mPnlValues.Controls.IndexOf(mPnlButtons);
 
                 ei.CheckBox = new CheckBox() {
-                    AutoSize = true,
+                    Height = 19,
                     Text = name,
                     Checked = adj != null
                 };
-                ctrlInsert(vp, ei.CheckBox, idx++);
-                ei.CheckBox.CheckedChanged += new EventHandler((sender, e) => { itemStateChanged(sender); });
+                ei.CheckBox.CheckedChanged += new EventHandler((sender, e) => {
+                    itemStateChanged(sender);
+                });
+                ctrlInsert(mPnlValues, ei.CheckBox, idx++);
 
                 if (adj != null) {
-                    ctrlInsert(vp, new Label() {
+                    var pnlProperty = new Panel();
+                    pnlProperty.BorderStyle = BorderStyle.FixedSingle;
+                    /* スライダー名称 */
+                    var lblTitle = new Label() {
+                        Top = 2,
+                        Left = 2,
                         TextAlign = ContentAlignment.BottomLeft,
-                        Text = "名前"
-                    }, idx++);
-                    ei.LabelBox = new TextBox() {
-                        Text = adj.SliderText,
-                        Width = 120
+                        Text = "スライダー名称",
+                        AutoSize = true
                     };
-                    ctrlInsert(vp, ei.LabelBox, idx++);
-                    ctrlInsert(vp, new Label() {
+                    pnlProperty.Controls.Add(lblTitle);
+                    ei.LabelBox = new TextBox() {
+                        Top = lblTitle.Bottom,
+                        Left = lblTitle.Left,
+                        Text = adj.SliderText,
+                        Width = 180
+                    };
+                    pnlProperty.Controls.Add(ei.LabelBox);
+                    /* 最小値 */
+                    var lblMin = new Label() {
+                        Top = ei.LabelBox.Bottom + 4,
+                        Left = ei.LabelBox.Left,
                         TextAlign = ContentAlignment.BottomLeft,
-                        Text = "最小値"
-                    }, idx++);
+                        Text = "最小値",
+                        AutoSize = true
+                    };
+                    pnlProperty.Controls.Add(lblMin);
                     ei.MinBox = new TextBox() {
+                        Top = lblMin.Bottom,
+                        Left = lblMin.Left,
                         Text = ElementInfoDialog.UnitString(ei, adj.MinValue),
                         Width = 50
                     };
-                    ctrlInsert(vp, ei.MinBox, idx++);
-                    ctrlInsert(vp, new Label() {
+                    pnlProperty.Controls.Add(ei.MinBox);
+                    /* 最大値 */
+                    var lblMax = new Label() {
+                        Top = lblMin.Top,
+                        Left = ei.MinBox.Right + 4,
                         TextAlign = ContentAlignment.BottomLeft,
-                        Text = "最大値"
-                    }, idx++);
+                        Text = "最大値",
+                        AutoSize = true
+                    };
+                    pnlProperty.Controls.Add(lblMax);
                     ei.MaxBox = new TextBox() {
+                        Top = lblMax.Bottom,
+                        Left = lblMax.Left,
                         Text = ElementInfoDialog.UnitString(ei, adj.MaxValue),
                         Width = 50
                     };
-                    ctrlInsert(vp, ei.MaxBox, idx++);
+                    pnlProperty.Controls.Add(ei.MaxBox);
+
+                    pnlProperty.Width = ei.LabelBox.Right + 4;
+                    pnlProperty.Height = ei.MaxBox.Bottom + 4;
+                    ctrlInsert(mPnlValues, pnlProperty, idx++);
                 }
             }
-            vp.ResumeLayout(false);
-            einfocount = i;
+            mPnlValues.ResumeLayout(false);
+            mEInfoCount = i;
         }
 
         Adjustable findAdjustable(int item) {
-            return sim.FindAdjustable(elm, item);
+            return mSim.FindAdjustable(mElm, item);
         }
 
         void apply() {
             int i;
-            for (i = 0; i != einfocount; i++) {
+            for (i = 0; i != mEInfoCount; i++) {
                 var adj = findAdjustable(i);
                 if (adj == null) {
                     continue;
                 }
-                var ei = einfos[i];
+                var ei = mEInfos[i];
                 if (ei.LabelBox == null) {  // haven't created UI yet?
                     continue;
                 }
@@ -164,20 +191,20 @@ namespace Circuit {
         public void itemStateChanged(object sender) {
             int i;
             bool changed = false;
-            for (i = 0; i != einfocount; i++) {
-                var ei = einfos[i];
+            for (i = 0; i != mEInfoCount; i++) {
+                var ei = mEInfos[i];
                 if (ei.CheckBox == sender) {
                     apply();
                     if (ei.CheckBox.Checked) {
-                        var adj = new Adjustable(elm, i);
+                        var adj = new Adjustable(mElm, i);
                         var rg = new Regex(" \\(.*\\)$");
                         adj.SliderText = rg.Replace(ei.Name, "");
                         adj.CreateSlider(ei);
-                        sim.Adjustables.Add(adj);
+                        mSim.Adjustables.Add(adj);
                     } else {
                         var adj = findAdjustable(i);
                         adj.DeleteSlider();
-                        sim.Adjustables.Remove(adj);
+                        mSim.Adjustables.Remove(adj);
                     }
                     changed = true;
                 }
@@ -185,16 +212,18 @@ namespace Circuit {
             if (changed) {
                 /* apply changes before we reset everything */
                 apply();
+                Visible = false;
                 clearDialog();
                 buildDialog();
-                Width = vp.Width + 24;
-                Height = vp.Height + 64;
+                Width = mPnlValues.Right + 2;
+                Height = mPnlValues.Bottom + 2;
+                Visible = true;
             }
         }
 
         public void clearDialog() {
-            while (vp.Controls[0] != hp) {
-                vp.Controls.RemoveAt(0);
+            while (mPnlValues.Controls[0] != mPnlButtons) {
+                mPnlValues.Controls.RemoveAt(0);
             }
         }
 
@@ -213,19 +242,19 @@ namespace Circuit {
                 tmp.Add(p.Controls[i]);
             }
             p.Controls.Clear();
-            var ofsY = 4;
+            var ofsY = 0;
             var width = 0;
             for (int i=0; i<tmp.Count; i++) {
-                tmp[i].Left = 4;
+                tmp[i].Left = 0;
                 tmp[i].Top = ofsY;
                 p.Controls.Add(tmp[i]);
-                ofsY += tmp[i].Height;
+                ofsY += tmp[i].Height + 4;
                 if (width < tmp[i].Width) {
                     width = tmp[i].Width;
                 }
             }
             p.Width = width + 4;
-            p.Height = ofsY + 4;
+            p.Height = ofsY;
             tmp.Clear();
         }
     }
