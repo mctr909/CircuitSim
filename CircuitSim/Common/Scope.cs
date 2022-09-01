@@ -1055,6 +1055,12 @@ namespace Circuit {
                 t = mScopeText;
             }
             var textY = 8;
+            var bkColor = CustomGraphics.TextColor;
+            if (ControlPanel.ChkPrintable.Checked) {
+                CustomGraphics.TextColor = Color.FromArgb(191, 0, 0, 0);
+            } else {
+                CustomGraphics.TextColor = Color.FromArgb(63, 255, 255, 255);
+            }
             if (!string.IsNullOrEmpty(t)) {
                 g.DrawLeftText(t, 0, textY);
                 textY += 12;
@@ -1083,6 +1089,7 @@ namespace Circuit {
             if (ShowFreq) {
                 g.DrawLeftText(calcFrequency(), 0, textY);
             }
+            CustomGraphics.TextColor = bkColor;
         }
         #endregion
     }
