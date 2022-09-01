@@ -51,9 +51,9 @@ namespace Circuit.Elements.Active {
             // draw leads and diode arrow
             drawDiode(g);
             // draw first plate
-            g.FillPolygon(g.LineColor, mPlate1);
+            g.FillPolygon(g.FillColor, mPlate1);
             // draw second plate
-            g.FillPolygon(g.LineColor, mPlate2);
+            g.FillPolygon(g.FillColor, mPlate2);
             doDots();
             drawPosts();
             drawName();

@@ -28,16 +28,12 @@ namespace Circuit {
         static Color mTextColor;
 
         Pen mPenPost = new Pen(Color.Red, 5.0f);
-        Pen mPenColor = new Pen(Color.White, 1.0f) {
-            StartCap = LineCap.Triangle,
-            EndCap = LineCap.Triangle
-        };
         Pen mPenLine = new Pen(Color.White, 1.0f) {
             StartCap = LineCap.Triangle,
             EndCap = LineCap.Triangle,
             Width = 0.1f
         };
-
+        Pen mPenFill = new Pen(Color.White, 1.0f);
         protected Bitmap mImage;
         Graphics mG;
 
@@ -73,6 +69,10 @@ namespace Circuit {
         public virtual Color LineColor {
             get { return mPenLine.Color; }
             set { mPenLine.Color = value; }
+        }
+        public virtual Color FillColor {
+            get { return mPenFill.Color; }
+            set { mPenFill.Color = value; }
         }
 
         public int Width { get; private set; }
@@ -166,7 +166,7 @@ namespace Circuit {
         }
 
         public void FillRectangle(int x, int y, int width, int height) {
-            mG.FillRectangle(mPenLine.Brush, x, y, width, height);
+            mG.FillRectangle(mPenFill.Brush, x, y, width, height);
         }
 
         public void FillRectangle(Brush brush, int x, int y, int width, int height) {
@@ -174,12 +174,12 @@ namespace Circuit {
         }
 
         public virtual void FillCircle(int cx, int cy, float radius) {
-            mG.FillPie(mPenLine.Brush, cx - radius, cy - radius, radius * 2, radius * 2, 0, 360);
+            mG.FillPie(mPenFill.Brush, cx - radius, cy - radius, radius * 2, radius * 2, 0, 360);
         }
 
         public virtual void FillPolygon(Color color, Point[] p) {
-            mPenColor.Color = color;
-            mG.FillPolygon(mPenColor.Brush, p);
+            mPenFill.Color = color;
+            mG.FillPolygon(mPenFill.Brush, p);
         }
 
         public virtual void ScrollBoard(int x, int y) {

@@ -92,7 +92,7 @@ namespace Circuit.Elements.Active {
                 w = 0;
             }
 
-            g.LineColor = Color.FromArgb((int)(mColorR * w), (int)(mColorG * w), (int)(mColorB * w));
+            g.FillColor = Color.FromArgb((int)(mColorR * w), (int)(mColorG * w), (int)(mColorB * w));
             g.FillCircle(mLedCenter.X, mLedCenter.Y, CR_INNER);
 
             setBbox(mPost1, mPost2, CR_INNER);

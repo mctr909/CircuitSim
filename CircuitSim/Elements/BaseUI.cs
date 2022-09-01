@@ -320,9 +320,9 @@ namespace Circuit.Elements {
                 pos += ds;
             }
             if (ControlPanel.ChkPrintable.Checked) {
-                Context.LineColor = CustomGraphics.GrayColor;
+                Context.FillColor = CustomGraphics.GrayColor;
             } else {
-                Context.LineColor = Color.Yellow;
+                Context.FillColor = Color.Yellow;
             }
             for (var di = pos; di < dr; di += ds) {
                 var x0 = (int)(a.X + di * dx / dr);

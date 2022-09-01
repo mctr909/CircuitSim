@@ -2313,6 +2313,7 @@ namespace Circuit {
 
             g.SetPlotBottom(0, mCircuitArea.Height - 2);
             {
+                g.DrawLine(0, -2, mCircuitArea.Width, -2);
                 g.DrawLine(0, 0, mCircuitArea.Width, 0);
             }
             g.ClearTransform();

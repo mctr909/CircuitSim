@@ -637,7 +637,7 @@ namespace Circuit {
                 var plot = Plots[SelectedPlot];
                 info[ct++] = plot.GetUnitText(plot.MaxValues[ip]);
                 int maxvy = (int)(mMainGridMult * (plot.MaxValues[ip] - mMainGridMid));
-                g.LineColor = plot.Color;
+                g.FillColor = plot.Color;
                 g.FillCircle(CirSimForm.Sim.MouseCursorX, BoundingBox.Y + y - maxvy, 3);
             }
             if (mShowV && Plots.Count > 0) {
@@ -669,7 +669,7 @@ namespace Circuit {
                 bx = szw / 2;
             }
 
-            g.LineColor = ControlPanel.ChkPrintable.Checked ? Color.White : Color.Black;
+            g.FillColor = ControlPanel.ChkPrintable.Checked ? Color.White : Color.Black;
             g.FillRectangle(bx - szw / 2, BoundingBox.Y - szh, szw, szh);
 
             for (int i = 0; i != ct; i++) {
