@@ -30,12 +30,12 @@
 			Stopped = false;
 			if (!Triggered && ((Type == 0 && Volts[0] >= TriggerVoltage) || (Type == 1 && Volts[0] <= TriggerVoltage))) {
 				Triggered = true;
-				TriggerTime = CirSimForm.Sim.Time;
+				TriggerTime = CirSimForm.Time;
 			}
-			if (Triggered && CirSimForm.Sim.Time >= TriggerTime + Delay) {
+			if (Triggered && CirSimForm.Time >= TriggerTime + Delay) {
 				Triggered = false;
 				Stopped = true;
-				CirSimForm.Sim.SetSimRunning(false);
+				CirSimForm.SetSimRunning(false);
 			}
 		}
 	}

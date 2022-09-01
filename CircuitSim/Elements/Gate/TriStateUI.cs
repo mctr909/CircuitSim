@@ -57,7 +57,7 @@ namespace Circuit.Elements.Gate {
         }
 
         public override void Drag(Point pos) {
-            pos = CirSimForm.Sim.SnapGrid(pos);
+            pos = CirSimForm.SnapGrid(pos);
             if (Math.Abs(DumpInfo.P1.X - pos.X) < Math.Abs(DumpInfo.P1.Y - pos.Y)) {
                 pos.X = DumpInfo.P1.X;
             } else {

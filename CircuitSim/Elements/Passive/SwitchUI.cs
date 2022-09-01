@@ -48,8 +48,8 @@ namespace Circuit.Elements.Passive {
             }
             if (ce.Link != 0) {
                 int i;
-                for (i = 0; i != CirSimForm.Sim.ElmCount; i++) {
-                    var o = CirSimForm.Sim.GetElm(i).Elm;
+                for (i = 0; i != CirSimForm.ElmCount; i++) {
+                    var o = CirSimForm.GetElm(i).Elm;
                     if (o is SwitchElm) {
                         var s2 = (SwitchElm)o;
                         if (s2.Link == ce.Link) {

@@ -86,7 +86,7 @@ namespace Circuit.Elements.Passive {
             drawLead(mPlate2[0], mPlate2[1]);
 
             updateDotCount();
-            if (CirSimForm.Sim.DragElm != this) {
+            if (CirSimForm.DragElm != this) {
                 drawDots(mPost1, mLead1, ce.CurCount);
                 drawDots(mPost2, mLead2, -ce.CurCount);
             }
@@ -142,7 +142,7 @@ namespace Circuit.Elements.Passive {
             return new EventHandler((s, e) => {
                 var trb = adj.Slider;
                 ce.Capacitance = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
-                CirSimForm.Sim.NeedAnalyze();
+                CirSimForm.NeedAnalyze();
             });
         }
     }

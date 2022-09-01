@@ -116,7 +116,7 @@ namespace Circuit.Elements.Passive {
             return new EventHandler((s, e) => {
                 var trb = adj.Slider;
                 ce.Inductance = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
-                CirSimForm.Sim.NeedAnalyze();
+                CirSimForm.NeedAnalyze();
             });
         }
     }

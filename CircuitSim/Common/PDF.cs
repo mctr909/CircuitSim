@@ -256,9 +256,9 @@ class PDF {
             );
         }
 
-        public override void ScrollBoard(int x, int y) {
-            mBoardOfsX = x;
-            mBoardOfsY = y;
+        public override void ScrollBoard(Point p) {
+            mBoardOfsX = p.X;
+            mBoardOfsY = p.Y;
         }
 
         public override void SetPlotBottom(int x, int y) {

@@ -45,7 +45,7 @@ namespace Circuit.Elements.Output {
 			arr[1] = "V = " + Utils.VoltageText(ce.Volts[0]);
 			arr[2] = "Vtrigger = " + Utils.VoltageText(ce.TriggerVoltage);
 			arr[3] = ce.Triggered ? ("stopping in "
-				+ Utils.UnitText(ce.TriggerTime + ce.Delay - CirSimForm.Sim.Time, "s")) : ce.Stopped ? "stopped" : "waiting";
+				+ Utils.UnitText(ce.TriggerTime + ce.Delay - CirSimForm.Time, "s")) : ce.Stopped ? "stopped" : "waiting";
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

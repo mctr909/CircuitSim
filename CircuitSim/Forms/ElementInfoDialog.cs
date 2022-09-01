@@ -188,14 +188,14 @@ namespace Circuit {
 
                     /* update slider if any */
                     if (mElm is BaseUI) {
-                        var adj = CirSimForm.Sim.FindAdjustable((BaseUI)mElm, r);
+                        var adj = CirSimForm.FindAdjustable((BaseUI)mElm, r);
                         if (adj != null) {
                             adj.Value = ei.Value;
                         }
                     }
                 }
             }
-            CirSimForm.Sim.NeedAnalyze();
+            CirSimForm.NeedAnalyze();
         }
 
         void itemStateChanged(object sender) {
@@ -217,7 +217,7 @@ namespace Circuit {
                         if (ei.NewDialog) {
                             changed = true;
                         }
-                        CirSimForm.Sim.NeedAnalyze();
+                        CirSimForm.NeedAnalyze();
                     }
                 }
             }

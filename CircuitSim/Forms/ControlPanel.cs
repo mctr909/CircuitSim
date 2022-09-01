@@ -38,13 +38,13 @@ namespace Circuit {
         static double mTimeStep;
         static Panel mSliderPanel;
 
-        public static void Init(CirSimForm sim) {
+        public static void Init() {
             int ofsY = 0;
             VerticalPanel = new Panel();
 
             /* Reset */
             BtnReset = new Button() { AutoSize = true, Text = "Reset" };
-            BtnReset.Click += new EventHandler((s, e) => { sim.ResetButton_onClick(); });
+            BtnReset.Click += new EventHandler((s, e) => { CirSimForm.ResetButton_onClick(); });
             BtnReset.Left = 4;
             BtnReset.Top = ofsY;
             VerticalPanel.Controls.Add(BtnReset);
@@ -52,7 +52,7 @@ namespace Circuit {
 
             /* Run */
             BtnRunStop = new Button() { AutoSize = true, Text = "RUN" };
-            BtnRunStop.Click += new EventHandler((s, e) => { sim.SetSimRunning(!sim.IsRunning); });
+            BtnRunStop.Click += new EventHandler((s, e) => { CirSimForm.SetSimRunning(!CirSimForm.IsRunning); });
             BtnRunStop.Left = 4;
             BtnRunStop.Top = ofsY;
             VerticalPanel.Controls.Add(BtnRunStop);
@@ -119,8 +119,8 @@ namespace Circuit {
             /* White Background */
             ChkPrintable = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "白黒表示" };
             ChkPrintable.CheckedChanged += new EventHandler((s, e) => {
-                for (int i = 0; i < sim.mScopeCount; i++) {
-                    sim.mScopes[i].SetRect(sim.mScopes[i].BoundingBox);
+                for (int i = 0; i < CirSimForm.ScopeCount; i++) {
+                    CirSimForm.Scopes[i].SetRect(CirSimForm.Scopes[i].BoundingBox);
                 }
             });
             VerticalPanel.Controls.Add(ChkPrintable);

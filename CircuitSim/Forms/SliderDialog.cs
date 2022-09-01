@@ -9,15 +9,13 @@ using Circuit.Elements;
 namespace Circuit {
     public class SliderDialog : Form {
         BaseUI mElm;
-        CirSimForm mSim;
         ElementInfo[] mEInfos;
         int mEInfoCount;
         Panel mPnlValues;
         Panel mPnlButtons;
 
-        public SliderDialog(BaseUI ce, CirSimForm f) : base() {
+        public SliderDialog(BaseUI ce) : base() {
             Text = "Add Sliders";
-            mSim = f;
             mElm = ce;
 
             mPnlValues = new Panel();
@@ -162,7 +160,7 @@ namespace Circuit {
         }
 
         Adjustable findAdjustable(int item) {
-            return mSim.FindAdjustable(mElm, item);
+            return CirSimForm.FindAdjustable(mElm, item);
         }
 
         void apply() {
@@ -200,11 +198,11 @@ namespace Circuit {
                         var rg = new Regex(" \\(.*\\)$");
                         adj.SliderText = rg.Replace(ei.Name, "");
                         adj.CreateSlider(ei);
-                        mSim.Adjustables.Add(adj);
+                        CirSimForm.Adjustables.Add(adj);
                     } else {
                         var adj = findAdjustable(i);
                         adj.DeleteSlider();
-                        mSim.Adjustables.Remove(adj);
+                        CirSimForm.Adjustables.Remove(adj);
                     }
                     changed = true;
                 }

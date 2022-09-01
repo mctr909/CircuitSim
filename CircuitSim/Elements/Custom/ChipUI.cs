@@ -204,14 +204,14 @@ namespace Circuit.Elements.Custom {
         }
 
         public override void Drag(Point pos) {
-            pos = CirSimForm.Sim.SnapGrid(pos);
+            pos = CirSimForm.SnapGrid(pos);
             if (pos.X < DumpInfo.P1.X) {
                 pos.X = DumpInfo.P1.X;
                 pos.Y = DumpInfo.P1.Y;
             } else {
                 DumpInfo.SetPosition(
                     DumpInfo.P1.X, pos.Y,
-                    CirSimForm.Sim.SnapGrid(pos.X), pos.Y
+                    CirSimForm.SnapGrid(pos.X), pos.Y
                 );
             }
             SetPoints();

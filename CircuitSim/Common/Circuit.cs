@@ -20,8 +20,6 @@ namespace Circuit {
         }
 
         #region private varidate
-        static CirSimForm mSim;
-
         static Dictionary<Point, NodeMapEntry> mNodeMap;
         static Dictionary<Point, int> mPostCountMap;
 
@@ -175,8 +173,8 @@ namespace Circuit {
             int mergeCount = 0;
             mNodeMap = new Dictionary<Point, NodeMapEntry>();
             mWireInfoList = new List<WireInfo>();
-            for (int i = 0; i != mSim.ElmCount; i++) {
-                var ce = mSim.GetElm(i);
+            for (int i = 0; i != CirSimForm.ElmCount; i++) {
+                var ce = CirSimForm.GetElm(i);
                 if (!(ce is WireUI)) {
                     continue;
                 }
@@ -313,8 +311,8 @@ namespace Circuit {
                 if (entry.Value == 1) {
                     bool bad = false;
                     var cn = entry.Key;
-                    for (int j = 0; j != mSim.ElmCount && !bad; j++) {
-                        var ce = mSim.GetElm(j);
+                    for (int j = 0; j != CirSimForm.ElmCount && !bad; j++) {
+                        var ce = CirSimForm.GetElm(j);
                         /* does this post intersect elm's bounding box? */
                         if (!ce.DumpInfo.BoundingBox.Contains(cn.X, cn.Y)) {
                             continue;
@@ -344,10 +342,6 @@ namespace Circuit {
                 return null;
             }
             return NodeList[n];
-        }
-
-        static public void SetSim(CirSimForm sim) {
-            mSim = sim;
         }
 
         /* stamp independent voltage source #vs, from n1 to n2, amount v */
@@ -497,8 +491,8 @@ namespace Circuit {
 
         static public void AnalyzeCircuit() {
             bool debug = false;
-            var elmList = mSim.ElmList;
-            if (0 == mSim.ElmCount) {
+            var elmList = CirSimForm.ElmList;
+            if (0 == CirSimForm.ElmCount) {
                 PostDrawList = new List<Point>();
                 BadConnectionList = new List<Point>();
                 return;
@@ -518,8 +512,8 @@ namespace Circuit {
 
             if (debug) Console.WriteLine("ac1");
             /* look for voltage or ground element */
-            for (int i = 0; i != mSim.ElmCount; i++) {
-                var ce = mSim.GetElm(i);
+            for (int i = 0; i != CirSimForm.ElmCount; i++) {
+                var ce = CirSimForm.GetElm(i);
                 if (ce is GroundUI) {
                     gotGround = true;
                     break;
@@ -554,8 +548,8 @@ namespace Circuit {
 
             /* allocate nodes and voltage sources */
             LabeledNodeElm.ResetNodeList();
-            for (int i = 0; i != mSim.ElmCount; i++) {
-                var ce = mSim.GetElm(i);
+            for (int i = 0; i != CirSimForm.ElmCount; i++) {
+                var ce = CirSimForm.GetElm(i);
                 var cee = ce.Elm;
                 int inodes = cee.InternalNodeCount;
                 int ivs = cee.VoltageSourceCount;
@@ -636,8 +630,8 @@ namespace Circuit {
             if (debug) Console.WriteLine("ac3");
 
             /* determine if circuit is nonlinear */
-            for (int i = 0; i != mSim.ElmCount; i++) {
-                var ce = mSim.GetElm(i);
+            for (int i = 0; i != CirSimForm.ElmCount; i++) {
+                var ce = CirSimForm.GetElm(i);
                 var cee = ce.Elm;
                 if (cee.NonLinear) {
                     CircuitNonLinear = true;
@@ -664,8 +658,8 @@ namespace Circuit {
             mCircuitNeedsMap = false;
 
             /* stamp linear circuit elements */
-            for (int i = 0; i != mSim.ElmCount; i++) {
-                var cee = mSim.GetElm(i).Elm;
+            for (int i = 0; i != CirSimForm.ElmCount; i++) {
+                var cee = CirSimForm.GetElm(i).Elm;
                 cee.AnaStamp();
             }
             if (debug) Console.WriteLine("ac4");
@@ -676,8 +670,8 @@ namespace Circuit {
             closure[0] = true;
             while (changed) {
                 changed = false;
-                for (int i = 0; i != mSim.ElmCount; i++) {
-                    var cee = mSim.GetElm(i).Elm;
+                for (int i = 0; i != CirSimForm.ElmCount; i++) {
+                    var cee = CirSimForm.GetElm(i).Elm;
                     if (cee is WireElm) {
                         continue;
                     }
@@ -720,8 +714,8 @@ namespace Circuit {
             }
             if (debug) Console.WriteLine("ac5");
 
-            for (int i = 0; i != mSim.ElmCount; i++) {
-                var ce = mSim.GetElm(i);
+            for (int i = 0; i != CirSimForm.ElmCount; i++) {
+                var ce = CirSimForm.GetElm(i);
                 var cee = ce.Elm;
 
                 /* look for inductors with no current path */
@@ -827,8 +821,8 @@ namespace Circuit {
             /* show resistance in voltage sources if there's only one */
             bool gotVoltageSource = false;
             ShowResistanceInVoltageSources = true;
-            for (int i = 0; i != mSim.ElmCount; i++) {
-                var ce = mSim.GetElm(i);
+            for (int i = 0; i != CirSimForm.ElmCount; i++) {
+                var ce = CirSimForm.GetElm(i);
                 if (ce is VoltageUI) {
                     if (gotVoltageSource) {
                         ShowResistanceInVoltageSources = false;
@@ -842,8 +836,8 @@ namespace Circuit {
         static public bool Run(bool debugprint) {
             const int subiterCount = 256;
             int i, j, k, subiter;
-            int elmCount = mSim.ElmCount;
-            var elmList = mSim.ElmList;
+            int elmCount = CirSimForm.ElmCount;
+            var elmList = CirSimForm.ElmList;
 
             for (i = 0; i != elmCount; i++) {
                 var ce = elmList[i].Elm;
@@ -955,14 +949,14 @@ namespace Circuit {
             StopMessage = s;
             Matrix = null;  /* causes an exception */
             StopElm = null;
-            mSim.SetSimRunning(false);
+            CirSimForm.SetSimRunning(false);
         }
 
         static public void Stop(string s, BaseElement ce) {
             StopMessage = s;
             Matrix = null;  /* causes an exception */
             StopElm = ce;
-            mSim.SetSimRunning(false);
+            CirSimForm.SetSimRunning(false);
         }
     }
 }

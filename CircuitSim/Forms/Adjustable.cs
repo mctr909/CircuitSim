@@ -36,12 +36,12 @@ namespace Circuit {
             EditItemC = 0;
         }
 
-        public Adjustable(StringTokenizer st, CirSimForm sim) {
+        public Adjustable(StringTokenizer st) {
             int e = st.nextTokenInt();
             if (e == -1) {
                 return;
             }
-            UI = sim.GetElm(e);
+            UI = CirSimForm.GetElm(e);
             EditItemR = st.nextTokenInt();
             EditItemC = 0;
             MinValue = st.nextTokenDouble();
@@ -77,18 +77,18 @@ namespace Circuit {
         }
 
         public void Execute() {
-            CirSimForm.Sim.NeedAnalyze();
+            CirSimForm.NeedAnalyze();
             if (mSettingValue) {
                 return;
             }
             var ei = UI.GetElementInfo(EditItemR, EditItemC);
             ei.Value = Value;
             UI.SetElementValue(EditItemR, EditItemC, ei);
-            CirSimForm.Sim.Repaint();
+            CirSimForm.Repaint();
         }
 
         public string Dump() {
-            return CirSimForm.Sim.GetElmIndex(UI)
+            return CirSimForm.GetElmIndex(UI)
                 + " " + EditItemR
                 + " " + MinValue
                 + " " + MaxValue

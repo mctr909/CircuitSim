@@ -45,7 +45,7 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void Drag(Point pos) {
-            pos = CirSimForm.Sim.SnapGrid(pos);
+            pos = CirSimForm.SnapGrid(pos);
             DumpInfo.SetP2(pos);
             SetPoints();
         }

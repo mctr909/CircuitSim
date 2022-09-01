@@ -154,7 +154,7 @@ namespace Circuit.Elements.Passive {
             ce.CurCount1 = updateDotCount(ce.Current1, ce.CurCount1);
             ce.CurCount2 = updateDotCount(ce.Current2, ce.CurCount2);
             ce.CurCount3 = updateDotCount(ce.Current3, ce.CurCount3);
-            if (CirSimForm.Sim.DragElm != this) {
+            if (CirSimForm.DragElm != this) {
                 drawDots(mPost1, mMidPoint, ce.CurCount1);
                 drawDots(mPost2, mMidPoint, ce.CurCount2);
                 drawDots(mPost3, mCorner2, ce.CurCount3);
@@ -319,7 +319,7 @@ namespace Circuit.Elements.Passive {
 
         void execute() {
             SetPoints();
-            CirSimForm.Sim.NeedAnalyze();
+            CirSimForm.NeedAnalyze();
         }
     }
 }

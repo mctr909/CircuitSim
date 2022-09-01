@@ -109,7 +109,7 @@ namespace Circuit.Elements.Input {
 
             updateDotCount();
 
-            if (CirSimForm.Sim.DragElm != this) {
+            if (CirSimForm.DragElm != this) {
                 if (elm.WaveForm == VoltageElm.WAVEFORM.DC) {
                     drawDots(mPost1, mPost2, Elm.CurCount);
                 } else {
@@ -448,8 +448,8 @@ namespace Circuit.Elements.Input {
                 case VALUE_NAME_V_OFS:
                     ce.Bias = val;
                     if (ce.LinkBias != 0) {
-                        for (int i = 0; i != CirSimForm.Sim.ElmCount; i++) {
-                            var o = CirSimForm.Sim.GetElm(i).Elm;
+                        for (int i = 0; i != CirSimForm.ElmCount; i++) {
+                            var o = CirSimForm.GetElm(i).Elm;
                             if (o is VoltageElm) {
                                 var s2 = (VoltageElm)o;
                                 if (s2.LinkBias == ce.LinkBias) {
@@ -468,8 +468,8 @@ namespace Circuit.Elements.Input {
                 case VALUE_NAME_PHASE_OFS:
                     ce.PhaseOffset = val * Math.PI / 180;
                     if (ce.LinkPhaseOffset != 0) {
-                        for (int i = 0; i != CirSimForm.Sim.ElmCount; i++) {
-                            var o = CirSimForm.Sim.GetElm(i).Elm;
+                        for (int i = 0; i != CirSimForm.ElmCount; i++) {
+                            var o = CirSimForm.GetElm(i).Elm;
                             if (o is VoltageElm) {
                                 var s2 = (VoltageElm)o;
                                 if (s2.LinkPhaseOffset == ce.LinkPhaseOffset) {
@@ -483,7 +483,7 @@ namespace Circuit.Elements.Input {
                     ce.DutyCycle = val;
                     break;
                 }
-                CirSimForm.Sim.NeedAnalyze();
+                CirSimForm.NeedAnalyze();
             });
         }
     }

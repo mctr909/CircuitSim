@@ -41,10 +41,10 @@ namespace Circuit.Elements.Output {
         }
 
         public void setScopeRect() {
-            int i1 = CirSimForm.Sim.TransformX(Math.Min(DumpInfo.P1.X, DumpInfo.P2.X));
-            int i2 = CirSimForm.Sim.TransformX(Math.Max(DumpInfo.P1.X, DumpInfo.P2.X));
-            int j1 = CirSimForm.Sim.TransformY(Math.Min(DumpInfo.P1.Y, DumpInfo.P2.Y));
-            int j2 = CirSimForm.Sim.TransformY(Math.Max(DumpInfo.P1.Y, DumpInfo.P2.Y));
+            int i1 = CirSimForm.TransformX(Math.Min(DumpInfo.P1.X, DumpInfo.P2.X));
+            int i2 = CirSimForm.TransformX(Math.Max(DumpInfo.P1.X, DumpInfo.P2.X));
+            int j1 = CirSimForm.TransformY(Math.Min(DumpInfo.P1.Y, DumpInfo.P2.Y));
+            int j2 = CirSimForm.TransformY(Math.Max(DumpInfo.P1.Y, DumpInfo.P2.Y));
             var r = new Rectangle(i1, j1, i2 - i1, j2 - j1);
             if (!r.Equals(elmScope.BoundingBox)) {
                 elmScope.SetRect(r);

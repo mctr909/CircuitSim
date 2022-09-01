@@ -80,7 +80,7 @@ namespace Circuit.Elements.Passive {
             }
 
             updateDotCount();
-            if (CirSimForm.Sim.DragElm != this) {
+            if (CirSimForm.DragElm != this) {
                 drawDots(mPost1, mLead1, ce.CurCount);
                 drawDots(mPost2, mLead2, -ce.CurCount);
             }

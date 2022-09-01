@@ -42,7 +42,7 @@ namespace Circuit.Elements {
         }
 
         public void Drag(Point pos, bool noDiagonal) {
-            pos = CirSimForm.Sim.SnapGrid(pos);
+            pos = CirSimForm.SnapGrid(pos);
             if (noDiagonal) {
                 if (Math.Abs(P1.X - pos.X) < Math.Abs(P1.Y - pos.Y)) {
                     pos.X = P1.X;

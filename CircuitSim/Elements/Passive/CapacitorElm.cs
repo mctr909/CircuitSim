@@ -31,7 +31,7 @@
         }
 
         public override void AnaStamp() {
-            if (CirSimForm.Sim.DcAnalysisFlag) {
+            if (CirSimForm.DcAnalysisFlag) {
                 /* when finding DC operating point, replace cap with a 100M resistor */
                 Circuit.StampResistor(Nodes[0], Nodes[1], 1e8);
                 mCurSourceValue = 0;
@@ -46,7 +46,7 @@
         }
 
         public override void CirDoStep() {
-            if (CirSimForm.Sim.DcAnalysisFlag) {
+            if (CirSimForm.DcAnalysisFlag) {
                 return;
             }
             Circuit.StampCurrentSource(Nodes[0], Nodes[1], mCurSourceValue);
@@ -60,7 +60,7 @@
             Volts[n] = c;
             VoltDiff = Volts[0] - Volts[1];
 
-            if (CirSimForm.Sim.DcAnalysisFlag) {
+            if (CirSimForm.DcAnalysisFlag) {
                 mCurrent = VoltDiff / 1e8;
                 return;
             }

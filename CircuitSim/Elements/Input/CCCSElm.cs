@@ -76,7 +76,7 @@ namespace Circuit.Elements.Input {
             if (mExpr != null) {
                 /* calculate output */
                 mExprState.Values[8] = cur;  /* I = current */
-                mExprState.Time = CirSimForm.Sim.Time;
+                mExprState.Time = CirSimForm.Time;
                 double v0 = mExpr.Eval(mExprState);
                 double rs = v0;
                 Pins[2].current = v0;

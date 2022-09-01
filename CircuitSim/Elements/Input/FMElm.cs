@@ -51,9 +51,9 @@ namespace Circuit.Elements.Input {
         }
 
         double getVoltage() {
-            double deltaT = CirSimForm.Sim.Time - mLastTime;
-            mLastTime = CirSimForm.Sim.Time;
-            double signalamplitude = Math.Sin(2 * Math.PI * (CirSimForm.Sim.Time - mFreqTimeZero) * Signalfreq);
+            double deltaT = CirSimForm.Time - mLastTime;
+            mLastTime = CirSimForm.Time;
+            double signalamplitude = Math.Sin(2 * Math.PI * (CirSimForm.Time - mFreqTimeZero) * Signalfreq);
             mFuncx += deltaT * (CarrierFreq + (signalamplitude * Deviation));
             double w = 2 * Math.PI * mFuncx;
             return Math.Sin(w) * MaxVoltage;
