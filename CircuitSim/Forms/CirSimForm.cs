@@ -74,11 +74,11 @@ namespace Circuit {
         static class Mouse {
             public static BaseUI GripElm = null;
             public static ELEMENTS EditElm = ELEMENTS.INVALID;
-            public static MOUSE_MODE Mode = MOUSE_MODE.SELECT;
+            public static MOUSE_MODE TempMode = MOUSE_MODE.SELECT;
             public static MouseButtons Button = MouseButtons.None;
             public static DateTime LastMove = DateTime.Now;
             public static bool IsDragging = false;
-            public static bool WasOverSplitter = false;
+            public static bool IsOverSplitter = false;
             public static long DownTime;
             public static Point InitDragGrid;
             public static Point DragGrid;
@@ -113,7 +113,7 @@ namespace Circuit {
         static MenuItem mRedoItem;
         MenuItem mPasteItem;
 
-        BaseUI mMenuElm;
+        static BaseUI mMenuElm;
         SwitchUI mHeldSwitchElm;
 
         static List<string> mUndoStack = new List<string>();
@@ -134,8 +134,8 @@ namespace Circuit {
 
         Point mMenuClient;
         Point mMenuPos;
-        int mMenuScope = -1;
-        int mMenuPlotWave = -1;
+        static int mMenuScope = -1;
+        static int mMenuPlotWave = -1;
 
         static long mLastTime = 0;
         static long mLastFrameTime;
@@ -210,7 +210,7 @@ namespace Circuit {
             ControlPanel.SetSliderPanelHeight();
 
             mElementPopupMenu = new ElementPopupMenu(this);
-            mScopePopupMenu = new ScopePopupMenu(this);
+            mScopePopupMenu = new ScopePopupMenu();
 
             SetSimRunning(true);
         }
@@ -315,7 +315,7 @@ namespace Circuit {
             }
             setMouseMode(MOUSE_MODE.ADD_ELM);
             Mouse.EditElm = item;
-            Mouse.Mode = MouseMode;
+            Mouse.TempMode = MouseMode;
             Repaint();
         }
 
@@ -367,7 +367,7 @@ namespace Circuit {
             Repaint();
         }
 
-        public void Performed(SCOPE_MENU_ITEM item) {
+        public static void Performed(SCOPE_MENU_ITEM item) {
             if (mContextMenu != null) {
                 mContextMenu.Close();
             }
@@ -440,7 +440,7 @@ namespace Circuit {
                 s.ResetGraph(true);
             }
             if (item == SCOPE_MENU_ITEM.PROPERTIES) {
-                s.Properties(this);
+                s.Properties(mPixCir.Left + mPixCir.Width / 2, mPixCir.Bottom);
             }
 
             deleteUnusedScopeElms();
@@ -755,12 +755,12 @@ namespace Circuit {
                 mMenuItems.AllUnchecked();
                 setMouseMode(MOUSE_MODE.SELECT);
                 Mouse.EditElm = ELEMENTS.INVALID;
-                Mouse.Mode = MouseMode;
+                Mouse.TempMode = MouseMode;
             }
             if (e.KeyValue == 32) {
                 setMouseMode(MOUSE_MODE.SELECT);
                 Mouse.EditElm = ELEMENTS.INVALID;
-                Mouse.Mode = MouseMode;
+                Mouse.TempMode = MouseMode;
             }
         }
         #endregion
@@ -804,28 +804,28 @@ namespace Circuit {
 
             Mouse.IsDragging = true;
 
-            if (Mouse.WasOverSplitter) {
-                Mouse.Mode = MOUSE_MODE.DRAG_SPLITTER;
+            if (Mouse.IsOverSplitter) {
+                Mouse.TempMode = MOUSE_MODE.DRAG_SPLITTER;
                 return;
             }
 
             if (MouseMode == MOUSE_MODE.SELECT && Mouse.Button == MouseButtons.Left) {
                 /* left mouse */
-                Mouse.Mode = MouseMode;
+                Mouse.TempMode = MouseMode;
                 if (mIsPressCtrl && mIsPressShift) {
-                    Mouse.Mode = MOUSE_MODE.DRAG_COLUMN;
+                    Mouse.TempMode = MOUSE_MODE.DRAG_COLUMN;
                     Cursor = Cursors.SizeWE;
                 } else if (mIsPressCtrl && mIsPressAlt) {
-                    Mouse.Mode = MOUSE_MODE.DRAG_ROW;
+                    Mouse.TempMode = MOUSE_MODE.DRAG_ROW;
                     Cursor = Cursors.SizeNS;
                 } else if (mIsPressCtrl) {
-                    Mouse.Mode = MOUSE_MODE.DRAG_POST;
+                    Mouse.TempMode = MOUSE_MODE.DRAG_POST;
                     Cursor = Cursors.Arrow;
                 } else if (mIsPressAlt) {
-                    Mouse.Mode = MOUSE_MODE.DRAG_ALL;
+                    Mouse.TempMode = MOUSE_MODE.DRAG_ALL;
                     Cursor = Cursors.NoMove2D;
                 } else {
-                    Mouse.Mode = MOUSE_MODE.SELECT;
+                    Mouse.TempMode = MOUSE_MODE.SELECT;
                     Cursor = Cursors.SizeAll;
                 }
             }
@@ -839,7 +839,7 @@ namespace Circuit {
                 } else {
                     s = ((ScopeUI)Mouse.GripElm).elmScope;
                 }
-                s.Properties(this);
+                s.Properties(mPixCir.Left + mPixCir.Width / 2, mPixCir.Bottom);
                 clearSelection();
                 Mouse.IsDragging = false;
                 return;
@@ -855,20 +855,20 @@ namespace Circuit {
             }
 
             /* IES - Grab resize handles in select mode if they are far enough apart and you are on top of them */
-            if (Mouse.Mode == MOUSE_MODE.SELECT && Mouse.GripElm != null
+            if (Mouse.TempMode == MOUSE_MODE.SELECT && Mouse.GripElm != null
                 && Mouse.GripElm.GetHandleGrabbedClose(gpos, POSTGRABSQ, MINPOSTGRABSIZE) >= 0
                 && !anySelectedButMouse()) {
-                Mouse.Mode = MOUSE_MODE.DRAG_POST;
+                Mouse.TempMode = MOUSE_MODE.DRAG_POST;
             }
 
-            if (Mouse.Mode != MOUSE_MODE.SELECT && Mouse.Mode != MOUSE_MODE.DRAG_SELECTED) {
+            if (Mouse.TempMode != MOUSE_MODE.SELECT && Mouse.TempMode != MOUSE_MODE.DRAG_SELECTED) {
                 clearSelection();
             }
 
             PushUndo();
             Mouse.InitDragGrid.X = gpos.X;
             Mouse.InitDragGrid.Y = gpos.Y;
-            if (Mouse.Mode != MOUSE_MODE.ADD_ELM) {
+            if (Mouse.TempMode != MOUSE_MODE.ADD_ELM) {
                 return;
             }
             /* */
@@ -884,16 +884,16 @@ namespace Circuit {
             Mouse.Button = MouseButtons.None;
 
             /* click to clear selection */
-            if (Mouse.Mode == MOUSE_MODE.SELECT && Mouse.SelectedArea.Width == 0) {
+            if (Mouse.TempMode == MOUSE_MODE.SELECT && Mouse.SelectedArea.Width == 0) {
                 clearSelection();
             }
 
             /* cmd-click = split wire */
-            if (Mouse.Mode == MOUSE_MODE.DRAG_POST && Mouse.DraggingPost == -1) {
+            if (Mouse.TempMode == MOUSE_MODE.DRAG_POST && Mouse.DraggingPost == -1) {
                 doSplit(Mouse.GripElm);
             }
 
-            Mouse.Mode = MouseMode;
+            Mouse.TempMode = MouseMode;
             Mouse.SelectedArea = new Rectangle();
             bool circuitChanged = false;
             if (mHeldSwitchElm != null) {
@@ -1028,7 +1028,7 @@ namespace Circuit {
             return new Rectangle(minx, miny, maxx - minx, maxy - miny);
         }
 
-        void stackScope(int s) {
+        static void stackScope(int s) {
             if (s == 0) {
                 if (ScopeCount < 2) {
                     return;
@@ -1044,7 +1044,7 @@ namespace Circuit {
             }
         }
 
-        void unstackScope(int s) {
+        static void unstackScope(int s) {
             if (s == 0) {
                 if (ScopeCount < 2) {
                     return;
@@ -1059,7 +1059,7 @@ namespace Circuit {
             }
         }
 
-        void combineScope(int s) {
+        static void combineScope(int s) {
             if (s == 0) {
                 if (ScopeCount < 2) {
                     return;
@@ -1070,7 +1070,7 @@ namespace Circuit {
             Scopes[s].SetElm(null);
         }
 
-        void stackAll() {
+        static void stackAll() {
             for (int i = 0; i != ScopeCount; i++) {
                 Scopes[i].Position = 0;
                 Scopes[i].ShowMax = false;
@@ -1078,21 +1078,21 @@ namespace Circuit {
             }
         }
 
-        void unstackAll() {
+        static void unstackAll() {
             for (int i = 0; i != ScopeCount; i++) {
                 Scopes[i].Position = i;
                 Scopes[i].ShowMax = true;
             }
         }
 
-        void combineAll() {
+        static void combineAll() {
             for (int i = ScopeCount - 2; i >= 0; i--) {
                 Scopes[i].Combine(Scopes[i + 1]);
                 Scopes[i + 1].SetElm(null);
             }
         }
 
-        void separateAll() {
+        static void separateAll() {
             var newscopes = new List<Scope>();
             int ct = 0;
             for (int i = 0; i < ScopeCount; i++) {
@@ -1387,7 +1387,7 @@ namespace Circuit {
                 return;
             }
 
-            if (Mouse.Mode == MOUSE_MODE.DRAG_SPLITTER) {
+            if (Mouse.TempMode == MOUSE_MODE.DRAG_SPLITTER) {
                 dragSplitter(MouseCursorX, MouseCursorY);
                 return;
             }
@@ -1402,7 +1402,7 @@ namespace Circuit {
                 DragElm.Drag(gpos);
             }
             bool success = true;
-            switch (Mouse.Mode) {
+            switch (Mouse.TempMode) {
             case MOUSE_MODE.DRAG_ALL:
                 dragAll(MouseCursorX, MouseCursorY);
                 break;
@@ -1429,7 +1429,7 @@ namespace Circuit {
                     if (DateTime.Now.ToFileTimeUtc() - Mouse.DownTime < 150) {
                         return;
                     }
-                    Mouse.Mode = MOUSE_MODE.DRAG_SELECTED;
+                    Mouse.TempMode = MOUSE_MODE.DRAG_SELECTED;
                     changed = success = dragSelected(gpos);
                 }
                 break;
@@ -1442,7 +1442,7 @@ namespace Circuit {
                 Mouse.DragScreen.Y = MouseCursorY;
                 /* Console.WriteLine("setting dragGridx in mousedragged");*/
                 Mouse.DragGrid = inverseTransform(Mouse.DragScreen);
-                if (!(Mouse.Mode == MOUSE_MODE.DRAG_SELECTED && onlyGraphicsElmsSelected())) {
+                if (!(Mouse.TempMode == MOUSE_MODE.DRAG_SELECTED && onlyGraphicsElmsSelected())) {
                     Mouse.DragGrid = SnapGrid(Mouse.DragGrid);
                 }
             }
@@ -1625,7 +1625,7 @@ namespace Circuit {
             }
         }
 
-        void setMouseElm(BaseUI ce) {
+        static void setMouseElm(BaseUI ce) {
             if (ce != Mouse.GripElm) {
                 if (Mouse.GripElm != null) {
                     Mouse.GripElm.SetMouseElm(false);
@@ -1654,14 +1654,14 @@ namespace Circuit {
                 && (x < mCircuitArea.Width)
                 && (y >= mCircuitArea.Height - 10)
                 && (y <= mCircuitArea.Height + 5);
-            if (isOverSplitter != Mouse.WasOverSplitter) {
+            if (isOverSplitter != Mouse.IsOverSplitter) {
                 if (isOverSplitter) {
                     Cursor = Cursors.HSplit;
                 } else {
                     setMouseMode(MouseMode);
                 }
             }
-            Mouse.WasOverSplitter = isOverSplitter;
+            Mouse.IsOverSplitter = isOverSplitter;
             return isOverSplitter;
         }
 
@@ -1891,7 +1891,7 @@ namespace Circuit {
             mClipboard = Storage.GetInstance().GetItem("circuitClipboard");
         }
 
-        void writeRecoveryToStorage() {
+        static void writeRecoveryToStorage() {
             Console.WriteLine("write recovery");
             var s = dumpCircuit();
             Storage.GetInstance().SetItem("circuitRecovery", s);
@@ -1901,7 +1901,7 @@ namespace Circuit {
             mRecovery = Storage.GetInstance().GetItem("circuitRecovery");
         }
 
-        void deleteUnusedScopeElms() {
+        static void deleteUnusedScopeElms() {
             /* Remove any scopeElms for elements that no longer exist */
             for (int i = ElmCount - 1; 0 <= i; i--) {
                 var ce = GetElm(i);
@@ -1912,7 +1912,7 @@ namespace Circuit {
             }
         }
 
-        void doDelete(bool pushUndoFlag) {
+        static void doDelete(bool pushUndoFlag) {
             int i;
             if (pushUndoFlag) {
                 PushUndo();
@@ -1937,7 +1937,7 @@ namespace Circuit {
             }
         }
 
-        bool willDelete(BaseUI ce) {
+        static bool willDelete(BaseUI ce) {
             /* Is this element in the list to be deleted.
             /* This changes the logic from the previous version which would initially only
             /* delete selected elements (which could include the mouseElm) and then delete the
@@ -2232,15 +2232,15 @@ namespace Circuit {
 
                 /* for some mouse modes, what matters is not the posts but the endpoints (which are only
                 /* the same for 2-terminal elements).  We draw those now if needed */
-                if (Mouse.Mode == MOUSE_MODE.DRAG_ROW
-                    || Mouse.Mode == MOUSE_MODE.DRAG_COLUMN
-                    || Mouse.Mode == MOUSE_MODE.DRAG_POST
-                    || Mouse.Mode == MOUSE_MODE.DRAG_SELECTED) {
+                if (Mouse.TempMode == MOUSE_MODE.DRAG_ROW
+                    || Mouse.TempMode == MOUSE_MODE.DRAG_COLUMN
+                    || Mouse.TempMode == MOUSE_MODE.DRAG_POST
+                    || Mouse.TempMode == MOUSE_MODE.DRAG_SELECTED) {
                     for (int i = 0; i != ElmCount; i++) {
                         var ce = GetElm(i);
                         g.DrawPost(ce.DumpInfo.P1);
                         g.DrawPost(ce.DumpInfo.P2);
-                        if (ce != Mouse.GripElm || Mouse.Mode != MOUSE_MODE.DRAG_POST) {
+                        if (ce != Mouse.GripElm || Mouse.TempMode != MOUSE_MODE.DRAG_POST) {
                             g.DrawHandle(ce.DumpInfo.P1);
                             g.DrawHandle(ce.DumpInfo.P2);
                         } else {
@@ -2250,7 +2250,7 @@ namespace Circuit {
                 }
 
                 /* draw handles for elm we're creating */
-                if (Mouse.Mode == MOUSE_MODE.SELECT && Mouse.GripElm != null) {
+                if (Mouse.TempMode == MOUSE_MODE.SELECT && Mouse.GripElm != null) {
                     Mouse.GripElm.DrawHandles(g);
                 }
 
@@ -2293,7 +2293,7 @@ namespace Circuit {
 
             g.SetPlotBottom(0, mCircuitArea.Height - 2);
             {
-                g.LineColor = Mouse.WasOverSplitter ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+                g.LineColor = Mouse.IsOverSplitter ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
                 g.DrawLine(0, -2, mCircuitArea.Width, -2);
                 g.DrawLine(0, 0, mCircuitArea.Width, 0);
             }

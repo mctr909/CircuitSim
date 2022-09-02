@@ -303,9 +303,9 @@ namespace Circuit {
             mShowNegative = false;
         }
 
-        public void Properties(Form parent) {
+        public void Properties(int x, int y) {
             var fm = new ScopeProperties(this);
-            fm.Show(parent);
+            fm.Show(x, y);
             CirSimForm.DialogShowing = fm;
         }
 

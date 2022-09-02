@@ -8,15 +8,15 @@ namespace Circuit.Forms {
         public ScopeProperties(Scope scope) {
             InitializeComponent();
             mScope = scope;
+            Visible = false;
         }
 
-        public void Show(Form parent) {
-            Visible = false;
+        public void Show(int x, int y) {
             Show();
             rbVoltage.Checked = mScope.ShowVoltage;
             rbSpectrum.Checked = mScope.ShowFFT;
-            Left = parent.Left + parent.Width / 2 - Width;
-            Top = parent.Bottom - Height;
+            Left = x;
+            Top = y - Height;
             Visible = true;
         }
 

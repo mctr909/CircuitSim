@@ -33,67 +33,67 @@ namespace Circuit {
         ToolStripMenuItem mReset;
         ToolStripMenuItem mProperties;
 
-        public ScopePopupMenu(CirSimForm sim) {
+        public ScopePopupMenu() {
             mPopupMenu = new ContextMenuStrip();
             /* スコープの表示場所 */
             mPopupMenu.Items.Add(mDock = new ToolStripMenuItem() { Text = "画面下部に表示" });
             mDock.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.DOCK);
+                CirSimForm.Performed(SCOPE_MENU_ITEM.DOCK);
             });
             mPopupMenu.Items.Add(mUndock = new ToolStripMenuItem() { Text = "任意の場所に表示" });
             mUndock.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.UNDOCK);
+                CirSimForm.Performed(SCOPE_MENU_ITEM.UNDOCK);
             });
             mPopupMenu.Items.Add(mDockSeparator = new ToolStripSeparator());
             /* 波形の配置 */
             mPopupMenu.Items.Add(mCombine = new ToolStripMenuItem() { Text = "左のスコープに重ねる" });
             mCombine.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.COMBINE);
+                CirSimForm.Performed(SCOPE_MENU_ITEM.COMBINE);
             });
             mPopupMenu.Items.Add(mStack = new ToolStripMenuItem() { Text = "左のスコープの下に並べる" });
             mStack.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.STACK);
+                CirSimForm.Performed(SCOPE_MENU_ITEM.STACK);
             });
             mPopupMenu.Items.Add(mUnstack = new ToolStripMenuItem() { Text = "右横に並べる" });
             mUnstack.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.UNSTACK);
+                CirSimForm.Performed(SCOPE_MENU_ITEM.UNSTACK);
             });
             mPopupMenu.Items.Add(mStackSeparator = new ToolStripSeparator());
             /* 削除 */
             mPopupMenu.Items.Add(mRemoveScope = new ToolStripMenuItem() { Text = "スコープの削除" });
             mRemoveScope.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.REMOVE_SCOPE);
+                CirSimForm.Performed(SCOPE_MENU_ITEM.REMOVE_SCOPE);
             });
             mPopupMenu.Items.Add(mRemoveWave = new ToolStripMenuItem() { Text = "選択波形の削除" });
             mRemoveWave.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.REMOVE_WAVE);
+                CirSimForm.Performed(SCOPE_MENU_ITEM.REMOVE_WAVE);
             });
             mPopupMenu.Items.Add(new ToolStripSeparator());
             /* 波形の状態更新 */
             mPopupMenu.Items.Add(mMaxScale = new ToolStripMenuItem() { Text = "振幅の最大化" });
             mMaxScale.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.MAX_SCALE);
+                CirSimForm.Performed(SCOPE_MENU_ITEM.MAX_SCALE);
             });
             mPopupMenu.Items.Add(mReset = new ToolStripMenuItem() { Text = "リセット" });
             mReset.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.RESET);
+                CirSimForm.Performed(SCOPE_MENU_ITEM.RESET);
             });
             mPopupMenu.Items.Add(new ToolStripSeparator());
             var speedUp = new ToolStripMenuItem() { Text = "速度(x2)" };
             mPopupMenu.Items.Add(speedUp);
             speedUp.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.SPEED_UP);
+                CirSimForm.Performed(SCOPE_MENU_ITEM.SPEED_UP);
             });
             var speedDown = new ToolStripMenuItem() { Text = "速度(x0.5)" };
             mPopupMenu.Items.Add(speedDown);
             speedDown.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.SPEED_DOWN);
+                CirSimForm.Performed(SCOPE_MENU_ITEM.SPEED_DOWN);
             });
             mPopupMenu.Items.Add(new ToolStripSeparator());
             /* 設定 */
             mPopupMenu.Items.Add(mProperties = new ToolStripMenuItem() { Text = "詳細設定" });
             mProperties.Click += new EventHandler((s, e) => {
-                sim.Performed(SCOPE_MENU_ITEM.PROPERTIES);
+                CirSimForm.Performed(SCOPE_MENU_ITEM.PROPERTIES);
             });
         }
 
