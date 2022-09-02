@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Drawing;
 
 using Circuit.Elements;
@@ -10,11 +9,15 @@ using Circuit.Forms;
 namespace Circuit {
     public class Scope {
         #region CONST
+        const int INFO_WIDTH = 120;
         const int FLAG_PLOTS = 4096;
         const double Mindb = -100.0;
 
         readonly double[] MULTA = new double[] { 1.5, 2.0, 1.5 };
         #endregion
+
+        public static int Count { get; set; }
+        public static Scope[] List { get; set; } = new Scope[20];
 
         #region dynamic variable
         FFT mFft;
@@ -226,6 +229,148 @@ namespace Circuit {
         }
 
         #region [public method]
+        public static void Setup(int height) {
+            /* check scopes to make sure the elements still exist, and remove
+            /* unused scopes/columns */
+            int pos = -1;
+            for (int i = 0; i < Count; i++) {
+                if (List[i].NeedToRemove) {
+                    int j;
+                    for (j = i; j != Count; j++) {
+                        List[j] = List[j + 1];
+                    }
+                    Count--;
+                    i--;
+                    continue;
+                }
+                if (List[i].Position > pos + 1) {
+                    List[i].Position = pos + 1;
+                }
+                pos = List[i].Position;
+            }
+
+            while (Count > 0 && List[Count - 1].Elm == null) {
+                Count--;
+            }
+
+            pos = 0;
+            var scopeColCount = new int[Count];
+            for (int i = 0; i != Count; i++) {
+                pos = Math.Max(List[i].Position, pos);
+                scopeColCount[List[i].Position]++;
+            }
+            int colct = pos + 1;
+            int iw = INFO_WIDTH;
+            if (colct <= 2) {
+                iw = iw * 3 / 2;
+            }
+            int w = (BaseUI.Context.Width - iw) / colct;
+            int marg = 10;
+            if (w < marg * 2) {
+                w = marg * 2;
+            }
+
+            pos = -1;
+            int colh = 0;
+            int row = 0;
+            int speed = 0;
+            foreach (var s in List) {
+                if (s == null) {
+                    break;
+                }
+                if (s.Position > pos) {
+                    pos = s.Position;
+                    colh = height / scopeColCount[pos];
+                    row = 0;
+                    speed = s.Speed;
+                }
+                s.StackCount = scopeColCount[pos];
+                if (s.Speed != speed) {
+                    s.Speed = speed;
+                    s.ResetGraph();
+                }
+                var r = new Rectangle(pos * w, BaseUI.Context.Height - height + colh * row, w - marg, colh);
+                row++;
+                if (!r.Equals(s.BoundingBox)) {
+                    s.SetRect(r);
+                }
+            }
+        }
+
+        public static void Stack(int s) {
+            if (s == 0) {
+                if (Count < 2) {
+                    return;
+                }
+                s = 1;
+            }
+            if (List[s].Position == List[s - 1].Position) {
+                return;
+            }
+            List[s].Position = List[s - 1].Position;
+            for (s++; s < Count; s++) {
+                List[s].Position--;
+            }
+        }
+
+        public static void Unstack(int s) {
+            if (s == 0) {
+                if (Count < 2) {
+                    return;
+                }
+                s = 1;
+            }
+            if (List[s].Position != List[s - 1].Position) {
+                return;
+            }
+            for (; s < Count; s++) {
+                List[s].Position++;
+            }
+        }
+
+        public static void Combine(int s) {
+            if (s == 0) {
+                if (Count < 2) {
+                    return;
+                }
+                s = 1;
+            }
+            List[s - 1].Combine(List[s]);
+            List[s].SetElm(null);
+        }
+
+        public static void StackAll() {
+            for (int i = 0; i != Count; i++) {
+                List[i].Position = 0;
+                List[i].ShowMax = false;
+                List[i].ShowMin = false;
+            }
+        }
+
+        public static void UnstackAll() {
+            for (int i = 0; i != Count; i++) {
+                List[i].Position = i;
+                List[i].ShowMax = true;
+            }
+        }
+
+        public static void CombineAll() {
+            for (int i = Count - 2; i >= 0; i--) {
+                List[i].Combine(List[i + 1]);
+                List[i + 1].SetElm(null);
+            }
+        }
+
+        public static void SeparateAll() {
+            var newscopes = new List<Scope>();
+            int ct = 0;
+            for (int i = 0; i < Count; i++) {
+                ct = List[i].Separate(newscopes, ct);
+            }
+            List = newscopes.ToArray();
+            Count = ct;
+        }
+
         public void ResetGraph(bool full = false) {
             mScopePointCount = 1;
             while (mScopePointCount <= BoundingBox.Width) {

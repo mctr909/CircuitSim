@@ -119,8 +119,8 @@ namespace Circuit {
             /* White Background */
             ChkPrintable = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "白黒表示" };
             ChkPrintable.CheckedChanged += new EventHandler((s, e) => {
-                for (int i = 0; i < CirSimForm.ScopeCount; i++) {
-                    CirSimForm.Scopes[i].SetRect(CirSimForm.Scopes[i].BoundingBox);
+                for (int i = 0; i < Scope.Count; i++) {
+                    Scope.List[i].SetRect(Scope.List[i].BoundingBox);
                 }
             });
             VerticalPanel.Controls.Add(ChkPrintable);
