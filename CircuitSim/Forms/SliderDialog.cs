@@ -18,28 +18,29 @@ namespace Circuit {
             Text = "Add Sliders";
             mElm = ce;
 
-            mPnlValues = new Panel();
+            SuspendLayout();
+            Visible = false;
 
+            mPnlValues = new Panel();
             mEInfos = new ElementInfo[10];
             mPnlButtons = new Panel();
             {
                 mPnlButtons.AutoSize = true;
-                /* Apply */
+                /* 反映 */
                 var okButton = new Button() {
                     Left = 0,
                     Width = 50,
-                    Text = "Apply"
+                    Text = "反映"
                 };
                 okButton.Click += new EventHandler((sender, e) => {
                     apply();
-                    closeDialog();
                 });
                 mPnlButtons.Controls.Add(okButton);
-                /* Cancel */
+                /* 閉じる */
                 var cancelButton = new Button() {
                     Left = okButton.Right + 4,
                     Width = 50,
-                    Text = "Cancel"
+                    Text = "閉じる"
                 };
                 cancelButton.Click += new EventHandler((sender, e) => {
                     closeDialog();
@@ -59,7 +60,8 @@ namespace Circuit {
             Width = mPnlValues.Right + 2;
             Height = mPnlValues.Bottom + 2;
 
-            Visible = false;
+            ControlBox = false;
+            ResumeLayout(false);
         }
 
         public void Show(int x, int y) {
@@ -88,7 +90,12 @@ namespace Circuit {
                 string name = ei.Name;
                 idx = mPnlValues.Controls.IndexOf(mPnlButtons);
 
+                var pnlProperty = new Panel();
+                pnlProperty.BorderStyle = BorderStyle.FixedSingle;
+
                 ei.CheckBox = new CheckBox() {
+                    Top = 0,
+                    Left = 2,
                     Height = 19,
                     Text = name,
                     Checked = adj != null
@@ -96,15 +103,16 @@ namespace Circuit {
                 ei.CheckBox.CheckedChanged += new EventHandler((sender, e) => {
                     itemStateChanged(sender);
                 });
-                ctrlInsert(mPnlValues, ei.CheckBox, idx++);
+                pnlProperty.Controls.Add(ei.CheckBox);
 
-                if (adj != null) {
-                    var pnlProperty = new Panel();
-                    pnlProperty.BorderStyle = BorderStyle.FixedSingle;
+                if (adj == null) {
+                    pnlProperty.Width = ei.CheckBox.Right + 4;
+                    pnlProperty.Height = ei.CheckBox.Bottom + 4;
+                } else {
                     /* スライダー名称 */
                     var lblTitle = new Label() {
-                        Top = 2,
-                        Left = 2,
+                        Top = ei.CheckBox.Bottom,
+                        Left = ei.CheckBox.Left,
                         TextAlign = ContentAlignment.BottomLeft,
                         Text = "スライダー名称",
                         AutoSize = true
@@ -130,7 +138,7 @@ namespace Circuit {
                         Top = lblMin.Bottom,
                         Left = lblMin.Left,
                         Text = ElementInfoDialog.UnitString(ei, adj.MinValue),
-                        Width = 50
+                        Width = 40
                     };
                     pnlProperty.Controls.Add(ei.MinBox);
                     /* 最大値 */
@@ -146,14 +154,13 @@ namespace Circuit {
                         Top = lblMax.Bottom,
                         Left = lblMax.Left,
                         Text = ElementInfoDialog.UnitString(ei, adj.MaxValue),
-                        Width = 50
+                        Width = 40
                     };
                     pnlProperty.Controls.Add(ei.MaxBox);
-
                     pnlProperty.Width = ei.LabelBox.Right + 4;
                     pnlProperty.Height = ei.MaxBox.Bottom + 4;
-                    ctrlInsert(mPnlValues, pnlProperty, idx++);
                 }
+                ctrlInsert(mPnlValues, pnlProperty, idx++);
             }
             mPnlValues.ResumeLayout(false);
             mEInfoCount = i;
@@ -246,7 +253,7 @@ namespace Circuit {
                 tmp[i].Left = 0;
                 tmp[i].Top = ofsY;
                 p.Controls.Add(tmp[i]);
-                ofsY += tmp[i].Height + 4;
+                ofsY += tmp[i].Height + 8;
                 if (width < tmp[i].Width) {
                     width = tmp[i].Width;
                 }

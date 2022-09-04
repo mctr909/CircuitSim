@@ -55,6 +55,7 @@ namespace Circuit.Elements.Input {
             optionList.Add((elm.PhaseOffset * 180 / Math.PI).ToString("0"));
             optionList.Add(elm.DutyCycle.ToString("0.00"));
             optionList.Add(elm.LinkBias);
+            optionList.Add(elm.LinkFrequency);
             optionList.Add(elm.LinkPhaseOffset);
         }
 
@@ -323,6 +324,9 @@ namespace Circuit.Elements.Input {
                 if (r == 3) {
                     return new ElementInfo("連動グループ", elm.LinkBias);
                 }
+                if (r == 4) {
+                    return new ElementInfo("連動グループ", elm.LinkFrequency);
+                }
                 if (r == 6) {
                     return new ElementInfo("連動グループ", elm.LinkPhaseOffset);
                 }
@@ -398,6 +402,9 @@ namespace Circuit.Elements.Input {
                 if (r == 3) {
                     elm.LinkBias = (int)ei.Value;
                 }
+                if (r == 4) {
+                    elm.LinkFrequency = (int)ei.Value;
+                }
                 if (r == 6) {
                     elm.LinkPhaseOffset = (int)ei.Value;
                 }
@@ -461,6 +468,17 @@ namespace Circuit.Elements.Input {
                     break;
                 case VALUE_NAME_HZ:
                     ce.Frequency = val;
+                    if (ce.LinkFrequency != 0) {
+                        for (int i = 0; i != CirSimForm.ElmCount; i++) {
+                            var o = CirSimForm.GetElm(i).Elm;
+                            if (o is VoltageElm) {
+                                var s2 = (VoltageElm)o;
+                                if (s2.LinkFrequency == ce.LinkFrequency) {
+                                    s2.Frequency = ce.Frequency;
+                                }
+                            }
+                        }
+                    }
                     break;
                 case VALUE_NAME_PHASE:
                     ce.Phase = val * Math.PI / 180;
