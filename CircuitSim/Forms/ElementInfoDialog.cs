@@ -40,22 +40,22 @@ namespace Circuit {
 
             mPnlCommonButtons = new Panel();
             {
-                /* Apply */
+                /* 反映 */
                 mPnlCommonButtons.Controls.Add(mBtnApply = new Button() {
                     AutoSize = true,
                     Width = 50,
-                    Text = "Apply"
+                    Text = "反映"
                 });
                 mBtnApply.Click += new EventHandler((s, e) => {
                     apply();
                     Close();
                 });
-                /* Cancel */
+                /* 閉じる */
                 mPnlCommonButtons.Controls.Add(mBtnCancel = new Button() {
                     AutoSize = true,
                     Width = 50,
                     Left = mBtnApply.Right + 4,
-                    Text = "Cancel"
+                    Text = "閉じる"
                 });
                 mBtnCancel.Click += new EventHandler((s, e) => {
                     Close();
@@ -71,7 +71,7 @@ namespace Circuit {
             mPnlCustomCtrl.Height = 0;
             Controls.Add(mPnlCustomCtrl);
             buildDialog();
-
+            ControlBox = false;
             ResumeLayout(false);
         }
 
@@ -349,6 +349,17 @@ namespace Circuit {
         double parseUnits(ElementInfo ei) {
             string s = ei.Textf.Text;
             return ParseUnits(s);
+        }
+
+        private void InitializeComponent() {
+            this.SuspendLayout();
+            // 
+            // ElementInfoDialog
+            // 
+            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Name = "ElementInfoDialog";
+            this.ResumeLayout(false);
+
         }
     }
 }
