@@ -90,10 +90,6 @@ namespace Circuit.Elements.Input {
         }
 
         public virtual double getVoltage() {
-            if (WaveForm != WAVEFORM.DC && CirSimForm.DcAnalysisFlag) {
-                return Bias;
-            }
-
             double t = CirSimForm.Time;
             double wt = 2 * Math.PI * Frequency * t + Phase + PhaseOffset;
             double duty = 2 * Math.PI * DutyCycle;

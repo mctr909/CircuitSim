@@ -51,7 +51,6 @@ namespace Circuit {
         public static Random Random { get; set; } = new Random();
         public static double CurrentMult { get; set; } = 0;
         public static bool IsRunning { get; private set; }
-        public static bool DcAnalysisFlag { get; private set; }
         public static MOUSE_MODE MouseMode { get; private set; } = MOUSE_MODE.SELECT;
         public static int SelectedScope { get; private set; } = -1;
         public static BaseUI DragElm { get; private set; }
@@ -232,9 +231,6 @@ namespace Circuit {
                 break;
             case MENU_ITEM.CREATE_MODULE:
                 doCreateSubcircuit();
-                break;
-            case MENU_ITEM.DC_ANALYSIS:
-                doDCAnalysis();
                 break;
             case MENU_ITEM.PRINT:
                 BaseUI.Context.DoPrint = true;
@@ -2038,11 +2034,6 @@ namespace Circuit {
             }
         }
 
-        void doDCAnalysis() {
-            DcAnalysisFlag = true;
-            ResetButton_onClick();
-        }
-
         bool isSelection() {
             for (int i = 0; i != ElmCount; i++) {
                 if (GetElm(i).IsSelected) {
@@ -2054,7 +2045,7 @@ namespace Circuit {
 
         static void updateCircuit() {
             bool didAnalyze = mAnalyzeFlag;
-            if (mAnalyzeFlag || DcAnalysisFlag) {
+            if (mAnalyzeFlag) {
                 Circuit.AnalyzeCircuit();
                 mAnalyzeFlag = false;
             }
@@ -2297,13 +2288,6 @@ namespace Circuit {
                 pdf.Save(saveFileDialog.FileName);
                 BaseUI.Context = CustomGraphics.FromImage(g.Width, g.Height);
             }
-
-            /* if we did DC analysis, we need to re-analyze the circuit with that flag cleared. */
-            if (DcAnalysisFlag) {
-                DcAnalysisFlag = false;
-                mAnalyzeFlag = true;
-            }
-
             mLastFrameTime = mLastTime;
         }
 

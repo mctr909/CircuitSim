@@ -31,24 +31,13 @@
         }
 
         public override void AnaStamp() {
-            if (CirSimForm.DcAnalysisFlag) {
-                /* when finding DC operating point, replace cap with a 100M resistor */
-                Circuit.StampResistor(Nodes[0], Nodes[1], 1e8);
-                mCurSourceValue = 0;
-                return;
-            }
-
             mCompResistance = ControlPanel.TimeStep / (2 * Capacitance);
-
             Circuit.StampResistor(Nodes[0], Nodes[1], mCompResistance);
             Circuit.StampRightSide(Nodes[0]);
             Circuit.StampRightSide(Nodes[1]);
         }
 
         public override void CirDoIteration() {
-            if (CirSimForm.DcAnalysisFlag) {
-                return;
-            }
             Circuit.StampCurrentSource(Nodes[0], Nodes[1], mCurSourceValue);
         }
 
@@ -59,18 +48,7 @@
         public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
             VoltDiff = Volts[0] - Volts[1];
-
-            if (CirSimForm.DcAnalysisFlag) {
-                mCurrent = VoltDiff / 1e8;
-                return;
-            }
-
-            /* we check compResistance because this might get called
-             * before stamp(), which sets compResistance, causing
-             * infinite current */
-            if (0 < mCompResistance) {
-                mCurrent = VoltDiff / mCompResistance + mCurSourceValue;
-            }
+            mCurrent = VoltDiff / mCompResistance + mCurSourceValue;
         }
     }
 }

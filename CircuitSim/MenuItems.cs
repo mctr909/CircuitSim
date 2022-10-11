@@ -19,7 +19,6 @@ namespace Circuit {
         SAVE_FILE,
         OVERWRITE,
         CREATE_MODULE,
-        DC_ANALYSIS,
         PRINT,
         RECOVER,
 

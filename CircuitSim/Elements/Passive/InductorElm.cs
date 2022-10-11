@@ -41,9 +41,7 @@
         public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
             var voltdiff = Volts[0] - Volts[1];
-            if (mCompResistance > 0) {
-                mCurrent = voltdiff / mCompResistance + mCurSourceValue;
-            }
+            mCurrent = voltdiff / mCompResistance + mCurSourceValue;
         }
 
         public void Setup(double ic, double cr) {
