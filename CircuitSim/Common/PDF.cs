@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-
+using System.IO.Compression;
 using Circuit;
 
 class PDF {
-    public const float Width = 841.92f;
-    public const float Height = 595.32f;
     const string FontName = "Arial";
     
     public class Page : CustomGraphics {
+        public const float Width = 841.92f;
+        public const float Height = 595.32f;
         readonly float FONT_SCALE;
         readonly float TEXT_SCALE;
         readonly float PIX_SCALE;
@@ -57,12 +57,13 @@ class PDF {
             mSw.Flush();
             mMs.Seek(0, SeekOrigin.Begin);
             var sw = new StreamWriter(fs);
-            var sr = new StreamReader(mMs);
+            sw.NewLine = "\n";
             sw.WriteLine("<< >>stream");
             sw.WriteLine("q");
             sw.WriteLine("0 w");
-            sw.WriteLine("0.5 0 0 -0.5 0 {0} cm", PDF.Height);
+            sw.WriteLine("0.5 0 0 -0.5 0 {0} cm", Height);
             sw.WriteLine("BT");
+            var sr = new StreamReader(mMs);
             while (!sr.EndOfStream) {
                 sw.WriteLine(sr.ReadLine());
             }
@@ -264,6 +265,16 @@ class PDF {
             );
         }
 
+        byte[] comp(MemoryStream ms) {
+            var compMs = new MemoryStream();
+            var comp = new DeflateStream(compMs, CompressionLevel.Optimal);
+            var arr = ms.ToArray();
+            comp.Write(arr, 0, arr.Length);
+            comp.Flush();
+            comp.Close();
+            return compMs.ToArray();
+        }
+
         public override void ScrollBoard(Point p) {
             mBoardOfsX = p.X;
             mBoardOfsY = p.Y;
@@ -271,7 +282,7 @@ class PDF {
 
         public override void SetPlotBottom(int x, int y) {
             mOfsX = x;
-            mOfsY = 2 * PDF.Height - (mImage.Height - y);
+            mOfsY = 2 * Height - (mImage.Height - y);
         }
 
         public override void SetPlotFloat(int x, int y) {
@@ -297,7 +308,13 @@ class PDF {
         }
         var fs = new FileStream(path, FileMode.Create);
         var sw = new StreamWriter(fs);
+        sw.NewLine = "\n";
         sw.WriteLine("%PDF-1.7");
+        sw.Flush();
+        fs.WriteByte(0xE2);
+        fs.WriteByte(0xE3);
+        fs.WriteByte(0xCF);
+        fs.WriteByte(0xD3);
         sw.WriteLine();
         sw.WriteLine("1 0 obj");
         sw.WriteLine("<<");
@@ -336,7 +353,7 @@ class PDF {
             sw.WriteLine("  /Type /Page");
             sw.WriteLine("  /Parent 2 0 R");
             sw.WriteLine("  /Resources 3 0 R");
-            sw.WriteLine("  /MediaBox [0 0 {0} {1}]", Width, Height);
+            sw.WriteLine("  /MediaBox [0 0 {0} {1}]", Page.Width, Page.Height);
             sw.WriteLine("  /Contents {0} 0 R", mPageList.Count + pIdx + 4);
             sw.WriteLine(">>");
             sw.WriteLine("endobj");
