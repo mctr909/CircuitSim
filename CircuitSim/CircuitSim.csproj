@@ -203,9 +203,6 @@
     <EmbeddedResource Include="Forms\CirSimForm.resx">
       <DependentUpon>CirSimForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ElementInfoDialog.resx">
-      <DependentUpon>ElementInfoDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ScopeProperties.resx">
       <DependentUpon>ScopeProperties.cs</DependentUpon>
     </EmbeddedResource>

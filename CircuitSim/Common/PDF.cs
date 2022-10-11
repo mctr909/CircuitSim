@@ -59,8 +59,7 @@ class PDF {
             mSw.Flush();
             mMs.Seek(0, SeekOrigin.Begin);
             var sr = new StreamReader(mMs);
-            sw.WriteLine("<< >>");
-            sw.WriteLine("stream");
+            sw.WriteLine("<< >>stream");
             sw.WriteLine("BT");
             while (!sr.EndOfStream) {
                 sw.WriteLine(sr.ReadLine());
