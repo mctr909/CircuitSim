@@ -253,6 +253,10 @@ namespace Circuit {
                 Count--;
             }
 
+            if (Count <= 0) {
+                return;
+            }
+
             pos = 0;
             var scopeColCount = new int[Count];
             for (int i = 0; i != Count; i++) {

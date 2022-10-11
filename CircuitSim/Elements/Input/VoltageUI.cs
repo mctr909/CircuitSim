@@ -15,10 +15,10 @@ namespace Circuit.Elements.Input {
 
         public const string VALUE_NAME_V = "電圧(V)";
         public const string VALUE_NAME_AMP = "振幅(V)";
-        public const string VALUE_NAME_V_OFS = "オフセット電圧(V)";
+        public const string VALUE_NAME_BIAS = "バイアス電圧(V)";
         public const string VALUE_NAME_HZ = "周波数(Hz)";
-        public const string VALUE_NAME_PHASE = "位相(degrees)";
-        public const string VALUE_NAME_PHASE_OFS = "オフセット位相(degrees)";
+        public const string VALUE_NAME_PHASE = "位相(deg.)";
+        public const string VALUE_NAME_PHASE_OFS = "オフセット位相(deg.)";
         public const string VALUE_NAME_DUTY = "デューティ比";
 
         Point mPs1;
@@ -297,7 +297,7 @@ namespace Circuit.Elements.Input {
                     return new ElementInfo(elm.WaveForm == VoltageElm.WAVEFORM.DC ? VALUE_NAME_V : VALUE_NAME_AMP, elm.MaxVoltage, -20, 20);
                 }
                 if (r == 3) {
-                    return new ElementInfo(VALUE_NAME_V_OFS, elm.Bias, -20, 20);
+                    return new ElementInfo(VALUE_NAME_BIAS, elm.Bias, -20, 20);
                 }
                 if (r == 4) {
                     if (elm.WaveForm == VoltageElm.WAVEFORM.DC || elm.WaveForm == VoltageElm.WAVEFORM.NOISE) {
@@ -420,7 +420,7 @@ namespace Circuit.Elements.Input {
                 adj.MinValue = 0;
                 adj.MaxValue = 5;
                 break;
-            case VALUE_NAME_V_OFS:
+            case VALUE_NAME_BIAS:
                 adj.MinValue = 0;
                 adj.MaxValue = 5;
                 break;
@@ -452,7 +452,7 @@ namespace Circuit.Elements.Input {
                 case VALUE_NAME_AMP:
                     ce.MaxVoltage = val;
                     break;
-                case VALUE_NAME_V_OFS:
+                case VALUE_NAME_BIAS:
                     ce.Bias = val;
                     if (ce.LinkBias != 0) {
                         for (int i = 0; i != CirSimForm.ElmCount; i++) {
