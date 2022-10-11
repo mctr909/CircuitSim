@@ -37,14 +37,14 @@ namespace Circuit.Elements.Active {
             Circuit.StampNonLinear(Nodes[2]);
         }
 
-        public override void CirDoStep() {
-            base.CirDoStep();
+        public override void CirDoIteration() {
+            base.CirDoIteration();
             Circuit.StampResistor(Nodes[2], Nodes[1], mCompResistance);
             Circuit.UpdateVoltageSource(Nodes[0], Nodes[2], mVoltSource, mVoltSourceValue);
         }
 
-        public override void CirStartIteration() {
-            base.CirStartIteration();
+        public override void CirPrepareIteration() {
+            base.CirPrepareIteration();
             // capacitor companion model using trapezoidal approximation
             // (Thevenin equivalent) consists of a voltage source in
             // series with a resistor
@@ -58,8 +58,8 @@ namespace Circuit.Elements.Active {
             mVoltSourceValue = -mCapVoltDiff - mCapCurrent * mCompResistance;
         }
 
-        public override void CirSetNodeVoltage(int n, double c) {
-            base.CirSetNodeVoltage(n, c);
+        public override void CirSetVoltage(int n, double c) {
+            base.CirSetVoltage(n, c);
             mCapVoltDiff = Volts[0] - Volts[1];
             mCurrent += mCapCurrent;
         }

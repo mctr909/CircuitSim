@@ -44,7 +44,7 @@ namespace Circuit.Elements.Output {
 
         public override int VoltageSourceCount { get { return 1; } }
 
-        public override void CirStepFinished() {
+        public override void CirIterationFinished() {
             mCount++; /*how many counts are in a cycle */
             mTotal += mCurrent * mCurrent; /* sum of squares */
             if (mCurrent > mMaxI && mIncreasingI) {

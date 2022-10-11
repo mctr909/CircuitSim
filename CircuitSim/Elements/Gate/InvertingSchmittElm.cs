@@ -51,7 +51,7 @@ namespace Circuit.Elements.Gate {
 
         public override bool AnaHasGroundConnection(int n1) { return n1 == 1; }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             double v0 = Volts[1];
             double _out;
             if (mState) {//Output is high

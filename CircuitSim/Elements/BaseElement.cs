@@ -146,15 +146,9 @@
         #endregion
 
         #region [method(Circuit)]
-        public virtual void CirStartIteration() { }
-
-        /// <summary>
-        /// stamp matrix values for non-linear elements
-        /// </summary>
-        public virtual void CirDoStep() { }
-
-        public virtual void CirStepFinished() { }
-
+        public virtual void CirPrepareIteration() { }
+        public virtual void CirIterationFinished() { }
+        public virtual void CirDoIteration() { }
         /// <summary>
         /// set current for voltage source vn to c.
         /// vn will be the same value as in a previous call to setVoltageSource(n, vn)
@@ -162,18 +156,12 @@
         /// <param name="vn"></param>
         /// <param name="c"></param>
         public virtual void CirSetCurrent(int vn, double c) { mCurrent = c; }
-
         /// <summary>
         /// set voltage of x'th node, called by simulator logic
         /// </summary>
-        /// <param name="n"></param>
+        /// <param name="xn">x'th node</param>
         /// <param name="c"></param>
-        public virtual void CirSetNodeVoltage(int n, double c) {
-            if (Volts.Length <= n) {
-                return;
-            }
-            Volts[n] = c;
-        }
+        public virtual void CirSetVoltage(int xn, double c) { Volts[xn] = c; }
         #endregion
     }
 }

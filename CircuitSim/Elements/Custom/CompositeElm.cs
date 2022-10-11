@@ -123,29 +123,29 @@ namespace Circuit.Elements.Custom {
             vsr.vsNode = v;
         }
 
-        public override void CirStartIteration() {
+        public override void CirPrepareIteration() {
             for (int i = 0; i < CompElmList.Count; i++) {
-                CompElmList[i].Elm.CirStartIteration();
+                CompElmList[i].Elm.CirPrepareIteration();
             }
         }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             for (int i = 0; i < CompElmList.Count; i++) {
-                CompElmList[i].Elm.CirDoStep();
+                CompElmList[i].Elm.CirDoIteration();
             }
         }
 
-        public override void CirStepFinished() {
+        public override void CirIterationFinished() {
             for (int i = 0; i < CompElmList.Count; i++) {
-                CompElmList[i].Elm.CirStepFinished();
+                CompElmList[i].Elm.CirIterationFinished();
             }
         }
 
-        public override void CirSetNodeVoltage(int n, double c) {
-            base.CirSetNodeVoltage(n, c);
+        public override void CirSetVoltage(int n, double c) {
+            base.CirSetVoltage(n, c);
             var cnLinks = mCompNodeList[n].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
-                cnLinks[i].Elm.CirSetNodeVoltage(cnLinks[i].Num, c);
+                cnLinks[i].Elm.CirSetVoltage(cnLinks[i].Num, c);
             }
             Volts[n] = c;
         }

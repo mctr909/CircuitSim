@@ -2313,7 +2313,6 @@ namespace Circuit {
                 return;
             }
 
-            bool debugprint = mDumpMatrix;
             mDumpMatrix = false;
             double steprate = ControlPanel.IterCount;
             long tm = DateTime.Now.ToFileTimeUtc();
@@ -2333,7 +2332,7 @@ namespace Circuit {
 
             int iter;
             for (iter = 1; ; iter++) {
-                if (!Circuit.Run(debugprint)) {
+                if (!Circuit.DoIteration()) {
                     break;
                 }
 

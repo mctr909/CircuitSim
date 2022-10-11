@@ -62,7 +62,7 @@ namespace Circuit.Elements.Custom {
             }
         }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             int i;
             for (i = 0; i != PostCount; i++) {
                 var p = Pins[i];

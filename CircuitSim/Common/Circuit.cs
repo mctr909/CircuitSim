@@ -600,7 +600,7 @@ namespace Circuit {
                         /* if it's the ground node, make sure the node voltage is 0,
                         /* cause it may not get set later */
                         if (n == 0) {
-                            cee.CirSetNodeVoltage(j, 0);
+                            cee.CirSetVoltage(j, 0);
                         }
                     }
                 }
@@ -833,7 +833,7 @@ namespace Circuit {
             }
         }
 
-        static public bool Run(bool debugprint) {
+        static public bool DoIteration() {
             const int subiterCount = 256;
             int i, j, k, subiter;
             int elmCount = CirSimForm.ElmCount;
@@ -841,7 +841,7 @@ namespace Circuit {
 
             for (i = 0; i != elmCount; i++) {
                 var ce = elmList[i].Elm;
-                ce.CirStartIteration();
+                ce.CirPrepareIteration();
             }
 
             for (subiter = 0; subiter != subiterCount; subiter++) {
@@ -859,14 +859,12 @@ namespace Circuit {
                 }
                 for (i = 0; i != elmCount; i++) {
                     var ce = elmList[i].Elm;
-                    ce.CirDoStep();
+                    ce.CirDoIteration();
                 }
                 if (StopMessage != null) {
                     return false;
                 }
 
-                bool printit = debugprint;
-                debugprint = false;
                 for (j = 0; j != mMatrixSize; j++) {
                     for (i = 0; i != mMatrixSize; i++) {
                         double x = Matrix[i, j];
@@ -875,17 +873,6 @@ namespace Circuit {
                             return false;
                         }
                     }
-                }
-                if (printit) {
-                    for (j = 0; j != mMatrixSize; j++) {
-                        string x = "";
-                        for (i = 0; i != mMatrixSize; i++) {
-                            x += Matrix[j, i] + ",";
-                        }
-                        x += "\n";
-                        Console.WriteLine(x);
-                    }
-                    Console.WriteLine("done");
                 }
                 if (CircuitNonLinear) {
                     if (Converged && subiter > 0) {
@@ -909,14 +896,13 @@ namespace Circuit {
                     /*Console.WriteLine(j + " " + res + " " + ri.type + " " + ri.mapCol);*/
                     if (double.IsNaN(res)) {
                         Converged = false;
-                        debugprint = true;
                         break;
                     }
                     if (j < NodeList.Count - 1) {
                         var cn = getCircuitNode(j + 1);
                         for (k = 0; k != cn.Links.Count; k++) {
                             var cnl = cn.Links[k];
-                            cnl.Elm.CirSetNodeVoltage(cnl.Num, res);
+                            cnl.Elm.CirSetVoltage(cnl.Num, res);
                         }
                     } else {
                         int ji = j - (NodeList.Count - 1);
@@ -939,7 +925,7 @@ namespace Circuit {
             }
 
             for (i = 0; i != elmCount; i++) {
-                elmList[i].Elm.CirStepFinished();
+                elmList[i].Elm.CirIterationFinished();
             }
 
             return true;

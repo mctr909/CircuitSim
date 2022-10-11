@@ -45,18 +45,18 @@
             Circuit.StampRightSide(Nodes[1]);
         }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             if (CirSimForm.DcAnalysisFlag) {
                 return;
             }
             Circuit.StampCurrentSource(Nodes[0], Nodes[1], mCurSourceValue);
         }
 
-        public override void CirStartIteration() {
+        public override void CirPrepareIteration() {
             mCurSourceValue = -VoltDiff / mCompResistance - mCurrent;
         }
 
-        public override void CirSetNodeVoltage(int n, double c) {
+        public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
             VoltDiff = Volts[0] - Volts[1];
 

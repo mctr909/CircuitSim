@@ -104,11 +104,11 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             calculate(false);
         }
 
-        public override void CirStepFinished() {
+        public override void CirIterationFinished() {
             calculate(true);
 
             /* fix current if body is connected to source or drain */

@@ -73,16 +73,16 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             mDiode.CirDoStep(Volts[0] - Volts[mDiodeEndNode]);
         }
 
-        public override void CirSetNodeVoltage(int n, double c) {
+        public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
             mCurrent = mDiode.CirCalculateCurrent(Volts[0] - Volts[mDiodeEndNode]);
         }
 
-        public override void CirStepFinished() {
+        public override void CirIterationFinished() {
             /* stop for huge currents that make simulator act weird */
             if (Math.Abs(mCurrent) > 1e12) {
                 Circuit.Stop("max current exceeded", this);

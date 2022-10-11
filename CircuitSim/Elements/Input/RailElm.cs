@@ -20,7 +20,7 @@
             }
         }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             if (WaveForm != WAVEFORM.DC) {
                 Circuit.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
             }

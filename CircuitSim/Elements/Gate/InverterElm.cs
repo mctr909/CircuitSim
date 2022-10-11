@@ -45,11 +45,11 @@ namespace Circuit.Elements.Gate {
             Circuit.StampVoltageSource(0, Nodes[1], mVoltSource);
         }
 
-        public override void CirStartIteration() {
+        public override void CirPrepareIteration() {
             mLastOutputVoltage = Volts[1];
         }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             double v = Volts[0] > HighVoltage * .5 ? 0 : HighVoltage;
             double maxStep = SlewRate * ControlPanel.TimeStep * 1e9;
             v = Math.Max(Math.Min(mLastOutputVoltage + maxStep, v), mLastOutputVoltage - maxStep);

@@ -52,7 +52,7 @@
             Circuit.StampVoltageSource(0, Nodes[InputCount], mVoltSource);
         }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             bool f = calcFunction();
             if (IsInverting) {
                 f = !f;

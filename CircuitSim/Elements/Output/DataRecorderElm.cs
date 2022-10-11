@@ -17,7 +17,7 @@
 
         public override double VoltageDiff { get { return Volts[0]; } }
 
-        public override void CirStepFinished() {
+        public override void CirIterationFinished() {
             Data[DataPtr++] = Volts[0];
             if (DataPtr >= DataCount) {
                 DataPtr = 0;

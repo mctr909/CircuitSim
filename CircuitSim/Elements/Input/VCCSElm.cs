@@ -61,7 +61,7 @@ namespace Circuit.Elements.Input {
             Circuit.StampNonLinear(Nodes[InputCount + 1]);
         }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             int i;
 
             /* no current path?  give up */

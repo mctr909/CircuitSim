@@ -44,7 +44,7 @@ namespace Circuit.Elements.Input {
 
         public override bool AnaHasGroundConnection(int n1) { return true; }
 
-        public override void CirStartIteration() {
+        public override void CirPrepareIteration() {
             /* has timestep been changed? */
             if (ControlPanel.TimeStep != mSavedTimeStep) {
                 setParams();
@@ -68,7 +68,7 @@ namespace Circuit.Elements.Input {
             }
         }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             Circuit.UpdateVoltageSource(0, Nodes[0], mVoltSource, mVolt);
         }
 
