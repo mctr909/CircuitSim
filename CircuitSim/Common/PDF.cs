@@ -59,9 +59,15 @@ class PDF {
             mSw.Flush();
             mMs.Seek(0, SeekOrigin.Begin);
             var sr = new StreamReader(mMs);
+            sw.WriteLine("<< >>");
+            sw.WriteLine("stream");
+            sw.WriteLine("BT");
             while (!sr.EndOfStream) {
                 sw.WriteLine(sr.ReadLine());
             }
+            sw.WriteLine("ET");
+            sw.WriteLine("endstream");
+            sw.Flush();
         }
 
         public override void DrawLeftText(string s, int x, int y) {
@@ -336,12 +342,7 @@ class PDF {
         }
         for (int pIdx = 0; pIdx < mPageList.Count; pIdx++) {
             sw.WriteLine("{0} 0 obj", mPageList.Count + pIdx + 4);
-            sw.WriteLine("<< >>");
-            sw.WriteLine("stream");
-            sw.WriteLine("BT");
             mPageList[pIdx].Flush(sw);
-            sw.WriteLine("ET");
-            sw.WriteLine("endstream");
             sw.WriteLine("endobj");
             sw.WriteLine();
         }
