@@ -44,8 +44,6 @@ class PDF {
         public Page(int width, int height) : base(width, height) {
             mMs = new MemoryStream();
             mSw = new StreamWriter(mMs);
-            mSw.WriteLine("0 w");
-            mSw.WriteLine("0.5 0 0 -0.5 0 {0} cm", PDF.Height);
             mOfsX = 0.0;
             mOfsY = 0.0;
             mBoardOfsX = 0.0;
@@ -55,16 +53,21 @@ class PDF {
             PIX_SCALE = FONT_SCALE * 0.65f;
         }
 
-        internal void Flush(StreamWriter sw) {
+        internal void Flush(FileStream fs) {
             mSw.Flush();
             mMs.Seek(0, SeekOrigin.Begin);
+            var sw = new StreamWriter(fs);
             var sr = new StreamReader(mMs);
             sw.WriteLine("<< >>stream");
+            sw.WriteLine("q");
+            sw.WriteLine("0 w");
+            sw.WriteLine("0.5 0 0 -0.5 0 {0} cm", PDF.Height);
             sw.WriteLine("BT");
             while (!sr.EndOfStream) {
                 sw.WriteLine(sr.ReadLine());
             }
             sw.WriteLine("ET");
+            sw.WriteLine("Q");
             sw.WriteLine("endstream");
             sw.Flush();
         }
@@ -341,7 +344,8 @@ class PDF {
         }
         for (int pIdx = 0; pIdx < mPageList.Count; pIdx++) {
             sw.WriteLine("{0} 0 obj", mPageList.Count + pIdx + 4);
-            mPageList[pIdx].Flush(sw);
+            sw.Flush();
+            mPageList[pIdx].Flush(fs);
             sw.WriteLine("endobj");
             sw.WriteLine();
         }
