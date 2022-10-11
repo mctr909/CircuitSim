@@ -79,7 +79,7 @@ namespace Circuit.Elements.Active {
             Circuit.StampNonLinear(Nodes[IdxE]);
         }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             double vbc = Volts[IdxB] - Volts[IdxC]; /* typically negative */
             double vbe = Volts[IdxB] - Volts[IdxE]; /* typically positive */
             if (0.01 < Math.Abs(vbc - mLastVbc) || 0.01 < Math.Abs(vbe - mLastVbe)) {
@@ -140,7 +140,7 @@ namespace Circuit.Elements.Active {
             Circuit.StampRightSide(Nodes[IdxE], -Ie + gee * vbe + gec * vbc);
         }
 
-        public override void CirStepFinished() {
+        public override void CirIterationFinished() {
             /* stop for huge currents that make simulator act weird */
             if (Math.Abs(Ic) > 1e12 || Math.Abs(Ib) > 1e12) {
                 Circuit.Stop("max current exceeded", this);

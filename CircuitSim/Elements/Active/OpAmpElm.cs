@@ -55,7 +55,7 @@ namespace Circuit.Elements.Active {
             return 0;
         }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             double vd = Volts[V_P] - Volts[V_N];
             if (Math.Abs(mLastVd - vd) > .1) {
                 Circuit.Converged = false;

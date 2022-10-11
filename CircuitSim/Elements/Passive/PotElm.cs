@@ -42,7 +42,7 @@
             Circuit.StampResistor(Nodes[2], Nodes[1], Resistance2);
         }
 
-        public override void CirSetNodeVoltage(int n, double c) {
+        public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
             if (Resistance1 == 0) {
                 return; /* avoid NaN */

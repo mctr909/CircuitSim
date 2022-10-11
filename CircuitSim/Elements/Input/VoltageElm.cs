@@ -77,13 +77,13 @@ namespace Circuit.Elements.Input {
             }
         }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             if (WaveForm != WAVEFORM.DC) {
                 Circuit.UpdateVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
             }
         }
 
-        public override void CirStepFinished() {
+        public override void CirIterationFinished() {
             if (WaveForm == WAVEFORM.NOISE) {
                 NoiseValue = (CirSimForm.Random.NextDouble() * 2 - 1) * MaxVoltage + Bias;
             }

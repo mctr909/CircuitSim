@@ -45,8 +45,8 @@ namespace Circuit.Elements.Passive {
             r1.Resistance = Resistance;
         }
 
-        public override void CirSetNodeVoltage(int n, double c) {
-            base.CirSetNodeVoltage(n, c);
+        public override void CirSetVoltage(int n, double c) {
+            base.CirSetVoltage(n, c);
             if (Volts.Length <= n) {
                 return;
             }

@@ -49,7 +49,7 @@ namespace Circuit.Elements.Input {
             Circuit.StampVoltageSource(0, Nodes[0], mVoltSource);
         }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             Circuit.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
         }
 

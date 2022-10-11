@@ -54,7 +54,7 @@ namespace Circuit.Elements.Input {
             Circuit.StampNonLinear(Nodes[3]);
         }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             /* no current path?  give up */
             if (mBroken) {
                 Pins[InputCount].current = 0;

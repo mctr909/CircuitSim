@@ -2121,9 +2121,9 @@ namespace Circuit {
             g.ScrollBoard(mOfs);
             {
                 var pdfX0 = 0;
-                var pdfX1 = (int)PDF.Width * 2;
+                var pdfX1 = (int)PDF.Page.Width * 2;
                 var pdfY0 = 0;
-                var pdfY1 = (int)PDF.Height * 2;
+                var pdfY1 = (int)PDF.Page.Height * 2;
                 g.LineColor = Color.Yellow;
                 g.DrawLine(pdfX0, pdfY0, pdfX1, pdfY0);
                 g.DrawLine(pdfX1, pdfY0, pdfX1, pdfY1);
@@ -2313,7 +2313,6 @@ namespace Circuit {
                 return;
             }
 
-            bool debugprint = mDumpMatrix;
             mDumpMatrix = false;
             double steprate = ControlPanel.IterCount;
             long tm = DateTime.Now.ToFileTimeUtc();
@@ -2333,7 +2332,7 @@ namespace Circuit {
 
             int iter;
             for (iter = 1; ; iter++) {
-                if (!Circuit.Run(debugprint)) {
+                if (!Circuit.DoIteration()) {
                     break;
                 }
 

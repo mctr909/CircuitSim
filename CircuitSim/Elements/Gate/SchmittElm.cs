@@ -6,7 +6,7 @@ namespace Circuit.Elements.Gate {
 
         public SchmittElm(StringTokenizer st) : base(st) { }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             double v0 = Volts[1];
             double _out;
             if (mState) {//Output is high

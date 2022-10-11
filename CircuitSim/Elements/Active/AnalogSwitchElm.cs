@@ -46,7 +46,7 @@
             Circuit.StampNonLinear(Nodes[1]);
         }
 
-        public override void CirDoStep() {
+        public override void CirDoIteration() {
             IsOpen = Volts[2] < 2.5;
             if (Invert) {
                 IsOpen = !IsOpen;
@@ -55,7 +55,7 @@
             Circuit.StampResistor(Nodes[0], Nodes[1], mResistance);
         }
 
-        public override void CirSetNodeVoltage(int n, double c) {
+        public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
             mCurrent = (Volts[0] - Volts[1]) / mResistance;
         }

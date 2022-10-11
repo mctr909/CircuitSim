@@ -16,7 +16,7 @@
             Circuit.StampResistor(Nodes[0], Nodes[1], Resistance);
         }
 
-        public override void CirSetNodeVoltage(int n, double c) {
+        public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
             mCurrent = (Volts[0] - Volts[1]) / Resistance;
         }
