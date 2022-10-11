@@ -179,6 +179,7 @@ namespace Circuit {
 
     public enum DUMP_ID {
         INVALID = 0,
+        ADJUSTABLE = 38,
         OPAMP = 'a',
         BOX = 'b',
         CAPACITOR = 'c',

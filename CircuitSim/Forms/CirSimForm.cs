@@ -1126,7 +1126,7 @@ namespace Circuit {
             }
             for (i = 0; i != Adjustables.Count; i++) {
                 var adj = Adjustables[i];
-                dump += "38 " + adj.Dump() + "\n";
+                dump += adj.Dump() + "\n";
             }
 
             return dump;
@@ -1210,7 +1210,7 @@ namespace Circuit {
                             DiodeModel.UndumpModel(st);
                             break;
                         }
-                        if (tint == 38) {
+                        if (tint == (int)DUMP_ID.ADJUSTABLE) {
                             var adj = new Adjustable(st);
                             Adjustables.Add(adj);
                             break;

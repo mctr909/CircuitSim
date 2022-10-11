@@ -88,11 +88,14 @@ namespace Circuit {
         }
 
         public string Dump() {
-            return CirSimForm.GetElmIndex(UI)
-                + " " + EditItemR
-                + " " + MinValue
-                + " " + MaxValue
-                + " " + Utils.Escape(SliderText);
+            return string.Join(" ",
+                (int)DUMP_ID.ADJUSTABLE,
+                CirSimForm.GetElmIndex(UI),
+                EditItemR,
+                MinValue,
+                MaxValue,
+                Utils.Escape(SliderText)
+            );
         }
     }
 }

@@ -426,7 +426,7 @@ namespace Circuit.Elements.Input {
                 break;
             case VALUE_NAME_HZ:
                 adj.MinValue = 0;
-                adj.MaxValue = 100;
+                adj.MaxValue = 1000;
                 break;
             case VALUE_NAME_PHASE:
                 adj.MinValue = -180;
