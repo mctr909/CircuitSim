@@ -27,20 +27,17 @@ namespace Circuit.UI.Active {
         }
 
         public OpAmp(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            /* GBW has no effect in this version of the simulator,
-             * but we retain it to keep the file format the same */
             double maxOut;
             double minOut;
+            double gain;
             double vn;
             double vp;
-            double gain;
             try {
                 maxOut = st.nextTokenDouble();
                 minOut = st.nextTokenDouble();
-                st.nextTokenDouble();
+                gain = st.nextTokenDouble();
                 vn = st.nextTokenDouble();
                 vp = st.nextTokenDouble();
-                gain = st.nextTokenDouble();
             } catch {
                 maxOut = 15;
                 minOut = -15;
@@ -61,10 +58,9 @@ namespace Circuit.UI.Active {
             DumpInfo.Flags |= FLAG_GAIN;
             optionList.Add(ce.MaxOut);
             optionList.Add(ce.MinOut);
-            optionList.Add(0);
+            optionList.Add(ce.Gain);
             optionList.Add(ce.Volts[ElmOpAmp.V_N].ToString("0.000000"));
             optionList.Add(ce.Volts[ElmOpAmp.V_P].ToString("0.000000"));
-            optionList.Add(ce.Gain);
         }
 
         public override void Draw(CustomGraphics g) {
