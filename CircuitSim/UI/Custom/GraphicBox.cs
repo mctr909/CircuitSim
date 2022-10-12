@@ -1,7 +1,5 @@
 ﻿using System.Drawing;
 
-using Circuit.Elements;
-
 namespace Circuit.UI.Custom {
     class GraphicBox : Graphic {
         public GraphicBox(Point pos) : base(pos) {

@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-using Circuit.Elements;
-
 namespace Circuit.UI.Custom {
     class GraphicText : Graphic {
         const int FLAG_BAR = 2;

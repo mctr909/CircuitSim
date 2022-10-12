@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Text.RegularExpressions;
 
-using Circuit.Elements;
 using Circuit.Elements.Custom;
 
 namespace Circuit.UI.Custom {

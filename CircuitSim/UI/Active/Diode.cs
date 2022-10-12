@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-using Circuit.Elements;
 using Circuit.Elements.Active;
 
 namespace Circuit.UI.Active {

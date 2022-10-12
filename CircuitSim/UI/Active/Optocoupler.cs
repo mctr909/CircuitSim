@@ -1,8 +1,6 @@
 ﻿using System.Drawing;
 
-using Circuit.Elements;
 using Circuit.Elements.Active;
-
 using Circuit.UI.Custom;
 
 namespace Circuit.UI.Active {

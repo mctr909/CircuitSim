@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-using Circuit.Elements;
 using Circuit.Elements.Input;
-
 using Circuit.UI.Custom;
 
 namespace Circuit.UI.Input {

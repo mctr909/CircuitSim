@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 
-using Circuit.Elements;
 using Circuit.Elements.Input;
 
 namespace Circuit.UI.Input {

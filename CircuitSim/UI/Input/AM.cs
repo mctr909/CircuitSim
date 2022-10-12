@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-using Circuit.Elements;
 using Circuit.Elements.Input;
 
 namespace Circuit.UI.Input {

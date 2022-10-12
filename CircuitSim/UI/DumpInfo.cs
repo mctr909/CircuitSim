@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace Circuit.Elements {
+namespace Circuit.UI {
     public class DumpInfo {
         public Point P1;
         public Point P2;

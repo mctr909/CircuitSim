@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-using Circuit.Elements;
 using Circuit.Elements.Gate;
 
 namespace Circuit.UI.Gate {
