@@ -141,7 +141,8 @@ namespace Circuit.Elements.Active {
             double[] tmpV;
             if (finished) {
                 tmpV = Volts;
-            } else {
+            }
+            else {
                 /* limit voltage changes to 0.5V */
                 tmpV = new double[3];
                 tmpV[IdxG] = Volts[IdxG];
@@ -161,9 +162,9 @@ namespace Circuit.Elements.Active {
                 }
             }
 
-            if (!finished && (nonConvergence(mLastV[IdxS], tmpV[IdxS]) || nonConvergence(mLastV[IdxD], tmpV[IdxD]) || nonConvergence(mLastV[IdxG], tmpV[IdxG]))) {
-                Circuit.Converged = false;
-            }
+            //if (!finished && (nonConvergence(mLastV[IdxS], tmpV[IdxS]) || nonConvergence(mLastV[IdxD], tmpV[IdxD]) || nonConvergence(mLastV[IdxG], tmpV[IdxG]))) {
+            //    Circuit.Converged = false;
+            //}
             mLastV[IdxG] = tmpV[IdxG];
             mLastV[IdxS] = tmpV[IdxS];
             mLastV[IdxD] = tmpV[IdxD];
@@ -192,13 +193,15 @@ namespace Circuit.Elements.Active {
                 Gds = 1e-8;
                 Ids = vds * Gds;
                 Mode = 0;
-            } else if (vds < vgs - Vt) {
+            }
+            else if (vds < vgs - Vt) {
                 /* linear */
                 Ids = Hfe * ((vgs - Vt) * vds - vds * vds * 0.5);
                 Gm = Hfe * vds;
                 Gds = Hfe * (vgs - vds - Vt);
                 Mode = 1;
-            } else {
+            }
+            else {
                 /* saturation; Gds = 0 */
                 Gm = Hfe * (vgs - Vt);
                 /* use very small Gds to avoid nonconvergence */
@@ -212,7 +215,8 @@ namespace Circuit.Elements.Active {
                 DiodeCurrent1 = mDiodeB1.CirCalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[IdxS])) * Pnp;
                 mDiodeB2.CirDoStep(Pnp * (Volts[BodyTerminal] - Volts[IdxD]));
                 DiodeCurrent2 = mDiodeB2.CirCalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[IdxD])) * Pnp;
-            } else {
+            }
+            else {
                 DiodeCurrent1 = DiodeCurrent2 = 0;
             }
 
@@ -227,16 +231,38 @@ namespace Circuit.Elements.Active {
                 return;
             }
 
-            Circuit.StampMatrix(Nodes[idxD], Nodes[idxD], Gds);
-            Circuit.StampMatrix(Nodes[idxD], Nodes[idxS], -Gds - Gm);
-            Circuit.StampMatrix(Nodes[idxD], Nodes[IdxG], Gm);
-            Circuit.StampMatrix(Nodes[idxS], Nodes[idxD], -Gds);
-            Circuit.StampMatrix(Nodes[idxS], Nodes[idxS], Gds + Gm);
-            Circuit.StampMatrix(Nodes[idxS], Nodes[IdxG], -Gm);
+            var ra = Circuit.mRowInfo[Nodes[idxD] - 1].MapRow;
+            var rb = Circuit.mRowInfo[Nodes[idxS] - 1].MapRow;
+            var ri = Circuit.mRowInfo[Nodes[idxD] - 1];
+            if (ri.IsConst) {
+                Circuit.mRightSide[ra] -= Gds * ri.Value;
+                Circuit.mRightSide[rb] += Gds * ri.Value;
+            } else {
+                Circuit.mMatrix[ra, ri.MapCol] += Gds;
+                Circuit.mMatrix[rb, ri.MapCol] -= Gds;
+            }
+            ri = Circuit.mRowInfo[Nodes[IdxG] - 1];
+            if (ri.IsConst) {
+                Circuit.mRightSide[ra] -= Gm * ri.Value;
+                Circuit.mRightSide[rb] += Gm * ri.Value;
+            } else {
+                Circuit.mMatrix[ra, ri.MapCol] += Gm;
+                Circuit.mMatrix[rb, ri.MapCol] -= Gm;
+            }
+            ri = Circuit.mRowInfo[Nodes[idxS] - 1];
+            if (ri.IsConst) {
+                Circuit.mRightSide[ra] += (Gds + Gm) * ri.Value;
+                Circuit.mRightSide[rb] -= (Gds + Gm) * ri.Value;
+            } else {
+                Circuit.mMatrix[ra, ri.MapCol] -= Gds + Gm;
+                Circuit.mMatrix[rb, ri.MapCol] += Gds + Gm;
+            }
 
-            double rs = -Pnp * ids0 + Gds * realVds + Gm * realVgs;
-            Circuit.StampRightSide(Nodes[idxD], rs);
-            Circuit.StampRightSide(Nodes[idxS], -rs);
+            var rs = -Pnp * ids0 + Gds * realVds + Gm * realVgs;
+            ra = Circuit.mRowInfo[Nodes[idxD] - 1].MapRow;
+            rb = Circuit.mRowInfo[Nodes[idxS] - 1].MapRow;
+            Circuit.mRightSide[ra] += rs;
+            Circuit.mRightSide[rb] -= rs;
         }
 
         bool nonConvergence(double last, double now) {

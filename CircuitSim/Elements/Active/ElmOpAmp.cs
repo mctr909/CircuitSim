@@ -53,12 +53,12 @@ namespace Circuit.Elements.Active {
 
         public override void CirDoIteration() {
             double vd = Volts[V_P] - Volts[V_N];
-            if (Math.Abs(mLastVd - vd) > 0.1) {
-                Circuit.Converged = false;
-            }
-            else if (Volts[V_O] > MaxOut + 0.1 || Volts[V_O] < MinOut - 0.1) {
-                Circuit.Converged = false;
-            }
+            //if (Math.Abs(mLastVd - vd) > 0.1) {
+            //    Circuit.Converged = false;
+            //}
+            //else if (Volts[V_O] > MaxOut + 0.1 || Volts[V_O] < MinOut - 0.1) {
+            //    Circuit.Converged = false;
+            //}
             double dx;
             double x;
             if (vd >= MaxOut / Gain && (mLastVd >= 0 || CirSimForm.Random.Next(4) == 1)) {
@@ -76,10 +76,26 @@ namespace Circuit.Elements.Active {
 
             /* newton-raphson */
             int vn = Circuit.NodeList.Count + mVoltSource;
-            Circuit.StampMatrix(vn, Nodes[0], dx);
-            Circuit.StampMatrix(vn, Nodes[1], -dx);
-            Circuit.StampMatrix(vn, Nodes[2], 1);
-            Circuit.StampRightSide(vn, x);
+            var r = Circuit.mRowInfo[vn - 1].MapRow;
+            var ri = Circuit.mRowInfo[Nodes[0] - 1];
+            if (ri.IsConst) {
+                Circuit.mRightSide[r] -= dx * ri.Value;
+            } else {
+                Circuit.mMatrix[r, ri.MapCol] += dx;
+            }
+            ri = Circuit.mRowInfo[Nodes[1] - 1];
+            if (ri.IsConst) {
+                Circuit.mRightSide[r] += dx * ri.Value;
+            } else {
+                Circuit.mMatrix[r, ri.MapCol] -= dx;
+            }
+            ri = Circuit.mRowInfo[Nodes[2] - 1];
+            if (ri.IsConst) {
+                Circuit.mRightSide[r] -= ri.Value;
+            } else {
+                Circuit.mMatrix[r, ri.MapCol] += 1;
+            }
+            Circuit.mRightSide[r] += x;
 
             mLastVd = vd;
         }

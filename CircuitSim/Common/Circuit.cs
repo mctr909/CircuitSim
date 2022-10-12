@@ -38,7 +38,7 @@ namespace Circuit {
         static int[] mPermute;
         static double[] mOrigRightSide;
         static double[,] mOrigMatrix;
-        static double[,] mMatrix;
+        public static double[,] mMatrix;
         public static double[] mRightSide;
         public static RowInfo[] mRowInfo;
         #endregion
@@ -911,26 +911,26 @@ namespace Circuit {
         /// <para>meaning that a voltage change of dv in node j will increase the current into node i by x dv.</para>
         /// <para>(Unless i or j is a voltage source node.)</para>
         /// </summary>
-        /// <param name="i">row</param>
-        /// <param name="j">column</param>
+        /// <param name="r">row</param>
+        /// <param name="c">column</param>
         /// <param name="x">stamp value in row, column</param>
-        public static void StampMatrix(int i, int j, double x) {
-            if (i > 0 && j > 0) {
+        public static void StampMatrix(int r, int c, double x) {
+            if (r > 0 && c > 0) {
                 if (mCircuitNeedsMap) {
-                    i = mRowInfo[i - 1].MapRow;
-                    var ri = mRowInfo[j - 1];
+                    r = mRowInfo[r - 1].MapRow;
+                    var ri = mRowInfo[c - 1];
                     if (ri.IsConst) {
                         /*Console.WriteLine("Stamping constant " + i + " " + j + " " + x);*/
-                        mRightSide[i] -= x * ri.Value;
+                        mRightSide[r] -= x * ri.Value;
                         return;
                     }
-                    j = ri.MapCol;
+                    c = ri.MapCol;
                     /*Console.WriteLine("stamping " + i + " " + j + " " + x);*/
                 } else {
-                    i--;
-                    j--;
+                    r--;
+                    c--;
                 }
-                mMatrix[i, j] += x;
+                mMatrix[r, c] += x;
             }
         }
 
