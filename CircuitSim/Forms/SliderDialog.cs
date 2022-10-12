@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 using Circuit.Elements;
+using Circuit.UI;
 
 namespace Circuit {
     public class SliderDialog : Form {

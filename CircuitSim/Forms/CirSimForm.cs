@@ -6,10 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-using Circuit.Elements;
-using Circuit.Elements.Passive;
 using Circuit.Elements.Active;
-using Circuit.Elements.Output;
+using Circuit.Elements.Passive;
+
+using Circuit.UI;
+using Circuit.UI.Passive;
 
 namespace Circuit {
     public partial class CirSimForm : Form {
@@ -108,7 +109,7 @@ namespace Circuit {
         MenuItem mPasteItem;
 
         static BaseUI mMenuElm;
-        SwitchUI mHeldSwitchElm;
+        Switch mHeldSwitchElm;
 
         static List<string> mUndoStack = new List<string>();
         static List<string> mRedoStack = new List<string>();
@@ -365,7 +366,7 @@ namespace Circuit {
                 s = Scope.List[mMenuScope];
             } else {
                 if (Mouse.GripElm is ScopeUI) {
-                    s = ((ScopeUI)Mouse.GripElm).elmScope;
+                    s = ((ScopeUI)Mouse.GripElm).Scope;
                 } else {
                     return;
                 }
@@ -375,7 +376,7 @@ namespace Circuit {
                 if (Scope.Count == Scope.List.Length) {
                     return;
                 }
-                Scope.List[Scope.Count] = ((ScopeUI)Mouse.GripElm).elmScope;
+                Scope.List[Scope.Count] = ((ScopeUI)Mouse.GripElm).Scope;
                 ((ScopeUI)Mouse.GripElm).clearElmScope();
                 Scope.List[Scope.Count].Position = Scope.Count;
                 Scope.Count++;
@@ -817,13 +818,13 @@ namespace Circuit {
             }
 
             if ((SelectedScope != -1 && Scope.List[SelectedScope].CursorInSettingsWheel) ||
-                (SelectedScope == -1 && Mouse.GripElm != null && (Mouse.GripElm is ScopeUI) && ((ScopeUI)Mouse.GripElm).elmScope.CursorInSettingsWheel)) {
+                (SelectedScope == -1 && Mouse.GripElm != null && (Mouse.GripElm is ScopeUI) && ((ScopeUI)Mouse.GripElm).Scope.CursorInSettingsWheel)) {
                 Console.WriteLine("Doing something");
                 Scope s;
                 if (SelectedScope != -1) {
                     s = Scope.List[SelectedScope];
                 } else {
-                    s = ((ScopeUI)Mouse.GripElm).elmScope;
+                    s = ((ScopeUI)Mouse.GripElm).Scope;
                 }
                 s.Properties(mPixCir.Left + mPixCir.Width / 2, mPixCir.Bottom);
                 clearSelection();
@@ -1278,15 +1279,15 @@ namespace Circuit {
         }
 
         bool doSwitch(Point pos) {
-            if (Mouse.GripElm == null || !(Mouse.GripElm is SwitchUI)) {
+            if (Mouse.GripElm == null || !(Mouse.GripElm is Switch)) {
                 return false;
             }
-            var se = (SwitchUI)Mouse.GripElm;
+            var se = (Switch)Mouse.GripElm;
             if (!se.GetSwitchRect().Contains(pos)) {
                 return false;
             }
             se.Toggle();
-            if (((SwitchElm)se.Elm).Momentary) {
+            if (((ElmSwitch)se.Elm).Momentary) {
                 mHeldSwitchElm = se;
             }
             NeedAnalyze();
@@ -1506,7 +1507,7 @@ namespace Circuit {
 
         void doSplit(BaseUI ce) {
             var pos = SnapGrid(inverseTransform(mMenuPos));
-            if (ce == null || !(ce is WireUI)) {
+            if (ce == null || !(ce is Wire)) {
                 return;
             }
             if (ce.DumpInfo.P1.X == ce.DumpInfo.P2.X) {
@@ -1518,7 +1519,7 @@ namespace Circuit {
             if (pos.X == ce.DumpInfo.P1.X && pos.Y == ce.DumpInfo.P1.Y || pos.X == ce.DumpInfo.P2.X && pos.Y == ce.DumpInfo.P2.Y) {
                 return;
             }
-            var newWire = new WireUI(pos);
+            var newWire = new Wire(pos);
             newWire.Drag(ce.DumpInfo.P2);
             ce.Drag(pos);
             ElmList.Add(newWire);
@@ -1698,9 +1699,9 @@ namespace Circuit {
                     mContextMenuLocation = mContextMenu.Location;
                 } else {
                     var s = (ScopeUI)Mouse.GripElm;
-                    if (s.elmScope.CanMenu) {
-                        mMenuPlotWave = s.elmScope.SelectedPlot;
-                        mContextMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, new Scope[] { s.elmScope }, 0, true);
+                    if (s.Scope.CanMenu) {
+                        mMenuPlotWave = s.Scope.SelectedPlot;
+                        mContextMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, new Scope[] { s.Scope }, 0, true);
                         mContextMenuLocation = mContextMenu.Location;
                     }
                 }
@@ -1715,7 +1716,7 @@ namespace Circuit {
 
         void scrollValues(int deltay) {
             if (Mouse.GripElm != null && !DialogIsShowing() && SelectedScope == -1) {
-                if ((Mouse.GripElm is ResistorUI) || (Mouse.GripElm is CapacitorUI) || (Mouse.GripElm is InductorUI)) {
+                if ((Mouse.GripElm is Resistor) || (Mouse.GripElm is Capacitor) || (Mouse.GripElm is Inductor)) {
                     mScrollValuePopup = new ScrollValuePopup(deltay, Mouse.GripElm);
                     mScrollValuePopup.Show(
                         Location.X + MouseCursorX,
@@ -1817,7 +1818,7 @@ namespace Circuit {
             /* Remove any scopeElms for elements that no longer exist */
             for (int i = ElmCount - 1; 0 <= i; i--) {
                 var ce = GetElm(i);
-                if ((ce is ScopeUI) && ((ScopeUI)ce).elmScope.NeedToRemove) {
+                if ((ce is ScopeUI) && ((ScopeUI)ce).Scope.NeedToRemove) {
                     ce.Delete();
                     ElmList.RemoveAt(i);
                 }
@@ -2020,7 +2021,7 @@ namespace Circuit {
                     continue;
                 }
                 if (cs == "TransistorElm") {
-                    if (((TransistorElm)e.Elm).NPN == -1) {
+                    if (((ElmTransistor)e.Elm).NPN == -1) {
                         cs = "PTransistorElm";
                     } else {
                         cs = "NTransistorElm";
@@ -2363,7 +2364,7 @@ namespace Circuit {
                 }
             }
             for (i = 0; i != ElmCount; i++) {
-                if ((GetElm(i) is ScopeUI) && ((ScopeUI)GetElm(i)).elmScope.ViewingWire) {
+                if ((GetElm(i) is ScopeUI) && ((ScopeUI)GetElm(i)).Scope.ViewingWire) {
                     return false;
                 }
             }

@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 
 using Circuit.Elements;
+using Circuit.UI;
 
 namespace Circuit {
     public class ScopePlot {

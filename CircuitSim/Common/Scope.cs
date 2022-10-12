@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-using Circuit.Elements;
-using Circuit.Elements.Passive;
 using Circuit.Forms;
+
+using Circuit.UI;
+using Circuit.UI.Passive;
 
 namespace Circuit {
     public class Scope {
@@ -133,7 +134,7 @@ namespace Circuit {
         public bool ViewingWire {
             get {
                 foreach (var plot in Plots) {
-                    if (plot.Elm is WireUI) {
+                    if (plot.Elm is Wire) {
                         return true;
                     }
                 }

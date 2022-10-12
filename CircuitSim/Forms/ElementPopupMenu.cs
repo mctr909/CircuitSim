@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-using Circuit.Elements;
-using Circuit.Elements.Passive;
+using Circuit.UI;
+using Circuit.UI.Passive;
 
 namespace Circuit {
     public enum ELEMENT_MENU_ITEM {
@@ -75,10 +75,10 @@ namespace Circuit {
         }
 
         bool canSplit(BaseUI ce) {
-            if (!(ce is WireUI)) {
+            if (!(ce is Wire)) {
                 return false;
             }
-            var we = (WireUI)ce;
+            var we = (Wire)ce;
             if (we.DumpInfo.P1.X == we.DumpInfo.P2.X || we.DumpInfo.P1.Y == we.DumpInfo.P2.Y) {
                 return true;
             }
@@ -86,7 +86,7 @@ namespace Circuit {
         }
 
         bool sliderItemEnabled(BaseUI elm) {
-            if (elm is PotUI) {
+            if (elm is Pot) {
                 return false;
             }
             for (int i = 0; ; i++) {

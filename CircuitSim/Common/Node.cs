@@ -5,6 +5,9 @@ using Circuit.Elements;
 using Circuit.Elements.Passive;
 using Circuit.Elements.Input;
 
+using Circuit.UI;
+using Circuit.UI.Passive;
+
 namespace Circuit {
     class CircuitNodeLink {
         public int Num;
@@ -24,10 +27,10 @@ namespace Circuit {
     }
 
     class WireInfo {
-        public WireUI Wire;
+        public Wire Wire;
         public List<BaseUI> Neighbors;
         public int Post;
-        public WireInfo(WireUI w) { Wire = w; }
+        public WireInfo(Wire w) { Wire = w; }
     }
 
     enum PathType {
@@ -76,13 +79,13 @@ namespace Circuit {
                 switch (mType) {
                 case PathType.INDUCTOR:
                     /* inductors need a path free of current sources */
-                    if (cee is CurrentElm) {
+                    if (cee is ElmCurrent) {
                         continue;
                     }
                     break;
                 case PathType.VOLTAGE:
                     /* when checking for voltage loops, we only care about voltage sources/wires/ground */
-                    if (!(cee.IsWire || (cee is VoltageElm) || (cee is GroundElm))) {
+                    if (!(cee.IsWire || (cee is ElmVoltage) || (cee is ElmGround))) {
                         continue;
                     }
                     break;
@@ -94,7 +97,7 @@ namespace Circuit {
                     break;
                 case PathType.CAPACITOR_V:
                     /* checking for capacitor/voltage source loops */
-                    if (!(cee.IsWire || (cee is CapacitorElm) || (cee is VoltageElm))) {
+                    if (!(cee.IsWire || (cee is ElmCapacitor) || (cee is ElmVoltage))) {
                         continue;
                     }
                     break;
@@ -123,7 +126,7 @@ namespace Circuit {
                     return true;
                 }
 
-                if (mType == PathType.INDUCTOR && (cee is InductorElm)) {
+                if (mType == PathType.INDUCTOR && (cee is ElmInductor)) {
                     /* inductors can use paths with other inductors of matching current */
                     double c = cee.Current;
                     if (nodeA == 0) {

@@ -1,6 +1,7 @@
 ﻿using System.Windows.Forms;
 
 using Circuit.Elements;
+using Circuit.UI;
 
 namespace Circuit {
     public class Adjustable {

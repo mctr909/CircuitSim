@@ -149,18 +149,7 @@
         public virtual void CirPrepareIteration() { }
         public virtual void CirIterationFinished() { }
         public virtual void CirDoIteration() { }
-        /// <summary>
-        /// set current for voltage source vn to c.
-        /// vn will be the same value as in a previous call to setVoltageSource(n, vn)
-        /// </summary>
-        /// <param name="vn"></param>
-        /// <param name="c"></param>
         public virtual void CirSetCurrent(int vn, double c) { mCurrent = c; }
-        /// <summary>
-        /// set voltage of x'th node, called by simulator logic
-        /// </summary>
-        /// <param name="xn">x'th node</param>
-        /// <param name="c"></param>
         public virtual void CirSetVoltage(int xn, double c) { Volts[xn] = c; }
         #endregion
     }

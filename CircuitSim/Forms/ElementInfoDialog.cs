@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
-using Circuit.Elements;
-using Circuit.Elements.Input;
+using Circuit.UI;
+using Circuit.UI.Input;
 
 namespace Circuit {
     public interface Editable {
@@ -338,7 +338,7 @@ namespace Circuit {
 
         string unitString(ElementInfo ei) {
             /* for voltage elements, express values in rms if that would be shorter */
-            if (mElm != null && (mElm is VoltageUI)
+            if (mElm != null && (mElm is Voltage)
                 && Math.Abs(ei.Value) > 1e-4
                 && diffFromInteger(ei.Value * 1e4) > diffFromInteger(ei.Value * 1e4 / ROOT2)) {
                 return UnitString(ei, ei.Value / ROOT2) + "rms";

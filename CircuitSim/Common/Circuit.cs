@@ -7,6 +7,10 @@ using Circuit.Elements.Passive;
 using Circuit.Elements.Input;
 using Circuit.Elements.Output;
 
+using Circuit.UI;
+using Circuit.UI.Passive;
+using Circuit.UI.Input;
+
 namespace Circuit {
     static class Circuit {
         class RowInfo {
@@ -175,10 +179,10 @@ namespace Circuit {
             mWireInfoList = new List<WireInfo>();
             for (int i = 0; i != CirSimForm.ElmCount; i++) {
                 var ce = CirSimForm.GetElm(i);
-                if (!(ce is WireUI)) {
+                if (!(ce is Wire)) {
                     continue;
                 }
-                var we = (WireUI)ce;
+                var we = (Wire)ce;
                 we.HasWireInfo = false;
                 mWireInfoList.Add(new WireInfo(we));
                 var p1 = ce.GetPost(0);
@@ -253,7 +257,7 @@ namespace Circuit {
 
                     /* is this a wire that doesn't have wire info yet?  If so we can't use it.
                     /* That would create a circular dependency */
-                    bool notReady = (ce is WireUI) && !((WireUI)ce).HasWireInfo;
+                    bool notReady = (ce is Wire) && !((Wire)ce).HasWireInfo;
 
                     /* which post does this element connect to, if any? */
                     if (pt.X == wire.DumpInfo.P1.X && pt.Y == wire.DumpInfo.P1.Y) {
@@ -514,15 +518,15 @@ namespace Circuit {
             /* look for voltage or ground element */
             for (int i = 0; i != CirSimForm.ElmCount; i++) {
                 var ce = CirSimForm.GetElm(i);
-                if (ce is GroundUI) {
+                if (ce is Ground) {
                     gotGround = true;
                     break;
                 }
 
-                if (ce is RailUI) {
+                if (ce is Rail) {
                     gotRail = true;
                 }
-                if (volt == null && (ce is VoltageUI)) {
+                if (volt == null && (ce is Voltage)) {
                     volt = ce;
                 }
             }
@@ -547,7 +551,7 @@ namespace Circuit {
             if (debug) Console.WriteLine("ac2");
 
             /* allocate nodes and voltage sources */
-            LabeledNodeElm.ResetNodeList();
+            ElmLabeledNode.ResetNodeList();
             for (int i = 0; i != CirSimForm.ElmCount; i++) {
                 var ce = CirSimForm.GetElm(i);
                 var cee = ce.Elm;
@@ -672,7 +676,7 @@ namespace Circuit {
                 changed = false;
                 for (int i = 0; i != CirSimForm.ElmCount; i++) {
                     var cee = CirSimForm.GetElm(i).Elm;
-                    if (cee is WireElm) {
+                    if (cee is ElmWire) {
                         continue;
                     }
                     /* loop through all ce's nodes to see if they are connected
@@ -719,7 +723,7 @@ namespace Circuit {
                 var cee = ce.Elm;
 
                 /* look for inductors with no current path */
-                if (cee is InductorElm) {
+                if (cee is ElmInductor) {
                     var fpi = new PathInfo(PathType.INDUCTOR, cee, cee.Nodes[1], elmList, NodeList.Count);
                     if (!fpi.FindPath(cee.Nodes[0])) {
                         if (debug) Console.WriteLine(cee + " no path");
@@ -728,8 +732,8 @@ namespace Circuit {
                 }
 
                 /* look for current sources with no current path */
-                if (cee is CurrentElm) {
-                    var cur = (CurrentElm)cee;
+                if (cee is ElmCurrent) {
+                    var cur = (ElmCurrent)cee;
                     var fpi = new PathInfo(PathType.INDUCTOR, cee, cee.Nodes[1], elmList, NodeList.Count);
                     if (!fpi.FindPath(cee.Nodes[0])) {
                         cur.stampCurrentSource(true);
@@ -741,14 +745,14 @@ namespace Circuit {
                 /* look for voltage source or wire loops.  we do this for voltage sources or wire-like elements (not actual wires
                 /* because those are optimized out, so the findPath won't work) */
                 if (2 == cee.PostCount) {
-                    if ((cee is VoltageElm) || (cee.IsWire && !(cee is WireElm))) {
+                    if ((cee is ElmVoltage) || (cee.IsWire && !(cee is ElmWire))) {
                         var fpi = new PathInfo(PathType.VOLTAGE, cee, cee.Nodes[1], elmList, NodeList.Count);
                         if (fpi.FindPath(cee.Nodes[0])) {
                             Stop("Voltage source/wire loop with no resistance!", cee);
                             return;
                         }
                     }
-                } else if (cee is SwitchElm2) {
+                } else if (cee is ElmSwitch2) {
                     /* for Switch2Elms we need to do extra work to look for wire loops */
                     var fpi = new PathInfo(PathType.VOLTAGE, cee, cee.Nodes[0], elmList, NodeList.Count);
                     for (int j = 1; j < cee.PostCount; j++) {
@@ -760,7 +764,7 @@ namespace Circuit {
                 }
 
                 /* look for path from rail to ground */
-                if ((cee is RailElm) || (cee is LogicInputElm)) {
+                if ((cee is ElmRail) || (cee is ElmLogicInput)) {
                     var fpi = new PathInfo(PathType.VOLTAGE, cee, cee.Nodes[0], elmList, NodeList.Count);
                     if (fpi.FindPath(0)) {
                         Stop("Path to ground with no resistance!", cee);
@@ -769,7 +773,7 @@ namespace Circuit {
                 }
 
                 /* look for shorted caps, or caps w/ voltage but no R */
-                if (cee is CapacitorElm) {
+                if (cee is ElmCapacitor) {
                     var fpi = new PathInfo(PathType.SHORT, cee, cee.Nodes[1], elmList, NodeList.Count);
                     if (fpi.FindPath(cee.Nodes[0])) {
                         Console.WriteLine(cee + " shorted");
@@ -823,7 +827,7 @@ namespace Circuit {
             ShowResistanceInVoltageSources = true;
             for (int i = 0; i != CirSimForm.ElmCount; i++) {
                 var ce = CirSimForm.GetElm(i);
-                if (ce is VoltageUI) {
+                if (ce is Voltage) {
                     if (gotVoltageSource) {
                         ShowResistanceInVoltageSources = false;
                     } else {

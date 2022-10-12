@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using Circuit.Elements;
-using Circuit.Elements.Passive;
+using Circuit.UI;
+using Circuit.UI.Passive;
 
 namespace Circuit {
     class ScrollValuePopup : Form {
@@ -98,17 +98,17 @@ namespace Circuit {
         }
 
         void setupValues() {
-            if (mMyElm is ResistorUI) {
+            if (mMyElm is Resistor) {
                 mMinPow = -2;
                 mMaxPow = 6;
                 mUnit = "Ω";
             }
-            if (mMyElm is CapacitorUI) {
+            if (mMyElm is Capacitor) {
                 mMinPow = -11;
                 mMaxPow = -3;
                 mUnit = "F";
             }
-            if (mMyElm is InductorUI) {
+            if (mMyElm is Inductor) {
                 mMinPow = -6;
                 mMaxPow = 0;
                 mUnit = "H";
