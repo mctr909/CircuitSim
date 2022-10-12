@@ -5,5 +5,4 @@ CAPACITOR 136 72 136 136 0 1E-07 -0.0556604483070988 C
 GROUND 136 136 136 144 0 
 LABELED_NODE 136 72 216 72 0 Vout
 TEXT 162 89 419 187 4 9 H(ω)\s\q\s1/jωC\s/\s(R\s\p\s1/jωC)\r\n\s\q\s1\s/\s(1\s\p\sjωCR)\r\n\s\q\s1\s/\s(1\s\p\sjωCR)\s*\s(1\s-\sjωCR)\s/\s(1\s-\sjωCR)\r\n\s\q\s1\s/\s(1\s\p\s(ωCR)^2)\s\p\sj{-ωCR\s/\s(1\s\p\s(ωCR)^2)}\r\n\r\nθ\s\q\s-arctan(ωCR)\r\nfc\s\q\s1\s/\s2πCR
-o 4 4 VOLTAGE 70658 0.1  0 5 4 VOLTAGE 4 VOLTAGE 4 VOLTAGE 4 VOLTAGE 4 VOLTAGE
 38 1 0 100 5000 R
