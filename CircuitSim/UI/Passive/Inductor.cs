@@ -17,7 +17,9 @@ namespace Circuit.UI.Passive {
 
         public Inductor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             try {
-                Elm = new ElmInductor(st);
+                var ind = st.nextTokenDouble();
+                var c = st.nextTokenDouble();
+                Elm = new ElmInductor(ind, c);
             } catch (Exception ex) {
                 throw new Exception("Inductor load error:{0}", ex);
             }

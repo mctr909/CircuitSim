@@ -1,14 +1,6 @@
 ﻿namespace Circuit.Elements.Passive {
     class ElmResistor : BaseElement {
-        public double Resistance { get; set; }
-
-        public ElmResistor() {
-            Resistance = 1000;
-        }
-
-        public ElmResistor(double resistance) {
-            Resistance = resistance;
-        }
+        public double Resistance = 1000;
 
         public override int PostCount { get { return 2; } }
 

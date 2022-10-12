@@ -17,16 +17,24 @@ namespace Circuit.UI.Passive {
 
         public Transformer(Point pos) : base(pos) {
             Elm = new ElmTransformer();
+            Elm.AllocNodes();
             mNoDiagonal = true;
             DumpInfo.ReferenceName = "T";
         }
 
         public Transformer(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
+            var elm = new ElmTransformer();
+            Elm = elm;
             try {
-                Elm = new ElmTransformer(st, (DumpInfo.Flags & FLAG_REVERSE) != 0);
+                elm.PInductance = st.nextTokenDouble();
+                elm.Ratio = st.nextTokenDouble();
+                elm.Currents[0] = st.nextTokenDouble();
+                elm.Currents[1] = st.nextTokenDouble();
+                elm.CouplingCoef = st.nextTokenDouble();
             } catch (Exception ex) {
                 throw new Exception("Transformer load error:{0}", ex);
             }
+            elm.AllocNodes();
             mNoDiagonal = true;
         }
 

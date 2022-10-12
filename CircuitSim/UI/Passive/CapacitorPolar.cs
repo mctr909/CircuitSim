@@ -12,7 +12,11 @@ namespace Circuit.UI.Passive {
         }
 
         public CapacitorPolar(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            Elm = new ElmPolarCapacitor(st);
+            var elm = new ElmPolarCapacitor();
+            Elm = elm;
+            elm.Capacitance = st.nextTokenDouble();
+            elm.VoltDiff = st.nextTokenDouble();
+            elm.MaxNegativeVoltage = st.nextTokenDouble();
         }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }

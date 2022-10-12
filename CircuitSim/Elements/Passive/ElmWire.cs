@@ -1,7 +1,5 @@
 ﻿namespace Circuit.Elements.Passive {
     class ElmWire : BaseElement {
-        public ElmWire() { }
-
         public override int PostCount { get { return 2; } }
 
         public override bool IsWire { get { return true; } }

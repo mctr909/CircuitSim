@@ -32,17 +32,22 @@ namespace Circuit.UI.Passive {
 
         public Pot(Point pos) : base(pos) {
             Elm = new ElmPot();
+            Elm.AllocNodes();
             DumpInfo.Flags = FLAG_SHOW_VALUES;
             DumpInfo.ReferenceName = "VR";
             createSlider();
         }
 
         public Pot(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
+            var elm = new ElmPot();
+            Elm = elm;
             try {
-                Elm = new ElmPot(st);
+                elm.MaxResistance = st.nextTokenDouble();
+                elm.Position = st.nextTokenDouble();
             } catch (Exception ex) {
                 throw new Exception("Pot load error:{0}", ex);
             }
+            elm.AllocNodes();
             createSlider();
         }
 

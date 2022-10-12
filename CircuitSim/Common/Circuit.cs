@@ -752,7 +752,7 @@ namespace Circuit {
                             return;
                         }
                     }
-                } else if (cee is ElmSwitch2) {
+                } else if (cee is ElmSwitchMulti) {
                     /* for Switch2Elms we need to do extra work to look for wire loops */
                     var fpi = new PathInfo(PathType.VOLTAGE, cee, cee.Nodes[0], elmList, NodeList.Count);
                     for (int j = 1; j < cee.PostCount; j++) {

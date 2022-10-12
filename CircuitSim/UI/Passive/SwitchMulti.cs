@@ -12,19 +12,28 @@ namespace Circuit.UI.Passive {
         Point[] mSwPoles;
 
         public SwitchMulti(Point pos) : base(pos, 0) {
-            Elm = new ElmSwitch2();
+            Elm = new ElmSwitchMulti();
+            Elm.AllocNodes();
             mNoDiagonal = true;
         }
 
         public SwitchMulti(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            Elm = new ElmSwitch2(st);
+            var elm = new ElmSwitchMulti();
+            Elm = elm;
+            try {
+                elm.Position = st.nextTokenInt();
+                elm.Momentary = st.nextTokenBool();
+                elm.Link = st.nextTokenInt();
+                elm.ThrowCount = st.nextTokenInt();
+            } catch { }
+            elm.AllocNodes();
             mNoDiagonal = true;
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.SWITCH_MULTI; } }
 
         protected override void dump(List<object> optionList) {
-            var ce = (ElmSwitch2)Elm;
+            var ce = (ElmSwitchMulti)Elm;
             base.dump(optionList);
             optionList.Add(ce.ThrowCount);
         }
@@ -34,7 +43,7 @@ namespace Circuit.UI.Passive {
         }
 
         public override Rectangle GetSwitchRect() {
-            var ce = (ElmSwitch2)Elm;
+            var ce = (ElmSwitchMulti)Elm;
             var l1 = new Rectangle(mLead1.X, mLead1.Y, 0, 0);
             var s0 = new Rectangle(mSwPoles[0].X, mSwPoles[0].Y, 0, 0);
             var s1 = new Rectangle(mSwPoles[ce.ThrowCount - 1].X, mSwPoles[ce.ThrowCount - 1].Y, 0, 0);
@@ -43,13 +52,13 @@ namespace Circuit.UI.Passive {
 
         public override void Toggle() {
             base.Toggle();
-            var ce = (ElmSwitch2)Elm;
+            var ce = (ElmSwitchMulti)Elm;
             if (ce.Link != 0) {
                 int i;
                 for (i = 0; i != CirSimForm.ElmCount; i++) {
                     var o = CirSimForm.GetElm(i).Elm;
-                    if (o is ElmSwitch2) {
-                        var s2 = (ElmSwitch2)o;
+                    if (o is ElmSwitchMulti) {
+                        var s2 = (ElmSwitchMulti)o;
                         if (s2.Link == ce.Link) {
                             s2.Position = ce.Position;
                         }
@@ -60,7 +69,7 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
-            var ce = (ElmSwitch2)Elm;
+            var ce = (ElmSwitchMulti)Elm;
             calcLeads(BODY_LEN);
             mSwPosts = new Point[ce.ThrowCount];
             mSwPoles = new Point[2 + ce.ThrowCount];
@@ -78,7 +87,7 @@ namespace Circuit.UI.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (ElmSwitch2)Elm;
+            var ce = (ElmSwitchMulti)Elm;
             setBbox(mPost1, mPost2, OPEN_HS);
             DumpInfo.AdjustBbox(mSwPosts[0], mSwPosts[ce.ThrowCount - 1]);
 
@@ -104,14 +113,14 @@ namespace Circuit.UI.Passive {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (ElmSwitch2)Elm;
+            var ce = (ElmSwitchMulti)Elm;
             arr[0] = "switch (" + (ce.Link == 0 ? "S" : "D")
                 + "P" + ((ce.ThrowCount > 2) ? ce.ThrowCount + "T)" : "DT)");
             arr[1] = "I = " + Utils.CurrentAbsText(ce.Current);
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
-            var ce = (ElmSwitch2)Elm;
+            var ce = (ElmSwitchMulti)Elm;
             if (c != 0) {
                 return null;
             }
@@ -122,7 +131,7 @@ namespace Circuit.UI.Passive {
         }
 
         public override void SetElementValue(int n, int c, ElementInfo ei) {
-            var ce = (ElmSwitch2)Elm;
+            var ce = (ElmSwitchMulti)Elm;
             if (n == 2) {
                 if (ei.Value >= 2) {
                     ce.ThrowCount = (int)ei.Value;

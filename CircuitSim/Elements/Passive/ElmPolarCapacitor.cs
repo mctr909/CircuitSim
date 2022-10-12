@@ -1,14 +1,6 @@
 ﻿namespace Circuit.Elements.Passive {
     class ElmPolarCapacitor : ElmCapacitor {
-        public double MaxNegativeVoltage;
-
-        public ElmPolarCapacitor() : base() {
-            MaxNegativeVoltage = 1;
-        }
-
-        public ElmPolarCapacitor(StringTokenizer st) : base(st) {
-            MaxNegativeVoltage = st.nextTokenDouble();
-        }
+        public double MaxNegativeVoltage = 1.0;
 
         public override void CirIterationFinished() {
             if (VoltageDiff < 0 && VoltageDiff < -MaxNegativeVoltage) {

@@ -1,7 +1,5 @@
 ﻿namespace Circuit.Elements.Passive {
     class ElmGround : BaseElement {
-        public ElmGround() { }
-
         public override double VoltageDiff { get { return 0; } }
 
         public override int VoltageSourceCount { get { return 1; } }

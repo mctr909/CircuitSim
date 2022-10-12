@@ -4,29 +4,17 @@
         public const int V_R = 1;
         public const int V_S = 2;
 
-        public double Position;
-        public double MaxResistance;
-        public double CurCount1;
-        public double CurCount2;
-        public double CurCount3;
+        public double Position = 0.5;
+        public double MaxResistance = 1000;
+        public double CurCount1 = 0;
+        public double CurCount2 = 0;
+        public double CurCount3 = 0;
 
         public double Resistance1 { get; private set; }
         public double Resistance2 { get; private set; }
         public double Current1 { get; private set; }
         public double Current2 { get; private set; }
         public double Current3 { get; private set; }
-
-        public ElmPot() : base() {
-            MaxResistance = 1000;
-            Position = 0.5;
-        }
-
-        public ElmPot(StringTokenizer st) : base() {
-            try {
-                MaxResistance = st.nextTokenDouble();
-                Position = st.nextTokenDouble();
-            } catch { }
-        }
 
         public override int PostCount { get { return 3; } }
 

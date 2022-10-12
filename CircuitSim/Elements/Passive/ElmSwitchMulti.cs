@@ -1,19 +1,6 @@
 ﻿namespace Circuit.Elements.Passive {
-    class ElmSwitch2 : ElmSwitch {
+    class ElmSwitchMulti : ElmSwitch {
         public int ThrowCount;
-
-        public ElmSwitch2() : base(false) {
-            ThrowCount = 2;
-            AllocNodes();
-        }
-
-        public ElmSwitch2(StringTokenizer st) : base(st) {
-            ThrowCount = 2;
-            try {
-                ThrowCount = st.nextTokenInt();
-            } catch { }
-            AllocNodes();
-        }
 
         public override bool IsWire { get { return true; } }
 

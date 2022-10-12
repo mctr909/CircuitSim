@@ -3,18 +3,9 @@
         double mCompResistance;
         double mCurSourceValue;
 
-        public double Capacitance { get; set; }
+        public double Capacitance = 1e-5;
 
-        public double VoltDiff { get; private set; }
-
-        public ElmCapacitor() {
-            Capacitance = 1e-5;
-        }
-
-        public ElmCapacitor(StringTokenizer st) {
-            Capacitance = st.nextTokenDouble();
-            VoltDiff = st.nextTokenDouble();
-        }
+        public double VoltDiff = 0.0;
 
         public override int PostCount { get { return 2; } }
 

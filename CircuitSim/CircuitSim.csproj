@@ -142,7 +142,7 @@
     <Compile Include="UI\Input\VoltageAC.cs" />
     <Compile Include="UI\Input\RailClock.cs" />
     <Compile Include="UI\Input\VoltageDC.cs" />
-    <Compile Include="Elements\Passive\ElmSwitch2.cs" />
+    <Compile Include="Elements\Passive\ElmSwitchMulti.cs" />
     <Compile Include="UI\Passive\SwitchMulti.cs" />
     <Compile Include="Elements\Passive\ElmSwitch.cs" />
     <Compile Include="UI\Passive\Switch.cs" />

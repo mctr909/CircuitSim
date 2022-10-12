@@ -7,13 +7,12 @@ namespace Circuit.Elements.Passive {
         public const int SEC_T = 1;
         public const int SEC_B = 3;
 
-        public double PInductance;
-        public double Ratio;
-        public double CouplingCoef;
-        public int Polarity;
-        public double[] CurCounts;
-
-        public double[] Currents { get; private set; }
+        public double PInductance = 0.01;
+        public double Ratio = 1.0;
+        public double CouplingCoef = 0.999;
+        public int Polarity = 1;
+        public double[] Currents = new double[2];
+        public double[] CurCounts = new double[2];
         
         double mCurSourceValue1;
         double mCurSourceValue2;
@@ -22,31 +21,6 @@ namespace Circuit.Elements.Passive {
         double mA2;
         double mA3;
         double mA4;
-
-        public ElmTransformer() : base() {
-            PInductance = 4;
-            Ratio = Polarity = 1;
-            CouplingCoef = .999;
-            Currents = new double[2];
-            CurCounts = new double[2];
-        }
-
-        public ElmTransformer(StringTokenizer st, bool reverse = false) : base() {
-            Currents = new double[2];
-            CurCounts = new double[2];
-            try {
-                PInductance = st.nextTokenDouble();
-                Ratio = st.nextTokenDouble();
-                Currents[0] = st.nextTokenDouble();
-                Currents[1] = st.nextTokenDouble();
-                try {
-                    CouplingCoef = st.nextTokenDouble();
-                } catch {
-                    CouplingCoef = 0.99;
-                }
-            } catch { }
-            Polarity = reverse ? -1 : 1;
-        }
 
         public override int PostCount { get { return 4; } }
 

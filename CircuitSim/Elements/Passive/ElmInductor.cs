@@ -3,15 +3,13 @@
         double mCompResistance;
         double mCurSourceValue;
 
-        public double Inductance { get; set; }
+        public double Inductance = 0.001;
 
-        public ElmInductor() : base() {
-            Inductance = 0.001;
-        }
+        public ElmInductor() : base() { }
 
-        public ElmInductor(StringTokenizer st) : base() {
-            Inductance = st.nextTokenDouble();
-            mCurrent = st.nextTokenDouble();
+        public ElmInductor(double inductance, double c) : base() {
+            Inductance = inductance;
+            mCurrent = c;
         }
 
         public override int PostCount { get { return 2; } }

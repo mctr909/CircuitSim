@@ -15,13 +15,21 @@ namespace Circuit.UI.Passive {
         }
 
         public Switch(Point pos, bool mm) : base(pos) {
-            Elm = new ElmSwitch(mm);
+            var elm = new ElmSwitch();
+            Elm = elm;
+            elm.Momentary = mm;
         }
 
         public Switch(Point p1, Point p2, int f) : base(p1, p2, f) { }
 
         public Switch(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            Elm = new ElmSwitch(st);
+            var elm = new ElmSwitch();
+            Elm = elm;
+            try {
+                elm.Position = st.nextTokenInt();
+                elm.Momentary = st.nextTokenBool();
+                elm.Link = st.nextTokenInt();
+            } catch { }
         }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.SWITCH; } }
