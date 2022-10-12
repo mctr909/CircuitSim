@@ -28,12 +28,15 @@
             Circuit.StampRightSide(Nodes[1]);
         }
 
-        public override void CirDoIteration() {
-            Circuit.StampCurrentSource(Nodes[0], Nodes[1], mCurSourceValue);
-        }
-
         public override void CirPrepareIteration() {
             mCurSourceValue = -VoltDiff / mCompResistance - mCurrent;
+        }
+
+        public override void CirDoIteration() {
+            var r = Circuit.mRowInfo[Nodes[0] - 1].MapRow;
+            Circuit.mRightSide[r] -= mCurSourceValue;
+            r = Circuit.mRowInfo[Nodes[1] - 1].MapRow;
+            Circuit.mRightSide[r] += mCurSourceValue;
         }
 
         public override void CirSetVoltage(int n, double c) {

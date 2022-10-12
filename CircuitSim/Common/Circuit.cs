@@ -13,7 +13,7 @@ using Circuit.UI.Input;
 
 namespace Circuit {
     static class Circuit {
-        class RowInfo {
+        public class RowInfo {
             public bool IsConst;
             public int MapCol;
             public int MapRow;
@@ -39,8 +39,8 @@ namespace Circuit {
         static double[] mOrigRightSide;
         static double[,] mOrigMatrix;
         static double[,] mMatrix;
-        static double[] mRightSide;
-        static RowInfo[] mRowInfo;
+        public static double[] mRightSide;
+        public static RowInfo[] mRowInfo;
         #endregion
 
         #region property

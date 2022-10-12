@@ -18,6 +18,16 @@
 
         public override int PostCount { get { return 3; } }
 
+        public override double GetCurrentIntoNode(int n) {
+            if (n == 0) {
+                return -Current1;
+            }
+            if (n == 1) {
+                return -Current2;
+            }
+            return -Current3;
+        }
+
         public override void Reset() {
             CurCount1 = CurCount2 = CurCount3 = 0;
             base.Reset();
@@ -38,16 +48,6 @@
             Current1 = (Volts[V_L] - Volts[V_S]) / Resistance1;
             Current2 = (Volts[V_R] - Volts[V_S]) / Resistance2;
             Current3 = -Current1 - Current2;
-        }
-
-        public override double GetCurrentIntoNode(int n) {
-            if (n == 0) {
-                return -Current1;
-            }
-            if (n == 1) {
-                return -Current2;
-            }
-            return -Current3;
         }
     }
 }

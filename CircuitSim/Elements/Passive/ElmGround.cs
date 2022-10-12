@@ -16,8 +16,6 @@
 
         public override void CirSetCurrent(int x, double c) { mCurrent = -c; }
 
-        public override void CirSetVoltage(int n, double c) {
-            Volts[n] = c;
-        }
+        public override void CirSetVoltage(int n, double c) { Volts[n] = c; }
     }
 }

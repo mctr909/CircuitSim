@@ -16,6 +16,11 @@
 
         public override bool NonLinear { get { return false; } }
 
+        public void Setup(double ic, double cr) {
+            Inductance = ic;
+            mCurrent = cr;
+        }
+
         public override void Reset() {
             mCurrent = Volts[0] = Volts[1] = CurCount = mCurSourceValue = 0;
         }
@@ -27,24 +32,22 @@
             Circuit.StampRightSide(Nodes[1]);
         }
 
-        public override void CirDoIteration() {
-            Circuit.StampCurrentSource(Nodes[0], Nodes[1], mCurSourceValue);
-        }
-
         public override void CirPrepareIteration() {
             double voltdiff = Volts[0] - Volts[1];
             mCurSourceValue = voltdiff / mCompResistance + mCurrent;
+        }
+
+        public override void CirDoIteration() {
+            var r = Circuit.mRowInfo[Nodes[0] - 1].MapRow;
+            Circuit.mRightSide[r] -= mCurSourceValue;
+            r = Circuit.mRowInfo[Nodes[1] - 1].MapRow;
+            Circuit.mRightSide[r] += mCurSourceValue;
         }
 
         public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
             var voltdiff = Volts[0] - Volts[1];
             mCurrent = voltdiff / mCompResistance + mCurSourceValue;
-        }
-
-        public void Setup(double ic, double cr) {
-            Inductance = ic;
-            mCurrent = cr;
         }
     }
 }

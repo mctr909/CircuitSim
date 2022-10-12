@@ -100,16 +100,22 @@ namespace Circuit.Elements.Passive {
             Circuit.StampRightSide(Nodes[3]);
         }
 
-        public override void CirDoIteration() {
-            Circuit.StampCurrentSource(Nodes[0], Nodes[2], mCurSourceValue1);
-            Circuit.StampCurrentSource(Nodes[1], Nodes[3], mCurSourceValue2);
-        }
-
         public override void CirPrepareIteration() {
             double voltdiff1 = Volts[PRI_T] - Volts[PRI_B];
             double voltdiff2 = Volts[SEC_T] - Volts[SEC_B];
             mCurSourceValue1 = voltdiff1 * mA1 + voltdiff2 * mA2 + Currents[0];
             mCurSourceValue2 = voltdiff1 * mA3 + voltdiff2 * mA4 + Currents[1];
+        }
+
+        public override void CirDoIteration() {
+            var r = Circuit.mRowInfo[Nodes[0] - 1].MapRow;
+            Circuit.mRightSide[r] -= mCurSourceValue1;
+            r = Circuit.mRowInfo[Nodes[2] - 1].MapRow;
+            Circuit.mRightSide[r] += mCurSourceValue1;
+            r = Circuit.mRowInfo[Nodes[1] - 1].MapRow;
+            Circuit.mRightSide[r] -= mCurSourceValue2;
+            r = Circuit.mRowInfo[Nodes[3] - 1].MapRow;
+            Circuit.mRightSide[r] += mCurSourceValue2;
         }
 
         public override void CirSetVoltage(int n, double c) {
