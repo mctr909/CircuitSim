@@ -1,22 +1,12 @@
 ﻿namespace Circuit.Elements.Active {
     class ElmAnalogSwitch : BaseElement {
-        public double Ron;
-        public double Roff;
+        public double Ron = 20;
+        public double Roff = 1e10;
         public bool Invert;
 
         public bool IsOpen { get; private set; }
 
         double mResistance;
-
-        public ElmAnalogSwitch() : base() {
-            Ron = 20;
-            Roff = 1e10;
-        }
-
-        public ElmAnalogSwitch(double r_on, double r_off) : base() {
-            Ron = r_on;
-            Roff = r_off;
-        }
 
         // we need this to be able to change the matrix for each step
         public override bool NonLinear { get { return true; } }

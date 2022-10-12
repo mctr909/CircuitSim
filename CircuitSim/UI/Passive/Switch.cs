@@ -87,8 +87,11 @@ namespace Circuit.UI.Passive {
             var ce = (ElmSwitch)Elm;
             setBbox(mPost1, mPost2, OPEN_HS);
             draw2Leads();
-            g.FillCircle(mLead1.X, mLead1.Y, 2);
-            g.FillCircle(mLead2.X, mLead2.Y, 2);
+            var fillColorBackup = g.FillColor;
+            g.FillColor = CustomGraphics.PostColor;
+            g.FillCircle(mLead1.X, mLead1.Y, 2.5f);
+            g.FillCircle(mLead2.X, mLead2.Y, 2.5f);
+            g.FillColor = fillColorBackup;
             var p2 = new Point();
             if (ce.Position == 0) {
                 interpLead(ref p2, 1, 2);

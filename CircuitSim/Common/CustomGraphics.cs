@@ -26,8 +26,8 @@ namespace Circuit {
         static Font mTextFont = new Font("Arial", 9.0f);
         static Brush mTextBrush = Brushes.Black;
         static Color mTextColor;
+        static Pen mPenPost = new Pen(Color.Red, 5.0f);
 
-        Pen mPenPost = new Pen(Color.Red, 5.0f);
         Pen mPenLine = new Pen(Color.White, 1.0f) {
             StartCap = LineCap.Triangle,
             EndCap = LineCap.Triangle,
@@ -41,6 +41,10 @@ namespace Circuit {
         public static Color SelectColor { get; set; }
         public static Color WhiteColor { get; set; }
         public static Color GrayColor { get; set; }
+        public static Color PostColor {
+            get { return mPenPost.Color; }
+            set { mPenPost.Color = value; }
+        }
         public static Color TextColor {
             get { return mTextColor; }
             set {
@@ -62,10 +66,6 @@ namespace Circuit {
             }
         }
         public bool DoPrint { get; set; } = false;
-        public Color PostColor {
-            get { return mPenPost.Color; }
-            set { mPenPost.Color = value; }
-        }
         public virtual Color LineColor {
             get { return mPenLine.Color; }
             set { mPenLine.Color = value; }

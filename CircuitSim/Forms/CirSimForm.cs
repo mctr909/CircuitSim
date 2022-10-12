@@ -2050,11 +2050,10 @@ namespace Circuit {
                 Circuit.AnalyzeCircuit();
                 mAnalyzeFlag = false;
             }
-
-            if (null != Mouse.GripElm && null != Circuit.StopElm && Circuit.StopElm != Mouse.GripElm.Elm) {
-                // Todo: SetMouseElm
-                //mCir.StopElm.SetMouseElm(true);
-            }
+            // Todo: SetMouseElm
+            //if (null != Mouse.GripElm && null != Circuit.StopElm && Circuit.StopElm != Mouse.GripElm.Elm) {
+            //    Circuit.StopElm.MouseElm(true);
+            //}
             Scope.Setup(BaseUI.Context.Height - mCircuitArea.Height);
 
             var g = BaseUI.Context;
@@ -2072,15 +2071,15 @@ namespace Circuit {
                 CustomGraphics.TextColor = Color.Black;
                 CustomGraphics.SelectColor = Color.Red;
                 CustomGraphics.PenHandle = Pens.Red.Brush;
-                g.PostColor = Color.Black;
+                CustomGraphics.PostColor = Color.Black;
                 g.Clear(Color.White);
             } else {
-                CustomGraphics.WhiteColor = Color.White;
-                CustomGraphics.GrayColor = Color.Gray;
-                CustomGraphics.TextColor = Color.LightGray;
+                CustomGraphics.WhiteColor = Color.FromArgb(191, 191, 191);
+                CustomGraphics.GrayColor = Color.FromArgb(79, 79, 79);
+                CustomGraphics.TextColor = Color.FromArgb(147, 147, 147);
                 CustomGraphics.SelectColor = Color.Cyan;
                 CustomGraphics.PenHandle = Pens.Cyan.Brush;
-                g.PostColor = Color.Red;
+                CustomGraphics.PostColor = Color.Red;
                 g.Clear(Color.Black);
             }
 
@@ -2293,8 +2292,7 @@ namespace Circuit {
         }
 
         static void runCircuit(bool didAnalyze) {
-            if (Circuit.Matrix == null || ElmCount == 0) {
-                Circuit.Matrix = null;
+            if (ElmCount == 0) {
                 return;
             }
 

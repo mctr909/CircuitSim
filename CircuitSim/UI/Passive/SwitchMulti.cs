@@ -90,16 +90,18 @@ namespace Circuit.UI.Passive {
             var ce = (ElmSwitchMulti)Elm;
             setBbox(mPost1, mPost2, OPEN_HS);
             DumpInfo.AdjustBbox(mSwPosts[0], mSwPosts[ce.ThrowCount - 1]);
-
+            var fillColorBackup = g.FillColor;
+            g.FillColor = CustomGraphics.PostColor;
             /* draw first lead */
             drawLead(mPost1, mLead1);
-            g.FillCircle(mLead1.X, mLead1.Y, 2);
+            g.FillCircle(mLead1.X, mLead1.Y, 2.5f);
             /* draw other leads */
             for (int i = 0; i < ce.ThrowCount; i++) {
                 var pole = mSwPoles[i];
                 drawLead(pole, mSwPosts[i]);
-                g.FillCircle(pole.X, pole.Y, 2);
+                g.FillCircle(pole.X, pole.Y, 2.5f);
             }
+            g.FillColor = fillColorBackup;
             /* draw switch */
             g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             g.DrawLine(mLead1, mSwPoles[ce.Position]);

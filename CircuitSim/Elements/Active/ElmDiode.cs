@@ -83,9 +83,8 @@ namespace Circuit.Elements.Active {
         }
 
         public override void CirIterationFinished() {
-            /* stop for huge currents that make simulator act weird */
             if (Math.Abs(mCurrent) > 1e12) {
-                Circuit.Stop("max current exceeded", this);
+                Circuit.Stop("最大電流を超えました", this);
             }
         }
     }

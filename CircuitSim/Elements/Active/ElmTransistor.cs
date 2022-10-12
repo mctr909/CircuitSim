@@ -55,11 +55,6 @@ namespace Circuit.Elements.Active {
 
         public override int PostCount { get { return 3; } }
 
-        public void SetHfe(double hfe) {
-            Hfe = hfe;
-            Setup();
-        }
-
         public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
                 return -Ib;
@@ -68,6 +63,22 @@ namespace Circuit.Elements.Active {
                 return -Ic;
             }
             return -Ie;
+        }
+
+        public void SetHfe(double hfe) {
+            Hfe = hfe;
+            Setup();
+        }
+
+        public override void Reset() {
+            Volts[IdxB] = Volts[IdxC] = Volts[IdxE] = 0;
+            mLastVbc = mLastVbe = 0;
+        }
+
+        public void Setup() {
+            mVcrit = VT * Math.Log(VT / (Math.Sqrt(2) * LEAKAGE));
+            mFgain = Hfe / (Hfe + 1);
+            mInv_fgain = 1 / mFgain;
         }
 
         public override void AnaStamp() {
@@ -138,21 +149,12 @@ namespace Circuit.Elements.Active {
         }
 
         public override void CirIterationFinished() {
-            /* stop for huge currents that make simulator act weird */
-            if (Math.Abs(Ic) > 1e12 || Math.Abs(Ib) > 1e12) {
-                Circuit.Stop("max current exceeded", this);
+            if (Math.Abs(Ic) > 1e12) {
+                Circuit.Stop("Icが最大電流を超えました", this);
             }
-        }
-
-        public override void Reset() {
-            Volts[IdxB] = Volts[IdxC] = Volts[IdxE] = 0;
-            mLastVbc = mLastVbe = 0;
-        }
-
-        public void Setup() {
-            mVcrit = VT * Math.Log(VT / (Math.Sqrt(2) * LEAKAGE));
-            mFgain = Hfe / (Hfe + 1);
-            mInv_fgain = 1 / mFgain;
+            if (Math.Abs(Ib) > 1e12) {
+                Circuit.Stop("Ibが最大電流を超えました", this);
+            }
         }
 
         double limitStep(double vnew, double vold) {
@@ -164,10 +166,12 @@ namespace Circuit.Elements.Active {
                     arg = 1 + (vnew - vold) / VT;
                     if (arg > 0) {
                         vnew = vold + VT * Math.Log(arg);
-                    } else {
+                    }
+                    else {
                         vnew = mVcrit;
                     }
-                } else {
+                }
+                else {
                     vnew = VT * Math.Log(vnew / VT);
                 }
                 Circuit.Converged = false;

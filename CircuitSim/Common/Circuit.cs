@@ -29,15 +29,17 @@ namespace Circuit {
 
         /* info about each wire and its neighbors, used to calculate wire currents */
         static List<WireInfo> mWireInfoList;
+        static BaseElement[] mVoltageSources;
 
         static bool mCircuitNeedsMap;
 
         static int mMatrixSize;
         static int mMatrixFullSize;
+        static int[] mPermute;
         static double[] mOrigRightSide;
         static double[,] mOrigMatrix;
+        static double[,] mMatrix;
         static double[] mRightSide;
-        static int[] mPermute;
         static RowInfo[] mRowInfo;
         #endregion
 
@@ -49,11 +51,8 @@ namespace Circuit {
         public static List<Point> BadConnectionList { get; private set; } = new List<Point>();
 
         public static List<CircuitNode> NodeList { get; private set; }
-        public static double[,] Matrix { get; set; }
 
         public static int VoltageSourceCount { get; private set; }
-
-        private static BaseElement[] mVoltageSources;
 
         public static bool CircuitNonLinear { get; private set; }
 
@@ -63,6 +62,7 @@ namespace Circuit {
         public static int SubIterations { get; private set; }
         #endregion
 
+        #region private method
         /* simplify the matrix; this speeds things up quite a bit, especially for digital circuits */
         static bool simplifyMatrix(int matrixSize) {
             int matRow;
@@ -79,7 +79,7 @@ namespace Circuit {
 
                 /* look for rows that can be removed */
                 for (matCol = 0; matCol != matrixSize; matCol++) {
-                    double q = Matrix[matRow, matCol];
+                    double q = mMatrix[matRow, matCol];
                     if (mRowInfo[matCol].IsConst) {
                         /* keep a running total of const values that have been
                         /* removed already */
@@ -102,7 +102,7 @@ namespace Circuit {
                 if (matCol == matrixSize) {
                     if (qp == -1) {
                         /* probably a singular matrix, try disabling matrix simplification above to check this */
-                        Stop("Matrix error");
+                        stop("Matrix error");
                         return false;
                     }
                     var elt = mRowInfo[qp];
@@ -147,16 +147,16 @@ namespace Circuit {
                 for (matCol = 0; matCol != matrixSize; matCol++) {
                     var ri = mRowInfo[matCol];
                     if (ri.IsConst) {
-                        newRS[ii] -= ri.Value * Matrix[matRow, matCol];
+                        newRS[ii] -= ri.Value * mMatrix[matRow, matCol];
                     } else {
-                        newMat[ii, ri.MapCol] += Matrix[matRow, matCol];
+                        newMat[ii, ri.MapCol] += mMatrix[matRow, matCol];
                     }
                 }
                 ii++;
             }
             /*Console.WriteLine("old size = " + matrixSize + " new size = " + newSize);*/
 
-            Matrix = newMat;
+            mMatrix = newMat;
             mRightSide = newRS;
             matrixSize = mMatrixSize = newSize;
             for (matRow = 0; matRow != matrixSize; matRow++) {
@@ -164,7 +164,7 @@ namespace Circuit {
             }
             for (matRow = 0; matRow != matrixSize; matRow++) {
                 for (matCol = 0; matCol != matrixSize; matCol++) {
-                    mOrigMatrix[matRow, matCol] = Matrix[matRow, matCol];
+                    mOrigMatrix[matRow, matCol] = mMatrix[matRow, matCol];
                 }
             }
             mCircuitNeedsMap = true;
@@ -341,137 +341,25 @@ namespace Circuit {
             mPostCountMap = null;
         }
 
+        static void stop(string s) {
+            StopMessage = s;
+            mMatrix = null;  /* causes an exception */
+            StopElm = null;
+            CirSimForm.SetSimRunning(false);
+        }
+
         static CircuitNode getCircuitNode(int n) {
             if (n >= NodeList.Count) {
                 return null;
             }
             return NodeList[n];
         }
+        #endregion
 
-        /* stamp independent voltage source #vs, from n1 to n2, amount v */
-        static public void StampVoltageSource(int n1, int n2, int vs, double v) {
-            int vn = NodeList.Count + vs;
-            StampMatrix(vn, n1, -1);
-            StampMatrix(vn, n2, 1);
-            StampRightSide(vn, v);
-            StampMatrix(n1, vn, 1);
-            StampMatrix(n2, vn, -1);
-        }
-
-        /* use this if the amount of voltage is going to be updated in doStep(), by updateVoltageSource() */
-        static public void StampVoltageSource(int n1, int n2, int vs) {
-            int vn = NodeList.Count + vs;
-            StampMatrix(vn, n1, -1);
-            StampMatrix(vn, n2, 1);
-            StampRightSide(vn);
-            StampMatrix(n1, vn, 1);
-            StampMatrix(n2, vn, -1);
-        }
-
-        /* update voltage source in doStep() */
-        static public void UpdateVoltageSource(int n1, int n2, int vs, double v) {
-            int vn = NodeList.Count + vs;
-            StampRightSide(vn, v);
-        }
-
-        static public void StampResistor(int n1, int n2, double r) {
-            double r0 = 1 / r;
-            if (double.IsNaN(r0) || double.IsInfinity(r0)) {
-                Console.WriteLine("bad resistance " + r + " " + r0 + "\n");
-                throw new Exception("bad resistance " + r + " " + r0);
-            }
-            StampMatrix(n1, n1, r0);
-            StampMatrix(n2, n2, r0);
-            StampMatrix(n1, n2, -r0);
-            StampMatrix(n2, n1, -r0);
-        }
-
-        static public void StampConductance(int n1, int n2, double r0) {
-            StampMatrix(n1, n1, r0);
-            StampMatrix(n2, n2, r0);
-            StampMatrix(n1, n2, -r0);
-            StampMatrix(n2, n1, -r0);
-        }
-
-        /* current from cn1 to cn2 is equal to voltage from vn1 to 2, divided by g */
-        static public void StampVCCurrentSource(int cn1, int cn2, int vn1, int vn2, double g) {
-            StampMatrix(cn1, vn1, g);
-            StampMatrix(cn2, vn2, g);
-            StampMatrix(cn1, vn2, -g);
-            StampMatrix(cn2, vn1, -g);
-        }
-
-        static public void StampCurrentSource(int n1, int n2, double i) {
-            StampRightSide(n1, -i);
-            StampRightSide(n2, i);
-        }
-
-        /* stamp a current source from n1 to n2 depending on current through vs */
-        static public void StampCCCS(int n1, int n2, int vs, double gain) {
-            int vn = NodeList.Count + vs;
-            StampMatrix(n1, vn, gain);
-            StampMatrix(n2, vn, -gain);
-        }
-
-        /// <summary>
-        /// <para>meaning that a voltage change of dv in node j will increase the current into node i by x dv.</para>
-        /// <para>(Unless i or j is a voltage source node.)</para>
-        /// </summary>
-        /// <param name="i">row</param>
-        /// <param name="j">column</param>
-        /// <param name="x">stamp value in row, column</param>
-        static public void StampMatrix(int i, int j, double x) {
-            if (i > 0 && j > 0) {
-                if (mCircuitNeedsMap) {
-                    i = mRowInfo[i - 1].MapRow;
-                    var ri = mRowInfo[j - 1];
-                    if (ri.IsConst) {
-                        /*Console.WriteLine("Stamping constant " + i + " " + j + " " + x);*/
-                        mRightSide[i] -= x * ri.Value;
-                        return;
-                    }
-                    j = ri.MapCol;
-                    /*Console.WriteLine("stamping " + i + " " + j + " " + x);*/
-                } else {
-                    i--;
-                    j--;
-                }
-                Matrix[i, j] += x;
-            }
-        }
-
-        /* stamp value x on the right side of row i, representing an
-        /* independent current source flowing into node i */
-        static public void StampRightSide(int i, double x) {
-            if (i > 0) {
-                if (mCircuitNeedsMap) {
-                    i = mRowInfo[i - 1].MapRow;
-                    /*Console.WriteLine("stamping " + i + " " + x);*/
-                } else {
-                    i--;
-                }
-                mRightSide[i] += x;
-            }
-        }
-
-        /* indicate that the value on the right side of row i changes in doStep() */
-        static public void StampRightSide(int i) {
-            /*Console.WriteLine("rschanges true " + (i-1)); */
-            if (i > 0) {
-                mRowInfo[i - 1].RightChanges = true;
-            }
-        }
-
-        /* indicate that the values on the left side of row i change in doStep() */
-        static public void StampNonLinear(int i) {
-            if (i > 0) {
-                mRowInfo[i - 1].LeftChanges = true;
-            }
-        }
-
+        #region public method
         /* we removed wires from the matrix to speed things up.  in order to display wire currents,
         /* we need to calculate them now. */
-        static public void CalcWireCurrents() {
+        public static void CalcWireCurrents() {
             /* for debugging */
             /*for (int i = 0; i != mWireInfoList.Count; i++) {
                 mWireInfoList[i].wire.setCurrent(-1, 1.23);
@@ -487,13 +375,14 @@ namespace Circuit {
                 }
                 if (wi.Post == 0) {
                     wi.Wire.Elm.CirSetCurrent(-1, cur);
-                } else {
+                }
+                else {
                     wi.Wire.Elm.CirSetCurrent(-1, -cur);
                 }
             }
         }
 
-        static public void AnalyzeCircuit() {
+        public static void AnalyzeCircuit() {
             bool debug = false;
             var elmList = CirSimForm.ElmList;
             if (0 == CirSimForm.ElmCount) {
@@ -540,10 +429,12 @@ namespace Circuit {
                 /* update node map */
                 if (mNodeMap.ContainsKey(pt)) {
                     mNodeMap[pt].Node = 0;
-                } else {
+                }
+                else {
                     mNodeMap.Add(pt, new NodeMapEntry(0));
                 }
-            } else {
+            }
+            else {
                 /* otherwise allocate extra node for ground */
                 var cn = new CircuitNode();
                 NodeList.Add(cn);
@@ -565,7 +456,8 @@ namespace Circuit {
                     if (mPostCountMap.ContainsKey(pt)) {
                         int g = mPostCountMap[pt];
                         mPostCountMap[pt] = g + 1;
-                    } else {
+                    }
+                    else {
                         mPostCountMap.Add(pt, 1);
                     }
 
@@ -589,11 +481,13 @@ namespace Circuit {
                         cee.AnaSetNode(j, NodeList.Count);
                         if (ccln) {
                             cln.Node = NodeList.Count;
-                        } else {
+                        }
+                        else {
                             mNodeMap.Add(pt, new NodeMapEntry(NodeList.Count));
                         }
                         NodeList.Add(cn);
-                    } else {
+                    }
+                    else {
                         int n = cln.Node;
                         var cnl = new CircuitNodeLink();
                         cnl.Num = j;
@@ -649,7 +543,7 @@ namespace Circuit {
             VoltageSourceCount = vscount;
 
             int matrixSize = NodeList.Count - 1 + vscount;
-            Matrix = new double[matrixSize, matrixSize];
+            mMatrix = new double[matrixSize, matrixSize];
             mRightSide = new double[matrixSize];
             mOrigMatrix = new double[matrixSize, matrixSize];
             mOrigRightSide = new double[matrixSize];
@@ -737,7 +631,8 @@ namespace Circuit {
                     var fpi = new PathInfo(PathType.INDUCTOR, cee, cee.Nodes[1], elmList, NodeList.Count);
                     if (!fpi.FindPath(cee.Nodes[0])) {
                         cur.stampCurrentSource(true);
-                    } else {
+                    }
+                    else {
                         cur.stampCurrentSource(false);
                     }
                 }
@@ -752,7 +647,8 @@ namespace Circuit {
                             return;
                         }
                     }
-                } else if (cee is ElmSwitchMulti) {
+                }
+                else if (cee is ElmSwitchMulti) {
                     /* for Switch2Elms we need to do extra work to look for wire loops */
                     var fpi = new PathInfo(PathType.VOLTAGE, cee, cee.Nodes[0], elmList, NodeList.Count);
                     for (int j = 1; j < cee.PostCount; j++) {
@@ -778,7 +674,8 @@ namespace Circuit {
                     if (fpi.FindPath(cee.Nodes[0])) {
                         Console.WriteLine(cee + " shorted");
                         cee.AnaShorted();
-                    } else {
+                    }
+                    else {
                         /* a capacitor loop used to cause a matrix error. but we changed the capacitor model
                         /* so it works fine now. The only issue is if a capacitor is added in parallel with
                         /* another capacitor with a nonzero voltage; in that case we will get oscillation unless
@@ -803,21 +700,21 @@ namespace Circuit {
                 for (int j = 0; j != mMatrixSize; j++) {
                     Console.WriteLine("RightSide[{0}]:{1}", j, mRightSide[j]);
                     for (int i = 0; i != mMatrixSize; i++) {
-                        Console.WriteLine("  Matrix[{0},{1}]:{2}", j, i, Matrix[j, i]);
+                        Console.WriteLine("  Matrix[{0},{1}]:{2}", j, i, mMatrix[j, i]);
                     }
                 }
             }
 
             /* check if we called stop() */
-            if (Matrix == null) {
+            if (mMatrix == null) {
                 return;
             }
 
             /* if a matrix is linear, we can do the lu_factor here instead of
             /* needing to do it every frame */
             if (!CircuitNonLinear) {
-                if (!Utils.luFactor(Matrix, mMatrixSize, mPermute)) {
-                    Stop("Singular matrix!");
+                if (!Utils.luFactor(mMatrix, mMatrixSize, mPermute)) {
+                    stop("Singular matrix!");
                     return;
                 }
             }
@@ -830,14 +727,15 @@ namespace Circuit {
                 if (ce is Voltage) {
                     if (gotVoltageSource) {
                         ShowResistanceInVoltageSources = false;
-                    } else {
+                    }
+                    else {
                         gotVoltageSource = true;
                     }
                 }
             }
         }
 
-        static public bool DoIteration() {
+        public static bool DoIteration() {
             const int subiterCount = 256;
             int i, j, k, subiter;
             int elmCount = CirSimForm.ElmCount;
@@ -857,7 +755,7 @@ namespace Circuit {
                 if (CircuitNonLinear) {
                     for (i = 0; i != mMatrixSize; i++) {
                         for (j = 0; j != mMatrixSize; j++) {
-                            Matrix[i, j] = mOrigMatrix[i, j];
+                            mMatrix[i, j] = mOrigMatrix[i, j];
                         }
                     }
                 }
@@ -871,9 +769,9 @@ namespace Circuit {
 
                 for (j = 0; j != mMatrixSize; j++) {
                     for (i = 0; i != mMatrixSize; i++) {
-                        double x = Matrix[i, j];
+                        double x = mMatrix[i, j];
                         if (double.IsNaN(x) || double.IsInfinity(x)) {
-                            Stop("nan/infinite matrix!");
+                            stop("nan/infinite matrix!");
                             return false;
                         }
                     }
@@ -882,19 +780,20 @@ namespace Circuit {
                     if (Converged && subiter > 0) {
                         break;
                     }
-                    if (!Utils.luFactor(Matrix, mMatrixSize, mPermute)) {
-                        Stop("Singular matrix!");
+                    if (!Utils.luFactor(mMatrix, mMatrixSize, mPermute)) {
+                        stop("Singular matrix!");
                         return false;
                     }
                 }
-                Utils.luSolve(Matrix, mMatrixSize, mPermute, mRightSide);
+                Utils.luSolve(mMatrix, mMatrixSize, mPermute, mRightSide);
 
                 for (j = 0; j != mMatrixFullSize; j++) {
                     var ri = mRowInfo[j];
                     double res = 0;
                     if (ri.IsConst) {
                         res = ri.Value;
-                    } else {
+                    }
+                    else {
                         res = mRightSide[ri.MapCol];
                     }
                     /*Console.WriteLine(j + " " + res + " " + ri.type + " " + ri.mapCol);*/
@@ -908,7 +807,8 @@ namespace Circuit {
                             var cnl = cn.Links[k];
                             cnl.Elm.CirSetVoltage(cnl.Num, res);
                         }
-                    } else {
+                    }
+                    else {
                         int ji = j - (NodeList.Count - 1);
                         /*Console.WriteLine("setting vsrc " + ji + " to " + res); */
                         mVoltageSources[ji].CirSetCurrent(ji, res);
@@ -924,7 +824,7 @@ namespace Circuit {
             }
 
             if (subiter == subiterCount) {
-                Stop("Convergence failed!");
+                stop("Convergence failed!");
                 return false;
             }
 
@@ -935,18 +835,133 @@ namespace Circuit {
             return true;
         }
 
-        static public void Stop(string s) {
+        public static void Stop(string s, BaseElement ce) {
             StopMessage = s;
-            Matrix = null;  /* causes an exception */
-            StopElm = null;
-            CirSimForm.SetSimRunning(false);
-        }
-
-        static public void Stop(string s, BaseElement ce) {
-            StopMessage = s;
-            Matrix = null;  /* causes an exception */
+            mMatrix = null;  /* causes an exception */
             StopElm = ce;
             CirSimForm.SetSimRunning(false);
         }
+
+        /* stamp independent voltage source #vs, from n1 to n2, amount v */
+        public static void StampVoltageSource(int n1, int n2, int vs, double v) {
+            int vn = NodeList.Count + vs;
+            StampMatrix(vn, n1, -1);
+            StampMatrix(vn, n2, 1);
+            StampRightSide(vn, v);
+            StampMatrix(n1, vn, 1);
+            StampMatrix(n2, vn, -1);
+        }
+
+        /* use this if the amount of voltage is going to be updated in doStep(), by updateVoltageSource() */
+        public static void StampVoltageSource(int n1, int n2, int vs) {
+            int vn = NodeList.Count + vs;
+            StampMatrix(vn, n1, -1);
+            StampMatrix(vn, n2, 1);
+            StampRightSide(vn);
+            StampMatrix(n1, vn, 1);
+            StampMatrix(n2, vn, -1);
+        }
+
+        /* update voltage source in doStep() */
+        public static void UpdateVoltageSource(int n1, int n2, int vs, double v) {
+            int vn = NodeList.Count + vs;
+            StampRightSide(vn, v);
+        }
+
+        public static void StampResistor(int n1, int n2, double r) {
+            double r0 = 1 / r;
+            if (double.IsNaN(r0) || double.IsInfinity(r0)) {
+                Console.WriteLine("bad resistance " + r + " " + r0 + "\n");
+                throw new Exception("bad resistance " + r + " " + r0);
+            }
+            StampMatrix(n1, n1, r0);
+            StampMatrix(n2, n2, r0);
+            StampMatrix(n1, n2, -r0);
+            StampMatrix(n2, n1, -r0);
+        }
+
+        public static void StampConductance(int n1, int n2, double r0) {
+            StampMatrix(n1, n1, r0);
+            StampMatrix(n2, n2, r0);
+            StampMatrix(n1, n2, -r0);
+            StampMatrix(n2, n1, -r0);
+        }
+
+        /* current from cn1 to cn2 is equal to voltage from vn1 to 2, divided by g */
+        public static void StampVCCurrentSource(int cn1, int cn2, int vn1, int vn2, double g) {
+            StampMatrix(cn1, vn1, g);
+            StampMatrix(cn2, vn2, g);
+            StampMatrix(cn1, vn2, -g);
+            StampMatrix(cn2, vn1, -g);
+        }
+
+        public static void StampCurrentSource(int n1, int n2, double i) {
+            StampRightSide(n1, -i);
+            StampRightSide(n2, i);
+        }
+
+        /* stamp a current source from n1 to n2 depending on current through vs */
+        public static void StampCCCS(int n1, int n2, int vs, double gain) {
+            int vn = NodeList.Count + vs;
+            StampMatrix(n1, vn, gain);
+            StampMatrix(n2, vn, -gain);
+        }
+
+        /// <summary>
+        /// <para>meaning that a voltage change of dv in node j will increase the current into node i by x dv.</para>
+        /// <para>(Unless i or j is a voltage source node.)</para>
+        /// </summary>
+        /// <param name="i">row</param>
+        /// <param name="j">column</param>
+        /// <param name="x">stamp value in row, column</param>
+        public static void StampMatrix(int i, int j, double x) {
+            if (i > 0 && j > 0) {
+                if (mCircuitNeedsMap) {
+                    i = mRowInfo[i - 1].MapRow;
+                    var ri = mRowInfo[j - 1];
+                    if (ri.IsConst) {
+                        /*Console.WriteLine("Stamping constant " + i + " " + j + " " + x);*/
+                        mRightSide[i] -= x * ri.Value;
+                        return;
+                    }
+                    j = ri.MapCol;
+                    /*Console.WriteLine("stamping " + i + " " + j + " " + x);*/
+                } else {
+                    i--;
+                    j--;
+                }
+                mMatrix[i, j] += x;
+            }
+        }
+
+        /* stamp value x on the right side of row i, representing an
+        /* independent current source flowing into node i */
+        public static void StampRightSide(int i, double x) {
+            if (i > 0) {
+                if (mCircuitNeedsMap) {
+                    i = mRowInfo[i - 1].MapRow;
+                    /*Console.WriteLine("stamping " + i + " " + x);*/
+                } else {
+                    i--;
+                }
+                mRightSide[i] += x;
+            }
+        }
+
+        /* indicate that the value on the right side of row i changes in doStep() */
+        public static void StampRightSide(int i) {
+            /*Console.WriteLine("rschanges true " + (i-1)); */
+            if (i > 0) {
+                mRowInfo[i - 1].RightChanges = true;
+            }
+        }
+
+        /* indicate that the values on the left side of row i change in doStep() */
+        public static void StampNonLinear(int i) {
+            if (i > 0) {
+                mRowInfo[i - 1].LeftChanges = true;
+            }
+        }
+        #endregion
     }
 }

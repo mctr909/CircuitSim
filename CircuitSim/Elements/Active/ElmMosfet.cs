@@ -105,13 +105,15 @@ namespace Circuit.Elements.Active {
 
         public override void CirIterationFinished() {
             calculate(true);
-
             /* fix current if body is connected to source or drain */
             if (BodyTerminal == 1) {
                 DiodeCurrent1 = -DiodeCurrent2;
             }
             if (BodyTerminal == 2) {
                 DiodeCurrent2 = -DiodeCurrent1;
+            }
+            if (Math.Abs(Ids) > 1e12) {
+                Circuit.Stop("Idsが最大電流を超えました", this);
             }
         }
 

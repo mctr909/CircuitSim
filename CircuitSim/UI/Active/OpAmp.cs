@@ -29,28 +29,26 @@ namespace Circuit.UI.Active {
         public OpAmp(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             /* GBW has no effect in this version of the simulator,
              * but we retain it to keep the file format the same */
-            double MaxOut;
-            double MinOut;
-            double Gbw;
+            double maxOut;
+            double minOut;
             double vn;
             double vp;
             double gain;
             try {
-                MaxOut = st.nextTokenDouble();
-                MinOut = st.nextTokenDouble();
-                Gbw = st.nextTokenDouble();
+                maxOut = st.nextTokenDouble();
+                minOut = st.nextTokenDouble();
+                st.nextTokenDouble();
                 vn = st.nextTokenDouble();
                 vp = st.nextTokenDouble();
                 gain = st.nextTokenDouble();
             } catch {
-                MaxOut = 15;
-                MinOut = -15;
-                Gbw = 1e6;
+                maxOut = 15;
+                minOut = -15;
                 vn = 0.0;
                 vp = 0.0;
                 gain = 1000.0;
             }
-            Elm = new ElmOpAmp(MaxOut, MinOut, Gbw, vn, vp, gain);
+            Elm = new ElmOpAmp(maxOut, minOut, vn, vp, gain);
             mNoDiagonal = true;
             DumpInfo.Flags |= FLAG_SMALL;
             setGain();
@@ -63,7 +61,7 @@ namespace Circuit.UI.Active {
             DumpInfo.Flags |= FLAG_GAIN;
             optionList.Add(ce.MaxOut);
             optionList.Add(ce.MinOut);
-            optionList.Add(ce.Gbw);
+            optionList.Add(0);
             optionList.Add(ce.Volts[ElmOpAmp.V_N].ToString("0.000000"));
             optionList.Add(ce.Volts[ElmOpAmp.V_P].ToString("0.000000"));
             optionList.Add(ce.Gain);
