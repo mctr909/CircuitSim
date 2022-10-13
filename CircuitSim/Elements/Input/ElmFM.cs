@@ -9,7 +9,7 @@ namespace Circuit.Elements.Input {
 
         double mFreqTimeZero;
         double mLastTime = 0;
-        double mFuncx = 0;
+        double mCounter = 0;
 
         public ElmFM() : base() {
             Deviation = 200;
@@ -47,16 +47,13 @@ namespace Circuit.Elements.Input {
         }
 
         public override void CirDoIteration() {
-            Circuit.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
-        }
-
-        double getVoltage() {
-            double deltaT = CirSimForm.Time - mLastTime;
+            var deltaT = CirSimForm.Time - mLastTime;
+            var signalAmplitude = Math.Sin(2 * Math.PI * (CirSimForm.Time - mFreqTimeZero) * Signalfreq);
+            mCounter += (CarrierFreq + (signalAmplitude * Deviation)) * deltaT;
+            var vn = Circuit.NodeList.Count + mVoltSource;
+            var row = Circuit.mRowInfo[vn - 1].MapRow;
+            Circuit.mRightSide[row] += Math.Sin(2 * Math.PI * mCounter) * MaxVoltage;
             mLastTime = CirSimForm.Time;
-            double signalamplitude = Math.Sin(2 * Math.PI * (CirSimForm.Time - mFreqTimeZero) * Signalfreq);
-            mFuncx += deltaT * (CarrierFreq + (signalamplitude * Deviation));
-            double w = 2 * Math.PI * mFuncx;
-            return Math.Sin(w) * MaxVoltage;
         }
     }
 }

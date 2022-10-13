@@ -76,7 +76,7 @@ namespace Circuit.Elements.Custom {
             for (i = 0; i != PostCount; i++) {
                 var p = Pins[i];
                 if (p.output) {
-                    Circuit.UpdateVoltageSource(0, Nodes[i], p.voltSource, p.value ? 5 : 0);
+                    Circuit.UpdateVoltageSource(p.voltSource, p.value ? 5 : 0);
                 }
             }
         }

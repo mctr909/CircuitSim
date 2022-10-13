@@ -72,7 +72,7 @@
             }
             LastOutput = f;
             double res = f ? HighVoltage : 0;
-            Circuit.UpdateVoltageSource(0, Nodes[InputCount], mVoltSource, res);
+            Circuit.UpdateVoltageSource(mVoltSource, res);
         }
 
         protected bool getInput(int x) {

@@ -863,7 +863,7 @@ namespace Circuit {
         }
 
         /* update voltage source in doStep() */
-        public static void UpdateVoltageSource(int n1, int n2, int vs, double v) {
+        public static void UpdateVoltageSource(int vs, double v) {
             int vn = NodeList.Count + vs;
             StampRightSide(vn, v);
         }

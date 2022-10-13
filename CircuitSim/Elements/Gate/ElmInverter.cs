@@ -53,7 +53,7 @@ namespace Circuit.Elements.Gate {
             double v = Volts[0] > HighVoltage * .5 ? 0 : HighVoltage;
             double maxStep = SlewRate * ControlPanel.TimeStep * 1e9;
             v = Math.Max(Math.Min(mLastOutputVoltage + maxStep, v), mLastOutputVoltage - maxStep);
-            Circuit.UpdateVoltageSource(0, Nodes[1], mVoltSource, v);
+            Circuit.UpdateVoltageSource(mVoltSource, v);
         }
     }
 }

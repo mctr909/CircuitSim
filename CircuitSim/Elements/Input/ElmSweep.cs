@@ -42,7 +42,35 @@ namespace Circuit.Elements.Input {
 
         public override int PostCount { get { return 1; } }
 
+        public override void Reset() {
+            Frequency = MinF;
+            mFreqTime = 0;
+            mFdir = 1;
+            setParams();
+        }
+
+        public void setParams() {
+            if (Frequency < MinF || Frequency > MaxF) {
+                Frequency = MinF;
+                mFreqTime = 0;
+                mFdir = 1;
+            }
+            if (IsLog) {
+                mFadd = 0;
+                mFmul = Math.Pow(MaxF / MinF, mFdir * ControlPanel.TimeStep / SweepTime);
+            }
+            else {
+                mFadd = mFdir * ControlPanel.TimeStep * (MaxF - MinF) / SweepTime;
+                mFmul = 1;
+            }
+            mSavedTimeStep = ControlPanel.TimeStep;
+        }
+
         public override bool AnaHasGroundConnection(int n1) { return true; }
+
+        public override void AnaStamp() {
+            Circuit.StampVoltageSource(0, Nodes[0], mVoltSource);
+        }
 
         public override void CirPrepareIteration() {
             /* has timestep been changed? */
@@ -69,34 +97,9 @@ namespace Circuit.Elements.Input {
         }
 
         public override void CirDoIteration() {
-            Circuit.UpdateVoltageSource(0, Nodes[0], mVoltSource, mVolt);
-        }
-
-        public override void AnaStamp() {
-            Circuit.StampVoltageSource(0, Nodes[0], mVoltSource);
-        }
-
-        public override void Reset() {
-            Frequency = MinF;
-            mFreqTime = 0;
-            mFdir = 1;
-            setParams();
-        }
-
-        public void setParams() {
-            if (Frequency < MinF || Frequency > MaxF) {
-                Frequency = MinF;
-                mFreqTime = 0;
-                mFdir = 1;
-            }
-            if (IsLog) {
-                mFadd = 0;
-                mFmul = Math.Pow(MaxF / MinF, mFdir * ControlPanel.TimeStep / SweepTime);
-            } else {
-                mFadd = mFdir * ControlPanel.TimeStep * (MaxF - MinF) / SweepTime;
-                mFmul = 1;
-            }
-            mSavedTimeStep = ControlPanel.TimeStep;
+            var vn = Circuit.NodeList.Count + mVoltSource;
+            var row = Circuit.mRowInfo[vn - 1].MapRow;
+            Circuit.mRightSide[row] += mVolt;
         }
     }
 }

@@ -73,7 +73,7 @@ namespace Circuit.Elements.Gate {
             }
             double maxStep = SlewRate * ControlPanel.TimeStep * 1e9;
             _out = Math.Max(Math.Min(v0 + maxStep, _out), v0 - maxStep);
-            Circuit.UpdateVoltageSource(0, Nodes[1], mVoltSource, _out);
+            Circuit.UpdateVoltageSource(mVoltSource, _out);
         }
 
         public override double GetCurrentIntoNode(int n) {

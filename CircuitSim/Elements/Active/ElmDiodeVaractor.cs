@@ -40,7 +40,7 @@ namespace Circuit.Elements.Active {
         public override void CirDoIteration() {
             base.CirDoIteration();
             Circuit.StampResistor(Nodes[2], Nodes[1], mCompResistance);
-            Circuit.UpdateVoltageSource(Nodes[0], Nodes[2], mVoltSource, mVoltSourceValue);
+            Circuit.UpdateVoltageSource(mVoltSource, mVoltSourceValue);
         }
 
         public override void CirPrepareIteration() {

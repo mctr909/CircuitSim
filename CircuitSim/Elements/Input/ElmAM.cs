@@ -50,12 +50,10 @@ namespace Circuit.Elements.Input {
         }
 
         public override void CirDoIteration() {
-            Circuit.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
-        }
-
-        double getVoltage() {
-            double w = 2 * Math.PI * (CirSimForm.Time - mFreqTimeZero);
-            return (Math.Sin(w * SignalFreq + Phase) * Depth + 2 - Depth) / 2 * Math.Sin(w * CarrierFreq) * MaxVoltage;
+            var vn = Circuit.NodeList.Count + mVoltSource;
+            var row = Circuit.mRowInfo[vn - 1].MapRow;
+            var th = 2 * Math.PI * (CirSimForm.Time - mFreqTimeZero);
+            Circuit.mRightSide[row] += (Math.Sin(th * SignalFreq + Phase) * Depth + 2 - Depth) / 2 * Math.Sin(th * CarrierFreq) * MaxVoltage;
         }
     }
 }
