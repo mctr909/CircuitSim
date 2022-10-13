@@ -4,11 +4,10 @@
         public double Roff = 1e10;
         public bool Invert;
 
-        public bool IsOpen { get; private set; }
-
         double mResistance;
 
-        // we need this to be able to change the matrix for each step
+        public bool IsOpen { get; private set; }
+
         public override bool NonLinear { get { return true; } }
 
         public override int PostCount { get { return 3; } }
@@ -23,8 +22,6 @@
             return mCurrent;
         }
 
-        // we have to just assume current will flow either way, even though that
-        // might cause singular matrix errors
         public override bool AnaGetConnection(int n1, int n2) { return !(n1 == 2 || n2 == 2); }
 
         public override void AnaStamp() {
@@ -38,7 +35,25 @@
                 IsOpen = !IsOpen;
             }
             mResistance = IsOpen ? Roff : Ron;
-            Circuit.StampResistor(Nodes[0], Nodes[1], mResistance);
+            var conductance = 1.0 / mResistance;
+            var rowA = Circuit.mRowInfo[Nodes[0] - 1].MapRow;
+            var rowB = Circuit.mRowInfo[Nodes[1] - 1].MapRow;
+            var colAri = Circuit.mRowInfo[Nodes[0] - 1];
+            var colBri = Circuit.mRowInfo[Nodes[1] - 1];
+            if (colAri.IsConst) {
+                Circuit.mRightSide[rowA] -= conductance * colAri.Value;
+                Circuit.mRightSide[rowB] += conductance * colAri.Value;
+            } else {
+                Circuit.mMatrix[rowA, colAri.MapCol] += conductance;
+                Circuit.mMatrix[rowB, colAri.MapCol] -= conductance;
+            }
+            if (colBri.IsConst) {
+                Circuit.mRightSide[rowA] += conductance * colBri.Value;
+                Circuit.mRightSide[rowB] -= conductance * colBri.Value;
+            } else {
+                Circuit.mMatrix[rowA, colBri.MapCol] -= conductance;
+                Circuit.mMatrix[rowB, colBri.MapCol] += conductance;
+            }
         }
 
         public override void CirSetVoltage(int n, double c) {

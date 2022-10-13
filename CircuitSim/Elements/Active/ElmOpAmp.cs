@@ -52,13 +52,7 @@ namespace Circuit.Elements.Active {
         public override bool AnaHasGroundConnection(int n1) { return n1 == 2; }
 
         public override void CirDoIteration() {
-            double vd = Volts[V_P] - Volts[V_N];
-            //if (Math.Abs(mLastVd - vd) > 0.1) {
-            //    Circuit.Converged = false;
-            //}
-            //else if (Volts[V_O] > MaxOut + 0.1 || Volts[V_O] < MinOut - 0.1) {
-            //    Circuit.Converged = false;
-            //}
+            var vd = Volts[V_P] - Volts[V_N];
             double dx;
             double x;
             if (vd >= MaxOut / Gain && (mLastVd >= 0 || CirSimForm.Random.Next(4) == 1)) {
@@ -75,8 +69,8 @@ namespace Circuit.Elements.Active {
             }
 
             /* newton-raphson */
-            int vn = Circuit.NodeList.Count + mVoltSource;
-            var r = Circuit.mRowInfo[vn - 1].MapRow;
+            var vnode = Circuit.NodeList.Count + mVoltSource;
+            var r = Circuit.mRowInfo[vnode - 1].MapRow;
             var ri = Circuit.mRowInfo[Nodes[0] - 1];
             if (ri.IsConst) {
                 Circuit.mRightSide[r] -= dx * ri.Value;

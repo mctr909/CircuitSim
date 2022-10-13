@@ -34,10 +34,6 @@ namespace Circuit.Elements.Active {
             initOptocoupler();
         }
 
-        public override bool AnaGetConnection(int n1, int n2) {
-            return n1 / 2 == n2 / 2;
-        }
-
         void initOptocoupler() {
             mCspc = 8 * 2;
             mCspc2 = mCspc * 2;
@@ -55,6 +51,10 @@ namespace Circuit.Elements.Active {
         public override void Reset() {
             base.Reset();
             mCurCounts = new double[4];
+        }
+
+        public override bool AnaGetConnection(int n1, int n2) {
+            return n1 / 2 == n2 / 2;
         }
     }
 }

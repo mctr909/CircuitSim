@@ -46,7 +46,16 @@ namespace Circuit.Elements.Active {
             Vt = vt;
             Hfe = hfe;
             setupDiodes();
-            AllocNodes(); /* make sure volts[] has the right number of elements when hasBodyTerminal() is true */
+            AllocNodes();
+        }
+        /* set up body diodes */
+        void setupDiodes() {
+            /* diode from node 1 to body terminal */
+            mDiodeB1 = new Diode();
+            mDiodeB1.SetupForDefaultModel();
+            /* diode from node 2 to body terminal */
+            mDiodeB2 = new Diode();
+            mDiodeB2.SetupForDefaultModel();
         }
 
         public override double Current { get { return Ids; } }
@@ -78,6 +87,14 @@ namespace Circuit.Elements.Active {
             return -Ids + DiodeCurrent2;
         }
 
+        public override void Reset() {
+            mLastV[1] = mLastV[2] = 0;
+            Volts[IdxG] = Volts[IdxS] = Volts[IdxD] = 0;
+            CurCount = 0;
+            mDiodeB1.Reset();
+            mDiodeB2.Reset();
+        }
+
         public override bool AnaGetConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
 
         public override void AnaStamp() {
@@ -100,87 +117,40 @@ namespace Circuit.Elements.Active {
         }
 
         public override void CirDoIteration() {
-            calculate(false);
-        }
-
-        public override void CirIterationFinished() {
-            calculate(true);
-            /* fix current if body is connected to source or drain */
-            if (BodyTerminal == 1) {
-                DiodeCurrent1 = -DiodeCurrent2;
+            /* limit voltage changes to 0.5V */
+            var tmpV = new double[3];
+            tmpV[IdxG] = Volts[IdxG];
+            tmpV[IdxS] = Volts[IdxS];
+            tmpV[IdxD] = Volts[IdxD];
+            if (tmpV[IdxS] > mLastV[IdxS] + 0.5) {
+                tmpV[IdxS] = mLastV[IdxS] + 0.5;
             }
-            if (BodyTerminal == 2) {
-                DiodeCurrent2 = -DiodeCurrent1;
+            if (tmpV[IdxS] < mLastV[IdxS] - 0.5) {
+                tmpV[IdxS] = mLastV[IdxS] - 0.5;
             }
-            if (Math.Abs(Ids) > 1e12) {
-                Circuit.Stop("Idsが最大電流を超えました", this);
+            if (tmpV[IdxD] > mLastV[IdxD] + 0.5) {
+                tmpV[IdxD] = mLastV[IdxD] + 0.5;
             }
-        }
-
-        public override void Reset() {
-            mLastV[1] = mLastV[2] = 0;
-            Volts[IdxG] = Volts[IdxS] = Volts[IdxD] = 0;
-            CurCount = 0;
-            mDiodeB1.Reset();
-            mDiodeB2.Reset();
-        }
-
-        /* set up body diodes */
-        void setupDiodes() {
-            /* diode from node 1 to body terminal */
-            mDiodeB1 = new Diode();
-            mDiodeB1.SetupForDefaultModel();
-            /* diode from node 2 to body terminal */
-            mDiodeB2 = new Diode();
-            mDiodeB2.SetupForDefaultModel();
-        }
-
-        /* this is called in doStep to stamp the matrix,
-         * and also called in stepFinished() to calculate the current */
-        void calculate(bool finished) {
-            double[] tmpV;
-            if (finished) {
-                tmpV = Volts;
-            }
-            else {
-                /* limit voltage changes to 0.5V */
-                tmpV = new double[3];
-                tmpV[IdxG] = Volts[IdxG];
-                tmpV[IdxS] = Volts[IdxS];
-                tmpV[IdxD] = Volts[IdxD];
-                if (tmpV[IdxS] > mLastV[IdxS] + 0.5) {
-                    tmpV[IdxS] = mLastV[IdxS] + 0.5;
-                }
-                if (tmpV[IdxS] < mLastV[IdxS] - 0.5) {
-                    tmpV[IdxS] = mLastV[IdxS] - 0.5;
-                }
-                if (tmpV[IdxD] > mLastV[IdxD] + 0.5) {
-                    tmpV[IdxD] = mLastV[IdxD] + 0.5;
-                }
-                if (tmpV[IdxD] < mLastV[IdxD] - 0.5) {
-                    tmpV[IdxD] = mLastV[IdxD] - 0.5;
-                }
+            if (tmpV[IdxD] < mLastV[IdxD] - 0.5) {
+                tmpV[IdxD] = mLastV[IdxD] - 0.5;
             }
 
-            //if (!finished && (nonConvergence(mLastV[IdxS], tmpV[IdxS]) || nonConvergence(mLastV[IdxD], tmpV[IdxD]) || nonConvergence(mLastV[IdxG], tmpV[IdxG]))) {
-            //    Circuit.Converged = false;
-            //}
             mLastV[IdxG] = tmpV[IdxG];
             mLastV[IdxS] = tmpV[IdxS];
             mLastV[IdxD] = tmpV[IdxD];
 
             /* if drain < source voltage, swap source and drain.
              * (opposite for PNP) */
-            int idxS = IdxS;
-            int idxD = IdxD;
+            var idxS = IdxS;
+            var idxD = IdxD;
             if (Pnp * tmpV[idxD] < Pnp * tmpV[idxS]) {
                 idxS = IdxD;
                 idxD = IdxS;
             }
-            double vgs = tmpV[IdxG] - tmpV[idxS];
-            double vds = tmpV[idxD] - tmpV[idxS];
-            double realVgs = vgs;
-            double realVds = vds;
+            var vgs = tmpV[IdxG] - tmpV[idxS];
+            var vds = tmpV[idxD] - tmpV[idxS];
+            var realVgs = vgs;
+            var realVds = vds;
             vgs *= Pnp;
             vds *= Pnp;
 
@@ -193,15 +163,13 @@ namespace Circuit.Elements.Active {
                 Gds = 1e-8;
                 Ids = vds * Gds;
                 Mode = 0;
-            }
-            else if (vds < vgs - Vt) {
+            } else if (vds < vgs - Vt) {
                 /* linear */
                 Ids = Hfe * ((vgs - Vt) * vds - vds * vds * 0.5);
                 Gm = Hfe * vds;
                 Gds = Hfe * (vgs - vds - Vt);
                 Mode = 1;
-            }
-            else {
+            } else {
                 /* saturation; Gds = 0 */
                 Gm = Hfe * (vgs - Vt);
                 /* use very small Gds to avoid nonconvergence */
@@ -215,20 +183,14 @@ namespace Circuit.Elements.Active {
                 DiodeCurrent1 = mDiodeB1.CirCalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[IdxS])) * Pnp;
                 mDiodeB2.CirDoStep(Pnp * (Volts[BodyTerminal] - Volts[IdxD]));
                 DiodeCurrent2 = mDiodeB2.CirCalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[IdxD])) * Pnp;
-            }
-            else {
+            } else {
                 DiodeCurrent1 = DiodeCurrent2 = 0;
             }
 
-            double ids0 = Ids;
-
             /* flip ids if we swapped source and drain above */
+            var realIds = Ids;
             if (idxS == 2 && Pnp == 1 || idxS == 1 && Pnp == -1) {
                 Ids = -Ids;
-            }
-
-            if (finished) {
-                return;
             }
 
             var ra = Circuit.mRowInfo[Nodes[idxD] - 1].MapRow;
@@ -258,35 +220,80 @@ namespace Circuit.Elements.Active {
                 Circuit.mMatrix[rb, ri.MapCol] += Gds + Gm;
             }
 
-            var rs = -Pnp * ids0 + Gds * realVds + Gm * realVgs;
+            var rs = -Pnp * realIds + Gds * realVds + Gm * realVgs;
             ra = Circuit.mRowInfo[Nodes[idxD] - 1].MapRow;
             rb = Circuit.mRowInfo[Nodes[idxS] - 1].MapRow;
             Circuit.mRightSide[ra] += rs;
             Circuit.mRightSide[rb] -= rs;
         }
 
-        bool nonConvergence(double last, double now) {
-            double diff = Math.Abs(last - now);
+        public override void CirIterationFinished() {
+            var tmpV = Volts;
+            mLastV[IdxG] = tmpV[IdxG];
+            mLastV[IdxS] = tmpV[IdxS];
+            mLastV[IdxD] = tmpV[IdxD];
 
-            /* high beta MOSFETs are more sensitive to small differences,
-             * so we are more strict about convergence testing */
-            if (Hfe > 1) {
-                diff *= 100;
+            /* if drain < source voltage, swap source and drain.
+             * (opposite for PNP) */
+            var idxS = IdxS;
+            var idxD = IdxD;
+            if (Pnp * tmpV[idxD] < Pnp * tmpV[idxS]) {
+                idxS = IdxD;
+                idxD = IdxS;
+            }
+            var vgs = tmpV[IdxG] - tmpV[idxS];
+            var vds = tmpV[idxD] - tmpV[idxS];
+            vgs *= Pnp;
+            vds *= Pnp;
+
+            Ids = 0;
+            Gm = 0;
+            double Gds = 0;
+            if (vgs < Vt) {
+                /* should be all zero, but that causes a singular matrix,
+                 * so instead we treat it as a large resistor */
+                Gds = 1e-8;
+                Ids = vds * Gds;
+                Mode = 0;
+            } else if (vds < vgs - Vt) {
+                /* linear */
+                Ids = Hfe * ((vgs - Vt) * vds - vds * vds * 0.5);
+                Gm = Hfe * vds;
+                Gds = Hfe * (vgs - vds - Vt);
+                Mode = 1;
+            } else {
+                /* saturation; Gds = 0 */
+                Gm = Hfe * (vgs - Vt);
+                /* use very small Gds to avoid nonconvergence */
+                Gds = 1e-8;
+                Ids = 0.5 * Hfe * (vgs - Vt) * (vgs - Vt) + (vds - (vgs - Vt)) * Gds;
+                Mode = 2;
             }
 
-            /* difference of less than 10mV is fine */
-            if (diff < .01) {
-                return false;
+            if (DoBodyDiode) {
+                mDiodeB1.CirDoStep(Pnp * (Volts[BodyTerminal] - Volts[IdxS]));
+                DiodeCurrent1 = mDiodeB1.CirCalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[IdxS])) * Pnp;
+                mDiodeB2.CirDoStep(Pnp * (Volts[BodyTerminal] - Volts[IdxD]));
+                DiodeCurrent2 = mDiodeB2.CirCalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[IdxD])) * Pnp;
+            } else {
+                DiodeCurrent1 = DiodeCurrent2 = 0;
             }
-            /* larger differences are fine if value is large */
-            if (Circuit.SubIterations > 10 && diff < Math.Abs(now) * .001) {
-                return false;
+
+            /* flip ids if we swapped source and drain above */
+            if (idxS == 2 && Pnp == 1 || idxS == 1 && Pnp == -1) {
+                Ids = -Ids;
             }
-            /* if we're having trouble converging, get more lenient */
-            if (Circuit.SubIterations > 100 && diff < .01 + (Circuit.SubIterations - 100) * .0001) {
-                return false;
+
+            /* fix current if body is connected to source or drain */
+            if (BodyTerminal == 1) {
+                DiodeCurrent1 = -DiodeCurrent2;
             }
-            return true;
+            if (BodyTerminal == 2) {
+                DiodeCurrent2 = -DiodeCurrent1;
+            }
+            if (Math.Abs(Ids) > 1e12) {
+                Circuit.Stop("Idsが最大電流を超えました", this);
+            }
         }
     }
 }
