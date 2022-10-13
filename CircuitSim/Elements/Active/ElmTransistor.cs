@@ -105,10 +105,8 @@ namespace Circuit.Elements.Active {
                 if (0.1 < mGmin) {
                     mGmin = 0.1;
                 }
-                /*Console.WriteLine("gmin " + gmin + " vbc " + vbc + " vbe " + vbe); */
             }
 
-            /*Console.WriteLine("T " + vbc + " " + vbe + "\n"); */
             vbc = NPN * limitStep(NPN * vbc, NPN * mLastVbc);
             vbe = NPN * limitStep(NPN * vbe, NPN * mLastVbe);
             mLastVbc = vbc;
@@ -119,8 +117,6 @@ namespace Circuit.Elements.Active {
             Ie = NPN * LEAKAGE * (-mInv_fgain * (expbe - 1) + (expbc - 1));
             Ic = NPN * LEAKAGE * ((expbe - 1) - INV_R_GAIN * (expbc - 1));
             Ib = -(Ie + Ic);
-            /*Console.WriteLine("gain " + ic/ib);
-            Console.WriteLine("T " + vbc + " " + vbe + " " + ie + " " + ic + "\n"); */
 
             double gee = -LEAKAGE * VD_COEF * expbe * mInv_fgain;
             double gec = LEAKAGE * VD_COEF * expbc;
@@ -131,21 +127,48 @@ namespace Circuit.Elements.Active {
             gcc -= mGmin;
             gee -= mGmin;
 
-            Circuit.StampMatrix(Nodes[IdxB], Nodes[IdxB], -gee - gec - gce - gcc);
-            Circuit.StampMatrix(Nodes[IdxB], Nodes[IdxC], gec + gcc);
-            Circuit.StampMatrix(Nodes[IdxB], Nodes[IdxE], gee + gce);
-            Circuit.StampMatrix(Nodes[IdxC], Nodes[IdxB], gce + gcc);
-            Circuit.StampMatrix(Nodes[IdxC], Nodes[IdxC], -gcc);
-            Circuit.StampMatrix(Nodes[IdxC], Nodes[IdxE], -gce);
-            Circuit.StampMatrix(Nodes[IdxE], Nodes[IdxB], gee + gec);
-            Circuit.StampMatrix(Nodes[IdxE], Nodes[IdxC], -gec);
-            Circuit.StampMatrix(Nodes[IdxE], Nodes[IdxE], -gee);
+            var rowB = Circuit.mRowInfo[Nodes[IdxB] - 1].MapRow;
+            var rowC = Circuit.mRowInfo[Nodes[IdxC] - 1].MapRow;
+            var rowE = Circuit.mRowInfo[Nodes[IdxE] - 1].MapRow;
+            var colri = Circuit.mRowInfo[Nodes[IdxB] - 1];
+            if (colri.IsConst) {
+                Circuit.mRightSide[rowB] += (gee + gec + gce + gcc) * colri.Value;
+                Circuit.mRightSide[rowC] -= (gce + gcc) * colri.Value;
+                Circuit.mRightSide[rowE] -= (gee + gec) * colri.Value;
+            } else {
+                Circuit.mMatrix[rowB, colri.MapCol] -= gee + gec + gce + gcc;
+                Circuit.mMatrix[rowC, colri.MapCol] += gce + gcc;
+                Circuit.mMatrix[rowE, colri.MapCol] += gee + gec;
+            }
+            colri = Circuit.mRowInfo[Nodes[IdxC] - 1];
+            if (colri.IsConst) {
+                Circuit.mRightSide[rowB] -= (gec + gcc) * colri.Value;
+                Circuit.mRightSide[rowC] += gcc * colri.Value;
+                Circuit.mRightSide[rowE] += gec * colri.Value;
+            } else {
+                Circuit.mMatrix[rowB, colri.MapCol] += gec + gcc;
+                Circuit.mMatrix[rowC, colri.MapCol] -= gcc;
+                Circuit.mMatrix[rowE, colri.MapCol] -= gec;
+            }
+            colri = Circuit.mRowInfo[Nodes[IdxE] - 1];
+            if (colri.IsConst) {
+                Circuit.mRightSide[rowB] -= (gee + gce) * colri.Value;
+                Circuit.mRightSide[rowC] += gce * colri.Value;
+                Circuit.mRightSide[rowE] += gee * colri.Value;
+            } else {
+                Circuit.mMatrix[rowB, colri.MapCol] += gee + gce;
+                Circuit.mMatrix[rowC, colri.MapCol] -= gce;
+                Circuit.mMatrix[rowE, colri.MapCol] -= gee;
+            }
 
             /* we are solving for v(k+1), not delta v, so we use formula
              * multiplying J by v(k) */
-            Circuit.StampRightSide(Nodes[IdxB], -Ib - (gec + gcc) * vbc - (gee + gce) * vbe);
-            Circuit.StampRightSide(Nodes[IdxC], -Ic + gce * vbe + gcc * vbc);
-            Circuit.StampRightSide(Nodes[IdxE], -Ie + gee * vbe + gec * vbc);
+            rowB = Circuit.mRowInfo[Nodes[IdxB] - 1].MapRow;
+            rowC = Circuit.mRowInfo[Nodes[IdxC] - 1].MapRow;
+            rowE = Circuit.mRowInfo[Nodes[IdxE] - 1].MapRow;
+            Circuit.mRightSide[rowB] += -Ib - (gec + gcc) * vbc - (gee + gce) * vbe;
+            Circuit.mRightSide[rowC] += -Ic + gce * vbe + gcc * vbc;
+            Circuit.mRightSide[rowE] += -Ie + gee * vbe + gec * vbc;
         }
 
         public override void CirIterationFinished() {
@@ -159,23 +182,18 @@ namespace Circuit.Elements.Active {
 
         double limitStep(double vnew, double vold) {
             double arg;
-            double oo = vnew;
-
             if (vnew > mVcrit && Math.Abs(vnew - vold) > (VT + VT)) {
                 if (vold > 0) {
                     arg = 1 + (vnew - vold) / VT;
                     if (arg > 0) {
                         vnew = vold + VT * Math.Log(arg);
-                    }
-                    else {
+                    } else {
                         vnew = mVcrit;
                     }
-                }
-                else {
+                } else {
                     vnew = VT * Math.Log(vnew / VT);
                 }
                 Circuit.Converged = false;
-                /*Console.WriteLine(vnew + " " + oo + " " + vold);*/
             }
             return vnew;
         }

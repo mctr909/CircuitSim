@@ -14,7 +14,7 @@
 
         public override void AnaStamp() {
             if (WaveForm == WAVEFORM.DC) {
-                Circuit.StampVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
+                Circuit.StampVoltageSource(0, Nodes[0], mVoltSource, GetVoltage());
             } else {
                 Circuit.StampVoltageSource(0, Nodes[0], mVoltSource);
             }
@@ -22,7 +22,7 @@
 
         public override void CirDoIteration() {
             if (WaveForm != WAVEFORM.DC) {
-                Circuit.UpdateVoltageSource(0, Nodes[0], mVoltSource, getVoltage());
+                Circuit.UpdateVoltageSource(0, Nodes[0], mVoltSource, GetVoltage());
             }
         }
     }

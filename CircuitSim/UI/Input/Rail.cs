@@ -62,14 +62,14 @@ namespace Circuit.UI.Input {
                 drawCenteredText("CLK", DumpInfo.P2, true);
             } else if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                 var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
-                double v = elm.getVoltage();
+                double v = elm.GetVoltage();
                 string s;
                 if (Math.Abs(v) < 1) {
                     s = v.ToString("0.000") + " V";
                 } else {
                     s = Utils.UnitText(v, "V");
                 }
-                if (elm.getVoltage() > 0) {
+                if (elm.GetVoltage() > 0) {
                     s = "+" + s;
                 }
                 drawCenteredText(s, DumpInfo.P2, true);

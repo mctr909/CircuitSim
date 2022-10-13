@@ -70,26 +70,26 @@ namespace Circuit.Elements.Active {
 
             /* newton-raphson */
             var vnode = Circuit.NodeList.Count + mVoltSource;
-            var r = Circuit.mRowInfo[vnode - 1].MapRow;
-            var ri = Circuit.mRowInfo[Nodes[0] - 1];
-            if (ri.IsConst) {
-                Circuit.mRightSide[r] -= dx * ri.Value;
+            var rowV = Circuit.mRowInfo[vnode - 1].MapRow;
+            var colri = Circuit.mRowInfo[Nodes[0] - 1];
+            if (colri.IsConst) {
+                Circuit.mRightSide[rowV] -= dx * colri.Value;
             } else {
-                Circuit.mMatrix[r, ri.MapCol] += dx;
+                Circuit.mMatrix[rowV, colri.MapCol] += dx;
             }
-            ri = Circuit.mRowInfo[Nodes[1] - 1];
-            if (ri.IsConst) {
-                Circuit.mRightSide[r] += dx * ri.Value;
+            colri = Circuit.mRowInfo[Nodes[1] - 1];
+            if (colri.IsConst) {
+                Circuit.mRightSide[rowV] += dx * colri.Value;
             } else {
-                Circuit.mMatrix[r, ri.MapCol] -= dx;
+                Circuit.mMatrix[rowV, colri.MapCol] -= dx;
             }
-            ri = Circuit.mRowInfo[Nodes[2] - 1];
-            if (ri.IsConst) {
-                Circuit.mRightSide[r] -= ri.Value;
+            colri = Circuit.mRowInfo[Nodes[2] - 1];
+            if (colri.IsConst) {
+                Circuit.mRightSide[rowV] -= colri.Value;
             } else {
-                Circuit.mMatrix[r, ri.MapCol] += 1;
+                Circuit.mMatrix[rowV, colri.MapCol] += 1;
             }
-            Circuit.mRightSide[r] += x;
+            Circuit.mRightSide[rowV] += x;
 
             mLastVd = vd;
         }

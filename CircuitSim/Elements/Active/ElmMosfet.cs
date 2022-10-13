@@ -193,38 +193,38 @@ namespace Circuit.Elements.Active {
                 Ids = -Ids;
             }
 
-            var ra = Circuit.mRowInfo[Nodes[idxD] - 1].MapRow;
-            var rb = Circuit.mRowInfo[Nodes[idxS] - 1].MapRow;
-            var ri = Circuit.mRowInfo[Nodes[idxD] - 1];
-            if (ri.IsConst) {
-                Circuit.mRightSide[ra] -= Gds * ri.Value;
-                Circuit.mRightSide[rb] += Gds * ri.Value;
+            var rowD = Circuit.mRowInfo[Nodes[idxD] - 1].MapRow;
+            var rowS = Circuit.mRowInfo[Nodes[idxS] - 1].MapRow;
+            var colri = Circuit.mRowInfo[Nodes[idxD] - 1];
+            if (colri.IsConst) {
+                Circuit.mRightSide[rowD] -= Gds * colri.Value;
+                Circuit.mRightSide[rowS] += Gds * colri.Value;
             } else {
-                Circuit.mMatrix[ra, ri.MapCol] += Gds;
-                Circuit.mMatrix[rb, ri.MapCol] -= Gds;
+                Circuit.mMatrix[rowD, colri.MapCol] += Gds;
+                Circuit.mMatrix[rowS, colri.MapCol] -= Gds;
             }
-            ri = Circuit.mRowInfo[Nodes[IdxG] - 1];
-            if (ri.IsConst) {
-                Circuit.mRightSide[ra] -= Gm * ri.Value;
-                Circuit.mRightSide[rb] += Gm * ri.Value;
+            colri = Circuit.mRowInfo[Nodes[IdxG] - 1];
+            if (colri.IsConst) {
+                Circuit.mRightSide[rowD] -= Gm * colri.Value;
+                Circuit.mRightSide[rowS] += Gm * colri.Value;
             } else {
-                Circuit.mMatrix[ra, ri.MapCol] += Gm;
-                Circuit.mMatrix[rb, ri.MapCol] -= Gm;
+                Circuit.mMatrix[rowD, colri.MapCol] += Gm;
+                Circuit.mMatrix[rowS, colri.MapCol] -= Gm;
             }
-            ri = Circuit.mRowInfo[Nodes[idxS] - 1];
-            if (ri.IsConst) {
-                Circuit.mRightSide[ra] += (Gds + Gm) * ri.Value;
-                Circuit.mRightSide[rb] -= (Gds + Gm) * ri.Value;
+            colri = Circuit.mRowInfo[Nodes[idxS] - 1];
+            if (colri.IsConst) {
+                Circuit.mRightSide[rowD] += (Gds + Gm) * colri.Value;
+                Circuit.mRightSide[rowS] -= (Gds + Gm) * colri.Value;
             } else {
-                Circuit.mMatrix[ra, ri.MapCol] -= Gds + Gm;
-                Circuit.mMatrix[rb, ri.MapCol] += Gds + Gm;
+                Circuit.mMatrix[rowD, colri.MapCol] -= Gds + Gm;
+                Circuit.mMatrix[rowS, colri.MapCol] += Gds + Gm;
             }
 
             var rs = -Pnp * realIds + Gds * realVds + Gm * realVgs;
-            ra = Circuit.mRowInfo[Nodes[idxD] - 1].MapRow;
-            rb = Circuit.mRowInfo[Nodes[idxS] - 1].MapRow;
-            Circuit.mRightSide[ra] += rs;
-            Circuit.mRightSide[rb] -= rs;
+            rowD = Circuit.mRowInfo[Nodes[idxD] - 1].MapRow;
+            rowS = Circuit.mRowInfo[Nodes[idxS] - 1].MapRow;
+            Circuit.mRightSide[rowD] += rs;
+            Circuit.mRightSide[rowS] -= rs;
         }
 
         public override void CirIterationFinished() {

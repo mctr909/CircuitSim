@@ -71,7 +71,7 @@ namespace Circuit.Elements.Input {
 
         public override void AnaStamp() {
             if (WaveForm == WAVEFORM.DC) {
-                Circuit.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
+                Circuit.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, GetVoltage());
             } else {
                 Circuit.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource);
             }
@@ -79,7 +79,7 @@ namespace Circuit.Elements.Input {
 
         public override void CirDoIteration() {
             if (WaveForm != WAVEFORM.DC) {
-                Circuit.UpdateVoltageSource(Nodes[0], Nodes[1], mVoltSource, getVoltage());
+                Circuit.UpdateVoltageSource(Nodes[0], Nodes[1], mVoltSource, GetVoltage());
             }
         }
 
@@ -89,7 +89,7 @@ namespace Circuit.Elements.Input {
             }
         }
 
-        public virtual double getVoltage() {
+        public double GetVoltage() {
             double t = CirSimForm.Time;
             double wt = 2 * Math.PI * Frequency * t + Phase + PhaseOffset;
             double duty = 2 * Math.PI * DutyCycle;
