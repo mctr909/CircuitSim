@@ -8,8 +8,6 @@
 
         public override double Power { get { return 0; } }
 
-        public override void CirSetVoltage(int n, double c) {
-            Volts[n] = c;
-        }
+        public override void CirSetVoltage(int n, double c) { Volts[n] = c; }
     }
 }

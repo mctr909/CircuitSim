@@ -42,12 +42,11 @@
 
         public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
-            if (Resistance1 == 0) {
-                return; /* avoid NaN */
+            if (0.0 < Resistance1) { // avoid NaN
+                Current1 = (Volts[V_L] - Volts[V_S]) / Resistance1;
+                Current2 = (Volts[V_R] - Volts[V_S]) / Resistance2;
+                Current3 = -Current1 - Current2;
             }
-            Current1 = (Volts[V_L] - Volts[V_S]) / Resistance1;
-            Current2 = (Volts[V_R] - Volts[V_S]) / Resistance2;
-            Current3 = -Current1 - Current2;
         }
     }
 }

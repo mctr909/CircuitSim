@@ -33,8 +33,7 @@
         }
 
         public override void CirPrepareIteration() {
-            double voltdiff = Volts[0] - Volts[1];
-            mCurSourceValue = voltdiff / mCompResistance + mCurrent;
+            mCurSourceValue = (Volts[0] - Volts[1]) / mCompResistance + mCurrent;
         }
 
         public override void CirDoIteration() {
@@ -46,8 +45,7 @@
 
         public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
-            var voltdiff = Volts[0] - Volts[1];
-            mCurrent = voltdiff / mCompResistance + mCurSourceValue;
+            mCurrent = (Volts[0] - Volts[1]) / mCompResistance + mCurSourceValue;
         }
     }
 }
