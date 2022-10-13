@@ -78,7 +78,7 @@ namespace Circuit.UI.Active {
             drawLead(mPost1, mLedLead1);
             drawLead(mLedLead2, mPost2);
 
-            g.LineColor = CustomGraphics.GrayColor;
+            g.DrawColor = CustomGraphics.LineColor;
             g.DrawCircle(mLedCenter, CR);
 
             var ce = (ElmDiode)Elm;

@@ -50,7 +50,7 @@ namespace Circuit.UI.Gate {
             var ce = (ElmInverter)Elm;
             drawPosts();
             draw2Leads();
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             if (Gate.UseAnsiGates()) {
                 g.DrawPolygon(mGatePolyAnsi);
             } else {

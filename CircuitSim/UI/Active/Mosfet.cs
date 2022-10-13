@@ -189,7 +189,7 @@ namespace Circuit.UI.Active {
 
             /* draw arrow */
             if (!DrawDigital) {
-                g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, mArrowPoly);
+                g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mArrowPoly);
             }
 
             /* draw gate */

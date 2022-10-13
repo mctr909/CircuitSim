@@ -129,7 +129,7 @@ namespace Circuit.UI.Input {
             var elm = (ElmVoltage)Elm;
 
             if (elm.WaveForm != ElmVoltage.WAVEFORM.NOISE) {
-                g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+                g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
                 g.DrawCircle(center, BODY_LEN / 2);
             }
 
@@ -143,7 +143,7 @@ namespace Circuit.UI.Input {
             xd = Math.Max(x - h + 1, Math.Min(x + h - 1, xd));
             var hd = (int)(h * elm.DutyCycle - h + x);
 
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
 
             switch (elm.WaveForm) {
             case ElmVoltage.WAVEFORM.DC: {

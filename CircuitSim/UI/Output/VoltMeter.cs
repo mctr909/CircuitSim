@@ -45,16 +45,16 @@ namespace Circuit.UI.Output {
             calcLeads((int)len);
 
             if (selected) {
-                g.LineColor = CustomGraphics.SelectColor;
+                g.DrawColor = CustomGraphics.SelectColor;
             } else {
-                g.LineColor = CustomGraphics.GrayColor;
+                g.DrawColor = CustomGraphics.LineColor;
             }
             drawLead(mPost1, mLead1);
 
             if (selected) {
-                g.LineColor = CustomGraphics.SelectColor;
+                g.DrawColor = CustomGraphics.SelectColor;
             } else {
-                g.LineColor = CustomGraphics.GrayColor;
+                g.DrawColor = CustomGraphics.LineColor;
             }
             drawLead(mLead2, mPost2);
 

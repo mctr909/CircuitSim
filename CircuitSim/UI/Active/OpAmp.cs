@@ -70,7 +70,7 @@ namespace Circuit.UI.Active {
             drawLead(mIn2p[0], mIn2p[1]);
             drawLead(mLead2, mPost2);
 
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             g.DrawPolygon(mTriangle);
 
             drawLead(mTextp[0], mTextp[1]);

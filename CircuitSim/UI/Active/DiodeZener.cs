@@ -51,7 +51,7 @@ namespace Circuit.UI.Active {
             draw2Leads();
 
             /* draw arrow thingy */
-            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, mPoly);
+            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mPoly);
             /* draw thing arrow is pointing to */
             drawLead(mCathode[0], mCathode[1]);
             /* draw wings on cathode */

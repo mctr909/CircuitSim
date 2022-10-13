@@ -87,7 +87,7 @@ namespace Circuit.UI.Active {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmOptocoupler)Elm;
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             g.DrawPolygon(mRectPoints);
 
             /* draw stubs */
@@ -105,10 +105,10 @@ namespace Circuit.UI.Active {
             drawPosts();
 
             /* draw little arrows */
-            var c = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            var c = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             g.FillPolygon(c, mArrow1);
             g.FillPolygon(c, mArrow2);
-            g.LineColor = c;
+            g.DrawColor = c;
             int sx = mStubs[0].X + 2;
             int sy = (mStubs[0].Y + mStubs[1].Y) / 2;
             for (int i = 0; i != 2; i++) {

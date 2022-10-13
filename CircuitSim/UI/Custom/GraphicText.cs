@@ -39,7 +39,6 @@ namespace Circuit.UI.Custom {
         public override void Draw(CustomGraphics g) {
             var bkColor = CustomGraphics.TextColor;
             var bkSize = CustomGraphics.TextSize;
-            CustomGraphics.TextColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
             CustomGraphics.TextSize = mSize;
             var size = g.GetTextSize(mText);
             DumpInfo.SetP2(
@@ -48,7 +47,6 @@ namespace Circuit.UI.Custom {
             );
             g.DrawLeftText(mText, DumpInfo.P1.X, (int)(DumpInfo.P1.Y + size.Height / 2));
             DumpInfo.SetBbox(DumpInfo.P1, DumpInfo.P2);
-            CustomGraphics.TextColor = bkColor;
             CustomGraphics.TextSize = bkSize;
         }
 

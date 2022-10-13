@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit {
@@ -119,6 +120,7 @@ namespace Circuit {
             /* White Background */
             ChkPrintable = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "白黒表示" };
             ChkPrintable.CheckedChanged += new EventHandler((s, e) => {
+                CustomGraphics.SetColor(ChkPrintable.Checked);
                 for (int i = 0; i < Scope.Count; i++) {
                     Scope.List[i].SetRect(Scope.List[i].BoundingBox);
                 }

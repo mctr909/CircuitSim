@@ -27,6 +27,7 @@ namespace Circuit {
         static Brush mTextBrush = Brushes.Black;
         static Color mTextColor;
         static Pen mPenPost = new Pen(Color.Red, 5.0f);
+        static Brush mPenHandle;
 
         Pen mPenLine = new Pen(Color.White, 1.0f) {
             StartCap = LineCap.Triangle,
@@ -37,17 +38,16 @@ namespace Circuit {
         protected Bitmap mImage;
         Graphics mG;
 
-        public static Brush PenHandle { get; set; }
-        public static Color SelectColor { get; set; }
-        public static Color WhiteColor { get; set; }
-        public static Color GrayColor { get; set; }
+        public static Color SelectColor { get; private set; }
+        public static Color WhiteColor { get; private set; }
+        public static Color LineColor { get; private set; }
         public static Color PostColor {
             get { return mPenPost.Color; }
-            set { mPenPost.Color = value; }
+            private set { mPenPost.Color = value; }
         }
         public static Color TextColor {
             get { return mTextColor; }
-            set {
+            private set {
                 var p = new Pen(value, 1.0f);
                 mTextBrush = p.Brush;
                 mTextColor = value;
@@ -55,18 +55,16 @@ namespace Circuit {
         }
         public static float TextSize {
             get { return mTextFont.Size; }
-            set {
-                mTextFont = new Font(mTextFont.Name, value);
-            }
+            set { mTextFont = new Font(mTextFont.Name, value); }
         }
         public static float LTextSize {
             get { return mTextFontL.Size; }
-            set {
-                mTextFontL = new Font(mTextFontL.Name, value);
-            }
+            set { mTextFontL = new Font(mTextFontL.Name, value); }
         }
+        
         public bool DoPrint { get; set; } = false;
-        public virtual Color LineColor {
+
+        public virtual Color DrawColor {
             get { return mPenLine.Color; }
             set { mPenLine.Color = value; }
         }
@@ -100,6 +98,24 @@ namespace Circuit {
             }
         }
 
+        public static void SetColor(bool isPrintable) {
+            if (isPrintable) {
+                WhiteColor = Color.Gray;
+                LineColor = Color.Black;
+                TextColor = Color.Black;
+                SelectColor = Color.Red;
+                PostColor = Color.Black;
+                mPenHandle = Pens.Red.Brush;
+            } else {
+                WhiteColor = Color.FromArgb(191, 191, 191);
+                LineColor = Color.FromArgb(79, 79, 79);
+                TextColor = Color.FromArgb(147, 147, 147);
+                SelectColor = Color.FromArgb(0, 255, 255);
+                PostColor = Color.FromArgb(211, 0, 0);
+                mPenHandle = Pens.Cyan.Brush;
+            }
+        }
+
         public static CustomGraphics FromImage(int width, int height) {
             return new CustomGraphics(width, height);
         }
@@ -130,7 +146,7 @@ namespace Circuit {
 
         public virtual void DrawHandle(Point p) {
             var radius = 4;
-            mG.FillPie(PenHandle, p.X - radius, p.Y - radius, radius * 2, radius * 2, 0, 360);
+            mG.FillPie(mPenHandle, p.X - radius, p.Y - radius, radius * 2, radius * 2, 0, 360);
         }
 
         public virtual void DrawLine(float ax, float ay, float bx, float by) {

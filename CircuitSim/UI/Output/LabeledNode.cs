@@ -40,7 +40,7 @@ namespace Circuit.UI.Output {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmLabeledNode)Elm;
             drawLead(mPost1, mLead1);
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
+            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             var str = ce.Text;
             var lineOver = false;
             if (str.StartsWith("/")) {

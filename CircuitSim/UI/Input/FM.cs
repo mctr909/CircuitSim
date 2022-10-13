@@ -52,7 +52,7 @@ namespace Circuit.UI.Input {
         void drawWaveform(CustomGraphics g, Point center) {
             int xc = center.X;
             int yc = center.Y;
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             g.DrawCircle(center, SIZE / 2);
             DumpInfo.AdjustBbox(xc - SIZE, yc - SIZE, xc + SIZE, yc + SIZE);
         }

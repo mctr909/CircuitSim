@@ -45,7 +45,7 @@ namespace Circuit.UI.Gate {
             var ce = (ElmInvertingSchmitt)Elm;
             drawPosts();
             draw2Leads();
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             g.DrawPolygon(gatePoly);
             g.DrawPolygon(symbolPoly);
             g.DrawCircle(pcircle, 3);

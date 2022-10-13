@@ -45,7 +45,7 @@ namespace Circuit.UI.Input {
 
             drawLead(mPost1, mLead1);
 
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
 
             int xc = mPost2.X;
             int yc = mPost2.Y;
@@ -70,7 +70,7 @@ namespace Circuit.UI.Input {
 
             int x0 = 0;
             var y0 = 0.0f;
-            g.LineColor = CustomGraphics.GrayColor;
+            g.DrawColor = CustomGraphics.LineColor;
             for (int i = -xl; i <= xl; i++) {
                 var yy = yc + (float)(0.95 * Math.Sin(i * Math.PI * w / xl) * wl);
                 if (i == -xl) {

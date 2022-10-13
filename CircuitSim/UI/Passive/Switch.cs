@@ -99,7 +99,7 @@ namespace Circuit.UI.Passive {
             } else {
                 interpLead(ref p2, (OPEN_HS - 2.0) / OPEN_HS, OPEN_HS);
             }
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
+            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             g.DrawLine(mLead1, p2);
             drawPosts();
         }

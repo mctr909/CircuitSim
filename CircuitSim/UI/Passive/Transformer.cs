@@ -111,7 +111,7 @@ namespace Circuit.UI.Passive {
             drawCoil(mPtCoil[0], mPtCoil[2], ce.Volts[ElmTransformer.PRI_T], ce.Volts[ElmTransformer.PRI_B], 90 * mDsign);
             drawCoil(mPtCoil[1], mPtCoil[3], ce.Volts[ElmTransformer.SEC_T], ce.Volts[ElmTransformer.SEC_B], -90 * mDsign * ce.Polarity);
 
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             g.DrawLine(mPtCore[0], mPtCore[2]);
             g.DrawLine(mPtCore[1], mPtCore[3]);
             if (mDots != null) {

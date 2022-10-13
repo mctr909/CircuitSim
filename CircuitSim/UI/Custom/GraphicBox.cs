@@ -27,7 +27,7 @@ namespace Circuit.UI.Custom {
         }
 
         public override void Draw(CustomGraphics g) {
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             DumpInfo.SetBbox(DumpInfo.P1, DumpInfo.P2);
             var x1 = DumpInfo.P1.X;
             var y1 = DumpInfo.P1.Y;

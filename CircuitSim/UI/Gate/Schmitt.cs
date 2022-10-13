@@ -18,7 +18,7 @@ namespace Circuit.UI.Gate {
             var ce = (ElmSchmitt)Elm;
             drawPosts();
             draw2Leads();
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             g.DrawPolygon(gatePoly);
             g.DrawPolygon(symbolPoly);
             ce.CurCount = updateDotCount(ce.Current, ce.CurCount);

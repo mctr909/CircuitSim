@@ -101,7 +101,7 @@ namespace Circuit.UI.Gate {
                 drawLead(mInPosts[i], mInGates[i]);
             }
             drawLead(mLead2, mPost2);
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             if (UseAnsiGates()) {
                 g.DrawPolygon(mGatePolyAnsi);
             } else {
@@ -111,7 +111,7 @@ namespace Circuit.UI.Gate {
                 drawCenteredLText(gateText, center, true);
             }
             if (ce.HasSchmittInputs) {
-                g.LineColor = CustomGraphics.WhiteColor;
+                g.DrawColor = CustomGraphics.WhiteColor;
                 g.DrawPolygon(mSchmittPoly);
             }
             if (mLinePoints != null && UseAnsiGates()) {

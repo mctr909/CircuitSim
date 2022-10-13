@@ -90,7 +90,7 @@ namespace Circuit.UI.Active {
 
             draw2Leads();
 
-            var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             /* draw arrow thingy */
             g.FillPolygon(color, mPoly);
             /* draw thing arrow is pointing to */

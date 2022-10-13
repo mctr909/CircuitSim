@@ -104,7 +104,7 @@ namespace Circuit.UI.Input {
         }
 
         void drawWaveform(CustomGraphics g, Point center) {
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             int xc = center.X;
             int yc = center.Y;
             g.DrawCircle(center, SIZE / 2);

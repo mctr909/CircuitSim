@@ -71,7 +71,7 @@ namespace Circuit.UI.Active {
             draw2Leads();
 
             interpLead(ref mPs, 1, hs);
-            g.LineColor = CustomGraphics.WhiteColor;
+            g.DrawColor = CustomGraphics.WhiteColor;
             g.DrawLine(mLead1, mPs);
 
             drawLead(mPost3, mLead3);

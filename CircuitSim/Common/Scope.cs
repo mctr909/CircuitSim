@@ -743,9 +743,9 @@ namespace Circuit {
             const int outR45 = 4 * 18 / 16;
             if (mShowSettingsWheel) {
                 if (CursorInSettingsWheel) {
-                    g.LineColor = Color.Cyan;
+                    g.DrawColor = Color.Cyan;
                 } else {
-                    g.LineColor = Color.DarkGray;
+                    g.DrawColor = Color.DarkGray;
                 }
                 if (isFloat) {
                     g.SetPlotFloat(BoundingBox.X + 12, BoundingBox.Y + BoundingBox.Height - 16);
@@ -811,7 +811,7 @@ namespace Circuit {
                 }
             }
 
-            g.LineColor = CustomGraphics.WhiteColor;
+            g.DrawColor = CustomGraphics.WhiteColor;
             g.DrawLine(CirSimForm.MouseCursorX, BoundingBox.Y, CirSimForm.MouseCursorX, BoundingBox.Y + BoundingBox.Height);
 
             int bx = CirSimForm.MouseCursorX;
@@ -890,7 +890,7 @@ namespace Circuit {
                     if (ly < 0 || BoundingBox.Height <= ly) {
                         continue;
                     }
-                    g.LineColor = ll == 0 ? majorDiv : minorDiv;
+                    g.DrawColor = ll == 0 ? majorDiv : minorDiv;
                     g.DrawLine(0, ly, BoundingBox.Width - 1, ly);
                 }
 
@@ -908,21 +908,21 @@ namespace Circuit {
                         continue;
                     }
                     if (((t + mGridStepX / 4) % (mGridStepX * 10)) < mGridStepX) {
-                        g.LineColor = majorDiv;
+                        g.DrawColor = majorDiv;
                     } else {
-                        g.LineColor = minorDiv;
+                        g.DrawColor = minorDiv;
                     }
                     g.DrawLine(lx, 0, lx, BoundingBox.Height - 1);
                 }
             }
 
             if (ControlPanel.ChkPrintable.Checked) {
-                g.LineColor = plot.Color;
+                g.DrawColor = plot.Color;
             } else {
                 if (selected || (CirSimForm.SelectedScope == -1 && plot.Elm.IsMouseElm)) {
-                    g.LineColor = CustomGraphics.SelectColor;
+                    g.DrawColor = CustomGraphics.SelectColor;
                 } else {
-                    g.LineColor = mSomethingSelected ? ScopePlot.GRAY : plot.Color;
+                    g.DrawColor = mSomethingSelected ? ScopePlot.GRAY : plot.Color;
                 }
             }
 
@@ -973,7 +973,7 @@ namespace Circuit {
             int prevEnd = 0;
             double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * xDivs * 2);
             var gridBottom = mFFTBoundingBox.Height - 1;
-            g.LineColor = CustomGraphics.GrayColor;
+            g.DrawColor = CustomGraphics.LineColor;
             g.DrawLine(0, 0, BoundingBox.Width, 0);
             g.DrawLine(0, gridBottom, BoundingBox.Width, gridBottom);
             g.DrawLine(mFFTBoundingBox.X, 0, mFFTBoundingBox.X, BoundingBox.Height);
@@ -1035,7 +1035,7 @@ namespace Circuit {
             var x0 = 1.0f * mFFTBoundingBox.X;
             var x1 = x0;
             var y0 = 0.0f;
-            g.LineColor = Color.Red;
+            g.DrawColor = Color.Red;
             if (LogSpectrum) {
                 var ymult = -bottom / Mindb;
                 for (int i = 0; i < mScopePointCount / 2; i++) {
@@ -1205,12 +1205,6 @@ namespace Circuit {
                 t = mScopeText;
             }
             var textY = 8;
-            var bkColor = CustomGraphics.TextColor;
-            if (ControlPanel.ChkPrintable.Checked) {
-                CustomGraphics.TextColor = Color.FromArgb(191, 0, 0, 0);
-            } else {
-                CustomGraphics.TextColor = Color.FromArgb(63, 255, 255, 255);
-            }
             if (!string.IsNullOrEmpty(t)) {
                 g.DrawLeftText(t, 0, textY);
                 textY += 12;
@@ -1239,7 +1233,6 @@ namespace Circuit {
             if (ShowFreq) {
                 g.DrawLeftText(calcFrequency(), 0, textY);
             }
-            CustomGraphics.TextColor = bkColor;
         }
         #endregion
     }

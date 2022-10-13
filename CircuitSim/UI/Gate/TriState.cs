@@ -50,7 +50,7 @@ namespace Circuit.UI.Gate {
 
             draw2Leads();
 
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             g.DrawPolygon(mGatePoly);
             drawLead(mPost3, mLead3);
             ce.CurCount = updateDotCount(ce.Current, ce.CurCount);

@@ -172,12 +172,12 @@ namespace Circuit.UI.Custom {
                 p.curcount = updateDotCount(p.current, p.curcount);
                 drawDots(b, a, p.curcount);
                 if (p.bubble) {
-                    g.LineColor = Color.White;
+                    g.DrawColor = Color.White;
                     g.DrawCircle(p.bubblePos, 1);
-                    g.LineColor = CustomGraphics.GrayColor;
+                    g.DrawColor = CustomGraphics.LineColor;
                     g.DrawCircle(p.bubblePos, 3);
                 }
-                g.LineColor = p.selected ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+                g.DrawColor = p.selected ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
                 var bkSize = CustomGraphics.TextSize;
                 CustomGraphics.TextSize = 12 * csize;
                 while (true) {
@@ -196,7 +196,7 @@ namespace Circuit.UI.Custom {
                 }
                 CustomGraphics.TextSize = bkSize;
             }
-            g.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             g.DrawPolygon(rectPoints);
             if (clockPoints != null) {
                 g.DrawPolygon(clockPoints);

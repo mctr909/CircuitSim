@@ -54,7 +54,7 @@ namespace Circuit.UI.Input {
 
             g.DrawCircle(mCenter, BODY_LEN / 2);
             drawLead(mAshaft1, mAshaft2);
-            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, mArrow);
+            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mArrow);
 
             setBbox(mPost1, mPost2, BODY_LEN);
             doDots();

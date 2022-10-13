@@ -142,6 +142,7 @@ namespace Circuit {
 
             mMenuItems = new MenuItems(this);
             ControlPanel.Init();
+            CustomGraphics.SetColor(ControlPanel.ChkPrintable.Checked);
 
             KeyPreview = true;
             KeyDown += onKeyDown;
@@ -2066,20 +2067,8 @@ namespace Circuit {
             }
 
             if (ControlPanel.ChkPrintable.Checked) {
-                CustomGraphics.WhiteColor = Color.Gray;
-                CustomGraphics.GrayColor = Color.Black;
-                CustomGraphics.TextColor = Color.Black;
-                CustomGraphics.SelectColor = Color.Red;
-                CustomGraphics.PenHandle = Pens.Red.Brush;
-                CustomGraphics.PostColor = Color.Black;
                 g.Clear(Color.White);
             } else {
-                CustomGraphics.WhiteColor = Color.FromArgb(191, 191, 191);
-                CustomGraphics.GrayColor = Color.FromArgb(79, 79, 79);
-                CustomGraphics.TextColor = Color.FromArgb(147, 147, 147);
-                CustomGraphics.SelectColor = Color.Cyan;
-                CustomGraphics.PenHandle = Pens.Cyan.Brush;
-                CustomGraphics.PostColor = Color.Red;
                 g.Clear(Color.Black);
             }
 
@@ -2115,7 +2104,7 @@ namespace Circuit {
                 var pdfX1 = (int)PDF.Page.Width * 2;
                 var pdfY0 = 0;
                 var pdfY1 = (int)PDF.Page.Height * 2;
-                g.LineColor = Color.Yellow;
+                g.DrawColor = Color.Yellow;
                 g.DrawLine(pdfX0, pdfY0, pdfX1, pdfY0);
                 g.DrawLine(pdfX1, pdfY0, pdfX1, pdfY1);
                 g.DrawLine(pdfX1, pdfY1, pdfX0, pdfY1);
@@ -2174,7 +2163,7 @@ namespace Circuit {
                 }
 
                 if (0 < Mouse.SelectedArea.Width) {
-                    g.LineColor = CustomGraphics.SelectColor;
+                    g.DrawColor = CustomGraphics.SelectColor;
                     g.DrawRectangle(Mouse.SelectedArea);
                 }
 
@@ -2183,7 +2172,7 @@ namespace Circuit {
                     && MouseCursorX <= mCircuitArea.Width && MouseCursorY <= mCircuitArea.Height) {
                     int x = SnapGrid(inverseTransformX(MouseCursorX));
                     int y = SnapGrid(inverseTransformY(MouseCursorY));
-                    g.LineColor = Color.Gray;
+                    g.DrawColor = Color.Gray;
                     g.DrawLine(x, inverseTransformY(0), x, inverseTransformY(mCircuitArea.Height));
                     g.DrawLine(inverseTransformX(0), y, inverseTransformX(mCircuitArea.Width), y);
                 }
@@ -2200,7 +2189,7 @@ namespace Circuit {
 
             g.SetPlotBottom(0, mCircuitArea.Height - 2);
             {
-                g.LineColor = Mouse.IsOverSplitter ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+                g.DrawColor = Mouse.IsOverSplitter ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
                 g.DrawLine(0, -2, mCircuitArea.Width, -2);
                 g.DrawLine(0, 0, mCircuitArea.Width, 0);
             }

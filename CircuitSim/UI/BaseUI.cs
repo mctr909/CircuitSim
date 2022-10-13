@@ -289,12 +289,12 @@ namespace Circuit.UI {
         }
 
         protected void drawLead(Point a, Point b) {
-            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawLine(a, b);
         }
 
         protected void draw2Leads() {
-            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             /* draw first lead */
             Context.DrawLine(mPost1, mLead1);
             /* draw second lead */
@@ -320,7 +320,7 @@ namespace Circuit.UI {
                 pos += ds;
             }
             if (ControlPanel.ChkPrintable.Checked) {
-                Context.FillColor = CustomGraphics.GrayColor;
+                Context.FillColor = CustomGraphics.LineColor;
             } else {
                 Context.FillColor = Color.Yellow;
             }
@@ -426,7 +426,7 @@ namespace Circuit.UI {
                 return;
             }
             /* draw more loops for a longer coil */
-            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             var loopCt = (int)Math.Ceiling(coilLen / 11);
             var w = coilLen / loopCt;
             var th = (float)(Utils.Angle(a, b) * 180 / Math.PI);
@@ -443,7 +443,7 @@ namespace Circuit.UI {
                 return;
             }
             /* draw more loops for a longer coil */
-            Context.LineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor;
+            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             var loopCt = (int)Math.Ceiling(coilLen / 9);
             float w = coilLen / loopCt;
             if (Utils.Angle(a, b) < 0) {

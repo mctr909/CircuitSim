@@ -45,7 +45,7 @@ namespace Circuit.UI.Output {
             var ce = (ElmAmmeter)Elm;
 
             drawLead(mPost1, mPost2);
-            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.GrayColor, mArrowPoly);
+            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mArrowPoly);
             doDots();
             setBbox(mPost1, mPost2, 3);
             string s = "A";

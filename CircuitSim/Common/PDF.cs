@@ -22,7 +22,7 @@ class PDF {
         double mBoardOfsX;
         double mBoardOfsY;
 
-        public override Color LineColor {
+        public override Color DrawColor {
             set {
                 mSw.WriteLine("{0} {1} {2} RG",
                     (value.R / 255.0).ToString("0.##"),
