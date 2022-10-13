@@ -314,20 +314,19 @@ namespace Circuit.UI {
             var dx = b.X - a.X;
             var dy = b.Y - a.Y;
             var dr = Math.Sqrt(dx * dx + dy * dy);
-            int ds = CirSimForm.GRID_SIZE * 2;
-            pos %= ds;
+            pos %= CirSimForm.GRID_SIZE;
             if (pos < 0) {
-                pos += ds;
+                pos += CirSimForm.GRID_SIZE;
             }
             if (ControlPanel.ChkPrintable.Checked) {
                 Context.FillColor = CustomGraphics.LineColor;
             } else {
                 Context.FillColor = Color.Yellow;
             }
-            for (var di = pos; di < dr; di += ds) {
+            for (var di = pos; di < dr; di += CirSimForm.GRID_SIZE) {
                 var x0 = (int)(a.X + di * dx / dr);
                 var y0 = (int)(a.Y + di * dy / dr);
-                Context.FillCircle(x0, y0, 1.5f);
+                Context.FillCircle(x0, y0, 0.5f);
             }
         }
 
