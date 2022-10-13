@@ -168,7 +168,7 @@ namespace Circuit {
             mPenLine.DashStyle = DashStyle.Solid;
         }
 
-        public virtual void DrawCircle(Point p, float radius) {
+        public virtual void DrawCircle(PointF p, float radius) {
             mG.DrawArc(mPenLine, p.X - radius, p.Y - radius, radius * 2, radius * 2, 0, 360);
         }
 
