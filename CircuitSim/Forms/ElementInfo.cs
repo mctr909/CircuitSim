@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Circuit {
@@ -47,6 +48,7 @@ namespace Circuit {
             Textf = new TextBox() {
                 Text = val.ToString()
             };
+            Textf.Font = new Font("Arial", 9);
             Dimensionless = false;
         }
 
@@ -56,6 +58,7 @@ namespace Circuit {
             Textf = new TextBox() {
                 Text = val.ToString()
             };
+            Textf.Font = new Font("Arial", 9);
             Dimensionless = false;
         }
 
@@ -90,13 +93,15 @@ namespace Circuit {
                 TextArea = new TextBox() {
                     Multiline = true,
                     Height = 100,
-                    Width = 250,
+                    Width = 300,
                     ScrollBars = ScrollBars.Vertical,
                     Text = val
                 };
+                TextArea.Font = new Font("Arial", 9);
             } else {
                 Textf = new TextBox();
                 Textf.Text = val;
+                Textf.Font = new Font("Arial", 9);
             }
             Dimensionless = false;
         }
