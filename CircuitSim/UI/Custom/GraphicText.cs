@@ -37,17 +37,21 @@ namespace Circuit.UI.Custom {
         }
 
         public override void Draw(CustomGraphics g) {
-            var bkColor = CustomGraphics.TextColor;
-            var bkSize = CustomGraphics.TextSize;
+            var sizeBk = CustomGraphics.TextSize;
+            var colorBk = CustomGraphics.TextColor;
             CustomGraphics.TextSize = mSize;
             var size = g.GetTextSize(mText);
             DumpInfo.SetP2(
                 (int)(DumpInfo.P1.X + size.Width),
                 (int)(DumpInfo.P1.Y + size.Height)
             );
+            if (NeedsHighlight) {
+                CustomGraphics.TextColor = CustomGraphics.SelectColor;
+            }
             g.DrawLeftText(mText, DumpInfo.P1.X, (int)(DumpInfo.P1.Y + size.Height / 2));
             DumpInfo.SetBbox(DumpInfo.P1, DumpInfo.P2);
-            CustomGraphics.TextSize = bkSize;
+            CustomGraphics.TextSize = sizeBk;
+            CustomGraphics.TextColor = colorBk;
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {

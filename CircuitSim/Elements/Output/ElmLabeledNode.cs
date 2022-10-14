@@ -44,6 +44,12 @@ namespace Circuit.Elements.Output {
 
         public override int VoltageSourceCount { get { return 1; } }
 
+        public override double GetCurrentIntoNode(int n) { return -mCurrent; }
+
+        public static void ResetNodeList() {
+            mNodeList = new Dictionary<string, int>();
+        }
+
         // get connection node (which is the same as regular nodes for all elements but this one).
         // node 0 is the terminal, node 1 is the internal node shared by all nodes with same name
         public override int AnaGetConnectionNode(int n) {
@@ -52,10 +58,6 @@ namespace Circuit.Elements.Output {
             }
             return mNodeNumber;
         }
-
-        public override double GetCurrentIntoNode(int n) { return -mCurrent; }
-
-        public override void CirSetCurrent(int x, double c) { mCurrent = -c; }
 
         public override void AnaStamp() {
             Circuit.StampVoltageSource(mNodeNumber, Nodes[0], mVoltSource, 0);
@@ -70,8 +72,12 @@ namespace Circuit.Elements.Output {
             }
         }
 
-        public static void ResetNodeList() {
-            mNodeList = new Dictionary<string, int>();
+        public override void CirSetCurrent(int x, double c) { mCurrent = -c; }
+
+        public override void CirSetVoltage(int n, double c) {
+            if (n == 0) {
+                Volts[0] = c;
+            }
         }
     }
 }

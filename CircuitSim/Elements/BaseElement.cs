@@ -150,7 +150,7 @@
         public virtual void CirIterationFinished() { }
         public virtual void CirDoIteration() { }
         public virtual void CirSetCurrent(int vn, double c) { mCurrent = c; }
-        public virtual void CirSetVoltage(int xn, double c) { Volts[xn] = c; }
+        public virtual void CirSetVoltage(int n, double c) { Volts[n] = c; }
         #endregion
     }
 }

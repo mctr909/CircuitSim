@@ -10,6 +10,7 @@ using Circuit.Elements.Output;
 using Circuit.UI;
 using Circuit.UI.Passive;
 using Circuit.UI.Input;
+using System.Runtime.InteropServices;
 
 namespace Circuit {
     static class Circuit {
@@ -22,6 +23,8 @@ namespace Circuit {
             public bool LeftChanges;  /* row's left side changes */
             public bool DropRow;      /* row is not needed in matrix */
         }
+
+        const int SubIterMax = 1000;
 
         #region private varidate
         static Dictionary<Point, NodeMapEntry> mNodeMap;
@@ -736,17 +739,15 @@ namespace Circuit {
         }
 
         public static bool DoIteration() {
-            const int subiterCount = 256;
             int i, j, k, subiter;
             int elmCount = CirSimForm.ElmCount;
-            var elmList = CirSimForm.ElmList;
 
             for (i = 0; i != elmCount; i++) {
-                var ce = elmList[i].Elm;
+                var ce = CirSimForm.ElmList[i].Elm;
                 ce.CirPrepareIteration();
             }
 
-            for (subiter = 0; subiter != subiterCount; subiter++) {
+            for (subiter = 0; subiter != SubIterMax; subiter++) {
                 Converged = true;
                 SubIterations = subiter;
                 for (i = 0; i != mMatrixSize; i++) {
@@ -760,7 +761,7 @@ namespace Circuit {
                     }
                 }
                 for (i = 0; i != elmCount; i++) {
-                    var ce = elmList[i].Elm;
+                    var ce = CirSimForm.ElmList[i].Elm;
                     ce.CirDoIteration();
                 }
                 if (StopMessage != null) {
@@ -819,17 +820,13 @@ namespace Circuit {
                 }
             }
 
-            if (subiter > 5) {
-                Console.WriteLine("converged after " + subiter + " iterations\n");
-            }
-
-            if (subiter == subiterCount) {
-                stop("Convergence failed!");
+            if (subiter == SubIterMax) {
+                stop("計算が収束しませんでした");
                 return false;
             }
 
             for (i = 0; i != elmCount; i++) {
-                elmList[i].Elm.CirIterationFinished();
+                CirSimForm.ElmList[i].Elm.CirIterationFinished();
             }
 
             return true;

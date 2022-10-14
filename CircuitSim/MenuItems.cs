@@ -46,6 +46,7 @@ namespace Circuit {
         WIRE,
         GROUND,
         SWITCH,
+        SWITCH_PUSH_C,
         SWITCH_PUSH_NC,
         SWITCH_PUSH_NO,
         SWITCH_MULTI,
@@ -427,6 +428,7 @@ namespace Circuit {
             passMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(passMenuBar, "スイッチ", ELEMENTS.SWITCH);
             addElementItem(passMenuBar, "切り替えスイッチ", ELEMENTS.SWITCH_MULTI);
+            addElementItem(passMenuBar, "プッシュスイッチ(C接点)", ELEMENTS.SWITCH_PUSH_C);
             addElementItem(passMenuBar, "プッシュスイッチ(NC)", ELEMENTS.SWITCH_PUSH_NC);
             addElementItem(passMenuBar, "プッシュスイッチ(NO)", ELEMENTS.SWITCH_PUSH_NO);
             passMenuBar.DropDownItems.Add(new ToolStripSeparator());
@@ -576,6 +578,8 @@ namespace Circuit {
                 return new Ground(pos);
             case ELEMENTS.SWITCH:
                 return new Switch(pos);
+            case ELEMENTS.SWITCH_PUSH_C:
+                return new SwitchPushC(pos);
             case ELEMENTS.SWITCH_PUSH_NC:
                 return new SwitchPushNC(pos);
             case ELEMENTS.SWITCH_PUSH_NO:

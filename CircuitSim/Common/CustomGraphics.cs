@@ -47,7 +47,7 @@ namespace Circuit {
         }
         public static Color TextColor {
             get { return mTextColor; }
-            private set {
+            set {
                 var p = new Pen(value, 1.0f);
                 mTextBrush = p.Brush;
                 mTextColor = value;
