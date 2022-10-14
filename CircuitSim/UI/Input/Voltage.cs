@@ -27,7 +27,7 @@ namespace Circuit.UI.Input {
         Point mPs2;
         Point mTextPos;
 
-        protected Voltage(Point pos, ElmVoltage.WAVEFORM wf) : base(pos) {
+        public Voltage(Point pos, ElmVoltage.WAVEFORM wf) : base(pos) {
             Elm = new ElmVoltage(wf);
             DumpInfo.ReferenceName = "";
         }

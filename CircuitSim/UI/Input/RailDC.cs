@@ -4,12 +4,12 @@ using System.Drawing;
 using Circuit.Elements.Input;
 
 namespace Circuit.UI.Input {
-    class VoltageDC : Voltage {
-        public VoltageDC(Point pos) : base(pos, ElmVoltage.WAVEFORM.DC) { }
+    class RailDC : Rail {
+        public RailDC(Point pos) : base(pos, ElmVoltage.WAVEFORM.DC) { }
 
-        public VoltageDC(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) { }
+        public RailDC(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) { }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.DC; } }
+        public override DUMP_ID DumpType { get { return DUMP_ID.RAIL_DC; } }
 
         public override void GetInfo(string[] arr) {
             var elm = (ElmVoltage)Elm;

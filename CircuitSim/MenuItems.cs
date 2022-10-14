@@ -84,8 +84,10 @@ namespace Circuit {
         #endregion
 
         #region Inputs and Sources
+        VOLTAGE,
         VOLTAGE_DC,
         VOLTAGE_AC,
+        RAIL,
         RAIL_DC,
         RAIL_AC,
         CLOCK,
@@ -235,6 +237,10 @@ namespace Circuit {
         FULL_ADDER = 196,
         AM = 200,
         FM = 201,
+        DC,
+        AC,
+        RAIL_DC,
+        RAIL_AC,
         LABELED_NODE = 207,
         CUSTOM_LOGIC = 208,
         CAPACITOR_POLAR = 209,
@@ -464,10 +470,12 @@ namespace Circuit {
             inputMenuBar.Font = menuFont;
             addElementItem(inputMenuBar, "直流電圧源(2端子)", ELEMENTS.VOLTAGE_DC);
             addElementItem(inputMenuBar, "交流電圧源(2端子)", ELEMENTS.VOLTAGE_AC);
+            addElementItem(inputMenuBar, "パルス源(2端子)", ELEMENTS.VOLTAGE);
             addElementItem(inputMenuBar, "定電流源", ELEMENTS.CURRENT);
             inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(inputMenuBar, "直流電圧源(1端子)", ELEMENTS.RAIL_DC);
             addElementItem(inputMenuBar, "交流電圧源(1端子)", ELEMENTS.RAIL_AC);
+            addElementItem(inputMenuBar, "パルス源(1端子)", ELEMENTS.RAIL);
             inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(inputMenuBar, "クロック", ELEMENTS.CLOCK);
             addElementItem(inputMenuBar, "スイープ", ELEMENTS.SWEEP);
@@ -634,12 +642,16 @@ namespace Circuit {
                 return new VoltageDC(pos);
             case ELEMENTS.VOLTAGE_AC:
                 return new VoltageAC(pos);
+            case ELEMENTS.VOLTAGE:
+                return new Voltage(pos, Elements.Input.ElmVoltage.WAVEFORM.PULSE);
             case ELEMENTS.CURRENT:
                 return new Current(pos);
             case ELEMENTS.RAIL_DC:
-                return new Rail(pos);
+                return new RailDC(pos);
             case ELEMENTS.RAIL_AC:
                 return new RailAC(pos);
+            case ELEMENTS.RAIL:
+                return new Rail(pos, Elements.Input.ElmVoltage.WAVEFORM.PULSE);
             case ELEMENTS.CLOCK:
                 return new RailClock(pos);
             case ELEMENTS.SWEEP:
@@ -822,10 +834,18 @@ namespace Circuit {
             #region Inputs and Sources
             case DUMP_ID.VOLTAGE:
                 return new Voltage(p1, p2, f, st);
+            case DUMP_ID.DC:
+                return new VoltageDC(p1, p2, f, st);
+            case DUMP_ID.AC:
+                return new VoltageAC(p1, p2, f, st);
             case DUMP_ID.CURRENT:
                 return new Current(p1, p2, f, st);
             case DUMP_ID.RAIL:
                 return new Rail(p1, p2, f, st);
+            case DUMP_ID.RAIL_DC:
+                return new RailDC(p1, p2, f, st);
+            case DUMP_ID.RAIL_AC:
+                return new RailAC(p1, p2, f, st);
             case DUMP_ID.VCCS:
                 return new VCCS(p1, p2, f, st);
             case DUMP_ID.CCCS:

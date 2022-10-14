@@ -7,10 +7,6 @@ namespace Circuit.UI.Input {
     class Rail : Voltage {
         protected const int FLAG_CLOCK = 1;
 
-        public Rail(Point pos) : base(pos, ElmVoltage.WAVEFORM.DC) {
-            Elm = new ElmRail(ElmVoltage.WAVEFORM.DC);
-        }
-
         public Rail(Point pos, ElmVoltage.WAVEFORM wf) : base(pos, wf) {
             Elm = new ElmRail(wf);
         }

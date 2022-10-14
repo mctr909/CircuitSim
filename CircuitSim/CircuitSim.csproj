@@ -102,6 +102,7 @@
     <Compile Include="UI\Input\FM.cs" />
     <Compile Include="UI\Input\LogicInput.cs" />
     <Compile Include="Elements\Input\ElmLogicInput.cs" />
+    <Compile Include="UI\Input\RailDC.cs" />
     <Compile Include="UI\Input\RailNoise.cs" />
     <Compile Include="Elements\Input\ElmRail.cs" />
     <Compile Include="Elements\Input\ElmSweep.cs" />
