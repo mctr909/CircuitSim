@@ -1,6 +1,6 @@
 ﻿namespace Circuit.Elements.Passive {
     class ElmSwitchMulti : ElmSwitch {
-        public int ThrowCount = 1;
+        public int ThrowCount = 2;
 
         public override bool IsWire { get { return true; } }
 

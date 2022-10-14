@@ -46,7 +46,8 @@ namespace Circuit {
         WIRE,
         GROUND,
         SWITCH,
-        SWITCH_PUSH,
+        SWITCH_PUSH_NC,
+        SWITCH_PUSH_NO,
         SWITCH_MULTI,
         RESISTOR,
         POT,
@@ -425,8 +426,9 @@ namespace Circuit {
             addElementItem(passMenuBar, "トランス", ELEMENTS.TRANSFORMER);
             passMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(passMenuBar, "スイッチ", ELEMENTS.SWITCH);
-            addElementItem(passMenuBar, "プッシュスイッチ", ELEMENTS.SWITCH_PUSH);
             addElementItem(passMenuBar, "切り替えスイッチ", ELEMENTS.SWITCH_MULTI);
+            addElementItem(passMenuBar, "プッシュスイッチ(NC)", ELEMENTS.SWITCH_PUSH_NC);
+            addElementItem(passMenuBar, "プッシュスイッチ(NO)", ELEMENTS.SWITCH_PUSH_NO);
             passMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(passMenuBar, "水晶振動子", ELEMENTS.CRYSTAL);
             mainMenuBar.Items.Add(passMenuBar);
@@ -574,8 +576,10 @@ namespace Circuit {
                 return new Ground(pos);
             case ELEMENTS.SWITCH:
                 return new Switch(pos);
-            case ELEMENTS.SWITCH_PUSH:
-                return new SwitchPush(pos);
+            case ELEMENTS.SWITCH_PUSH_NC:
+                return new SwitchPushNC(pos);
+            case ELEMENTS.SWITCH_PUSH_NO:
+                return new SwitchPushNO(pos);
             case ELEMENTS.SWITCH_MULTI:
                 return new SwitchMulti(pos);
             case ELEMENTS.RESISTOR:

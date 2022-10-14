@@ -5,19 +5,16 @@ using Circuit.Elements.Passive;
 
 namespace Circuit.UI.Passive {
     class Switch : BaseUI {
-        const int OPEN_HS = 16;
-        const int BODY_LEN = 28;
+        const int OPEN_HS = 12;
+        const int BODY_LEN = 24;
 
         public Switch(Point pos, int dummy) : base(pos) { }
 
-        public Switch(Point pos) : base(pos) {
-            Elm = new ElmSwitch();
-        }
-
-        public Switch(Point pos, bool mm) : base(pos) {
+        public Switch(Point pos, bool momentary = false, bool isNo = false) : base(pos) {
             var elm = new ElmSwitch();
             Elm = elm;
-            elm.Momentary = mm;
+            elm.Momentary = momentary;
+            elm.Position = isNo ? 1 : 0;
         }
 
         public Switch(Point p1, Point p2, int f) : base(p1, p2, f) { }
@@ -49,7 +46,7 @@ namespace Circuit.UI.Passive {
             }
         }
 
-        public virtual void Toggle() {
+        public void Toggle() {
             var ce = (ElmSwitch)Elm;
             ce.Position++;
             if (ce.PosCount <= ce.Position) {
@@ -58,11 +55,25 @@ namespace Circuit.UI.Passive {
             if (ce.Link != 0) {
                 int i;
                 for (i = 0; i != CirSimForm.ElmCount; i++) {
-                    var o = CirSimForm.GetElm(i).Elm;
-                    if (o is ElmSwitch) {
-                        var s2 = (ElmSwitch)o;
-                        if (s2.Link == ce.Link) {
-                            s2.Position = ce.Position;
+                    var ui2 = CirSimForm.GetElm(i);
+                    if (ui2 == this) {
+                        continue;
+                    }
+                    if (this is SwitchMulti) {
+                        if (ui2 is SwitchMulti) {
+                            var s2 = (ElmSwitchMulti)ui2.Elm;
+                            if (s2.Link == ce.Link) {
+                                if (ce.Position < s2.ThrowCount) {
+                                    s2.Position = ce.Position;
+                                }
+                            }
+                        }
+                    } else {
+                        if (ui2.Elm is ElmSwitch) {
+                            var s2 = (ElmSwitch)ui2.Elm;
+                            if (s2.Link == ce.Link) {
+                                s2.Position = s2.Position == 0 ? 1 : 0;
+                            }
                         }
                     }
                 }
@@ -106,7 +117,7 @@ namespace Circuit.UI.Passive {
 
         public override void GetInfo(string[] arr) {
             var ce = (ElmSwitch)Elm;
-            arr[0] = (ce.Momentary) ? "push switch (SPST)" : "switch (SPST)";
+            arr[0] = (ce.Momentary) ? "push switch" : "switch";
             if (ce.Position == 1) {
                 arr[1] = "open";
                 arr[2] = "Vd = " + Utils.VoltageAbsText(ce.VoltageDiff);
@@ -123,9 +134,6 @@ namespace Circuit.UI.Passive {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("モーメンタリ", ce.Momentary);
-            }
-            if (r == 1) {
                 return new ElementInfo("連動グループ", ce.Link, 0, 100).SetDimensionless();
             }
             return null;
@@ -134,9 +142,6 @@ namespace Circuit.UI.Passive {
         public override void SetElementValue(int n, int c, ElementInfo ei) {
             var ce = (ElmSwitch)Elm;
             if (n == 0) {
-                ce.Momentary = ei.CheckBox.Checked;
-            }
-            if (n == 1) {
                 ce.Link = (int)ei.Value;
             }
         }

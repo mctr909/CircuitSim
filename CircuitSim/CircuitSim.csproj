@@ -136,7 +136,8 @@
     <Compile Include="UI\Passive\CapacitorPolar.cs" />
     <Compile Include="Elements\Passive\ElmPot.cs" />
     <Compile Include="UI\Passive\Pot.cs" />
-    <Compile Include="UI\Passive\SwitchPush.cs" />
+    <Compile Include="UI\Passive\SwitchPushNO.cs" />
+    <Compile Include="UI\Passive\SwitchPushNC.cs" />
     <Compile Include="Elements\Passive\ElmResistor.cs" />
     <Compile Include="UI\Input\RailAC.cs" />
     <Compile Include="UI\Input\VoltageAC.cs" />

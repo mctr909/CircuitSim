@@ -6,7 +6,7 @@ using Circuit.Elements.Passive;
 namespace Circuit.UI.Passive {
     class SwitchMulti : Switch {
         const int OPEN_HS = 8;
-        const int BODY_LEN = 28;
+        const int BODY_LEN = 24;
 
         Point[] mSwPosts;
         Point[] mSwPoles;
@@ -48,23 +48,6 @@ namespace Circuit.UI.Passive {
             var s0 = new Rectangle(mSwPoles[0].X, mSwPoles[0].Y, 0, 0);
             var s1 = new Rectangle(mSwPoles[ce.ThrowCount - 1].X, mSwPoles[ce.ThrowCount - 1].Y, 0, 0);
             return Rectangle.Union(l1, Rectangle.Union(s0, s1));
-        }
-
-        public override void Toggle() {
-            base.Toggle();
-            var ce = (ElmSwitchMulti)Elm;
-            if (ce.Link != 0) {
-                int i;
-                for (i = 0; i != CirSimForm.ElmCount; i++) {
-                    var o = CirSimForm.GetElm(i).Elm;
-                    if (o is ElmSwitchMulti) {
-                        var s2 = (ElmSwitchMulti)o;
-                        if (s2.Link == ce.Link) {
-                            s2.Position = ce.Position;
-                        }
-                    }
-                }
-            }
         }
 
         public override void SetPoints() {
@@ -126,7 +109,7 @@ namespace Circuit.UI.Passive {
             if (c != 0) {
                 return null;
             }
-            if (r == 2) {
+            if (r == 1) {
                 return new ElementInfo("分岐数", ce.ThrowCount, 2, 10).SetDimensionless();
             }
             return base.GetElementInfo(r, c);
@@ -134,13 +117,11 @@ namespace Circuit.UI.Passive {
 
         public override void SetElementValue(int n, int c, ElementInfo ei) {
             var ce = (ElmSwitchMulti)Elm;
-            if (n == 2) {
-                if (ei.Value >= 2) {
-                    ce.ThrowCount = (int)ei.Value;
+            if (n == 1) {
+                if (ei.Value < 2) {
+                    ei.Value = 2;
                 }
-                if (ce.ThrowCount > 2) {
-                    ce.Momentary = false;
-                }
+                ce.ThrowCount = (int)ei.Value;
                 ce.AllocNodes();
                 SetPoints();
             } else {
