@@ -30,10 +30,10 @@ namespace Circuit.UI.Input {
                     return new ElementInfo("名前", DumpInfo.ReferenceName);
                 }
                 if (r == 1) {
-                    return new ElementInfo(VALUE_NAME_V, elm.MaxVoltage, -20, 20);
+                    return new ElementInfo(VALUE_NAME_V, elm.MaxVoltage);
                 }
                 if (r == 2) {
-                    return new ElementInfo(VALUE_NAME_BIAS, elm.Bias, -20, 20);
+                    return new ElementInfo(VALUE_NAME_BIAS, elm.Bias);
                 }
             }
             if (c == 1) {
@@ -41,7 +41,7 @@ namespace Circuit.UI.Input {
                     return new ElementInfo();
                 }
                 if (r == 2) {
-                    return new ElementInfo("連動グループ", elm.LinkBias);
+                    return new ElementInfo("連動グループ", elm.LinkBias, true);
                 }
             }
             return null;

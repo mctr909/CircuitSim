@@ -49,11 +49,10 @@ namespace Circuit.UI.Input {
             if (r == 0) {
                 var ei = new ElementInfo("Output Function");
                 ei.Text = ce.ExprString;
-                ei.DisallowSliders();
                 return ei;
             }
             if (r == 1) {
-                return new ElementInfo("入力数", ce.InputCount, 1, 8).SetDimensionless();
+                return new ElementInfo("入力数", ce.InputCount);
             }
             return null;
         }

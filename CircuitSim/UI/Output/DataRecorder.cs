@@ -54,7 +54,7 @@ namespace Circuit.UI.Output {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("サンプル数", ce.DataCount).SetDimensionless();
+                return new ElementInfo("サンプル数", ce.DataCount);
             }
             if (r == 1) {
                 return new ElementInfo("列名", mName);

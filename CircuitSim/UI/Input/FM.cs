@@ -74,16 +74,16 @@ namespace Circuit.UI.Input {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("振幅(V)", ce.MaxVoltage, -20, 20);
+                return new ElementInfo("振幅(V)", ce.MaxVoltage);
             }
             if (r == 1) {
-                return new ElementInfo("搬送波周波数(Hz)", ce.CarrierFreq, 4, 500);
+                return new ElementInfo("搬送波周波数(Hz)", ce.CarrierFreq);
             }
             if (r == 2) {
-                return new ElementInfo("信号周波数(Hz)", ce.Signalfreq, 4, 500);
+                return new ElementInfo("信号周波数(Hz)", ce.Signalfreq);
             }
             if (r == 3) {
-                return new ElementInfo("周波数偏移(Hz)", ce.Deviation, 4, 500);
+                return new ElementInfo("周波数偏移(Hz)", ce.Deviation);
             }
             return null;
         }

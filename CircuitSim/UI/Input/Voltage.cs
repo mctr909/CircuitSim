@@ -296,41 +296,41 @@ namespace Circuit.UI.Input {
                     return new ElementInfo("名前", DumpInfo.ReferenceName);
                 }
                 if (r == 2) {
-                    return new ElementInfo(elm.WaveForm == ElmVoltage.WAVEFORM.DC ? VALUE_NAME_V : VALUE_NAME_AMP, elm.MaxVoltage, -20, 20);
+                    return new ElementInfo(elm.WaveForm == ElmVoltage.WAVEFORM.DC ? VALUE_NAME_V : VALUE_NAME_AMP, elm.MaxVoltage);
                 }
                 if (r == 3) {
-                    return new ElementInfo(VALUE_NAME_BIAS, elm.Bias, -20, 20);
+                    return new ElementInfo(VALUE_NAME_BIAS, elm.Bias);
                 }
                 if (r == 4) {
                     if (elm.WaveForm == ElmVoltage.WAVEFORM.DC || elm.WaveForm == ElmVoltage.WAVEFORM.NOISE) {
                         return null;
                     } else {
-                        return new ElementInfo(VALUE_NAME_HZ, elm.Frequency, 4, 500);
+                        return new ElementInfo(VALUE_NAME_HZ, elm.Frequency);
                     }
                 }
                 if (r == 5) {
-                    return new ElementInfo(VALUE_NAME_PHASE, double.Parse((elm.Phase * 180 / Math.PI).ToString("0.00")), -180, 180).SetDimensionless();
+                    return new ElementInfo(VALUE_NAME_PHASE, double.Parse((elm.Phase * 180 / Math.PI).ToString("0.00")));
                 }
                 if (r == 6) {
-                    return new ElementInfo(VALUE_NAME_PHASE_OFS, double.Parse((elm.PhaseOffset * 180 / Math.PI).ToString("0.00")), -180, 180).SetDimensionless();
+                    return new ElementInfo(VALUE_NAME_PHASE_OFS, double.Parse((elm.PhaseOffset * 180 / Math.PI).ToString("0.00")));
                 }
                 if (r == 7 && (elm.WaveForm == ElmVoltage.WAVEFORM.PULSE
                     || elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_BOTH
                     || elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE
                     || elm.WaveForm == ElmVoltage.WAVEFORM.PWM
                     || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_BOTH)) {
-                    return new ElementInfo(VALUE_NAME_DUTY, elm.DutyCycle * 100, 0, 100).SetDimensionless();
+                    return new ElementInfo(VALUE_NAME_DUTY, elm.DutyCycle * 100);
                 }
             }
             if (c == 1) {
                 if (r == 3) {
-                    return new ElementInfo("連動グループ", elm.LinkBias);
+                    return new ElementInfo("連動グループ", elm.LinkBias, true);
                 }
                 if (r == 4) {
-                    return new ElementInfo("連動グループ", elm.LinkFrequency);
+                    return new ElementInfo("連動グループ", elm.LinkFrequency, true);
                 }
                 if (r == 6) {
-                    return new ElementInfo("連動グループ", elm.LinkPhaseOffset);
+                    return new ElementInfo("連動グループ", elm.LinkPhaseOffset, true);
                 }
                 if (r < 7) {
                     return new ElementInfo();

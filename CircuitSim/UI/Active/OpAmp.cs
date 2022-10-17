@@ -127,13 +127,13 @@ namespace Circuit.UI.Active {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("+電源(V)", ce.MaxOut, 1, 20);
+                return new ElementInfo("+電源(V)", ce.MaxOut);
             }
             if (r == 1) {
-                return new ElementInfo("-電源(V)", ce.MinOut, -20, 0);
+                return new ElementInfo("-電源(V)", ce.MinOut);
             }
             if (r == 2) {
-                return new ElementInfo("ゲイン(db)", 20 * Math.Log10(ce.Gain), 10, 1000000);
+                return new ElementInfo("ゲイン(db)", 20 * Math.Log10(ce.Gain));
             }
             return null;
         }

@@ -70,10 +70,10 @@ namespace Circuit.UI.Input {
                 return new ElementInfo("モーメンタリ", ce.Momentary);
             }
             if (r == 1) {
-                return new ElementInfo("H電圧(V)", ((ElmLogicInput)Elm).mHiV, 10, -10);
+                return new ElementInfo("H電圧(V)", ((ElmLogicInput)Elm).mHiV);
             }
             if (r == 2) {
-                return new ElementInfo("L電圧(V)", ((ElmLogicInput)Elm).mLoV, 10, -10);
+                return new ElementInfo("L電圧(V)", ((ElmLogicInput)Elm).mLoV);
             }
             if (r == 3) {
                 return new ElementInfo("数値表示", isNumeric);

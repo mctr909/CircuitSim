@@ -193,7 +193,7 @@ namespace Circuit.UI.Active {
                 return new ElementInfo("名前", DumpInfo.ReferenceName);
             }
             if (r == 1) {
-                return new ElementInfo("hfe", ((ElmTransistor)Elm).Hfe, 10, 1000).SetDimensionless();
+                return new ElementInfo("hfe", ((ElmTransistor)Elm).Hfe);
             }
             if (r == 2) {
                 return new ElementInfo("エミッタ/コレクタ 入れ替え", (DumpInfo.Flags & FLAG_FLIP) != 0);

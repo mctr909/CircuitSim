@@ -110,10 +110,6 @@ namespace Circuit {
         }
 
         public static string UnitString(ElementInfo ei, double v) {
-            double va = Math.Abs(v);
-            if (ei != null && ei.Dimensionless) {
-                return v.ToString();
-            }
             return Utils.UnitText(v);
         }
 
@@ -282,14 +278,12 @@ namespace Circuit {
                         itemStateChanged(s);
                     });
                     insertCtrl(mPnlCustomCtrl, ei.Name, ei.Button);
-                } else if (ei.TextArea != null) {
-                    insertCtrl(mPnlCustomCtrl, ei.Name, ei.TextArea);
-                    mCloseOnEnter = false;
                 } else if (ei.Textf != null) {
                     insertCtrl(mPnlCustomCtrl, ei.Name, ei.Textf);
                     if (ei.Text == null) {
                         ei.Textf.Text = unitString(ei);
                     }
+                    mCloseOnEnter = false;
                 } else {
                     mOfsY += 37;
                     continue;

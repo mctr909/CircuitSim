@@ -74,7 +74,7 @@ namespace Circuit.UI.Active {
                 return null;
             }
             if (r == 2) {
-                return new ElementInfo("静電容量(F) @ 0V", ce.mBaseCapacitance, 10, 1000);
+                return new ElementInfo("静電容量(F) @ 0V", ce.mBaseCapacitance);
             }
             return base.GetElementInfo(r, c);
         }

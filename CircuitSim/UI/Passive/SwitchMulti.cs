@@ -110,7 +110,7 @@ namespace Circuit.UI.Passive {
                 return null;
             }
             if (r == 1) {
-                return new ElementInfo("分岐数", ce.ThrowCount, 2, 10).SetDimensionless();
+                return new ElementInfo("分岐数", ce.ThrowCount);
             }
             return base.GetElementInfo(r, c);
         }

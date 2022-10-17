@@ -140,10 +140,10 @@ namespace Circuit.UI.Gate {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("入力数", ce.InputCount, 1, 8).SetDimensionless();
+                return new ElementInfo("入力数", ce.InputCount);
             }
             if (r == 1) {
-                return new ElementInfo("閾値(V)", ce.HighVoltage, 1, 10);
+                return new ElementInfo("閾値(V)", ce.HighVoltage);
             }
             if (r == 2) {
                 return new ElementInfo("シュミットトリガー", ce.HasSchmittInputs);

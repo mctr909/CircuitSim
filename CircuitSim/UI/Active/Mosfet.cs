@@ -262,10 +262,10 @@ namespace Circuit.UI.Active {
                 return new ElementInfo("名前", DumpInfo.ReferenceName);
             }
             if (r == 1) {
-                return new ElementInfo("閾値電圧", ce.Pnp * ce.Vt, 0.01, 5);
+                return new ElementInfo("閾値電圧", ce.Pnp * ce.Vt);
             }
             if (r == 2) {
-                return new ElementInfo("hfe", ce.Hfe, 0.01, 5);
+                return new ElementInfo("hfe", ce.Hfe);
             }
             if (r == 3) {
                 return new ElementInfo("バルク表示", ShowBulk);

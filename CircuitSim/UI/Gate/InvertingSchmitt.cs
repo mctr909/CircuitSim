@@ -84,11 +84,11 @@ namespace Circuit.UI.Gate {
             }
             if (r == 0) {
                 dlt = ce.LowerTrigger;
-                return new ElementInfo("Lower threshold (V)", ce.LowerTrigger, 0.01, 5);
+                return new ElementInfo("Lower threshold (V)", ce.LowerTrigger);
             }
             if (r == 1) {
                 dut = ce.UpperTrigger;
-                return new ElementInfo("Upper threshold (V)", ce.UpperTrigger, 0.01, 5);
+                return new ElementInfo("Upper threshold (V)", ce.UpperTrigger);
             }
             if (r == 2) {
                 return new ElementInfo("Slew Rate (V/ns)", ce.SlewRate);

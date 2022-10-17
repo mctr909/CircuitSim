@@ -78,7 +78,7 @@ namespace Circuit.UI.Gate {
                 return new ElementInfo("Slew Rate (V/ns)", ce.SlewRate);
             }
             if (r == 1) {
-                return new ElementInfo("High Voltage (V)", ce.HighVoltage, 1, 10);
+                return new ElementInfo("High Voltage (V)", ce.HighVoltage);
             }
             return null;
         }

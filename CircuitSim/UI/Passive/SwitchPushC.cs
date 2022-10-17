@@ -15,7 +15,7 @@ namespace Circuit.UI.Passive {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("連動グループ", ce.Link, 0, 100).SetDimensionless();
+                return new ElementInfo("連動グループ", ce.Link, true);
             }
             return null;
         }

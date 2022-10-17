@@ -119,16 +119,16 @@ namespace Circuit.UI.Active {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("赤(0～1)", mColorR, 0, 1).SetDimensionless();
+                return new ElementInfo("赤(0～1)", mColorR);
             }
             if (r == 1) {
-                return new ElementInfo("緑(0～1)", mColorG, 0, 1).SetDimensionless();
+                return new ElementInfo("緑(0～1)", mColorG);
             }
             if (r == 2) {
-                return new ElementInfo("青(0～1)", mColorB, 0, 1).SetDimensionless();
+                return new ElementInfo("青(0～1)", mColorB);
             }
             if (r == 3) {
-                return new ElementInfo("最大輝度電流(A)", mMaxBrightnessCurrent, 0, 0.1);
+                return new ElementInfo("最大輝度電流(A)", mMaxBrightnessCurrent);
             }
             return base.GetElementInfo(r - 4, c);
         }

@@ -66,7 +66,7 @@ namespace Circuit.UI.Output {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("閾値(V)", ce.mThreshold, 10, -10);
+                return new ElementInfo("閾値(V)", ce.mThreshold);
             }
             if (r == 1) {
                 return new ElementInfo("プルダウン", needsPullDown);

@@ -62,14 +62,14 @@ namespace Circuit.UI.Custom {
                 return new ElementInfo("テキスト", mText, true);
             }
             if (r == 1) {
-                return new ElementInfo("サイズ", mSize, 7, 24);
+                return new ElementInfo("サイズ", mSize, true);
             }
             return null;
         }
 
         public override void SetElementValue(int n, int c, ElementInfo ei) {
             if (n == 0) {
-                mText = ei.TextArea.Text;
+                mText = ei.Textf.Text;
             }
             if (n == 1) {
                 mSize = (int)ei.Value;
