@@ -18,7 +18,7 @@ namespace Circuit {
         static readonly StringFormat mAlignCenterV = new StringFormat() {
             Alignment = StringAlignment.Center,
             LineAlignment = StringAlignment.Near,
-            FormatFlags = StringFormatFlags.DirectionVertical,
+            FormatFlags = StringFormatFlags.DirectionVertical
         };
 
         protected static Font mTextFontL = new Font("Arial", 11.0f);

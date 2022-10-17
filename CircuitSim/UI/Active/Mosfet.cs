@@ -141,13 +141,13 @@ namespace Circuit.UI.Active {
 
         void setTextPos() {
             if (mVertical) {
+                mNamePos = new Point(mPost2.X, mPost2.Y + HS * mDsign * 2 / 3);
+            } else if (mHorizontal) {
                 if (0 < mDsign) {
                     mNamePos = new Point(mPost2.X - 1, mPost2.Y);
                 } else {
                     mNamePos = new Point(mPost2.X - 16, mPost2.Y);
                 }
-            } else if (mPost1.X == mPost2.X) {
-                mNamePos = new Point(mPost2.X, mPost2.Y + HS * mDsign * 2 / 3);
             } else {
                 interpPoint(ref mNamePos, 0.5, 10 * mDsign);
             }
@@ -218,9 +218,9 @@ namespace Circuit.UI.Active {
 
             if (ControlPanel.ChkShowName.Checked) {
                 if (mVertical) {
-                    g.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
-                } else {
                     g.DrawCenteredText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
+                } else {
+                    g.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
                 }
             }
         }
