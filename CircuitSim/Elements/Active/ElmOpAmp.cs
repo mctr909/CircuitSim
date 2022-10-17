@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Circuit.Elements.Active {
+﻿namespace Circuit.Elements.Active {
     class ElmOpAmp : BaseElement {
         public const int V_N = 0;
         public const int V_P = 1;
@@ -11,16 +9,6 @@ namespace Circuit.Elements.Active {
         public double Gain = 100000;
 
         double mLastVd;
-
-        public ElmOpAmp() : base() { }
-
-        public ElmOpAmp(double max, double min, double gain, double vn, double vp) : base() {
-            MaxOut = max;
-            MinOut = min;
-            Gain = gain;
-            Volts[V_N] = vn;
-            Volts[V_P] = vp;
-        }
 
         public override double VoltageDiff { get { return Volts[V_O] - Volts[V_P]; } }
 
@@ -93,6 +81,5 @@ namespace Circuit.Elements.Active {
 
             mLastVd = vd;
         }
-
     }
 }

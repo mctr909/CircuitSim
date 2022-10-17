@@ -67,11 +67,9 @@ namespace Circuit.UI.Active {
         }
 
         protected void setTextPos() {
-            mNameV = mPost1.X == mPost2.X;
-            mNameH = mPost1.Y == mPost2.Y;
-            if (mNameH) {
+            if (mHorizontal) {
                 interpPoint(ref mNamePos, 0.5, 13 * mDsign);
-            } else if (mNameV) {
+            } else if (mVertical) {
                 interpPoint(ref mNamePos, 0.5, -22 * mDsign);
             } else {
                 interpPoint(ref mNamePos, 0.5, -10 * mDsign);

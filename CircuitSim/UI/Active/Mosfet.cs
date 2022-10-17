@@ -140,8 +140,7 @@ namespace Circuit.UI.Active {
         }
 
         void setTextPos() {
-            mNameV = mPost1.Y == mPost2.Y;
-            if (mNameV) {
+            if (mVertical) {
                 if (0 < mDsign) {
                     mNamePos = new Point(mPost2.X - 1, mPost2.Y);
                 } else {
@@ -162,11 +161,15 @@ namespace Circuit.UI.Active {
 
             setBbox(mPost1, mPost2, HS);
 
+            var ce = (ElmMosfet)Elm;
+
             /* draw source/drain terminals */
             drawLead(mSrc[0], mSrc[1]);
             drawLead(mDrn[0], mDrn[1]);
 
-            var ce = (ElmMosfet)Elm;
+            /* draw little extensions of that line */
+            drawLead(mSrc[1], mSrc[2]);
+            drawLead(mDrn[1], mDrn[2]);
 
             /* draw line connecting source and drain */
             bool enhancement = ce.Vt > 0 && ShowBulk;
@@ -176,10 +179,6 @@ namespace Circuit.UI.Active {
                 }
                 drawLead(mPs1[i], mPs2[i]);
             }
-
-            /* draw little extensions of that line */
-            drawLead(mSrc[1], mSrc[2]);
-            drawLead(mDrn[1], mDrn[2]);
 
             /* draw bulk connection */
             if (ShowBulk) {
@@ -218,7 +217,7 @@ namespace Circuit.UI.Active {
             drawPosts();
 
             if (ControlPanel.ChkShowName.Checked) {
-                if (mNameV) {
+                if (mVertical) {
                     g.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
                 } else {
                     g.DrawCenteredText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);

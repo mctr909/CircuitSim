@@ -27,25 +27,13 @@ namespace Circuit.UI.Active {
         }
 
         public OpAmp(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            double maxOut;
-            double minOut;
-            double gain;
-            double vn;
-            double vp;
-            try {
-                maxOut = st.nextTokenDouble();
-                minOut = st.nextTokenDouble();
-                gain = st.nextTokenDouble();
-                vn = st.nextTokenDouble();
-                vp = st.nextTokenDouble();
-            } catch {
-                maxOut = 15;
-                minOut = -15;
-                vn = 0.0;
-                vp = 0.0;
-                gain = 1000.0;
-            }
-            Elm = new ElmOpAmp(maxOut, minOut, vn, vp, gain);
+            var elm = new ElmOpAmp();
+            Elm = elm;
+            elm.MaxOut = st.nextTokenDouble();
+            elm.MinOut = st.nextTokenDouble();
+            elm.Gain = st.nextTokenDouble();
+            elm.Volts[ElmOpAmp.V_N] = st.nextTokenDouble();
+            elm.Volts[ElmOpAmp.V_P] = st.nextTokenDouble();
             mNoDiagonal = true;
             DumpInfo.Flags |= FLAG_SMALL;
             setGain();

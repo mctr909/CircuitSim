@@ -32,8 +32,7 @@ namespace Circuit.UI.Output {
             base.SetPoints();
             interpPoint(ref mMid, 0.5 + 4 / mLen);
             Utils.CreateArrow(mPost1, mMid, out mArrowPoly, 9, 5);
-            mNameV = mPost1.X == mPost2.X;
-            if (mNameV) {
+            if (mVertical) {
                 interpPoint(ref mTextPos, 0.5, -21 * mDsign);
             } else {
                 interpPoint(ref mTextPos, 0.5, 12 * mDsign);
@@ -57,7 +56,7 @@ namespace Circuit.UI.Output {
                 s = Utils.UnitTextWithScale(ce.RmsI, "A(rms)", ce.Scale);
                 break;
             }
-            if (mNameV) {
+            if (mVertical) {
                 g.DrawCenteredVText(s, mTextPos.X, mTextPos.Y);
             } else {
                 g.DrawCenteredText(s, mTextPos.X, mTextPos.Y);

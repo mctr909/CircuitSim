@@ -9,6 +9,7 @@ namespace Circuit.UI.Active {
 
         const int BODY_LEN = 16;
         const int HS = 16;
+        const int BASE_THICK = 2;
 
         double mCurCountC;
         double mCurCountE;
@@ -79,14 +80,18 @@ namespace Circuit.UI.Active {
 
             /* calc rectangle edges */
             var rect = new Point[4];
-            interpPointAB(ref rect[0], ref rect[1], 1 - (BODY_LEN - 1) / mLen, HS);
-            interpPointAB(ref rect[2], ref rect[3], 1 - (BODY_LEN - 3) / mLen, HS);
+            interpPointAB(ref rect[0], ref rect[1], 1 - BODY_LEN / mLen, HS);
+            interpPointAB(ref rect[2], ref rect[3], 1 - (BODY_LEN - BASE_THICK) / mLen, HS);
 
             /* calc points where collector/emitter leads contact rectangle */
-            interpPointAB(ref mColl[1], ref mEmit[1], 1 - (BODY_LEN - 3) / mLen, 6 * mDsign * ce.NPN);
+            interpPointAB(ref mColl[1], ref mEmit[1], 1 - (BODY_LEN - BASE_THICK) / mLen, 6 * mDsign * ce.NPN);
 
             /* calc point where base lead contacts rectangle */
-            interpPoint(ref mTbase, 1 - (BODY_LEN - 1) / mLen);
+            if (mDsign < 0) {
+                interpPoint(ref mTbase, 1 - (BODY_LEN - BASE_THICK + 1) / mLen);
+            } else {
+                interpPoint(ref mTbase, 1 - BODY_LEN / mLen);
+            }
 
             /* rectangle */
             mRectPoly = new Point[] { rect[0], rect[2], rect[3], rect[1] };
@@ -96,7 +101,7 @@ namespace Circuit.UI.Active {
                 Utils.CreateArrow(mEmit[1], mEmit[0], out mArrowPoly, 8, 3);
             } else {
                 var pt = new Point();
-                interpPoint(ref pt, 1 - (BODY_LEN - 2) / mLen, -5 * mDsign * ce.NPN);
+                interpPoint(ref pt, 1 - BODY_LEN / mLen, -5 * mDsign * ce.NPN);
                 Utils.CreateArrow(mEmit[0], pt, out mArrowPoly, 8, 3);
             }
 
@@ -106,8 +111,7 @@ namespace Circuit.UI.Active {
         void setTextPos() {
             var txtW = Context.GetTextSize(DumpInfo.ReferenceName).Width;
             var swap = 0 < (DumpInfo.Flags & FLAG_FLIP) ? -1 : 1;
-            mNameV = mPost1.Y == mPost2.Y;
-            if (mNameV) {
+            if (mVertical) {
                 if (0 < mDsign * swap) {
                     mNamePos = new Point(mPost2.X - 1, mPost2.Y);
                 } else {
@@ -147,7 +151,7 @@ namespace Circuit.UI.Active {
             drawPosts();
 
             if (ControlPanel.ChkShowName.Checked) {
-                if (mNameV) {
+                if (mVertical) {
                     g.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
                 } else {
                     g.DrawCenteredText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);

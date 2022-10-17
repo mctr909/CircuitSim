@@ -95,8 +95,8 @@ namespace Circuit.UI {
         protected Point mLead1;
         protected Point mLead2;
 
-        protected bool mNameV;
-        protected bool mNameH;
+        protected bool mVertical;
+        protected bool mHorizontal;
         protected Point mNamePos;
         protected Point mValuePos;
 
@@ -397,9 +397,9 @@ namespace Circuit.UI {
         protected void drawValue(double value) {
             if (ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.UnitText(value);
-                if (mNameV) {
+                if (mVertical) {
                     Context.DrawCenteredVText(s, mValuePos.X, mValuePos.Y);
-                } else if (mNameH) {
+                } else if (mHorizontal) {
                     Context.DrawCenteredText(s, mValuePos.X, mValuePos.Y);
                 } else {
                     Context.DrawLeftText(s, mValuePos.X, mValuePos.Y);
@@ -409,9 +409,9 @@ namespace Circuit.UI {
 
         protected void drawName() {
             if (ControlPanel.ChkShowName.Checked) {
-                if (mNameV) {
+                if (mVertical) {
                     Context.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
-                } else if(mNameH) {
+                } else if(mHorizontal) {
                     Context.DrawCenteredText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
                 } else {
                     Context.DrawRightText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
@@ -624,6 +624,8 @@ namespace Circuit.UI {
             mDsign = (mDiff.Y == 0) ? Math.Sign(mDiff.X) : Math.Sign(mDiff.Y);
             mPost1 = new Point(DumpInfo.P1.X, DumpInfo.P1.Y);
             mPost2 = new Point(DumpInfo.P2.X, DumpInfo.P2.Y);
+            mVertical = mPost1.X == mPost2.X;
+            mHorizontal = mPost1.Y == mPost2.Y;
         }
 
         public virtual void SetMouseElm(bool v) {

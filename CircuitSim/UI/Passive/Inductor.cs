@@ -42,12 +42,10 @@ namespace Circuit.UI.Passive {
         }
 
         void setTextPos() {
-            mNameV = mPost1.X == mPost2.X;
-            mNameH = mPost1.Y == mPost2.Y;
-            if (mNameH) {
+            if (mHorizontal) {
                 interpPoint(ref mValuePos, 0.5, -11 * mDsign);
                 interpPoint(ref mNamePos, 0.5, 10 * mDsign);
-            } else if (mNameV) {
+            } else if (mVertical) {
                 interpPoint(ref mValuePos, 0.5, mDsign);
                 interpPoint(ref mNamePos, 0.5, -20 * mDsign);
             } else {

@@ -77,8 +77,8 @@ namespace Circuit.UI.Passive {
             base.SetPoints();
             int offset = 0;
             int myLen = 0;
-            mNameV = Math.Abs(mDiff.X) <= Math.Abs(mDiff.Y);
-            if (mNameV) {
+            mVertical = Math.Abs(mDiff.X) <= Math.Abs(mDiff.Y);
+            if (mVertical) {
                 /* vertical */
                 myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(mDiff.Y)
                     * ((Math.Abs(mDiff.Y) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
@@ -195,7 +195,7 @@ namespace Circuit.UI.Passive {
                 }
             }
             if (ControlPanel.ChkShowName.Checked) {
-                if (mNameV) {
+                if (mVertical) {
                     g.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
                 } else {
                     g.DrawLeftText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
