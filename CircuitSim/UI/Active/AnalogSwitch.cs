@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 
 using Circuit.Elements.Active;
-using Circuit.Elements.Passive;
 
 namespace Circuit.UI.Active {
     class AnalogSwitch : BaseUI {
@@ -21,6 +20,7 @@ namespace Circuit.UI.Active {
 
         public AnalogSwitch(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
             var elm = new ElmAnalogSwitch();
+            Elm = elm;
             try {
                 elm.Ron = double.Parse(st.nextToken());
                 elm.Roff = double.Parse(st.nextToken());

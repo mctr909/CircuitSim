@@ -449,6 +449,9 @@ namespace Circuit {
             for (int i = 0; i != CirSimForm.ElmCount; i++) {
                 var ce = CirSimForm.GetElm(i);
                 var cee = ce.Elm;
+                if (null == cee) {
+                    continue;
+                }
                 int inodes = cee.InternalNodeCount;
                 int ivs = cee.VoltageSourceCount;
                 int posts = cee.PostCount;

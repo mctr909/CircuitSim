@@ -156,7 +156,6 @@
     <Compile Include="Common\Scope.cs" />
     <Compile Include="Common\Utils.cs" />
     <Compile Include="Forms\ControlPanel.cs" />
-    <Compile Include="Common\Diode.cs" />
     <Compile Include="Common\DiodeModel.cs" />
     <Compile Include="Forms\ElementPopupMenu.cs" />
     <Compile Include="Forms\ScopePopupMenu.cs" />

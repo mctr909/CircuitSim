@@ -612,7 +612,7 @@ namespace Circuit {
 
             #region Active Components
             case ELEMENTS.DIODE:
-                return new UI.Active.Diode(pos, "D");
+                return new Diode(pos, "D");
             case ELEMENTS.ZENER:
                 return new DiodeZener(pos);
             case ELEMENTS.VARACTOR:
@@ -812,7 +812,7 @@ namespace Circuit {
 
             #region Active Components
             case DUMP_ID.DIODE:
-                return new UI.Active.Diode(p1, p2, f, st);
+                return new Diode(p1, p2, f, st);
             case DUMP_ID.ZENER:
                 return new DiodeZener(p1, p2, f, st);
             case DUMP_ID.VARACTOR:
