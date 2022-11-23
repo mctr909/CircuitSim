@@ -31,8 +31,8 @@ namespace Circuit.Elements.Active {
         public double Vs { get { return Volts[IdxS]; } }
         public double Vd { get { return Volts[IdxD]; } }
 
-        Diode mDiodeB1;
-        Diode mDiodeB2;
+        ElmDiode mDiodeB1;
+        ElmDiode mDiodeB2;
         double[] mLastV = new double[] { 0.0, 0.0, 0.0 };
 
         public ElmMosfet(bool pnpflag) : base() {
@@ -51,11 +51,11 @@ namespace Circuit.Elements.Active {
         /* set up body diodes */
         void setupDiodes() {
             /* diode from node 1 to body terminal */
-            mDiodeB1 = new Diode();
-            mDiodeB1.SetupForDefaultModel();
+            mDiodeB1 = new ElmDiode(DiodeModel.GetDefaultModel().Name);
+            mDiodeB1.Setup();
             /* diode from node 2 to body terminal */
-            mDiodeB2 = new Diode();
-            mDiodeB2.SetupForDefaultModel();
+            mDiodeB2 = new ElmDiode(DiodeModel.GetDefaultModel().Name);
+            mDiodeB2.Setup();
         }
 
         public override double Current { get { return Ids; } }
@@ -91,8 +91,8 @@ namespace Circuit.Elements.Active {
             mLastV[1] = mLastV[2] = 0;
             Volts[IdxG] = Volts[IdxS] = Volts[IdxD] = 0;
             CurCount = 0;
-            mDiodeB1.Reset();
-            mDiodeB2.Reset();
+            mDiodeB1.ResetDiff();
+            mDiodeB2.ResetDiff();
         }
 
         public override bool AnaGetConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
