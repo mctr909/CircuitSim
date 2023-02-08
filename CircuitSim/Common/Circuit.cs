@@ -357,6 +357,116 @@ namespace Circuit {
             }
             return NodeList[n];
         }
+
+        /* factors a matrix into upper and lower triangular matrices by
+        /* gaussian elimination.  On entry, a[0..n-1][0..n-1] is the
+        /* matrix to be factored.  ipvt[] returns an integer vector of pivot
+        /* indices, used in the lu_solve() routine. */
+        static bool luFactor(double[,] a, int n, int[] ipvt) {
+            /* check for a possible singular matrix by scanning for rows that
+            /* are all zeroes */
+            for (int i = 0; i != n; i++) {
+                bool row_all_zeros = true;
+                for (int j = 0; j != n; j++) {
+                    if (a[i, j] != 0) {
+                        row_all_zeros = false;
+                        break;
+                    }
+                }
+                /* if all zeros, it's a singular matrix */
+                if (row_all_zeros) {
+                    return false;
+                }
+            }
+
+            /* use Crout's method; loop through the columns */
+            for (int j = 0; j != n; j++) {
+                /* calculate upper triangular elements for this column */
+                for (int i = 0; i != j; i++) {
+                    double q = a[i, j];
+                    for (int k = 0; k != i; k++) {
+                        q -= a[i, k] * a[k, j];
+                    }
+                    a[i, j] = q;
+                }
+                /* calculate lower triangular elements for this column */
+                double largest = 0;
+                int largestRow = -1;
+                for (int i = j; i != n; i++) {
+                    double q = a[i, j];
+                    for (int k = 0; k != j; k++) {
+                        q -= a[i, k] * a[k, j];
+                    }
+                    a[i, j] = q;
+                    double x = Math.Abs(q);
+                    if (x >= largest) {
+                        largest = x;
+                        largestRow = i;
+                    }
+                }
+                /* pivoting */
+                if (j != largestRow) {
+                    double x;
+                    for (int k = 0; k != n; k++) {
+                        x = a[largestRow, k];
+                        a[largestRow, k] = a[j, k];
+                        a[j, k] = x;
+                    }
+                }
+                /* keep track of row interchanges */
+                ipvt[j] = largestRow;
+                /* avoid zeros */
+                if (a[j, j] == 0.0) {
+                    Console.WriteLine("avoided zero");
+                    a[j, j] = 1e-18;
+                }
+                if (j != n - 1) {
+                    double mult = 1.0 / a[j, j];
+                    for (int i = j + 1; i != n; i++) {
+                        a[i, j] *= mult;
+                    }
+                }
+            }
+            return true;
+        }
+
+        /* Solves the set of n linear equations using a LU factorization
+        /* previously performed by lu_factor.  On input, b[0..n-1] is the right
+        /* hand side of the equations, and on output, contains the solution. */
+        static void luSolve(double[,] a, int n, int[] ipvt, double[] b) {
+            int i;
+
+            /* find first nonzero b element */
+            for (i = 0; i != n; i++) {
+                int row = ipvt[i];
+                double swap = b[row];
+                b[row] = b[i];
+                b[i] = swap;
+                if (swap != 0) {
+                    break;
+                }
+            }
+
+            int bi = i++;
+            for (; i < n; i++) {
+                int row = ipvt[i];
+                double tot = b[row];
+                b[row] = b[i];
+                /* forward substitution using the lower triangular matrix */
+                for (int j = bi; j < i; j++) {
+                    tot -= a[i, j] * b[j];
+                }
+                b[i] = tot;
+            }
+            for (i = n - 1; i >= 0; i--) {
+                double tot = b[i];
+                /* back-substitution using the upper triangular matrix */
+                for (int j = i + 1; j != n; j++) {
+                    tot -= a[i, j] * b[j];
+                }
+                b[i] = tot / a[i, i];
+            }
+        }
         #endregion
 
         #region public method
@@ -432,12 +542,10 @@ namespace Circuit {
                 /* update node map */
                 if (mNodeMap.ContainsKey(pt)) {
                     mNodeMap[pt].Node = 0;
-                }
-                else {
+                } else {
                     mNodeMap.Add(pt, new NodeMapEntry(0));
                 }
-            }
-            else {
+            } else {
                 /* otherwise allocate extra node for ground */
                 var cn = new CircuitNode();
                 NodeList.Add(cn);
@@ -462,8 +570,7 @@ namespace Circuit {
                     if (mPostCountMap.ContainsKey(pt)) {
                         int g = mPostCountMap[pt];
                         mPostCountMap[pt] = g + 1;
-                    }
-                    else {
+                    } else {
                         mPostCountMap.Add(pt, 1);
                     }
 
@@ -487,13 +594,11 @@ namespace Circuit {
                         cee.AnaSetNode(j, NodeList.Count);
                         if (ccln) {
                             cln.Node = NodeList.Count;
-                        }
-                        else {
+                        } else {
                             mNodeMap.Add(pt, new NodeMapEntry(NodeList.Count));
                         }
                         NodeList.Add(cn);
-                    }
-                    else {
+                    } else {
                         int n = cln.Node;
                         var cnl = new CircuitNodeLink();
                         cnl.Num = j;
@@ -637,8 +742,7 @@ namespace Circuit {
                     var fpi = new PathInfo(PathType.INDUCTOR, cee, cee.Nodes[1], elmList, NodeList.Count);
                     if (!fpi.FindPath(cee.Nodes[0])) {
                         cur.stampCurrentSource(true);
-                    }
-                    else {
+                    } else {
                         cur.stampCurrentSource(false);
                     }
                 }
@@ -653,8 +757,7 @@ namespace Circuit {
                             return;
                         }
                     }
-                }
-                else if (cee is ElmSwitchMulti) {
+                } else if (cee is ElmSwitchMulti) {
                     /* for Switch2Elms we need to do extra work to look for wire loops */
                     var fpi = new PathInfo(PathType.VOLTAGE, cee, cee.Nodes[0], elmList, NodeList.Count);
                     for (int j = 1; j < cee.PostCount; j++) {
@@ -680,8 +783,7 @@ namespace Circuit {
                     if (fpi.FindPath(cee.Nodes[0])) {
                         Console.WriteLine(cee + " shorted");
                         cee.AnaShorted();
-                    }
-                    else {
+                    } else {
                         /* a capacitor loop used to cause a matrix error. but we changed the capacitor model
                         /* so it works fine now. The only issue is if a capacitor is added in parallel with
                         /* another capacitor with a nonzero voltage; in that case we will get oscillation unless
@@ -719,7 +821,7 @@ namespace Circuit {
             /* if a matrix is linear, we can do the lu_factor here instead of
             /* needing to do it every frame */
             if (!CircuitNonLinear) {
-                if (!Utils.luFactor(Matrix, mMatrixSize, mPermute)) {
+                if (!luFactor(Matrix, mMatrixSize, mPermute)) {
                     stop("Singular matrix!");
                     return;
                 }
@@ -733,8 +835,7 @@ namespace Circuit {
                 if (ce is Voltage) {
                     if (gotVoltageSource) {
                         ShowResistanceInVoltageSources = false;
-                    }
-                    else {
+                    } else {
                         gotVoltageSource = true;
                     }
                 }
@@ -784,20 +885,19 @@ namespace Circuit {
                     if (Converged && subiter > 0) {
                         break;
                     }
-                    if (!Utils.luFactor(Matrix, mMatrixSize, mPermute)) {
+                    if (!luFactor(Matrix, mMatrixSize, mPermute)) {
                         stop("Singular matrix!");
                         return false;
                     }
                 }
-                Utils.luSolve(Matrix, mMatrixSize, mPermute, RightSide);
+                luSolve(Matrix, mMatrixSize, mPermute, RightSide);
 
                 for (j = 0; j != mMatrixFullSize; j++) {
                     var ri = RowInfo[j];
                     double res = 0;
                     if (ri.IsConst) {
                         res = ri.Value;
-                    }
-                    else {
+                    } else {
                         res = RightSide[ri.MapCol];
                     }
                     /*Console.WriteLine(j + " " + res + " " + ri.type + " " + ri.mapCol);*/
@@ -811,8 +911,7 @@ namespace Circuit {
                             var cnl = cn.Links[k];
                             cnl.Elm.CirSetVoltage(cnl.Num, res);
                         }
-                    }
-                    else {
+                    } else {
                         int ji = j - (NodeList.Count - 1);
                         /*Console.WriteLine("setting vsrc " + ji + " to " + res); */
                         mVoltageSources[ji].CirSetCurrent(ji, res);
@@ -841,7 +940,9 @@ namespace Circuit {
             StopElm = ce;
             CirSimForm.SetSimRunning(false);
         }
+        #endregion
 
+        #region stamp method
         /* stamp independent voltage source #vs, from n1 to n2, amount v */
         public static void StampVoltageSource(int n1, int n2, int vs, double v) {
             int vn = NodeList.Count + vs;

@@ -90,40 +90,40 @@ namespace Circuit.Elements.Passive {
             mA2 = -m * deti * ts;
             mA3 = -m * deti * ts;
             mA4 = l1 * deti * ts;
-            Circuit.StampConductance(Nodes[0], Nodes[2], mA1);
-            Circuit.StampVCCurrentSource(Nodes[0], Nodes[2], Nodes[1], Nodes[3], mA2);
-            Circuit.StampVCCurrentSource(Nodes[1], Nodes[3], Nodes[0], Nodes[2], mA3);
-            Circuit.StampConductance(Nodes[1], Nodes[3], mA4);
-            Circuit.StampRightSide(Nodes[0]);
-            Circuit.StampRightSide(Nodes[1]);
-            Circuit.StampRightSide(Nodes[2]);
-            Circuit.StampRightSide(Nodes[3]);
+            Circuit.StampConductance(Nodes[PRI_T], Nodes[PRI_B], mA1);
+            Circuit.StampVCCurrentSource(Nodes[PRI_T], Nodes[PRI_B], Nodes[SEC_T], Nodes[SEC_B], mA2);
+            Circuit.StampVCCurrentSource(Nodes[SEC_T], Nodes[SEC_B], Nodes[PRI_T], Nodes[PRI_B], mA3);
+            Circuit.StampConductance(Nodes[SEC_T], Nodes[SEC_B], mA4);
+            Circuit.StampRightSide(Nodes[PRI_T]);
+            Circuit.StampRightSide(Nodes[SEC_T]);
+            Circuit.StampRightSide(Nodes[PRI_B]);
+            Circuit.StampRightSide(Nodes[SEC_B]);
         }
 
         public override void CirPrepareIteration() {
-            double voltdiff1 = Volts[PRI_T] - Volts[PRI_B];
-            double voltdiff2 = Volts[SEC_T] - Volts[SEC_B];
-            mCurSourceValue1 = voltdiff1 * mA1 + voltdiff2 * mA2 + Currents[0];
-            mCurSourceValue2 = voltdiff1 * mA3 + voltdiff2 * mA4 + Currents[1];
+            var voltDiffP = Volts[PRI_T] - Volts[PRI_B];
+            var voltDiffS = Volts[SEC_T] - Volts[SEC_B];
+            mCurSourceValue1 = voltDiffP * mA1 + voltDiffS * mA2 + Currents[0];
+            mCurSourceValue2 = voltDiffP * mA3 + voltDiffS * mA4 + Currents[1];
         }
 
         public override void CirDoIteration() {
-            var r = Circuit.RowInfo[Nodes[0] - 1].MapRow;
+            var r = Circuit.RowInfo[Nodes[PRI_T] - 1].MapRow;
             Circuit.RightSide[r] -= mCurSourceValue1;
-            r = Circuit.RowInfo[Nodes[2] - 1].MapRow;
+            r = Circuit.RowInfo[Nodes[PRI_B] - 1].MapRow;
             Circuit.RightSide[r] += mCurSourceValue1;
-            r = Circuit.RowInfo[Nodes[1] - 1].MapRow;
+            r = Circuit.RowInfo[Nodes[SEC_T] - 1].MapRow;
             Circuit.RightSide[r] -= mCurSourceValue2;
-            r = Circuit.RowInfo[Nodes[3] - 1].MapRow;
+            r = Circuit.RowInfo[Nodes[SEC_B] - 1].MapRow;
             Circuit.RightSide[r] += mCurSourceValue2;
         }
 
         public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
-            double voltdiff1 = Volts[PRI_T] - Volts[PRI_B];
-            double voltdiff2 = Volts[SEC_T] - Volts[SEC_B];
-            Currents[0] = voltdiff1 * mA1 + voltdiff2 * mA2 + mCurSourceValue1;
-            Currents[1] = voltdiff1 * mA3 + voltdiff2 * mA4 + mCurSourceValue2;
+            var voltDiffP = Volts[PRI_T] - Volts[PRI_B];
+            var voltDiffS = Volts[SEC_T] - Volts[SEC_B];
+            Currents[0] = voltDiffP * mA1 + voltDiffS * mA2 + mCurSourceValue1;
+            Currents[1] = voltDiffP * mA3 + voltDiffS * mA4 + mCurSourceValue2;
         }
     }
 }
