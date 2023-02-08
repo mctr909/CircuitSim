@@ -17,7 +17,8 @@ namespace Circuit.Elements.Active {
         const double VZ_COEF = 1 / VT;
 
         bool mHasResistance;
-        int[] mNodes = new int[2];
+        int mNodes0;
+        int mNodes1;
         int mDiodeEndNode;
         double mLastVoltDiff;
 
@@ -118,14 +119,33 @@ namespace Circuit.Elements.Active {
             AllocNodes();
         }
 
-        public void Stamp(int n0, int n1) {
-            mNodes[0] = n0;
-            mNodes[1] = n1;
-            Circuit.RowInfo[mNodes[0] - 1].LeftChanges = true;
-            Circuit.RowInfo[mNodes[1] - 1].LeftChanges = true;
+        public override void Reset() {
+            mLastVoltDiff = 0;
+            Volts[0] = Volts[1] = CurCount = 0;
+            if (mHasResistance) {
+                Volts[2] = 0;
+            }
         }
 
-        public void CirDoStep(double voltdiff) {
+        public override void AnaStamp() {
+            if (mHasResistance) {
+                /* create diode from node 0 to internal node */
+                stamp(Nodes[0], Nodes[2]);
+                /* create resistor from internal node to node 1 */
+                var r0 = 1.0 / mModel.SeriesResistance;
+                Circuit.Matrix[Nodes[1] - 1, Nodes[1] - 1] += r0;
+                Circuit.Matrix[Nodes[2] - 1, Nodes[2] - 1] += r0;
+                Circuit.Matrix[Nodes[1] - 1, Nodes[2] - 1] -= r0;
+                Circuit.Matrix[Nodes[2] - 1, Nodes[1] - 1] -= r0;
+            } else {
+                /* don't need any internal nodes if no series resistance */
+                stamp(Nodes[0], Nodes[1]);
+            }
+        }
+
+        public override void CirDoIteration() {
+            var voltdiff = Volts[0] - Volts[mDiodeEndNode];
+
             /* used to have 0.1 here, but needed 0.01 for peak detector */
             if (0.01 < Math.Abs(voltdiff - mLastVoltDiff)) {
                 Circuit.Converged = false;
@@ -218,91 +238,64 @@ namespace Circuit.Elements.Active {
                         - 1
                     ) + geq * (-voltdiff);
                 }
-                var row = Circuit.RowInfo[mNodes[0] - 1].MapRow;
-                var ri = Circuit.RowInfo[mNodes[0] - 1];
+                var row = Circuit.RowInfo[mNodes0 - 1].MapRow;
+                var ri = Circuit.RowInfo[mNodes0 - 1];
                 if (ri.IsConst) {
                     Circuit.RightSide[row] -= geq * ri.Value;
                 } else {
                     Circuit.Matrix[row, ri.MapCol] += geq;
                 }
-                row = Circuit.RowInfo[mNodes[1] - 1].MapRow;
-                ri = Circuit.RowInfo[mNodes[1] - 1];
+                row = Circuit.RowInfo[mNodes1 - 1].MapRow;
+                ri = Circuit.RowInfo[mNodes1 - 1];
                 if (ri.IsConst) {
                     Circuit.RightSide[row] -= geq * ri.Value;
                 } else {
                     Circuit.Matrix[row, ri.MapCol] += geq;
                 }
-                row = Circuit.RowInfo[mNodes[0] - 1].MapRow;
-                ri = Circuit.RowInfo[mNodes[1] - 1];
+                row = Circuit.RowInfo[mNodes0 - 1].MapRow;
+                ri = Circuit.RowInfo[mNodes1 - 1];
                 if (ri.IsConst) {
                     Circuit.RightSide[row] += geq * ri.Value;
                 } else {
                     Circuit.Matrix[row, ri.MapCol] -= geq;
                 }
-                row = Circuit.RowInfo[mNodes[1] - 1].MapRow;
-                ri = Circuit.RowInfo[mNodes[0] - 1];
+                row = Circuit.RowInfo[mNodes1 - 1].MapRow;
+                ri = Circuit.RowInfo[mNodes0 - 1];
                 if (ri.IsConst) {
                     Circuit.RightSide[row] += geq * ri.Value;
                 } else {
                     Circuit.Matrix[row, ri.MapCol] -= geq;
                 }
-                Circuit.RightSide[Circuit.RowInfo[mNodes[0] - 1].MapRow] -= nc;
-                Circuit.RightSide[Circuit.RowInfo[mNodes[1] - 1].MapRow] += nc;
+                Circuit.RightSide[Circuit.RowInfo[mNodes0 - 1].MapRow] -= nc;
+                Circuit.RightSide[Circuit.RowInfo[mNodes1 - 1].MapRow] += nc;
             }
-        }
-
-        public double CirCalculateCurrent(double voltdiff) {
-            if (voltdiff >= 0 || mZvoltage == 0) {
-                return mLeakage * (Math.Exp(voltdiff * mVdCoef) - 1);
-            }
-            return mLeakage * (
-                Math.Exp(voltdiff * mVdCoef)
-                - Math.Exp((-voltdiff - mZoffset) * VZ_COEF)
-                - 1
-            );
-        }
-
-        public void ResetDiff() {
-            mLastVoltDiff = 0;
-        }
-
-        public override void Reset() {
-            mLastVoltDiff = 0;
-            Volts[0] = Volts[1] = CurCount = 0;
-            if (mHasResistance) {
-                Volts[2] = 0;
-            }
-        }
-
-        public override void AnaStamp() {
-            if (mHasResistance) {
-                /* create diode from node 0 to internal node */
-                Stamp(Nodes[0], Nodes[2]);
-                /* create resistor from internal node to node 1 */
-                var r0 = 1.0 / mModel.SeriesResistance;
-                Circuit.Matrix[Nodes[1] - 1, Nodes[1] - 1] += r0;
-                Circuit.Matrix[Nodes[2] - 1, Nodes[2] - 1] += r0;
-                Circuit.Matrix[Nodes[1] - 1, Nodes[2] - 1] -= r0;
-                Circuit.Matrix[Nodes[2] - 1, Nodes[1] - 1] -= r0;
-            } else {
-                /* don't need any internal nodes if no series resistance */
-                Stamp(Nodes[0], Nodes[1]);
-            }
-        }
-
-        public override void CirDoIteration() {
-            CirDoStep(Volts[0] - Volts[mDiodeEndNode]);
         }
 
         public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
-            CirCalculateCurrent(Volts[0] - Volts[mDiodeEndNode]);
+            var voltdiff = Volts[0] - Volts[mDiodeEndNode];
+            if (voltdiff >= 0 || mZvoltage == 0) {
+                mCurrent = mLeakage * (Math.Exp(voltdiff * mVdCoef) - 1);
+            } else {
+                mCurrent = mLeakage * (
+                    Math.Exp(voltdiff * mVdCoef)
+                    - Math.Exp((-voltdiff - mZoffset) * VZ_COEF)
+                    - 1
+                );
+            }
         }
 
         public override void CirIterationFinished() {
             if (Math.Abs(mCurrent) > 1e12) {
                 Circuit.Stop("最大電流を超えました", this);
             }
+        }
+
+        void stamp(int n0, int n1) {
+            mNodes0 = n0;
+            mNodes1 = n1;
+            Circuit.RowInfo[mNodes0 - 1].LeftChanges = true;
+            Circuit.RowInfo[mNodes1 - 1].LeftChanges = true;
         }
     }
 }
