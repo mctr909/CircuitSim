@@ -10,21 +10,24 @@ using Circuit.Elements.Output;
 using Circuit.UI;
 using Circuit.UI.Passive;
 using Circuit.UI.Input;
-using System.Runtime.InteropServices;
 
 namespace Circuit {
     static class Circuit {
-        public class RowInfo {
+        public class ROW_INFO {
             public bool IsConst;
-            public int MapCol;
-            public int MapRow;
-            public double Value;
             public bool RightChanges; /* row's right side changes */
             public bool LeftChanges;  /* row's left side changes */
             public bool DropRow;      /* row is not needed in matrix */
+            public int MapCol;
+            public int MapRow;
+            public double Value;
         }
 
         const int SubIterMax = 1000;
+
+        public static double[,] Matrix;
+        public static double[] RightSide;
+        public static ROW_INFO[] RowInfo;
 
         #region private varidate
         static Dictionary<Point, NodeMapEntry> mNodeMap;
@@ -41,9 +44,6 @@ namespace Circuit {
         static int[] mPermute;
         static double[] mOrigRightSide;
         static double[,] mOrigMatrix;
-        public static double[,] mMatrix;
-        public static double[] mRightSide;
-        public static RowInfo[] mRowInfo;
         #endregion
 
         #region property
@@ -73,7 +73,7 @@ namespace Circuit {
             for (matRow = 0; matRow != matrixSize; matRow++) {
                 int qp = -1;
                 double qv = 0;
-                var re = mRowInfo[matRow];
+                var re = RowInfo[matRow];
                 /*Console.WriteLine("row " + i + " " + re.lsChanges + " " + re.rsChanges + " " + re.dropRow);*/
                 if (re.LeftChanges || re.DropRow || re.RightChanges) {
                     continue;
@@ -82,11 +82,11 @@ namespace Circuit {
 
                 /* look for rows that can be removed */
                 for (matCol = 0; matCol != matrixSize; matCol++) {
-                    double q = mMatrix[matRow, matCol];
-                    if (mRowInfo[matCol].IsConst) {
+                    double q = Matrix[matRow, matCol];
+                    if (RowInfo[matCol].IsConst) {
                         /* keep a running total of const values that have been
                         /* removed already */
-                        rsadd -= mRowInfo[matCol].Value * q;
+                        rsadd -= RowInfo[matCol].Value * q;
                         continue;
                     }
                     /* ignore zeroes */
@@ -108,15 +108,15 @@ namespace Circuit {
                         stop("Matrix error");
                         return false;
                     }
-                    var elt = mRowInfo[qp];
+                    var elt = RowInfo[qp];
                     /* we found a row with only one nonzero nonconst entry; that value is a constant */
                     if (elt.IsConst) {
                         Console.WriteLine("type already CONST for " + qp + "!");
                         continue;
                     }
                     elt.IsConst = true;
-                    elt.Value = (mRightSide[matRow] + rsadd) / qv;
-                    mRowInfo[matRow].DropRow = true;
+                    elt.Value = (RightSide[matRow] + rsadd) / qv;
+                    RowInfo[matRow].DropRow = true;
                     matRow = -1; /* start over from scratch */
                 }
             }
@@ -125,7 +125,7 @@ namespace Circuit {
             /* find size of new matrix */
             int nn = 0;
             for (matRow = 0; matRow != matrixSize; matRow++) {
-                var elt = mRowInfo[matRow];
+                var elt = RowInfo[matRow];
                 if (elt.IsConst) {
                     elt.MapCol = -1;
                 } else {
@@ -140,34 +140,34 @@ namespace Circuit {
             var newRS = new double[newSize];
             int ii = 0;
             for (matRow = 0; matRow != matrixSize; matRow++) {
-                var rri = mRowInfo[matRow];
+                var rri = RowInfo[matRow];
                 if (rri.DropRow) {
                     rri.MapRow = -1;
                     continue;
                 }
-                newRS[ii] = mRightSide[matRow];
+                newRS[ii] = RightSide[matRow];
                 rri.MapRow = ii;
                 for (matCol = 0; matCol != matrixSize; matCol++) {
-                    var ri = mRowInfo[matCol];
+                    var ri = RowInfo[matCol];
                     if (ri.IsConst) {
-                        newRS[ii] -= ri.Value * mMatrix[matRow, matCol];
+                        newRS[ii] -= ri.Value * Matrix[matRow, matCol];
                     } else {
-                        newMat[ii, ri.MapCol] += mMatrix[matRow, matCol];
+                        newMat[ii, ri.MapCol] += Matrix[matRow, matCol];
                     }
                 }
                 ii++;
             }
             /*Console.WriteLine("old size = " + matrixSize + " new size = " + newSize);*/
 
-            mMatrix = newMat;
-            mRightSide = newRS;
+            Matrix = newMat;
+            RightSide = newRS;
             matrixSize = mMatrixSize = newSize;
             for (matRow = 0; matRow != matrixSize; matRow++) {
-                mOrigRightSide[matRow] = mRightSide[matRow];
+                mOrigRightSide[matRow] = RightSide[matRow];
             }
             for (matRow = 0; matRow != matrixSize; matRow++) {
                 for (matCol = 0; matCol != matrixSize; matCol++) {
-                    mOrigMatrix[matRow, matCol] = mMatrix[matRow, matCol];
+                    mOrigMatrix[matRow, matCol] = Matrix[matRow, matCol];
                 }
             }
             mCircuitNeedsMap = true;
@@ -346,7 +346,7 @@ namespace Circuit {
 
         static void stop(string s) {
             StopMessage = s;
-            mMatrix = null;  /* causes an exception */
+            Matrix = null;  /* causes an exception */
             StopElm = null;
             CirSimForm.SetSimRunning(false);
         }
@@ -549,15 +549,15 @@ namespace Circuit {
             VoltageSourceCount = vscount;
 
             int matrixSize = NodeList.Count - 1 + vscount;
-            mMatrix = new double[matrixSize, matrixSize];
-            mRightSide = new double[matrixSize];
+            Matrix = new double[matrixSize, matrixSize];
+            RightSide = new double[matrixSize];
             mOrigMatrix = new double[matrixSize, matrixSize];
             mOrigRightSide = new double[matrixSize];
             mMatrixSize = mMatrixFullSize = matrixSize;
-            mRowInfo = new RowInfo[matrixSize];
+            RowInfo = new ROW_INFO[matrixSize];
             mPermute = new int[matrixSize];
             for (int i = 0; i != matrixSize; i++) {
-                mRowInfo[i] = new RowInfo();
+                RowInfo[i] = new ROW_INFO();
             }
             mCircuitNeedsMap = false;
 
@@ -704,22 +704,22 @@ namespace Circuit {
             if (debug) {
                 Console.WriteLine("matrixSize = " + matrixSize + " " + CircuitNonLinear);
                 for (int j = 0; j != mMatrixSize; j++) {
-                    Console.WriteLine("RightSide[{0}]:{1}", j, mRightSide[j]);
+                    Console.WriteLine("RightSide[{0}]:{1}", j, RightSide[j]);
                     for (int i = 0; i != mMatrixSize; i++) {
-                        Console.WriteLine("  Matrix[{0},{1}]:{2}", j, i, mMatrix[j, i]);
+                        Console.WriteLine("  Matrix[{0},{1}]:{2}", j, i, Matrix[j, i]);
                     }
                 }
             }
 
             /* check if we called stop() */
-            if (mMatrix == null) {
+            if (Matrix == null) {
                 return;
             }
 
             /* if a matrix is linear, we can do the lu_factor here instead of
             /* needing to do it every frame */
             if (!CircuitNonLinear) {
-                if (!Utils.luFactor(mMatrix, mMatrixSize, mPermute)) {
+                if (!Utils.luFactor(Matrix, mMatrixSize, mPermute)) {
                     stop("Singular matrix!");
                     return;
                 }
@@ -754,12 +754,12 @@ namespace Circuit {
                 Converged = true;
                 SubIterations = subiter;
                 for (i = 0; i != mMatrixSize; i++) {
-                    mRightSide[i] = mOrigRightSide[i];
+                    RightSide[i] = mOrigRightSide[i];
                 }
                 if (CircuitNonLinear) {
                     for (i = 0; i != mMatrixSize; i++) {
                         for (j = 0; j != mMatrixSize; j++) {
-                            mMatrix[i, j] = mOrigMatrix[i, j];
+                            Matrix[i, j] = mOrigMatrix[i, j];
                         }
                     }
                 }
@@ -773,7 +773,7 @@ namespace Circuit {
 
                 for (j = 0; j != mMatrixSize; j++) {
                     for (i = 0; i != mMatrixSize; i++) {
-                        double x = mMatrix[i, j];
+                        double x = Matrix[i, j];
                         if (double.IsNaN(x) || double.IsInfinity(x)) {
                             stop("nan/infinite matrix!");
                             return false;
@@ -784,21 +784,21 @@ namespace Circuit {
                     if (Converged && subiter > 0) {
                         break;
                     }
-                    if (!Utils.luFactor(mMatrix, mMatrixSize, mPermute)) {
+                    if (!Utils.luFactor(Matrix, mMatrixSize, mPermute)) {
                         stop("Singular matrix!");
                         return false;
                     }
                 }
-                Utils.luSolve(mMatrix, mMatrixSize, mPermute, mRightSide);
+                Utils.luSolve(Matrix, mMatrixSize, mPermute, RightSide);
 
                 for (j = 0; j != mMatrixFullSize; j++) {
-                    var ri = mRowInfo[j];
+                    var ri = RowInfo[j];
                     double res = 0;
                     if (ri.IsConst) {
                         res = ri.Value;
                     }
                     else {
-                        res = mRightSide[ri.MapCol];
+                        res = RightSide[ri.MapCol];
                     }
                     /*Console.WriteLine(j + " " + res + " " + ri.type + " " + ri.mapCol);*/
                     if (double.IsNaN(res)) {
@@ -837,7 +837,7 @@ namespace Circuit {
 
         public static void Stop(string s, BaseElement ce) {
             StopMessage = s;
-            mMatrix = null;  /* causes an exception */
+            Matrix = null;  /* causes an exception */
             StopElm = ce;
             CirSimForm.SetSimRunning(false);
         }
@@ -917,11 +917,11 @@ namespace Circuit {
         public static void StampMatrix(int r, int c, double x) {
             if (r > 0 && c > 0) {
                 if (mCircuitNeedsMap) {
-                    r = mRowInfo[r - 1].MapRow;
-                    var ri = mRowInfo[c - 1];
+                    r = RowInfo[r - 1].MapRow;
+                    var ri = RowInfo[c - 1];
                     if (ri.IsConst) {
                         /*Console.WriteLine("Stamping constant " + i + " " + j + " " + x);*/
-                        mRightSide[r] -= x * ri.Value;
+                        RightSide[r] -= x * ri.Value;
                         return;
                     }
                     c = ri.MapCol;
@@ -930,7 +930,7 @@ namespace Circuit {
                     r--;
                     c--;
                 }
-                mMatrix[r, c] += x;
+                Matrix[r, c] += x;
             }
         }
 
@@ -939,12 +939,12 @@ namespace Circuit {
         public static void StampRightSide(int i, double x) {
             if (i > 0) {
                 if (mCircuitNeedsMap) {
-                    i = mRowInfo[i - 1].MapRow;
+                    i = RowInfo[i - 1].MapRow;
                     /*Console.WriteLine("stamping " + i + " " + x);*/
                 } else {
                     i--;
                 }
-                mRightSide[i] += x;
+                RightSide[i] += x;
             }
         }
 
@@ -952,14 +952,14 @@ namespace Circuit {
         public static void StampRightSide(int i) {
             /*Console.WriteLine("rschanges true " + (i-1)); */
             if (i > 0) {
-                mRowInfo[i - 1].RightChanges = true;
+                RowInfo[i - 1].RightChanges = true;
             }
         }
 
         /* indicate that the values on the left side of row i change in doStep() */
         public static void StampNonLinear(int i) {
             if (i > 0) {
-                mRowInfo[i - 1].LeftChanges = true;
+                RowInfo[i - 1].LeftChanges = true;
             }
         }
         #endregion

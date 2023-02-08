@@ -98,8 +98,8 @@ namespace Circuit.Elements.Input {
 
         public override void CirDoIteration() {
             var vn = Circuit.NodeList.Count + mVoltSource;
-            var row = Circuit.mRowInfo[vn - 1].MapRow;
-            Circuit.mRightSide[row] += mVolt;
+            var row = Circuit.RowInfo[vn - 1].MapRow;
+            Circuit.RightSide[row] += mVolt;
         }
     }
 }

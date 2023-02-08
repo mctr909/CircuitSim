@@ -121,8 +121,8 @@ namespace Circuit.Elements.Active {
         public void Stamp(int n0, int n1) {
             mNodes[0] = n0;
             mNodes[1] = n1;
-            Circuit.mRowInfo[mNodes[0] - 1].LeftChanges = true;
-            Circuit.mRowInfo[mNodes[1] - 1].LeftChanges = true;
+            Circuit.RowInfo[mNodes[0] - 1].LeftChanges = true;
+            Circuit.RowInfo[mNodes[1] - 1].LeftChanges = true;
         }
 
         public void CirDoStep(double voltdiff) {
@@ -218,36 +218,36 @@ namespace Circuit.Elements.Active {
                         - 1
                     ) + geq * (-voltdiff);
                 }
-                var row = Circuit.mRowInfo[mNodes[0] - 1].MapRow;
-                var ri = Circuit.mRowInfo[mNodes[0] - 1];
+                var row = Circuit.RowInfo[mNodes[0] - 1].MapRow;
+                var ri = Circuit.RowInfo[mNodes[0] - 1];
                 if (ri.IsConst) {
-                    Circuit.mRightSide[row] -= geq * ri.Value;
+                    Circuit.RightSide[row] -= geq * ri.Value;
                 } else {
-                    Circuit.mMatrix[row, ri.MapCol] += geq;
+                    Circuit.Matrix[row, ri.MapCol] += geq;
                 }
-                row = Circuit.mRowInfo[mNodes[1] - 1].MapRow;
-                ri = Circuit.mRowInfo[mNodes[1] - 1];
+                row = Circuit.RowInfo[mNodes[1] - 1].MapRow;
+                ri = Circuit.RowInfo[mNodes[1] - 1];
                 if (ri.IsConst) {
-                    Circuit.mRightSide[row] -= geq * ri.Value;
+                    Circuit.RightSide[row] -= geq * ri.Value;
                 } else {
-                    Circuit.mMatrix[row, ri.MapCol] += geq;
+                    Circuit.Matrix[row, ri.MapCol] += geq;
                 }
-                row = Circuit.mRowInfo[mNodes[0] - 1].MapRow;
-                ri = Circuit.mRowInfo[mNodes[1] - 1];
+                row = Circuit.RowInfo[mNodes[0] - 1].MapRow;
+                ri = Circuit.RowInfo[mNodes[1] - 1];
                 if (ri.IsConst) {
-                    Circuit.mRightSide[row] += geq * ri.Value;
+                    Circuit.RightSide[row] += geq * ri.Value;
                 } else {
-                    Circuit.mMatrix[row, ri.MapCol] -= geq;
+                    Circuit.Matrix[row, ri.MapCol] -= geq;
                 }
-                row = Circuit.mRowInfo[mNodes[1] - 1].MapRow;
-                ri = Circuit.mRowInfo[mNodes[0] - 1];
+                row = Circuit.RowInfo[mNodes[1] - 1].MapRow;
+                ri = Circuit.RowInfo[mNodes[0] - 1];
                 if (ri.IsConst) {
-                    Circuit.mRightSide[row] += geq * ri.Value;
+                    Circuit.RightSide[row] += geq * ri.Value;
                 } else {
-                    Circuit.mMatrix[row, ri.MapCol] -= geq;
+                    Circuit.Matrix[row, ri.MapCol] -= geq;
                 }
-                Circuit.mRightSide[Circuit.mRowInfo[mNodes[0] - 1].MapRow] -= nc;
-                Circuit.mRightSide[Circuit.mRowInfo[mNodes[1] - 1].MapRow] += nc;
+                Circuit.RightSide[Circuit.RowInfo[mNodes[0] - 1].MapRow] -= nc;
+                Circuit.RightSide[Circuit.RowInfo[mNodes[1] - 1].MapRow] += nc;
             }
         }
 
@@ -280,10 +280,10 @@ namespace Circuit.Elements.Active {
                 Stamp(Nodes[0], Nodes[2]);
                 /* create resistor from internal node to node 1 */
                 var r0 = 1.0 / mModel.SeriesResistance;
-                Circuit.mMatrix[Nodes[1] - 1, Nodes[1] - 1] += r0;
-                Circuit.mMatrix[Nodes[2] - 1, Nodes[2] - 1] += r0;
-                Circuit.mMatrix[Nodes[1] - 1, Nodes[2] - 1] -= r0;
-                Circuit.mMatrix[Nodes[2] - 1, Nodes[1] - 1] -= r0;
+                Circuit.Matrix[Nodes[1] - 1, Nodes[1] - 1] += r0;
+                Circuit.Matrix[Nodes[2] - 1, Nodes[2] - 1] += r0;
+                Circuit.Matrix[Nodes[1] - 1, Nodes[2] - 1] -= r0;
+                Circuit.Matrix[Nodes[2] - 1, Nodes[1] - 1] -= r0;
             } else {
                 /* don't need any internal nodes if no series resistance */
                 Stamp(Nodes[0], Nodes[1]);

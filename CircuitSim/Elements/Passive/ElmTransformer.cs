@@ -108,14 +108,14 @@ namespace Circuit.Elements.Passive {
         }
 
         public override void CirDoIteration() {
-            var r = Circuit.mRowInfo[Nodes[0] - 1].MapRow;
-            Circuit.mRightSide[r] -= mCurSourceValue1;
-            r = Circuit.mRowInfo[Nodes[2] - 1].MapRow;
-            Circuit.mRightSide[r] += mCurSourceValue1;
-            r = Circuit.mRowInfo[Nodes[1] - 1].MapRow;
-            Circuit.mRightSide[r] -= mCurSourceValue2;
-            r = Circuit.mRowInfo[Nodes[3] - 1].MapRow;
-            Circuit.mRightSide[r] += mCurSourceValue2;
+            var r = Circuit.RowInfo[Nodes[0] - 1].MapRow;
+            Circuit.RightSide[r] -= mCurSourceValue1;
+            r = Circuit.RowInfo[Nodes[2] - 1].MapRow;
+            Circuit.RightSide[r] += mCurSourceValue1;
+            r = Circuit.RowInfo[Nodes[1] - 1].MapRow;
+            Circuit.RightSide[r] -= mCurSourceValue2;
+            r = Circuit.RowInfo[Nodes[3] - 1].MapRow;
+            Circuit.RightSide[r] += mCurSourceValue2;
         }
 
         public override void CirSetVoltage(int n, double c) {

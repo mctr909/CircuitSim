@@ -80,8 +80,8 @@ namespace Circuit.Elements.Input {
         public override void CirDoIteration() {
             if (WaveForm != WAVEFORM.DC) {
                 var vn = Circuit.NodeList.Count + mVoltSource;
-                var row = Circuit.mRowInfo[vn - 1].MapRow;
-                Circuit.mRightSide[row] += GetVoltage();
+                var row = Circuit.RowInfo[vn - 1].MapRow;
+                Circuit.RightSide[row] += GetVoltage();
             }
         }
 

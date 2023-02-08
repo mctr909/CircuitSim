@@ -58,26 +58,26 @@
 
             /* newton-raphson */
             var vnode = Circuit.NodeList.Count + mVoltSource;
-            var rowV = Circuit.mRowInfo[vnode - 1].MapRow;
-            var colri = Circuit.mRowInfo[Nodes[0] - 1];
+            var rowV = Circuit.RowInfo[vnode - 1].MapRow;
+            var colri = Circuit.RowInfo[Nodes[0] - 1];
             if (colri.IsConst) {
-                Circuit.mRightSide[rowV] -= dx * colri.Value;
+                Circuit.RightSide[rowV] -= dx * colri.Value;
             } else {
-                Circuit.mMatrix[rowV, colri.MapCol] += dx;
+                Circuit.Matrix[rowV, colri.MapCol] += dx;
             }
-            colri = Circuit.mRowInfo[Nodes[1] - 1];
+            colri = Circuit.RowInfo[Nodes[1] - 1];
             if (colri.IsConst) {
-                Circuit.mRightSide[rowV] += dx * colri.Value;
+                Circuit.RightSide[rowV] += dx * colri.Value;
             } else {
-                Circuit.mMatrix[rowV, colri.MapCol] -= dx;
+                Circuit.Matrix[rowV, colri.MapCol] -= dx;
             }
-            colri = Circuit.mRowInfo[Nodes[2] - 1];
+            colri = Circuit.RowInfo[Nodes[2] - 1];
             if (colri.IsConst) {
-                Circuit.mRightSide[rowV] -= colri.Value;
+                Circuit.RightSide[rowV] -= colri.Value;
             } else {
-                Circuit.mMatrix[rowV, colri.MapCol] += 1;
+                Circuit.Matrix[rowV, colri.MapCol] += 1;
             }
-            Circuit.mRightSide[rowV] += x;
+            Circuit.RightSide[rowV] += x;
 
             mLastVd = vd;
         }

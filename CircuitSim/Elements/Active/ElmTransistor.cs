@@ -127,48 +127,48 @@ namespace Circuit.Elements.Active {
             gcc -= mGmin;
             gee -= mGmin;
 
-            var rowB = Circuit.mRowInfo[Nodes[IdxB] - 1].MapRow;
-            var rowC = Circuit.mRowInfo[Nodes[IdxC] - 1].MapRow;
-            var rowE = Circuit.mRowInfo[Nodes[IdxE] - 1].MapRow;
-            var colri = Circuit.mRowInfo[Nodes[IdxB] - 1];
+            var rowB = Circuit.RowInfo[Nodes[IdxB] - 1].MapRow;
+            var rowC = Circuit.RowInfo[Nodes[IdxC] - 1].MapRow;
+            var rowE = Circuit.RowInfo[Nodes[IdxE] - 1].MapRow;
+            var colri = Circuit.RowInfo[Nodes[IdxB] - 1];
             if (colri.IsConst) {
-                Circuit.mRightSide[rowB] += (gee + gec + gce + gcc) * colri.Value;
-                Circuit.mRightSide[rowC] -= (gce + gcc) * colri.Value;
-                Circuit.mRightSide[rowE] -= (gee + gec) * colri.Value;
+                Circuit.RightSide[rowB] += (gee + gec + gce + gcc) * colri.Value;
+                Circuit.RightSide[rowC] -= (gce + gcc) * colri.Value;
+                Circuit.RightSide[rowE] -= (gee + gec) * colri.Value;
             } else {
-                Circuit.mMatrix[rowB, colri.MapCol] -= gee + gec + gce + gcc;
-                Circuit.mMatrix[rowC, colri.MapCol] += gce + gcc;
-                Circuit.mMatrix[rowE, colri.MapCol] += gee + gec;
+                Circuit.Matrix[rowB, colri.MapCol] -= gee + gec + gce + gcc;
+                Circuit.Matrix[rowC, colri.MapCol] += gce + gcc;
+                Circuit.Matrix[rowE, colri.MapCol] += gee + gec;
             }
-            colri = Circuit.mRowInfo[Nodes[IdxC] - 1];
+            colri = Circuit.RowInfo[Nodes[IdxC] - 1];
             if (colri.IsConst) {
-                Circuit.mRightSide[rowB] -= (gec + gcc) * colri.Value;
-                Circuit.mRightSide[rowC] += gcc * colri.Value;
-                Circuit.mRightSide[rowE] += gec * colri.Value;
+                Circuit.RightSide[rowB] -= (gec + gcc) * colri.Value;
+                Circuit.RightSide[rowC] += gcc * colri.Value;
+                Circuit.RightSide[rowE] += gec * colri.Value;
             } else {
-                Circuit.mMatrix[rowB, colri.MapCol] += gec + gcc;
-                Circuit.mMatrix[rowC, colri.MapCol] -= gcc;
-                Circuit.mMatrix[rowE, colri.MapCol] -= gec;
+                Circuit.Matrix[rowB, colri.MapCol] += gec + gcc;
+                Circuit.Matrix[rowC, colri.MapCol] -= gcc;
+                Circuit.Matrix[rowE, colri.MapCol] -= gec;
             }
-            colri = Circuit.mRowInfo[Nodes[IdxE] - 1];
+            colri = Circuit.RowInfo[Nodes[IdxE] - 1];
             if (colri.IsConst) {
-                Circuit.mRightSide[rowB] -= (gee + gce) * colri.Value;
-                Circuit.mRightSide[rowC] += gce * colri.Value;
-                Circuit.mRightSide[rowE] += gee * colri.Value;
+                Circuit.RightSide[rowB] -= (gee + gce) * colri.Value;
+                Circuit.RightSide[rowC] += gce * colri.Value;
+                Circuit.RightSide[rowE] += gee * colri.Value;
             } else {
-                Circuit.mMatrix[rowB, colri.MapCol] += gee + gce;
-                Circuit.mMatrix[rowC, colri.MapCol] -= gce;
-                Circuit.mMatrix[rowE, colri.MapCol] -= gee;
+                Circuit.Matrix[rowB, colri.MapCol] += gee + gce;
+                Circuit.Matrix[rowC, colri.MapCol] -= gce;
+                Circuit.Matrix[rowE, colri.MapCol] -= gee;
             }
 
             /* we are solving for v(k+1), not delta v, so we use formula
              * multiplying J by v(k) */
-            rowB = Circuit.mRowInfo[Nodes[IdxB] - 1].MapRow;
-            rowC = Circuit.mRowInfo[Nodes[IdxC] - 1].MapRow;
-            rowE = Circuit.mRowInfo[Nodes[IdxE] - 1].MapRow;
-            Circuit.mRightSide[rowB] += -Ib - (gec + gcc) * vbc - (gee + gce) * vbe;
-            Circuit.mRightSide[rowC] += -Ic + gce * vbe + gcc * vbc;
-            Circuit.mRightSide[rowE] += -Ie + gee * vbe + gec * vbc;
+            rowB = Circuit.RowInfo[Nodes[IdxB] - 1].MapRow;
+            rowC = Circuit.RowInfo[Nodes[IdxC] - 1].MapRow;
+            rowE = Circuit.RowInfo[Nodes[IdxE] - 1].MapRow;
+            Circuit.RightSide[rowB] += -Ib - (gec + gcc) * vbc - (gee + gce) * vbe;
+            Circuit.RightSide[rowC] += -Ic + gce * vbe + gcc * vbc;
+            Circuit.RightSide[rowE] += -Ie + gee * vbe + gec * vbc;
         }
 
         public override void CirIterationFinished() {

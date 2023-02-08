@@ -33,10 +33,10 @@
         }
 
         public override void CirDoIteration() {
-            var r = Circuit.mRowInfo[Nodes[0] - 1].MapRow;
-            Circuit.mRightSide[r] -= mCurSourceValue;
-            r = Circuit.mRowInfo[Nodes[1] - 1].MapRow;
-            Circuit.mRightSide[r] += mCurSourceValue;
+            var r = Circuit.RowInfo[Nodes[0] - 1].MapRow;
+            Circuit.RightSide[r] -= mCurSourceValue;
+            r = Circuit.RowInfo[Nodes[1] - 1].MapRow;
+            Circuit.RightSide[r] += mCurSourceValue;
         }
 
         public override void CirSetVoltage(int n, double c) {

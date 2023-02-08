@@ -36,23 +36,23 @@
             }
             mResistance = IsOpen ? Roff : Ron;
             var conductance = 1.0 / mResistance;
-            var rowA = Circuit.mRowInfo[Nodes[0] - 1].MapRow;
-            var rowB = Circuit.mRowInfo[Nodes[1] - 1].MapRow;
-            var colri = Circuit.mRowInfo[Nodes[0] - 1];
+            var rowA = Circuit.RowInfo[Nodes[0] - 1].MapRow;
+            var rowB = Circuit.RowInfo[Nodes[1] - 1].MapRow;
+            var colri = Circuit.RowInfo[Nodes[0] - 1];
             if (colri.IsConst) {
-                Circuit.mRightSide[rowA] -= conductance * colri.Value;
-                Circuit.mRightSide[rowB] += conductance * colri.Value;
+                Circuit.RightSide[rowA] -= conductance * colri.Value;
+                Circuit.RightSide[rowB] += conductance * colri.Value;
             } else {
-                Circuit.mMatrix[rowA, colri.MapCol] += conductance;
-                Circuit.mMatrix[rowB, colri.MapCol] -= conductance;
+                Circuit.Matrix[rowA, colri.MapCol] += conductance;
+                Circuit.Matrix[rowB, colri.MapCol] -= conductance;
             }
-            colri = Circuit.mRowInfo[Nodes[1] - 1];
+            colri = Circuit.RowInfo[Nodes[1] - 1];
             if (colri.IsConst) {
-                Circuit.mRightSide[rowA] += conductance * colri.Value;
-                Circuit.mRightSide[rowB] -= conductance * colri.Value;
+                Circuit.RightSide[rowA] += conductance * colri.Value;
+                Circuit.RightSide[rowB] -= conductance * colri.Value;
             } else {
-                Circuit.mMatrix[rowA, colri.MapCol] -= conductance;
-                Circuit.mMatrix[rowB, colri.MapCol] += conductance;
+                Circuit.Matrix[rowA, colri.MapCol] -= conductance;
+                Circuit.Matrix[rowB, colri.MapCol] += conductance;
             }
         }
 

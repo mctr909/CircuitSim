@@ -50,9 +50,11 @@ namespace Circuit.UI.Active {
                 vt = st.nextTokenDouble();
                 hfe = st.nextTokenDouble();
             } catch { }
-            Elm = new ElmMosfet((f & FLAG_PNP) != 0, vt, hfe);
             mNoDiagonal = true;
             mGlobalFlags = DumpInfo.Flags & (FLAGS_GLOBAL);
+            Elm = new ElmMosfet((f & FLAG_PNP) != 0, vt, hfe);
+            var ce = (ElmMosfet)Elm;
+            ce.DoBodyDiode = 0 != (DumpInfo.Flags & FLAG_BODY_DIODE);
         }
 
         public override bool CanViewInScope { get { return true; } }

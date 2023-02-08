@@ -51,8 +51,8 @@ namespace Circuit.Elements.Input {
             var signalAmplitude = Math.Sin(2 * Math.PI * (CirSimForm.Time - mFreqTimeZero) * Signalfreq);
             mCounter += (CarrierFreq + (signalAmplitude * Deviation)) * deltaT;
             var vn = Circuit.NodeList.Count + mVoltSource;
-            var row = Circuit.mRowInfo[vn - 1].MapRow;
-            Circuit.mRightSide[row] += Math.Sin(2 * Math.PI * mCounter) * MaxVoltage;
+            var row = Circuit.RowInfo[vn - 1].MapRow;
+            Circuit.RightSide[row] += Math.Sin(2 * Math.PI * mCounter) * MaxVoltage;
             mLastTime = CirSimForm.Time;
         }
     }
