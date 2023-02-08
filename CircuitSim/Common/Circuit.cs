@@ -28,6 +28,7 @@ namespace Circuit {
         public static double[,] Matrix;
         public static double[] RightSide;
         public static ROW_INFO[] RowInfo;
+        public static List<CircuitNode> NodeList;
 
         #region private varidate
         static Dictionary<Point, NodeMapEntry> mNodeMap;
@@ -47,13 +48,10 @@ namespace Circuit {
         #endregion
 
         #region property
-        public static BaseElement StopElm { get; set; }
-        public static string StopMessage { get; set; }
-
         public static List<Point> PostDrawList { get; private set; } = new List<Point>();
         public static List<Point> BadConnectionList { get; private set; } = new List<Point>();
-
-        public static List<CircuitNode> NodeList { get; private set; }
+        public static BaseElement StopElm { get; set; }
+        public static string StopMessage { get; set; }
 
         public static int VoltageSourceCount { get; private set; }
 
