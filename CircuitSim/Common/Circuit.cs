@@ -24,6 +24,7 @@ namespace Circuit {
         }
 
         const int SubIterMax = 1000;
+        const bool debug = false;
 
         public static double[,] Matrix;
         public static double[] RightSide;
@@ -471,10 +472,6 @@ namespace Circuit {
         /* we removed wires from the matrix to speed things up.  in order to display wire currents,
         /* we need to calculate them now. */
         public static void CalcWireCurrents() {
-            /* for debugging */
-            /*for (int i = 0; i != mWireInfoList.Count; i++) {
-                mWireInfoList[i].wire.setCurrent(-1, 1.23);
-            }*/
             for (int i = 0; i != mWireInfoList.Count; i++) {
                 var wi = mWireInfoList[i];
                 double cur = 0;
@@ -494,7 +491,6 @@ namespace Circuit {
         }
 
         public static void AnalyzeCircuit() {
-            bool debug = false;
             var elmList = CirSimForm.ElmList;
             if (0 == CirSimForm.ElmCount) {
                 PostDrawList = new List<Point>();
@@ -504,164 +500,164 @@ namespace Circuit {
 
             StopMessage = null;
             StopElm = null;
-
-            int vscount = 0;
             NodeList = new List<CircuitNode>();
             mPostCountMap = new Dictionary<Point, int>();
-            bool gotGround = false;
-            bool gotRail = false;
-            BaseUI volt = null;
 
             calculateWireClosure();
 
-            if (debug) Console.WriteLine("ac1");
-            /* look for voltage or ground element */
-            for (int i = 0; i != CirSimForm.ElmCount; i++) {
-                var ce = CirSimForm.GetElm(i);
-                if (ce is Ground) {
-                    gotGround = true;
-                    break;
+            {
+                /* look for voltage or ground element */
+                bool gotGround = false;
+                bool gotRail = false;
+                BaseUI volt = null;
+                for (int i = 0; i != CirSimForm.ElmCount; i++) {
+                    var ce = CirSimForm.GetElm(i);
+                    if (ce is Ground) {
+                        gotGround = true;
+                        break;
+                    }
+                    if (ce is Rail) {
+                        gotRail = true;
+                    }
+                    if (volt == null && (ce is Voltage)) {
+                        volt = ce;
+                    }
                 }
 
-                if (ce is Rail) {
-                    gotRail = true;
-                }
-                if (volt == null && (ce is Voltage)) {
-                    volt = ce;
-                }
-            }
-
-            /* if no ground, and no rails, then the voltage elm's first terminal
-            /* is ground */
-            if (!gotGround && volt != null && !gotRail) {
-                var cn = new CircuitNode();
-                var pt = volt.GetPost(0);
-                NodeList.Add(cn);
-                /* update node map */
-                if (mNodeMap.ContainsKey(pt)) {
-                    mNodeMap[pt].Node = 0;
+                /* if no ground, and no rails, then the voltage elm's first terminal
+                /* is ground */
+                if (!gotGround && volt != null && !gotRail) {
+                    var cn = new CircuitNode();
+                    var pt = volt.GetPost(0);
+                    NodeList.Add(cn);
+                    /* update node map */
+                    if (mNodeMap.ContainsKey(pt)) {
+                        mNodeMap[pt].Node = 0;
+                    } else {
+                        mNodeMap.Add(pt, new NodeMapEntry(0));
+                    }
                 } else {
-                    mNodeMap.Add(pt, new NodeMapEntry(0));
+                    /* otherwise allocate extra node for ground */
+                    var cn = new CircuitNode();
+                    NodeList.Add(cn);
                 }
-            } else {
-                /* otherwise allocate extra node for ground */
-                var cn = new CircuitNode();
-                NodeList.Add(cn);
             }
-            if (debug) Console.WriteLine("ac2");
 
             /* allocate nodes and voltage sources */
-            ElmLabeledNode.ResetNodeList();
-            for (int i = 0; i != CirSimForm.ElmCount; i++) {
-                var ce = CirSimForm.GetElm(i);
-                var cee = ce.Elm;
-                if (null == cee) {
-                    continue;
-                }
-                int inodes = cee.InternalNodeCount;
-                int ivs = cee.VoltageSourceCount;
-                int posts = cee.PostCount;
-
-                /* allocate a node for each post and match posts to nodes */
-                for (int j = 0; j != posts; j++) {
-                    var pt = ce.GetPost(j);
-                    if (mPostCountMap.ContainsKey(pt)) {
-                        int g = mPostCountMap[pt];
-                        mPostCountMap[pt] = g + 1;
-                    } else {
-                        mPostCountMap.Add(pt, 1);
+            int vscount = 0;
+            {
+                ElmLabeledNode.ResetNodeList();
+                for (int i = 0; i != CirSimForm.ElmCount; i++) {
+                    var ce = CirSimForm.GetElm(i);
+                    var cee = ce.Elm;
+                    if (null == cee) {
+                        continue;
                     }
+                    int inodes = cee.InternalNodeCount;
+                    int ivs = cee.VoltageSourceCount;
+                    int posts = cee.PostCount;
 
-                    NodeMapEntry cln = null;
-                    var ccln = mNodeMap.ContainsKey(pt);
-                    if (ccln) {
-                        cln = mNodeMap[pt];
+                    /* allocate a node for each post and match posts to nodes */
+                    for (int j = 0; j != posts; j++) {
+                        var pt = ce.GetPost(j);
+                        if (mPostCountMap.ContainsKey(pt)) {
+                            int g = mPostCountMap[pt];
+                            mPostCountMap[pt] = g + 1;
+                        } else {
+                            mPostCountMap.Add(pt, 1);
+                        }
+
+                        NodeMapEntry cln = null;
+                        var ccln = mNodeMap.ContainsKey(pt);
+                        if (ccln) {
+                            cln = mNodeMap[pt];
+                        }
+
+                        /* is this node not in map yet?  or is the node number unallocated?
+                        /* (we don't allocate nodes before this because changing the allocation order
+                        /* of nodes changes circuit behavior and breaks backward compatibility;
+                        /* the code below to connect unconnected nodes may connect a different node to ground) */
+                        if (!ccln || cln.Node == -1) {
+                            var cn = new CircuitNode();
+                            var cnl = new CircuitNodeLink();
+                            cnl.Num = j;
+                            cnl.UI = ce;
+                            cnl.Elm = cee;
+                            cn.Links.Add(cnl);
+                            cee.AnaSetNode(j, NodeList.Count);
+                            if (ccln) {
+                                cln.Node = NodeList.Count;
+                            } else {
+                                mNodeMap.Add(pt, new NodeMapEntry(NodeList.Count));
+                            }
+                            NodeList.Add(cn);
+                        } else {
+                            int n = cln.Node;
+                            var cnl = new CircuitNodeLink();
+                            cnl.Num = j;
+                            cnl.UI = ce;
+                            cnl.Elm = cee;
+                            getCircuitNode(n).Links.Add(cnl);
+                            cee.AnaSetNode(j, n);
+                            /* if it's the ground node, make sure the node voltage is 0,
+                            /* cause it may not get set later */
+                            if (n == 0) {
+                                cee.CirSetVoltage(j, 0);
+                            }
+                        }
                     }
-
-                    /* is this node not in map yet?  or is the node number unallocated?
-                    /* (we don't allocate nodes before this because changing the allocation order
-                    /* of nodes changes circuit behavior and breaks backward compatibility;
-                    /* the code below to connect unconnected nodes may connect a different node to ground) */
-                    if (!ccln || cln.Node == -1) {
+                    for (int j = 0; j != inodes; j++) {
                         var cn = new CircuitNode();
+                        cn.Internal = true;
                         var cnl = new CircuitNodeLink();
-                        cnl.Num = j;
+                        cnl.Num = j + posts;
                         cnl.UI = ce;
                         cnl.Elm = cee;
                         cn.Links.Add(cnl);
-                        cee.AnaSetNode(j, NodeList.Count);
-                        if (ccln) {
-                            cln.Node = NodeList.Count;
-                        } else {
-                            mNodeMap.Add(pt, new NodeMapEntry(NodeList.Count));
-                        }
+                        cee.AnaSetNode(cnl.Num, NodeList.Count);
                         NodeList.Add(cn);
-                    } else {
-                        int n = cln.Node;
-                        var cnl = new CircuitNodeLink();
-                        cnl.Num = j;
-                        cnl.UI = ce;
-                        cnl.Elm = cee;
-                        getCircuitNode(n).Links.Add(cnl);
-                        cee.AnaSetNode(j, n);
-                        /* if it's the ground node, make sure the node voltage is 0,
-                        /* cause it may not get set later */
-                        if (n == 0) {
-                            cee.CirSetVoltage(j, 0);
-                        }
                     }
+                    vscount += ivs;
                 }
-                for (int j = 0; j != inodes; j++) {
-                    var cn = new CircuitNode();
-                    cn.Internal = true;
-                    var cnl = new CircuitNodeLink();
-                    cnl.Num = j + posts;
-                    cnl.UI = ce;
-                    cnl.Elm = cee;
-                    cn.Links.Add(cnl);
-                    cee.AnaSetNode(cnl.Num, NodeList.Count);
-                    NodeList.Add(cn);
+                makePostDrawList();
+                if (calcWireInfo()) {
+                    mNodeMap = null; /* done with this */
+                } else {
+                    return;
                 }
-                vscount += ivs;
             }
-
-            makePostDrawList();
-            if (!calcWireInfo()) {
-                return;
-            }
-            mNodeMap = null; /* done with this */
-
-            mVoltageSources = new BaseElement[vscount];
-            vscount = 0;
-            CircuitNonLinear = false;
-            if (debug) Console.WriteLine("ac3");
 
             /* determine if circuit is nonlinear */
-            for (int i = 0; i != CirSimForm.ElmCount; i++) {
-                var ce = CirSimForm.GetElm(i);
-                var cee = ce.Elm;
-                if (cee.NonLinear) {
-                    CircuitNonLinear = true;
+            {
+                mVoltageSources = new BaseElement[vscount];
+                vscount = 0;
+                CircuitNonLinear = false;
+                for (int i = 0; i != CirSimForm.ElmCount; i++) {
+                    var ce = CirSimForm.GetElm(i);
+                    var cee = ce.Elm;
+                    if (cee.NonLinear) {
+                        CircuitNonLinear = true;
+                    }
+                    int ivs = cee.VoltageSourceCount;
+                    for (int j = 0; j != ivs; j++) {
+                        mVoltageSources[vscount] = cee;
+                        cee.AnaSetVoltageSource(j, vscount++);
+                    }
                 }
-                int ivs = cee.VoltageSourceCount;
-                for (int j = 0; j != ivs; j++) {
-                    mVoltageSources[vscount] = cee;
-                    cee.AnaSetVoltageSource(j, vscount++);
-                }
+                VoltageSourceCount = vscount;
             }
-            VoltageSourceCount = vscount;
 
             int matrixSize = NodeList.Count - 1 + vscount;
             Matrix = new double[matrixSize, matrixSize];
             RightSide = new double[matrixSize];
-            mOrigMatrix = new double[matrixSize, matrixSize];
-            mOrigRightSide = new double[matrixSize];
-            mMatrixSize = mMatrixFullSize = matrixSize;
             RowInfo = new ROW_INFO[matrixSize];
-            mPermute = new int[matrixSize];
             for (int i = 0; i != matrixSize; i++) {
                 RowInfo[i] = new ROW_INFO();
             }
+            mMatrixSize = mMatrixFullSize = matrixSize;
+            mOrigMatrix = new double[matrixSize, matrixSize];
+            mOrigRightSide = new double[matrixSize];
+            mPermute = new int[matrixSize];
             mCircuitNeedsMap = false;
 
             /* stamp linear circuit elements */
@@ -669,7 +665,6 @@ namespace Circuit {
                 var cee = CirSimForm.GetElm(i).Elm;
                 cee.AnaStamp();
             }
-            if (debug) Console.WriteLine("ac4");
 
             /* determine nodes that are not connected indirectly to ground */
             var closure = new bool[NodeList.Count];
@@ -719,7 +714,6 @@ namespace Circuit {
                     }
                 }
             }
-            if (debug) Console.WriteLine("ac5");
 
             for (int i = 0; i != CirSimForm.ElmCount; i++) {
                 var ce = CirSimForm.GetElm(i);
@@ -729,7 +723,6 @@ namespace Circuit {
                 if (cee is ElmInductor) {
                     var fpi = new PathInfo(PathType.INDUCTOR, cee, cee.Nodes[1], elmList, NodeList.Count);
                     if (!fpi.FindPath(cee.Nodes[0])) {
-                        if (debug) Console.WriteLine(cee + " no path");
                         cee.Reset();
                     }
                 }
@@ -795,7 +788,6 @@ namespace Circuit {
                     }
                 }
             }
-            if (debug) Console.WriteLine("ac6");
 
             if (!simplifyMatrix(matrixSize)) {
                 return;
