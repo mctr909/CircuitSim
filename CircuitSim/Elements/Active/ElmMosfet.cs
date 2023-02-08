@@ -52,10 +52,8 @@ namespace Circuit.Elements.Active {
         void setupDiodes() {
             /* diode from node 1 to body terminal */
             mDiodeB1 = new ElmDiode(DiodeModel.GetDefaultModel().Name);
-            mDiodeB1.Setup();
             /* diode from node 2 to body terminal */
             mDiodeB2 = new ElmDiode(DiodeModel.GetDefaultModel().Name);
-            mDiodeB2.Setup();
         }
 
         public override double Current { get { return Ids; } }
@@ -98,21 +96,24 @@ namespace Circuit.Elements.Active {
         public override bool AnaGetConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
 
         public override void AnaStamp() {
-            Circuit.StampNonLinear(Nodes[1]);
-            Circuit.StampNonLinear(Nodes[2]);
+            Circuit.StampNonLinear(Nodes[IdxS]);
+            Circuit.StampNonLinear(Nodes[IdxD]);
 
-            BodyTerminal = (Pnp == -1) ? 2 : 1;
+            BodyTerminal = (Pnp == -1) ? IdxD : IdxS;
 
             if (DoBodyDiode) {
+                var ns = Nodes[IdxS];
+                var nd = Nodes[IdxD];
+                int nx;
                 if (Pnp == -1) {
                     /* pnp: diodes conduct when S or D are higher than body */
-                    mDiodeB1.Stamp(Nodes[1], Nodes[BodyTerminal]);
-                    mDiodeB2.Stamp(Nodes[2], Nodes[BodyTerminal]);
+                    nx = nd;
                 } else {
                     /* npn: diodes conduct when body is higher than S or D */
-                    mDiodeB1.Stamp(Nodes[BodyTerminal], Nodes[1]);
-                    mDiodeB2.Stamp(Nodes[BodyTerminal], Nodes[2]);
+                    nx = ns;
                 }
+                mDiodeB1.Stamp(ns, nx);
+                mDiodeB2.Stamp(nx, nd);
             }
         }
 
@@ -181,10 +182,12 @@ namespace Circuit.Elements.Active {
             }
 
             if (DoBodyDiode) {
-                mDiodeB1.CirDoStep(Pnp * (Volts[BodyTerminal] - Volts[IdxS]));
-                DiodeCurrent1 = mDiodeB1.CirCalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[IdxS])) * Pnp;
-                mDiodeB2.CirDoStep(Pnp * (Volts[BodyTerminal] - Volts[IdxD]));
-                DiodeCurrent2 = mDiodeB2.CirCalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[IdxD])) * Pnp;
+                var vbs = (Volts[BodyTerminal] - Volts[IdxS]) * Pnp;
+                var vbd = (Volts[BodyTerminal] - Volts[IdxD]) * Pnp;
+                mDiodeB1.CirDoStep(vbs);
+                DiodeCurrent1 = mDiodeB1.CirCalculateCurrent(vbs) * Pnp;
+                mDiodeB2.CirDoStep(vbd);
+                DiodeCurrent2 = mDiodeB2.CirCalculateCurrent(vbd) * Pnp;
             } else {
                 DiodeCurrent1 = DiodeCurrent2 = 0;
             }
@@ -273,10 +276,12 @@ namespace Circuit.Elements.Active {
             }
 
             if (DoBodyDiode) {
-                mDiodeB1.CirDoStep(Pnp * (Volts[BodyTerminal] - Volts[IdxS]));
-                DiodeCurrent1 = mDiodeB1.CirCalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[IdxS])) * Pnp;
-                mDiodeB2.CirDoStep(Pnp * (Volts[BodyTerminal] - Volts[IdxD]));
-                DiodeCurrent2 = mDiodeB2.CirCalculateCurrent(Pnp * (Volts[BodyTerminal] - Volts[IdxD])) * Pnp;
+                var vbs = (Volts[BodyTerminal] - Volts[IdxS]) * Pnp;
+                var vbd = (Volts[BodyTerminal] - Volts[IdxD]) * Pnp;
+                mDiodeB1.CirDoStep(vbs);
+                DiodeCurrent1 = mDiodeB1.CirCalculateCurrent(vbs) * Pnp;
+                mDiodeB2.CirDoStep(vbd);
+                DiodeCurrent2 = mDiodeB2.CirCalculateCurrent(vbd) * Pnp;
             } else {
                 DiodeCurrent1 = DiodeCurrent2 = 0;
             }
