@@ -280,7 +280,7 @@ namespace Circuit {
             int row = 0;
             int speed = 0;
             foreach (var s in List) {
-                if (s == null) {
+                if (s == null || scopeColCount.Length <= s.Position) {
                     break;
                 }
                 if (s.Position > pos) {

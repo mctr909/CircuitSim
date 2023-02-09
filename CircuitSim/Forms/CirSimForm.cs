@@ -1085,10 +1085,15 @@ namespace Circuit {
             }
 
             string dump = dumpCircuit();
-            var fs = new StreamWriter(filePath);
-            fs.Write(dump);
-            fs.Close();
-            fs.Dispose();
+            try {
+                var fs = new FileStream(filePath, FileMode.Create);
+                var sw = new StreamWriter(fs);
+                sw.Write(dump);
+                sw.Close();
+                sw.Dispose();
+            } catch (Exception ex) {
+                Console.WriteLine(ex.ToString());
+            }
         }
 
         static string dumpCircuit() {
