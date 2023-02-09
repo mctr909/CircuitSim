@@ -16,11 +16,7 @@ namespace Circuit.UI.Input {
             arr[0] = "DC";
             arr[1] = "I = " + Utils.CurrentText(elm.Current);
             arr[2] = "V = " + Utils.VoltageText(elm.VoltageDiff);
-            int i = 3;
-            if (elm.Current != 0 && Circuit.ShowResistanceInVoltageSources) {
-                arr[i++] = "(R = " + Utils.UnitText(elm.MaxVoltage / elm.Current, CirSimForm.OHM_TEXT) + ")";
-            }
-            arr[i++] = "P = " + Utils.UnitText(elm.Power, "W");
+            arr[3] = "P = " + Utils.UnitText(elm.Power, "W");
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {

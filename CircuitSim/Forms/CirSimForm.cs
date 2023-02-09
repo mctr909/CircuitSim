@@ -1440,7 +1440,6 @@ namespace Circuit {
                 Mouse.GripElm.IsSelected = me = true;
             }
             if (!onlyGraphicsElmsSelected()) {
-                Console.WriteLine("Snapping x and y");
                 pos = SnapGrid(pos);
             }
             int dx = pos.X - Mouse.DragGrid.X;
@@ -1811,7 +1810,6 @@ namespace Circuit {
         }
 
         static void writeRecoveryToStorage() {
-            Console.WriteLine("write recovery");
             var s = dumpCircuit();
             Storage.GetInstance().SetItem("circuitRecovery", s);
         }
@@ -2337,7 +2335,7 @@ namespace Circuit {
                 if (!IsRunning) {
                     break;
                 }
-            } /* for (iter = 1; ; iter++) */
+            }
 
             mLastIterTime = lit;
             if (delayWireProcessing) {

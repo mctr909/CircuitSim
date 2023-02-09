@@ -265,9 +265,6 @@ namespace Circuit.UI.Input {
                     arr[i++] = "wavelength = " + Utils.UnitText(2.9979e8 / elm.Frequency, "m");
                 }
             }
-            if (elm.WaveForm == ElmVoltage.WAVEFORM.DC && elm.Current != 0 && Circuit.ShowResistanceInVoltageSources) {
-                arr[i++] = "(R = " + Utils.UnitText(elm.MaxVoltage / elm.Current, CirSimForm.OHM_TEXT) + ")";
-            }
             arr[i++] = "P = " + Utils.UnitText(elm.Power, "W");
         }
 
