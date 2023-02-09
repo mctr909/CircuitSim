@@ -1092,7 +1092,7 @@ namespace Circuit {
                 sw.Close();
                 sw.Dispose();
             } catch (Exception ex) {
-                Console.WriteLine(ex.ToString());
+                MessageBox.Show(ex.ToString());
             }
         }
 
