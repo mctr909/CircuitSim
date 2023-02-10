@@ -10,10 +10,10 @@
 
         public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
-                return -mCurrent;
+                return -Current;
             }
             if (n == Position + 1) {
-                return mCurrent;
+                return Current;
             }
             return 0;
         }

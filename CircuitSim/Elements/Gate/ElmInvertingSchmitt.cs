@@ -78,7 +78,7 @@ namespace Circuit.Elements.Gate {
 
         public override double GetCurrentIntoNode(int n) {
             if (n == 1) {
-                return mCurrent;
+                return Current;
             }
             return 0;
         }

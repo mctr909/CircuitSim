@@ -29,10 +29,10 @@ namespace Circuit.Elements.Input {
         public override bool AnaHasGroundConnection(int n1) { return true; }
 
         public override double GetCurrentIntoNode(int n) {
-            return -mCurrent;
+            return -Current;
         }
 
-        public override void CirSetCurrent(int vs, double c) { mCurrent = -c; }
+        public override void CirSetCurrent(int vs, double c) { Current = -c; }
 
         public override void AnaStamp() {
             double v = 0 != Position ? mHiV : mLoV;

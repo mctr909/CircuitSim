@@ -20,7 +20,7 @@
         public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
             if (Position == 1) {
-                mCurrent = 0;
+                Current = 0;
             }
         }
     }

@@ -12,12 +12,12 @@
 
         public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
-                return -mCurrent;
+                return -Current;
             }
             if (n == 2) {
                 return 0;
             }
-            return mCurrent;
+            return Current;
         }
 
         public override bool AnaGetConnection(int n1, int n2) { return !(n1 == 2 || n2 == 2); }
@@ -56,7 +56,7 @@
 
         public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
-            mCurrent = (Volts[0] - Volts[1]) / mResistance;
+            Current = (Volts[0] - Volts[1]) / mResistance;
         }
     }
 }

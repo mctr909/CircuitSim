@@ -61,7 +61,7 @@ namespace Circuit.Elements.Input {
 
         public override double VoltageDiff { get { return Volts[1] - Volts[0]; } }
 
-        public override double Power { get { return -VoltageDiff * mCurrent; } }
+        public override double Power { get { return -VoltageDiff * Current; } }
 
         public override int VoltageSourceCount { get { return 1; } }
 

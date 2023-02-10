@@ -273,9 +273,9 @@ namespace Circuit.Elements.Active {
             Volts[n] = c;
             var voltdiff = Volts[0] - Volts[mDiodeEndNode];
             if (voltdiff >= 0 || mZvoltage == 0) {
-                mCurrent = mLeakage * (Math.Exp(voltdiff * mVdCoef) - 1);
+                Current = mLeakage * (Math.Exp(voltdiff * mVdCoef) - 1);
             } else {
-                mCurrent = mLeakage * (
+                Current = mLeakage * (
                     Math.Exp(voltdiff * mVdCoef)
                     - Math.Exp((-voltdiff - mZoffset) * VZ_COEF)
                     - 1
@@ -284,7 +284,7 @@ namespace Circuit.Elements.Active {
         }
 
         public override void CirIterationFinished() {
-            if (Math.Abs(mCurrent) > 1e12) {
+            if (Math.Abs(Current) > 1e12) {
                 Circuit.Stop("最大電流を超えました", this);
             }
         }

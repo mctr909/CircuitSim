@@ -24,7 +24,6 @@ namespace Circuit.Elements.Active {
         public int Mode { get; private set; } = 0;
         public double Gm { get; private set; } = 0;
 
-        public double Ids { get; private set; }
         public double DiodeCurrent1 { get; private set; }
         public double DiodeCurrent2 { get; private set; }
         public double Vg { get { return Volts[IdxG]; } }
@@ -56,13 +55,11 @@ namespace Circuit.Elements.Active {
             AllocNodes();
         }
 
-        public override double Current { get { return Ids; } }
-
         public override double VoltageDiff { get { return Volts[IdxD] - Volts[IdxS]; } }
 
         public override double Power {
             get {
-                return Ids * (Volts[IdxD] - Volts[IdxS])
+                return Current * (Volts[IdxD] - Volts[IdxS])
                     - DiodeCurrent1 * (Volts[IdxS] - Volts[BodyTerminal])
                     - DiodeCurrent2 * (Volts[IdxD] - Volts[BodyTerminal]);
             }
@@ -78,9 +75,9 @@ namespace Circuit.Elements.Active {
                 return -DiodeCurrent1 - DiodeCurrent2;
             }
             if (n == 1) {
-                return Ids + DiodeCurrent1;
+                return Current + DiodeCurrent1;
             }
-            return -Ids + DiodeCurrent2;
+            return -Current + DiodeCurrent2;
         }
 
         public override void Reset() {
@@ -164,12 +161,12 @@ namespace Circuit.Elements.Active {
                 /* should be all zero, but that causes a singular matrix,
                  * so instead we treat it as a large resistor */
                 Gds = 1e-8;
-                Ids = vds * Gds;
+                Current = vds * Gds;
                 Gm = 0;
                 Mode = 0;
             } else if (vds < vgs - Vt) {
                 /* mode: linear */
-                Ids = Hfe * ((vgs - Vt) * vds - vds * vds * 0.5);
+                Current = Hfe * ((vgs - Vt) * vds - vds * vds * 0.5);
                 Gm = Hfe * vds;
                 Gds = Hfe * (vgs - vds - Vt);
                 Mode = 1;
@@ -178,7 +175,7 @@ namespace Circuit.Elements.Active {
                 Gm = Hfe * (vgs - Vt);
                 /* use very small Gds to avoid nonconvergence */
                 Gds = 1e-8;
-                Ids = 0.5 * Hfe * (vgs - Vt) * (vgs - Vt) + (vds - (vgs - Vt)) * Gds;
+                Current = 0.5 * Hfe * (vgs - Vt) * (vgs - Vt) + (vds - (vgs - Vt)) * Gds;
                 Mode = 2;
             }
 
@@ -194,9 +191,9 @@ namespace Circuit.Elements.Active {
             }
 
             /* flip ids if we swapped source and drain above */
-            var realIds = Ids;
+            var realIds = Current;
             if (idxS == 2 && Pnp == 1 || idxS == 1 && Pnp == -1) {
-                Ids = -Ids;
+                Current = -Current;
             }
 
             var rowD = Circuit.RowInfo[Nodes[idxD] - 1].MapRow;
@@ -252,18 +249,18 @@ namespace Circuit.Elements.Active {
             vgs *= Pnp;
             vds *= Pnp;
 
-            Ids = 0;
+            Current = 0;
             Gm = 0;
             double Gds = 0;
             if (vgs < Vt) {
                 /* should be all zero, but that causes a singular matrix,
                  * so instead we treat it as a large resistor */
                 Gds = 1e-8;
-                Ids = vds * Gds;
+                Current = vds * Gds;
                 Mode = 0;
             } else if (vds < vgs - Vt) {
                 /* linear */
-                Ids = Hfe * ((vgs - Vt) * vds - vds * vds * 0.5);
+                Current = Hfe * ((vgs - Vt) * vds - vds * vds * 0.5);
                 Gm = Hfe * vds;
                 Gds = Hfe * (vgs - vds - Vt);
                 Mode = 1;
@@ -272,7 +269,7 @@ namespace Circuit.Elements.Active {
                 Gm = Hfe * (vgs - Vt);
                 /* use very small Gds to avoid nonconvergence */
                 Gds = 1e-8;
-                Ids = 0.5 * Hfe * (vgs - Vt) * (vgs - Vt) + (vds - (vgs - Vt)) * Gds;
+                Current = 0.5 * Hfe * (vgs - Vt) * (vgs - Vt) + (vds - (vgs - Vt)) * Gds;
                 Mode = 2;
             }
 
@@ -289,7 +286,7 @@ namespace Circuit.Elements.Active {
 
             /* flip ids if we swapped source and drain above */
             if (idxS == 2 && Pnp == 1 || idxS == 1 && Pnp == -1) {
-                Ids = -Ids;
+                Current = -Current;
             }
 
             /* fix current if body is connected to source or drain */
@@ -302,7 +299,7 @@ namespace Circuit.Elements.Active {
             if (Math.Abs(vds) > 1e4) {
                 Circuit.Stop("Vdsが最大を超えました", this);
             }
-            if (Math.Abs(Ids) > 1e3) {
+            if (Math.Abs(Current) > 1e3) {
                 Circuit.Stop("Idsが最大を超えました", this);
             }
         }

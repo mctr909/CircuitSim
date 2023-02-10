@@ -10,7 +10,7 @@
 
         public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
-            mCurrent = (Volts[0] - Volts[1]) / Resistance;
+            Current = (Volts[0] - Volts[1]) / Resistance;
         }
     }
 }

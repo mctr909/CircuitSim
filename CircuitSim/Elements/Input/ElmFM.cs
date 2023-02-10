@@ -38,7 +38,7 @@ namespace Circuit.Elements.Input {
 
         public override int VoltageSourceCount { get { return 1; } }
 
-        public override double Power { get { return -VoltageDiff * mCurrent; } }
+        public override double Power { get { return -VoltageDiff * Current; } }
 
         public override bool AnaHasGroundConnection(int n1) { return true; }
 

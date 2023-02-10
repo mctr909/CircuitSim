@@ -204,7 +204,7 @@ namespace Circuit.UI.Active {
                 string s = "" + (ce.Vt * ce.Pnp);
                 drawCenteredLText(s, DumpInfo.P2, false);
             }
-            ce.CurCount = updateDotCount(-ce.Ids, ce.CurCount);
+            ce.CurCount = updateDotCount(-ce.Current, ce.CurCount);
             drawDots(mSrc[0], mSrc[1], ce.CurCount);
             drawDots(mDrn[1], mDrn[0], ce.CurCount);
             drawDots(mSrc[1], mDrn[1], ce.CurCount);
@@ -236,7 +236,7 @@ namespace Circuit.UI.Active {
             arr[0] = ((ce.Pnp == -1) ? "p-" : "n-") + n;
             arr[0] += " (Vt=" + Utils.VoltageText(ce.Pnp * ce.Vt);
             arr[0] += ", \u03b2=" + ce.Hfe + ")";
-            arr[1] = ((ce.Pnp == 1) ? "Ids = " : "Isd = ") + Utils.CurrentText(ce.Ids);
+            arr[1] = ((ce.Pnp == 1) ? "Ids = " : "Isd = ") + Utils.CurrentText(ce.Current);
             arr[2] = "Vgs = " + Utils.VoltageText(ce.Vg - (ce.Pnp == -1 ? ce.Vd : ce.Vs));
             arr[3] = ((ce.Pnp == 1) ? "Vds = " : "Vsd = ") + Utils.VoltageText(ce.Vd - ce.Vs);
             arr[4] = (ce.Mode == 0) ? "off" : (ce.Mode == 1) ? "linear" : "saturation";

@@ -8,7 +8,6 @@
             AllocNodes();
         }
 
-        protected double mCurrent;
         protected int mVoltSource;
 
         #region [property]
@@ -19,6 +18,8 @@
         public int[] Nodes { get; protected set; }
 
         public double[] Volts { get; protected set; }
+
+        public double Current { get; protected set; }
 
         /// <summary>
         /// number of voltage sources this element needs
@@ -44,11 +45,9 @@
         /// <returns></returns>
         public virtual bool IsWire { get { return false; } }
 
-        public virtual double Current { get { return mCurrent; } }
-
         public virtual double VoltageDiff { get { return Volts[0] - Volts[1]; } }
 
-        public virtual double Power { get { return VoltageDiff * mCurrent; } }
+        public virtual double Power { get { return VoltageDiff * Current; } }
         #endregion
 
         #region [method]
@@ -76,9 +75,9 @@
 
         public virtual double GetCurrentIntoNode(int n) {
             if (n == 0 && PostCount == 2) {
-                return -mCurrent;
+                return -Current;
             } else {
-                return mCurrent;
+                return Current;
             }
         }
         #endregion
@@ -147,7 +146,7 @@
         public virtual void CirPrepareIteration() { }
         public virtual void CirIterationFinished() { }
         public virtual void CirDoIteration() { }
-        public virtual void CirSetCurrent(int vn, double c) { mCurrent = c; }
+        public virtual void CirSetCurrent(int vn, double c) { Current = c; }
         public virtual void CirSetVoltage(int n, double c) { Volts[n] = c; }
         #endregion
     }

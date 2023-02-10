@@ -61,7 +61,7 @@ namespace Circuit.Elements.Active {
         public override void CirSetVoltage(int n, double c) {
             base.CirSetVoltage(n, c);
             mCapVoltDiff = Volts[0] - Volts[1];
-            mCurrent += mCapCurrent;
+            Current += mCapCurrent;
         }
 
         public override void CirSetCurrent(int x, double c) { mCapCurrent = c; }

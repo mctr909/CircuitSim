@@ -12,7 +12,7 @@
 
         public override double VoltageDiff { get { return Volts[V_O] - Volts[V_P]; } }
 
-        public override double Power { get { return Volts[V_O] * mCurrent; } }
+        public override double Power { get { return Volts[V_O] * Current; } }
 
         public override int VoltageSourceCount { get { return 1; } }
 
@@ -20,7 +20,7 @@
 
         public override double GetCurrentIntoNode(int n) {
             if (n == 2) {
-                return -mCurrent;
+                return -Current;
             }
             return 0;
         }

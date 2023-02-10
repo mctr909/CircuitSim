@@ -46,17 +46,17 @@ namespace Circuit.Elements.Output {
 
         public override void CirIterationFinished() {
             mCount++; /*how many counts are in a cycle */
-            mTotal += mCurrent * mCurrent; /* sum of squares */
-            if (mCurrent > mMaxI && mIncreasingI) {
-                mMaxI = mCurrent;
+            mTotal += Current * Current; /* sum of squares */
+            if (Current > mMaxI && mIncreasingI) {
+                mMaxI = Current;
                 mIncreasingI = true;
                 mDecreasingI = false;
             }
 
-            if (mCurrent < mMaxI && mIncreasingI) { /* change of direction I now going down - at start of waveform */
+            if (Current < mMaxI && mIncreasingI) { /* change of direction I now going down - at start of waveform */
                 mLastMaxI = mMaxI; /* capture last maximum */
                                  /* capture time between */
-                mMinI = mCurrent; /* track minimum value */
+                mMinI = Current; /* track minimum value */
                 mIncreasingI = false;
                 mDecreasingI = true;
 
@@ -71,16 +71,16 @@ namespace Circuit.Elements.Output {
 
             }
 
-            if (mCurrent < mMinI && mDecreasingI) { /* I going down, track minimum value */
-                mMinI = mCurrent;
+            if (Current < mMinI && mDecreasingI) { /* I going down, track minimum value */
+                mMinI = Current;
                 mIncreasingI = false;
                 mDecreasingI = true;
             }
 
-            if (mCurrent > mMinI && mDecreasingI) { /* change of direction I now going up */
+            if (Current > mMinI && mDecreasingI) { /* change of direction I now going up */
                 mLastMinI = mMinI; /* capture last minimum */
 
-                mMaxI = mCurrent;
+                mMaxI = Current;
                 mIncreasingI = true;
                 mDecreasingI = false;
 
@@ -95,7 +95,7 @@ namespace Circuit.Elements.Output {
             }
 
             /* need to zero the rms value if it stays at 0 for a while */
-            if (mCurrent == 0) {
+            if (Current == 0) {
                 mZeroCount++;
                 if (mZeroCount > 5) {
                     mTotal = 0;
@@ -109,7 +109,7 @@ namespace Circuit.Elements.Output {
 
             switch (Meter) {
             case AM_VOL:
-                SelectedValue = mCurrent;
+                SelectedValue = Current;
                 break;
             case AM_RMS:
                 SelectedValue = RmsI;

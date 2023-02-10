@@ -36,7 +36,7 @@ namespace Circuit.Elements.Input {
 
         public override int VoltageSourceCount { get { return 1; } }
 
-        public override double Power { get { return -VoltageDiff * mCurrent; } }
+        public override double Power { get { return -VoltageDiff * Current; } }
 
         public override void Reset() {
             mFreqTimeZero = 0;

@@ -6,7 +6,7 @@
 
         public override int PostCount { get { return 1; } }
 
-        public override double GetCurrentIntoNode(int n) { return -mCurrent; }
+        public override double GetCurrentIntoNode(int n) { return -Current; }
 
         public override bool AnaHasGroundConnection(int n1) { return true; }
 
@@ -14,6 +14,6 @@
             Circuit.StampVoltageSource(0, Nodes[0], mVoltSource, 0);
         }
 
-        public override void CirSetCurrent(int x, double c) { mCurrent = -c; }
+        public override void CirSetCurrent(int x, double c) { Current = -c; }
     }
 }

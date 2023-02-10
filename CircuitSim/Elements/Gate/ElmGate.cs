@@ -35,7 +35,7 @@
 
         public override double GetCurrentIntoNode(int n) {
             if (n == InputCount) {
-                return mCurrent;
+                return Current;
             }
             return 0;
         }

@@ -28,7 +28,7 @@
 
         public override double GetCurrentIntoNode(int n) {
             if (n == 1) {
-                return mCurrent;
+                return Current;
             }
             return 0;
         }
@@ -56,7 +56,7 @@
 
         public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
-            mCurrent = (Volts[0] - Volts[1]) / mResistance;
+            Current = (Volts[0] - Volts[1]) / mResistance;
         }
     }
 }

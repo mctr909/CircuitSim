@@ -44,7 +44,7 @@ namespace Circuit.Elements.Output {
 
         public override int VoltageSourceCount { get { return 1; } }
 
-        public override double GetCurrentIntoNode(int n) { return -mCurrent; }
+        public override double GetCurrentIntoNode(int n) { return -Current; }
 
         public static void ResetNodeList() {
             mNodeList = new Dictionary<string, int>();
@@ -72,7 +72,7 @@ namespace Circuit.Elements.Output {
             }
         }
 
-        public override void CirSetCurrent(int x, double c) { mCurrent = -c; }
+        public override void CirSetCurrent(int x, double c) { Current = -c; }
 
         public override void CirSetVoltage(int n, double c) {
             if (n == 0) {

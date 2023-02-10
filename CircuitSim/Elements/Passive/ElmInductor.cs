@@ -9,18 +9,18 @@
 
         public ElmInductor(double inductance, double c) : base() {
             Inductance = inductance;
-            mCurrent = c;
+            Current = c;
         }
 
         public override int PostCount { get { return 2; } }
 
         public void Setup(double ic, double cr) {
             Inductance = ic;
-            mCurrent = cr;
+            Current = cr;
         }
 
         public override void Reset() {
-            mCurrent = Volts[0] = Volts[1] = CurCount = mCurSourceValue = 0;
+            Current = Volts[0] = Volts[1] = CurCount = mCurSourceValue = 0;
         }
 
         public override void AnaStamp() {
@@ -31,7 +31,7 @@
         }
 
         public override void CirPrepareIteration() {
-            mCurSourceValue = (Volts[0] - Volts[1]) / mCompResistance + mCurrent;
+            mCurSourceValue = (Volts[0] - Volts[1]) / mCompResistance + Current;
         }
 
         public override void CirDoIteration() {
@@ -43,7 +43,7 @@
 
         public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
-            mCurrent = (Volts[0] - Volts[1]) / mCompResistance + mCurSourceValue;
+            Current = (Volts[0] - Volts[1]) / mCompResistance + mCurSourceValue;
         }
     }
 }

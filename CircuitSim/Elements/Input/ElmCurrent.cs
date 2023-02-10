@@ -14,18 +14,18 @@
 
         public override double VoltageDiff { get { return Volts[1] - Volts[0]; } }
 
-        public override double Power { get { return -VoltageDiff * mCurrent; } }
+        public override double Power { get { return -VoltageDiff * Current; } }
 
         /* we defer stamping current sources until we can tell if they have a current path or not */
         public void stampCurrentSource(bool broken) {
             if (broken) {
                 /* no current path; stamping a current source would cause a matrix error. */
                 Circuit.StampResistor(Nodes[0], Nodes[1], 1e8);
-                mCurrent = 0;
+                Current = 0;
             } else {
                 /* ok to stamp a current source */
                 Circuit.StampCurrentSource(Nodes[0], Nodes[1], mCurrentValue);
-                mCurrent = mCurrentValue;
+                Current = mCurrentValue;
             }
         }
     }
