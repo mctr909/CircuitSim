@@ -56,7 +56,6 @@ namespace Circuit {
         CAPACITOR_POLER,
         INDUCTOR,
         TRANSFORMER,
-        CRYSTAL,
         #endregion
 
         #region Active Components
@@ -254,7 +253,6 @@ namespace Circuit {
         OPTO_COUPLER = 407,
         STOP_TRIGGER = 408,
         CUSTOM_COMPOSITE = 410,
-        CRYSTAL = 412,
         SRAM = 413,
     }
 
@@ -431,14 +429,6 @@ namespace Circuit {
             addElementItem(passMenuBar, "可変抵抗", ELEMENTS.POT);
             addElementItem(passMenuBar, "コンデンサ(有極性)", ELEMENTS.CAPACITOR_POLER);
             addElementItem(passMenuBar, "トランス", ELEMENTS.TRANSFORMER);
-            passMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(passMenuBar, "スイッチ", ELEMENTS.SWITCH);
-            addElementItem(passMenuBar, "切り替えスイッチ", ELEMENTS.SWITCH_MULTI);
-            addElementItem(passMenuBar, "プッシュスイッチ(C接点)", ELEMENTS.SWITCH_PUSH_C);
-            addElementItem(passMenuBar, "プッシュスイッチ(NC)", ELEMENTS.SWITCH_PUSH_NC);
-            addElementItem(passMenuBar, "プッシュスイッチ(NO)", ELEMENTS.SWITCH_PUSH_NO);
-            passMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(passMenuBar, "水晶振動子", ELEMENTS.CRYSTAL);
             mainMenuBar.Items.Add(passMenuBar);
             #endregion
 
@@ -462,6 +452,18 @@ namespace Circuit {
             addElementItem(activeMenuBar, "フォトカプラ", ELEMENTS.OPTOCOUPLER);
             addElementItem(activeMenuBar, "アナログスイッチ", ELEMENTS.ANALOG_SWITCH);
             mainMenuBar.Items.Add(activeMenuBar);
+            #endregion
+
+            #region Switch
+            var switchMenuBar = new ToolStripMenuItem();
+            switchMenuBar.Text = "スイッチ(S)";
+            switchMenuBar.Font = menuFont;
+            addElementItem(switchMenuBar, "スイッチ", ELEMENTS.SWITCH);
+            addElementItem(switchMenuBar, "切り替えスイッチ", ELEMENTS.SWITCH_MULTI);
+            addElementItem(switchMenuBar, "プッシュスイッチ(C接点)", ELEMENTS.SWITCH_PUSH_C);
+            addElementItem(switchMenuBar, "プッシュスイッチ(NC)", ELEMENTS.SWITCH_PUSH_NC);
+            addElementItem(switchMenuBar, "プッシュスイッチ(NO)", ELEMENTS.SWITCH_PUSH_NO);
+            mainMenuBar.Items.Add(switchMenuBar);
             #endregion
 
             #region Inputs and Sources
@@ -606,8 +608,6 @@ namespace Circuit {
                 return new Inductor(pos);
             case ELEMENTS.TRANSFORMER:
                 return new Transformer(pos);
-            case ELEMENTS.CRYSTAL:
-                return new Crystal(pos);
             #endregion
 
             #region Active Components
@@ -806,8 +806,6 @@ namespace Circuit {
                 return new Inductor(p1, p2, f, st);
             case DUMP_ID.TRANSFORMER:
                 return new Transformer(p1, p2, f, st);
-            case DUMP_ID.CRYSTAL:
-                return new Crystal(p1, p2, f, st);
             #endregion
 
             #region Active Components

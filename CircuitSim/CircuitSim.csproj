@@ -129,8 +129,6 @@
     <Compile Include="UI\Output\VoltMeter.cs" />
     <Compile Include="Elements\Passive\ElmCapacitor.cs" />
     <Compile Include="UI\Input\Rail.cs" />
-    <Compile Include="UI\Passive\Crystal.cs" />
-    <Compile Include="Elements\Passive\ElmCrystal.cs" />
     <Compile Include="Elements\Passive\ElmGround.cs" />
     <Compile Include="Elements\Passive\ElmInductor.cs" />
     <Compile Include="Elements\Passive\ElmPolarCapacitor.cs" />

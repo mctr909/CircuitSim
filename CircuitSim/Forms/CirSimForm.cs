@@ -2277,7 +2277,11 @@ namespace Circuit {
                 saveFileDialog.Filter = "PDFファイル(*.pdf)|*.pdf";
                 saveFileDialog.FileName = Path.GetFileNameWithoutExtension(mFileName);
                 saveFileDialog.ShowDialog();
-                pdf.Save(saveFileDialog.FileName);
+                try {
+                    pdf.Save(saveFileDialog.FileName);
+                } catch(Exception ex) {
+                    MessageBox.Show(ex.ToString());
+                }
                 BaseUI.Context = CustomGraphics.FromImage(g.Width, g.Height);
             }
             mLastFrameTime = mLastTime;
