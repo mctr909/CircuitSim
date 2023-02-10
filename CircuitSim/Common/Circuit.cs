@@ -40,7 +40,6 @@ namespace Circuit {
         static BaseElement[] mVoltageSources;
 
         static bool mCircuitNeedsMap;
-        static bool mCircuitNonLinear;
 
         static int mMatrixSize;
         static int mMatrixFullSize;
@@ -519,19 +518,19 @@ namespace Circuit {
             int vscount = 0;
             {
                 ElmLabeledNode.ResetNodeList();
-                for (int i = 0; i != CirSimForm.ElmCount; i++) {
-                    var ce = CirSimForm.GetElm(i);
-                    var cee = ce.Elm;
-                    if (null == cee) {
+                for (int i = 0; i < CirSimForm.ElmCount; i++) {
+                    var ui = CirSimForm.ElmList[i];
+                    var ce = ui.Elm;
+                    if (null == ce) {
                         continue;
                     }
-                    int inodes = cee.InternalNodeCount;
-                    int ivs = cee.VoltageSourceCount;
-                    int posts = cee.PostCount;
+                    int inodes = ce.InternalNodeCount;
+                    int ivs = ce.VoltageSourceCount;
+                    int posts = ce.PostCount;
 
                     /* allocate a node for each post and match posts to nodes */
-                    for (int j = 0; j != posts; j++) {
-                        var pt = ce.GetPost(j);
+                    for (int j = 0; j < posts; j++) {
+                        var pt = ui.GetPost(j);
                         if (mPostCountMap.ContainsKey(pt)) {
                             int g = mPostCountMap[pt];
                             mPostCountMap[pt] = g + 1;
@@ -553,10 +552,10 @@ namespace Circuit {
                             var cn = new CircuitNode();
                             var cnl = new CircuitNodeLink();
                             cnl.Num = j;
-                            cnl.UI = ce;
-                            cnl.Elm = cee;
+                            cnl.UI = ui;
+                            cnl.Elm = ce;
                             cn.Links.Add(cnl);
-                            cee.AnaSetNode(j, NodeList.Count);
+                            ce.AnaSetNode(j, NodeList.Count);
                             if (ccln) {
                                 cln.Node = NodeList.Count;
                             } else {
@@ -567,53 +566,46 @@ namespace Circuit {
                             int n = cln.Node;
                             var cnl = new CircuitNodeLink();
                             cnl.Num = j;
-                            cnl.UI = ce;
-                            cnl.Elm = cee;
+                            cnl.UI = ui;
+                            cnl.Elm = ce;
                             getCircuitNode(n).Links.Add(cnl);
-                            cee.AnaSetNode(j, n);
+                            ce.AnaSetNode(j, n);
                             /* if it's the ground node, make sure the node voltage is 0,
                             /* cause it may not get set later */
                             if (n == 0) {
-                                cee.CirSetVoltage(j, 0);
+                                ce.CirSetVoltage(j, 0);
                             }
                         }
                     }
-                    for (int j = 0; j != inodes; j++) {
+                    for (int j = 0; j < inodes; j++) {
                         var cn = new CircuitNode();
                         cn.Internal = true;
                         var cnl = new CircuitNodeLink();
                         cnl.Num = j + posts;
-                        cnl.UI = ce;
-                        cnl.Elm = cee;
+                        cnl.UI = ui;
+                        cnl.Elm = ce;
                         cn.Links.Add(cnl);
-                        cee.AnaSetNode(cnl.Num, NodeList.Count);
+                        ce.AnaSetNode(cnl.Num, NodeList.Count);
                         NodeList.Add(cn);
                     }
                     vscount += ivs;
                 }
+
                 makePostDrawList();
                 if (calcWireInfo()) {
                     mNodeMap = null; /* done with this */
                 } else {
                     return;
                 }
-            }
 
-            /* determine if circuit is nonlinear */
-            {
                 mVoltageSources = new BaseElement[vscount];
                 vscount = 0;
-                mCircuitNonLinear = false;
-                for (int i = 0; i != CirSimForm.ElmCount; i++) {
-                    var ce = CirSimForm.GetElm(i);
-                    var cee = ce.Elm;
-                    if (cee.NonLinear) {
-                        mCircuitNonLinear = true;
-                    }
-                    int ivs = cee.VoltageSourceCount;
-                    for (int j = 0; j != ivs; j++) {
-                        mVoltageSources[vscount] = cee;
-                        cee.AnaSetVoltageSource(j, vscount++);
+                for (int i = 0; i < CirSimForm.ElmCount; i++) {
+                    var ce = CirSimForm.GetElm(i).Elm;
+                    int ivs = ce.VoltageSourceCount;
+                    for (int j = 0; j < ivs; j++) {
+                        mVoltageSources[vscount] = ce;
+                        ce.AnaSetVoltageSource(j, vscount++);
                     }
                 }
             }
@@ -622,7 +614,7 @@ namespace Circuit {
             Matrix = new double[matrixSize, matrixSize];
             RightSide = new double[matrixSize];
             RowInfo = new ROW_INFO[matrixSize];
-            for (int i = 0; i != matrixSize; i++) {
+            for (int i = 0; i < matrixSize; i++) {
                 RowInfo[i] = new ROW_INFO();
             }
             mMatrixSize = mMatrixFullSize = matrixSize;
@@ -632,8 +624,8 @@ namespace Circuit {
             mCircuitNeedsMap = false;
 
             /* stamp linear circuit elements */
-            for (int i = 0; i != CirSimForm.ElmCount; i++) {
-                var cee = CirSimForm.GetElm(i).Elm;
+            for (int i = 0; i < CirSimForm.ElmCount; i++) {
+                var cee = CirSimForm.ElmList[i].Elm;
                 cee.AnaStamp();
             }
 
@@ -764,26 +756,12 @@ namespace Circuit {
             }
 
             if (DEBUG) {
-                Console.WriteLine("matrixSize = " + matrixSize + " " + mCircuitNonLinear);
+                Console.WriteLine("Matrix size:" + matrixSize);
                 for (int j = 0; j != mMatrixSize; j++) {
                     Console.WriteLine("RightSide[{0}]:{1}", j, RightSide[j]);
                     for (int i = 0; i != mMatrixSize; i++) {
                         Console.WriteLine("  Matrix[{0},{1}]:{2}", j, i, Matrix[j, i]);
                     }
-                }
-            }
-
-            /* check if we called stop() */
-            if (Matrix == null) {
-                return;
-            }
-
-            /* if a matrix is linear, we can do the lu_factor here instead of
-            /* needing to do it every frame */
-            if (!mCircuitNonLinear) {
-                if (!luFactor(Matrix, mMatrixSize, mPermute)) {
-                    stop("Singular matrix!");
-                    return;
                 }
             }
         }
@@ -800,16 +778,14 @@ namespace Circuit {
             for (subiter = 0; subiter < SubIterMax; subiter++) {
                 Converged = true;
                 SubIterations = subiter;
+
+                Array.Copy(mOrigRightSide, RightSide, mMatrixSize);
                 for (int i = 0; i < mMatrixSize; i++) {
-                    RightSide[i] = mOrigRightSide[i];
-                }
-                if (mCircuitNonLinear) {
-                    for (int i = 0; i < mMatrixSize; i++) {
-                        for (int j = 0; j < mMatrixSize; j++) {
-                            Matrix[i, j] = mOrigMatrix[i, j];
-                        }
+                    for (int j = 0; j < mMatrixSize; j++) {
+                        Matrix[i, j] = mOrigMatrix[i, j];
                     }
                 }
+
                 for (int i = 0; i < elmCount; i++) {
                     var ce = CirSimForm.ElmList[i].Elm;
                     ce.CirDoIteration();
@@ -827,14 +803,14 @@ namespace Circuit {
                         }
                     }
                 }
-                if (mCircuitNonLinear) {
-                    if (Converged && subiter > 0) {
-                        break;
-                    }
-                    if (!luFactor(Matrix, mMatrixSize, mPermute)) {
-                        stop("Singular matrix!");
-                        return false;
-                    }
+
+                if (Converged && subiter > 0) {
+                    break;
+                }
+
+                if (!luFactor(Matrix, mMatrixSize, mPermute)) {
+                    stop("Singular matrix!");
+                    return false;
                 }
                 luSolve(Matrix, mMatrixSize, mPermute, RightSide);
 
@@ -861,9 +837,6 @@ namespace Circuit {
                         int ji = j - (NodeList.Count - 1);
                         mVoltageSources[ji].CirSetCurrent(ji, res);
                     }
-                }
-                if (!mCircuitNonLinear) {
-                    break;
                 }
             }
 

@@ -20,11 +20,6 @@
             } catch { }
         }
 
-        /* we need this to be able to change the matrix for each step */
-        public override bool NonLinear {
-            get { return true; }
-        }
-
         public override int PostCount { get { return 3; } }
 
         public override int InternalNodeCount { get { return 1; } }

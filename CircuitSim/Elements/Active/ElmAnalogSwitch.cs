@@ -8,8 +8,6 @@
 
         public bool IsOpen { get; private set; }
 
-        public override bool NonLinear { get { return true; } }
-
         public override int PostCount { get { return 3; } }
 
         public override double GetCurrentIntoNode(int n) {

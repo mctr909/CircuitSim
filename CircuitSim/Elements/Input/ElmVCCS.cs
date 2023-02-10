@@ -32,8 +32,6 @@ namespace Circuit.Elements.Input {
 
         public override int VoltageSourceCount { get { return 0; } }
 
-        public override bool NonLinear { get { return true; } }
-
         public override int PostCount { get { return InputCount + 2; } }
 
         public override void SetupPins(Chip ui) {

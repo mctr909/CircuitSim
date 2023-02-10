@@ -49,8 +49,6 @@
         public virtual double VoltageDiff { get { return Volts[0] - Volts[1]; } }
 
         public virtual double Power { get { return VoltageDiff * mCurrent; } }
-
-        public virtual bool NonLinear { get { return false; } }
         #endregion
 
         #region [method]

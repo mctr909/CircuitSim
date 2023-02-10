@@ -68,8 +68,6 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override bool NonLinear { get { return true; } }
-
         public override int PostCount { get { return 3; } }
 
         public override double GetCurrentIntoNode(int n) {

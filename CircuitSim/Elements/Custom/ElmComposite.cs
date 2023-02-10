@@ -51,14 +51,6 @@ namespace Circuit.Elements.Custom {
 
         public override int InternalNodeCount { get { return mNumNodes - NumPosts; } }
 
-        public override bool NonLinear {
-            get {
-                /* Lets assume that any useful composite elements are
-                 * non-linear */
-                return true;
-            }
-        }
-
         public override void Reset() {
             for (int i = 0; i < CompElmList.Count; i++) {
                 CompElmList[i].Elm.Reset();

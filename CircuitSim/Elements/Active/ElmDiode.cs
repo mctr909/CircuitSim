@@ -91,8 +91,6 @@ namespace Circuit.Elements.Active {
 
         public override int InternalNodeCount { get { return mHasResistance ? 1 : 0; } }
 
-        public override bool NonLinear { get { return true; } }
-
         public void Setup() {
             mModel = DiodeModel.GetModelWithNameOrCopy(mModelName, mModel);
             mModelName = mModel.Name;

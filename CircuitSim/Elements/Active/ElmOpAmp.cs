@@ -16,8 +16,6 @@
 
         public override int VoltageSourceCount { get { return 1; } }
 
-        public override bool NonLinear { get { return true; } }
-
         public override int PostCount { get { return 3; } }
 
         public override double GetCurrentIntoNode(int n) {

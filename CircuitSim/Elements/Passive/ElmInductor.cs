@@ -14,8 +14,6 @@
 
         public override int PostCount { get { return 2; } }
 
-        public override bool NonLinear { get { return false; } }
-
         public void Setup(double ic, double cr) {
             Inductance = ic;
             mCurrent = cr;
