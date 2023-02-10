@@ -83,7 +83,6 @@ namespace Circuit.Elements.Active {
         public override void Reset() {
             mLastV[1] = mLastV[2] = 0;
             Volts[IdxG] = Volts[IdxS] = Volts[IdxD] = 0;
-            CurCount = 0;
             mDiode1LastVoltDiff = 0.0;
             mDiode2LastVoltDiff = 0.0;
         }

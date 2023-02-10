@@ -66,8 +66,8 @@ namespace Circuit.UI.Active {
             drawLead(mTextp[4], mTextp[5]);
 
             var ce = (ElmOpAmp)Elm;
-            ce.CurCount = updateDotCount(ce.Current, ce.CurCount);
-            drawDots(mPost2, mLead2, ce.CurCount);
+            CurCount = updateDotCount(ce.Current, CurCount);
+            drawDots(mPost2, mLead2, CurCount);
             drawPosts();
         }
 

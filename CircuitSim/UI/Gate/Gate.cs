@@ -122,8 +122,8 @@ namespace Circuit.UI.Gate {
             if (ce.IsInverting) {
                 g.DrawCircle(mCirclePos, CIRCLE_SIZE);
             }
-            ce.CurCount = updateDotCount(ce.Current, ce.CurCount);
-            drawDots(mLead2, mPost2, ce.CurCount);
+            CurCount = updateDotCount(ce.Current, CurCount);
+            drawDots(mLead2, mPost2, CurCount);
             drawPosts();
         }
 

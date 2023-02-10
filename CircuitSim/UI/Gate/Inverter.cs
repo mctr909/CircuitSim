@@ -65,8 +65,8 @@ namespace Circuit.UI.Gate {
                 drawCenteredLText("1", mCenter, true);
             }
             g.DrawCircle(mPcircle, 3);
-            ce.CurCount = updateDotCount(ce.Current, ce.CurCount);
-            drawDots(mLead2, mPost2, ce.CurCount);
+            CurCount = updateDotCount(ce.Current, CurCount);
+            drawDots(mLead2, mPost2, CurCount);
         }
 
         public override void GetInfo(string[] arr) {

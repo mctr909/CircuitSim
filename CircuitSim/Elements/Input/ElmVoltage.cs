@@ -32,7 +32,6 @@ namespace Circuit.Elements.Input {
             MaxVoltage = 5;
             Frequency = 100;
             DutyCycle = .5;
-            Reset();
         }
 
         public ElmVoltage(StringTokenizer st) {
@@ -40,7 +39,6 @@ namespace Circuit.Elements.Input {
             Frequency = 100;
             WaveForm = WAVEFORM.DC;
             DutyCycle = .5;
-
             try {
                 WaveForm = st.nextTokenEnum<WAVEFORM>();
                 Frequency = st.nextTokenDouble();
@@ -53,8 +51,6 @@ namespace Circuit.Elements.Input {
                 LinkFrequency = st.nextTokenInt();
                 LinkPhaseOffset = st.nextTokenInt();
             } catch { }
-
-            Reset();
         }
 
         public override int PostCount { get { return 2; } }
@@ -65,9 +61,7 @@ namespace Circuit.Elements.Input {
 
         public override int VoltageSourceCount { get { return 1; } }
 
-        public override void Reset() {
-            CurCount = 0;
-        }
+        public override void Reset() { }
 
         public override void AnaStamp() {
             if (WaveForm == WAVEFORM.DC) {

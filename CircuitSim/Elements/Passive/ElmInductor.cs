@@ -20,7 +20,7 @@
         }
 
         public override void Reset() {
-            Current = Volts[0] = Volts[1] = CurCount = mCurSourceValue = 0;
+            Current = Volts[0] = Volts[1] = mCurSourceValue = 0;
         }
 
         public override void AnaStamp() {

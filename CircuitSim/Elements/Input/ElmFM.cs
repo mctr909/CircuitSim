@@ -29,7 +29,6 @@ namespace Circuit.Elements.Input {
 
         public override void Reset() {
             mFreqTimeZero = 0;
-            CurCount = 0;
         }
 
         public override int PostCount { get { return 1; } }

@@ -56,8 +56,8 @@ namespace Circuit.UI.Output {
                     g.DrawLine(DumpInfo.P2.X - sw / 2, ya, DumpInfo.P2.X + sw / 2, ya);
                 }
             }
-            ce.CurCount = updateDotCount(ce.Current, ce.CurCount);
-            drawDots(mPost1, mLead1, ce.CurCount);
+            CurCount = updateDotCount(ce.Current, CurCount);
+            drawDots(mPost1, mLead1, CurCount);
             interpPoint(ref mPos, 1 + 11.0 / mLen);
             setBbox(mPost1, mPos, CircleSize);
             drawPosts();

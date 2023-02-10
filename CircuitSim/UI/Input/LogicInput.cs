@@ -46,7 +46,7 @@ namespace Circuit.UI.Input {
             drawCenteredLText(s, DumpInfo.P2, true);
             drawLead(mPost1, mLead1);
             updateDotCount();
-            drawDots(mPost1, mLead1, ce.CurCount);
+            drawDots(mPost1, mLead1, CurCount);
             drawPosts();
         }
 

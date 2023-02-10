@@ -99,8 +99,8 @@ namespace Circuit.UI.Active {
 
             setBbox(mPost1, mPost2, CR_INNER);
             updateDotCount();
-            drawDots(mPost1, mLedLead1, ce.CurCount);
-            drawDots(mPost2, mLedLead2, -ce.CurCount);
+            drawDots(mPost1, mLedLead1, CurCount);
+            drawDots(mPost2, mLedLead2, -CurCount);
             drawPosts();
         }
 

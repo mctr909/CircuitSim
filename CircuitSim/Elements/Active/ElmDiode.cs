@@ -119,7 +119,7 @@ namespace Circuit.Elements.Active {
 
         public override void Reset() {
             mLastVoltDiff = 0;
-            Volts[0] = Volts[1] = CurCount = 0;
+            Volts[0] = Volts[1] = 0;
             if (mHasResistance) {
                 Volts[2] = 0;
             }

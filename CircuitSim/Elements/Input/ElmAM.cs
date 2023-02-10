@@ -40,7 +40,6 @@ namespace Circuit.Elements.Input {
 
         public override void Reset() {
             mFreqTimeZero = 0;
-            CurCount = 0;
         }
 
         public override bool AnaHasGroundConnection(int n1) { return true; }

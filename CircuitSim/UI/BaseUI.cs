@@ -72,6 +72,8 @@ namespace Circuit.UI {
         public virtual int DefaultFlags { get { return 0; } }
 
         protected virtual int NumHandles { get { return 2; } }
+
+        protected double CurCount { get; set; }
         #endregion
 
         #region [variable]
@@ -158,7 +160,7 @@ namespace Circuit.UI {
         protected void doDots() {
             updateDotCount();
             if (CirSimForm.DragElm != this) {
-                drawDots(mPost1, mPost2, Elm.CurCount);
+                drawDots(mPost1, mPost2, CurCount);
             }
         }
 
@@ -181,7 +183,7 @@ namespace Circuit.UI {
         /// update dot positions (curcount) for drawing current (simple case for single current)
         /// </summary>
         protected void updateDotCount() {
-            Elm.CurCount = updateDotCount(Elm.Current, Elm.CurCount);
+            CurCount = updateDotCount(Elm.Current, CurCount);
         }
 
         protected int getBasicInfo(string[] arr) {

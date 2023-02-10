@@ -90,9 +90,9 @@ namespace Circuit.UI.Passive {
             g.DrawLine(mLead1, mSwPoles[ce.Position]);
 
             updateDotCount();
-            drawDots(mPost1, mLead1, ce.CurCount);
+            drawDots(mPost1, mLead1, CurCount);
             if (ce.Position != 2) {
-                drawDots(mSwPoles[ce.Position], mSwPosts[ce.Position], ce.CurCount);
+                drawDots(mSwPoles[ce.Position], mSwPosts[ce.Position], CurCount);
             }
             drawPosts();
         }

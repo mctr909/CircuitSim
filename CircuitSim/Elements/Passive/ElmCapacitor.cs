@@ -11,14 +11,14 @@
 
         public override void Reset() {
             base.Reset();
-            Current = CurCount = mCurSourceValue = 0;
+            Current = mCurSourceValue = 0;
             /* put small charge on caps when reset to start oscillators */
             VoltDiff = 1e-3;
         }
 
         public override void AnaShorted() {
             base.Reset();
-            VoltDiff = Current = CurCount = mCurSourceValue = 0;
+            VoltDiff = Current = mCurSourceValue = 0;
         }
 
         public override void AnaStamp() {

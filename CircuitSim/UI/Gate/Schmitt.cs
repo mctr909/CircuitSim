@@ -21,8 +21,8 @@ namespace Circuit.UI.Gate {
             g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             g.DrawPolygon(gatePoly);
             g.DrawPolygon(symbolPoly);
-            ce.CurCount = updateDotCount(ce.Current, ce.CurCount);
-            drawDots(mLead2, mPost2, ce.CurCount);
+            CurCount = updateDotCount(ce.Current, CurCount);
+            drawDots(mLead2, mPost2, CurCount);
         }
 
         public override void SetPoints() {

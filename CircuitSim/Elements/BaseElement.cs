@@ -13,8 +13,6 @@
         #region [property]
         public abstract int PostCount { get; }
 
-        public double CurCount { get; set; }
-
         public int[] Nodes { get; protected set; }
 
         public double[] Volts { get; protected set; }
@@ -70,7 +68,6 @@
             for (int i = 0; i != PostCount + InternalNodeCount; i++) {
                 Volts[i] = 0;
             }
-            CurCount = 0;
         }
 
         public virtual double GetCurrentIntoNode(int n) {
