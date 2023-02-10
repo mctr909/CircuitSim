@@ -10,10 +10,6 @@ namespace Circuit.Elements.Output {
         public const int TP_MIN = 3;
         public const int TP_P2P = 4;
         public const int TP_BIN = 5;
-        public const int TP_FRQ = 6;
-        public const int TP_PER = 7;
-        public const int TP_PWI = 8;
-        public const int TP_DUT = 9; /* mark to space ratio */
 
         public int Meter;
         public E_SCALE Scale;
@@ -22,10 +18,6 @@ namespace Circuit.Elements.Output {
         public double BinaryLevel { get; private set; } = 0; /*0 or 1 - double because we only pass doubles back to the web page */
         public double LastMaxV { get; private set; }
         public double LastMinV { get; private set; }
-        public double Frequency { get; private set; } = 0;
-        public double Period { get; private set; } = 0;
-        public double PulseWidth { get; private set; } = 0;
-        public double DutyCycle { get; private set; } = 0;
         public double SelectedValue { get; private set; } = 0;
 
         double mTotal;
@@ -36,10 +28,6 @@ namespace Circuit.Elements.Output {
 
         bool mIncreasingV = true;
         bool mDecreasingV = true;
-
-        long mPeriodStart; /* time between consecutive max values */
-        long mPeriodLength;
-        long mPulseStart;
 
         public ElmVoltMeter() : base() {
             Meter = TP_VOL;
@@ -78,12 +66,6 @@ namespace Circuit.Elements.Output {
             if (v < mMaxV && mIncreasingV) { /* change of direction V now going down - at start of waveform */
                 LastMaxV = mMaxV; /* capture last maximum */
                                    /* capture time between */
-                var now = DateTime.Now.ToFileTimeUtc();
-                mPeriodLength = now - mPeriodStart;
-                mPeriodStart = now;
-                Period = mPeriodLength;
-                PulseWidth = now - mPulseStart;
-                DutyCycle = PulseWidth / mPeriodLength;
                 mMinV = v; /* track minimum value with V */
                 mIncreasingV = false;
                 mDecreasingV = true;
@@ -106,7 +88,6 @@ namespace Circuit.Elements.Output {
 
             if (v > mMinV && mDecreasingV) { /* change of direction V now going up */
                 LastMinV = mMinV; /* capture last minimum */
-                mPulseStart = DateTime.Now.ToFileTimeUtc();
                 mMaxV = v;
                 mIncreasingV = true;
                 mDecreasingV = false;
@@ -151,14 +132,6 @@ namespace Circuit.Elements.Output {
                 return "Peak to peak";
             case TP_BIN:
                 return "Binary";
-            case TP_FRQ:
-                return "Frequency";
-            case TP_PER:
-                return "Period";
-            case TP_PWI:
-                return "Pulse width";
-            case TP_DUT:
-                return "Duty cycle";
             }
             return "";
         }

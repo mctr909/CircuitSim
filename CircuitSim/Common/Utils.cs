@@ -283,7 +283,7 @@ namespace Circuit {
             double va = Math.Abs(v);
             if (va < 1e-14) {
                 /* this used to return null, but then wires would display "null" with 0V */
-                return "0" + u;
+                return "0.00" + u;
             }
             if (va < 1e-8) {
                 return format(v * 1e12, isShort) + "p" + u;

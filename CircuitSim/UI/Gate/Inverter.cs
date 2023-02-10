@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Collections.Generic;
 
 using Circuit.Elements.Gate;
 
@@ -17,6 +18,12 @@ namespace Circuit.UI.Gate {
         public Inverter(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new ElmInverter(st);
             mNoDiagonal = true;
+        }
+
+        protected override void dump(List<object> optionList) {
+            var ce = (ElmInverter)Elm;
+            optionList.Add(ce.SlewRate);
+            optionList.Add(ce.HighVoltage);
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.INVERT; } }

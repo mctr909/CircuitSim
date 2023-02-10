@@ -7,7 +7,7 @@ namespace Circuit.UI.Output {
     class VoltMeter : BaseUI {
         const int FLAG_SHOWVOLTAGE = 1;
 
-        Point mCenter;
+        protected Point mCenter;
         Point mPlusPoint;
 
         public VoltMeter(Point pos) : base(pos) {
@@ -32,12 +32,11 @@ namespace Circuit.UI.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            interpPoint(ref mCenter, 0.5, 12 * mDsign);
+            interpPoint(ref mCenter, 0.5);
             interpPoint(ref mPlusPoint, 8.0 / mLen, 6 * mDsign);
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (ElmVoltMeter)Elm;
             int hs = 8;
             setBbox(mPost1, mPost2, hs);
             bool selected = NeedsHighlight;
@@ -65,42 +64,7 @@ namespace Circuit.UI.Output {
                 drawCenteredLText("Y", mCenter, true);
             }
 
-            if (mustShowVoltage()) {
-                string s = "";
-                switch (ce.Meter) {
-                case ElmVoltMeter.TP_VOL:
-                    s = Utils.UnitTextWithScale(ce.VoltageDiff, "V", ce.Scale);
-                    break;
-                case ElmVoltMeter.TP_RMS:
-                    s = Utils.UnitTextWithScale(ce.RmsV, "V(rms)", ce.Scale);
-                    break;
-                case ElmVoltMeter.TP_MAX:
-                    s = Utils.UnitTextWithScale(ce.LastMaxV, "Vpk", ce.Scale);
-                    break;
-                case ElmVoltMeter.TP_MIN:
-                    s = Utils.UnitTextWithScale(ce.LastMinV, "Vmin", ce.Scale);
-                    break;
-                case ElmVoltMeter.TP_P2P:
-                    s = Utils.UnitTextWithScale(ce.LastMaxV - ce.LastMinV, "Vp2p", ce.Scale);
-                    break;
-                case ElmVoltMeter.TP_BIN:
-                    s = ce.BinaryLevel + "";
-                    break;
-                case ElmVoltMeter.TP_FRQ:
-                    s = Utils.UnitText(ce.Frequency, "Hz");
-                    break;
-                case ElmVoltMeter.TP_PER:
-                    s = "percent:" + ce.Period + " " + ControlPanel.TimeStep + " " + CirSimForm.Time + " " + ControlPanel.IterCount;
-                    break;
-                case ElmVoltMeter.TP_PWI:
-                    s = Utils.UnitText(ce.PulseWidth, "S");
-                    break;
-                case ElmVoltMeter.TP_DUT:
-                    s = ce.DutyCycle.ToString("0.000");
-                    break;
-                }
-                drawCenteredText(s, mCenter, true);
-            }
+            drawValues();
             drawCenteredLText("+", mPlusPoint, true);
             drawPosts();
         }
@@ -134,6 +98,34 @@ namespace Circuit.UI.Output {
             }
             if (n == 1) {
                 ce.Scale = (E_SCALE)ei.Choice.SelectedIndex;
+            }
+        }
+
+        protected void drawValues() {
+            if (mustShowVoltage()) {
+                var ce = (ElmVoltMeter)Elm;
+                string s = "";
+                switch (ce.Meter) {
+                case ElmVoltMeter.TP_VOL:
+                    s = Utils.UnitTextWithScale(ce.VoltageDiff, "V", ce.Scale);
+                    break;
+                case ElmVoltMeter.TP_RMS:
+                    s = Utils.UnitTextWithScale(ce.RmsV, "V(rms)", ce.Scale);
+                    break;
+                case ElmVoltMeter.TP_MAX:
+                    s = Utils.UnitTextWithScale(ce.LastMaxV, "Vpk", ce.Scale);
+                    break;
+                case ElmVoltMeter.TP_MIN:
+                    s = Utils.UnitTextWithScale(ce.LastMinV, "Vmin", ce.Scale);
+                    break;
+                case ElmVoltMeter.TP_P2P:
+                    s = Utils.UnitTextWithScale(ce.LastMaxV - ce.LastMinV, "Vp2p", ce.Scale);
+                    break;
+                case ElmVoltMeter.TP_BIN:
+                    s = ce.BinaryLevel + "";
+                    break;
+                }
+                drawCenteredText(s, mCenter, true);
             }
         }
 

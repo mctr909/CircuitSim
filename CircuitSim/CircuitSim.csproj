@@ -126,6 +126,7 @@
     <Compile Include="Elements\Output\ElmStopTrigger.cs" />
     <Compile Include="UI\Output\StopTrigger.cs" />
     <Compile Include="Elements\Output\ElmVoltMeter.cs" />
+    <Compile Include="UI\Output\VoltMeter1Term.cs" />
     <Compile Include="UI\Output\VoltMeter.cs" />
     <Compile Include="Elements\Passive\ElmCapacitor.cs" />
     <Compile Include="UI\Input\Rail.cs" />

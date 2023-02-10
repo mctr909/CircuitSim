@@ -102,7 +102,8 @@ namespace Circuit {
 
         #region Outputs and Labels
         OUTPUT,
-        VOLTMETER,
+        VOLTMETER2,
+        VOLTMETER1,
         AMMETER,
         DATA_RECORDER,
         OUTPUT_AUDIO,
@@ -208,6 +209,7 @@ namespace Circuit {
         TRANSFORMER = 'T',
         TEXT = 'x',
         VOLTMETER = '>',
+        VOLTMETER1 = 'V',
         AND_GATE = 150,
         NAND_GATE = 151,
         OR_GATE = 152,
@@ -493,7 +495,8 @@ namespace Circuit {
             outputMenuBar.Font = menuFont;
             addElementItem(outputMenuBar, "出力ピン", ELEMENTS.OUTPUT);
             outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(outputMenuBar, "電圧計", ELEMENTS.VOLTMETER);
+            addElementItem(outputMenuBar, "電圧計(2端子)", ELEMENTS.VOLTMETER2);
+            addElementItem(outputMenuBar, "電圧計(1端子)", ELEMENTS.VOLTMETER1);
             addElementItem(outputMenuBar, "電流計", ELEMENTS.AMMETER);
             outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(outputMenuBar, "データ出力", ELEMENTS.DATA_RECORDER);
@@ -667,8 +670,10 @@ namespace Circuit {
             #region Outputs and Labels
             case ELEMENTS.OUTPUT:
                 return new LabeledNode(pos);
-            case ELEMENTS.VOLTMETER:
+            case ELEMENTS.VOLTMETER2:
                 return new VoltMeter(pos);
+            case ELEMENTS.VOLTMETER1:
+                return new VoltMeter1Term(pos);
             case ELEMENTS.AMMETER:
                 return new Ammeter(pos);
             case ELEMENTS.DATA_RECORDER:
@@ -859,6 +864,8 @@ namespace Circuit {
             #region Outputs and Labels
             case DUMP_ID.VOLTMETER:
                 return new VoltMeter(p1, p2, f, st);
+            case DUMP_ID.VOLTMETER1:
+                return new VoltMeter1Term(p1, p2, f, st);
             case DUMP_ID.AMMETER:
                 return new Ammeter(p1, p2, f, st);
             case DUMP_ID.LABELED_NODE:
