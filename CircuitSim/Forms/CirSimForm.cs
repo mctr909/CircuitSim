@@ -2303,32 +2303,26 @@ namespace Circuit {
                 return;
             }
 
-            bool delayWireProcessing = canDelayWireProcessing();
-
             int iter;
             for (iter = 1; ; iter++) {
                 if (!Circuit.DoIteration()) {
                     break;
                 }
-
                 Time += ControlPanel.TimeStep;
 
-                if (!delayWireProcessing) {
-                    Circuit.CalcWireCurrents();
-                }
-                for (int i = 0; i != Scope.Count; i++) {
+                for (int i = 0; i < Scope.Count; i++) {
                     Scope.List[i].TimeStep();
                 }
-                for (int i = 0; i != ElmCount; i++) {
-                    if (GetElm(i) is ScopeUI) {
-                        ((ScopeUI)GetElm(i)).stepScope();
+                for (int i = 0; i < ElmCount; i++) {
+                    if (ElmList[i] is ScopeUI) {
+                        ((ScopeUI)ElmList[i]).stepScope();
                     }
                 }
 
-                tm = DateTime.Now.ToFileTimeUtc();
-                lit = tm;
                 /* Check whether enough time has elapsed to perform an *additional* iteration after
                 /* those we have already completed. */
+                tm = DateTime.Now.ToFileTimeUtc();
+                lit = tm;
                 if ((iter + 1) * 1000 >= steprate * (tm - mLastIterTime) || (tm - mLastFrameTime > 250000)) {
                     break;
                 }
@@ -2336,29 +2330,7 @@ namespace Circuit {
                     break;
                 }
             }
-
             mLastIterTime = lit;
-            if (delayWireProcessing) {
-                Circuit.CalcWireCurrents();
-            }
-            /* Console.WriteLine((DateTime.Now.ToFileTimeUtc() - lastFrameTime) / (double)iter); */
-        }
-
-        /* we need to calculate wire currents for every iteration if someone is viewing a wire in the
-        /* scope.  Otherwise we can do it only once per frame. */
-        static bool canDelayWireProcessing() {
-            int i;
-            for (i = 0; i != Scope.Count; i++) {
-                if (Scope.List[i].ViewingWire) {
-                    return false;
-                }
-            }
-            for (i = 0; i != ElmCount; i++) {
-                if ((GetElm(i) is ScopeUI) && ((ScopeUI)GetElm(i)).Scope.ViewingWire) {
-                    return false;
-                }
-            }
-            return true;
         }
         #endregion
     }

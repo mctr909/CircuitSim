@@ -789,7 +789,6 @@ namespace Circuit {
         }
 
         public static bool DoIteration() {
-            int subiter;
             int elmCount = CirSimForm.ElmCount;
 
             for (int i = 0; i < elmCount; i++) {
@@ -797,6 +796,7 @@ namespace Circuit {
                 ce.CirPrepareIteration();
             }
 
+            int subiter;
             for (subiter = 0; subiter < SubIterMax; subiter++) {
                 Converged = true;
                 SubIterations = subiter;
@@ -876,12 +876,9 @@ namespace Circuit {
                 CirSimForm.ElmList[i].Elm.CirIterationFinished();
             }
 
-            return true;
-        }
-
-        /* we removed wires from the matrix to speed things up.  in order to display wire currents,
-        /* we need to calculate them now. */
-        public static void CalcWireCurrents() {
+            /* calc wire currents */
+            /* we removed wires from the matrix to speed things up.  in order to display wire currents,
+            /* we need to calculate them now. */
             for (int i = 0; i < mWireInfoList.Count; i++) {
                 var wi = mWireInfoList[i];
                 double cur = 0;
@@ -897,6 +894,8 @@ namespace Circuit {
                     wi.Wire.Elm.CirSetCurrent(-1, -cur);
                 }
             }
+
+            return true;
         }
 
         public static void Stop(string s, BaseElement ce) {
