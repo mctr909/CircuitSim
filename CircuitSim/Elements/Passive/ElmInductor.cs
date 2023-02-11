@@ -24,10 +24,16 @@
         }
 
         public override void AnaStamp() {
-            mCompResistance = 2 * Inductance / ControlPanel.TimeStep;
-            Circuit.StampResistor(Nodes[0], Nodes[1], mCompResistance);
-            Circuit.StampRightSide(Nodes[0]);
-            Circuit.StampRightSide(Nodes[1]);
+            var g = ControlPanel.TimeStep / (2 * Inductance);
+            var n0 = Nodes[0] - 1;
+            var n1 = Nodes[1] - 1;
+            mCompResistance = 1.0 / g;
+            Circuit.Matrix[n0, n0] += g;
+            Circuit.Matrix[n1, n1] += g;
+            Circuit.Matrix[n0, n1] -= g;
+            Circuit.Matrix[n1, n0] -= g;
+            Circuit.RowInfo[n0].RightChanges = true;
+            Circuit.RowInfo[n1].RightChanges = true;
         }
 
         public override void CirPrepareIteration() {

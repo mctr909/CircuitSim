@@ -36,8 +36,19 @@
         public override void AnaStamp() {
             Resistance1 = MaxResistance * Position;
             Resistance2 = MaxResistance * (1 - Position);
-            Circuit.StampResistor(Nodes[0], Nodes[2], Resistance1);
-            Circuit.StampResistor(Nodes[2], Nodes[1], Resistance2);
+            var g1 = 1.0 / Resistance1;
+            var g2 = 1.0 / Resistance2;
+            var n0 = Nodes[0] - 1;
+            var n1 = Nodes[1] - 1;
+            var n2 = Nodes[2] - 1;
+            Circuit.Matrix[n0, n0] += g1;
+            Circuit.Matrix[n2, n2] += g1;
+            Circuit.Matrix[n0, n2] -= g1;
+            Circuit.Matrix[n2, n0] -= g1;
+            Circuit.Matrix[n2, n2] += g2;
+            Circuit.Matrix[n1, n1] += g2;
+            Circuit.Matrix[n2, n1] -= g2;
+            Circuit.Matrix[n1, n2] -= g2;
         }
 
         public override void CirSetVoltage(int n, double c) {
