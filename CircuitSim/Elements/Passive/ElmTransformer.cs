@@ -90,14 +90,35 @@ namespace Circuit.Elements.Passive {
             mA2 = -m * deti * ts;
             mA3 = -m * deti * ts;
             mA4 = l1 * deti * ts;
-            Circuit.StampConductance(Nodes[PRI_T], Nodes[PRI_B], mA1);
-            Circuit.StampVCCurrentSource(Nodes[PRI_T], Nodes[PRI_B], Nodes[SEC_T], Nodes[SEC_B], mA2);
-            Circuit.StampVCCurrentSource(Nodes[SEC_T], Nodes[SEC_B], Nodes[PRI_T], Nodes[PRI_B], mA3);
-            Circuit.StampConductance(Nodes[SEC_T], Nodes[SEC_B], mA4);
-            Circuit.StampRightSide(Nodes[PRI_T]);
-            Circuit.StampRightSide(Nodes[SEC_T]);
-            Circuit.StampRightSide(Nodes[PRI_B]);
-            Circuit.StampRightSide(Nodes[SEC_B]);
+            var pre_t = Nodes[PRI_T] - 1;
+            var pre_b = Nodes[PRI_B] - 1;
+            var sec_t = Nodes[SEC_T] - 1;
+            var sec_b = Nodes[SEC_B] - 1;
+
+            Circuit.Matrix[pre_t, pre_t] += mA1;
+            Circuit.Matrix[pre_b, pre_b] += mA1;
+            Circuit.Matrix[pre_t, pre_b] -= mA1;
+            Circuit.Matrix[pre_b, pre_t] -= mA1;
+
+            Circuit.Matrix[pre_t, sec_t] += mA2;
+            Circuit.Matrix[pre_b, sec_b] += mA2;
+            Circuit.Matrix[pre_t, sec_b] -= mA2;
+            Circuit.Matrix[pre_b, sec_t] -= mA2;
+
+            Circuit.Matrix[sec_t, pre_t] += mA3;
+            Circuit.Matrix[sec_b, pre_b] += mA3;
+            Circuit.Matrix[sec_t, pre_b] -= mA3;
+            Circuit.Matrix[sec_b, pre_t] -= mA3;
+
+            Circuit.Matrix[sec_t, sec_t] += mA4;
+            Circuit.Matrix[sec_b, sec_b] += mA4;
+            Circuit.Matrix[sec_t, sec_b] -= mA4;
+            Circuit.Matrix[sec_b, sec_t] -= mA4;
+
+            Circuit.RowInfo[pre_t].RightChanges = true;
+            Circuit.RowInfo[sec_t].RightChanges = true;
+            Circuit.RowInfo[pre_b].RightChanges = true;
+            Circuit.RowInfo[sec_b].RightChanges = true;
         }
 
         public override void CirPrepareIteration() {
