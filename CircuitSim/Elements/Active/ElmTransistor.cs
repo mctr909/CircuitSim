@@ -80,9 +80,9 @@ namespace Circuit.Elements.Active {
         }
 
         public override void AnaStamp() {
-            Circuit.StampNonLinear(Nodes[IdxB]);
-            Circuit.StampNonLinear(Nodes[IdxC]);
-            Circuit.StampNonLinear(Nodes[IdxE]);
+            Circuit.RowInfo[Nodes[IdxB] - 1].LeftChanges = true;
+            Circuit.RowInfo[Nodes[IdxC] - 1].LeftChanges = true;
+            Circuit.RowInfo[Nodes[IdxE] - 1].LeftChanges = true;
         }
 
         public override void CirDoIteration() {

@@ -90,8 +90,8 @@ namespace Circuit.Elements.Active {
         public override bool AnaGetConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
 
         public override void AnaStamp() {
-            Circuit.StampNonLinear(Nodes[IdxS]);
-            Circuit.StampNonLinear(Nodes[IdxD]);
+            Circuit.RowInfo[Nodes[IdxS] - 1].LeftChanges = true;
+            Circuit.RowInfo[Nodes[IdxD] - 1].LeftChanges = true;
 
             BodyTerminal = (Pnp == -1) ? IdxD : IdxS;
 
