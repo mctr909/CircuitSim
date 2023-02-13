@@ -39,7 +39,21 @@ namespace Circuit.Elements.Active {
 
         public override void CirDoIteration() {
             base.CirDoIteration();
-            Circuit.StampResistor(Nodes[2], Nodes[1], mCompResistance);
+            var g = 1.0 / mCompResistance;
+            var n1 = Nodes[2] - 1;
+            var n2 = Nodes[1] - 1;
+            var r = Circuit.RowInfo[n1].MapRow;
+            var ri = Circuit.RowInfo[n1];
+            Circuit.Matrix[r, ri.MapCol] += g;
+            r = Circuit.RowInfo[n2].MapRow;
+            ri = Circuit.RowInfo[n2];
+            Circuit.Matrix[r, ri.MapCol] += g;
+            r = Circuit.RowInfo[n1].MapRow;
+            ri = Circuit.RowInfo[n2];
+            Circuit.Matrix[r, ri.MapCol] -= g;
+            r = Circuit.RowInfo[n2].MapRow;
+            ri = Circuit.RowInfo[n1];
+            Circuit.Matrix[r, ri.MapCol] -= g;
             Circuit.UpdateVoltageSource(mVoltSource, mVoltSourceValue);
         }
 
