@@ -14,11 +14,11 @@
 
         public override double Power { get { return Volts[V_O] * Current; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int AnaVoltageSourceCount { get { return 1; } }
 
         public override int PostCount { get { return 3; } }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             if (n == 2) {
                 return -Current;
             }

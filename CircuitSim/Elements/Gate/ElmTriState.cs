@@ -22,11 +22,11 @@
 
         public override int PostCount { get { return 3; } }
 
-        public override int InternalNodeCount { get { return 1; } }
+        public override int AnaInternalNodeCount { get { return 1; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int AnaVoltageSourceCount { get { return 1; } }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             if (n == 1) {
                 return Current;
             }

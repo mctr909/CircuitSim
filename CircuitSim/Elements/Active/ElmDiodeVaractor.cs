@@ -22,9 +22,9 @@ namespace Circuit.Elements.Active {
             mBaseCapacitance = double.Parse(st.nextToken());
         }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int AnaVoltageSourceCount { get { return 1; } }
 
-        public override int InternalNodeCount { get { return 1; } }
+        public override int AnaInternalNodeCount { get { return 1; } }
 
         public override void Reset() {
             base.Reset();

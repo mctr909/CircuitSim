@@ -95,8 +95,6 @@ namespace Circuit.UI.Active {
                 var a = mPosts[i];
                 var b = mStubs[i];
                 drawLead(a, b);
-                ce.mCurCounts[i] = updateDotCount(-ce.GetCurrentIntoNode(i), ce.mCurCounts[i]);
-                drawDots(a, b, ce.mCurCounts[i]);
             }
 
             ce.mDiode.Draw(g);
@@ -118,10 +116,7 @@ namespace Circuit.UI.Active {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (ElmOptocoupler)Elm;
             arr[0] = "optocoupler";
-            arr[1] = "Iin = " + Utils.CurrentText(ce.GetCurrentIntoNode(0));
-            arr[2] = "Iout = " + Utils.CurrentText(ce.GetCurrentIntoNode(2));
         }
     }
 }

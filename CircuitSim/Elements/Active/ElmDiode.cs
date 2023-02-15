@@ -89,7 +89,7 @@ namespace Circuit.Elements.Active {
 
         public override int PostCount { get { return 2; } }
 
-        public override int InternalNodeCount { get { return mHasResistance ? 1 : 0; } }
+        public override int AnaInternalNodeCount { get { return mHasResistance ? 1 : 0; } }
 
         public void Setup() {
             mModel = DiodeModel.GetModelWithNameOrCopy(mModelName, mModel);

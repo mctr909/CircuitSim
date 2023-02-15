@@ -39,7 +39,7 @@ namespace Circuit.Elements.Gate {
 
         public override double VoltageDiff { get { return Volts[0]; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int AnaVoltageSourceCount { get { return 1; } }
 
         // there is no current path through the InvertingSchmitt input, but there
         // is an indirect path through the output to ground.
@@ -76,7 +76,7 @@ namespace Circuit.Elements.Gate {
             Circuit.UpdateVoltageSource(mVoltSource, _out);
         }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             if (n == 1) {
                 return Current;
             }

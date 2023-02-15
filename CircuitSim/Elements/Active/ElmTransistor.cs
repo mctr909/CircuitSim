@@ -53,7 +53,7 @@ namespace Circuit.Elements.Active {
 
         public override int PostCount { get { return 3; } }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             if (n == 0) {
                 return -Ib;
             }

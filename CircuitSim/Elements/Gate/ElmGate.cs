@@ -29,11 +29,11 @@
             LastOutput = HighVoltage * 0.5 < lastOutputVoltage;
         }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int AnaVoltageSourceCount { get { return 1; } }
 
         public override int PostCount { get { return InputCount + 1; } }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             if (n == InputCount) {
                 return Current;
             }

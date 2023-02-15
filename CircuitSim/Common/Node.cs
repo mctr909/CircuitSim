@@ -106,7 +106,7 @@ namespace Circuit {
                 if (n1 == 0) {
                     /* look for posts which have a ground connection;
                     /* our path can go through ground */
-                    for (int j = 0; j != cee.ConnectionNodeCount; j++) {
+                    for (int j = 0; j != cee.AnaConnectionNodeCount; j++) {
                         if (cee.AnaHasGroundConnection(j) && FindPath(cee.AnaGetConnectionNode(j))) {
                             return true;
                         }
@@ -114,12 +114,12 @@ namespace Circuit {
                 }
 
                 int nodeA;
-                for (nodeA = 0; nodeA != cee.ConnectionNodeCount; nodeA++) {
+                for (nodeA = 0; nodeA != cee.AnaConnectionNodeCount; nodeA++) {
                     if (cee.AnaGetConnectionNode(nodeA) == n1) {
                         break;
                     }
                 }
-                if (nodeA == cee.ConnectionNodeCount) {
+                if (nodeA == cee.AnaConnectionNodeCount) {
                     continue;
                 }
                 if (cee.AnaHasGroundConnection(nodeA) && FindPath(0)) {
@@ -137,7 +137,7 @@ namespace Circuit {
                     }
                 }
 
-                for (int nodeB = 0; nodeB != cee.ConnectionNodeCount; nodeB++) {
+                for (int nodeB = 0; nodeB != cee.AnaConnectionNodeCount; nodeB++) {
                     if (nodeA == nodeB) {
                         continue;
                     }

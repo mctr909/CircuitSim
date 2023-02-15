@@ -17,7 +17,7 @@ namespace Circuit.Elements.Input {
             SetupPins(ui);
         }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int AnaVoltageSourceCount { get { return 1; } }
 
         public override int PostCount { get { return 4; } }
 

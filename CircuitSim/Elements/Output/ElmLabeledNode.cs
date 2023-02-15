@@ -18,12 +18,12 @@ namespace Circuit.Elements.Output {
 
         public override int PostCount { get { return 1; } }
 
-        public override int ConnectionNodeCount { get { return 2; } }
+        public override int AnaConnectionNodeCount { get { return 2; } }
 
         // this is basically a wire, since it just connects two nodes together
         public override bool IsWire { get { return true; } }
 
-        public override int InternalNodeCount {
+        public override int AnaInternalNodeCount {
             get {
                 // this can happen at startup
                 if (mNodeList == null) {
@@ -42,9 +42,9 @@ namespace Circuit.Elements.Output {
 
         public override double VoltageDiff { get { return Volts[0]; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int AnaVoltageSourceCount { get { return 1; } }
 
-        public override double GetCurrentIntoNode(int n) { return -Current; }
+        public override double CirGetCurrentIntoNode(int n) { return -Current; }
 
         public static void ResetNodeList() {
             mNodeList = new Dictionary<string, int>();

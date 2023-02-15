@@ -4,11 +4,11 @@
 
         public override bool IsWire { get { return true; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int AnaVoltageSourceCount { get { return 1; } }
 
         public override int PostCount { get { return 1 + ThrowCount; } }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             if (n == 0) {
                 return -Current;
             }

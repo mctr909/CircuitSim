@@ -31,7 +31,7 @@ namespace Circuit.Elements.Gate {
             Circuit.UpdateVoltageSource(mVoltSource, _out);
         }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             if (n == 1) {
                 return Current;
             }

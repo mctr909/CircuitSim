@@ -30,7 +30,7 @@ namespace Circuit.Elements.Input {
             SetupPins(ui);
         }
 
-        public override int VoltageSourceCount { get { return 0; } }
+        public override int AnaVoltageSourceCount { get { return 0; } }
 
         public override int PostCount { get { return InputCount + 2; } }
 

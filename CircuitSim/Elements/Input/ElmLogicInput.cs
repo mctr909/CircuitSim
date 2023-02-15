@@ -22,13 +22,13 @@ namespace Circuit.Elements.Input {
 
         public override double VoltageDiff { get { return Volts[0]; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int AnaVoltageSourceCount { get { return 1; } }
 
         public override int PostCount { get { return 1; } }
 
         public override bool AnaHasGroundConnection(int n1) { return true; }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             return -Current;
         }
 

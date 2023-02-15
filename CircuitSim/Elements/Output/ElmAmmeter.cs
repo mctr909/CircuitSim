@@ -42,7 +42,7 @@ namespace Circuit.Elements.Output {
 
         public override double Power { get { return 0; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int AnaVoltageSourceCount { get { return 1; } }
 
         public override void CirIterationFinished() {
             mCount++; /*how many counts are in a cycle */

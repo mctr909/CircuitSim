@@ -38,7 +38,7 @@ namespace Circuit.Elements.Input {
 
         public override double Power { get { return -VoltageDiff * Current; } }
 
-        public override int VoltageSourceCount { get { return 1; } }
+        public override int AnaVoltageSourceCount { get { return 1; } }
 
         public override int PostCount { get { return 1; } }
 

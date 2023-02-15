@@ -35,7 +35,7 @@ namespace Circuit.Elements.Passive {
             mCurSourceValue1 = mCurSourceValue2 = 0;
         }
 
-        public override double GetCurrentIntoNode(int n) {
+        public override double CirGetCurrentIntoNode(int n) {
             if (n < 2) {
                 return -Currents[n];
             }

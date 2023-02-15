@@ -524,8 +524,8 @@ namespace Circuit {
                     if (null == ce) {
                         continue;
                     }
-                    int inodes = ce.InternalNodeCount;
-                    int ivs = ce.VoltageSourceCount;
+                    int inodes = ce.AnaInternalNodeCount;
+                    int ivs = ce.AnaVoltageSourceCount;
                     int posts = ce.PostCount;
 
                     /* allocate a node for each post and match posts to nodes */
@@ -602,7 +602,7 @@ namespace Circuit {
                 vscount = 0;
                 for (int i = 0; i < CirSimForm.ElmCount; i++) {
                     var ce = CirSimForm.GetElm(i).Elm;
-                    int ivs = ce.VoltageSourceCount;
+                    int ivs = ce.AnaVoltageSourceCount;
                     for (int j = 0; j < ivs; j++) {
                         mVoltageSources[vscount] = ce;
                         ce.AnaSetVoltageSource(j, vscount++);
@@ -642,7 +642,7 @@ namespace Circuit {
                     }
                     /* loop through all ce's nodes to see if they are connected
                     /* to other nodes not in closure */
-                    for (int j = 0; j < cee.ConnectionNodeCount; j++) {
+                    for (int j = 0; j < cee.AnaConnectionNodeCount; j++) {
                         if (!closure[cee.AnaGetConnectionNode(j)]) {
                             if (cee.AnaHasGroundConnection(j)) {
                                 closure[cee.AnaGetConnectionNode(j)] = changed = true;
@@ -650,7 +650,7 @@ namespace Circuit {
                             continue;
                         }
                         int k;
-                        for (k = 0; k != cee.ConnectionNodeCount; k++) {
+                        for (k = 0; k != cee.AnaConnectionNodeCount; k++) {
                             if (j == k) {
                                 continue;
                             }
@@ -859,7 +859,7 @@ namespace Circuit {
                 for (int j = 0; j < wi.Neighbors.Count; j++) {
                     var ce = wi.Neighbors[j];
                     int n = ce.GetNodeAtPoint(p.X, p.Y);
-                    cur += ce.Elm.GetCurrentIntoNode(n);
+                    cur += ce.Elm.CirGetCurrentIntoNode(n);
                 }
                 if (wi.Post == 0) {
                     wi.Wire.Elm.CirSetCurrent(-1, cur);

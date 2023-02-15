@@ -19,33 +19,32 @@
 
         public double Current { get; protected set; }
 
-        /// <summary>
-        /// number of voltage sources this element needs
-        /// </summary>
-        /// <returns></returns>
-        public virtual int VoltageSourceCount { get { return 0; } }
+        public virtual double VoltageDiff { get { return Volts[0] - Volts[1]; } }
 
-        /// <summary>
-        /// number of internal nodes (nodes not visible in UI that are needed for implementation)
-        /// </summary>
-        /// <returns></returns>
-        public virtual int InternalNodeCount { get { return 0; } }
+        public virtual double Power { get { return VoltageDiff * Current; } }
+        #endregion
 
-        /// <summary>
-        /// get number of nodes that can be retrieved by ConnectionNode
-        /// </summary>
-        /// <returns></returns>
-        public virtual int ConnectionNodeCount { get { return PostCount; } }
-
+        #region [property(Analyze)]
         /// <summary>
         /// is this a wire or equivalent to a wire?
         /// </summary>
         /// <returns></returns>
         public virtual bool IsWire { get { return false; } }
-
-        public virtual double VoltageDiff { get { return Volts[0] - Volts[1]; } }
-
-        public virtual double Power { get { return VoltageDiff * Current; } }
+        /// <summary>
+        /// number of voltage sources this element needs
+        /// </summary>
+        /// <returns></returns>
+        public virtual int AnaVoltageSourceCount { get { return 0; } }
+        /// <summary>
+        /// number of internal nodes (nodes not visible in UI that are needed for implementation)
+        /// </summary>
+        /// <returns></returns>
+        public virtual int AnaInternalNodeCount { get { return 0; } }
+        /// <summary>
+        /// get number of nodes that can be retrieved by ConnectionNode
+        /// </summary>
+        /// <returns></returns>
+        public virtual int AnaConnectionNodeCount { get { return PostCount; } }
         #endregion
 
         #region [method]
@@ -53,7 +52,7 @@
         /// allocate nodes/volts arrays we need
         /// </summary>
         public void AllocNodes() {
-            int n = PostCount + InternalNodeCount;
+            int n = PostCount + AnaInternalNodeCount;
             /* preserve voltages if possible */
             if (Nodes == null || Nodes.Length != n) {
                 Nodes = new int[n];
@@ -65,16 +64,8 @@
         /// handle reset button
         /// </summary>
         public virtual void Reset() {
-            for (int i = 0; i != PostCount + InternalNodeCount; i++) {
+            for (int i = 0; i != PostCount + AnaInternalNodeCount; i++) {
                 Volts[i] = 0;
-            }
-        }
-
-        public virtual double GetCurrentIntoNode(int n) {
-            if (n == 0 && PostCount == 2) {
-                return -Current;
-            } else {
-                return Current;
             }
         }
         #endregion
@@ -140,6 +131,13 @@
         #endregion
 
         #region [method(Circuit)]
+        public virtual double CirGetCurrentIntoNode(int n) {
+            if (n == 0 && PostCount == 2) {
+                return -Current;
+            } else {
+                return Current;
+            }
+        }
         public virtual void CirPrepareIteration() { }
         public virtual void CirIterationFinished() { }
         public virtual void CirDoIteration() { }
