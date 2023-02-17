@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Deflate.cs" />
     <Compile Include="Common\PDF.cs" />
     <Compile Include="Elements\Active\ElmAnalogSwitch.cs" />
     <Compile Include="UI\Active\AnalogSwitch.cs" />

@@ -56,19 +56,30 @@ class PDF {
         internal void Flush(FileStream fs) {
             mSw.Flush();
             mMs.Seek(0, SeekOrigin.Begin);
-            var sw = new StreamWriter(fs);
-            sw.NewLine = "\n";
-            sw.WriteLine("<< >>stream");
-            sw.WriteLine("q");
-            sw.WriteLine("0 w");
-            sw.WriteLine("0.5 0 0 -0.5 0 {0} cm", Height);
-            sw.WriteLine("BT");
+            var ms = new MemoryStream();
+            var tmp = new StreamWriter(ms);
+            tmp.WriteLine("q");
+            tmp.WriteLine("0 w");
+            tmp.WriteLine("0.5 0 0 -0.5 0 {0} cm", Height);
+            tmp.WriteLine("BT");
             var sr = new StreamReader(mMs);
             while (!sr.EndOfStream) {
-                sw.WriteLine(sr.ReadLine());
+                tmp.WriteLine(sr.ReadLine());
             }
-            sw.WriteLine("ET");
-            sw.WriteLine("Q");
+            tmp.WriteLine("ET");
+            tmp.WriteLine("Q");
+            tmp.Flush();
+
+            var enc = Deflate.Compress(ms.ToArray());
+            var sw = new StreamWriter(fs);
+            sw.NewLine = "\n";
+            sw.WriteLine("<</Filter /FlateDecode /Length {0}>>stream", enc.Length + 2);
+            sw.Flush();
+            fs.WriteByte(0x68);
+            fs.WriteByte(0xDE);
+            fs.Write(enc, 0, enc.Length);
+            fs.Flush();
+            sw.WriteLine();
             sw.WriteLine("endstream");
             sw.Flush();
         }
