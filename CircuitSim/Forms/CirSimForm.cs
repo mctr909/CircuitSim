@@ -1057,12 +1057,17 @@ namespace Circuit {
                 return;
             }
             PushUndo();
-            var fs = new StreamReader(open.FileName);
-            var data = fs.ReadToEnd();
-            mFileName = open.FileName;
+            string data = "";
+            try {
+                var fs = new StreamReader(open.FileName);
+                data = fs.ReadToEnd();
+                fs.Close();
+                fs.Dispose();
+                mFileName = open.FileName;
+            } catch (Exception ex) {
+                MessageBox.Show(ex.ToString());
+            }
             Text = mFileName;
-            fs.Close();
-            fs.Dispose();
             readCircuit(data);
         }
 
