@@ -2067,8 +2067,16 @@ namespace Circuit {
 
             var g = BaseUI.Context;
             PDF.Page pdfG = null;
+            var bkIsRun = IsRunning;
+            var bkPrint = ControlPanel.ChkPrintable.Checked;
             if (g.DoPrint) {
                 g.DoPrint = false;
+                if (bkIsRun) {
+                    IsRunning = false;
+                }
+                if (bkPrint) {
+                    ControlPanel.ChkPrintable.Checked = false;
+                }
                 pdfG = new PDF.Page(g.Width, g.Height);
                 g = pdfG;
                 BaseUI.Context = pdfG;
@@ -2287,6 +2295,8 @@ namespace Circuit {
                 } catch(Exception ex) {
                     MessageBox.Show(ex.ToString());
                 }
+                IsRunning = bkIsRun;
+                ControlPanel.ChkPrintable.Checked = bkPrint;
                 BaseUI.Context = CustomGraphics.FromImage(g.Width, g.Height);
             }
             mLastFrameTime = mLastTime;
