@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 
-class Uint8WriteStream {
+class ByteStream {
     byte[] buffer;
     int maxSize;
     int extendedSize;
 
     public int Index { get; private set; }
     
-    public Uint8WriteStream(int extendedUnit) {
+    public ByteStream(int extendedUnit) {
         buffer = new byte[extendedUnit];
         maxSize = extendedUnit;
         extendedSize = extendedUnit;
@@ -30,7 +30,7 @@ class Uint8WriteStream {
         Index++;
     }
 
-    public void WriteFrom(Uint8WriteStream source, int start, int length) {
+    public void WriteFrom(ByteStream source, int start, int length) {
         var end = start + length;
         for (int i = start; i < end; i++) {
             Write(source.buffer[i]);
@@ -44,15 +44,16 @@ class Uint8WriteStream {
     }
 }
 
-class BitReadStream {
+class BitStream {
     byte[] buffer;
     int bufferIndex;
     int nowBits;
 
+    public int NowBitsIndex { get; private set; }
     public int NowBitsLength { get; private set; }
     public bool IsEnd { get; private set; }
 
-    public BitReadStream(byte[] buffer, int offset = 0) {
+    public BitStream(byte[] buffer, int offset = 0) {
         this.buffer = buffer;
         bufferIndex = offset;
         nowBits = buffer[offset];
@@ -100,41 +101,6 @@ class BitReadStream {
         }
         return bits;
     }
-}
-
-class BitWriteStream {
-    byte[] buffer;
-    int bufferIndex;
-    int nowBits;
-    bool isEnd;
-
-    public int NowBitsIndex { get; private set; }
-    
-    public BitWriteStream(byte[] buffer, int bufferOffset = 0, int bitsOffset = 0) {
-        this.buffer = buffer;
-        bufferIndex = bufferOffset;
-        nowBits = buffer[bufferOffset];
-        isEnd = false;
-        NowBitsIndex = bitsOffset;
-    }
-
-    void write(int bit) {
-        if (isEnd) {
-            throw new Exception("Lack of data length");
-        }
-        bit <<= NowBitsIndex;
-        nowBits += bit;
-        NowBitsIndex++;
-        if (NowBitsIndex >= 8) {
-            buffer[bufferIndex] = (byte)nowBits;
-            bufferIndex++;
-            nowBits = 0;
-            NowBitsIndex = 0;
-            if (buffer.Length <= bufferIndex) {
-                isEnd = true;
-            }
-        }
-    }
 
     public void WriteRange(int value, int length) {
         var mask = 1;
@@ -159,14 +125,32 @@ class BitWriteStream {
         Array.Copy(buffer, 0, ret, 0, ret.Length);
         return ret;
     }
+
+    void write(int bit) {
+        if (IsEnd) {
+            throw new Exception("Lack of data length");
+        }
+        bit <<= NowBitsIndex;
+        nowBits += bit;
+        NowBitsIndex++;
+        if (NowBitsIndex >= 8) {
+            buffer[bufferIndex] = (byte)nowBits;
+            bufferIndex++;
+            nowBits = 0;
+            NowBitsIndex = 0;
+            if (buffer.Length <= bufferIndex) {
+                IsEnd = true;
+            }
+        }
+    }
 }
 
 struct Code {
     public int Value;
     public int BitLen;
-    public Code(int c, int b) {
-        Value = c;
-        BitLen = b;
+    public Code(int value, int length) {
+        Value = value;
+        BitLen = length;
     }
 }
 
@@ -308,7 +292,10 @@ class LZ77 {
 
 class Deflate {
     const int BLOCK_MAX_BUFFER_LEN = 131072;
-    
+
+    static readonly Dictionary<int, Dictionary<int, int>> FIXED_HUFFMAN_TABLE
+        = generateHuffmanTable(makeFixedHuffmanCodelenValues());
+
     public static readonly int[] LENGTH_EXTRA_BIT_BASE = {
         3, 4, 5, 6, 7, 8, 9, 10, 11, 13,
         15, 17, 19, 23, 27, 31, 35, 43, 51, 59,
@@ -340,17 +327,17 @@ class Deflate {
         DYNAMIC = 2
     }
 
-    struct Simble {
+    struct Pack {
         public int Count;
         public List<int> Simbles;
-        public Simble(int c, int[] s) {
-            Count = c;
+        public Pack(int count, int[] simbles) {
+            Count = count;
             Simbles = new List<int>();
-            Simbles.AddRange(s);
+            Simbles.AddRange(simbles);
         }
     }
 
-    static Dictionary<int, Code> generateDeflateHuffmanTable(int[] values, int maxLength = 15) {
+    static List<Pack> createPackages(int[] values, int maxLength) {
         var valuesCount = new Dictionary<int, int>();
         foreach (var value in values) {
             if (!valuesCount.ContainsKey(value)) {
@@ -360,102 +347,105 @@ class Deflate {
             }
         }
 
-        var valuesCountKeys = valuesCount.Keys.ToArray();
-
-        var tmpPackageIndex = 0;
-        var tmpPackages = new List<Simble>();
-        var packages = new List<Simble>();        
-        if (valuesCountKeys.Length == 1) {
-            packages.Add(new Simble(
-                valuesCount[0],
-                new int[] { valuesCountKeys[0] }
+        if (valuesCount.Count == 1) {
+            var ret = new List<Pack>();
+            var v = valuesCount.ElementAt(0);
+            ret.Add(new Pack(
+                v.Value,
+                new int[] { v.Key }
             ));
-        } else {
-            for (int i = 0; i < maxLength; i++) {
-                packages = new List<Simble>();
-                foreach (var value in valuesCountKeys) {
-                    var pack = new Simble(
-                        valuesCount[value],
-                        new int[] { value }
-                    );
-                    packages.Add(pack);
-                }
-
-                tmpPackageIndex = 0;
-                while (tmpPackageIndex + 2 <= tmpPackages.Count) {
-                    var pack = new Simble();
-                    pack.Count = tmpPackages[tmpPackageIndex].Count + tmpPackages[tmpPackageIndex + 1].Count;
-                    pack.Simbles = new List<int>();
-                    pack.Simbles.AddRange(tmpPackages[tmpPackageIndex].Simbles.ToArray());
-                    pack.Simbles.AddRange(tmpPackages[tmpPackageIndex + 1].Simbles.ToArray());
-                    packages.Add(pack);
-                    tmpPackageIndex += 2;
-                }
-
-                packages.Sort(new Comparison<Simble>((a, b) => {
-                    if (a.Count < b.Count) {
-                        return -1;
-                    }
-                    if (a.Count > b.Count) {
-                        return 1;
-                    }
-                    if (a.Simbles.Count < b.Simbles.Count) {
-                        return -1;
-                    }
-                    if (a.Simbles.Count > b.Simbles.Count) {
-                        return 1;
-                    }
-                    if (a.Simbles[0] < b.Simbles[0]) {
-                        return -1;
-                    }
-                    if (a.Simbles[0] > b.Simbles[0]) {
-                        return 1;
-                    }
-                    return 0;
-                }));
-
-                if (packages.Count % 2 != 0) {
-                    packages.RemoveAt(packages.Count - 1);
-                }
-                tmpPackages = packages;
-            }
+            return ret;
         }
 
-        var valuesCodelen = new Dictionary<int, int>();
+        var packages = new List<Pack>();
+        var tmpPackages = new List<Pack>();
+        for (int i = 0; i < maxLength; i++) {
+            packages = new List<Pack>();
+            foreach (var kv in valuesCount) {
+                var pack = new Pack(
+                    kv.Value,
+                    new int[] { kv.Key }
+                );
+                packages.Add(pack);
+            }
+
+            var tmpPackageIndex = 0;
+            while (tmpPackageIndex + 2 <= tmpPackages.Count) {
+                var pack = new Pack();
+                pack.Count = tmpPackages[tmpPackageIndex].Count + tmpPackages[tmpPackageIndex + 1].Count;
+                pack.Simbles = new List<int>();
+                pack.Simbles.AddRange(tmpPackages[tmpPackageIndex].Simbles.ToArray());
+                pack.Simbles.AddRange(tmpPackages[tmpPackageIndex + 1].Simbles.ToArray());
+                packages.Add(pack);
+                tmpPackageIndex += 2;
+            }
+
+            packages.Sort(new Comparison<Pack>((a, b) => {
+                if (a.Count < b.Count) {
+                    return -1;
+                }
+                if (a.Count > b.Count) {
+                    return 1;
+                }
+                if (a.Simbles.Count < b.Simbles.Count) {
+                    return -1;
+                }
+                if (a.Simbles.Count > b.Simbles.Count) {
+                    return 1;
+                }
+                if (a.Simbles[0] < b.Simbles[0]) {
+                    return -1;
+                }
+                if (a.Simbles[0] > b.Simbles[0]) {
+                    return 1;
+                }
+                return 0;
+            }));
+
+            if (packages.Count % 2 != 0) {
+                packages.RemoveAt(packages.Count - 1);
+            }
+            tmpPackages = packages;
+        }
+        return packages;
+    }
+
+    static Dictionary<int, Code> generateDeflateHuffmanTable(int[] values, int maxLength = 15) {
+        var valuesCodeLen = new Dictionary<int, int>();
+        var packages = createPackages(values, maxLength);
         foreach (var pack in packages) {
             foreach (var symble in pack.Simbles) {
-                if (!valuesCodelen.ContainsKey(symble)) {
-                    valuesCodelen.Add(symble, 1);
+                if (!valuesCodeLen.ContainsKey(symble)) {
+                    valuesCodeLen.Add(symble, 1);
                 } else {
-                    valuesCodelen[symble]++;
+                    valuesCodeLen[symble]++;
                 }
             };
         };
 
-        var valuesCodelenKeys = valuesCodelen.Keys.ToArray();
-        var codelenGroup = new Dictionary<int, List<int>>();
-        var codelen = 3;
-        var codelenValueMin = int.MaxValue;
-        var codelenValueMax = 0;
-        foreach (var valuesCodelenKey in valuesCodelenKeys) {
-            codelen = valuesCodelen[valuesCodelenKey];
-            if (!codelenGroup.ContainsKey(codelen)) {
-                codelenGroup.Add(codelen, new List<int>());
-                if (codelenValueMin > codelen) {
-                    codelenValueMin = codelen;
+        var codeLenGroup = new Dictionary<int, List<int>>();
+        var codeLenValueMin = int.MaxValue;
+        var codeLenValueMax = 0;
+        foreach (var kv in valuesCodeLen) {
+            var codeLen = kv.Value;
+            var symble = kv.Key;
+            if (!codeLenGroup.ContainsKey(codeLen)) {
+                codeLenGroup.Add(codeLen, new List<int>());
+                if (codeLenValueMin > codeLen) {
+                    codeLenValueMin = codeLen;
                 }
-                if (codelenValueMax < codelen) {
-                    codelenValueMax = codelen;
+                if (codeLenValueMax < codeLen) {
+                    codeLenValueMax = codeLen;
                 }
             }
-            codelenGroup[codelen].Add(valuesCodelenKey);
+            codeLenGroup[codeLen].Add(symble);
         };
 
         var table = new Dictionary<int, Code>();
         var code = 0;
-        for (int i = codelenValueMin; i <= codelenValueMax; i++) {
-            if (codelenGroup.ContainsKey(i)) {
-                var group = codelenGroup[i];
+        for (int i = codeLenValueMin; i <= codeLenValueMax; i++) {
+            if (codeLenGroup.ContainsKey(i)) {
+                var group = codeLenGroup[i];
                 group.Sort(new Comparison<int>((a, b) => {
                     if (a < b) {
                         return -1;
@@ -475,7 +465,7 @@ class Deflate {
         return table;
     }
 
-    static void deflateDynamicBlock(BitWriteStream stream, byte[] input, int startIndex, int targetLength) {
+    static void deflateDynamicBlock(BitStream stream, byte[] input, int startIndex, int targetLength) {
         var lz77Codes = LZ77.GenerateCodes(input, startIndex, targetLength);
         var clCodeValues = new List<int>() { 256 }; // character or matching length
         var distanceCodeValues = new List<int>();
@@ -645,9 +635,6 @@ class Deflate {
         stream.WriteRangeCoded(codelenTable256);
     }
 
-    static Dictionary<int, Dictionary<int, int>> FIXED_HUFFMAN_TABLE
-        = generateHuffmanTable(makeFixedHuffmanCodelenValues());
-
     static Dictionary<int, Dictionary<int, int>> generateHuffmanTable(Dictionary<int, List<int>> codelenValues) {
         var codelens = codelenValues.Keys;
         var codelen = 0;
@@ -714,7 +701,7 @@ class Deflate {
         return codelenValues;
     }
 
-    static void inflateUncompressedBlock(BitReadStream stream, Uint8WriteStream buffer) {
+    static void inflateUncompressedBlock(BitStream stream, ByteStream buffer) {
         // Skip to byte boundary
         if (stream.NowBitsLength < 8) {
             stream.ReadRange(stream.NowBitsLength);
@@ -729,7 +716,7 @@ class Deflate {
         }
     }
 
-    static void inflateFixedBlock(BitReadStream stream, Uint8WriteStream buffer) {
+    static void inflateFixedBlock(BitStream stream, ByteStream buffer) {
         var tables = FIXED_HUFFMAN_TABLE;
         var codeLenMax = 0;
         var codeLenMin = int.MaxValue;
@@ -782,7 +769,7 @@ class Deflate {
         }
     }
 
-    static void inflateDynamicBlock(BitReadStream stream, Uint8WriteStream buffer) {
+    static void inflateDynamicBlock(BitStream stream, ByteStream buffer) {
         var HLIT = stream.ReadRange(5) + 257;
         var HDIST = stream.ReadRange(5) + 1;
         var HCLEN = stream.ReadRange(4) + 4;
@@ -952,7 +939,7 @@ class Deflate {
     public static byte[] Compress(byte[] input) {
         var inputLength = input.Length;
         var streamHeap = (inputLength < BLOCK_MAX_BUFFER_LEN / 2) ? BLOCK_MAX_BUFFER_LEN : inputLength * 2;
-        var stream = new BitWriteStream(new byte[streamHeap]);
+        var stream = new BitStream(new byte[streamHeap]);
         var processedLength = 0;
         var targetLength = 0;
         while (true) {
@@ -977,8 +964,8 @@ class Deflate {
     }
 
     public static byte[] UnCompress(byte[] input, int offset = 0) {
-        var buffer = new Uint8WriteStream(input.Length * 10);
-        var stream = new BitReadStream(input, offset);
+        var buffer = new ByteStream(input.Length * 10);
+        var stream = new BitStream(input, offset);
         var bFinal = 0;
         while (bFinal != 1) {
             bFinal = stream.ReadRange(1);
