@@ -86,7 +86,7 @@ namespace Circuit.UI.Input {
             var elm = (ElmVoltage)Elm;
             if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                 int hs = 10;
-                setBbox(mPost1, mPost2, hs);
+                setBbox(hs);
 
                 interpLeadAB(ref mPs1, ref mPs2, 0, hs * 0.5);
                 drawLead(mPs1, mPs2);
@@ -97,7 +97,7 @@ namespace Circuit.UI.Input {
                 string s = Utils.UnitText(elm.MaxVoltage, "V");
                 g.DrawRightText(s, mTextPos.X, mTextPos.Y);
             } else {
-                setBbox(mPost1, mPost2, BODY_LEN);
+                setBbox(BODY_LEN);
                 interpLead(ref mPs1, 0.5);
                 drawWaveform(g, mPs1);
                 string inds;

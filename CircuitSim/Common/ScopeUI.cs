@@ -75,7 +75,7 @@ namespace Circuit {
 
         public override void Draw(CustomGraphics g) {
             setScopeRect();
-            setBbox(mPost1, mPost2, 0);
+            setBbox(0);
             Scope.Draw(g, true);
             drawPosts();
         }

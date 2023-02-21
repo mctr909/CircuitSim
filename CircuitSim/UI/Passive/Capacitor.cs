@@ -79,13 +79,13 @@ namespace Circuit.UI.Passive {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmCapacitor)Elm;
-            setBbox(mPost1, mPost2, HS);
+            setBbox(HS);
+            drawLeadA();
+            drawLeadB();
 
             /* draw first lead and plate */
-            drawLead(mPost1, mLead1);
             drawLead(mPlate1[0], mPlate1[1]);
             /* draw second lead and plate */
-            drawLead(mPost2, mLead2);
             drawLead(mPlate2[0], mPlate2[1]);
 
             updateDotCount();

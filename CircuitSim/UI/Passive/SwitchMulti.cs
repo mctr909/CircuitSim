@@ -71,12 +71,12 @@ namespace Circuit.UI.Passive {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmSwitchMulti)Elm;
-            setBbox(mPost1, mPost2, OPEN_HS);
+            setBbox(OPEN_HS);
             DumpInfo.AdjustBbox(mSwPosts[0], mSwPosts[ce.ThrowCount - 1]);
             var fillColorBackup = g.FillColor;
             g.FillColor = CustomGraphics.PostColor;
             /* draw first lead */
-            drawLead(mPost1, mLead1);
+            drawLeadA();
             g.FillCircle(mLead1.X, mLead1.Y, 2.5f);
             /* draw other leads */
             for (int i = 0; i < ce.ThrowCount; i++) {

@@ -125,7 +125,7 @@ namespace Circuit.UI.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            setBbox(mPost1, mPost2, 16);
+            setBbox(16);
 
             /* draw collector */
             drawLead(mColl[0], mColl[1]);

@@ -89,7 +89,7 @@ namespace Circuit.UI.Gate {
                 ce.Volts[i] = (ce.LastOutput ^ ce.IsInverting) ? 5 : 0;
             }
             mHs2 = G_WIDTH * (ce.InputCount / 2 + 1);
-            setBbox(mPost1, mPost2, mHs2);
+            setBbox(mHs2);
             if (ce.HasSchmittInputs) {
                 Utils.CreateSchmitt(mLead1, mLead2, out mSchmittPoly, 1, .47f);
             }
@@ -100,7 +100,7 @@ namespace Circuit.UI.Gate {
             for (int i = 0; i != ce.InputCount; i++) {
                 drawLead(mInPosts[i], mInGates[i]);
             }
-            drawLead(mLead2, mPost2);
+            drawLeadB();
             g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             if (UseAnsiGates()) {
                 g.DrawPolygon(mGatePolyAnsi);

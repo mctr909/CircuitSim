@@ -154,6 +154,16 @@ namespace Circuit.UI {
             );
         }
 
+        protected void setBbox(double w) {
+            DumpInfo.SetBbox(mPost1, mPost2);
+            var dpx = (int)(mDir.X * w);
+            var dpy = (int)(mDir.Y * w);
+            DumpInfo.AdjustBbox(
+                mPost1.X + dpx, mPost1.Y + dpy,
+                mPost1.X - dpx, mPost1.Y - dpy
+            );
+        }
+
         /// <summary>
         /// update and draw current for simple two-terminal element
         /// </summary>
@@ -293,6 +303,16 @@ namespace Circuit.UI {
         protected void drawLead(Point a, Point b) {
             Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawLine(a, b);
+        }
+
+        protected void drawLeadA() {
+            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawLine(mPost1, mLead1);
+        }
+
+        protected void drawLeadB() {
+            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawLine(mLead2, mPost2);
         }
 
         protected void draw2Leads() {

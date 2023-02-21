@@ -56,7 +56,7 @@ namespace Circuit.UI.Input {
             drawLead(mAshaft1, mAshaft2);
             g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mArrow);
 
-            setBbox(mPost1, mPost2, BODY_LEN);
+            setBbox(BODY_LEN);
             doDots();
             if (ControlPanel.ChkShowValues.Checked) {
                 string s = Utils.UnitText(mCurrentValue, "A");

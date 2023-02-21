@@ -41,9 +41,9 @@ namespace Circuit.UI.Input {
             } else {
                 setLead1(1 - w / mLen);
             }
-            setBbox(mPost1, mPost2, BODY_LEN);
+            setBbox(BODY_LEN);
 
-            drawLead(mPost1, mLead1);
+            drawLeadA();
             drawRail(g);
             drawPosts();
             CurCount = updateDotCount(-Elm.Current, CurCount);

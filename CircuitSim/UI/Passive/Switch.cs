@@ -96,7 +96,7 @@ namespace Circuit.UI.Passive {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmSwitch)Elm;
-            setBbox(mPost1, mPost2, OPEN_HS);
+            setBbox(OPEN_HS);
             draw2Leads();
             var fillColorBackup = g.FillColor;
             g.FillColor = CustomGraphics.PostColor;

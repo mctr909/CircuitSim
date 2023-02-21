@@ -38,24 +38,13 @@ namespace Circuit.UI.Output {
 
         public override void Draw(CustomGraphics g) {
             int hs = 8;
-            setBbox(mPost1, mPost2, hs);
+            setBbox(hs);
             bool selected = NeedsHighlight;
             double len = (selected || CirSimForm.DragElm == this || mustShowVoltage()) ? 16 : mLen - 32;
             calcLeads((int)len);
 
-            if (selected) {
-                g.DrawColor = CustomGraphics.SelectColor;
-            } else {
-                g.DrawColor = CustomGraphics.LineColor;
-            }
-            drawLead(mPost1, mLead1);
-
-            if (selected) {
-                g.DrawColor = CustomGraphics.SelectColor;
-            } else {
-                g.DrawColor = CustomGraphics.LineColor;
-            }
-            drawLead(mLead2, mPost2);
+            drawLeadA();
+            drawLeadB();
 
             if (this == CirSimForm.PlotXElm) {
                 drawCenteredLText("X", mCenter, true);

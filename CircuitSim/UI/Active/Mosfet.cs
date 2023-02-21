@@ -161,7 +161,7 @@ namespace Circuit.UI.Active {
                 SetPoints();
             }
 
-            setBbox(mPost1, mPost2, HS);
+            setBbox(HS);
 
             var ce = (ElmMosfet)Elm;
 

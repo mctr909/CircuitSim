@@ -36,8 +36,8 @@ namespace Circuit.UI.Input {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmFM)Elm;
-            setBbox(mPost1, mPost2, SIZE);
-            drawLead(mPost1, mLead1);
+            setBbox(SIZE);
+            drawLeadA();
 
             string s = "FM";
             drawCenteredText(s, DumpInfo.P2, true);

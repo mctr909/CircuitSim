@@ -84,7 +84,7 @@ namespace Circuit.UI.Active {
         }
 
         protected void drawDiode(CustomGraphics g) {
-            setBbox(mPost1, mPost2, HS);
+            setBbox(HS);
 
             draw2Leads();
 

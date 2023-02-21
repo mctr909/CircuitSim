@@ -52,11 +52,11 @@ namespace Circuit.UI.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            setBbox(mPost1, mPost2, mOpHeight * 2);
+            setBbox(mOpHeight * 2);
 
             drawLead(mIn1p[0], mIn1p[1]);
             drawLead(mIn2p[0], mIn2p[1]);
-            drawLead(mLead2, mPost2);
+            drawLeadB();
 
             g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             g.DrawPolygon(mTriangle);

@@ -59,7 +59,7 @@ namespace Circuit.UI.Passive {
             double v1 = Elm.Volts[0];
             double v2 = Elm.Volts[1];
             int hs = 8;
-            setBbox(mPost1, mPost2, hs);
+            setBbox(hs);
 
             draw2Leads();
             drawCoil(mLead1, mLead2, v1, v2);

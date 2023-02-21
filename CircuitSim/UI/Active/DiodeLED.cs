@@ -97,7 +97,7 @@ namespace Circuit.UI.Active {
             g.FillColor = Color.FromArgb((int)(mColorR * w), (int)(mColorG * w), (int)(mColorB * w));
             g.FillCircle(mLedCenter.X, mLedCenter.Y, CR_INNER);
 
-            setBbox(mPost1, mPost2, CR_INNER);
+            setBbox(CR_INNER);
             updateDotCount();
             drawDots(mPost1, mLedLead1, CurCount);
             drawDots(mPost2, mLedLead2, -CurCount);

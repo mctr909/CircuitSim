@@ -46,7 +46,7 @@ namespace Circuit.UI.Gate {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmTriState)Elm;
             int hs = 16;
-            setBbox(mPost1, mPost2, hs);
+            setBbox(hs);
 
             draw2Leads();
 

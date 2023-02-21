@@ -18,7 +18,7 @@ namespace Circuit.UI.Output {
         }
 
         public override void Draw(CustomGraphics g) {
-            setBbox(mPost1, mPost2, 1);
+            setBbox(1);
 
             if (NeedsHighlight) {
                 g.DrawColor = CustomGraphics.SelectColor;

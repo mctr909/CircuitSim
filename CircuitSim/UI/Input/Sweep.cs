@@ -41,9 +41,9 @@ namespace Circuit.UI.Input {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmSweep)Elm;
-            setBbox(mPost1, mPost2, SIZE);
+            setBbox(SIZE);
 
-            drawLead(mPost1, mLead1);
+            drawLeadA();
 
             g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
 

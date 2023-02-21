@@ -50,7 +50,7 @@ namespace Circuit.UI.Gate {
             Utils.InterpPoint(mLead1, l2, ref mGatePolyEuro[3], ref mGatePolyEuro[2], 1, hs);
             Utils.InterpPoint(mLead1, l2, ref mCenter, .5);
 
-            setBbox(mPost1, mPost2, hs);
+            setBbox(hs);
         }
 
         public override void Draw(CustomGraphics g) {

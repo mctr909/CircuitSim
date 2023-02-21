@@ -44,7 +44,7 @@ namespace Circuit.UI.Input {
             }
             setBbox(mPost1, mLead1, 0);
             drawCenteredLText(s, DumpInfo.P2, true);
-            drawLead(mPost1, mLead1);
+            drawLeadA();
             updateDotCount();
             drawDots(mPost1, mLead1, CurCount);
             drawPosts();

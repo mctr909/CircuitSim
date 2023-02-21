@@ -46,7 +46,7 @@ namespace Circuit.UI.Output {
             drawLead(mPost1, mPost2);
             g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mArrowPoly);
             doDots();
-            setBbox(mPost1, mPost2, 3);
+            setBbox(3);
             string s = "A";
             switch (ce.Meter) {
             case ElmAmmeter.AM_VOL:

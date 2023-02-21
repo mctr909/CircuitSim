@@ -123,7 +123,7 @@ namespace Circuit.UI.Passive {
             double vl = ce.Volts[ElmPot.V_L];
             double vr = ce.Volts[ElmPot.V_R];
             double vs = ce.Volts[ElmPot.V_S];
-            setBbox(mPost1, mPost2, HS);
+            setBbox(HS);
             draw2Leads();
 
             int divide = (int)(SEGMENTS * ce.Position);
