@@ -74,7 +74,7 @@ namespace Circuit.UI.Output {
             }
             if (r == 0) {
                 return new ElementInfo("表示", ce.Meter,
-                    new string[] { "瞬時値", "実効値", "最大値", "最小値", "P-P", "2値" }
+                    new string[] { "瞬時値", "実効値", "最大値", "最小値", "P-P" }
                 );
             }
             if (r == 1) {
@@ -106,8 +106,6 @@ namespace Circuit.UI.Output {
                 return Utils.UnitTextWithScale(ce.LastMinV, "Vmin", ce.Scale);
             case ElmVoltMeter.TP_P2P:
                 return Utils.UnitTextWithScale(ce.LastMaxV - ce.LastMinV, "Vp2p", ce.Scale);
-            case ElmVoltMeter.TP_BIN:
-                return ce.BinaryLevel + "";
             }
             return "";
         }

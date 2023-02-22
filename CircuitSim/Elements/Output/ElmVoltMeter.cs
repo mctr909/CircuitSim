@@ -7,7 +7,6 @@ namespace Circuit.Elements.Output {
         public const int TP_MAX = 2;
         public const int TP_MIN = 3;
         public const int TP_P2P = 4;
-        public const int TP_BIN = 5;
 
         public int Meter;
         public E_SCALE Scale;
@@ -15,10 +14,8 @@ namespace Circuit.Elements.Output {
         public override int PostCount { get { return 2; } }
 
         public double RmsV { get; private set; } = 0;
-        public double BinaryLevel { get; private set; } = 0; /*0 or 1 - double because we only pass doubles back to the web page */
         public double LastMaxV { get; private set; }
         public double LastMinV { get; private set; }
-        public double SelectedValue { get; private set; } = 0;
 
         double mTotal;
         double mCount;
@@ -47,12 +44,6 @@ namespace Circuit.Elements.Output {
             mCount++; /*how many counts are in a cycle */
             double v = VoltageDiff;
             mTotal += v * v;
-
-            if (v < 2.5) {
-                BinaryLevel = 0;
-            } else {
-                BinaryLevel = 1;
-            }
 
             /* V going up, track maximum value with */
             if (v > mMaxV && mIncreasingV) {
