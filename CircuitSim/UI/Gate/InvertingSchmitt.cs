@@ -50,7 +50,7 @@ namespace Circuit.UI.Gate {
             g.DrawPolygon(symbolPoly);
             g.DrawCircle(pcircle, 3);
             CurCount = updateDotCount(ce.Current, CurCount);
-            drawDots(mLead2, mPost2, CurCount);
+            drawDotsB(CurCount);
         }
 
         public override void SetPoints() {

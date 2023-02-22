@@ -34,6 +34,7 @@ namespace Circuit.UI.Input {
         public override void SetPoints() {
             base.SetPoints();
             setLead1(1 - 12 / mLen);
+            setBbox(mPost1, mLead1, 0);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -42,11 +43,10 @@ namespace Circuit.UI.Input {
             if (isNumeric) {
                 s = "" + ce.Position;
             }
-            setBbox(mPost1, mLead1, 0);
             drawCenteredLText(s, DumpInfo.P2, true);
             drawLeadA();
             updateDotCount();
-            drawDots(mPost1, mLead1, CurCount);
+            drawDotsA(CurCount);
             drawPosts();
         }
 

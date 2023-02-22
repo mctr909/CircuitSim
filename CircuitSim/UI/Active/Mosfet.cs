@@ -111,17 +111,23 @@ namespace Circuit.UI.Active {
             var ce = (ElmMosfet)Elm;
 
             if (!DrawDigital) {
+                var b0 = mBody[0];
+                var b1 = mBody[1];
                 if (ce.Pnp == 1) {
                     if (ShowBulk) {
-                        Utils.CreateArrow(mBody[0], mBody[1], out mArrowPoly, 8, 3);
+                        Utils.CreateArrow(b0.X, b0.Y, b1.X, b1.Y, out mArrowPoly, 8, 3);
                     } else {
-                        Utils.CreateArrow(mSrc[1], mSrc[0], out mArrowPoly, 8, 3);
+                        var s0 = mSrc[0];
+                        var s1 = mSrc[1];
+                        Utils.CreateArrow(s1.X, s1.Y, s0.X, s0.Y, out mArrowPoly, 8, 3);
                     }
                 } else {
                     if (ShowBulk) {
-                        Utils.CreateArrow(mBody[1], mBody[0], out mArrowPoly, 8, 3);
+                        Utils.CreateArrow(b1.X, b1.Y, b0.X, b0.Y, out mArrowPoly, 8, 3);
                     } else {
-                        Utils.CreateArrow(mDrn[0], mDrn[1], out mArrowPoly, 8, 3);
+                        var d0 = mDrn[0];
+                        var d1 = mDrn[1];
+                        Utils.CreateArrow(d0.X, d0.Y, d1.X, d1.Y, out mArrowPoly, 8, 3);
                     }
                 }
             } else if (ce.Pnp == -1) {

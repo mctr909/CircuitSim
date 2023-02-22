@@ -66,7 +66,7 @@ namespace Circuit.UI.Gate {
             }
             g.DrawCircle(mPcircle, 3);
             CurCount = updateDotCount(ce.Current, CurCount);
-            drawDots(mLead2, mPost2, CurCount);
+            drawDotsB(CurCount);
         }
 
         public override void GetInfo(string[] arr) {

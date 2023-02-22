@@ -30,11 +30,13 @@ namespace Circuit.UI.Output {
         public override void SetPoints() {
             base.SetPoints();
             var ce = (ElmLabeledNode)Elm;
-            if (mPost1.X == mPost2.X) {
+            if (mVertical) {
                 setLead1(1 - 0.5 * Context.GetTextSize(ce.Text).Height / mLen);
             } else {
                 setLead1(1 - 0.5 * Context.GetTextSize(ce.Text).Width / mLen);
             }
+            interpPoint(ref mPos, 1 + 11.0 / mLen);
+            setBbox(mPost1, mPos, CircleSize);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -57,9 +59,7 @@ namespace Circuit.UI.Output {
                 }
             }
             CurCount = updateDotCount(ce.Current, CurCount);
-            drawDots(mPost1, mLead1, CurCount);
-            interpPoint(ref mPos, 1 + 11.0 / mLen);
-            setBbox(mPost1, mPos, CircleSize);
+            drawDotsA(CurCount);
             drawPosts();
         }
 

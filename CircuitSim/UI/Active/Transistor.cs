@@ -98,11 +98,14 @@ namespace Circuit.UI.Active {
 
             /* arrow */
             if (ce.NPN == 1) {
-                Utils.CreateArrow(mEmit[1], mEmit[0], out mArrowPoly, 8, 3);
+                var e0 = mEmit[0];
+                var e1 = mEmit[1];
+                Utils.CreateArrow(e1.X, e1.Y, e0.X, e0.Y, out mArrowPoly, 8, 3);
             } else {
+                var e0 = mEmit[0];
                 var pt = new Point();
                 interpPoint(ref pt, 1 - BODY_LEN / mLen, -5 * mDsign * ce.NPN);
-                Utils.CreateArrow(mEmit[0], pt, out mArrowPoly, 8, 3);
+                Utils.CreateArrow(e0.X, e0.Y, pt.X, pt.Y, out mArrowPoly, 8, 3);
             }
 
             setTextPos();

@@ -54,7 +54,7 @@ namespace Circuit.UI.Gate {
             g.DrawPolygon(mGatePoly);
             drawLead(mPost3, mLead3);
             CurCount = updateDotCount(ce.Current, CurCount);
-            drawDots(mLead2, mPost2, CurCount);
+            drawDotsB(CurCount);
             drawPosts();
         }
 

@@ -110,6 +110,15 @@ namespace Circuit.UI {
             BoundingBox.Height = b.Y - a.Y + 1;
         }
 
+        public void SetBbox(int ax, int ay, int bx, int by) {
+            if (ax > bx) { var q = ax; ax = bx; bx = q; }
+            if (ay > by) { var q = ay; ay = by; by = q; }
+            BoundingBox.X = ax;
+            BoundingBox.Y = ay;
+            BoundingBox.Width = bx - ax + 1;
+            BoundingBox.Height = by - ay + 1;
+        }
+
         public void AdjustBbox(int x1, int y1, int x2, int y2) {
             if (x1 > x2) { var q = x1; x1 = x2; x2 = q; }
             if (y1 > y2) { var q = y1; y1 = y2; y2 = q; }

@@ -106,6 +106,8 @@ namespace Circuit.UI {
         protected bool mNoDiagonal;
         #endregion
 
+        protected BaseUI() { }
+
         /// <summary>
         /// create new element with one post at pos, to be dragged out by user
         /// </summary>
@@ -155,9 +157,12 @@ namespace Circuit.UI {
         }
 
         protected void setBbox(double w) {
-            DumpInfo.SetBbox(mPost1, mPost2);
             var dpx = (int)(mDir.X * w);
             var dpy = (int)(mDir.Y * w);
+            DumpInfo.SetBbox(
+                mPost1.X + dpx, mPost1.Y + dpy,
+                mPost1.X - dpx, mPost1.Y - dpy
+            );
             DumpInfo.AdjustBbox(
                 mPost1.X + dpx, mPost1.Y + dpy,
                 mPost1.X - dpx, mPost1.Y - dpy
@@ -294,7 +299,7 @@ namespace Circuit.UI {
             if (CirSimForm.MouseMode == CirSimForm.MOUSE_MODE.DRAG_ROW || CirSimForm.MouseMode == CirSimForm.MOUSE_MODE.DRAG_COLUMN) {
                 return;
             }
-            for (int i = 0; i != Elm.PostCount; i++) {
+            for (int i = 0; i < Elm.PostCount; i++) {
                 var p = GetPost(i);
                 Context.DrawPost(p);
             }
@@ -350,6 +355,14 @@ namespace Circuit.UI {
                 var y0 = (int)(a.Y + di * dy / dr);
                 Context.FillCircle(x0, y0, 0.5f);
             }
+        }
+
+        protected void drawDotsA(double pos) {
+            drawDots(mPost1, mLead1, pos);
+        }
+
+        protected void drawDotsB(double pos) {
+            drawDots(mLead2, mPost2, pos);
         }
 
         protected void drawCenteredText(string s, Point p, bool cx) {
@@ -633,6 +646,9 @@ namespace Circuit.UI {
             mDiff.X = DumpInfo.P2.X - DumpInfo.P1.X;
             mDiff.Y = DumpInfo.P2.Y - DumpInfo.P1.Y;
             mLen = Math.Sqrt(mDiff.X * mDiff.X + mDiff.Y * mDiff.Y);
+            mDsign = (mDiff.Y == 0) ? Math.Sign(mDiff.X) : Math.Sign(mDiff.Y);
+            mPost1 = new Point(DumpInfo.P1.X, DumpInfo.P1.Y);
+            mPost2 = new Point(DumpInfo.P2.X, DumpInfo.P2.Y);
             var sx = mPost2.X - mPost1.X;
             var sy = mPost2.Y - mPost1.Y;
             var r = (float)Math.Sqrt(sx * sx + sy * sy);
@@ -643,9 +659,6 @@ namespace Circuit.UI {
                 mDir.X = sy / r;
                 mDir.Y = -sx / r;
             }
-            mDsign = (mDiff.Y == 0) ? Math.Sign(mDiff.X) : Math.Sign(mDiff.Y);
-            mPost1 = new Point(DumpInfo.P1.X, DumpInfo.P1.Y);
-            mPost2 = new Point(DumpInfo.P2.X, DumpInfo.P2.Y);
             mVertical = mPost1.X == mPost2.X;
             mHorizontal = mPost1.Y == mPost2.Y;
         }

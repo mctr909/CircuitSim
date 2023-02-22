@@ -2,8 +2,6 @@
 
 namespace Circuit.Elements.Output {
     class ElmVoltMeter : BaseElement {
-        const int FLAG_SHOWVOLTAGE = 1;
-
         public const int TP_VOL = 0;
         public const int TP_RMS = 1;
         public const int TP_MAX = 2;
@@ -13,6 +11,8 @@ namespace Circuit.Elements.Output {
 
         public int Meter;
         public E_SCALE Scale;
+
+        public override int PostCount { get { return 2; } }
 
         public double RmsV { get; private set; } = 0;
         public double BinaryLevel { get; private set; } = 0; /*0 or 1 - double because we only pass doubles back to the web page */
@@ -42,8 +42,6 @@ namespace Circuit.Elements.Output {
                 Scale = st.nextTokenEnum<E_SCALE>();
             } catch { }
         }
-
-        public override int PostCount { get { return 2; } }
 
         public override void CirIterationFinished() {
             mCount++; /*how many counts are in a cycle */
@@ -117,23 +115,5 @@ namespace Circuit.Elements.Output {
         }
 
         public override bool AnaGetConnection(int n1, int n2) { return false; }
-
-        public string getMeter() {
-            switch (Meter) {
-            case TP_VOL:
-                return "V";
-            case TP_RMS:
-                return "V(rms)";
-            case TP_MAX:
-                return "Vmax";
-            case TP_MIN:
-                return "Vmin";
-            case TP_P2P:
-                return "Peak to peak";
-            case TP_BIN:
-                return "Binary";
-            }
-            return "";
-        }
     }
 }

@@ -38,7 +38,7 @@ namespace Circuit.UI.Input {
             interpLead(ref mAshaft2, 0.6);
             interpLead(ref mCenter, 0.5);
             int sign;
-            if (mPost1.Y == mPost2.Y) {
+            if (mHorizontal) {
                 sign = mDsign;
             } else {
                 sign = -mDsign;
@@ -46,7 +46,7 @@ namespace Circuit.UI.Input {
             interpPoint(ref mTextPos, 0.5, 16 * sign);
             var p2 = new Point();
             interpLead(ref p2, 0.8);
-            Utils.CreateArrow(mCenter, p2, out mArrow, 8, 4);
+            Utils.CreateArrow(mCenter.X, mCenter.Y, p2.X, p2.Y, out mArrow, 8, 4);
         }
 
         public override void Draw(CustomGraphics g) {

@@ -5,7 +5,7 @@ using Circuit.Elements.Output;
 
 namespace Circuit.UI.Output {
     class VoltMeter : BaseUI {
-        const int FLAG_SHOWVOLTAGE = 1;
+        protected const int FLAG_SHOWVOLTAGE = 1;
 
         protected Point mCenter;
         Point mPlusPoint;
@@ -53,7 +53,10 @@ namespace Circuit.UI.Output {
                 drawCenteredLText("Y", mCenter, true);
             }
 
-            drawValues();
+            if (mustShowVoltage()) {
+                drawCenteredText(drawValues(), mCenter, true);
+            }
+
             drawCenteredLText("+", mPlusPoint, true);
             drawPosts();
         }
@@ -90,35 +93,26 @@ namespace Circuit.UI.Output {
             }
         }
 
-        protected void drawValues() {
-            if (mustShowVoltage()) {
-                var ce = (ElmVoltMeter)Elm;
-                string s = "";
-                switch (ce.Meter) {
-                case ElmVoltMeter.TP_VOL:
-                    s = Utils.UnitTextWithScale(ce.VoltageDiff, "V", ce.Scale);
-                    break;
-                case ElmVoltMeter.TP_RMS:
-                    s = Utils.UnitTextWithScale(ce.RmsV, "V(rms)", ce.Scale);
-                    break;
-                case ElmVoltMeter.TP_MAX:
-                    s = Utils.UnitTextWithScale(ce.LastMaxV, "Vpk", ce.Scale);
-                    break;
-                case ElmVoltMeter.TP_MIN:
-                    s = Utils.UnitTextWithScale(ce.LastMinV, "Vmin", ce.Scale);
-                    break;
-                case ElmVoltMeter.TP_P2P:
-                    s = Utils.UnitTextWithScale(ce.LastMaxV - ce.LastMinV, "Vp2p", ce.Scale);
-                    break;
-                case ElmVoltMeter.TP_BIN:
-                    s = ce.BinaryLevel + "";
-                    break;
-                }
-                drawCenteredText(s, mCenter, true);
+        protected string drawValues() {
+            var ce = (ElmVoltMeter)Elm;
+            switch (ce.Meter) {
+            case ElmVoltMeter.TP_VOL:
+                return Utils.UnitTextWithScale(ce.VoltageDiff, "V", ce.Scale);
+            case ElmVoltMeter.TP_RMS:
+                return Utils.UnitTextWithScale(ce.RmsV, "V(rms)", ce.Scale);
+            case ElmVoltMeter.TP_MAX:
+                return Utils.UnitTextWithScale(ce.LastMaxV, "Vpk", ce.Scale);
+            case ElmVoltMeter.TP_MIN:
+                return Utils.UnitTextWithScale(ce.LastMinV, "Vmin", ce.Scale);
+            case ElmVoltMeter.TP_P2P:
+                return Utils.UnitTextWithScale(ce.LastMaxV - ce.LastMinV, "Vp2p", ce.Scale);
+            case ElmVoltMeter.TP_BIN:
+                return ce.BinaryLevel + "";
             }
+            return "";
         }
 
-        bool mustShowVoltage() {
+        protected bool mustShowVoltage() {
             return (DumpInfo.Flags & FLAG_SHOWVOLTAGE) != 0;
         }
     }

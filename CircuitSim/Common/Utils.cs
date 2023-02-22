@@ -131,13 +131,31 @@ namespace Circuit {
             }
         }
 
-        public static void CreateArrow(Point a, Point b, out Point[] ret, double al, double aw) {
-            var adx = b.X - a.X;
-            var ady = b.Y - a.Y;
+        public static void InterpPoint(int ax, int ay, int bx, int by, ref Point ret1, ref Point ret2, double f, double g) {
+            var gx = by - ay;
+            var gy = ax - bx;
+            var r = Math.Sqrt(gx * gx + gy * gy);
+            if (0.0 == r) {
+                ret1.X = ax;
+                ret1.Y = ay;
+                ret2.X = bx;
+                ret2.Y = by;
+            } else {
+                g /= r;
+                ret1.X = (int)Math.Floor(ax * (1 - f) + bx * f + g * gx + 0.45);
+                ret1.Y = (int)Math.Floor(ay * (1 - f) + by * f + g * gy + 0.45);
+                ret2.X = (int)Math.Floor(ax * (1 - f) + bx * f - g * gx + 0.45);
+                ret2.Y = (int)Math.Floor(ay * (1 - f) + by * f - g * gy + 0.45);
+            }
+        }
+
+        public static void CreateArrow(int ax, int ay, int bx, int by, out Point[] ret, double al, double aw) {
+            var adx = bx - ax;
+            var ady = by - ay;
             var l = Math.Sqrt(adx * adx + ady * ady);
             ret = new Point[3];
-            ret[0] = new Point(b.X, b.Y);
-            InterpPoint(a, b, ref ret[1], ref ret[2], 1.0 - al / l, aw);
+            ret[0] = new Point(bx, by);
+            InterpPoint(ax, ay, bx, by, ref ret[1], ref ret[2], 1.0 - al / l, aw);
         }
 
         public static void CreateSchmitt(Point a, Point b, out Point[] ret, double gsize, double ctr) {

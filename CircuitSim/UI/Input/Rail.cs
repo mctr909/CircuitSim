@@ -48,7 +48,7 @@ namespace Circuit.UI.Input {
             drawPosts();
             CurCount = updateDotCount(-Elm.Current, CurCount);
             if (CirSimForm.DragElm != this) {
-                drawDots(mPost1, mLead1, CurCount);
+                drawDotsA(CurCount);
             }
         }
 

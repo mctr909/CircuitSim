@@ -68,7 +68,7 @@ namespace Circuit.UI.Input {
             calcLeads((elm.WaveForm == ElmVoltage.WAVEFORM.DC) ? BODY_LEN_DC : BODY_LEN);
 
             int sign;
-            if (mPost1.Y == mPost2.Y) {
+            if (mHorizontal) {
                 sign = -mDsign;
             } else {
                 sign = mDsign;
@@ -116,8 +116,8 @@ namespace Circuit.UI.Input {
                 if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                     drawDots(mPost1, mPost2, CurCount);
                 } else {
-                    drawDots(mPost1, mLead1, CurCount);
-                    drawDots(mPost2, mLead2, -CurCount);
+                    drawDotsA(CurCount);
+                    drawDotsB(CurCount);
                 }
             }
             drawPosts();

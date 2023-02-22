@@ -78,11 +78,11 @@ namespace Circuit.UI.Active {
             int y = sy - 5;
             var p1 = new Point(sx, y);
             var p2 = new Point(sx + 20, y);
-            Utils.CreateArrow(p1, p2, out mArrow1, 5, 2);
+            Utils.CreateArrow(p1.X, p1.Y, p2.X, p2.Y, out mArrow1, 5, 2);
             y = sy + 5;
             p1 = new Point(sx, y);
             p2 = new Point(sx + 20, y);
-            Utils.CreateArrow(p1, p2, out mArrow2, 5, 2);
+            Utils.CreateArrow(p1.X, p1.Y, p2.X, p2.Y, out mArrow2, 5, 2);
         }
 
         public override void Draw(CustomGraphics g) {

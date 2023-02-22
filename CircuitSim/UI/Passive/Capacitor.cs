@@ -90,8 +90,8 @@ namespace Circuit.UI.Passive {
 
             updateDotCount();
             if (CirSimForm.DragElm != this) {
-                drawDots(mPost1, mLead1, CurCount);
-                drawDots(mPost2, mLead2, -CurCount);
+                drawDotsA(CurCount);
+                drawDotsB(CurCount);
             }
             drawPosts();
 

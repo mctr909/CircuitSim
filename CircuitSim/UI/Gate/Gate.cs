@@ -123,7 +123,7 @@ namespace Circuit.UI.Gate {
                 g.DrawCircle(mCirclePos, CIRCLE_SIZE);
             }
             CurCount = updateDotCount(ce.Current, CurCount);
-            drawDots(mLead2, mPost2, CurCount);
+            drawDotsB(CurCount);
             drawPosts();
         }
 

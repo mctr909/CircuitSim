@@ -22,7 +22,7 @@ namespace Circuit.UI.Gate {
             g.DrawPolygon(gatePoly);
             g.DrawPolygon(symbolPoly);
             CurCount = updateDotCount(ce.Current, CurCount);
-            drawDots(mLead2, mPost2, CurCount);
+            drawDotsB(CurCount);
         }
 
         public override void SetPoints() {
