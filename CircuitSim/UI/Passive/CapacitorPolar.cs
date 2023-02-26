@@ -30,13 +30,13 @@ namespace Circuit.UI.Passive {
         public override void SetPoints() {
             base.SetPoints();
             double f = (mLen / 2 - 4) / mLen;
-            if (DumpInfo.P2.Y > DumpInfo.P1.Y) {
+            if (DumpInfo.P2Y > DumpInfo.P1Y) {
                 mPlusPoint.Y += 4;
             }
-            if (DumpInfo.P1.Y > DumpInfo.P2.Y) {
+            if (DumpInfo.P1Y > DumpInfo.P2Y) {
                 mPlusPoint.Y += 3;
             }
-            if (DumpInfo.P1.Y == DumpInfo.P2.Y) {
+            if (DumpInfo.P1Y == DumpInfo.P2Y) {
                 interpPoint(ref mPlusPoint, f - 5 / mLen, 5 * mDsign);
             } else {
                 interpPoint(ref mPlusPoint, f - 5 / mLen, -5 * mDsign);

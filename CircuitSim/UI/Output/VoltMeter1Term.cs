@@ -18,7 +18,7 @@ namespace Circuit.UI.Output {
                 setLead1(1 - 0.5 * Context.GetTextSize("1.99mV").Width / mLen);
             }
             interpPoint(ref mCenter, 1 + 11.0 / mLen);
-            setBbox(mPost1, mCenter, 0);
+            setBbox(mPost1X, mPost1Y, mCenter, 0);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -30,7 +30,7 @@ namespace Circuit.UI.Output {
             }
             drawLeadA();
             if (mustShowVoltage()) {
-                drawCenteredText(drawValues(), DumpInfo.P2, true);
+                drawCenteredText(drawValues(), DumpInfo.P2X, DumpInfo.P2Y, true);
             }
         }
     }

@@ -28,13 +28,13 @@ namespace Circuit.UI.Input {
         }
 
         public override Rectangle GetSwitchRect() {
-            return new Rectangle(DumpInfo.P2.X - 10, DumpInfo.P2.Y - 10, 20, 20);
+            return new Rectangle(DumpInfo.P2X - 10, DumpInfo.P2Y - 10, 20, 20);
         }
 
         public override void SetPoints() {
             base.SetPoints();
             setLead1(1 - 12 / mLen);
-            setBbox(mPost1, mLead1, 0);
+            setBbox(mPost1X, mPost1Y, mLead1, 0);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -43,7 +43,7 @@ namespace Circuit.UI.Input {
             if (isNumeric) {
                 s = "" + ce.Position;
             }
-            drawCenteredLText(s, DumpInfo.P2, true);
+            drawCenteredLText(s, DumpInfo.P2X, DumpInfo.P2Y, true);
             drawLeadA();
             updateDotCount();
             drawDotsA(CurCount);

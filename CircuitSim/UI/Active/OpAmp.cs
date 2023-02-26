@@ -104,7 +104,7 @@ namespace Circuit.UI.Active {
         }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? mIn1p[0] : (n == 1) ? mIn2p[0] : mPost2;
+            return (n == 0) ? mIn1p[0] : (n == 1) ? mIn2p[0] : new Point(mPost2X, mPost2Y);
         }
 
         public override void GetInfo(string[] arr) {

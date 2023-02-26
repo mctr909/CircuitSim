@@ -41,6 +41,12 @@ namespace Circuit {
             return Math.Sqrt(x * x + y * y);
         }
 
+        public static double Distance(double ax, double ay, Point b) {
+            var x = b.X - ax;
+            var y = b.Y - ay;
+            return Math.Sqrt(x * x + y * y);
+        }
+
         public static double Distance(Point a, double bx, double by) {
             var x = bx - a.X;
             var y = by - a.Y;

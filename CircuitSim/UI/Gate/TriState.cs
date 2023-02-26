@@ -60,12 +60,12 @@ namespace Circuit.UI.Gate {
 
         public override void Drag(Point pos) {
             pos = CirSimForm.SnapGrid(pos);
-            if (Math.Abs(DumpInfo.P1.X - pos.X) < Math.Abs(DumpInfo.P1.Y - pos.Y)) {
-                pos.X = DumpInfo.P1.X;
+            if (Math.Abs(DumpInfo.P1X - pos.X) < Math.Abs(DumpInfo.P1Y - pos.Y)) {
+                pos.X = DumpInfo.P1X;
             } else {
-                pos.Y = DumpInfo.P1.Y;
+                pos.Y = DumpInfo.P1Y;
             }
-            int q1 = Math.Abs(DumpInfo.P1.X - pos.X) + Math.Abs(DumpInfo.P1.Y - pos.Y);
+            int q1 = Math.Abs(DumpInfo.P1X - pos.X) + Math.Abs(DumpInfo.P1Y - pos.Y);
             int q2 = (q1 / 2) % CirSimForm.GRID_SIZE;
             if (q2 != 0) {
                 return;
@@ -75,7 +75,7 @@ namespace Circuit.UI.Gate {
         }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? mPost1 : (n == 1) ? mPost2 : mPost3;
+            return (n == 0) ? new Point(mPost1X, mPost1Y) : (n == 1) ? new Point(mPost2X, mPost2Y) : mPost3;
         }
 
         public override void GetInfo(string[] arr) {

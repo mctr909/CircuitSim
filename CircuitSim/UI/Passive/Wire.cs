@@ -23,7 +23,7 @@ namespace Circuit.UI.Passive {
         }
 
         public override void Draw(CustomGraphics g) {
-            drawLead(mPost1, mPost2);
+            drawLead(mPost1X, mPost1Y, mPost2X, mPost2Y);
             doDots();
             setBbox(3);
             drawPosts();

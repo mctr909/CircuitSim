@@ -75,8 +75,8 @@ namespace Circuit.UI.Active {
                 return;
             }
 
-            drawLead(mPost1, mLedLead1);
-            drawLead(mLedLead2, mPost2);
+            drawLead(mPost1X, mPost1Y, mLedLead1);
+            drawLead(mLedLead2, mPost2X, mPost2Y);
 
             g.DrawColor = CustomGraphics.LineColor;
             g.DrawCircle(mLedCenter, CR);
@@ -99,8 +99,8 @@ namespace Circuit.UI.Active {
 
             setBbox(CR_INNER);
             updateDotCount();
-            drawDots(mPost1, mLedLead1, CurCount);
-            drawDots(mPost2, mLedLead2, -CurCount);
+            drawDots(mPost1X, mPost1Y, mLedLead1, CurCount);
+            drawDots(mPost2X, mPost2Y, mLedLead2, -CurCount);
             drawPosts();
         }
 

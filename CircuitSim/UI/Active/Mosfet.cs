@@ -77,7 +77,7 @@ namespace Circuit.UI.Active {
          * 3 = body (if present)
          * for PNP, 1 is drain, 2 is source */
         public override Point GetPost(int n) {
-            return (n == 0) ? mPost1 : (n == 1) ? mSrc[0] : (n == 2) ? mDrn[0] : mBody[0];
+            return (n == 0) ? new Point(mPost1X, mPost1Y) : (n == 1) ? mSrc[0] : (n == 2) ? mDrn[0] : mBody[0];
         }
 
         public override void SetPoints() {
@@ -149,12 +149,12 @@ namespace Circuit.UI.Active {
 
         void setTextPos() {
             if (mVertical) {
-                mNamePos = new Point(mPost2.X, mPost2.Y + HS * mDsign * 2 / 3);
+                mNamePos = new Point(mPost2X, mPost2Y + HS * mDsign * 2 / 3);
             } else if (mHorizontal) {
                 if (0 < mDsign) {
-                    mNamePos = new Point(mPost2.X - 1, mPost2.Y);
+                    mNamePos = new Point(mPost2X - 1, mPost2Y);
                 } else {
-                    mNamePos = new Point(mPost2.X - 16, mPost2.Y);
+                    mNamePos = new Point(mPost2X - 16, mPost2Y);
                 }
             } else {
                 interpPoint(ref mNamePos, 0.5, 10 * mDsign);
@@ -200,7 +200,7 @@ namespace Circuit.UI.Active {
             }
 
             /* draw gate */
-            drawLead(mPost1, mGate[1]);
+            drawLead(mPost1X, mPost1Y, mGate[1]);
             drawLead(mGate[0], mGate[2]);
             if (DrawDigital && ce.Pnp == -1) {
                 g.DrawCircle(mPcircle, mPcircler);
@@ -208,7 +208,7 @@ namespace Circuit.UI.Active {
 
             if ((DumpInfo.Flags & FLAG_SHOWVT) != 0) {
                 string s = "" + (ce.Vt * ce.Pnp);
-                drawCenteredLText(s, DumpInfo.P2, false);
+                drawCenteredLText(s, DumpInfo.P2X, DumpInfo.P2Y, false);
             }
             CurCount = updateDotCount(-ce.Current, CurCount);
             drawDots(mSrc[0], mSrc[1], CurCount);

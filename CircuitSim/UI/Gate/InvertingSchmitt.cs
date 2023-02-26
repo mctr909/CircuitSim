@@ -66,7 +66,7 @@ namespace Circuit.UI.Gate {
             gatePoly = new Point[3];
             interpLeadAB(ref gatePoly[0], ref gatePoly[1], 0, hs);
             interpPoint(ref gatePoly[2], 0.5 + (ww - 5) / mLen);
-            Utils.CreateSchmitt(mPost1, mPost2, out symbolPoly, 1, .5 - (ww - 9) / mLen);
+            Utils.CreateSchmitt(new Point(mPost1X, mPost1Y), new Point(mPost2X, mPost2Y), out symbolPoly, 1, .5 - (ww - 9) / mLen);
             setBbox(hs);
         }
 

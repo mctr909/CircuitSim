@@ -57,7 +57,7 @@ namespace Circuit.UI.Gate {
         public override Point GetPost(int n) {
             var ce = (ElmGate)Elm;
             if (n == ce.InputCount) {
-                return mPost2;
+                return new Point(mPost2X, mPost2Y);
             }
             return mInPosts[n];
         }

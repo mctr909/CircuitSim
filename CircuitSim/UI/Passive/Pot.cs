@@ -64,7 +64,7 @@ namespace Circuit.UI.Passive {
         }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? mPost1 : (n == 1) ? mPost2 : mPost3;
+            return (n == 0) ? new Point(mPost1X, mPost1Y) : (n == 1) ? new Point(mPost2X, mPost2Y) : mPost3;
         }
 
         public override void Delete() {
@@ -83,22 +83,22 @@ namespace Circuit.UI.Passive {
                 myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(mDiff.Y)
                     * ((Math.Abs(mDiff.Y) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
                 if (mDiff.Y != 0) {
-                    mPost2.Y = mPost1.Y + myLen;
+                    mPost2Y = mPost1Y + myLen;
                     offset = (0 < mDiff.Y) ? mDiff.X : -mDiff.X;
-                    mPost2.X = mPost1.X;
+                    mPost2X = mPost1X;
                 }
             } else {
                 /* horizontal */
                 myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(mDiff.X)
                     * ((Math.Abs(mDiff.X) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
-                mPost2.X = mPost1.X + myLen;
+                mPost2X = mPost1X + myLen;
                 offset = (mDiff.X < 0) ? mDiff.Y : -mDiff.Y;
-                mPost2.Y = mPost1.Y;
+                mPost2Y = mPost1Y;
             }
             if (offset < CirSimForm.GRID_SIZE) {
                 offset = CirSimForm.GRID_SIZE;
             }
-            mLen = Utils.Distance(mPost1, mPost2);
+            mLen = Utils.Distance(mPost1X, mPost1Y, mPost2X, mPost2Y);
 
             calcLeads(BODY_LEN);
 
@@ -162,8 +162,8 @@ namespace Circuit.UI.Passive {
             ce.CurCount2 = updateDotCount(ce.Current2, ce.CurCount2);
             ce.CurCount3 = updateDotCount(ce.Current3, ce.CurCount3);
             if (CirSimForm.DragElm != this) {
-                drawDots(mPost1, mMidPoint, ce.CurCount1);
-                drawDots(mPost2, mMidPoint, ce.CurCount2);
+                drawDots(mPost1X, mPost1Y, mMidPoint, ce.CurCount1);
+                drawDots(mPost2X, mPost2Y, mMidPoint, ce.CurCount2);
                 drawDots(mPost3, mCorner2, ce.CurCount3);
                 drawDots(mCorner2, mMidPoint, ce.CurCount3 + Utils.Distance(mPost3, mCorner2));
             }

@@ -90,8 +90,10 @@ namespace Circuit.UI {
         protected PointF mDir;
 
         /* post of objects */
-        protected Point mPost1;
-        protected Point mPost2;
+        protected int mPost1X { get; private set; }
+        protected int mPost1Y { get; private set; }
+        protected int mPost2X;
+        protected int mPost2Y;
 
         /* lead points (ends of wire stubs for simple two-terminal elements) */
         protected Point mLead1;
@@ -132,12 +134,26 @@ namespace Circuit.UI {
         /// <param name="len"></param>
         protected void calcLeads(int len) {
             if (mLen < len || len == 0) {
-                mLead1 = mPost1;
-                mLead2 = mPost2;
+                mLead1 = new Point(mPost1X, mPost1Y);
+                mLead2 = new Point(mPost2X, mPost2Y);
                 return;
             }
             setLead1((mLen - len) / (2 * mLen));
             setLead2((mLen + len) / (2 * mLen));
+        }
+
+        protected void setBbox(int ax, int ay, int bx, int by, double w) {
+            DumpInfo.SetBbox(ax, ay, bx, by);
+            var dpx = (int)(mDir.X * w);
+            var dpy = (int)(mDir.Y * w);
+            DumpInfo.AdjustBbox(
+                ax + dpx, ay + dpy,
+                ax - dpx, ay - dpy
+            );
+        }
+
+        protected void setBbox(int ax, int ay, Point b, double w) {
+            setBbox(ax, ay, b.X, b.Y, w);
         }
 
         /// <summary>
@@ -147,25 +163,19 @@ namespace Circuit.UI {
         /// <param name="b"></param>
         /// <param name="w"></param>
         protected void setBbox(Point a, Point b, double w) {
-            DumpInfo.SetBbox(a, b);
-            var dpx = (int)(mDir.X * w);
-            var dpy = (int)(mDir.Y * w);
-            DumpInfo.AdjustBbox(
-                a.X + dpx, a.Y + dpy,
-                a.X - dpx, a.Y - dpy
-            );
+            setBbox(a.X, a.Y, b.X, b.Y, w);
         }
 
         protected void setBbox(double w) {
             var dpx = (int)(mDir.X * w);
             var dpy = (int)(mDir.Y * w);
             DumpInfo.SetBbox(
-                mPost1.X + dpx, mPost1.Y + dpy,
-                mPost1.X - dpx, mPost1.Y - dpy
+                mPost1X + dpx, mPost1Y + dpy,
+                mPost1X - dpx, mPost1Y - dpy
             );
             DumpInfo.AdjustBbox(
-                mPost1.X + dpx, mPost1.Y + dpy,
-                mPost1.X - dpx, mPost1.Y - dpy
+                mPost1X + dpx, mPost1Y + dpy,
+                mPost1X - dpx, mPost1Y - dpy
             );
         }
 
@@ -175,7 +185,7 @@ namespace Circuit.UI {
         protected void doDots() {
             updateDotCount();
             if (CirSimForm.DragElm != this) {
-                drawDots(mPost1, mPost2, CurCount);
+                drawDots(mPost1X, mPost1Y, mPost2X, mPost2Y, CurCount);
             }
         }
 
@@ -216,39 +226,39 @@ namespace Circuit.UI {
         }
 
         protected void interpPoint(ref Point p, double f) {
-            p.X = (int)Math.Floor(mPost1.X * (1 - f) + mPost2.X * f + 0.5);
-            p.Y = (int)Math.Floor(mPost1.Y * (1 - f) + mPost2.Y * f + 0.5);
+            p.X = (int)Math.Floor(mPost1X * (1 - f) + mPost2X * f + 0.5);
+            p.Y = (int)Math.Floor(mPost1Y * (1 - f) + mPost2Y * f + 0.5);
         }
 
         protected void interpPoint(ref Point p, double f, double g) {
-            var gx = mPost2.Y - mPost1.Y;
-            var gy = mPost1.X - mPost2.X;
+            var gx = mPost2Y - mPost1Y;
+            var gy = mPost1X - mPost2X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                p.X = mPost1.X;
-                p.Y = mPost1.Y;
+                p.X = mPost1X;
+                p.Y = mPost1Y;
             } else {
                 g /= r;
-                p.X = (int)Math.Floor(mPost1.X * (1 - f) + mPost2.X * f + g * gx + 0.5);
-                p.Y = (int)Math.Floor(mPost1.Y * (1 - f) + mPost2.Y * f + g * gy + 0.5);
+                p.X = (int)Math.Floor(mPost1X * (1 - f) + mPost2X * f + g * gx + 0.5);
+                p.Y = (int)Math.Floor(mPost1Y * (1 - f) + mPost2Y * f + g * gy + 0.5);
             }
         }
 
         protected void interpPointAB(ref Point a, ref Point b, double f, double g) {
-            var gx = mPost2.Y - mPost1.Y;
-            var gy = mPost1.X - mPost2.X;
+            var gx = mPost2Y - mPost1Y;
+            var gy = mPost1X - mPost2X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                a.X = mPost1.X;
-                a.Y = mPost1.Y;
-                b.X = mPost2.X;
-                b.Y = mPost2.Y;
+                a.X = mPost1X;
+                a.Y = mPost1Y;
+                b.X = mPost2X;
+                b.Y = mPost2Y;
             } else {
                 g /= r;
-                a.X = (int)Math.Floor(mPost1.X * (1 - f) + mPost2.X * f + g * gx + 0.5);
-                a.Y = (int)Math.Floor(mPost1.Y * (1 - f) + mPost2.Y * f + g * gy + 0.5);
-                b.X = (int)Math.Floor(mPost1.X * (1 - f) + mPost2.X * f - g * gx + 0.5);
-                b.Y = (int)Math.Floor(mPost1.Y * (1 - f) + mPost2.Y * f - g * gy + 0.5);
+                a.X = (int)Math.Floor(mPost1X * (1 - f) + mPost2X * f + g * gx + 0.5);
+                a.Y = (int)Math.Floor(mPost1Y * (1 - f) + mPost2Y * f + g * gy + 0.5);
+                b.X = (int)Math.Floor(mPost1X * (1 - f) + mPost2X * f - g * gx + 0.5);
+                b.Y = (int)Math.Floor(mPost1Y * (1 - f) + mPost2Y * f - g * gy + 0.5);
             }
         }
 
@@ -306,26 +316,38 @@ namespace Circuit.UI {
         }
 
         protected void drawLead(Point a, Point b) {
+            drawLead(a.X, a.Y, b.X, b.Y);
+        }
+
+        protected void drawLead(float ax, float ay, Point b) {
+            drawLead(ax, ay, b.X, b.Y);
+        }
+
+        protected void drawLead(Point a, float bx, float by) {
+            drawLead(a.X, a.Y, bx, by);
+        }
+
+        protected void drawLead(float ax, float ay, float bx, float by) {
             Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            Context.DrawLine(a, b);
+            Context.DrawLine(ax, ay, bx, by);
         }
 
         protected void drawLeadA() {
             Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            Context.DrawLine(mPost1, mLead1);
+            Context.DrawLine(mPost1X, mPost1Y, mLead1);
         }
 
         protected void drawLeadB() {
             Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            Context.DrawLine(mLead2, mPost2);
+            Context.DrawLine(mLead2, mPost2X, mPost2Y);
         }
 
         protected void draw2Leads() {
             Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             /* draw first lead */
-            Context.DrawLine(mPost1, mLead1);
+            Context.DrawLine(mPost1X, mPost1Y, mLead1);
             /* draw second lead */
-            Context.DrawLine(mLead2, mPost2);
+            Context.DrawLine(mLead2, mPost2X, mPost2Y);
         }
 
         /// <summary>
@@ -335,11 +357,23 @@ namespace Circuit.UI {
         /// <param name="b"></param>
         /// <param name="pos"></param>
         protected void drawDots(Point a, Point b, double pos) {
+            drawDots(a.X, a.Y, b.X, b.Y, pos);
+        }
+
+        protected void drawDots(float ax, float ay, Point b, double pos) {
+            drawDots(ax, ay, b.X, b.Y, pos);
+        }
+
+        protected void drawDots(Point a, float bx, float by, double pos) {
+            drawDots(a.X, a.Y, bx, by, pos);
+        }
+
+        protected void drawDots(float ax, float ay, float bx, float by, double pos) {
             if ((!CirSimForm.IsRunning) || pos == 0 || !ControlPanel.ChkShowDots.Checked) {
                 return;
             }
-            var dx = b.X - a.X;
-            var dy = b.Y - a.Y;
+            var dx = bx - ax;
+            var dy = by - ay;
             var dr = Math.Sqrt(dx * dx + dy * dy);
             pos %= CirSimForm.GRID_SIZE;
             if (pos < 0) {
@@ -351,42 +385,50 @@ namespace Circuit.UI {
                 Context.FillColor = Color.Yellow;
             }
             for (var di = pos; di < dr; di += CirSimForm.GRID_SIZE) {
-                var x0 = (int)(a.X + di * dx / dr);
-                var y0 = (int)(a.Y + di * dy / dr);
+                var x0 = (int)(ax + di * dx / dr);
+                var y0 = (int)(ay + di * dy / dr);
                 Context.FillCircle(x0, y0, 0.5f);
             }
         }
 
         protected void drawDotsA(double pos) {
-            drawDots(mPost1, mLead1, pos);
+            drawDots(mPost1X, mPost1Y, mLead1, pos);
         }
 
         protected void drawDotsB(double pos) {
-            drawDots(mLead2, mPost2, pos);
+            drawDots(mLead2, mPost2X, mPost2Y, pos);
         }
 
-        protected void drawCenteredText(string s, Point p, bool cx) {
+        protected void drawCenteredText(string s, int x, int y, bool cx) {
             var fs = Context.GetTextSize(s);
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
             if (cx) {
-                DumpInfo.AdjustBbox(p.X - w / 2, p.Y - h2, p.X + w / 2, p.Y + h2);
+                DumpInfo.AdjustBbox(x - w / 2, y - h2, x + w / 2, y + h2);
             } else {
-                DumpInfo.AdjustBbox(p.X, p.Y - h2, p.X + w, p.Y + h2);
+                DumpInfo.AdjustBbox(x, y - h2, x + w, y + h2);
             }
-            Context.DrawCenteredText(s, p.X, p.Y);
+            Context.DrawCenteredText(s, x, y);
         }
 
-        protected void drawCenteredLText(string s, Point p, bool cx) {
+        protected void drawCenteredText(string s, Point p, bool cx) {
+            drawCenteredText(s, p.X, p.Y, cx);
+        }
+
+        protected void drawCenteredLText(string s, int x, int y, bool cx) {
             var fs = Context.GetTextSizeL(s);
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
             if (cx) {
-                DumpInfo.AdjustBbox(p.X - w / 2, p.Y - h2, p.X + w / 2, p.Y + h2);
+                DumpInfo.AdjustBbox(x - w / 2, y - h2, x + w / 2, y + h2);
             } else {
-                DumpInfo.AdjustBbox(p.X, p.Y - h2, p.X + w, p.Y + h2);
+                DumpInfo.AdjustBbox(x, y - h2, x + w, y + h2);
             }
-            Context.DrawCenteredLText(s, p.X, p.Y);
+            Context.DrawCenteredLText(s, x, y);
+        }
+
+        protected void drawCenteredLText(string s, Point p, bool cx) {
+            drawCenteredLText(s, p.X, p.Y, cx);
         }
 
         /// <summary>
@@ -400,11 +442,11 @@ namespace Circuit.UI {
             var textSize = Context.GetTextSize(s);
             int xc, yc;
             if (this is Rail || this is Sweep) {
-                xc = DumpInfo.P2.X;
-                yc = DumpInfo.P2.Y;
+                xc = DumpInfo.P2X;
+                yc = DumpInfo.P2Y;
             } else {
-                xc = (DumpInfo.P2.X + DumpInfo.P1.X) / 2;
-                yc = (DumpInfo.P2.Y + DumpInfo.P1.Y) / 2;
+                xc = (DumpInfo.P2X + DumpInfo.P1X) / 2;
+                yc = (DumpInfo.P2Y + DumpInfo.P1Y) / 2;
             }
             Context.DrawRightText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
         }
@@ -420,11 +462,11 @@ namespace Circuit.UI {
             var textSize = Context.GetTextSize(s);
             int xc, yc;
             if (this is Rail) {
-                xc = DumpInfo.P2.X;
-                yc = DumpInfo.P2.Y;
+                xc = DumpInfo.P2X;
+                yc = DumpInfo.P2Y;
             } else {
-                xc = (DumpInfo.P2.X + DumpInfo.P1.X) / 2;
-                yc = (DumpInfo.P2.Y + DumpInfo.P1.Y) / 2;
+                xc = (DumpInfo.P2X + DumpInfo.P1X) / 2;
+                yc = (DumpInfo.P2Y + DumpInfo.P1Y) / 2;
             }
             Context.DrawLeftText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
         }
@@ -493,9 +535,9 @@ namespace Circuit.UI {
 
         #region [public method]
         public void DrawHandles(CustomGraphics g) {
-            g.DrawHandle(DumpInfo.P1);
+            g.DrawHandle(DumpInfo.P1X, DumpInfo.P1Y);
             if (2 <= NumHandles) {
-                g.DrawHandle(DumpInfo.P2);
+                g.DrawHandle(DumpInfo.P2X, DumpInfo.P2Y);
             }
         }
 
@@ -533,18 +575,20 @@ namespace Circuit.UI {
         /// <param name="dy"></param>
         /// <returns></returns>
         public bool AllowMove(int dx, int dy) {
-            int nx = DumpInfo.P1.X + dx;
-            int ny = DumpInfo.P1.Y + dy;
-            int nx2 = DumpInfo.P2.X + dx;
-            int ny2 = DumpInfo.P2.Y + dy;
+            int nx = DumpInfo.P1X + dx;
+            int ny = DumpInfo.P1Y + dy;
+            int nx2 = DumpInfo.P2X + dx;
+            int ny2 = DumpInfo.P2Y + dy;
             for (int i = 0; i != CirSimForm.ElmCount; i++) {
                 var ce = CirSimForm.GetElm(i);
-                var ceP1 = ce.DumpInfo.P1;
-                var ceP2 = ce.DumpInfo.P2;
-                if (ceP1.X == nx && ceP1.Y == ny && ceP2.X == nx2 && ceP2.Y == ny2) {
+                var ceP1X = ce.DumpInfo.P1X;
+                var ceP1Y = ce.DumpInfo.P1Y;
+                var ceP2X = ce.DumpInfo.P2X;
+                var ceP2Y = ce.DumpInfo.P2Y;
+                if (ceP1X == nx && ceP1Y == ny && ceP2X == nx2 && ceP2Y == ny2) {
                     return false;
                 }
-                if (ceP1.X == nx2 && ceP1.Y == ny2 && ceP2.X == nx && ceP2.Y == ny) {
+                if (ceP1X == nx2 && ceP1Y == ny2 && ceP2X == nx && ceP2Y == ny) {
                     return false;
                 }
             }
@@ -557,13 +601,13 @@ namespace Circuit.UI {
 
         public int GetHandleGrabbedClose(int xtest, int ytest, int deltaSq, int minSize) {
             mLastHandleGrabbed = -1;
-            var x12 = DumpInfo.P2.X - DumpInfo.P1.X;
-            var y12 = DumpInfo.P2.Y - DumpInfo.P1.Y;
+            var x12 = DumpInfo.P2X - DumpInfo.P1X;
+            var y12 = DumpInfo.P2Y - DumpInfo.P1Y;
             if (Math.Sqrt(x12 * x12 + y12 * y12) >= minSize) {
-                var x1t = xtest - DumpInfo.P1.X;
-                var y1t = ytest - DumpInfo.P1.Y;
-                var x2t = xtest - DumpInfo.P2.X;
-                var y2t = ytest - DumpInfo.P2.Y;
+                var x1t = xtest - DumpInfo.P1X;
+                var y1t = ytest - DumpInfo.P1Y;
+                var x2t = xtest - DumpInfo.P2X;
+                var y2t = ytest - DumpInfo.P2Y;
                 if (Math.Sqrt(x1t * x1t + y1t * y1t) <= deltaSq) {
                     mLastHandleGrabbed = 0;
                 } else if (Math.Sqrt(x2t * x2t + y2t * y2t) <= deltaSq) {
@@ -575,13 +619,13 @@ namespace Circuit.UI {
 
         public int GetHandleGrabbedClose(Point testp, int deltaSq, int minSize) {
             mLastHandleGrabbed = -1;
-            var x12 = DumpInfo.P2.X - DumpInfo.P1.X;
-            var y12 = DumpInfo.P2.Y - DumpInfo.P1.Y;
+            var x12 = DumpInfo.P2X - DumpInfo.P1X;
+            var y12 = DumpInfo.P2Y - DumpInfo.P1Y;
             if (Math.Sqrt(x12 * x12 + y12 * y12) >= minSize) {
-                var x1t = testp.X - DumpInfo.P1.X;
-                var y1t = testp.Y - DumpInfo.P1.Y;
-                var x2t = testp.X - DumpInfo.P2.X;
-                var y2t = testp.Y - DumpInfo.P2.Y;
+                var x1t = testp.X - DumpInfo.P1X;
+                var y1t = testp.Y - DumpInfo.P1Y;
+                var x2t = testp.X - DumpInfo.P2X;
+                var y2t = testp.Y - DumpInfo.P2Y;
                 if (Math.Sqrt(x1t * x1t + y1t * y1t) <= deltaSq) {
                     mLastHandleGrabbed = 0;
                 } else if (Math.Sqrt(x2t * x2t + y2t * y2t) <= deltaSq) {
@@ -593,7 +637,7 @@ namespace Circuit.UI {
 
         public int GetNodeAtPoint(int xp, int yp) {
             if (Elm.PostCount == 2) {
-                return (DumpInfo.P1.X == xp && DumpInfo.P1.Y == yp) ? 0 : 1;
+                return (DumpInfo.P1X == xp && DumpInfo.P1Y == yp) ? 0 : 1;
             }
             for (int i = 0; i != Elm.PostCount; i++) {
                 var p = GetPost(i);
@@ -643,14 +687,12 @@ namespace Circuit.UI {
         /// Called when element is moved
         /// </summary>
         public virtual void SetPoints() {
-            mDiff.X = DumpInfo.P2.X - DumpInfo.P1.X;
-            mDiff.Y = DumpInfo.P2.Y - DumpInfo.P1.Y;
+            mDiff.X = DumpInfo.P2X - DumpInfo.P1X;
+            mDiff.Y = DumpInfo.P2Y - DumpInfo.P1Y;
             mLen = Math.Sqrt(mDiff.X * mDiff.X + mDiff.Y * mDiff.Y);
             mDsign = (mDiff.Y == 0) ? Math.Sign(mDiff.X) : Math.Sign(mDiff.Y);
-            mPost1 = new Point(DumpInfo.P1.X, DumpInfo.P1.Y);
-            mPost2 = new Point(DumpInfo.P2.X, DumpInfo.P2.Y);
-            var sx = mPost2.X - mPost1.X;
-            var sy = mPost2.Y - mPost1.Y;
+            var sx = DumpInfo.P2X - DumpInfo.P1X;
+            var sy = DumpInfo.P2Y - DumpInfo.P1Y;
             var r = (float)Math.Sqrt(sx * sx + sy * sy);
             if (r == 0) {
                 mDir.X = 0;
@@ -659,8 +701,12 @@ namespace Circuit.UI {
                 mDir.X = sy / r;
                 mDir.Y = -sx / r;
             }
-            mVertical = mPost1.X == mPost2.X;
-            mHorizontal = mPost1.Y == mPost2.Y;
+            mVertical = DumpInfo.P1X == DumpInfo.P2X;
+            mHorizontal = DumpInfo.P1Y == DumpInfo.P2Y;
+            mPost1X = DumpInfo.P1X;
+            mPost1Y = DumpInfo.P1Y;
+            mPost2X = DumpInfo.P2X;
+            mPost2Y = DumpInfo.P2Y;
         }
 
         public virtual void SetMouseElm(bool v) {
@@ -677,7 +723,7 @@ namespace Circuit.UI {
         /// <param name="n"></param>
         /// <returns></returns>
         public virtual Point GetPost(int n) {
-            return (n == 0) ? mPost1 : (n == 1) ? mPost2 : new Point();
+            return (n == 0) ? new Point(mPost1X, mPost1Y) : (n == 1) ? new Point(mPost2X, mPost2Y) : new Point();
         }
 
         /// <summary>

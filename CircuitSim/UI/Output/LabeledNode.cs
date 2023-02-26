@@ -36,7 +36,7 @@ namespace Circuit.UI.Output {
                 setLead1(1 - 0.5 * Context.GetTextSize(ce.Text).Width / mLen);
             }
             interpPoint(ref mPos, 1 + 11.0 / mLen);
-            setBbox(mPost1, mPos, CircleSize);
+            setBbox(mPost1X, mPost1Y, mPos, CircleSize);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -49,13 +49,13 @@ namespace Circuit.UI.Output {
                 lineOver = true;
                 str = str.Substring(1);
             }
-            drawCenteredText(str, DumpInfo.P2, true);
+            drawCenteredText(str, DumpInfo.P2X, DumpInfo.P2Y, true);
             if (lineOver) {
                 int asc = (int)(CustomGraphics.TextSize + 0.5);
                 if (lineOver) {
-                    int ya = DumpInfo.P2.Y - asc;
+                    int ya = DumpInfo.P2Y - asc;
                     int sw = (int)g.GetTextSize(str).Width;
-                    g.DrawLine(DumpInfo.P2.X - sw / 2, ya, DumpInfo.P2.X + sw / 2, ya);
+                    g.DrawLine(DumpInfo.P2X - sw / 2, ya, DumpInfo.P2X + sw / 2, ya);
                 }
             }
             CurCount = updateDotCount(ce.Current, CurCount);

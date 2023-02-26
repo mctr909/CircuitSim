@@ -39,7 +39,7 @@ namespace Circuit.UI.Passive {
         }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? mPost1 : mSwPosts[n - 1];
+            return (n == 0) ? new Point(mPost1X, mPost1Y) : mSwPosts[n - 1];
         }
 
         public override Rectangle GetSwitchRect() {

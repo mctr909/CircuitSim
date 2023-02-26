@@ -56,7 +56,7 @@ namespace Circuit.UI.Active {
         }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? mPost1 : (n == 1) ? mColl[0] : mEmit[0];
+            return (n == 0) ? new Point(mPost1X, mPost1Y) : (n == 1) ? mColl[0] : mEmit[0];
         }
 
         void setup() {
@@ -115,12 +115,12 @@ namespace Circuit.UI.Active {
             var txtW = Context.GetTextSize(DumpInfo.ReferenceName).Width;
             var swap = 0 < (DumpInfo.Flags & FLAG_FLIP) ? -1 : 1;
             if (mVertical) {
-                mNamePos = new Point(mPost2.X, mPost2.Y + HS * swap * mDsign * 2 / 3);
+                mNamePos = new Point(mPost2X, mPost2Y + HS * swap * mDsign * 2 / 3);
             } else if (mHorizontal) {
                 if (0 < mDsign * swap) {
-                    mNamePos = new Point(mPost2.X - 1, mPost2.Y);
+                    mNamePos = new Point(mPost2X - 1, mPost2Y);
                 } else {
-                    mNamePos = new Point(mPost2.X - 16, mPost2.Y);
+                    mNamePos = new Point(mPost2X - 16, mPost2Y);
                 }
             } else {
                 interpPoint(ref mNamePos, 0.5, 10 * mDsign);
@@ -137,12 +137,12 @@ namespace Circuit.UI.Active {
             /* draw arrow */
             g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mArrowPoly);
             /* draw base */
-            drawLead(mPost1, mTbase);
+            drawLead(mPost1X, mPost1Y, mTbase);
 
             /* draw dots */
             var ce = (ElmTransistor)Elm;
             mCurCountB = updateDotCount(-ce.Ib, mCurCountB);
-            drawDots(mTbase, mPost1, mCurCountB);
+            drawDots(mTbase, mPost1X, mPost1Y, mCurCountB);
             mCurCountC = updateDotCount(-ce.Ic, mCurCountC);
             drawDots(mColl[1], mColl[0], mCurCountC);
             mCurCountE = updateDotCount(-ce.Ie, mCurCountE);

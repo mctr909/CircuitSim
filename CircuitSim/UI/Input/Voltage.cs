@@ -81,7 +81,7 @@ namespace Circuit.UI.Input {
         }
 
         public override void Draw(CustomGraphics g) {
-            DumpInfo.SetBbox(DumpInfo.P1, DumpInfo.P2);
+            DumpInfo.SetBbox(DumpInfo.P1X, DumpInfo.P1Y, DumpInfo.P2X, DumpInfo.P2Y);
             draw2Leads();
             var elm = (ElmVoltage)Elm;
             if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
@@ -99,7 +99,7 @@ namespace Circuit.UI.Input {
             } else {
                 setBbox(BODY_LEN);
                 interpLead(ref mPs1, 0.5);
-                drawWaveform(g, mPs1);
+                drawWaveform(g, mPs1.X, mPs1.Y);
                 string inds;
                 if (0 < elm.Bias || (0 == elm.Bias &&
                     (ElmVoltage.WAVEFORM.PULSE == elm.WaveForm || ElmVoltage.WAVEFORM.PULSE_BOTH == elm.WaveForm))) {
@@ -114,7 +114,7 @@ namespace Circuit.UI.Input {
 
             if (CirSimForm.DragElm != this) {
                 if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
-                    drawDots(mPost1, mPost2, CurCount);
+                    drawDots(mPost1X, mPost1Y, mPost2X, mPost2Y, CurCount);
                 } else {
                     drawDotsA(CurCount);
                     drawDotsB(CurCount);
@@ -123,14 +123,12 @@ namespace Circuit.UI.Input {
             drawPosts();
         }
 
-        protected void drawWaveform(CustomGraphics g, Point center) {
-            var x = center.X;
-            var y = center.Y;
+        protected void drawWaveform(CustomGraphics g, int x, int y) {
             var elm = (ElmVoltage)Elm;
 
             if (elm.WaveForm != ElmVoltage.WAVEFORM.NOISE) {
                 g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-                g.DrawCircle(center, BODY_LEN / 2);
+                g.DrawCircle(x, y, BODY_LEN / 2);
             }
 
             DumpInfo.AdjustBbox(
@@ -139,9 +137,9 @@ namespace Circuit.UI.Input {
             );
 
             var h = 7;
-            var xd = (int)(h * 2 * elm.DutyCycle - h + x);
-            xd = Math.Max(x - h + 1, Math.Min(x + h - 1, xd));
-            var hd = (int)(h * elm.DutyCycle - h + x);
+            var w = (int)(h * 2 * elm.DutyCycle - h + x);
+            w = Math.Max(x - h + 1, Math.Min(x + h - 1, w));
+            var wh = (int)(h * elm.DutyCycle - h + x);
 
             g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
 
@@ -152,42 +150,42 @@ namespace Circuit.UI.Input {
             case ElmVoltage.WAVEFORM.SQUARE:
                 if (elm.MaxVoltage < 0) {
                     g.DrawLine(x - h, y + h, x - h, y);
-                    g.DrawLine(x - h, y + h, xd, y + h);
-                    g.DrawLine(xd, y + h, xd, y - h);
-                    g.DrawLine(x + h, y - h, xd, y - h);
+                    g.DrawLine(x - h, y + h, w, y + h);
+                    g.DrawLine(w, y + h, w, y - h);
+                    g.DrawLine(x + h, y - h, w, y - h);
                     g.DrawLine(x + h, y, x + h, y - h);
                 } else {
                     g.DrawLine(x - h, y - h, x - h, y);
-                    g.DrawLine(x - h, y - h, xd, y - h);
-                    g.DrawLine(xd, y - h, xd, y + h);
-                    g.DrawLine(x + h, y + h, xd, y + h);
+                    g.DrawLine(x - h, y - h, w, y - h);
+                    g.DrawLine(w, y - h, w, y + h);
+                    g.DrawLine(x + h, y + h, w, y + h);
                     g.DrawLine(x + h, y, x + h, y + h);
                 }
                 break;
             case ElmVoltage.WAVEFORM.PULSE:
                 if (elm.MaxVoltage < 0) {
                     g.DrawLine(x + h, y, x + h, y);
-                    g.DrawLine(x + h, y, xd, y);
-                    g.DrawLine(xd, y + h, xd, y);
-                    g.DrawLine(x - h, y + h, xd, y + h);
+                    g.DrawLine(x + h, y, w, y);
+                    g.DrawLine(w, y + h, w, y);
+                    g.DrawLine(x - h, y + h, w, y + h);
                     g.DrawLine(x - h, y + h, x - h, y);
                 } else {
                     g.DrawLine(x - h, y - h, x - h, y);
-                    g.DrawLine(x - h, y - h, xd, y - h);
-                    g.DrawLine(xd, y - h, xd, y);
-                    g.DrawLine(x + h, y, xd, y);
+                    g.DrawLine(x - h, y - h, w, y - h);
+                    g.DrawLine(w, y - h, w, y);
+                    g.DrawLine(x + h, y, w, y);
                     g.DrawLine(x + h, y, x + h, y);
                 }
                 break;
             case ElmVoltage.WAVEFORM.PULSE_BOTH:
                 g.DrawLine(x - h, y - h, x - h, y);
-                g.DrawLine(x - h, y - h, hd, y - h);
-                g.DrawLine(hd, y - h, hd, y);
-                g.DrawLine(hd, y, x, y);
+                g.DrawLine(x - h, y - h, wh, y - h);
+                g.DrawLine(wh, y - h, wh, y);
+                g.DrawLine(wh, y, x, y);
                 g.DrawLine(x, y, x, y + h);
-                g.DrawLine(x, y + h, hd + h, y + h);
-                g.DrawLine(hd + h, y + h, hd + h, y);
-                g.DrawLine(hd + h, y, x + h, y);
+                g.DrawLine(x, y + h, wh + h, y + h);
+                g.DrawLine(wh + h, y + h, wh + h, y);
+                g.DrawLine(wh + h, y, x + h, y);
                 break;
             case ElmVoltage.WAVEFORM.SAWTOOTH:
                 g.DrawLine(x, y - h, x - h, y);
@@ -203,7 +201,7 @@ namespace Circuit.UI.Input {
                 break;
             }
             case ElmVoltage.WAVEFORM.NOISE: {
-                drawCenteredText("Noise", center, true);
+                drawCenteredText("Noise", x, y, true);
                 break;
             }
             case ElmVoltage.WAVEFORM.AC: {

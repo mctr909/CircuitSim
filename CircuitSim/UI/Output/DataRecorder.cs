@@ -34,9 +34,9 @@ namespace Circuit.UI.Output {
             var str = "export";
 
             interpPoint(ref mLead1, 1 - ((int)g.GetTextSize(str).Width / 2) / mLen);
-            setBbox(mPost1, mLead1, 0);
+            setBbox(mPost1X, mPost1Y, mLead1, 0);
 
-            drawCenteredText(str, DumpInfo.P2, true);
+            drawCenteredText(str, DumpInfo.P2X, DumpInfo.P2Y, true);
             drawLeadA();
             drawPosts();
         }

@@ -42,14 +42,14 @@ namespace Circuit.UI.Custom {
             CustomGraphics.TextSize = mSize;
             var size = g.GetTextSize(mText);
             DumpInfo.SetP2(
-                (int)(DumpInfo.P1.X + size.Width),
-                (int)(DumpInfo.P1.Y + size.Height)
+                (int)(DumpInfo.P1X + size.Width),
+                (int)(DumpInfo.P1Y + size.Height)
             );
             if (NeedsHighlight) {
                 CustomGraphics.TextColor = CustomGraphics.SelectColor;
             }
-            g.DrawLeftText(mText, DumpInfo.P1.X, (int)(DumpInfo.P1.Y + size.Height / 2));
-            DumpInfo.SetBbox(DumpInfo.P1, DumpInfo.P2);
+            g.DrawLeftText(mText, DumpInfo.P1X, (int)(DumpInfo.P1Y + size.Height / 2));
+            DumpInfo.SetBbox(DumpInfo.P1X, DumpInfo.P1Y, DumpInfo.P2X, DumpInfo.P2Y);
             CustomGraphics.TextSize = sizeBk;
             CustomGraphics.TextColor = colorBk;
         }

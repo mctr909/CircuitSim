@@ -36,7 +36,7 @@ namespace Circuit.UI.Input {
         public override void SetPoints() {
             base.SetPoints();
             setLead1(1 - 0.5 * SIZE / mLen);
-            interpPoint(ref mTextPos, 1.0 + 0.66 * SIZE / Utils.Distance(mPost1, mPost2), 24 * mDsign);
+            interpPoint(ref mTextPos, 1.0 + 0.66 * SIZE / Utils.Distance(mPost1X, mPost1Y, mPost2X, mPost2Y), 24 * mDsign);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -47,9 +47,9 @@ namespace Circuit.UI.Input {
 
             g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
 
-            int xc = mPost2.X;
-            int yc = mPost2.Y;
-            g.DrawCircle(mPost2, SIZE / 2);
+            int xc = mPost2X;
+            int yc = mPost2Y;
+            g.DrawCircle(mPost2X, mPost2Y, SIZE / 2);
 
             DumpInfo.AdjustBbox(
                 xc - SIZE, yc - SIZE,

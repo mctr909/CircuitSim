@@ -34,8 +34,8 @@ namespace Circuit.UI.Output {
 				w = mLen * 0.8;
 			}
 			setLead1(1 - w / mLen);
-			setBbox(mPost1, mLead1, 0);
-			drawCenteredText(s, DumpInfo.P2, true);
+			setBbox(mPost1X, mPost1Y, mLead1, 0);
+			drawCenteredText(s, DumpInfo.P2X, DumpInfo.P2Y, true);
 			drawLeadA();
 			drawPosts();
 		}

@@ -61,18 +61,20 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             var elm = (ElmTransformer)Elm;
-            var width = Math.Max(BODY_LEN, Math.Abs(DumpInfo.P2.X - DumpInfo.P1.X));
-            var height = Math.Max(BODY_LEN, Math.Abs(DumpInfo.P2.Y - DumpInfo.P1.Y));
-            if (DumpInfo.P2.X == DumpInfo.P1.X) {
-                DumpInfo.SetP2(DumpInfo.P2.X, DumpInfo.P1.Y);
+            var width = Math.Max(BODY_LEN, Math.Abs(DumpInfo.P2X - DumpInfo.P1X));
+            var height = Math.Max(BODY_LEN, Math.Abs(DumpInfo.P2Y - DumpInfo.P1Y));
+            if (DumpInfo.P2X == DumpInfo.P1X) {
+                DumpInfo.SetP2(DumpInfo.P2X, DumpInfo.P1Y);
             }
             base.SetPoints();
-            mPost2.Y = mPost1.Y;
+            mPost2Y = mPost1Y;
             mPtEnds = new Point[4];
             mPtCoil = new Point[4];
             mPtCore = new Point[4];
-            mPtEnds[0] = mPost1;
-            mPtEnds[1] = mPost2;
+            mPtEnds[0].X = mPost1X;
+            mPtEnds[0].Y = mPost1Y;
+            mPtEnds[1].X = mPost2X;
+            mPtEnds[1].Y = mPost2Y;
             interpPoint(ref mPtEnds[2], 0, -mDsign * height);
             interpPoint(ref mPtEnds[3], 1, -mDsign * height);
             var ce = 0.5 - 10.0 / width;

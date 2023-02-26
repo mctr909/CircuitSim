@@ -255,12 +255,12 @@ namespace Circuit {
                     bool notReady = (ce is Wire) && !((Wire)ce).HasWireInfo;
 
                     /* which post does this element connect to, if any? */
-                    if (pt.X == wire.DumpInfo.P1.X && pt.Y == wire.DumpInfo.P1.Y) {
+                    if (pt.X == wire.DumpInfo.P1X && pt.Y == wire.DumpInfo.P1Y) {
                         neighbors0.Add(ce);
                         if (notReady) {
                             isReady0 = false;
                         }
-                    } else if (pt.X == wire.DumpInfo.P2.X && pt.Y == wire.DumpInfo.P2.Y) {
+                    } else if (pt.X == wire.DumpInfo.P2X && pt.Y == wire.DumpInfo.P2Y) {
                         neighbors1.Add(ce);
                         if (notReady) {
                             isReady1 = false;
