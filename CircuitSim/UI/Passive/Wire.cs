@@ -4,8 +4,6 @@ using Circuit.Elements.Passive;
 
 namespace Circuit.UI.Passive {
     class Wire : BaseUI {
-        public bool HasWireInfo; /* used in CirSim to calculate wire currents */
-
         public Wire(Point pos) : base(pos) {
             Elm = new ElmWire();
         }

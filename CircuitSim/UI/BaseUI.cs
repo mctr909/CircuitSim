@@ -629,19 +629,6 @@ namespace Circuit.UI {
             return mLastHandleGrabbed;
         }
 
-        public int GetNodeAtPoint(int xp, int yp) {
-            if (Elm.PostCount == 2) {
-                return (DumpInfo.P1X == xp && DumpInfo.P1Y == yp) ? 0 : 1;
-            }
-            for (int i = 0; i != Elm.PostCount; i++) {
-                var p = Elm.GetPost(i);
-                if (p.X == xp && p.Y == yp) {
-                    return i;
-                }
-            }
-            return 0;
-        }
-
         public string DispPostVoltage(int x) {
             if (x < Elm.Volts.Length) {
                 return Utils.UnitText(Elm.Volts[x], "V");

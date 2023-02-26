@@ -200,7 +200,6 @@ namespace Circuit.Elements.Custom {
                     int nodeOfThisPost = stModel.nextTokenInt();
                     cnLink = new CircuitNodeLink();
                     cnLink.Num = thisPost;
-                    cnLink.UI = newce;
                     cnLink.Elm = newce.Elm;
                     if (!compNodeHash.ContainsKey(nodeOfThisPost)) {
                         cn = new CircuitNode();
@@ -238,7 +237,6 @@ namespace Circuit.Elements.Custom {
                 for (int j = 0; j != inodes; j++) {
                     cnLink = new CircuitNodeLink();
                     cnLink.Num = j + cee.PostCount;
-                    cnLink.UI = ce;
                     cnLink.Elm = cee;
                     cn = new CircuitNode();
                     cn.Links.Add(cnLink);

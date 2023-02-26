@@ -11,7 +11,6 @@ using Circuit.UI.Passive;
 namespace Circuit {
     class CircuitNodeLink {
         public int Num;
-        public BaseUI UI;
         public BaseElement Elm;
     }
 
@@ -27,10 +26,10 @@ namespace Circuit {
     }
 
     class WireInfo {
-        public Wire Wire;
-        public List<BaseUI> Neighbors;
+        public ElmWire Wire;
+        public List<BaseElement> Neighbors;
         public int Post;
-        public WireInfo(Wire w) { Wire = w; }
+        public WireInfo(ElmWire w) { Wire = w; }
     }
 
     enum PathType {

@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-using Circuit.Elements;
-using Circuit.Elements.Output;
-
 using Circuit.UI;
 
 namespace Circuit {

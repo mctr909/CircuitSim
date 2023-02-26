@@ -24,6 +24,19 @@ namespace Circuit.Elements {
             return (n == 0) ? new Point(Post1X, Post1Y) : (n == 1) ? new Point(Post2X, Post2Y) : new Point();
         }
 
+        public int GetNodeAtPoint(int xp, int yp) {
+            if (PostCount == 2) {
+                return (Post1X == xp && Post1Y == yp) ? 0 : 1;
+            }
+            for (int i = 0; i != PostCount; i++) {
+                var p = GetPost(i);
+                if (p.X == xp && p.Y == yp) {
+                    return i;
+                }
+            }
+            return 0;
+        }
+
         public int[] Nodes { get; protected set; }
 
         public double[] Volts { get; protected set; }
