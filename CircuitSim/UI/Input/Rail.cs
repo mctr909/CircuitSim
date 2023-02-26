@@ -70,7 +70,7 @@ namespace Circuit.UI.Input {
                 }
                 drawCenteredText(s, DumpInfo.P2X, DumpInfo.P2Y, true);
             } else {
-                drawWaveform(g, mPost2X, mPost2Y);
+                drawWaveform(g, Elm.Post2X, Elm.Post2Y);
             }
         }
     }

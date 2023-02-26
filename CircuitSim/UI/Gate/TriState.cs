@@ -8,7 +8,6 @@ namespace Circuit.UI.Gate {
     class TriState : BaseUI {
         const int BODY_LEN = 32;
 
-        Point mPost3;
         Point mLead3;
         Point[] mGatePoly;
 
@@ -39,7 +38,7 @@ namespace Circuit.UI.Gate {
             mGatePoly = new Point[3];
             interpLeadAB(ref mGatePoly[0], ref mGatePoly[1], 0, hs);
             interpPoint(ref mGatePoly[2], 0.5 + ww / mLen);
-            interpPoint(ref mPost3, 0.5, -hs);
+            interpPoint(ref ((ElmTriState)Elm).Post3, 0.5, -hs);
             interpPoint(ref mLead3, 0.5, -hs / 2);
         }
 
@@ -52,7 +51,7 @@ namespace Circuit.UI.Gate {
 
             g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             g.DrawPolygon(mGatePoly);
-            drawLead(mPost3, mLead3);
+            drawLead(ce.Post3, mLead3);
             CurCount = updateDotCount(ce.Current, CurCount);
             drawDotsB(CurCount);
             drawPosts();
@@ -72,10 +71,6 @@ namespace Circuit.UI.Gate {
             }
             DumpInfo.SetP2(pos);
             SetPoints();
-        }
-
-        public override Point GetPost(int n) {
-            return (n == 0) ? new Point(mPost1X, mPost1Y) : (n == 1) ? new Point(mPost2X, mPost2Y) : mPost3;
         }
 
         public override void GetInfo(string[] arr) {

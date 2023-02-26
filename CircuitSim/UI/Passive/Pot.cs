@@ -14,7 +14,6 @@ namespace Circuit.UI.Passive {
         const int SEGMENTS = 12;
         const double SEG_F = 1.0 / SEGMENTS;
 
-        Point mPost3;
         Point mCorner2;
         Point mArrowPoint;
         Point mMidPoint;
@@ -63,10 +62,6 @@ namespace Circuit.UI.Passive {
             base.SetMouseElm(v);
         }
 
-        public override Point GetPost(int n) {
-            return (n == 0) ? new Point(mPost1X, mPost1Y) : (n == 1) ? new Point(mPost2X, mPost2Y) : mPost3;
-        }
-
         public override void Delete() {
             ControlPanel.RemoveSlider(mLabel);
             ControlPanel.RemoveSlider(mSlider);
@@ -83,22 +78,22 @@ namespace Circuit.UI.Passive {
                 myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(mDiff.Y)
                     * ((Math.Abs(mDiff.Y) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
                 if (mDiff.Y != 0) {
-                    mPost2Y = mPost1Y + myLen;
+                    Elm.Post2Y = Elm.Post1Y + myLen;
                     offset = (0 < mDiff.Y) ? mDiff.X : -mDiff.X;
-                    mPost2X = mPost1X;
+                    Elm.Post2X = Elm.Post1X;
                 }
             } else {
                 /* horizontal */
                 myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(mDiff.X)
                     * ((Math.Abs(mDiff.X) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
-                mPost2X = mPost1X + myLen;
+                Elm.Post2X = Elm.Post1X + myLen;
                 offset = (mDiff.X < 0) ? mDiff.Y : -mDiff.Y;
-                mPost2Y = mPost1Y;
+                Elm.Post2Y = Elm.Post1Y;
             }
             if (offset < CirSimForm.GRID_SIZE) {
                 offset = CirSimForm.GRID_SIZE;
             }
-            mLen = Utils.Distance(mPost1X, mPost1Y, mPost2X, mPost2Y);
+            mLen = Utils.Distance(Elm.Post1X, Elm.Post1Y, Elm.Post2X, Elm.Post2Y);
 
             calcLeads(BODY_LEN);
 
@@ -106,7 +101,7 @@ namespace Circuit.UI.Passive {
             var ce = (ElmPot)Elm;
             ce.Position = mSlider.Value * 0.0099 + 0.0001;
             int soff = (int)((ce.Position - 0.5) * BODY_LEN);
-            interpPoint(ref mPost3, 0.5, offset);
+            interpPoint(ref ce.Post3, 0.5, offset);
             interpPoint(ref mCorner2, soff / mLen + 0.5, offset);
             interpPoint(ref mArrowPoint, soff / mLen + 0.5, 8 * Math.Sign(offset));
             interpPoint(ref mMidPoint, soff / mLen + 0.5);
@@ -152,7 +147,7 @@ namespace Circuit.UI.Passive {
             }
 
             /* draw slider */
-            drawLead(mPost3, mCorner2);
+            drawLead(ce.Post3, mCorner2);
             drawLead(mCorner2, mArrowPoint);
             drawLead(mArrow1, mArrowPoint);
             drawLead(mArrow2, mArrowPoint);
@@ -162,18 +157,18 @@ namespace Circuit.UI.Passive {
             ce.CurCount2 = updateDotCount(ce.Current2, ce.CurCount2);
             ce.CurCount3 = updateDotCount(ce.Current3, ce.CurCount3);
             if (CirSimForm.DragElm != this) {
-                drawDots(mPost1X, mPost1Y, mMidPoint, ce.CurCount1);
-                drawDots(mPost2X, mPost2Y, mMidPoint, ce.CurCount2);
-                drawDots(mPost3, mCorner2, ce.CurCount3);
-                drawDots(mCorner2, mMidPoint, ce.CurCount3 + Utils.Distance(mPost3, mCorner2));
+                drawDots(Elm.Post1X, Elm.Post1Y, mMidPoint, ce.CurCount1);
+                drawDots(Elm.Post2X, Elm.Post2Y, mMidPoint, ce.CurCount2);
+                drawDots(ce.Post3, mCorner2, ce.CurCount3);
+                drawDots(mCorner2, mMidPoint, ce.CurCount3 + Utils.Distance(ce.Post3, mCorner2));
             }
             drawPosts();
 
             if (ControlPanel.ChkShowValues.Checked && ce.Resistance1 > 0 && (DumpInfo.Flags & FLAG_SHOW_VALUES) != 0) {
                 /* check for vertical pot with 3rd terminal on left */
-                bool reverseY = (mPost3.X < mLead1.X && mLead1.X == mLead2.X);
+                bool reverseY = (ce.Post3.X < mLead1.X && mLead1.X == mLead2.X);
                 /* check for horizontal pot with 3rd terminal on top */
-                bool reverseX = (mPost3.Y < mLead1.Y && mLead1.X != mLead2.X);
+                bool reverseX = (ce.Post3.Y < mLead1.Y && mLead1.X != mLead2.X);
                 /* check if we need to swap texts (if leads are reversed, e.g. drawn right to left) */
                 bool rev = (mLead1.X == mLead2.X && mLead1.Y < mLead2.Y) || (mLead1.Y == mLead2.Y && mLead1.X > mLead2.X);
 

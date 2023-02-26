@@ -11,7 +11,6 @@ namespace Circuit.UI.Active {
         const int BODY_LEN = 24;
 
         Point mPs;
-        Point mPost3;
         Point mLead3;
 
         public AnalogSwitch(Point pos) : base(pos) {
@@ -35,10 +34,6 @@ namespace Circuit.UI.Active {
 
         public override DUMP_ID DumpType { get { return DUMP_ID.ANALOG_SW; } }
 
-        public override Point GetPost(int n) {
-            return (0 == n) ? new Point(mPost1X, mPost1Y) : (1 == n) ? new Point(mPost2X, mPost2Y) : mPost3;
-        }
-
         public override void Drag(Point pos) {
             pos = CirSimForm.SnapGrid(pos);
             if (Math.Abs(DumpInfo.P1X - pos.X) < Math.Abs(DumpInfo.P1Y - pos.Y)) {
@@ -59,7 +54,7 @@ namespace Circuit.UI.Active {
             base.SetPoints();
             calcLeads(BODY_LEN);
             mPs = new Point();
-            interpPoint(ref mPost3, 0.5, -OPEN_HS);
+            interpPoint(ref ((ElmAnalogSwitch)Elm).Post3, 0.5, -OPEN_HS);
             interpPoint(ref mLead3, 0.5, -OPEN_HS / 2);
         }
 
@@ -74,7 +69,7 @@ namespace Circuit.UI.Active {
             g.DrawColor = CustomGraphics.WhiteColor;
             g.DrawLine(mLead1, mPs);
 
-            drawLead(mPost3, mLead3);
+            drawLead(ce.Post3, mLead3);
 
             if (!ce.IsOpen) {
                 doDots();

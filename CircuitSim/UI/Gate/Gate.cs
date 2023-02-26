@@ -25,7 +25,6 @@ namespace Circuit.UI.Gate {
         protected Point[] mLinePoints;
 
         Point[] mSchmittPoly;
-        Point[] mInPosts;
         Point[] mInGates;
 
         protected virtual string gateText { get { return null; } }
@@ -54,14 +53,6 @@ namespace Circuit.UI.Gate {
             optionList.Add(ce.HighVoltage);
         }
 
-        public override Point GetPost(int n) {
-            var ce = (ElmGate)Elm;
-            if (n == ce.InputCount) {
-                return new Point(mPost2X, mPost2Y);
-            }
-            return mInPosts[n];
-        }
-
         public override void SetPoints() {
             base.SetPoints();
             var ce = (ElmGate)Elm;
@@ -76,7 +67,7 @@ namespace Circuit.UI.Gate {
                 mWw = (int)(mLen / 2 - 8);
             }
             calcLeads(mWw * 2);
-            mInPosts = new Point[ce.InputCount];
+            ce.InPosts = new Point[ce.InputCount];
             mInGates = new Point[ce.InputCount];
             ce.AllocNodes();
             int i0 = -ce.InputCount / 2;
@@ -84,7 +75,7 @@ namespace Circuit.UI.Gate {
                 if (i0 == 0 && (ce.InputCount & 1) == 0) {
                     i0++;
                 }
-                interpPoint(ref mInPosts[i], 0, hs * i0);
+                interpPoint(ref ce.InPosts[i], 0, hs * i0);
                 interpLead(ref mInGates[i], 0, hs * i0);
                 ce.Volts[i] = (ce.LastOutput ^ ce.IsInverting) ? 5 : 0;
             }
@@ -98,7 +89,7 @@ namespace Circuit.UI.Gate {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmGate)Elm;
             for (int i = 0; i != ce.InputCount; i++) {
-                drawLead(mInPosts[i], mInGates[i]);
+                drawLead(ce.InPosts[i], mInGates[i]);
             }
             drawLeadB();
             g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;

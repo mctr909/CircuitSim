@@ -41,7 +41,7 @@ namespace Circuit.UI.Input {
 
             string s = "FM";
             drawCenteredText(s, DumpInfo.P2X, DumpInfo.P2Y, true);
-            drawWaveform(g, mPost2X, mPost2Y);
+            drawWaveform(g, Elm.Post2X, Elm.Post2Y);
             drawPosts();
             CurCount = updateDotCount(-ce.Current, CurCount);
             if (CirSimForm.DragElm != this) {

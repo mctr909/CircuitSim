@@ -1645,17 +1645,18 @@ namespace Circuit {
                             break;
                         }
                     }
-                    int jn = ce.Elm.PostCount;
+                    var elm = ce.Elm;
+                    int jn = elm.PostCount;
                     if (2 == jn) {
-                        var p1 = ce.GetPost(0);
-                        var p2 = ce.GetPost(1);
+                        var p1 = elm.GetPost(0);
+                        var p2 = elm.GetPost(1);
                         if (Utils.DistanceOnLine(p1.X, p1.Y, p2.X, p2.Y, gx, gy) < 16) {
                             newMouseElm = ce;
                             break;
                         }
                     } else {
                         for (int j = 0; j != jn; j++) {
-                            var pt = ce.GetPost(j);
+                            var pt = elm.GetPost(j);
                             if (Utils.Distance(pt, gx, gy) < 16) {
                                 newMouseElm = ce;
                                 Mouse.Post = j;
@@ -1676,7 +1677,7 @@ namespace Circuit {
                 Mouse.Post = -1;
                 /* look for post close to the mouse pointer */
                 for (int i = 0; i != newMouseElm.Elm.PostCount; i++) {
-                    var pt = newMouseElm.GetPost(i);
+                    var pt = newMouseElm.Elm.GetPost(i);
                     if (Utils.Distance(pt, gx, gy) < 16) {
                         Mouse.Post = i;
                     }

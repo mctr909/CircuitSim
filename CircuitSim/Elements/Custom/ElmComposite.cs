@@ -15,8 +15,13 @@ namespace Circuit.Elements.Custom {
     class ElmComposite : BaseElement {
         /* list of elements contained in this subcircuit */
         public List<BaseUI> CompElmList = new List<BaseUI>();
+        public Point[] Posts;
 
         public int NumPosts { get; protected set; } = 0;
+
+        public override Point GetPost(int n) {
+            return Posts[n];
+        }
 
         /* list of nodes, mapping each one to a list of elements that reference that node */
         List<CircuitNode> mCompNodeList;

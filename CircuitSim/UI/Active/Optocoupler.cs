@@ -12,13 +12,15 @@ namespace Circuit.UI.Active {
 
         public Optocoupler(Point pos) : base(pos) {
             Elm = new ElmOptocoupler();
-            mPosts = new Point[((ElmOptocoupler)Elm).NumPosts];
+            var ce = (ElmOptocoupler)Elm;
+            ce.Posts = new Point[((ElmOptocoupler)Elm).NumPosts];
             mNoDiagonal = true;
         }
 
         public Optocoupler(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new ElmOptocoupler(st);
-            mPosts = new Point[((ElmOptocoupler)Elm).NumPosts];
+            var ce = (ElmOptocoupler)Elm;
+            ce.Posts = new Point[((ElmOptocoupler)Elm).NumPosts];
             /* pass st=null since we don't need to undump any of the sub-elements */
             mNoDiagonal = true;
         }
@@ -62,15 +64,15 @@ namespace Circuit.UI.Active {
             setPin(3, x0, y0, 0, 1, 0.5, 0, xs - ce.mCspc2, 0);
 
             /* diode */
-            ce.mDiode.SetPosition(mPosts[0].X + 16, mPosts[0].Y, mPosts[1].X + 16, mPosts[1].Y);
-            mStubs[0] = ce.mDiode.GetPost(0);
-            mStubs[1] = ce.mDiode.GetPost(1);
+            ce.mDiode.SetPosition(ce.Posts[0].X + 16, ce.Posts[0].Y, ce.Posts[1].X + 16, ce.Posts[1].Y);
+            mStubs[0] = ce.mDiode.Elm.GetPost(0);
+            mStubs[1] = ce.mDiode.Elm.GetPost(1);
 
             /* transistor */
-            int midp = (mPosts[2].Y + mPosts[3].Y) / 2;
-            ce.mTransistor.SetPosition(mPosts[2].X - 20, midp, mPosts[2].X - 4, midp);
-            mStubs[2] = ce.mTransistor.GetPost(1);
-            mStubs[3] = ce.mTransistor.GetPost(2);
+            int midp = (ce.Posts[2].Y + ce.Posts[3].Y) / 2;
+            ce.mTransistor.SetPosition(ce.Posts[2].X - 20, midp, ce.Posts[2].X - 4, midp);
+            mStubs[2] = ce.mTransistor.Elm.GetPost(1);
+            mStubs[3] = ce.mTransistor.Elm.GetPost(2);
 
             /* create little arrows */
             int sx = mStubs[0].X + 2;
@@ -92,7 +94,7 @@ namespace Circuit.UI.Active {
 
             /* draw stubs */
             for (int i = 0; i != 4; i++) {
-                var a = mPosts[i];
+                var a = ce.Posts[i];
                 var b = mStubs[i];
                 drawLead(a, b);
             }

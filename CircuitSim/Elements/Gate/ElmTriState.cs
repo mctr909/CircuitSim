@@ -1,8 +1,11 @@
-﻿namespace Circuit.Elements.Gate {
+﻿using System.Drawing;
+
+namespace Circuit.Elements.Gate {
     class ElmTriState : BaseElement {
         double mResistance;
         public double Ron;
         public double Roff;
+        public Point Post3;
 
         public bool Open { get; private set; }
 
@@ -25,6 +28,10 @@
         public override int AnaInternalNodeCount { get { return 1; } }
 
         public override int AnaVoltageSourceCount { get { return 1; } }
+
+        public override Point GetPost(int n) {
+            return (n == 0) ? new Point(Post1X, Post1Y) : (n == 1) ? new Point(Post2X, Post2Y) : Post3;
+        }
 
         public override double CirGetCurrentIntoNode(int n) {
             if (n == 1) {

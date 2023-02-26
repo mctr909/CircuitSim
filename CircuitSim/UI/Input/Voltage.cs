@@ -114,7 +114,7 @@ namespace Circuit.UI.Input {
 
             if (CirSimForm.DragElm != this) {
                 if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
-                    drawDots(mPost1X, mPost1Y, mPost2X, mPost2Y, CurCount);
+                    drawDots(Elm.Post1X, Elm.Post1Y, Elm.Post2X, Elm.Post2Y, CurCount);
                 } else {
                     drawDotsA(CurCount);
                     drawDotsB(CurCount);

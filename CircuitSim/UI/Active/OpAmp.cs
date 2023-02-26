@@ -14,8 +14,6 @@ namespace Circuit.UI.Active {
         const int mOpHeight = 8;
         const int mOpWidth = 16;
 
-        Point[] mIn1p;
-        Point[] mIn2p;
         Point[] mTextp;
         Point[] mTriangle;
 
@@ -54,8 +52,10 @@ namespace Circuit.UI.Active {
         public override void Draw(CustomGraphics g) {
             setBbox(mOpHeight * 2);
 
-            drawLead(mIn1p[0], mIn1p[1]);
-            drawLead(mIn2p[0], mIn2p[1]);
+            var ce = (ElmOpAmp)Elm;
+
+            drawLead(ce.In1p[0], ce.In1p[1]);
+            drawLead(ce.In2p[0], ce.In2p[1]);
             drawLeadB();
 
             g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
@@ -65,7 +65,6 @@ namespace Circuit.UI.Active {
             drawLead(mTextp[2], mTextp[3]);
             drawLead(mTextp[4], mTextp[5]);
 
-            var ce = (ElmOpAmp)Elm;
             CurCount = updateDotCount(ce.Current, CurCount);
             drawDotsB(-CurCount);
             drawPosts();
@@ -82,10 +81,11 @@ namespace Circuit.UI.Active {
             if ((DumpInfo.Flags & FLAG_SWAP) != 0) {
                 hs = -hs;
             }
-            mIn1p = new Point[2];
-            mIn2p = new Point[2];
-            interpPointAB(ref mIn1p[0], ref mIn2p[0], 0, hs);
-            interpLeadAB(ref mIn1p[1], ref mIn2p[1], 0, hs);
+            var ce = (ElmOpAmp)Elm;
+            ce.In1p = new Point[2];
+            ce.In2p = new Point[2];
+            interpPointAB(ref ce.In1p[0], ref ce.In2p[0], 0, hs);
+            interpLeadAB(ref ce.In1p[1], ref ce.In2p[1], 0, hs);
 
             var signp = new Point[2];
             interpLeadAB(ref signp[0], ref signp[1], 0.2, hs);
@@ -101,10 +101,6 @@ namespace Circuit.UI.Active {
             var tris = new Point[2];
             interpLeadAB(ref tris[0], ref tris[1], 0, hs * 2);
             mTriangle = new Point[] { tris[0], tris[1], mLead2 };
-        }
-
-        public override Point GetPost(int n) {
-            return (n == 0) ? mIn1p[0] : (n == 1) ? mIn2p[0] : new Point(mPost2X, mPost2Y);
         }
 
         public override void GetInfo(string[] arr) {

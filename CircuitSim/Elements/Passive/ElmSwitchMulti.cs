@@ -1,12 +1,19 @@
-﻿namespace Circuit.Elements.Passive {
+﻿using System.Drawing;
+
+namespace Circuit.Elements.Passive {
     class ElmSwitchMulti : ElmSwitch {
         public int ThrowCount = 2;
+        public Point[] SwPosts;
 
         public override bool IsWire { get { return true; } }
 
         public override int AnaVoltageSourceCount { get { return 1; } }
 
         public override int PostCount { get { return 1 + ThrowCount; } }
+
+        public override Point GetPost(int n) {
+            return (n == 0) ? new Point(Post1X, Post1Y) : SwPosts[n - 1];
+        }
 
         public override double CirGetCurrentIntoNode(int n) {
             if (n == 0) {

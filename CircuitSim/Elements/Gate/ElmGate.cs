@@ -1,4 +1,6 @@
-﻿namespace Circuit.Elements.Gate {
+﻿using System.Drawing;
+
+namespace Circuit.Elements.Gate {
     class ElmGate : BaseElement {
         public static double LastHighVoltage = 5;
 
@@ -7,10 +9,18 @@
         public double HighVoltage;
         public bool HasSchmittInputs;
         public bool IsInverting;
+        public Point[] InPosts;
 
         int mOscillationCount;
 
         public bool LastOutput { get; private set; }
+
+        public override Point GetPost(int n) {
+            if (n == InputCount) {
+                return new Point(Post2X, Post2Y);
+            }
+            return InPosts[n];
+        }
 
         public ElmGate() : base() {
             InputCount = 2;

@@ -9,8 +9,6 @@ namespace Circuit.UI.Custom {
         /* need to use escape() instead of converting spaces to _'s so composite elements can be nested */
         protected const int FLAG_ESCAPE = 1;
 
-        protected Point[] mPosts;
-
         public Composite(Point pos) : base(pos) { }
 
         public Composite(Point p1, Point p2, int f) : base(p1, p2, f) { }
@@ -57,17 +55,14 @@ namespace Circuit.UI.Custom {
 
         bool useEscape() { return (DumpInfo.Flags & FLAG_ESCAPE) != 0; }
 
-        public override Point GetPost(int n) {
-            return mPosts[n];
-        }
-
         protected void setPost(int n, Point p) {
-            mPosts[n] = p;
+            ((ElmComposite)Elm).Posts[n] = p;
         }
 
         void setPost(int n, int x, int y) {
-            mPosts[n].X = x;
-            mPosts[n].Y = y;
+            var ce = (ElmComposite)Elm;
+            ce.Posts[n].X = x;
+            ce.Posts[n].Y = y;
         }
 
         public override void Delete() {

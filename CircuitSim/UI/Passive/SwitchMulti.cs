@@ -8,7 +8,6 @@ namespace Circuit.UI.Passive {
         const int OPEN_HS = 8;
         const int BODY_LEN = 24;
 
-        Point[] mSwPosts;
         Point[] mSwPoles;
 
         public SwitchMulti(Point pos) : base(pos, 0) {
@@ -38,10 +37,6 @@ namespace Circuit.UI.Passive {
             optionList.Add(ce.ThrowCount);
         }
 
-        public override Point GetPost(int n) {
-            return (n == 0) ? new Point(mPost1X, mPost1Y) : mSwPosts[n - 1];
-        }
-
         public override Rectangle GetSwitchRect() {
             var ce = (ElmSwitchMulti)Elm;
             var l1 = new Rectangle(mLead1.X, mLead1.Y, 0, 0);
@@ -54,7 +49,7 @@ namespace Circuit.UI.Passive {
             base.SetPoints();
             var ce = (ElmSwitchMulti)Elm;
             calcLeads(BODY_LEN);
-            mSwPosts = new Point[ce.ThrowCount];
+            ce.SwPosts = new Point[ce.ThrowCount];
             mSwPoles = new Point[2 + ce.ThrowCount];
             int i;
             for (i = 0; i != ce.ThrowCount; i++) {
@@ -63,7 +58,7 @@ namespace Circuit.UI.Passive {
                     hs = OPEN_HS;
                 }
                 interpLead(ref mSwPoles[i], 1, hs);
-                interpPoint(ref mSwPosts[i], 1, hs);
+                interpPoint(ref ce.SwPosts[i], 1, hs);
             }
             mSwPoles[i] = mLead2; /* for center off */
             ce.PosCount = ce.ThrowCount;
@@ -72,7 +67,7 @@ namespace Circuit.UI.Passive {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmSwitchMulti)Elm;
             setBbox(OPEN_HS);
-            DumpInfo.AdjustBbox(mSwPosts[0], mSwPosts[ce.ThrowCount - 1]);
+            DumpInfo.AdjustBbox(ce.SwPosts[0], ce.SwPosts[ce.ThrowCount - 1]);
             var fillColorBackup = g.FillColor;
             g.FillColor = CustomGraphics.PostColor;
             /* draw first lead */
@@ -81,7 +76,7 @@ namespace Circuit.UI.Passive {
             /* draw other leads */
             for (int i = 0; i < ce.ThrowCount; i++) {
                 var pole = mSwPoles[i];
-                drawLead(pole, mSwPosts[i]);
+                drawLead(pole, ce.SwPosts[i]);
                 g.FillCircle(pole.X, pole.Y, 2.5f);
             }
             g.FillColor = fillColorBackup;
@@ -92,7 +87,7 @@ namespace Circuit.UI.Passive {
             updateDotCount();
             drawDotsA(CurCount);
             if (ce.Position != 2) {
-                drawDots(mSwPoles[ce.Position], mSwPosts[ce.Position], CurCount);
+                drawDots(mSwPoles[ce.Position], ce.SwPosts[ce.Position], CurCount);
             }
             drawPosts();
         }

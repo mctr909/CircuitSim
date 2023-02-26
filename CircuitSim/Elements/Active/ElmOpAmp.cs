@@ -1,4 +1,6 @@
-﻿namespace Circuit.Elements.Active {
+﻿using System.Drawing;
+
+namespace Circuit.Elements.Active {
     class ElmOpAmp : BaseElement {
         public const int V_N = 0;
         public const int V_P = 1;
@@ -7,6 +9,9 @@
         public double MaxOut = 15;
         public double MinOut = -15;
         public double Gain = 100000;
+
+        public Point[] In1p;
+        public Point[] In2p;
 
         double mLastVd;
 
@@ -17,6 +22,10 @@
         public override int AnaVoltageSourceCount { get { return 1; } }
 
         public override int PostCount { get { return 3; } }
+
+        public override Point GetPost(int n) {
+            return (n == 0) ? In1p[0] : (n == 1) ? In2p[0] : new Point(Post2X, Post2Y);
+        }
 
         public override double CirGetCurrentIntoNode(int n) {
             if (n == 2) {

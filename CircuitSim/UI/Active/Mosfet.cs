@@ -25,10 +25,7 @@ namespace Circuit.UI.Active {
 
         int mPcircler;
 
-        Point[] mSrc;
-        Point[] mDrn;
         Point[] mGate;
-        Point[] mBody;
         Point[] mArrowPoly;
         Point mPcircle;
 
@@ -71,17 +68,9 @@ namespace Circuit.UI.Active {
 
         bool ShowBulk { get { return (DumpInfo.Flags & (FLAG_DIGITAL | FLAG_HIDE_BULK)) == 0; } }
 
-        /* post 0 = gate,
-         * 1 = source for NPN,
-         * 2 = drain for NPN,
-         * 3 = body (if present)
-         * for PNP, 1 is drain, 2 is source */
-        public override Point GetPost(int n) {
-            return (n == 0) ? new Point(mPost1X, mPost1Y) : (n == 1) ? mSrc[0] : (n == 2) ? mDrn[0] : mBody[0];
-        }
-
         public override void SetPoints() {
             base.SetPoints();
+            var ce = (ElmMosfet)Elm;
 
             /* these two flags apply to all mosfets */
             DumpInfo.Flags &= ~FLAGS_GLOBAL;
@@ -92,41 +81,39 @@ namespace Circuit.UI.Active {
             if ((DumpInfo.Flags & FLAG_FLIP) != 0) {
                 hs2 = -hs2;
             }
-            mSrc = new Point[3];
-            mDrn = new Point[3];
-            interpPointAB(ref mSrc[0], ref mDrn[0], 1, -hs2);
-            interpPointAB(ref mSrc[1], ref mDrn[1], 1 - 18 / mLen, -hs2);
-            interpPointAB(ref mSrc[2], ref mDrn[2], 1 - 18 / mLen, -hs2 * 4 / 3);
+            ce.Src = new Point[3];
+            ce.Drn = new Point[3];
+            interpPointAB(ref ce.Src[0], ref ce.Drn[0], 1, -hs2);
+            interpPointAB(ref ce.Src[1], ref ce.Drn[1], 1 - 18 / mLen, -hs2);
+            interpPointAB(ref ce.Src[2], ref ce.Drn[2], 1 - 18 / mLen, -hs2 * 4 / 3);
 
             mGate = new Point[3];
             interpPointAB(ref mGate[0], ref mGate[2], 1 - 24 / mLen, hs2 / 2);
             Utils.InterpPoint(mGate[0], mGate[2], ref mGate[1], .5);
 
             if (ShowBulk) {
-                mBody = new Point[2];
-                Utils.InterpPoint(mSrc[0], mDrn[0], ref mBody[0], .5);
-                Utils.InterpPoint(mSrc[1], mDrn[1], ref mBody[1], .5);
+                ce.Body = new Point[2];
+                Utils.InterpPoint(ce.Src[0], ce.Drn[0], ref ce.Body[0], .5);
+                Utils.InterpPoint(ce.Src[1], ce.Drn[1], ref ce.Body[1], .5);
             }
 
-            var ce = (ElmMosfet)Elm;
-
             if (!DrawDigital) {
-                var b0 = mBody[0];
-                var b1 = mBody[1];
+                var b0 = ce.Body[0];
+                var b1 = ce.Body[1];
                 if (ce.Pnp == 1) {
                     if (ShowBulk) {
                         Utils.CreateArrow(b0.X, b0.Y, b1.X, b1.Y, out mArrowPoly, 8, 3);
                     } else {
-                        var s0 = mSrc[0];
-                        var s1 = mSrc[1];
+                        var s0 = ce.Src[0];
+                        var s1 = ce.Src[1];
                         Utils.CreateArrow(s1.X, s1.Y, s0.X, s0.Y, out mArrowPoly, 8, 3);
                     }
                 } else {
                     if (ShowBulk) {
                         Utils.CreateArrow(b1.X, b1.Y, b0.X, b0.Y, out mArrowPoly, 8, 3);
                     } else {
-                        var d0 = mDrn[0];
-                        var d1 = mDrn[1];
+                        var d0 = ce.Drn[0];
+                        var d1 = ce.Drn[1];
                         Utils.CreateArrow(d0.X, d0.Y, d1.X, d1.Y, out mArrowPoly, 8, 3);
                     }
                 }
@@ -140,8 +127,8 @@ namespace Circuit.UI.Active {
             mPs1 = new Point[SEGMENTS];
             mPs2 = new Point[SEGMENTS];
             for (int i = 0; i != SEGMENTS; i++) {
-                Utils.InterpPoint(mSrc[1], mDrn[1], ref mPs1[i], i * SEG_F);
-                Utils.InterpPoint(mSrc[1], mDrn[1], ref mPs2[i], (i + 1) * SEG_F);
+                Utils.InterpPoint(ce.Src[1], ce.Drn[1], ref mPs1[i], i * SEG_F);
+                Utils.InterpPoint(ce.Src[1], ce.Drn[1], ref mPs2[i], (i + 1) * SEG_F);
             }
 
             setTextPos();
@@ -149,12 +136,12 @@ namespace Circuit.UI.Active {
 
         void setTextPos() {
             if (mVertical) {
-                mNamePos = new Point(mPost2X, mPost2Y + HS * mDsign * 2 / 3);
+                mNamePos = new Point(Elm.Post2X, Elm.Post2Y + HS * mDsign * 2 / 3);
             } else if (mHorizontal) {
                 if (0 < mDsign) {
-                    mNamePos = new Point(mPost2X - 1, mPost2Y);
+                    mNamePos = new Point(Elm.Post2X - 1, Elm.Post2Y);
                 } else {
-                    mNamePos = new Point(mPost2X - 16, mPost2Y);
+                    mNamePos = new Point(Elm.Post2X - 16, Elm.Post2Y);
                 }
             } else {
                 interpPoint(ref mNamePos, 0.5, 10 * mDsign);
@@ -172,12 +159,12 @@ namespace Circuit.UI.Active {
             var ce = (ElmMosfet)Elm;
 
             /* draw source/drain terminals */
-            drawLead(mSrc[0], mSrc[1]);
-            drawLead(mDrn[0], mDrn[1]);
+            drawLead(ce.Src[0], ce.Src[1]);
+            drawLead(ce.Drn[0], ce.Drn[1]);
 
             /* draw little extensions of that line */
-            drawLead(mSrc[1], mSrc[2]);
-            drawLead(mDrn[1], mDrn[2]);
+            drawLead(ce.Src[1], ce.Src[2]);
+            drawLead(ce.Drn[1], ce.Drn[2]);
 
             /* draw line connecting source and drain */
             bool enhancement = ce.Vt > 0 && ShowBulk;
@@ -190,8 +177,8 @@ namespace Circuit.UI.Active {
 
             /* draw bulk connection */
             if (ShowBulk) {
-                drawLead(ce.Pnp == -1 ? mDrn[0] : mSrc[0], mBody[0]);
-                drawLead(mBody[0], mBody[1]);
+                drawLead(ce.Pnp == -1 ? ce.Drn[0] : ce.Src[0], ce.Body[0]);
+                drawLead(ce.Body[0], ce.Body[1]);
             }
 
             /* draw arrow */
@@ -200,7 +187,7 @@ namespace Circuit.UI.Active {
             }
 
             /* draw gate */
-            drawLead(mPost1X, mPost1Y, mGate[1]);
+            drawLead(Elm.Post1X, Elm.Post1Y, mGate[1]);
             drawLead(mGate[0], mGate[2]);
             if (DrawDigital && ce.Pnp == -1) {
                 g.DrawCircle(mPcircle, mPcircler);
@@ -211,15 +198,15 @@ namespace Circuit.UI.Active {
                 drawCenteredLText(s, DumpInfo.P2X, DumpInfo.P2Y, false);
             }
             CurCount = updateDotCount(-ce.Current, CurCount);
-            drawDots(mSrc[0], mSrc[1], CurCount);
-            drawDots(mDrn[1], mDrn[0], CurCount);
-            drawDots(mSrc[1], mDrn[1], CurCount);
+            drawDots(ce.Src[0], ce.Src[1], CurCount);
+            drawDots(ce.Drn[1], ce.Drn[0], CurCount);
+            drawDots(ce.Src[1], ce.Drn[1], CurCount);
 
             if (ShowBulk) {
                 mCurcountBody1 = updateDotCount(ce.DiodeCurrent1, mCurcountBody1);
                 mCurcountBody2 = updateDotCount(ce.DiodeCurrent2, mCurcountBody2);
-                drawDots(mSrc[0], mBody[0], -mCurcountBody1);
-                drawDots(mBody[0], mDrn[0], mCurcountBody2);
+                drawDots(ce.Src[0], ce.Body[0], -mCurcountBody1);
+                drawDots(ce.Body[0], ce.Drn[0], mCurcountBody2);
             }
 
             drawPosts();

@@ -1,4 +1,6 @@
-﻿namespace Circuit.Elements.Active {
+﻿using System.Drawing;
+
+namespace Circuit.Elements.Active {
     class ElmAnalogSwitch : BaseElement {
         public double Ron = 20;
         public double Roff = 1e10;
@@ -6,9 +8,15 @@
 
         double mResistance;
 
+        public Point Post3;
+
         public bool IsOpen { get; private set; }
 
         public override int PostCount { get { return 3; } }
+
+        public override Point GetPost(int n) {
+            return (0 == n) ? new Point(Post1X, Post1Y) : (1 == n) ? new Point(Post2X, Post2Y) : Post3;
+        }
 
         public override double CirGetCurrentIntoNode(int n) {
             if (n == 0) {

@@ -299,11 +299,6 @@ namespace Circuit.UI.Custom {
             return true;
         }
 
-        public override Point GetPost(int n) {
-            var ce = (ElmChip)Elm;
-            return ce.Pins[n].post;
-        }
-
         public override void GetInfo(string[] arr) {
             var ce = (ElmChip)Elm;
             arr[0] = getChipName();

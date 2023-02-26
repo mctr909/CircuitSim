@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 namespace Circuit.Elements.Active {
     class ElmMosfet : BaseElement {
@@ -29,6 +30,10 @@ namespace Circuit.Elements.Active {
         public double Vg { get { return Volts[IdxG]; } }
         public double Vs { get { return Volts[IdxS]; } }
         public double Vd { get { return Volts[IdxD]; } }
+
+        public Point[] Src;
+        public Point[] Drn;
+        public Point[] Body;
 
         const double DiodeVcrit = 0.6347668814648425;
         const double DiodeVscale = 0.05173;
@@ -66,6 +71,15 @@ namespace Circuit.Elements.Active {
         }
 
         public override int PostCount { get { return 3; } }
+
+        /* post 0 = gate,
+         * 1 = source for NPN,
+         * 2 = drain for NPN,
+         * 3 = body (if present)
+         * for PNP, 1 is drain, 2 is source */
+        public override Point GetPost(int n) {
+            return (n == 0) ? new Point(Post1X, Post1Y) : (n == 1) ? Src[0] : (n == 2) ? Drn[0] : Body[0];
+        }
 
         public override double CirGetCurrentIntoNode(int n) {
             if (n == 0) {

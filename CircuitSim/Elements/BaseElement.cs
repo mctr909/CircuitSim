@@ -1,4 +1,6 @@
-﻿namespace Circuit.Elements {
+﻿using System.Drawing;
+
+namespace Circuit.Elements {
     public abstract class BaseElement {
         protected static bool ComparePair(int x1, int x2, int y1, int y2) {
             return (x1 == y1 && x2 == y2) || (x1 == y2 && x2 == y1);
@@ -10,8 +12,17 @@
 
         protected int mVoltSource;
 
+        public int Post1X;
+        public int Post1Y;
+        public int Post2X;
+        public int Post2Y;
+
         #region [property]
         public abstract int PostCount { get; }
+
+        public virtual Point GetPost(int n) {
+            return (n == 0) ? new Point(Post1X, Post1Y) : (n == 1) ? new Point(Post2X, Post2Y) : new Point();
+        }
 
         public int[] Nodes { get; protected set; }
 

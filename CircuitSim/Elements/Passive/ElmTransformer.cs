@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 namespace Circuit.Elements.Passive {
     class ElmTransformer : BaseElement {
@@ -13,7 +14,9 @@ namespace Circuit.Elements.Passive {
         public int Polarity = 1;
         public double[] Currents = new double[2];
         public double[] CurCounts = new double[2];
-        
+
+        public Point[] PtEnds;
+
         double mCurSourceValue1;
         double mCurSourceValue2;
 
@@ -23,6 +26,10 @@ namespace Circuit.Elements.Passive {
         double mA4;
 
         public override int PostCount { get { return 4; } }
+
+        public override Point GetPost(int n) {
+            return PtEnds[n];
+        }
 
         public override void Reset() {
             /* need to set current-source values here in case one of the nodes is node 0.  In that case

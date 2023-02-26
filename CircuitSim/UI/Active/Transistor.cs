@@ -15,8 +15,6 @@ namespace Circuit.UI.Active {
         double mCurCountE;
         double mCurCountB;
 
-        Point[] mColl;
-        Point[] mEmit;
         Point mTbase;
 
         Point[] mRectPoly;
@@ -55,10 +53,6 @@ namespace Circuit.UI.Active {
             optionList.Add(ce.Hfe);
         }
 
-        public override Point GetPost(int n) {
-            return (n == 0) ? new Point(mPost1X, mPost1Y) : (n == 1) ? mColl[0] : mEmit[0];
-        }
-
         void setup() {
             ((ElmTransistor)Elm).Setup();
             mNoDiagonal = true;
@@ -74,9 +68,9 @@ namespace Circuit.UI.Active {
             int hs2 = HS * mDsign * ce.NPN;
 
             /* calc collector, emitter posts */
-            mColl = new Point[2];
-            mEmit = new Point[2];
-            interpPointAB(ref mColl[0], ref mEmit[0], 1, hs2);
+            ce.Coll = new Point[2];
+            ce.Emit = new Point[2];
+            interpPointAB(ref ce.Coll[0], ref ce.Emit[0], 1, hs2);
 
             /* calc rectangle edges */
             var rect = new Point[4];
@@ -84,7 +78,7 @@ namespace Circuit.UI.Active {
             interpPointAB(ref rect[2], ref rect[3], 1 - (BODY_LEN - BASE_THICK) / mLen, HS);
 
             /* calc points where collector/emitter leads contact rectangle */
-            interpPointAB(ref mColl[1], ref mEmit[1], 1 - (BODY_LEN - BASE_THICK) / mLen, 6 * mDsign * ce.NPN);
+            interpPointAB(ref ce.Coll[1], ref ce.Emit[1], 1 - (BODY_LEN - BASE_THICK) / mLen, 6 * mDsign * ce.NPN);
 
             /* calc point where base lead contacts rectangle */
             if (mDsign < 0) {
@@ -98,11 +92,11 @@ namespace Circuit.UI.Active {
 
             /* arrow */
             if (ce.NPN == 1) {
-                var e0 = mEmit[0];
-                var e1 = mEmit[1];
+                var e0 = ce.Emit[0];
+                var e1 = ce.Emit[1];
                 Utils.CreateArrow(e1.X, e1.Y, e0.X, e0.Y, out mArrowPoly, 8, 3);
             } else {
-                var e0 = mEmit[0];
+                var e0 = ce.Emit[0];
                 var pt = new Point();
                 interpPoint(ref pt, 1 - BODY_LEN / mLen, -5 * mDsign * ce.NPN);
                 Utils.CreateArrow(e0.X, e0.Y, pt.X, pt.Y, out mArrowPoly, 8, 3);
@@ -115,12 +109,12 @@ namespace Circuit.UI.Active {
             var txtW = Context.GetTextSize(DumpInfo.ReferenceName).Width;
             var swap = 0 < (DumpInfo.Flags & FLAG_FLIP) ? -1 : 1;
             if (mVertical) {
-                mNamePos = new Point(mPost2X, mPost2Y + HS * swap * mDsign * 2 / 3);
+                mNamePos = new Point(Elm.Post2X, Elm.Post2Y + HS * swap * mDsign * 2 / 3);
             } else if (mHorizontal) {
                 if (0 < mDsign * swap) {
-                    mNamePos = new Point(mPost2X - 1, mPost2Y);
+                    mNamePos = new Point(Elm.Post2X - 1, Elm.Post2Y);
                 } else {
-                    mNamePos = new Point(mPost2X - 16, mPost2Y);
+                    mNamePos = new Point(Elm.Post2X - 16, Elm.Post2Y);
                 }
             } else {
                 interpPoint(ref mNamePos, 0.5, 10 * mDsign);
@@ -129,24 +123,24 @@ namespace Circuit.UI.Active {
 
         public override void Draw(CustomGraphics g) {
             setBbox(16);
+            var ce = (ElmTransistor)Elm;
 
             /* draw collector */
-            drawLead(mColl[0], mColl[1]);
+            drawLead(ce.Coll[0], ce.Coll[1]);
             /* draw emitter */
-            drawLead(mEmit[0], mEmit[1]);
+            drawLead(ce.Emit[0], ce.Emit[1]);
             /* draw arrow */
             g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mArrowPoly);
             /* draw base */
-            drawLead(mPost1X, mPost1Y, mTbase);
+            drawLead(Elm.Post1X, Elm.Post1Y, mTbase);
 
             /* draw dots */
-            var ce = (ElmTransistor)Elm;
             mCurCountB = updateDotCount(-ce.Ib, mCurCountB);
-            drawDots(mTbase, mPost1X, mPost1Y, mCurCountB);
+            drawDots(mTbase, Elm.Post1X, Elm.Post1Y, mCurCountB);
             mCurCountC = updateDotCount(-ce.Ic, mCurCountC);
-            drawDots(mColl[1], mColl[0], mCurCountC);
+            drawDots(ce.Coll[1], ce.Coll[0], mCurCountC);
             mCurCountE = updateDotCount(-ce.Ie, mCurCountE);
-            drawDots(mEmit[1], mEmit[0], mCurCountE);
+            drawDots(ce.Emit[1], ce.Emit[0], mCurCountE);
 
             /* draw base rectangle */
             g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mRectPoly);

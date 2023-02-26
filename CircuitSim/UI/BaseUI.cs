@@ -89,12 +89,6 @@ namespace Circuit.UI {
         /* direction of element */
         protected PointF mDir;
 
-        /* post of objects */
-        protected int mPost1X { get; private set; }
-        protected int mPost1Y { get; private set; }
-        protected int mPost2X;
-        protected int mPost2Y;
-
         /* lead points (ends of wire stubs for simple two-terminal elements) */
         protected Point mLead1;
         protected Point mLead2;
@@ -134,8 +128,8 @@ namespace Circuit.UI {
         /// <param name="len"></param>
         protected void calcLeads(int len) {
             if (mLen < len || len == 0) {
-                mLead1 = new Point(mPost1X, mPost1Y);
-                mLead2 = new Point(mPost2X, mPost2Y);
+                mLead1 = new Point(Elm.Post1X, Elm.Post1Y);
+                mLead2 = new Point(Elm.Post2X, Elm.Post2Y);
                 return;
             }
             setLead1((mLen - len) / (2 * mLen));
@@ -170,12 +164,12 @@ namespace Circuit.UI {
             var dpx = (int)(mDir.X * w);
             var dpy = (int)(mDir.Y * w);
             DumpInfo.SetBbox(
-                mPost1X + dpx, mPost1Y + dpy,
-                mPost1X - dpx, mPost1Y - dpy
+                Elm.Post1X + dpx, Elm.Post1Y + dpy,
+                Elm.Post1X - dpx, Elm.Post1Y - dpy
             );
             DumpInfo.AdjustBbox(
-                mPost1X + dpx, mPost1Y + dpy,
-                mPost1X - dpx, mPost1Y - dpy
+                Elm.Post1X + dpx, Elm.Post1Y + dpy,
+                Elm.Post1X - dpx, Elm.Post1Y - dpy
             );
         }
 
@@ -185,7 +179,7 @@ namespace Circuit.UI {
         protected void doDots() {
             updateDotCount();
             if (CirSimForm.DragElm != this) {
-                drawDots(mPost1X, mPost1Y, mPost2X, mPost2Y, CurCount);
+                drawDots(Elm.Post1X, Elm.Post1Y, Elm.Post2X, Elm.Post2Y, CurCount);
             }
         }
 
@@ -226,39 +220,39 @@ namespace Circuit.UI {
         }
 
         protected void interpPoint(ref Point p, double f) {
-            p.X = (int)Math.Floor(mPost1X * (1 - f) + mPost2X * f + 0.5);
-            p.Y = (int)Math.Floor(mPost1Y * (1 - f) + mPost2Y * f + 0.5);
+            p.X = (int)Math.Floor(Elm.Post1X * (1 - f) + Elm.Post2X * f + 0.5);
+            p.Y = (int)Math.Floor(Elm.Post1Y * (1 - f) + Elm.Post2Y * f + 0.5);
         }
 
         protected void interpPoint(ref Point p, double f, double g) {
-            var gx = mPost2Y - mPost1Y;
-            var gy = mPost1X - mPost2X;
+            var gx = Elm.Post2Y - Elm.Post1Y;
+            var gy = Elm.Post1X - Elm.Post2X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                p.X = mPost1X;
-                p.Y = mPost1Y;
+                p.X = Elm.Post1X;
+                p.Y = Elm.Post1Y;
             } else {
                 g /= r;
-                p.X = (int)Math.Floor(mPost1X * (1 - f) + mPost2X * f + g * gx + 0.5);
-                p.Y = (int)Math.Floor(mPost1Y * (1 - f) + mPost2Y * f + g * gy + 0.5);
+                p.X = (int)Math.Floor(Elm.Post1X * (1 - f) + Elm.Post2X * f + g * gx + 0.5);
+                p.Y = (int)Math.Floor(Elm.Post1Y * (1 - f) + Elm.Post2Y * f + g * gy + 0.5);
             }
         }
 
         protected void interpPointAB(ref Point a, ref Point b, double f, double g) {
-            var gx = mPost2Y - mPost1Y;
-            var gy = mPost1X - mPost2X;
+            var gx = Elm.Post2Y - Elm.Post1Y;
+            var gy = Elm.Post1X - Elm.Post2X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                a.X = mPost1X;
-                a.Y = mPost1Y;
-                b.X = mPost2X;
-                b.Y = mPost2Y;
+                a.X = Elm.Post1X;
+                a.Y = Elm.Post1Y;
+                b.X = Elm.Post2X;
+                b.Y = Elm.Post2Y;
             } else {
                 g /= r;
-                a.X = (int)Math.Floor(mPost1X * (1 - f) + mPost2X * f + g * gx + 0.5);
-                a.Y = (int)Math.Floor(mPost1Y * (1 - f) + mPost2Y * f + g * gy + 0.5);
-                b.X = (int)Math.Floor(mPost1X * (1 - f) + mPost2X * f - g * gx + 0.5);
-                b.Y = (int)Math.Floor(mPost1Y * (1 - f) + mPost2Y * f - g * gy + 0.5);
+                a.X = (int)Math.Floor(Elm.Post1X * (1 - f) + Elm.Post2X * f + g * gx + 0.5);
+                a.Y = (int)Math.Floor(Elm.Post1Y * (1 - f) + Elm.Post2Y * f + g * gy + 0.5);
+                b.X = (int)Math.Floor(Elm.Post1X * (1 - f) + Elm.Post2X * f - g * gx + 0.5);
+                b.Y = (int)Math.Floor(Elm.Post1Y * (1 - f) + Elm.Post2Y * f - g * gy + 0.5);
             }
         }
 
@@ -310,7 +304,7 @@ namespace Circuit.UI {
                 return;
             }
             for (int i = 0; i < Elm.PostCount; i++) {
-                var p = GetPost(i);
+                var p = Elm.GetPost(i);
                 Context.DrawPost(p);
             }
         }
@@ -334,20 +328,20 @@ namespace Circuit.UI {
 
         protected void drawLeadA() {
             Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            Context.DrawLine(mPost1X, mPost1Y, mLead1);
+            Context.DrawLine(Elm.Post1X, Elm.Post1Y, mLead1);
         }
 
         protected void drawLeadB() {
             Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            Context.DrawLine(mLead2, mPost2X, mPost2Y);
+            Context.DrawLine(mLead2, Elm.Post2X, Elm.Post2Y);
         }
 
         protected void draw2Leads() {
             Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             /* draw first lead */
-            Context.DrawLine(mPost1X, mPost1Y, mLead1);
+            Context.DrawLine(Elm.Post1X, Elm.Post1Y, mLead1);
             /* draw second lead */
-            Context.DrawLine(mLead2, mPost2X, mPost2Y);
+            Context.DrawLine(mLead2, Elm.Post2X, Elm.Post2Y);
         }
 
         /// <summary>
@@ -392,11 +386,11 @@ namespace Circuit.UI {
         }
 
         protected void drawDotsA(double pos) {
-            drawDots(mPost1X, mPost1Y, mLead1, pos);
+            drawDots(Elm.Post1X, Elm.Post1Y, mLead1, pos);
         }
 
         protected void drawDotsB(double pos) {
-            drawDots(mLead2, mPost2X, mPost2Y, pos);
+            drawDots(mLead2, Elm.Post2X, Elm.Post2Y, pos);
         }
 
         protected void drawCenteredText(string s, int x, int y, bool cx) {
@@ -640,7 +634,7 @@ namespace Circuit.UI {
                 return (DumpInfo.P1X == xp && DumpInfo.P1Y == yp) ? 0 : 1;
             }
             for (int i = 0; i != Elm.PostCount; i++) {
-                var p = GetPost(i);
+                var p = Elm.GetPost(i);
                 if (p.X == xp && p.Y == yp) {
                     return i;
                 }
@@ -703,10 +697,10 @@ namespace Circuit.UI {
             }
             mVertical = DumpInfo.P1X == DumpInfo.P2X;
             mHorizontal = DumpInfo.P1Y == DumpInfo.P2Y;
-            mPost1X = DumpInfo.P1X;
-            mPost1Y = DumpInfo.P1Y;
-            mPost2X = DumpInfo.P2X;
-            mPost2Y = DumpInfo.P2Y;
+            Elm.Post1X = DumpInfo.P1X;
+            Elm.Post1Y = DumpInfo.P1Y;
+            Elm.Post2X = DumpInfo.P2X;
+            Elm.Post2Y = DumpInfo.P2Y;
         }
 
         public virtual void SetMouseElm(bool v) {
@@ -715,15 +709,6 @@ namespace Circuit.UI {
             } else if (mMouseElmRef == this) {
                 mMouseElmRef = null;
             }
-        }
-
-        /// <summary>
-        /// get position of nth node
-        /// </summary>
-        /// <param name="n"></param>
-        /// <returns></returns>
-        public virtual Point GetPost(int n) {
-            return (n == 0) ? new Point(mPost1X, mPost1Y) : (n == 1) ? new Point(mPost2X, mPost2Y) : new Point();
         }
 
         /// <summary>
