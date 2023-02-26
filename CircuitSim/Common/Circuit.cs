@@ -481,17 +481,17 @@ namespace Circuit {
                 /* look for voltage or ground element */
                 bool gotGround = false;
                 bool gotRail = false;
-                BaseUI volt = null;
+                BaseElement volt = null;
                 for (int i = 0; i != CirSimForm.ElmCount; i++) {
-                    var ce = CirSimForm.GetElm(i);
-                    if (ce is Ground) {
+                    var ce = CirSimForm.GetElm(i).Elm;
+                    if (ce is ElmGround) {
                         gotGround = true;
                         break;
                     }
-                    if (ce is Rail) {
+                    if (ce is ElmRail) {
                         gotRail = true;
                     }
-                    if (volt == null && (ce is Voltage)) {
+                    if (volt == null && (ce is ElmVoltage)) {
                         volt = ce;
                     }
                 }
@@ -500,7 +500,7 @@ namespace Circuit {
                 /* is ground */
                 if (!gotGround && volt != null && !gotRail) {
                     var cn = new CircuitNode();
-                    var pt = volt.Elm.GetPost(0);
+                    var pt = volt.GetPost(0);
                     NodeList.Add(cn);
                     /* update node map */
                     if (mNodeMap.ContainsKey(pt)) {
