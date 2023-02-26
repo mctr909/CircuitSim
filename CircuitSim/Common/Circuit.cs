@@ -10,6 +10,7 @@ using Circuit.Elements.Output;
 using Circuit.UI;
 using Circuit.UI.Passive;
 using Circuit.UI.Input;
+using Circuit.UI.Output;
 
 namespace Circuit {
     static class Circuit {
@@ -531,11 +532,13 @@ namespace Circuit {
                     /* allocate a node for each post and match posts to nodes */
                     for (int j = 0; j < posts; j++) {
                         var pt = ui.GetPost(j);
-                        if (mPostCountMap.ContainsKey(pt)) {
-                            int g = mPostCountMap[pt];
-                            mPostCountMap[pt] = g + 1;
-                        } else {
-                            mPostCountMap.Add(pt, 1);
+                        if (!(ui is VoltMeter1Term)) {
+                            if (mPostCountMap.ContainsKey(pt)) {
+                                int g = mPostCountMap[pt];
+                                mPostCountMap[pt] = g + 1;
+                            } else {
+                                mPostCountMap.Add(pt, 1);
+                            }
                         }
 
                         NodeMapEntry cln = null;

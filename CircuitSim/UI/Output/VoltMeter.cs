@@ -99,13 +99,13 @@ namespace Circuit.UI.Output {
             case ElmVoltMeter.TP_VOL:
                 return Utils.UnitTextWithScale(ce.VoltageDiff, "V", ce.Scale);
             case ElmVoltMeter.TP_RMS:
-                return Utils.UnitTextWithScale(ce.RmsV, "V(rms)", ce.Scale);
+                return Utils.UnitTextWithScale(ce.RmsV, "Vrms", ce.Scale);
             case ElmVoltMeter.TP_MAX:
                 return Utils.UnitTextWithScale(ce.LastMaxV, "Vpk", ce.Scale);
             case ElmVoltMeter.TP_MIN:
                 return Utils.UnitTextWithScale(ce.LastMinV, "Vmin", ce.Scale);
             case ElmVoltMeter.TP_P2P:
-                return Utils.UnitTextWithScale(ce.LastMaxV - ce.LastMinV, "Vp2p", ce.Scale);
+                return Utils.UnitTextWithScale(ce.LastMaxV - ce.LastMinV, "Vp-p", ce.Scale);
             }
             return "";
         }
