@@ -46,13 +46,13 @@ namespace Circuit.Elements.Input {
         }
 
         public override void CirDoIteration() {
-            var deltaT = CirSimForm.Time - mLastTime;
-            var signalAmplitude = Math.Sin(2 * Math.PI * (CirSimForm.Time - mFreqTimeZero) * Signalfreq);
+            var deltaT = Circuit.Time - mLastTime;
+            var signalAmplitude = Math.Sin(2 * Math.PI * (Circuit.Time - mFreqTimeZero) * Signalfreq);
             mCounter += (CarrierFreq + (signalAmplitude * Deviation)) * deltaT;
             var vn = Circuit.NodeList.Count + mVoltSource;
             var row = Circuit.RowInfo[vn - 1].MapRow;
             Circuit.RightSide[row] += Math.Sin(2 * Math.PI * mCounter) * MaxVoltage;
-            mLastTime = CirSimForm.Time;
+            mLastTime = Circuit.Time;
         }
     }
 }

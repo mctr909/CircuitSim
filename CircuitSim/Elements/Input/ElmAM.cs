@@ -51,7 +51,7 @@ namespace Circuit.Elements.Input {
         public override void CirDoIteration() {
             var vn = Circuit.NodeList.Count + mVoltSource;
             var row = Circuit.RowInfo[vn - 1].MapRow;
-            var th = 2 * Math.PI * (CirSimForm.Time - mFreqTimeZero);
+            var th = 2 * Math.PI * (Circuit.Time - mFreqTimeZero);
             Circuit.RightSide[row] += (Math.Sin(th * SignalFreq + Phase) * Depth + 2 - Depth) / 2 * Math.Sin(th * CarrierFreq) * MaxVoltage;
         }
     }

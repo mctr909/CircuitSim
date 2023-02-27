@@ -85,8 +85,8 @@ namespace Circuit.UI.Input {
                 case VALUE_NAME_BIAS:
                     ce.Bias = val;
                     if (ce.LinkBias != 0) {
-                        for (int i = 0; i != CirSimForm.ElmCount; i++) {
-                            var o = CirSimForm.GetElm(i).Elm;
+                        for (int i = 0; i != CirSimForm.UICount; i++) {
+                            var o = CirSimForm.GetUI(i).Elm;
                             if (o is ElmVoltage) {
                                 var s2 = (ElmVoltage)o;
                                 if (s2.LinkBias == ce.LinkBias) {

@@ -54,8 +54,8 @@ namespace Circuit.UI.Passive {
             }
             if (ce.Link != 0) {
                 int i;
-                for (i = 0; i != CirSimForm.ElmCount; i++) {
-                    var ui2 = CirSimForm.GetElm(i);
+                for (i = 0; i != CirSimForm.UICount; i++) {
+                    var ui2 = CirSimForm.GetUI(i);
                     if (ui2 == this) {
                         continue;
                     }

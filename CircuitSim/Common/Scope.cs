@@ -146,7 +146,7 @@ namespace Circuit {
                 bool ret = true;
                 for (int i = 0; i != Plots.Count; i++) {
                     var plot = Plots[i];
-                    if (CirSimForm.GetElmIndex(plot.Elm) < 0) {
+                    if (CirSimForm.GetUIIndex(plot.Elm) < 0) {
                         Plots.RemoveAt(i--);
                     } else {
                         ret = false;
@@ -487,7 +487,7 @@ namespace Circuit {
             dumpList.Add(Position);
             dumpList.Add(Plots.Count);
             foreach (var p in Plots) {
-                dumpList.Add(CirSimForm.GetElmIndex(p.Elm) + "_" + p.ColorIndex);
+                dumpList.Add(CirSimForm.GetUIIndex(p.Elm) + "_" + p.ColorIndex);
             }
             if (!string.IsNullOrWhiteSpace(Text)) {
                 dumpList.Add(Utils.Escape(Text));
@@ -509,7 +509,7 @@ namespace Circuit {
                 for (int i = 0; i != plotCount; i++) {
                     var subElmCol = st.nextToken().Split('_');
                     var subElmIdx = int.Parse(subElmCol[0]);
-                    var subElm = CirSimForm.GetElm(subElmIdx);
+                    var subElm = CirSimForm.UIList[subElmIdx];
                     var color = (int)Enum.Parse(typeof(ScopePlot.E_COLOR), subElmCol[1]);
                     var p = new ScopePlot(subElm);
                     p.SetColor(color);
@@ -791,7 +791,7 @@ namespace Circuit {
                 g.FillCircle(CirSimForm.MouseCursorX, BoundingBox.Y + y - maxvy, 3);
             }
             if (mShowV && Plots.Count > 0) {
-                double t = CirSimForm.Time - ControlPanel.TimeStep * Speed * (BoundingBox.X + BoundingBox.Width - CirSimForm.MouseCursorX);
+                double t = Circuit.Time - ControlPanel.TimeStep * Speed * (BoundingBox.X + BoundingBox.Width - CirSimForm.MouseCursorX);
                 info[ct++] = Utils.TimeText(t);
             }
             if (mShowFFT) {
@@ -896,8 +896,8 @@ namespace Circuit {
 
                 /* vertical gridlines */
                 var baseT = ControlPanel.TimeStep * Speed;
-                var beginT = CirSimForm.Time - BoundingBox.Width * baseT;
-                var endT = CirSimForm.Time - (CirSimForm.Time % mGridStepX);
+                var beginT = Circuit.Time - BoundingBox.Width * baseT;
+                var endT = Circuit.Time - (Circuit.Time % mGridStepX);
                 for (int ll = 0; ; ll++) {
                     var t = endT - mGridStepX * ll;
                     var lx = (float)((t - beginT) / baseT);

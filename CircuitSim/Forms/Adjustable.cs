@@ -42,7 +42,7 @@ namespace Circuit {
             if (e == -1) {
                 return;
             }
-            UI = CirSimForm.GetElm(e);
+            UI = CirSimForm.UIList[e];
             EditItemR = st.nextTokenInt();
             EditItemC = 0;
             MinValue = st.nextTokenDouble();
@@ -91,7 +91,7 @@ namespace Circuit {
         public string Dump() {
             return string.Join(" ",
                 (int)DUMP_ID.ADJUSTABLE,
-                CirSimForm.GetElmIndex(UI),
+                CirSimForm.GetUIIndex(UI),
                 EditItemR,
                 MinValue,
                 MaxValue,

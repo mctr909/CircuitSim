@@ -92,7 +92,7 @@ namespace Circuit.Elements.Input {
                 for (i = 0; i != InputCount; i++) {
                     mExprState.Values[i] = Volts[i];
                 }
-                mExprState.Time = CirSimForm.Time;
+                mExprState.Time = Circuit.Time;
                 double v0 = -mExpr.Eval(mExprState);
                 /*if (Math.Abs(volts[inputCount] - v0) > Math.Abs(v0) * .01 && cir.SubIterations < 100) {
                     cir.Converged = false;

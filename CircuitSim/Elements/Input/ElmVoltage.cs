@@ -86,7 +86,7 @@ namespace Circuit.Elements.Input {
         }
 
         public double GetVoltage() {
-            double t = CirSimForm.Time;
+            double t = Circuit.Time;
             double wt = 2 * Math.PI * Frequency * t + Phase + PhaseOffset;
             double duty = 2 * Math.PI * DutyCycle;
             double cycle = wt % (2 * Math.PI);

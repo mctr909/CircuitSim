@@ -573,8 +573,8 @@ namespace Circuit.UI {
             int ny = DumpInfo.P1Y + dy;
             int nx2 = DumpInfo.P2X + dx;
             int ny2 = DumpInfo.P2Y + dy;
-            for (int i = 0; i != CirSimForm.ElmCount; i++) {
-                var ce = CirSimForm.GetElm(i);
+            for (int i = 0; i != CirSimForm.UICount; i++) {
+                var ce = CirSimForm.GetUI(i);
                 var ceP1X = ce.DumpInfo.P1X;
                 var ceP1Y = ce.DumpInfo.P1Y;
                 var ceP2X = ce.DumpInfo.P2X;

@@ -6,7 +6,6 @@ using Circuit.Elements.Passive;
 using Circuit.Elements.Input;
 
 using Circuit.UI;
-using Circuit.UI.Passive;
 
 namespace Circuit {
     class CircuitNodeLink {
@@ -43,13 +42,13 @@ namespace Circuit {
         PathType mType;
         int mDest;
         BaseElement mFirstElm;
-        List<BaseUI> mElmList;
+        List<BaseElement> mElmList;
         bool[] mVisited;
 
         /* State object to help find loops in circuit subject to various conditions (depending on type)
          * elm = source and destination element.
          * dest = destination node. */
-        public PathInfo(PathType type, BaseElement elm, int dest, List<BaseUI> elmList, int nodeCount) {
+        public PathInfo(PathType type, BaseElement elm, int dest, List<BaseElement> elmList, int nodeCount) {
             mDest = dest;
             mType = type;
             mFirstElm = elm;
@@ -71,7 +70,7 @@ namespace Circuit {
 
             mVisited[n1] = true;
             for (int i = 0; i != mElmList.Count; i++) {
-                var cee = mElmList[i].Elm;
+                var cee = mElmList[i];
                 if (cee == mFirstElm) {
                     continue;
                 }

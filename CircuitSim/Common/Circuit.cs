@@ -7,11 +7,6 @@ using Circuit.Elements.Passive;
 using Circuit.Elements.Input;
 using Circuit.Elements.Output;
 
-using Circuit.UI;
-using Circuit.UI.Passive;
-using Circuit.UI.Input;
-using Circuit.UI.Output;
-
 namespace Circuit {
     static class Circuit {
         public class ROW_INFO {
@@ -31,6 +26,7 @@ namespace Circuit {
         public static double[] RightSide;
         public static ROW_INFO[] RowInfo;
         public static List<CircuitNode> NodeList;
+        public static List<BaseElement> ElmList;
 
         #region private varidate
         static Dictionary<Point, NodeMapEntry> mNodeMap;
@@ -53,6 +49,7 @@ namespace Circuit {
         public static List<Point> PostDrawList { get; private set; } = new List<Point>();
         public static List<Point> BadConnectionList { get; private set; } = new List<Point>();
         public static BaseElement StopElm { get; set; }
+        public static double Time { get; set; }
         public static string StopMessage { get; set; }
         public static bool Converged { get; set; }
         public static int SubIterations { get; private set; }
@@ -172,12 +169,12 @@ namespace Circuit {
             int mergeCount = 0;
             mNodeMap = new Dictionary<Point, NodeMapEntry>();
             mWireInfoList = new List<WireInfo>();
-            for (int i = 0; i != CirSimForm.ElmCount; i++) {
-                var ce = CirSimForm.GetElm(i);
-                if (!(ce is Wire)) {
+            for (int i = 0; i < ElmList.Count; i++) {
+                var ce = ElmList[i];
+                if (!(ce is ElmWire)) {
                     continue;
                 }
-                var elm = (ElmWire)ce.Elm;
+                var elm = (ElmWire)ce;
                 elm.HasWireInfo = false;
                 mWireInfoList.Add(new WireInfo(elm));
                 var p1 = elm.GetPost(0);
@@ -311,17 +308,13 @@ namespace Circuit {
                 if (entry.Value == 1) {
                     bool bad = false;
                     var cn = entry.Key;
-                    for (int j = 0; j != CirSimForm.ElmCount && !bad; j++) {
-                        var ce = CirSimForm.GetElm(j);
-                        /* does this post intersect elm's bounding box? */
-                        if (!ce.DumpInfo.BoundingBox.Contains(cn.X, cn.Y)) {
-                            continue;
-                        }
+                    for (int j = 0; j != ElmList.Count && !bad; j++) {
+                        var ce = ElmList[j];
                         /* does this post belong to the elm? */
                         int k;
-                        int pc = ce.Elm.PostCount;
+                        int pc = ce.PostCount;
                         for (k = 0; k != pc; k++) {
-                            if (ce.Elm.GetPost(k).Equals(cn)) {
+                            if (ce.GetPost(k).Equals(cn)) {
                                 break;
                             }
                         }
@@ -464,7 +457,7 @@ namespace Circuit {
 
         #region public method
         public static void AnalyzeCircuit() {
-            if (0 == CirSimForm.ElmCount) {
+            if (0 == ElmList.Count) {
                 PostDrawList = new List<Point>();
                 BadConnectionList = new List<Point>();
                 return;
@@ -482,8 +475,8 @@ namespace Circuit {
                 bool gotGround = false;
                 bool gotRail = false;
                 BaseElement volt = null;
-                for (int i = 0; i != CirSimForm.ElmCount; i++) {
-                    var ce = CirSimForm.GetElm(i).Elm;
+                for (int i = 0; i != ElmList.Count; i++) {
+                    var ce = ElmList[i];
                     if (ce is ElmGround) {
                         gotGround = true;
                         break;
@@ -519,8 +512,8 @@ namespace Circuit {
             int vscount = 0;
             {
                 ElmLabeledNode.ResetNodeList();
-                for (int i = 0; i < CirSimForm.ElmCount; i++) {
-                    var ce = CirSimForm.ElmList[i].Elm;
+                for (int i = 0; i < ElmList.Count; i++) {
+                    var ce = ElmList[i];
                     if (null == ce) {
                         continue;
                     }
@@ -597,8 +590,8 @@ namespace Circuit {
 
                 mVoltageSources = new BaseElement[vscount];
                 vscount = 0;
-                for (int i = 0; i < CirSimForm.ElmCount; i++) {
-                    var ce = CirSimForm.GetElm(i).Elm;
+                for (int i = 0; i < ElmList.Count; i++) {
+                    var ce = ElmList[i];
                     int ivs = ce.AnaVoltageSourceCount;
                     for (int j = 0; j < ivs; j++) {
                         mVoltageSources[vscount] = ce;
@@ -621,9 +614,8 @@ namespace Circuit {
             mCircuitNeedsMap = false;
 
             /* stamp linear circuit elements */
-            for (int i = 0; i < CirSimForm.ElmCount; i++) {
-                var cee = CirSimForm.ElmList[i].Elm;
-                cee.AnaStamp();
+            for (int i = 0; i < ElmList.Count; i++) {
+                ElmList[i].AnaStamp();
             }
 
             /* determine nodes that are not connected indirectly to ground */
@@ -632,27 +624,27 @@ namespace Circuit {
             closure[0] = true;
             while (changed) {
                 changed = false;
-                for (int i = 0; i != CirSimForm.ElmCount; i++) {
-                    var cee = CirSimForm.GetElm(i).Elm;
-                    if (cee is ElmWire) {
+                for (int i = 0; i < ElmList.Count; i++) {
+                    var ce = ElmList[i];
+                    if (ce is ElmWire) {
                         continue;
                     }
                     /* loop through all ce's nodes to see if they are connected
                     /* to other nodes not in closure */
-                    for (int j = 0; j < cee.AnaConnectionNodeCount; j++) {
-                        if (!closure[cee.AnaGetConnectionNode(j)]) {
-                            if (cee.AnaHasGroundConnection(j)) {
-                                closure[cee.AnaGetConnectionNode(j)] = changed = true;
+                    for (int j = 0; j < ce.AnaConnectionNodeCount; j++) {
+                        if (!closure[ce.AnaGetConnectionNode(j)]) {
+                            if (ce.AnaHasGroundConnection(j)) {
+                                closure[ce.AnaGetConnectionNode(j)] = changed = true;
                             }
                             continue;
                         }
                         int k;
-                        for (k = 0; k != cee.AnaConnectionNodeCount; k++) {
+                        for (k = 0; k != ce.AnaConnectionNodeCount; k++) {
                             if (j == k) {
                                 continue;
                             }
-                            int kn = cee.AnaGetConnectionNode(k);
-                            if (cee.AnaGetConnection(j, k) && !closure[kn]) {
+                            int kn = ce.AnaGetConnectionNode(k);
+                            if (ce.AnaGetConnection(j, k) && !closure[kn]) {
                                 closure[kn] = true;
                                 changed = true;
                             }
@@ -674,23 +666,22 @@ namespace Circuit {
                 }
             }
 
-            for (int i = 0; i != CirSimForm.ElmCount; i++) {
-                var ce = CirSimForm.GetElm(i);
-                var cee = ce.Elm;
+            for (int i = 0; i < ElmList.Count; i++) {
+                var ce = ElmList[i];
 
                 /* look for inductors with no current path */
-                if (cee is ElmInductor) {
-                    var fpi = new PathInfo(PathType.INDUCTOR, cee, cee.Nodes[1], CirSimForm.ElmList, NodeList.Count);
-                    if (!fpi.FindPath(cee.Nodes[0])) {
-                        cee.Reset();
+                if (ce is ElmInductor) {
+                    var fpi = new PathInfo(PathType.INDUCTOR, ce, ce.Nodes[1], ElmList, NodeList.Count);
+                    if (!fpi.FindPath(ce.Nodes[0])) {
+                        ce.Reset();
                     }
                 }
 
                 /* look for current sources with no current path */
-                if (cee is ElmCurrent) {
-                    var cur = (ElmCurrent)cee;
-                    var fpi = new PathInfo(PathType.INDUCTOR, cee, cee.Nodes[1], CirSimForm.ElmList, NodeList.Count);
-                    if (!fpi.FindPath(cee.Nodes[0])) {
+                if (ce is ElmCurrent) {
+                    var cur = (ElmCurrent)ce;
+                    var fpi = new PathInfo(PathType.INDUCTOR, ce, ce.Nodes[1], ElmList, NodeList.Count);
+                    if (!fpi.FindPath(ce.Nodes[0])) {
                         cur.stampCurrentSource(true);
                     } else {
                         cur.stampCurrentSource(false);
@@ -699,49 +690,49 @@ namespace Circuit {
 
                 /* look for voltage source or wire loops.  we do this for voltage sources or wire-like elements (not actual wires
                 /* because those are optimized out, so the findPath won't work) */
-                if (2 == cee.PostCount) {
-                    if ((cee is ElmVoltage) || (cee.IsWire && !(cee is ElmWire))) {
-                        var fpi = new PathInfo(PathType.VOLTAGE, cee, cee.Nodes[1], CirSimForm.ElmList, NodeList.Count);
-                        if (fpi.FindPath(cee.Nodes[0])) {
-                            Stop("Voltage source/wire loop with no resistance!", cee);
+                if (2 == ce.PostCount) {
+                    if ((ce is ElmVoltage) || (ce.IsWire && !(ce is ElmWire))) {
+                        var fpi = new PathInfo(PathType.VOLTAGE, ce, ce.Nodes[1], ElmList, NodeList.Count);
+                        if (fpi.FindPath(ce.Nodes[0])) {
+                            Stop("Voltage source/wire loop with no resistance!", ce);
                             return;
                         }
                     }
-                } else if (cee is ElmSwitchMulti) {
+                } else if (ce is ElmSwitchMulti) {
                     /* for Switch2Elms we need to do extra work to look for wire loops */
-                    var fpi = new PathInfo(PathType.VOLTAGE, cee, cee.Nodes[0], CirSimForm.ElmList, NodeList.Count);
-                    for (int j = 1; j < cee.PostCount; j++) {
-                        if (cee.AnaGetConnection(0, j) && fpi.FindPath(cee.Nodes[j])) {
-                            Stop("Voltage source/wire loop with no resistance!", cee);
+                    var fpi = new PathInfo(PathType.VOLTAGE, ce, ce.Nodes[0], ElmList, NodeList.Count);
+                    for (int j = 1; j < ce.PostCount; j++) {
+                        if (ce.AnaGetConnection(0, j) && fpi.FindPath(ce.Nodes[j])) {
+                            Stop("Voltage source/wire loop with no resistance!", ce);
                             return;
                         }
                     }
                 }
 
                 /* look for path from rail to ground */
-                if ((cee is ElmRail) || (cee is ElmLogicInput)) {
-                    var fpi = new PathInfo(PathType.VOLTAGE, cee, cee.Nodes[0], CirSimForm.ElmList, NodeList.Count);
+                if ((ce is ElmRail) || (ce is ElmLogicInput)) {
+                    var fpi = new PathInfo(PathType.VOLTAGE, ce, ce.Nodes[0], ElmList, NodeList.Count);
                     if (fpi.FindPath(0)) {
-                        Stop("Path to ground with no resistance!", cee);
+                        Stop("Path to ground with no resistance!", ce);
                         return;
                     }
                 }
 
                 /* look for shorted caps, or caps w/ voltage but no R */
-                if (cee is ElmCapacitor) {
-                    var fpi = new PathInfo(PathType.SHORT, cee, cee.Nodes[1], CirSimForm.ElmList, NodeList.Count);
-                    if (fpi.FindPath(cee.Nodes[0])) {
-                        Console.WriteLine(cee + " shorted");
-                        cee.AnaShorted();
+                if (ce is ElmCapacitor) {
+                    var fpi = new PathInfo(PathType.SHORT, ce, ce.Nodes[1], ElmList, NodeList.Count);
+                    if (fpi.FindPath(ce.Nodes[0])) {
+                        Console.WriteLine(ce + " shorted");
+                        ce.AnaShorted();
                     } else {
                         /* a capacitor loop used to cause a matrix error. but we changed the capacitor model
                         /* so it works fine now. The only issue is if a capacitor is added in parallel with
                         /* another capacitor with a nonzero voltage; in that case we will get oscillation unless
                         /* we reset both capacitors to have the same voltage. Rather than check for that, we just
                         /* give an error. */
-                        fpi = new PathInfo(PathType.CAPACITOR_V, cee, cee.Nodes[1], CirSimForm.ElmList, NodeList.Count);
-                        if (fpi.FindPath(cee.Nodes[0])) {
-                            Stop("Capacitor loop with no resistance!", cee);
+                        fpi = new PathInfo(PathType.CAPACITOR_V, ce, ce.Nodes[1], ElmList, NodeList.Count);
+                        if (fpi.FindPath(ce.Nodes[0])) {
+                            Stop("Capacitor loop with no resistance!", ce);
                             return;
                         }
                     }
@@ -764,10 +755,8 @@ namespace Circuit {
         }
 
         public static bool DoIteration() {
-            int elmCount = CirSimForm.ElmCount;
-
-            for (int i = 0; i < elmCount; i++) {
-                CirSimForm.ElmList[i].Elm.CirPrepareIteration();
+            for (int i = 0; i < ElmList.Count; i++) {
+                ElmList[i].CirPrepareIteration();
             }
 
             int subiter;
@@ -782,8 +771,8 @@ namespace Circuit {
                     }
                 }
 
-                for (int i = 0; i < elmCount; i++) {
-                    CirSimForm.ElmList[i].Elm.CirDoIteration();
+                for (int i = 0; i < ElmList.Count; i++) {
+                    ElmList[i].CirDoIteration();
                 }
                 if (StopMessage != null) {
                     return false;
@@ -840,8 +829,8 @@ namespace Circuit {
                 return false;
             }
 
-            for (int i = 0; i < elmCount; i++) {
-                CirSimForm.ElmList[i].Elm.CirIterationFinished();
+            for (int i = 0; i < ElmList.Count; i++) {
+                ElmList[i].CirIterationFinished();
             }
 
             /* calc wire currents */
