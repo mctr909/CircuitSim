@@ -17,7 +17,7 @@ namespace Circuit.Elements.Gate {
 
         public override Point GetPost(int n) {
             if (n == InputCount) {
-                return new Point(Post2X, Post2Y);
+                return Post2;
             }
             return InPosts[n];
         }

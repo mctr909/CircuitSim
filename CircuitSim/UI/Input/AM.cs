@@ -43,7 +43,7 @@ namespace Circuit.UI.Input {
 
             string s = "AM";
             drawCenteredText(s, DumpInfo.P2X, DumpInfo.P2Y, true);
-            drawWaveform(g, Elm.Post2X, Elm.Post2Y);
+            drawWaveform(g, Elm.Post2);
             drawPosts();
             CurCount = updateDotCount(-ce.Current, CurCount);
             if (CirSimForm.DragElm != this) {
@@ -101,6 +101,10 @@ namespace Circuit.UI.Input {
             if (n == 4) {
                 ce.Phase = ei.Value * Math.PI / 180;
             }
+        }
+
+        void drawWaveform(CustomGraphics g, Point p) {
+            drawWaveform(g, p.X, p.Y);
         }
 
         void drawWaveform(CustomGraphics g, int x, int y) {

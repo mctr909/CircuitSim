@@ -114,13 +114,17 @@ namespace Circuit.UI.Input {
 
             if (CirSimForm.DragElm != this) {
                 if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
-                    drawDots(Elm.Post1X, Elm.Post1Y, Elm.Post2X, Elm.Post2Y, CurCount);
+                    drawDots(Elm.Post1, Elm.Post2, CurCount);
                 } else {
                     drawDotsA(CurCount);
                     drawDotsB(CurCount);
                 }
             }
             drawPosts();
+        }
+
+        protected void drawWaveform(CustomGraphics g, Point p) {
+            drawWaveform(g, p.X, p.Y);
         }
 
         protected void drawWaveform(CustomGraphics g, int x, int y) {

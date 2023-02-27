@@ -253,12 +253,12 @@ namespace Circuit {
                     var pt = ce.GetPost(cnl.Num);
 
                     /* which post does this element connect to, if any? */
-                    if (pt.X == wire.Post1X && pt.Y == wire.Post1Y) {
+                    if (pt.X == wire.Post1.X && pt.Y == wire.Post1.Y) {
                         neighbors0.Add(ce);
                         if (notReady) {
                             isReady0 = false;
                         }
-                    } else if (pt.X == wire.Post2X && pt.Y == wire.Post2Y) {
+                    } else if (pt.X == wire.Post2.X && pt.Y == wire.Post2.Y) {
                         neighbors1.Add(ce);
                         if (notReady) {
                             isReady1 = false;
@@ -843,7 +843,7 @@ namespace Circuit {
                 var p = we.GetPost(wi.Post);
                 for (int j = 0; j < wi.Neighbors.Count; j++) {
                     var ce = wi.Neighbors[j];
-                    int n = ce.GetNodeAtPoint(p.X, p.Y);
+                    int n = ce.CirGetNodeAtPoint(p.X, p.Y);
                     cur += ce.CirGetCurrentIntoNode(n);
                 }
                 if (wi.Post == 0) {

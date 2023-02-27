@@ -155,6 +155,10 @@ namespace Circuit {
             }
         }
 
+        public static void CreateArrow(Point a, Point b, out Point[] ret, double al, double aw) {
+            CreateArrow(a.X, a.Y, b.X, b.Y, out ret, al, aw);
+        }
+
         public static void CreateArrow(int ax, int ay, int bx, int by, out Point[] ret, double al, double aw) {
             var adx = bx - ax;
             var ady = by - ay;

@@ -109,12 +109,12 @@ namespace Circuit.UI.Active {
             var txtW = Context.GetTextSize(DumpInfo.ReferenceName).Width;
             var swap = 0 < (DumpInfo.Flags & FLAG_FLIP) ? -1 : 1;
             if (mVertical) {
-                mNamePos = new Point(Elm.Post2X, Elm.Post2Y + HS * swap * mDsign * 2 / 3);
+                mNamePos = new Point(Elm.Post2.X, Elm.Post2.Y + HS * swap * mDsign * 2 / 3);
             } else if (mHorizontal) {
                 if (0 < mDsign * swap) {
-                    mNamePos = new Point(Elm.Post2X - 1, Elm.Post2Y);
+                    mNamePos = new Point(Elm.Post2.X - 1, Elm.Post2.Y);
                 } else {
-                    mNamePos = new Point(Elm.Post2X - 16, Elm.Post2Y);
+                    mNamePos = new Point(Elm.Post2.X - 16, Elm.Post2.Y);
                 }
             } else {
                 interpPoint(ref mNamePos, 0.5, 10 * mDsign);
@@ -132,11 +132,11 @@ namespace Circuit.UI.Active {
             /* draw arrow */
             g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mArrowPoly);
             /* draw base */
-            drawLead(Elm.Post1X, Elm.Post1Y, mTbase);
+            drawLead(Elm.Post1, mTbase);
 
             /* draw dots */
             mCurCountB = updateDotCount(-ce.Ib, mCurCountB);
-            drawDots(mTbase, Elm.Post1X, Elm.Post1Y, mCurCountB);
+            drawDots(mTbase, Elm.Post1, mCurCountB);
             mCurCountC = updateDotCount(-ce.Ic, mCurCountC);
             drawDots(ce.Coll[1], ce.Coll[0], mCurCountC);
             mCurCountE = updateDotCount(-ce.Ie, mCurCountE);

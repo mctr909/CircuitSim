@@ -12,29 +12,15 @@ namespace Circuit.Elements {
 
         protected int mVoltSource;
 
-        public int Post1X;
-        public int Post1Y;
-        public int Post2X;
-        public int Post2Y;
+        public Point Post1;
+        public Point Post2;
+        public Point Post3;
 
         #region [property]
         public abstract int PostCount { get; }
 
         public virtual Point GetPost(int n) {
-            return (n == 0) ? new Point(Post1X, Post1Y) : (n == 1) ? new Point(Post2X, Post2Y) : new Point();
-        }
-
-        public int GetNodeAtPoint(int xp, int yp) {
-            if (PostCount == 2) {
-                return (Post1X == xp && Post1Y == yp) ? 0 : 1;
-            }
-            for (int i = 0; i != PostCount; i++) {
-                var p = GetPost(i);
-                if (p.X == xp && p.Y == yp) {
-                    return i;
-                }
-            }
-            return 0;
+            return (n == 0) ? Post1 : (n == 1) ? Post2 : Post3;
         }
 
         public int[] Nodes { get; protected set; }
@@ -155,6 +141,18 @@ namespace Circuit.Elements {
         #endregion
 
         #region [method(Circuit)]
+        public int CirGetNodeAtPoint(int xp, int yp) {
+            if (PostCount == 2) {
+                return (Post1.X == xp && Post1.Y == yp) ? 0 : 1;
+            }
+            for (int i = 0; i != PostCount; i++) {
+                var p = GetPost(i);
+                if (p.X == xp && p.Y == yp) {
+                    return i;
+                }
+            }
+            return 0;
+        }
         public virtual double CirGetCurrentIntoNode(int n) {
             if (n == 0 && PostCount == 2) {
                 return -Current;

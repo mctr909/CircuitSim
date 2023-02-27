@@ -8,14 +8,12 @@ namespace Circuit.Elements.Active {
 
         double mResistance;
 
-        public Point Post3;
-
         public bool IsOpen { get; private set; }
 
         public override int PostCount { get { return 3; } }
 
         public override Point GetPost(int n) {
-            return (0 == n) ? new Point(Post1X, Post1Y) : (1 == n) ? new Point(Post2X, Post2Y) : Post3;
+            return (0 == n) ? Post1 : (1 == n) ? Post2 : Post3;
         }
 
         public override double CirGetCurrentIntoNode(int n) {

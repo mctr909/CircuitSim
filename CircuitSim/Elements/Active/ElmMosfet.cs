@@ -78,7 +78,7 @@ namespace Circuit.Elements.Active {
          * 3 = body (if present)
          * for PNP, 1 is drain, 2 is source */
         public override Point GetPost(int n) {
-            return (n == 0) ? new Point(Post1X, Post1Y) : (n == 1) ? Src[0] : (n == 2) ? Drn[0] : Body[0];
+            return (n == 0) ? Post1 : (n == 1) ? Src[0] : (n == 2) ? Drn[0] : Body[0];
         }
 
         public override double CirGetCurrentIntoNode(int n) {

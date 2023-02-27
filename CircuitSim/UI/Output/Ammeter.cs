@@ -31,7 +31,7 @@ namespace Circuit.UI.Output {
         public override void SetPoints() {
             base.SetPoints();
             interpPoint(ref mMid, 0.5 + 4 / mLen);
-            Utils.CreateArrow(Elm.Post1X, Elm.Post1Y, mMid.X, mMid.Y, out mArrowPoly, 9, 5);
+            Utils.CreateArrow(Elm.Post1, mMid, out mArrowPoly, 9, 5);
             if (mVertical) {
                 interpPoint(ref mTextPos, 0.5, -21 * mDsign);
             } else {
@@ -43,7 +43,7 @@ namespace Circuit.UI.Output {
             base.Draw(g); /* BC required for highlighting */
             var ce = (ElmAmmeter)Elm;
 
-            drawLead(Elm.Post1X, Elm.Post1Y, Elm.Post2X, Elm.Post2Y);
+            drawLead(Elm.Post1, Elm.Post2);
             g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mArrowPoly);
             doDots();
             setBbox(3);

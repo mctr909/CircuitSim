@@ -136,12 +136,12 @@ namespace Circuit.UI.Active {
 
         void setTextPos() {
             if (mVertical) {
-                mNamePos = new Point(Elm.Post2X, Elm.Post2Y + HS * mDsign * 2 / 3);
+                mNamePos = new Point(Elm.Post2.X, Elm.Post2.Y + HS * mDsign * 2 / 3);
             } else if (mHorizontal) {
                 if (0 < mDsign) {
-                    mNamePos = new Point(Elm.Post2X - 1, Elm.Post2Y);
+                    mNamePos = new Point(Elm.Post2.X - 1, Elm.Post2.Y);
                 } else {
-                    mNamePos = new Point(Elm.Post2X - 16, Elm.Post2Y);
+                    mNamePos = new Point(Elm.Post2.X - 16, Elm.Post2.Y);
                 }
             } else {
                 interpPoint(ref mNamePos, 0.5, 10 * mDsign);
@@ -187,7 +187,7 @@ namespace Circuit.UI.Active {
             }
 
             /* draw gate */
-            drawLead(Elm.Post1X, Elm.Post1Y, mGate[1]);
+            drawLead(Elm.Post1, mGate[1]);
             drawLead(mGate[0], mGate[2]);
             if (DrawDigital && ce.Pnp == -1) {
                 g.DrawCircle(mPcircle, mPcircler);

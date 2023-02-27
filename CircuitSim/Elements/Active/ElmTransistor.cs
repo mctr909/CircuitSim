@@ -58,7 +58,7 @@ namespace Circuit.Elements.Active {
         public override int PostCount { get { return 3; } }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? new Point(Post1X, Post1Y) : (n == 1) ? Coll[0] : Emit[0];
+            return (n == 0) ? Post1 : (n == 1) ? Coll[0] : Emit[0];
         }
 
         public override double CirGetCurrentIntoNode(int n) {

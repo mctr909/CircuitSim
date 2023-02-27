@@ -12,7 +12,7 @@ namespace Circuit.Elements.Passive {
         public override int PostCount { get { return 1 + ThrowCount; } }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? new Point(Post1X, Post1Y) : SwPosts[n - 1];
+            return (n == 0) ? Post1 : SwPosts[n - 1];
         }
 
         public override double CirGetCurrentIntoNode(int n) {

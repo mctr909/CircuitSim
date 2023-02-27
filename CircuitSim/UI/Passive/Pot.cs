@@ -78,22 +78,22 @@ namespace Circuit.UI.Passive {
                 myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(mDiff.Y)
                     * ((Math.Abs(mDiff.Y) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
                 if (mDiff.Y != 0) {
-                    Elm.Post2Y = Elm.Post1Y + myLen;
+                    Elm.Post2.Y = Elm.Post1.Y + myLen;
                     offset = (0 < mDiff.Y) ? mDiff.X : -mDiff.X;
-                    Elm.Post2X = Elm.Post1X;
+                    Elm.Post2.X = Elm.Post1.X;
                 }
             } else {
                 /* horizontal */
                 myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(mDiff.X)
                     * ((Math.Abs(mDiff.X) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
-                Elm.Post2X = Elm.Post1X + myLen;
+                Elm.Post2.X = Elm.Post1.X + myLen;
                 offset = (mDiff.X < 0) ? mDiff.Y : -mDiff.Y;
-                Elm.Post2Y = Elm.Post1Y;
+                Elm.Post2.Y = Elm.Post1.Y;
             }
             if (offset < CirSimForm.GRID_SIZE) {
                 offset = CirSimForm.GRID_SIZE;
             }
-            mLen = Utils.Distance(Elm.Post1X, Elm.Post1Y, Elm.Post2X, Elm.Post2Y);
+            mLen = Utils.Distance(Elm.Post1, Elm.Post2);
 
             calcLeads(BODY_LEN);
 
@@ -157,8 +157,8 @@ namespace Circuit.UI.Passive {
             ce.CurCount2 = updateDotCount(ce.Current2, ce.CurCount2);
             ce.CurCount3 = updateDotCount(ce.Current3, ce.CurCount3);
             if (CirSimForm.DragElm != this) {
-                drawDots(Elm.Post1X, Elm.Post1Y, mMidPoint, ce.CurCount1);
-                drawDots(Elm.Post2X, Elm.Post2Y, mMidPoint, ce.CurCount2);
+                drawDots(Elm.Post1, mMidPoint, ce.CurCount1);
+                drawDots(Elm.Post2, mMidPoint, ce.CurCount2);
                 drawDots(ce.Post3, mCorner2, ce.CurCount3);
                 drawDots(mCorner2, mMidPoint, ce.CurCount3 + Utils.Distance(ce.Post3, mCorner2));
             }

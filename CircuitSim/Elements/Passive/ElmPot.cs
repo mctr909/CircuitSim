@@ -11,7 +11,6 @@ namespace Circuit.Elements.Passive {
         public double CurCount1 = 0;
         public double CurCount2 = 0;
         public double CurCount3 = 0;
-        public Point Post3;
 
         public double Resistance1 { get; private set; }
         public double Resistance2 { get; private set; }
@@ -22,7 +21,7 @@ namespace Circuit.Elements.Passive {
         public override int PostCount { get { return 3; } }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? new Point(Post1X, Post1Y) : (n == 1) ? new Point(Post2X, Post2Y) : Post3;
+            return (n == 0) ? Post1 : (n == 1) ? Post2 : Post3;
         }
 
         public override double CirGetCurrentIntoNode(int n) {

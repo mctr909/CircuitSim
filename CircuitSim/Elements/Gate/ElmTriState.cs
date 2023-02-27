@@ -5,7 +5,6 @@ namespace Circuit.Elements.Gate {
         double mResistance;
         public double Ron;
         public double Roff;
-        public Point Post3;
 
         public bool Open { get; private set; }
 
@@ -30,7 +29,7 @@ namespace Circuit.Elements.Gate {
         public override int AnaVoltageSourceCount { get { return 1; } }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? new Point(Post1X, Post1Y) : (n == 1) ? new Point(Post2X, Post2Y) : Post3;
+            return (n == 0) ? Post1 : (n == 1) ? Post2 : Post3;
         }
 
         public override double CirGetCurrentIntoNode(int n) {

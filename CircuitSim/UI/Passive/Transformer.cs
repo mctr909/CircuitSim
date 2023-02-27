@@ -62,14 +62,12 @@ namespace Circuit.UI.Passive {
                 DumpInfo.SetP2(DumpInfo.P2X, DumpInfo.P1Y);
             }
             base.SetPoints();
-            ce.Post2Y = ce.Post1Y;
+            ce.Post2.Y = ce.Post1.Y;
             ce.PtEnds = new Point[4];
             mPtCoil = new Point[4];
             mPtCore = new Point[4];
-            ce.PtEnds[0].X = ce.Post1X;
-            ce.PtEnds[0].Y = ce.Post1Y;
-            ce.PtEnds[1].X = ce.Post2X;
-            ce.PtEnds[1].Y = ce.Post2Y;
+            ce.PtEnds[0] = ce.Post1;
+            ce.PtEnds[1] = ce.Post2;
             interpPoint(ref ce.PtEnds[2], 0, -mDsign * height);
             interpPoint(ref ce.PtEnds[3], 1, -mDsign * height);
             var pce = 0.5 - 10.0 / width;
