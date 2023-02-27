@@ -200,18 +200,18 @@ namespace Circuit {
                 }
                 if (cp1) {
                     var cn1 = mNodeMap[p1];
-                    mNodeMap.Add(elm.GetPost(1), cn1);
+                    mNodeMap.Add(p2, cn1);
                     continue;
                 }
                 if (cp2) {
                     var cn2 = mNodeMap[p2];
-                    mNodeMap.Add(elm.GetPost(0), cn2);
+                    mNodeMap.Add(p1, cn2);
                     continue;
                 }
                 /* new entry */
                 var cn = new NodeMapEntry();
-                mNodeMap.Add(elm.GetPost(0), cn);
-                mNodeMap.Add(elm.GetPost(1), cn);
+                mNodeMap.Add(p1, cn);
+                mNodeMap.Add(p2, cn);
             }
             /*Console.WriteLine("groups with " + mNodeMap.Count + " nodes " + mergeCount);*/
         }
