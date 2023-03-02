@@ -50,6 +50,11 @@
     <Compile Include="Common\Deflate.cs" />
     <Compile Include="Common\PDF.cs" />
     <Compile Include="Elements\Active\ElmAnalogSwitch.cs" />
+    <Compile Include="Elements\Logic\ElmDeMultiplexer.cs" />
+    <Compile Include="Elements\Logic\ElmFullAdder.cs" />
+    <Compile Include="Elements\Logic\ElmHalfAdder.cs" />
+    <Compile Include="Elements\Logic\ElmLatch.cs" />
+    <Compile Include="Elements\Logic\ElmMultiplexer.cs" />
     <Compile Include="UI\Active\AnalogSwitch.cs" />
     <Compile Include="Elements\Active\ElmDiode.cs" />
     <Compile Include="UI\Active\Diode.cs" />
@@ -230,8 +235,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Elements\Logic\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
