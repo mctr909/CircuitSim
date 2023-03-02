@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace Circuit.Elements.Passive {
+﻿namespace Circuit.Elements.Passive {
     class ElmPot : BaseElement {
         public const int V_L = 0;
         public const int V_R = 1;
@@ -19,20 +17,6 @@ namespace Circuit.Elements.Passive {
         public double Current3 { get; private set; }
 
         public override int PostCount { get { return 3; } }
-
-        public override Point GetPost(int n) {
-            return (n == 0) ? Post1 : (n == 1) ? Post2 : Post3;
-        }
-
-        public override double CirGetCurrentIntoNode(int n) {
-            if (n == 0) {
-                return -Current1;
-            }
-            if (n == 1) {
-                return -Current2;
-            }
-            return -Current3;
-        }
 
         public override void Reset() {
             CurCount1 = CurCount2 = CurCount3 = 0;
@@ -55,6 +39,16 @@ namespace Circuit.Elements.Passive {
             Circuit.Matrix[n1, n1] += g2;
             Circuit.Matrix[n2, n1] -= g2;
             Circuit.Matrix[n1, n2] -= g2;
+        }
+
+        public override double CirGetCurrentIntoNode(int n) {
+            if (n == 0) {
+                return -Current1;
+            }
+            if (n == 1) {
+                return -Current2;
+            }
+            return -Current3;
         }
 
         public override void CirSetVoltage(int n, double c) {

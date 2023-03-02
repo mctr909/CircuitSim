@@ -72,26 +72,14 @@ namespace Circuit.Elements.Active {
 
         public override int PostCount { get { return 3; } }
 
-        /* post 0 = gate,
-         * 1 = source for NPN,
-         * 2 = drain for NPN,
+        /* post
+         * 0 = gate
+         * 1 = source for NPN
+         * 2 = drain for NPN
          * 3 = body (if present)
          * for PNP, 1 is drain, 2 is source */
         public override Point GetPost(int n) {
-            return (n == 0) ? Post1 : (n == 1) ? Src[0] : (n == 2) ? Drn[0] : Body[0];
-        }
-
-        public override double CirGetCurrentIntoNode(int n) {
-            if (n == 0) {
-                return 0;
-            }
-            if (n == 3) {
-                return -DiodeCurrent1 - DiodeCurrent2;
-            }
-            if (n == 1) {
-                return Current + DiodeCurrent1;
-            }
-            return -Current + DiodeCurrent2;
+            return (n == 0) ? Post[0] : (n == 1) ? Src[0] : (n == 2) ? Drn[0] : Body[0];
         }
 
         public override void Reset() {
@@ -128,32 +116,47 @@ namespace Circuit.Elements.Active {
             }
         }
 
+        public override double CirGetCurrentIntoNode(int n) {
+            if (n == 0) {
+                return 0;
+            }
+            if (n == 3) {
+                return -DiodeCurrent1 - DiodeCurrent2;
+            }
+            if (n == 1) {
+                return Current + DiodeCurrent1;
+            }
+            return -Current + DiodeCurrent2;
+        }
+
         public override void CirDoIteration() {
-            /* limit voltage changes to 0.5V */
-            var tmpVg = Volts[IdxG];
-            var tmpVs = Volts[IdxS];
-            var tmpVd = Volts[IdxD];
-            if (tmpVs > mLastV[IdxS] + 0.5) {
-                tmpVs = mLastV[IdxS] + 0.5;
-            }
-            if (tmpVs < mLastV[IdxS] - 0.5) {
-                tmpVs = mLastV[IdxS] - 0.5;
-            }
-            if (tmpVd > mLastV[IdxD] + 0.5) {
-                tmpVd = mLastV[IdxD] + 0.5;
-            }
-            if (tmpVd < mLastV[IdxD] - 0.5) {
-                tmpVd = mLastV[IdxD] - 0.5;
+            /* ドレインとソースの電圧変化を0.5Vに制限する */
+            {
+                const double limitDelta = 0.5;
+                var vs = Volts[IdxS];
+                var vd = Volts[IdxD];
+                if (vs > mLastV[IdxS] + limitDelta) {
+                    vs = mLastV[IdxS] + limitDelta;
+                }
+                if (vs < mLastV[IdxS] - limitDelta) {
+                    vs = mLastV[IdxS] - limitDelta;
+                }
+                if (vd > mLastV[IdxD] + limitDelta) {
+                    vd = mLastV[IdxD] + limitDelta;
+                }
+                if (vd < mLastV[IdxD] - limitDelta) {
+                    vd = mLastV[IdxD] - limitDelta;
+                }
+                mLastV[IdxS] = vs;
+                mLastV[IdxD] = vd;
+                mLastV[IdxG] = Volts[IdxG];
             }
 
-            mLastV[IdxG] = tmpVg;
-            mLastV[IdxS] = tmpVs;
-            mLastV[IdxD] = tmpVd;
-
-            /* if drain < source voltage, swap source and drain.
-             * (opposite for PNP) */
+            /* ドレインソース間電圧が負の場合
+             * ドレインとソースを入れ替える
+             * (電流の計算を単純化するため) */
             int idxS, idxD;
-            if (Pnp * tmpVd < Pnp * tmpVs) {
+            if (Pnp * Volts[IdxD] < Pnp * Volts[IdxS]) {
                 idxS = IdxD;
                 idxD = IdxS;
             } else {
@@ -161,37 +164,43 @@ namespace Circuit.Elements.Active {
                 idxD = IdxD;
             }
 
-            var vgs = tmpVg - tmpVs;
-            var vds = tmpVd - tmpVs;
-            var realVgs = vgs;
-            var realVds = vds;
-            vgs *= Pnp;
-            vds *= Pnp;
-
             double Gds;
-            if (vgs < Vt) {
-                /* mode: off */
-                /* should be all zero, but that causes a singular matrix,
-                 * so instead we treat it as a large resistor */
-                Gds = 1e-8;
-                Current = vds * Gds;
-                Gm = 0;
-                Mode = 0;
-            } else if (vds < vgs - Vt) {
-                /* mode: linear */
-                Current = Hfe * ((vgs - Vt) * vds - vds * vds * 0.5);
-                Gm = Hfe * vds;
-                Gds = Hfe * (vgs - vds - Vt);
-                Mode = 1;
-            } else {
-                /* mode: saturation */
-                Gm = Hfe * (vgs - Vt);
-                /* use very small Gds to avoid nonconvergence */
-                Gds = 1e-8;
-                Current = 0.5 * Hfe * (vgs - Vt) * (vgs - Vt) + (vds - (vgs - Vt)) * Gds;
-                Mode = 2;
+            var Vgs = Volts[IdxG] - Volts[idxS];
+            var Vds = Volts[idxD] - Volts[idxS];
+            {
+                var tmpVgsVt = Vgs * Pnp - Vt;
+                var tmpVds = Vds * Pnp;
+                if (tmpVgsVt < 0.0) {
+                    /* mode: off */
+                    /* 電流を0にするべきだが特異な行列となるため
+                     * 100MΩとした時の電流にする */
+                    Gds = 1e-8;
+                    Gm = 0;
+                    Current = tmpVds * Gds;
+                    Mode = 0;
+                } else if (tmpVds < tmpVgsVt) {
+                    /* mode: 線形領域 */
+                    Gds = Hfe * (tmpVgsVt - tmpVds);
+                    Gm = Hfe * tmpVds;
+                    Current = Hfe * (tmpVgsVt * tmpVds - tmpVds * tmpVds * 0.5);
+                    Mode = 1;
+                } else {
+                    /* mode: 飽和領域 */
+                    Gds = 1e-8;
+                    Gm = Hfe * tmpVgsVt;
+                    Current = 0.5 * Hfe * tmpVgsVt * tmpVgsVt + (tmpVds - tmpVgsVt) * Gds;
+                    Mode = 2;
+                }
             }
 
+            /* ドレインソース間電圧が負の場合
+             * ドレインとソースを入れ替えているため電流を反転 */
+            var realIds = Current;
+            if (idxS == 2 && Pnp == 1 || idxS == 1 && Pnp == -1) {
+                Current = -Current;
+            }
+
+            /* 還流ダイオード */
             if (DoBodyDiode) {
                 var vbs = (Volts[BodyTerminal] - Volts[IdxS]) * Pnp;
                 var vbd = (Volts[BodyTerminal] - Volts[IdxD]) * Pnp;
@@ -201,12 +210,6 @@ namespace Circuit.Elements.Active {
                 DiodeCurrent2 = (Math.Exp(vbd * DiodeVdCoef) - 1) * DiodeLeakage * Pnp;
             } else {
                 DiodeCurrent1 = DiodeCurrent2 = 0;
-            }
-
-            /* flip ids if we swapped source and drain above */
-            var realIds = Current;
-            if (idxS == 2 && Pnp == 1 || idxS == 1 && Pnp == -1) {
-                Current = -Current;
             }
 
             var rowD = Circuit.RowInfo[Nodes[idxD] - 1].MapRow;
@@ -236,7 +239,7 @@ namespace Circuit.Elements.Active {
                 Circuit.Matrix[rowS, colri.MapCol] += Gds + Gm;
             }
 
-            var rs = -Pnp * realIds + Gds * realVds + Gm * realVgs;
+            var rs = -Pnp * realIds + Gds * Vds + Gm * Vgs;
             rowD = Circuit.RowInfo[Nodes[idxD] - 1].MapRow;
             rowS = Circuit.RowInfo[Nodes[idxS] - 1].MapRow;
             Circuit.RightSide[rowD] += rs;
@@ -244,21 +247,20 @@ namespace Circuit.Elements.Active {
         }
 
         public override void CirIterationFinished() {
-            var tmpV = Volts;
-            mLastV[IdxG] = tmpV[IdxG];
-            mLastV[IdxS] = tmpV[IdxS];
-            mLastV[IdxD] = tmpV[IdxD];
+            mLastV[IdxG] = Volts[IdxG];
+            mLastV[IdxS] = Volts[IdxS];
+            mLastV[IdxD] = Volts[IdxD];
 
             /* if drain < source voltage, swap source and drain.
              * (opposite for PNP) */
             var idxS = IdxS;
             var idxD = IdxD;
-            if (Pnp * tmpV[idxD] < Pnp * tmpV[idxS]) {
+            if (Pnp * Volts[idxD] < Pnp * Volts[idxS]) {
                 idxS = IdxD;
                 idxD = IdxS;
             }
-            var vgs = tmpV[IdxG] - tmpV[idxS];
-            var vds = tmpV[idxD] - tmpV[idxS];
+            var vgs = Volts[IdxG] - Volts[idxS];
+            var vds = Volts[idxD] - Volts[idxS];
             vgs *= Pnp;
             vds *= Pnp;
 

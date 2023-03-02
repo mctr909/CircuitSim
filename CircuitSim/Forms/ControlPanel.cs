@@ -15,7 +15,7 @@ namespace Circuit {
         public static CheckBox ChkPrintable { get; private set; }
         public static CheckBox ChkCrossHair { get; private set; }
 
-        public static double IterCount {
+        public static double StepRate {
             get {
                 if (TrbSpeed.Value == 0) {
                     return 0;

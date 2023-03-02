@@ -24,14 +24,7 @@ namespace Circuit.Elements.Active {
         public override int PostCount { get { return 3; } }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? In1p[0] : (n == 1) ? In2p[0] : Post2;
-        }
-
-        public override double CirGetCurrentIntoNode(int n) {
-            if (n == 2) {
-                return -Current;
-            }
-            return 0;
+            return (n == 0) ? In1p[0] : (n == 1) ? In2p[0] : Post[1];
         }
 
         /* there is no current path through the op-amp inputs,
@@ -45,6 +38,13 @@ namespace Circuit.Elements.Active {
         }
 
         public override bool AnaHasGroundConnection(int n1) { return n1 == 2; }
+
+        public override double CirGetCurrentIntoNode(int n) {
+            if (n == 2) {
+                return -Current;
+            }
+            return 0;
+        }
 
         public override void CirDoIteration() {
             var vd = Volts[V_P] - Volts[V_N];

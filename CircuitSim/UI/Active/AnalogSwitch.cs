@@ -54,7 +54,7 @@ namespace Circuit.UI.Active {
             base.SetPoints();
             calcLeads(BODY_LEN);
             mPs = new Point();
-            interpPoint(ref ((ElmAnalogSwitch)Elm).Post3, 0.5, -OPEN_HS);
+            interpPoint(ref ((ElmAnalogSwitch)Elm).Post[2], 0.5, -OPEN_HS);
             interpPoint(ref mLead3, 0.5, -OPEN_HS / 2);
         }
 
@@ -69,7 +69,7 @@ namespace Circuit.UI.Active {
             g.DrawColor = CustomGraphics.WhiteColor;
             g.DrawLine(mLead1, mPs);
 
-            drawLead(ce.Post3, mLead3);
+            drawLead(ce.Post[2], mLead3);
 
             if (!ce.IsOpen) {
                 doDots();

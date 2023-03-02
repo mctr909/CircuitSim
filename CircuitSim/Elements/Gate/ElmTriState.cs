@@ -28,10 +28,6 @@ namespace Circuit.Elements.Gate {
 
         public override int AnaVoltageSourceCount { get { return 1; } }
 
-        public override Point GetPost(int n) {
-            return (n == 0) ? Post1 : (n == 1) ? Post2 : Post3;
-        }
-
         public override double CirGetCurrentIntoNode(int n) {
             if (n == 1) {
                 return Current;

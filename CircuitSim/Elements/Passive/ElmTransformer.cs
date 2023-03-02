@@ -42,13 +42,6 @@ namespace Circuit.Elements.Passive {
             mCurSourceValue1 = mCurSourceValue2 = 0;
         }
 
-        public override double CirGetCurrentIntoNode(int n) {
-            if (n < 2) {
-                return -Currents[n];
-            }
-            return Currents[n - 2];
-        }
-
         public override bool AnaGetConnection(int n1, int n2) {
             if (ComparePair(n1, n2, 0, 2)) {
                 return true;
@@ -126,6 +119,13 @@ namespace Circuit.Elements.Passive {
             Circuit.RowInfo[sec_t].RightChanges = true;
             Circuit.RowInfo[pre_b].RightChanges = true;
             Circuit.RowInfo[sec_b].RightChanges = true;
+        }
+
+        public override double CirGetCurrentIntoNode(int n) {
+            if (n < 2) {
+                return -Currents[n];
+            }
+            return Currents[n - 2];
         }
 
         public override void CirPrepareIteration() {

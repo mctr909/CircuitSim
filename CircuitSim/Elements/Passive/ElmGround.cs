@@ -6,8 +6,6 @@
 
         public override int PostCount { get { return 1; } }
 
-        public override double CirGetCurrentIntoNode(int n) { return -Current; }
-
         public override bool AnaHasGroundConnection(int n1) { return true; }
 
         public override void AnaStamp() {
@@ -16,6 +14,8 @@
             Circuit.Matrix[nv, n0] += 1;
             Circuit.Matrix[n0, nv] -= 1;
         }
+
+        public override double CirGetCurrentIntoNode(int n) { return -Current; }
 
         public override void CirSetCurrent(int x, double c) { Current = -c; }
     }

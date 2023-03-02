@@ -1114,7 +1114,7 @@ namespace Circuit {
             /* 32 = linear scale in afilter */
             string dump = "$ " + f
                 + " " + ControlPanel.TimeStep
-                + " " + ControlPanel.IterCount
+                + " " + ControlPanel.StepRate
                 + " " + ControlPanel.TrbCurrent.Value + "\n";
 
             int i;
@@ -2311,7 +2311,7 @@ namespace Circuit {
             }
 
             mDumpMatrix = false;
-            double steprate = ControlPanel.IterCount;
+            double steprate = ControlPanel.StepRate;
             long tm = DateTime.Now.ToFileTimeUtc();
             long lit = mLastIterTime;
             if (lit == 0) {

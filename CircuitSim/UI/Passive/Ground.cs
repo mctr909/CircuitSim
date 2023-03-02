@@ -22,7 +22,7 @@ namespace Circuit.UI.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.GROUND; } }
 
         public override void Draw(CustomGraphics g) {
-            drawLead(Elm.Post1, Elm.Post2);
+            drawLead(Elm.Post[0], Elm.Post[1]);
             for (int i = 0; i != 3; i++) {
                 var a = BODY_LEN - i * 3;
                 var b = i * BODY_LEN * 0.5;
@@ -30,7 +30,7 @@ namespace Circuit.UI.Passive {
                 drawLead(mP1, mP2);
             }
             doDots();
-            setBbox(Elm.Post1, mP1, 11);
+            setBbox(Elm.Post[0], mP1, 11);
             drawPosts();
         }
 

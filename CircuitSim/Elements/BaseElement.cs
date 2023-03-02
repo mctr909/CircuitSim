@@ -12,15 +12,13 @@ namespace Circuit.Elements {
 
         protected int mVoltSource;
 
-        public Point Post1;
-        public Point Post2;
-        public Point Post3;
+        public Point[] Post = new Point[3];
 
         #region [property]
         public abstract int PostCount { get; }
 
         public virtual Point GetPost(int n) {
-            return (n == 0) ? Post1 : (n == 1) ? Post2 : Post3;
+            return Post[n];
         }
 
         public int[] Nodes { get; protected set; }
@@ -143,7 +141,7 @@ namespace Circuit.Elements {
         #region [method(Circuit)]
         public int CirGetNodeAtPoint(int xp, int yp) {
             if (PostCount == 2) {
-                return (Post1.X == xp && Post1.Y == yp) ? 0 : 1;
+                return (Post[0].X == xp && Post[0].Y == yp) ? 0 : 1;
             }
             for (int i = 0; i != PostCount; i++) {
                 var p = GetPost(i);

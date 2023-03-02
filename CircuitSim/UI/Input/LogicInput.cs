@@ -34,7 +34,7 @@ namespace Circuit.UI.Input {
         public override void SetPoints() {
             base.SetPoints();
             setLead1(1 - 12 / mLen);
-            setBbox(Elm.Post1, mLead1, 0);
+            setBbox(Elm.Post[0], mLead1, 0);
         }
 
         public override void Draw(CustomGraphics g) {

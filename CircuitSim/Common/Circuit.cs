@@ -253,12 +253,12 @@ namespace Circuit {
                     var pt = ce.GetPost(cnl.Num);
 
                     /* which post does this element connect to, if any? */
-                    if (pt.X == wire.Post1.X && pt.Y == wire.Post1.Y) {
+                    if (pt.X == wire.Post[0].X && pt.Y == wire.Post[0].Y) {
                         neighbors0.Add(ce);
                         if (notReady) {
                             isReady0 = false;
                         }
-                    } else if (pt.X == wire.Post2.X && pt.Y == wire.Post2.Y) {
+                    } else if (pt.X == wire.Post[1].X && pt.Y == wire.Post[1].Y) {
                         neighbors1.Add(ce);
                         if (notReady) {
                             isReady1 = false;

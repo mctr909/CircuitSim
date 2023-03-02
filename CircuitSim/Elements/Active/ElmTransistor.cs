@@ -58,17 +58,7 @@ namespace Circuit.Elements.Active {
         public override int PostCount { get { return 3; } }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? Post1 : (n == 1) ? Coll[0] : Emit[0];
-        }
-
-        public override double CirGetCurrentIntoNode(int n) {
-            if (n == 0) {
-                return -Ib;
-            }
-            if (n == 1) {
-                return -Ic;
-            }
-            return -Ie;
+            return (n == 0) ? Post[0] : (n == 1) ? Coll[0] : Emit[0];
         }
 
         public void SetHfe(double hfe) {
@@ -91,6 +81,16 @@ namespace Circuit.Elements.Active {
             Circuit.RowInfo[Nodes[IdxB] - 1].LeftChanges = true;
             Circuit.RowInfo[Nodes[IdxC] - 1].LeftChanges = true;
             Circuit.RowInfo[Nodes[IdxE] - 1].LeftChanges = true;
+        }
+
+        public override double CirGetCurrentIntoNode(int n) {
+            if (n == 0) {
+                return -Ib;
+            }
+            if (n == 1) {
+                return -Ic;
+            }
+            return -Ie;
         }
 
         public override void CirDoIteration() {

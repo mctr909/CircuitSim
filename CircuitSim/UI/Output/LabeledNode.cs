@@ -36,7 +36,7 @@ namespace Circuit.UI.Output {
                 setLead1(1 - 0.5 * Context.GetTextSize(ce.Text).Width / mLen);
             }
             interpPoint(ref mPos, 1 + 11.0 / mLen);
-            setBbox(Elm.Post1, mPos, CircleSize);
+            setBbox(Elm.Post[0], mPos, CircleSize);
         }
 
         public override void Draw(CustomGraphics g) {

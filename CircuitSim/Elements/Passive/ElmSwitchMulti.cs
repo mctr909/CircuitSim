@@ -12,7 +12,15 @@ namespace Circuit.Elements.Passive {
         public override int PostCount { get { return 1 + ThrowCount; } }
 
         public override Point GetPost(int n) {
-            return (n == 0) ? Post1 : SwPosts[n - 1];
+            return (n == 0) ? Post[0] : SwPosts[n - 1];
+        }
+
+        public override bool AnaGetConnection(int n1, int n2) {
+            return ComparePair(n1, n2, 0, 1 + Position);
+        }
+
+        public override void AnaStamp() {
+            Circuit.StampVoltageSource(Nodes[0], Nodes[Position + 1], mVoltSource, 0);
         }
 
         public override double CirGetCurrentIntoNode(int n) {
@@ -25,12 +33,5 @@ namespace Circuit.Elements.Passive {
             return 0;
         }
 
-        public override bool AnaGetConnection(int n1, int n2) {
-            return ComparePair(n1, n2, 0, 1 + Position);
-        }
-
-        public override void AnaStamp() {
-            Circuit.StampVoltageSource(Nodes[0], Nodes[Position + 1], mVoltSource, 0);
-        }
     }
 }

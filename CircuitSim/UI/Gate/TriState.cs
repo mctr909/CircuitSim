@@ -38,7 +38,7 @@ namespace Circuit.UI.Gate {
             mGatePoly = new Point[3];
             interpLeadAB(ref mGatePoly[0], ref mGatePoly[1], 0, hs);
             interpPoint(ref mGatePoly[2], 0.5 + ww / mLen);
-            interpPoint(ref ((ElmTriState)Elm).Post3, 0.5, -hs);
+            interpPoint(ref ((ElmTriState)Elm).Post[2], 0.5, -hs);
             interpPoint(ref mLead3, 0.5, -hs / 2);
         }
 
@@ -51,7 +51,7 @@ namespace Circuit.UI.Gate {
 
             g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             g.DrawPolygon(mGatePoly);
-            drawLead(ce.Post3, mLead3);
+            drawLead(ce.Post[2], mLead3);
             CurCount = updateDotCount(ce.Current, CurCount);
             drawDotsB(CurCount);
             drawPosts();

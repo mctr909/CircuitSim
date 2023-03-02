@@ -136,12 +136,12 @@ namespace Circuit.UI.Active {
 
         void setTextPos() {
             if (mVertical) {
-                mNamePos = new Point(Elm.Post2.X, Elm.Post2.Y + HS * mDsign * 2 / 3);
+                mNamePos = new Point(Elm.Post[1].X, Elm.Post[1].Y + HS * mDsign * 2 / 3);
             } else if (mHorizontal) {
                 if (0 < mDsign) {
-                    mNamePos = new Point(Elm.Post2.X - 1, Elm.Post2.Y);
+                    mNamePos = new Point(Elm.Post[1].X - 1, Elm.Post[1].Y);
                 } else {
-                    mNamePos = new Point(Elm.Post2.X - 16, Elm.Post2.Y);
+                    mNamePos = new Point(Elm.Post[1].X - 16, Elm.Post[1].Y);
                 }
             } else {
                 interpPoint(ref mNamePos, 0.5, 10 * mDsign);
@@ -187,7 +187,7 @@ namespace Circuit.UI.Active {
             }
 
             /* draw gate */
-            drawLead(Elm.Post1, mGate[1]);
+            drawLead(Elm.Post[0], mGate[1]);
             drawLead(mGate[0], mGate[2]);
             if (DrawDigital && ce.Pnp == -1) {
                 g.DrawCircle(mPcircle, mPcircler);
@@ -228,11 +228,11 @@ namespace Circuit.UI.Active {
             var ce = (ElmMosfet)Elm;
             arr[0] = ((ce.Pnp == -1) ? "p-" : "n-") + n;
             arr[0] += " (Vt=" + Utils.VoltageText(ce.Pnp * ce.Vt);
-            arr[0] += ", \u03b2=" + ce.Hfe + ")";
+            arr[0] += ", Hfe=" + ce.Hfe + ")";
             arr[1] = ((ce.Pnp == 1) ? "Ids = " : "Isd = ") + Utils.CurrentText(ce.Current);
             arr[2] = "Vgs = " + Utils.VoltageText(ce.Vg - (ce.Pnp == -1 ? ce.Vd : ce.Vs));
             arr[3] = ((ce.Pnp == 1) ? "Vds = " : "Vsd = ") + Utils.VoltageText(ce.Vd - ce.Vs);
-            arr[4] = (ce.Mode == 0) ? "off" : (ce.Mode == 1) ? "linear" : "saturation";
+            arr[4] = (ce.Mode == 0) ? "off" : (ce.Mode == 1) ? "線形" : "飽和";
             arr[5] = "gm = " + Utils.UnitText(ce.Gm, "A/V");
             arr[6] = "P = " + Utils.UnitText(ce.Power, "W");
             if (ShowBulk) {

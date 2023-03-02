@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace Circuit.Elements.Active {
+﻿namespace Circuit.Elements.Active {
     class ElmAnalogSwitch : BaseElement {
         public double Ron = 20;
         public double Roff = 1e10;
@@ -12,8 +10,11 @@ namespace Circuit.Elements.Active {
 
         public override int PostCount { get { return 3; } }
 
-        public override Point GetPost(int n) {
-            return (0 == n) ? Post1 : (1 == n) ? Post2 : Post3;
+        public override bool AnaGetConnection(int n1, int n2) { return !(n1 == 2 || n2 == 2); }
+
+        public override void AnaStamp() {
+            Circuit.StampNonLinear(Nodes[0]);
+            Circuit.StampNonLinear(Nodes[1]);
         }
 
         public override double CirGetCurrentIntoNode(int n) {
@@ -24,13 +25,6 @@ namespace Circuit.Elements.Active {
                 return 0;
             }
             return Current;
-        }
-
-        public override bool AnaGetConnection(int n1, int n2) { return !(n1 == 2 || n2 == 2); }
-
-        public override void AnaStamp() {
-            Circuit.StampNonLinear(Nodes[0]);
-            Circuit.StampNonLinear(Nodes[1]);
         }
 
         public override void CirDoIteration() {
