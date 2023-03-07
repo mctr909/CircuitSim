@@ -31,7 +31,7 @@ namespace Circuit.Elements.Input {
             Pins[2] = new Chip.Pin(ui, 0, Chip.SIDE_E, "O+");
             Pins[2].output = true;
             Pins[3] = new Chip.Pin(ui, 1, Chip.SIDE_E, "O-");
-            mExprState = new ExprState(1);
+            mExprState = new Expr.State(1);
         }
 
         public override bool hasCurrentOutput() { return true; }

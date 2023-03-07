@@ -11,7 +11,7 @@ namespace Circuit.Elements.Input {
         public string ExprString;
 
         protected Expr mExpr;
-        protected ExprState mExprState;
+        protected Expr.State mExprState;
         double[] mLastVolts;
 
         public ElmVCCS(Chip ui) : base() {
@@ -44,7 +44,7 @@ namespace Circuit.Elements.Input {
             Pins[InputCount] = new Chip.Pin(ui, 0, Chip.SIDE_E, "C+");
             Pins[InputCount + 1] = new Chip.Pin(ui, 1, Chip.SIDE_E, "C-");
             mLastVolts = new double[InputCount];
-            mExprState = new ExprState(InputCount);
+            mExprState = new Expr.State(InputCount);
         }
 
         public override bool AnaGetConnection(int n1, int n2) {
@@ -164,7 +164,7 @@ namespace Circuit.Elements.Input {
         }
 
         public void ParseExpr() {
-            var parser = new ExprParser(ExprString);
+            var parser = new Expr.Parser(ExprString);
             mExpr = parser.ParseExpression();
         }
 

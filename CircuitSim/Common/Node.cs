@@ -5,8 +5,6 @@ using Circuit.Elements;
 using Circuit.Elements.Passive;
 using Circuit.Elements.Input;
 
-using Circuit.UI;
-
 namespace Circuit {
     class CircuitNodeLink {
         public int Num;
