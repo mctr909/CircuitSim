@@ -33,14 +33,28 @@ namespace Circuit.Elements.Active {
 
         public override void AnaStamp() {
             base.AnaStamp();
-            Circuit.StampVoltageSource(Nodes[0], Nodes[2], mVoltSource);
-            Circuit.StampNonLinear(Nodes[2]);
+            var n0 = Nodes[0] - 1;
+            var n1 = Nodes[2] - 1;
+            int vn = Circuit.NodeList.Count + mVoltSource - 1;
+            Circuit.Matrix[vn, n0] -= 1;
+            Circuit.Matrix[vn, n1] += 1;
+            Circuit.Matrix[n0, vn] += 1;
+            Circuit.Matrix[n1, vn] -= 1;
+            Circuit.RowInfo[vn].RightChanges = true;
+            Circuit.RowInfo[n1].LeftChanges = true;
         }
 
         public override void CirDoIteration() {
             base.CirDoIteration();
-            Circuit.StampResistor(Nodes[2], Nodes[1], mCompResistance);
-            Circuit.UpdateVoltageSource(mVoltSource, mVoltSourceValue);
+            var g = 1.0 / mCompResistance;
+            var n0 = Nodes[2] - 1;
+            var n1 = Nodes[1] - 1;
+            var vn = Circuit.NodeList.Count + mVoltSource - 1;
+            Circuit.Matrix[n0, n0] += g;
+            Circuit.Matrix[n1, n1] += g;
+            Circuit.Matrix[n0, n1] -= g;
+            Circuit.Matrix[n1, n0] -= g;
+            Circuit.RightSide[vn] += mVoltSourceValue;
         }
 
         public override void CirPrepareIteration() {

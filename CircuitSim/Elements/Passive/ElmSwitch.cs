@@ -13,7 +13,13 @@
 
         public override void AnaStamp() {
             if (Position == 0) {
-                Circuit.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
+                var n0 = Nodes[0] - 1;
+                var n1 = Nodes[1] - 1;
+                int vn = Circuit.NodeList.Count + mVoltSource - 1;
+                Circuit.Matrix[vn, n0] -= 1;
+                Circuit.Matrix[vn, n1] += 1;
+                Circuit.Matrix[n0, vn] += 1;
+                Circuit.Matrix[n1, vn] -= 1;
             }
         }
 

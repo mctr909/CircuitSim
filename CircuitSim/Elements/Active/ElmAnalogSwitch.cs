@@ -13,8 +13,8 @@
         public override bool AnaGetConnection(int n1, int n2) { return !(n1 == 2 || n2 == 2); }
 
         public override void AnaStamp() {
-            Circuit.StampNonLinear(Nodes[0]);
-            Circuit.StampNonLinear(Nodes[1]);
+            Circuit.RowInfo[Nodes[0] - 1].LeftChanges = true;
+            Circuit.RowInfo[Nodes[1] - 1].LeftChanges = true;
         }
 
         public override double CirGetCurrentIntoNode(int n) {
