@@ -12,6 +12,7 @@ using Circuit.Elements.Passive;
 
 using Circuit.UI;
 using Circuit.UI.Passive;
+using Circuit.UI.Output;
 
 namespace Circuit {
     public partial class CirSimForm : Form {
@@ -281,16 +282,16 @@ namespace Circuit {
 
             switch (item) {
             case MENU_ITEM.STACK_ALL:
-                Scope.StackAll();
+                Scope.Property.StackAll();
                 break;
             case MENU_ITEM.UNSTACK_ALL:
-                Scope.UnstackAll();
+                Scope.Property.UnstackAll();
                 break;
             case MENU_ITEM.COMBINE_ALL:
-                Scope.CombineAll();
+                Scope.Property.CombineAll();
                 break;
             case MENU_ITEM.SEPARATE_ALL:
-                Scope.SeparateAll();
+                Scope.Property.SeparateAll();
                 break;
             }
 
@@ -327,29 +328,29 @@ namespace Circuit {
 
             if (item == ELEMENT_MENU_ITEM.VIEW_IN_SCOPE && mMenuElm != null) {
                 int i;
-                for (i = 0; i != Scope.Count; i++) {
-                    if (Scope.List[i].Elm == null) {
+                for (i = 0; i != Scope.Property.Count; i++) {
+                    if (Scope.Property.List[i].Elm == null) {
                         break;
                     }
                 }
-                if (i == Scope.Count) {
-                    if (Scope.Count == Scope.List.Length) {
+                if (i == Scope.Property.Count) {
+                    if (Scope.Property.Count == Scope.Property.List.Length) {
                         return;
                     }
-                    Scope.Count++;
-                    Scope.List[i] = new Scope();
-                    Scope.List[i].Position = i;
+                    Scope.Property.Count++;
+                    Scope.Property.List[i] = new Scope.Property();
+                    Scope.Property.List[i].Position = i;
                 }
-                Scope.List[i].SetElm(mMenuElm);
+                Scope.Property.List[i].SetElm(mMenuElm);
                 if (i > 0) {
-                    Scope.List[i].Speed = Scope.List[i - 1].Speed;
+                    Scope.Property.List[i].Speed = Scope.Property.List[i - 1].Speed;
                 }
             }
 
             if (item == ELEMENT_MENU_ITEM.VIEW_IN_FLOAT_SCOPE && mMenuElm != null) {
-                var newScope = new ScopeUI(SnapGrid(mMenuElm.DumpInfo.P1X + 50, mMenuElm.DumpInfo.P1Y + 50));
+                var newScope = new Scope(SnapGrid(mMenuElm.DumpInfo.P1X + 50, mMenuElm.DumpInfo.P1Y + 50));
                 UIList.Add(newScope);
-                newScope.setScopeElm(mMenuElm);
+                newScope.SetScopeElm(mMenuElm);
             }
 
             Repaint();
@@ -362,37 +363,37 @@ namespace Circuit {
 
             PushUndo();
 
-            Scope s;
+            Scope.Property s;
             if (mMenuScope != -1) {
-                s = Scope.List[mMenuScope];
+                s = Scope.Property.List[mMenuScope];
             } else {
-                if (Mouse.GripElm is ScopeUI) {
-                    s = ((ScopeUI)Mouse.GripElm).Scope;
+                if (Mouse.GripElm is Scope) {
+                    s = ((Scope)Mouse.GripElm).Properties;
                 } else {
                     return;
                 }
             }
 
             if (item == SCOPE_MENU_ITEM.DOCK) {
-                if (Scope.Count == Scope.List.Length) {
+                if (Scope.Property.Count == Scope.Property.List.Length) {
                     return;
                 }
-                Scope.List[Scope.Count] = ((ScopeUI)Mouse.GripElm).Scope;
-                ((ScopeUI)Mouse.GripElm).clearElmScope();
-                Scope.List[Scope.Count].Position = Scope.Count;
-                Scope.Count++;
+                Scope.Property.List[Scope.Property.Count] = ((Scope)Mouse.GripElm).Properties;
+                ((Scope)Mouse.GripElm).ClearElmScope();
+                Scope.Property.List[Scope.Property.Count].Position = Scope.Property.Count;
+                Scope.Property.Count++;
                 doDelete(false);
             }
 
             if (item == SCOPE_MENU_ITEM.UNDOCK && 0 <= mMenuScope) {
-                var newScope = new ScopeUI(SnapGrid(mMenuElm.DumpInfo.P1X + 50, mMenuElm.DumpInfo.P1Y + 50));
+                var newScope = new Scope(SnapGrid(mMenuElm.DumpInfo.P1X + 50, mMenuElm.DumpInfo.P1Y + 50));
                 UIList.Add(newScope);
-                newScope.setElmScope(Scope.List[mMenuScope]);
+                newScope.SetElmScope(Scope.Property.List[mMenuScope]);
                 /* remove scope from list.  setupScopes() will fix the positions */
-                for (int i = mMenuScope; i < Scope.Count; i++) {
-                    Scope.List[i] = Scope.List[i + 1];
+                for (int i = mMenuScope; i < Scope.Property.Count; i++) {
+                    Scope.Property.List[i] = Scope.Property.List[i + 1];
                 }
-                Scope.Count--;
+                Scope.Property.Count--;
             }
 
             if (null == s) {
@@ -416,13 +417,13 @@ namespace Circuit {
                 s.MaxScale();
             }
             if (item == SCOPE_MENU_ITEM.STACK) {
-                Scope.Stack(mMenuScope);
+                Scope.Property.Stack(mMenuScope);
             }
             if (item == SCOPE_MENU_ITEM.UNSTACK) {
-                Scope.Unstack(mMenuScope);
+                Scope.Property.Unstack(mMenuScope);
             }
             if (item == SCOPE_MENU_ITEM.COMBINE) {
-                Scope.Combine(mMenuScope);
+                Scope.Property.Combine(mMenuScope);
             }
             if (item == SCOPE_MENU_ITEM.RESET) {
                 s.ResetGraph(true);
@@ -647,8 +648,8 @@ namespace Circuit {
             for (int i = 0; i != UIList.Count; i++) {
                 UIList[i].Elm.Reset();
             }
-            for (int i = 0; i != Scope.Count; i++) {
-                Scope.List[i].ResetGraph(true);
+            for (int i = 0; i != Scope.Property.Count; i++) {
+                Scope.Property.List[i].ResetGraph(true);
             }
             mAnalyzeFlag = true;
             if (Circuit.Time == 0) {
@@ -728,9 +729,9 @@ namespace Circuit {
             }
 
             if (code == Keys.Back || code == Keys.Delete) {
-                if (SelectedScope != -1 && null != Scope.List[SelectedScope]) {
+                if (SelectedScope != -1 && null != Scope.Property.List[SelectedScope]) {
                     /* Treat DELETE key with scope selected as "remove scope", not delete */
-                    Scope.List[SelectedScope].SetElm(null);
+                    Scope.Property.List[SelectedScope].SetElm(null);
                     SelectedScope = -1;
                 } else {
                     mMenuElm = null;
@@ -818,14 +819,15 @@ namespace Circuit {
                 }
             }
 
-            if ((SelectedScope != -1 && Scope.List[SelectedScope].CursorInSettingsWheel) ||
-                (SelectedScope == -1 && Mouse.GripElm != null && (Mouse.GripElm is ScopeUI) && ((ScopeUI)Mouse.GripElm).Scope.CursorInSettingsWheel)) {
+            if ((SelectedScope != -1 && Scope.Property.List[SelectedScope].CursorInSettingsWheel) ||
+                (SelectedScope == -1 && Mouse.GripElm != null && (Mouse.GripElm is Scope) &&
+                ((Scope)Mouse.GripElm).Properties.CursorInSettingsWheel)) {
                 Console.WriteLine("Doing something");
-                Scope s;
+                Scope.Property s;
                 if (SelectedScope != -1) {
-                    s = Scope.List[SelectedScope];
+                    s = Scope.Property.List[SelectedScope];
                 } else {
-                    s = ((ScopeUI)Mouse.GripElm).Scope;
+                    s = ((Scope)Mouse.GripElm).Properties;
                 }
                 s.Properties(mPixCir.Left + mPixCir.Width / 2, mPixCir.Bottom);
                 clearSelection();
@@ -1126,8 +1128,8 @@ namespace Circuit {
                 }
                 dump += ce.Dump + "\n";
             }
-            for (i = 0; i != Scope.Count; i++) {
-                string d = Scope.List[i].Dump();
+            for (i = 0; i != Scope.Property.Count; i++) {
+                string d = Scope.Property.List[i].Dump();
                 if (d != null) {
                     dump += d + "\n";
                 }
@@ -1160,7 +1162,7 @@ namespace Circuit {
                 }
                 UIList.Clear();
                 ControlPanel.Reset();
-                Scope.Count = 0;
+                Scope.Property.Count = 0;
                 mLastIterTime = 0;
             }
 
@@ -1189,10 +1191,10 @@ namespace Circuit {
                             continue;
                         }
                         if (tint == 'o') {
-                            var sc = new Scope();
-                            sc.Position = Scope.Count;
+                            var sc = new Scope.Property();
+                            sc.Position = Scope.Property.Count;
                             sc.Undump(st);
-                            Scope.List[Scope.Count++] = sc;
+                            Scope.Property.List[Scope.Property.Count++] = sc;
                             break;
                         }
                         if (tint == '$') {
@@ -1665,8 +1667,8 @@ namespace Circuit {
                         }
                     }
                 }
-                for (int i = 0; i != Scope.Count; i++) {
-                    var s = Scope.List[i];
+                for (int i = 0; i != Scope.Property.Count; i++) {
+                    var s = Scope.Property.List[i];
                     if (s.BoundingBox.Contains(mx, my)) {
                         newMouseElm = s.Elm;
                         SelectedScope = i;
@@ -1698,21 +1700,21 @@ namespace Circuit {
             mMenuScope = -1;
             mMenuPlotWave = -1;
             if (SelectedScope != -1) {
-                if (Scope.List[SelectedScope].CanMenu) {
+                if (Scope.Property.List[SelectedScope].CanMenu) {
                     mMenuScope = SelectedScope;
-                    mMenuPlotWave = Scope.List[SelectedScope].SelectedPlot;
-                    mContextMenu = mScopePopupMenu.Show(mMenuClient.X, Bottom, Scope.List, SelectedScope, false);
+                    mMenuPlotWave = Scope.Property.List[SelectedScope].SelectedPlot;
+                    mContextMenu = mScopePopupMenu.Show(mMenuClient.X, Bottom, Scope.Property.List, SelectedScope, false);
                     mContextMenuLocation = mContextMenu.Location;
                 }
             } else if (Mouse.GripElm != null) {
-                if (!(Mouse.GripElm is ScopeUI)) {
+                if (!(Mouse.GripElm is Scope)) {
                     mContextMenu = mElementPopupMenu.Show(mMenuClient.X, mMenuClient.Y, Mouse.GripElm);
                     mContextMenuLocation = mContextMenu.Location;
                 } else {
-                    var s = (ScopeUI)Mouse.GripElm;
-                    if (s.Scope.CanMenu) {
-                        mMenuPlotWave = s.Scope.SelectedPlot;
-                        mContextMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, new Scope[] { s.Scope }, 0, true);
+                    var s = (Scope)Mouse.GripElm;
+                    if (s.Properties.CanMenu) {
+                        mMenuPlotWave = s.Properties.SelectedPlot;
+                        mContextMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, new Scope.Property[] { s.Properties }, 0, true);
                         mContextMenuLocation = mContextMenu.Location;
                     }
                 }
@@ -1798,7 +1800,7 @@ namespace Circuit {
                 /* ScopeElms don't cut-paste well because their reference to a parent
                 /* elm by number get's messed up in the dump. For now we will just ignore them
                 /* until I can be bothered to come up with something better */
-                if (willDelete(ce) && !(ce is ScopeUI)) {
+                if (willDelete(ce) && !(ce is Scope)) {
                     mClipboard += ce.Dump + "\n";
                 }
             }
@@ -1828,7 +1830,7 @@ namespace Circuit {
             /* Remove any scopeElms for elements that no longer exist */
             for (int i = UICount - 1; 0 <= i; i--) {
                 var ce = GetUI(i);
-                if ((ce is ScopeUI) && ((ScopeUI)ce).Scope.NeedToRemove) {
+                if ((ce is Scope) && ((Scope)ce).Properties.NeedToRemove) {
                     ce.Delete();
                     UIList.RemoveAt(i);
                 }
@@ -1885,7 +1887,7 @@ namespace Circuit {
                     r += m + "\n";
                 }
                 /* See notes on do cut why we don't copy ScopeElms. */
-                if (ce.IsSelected && !(ce is ScopeUI)) {
+                if (ce.IsSelected && !(ce is Scope)) {
                     r += ce.Dump + "\n";
                 }
             }
@@ -2066,7 +2068,7 @@ namespace Circuit {
             //if (null != Mouse.GripElm && null != Circuit.StopElm && Circuit.StopElm != Mouse.GripElm.Elm) {
             //    Circuit.StopElm.MouseElm(true);
             //}
-            Scope.Setup(BaseUI.Context.Height - mCircuitArea.Height);
+            Scope.Property.Setup(BaseUI.Context.Height - mCircuitArea.Height);
 
             var g = BaseUI.Context;
             PDF.Page pdfG = null;
@@ -2133,7 +2135,7 @@ namespace Circuit {
                 for (int i = 0; i != UICount; i++) {
                     var ui = UIList[i];
                     ui.Draw(g);
-                    if (ui is ScopeUI) {
+                    if (ui is Scope) {
                         g.ScrollBoard(mOfs);
                     }
                 }
@@ -2214,12 +2216,12 @@ namespace Circuit {
             }
             g.ClearTransform();
 
-            int ct = Scope.Count;
+            int ct = Scope.Property.Count;
             if (Circuit.StopMessage != null) {
                 ct = 0;
             }
             for (int i = 0; i != ct; i++) {
-                Scope.List[i].Draw(g);
+                Scope.Property.List[i].Draw(g);
             }
 
             if (Circuit.StopMessage != null) {
@@ -2250,7 +2252,7 @@ namespace Circuit {
 
                 int x = 0;
                 if (ct != 0) {
-                    x = Scope.List[ct - 1].RightEdge + 20;
+                    x = Scope.Property.List[ct - 1].RightEdge + 20;
                 }
                 x = Math.Max(x, g.Width * 2 / 3);
                 g.SetPlotBottom(x, mCircuitArea.Height);
@@ -2332,12 +2334,12 @@ namespace Circuit {
                 }
                 Circuit.Time += ControlPanel.TimeStep;
 
-                for (int i = 0; i < Scope.Count; i++) {
-                    Scope.List[i].TimeStep();
+                for (int i = 0; i < Scope.Property.Count; i++) {
+                    Scope.Property.List[i].TimeStep();
                 }
                 for (int i = 0; i < UICount; i++) {
-                    if (UIList[i] is ScopeUI) {
-                        ((ScopeUI)UIList[i]).stepScope();
+                    if (UIList[i] is Scope) {
+                        ((Scope)UIList[i]).StepScope();
                     }
                 }
 

@@ -4,6 +4,7 @@ using System.Drawing;
 
 using Circuit.Elements;
 using Circuit.UI.Input;
+using Circuit.UI.Output;
 
 namespace Circuit.UI {
     public abstract class BaseUI : Editable {
@@ -46,7 +47,7 @@ namespace Circuit.UI {
                     return false;
                 }
                 /* Test if the current mouseElm is a ScopeElm and, if so, does it belong to this elm */
-                var isScopeElm = (mMouseElmRef is ScopeUI) && ((ScopeUI)mMouseElmRef).Scope.Elm.Equals(this);
+                var isScopeElm = (mMouseElmRef is Scope) && ((Scope)mMouseElmRef).Properties.Elm.Equals(this);
                 return mMouseElmRef.Equals(this) || IsSelected || isScopeElm;
             }
         }

@@ -681,7 +681,7 @@ namespace Circuit {
             case ELEMENTS.STOP_TRIGGER:
                 return new StopTrigger(pos);
             case ELEMENTS.SCOPE:
-                return new ScopeUI(pos);
+                return new Scope(pos);
             #endregion
 
             #region Active Building Blocks
@@ -875,7 +875,7 @@ namespace Circuit {
             case DUMP_ID.DATA_RECORDER:
                 return new DataRecorder(p1, p2, f, st);
             case DUMP_ID.SCOPE:
-                return new ScopeUI(p1, p2, f, st);
+                return new Scope(p1, p2, f, st);
             case DUMP_ID.STOP_TRIGGER:
                 return new StopTrigger(p1, p2, f, st);
             #endregion

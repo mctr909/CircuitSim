@@ -2,6 +2,8 @@
 using System.Drawing;
 using System.Windows.Forms;
 
+using Circuit.UI.Output;
+
 namespace Circuit {
     public enum SCOPE_MENU_ITEM {
         DOCK,
@@ -97,14 +99,14 @@ namespace Circuit {
             });
         }
 
-        public ContextMenuStrip Show(int px, int py, Scope[] scopes, int selectedScopeIndex, bool floating) {
+        public ContextMenuStrip Show(int px, int py, Scope.Property[] scopes, int selectedScopeIndex, bool floating) {
             doScopePopupChecks(scopes, selectedScopeIndex, floating);
             mPopupMenu.Show();
             mPopupMenu.Location = new Point(px, py - mPopupMenu.Height - 8);
             return mPopupMenu;
         }
 
-        void doScopePopupChecks(Scope[] scopes, int selectedScopeIndex, bool floating) {
+        void doScopePopupChecks(Scope.Property[] scopes, int selectedScopeIndex, bool floating) {
             var hasStacks = false;
             var hasLeft = false;
             var selectedScope = scopes[selectedScopeIndex];

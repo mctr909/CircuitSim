@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
 
+using Circuit.UI.Output;
+
 namespace Circuit {
     static class ControlPanel {
         public static Panel VerticalPanel { get; private set; }
@@ -120,8 +122,8 @@ namespace Circuit {
             ChkPrintable = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "白黒表示" };
             ChkPrintable.CheckedChanged += new EventHandler((s, e) => {
                 CustomGraphics.SetColor(ChkPrintable.Checked);
-                for (int i = 0; i < Scope.Count; i++) {
-                    Scope.List[i].SetRect(Scope.List[i].BoundingBox);
+                for (int i = 0; i < Scope.Property.Count; i++) {
+                    Scope.Property.List[i].SetRect(Scope.Property.List[i].BoundingBox);
                 }
             });
             VerticalPanel.Controls.Add(ChkPrintable);

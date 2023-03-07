@@ -128,7 +128,7 @@
     <Compile Include="UI\Output\LabeledNode.cs" />
     <Compile Include="Elements\Output\ElmLogicOutput.cs" />
     <Compile Include="UI\Output\LogicOutput.cs" />
-    <Compile Include="Common\ScopeElm.cs" />
+    <Compile Include="Elements\Output\ElmScope.cs" />
     <Compile Include="Elements\Output\ElmStopTrigger.cs" />
     <Compile Include="UI\Output\StopTrigger.cs" />
     <Compile Include="Elements\Output\ElmVoltMeter.cs" />
@@ -158,7 +158,6 @@
     <Compile Include="UI\Passive\Transformer.cs" />
     <Compile Include="Elements\Passive\ElmWire.cs" />
     <Compile Include="Common\CustomGraphics.cs" />
-    <Compile Include="Common\Scope.cs" />
     <Compile Include="Common\Utils.cs" />
     <Compile Include="Forms\ControlPanel.cs" />
     <Compile Include="Common\DiodeModel.cs" />
@@ -202,8 +201,7 @@
     <Compile Include="UI\Passive\Inductor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Common\ScopeUI.cs" />
-    <Compile Include="Common\ScopePlot.cs" />
+    <Compile Include="UI\Output\Scope.cs" />
     <Compile Include="UI\Passive\Resistor.cs" />
     <Compile Include="Common\Storage.cs" />
     <Compile Include="Shortcut.cs" />

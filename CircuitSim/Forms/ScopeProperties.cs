@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Windows.Forms;
 
+using Circuit.UI.Output;
+
 namespace Circuit.Forms {
     public partial class ScopeProperties : Form {
-        Scope mScope;
+        Scope.Property mScope;
 
-        public ScopeProperties(Scope scope) {
+        public ScopeProperties(Scope.Property scope) {
             InitializeComponent();
             mScope = scope;
             Visible = false;
@@ -43,8 +45,8 @@ namespace Circuit.Forms {
             txtLabel.Text = mScope.Text;
 
             cmbColor.Items.Clear();
-            foreach (var c in Enum.GetValues(typeof(ScopePlot.E_COLOR))) {
-                if ((ScopePlot.E_COLOR)c == ScopePlot.E_COLOR.INVALID) {
+            foreach (var c in Enum.GetValues(typeof(Scope.Property.Plot.E_COLOR))) {
+                if ((Scope.Property.Plot.E_COLOR)c == Scope.Property.Plot.E_COLOR.INVALID) {
                     continue;
                 }
                 cmbColor.Items.Add(c);
