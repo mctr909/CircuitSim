@@ -177,7 +177,6 @@
     <Compile Include="Common\Circuit.cs" />
     <Compile Include="Elements\Expr.cs" />
     <Compile Include="Common\FFT.cs" />
-    <Compile Include="Common\Node.cs" />
     <Compile Include="Forms\ScrollValuePopup.cs">
       <SubType>Form</SubType>
     </Compile>

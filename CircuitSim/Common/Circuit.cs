@@ -8,6 +8,147 @@ using Circuit.Elements.Input;
 using Circuit.Elements.Output;
 
 namespace Circuit {
+    class CircuitNodeLink {
+        public int Num;
+        public BaseElement Elm;
+    }
+
+    class CircuitNode {
+        public List<CircuitNodeLink> Links = new List<CircuitNodeLink>();
+        public bool Internal;
+    }
+
+    class NodeMapEntry {
+        public int Node;
+        public NodeMapEntry() { Node = -1; }
+        public NodeMapEntry(int n) { Node = n; }
+    }
+
+    class WireInfo {
+        public ElmWire Wire;
+        public List<BaseElement> Neighbors;
+        public int Post;
+        public WireInfo(ElmWire w) { Wire = w; }
+    }
+
+    class PathInfo {
+        public enum TYPE {
+            INDUCTOR = 1,
+            VOLTAGE = 2,
+            SHORT = 3,
+            CAPACITOR_V = 4
+        }
+
+        TYPE mType;
+        int mDest;
+        BaseElement mFirstElm;
+        List<BaseElement> mElmList;
+        bool[] mVisited;
+
+        /* State object to help find loops in circuit subject to various conditions (depending on type)
+         * elm = source and destination element.
+         * dest = destination node. */
+        public PathInfo(TYPE type, BaseElement elm, int dest, List<BaseElement> elmList, int nodeCount) {
+            mDest = dest;
+            mType = type;
+            mFirstElm = elm;
+            mElmList = elmList;
+            mVisited = new bool[nodeCount];
+        }
+
+        /* look through circuit for loop starting at node n1 of firstElm,
+         * for a path back to dest node of firstElm */
+        public bool FindPath(int n1) {
+            if (n1 == mDest) {
+                return true;
+            }
+
+            /* depth first search, don't need to revisit already visited nodes! */
+            if (mVisited[n1]) {
+                return false;
+            }
+
+            mVisited[n1] = true;
+            for (int i = 0; i != mElmList.Count; i++) {
+                var cee = mElmList[i];
+                if (cee == mFirstElm) {
+                    continue;
+                }
+                switch (mType) {
+                case TYPE.INDUCTOR:
+                    /* inductors need a path free of current sources */
+                    if (cee is ElmCurrent) {
+                        continue;
+                    }
+                    break;
+                case TYPE.VOLTAGE:
+                    /* when checking for voltage loops, we only care about voltage sources/wires/ground */
+                    if (!(cee.IsWire || (cee is ElmVoltage) || (cee is ElmGround))) {
+                        continue;
+                    }
+                    break;
+                /* when checking for shorts, just check wires */
+                case TYPE.SHORT:
+                    if (!cee.IsWire) {
+                        continue;
+                    }
+                    break;
+                case TYPE.CAPACITOR_V:
+                    /* checking for capacitor/voltage source loops */
+                    if (!(cee.IsWire || (cee is ElmCapacitor) || (cee is ElmVoltage))) {
+                        continue;
+                    }
+                    break;
+                }
+
+                if (n1 == 0) {
+                    /* look for posts which have a ground connection;
+                    /* our path can go through ground */
+                    for (int j = 0; j != cee.AnaConnectionNodeCount; j++) {
+                        if (cee.AnaHasGroundConnection(j) && FindPath(cee.AnaGetConnectionNode(j))) {
+                            return true;
+                        }
+                    }
+                }
+
+                int nodeA;
+                for (nodeA = 0; nodeA != cee.AnaConnectionNodeCount; nodeA++) {
+                    if (cee.AnaGetConnectionNode(nodeA) == n1) {
+                        break;
+                    }
+                }
+                if (nodeA == cee.AnaConnectionNodeCount) {
+                    continue;
+                }
+                if (cee.AnaHasGroundConnection(nodeA) && FindPath(0)) {
+                    return true;
+                }
+
+                if (mType == TYPE.INDUCTOR && (cee is ElmInductor)) {
+                    /* inductors can use paths with other inductors of matching current */
+                    double c = cee.Current;
+                    if (nodeA == 0) {
+                        c = -c;
+                    }
+                    if (Math.Abs(c - mFirstElm.Current) > 1e-10) {
+                        continue;
+                    }
+                }
+
+                for (int nodeB = 0; nodeB != cee.AnaConnectionNodeCount; nodeB++) {
+                    if (nodeA == nodeB) {
+                        continue;
+                    }
+                    if (cee.AnaGetConnection(nodeA, nodeB) && FindPath(cee.AnaGetConnectionNode(nodeB))) {
+                        /*Console.WriteLine("got findpath " + n1); */
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
+
     static class Circuit {
         public class ROW_INFO {
             public bool IsConst;
@@ -671,7 +812,7 @@ namespace Circuit {
 
                 /* look for inductors with no current path */
                 if (ce is ElmInductor) {
-                    var fpi = new PathInfo(PathType.INDUCTOR, ce, ce.Nodes[1], ElmList, NodeList.Count);
+                    var fpi = new PathInfo(PathInfo.TYPE.INDUCTOR, ce, ce.Nodes[1], ElmList, NodeList.Count);
                     if (!fpi.FindPath(ce.Nodes[0])) {
                         ce.Reset();
                     }
@@ -680,7 +821,7 @@ namespace Circuit {
                 /* look for current sources with no current path */
                 if (ce is ElmCurrent) {
                     var cur = (ElmCurrent)ce;
-                    var fpi = new PathInfo(PathType.INDUCTOR, ce, ce.Nodes[1], ElmList, NodeList.Count);
+                    var fpi = new PathInfo(PathInfo.TYPE.INDUCTOR, ce, ce.Nodes[1], ElmList, NodeList.Count);
                     if (!fpi.FindPath(ce.Nodes[0])) {
                         cur.stampCurrentSource(true);
                     } else {
@@ -692,7 +833,7 @@ namespace Circuit {
                 /* because those are optimized out, so the findPath won't work) */
                 if (2 == ce.PostCount) {
                     if ((ce is ElmVoltage) || (ce.IsWire && !(ce is ElmWire))) {
-                        var fpi = new PathInfo(PathType.VOLTAGE, ce, ce.Nodes[1], ElmList, NodeList.Count);
+                        var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Nodes[1], ElmList, NodeList.Count);
                         if (fpi.FindPath(ce.Nodes[0])) {
                             Stop("Voltage source/wire loop with no resistance!", ce);
                             return;
@@ -700,7 +841,7 @@ namespace Circuit {
                     }
                 } else if (ce is ElmSwitchMulti) {
                     /* for Switch2Elms we need to do extra work to look for wire loops */
-                    var fpi = new PathInfo(PathType.VOLTAGE, ce, ce.Nodes[0], ElmList, NodeList.Count);
+                    var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Nodes[0], ElmList, NodeList.Count);
                     for (int j = 1; j < ce.PostCount; j++) {
                         if (ce.AnaGetConnection(0, j) && fpi.FindPath(ce.Nodes[j])) {
                             Stop("Voltage source/wire loop with no resistance!", ce);
@@ -711,7 +852,7 @@ namespace Circuit {
 
                 /* look for path from rail to ground */
                 if ((ce is ElmRail) || (ce is ElmLogicInput)) {
-                    var fpi = new PathInfo(PathType.VOLTAGE, ce, ce.Nodes[0], ElmList, NodeList.Count);
+                    var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Nodes[0], ElmList, NodeList.Count);
                     if (fpi.FindPath(0)) {
                         Stop("Path to ground with no resistance!", ce);
                         return;
@@ -720,7 +861,7 @@ namespace Circuit {
 
                 /* look for shorted caps, or caps w/ voltage but no R */
                 if (ce is ElmCapacitor) {
-                    var fpi = new PathInfo(PathType.SHORT, ce, ce.Nodes[1], ElmList, NodeList.Count);
+                    var fpi = new PathInfo(PathInfo.TYPE.SHORT, ce, ce.Nodes[1], ElmList, NodeList.Count);
                     if (fpi.FindPath(ce.Nodes[0])) {
                         Console.WriteLine(ce + " shorted");
                         ce.AnaShorted();
@@ -730,7 +871,7 @@ namespace Circuit {
                         /* another capacitor with a nonzero voltage; in that case we will get oscillation unless
                         /* we reset both capacitors to have the same voltage. Rather than check for that, we just
                         /* give an error. */
-                        fpi = new PathInfo(PathType.CAPACITOR_V, ce, ce.Nodes[1], ElmList, NodeList.Count);
+                        fpi = new PathInfo(PathInfo.TYPE.CAPACITOR_V, ce, ce.Nodes[1], ElmList, NodeList.Count);
                         if (fpi.FindPath(ce.Nodes[0])) {
                             Stop("Capacitor loop with no resistance!", ce);
                             return;
