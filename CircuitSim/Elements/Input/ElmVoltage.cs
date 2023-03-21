@@ -73,7 +73,7 @@ namespace Circuit.Elements.Input {
 
         public override void CirDoIteration() {
             if (WaveForm != WAVEFORM.DC) {
-                var vn = Circuit.NodeList.Count + mVoltSource;
+                var vn = Circuit.Nodes.Count + mVoltSource;
                 var row = Circuit.RowInfo[vn - 1].MapRow;
                 Circuit.RightSide[row] += GetVoltage();
             }

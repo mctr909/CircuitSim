@@ -73,7 +73,7 @@ namespace Circuit.Elements.Input {
             if (Math.Abs(cur - mLastCurrent) > convergeLimit) {
                 Circuit.Converged = false;
             }
-            int vn1 = Pins[1].voltSource + Circuit.NodeList.Count;
+            int vn1 = Pins[1].voltSource + Circuit.Nodes.Count;
             if (mExpr != null) {
                 /* calculate output */
                 mExprState.Values[8] = cur;  /* I = current */

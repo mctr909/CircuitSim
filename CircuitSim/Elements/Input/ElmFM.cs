@@ -49,7 +49,7 @@ namespace Circuit.Elements.Input {
             var deltaT = Circuit.Time - mLastTime;
             var signalAmplitude = Math.Sin(2 * Math.PI * (Circuit.Time - mFreqTimeZero) * Signalfreq);
             mCounter += (CarrierFreq + (signalAmplitude * Deviation)) * deltaT;
-            var vn = Circuit.NodeList.Count + mVoltSource;
+            var vn = Circuit.Nodes.Count + mVoltSource;
             var row = Circuit.RowInfo[vn - 1].MapRow;
             Circuit.RightSide[row] += Math.Sin(2 * Math.PI * mCounter) * MaxVoltage;
             mLastTime = Circuit.Time;

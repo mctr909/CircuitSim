@@ -35,7 +35,7 @@ namespace Circuit.Elements.Active {
             base.AnaStamp();
             var n0 = Nodes[0] - 1;
             var n1 = Nodes[2] - 1;
-            int vn = Circuit.NodeList.Count + mVoltSource - 1;
+            int vn = Circuit.Nodes.Count + mVoltSource - 1;
             Circuit.Matrix[vn, n0] -= 1;
             Circuit.Matrix[vn, n1] += 1;
             Circuit.Matrix[n0, vn] += 1;
@@ -49,7 +49,7 @@ namespace Circuit.Elements.Active {
             var g = 1.0 / mCompResistance;
             var n0 = Nodes[2] - 1;
             var n1 = Nodes[1] - 1;
-            var vn = Circuit.NodeList.Count + mVoltSource - 1;
+            var vn = Circuit.Nodes.Count + mVoltSource - 1;
             Circuit.Matrix[n0, n0] += g;
             Circuit.Matrix[n1, n1] += g;
             Circuit.Matrix[n0, n1] -= g;

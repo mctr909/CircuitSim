@@ -32,7 +32,7 @@ namespace Circuit.Elements.Active {
         public override bool AnaGetConnection(int n1, int n2) { return false; }
 
         public override void AnaStamp() {
-            int vn = Circuit.NodeList.Count + mVoltSource;
+            int vn = Circuit.Nodes.Count + mVoltSource;
             Circuit.StampNonLinear(vn);
             Circuit.StampMatrix(Nodes[2], vn, 1);
         }
@@ -64,7 +64,7 @@ namespace Circuit.Elements.Active {
             }
 
             /* newton-raphson */
-            var vnode = Circuit.NodeList.Count + mVoltSource;
+            var vnode = Circuit.Nodes.Count + mVoltSource;
             var rowV = Circuit.RowInfo[vnode - 1].MapRow;
             var colri = Circuit.RowInfo[Nodes[0] - 1];
             if (colri.IsConst) {

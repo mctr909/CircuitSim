@@ -1151,7 +1151,6 @@ namespace Circuit {
         }
 
         void readCircuit(byte[] b, int flags) {
-            Console.WriteLine("readCircuit");
             int i;
             int len = b.Length;
             if ((flags & RC_RETAIN) == 0) {
@@ -2057,9 +2056,9 @@ namespace Circuit {
         static void updateCircuit() {
             bool didAnalyze = mAnalyzeFlag;
             if (mAnalyzeFlag) {
-                Circuit.ElmList = new List<BaseElement>();
+                Circuit.ClearElm();
                 foreach (var ui in UIList) {
-                    Circuit.ElmList.Add(ui.Elm);
+                    Circuit.AddElm(ui.Elm);
                 }
                 Circuit.AnalyzeCircuit();
                 mAnalyzeFlag = false;
