@@ -8,13 +8,12 @@ using Circuit.Elements.Input;
 using Circuit.Elements.Output;
 
 namespace Circuit {
-    class CircuitNodeLink {
-        public int Num;
-        public BaseElement Elm;
-    }
-
     class CircuitNode {
-        public List<CircuitNodeLink> Links = new List<CircuitNodeLink>();
+        public struct LINK {
+            public int Num;
+            public BaseElement Elm;
+        }
+        public List<LINK> Links = new List<LINK>();
         public bool Internal;
     }
 
@@ -149,23 +148,23 @@ namespace Circuit {
         }
     }
 
-    class RowInfo {
-        public bool IsConst;
-        public bool RightChanges; /* row's right side changes */
-        public bool LeftChanges;  /* row's left side changes */
-        public bool DropRow;      /* row is not needed in matrix */
-        public int MapCol;
-        public int MapRow;
-        public double Value;
-    }
-
     static class Circuit {
+        public class ROW_INFO {
+            public bool IsConst;
+            public bool RightChanges; /* row's right side changes */
+            public bool LeftChanges;  /* row's left side changes */
+            public bool DropRow;      /* row is not needed in matrix */
+            public int MapCol;
+            public int MapRow;
+            public double Value;
+        }
+
         const int SubIterMax = 100;
         const bool DEBUG = false;
 
         public static double[,] Matrix;
         public static double[] RightSide;
-        public static RowInfo[] RowInfo;
+        public static ROW_INFO[] RowInfo;
         public static List<CircuitNode> Nodes;
 
         #region private varidate
@@ -692,7 +691,7 @@ namespace Circuit {
                         /* the code below to connect unconnected nodes may connect a different node to ground) */
                         if (!ccln || cln.Node == -1) {
                             var cn = new CircuitNode();
-                            var cnl = new CircuitNodeLink();
+                            var cnl = new CircuitNode.LINK();
                             cnl.Num = j;
                             cnl.Elm = ce;
                             cn.Links.Add(cnl);
@@ -705,7 +704,7 @@ namespace Circuit {
                             Nodes.Add(cn);
                         } else {
                             int n = cln.Node;
-                            var cnl = new CircuitNodeLink();
+                            var cnl = new CircuitNode.LINK();
                             cnl.Num = j;
                             cnl.Elm = ce;
                             getCircuitNode(n).Links.Add(cnl);
@@ -720,7 +719,7 @@ namespace Circuit {
                     for (int j = 0; j < inodes; j++) {
                         var cn = new CircuitNode();
                         cn.Internal = true;
-                        var cnl = new CircuitNodeLink();
+                        var cnl = new CircuitNode.LINK();
                         cnl.Num = j + posts;
                         cnl.Elm = ce;
                         cn.Links.Add(cnl);
@@ -752,9 +751,9 @@ namespace Circuit {
             int matrixSize = Nodes.Count - 1 + vscount;
             Matrix = new double[matrixSize, matrixSize];
             RightSide = new double[matrixSize];
-            RowInfo = new RowInfo[matrixSize];
+            RowInfo = new ROW_INFO[matrixSize];
             for (int i = 0; i < matrixSize; i++) {
-                RowInfo[i] = new RowInfo();
+                RowInfo[i] = new ROW_INFO();
             }
             mMatrixSize = mMatrixFullSize = matrixSize;
             mOrigMatrix = new double[matrixSize, matrixSize];

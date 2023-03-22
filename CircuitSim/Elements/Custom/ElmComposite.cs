@@ -82,7 +82,7 @@ namespace Circuit.Elements.Custom {
 
         /* is n1 connected to ground somehow? */
         public override bool AnaHasGroundConnection(int n1) {
-            List<CircuitNodeLink> cnLinks;
+            List<CircuitNode.LINK> cnLinks;
             cnLinks = mCompNodeList[n1].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
                 if (cnLinks[i].Elm.AnaHasGroundConnection(cnLinks[i].Num)) {
@@ -169,7 +169,7 @@ namespace Circuit.Elements.Custom {
             var compNodeHash = new Dictionary<int, CircuitNode>();
             var modelLinet = new StringTokenizer(model, "\r");
             CircuitNode cn;
-            CircuitNodeLink cnLink;
+            CircuitNode.LINK cnLink;
             VoltageSourceRecord vsRecord;
 
             CompElmList = new List<BaseUI>();
@@ -198,7 +198,7 @@ namespace Circuit.Elements.Custom {
                 int thisPost = 0;
                 while (stModel.HasMoreTokens) {
                     int nodeOfThisPost = stModel.nextTokenInt();
-                    cnLink = new CircuitNodeLink();
+                    cnLink = new CircuitNode.LINK();
                     cnLink.Num = thisPost;
                     cnLink.Elm = newce.Elm;
                     if (!compNodeHash.ContainsKey(nodeOfThisPost)) {
@@ -235,7 +235,7 @@ namespace Circuit.Elements.Custom {
                 var cee = ce.Elm;
                 int inodes = cee.AnaInternalNodeCount;
                 for (int j = 0; j != inodes; j++) {
-                    cnLink = new CircuitNodeLink();
+                    cnLink = new CircuitNode.LINK();
                     cnLink.Num = j + cee.PostCount;
                     cnLink.Elm = cee;
                     cn = new CircuitNode();
