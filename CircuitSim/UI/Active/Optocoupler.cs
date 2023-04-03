@@ -42,8 +42,8 @@ namespace Circuit.UI.Active {
 
             // adapted from ChipElm
             int hs = ce.mCspc;
-            int x0 = DumpInfo.P1X + ce.mCspc;
-            int y0 = DumpInfo.P1Y;
+            int x0 = DumpInfo.P1.X + ce.mCspc;
+            int y0 = DumpInfo.P1.Y;
             var r = new Point(x0 - ce.mCspc, y0 - ce.mCspc / 2);
             int sizeX = 2;
             int sizeY = 2;

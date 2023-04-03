@@ -435,11 +435,11 @@ namespace Circuit.UI {
             var textSize = Context.GetTextSize(s);
             int xc, yc;
             if (this is Rail || this is Sweep) {
-                xc = DumpInfo.P2X;
-                yc = DumpInfo.P2Y;
+                xc = DumpInfo.P2.X;
+                yc = DumpInfo.P2.Y;
             } else {
-                xc = (DumpInfo.P2X + DumpInfo.P1X) / 2;
-                yc = (DumpInfo.P2Y + DumpInfo.P1Y) / 2;
+                xc = (DumpInfo.P2.X + DumpInfo.P1.X) / 2;
+                yc = (DumpInfo.P2.Y + DumpInfo.P1.Y) / 2;
             }
             Context.DrawRightText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
         }
@@ -455,11 +455,11 @@ namespace Circuit.UI {
             var textSize = Context.GetTextSize(s);
             int xc, yc;
             if (this is Rail) {
-                xc = DumpInfo.P2X;
-                yc = DumpInfo.P2Y;
+                xc = DumpInfo.P2.X;
+                yc = DumpInfo.P2.Y;
             } else {
-                xc = (DumpInfo.P2X + DumpInfo.P1X) / 2;
-                yc = (DumpInfo.P2Y + DumpInfo.P1Y) / 2;
+                xc = (DumpInfo.P2.X + DumpInfo.P1.X) / 2;
+                yc = (DumpInfo.P2.Y + DumpInfo.P1.Y) / 2;
             }
             Context.DrawLeftText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
         }
@@ -528,9 +528,9 @@ namespace Circuit.UI {
 
         #region [public method]
         public void DrawHandles(CustomGraphics g) {
-            g.DrawHandle(DumpInfo.P1X, DumpInfo.P1Y);
+            g.DrawHandle(DumpInfo.P1);
             if (2 <= NumHandles) {
-                g.DrawHandle(DumpInfo.P2X, DumpInfo.P2Y);
+                g.DrawHandle(DumpInfo.P2);
             }
         }
 
@@ -568,16 +568,16 @@ namespace Circuit.UI {
         /// <param name="dy"></param>
         /// <returns></returns>
         public bool AllowMove(int dx, int dy) {
-            int nx = DumpInfo.P1X + dx;
-            int ny = DumpInfo.P1Y + dy;
-            int nx2 = DumpInfo.P2X + dx;
-            int ny2 = DumpInfo.P2Y + dy;
+            int nx = DumpInfo.P1.X + dx;
+            int ny = DumpInfo.P1.Y + dy;
+            int nx2 = DumpInfo.P2.X + dx;
+            int ny2 = DumpInfo.P2.Y + dy;
             for (int i = 0; i != CirSimForm.UICount; i++) {
                 var ce = CirSimForm.GetUI(i);
-                var ceP1X = ce.DumpInfo.P1X;
-                var ceP1Y = ce.DumpInfo.P1Y;
-                var ceP2X = ce.DumpInfo.P2X;
-                var ceP2Y = ce.DumpInfo.P2Y;
+                var ceP1X = ce.DumpInfo.P1.X;
+                var ceP1Y = ce.DumpInfo.P1.Y;
+                var ceP2X = ce.DumpInfo.P2.X;
+                var ceP2Y = ce.DumpInfo.P2.Y;
                 if (ceP1X == nx && ceP1Y == ny && ceP2X == nx2 && ceP2Y == ny2) {
                     return false;
                 }
@@ -594,13 +594,13 @@ namespace Circuit.UI {
 
         public int GetHandleGrabbedClose(int xtest, int ytest, int deltaSq, int minSize) {
             mLastHandleGrabbed = -1;
-            var x12 = DumpInfo.P2X - DumpInfo.P1X;
-            var y12 = DumpInfo.P2Y - DumpInfo.P1Y;
+            var x12 = DumpInfo.P2.X - DumpInfo.P1.X;
+            var y12 = DumpInfo.P2.Y - DumpInfo.P1.Y;
             if (Math.Sqrt(x12 * x12 + y12 * y12) >= minSize) {
-                var x1t = xtest - DumpInfo.P1X;
-                var y1t = ytest - DumpInfo.P1Y;
-                var x2t = xtest - DumpInfo.P2X;
-                var y2t = ytest - DumpInfo.P2Y;
+                var x1t = xtest - DumpInfo.P1.X;
+                var y1t = ytest - DumpInfo.P1.Y;
+                var x2t = xtest - DumpInfo.P2.X;
+                var y2t = ytest - DumpInfo.P2.Y;
                 if (Math.Sqrt(x1t * x1t + y1t * y1t) <= deltaSq) {
                     mLastHandleGrabbed = 0;
                 } else if (Math.Sqrt(x2t * x2t + y2t * y2t) <= deltaSq) {
@@ -612,13 +612,13 @@ namespace Circuit.UI {
 
         public int GetHandleGrabbedClose(Point testp, int deltaSq, int minSize) {
             mLastHandleGrabbed = -1;
-            var x12 = DumpInfo.P2X - DumpInfo.P1X;
-            var y12 = DumpInfo.P2Y - DumpInfo.P1Y;
+            var x12 = DumpInfo.P2.X - DumpInfo.P1.X;
+            var y12 = DumpInfo.P2.Y - DumpInfo.P1.Y;
             if (Math.Sqrt(x12 * x12 + y12 * y12) >= minSize) {
-                var x1t = testp.X - DumpInfo.P1X;
-                var y1t = testp.Y - DumpInfo.P1Y;
-                var x2t = testp.X - DumpInfo.P2X;
-                var y2t = testp.Y - DumpInfo.P2Y;
+                var x1t = testp.X - DumpInfo.P1.X;
+                var y1t = testp.Y - DumpInfo.P1.Y;
+                var x2t = testp.X - DumpInfo.P2.X;
+                var y2t = testp.Y - DumpInfo.P2.Y;
                 if (Math.Sqrt(x1t * x1t + y1t * y1t) <= deltaSq) {
                     mLastHandleGrabbed = 0;
                 } else if (Math.Sqrt(x2t * x2t + y2t * y2t) <= deltaSq) {
@@ -667,12 +667,12 @@ namespace Circuit.UI {
         /// Called when element is moved
         /// </summary>
         public virtual void SetPoints() {
-            mDiff.X = DumpInfo.P2X - DumpInfo.P1X;
-            mDiff.Y = DumpInfo.P2Y - DumpInfo.P1Y;
+            mDiff.X = DumpInfo.P2.X - DumpInfo.P1.X;
+            mDiff.Y = DumpInfo.P2.Y - DumpInfo.P1.Y;
             mLen = Math.Sqrt(mDiff.X * mDiff.X + mDiff.Y * mDiff.Y);
             mDsign = (mDiff.Y == 0) ? Math.Sign(mDiff.X) : Math.Sign(mDiff.Y);
-            var sx = DumpInfo.P2X - DumpInfo.P1X;
-            var sy = DumpInfo.P2Y - DumpInfo.P1Y;
+            var sx = DumpInfo.P2.X - DumpInfo.P1.X;
+            var sy = DumpInfo.P2.Y - DumpInfo.P1.Y;
             var r = (float)Math.Sqrt(sx * sx + sy * sy);
             if (r == 0) {
                 mDir.X = 0;
@@ -681,12 +681,12 @@ namespace Circuit.UI {
                 mDir.X = sy / r;
                 mDir.Y = -sx / r;
             }
-            mVertical = DumpInfo.P1X == DumpInfo.P2X;
-            mHorizontal = DumpInfo.P1Y == DumpInfo.P2Y;
-            Elm.Post[0].X = DumpInfo.P1X;
-            Elm.Post[0].Y = DumpInfo.P1Y;
-            Elm.Post[1].X = DumpInfo.P2X;
-            Elm.Post[1].Y = DumpInfo.P2Y;
+            mVertical = DumpInfo.P1.X == DumpInfo.P2.X;
+            mHorizontal = DumpInfo.P1.Y == DumpInfo.P2.Y;
+            Elm.Post[0].X = DumpInfo.P1.X;
+            Elm.Post[0].Y = DumpInfo.P1.Y;
+            Elm.Post[1].X = DumpInfo.P2.X;
+            Elm.Post[1].Y = DumpInfo.P2.Y;
         }
 
         public virtual void SetMouseElm(bool v) {

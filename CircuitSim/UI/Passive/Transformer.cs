@@ -56,10 +56,10 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             var ce = (ElmTransformer)Elm;
-            var width = Math.Max(BODY_LEN, Math.Abs(DumpInfo.P2X - DumpInfo.P1X));
-            var height = Math.Max(BODY_LEN, Math.Abs(DumpInfo.P2Y - DumpInfo.P1Y));
-            if (DumpInfo.P2X == DumpInfo.P1X) {
-                DumpInfo.SetP2(DumpInfo.P2X, DumpInfo.P1Y);
+            var width = Math.Max(BODY_LEN, Math.Abs(DumpInfo.P2.X - DumpInfo.P1.X));
+            var height = Math.Max(BODY_LEN, Math.Abs(DumpInfo.P2.Y - DumpInfo.P1.Y));
+            if (DumpInfo.P2.X == DumpInfo.P1.X) {
+                DumpInfo.SetP2(DumpInfo.P2.X, DumpInfo.P1.Y);
             }
             base.SetPoints();
             ce.Post[1].Y = ce.Post[0].Y;

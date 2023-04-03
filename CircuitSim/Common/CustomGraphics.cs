@@ -140,21 +140,21 @@ namespace Circuit {
             mG.DrawString(s, mTextFont, mTextBrush, x, y, mAlignCenterV);
         }
 
-        public virtual void DrawPost(float x, float y) {
-            mG.FillPie(mPenPost.Brush, x - mPenPost.Width / 2, y - mPenPost.Width / 2, mPenPost.Width, mPenPost.Width, 0, 360);
-        }
-
         public virtual void DrawPost(PointF p) {
-            DrawPost(p.X, p.Y);
-        }
-
-        public virtual void DrawHandle(int x, int y) {
-            var radius = 4;
-            mG.FillPie(mPenHandle, x - radius, y - radius, radius * 2, radius * 2, 0, 360);
+            mG.FillPie(mPenPost.Brush,
+                p.X - mPenPost.Width / 2, p.Y - mPenPost.Width / 2,
+                mPenPost.Width, mPenPost.Width,
+                0, 360
+            );
         }
 
         public virtual void DrawHandle(Point p) {
-            DrawHandle(p.X, p.Y);
+            var radius = 4;
+            mG.FillPie(mPenHandle,
+                p.X - radius, p.Y - radius,
+                radius * 2, radius * 2,
+                0, 360
+            );
         }
 
         public virtual void DrawLine(float ax, float ay, float bx, float by) {

@@ -348,7 +348,7 @@ namespace Circuit {
             }
 
             if (item == ELEMENT_MENU_ITEM.VIEW_IN_FLOAT_SCOPE && mMenuElm != null) {
-                var newScope = new Scope(SnapGrid(mMenuElm.DumpInfo.P1X + 50, mMenuElm.DumpInfo.P1Y + 50));
+                var newScope = new Scope(SnapGrid(mMenuElm.DumpInfo.P1.X + 50, mMenuElm.DumpInfo.P1.Y + 50));
                 UIList.Add(newScope);
                 newScope.SetScopeElm(mMenuElm);
             }
@@ -386,7 +386,7 @@ namespace Circuit {
             }
 
             if (item == SCOPE_MENU_ITEM.UNDOCK && 0 <= mMenuScope) {
-                var newScope = new Scope(SnapGrid(mMenuElm.DumpInfo.P1X + 50, mMenuElm.DumpInfo.P1Y + 50));
+                var newScope = new Scope(SnapGrid(mMenuElm.DumpInfo.P1.X + 50, mMenuElm.DumpInfo.P1.Y + 50));
                 UIList.Add(newScope);
                 newScope.SetElmScope(Scope.Property.List[mMenuScope]);
                 /* remove scope from list.  setupScopes() will fix the positions */
@@ -1006,11 +1006,11 @@ namespace Circuit {
                 /* centered text causes problems when trying to center the circuit, */
                 /* so we special-case it here */
                 if (!ce.IsCenteredText) {
-                    minx = Math.Min(ce.DumpInfo.P1X, Math.Min(ce.DumpInfo.P2X, minx));
-                    maxx = Math.Max(ce.DumpInfo.P1X, Math.Max(ce.DumpInfo.P2X, maxx));
+                    minx = Math.Min(ce.DumpInfo.P1.X, Math.Min(ce.DumpInfo.P2.X, minx));
+                    maxx = Math.Max(ce.DumpInfo.P1.X, Math.Max(ce.DumpInfo.P2.X, maxx));
                 }
-                miny = Math.Min(ce.DumpInfo.P1Y, Math.Min(ce.DumpInfo.P2Y, miny));
-                maxy = Math.Max(ce.DumpInfo.P1Y, Math.Max(ce.DumpInfo.P2Y, maxy));
+                miny = Math.Min(ce.DumpInfo.P1.Y, Math.Min(ce.DumpInfo.P2.Y, miny));
+                maxy = Math.Max(ce.DumpInfo.P1.Y, Math.Max(ce.DumpInfo.P2.Y, maxy));
             }
             if (minx > maxx) {
                 return new Rectangle();
@@ -1412,10 +1412,10 @@ namespace Circuit {
             }
             for (int i = 0; i != UICount; i++) {
                 var ce = GetUI(i);
-                if (ce.DumpInfo.P1Y == Mouse.DragGrid.Y) {
+                if (ce.DumpInfo.P1.Y == Mouse.DragGrid.Y) {
                     ce.MovePoint(0, 0, dy);
                 }
-                if (ce.DumpInfo.P2Y == Mouse.DragGrid.Y) {
+                if (ce.DumpInfo.P2.Y == Mouse.DragGrid.Y) {
                     ce.MovePoint(1, 0, dy);
                 }
             }
@@ -1429,10 +1429,10 @@ namespace Circuit {
             }
             for (int i = 0; i != UICount; i++) {
                 var ce = GetUI(i);
-                if (ce.DumpInfo.P1X == Mouse.DragGrid.X) {
+                if (ce.DumpInfo.P1.X == Mouse.DragGrid.X) {
                     ce.MovePoint(0, dx, 0);
                 }
-                if (ce.DumpInfo.P1X == Mouse.DragGrid.X) {
+                if (ce.DumpInfo.P1.X == Mouse.DragGrid.X) {
                     ce.MovePoint(1, dx, 0);
                 }
             }
@@ -1485,8 +1485,8 @@ namespace Circuit {
         void dragPost(Point pos) {
             if (Mouse.DraggingPost == -1) {
                 Mouse.DraggingPost
-                    = (Utils.Distance(Mouse.GripElm.DumpInfo.P1X, Mouse.GripElm.DumpInfo.P1Y, pos.X, pos.Y)
-                    > Utils.Distance(Mouse.GripElm.DumpInfo.P2X, Mouse.GripElm.DumpInfo.P2Y, pos.X, pos.Y))
+                    = (Utils.Distance(Mouse.GripElm.DumpInfo.P1.X, Mouse.GripElm.DumpInfo.P1.Y, pos.X, pos.Y)
+                    > Utils.Distance(Mouse.GripElm.DumpInfo.P2.X, Mouse.GripElm.DumpInfo.P2.Y, pos.X, pos.Y))
                     ? 1 : 0;
             }
             int dx = pos.X - Mouse.DragGrid.X;
@@ -1521,17 +1521,17 @@ namespace Circuit {
             if (ce == null || !(ce is Wire)) {
                 return;
             }
-            if (ce.DumpInfo.P1X == ce.DumpInfo.P2X) {
-                pos.X = ce.DumpInfo.P1X;
+            if (ce.DumpInfo.P1.X == ce.DumpInfo.P2.X) {
+                pos.X = ce.DumpInfo.P1.X;
             } else {
-                pos.Y = ce.DumpInfo.P1Y;
+                pos.Y = ce.DumpInfo.P1.Y;
             }
             /* don't create zero-length wire */
-            if (pos.X == ce.DumpInfo.P1X && pos.Y == ce.DumpInfo.P1Y || pos.X == ce.DumpInfo.P2X && pos.Y == ce.DumpInfo.P2Y) {
+            if (pos.X == ce.DumpInfo.P1.X && pos.Y == ce.DumpInfo.P1.Y || pos.X == ce.DumpInfo.P2.X && pos.Y == ce.DumpInfo.P2.Y) {
                 return;
             }
             var newWire = new Wire(pos);
-            newWire.Drag(new Point(ce.DumpInfo.P2X, ce.DumpInfo.P2Y));
+            newWire.Drag(new Point(ce.DumpInfo.P2.X, ce.DumpInfo.P2.Y));
             ce.Drag(pos);
             UIList.Add(newWire);
             NeedAnalyze();
@@ -1564,7 +1564,7 @@ namespace Circuit {
         void removeZeroLengthElements() {
             for (int i = UICount - 1; i >= 0; i--) {
                 var ce = GetUI(i);
-                if (ce.DumpInfo.P1X == ce.DumpInfo.P2X && ce.DumpInfo.P1Y == ce.DumpInfo.P2Y) {
+                if (ce.DumpInfo.P1.X == ce.DumpInfo.P2.X && ce.DumpInfo.P1.Y == ce.DumpInfo.P2.Y) {
                     UIList.RemoveAt(i);
                     /*Console.WriteLine("delete element: {0} {1}\t{2} {3}\t{4}", ce.GetType(), ce.x1, ce.y1, ce.x2, ce.y2); */
                     ce.Delete();
@@ -2153,11 +2153,11 @@ namespace Circuit {
                     || Mouse.TempMode == MOUSE_MODE.DRAG_SELECTED) {
                     for (int i = 0; i != UICount; i++) {
                         var ce = GetUI(i);
-                        g.DrawPost(ce.DumpInfo.P1X, ce.DumpInfo.P1Y);
-                        g.DrawPost(ce.DumpInfo.P2X, ce.DumpInfo.P2Y);
+                        g.DrawPost(ce.DumpInfo.P1);
+                        g.DrawPost(ce.DumpInfo.P2);
                         if (ce != Mouse.GripElm || Mouse.TempMode != MOUSE_MODE.DRAG_POST) {
-                            g.DrawHandle(ce.DumpInfo.P1X, ce.DumpInfo.P1Y);
-                            g.DrawHandle(ce.DumpInfo.P2X, ce.DumpInfo.P2Y);
+                            g.DrawHandle(ce.DumpInfo.P1);
+                            g.DrawHandle(ce.DumpInfo.P2);
                         } else {
                             ce.DrawHandles(g);
                         }
@@ -2170,7 +2170,7 @@ namespace Circuit {
                 }
 
                 /* draw handles for elm we're dragging */
-                if (DragElm != null && (DragElm.DumpInfo.P1X != DragElm.DumpInfo.P2X || DragElm.DumpInfo.P1Y != DragElm.DumpInfo.P2Y)) {
+                if (DragElm != null && (DragElm.DumpInfo.P1.X != DragElm.DumpInfo.P2.X || DragElm.DumpInfo.P1.Y != DragElm.DumpInfo.P2.Y)) {
                     DragElm.Draw(g);
                     DragElm.DrawHandles(g);
                 }

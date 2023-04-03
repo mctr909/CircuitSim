@@ -30,7 +30,7 @@ namespace Circuit.UI.Output {
             }
             drawLeadA();
             if (mustShowVoltage()) {
-                drawCenteredText(drawValues(), DumpInfo.P2X, DumpInfo.P2Y, true);
+                drawCenteredText(drawValues(), DumpInfo.P2.X, DumpInfo.P2.Y, true);
             }
         }
     }

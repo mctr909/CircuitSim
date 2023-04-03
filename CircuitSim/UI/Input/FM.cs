@@ -40,7 +40,7 @@ namespace Circuit.UI.Input {
             drawLeadA();
 
             string s = "FM";
-            drawCenteredText(s, DumpInfo.P2X, DumpInfo.P2Y, true);
+            drawCenteredText(s, DumpInfo.P2.X, DumpInfo.P2.Y, true);
             drawWaveform(g, Elm.Post[1]);
             drawPosts();
             CurCount = updateDotCount(-ce.Current, CurCount);

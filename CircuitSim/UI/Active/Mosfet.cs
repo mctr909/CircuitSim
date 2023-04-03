@@ -201,7 +201,7 @@ namespace Circuit.UI.Active {
 
             if ((DumpInfo.Flags & FLAG_SHOWVT) != 0) {
                 string s = "" + (ce.Vt * ce.Pnp);
-                drawCenteredLText(s, DumpInfo.P2X, DumpInfo.P2Y, false);
+                drawCenteredLText(s, DumpInfo.P2.X, DumpInfo.P2.Y, false);
             }
             CurCount = updateDotCount(-ce.Current, CurCount);
             drawDots(ce.Src[0], ce.Src[1], CurCount);

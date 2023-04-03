@@ -12,7 +12,7 @@ namespace Circuit.UI.Output {
 
         public Scope(Point pos) : base(pos) {
             mNoDiagonal = false;
-            DumpInfo.SetP2(DumpInfo.P1X + 128, DumpInfo.P1Y + 64);
+            DumpInfo.SetP2(DumpInfo.P1.X + 128, DumpInfo.P1.Y + 64);
             Properties = new Property();
             Elm = new ElmScope(Properties);
             SetPoints();
@@ -45,10 +45,10 @@ namespace Circuit.UI.Output {
         }
 
         public void SetScopeRect() {
-            int i1 = CirSimForm.TransformX(Math.Min(DumpInfo.P1X, DumpInfo.P2X));
-            int i2 = CirSimForm.TransformX(Math.Max(DumpInfo.P1X, DumpInfo.P2X));
-            int j1 = CirSimForm.TransformY(Math.Min(DumpInfo.P1Y, DumpInfo.P2Y));
-            int j2 = CirSimForm.TransformY(Math.Max(DumpInfo.P1Y, DumpInfo.P2Y));
+            int i1 = CirSimForm.TransformX(Math.Min(DumpInfo.P1.X, DumpInfo.P2.X));
+            int i2 = CirSimForm.TransformX(Math.Max(DumpInfo.P1.X, DumpInfo.P2.X));
+            int j1 = CirSimForm.TransformY(Math.Min(DumpInfo.P1.Y, DumpInfo.P2.Y));
+            int j2 = CirSimForm.TransformY(Math.Max(DumpInfo.P1.Y, DumpInfo.P2.Y));
             var r = new Rectangle(i1, j1, i2 - i1, j2 - j1);
             if (!r.Equals(Properties.BoundingBox)) {
                 Properties.SetRect(r);

@@ -4,70 +4,68 @@ using System.Drawing;
 
 namespace Circuit.UI {
     public class DumpInfo {
-        public int P1X;
-        public int P1Y;
-        public int P2X;
-        public int P2Y;
+        public Point P1;
+        public Point P2;
         public int Flags;
         public string ReferenceName;
         public Rectangle BoundingBox;
 
         public bool IsCreationFailed {
-            get { return P1X == P2X && P1Y == P2Y; }
+            get { return P1.X == P2.X && P1.Y == P2.Y; }
         }
 
         public bool BoxIsCreationFailed {
-            get { return Math.Abs(P2X - P1X) < 32 || Math.Abs(P2Y - P1Y) < 32; }
+            get { return Math.Abs(P2.X - P1.X) < 32 || Math.Abs(P2.Y - P1.Y) < 32; }
         }
 
         public DumpInfo(Point pos, int flags) {
-            P1X = P2X = pos.X;
-            P1Y = P2Y = pos.Y;
+            P1.X = P2.X = pos.X;
+            P1.Y = P2.Y = pos.Y;
             Flags = flags;
             BoundingBox = getBoundingBox();
         }
 
         public DumpInfo(Point p1, Point p2, int flags) {
-            P1X = p1.X;
-            P1Y = p1.Y;
-            P2X = p2.X;
-            P2Y = p2.Y;
+            P1.X = p1.X;
+            P1.Y = p1.Y;
+            P2.X = p2.X;
+            P2.Y = p2.Y;
             Flags = flags;
             BoundingBox = getBoundingBox();
         }
 
         public void FlipPosts() {
-            int oldx = P1X;
-            int oldy = P1Y;
-            P1X = P2X;
-            P1Y = P2Y;
-            P2X = oldx;
-            P2Y = oldy;
+            int oldx = P1.X;
+            int oldy = P1.Y;
+            P1.X = P2.X;
+            P1.Y = P2.Y;
+            P2.X = oldx;
+            P2.Y = oldy;
         }
 
         public void Drag(Point pos, bool noDiagonal) {
             pos = CirSimForm.SnapGrid(pos);
             if (noDiagonal) {
-                if (Math.Abs(P1X - pos.X) < Math.Abs(P1Y - pos.Y)) {
-                    pos.X = P1X;
+                if (Math.Abs(P1.X - pos.X) < Math.Abs(P1.Y - pos.Y)) {
+                    pos.X = P1.X;
                 } else {
-                    pos.Y = P1Y;
+                    pos.Y = P1.Y;
                 }
             }
-            P2X = pos.X;
-            P2Y = pos.Y;
+            P2.X = pos.X;
+            P2.Y = pos.Y;
         }
 
         public void SetPosition(int ax, int ay, int bx, int by) {
-            P1X = ax;
-            P1Y = ay;
-            P2X = bx;
-            P2Y = by;
+            P1.X = ax;
+            P1.Y = ay;
+            P2.X = bx;
+            P2.Y = by;
         }
 
         public void SetP2(int x, int y) {
-            P2X = x;
-            P2Y = y;
+            P2.X = x;
+            P2.Y = y;
         }
 
         public void SetP2(Point pos) {
@@ -75,10 +73,10 @@ namespace Circuit.UI {
         }
 
         public void Move(int dx, int dy) {
-            P1X += dx;
-            P1Y += dy;
-            P2X += dx;
-            P2Y += dy;
+            P1.X += dx;
+            P1.Y += dy;
+            P2.X += dx;
+            P2.Y += dy;
             BoundingBox.X += dx;
             BoundingBox.Y += dy;
         }
@@ -86,22 +84,22 @@ namespace Circuit.UI {
         public void MovePoint(int n, int dx, int dy) {
             /* modified by IES to prevent the user dragging points to create zero sized nodes
             /* that then render improperly */
-            int oldx = P1X;
-            int oldy = P1Y;
-            int oldx2 = P2X;
-            int oldy2 = P2Y;
+            int oldx = P1.X;
+            int oldy = P1.Y;
+            int oldx2 = P2.X;
+            int oldy2 = P2.Y;
             if (n == 0) {
-                P1X += dx;
-                P1Y += dy;
+                P1.X += dx;
+                P1.Y += dy;
             } else {
-                P2X += dx;
-                P2Y += dy;
+                P2.X += dx;
+                P2.Y += dy;
             }
-            if (P1X == P2X && P1Y == P2Y) {
-                P1X = oldx;
-                P1Y = oldy;
-                P2X = oldx2;
-                P2Y = oldy2;
+            if (P1.X == P2.X && P1.Y == P2.Y) {
+                P1.X = oldx;
+                P1.Y = oldy;
+                P2.X = oldx2;
+                P2.Y = oldy2;
             }
         }
 
@@ -140,30 +138,30 @@ namespace Circuit.UI {
         }
 
         public double Distance(double x, double y) {
-            return Utils.DistanceOnLine(P1X, P1Y, P2X, P2Y, x, y);
+            return Utils.DistanceOnLine(P1.X, P1.Y, P2.X, P2.Y, x, y);
         }
 
         public double BoxDistance(double x, double y) {
             return Math.Min(
-                Utils.DistanceOnLine(P1X, P1Y, P2X, P1Y, x, y), Math.Min(
-                Utils.DistanceOnLine(P2X, P1Y, P2X, P2Y, x, y), Math.Min(
-                Utils.DistanceOnLine(P2X, P2Y, P1X, P2Y, x, y),
-                Utils.DistanceOnLine(P1X, P2Y, P1X, P1Y, x, y)
+                Utils.DistanceOnLine(P1.X, P1.Y, P2.X, P1.Y, x, y), Math.Min(
+                Utils.DistanceOnLine(P2.X, P1.Y, P2.X, P2.Y, x, y), Math.Min(
+                Utils.DistanceOnLine(P2.X, P2.Y, P1.X, P2.Y, x, y),
+                Utils.DistanceOnLine(P1.X, P2.Y, P1.X, P1.Y, x, y)
             )));
         }
 
         public double BoxDistance(Rectangle box, double x, double y) {
             return box.Contains((int)x, (int)y) ? 0 : Math.Min(
-                Utils.DistanceOnLine(P1X, P1Y, P2X, P1Y, x, y), Math.Min(
-                Utils.DistanceOnLine(P2X, P1Y, P2X, P2Y, x, y), Math.Min(
-                Utils.DistanceOnLine(P2X, P2Y, P1X, P2Y, x, y),
-                Utils.DistanceOnLine(P1X, P2Y, P1X, P1Y, x, y)
+                Utils.DistanceOnLine(P1.X, P1.Y, P2.X, P1.Y, x, y), Math.Min(
+                Utils.DistanceOnLine(P2.X, P1.Y, P2.X, P2.Y, x, y), Math.Min(
+                Utils.DistanceOnLine(P2.X, P2.Y, P1.X, P2.Y, x, y),
+                Utils.DistanceOnLine(P1.X, P2.Y, P1.X, P1.Y, x, y)
             )));
         }
 
         public string GetValue(DUMP_ID type, List<object> optionList) {
             var separator = " ";
-            var ret = string.Join(separator, type, P1X, P1Y, P2X, P2Y, Flags);
+            var ret = string.Join(separator, type, P1.X, P1.Y, P2.X, P2.Y, Flags);
             if (0 < optionList.Count) {
                 ret += separator + string.Join(separator, optionList.ToArray());
             }
@@ -175,8 +173,8 @@ namespace Circuit.UI {
 
         Rectangle getBoundingBox() {
             return new Rectangle(
-                Math.Min(P1X, P2X), Math.Min(P1Y, P2Y),
-                Math.Abs(P2X - P1X) + 1, Math.Abs(P2Y - P1Y) + 1
+                Math.Min(P1.X, P2.X), Math.Min(P1.Y, P2.Y),
+                Math.Abs(P2.X - P1.X) + 1, Math.Abs(P2.Y - P1.Y) + 1
             );
         }
     }

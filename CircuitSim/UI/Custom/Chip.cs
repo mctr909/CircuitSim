@@ -206,12 +206,12 @@ namespace Circuit.UI.Custom {
 
         public override void Drag(Point pos) {
             pos = CirSimForm.SnapGrid(pos);
-            if (pos.X < DumpInfo.P1X) {
-                pos.X = DumpInfo.P1X;
-                pos.Y = DumpInfo.P1Y;
+            if (pos.X < DumpInfo.P1.X) {
+                pos.X = DumpInfo.P1.X;
+                pos.Y = DumpInfo.P1.Y;
             } else {
                 DumpInfo.SetPosition(
-                    DumpInfo.P1X, pos.Y,
+                    DumpInfo.P1.X, pos.Y,
                     CirSimForm.SnapGrid(pos.X), pos.Y
                 );
             }
@@ -222,8 +222,8 @@ namespace Circuit.UI.Custom {
             var ce = (ElmChip)Elm;
             clockPoints = null;
             int hs = cspc;
-            int x0 = DumpInfo.P1X + cspc2;
-            int y0 = DumpInfo.P1Y;
+            int x0 = DumpInfo.P1.X + cspc2;
+            int y0 = DumpInfo.P1.Y;
             var r = new Point(x0 - cspc, y0 - cspc);
             int xs = sizeX * cspc2;
             int ys = sizeY * cspc2;
@@ -256,8 +256,8 @@ namespace Circuit.UI.Custom {
         /* see if we can move pin to position xp, yp, and return the new position */
         public bool getPinPos(int xp, int yp, int pin, int[] pos) {
             var ce = (ElmChip)Elm;
-            int x0 = DumpInfo.P1X + cspc2;
-            int y0 = DumpInfo.P1Y;
+            int x0 = DumpInfo.P1.X + cspc2;
+            int y0 = DumpInfo.P1.Y;
             int xr = x0 - cspc;
             int yr = y0 - cspc;
             double xd = (xp - xr) / (double)cspc2 - .5;

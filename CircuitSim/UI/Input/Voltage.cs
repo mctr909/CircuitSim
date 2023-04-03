@@ -81,7 +81,7 @@ namespace Circuit.UI.Input {
         }
 
         public override void Draw(CustomGraphics g) {
-            DumpInfo.SetBbox(DumpInfo.P1X, DumpInfo.P1Y, DumpInfo.P2X, DumpInfo.P2Y);
+            DumpInfo.SetBbox(DumpInfo.P1.X, DumpInfo.P1.Y, DumpInfo.P2.X, DumpInfo.P2.Y);
             draw2Leads();
             var elm = (ElmVoltage)Elm;
             if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
