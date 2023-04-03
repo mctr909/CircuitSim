@@ -2063,10 +2063,7 @@ namespace Circuit {
                 Circuit.AnalyzeCircuit();
                 mAnalyzeFlag = false;
             }
-            // Todo: SetMouseElm
-            //if (null != Mouse.GripElm && null != Circuit.StopElm && Circuit.StopElm != Mouse.GripElm.Elm) {
-            //    Circuit.StopElm.MouseElm(true);
-            //}
+
             Scope.Property.Setup(BaseUI.Context.Height - mCircuitArea.Height);
 
             var g = BaseUI.Context;
@@ -2120,15 +2117,17 @@ namespace Circuit {
 
             g.ScrollBoard(mOfs);
             {
-                var pdfX0 = 0;
-                var pdfX1 = (int)PDF.Page.Width * 2;
-                var pdfY0 = 0;
-                var pdfY1 = (int)PDF.Page.Height * 2;
-                g.DrawColor = Color.Yellow;
-                g.DrawLine(pdfX0, pdfY0, pdfX1, pdfY0);
-                g.DrawLine(pdfX1, pdfY0, pdfX1, pdfY1);
-                g.DrawLine(pdfX1, pdfY1, pdfX0, pdfY1);
-                g.DrawLine(pdfX0, pdfY1, pdfX0, pdfY0);
+                if (null == pdfG) {
+                    var pdfX0 = 0;
+                    var pdfX1 = (int)PDF.Page.Width * 2;
+                    var pdfY0 = 0;
+                    var pdfY1 = (int)PDF.Page.Height * 2;
+                    g.DrawColor = Color.Yellow;
+                    g.DrawLine(pdfX0, pdfY0, pdfX1, pdfY0);
+                    g.DrawLine(pdfX1, pdfY0, pdfX1, pdfY1);
+                    g.DrawLine(pdfX1, pdfY1, pdfX0, pdfY1);
+                    g.DrawLine(pdfX0, pdfY1, pdfX0, pdfY0);
+                }
 
                 /* draw elements */
                 for (int i = 0; i != UICount; i++) {
@@ -2199,73 +2198,67 @@ namespace Circuit {
             }
             g.ClearTransform();
 
-            Brush bCircuitArea;
-            if (ControlPanel.ChkPrintable.Checked) {
-                bCircuitArea = Brushes.White;
-            } else {
-                bCircuitArea = Brushes.Black;
-            }
-            g.FillRectangle(bCircuitArea, 0, mCircuitArea.Height, mCircuitArea.Width, g.Height - mCircuitArea.Height);
-
-            g.SetPlotBottom(0, mCircuitArea.Height - 2);
-            {
-                g.DrawColor = Mouse.IsOverSplitter ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-                g.DrawLine(0, -2, mCircuitArea.Width, -2);
-                g.DrawLine(0, 0, mCircuitArea.Width, 0);
-            }
-            g.ClearTransform();
-
-            int ct = Scope.Property.Count;
-            if (Circuit.StopMessage != null) {
-                ct = 0;
-            }
-            for (int i = 0; i != ct; i++) {
-                Scope.Property.List[i].Draw(g);
-            }
-
-            if (Circuit.StopMessage != null) {
-                g.DrawLeftText(Circuit.StopMessage, 10, mCircuitArea.Height - 10);
-            } else {
-                var info = new string[10];
-                if (Mouse.GripElm != null) {
-                    if (Mouse.Post == -1) {
-                        Mouse.GripElm.GetInfo(info);
-                    } else {
-                        info[0] = "V = " + Mouse.GripElm.DispPostVoltage(Mouse.Post);
-                    }
-                } else {
-                    info[0] = "t = " + Utils.TimeText(Circuit.Time);
-                    info[1] = "time step = " + Utils.TimeText(ControlPanel.TimeStep);
-                }
-
-                /* count lines of data */
+            if (null == pdfG) {
+                var bScopeArea = ControlPanel.ChkPrintable.Checked ? Brushes.White : Brushes.Black;
+                g.FillRectangle(bScopeArea,
+                    0, mCircuitArea.Height,
+                    mCircuitArea.Width, g.Height - mCircuitArea.Height
+                );
+                g.SetPlotBottom(0, mCircuitArea.Height - 2);
                 {
-                    int infoIdx;
-                    for (infoIdx = 0; infoIdx < info.Length - 1 && info[infoIdx] != null; infoIdx++)
-                        ;
-                    int badnodes = Circuit.BadConnectionList.Count;
-                    if (badnodes > 0) {
-                        info[infoIdx++] = badnodes + ((badnodes == 1) ? " bad connection" : " bad connections");
-                    }
-                }
-
-                int x = 0;
-                if (ct != 0) {
-                    x = Scope.Property.List[ct - 1].RightEdge + 20;
-                }
-                x = Math.Max(x, g.Width * 2 / 3);
-                g.SetPlotBottom(x, mCircuitArea.Height);
-                {
-                    for (int i = 0; i < info.Length && info[i] != null; i++) {
-                        g.DrawLeftText(info[i], 0, 15 * (i + 1));
-                    }
+                    g.DrawColor = Mouse.IsOverSplitter ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+                    g.DrawLine(0, -2, mCircuitArea.Width, -2);
+                    g.DrawLine(0, 0, mCircuitArea.Width, 0);
                 }
                 g.ClearTransform();
-            }
 
-            if (null != Mouse.GripElm && null != Circuit.StopElm && Circuit.StopElm != Mouse.GripElm.Elm) {
-                // Todo: SetMouseElm
-                //mCir.StopElm.SetMouseElm(false);
+                var ct = Scope.Property.Count;
+                if (Circuit.StopMessage != null) {
+                    ct = 0;
+                }
+                for (int i = 0; i != ct; i++) {
+                    Scope.Property.List[i].Draw(g);
+                }
+
+                if (Circuit.StopMessage != null) {
+                    g.DrawLeftText(Circuit.StopMessage, 10, mCircuitArea.Height - 10);
+                } else {
+                    var info = new string[10];
+                    if (Mouse.GripElm != null) {
+                        if (Mouse.Post == -1) {
+                            Mouse.GripElm.GetInfo(info);
+                        } else {
+                            info[0] = "V = " + Mouse.GripElm.DispPostVoltage(Mouse.Post);
+                        }
+                    } else {
+                        info[0] = "t = " + Utils.TimeText(Circuit.Time);
+                        info[1] = "time step = " + Utils.TimeText(ControlPanel.TimeStep);
+                    }
+
+                    /* count lines of data */
+                    {
+                        int infoIdx;
+                        for (infoIdx = 0; infoIdx < info.Length - 1 && info[infoIdx] != null; infoIdx++)
+                            ;
+                        int badnodes = Circuit.BadConnectionList.Count;
+                        if (badnodes > 0) {
+                            info[infoIdx++] = badnodes + ((badnodes == 1) ? " bad connection" : " bad connections");
+                        }
+                    }
+
+                    int x = 0;
+                    if (ct != 0) {
+                        x = Scope.Property.List[ct - 1].RightEdge + 20;
+                    }
+                    x = Math.Max(x, g.Width * 2 / 3);
+                    g.SetPlotBottom(x, mCircuitArea.Height);
+                    {
+                        for (int i = 0; i < info.Length && info[i] != null; i++) {
+                            g.DrawLeftText(info[i], 0, 15 * (i + 1));
+                        }
+                    }
+                    g.ClearTransform();
+                }
             }
 
             if (null != mPixCir.Image) {

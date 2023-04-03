@@ -10,8 +10,9 @@ namespace Circuit.Elements.Input {
             SAWTOOTH,
             PULSE,
             PULSE_BOTH,
-            PWM,
+            PWM_MONOPOLE,
             PWM_DIPOLE,
+            PWM_POSITIVE,
             NOISE
         }
 
@@ -110,20 +111,30 @@ namespace Circuit.Elements.Input {
                 } else {
                     return 2 * (cycle - Math.PI) < duty ? (Bias - MaxVoltage) : Bias;
                 }
-            case WAVEFORM.PWM: {
-                var maxwt = 2 * Math.PI * t / (32 * ControlPanel.TimeStep);
+            case WAVEFORM.PWM_MONOPOLE: {
+                var maxwt = 2 * Math.PI * t / (128 * ControlPanel.TimeStep);
                 var cr = triangleFunc(maxwt % (2 * Math.PI)) * 0.5 + 0.5;
                 var sg = DutyCycle * Math.Sin(wt) * 0.5 + 0.5;
                 return Bias + (cr < sg ? MaxVoltage : 0);
             }
             case WAVEFORM.PWM_DIPOLE: {
-                var maxwt = 2 * Math.PI * t / (32 * ControlPanel.TimeStep);
+                var maxwt = 2 * Math.PI * t / (128 * ControlPanel.TimeStep);
                 var cr = triangleFunc(maxwt % (2 * Math.PI)) * 0.5 + 0.5;
                 var sg = DutyCycle * Math.Sin(wt);
                 if (0.0 <= sg) {
                     return Bias + (cr < sg ? MaxVoltage : 0);
                 } else {
                     return Bias - (sg < -cr ? MaxVoltage : 0);
+                }
+            }
+            case WAVEFORM.PWM_POSITIVE: {
+                var maxwt = 2 * Math.PI * t / (128 * ControlPanel.TimeStep);
+                var cr = triangleFunc(maxwt % (2 * Math.PI)) * 0.5 + 0.5;
+                var sg = DutyCycle * Math.Sin(wt);
+                if (0.0 <= sg) {
+                    return Bias + (cr < sg ? MaxVoltage : 0);
+                } else {
+                    return Bias;
                 }
             }
             case WAVEFORM.NOISE:

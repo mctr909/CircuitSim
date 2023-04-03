@@ -249,6 +249,7 @@ namespace Circuit.UI.Input {
             case ElmVoltage.WAVEFORM.TRIANGLE:
             case ElmVoltage.WAVEFORM.NOISE:
             case ElmVoltage.WAVEFORM.PWM_DIPOLE:
+            case ElmVoltage.WAVEFORM.PWM_POSITIVE:
                 arr[0] = elm.WaveForm.ToString(); break;
             }
 
@@ -285,8 +286,9 @@ namespace Circuit.UI.Input {
                     ei.Choice.Items.Add(ElmVoltage.WAVEFORM.SAWTOOTH);
                     ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PULSE);
                     ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PULSE_BOTH);
-                    ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PWM);
+                    ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PWM_MONOPOLE);
                     ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PWM_DIPOLE);
+                    ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PWM_POSITIVE);
                     ei.Choice.Items.Add(ElmVoltage.WAVEFORM.NOISE);
                     ei.Choice.SelectedIndex = (int)elm.WaveForm;
                     return ei;
@@ -316,8 +318,9 @@ namespace Circuit.UI.Input {
                 if (r == 7 && (elm.WaveForm == ElmVoltage.WAVEFORM.PULSE
                     || elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_BOTH
                     || elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE
-                    || elm.WaveForm == ElmVoltage.WAVEFORM.PWM
-                    || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_DIPOLE)) {
+                    || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_MONOPOLE
+                    || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_DIPOLE
+                    || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_POSITIVE)) {
                     return new ElementInfo(VALUE_NAME_DUTY, elm.DutyCycle * 100);
                 }
             }
@@ -392,8 +395,9 @@ namespace Circuit.UI.Input {
                 if (elm.WaveForm == ElmVoltage.WAVEFORM.PULSE
                    || elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_BOTH
                    || elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE
-                   || elm.WaveForm == ElmVoltage.WAVEFORM.PWM
-                   || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_DIPOLE) {
+                   || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_MONOPOLE
+                   || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_DIPOLE
+                   || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_POSITIVE) {
                     if (r == 7) {
                         elm.DutyCycle = ei.Value * .01;
                     }
