@@ -13,7 +13,7 @@ namespace Circuit.UI.Active {
         const int FLAG_BODY_DIODE = 32;
         const int FLAGS_GLOBAL = (FLAG_HIDE_BULK | FLAG_DIGITAL);
 
-        const int HS = 16;
+        const int HS = 10;
 
         const int SEGMENTS = 6;
         const double SEG_F = 1.0 / SEGMENTS;
@@ -77,18 +77,22 @@ namespace Circuit.UI.Active {
             DumpInfo.Flags |= mGlobalFlags;
 
             /* find the coordinates of the various points we need to draw the MOSFET. */
-            int hs2 = HS * mDsign;
+            var hsm = (HS / 8 + 1) * 8;
+            int hs1 = hsm * mDsign;
+            var hs2 = HS * mDsign;
             if ((DumpInfo.Flags & FLAG_FLIP) != 0) {
+                hs1 = -hs1;
                 hs2 = -hs2;
             }
-            ce.Src = new Point[3];
-            ce.Drn = new Point[3];
-            interpPointAB(ref ce.Src[0], ref ce.Drn[0], 1, -hs2);
-            interpPointAB(ref ce.Src[1], ref ce.Drn[1], 1 - 18 / mLen, -hs2);
-            interpPointAB(ref ce.Src[2], ref ce.Drn[2], 1 - 18 / mLen, -hs2 * 4 / 3);
+            ce.Src = new Point[4];
+            ce.Drn = new Point[4];
+            interpPointAB(ref ce.Src[0], ref ce.Drn[0], 1, -hs1);
+            interpPointAB(ref ce.Src[3], ref ce.Drn[3], 1, -hs2);
+            interpPointAB(ref ce.Src[1], ref ce.Drn[1], 1 - 12 / mLen, -hs2);
+            interpPointAB(ref ce.Src[2], ref ce.Drn[2], 1 - 12 / mLen, -hs2 * 4 / 3);
 
             mGate = new Point[3];
-            interpPointAB(ref mGate[0], ref mGate[2], 1 - 24 / mLen, hs2 / 2);
+            interpPointAB(ref mGate[0], ref mGate[2], 1 - 18 / mLen, hs2 / 2);
             Utils.InterpPoint(mGate[0], mGate[2], ref mGate[1], .5);
 
             if (ShowBulk) {
@@ -159,8 +163,10 @@ namespace Circuit.UI.Active {
             var ce = (ElmMosfet)Elm;
 
             /* draw source/drain terminals */
-            drawLead(ce.Src[0], ce.Src[1]);
-            drawLead(ce.Drn[0], ce.Drn[1]);
+            drawLead(ce.Src[1], ce.Src[3]);
+            drawLead(ce.Drn[1], ce.Drn[3]);
+            drawLead(ce.Src[3], ce.Src[0]);
+            drawLead(ce.Drn[3], ce.Drn[0]);
 
             /* draw little extensions of that line */
             drawLead(ce.Src[1], ce.Src[2]);
