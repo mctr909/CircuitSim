@@ -248,7 +248,7 @@ namespace Circuit.UI.Input {
             case ElmVoltage.WAVEFORM.SAWTOOTH:
             case ElmVoltage.WAVEFORM.TRIANGLE:
             case ElmVoltage.WAVEFORM.NOISE:
-            case ElmVoltage.WAVEFORM.PWM_BOTH:
+            case ElmVoltage.WAVEFORM.PWM_DIPOLE:
                 arr[0] = elm.WaveForm.ToString(); break;
             }
 
@@ -286,7 +286,7 @@ namespace Circuit.UI.Input {
                     ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PULSE);
                     ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PULSE_BOTH);
                     ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PWM);
-                    ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PWM_BOTH);
+                    ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PWM_DIPOLE);
                     ei.Choice.Items.Add(ElmVoltage.WAVEFORM.NOISE);
                     ei.Choice.SelectedIndex = (int)elm.WaveForm;
                     return ei;
@@ -317,7 +317,7 @@ namespace Circuit.UI.Input {
                     || elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_BOTH
                     || elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE
                     || elm.WaveForm == ElmVoltage.WAVEFORM.PWM
-                    || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_BOTH)) {
+                    || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_DIPOLE)) {
                     return new ElementInfo(VALUE_NAME_DUTY, elm.DutyCycle * 100);
                 }
             }
@@ -393,7 +393,7 @@ namespace Circuit.UI.Input {
                    || elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_BOTH
                    || elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE
                    || elm.WaveForm == ElmVoltage.WAVEFORM.PWM
-                   || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_BOTH) {
+                   || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_DIPOLE) {
                     if (r == 7) {
                         elm.DutyCycle = ei.Value * .01;
                     }

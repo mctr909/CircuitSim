@@ -11,7 +11,7 @@ namespace Circuit.Elements.Input {
             PULSE,
             PULSE_BOTH,
             PWM,
-            PWM_BOTH,
+            PWM_DIPOLE,
             NOISE
         }
 
@@ -112,17 +112,13 @@ namespace Circuit.Elements.Input {
                 }
             case WAVEFORM.PWM: {
                 var maxwt = 2 * Math.PI * t / (32 * ControlPanel.TimeStep);
-                var cr = triangleFunc(maxwt % (2 * Math.PI));
-                var sg = DutyCycle * Math.Sin(wt);
-                if (0.0 <= sg) {
-                    return Bias + (cr < sg ? MaxVoltage : 0);
-                } else {
-                    return Bias;
-                }
+                var cr = triangleFunc(maxwt % (2 * Math.PI)) * 0.5 + 0.5;
+                var sg = DutyCycle * Math.Sin(wt) * 0.5 + 0.5;
+                return Bias + (cr < sg ? MaxVoltage : 0);
             }
-            case WAVEFORM.PWM_BOTH: {
+            case WAVEFORM.PWM_DIPOLE: {
                 var maxwt = 2 * Math.PI * t / (32 * ControlPanel.TimeStep);
-                var cr = triangleFunc(maxwt % (2 * Math.PI));
+                var cr = triangleFunc(maxwt % (2 * Math.PI)) * 0.5 + 0.5;
                 var sg = DutyCycle * Math.Sin(wt);
                 if (0.0 <= sg) {
                     return Bias + (cr < sg ? MaxVoltage : 0);
