@@ -4,12 +4,12 @@ namespace Circuit.UI.Custom {
     class GraphicBox : Graphic {
         public GraphicBox(Point pos) : base(pos) {
             DumpInfo.SetP2(pos);
-            DumpInfo.SetBbox(pos, DumpInfo.P2.X, DumpInfo.P2.Y);
+            DumpInfo.SetBbox(pos, DumpInfo.P2);
         }
 
         public GraphicBox(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
             DumpInfo.SetP2(b);
-            DumpInfo.SetBbox(DumpInfo.P1.X, DumpInfo.P1.Y, DumpInfo.P2.X, DumpInfo.P2.Y);
+            DumpInfo.SetBbox(DumpInfo.P1, DumpInfo.P2);
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.BOX; } }
@@ -28,7 +28,7 @@ namespace Circuit.UI.Custom {
 
         public override void Draw(CustomGraphics g) {
             g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            DumpInfo.SetBbox(DumpInfo.P1.X, DumpInfo.P1.Y, DumpInfo.P2.X, DumpInfo.P2.Y);
+            DumpInfo.SetBbox(DumpInfo.P1, DumpInfo.P2);
             var x1 = DumpInfo.P1.X;
             var y1 = DumpInfo.P1.Y;
             var x2 = DumpInfo.P2.X;

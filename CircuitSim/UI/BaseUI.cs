@@ -574,14 +574,12 @@ namespace Circuit.UI {
             int ny2 = DumpInfo.P2.Y + dy;
             for (int i = 0; i != CirSimForm.UICount; i++) {
                 var ce = CirSimForm.GetUI(i);
-                var ceP1X = ce.DumpInfo.P1.X;
-                var ceP1Y = ce.DumpInfo.P1.Y;
-                var ceP2X = ce.DumpInfo.P2.X;
-                var ceP2Y = ce.DumpInfo.P2.Y;
-                if (ceP1X == nx && ceP1Y == ny && ceP2X == nx2 && ceP2Y == ny2) {
+                var ceP1 = ce.DumpInfo.P1;
+                var ceP2 = ce.DumpInfo.P2;
+                if (ceP1.X == nx && ceP1.Y == ny && ceP2.X == nx2 && ceP2.Y == ny2) {
                     return false;
                 }
-                if (ceP1X == nx2 && ceP1Y == ny2 && ceP2X == nx && ceP2Y == ny) {
+                if (ceP1.X == nx2 && ceP1.Y == ny2 && ceP2.X == nx && ceP2.Y == ny) {
                     return false;
                 }
             }
@@ -683,10 +681,8 @@ namespace Circuit.UI {
             }
             mVertical = DumpInfo.P1.X == DumpInfo.P2.X;
             mHorizontal = DumpInfo.P1.Y == DumpInfo.P2.Y;
-            Elm.Post[0].X = DumpInfo.P1.X;
-            Elm.Post[0].Y = DumpInfo.P1.Y;
-            Elm.Post[1].X = DumpInfo.P2.X;
-            Elm.Post[1].Y = DumpInfo.P2.Y;
+            Elm.Post[0] = DumpInfo.P1;
+            Elm.Post[1] = DumpInfo.P2;
         }
 
         public virtual void SetMouseElm(bool v) {

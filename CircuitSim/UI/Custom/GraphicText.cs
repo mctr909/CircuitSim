@@ -49,7 +49,7 @@ namespace Circuit.UI.Custom {
                 CustomGraphics.TextColor = CustomGraphics.SelectColor;
             }
             g.DrawLeftText(mText, DumpInfo.P1.X, (int)(DumpInfo.P1.Y + size.Height / 2));
-            DumpInfo.SetBbox(DumpInfo.P1.X, DumpInfo.P1.Y, DumpInfo.P2.X, DumpInfo.P2.Y);
+            DumpInfo.SetBbox(DumpInfo.P1, DumpInfo.P2);
             CustomGraphics.TextSize = sizeBk;
             CustomGraphics.TextColor = colorBk;
         }

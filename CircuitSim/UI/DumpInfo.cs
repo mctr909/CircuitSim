@@ -19,28 +19,22 @@ namespace Circuit.UI {
         }
 
         public DumpInfo(Point pos, int flags) {
-            P1.X = P2.X = pos.X;
-            P1.Y = P2.Y = pos.Y;
+            P1 = P2 = pos;
             Flags = flags;
             BoundingBox = getBoundingBox();
         }
 
         public DumpInfo(Point p1, Point p2, int flags) {
-            P1.X = p1.X;
-            P1.Y = p1.Y;
-            P2.X = p2.X;
-            P2.Y = p2.Y;
+            P1 = p1;
+            P2 = p2;
             Flags = flags;
             BoundingBox = getBoundingBox();
         }
 
         public void FlipPosts() {
-            int oldx = P1.X;
-            int oldy = P1.Y;
-            P1.X = P2.X;
-            P1.Y = P2.Y;
-            P2.X = oldx;
-            P2.Y = oldy;
+            var old = P1;
+            P1 = P2;
+            P2= old;
         }
 
         public void Drag(Point pos, bool noDiagonal) {
@@ -52,8 +46,7 @@ namespace Circuit.UI {
                     pos.Y = P1.Y;
                 }
             }
-            P2.X = pos.X;
-            P2.Y = pos.Y;
+            P2 = pos;
         }
 
         public void SetPosition(int ax, int ay, int bx, int by) {
@@ -84,10 +77,8 @@ namespace Circuit.UI {
         public void MovePoint(int n, int dx, int dy) {
             /* modified by IES to prevent the user dragging points to create zero sized nodes
             /* that then render improperly */
-            int oldx = P1.X;
-            int oldy = P1.Y;
-            int oldx2 = P2.X;
-            int oldy2 = P2.Y;
+            var old = P1;
+            var old2 = P2;
             if (n == 0) {
                 P1.X += dx;
                 P1.Y += dy;
@@ -96,10 +87,8 @@ namespace Circuit.UI {
                 P2.Y += dy;
             }
             if (P1.X == P2.X && P1.Y == P2.Y) {
-                P1.X = oldx;
-                P1.Y = oldy;
-                P2.X = oldx2;
-                P2.Y = oldy2;
+                P1 = old;
+                P2 = old2;
             }
         }
 
