@@ -99,7 +99,7 @@ namespace Circuit.UI.Input {
             } else {
                 setBbox(BODY_LEN);
                 interpLead(ref mPs1, 0.5);
-                drawWaveform(g, mPs1.X, mPs1.Y);
+                drawWaveform(g, mPs1);
                 string inds;
                 if (0 < elm.Bias || (0 == elm.Bias &&
                     (ElmVoltage.WAVEFORM.PULSE == elm.WaveForm || ElmVoltage.WAVEFORM.PULSE_BOTH == elm.WaveForm))) {
@@ -124,15 +124,13 @@ namespace Circuit.UI.Input {
         }
 
         protected void drawWaveform(CustomGraphics g, Point p) {
-            drawWaveform(g, p.X, p.Y);
-        }
-
-        protected void drawWaveform(CustomGraphics g, int x, int y) {
+            var x = p.X;
+            var y = p.Y;
             var elm = (ElmVoltage)Elm;
 
             if (elm.WaveForm != ElmVoltage.WAVEFORM.NOISE) {
                 g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-                g.DrawCircle(x, y, BODY_LEN / 2);
+                g.DrawCircle(p, BODY_LEN / 2);
             }
 
             DumpInfo.AdjustBbox(

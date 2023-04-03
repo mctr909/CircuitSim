@@ -157,14 +157,6 @@ namespace Circuit {
             DrawHandle(p.X, p.Y);
         }
 
-        public virtual void DrawLine(float ax, float ay, Point b) {
-            mG.DrawLine(mPenLine, ax, ay, b.X, b.Y);
-        }
-
-        public virtual void DrawLine(Point a, float bx, float by) {
-            mG.DrawLine(mPenLine, a.X, a.Y, bx, by);
-        }
-
         public virtual void DrawLine(float ax, float ay, float bx, float by) {
             mG.DrawLine(mPenLine, ax, ay, bx, by);
         }
@@ -184,12 +176,8 @@ namespace Circuit {
             mPenLine.DashStyle = DashStyle.Solid;
         }
 
-        public virtual void DrawCircle(float px, float py, float radius) {
-            mG.DrawArc(mPenLine, px - radius, py - radius, radius * 2, radius * 2, 0, 360);
-        }
-
         public virtual void DrawCircle(PointF p, float radius) {
-            DrawCircle(p.X, p.Y, radius);
+            mG.DrawArc(mPenLine, p.X - radius, p.Y - radius, radius * 2, radius * 2, 0, 360);
         }
 
         public virtual void DrawArc(Point p, float diameter, float start, float sweep) {

@@ -50,13 +50,9 @@ namespace Circuit.UI.Input {
         }
 
         void drawWaveform(CustomGraphics g, Point p) {
-            drawWaveform(g, p.X, p.Y);
-        }
-
-        void drawWaveform(CustomGraphics g, int x, int y) {
             g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            g.DrawCircle(x, y, SIZE / 2);
-            DumpInfo.AdjustBbox(x - SIZE, y - SIZE, x + SIZE, y + SIZE);
+            g.DrawCircle(p, SIZE / 2);
+            DumpInfo.AdjustBbox(p.X - SIZE, p.Y - SIZE, p.X + SIZE, p.Y + SIZE);
         }
 
         public override void GetInfo(string[] arr) {
