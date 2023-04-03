@@ -7,8 +7,8 @@ namespace Circuit.UI.Active {
     class Transistor : BaseUI {
         const int FLAG_FLIP = 1;
 
-        const int BODY_LEN = 16;
-        const int HS = 16;
+        const int BODY_LEN = 12;
+        const int HS = 12;
         const int BASE_THICK = 2;
 
         double mCurCountC;
@@ -65,12 +65,15 @@ namespace Circuit.UI.Active {
             if ((DumpInfo.Flags & FLAG_FLIP) != 0) {
                 mDsign = -mDsign;
             }
-            int hs2 = HS * mDsign * ce.NPN;
 
             /* calc collector, emitter posts */
-            ce.Coll = new Point[2];
-            ce.Emit = new Point[2];
+            var hsm = (HS / 8 + 1) * 8;
+            var hs1 = HS * mDsign * ce.NPN;
+            var hs2 = hsm * mDsign * ce.NPN;
+            ce.Coll = new Point[3];
+            ce.Emit = new Point[3];
             interpPointAB(ref ce.Coll[0], ref ce.Emit[0], 1, hs2);
+            interpPointAB(ref ce.Coll[2], ref ce.Emit[2], 1, hs1);
 
             /* calc rectangle edges */
             var rect = new Point[4];
@@ -92,11 +95,11 @@ namespace Circuit.UI.Active {
 
             /* arrow */
             if (ce.NPN == 1) {
-                var e0 = ce.Emit[0];
+                var e0 = ce.Emit[2];
                 var e1 = ce.Emit[1];
                 Utils.CreateArrow(e1.X, e1.Y, e0.X, e0.Y, out mArrowPoly, 8, 3);
             } else {
-                var e0 = ce.Emit[0];
+                var e0 = ce.Emit[2];
                 var pt = new Point();
                 interpPoint(ref pt, 1 - BODY_LEN / mLen, -5 * mDsign * ce.NPN);
                 Utils.CreateArrow(e0.X, e0.Y, pt.X, pt.Y, out mArrowPoly, 8, 3);
@@ -126,9 +129,11 @@ namespace Circuit.UI.Active {
             var ce = (ElmTransistor)Elm;
 
             /* draw collector */
-            drawLead(ce.Coll[0], ce.Coll[1]);
+            drawLead(ce.Coll[0], ce.Coll[2]);
+            drawLead(ce.Coll[2], ce.Coll[1]);
             /* draw emitter */
-            drawLead(ce.Emit[0], ce.Emit[1]);
+            drawLead(ce.Emit[0], ce.Emit[2]);
+            drawLead(ce.Emit[2], ce.Emit[1]);
             /* draw arrow */
             g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mArrowPoly);
             /* draw base */
