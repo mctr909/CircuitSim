@@ -112,7 +112,7 @@ namespace Circuit.UI.Output {
                     INVALID
                 }
 
-                public BaseUI Elm;
+                public BaseUI UI;
 
                 public double[] MinValues { get; private set; }
                 public double[] MaxValues { get; private set; }
@@ -126,7 +126,7 @@ namespace Circuit.UI.Output {
                 int mCounter;
 
                 public Plot(BaseUI e) {
-                    Elm = e;
+                    UI = e;
                 }
 
                 public int StartIndex(int w) {
@@ -160,10 +160,10 @@ namespace Circuit.UI.Output {
                 }
 
                 public void TimeStep() {
-                    if (Elm == null) {
+                    if (UI == null) {
                         return;
                     }
-                    double v = Elm.Elm.GetVoltageDiff();
+                    double v = UI.Elm.GetVoltageDiff();
                     if (v < MinValues[Pointer]) {
                         MinValues[Pointer] = v;
                     }
@@ -283,33 +283,33 @@ namespace Circuit.UI.Output {
             }
 
             /* get scope element, returning null if there's more than one */
-            public BaseUI SingleElm {
+            public BaseUI SingleUI {
                 get {
-                    var elm = Plots[0].Elm;
+                    var ui = Plots[0].UI;
                     for (int i = 1; i < Plots.Count; i++) {
-                        if (!Plots[i].Elm.Equals(elm)) {
+                        if (!Plots[i].UI.Equals(ui)) {
                             return null;
                         }
                     }
-                    return elm;
+                    return ui;
                 }
             }
-            public BaseUI Elm {
+            public BaseUI UI {
                 get {
                     if (0 <= SelectedPlot && SelectedPlot < Plots.Count) {
-                        return Plots[SelectedPlot].Elm;
+                        return Plots[SelectedPlot].UI;
                     }
-                    return 0 < Plots.Count ? Plots[0].Elm : null;
+                    return 0 < Plots.Count ? Plots[0].UI : null;
                 }
             }
 
             public bool CanMenu {
-                get { return Plots[0].Elm != null; }
+                get { return Plots[0].UI != null; }
             }
             public bool ViewingWire {
                 get {
                     foreach (var plot in Plots) {
-                        if (plot.Elm is Wire) {
+                        if (plot.UI is Wire) {
                             return true;
                         }
                     }
@@ -321,7 +321,7 @@ namespace Circuit.UI.Output {
                     bool ret = true;
                     for (int i = 0; i != Plots.Count; i++) {
                         var plot = Plots[i];
-                        if (CirSimForm.GetUIIndex(plot.Elm) < 0) {
+                        if (CirSimForm.GetUIIndex(plot.UI) < 0) {
                             Plots.RemoveAt(i--);
                         } else {
                             ret = false;
@@ -354,17 +354,17 @@ namespace Circuit.UI.Output {
                         return null;
                     }
                     /* multiple elms?  don't show text (unless one is selected) */
-                    if (SelectedPlot < 0 && SingleElm == null) {
+                    if (SelectedPlot < 0 && SingleUI == null) {
                         return null;
                     }
                     var plot = Plots[0];
                     if (0 <= SelectedPlot && SelectedPlot < Plots.Count) {
                         plot = Plots[SelectedPlot];
                     }
-                    if (plot.Elm == null) {
+                    if (plot.UI == null) {
                         return "";
                     } else {
-                        return plot.Elm.GetScopeText();
+                        return plot.UI.GetScopeText();
                     }
                 }
             }
@@ -425,7 +425,7 @@ namespace Circuit.UI.Output {
                     pos = List[i].Position;
                 }
 
-                while (Count > 0 && List[Count - 1].Elm == null) {
+                while (Count > 0 && List[Count - 1].UI == null) {
                     Count--;
                 }
 
@@ -601,7 +601,7 @@ namespace Circuit.UI.Output {
                         return pos;
                     }
                     var s = new Property();
-                    s.setValue(sp.Elm);
+                    s.setValue(sp.UI);
                     s.Position = pos;
                     s.mFlags = mFlags;
                     s.Speed = Speed;
@@ -650,8 +650,7 @@ namespace Circuit.UI.Output {
 
             public string Dump() {
                 var vPlot = Plots[0];
-                var elm = vPlot.Elm;
-                if (elm == null) {
+                if (vPlot.UI == null) {
                     return null;
                 }
                 var dumpList = new List<object>();
@@ -662,7 +661,7 @@ namespace Circuit.UI.Output {
                 dumpList.Add(Position);
                 dumpList.Add(Plots.Count);
                 foreach (var p in Plots) {
-                    dumpList.Add(CirSimForm.GetUIIndex(p.Elm) + "_" + p.ColorIndex);
+                    dumpList.Add(CirSimForm.GetUIIndex(p.UI) + "_" + p.ColorIndex);
                 }
                 if (!string.IsNullOrWhiteSpace(Text)) {
                     dumpList.Add(Utils.Escape(Text));
@@ -732,7 +731,7 @@ namespace Circuit.UI.Output {
 
                 foreach (var p in Plots) {
                     calcPlotScale(p);
-                    if (CirSimForm.SelectedScope == -1 && p.Elm != null && p.Elm.IsMouseElm) {
+                    if (CirSimForm.SelectedScope == -1 && p.UI != null && p.UI.IsMouseElm) {
                         mSomethingSelected = true;
                     }
                     mReduceRange = true;
@@ -806,8 +805,8 @@ namespace Circuit.UI.Output {
                 if (Plots.Count > 2 || Plots.Count == 0) {
                     return;
                 }
-                var ce = Plots[0].Elm;
-                if (Plots.Count == 2 && !Plots[1].Elm.Equals(ce)) {
+                var ce = Plots[0].UI;
+                if (Plots.Count == 2 && !Plots[1].UI.Equals(ce)) {
                     return;
                 }
                 setValue(ce);
@@ -1003,7 +1002,7 @@ namespace Circuit.UI.Output {
             }
 
             void drawPlot(CustomGraphics g, Plot plot, bool selected) {
-                if (plot.Elm == null) {
+                if (plot.UI == null) {
                     return;
                 }
 
@@ -1092,7 +1091,7 @@ namespace Circuit.UI.Output {
                 if (ControlPanel.ChkPrintable.Checked) {
                     g.DrawColor = plot.Color;
                 } else {
-                    if (selected || (CirSimForm.SelectedScope == -1 && plot.Elm.IsMouseElm)) {
+                    if (selected || (CirSimForm.SelectedScope == -1 && plot.UI.IsMouseElm)) {
                         g.DrawColor = CustomGraphics.SelectColor;
                     } else {
                         g.DrawColor = mSomethingSelected ? Plot.GRAY : plot.Color;

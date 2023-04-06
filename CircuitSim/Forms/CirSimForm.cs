@@ -329,7 +329,7 @@ namespace Circuit {
             if (item == ELEMENT_MENU_ITEM.VIEW_IN_SCOPE && mMenuElm != null) {
                 int i;
                 for (i = 0; i != Scope.Property.Count; i++) {
-                    if (Scope.Property.List[i].Elm == null) {
+                    if (Scope.Property.List[i].UI == null) {
                         break;
                     }
                 }
@@ -1669,7 +1669,7 @@ namespace Circuit {
                 for (int i = 0; i != Scope.Property.Count; i++) {
                     var s = Scope.Property.List[i];
                     if (s.BoundingBox.Contains(mx, my)) {
-                        newMouseElm = s.Elm;
+                        newMouseElm = s.UI;
                         SelectedScope = i;
                         break;
                     }
