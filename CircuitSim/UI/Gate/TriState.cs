@@ -77,7 +77,7 @@ namespace Circuit.UI.Gate {
             var ce = (ElmTriState)Elm;
             arr[0] = "tri-state buffer";
             arr[1] = ce.Open ? "open" : "closed";
-            arr[2] = "Vd = " + Utils.VoltageAbsText(ce.VoltageDiff);
+            arr[2] = "Vd = " + Utils.VoltageAbsText(ce.GetVoltageDiff());
             arr[3] = "I = " + Utils.CurrentAbsText(ce.Current);
             arr[4] = "Vc = " + Utils.VoltageText(ce.Volts[2]);
         }

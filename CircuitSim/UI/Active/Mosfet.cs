@@ -240,7 +240,7 @@ namespace Circuit.UI.Active {
             arr[3] = ((ce.Pnp == 1) ? "Vds = " : "Vsd = ") + Utils.VoltageText(ce.Vd - ce.Vs);
             arr[4] = (ce.Mode == 0) ? "off" : (ce.Mode == 1) ? "線形" : "飽和";
             arr[5] = "gm = " + Utils.UnitText(ce.Gm, "A/V");
-            arr[6] = "P = " + Utils.UnitText(ce.Power, "W");
+            arr[6] = "P = " + Utils.UnitText(ce.GetPower(), "W");
             if (ShowBulk) {
                 arr[7] = "Ib = " + Utils.UnitText(
                     ce.BodyTerminal == 1 ? -ce.DiodeCurrent1 :

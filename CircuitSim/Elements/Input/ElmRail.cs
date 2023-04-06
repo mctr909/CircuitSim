@@ -6,9 +6,9 @@
 
         public ElmRail(StringTokenizer st): base(st) { }
 
-        public override double VoltageDiff { get { return Volts[0]; } }
-
         public override int PostCount { get { return 1; } }
+
+        public override double GetVoltageDiff() { return Volts[0]; }
 
         public override bool AnaHasGroundConnection(int n1) { return true; }
 

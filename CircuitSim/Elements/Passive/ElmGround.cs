@@ -1,10 +1,10 @@
 ﻿namespace Circuit.Elements.Passive {
     class ElmGround : BaseElement {
-        public override double VoltageDiff { get { return 0; } }
-
         public override int AnaVoltageSourceCount { get { return 1; } }
 
         public override int PostCount { get { return 1; } }
+
+        public override double GetVoltageDiff() { return 0; }
 
         public override bool AnaHasGroundConnection(int n1) { return true; }
 

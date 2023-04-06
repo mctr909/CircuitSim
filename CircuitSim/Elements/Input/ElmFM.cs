@@ -33,11 +33,11 @@ namespace Circuit.Elements.Input {
 
         public override int PostCount { get { return 1; } }
 
-        public override double VoltageDiff { get { return Volts[0]; } }
-
         public override int AnaVoltageSourceCount { get { return 1; } }
 
-        public override double Power { get { return -VoltageDiff * Current; } }
+        public override double GetVoltageDiff() { return Volts[0]; }
+
+        public override double GetPower() { return -GetVoltageDiff() * Current; }
 
         public override bool AnaHasGroundConnection(int n1) { return true; }
 

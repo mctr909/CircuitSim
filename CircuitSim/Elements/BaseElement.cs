@@ -17,19 +17,11 @@ namespace Circuit.Elements {
         #region [property]
         public abstract int PostCount { get; }
 
-        public virtual Point GetPost(int n) {
-            return Post[n];
-        }
-
         public int[] Nodes { get; protected set; }
 
         public double[] Volts { get; protected set; }
 
         public double Current { get; protected set; }
-
-        public virtual double VoltageDiff { get { return Volts[0] - Volts[1]; } }
-
-        public virtual double Power { get { return VoltageDiff * Current; } }
         #endregion
 
         #region [property(Analyze)]
@@ -56,6 +48,12 @@ namespace Circuit.Elements {
         #endregion
 
         #region [method]
+        public virtual Point GetPost(int n) { return Post[n]; }
+
+        public virtual double GetVoltageDiff() { return Volts[0] - Volts[1]; }
+
+        public virtual double GetPower() { return GetVoltageDiff() * Current; }
+
         /// <summary>
         /// allocate nodes/volts arrays we need
         /// </summary>

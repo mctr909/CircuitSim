@@ -163,7 +163,7 @@ namespace Circuit.UI.Output {
                     if (Elm == null) {
                         return;
                     }
-                    double v = Elm.Elm.VoltageDiff;
+                    double v = Elm.Elm.GetVoltageDiff();
                     if (v < MinValues[Pointer]) {
                         MinValues[Pointer] = v;
                     }

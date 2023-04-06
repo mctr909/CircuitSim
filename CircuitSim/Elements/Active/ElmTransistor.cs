@@ -49,17 +49,17 @@ namespace Circuit.Elements.Active {
             Volts[IdxE] = -vbc;
         }
 
-        public override double Power {
-            get { return (Volts[IdxB] - Volts[IdxE]) * Ib + (Volts[IdxC] - Volts[IdxE]) * Ic; }
-        }
-
-        public override double VoltageDiff { get { return Volts[IdxC] - Volts[IdxE]; } }
-
         public override int PostCount { get { return 3; } }
 
         public override Point GetPost(int n) {
             return (n == 0) ? Post[0] : (n == 1) ? Coll[0] : Emit[0];
         }
+
+        public override double GetPower() {
+            return (Volts[IdxB] - Volts[IdxE]) * Ib + (Volts[IdxC] - Volts[IdxE]) * Ic;
+        }
+
+        public override double GetVoltageDiff() { return Volts[IdxC] - Volts[IdxE]; }
 
         public void SetHfe(double hfe) {
             Hfe = hfe;

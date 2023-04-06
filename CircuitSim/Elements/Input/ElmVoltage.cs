@@ -56,11 +56,11 @@ namespace Circuit.Elements.Input {
 
         public override int PostCount { get { return 2; } }
 
-        public override double VoltageDiff { get { return Volts[1] - Volts[0]; } }
-
-        public override double Power { get { return -VoltageDiff * Current; } }
-
         public override int AnaVoltageSourceCount { get { return 1; } }
+
+        public override double GetVoltageDiff() { return Volts[1] - Volts[0]; }
+
+        public override double GetPower() { return -GetVoltageDiff() * Current; }
 
         public override void Reset() { }
 

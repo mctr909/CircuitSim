@@ -252,7 +252,7 @@ namespace Circuit.UI.Input {
             }
 
             arr[1] = "I = " + Utils.CurrentText(elm.Current);
-            arr[2] = ((this is Rail) ? "V = " : "Vd = ") + Utils.VoltageText(elm.VoltageDiff);
+            arr[2] = ((this is Rail) ? "V = " : "Vd = ") + Utils.VoltageText(elm.GetVoltageDiff());
             int i = 3;
             if (elm.WaveForm != ElmVoltage.WAVEFORM.DC && elm.WaveForm != ElmVoltage.WAVEFORM.NOISE) {
                 arr[i++] = "f = " + Utils.UnitText(elm.Frequency, "Hz");
@@ -266,7 +266,7 @@ namespace Circuit.UI.Input {
                     arr[i++] = "wavelength = " + Utils.UnitText(2.9979e8 / elm.Frequency, "m");
                 }
             }
-            arr[i++] = "P = " + Utils.UnitText(elm.Power, "W");
+            arr[i++] = "P = " + Utils.UnitText(elm.GetPower(), "W");
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {

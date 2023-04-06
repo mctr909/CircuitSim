@@ -208,7 +208,7 @@ namespace Circuit.UI {
 
         protected int getBasicInfo(string[] arr) {
             arr[1] = "I = " + Utils.CurrentAbsText(Elm.Current);
-            arr[2] = "Vd = " + Utils.VoltageAbsText(Elm.VoltageDiff);
+            arr[2] = "Vd = " + Utils.VoltageAbsText(Elm.GetVoltageDiff());
             return 3;
         }
 

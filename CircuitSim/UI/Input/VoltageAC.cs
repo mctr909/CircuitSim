@@ -15,7 +15,7 @@ namespace Circuit.UI.Input {
             var elm = (ElmVoltage)Elm;
             arr[0] = "AC";
             arr[1] = "I = " + Utils.CurrentText(elm.Current);
-            arr[2] = "Vd = " + Utils.VoltageText(elm.VoltageDiff);
+            arr[2] = "Vd = " + Utils.VoltageText(elm.GetVoltageDiff());
             int i = 3;
             arr[i++] = "f = " + Utils.UnitText(elm.Frequency, "Hz");
             arr[i++] = "Vmax = " + Utils.VoltageText(elm.MaxVoltage);
@@ -27,7 +27,7 @@ namespace Circuit.UI.Input {
             } else if (elm.Frequency > 500) {
                 arr[i++] = "wavelength = " + Utils.UnitText(2.9979e8 / elm.Frequency, "m");
             }
-            arr[i++] = "P = " + Utils.UnitText(elm.Power, "W");
+            arr[i++] = "P = " + Utils.UnitText(elm.GetPower(), "W");
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {

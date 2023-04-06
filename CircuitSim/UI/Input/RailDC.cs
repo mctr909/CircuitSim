@@ -15,8 +15,8 @@ namespace Circuit.UI.Input {
             var elm = (ElmVoltage)Elm;
             arr[0] = "DC";
             arr[1] = "I = " + Utils.CurrentText(elm.Current);
-            arr[2] = "V = " + Utils.VoltageText(elm.VoltageDiff);
-            arr[3] = "P = " + Utils.UnitText(elm.Power, "W");
+            arr[2] = "V = " + Utils.VoltageText(elm.GetVoltageDiff());
+            arr[3] = "P = " + Utils.UnitText(elm.GetPower(), "W");
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {

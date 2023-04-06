@@ -64,7 +64,7 @@ namespace Circuit.UI.Output {
         public override void GetInfo(string[] arr) {
             var ce = (ElmVoltMeter)Elm;
             arr[0] = "voltmeter";
-            arr[1] = "Vd = " + Utils.VoltageText(ce.VoltageDiff);
+            arr[1] = "Vd = " + Utils.VoltageText(ce.GetVoltageDiff());
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
@@ -97,7 +97,7 @@ namespace Circuit.UI.Output {
             var ce = (ElmVoltMeter)Elm;
             switch (ce.Meter) {
             case ElmVoltMeter.TP_VOL:
-                return Utils.UnitTextWithScale(ce.VoltageDiff, "V", ce.Scale);
+                return Utils.UnitTextWithScale(ce.GetVoltageDiff(), "V", ce.Scale);
             case ElmVoltMeter.TP_RMS:
                 return Utils.UnitTextWithScale(ce.RmsV, "Vrms", ce.Scale);
             case ElmVoltMeter.TP_MAX:

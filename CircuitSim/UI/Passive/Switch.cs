@@ -120,7 +120,7 @@ namespace Circuit.UI.Passive {
             arr[0] = (ce.Momentary) ? "push switch" : "switch";
             if (ce.Position == 1) {
                 arr[1] = "open";
-                arr[2] = "Vd = " + Utils.VoltageAbsText(ce.VoltageDiff);
+                arr[2] = "Vd = " + Utils.VoltageAbsText(ce.GetVoltageDiff());
             } else {
                 arr[1] = "closed";
                 arr[2] = "V = " + Utils.VoltageText(ce.Volts[0]);

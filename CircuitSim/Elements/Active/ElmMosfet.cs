@@ -11,6 +11,11 @@ namespace Circuit.Elements.Active {
         const int POST_D = 2;
         const int POST_BODY = 3;
 
+        const double DiodeVcrit = 0.6347668814648425;
+        const double DiodeVscale = 0.05173;
+        const double DiodeLeakage = 1.7143528192808883E-07;
+        const double DiodeVdCoef = 19.331142470520007;
+
         public const double DefaultThreshold = 1.5;
         public const double BackwardCompatibilityHfe = 0.02;
 
@@ -39,17 +44,12 @@ namespace Circuit.Elements.Active {
         public Point[] Drn;
         public Point[] Body;
 
-        const double DiodeVcrit = 0.6347668814648425;
-        const double DiodeVscale = 0.05173;
-        const double DiodeLeakage = 1.7143528192808883E-07;
-        const double DiodeVdCoef = 19.331142470520007;
         int mDiode1Node0;
         int mDiode1Node1;
         int mDiode2Node0;
         int mDiode2Node1;
         double mDiode1LastVoltDiff;
         double mDiode2LastVoltDiff;
-
         double[] mLastV = new double[] { 0.0, 0.0, 0.0 };
 
         public ElmMosfet(bool pnpflag) : base() {
@@ -62,16 +62,6 @@ namespace Circuit.Elements.Active {
             Vt = vt;
             Hfe = hfe;
             AllocNodes();
-        }
-
-        public override double VoltageDiff { get { return Volts[IdxD] - Volts[IdxS]; } }
-
-        public override double Power {
-            get {
-                return Current * (Volts[IdxD] - Volts[IdxS])
-                    - DiodeCurrent1 * (Volts[IdxS] - Volts[BodyTerminal])
-                    - DiodeCurrent2 * (Volts[IdxD] - Volts[BodyTerminal]);
-            }
         }
 
         public override int PostCount { get { return 3; } }
@@ -95,6 +85,14 @@ namespace Circuit.Elements.Active {
             default:
                 return new Point();
             }
+        }
+
+        public override double GetVoltageDiff() { return Volts[IdxD] - Volts[IdxS]; }
+
+        public override double GetPower() {
+            return Current * (Volts[IdxD] - Volts[IdxS])
+                - DiodeCurrent1 * (Volts[IdxS] - Volts[BodyTerminal])
+                - DiodeCurrent2 * (Volts[IdxD] - Volts[BodyTerminal]);
         }
 
         public override void Reset() {

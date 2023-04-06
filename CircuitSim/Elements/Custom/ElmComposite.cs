@@ -42,19 +42,17 @@ namespace Circuit.Elements.Custom {
 
         public override int PostCount { get { return NumPosts; } }
 
-        public override double Power {
-            get {
-                double power = 0.0;
-                for (int i = 0; i < CompElmList.Count; i++) {
-                    power += CompElmList[i].Elm.Power;
-                }
-                return power;
-            }
-        }
-
         public override int AnaVoltageSourceCount { get { return mVoltageSources.Count; } }
 
         public override int AnaInternalNodeCount { get { return mNumNodes - NumPosts; } }
+
+        public override double GetPower() {
+            double power = 0.0;
+            for (int i = 0; i < CompElmList.Count; i++) {
+                power += CompElmList[i].Elm.GetPower();
+            }
+            return power;
+        }
 
         public override void Reset() {
             for (int i = 0; i < CompElmList.Count; i++) {

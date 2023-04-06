@@ -42,7 +42,7 @@ namespace Circuit.Elements.Output {
 
         public override void CirIterationFinished() {
             mCount++; /*how many counts are in a cycle */
-            double v = VoltageDiff;
+            double v = GetVoltageDiff();
             mTotal += v * v;
 
             /* V going up, track maximum value with */

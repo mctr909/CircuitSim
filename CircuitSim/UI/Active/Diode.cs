@@ -107,8 +107,8 @@ namespace Circuit.UI.Active {
                 arr[0] = "diode (" + ce.mModelName + ")";
             }
             arr[1] = "I = " + Utils.CurrentText(ce.Current);
-            arr[2] = "Vd = " + Utils.VoltageText(ce.VoltageDiff);
-            arr[3] = "P = " + Utils.UnitText(ce.Power, "W");
+            arr[2] = "Vd = " + Utils.VoltageText(ce.GetVoltageDiff());
+            arr[3] = "P = " + Utils.UnitText(ce.GetPower(), "W");
             if (ce.mModel.OldStyle) {
                 arr[4] = "Vf = " + Utils.VoltageText(ce.mModel.FwDrop);
             }

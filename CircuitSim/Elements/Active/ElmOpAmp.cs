@@ -15,10 +15,6 @@ namespace Circuit.Elements.Active {
 
         double mLastVd;
 
-        public override double VoltageDiff { get { return Volts[V_O] - Volts[V_P]; } }
-
-        public override double Power { get { return Volts[V_O] * Current; } }
-
         public override int AnaVoltageSourceCount { get { return 1; } }
 
         public override int PostCount { get { return 3; } }
@@ -26,6 +22,10 @@ namespace Circuit.Elements.Active {
         public override Point GetPost(int n) {
             return (n == 0) ? In1p[0] : (n == 1) ? In2p[0] : Post[1];
         }
+
+        public override double GetVoltageDiff() { return Volts[V_O] - Volts[V_P]; }
+
+        public override double GetPower() { return Volts[V_O] * Current; }
 
         /* there is no current path through the op-amp inputs,
          * but there is an indirect path through the output to ground. */
