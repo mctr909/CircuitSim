@@ -219,7 +219,6 @@ namespace Circuit.UI.Output {
             double mMainGridMult;
             double mMainGridMid;
 
-            bool mDrewGridlines;
             bool mSomethingSelected;
             bool mMaxScale;
             bool mShowNegative;
@@ -744,7 +743,6 @@ namespace Circuit.UI.Output {
                     mSomethingSelected = true;
                 }
 
-                mDrewGridlines = false;
                 if ((ShowMax || ShowMin) && Plots.Count > 0) {
                     calcMaxAndMin();
                 }
@@ -1047,8 +1045,7 @@ namespace Circuit.UI.Output {
                     }
                 }
 
-                if (!mDrewGridlines) {
-                    mDrewGridlines = true;
+                {
                     var minorDiv = Color.FromArgb(0x30, 0x30, 0x30);
                     var majorDiv = Color.FromArgb(0xA0, 0xA0, 0xA0);
                     if (ControlPanel.ChkPrintable.Checked) {
