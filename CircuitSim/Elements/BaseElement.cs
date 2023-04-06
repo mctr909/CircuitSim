@@ -12,7 +12,7 @@ namespace Circuit.Elements {
 
         protected int mVoltSource;
 
-        public Point[] Post = new Point[3];
+        public Point[] Post = new Point[4];
 
         #region [property]
         public abstract int PostCount { get; }

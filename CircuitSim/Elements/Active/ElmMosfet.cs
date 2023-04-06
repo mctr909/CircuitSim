@@ -6,6 +6,10 @@ namespace Circuit.Elements.Active {
         const int IdxG = 0;
         const int IdxS = 1;
         const int IdxD = 2;
+        const int POST_G = 0;
+        const int POST_S = 1;
+        const int POST_D = 2;
+        const int POST_BODY = 3;
 
         public const double DefaultThreshold = 1.5;
         public const double BackwardCompatibilityHfe = 0.02;
@@ -79,7 +83,18 @@ namespace Circuit.Elements.Active {
          * 3 = body (if present)
          * for PNP, 1 is drain, 2 is source */
         public override Point GetPost(int n) {
-            return (n == 0) ? Post[0] : (n == 1) ? Src[0] : (n == 2) ? Drn[0] : Body[0];
+            switch (n) {
+            case POST_G:
+                return Post[0];
+            case POST_S:
+                return Src[0];
+            case POST_D:
+                return Drn[0];
+            case POST_BODY:
+                return Body[0];
+            default:
+                return new Point();
+            }
         }
 
         public override void Reset() {
