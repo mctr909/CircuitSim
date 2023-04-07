@@ -60,8 +60,6 @@ namespace Circuit.Elements.Input {
 
         public override double GetVoltageDiff() { return Volts[1] - Volts[0]; }
 
-        public override double GetPower() { return -GetVoltageDiff() * Current; }
-
         public override void Reset() { }
 
         public override void AnaStamp() {

@@ -184,7 +184,6 @@ namespace Circuit.UI.Active {
             arr[4] = "Vbe = " + Utils.VoltageText(vbe);
             arr[5] = "Vbc = " + Utils.VoltageText(vbc);
             arr[6] = "Vce = " + Utils.VoltageText(vce);
-            arr[7] = "P = " + Utils.UnitText(ce.GetPower(), "W");
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {

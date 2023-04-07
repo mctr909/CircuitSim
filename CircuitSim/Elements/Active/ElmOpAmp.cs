@@ -25,8 +25,6 @@ namespace Circuit.Elements.Active {
 
         public override double GetVoltageDiff() { return Volts[V_O] - Volts[V_P]; }
 
-        public override double GetPower() { return Volts[V_O] * Current; }
-
         /* there is no current path through the op-amp inputs,
          * but there is an indirect path through the output to ground. */
         public override bool AnaGetConnection(int n1, int n2) { return false; }

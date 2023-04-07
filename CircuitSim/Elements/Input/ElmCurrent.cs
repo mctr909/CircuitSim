@@ -14,8 +14,6 @@
 
         public override double GetVoltageDiff() { return Volts[1] - Volts[0]; }
 
-        public override double GetPower() { return -GetVoltageDiff() * Current; }
-
         /* we defer stamping current sources until we can tell if they have a current path or not */
         public void stampCurrentSource(bool broken) {
             if (broken) {

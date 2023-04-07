@@ -55,10 +55,6 @@ namespace Circuit.Elements.Active {
             return (n == 0) ? Post[0] : (n == 1) ? Coll[0] : Emit[0];
         }
 
-        public override double GetPower() {
-            return (Volts[IdxB] - Volts[IdxE]) * Ib + (Volts[IdxC] - Volts[IdxE]) * Ic;
-        }
-
         public override double GetVoltageDiff() { return Volts[IdxC] - Volts[IdxE]; }
 
         public void SetHfe(double hfe) {

@@ -36,8 +36,6 @@ namespace Circuit.Elements.Input {
 
         public override double GetVoltageDiff() { return Volts[0]; }
 
-        public override double GetPower() { return -GetVoltageDiff() * Current; }
-
         public override void Reset() {
             mFreqTimeZero = 0;
         }

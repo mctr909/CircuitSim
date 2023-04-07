@@ -76,7 +76,6 @@ namespace Circuit.UI.Passive {
             arr[0] = string.IsNullOrEmpty(DumpInfo.ReferenceName) ? "コイル" : DumpInfo.ReferenceName;
             getBasicInfo(arr);
             arr[3] = "L = " + Utils.UnitText(ce.Inductance, "H");
-            arr[4] = "P = " + Utils.UnitText(ce.GetPower(), "W");
         }
 
         public override string GetScopeText() {

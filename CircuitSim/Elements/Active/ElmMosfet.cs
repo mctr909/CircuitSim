@@ -89,12 +89,6 @@ namespace Circuit.Elements.Active {
 
         public override double GetVoltageDiff() { return Volts[IdxD] - Volts[IdxS]; }
 
-        public override double GetPower() {
-            return Current * (Volts[IdxD] - Volts[IdxS])
-                - DiodeCurrent1 * (Volts[IdxS] - Volts[BodyTerminal])
-                - DiodeCurrent2 * (Volts[IdxD] - Volts[BodyTerminal]);
-        }
-
         public override void Reset() {
             mLastV[1] = mLastV[2] = 0;
             Volts[IdxG] = Volts[IdxS] = Volts[IdxD] = 0;

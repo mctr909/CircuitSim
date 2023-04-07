@@ -52,8 +52,6 @@ namespace Circuit.Elements {
 
         public virtual double GetVoltageDiff() { return Volts[0] - Volts[1]; }
 
-        public virtual double GetPower() { return GetVoltageDiff() * Current; }
-
         /// <summary>
         /// allocate nodes/volts arrays we need
         /// </summary>

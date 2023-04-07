@@ -27,7 +27,6 @@ namespace Circuit.UI.Input {
             } else if (elm.Frequency > 500) {
                 arr[i++] = "wavelength = " + Utils.UnitText(2.9979e8 / elm.Frequency, "m");
             }
-            arr[i++] = "P = " + Utils.UnitText(elm.GetPower(), "W");
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {

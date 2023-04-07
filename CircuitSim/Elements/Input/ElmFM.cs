@@ -37,8 +37,6 @@ namespace Circuit.Elements.Input {
 
         public override double GetVoltageDiff() { return Volts[0]; }
 
-        public override double GetPower() { return -GetVoltageDiff() * Current; }
-
         public override bool AnaHasGroundConnection(int n1) { return true; }
 
         public override void AnaStamp() {

@@ -42,8 +42,6 @@ namespace Circuit.Elements.Output {
 
         public override double GetVoltageDiff() { return Volts[0]; }
 
-        public override double GetPower() { return 0; }
-
         public override void CirIterationFinished() {
             mCount++; /*how many counts are in a cycle */
             mTotal += Current * Current; /* sum of squares */

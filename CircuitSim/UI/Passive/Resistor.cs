@@ -140,7 +140,6 @@ namespace Circuit.UI.Passive {
             arr[0] = string.IsNullOrEmpty(DumpInfo.ReferenceName) ? "抵抗" : DumpInfo.ReferenceName;
             getBasicInfo(arr);
             arr[3] = "R = " + Utils.UnitText(ce.Resistance, CirSimForm.OHM_TEXT);
-            arr[4] = "P = " + Utils.UnitText(ce.GetPower(), "W");
         }
 
         public override string GetScopeText() {
