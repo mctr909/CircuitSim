@@ -1647,22 +1647,38 @@ namespace Circuit {
                         }
                     }
                     var elm = ce.Elm;
-                    int jn = elm.PostCount;
-                    if (2 == jn) {
+                    if (2 == elm.PostCount) {
                         var p1 = elm.GetPost(0);
                         var p2 = elm.GetPost(1);
-                        if (Utils.DistanceOnLine(p1.X, p1.Y, p2.X, p2.Y, gx, gy) < 16) {
+                        if (Utils.Distance(p1, gx, gy) < 5) {
+                            /// TODO: select post
+                            newMouseElm = ce;
+                            Mouse.Post = 0;
+                            break;
+                        }
+                        if (Utils.Distance(p2, gx, gy) < 5) {
+                            /// TODO: select post
+                            newMouseElm = ce;
+                            Mouse.Post = 1;
+                            break;
+                        }
+                        if (Utils.DistanceOnLine(p1.X, p1.Y, p2.X, p2.Y, gx, gy) < 8) {
                             newMouseElm = ce;
                             break;
                         }
                     } else {
-                        for (int j = 0; j != jn; j++) {
+                        for (int j = elm.PostCount - 1; 0 <= j; j--) {
                             var pt = elm.GetPost(j);
-                            if (Utils.Distance(pt, gx, gy) < 16) {
+                            if (Utils.Distance(pt, gx, gy) < 5) {
+                                /// TODO: select post
                                 newMouseElm = ce;
                                 Mouse.Post = j;
                                 break;
                             }
+                        }
+                        if (ce.DumpInfo.BoundingBox.Contains(gx, gy)) {
+                            newMouseElm = ce;
+                            break;
                         }
                     }
                 }

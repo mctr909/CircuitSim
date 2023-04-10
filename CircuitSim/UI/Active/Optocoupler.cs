@@ -41,17 +41,16 @@ namespace Circuit.UI.Active {
             var ce = (ElmOptocoupler)Elm;
 
             // adapted from ChipElm
-            int hs = ce.mCspc;
             int x0 = DumpInfo.P1.X + ce.mCspc;
             int y0 = DumpInfo.P1.Y;
             var r = new Point(x0 - ce.mCspc, y0 - ce.mCspc / 2);
-            int sizeX = 2;
+            var sizeX = 1.5f;
             int sizeY = 2;
-            int xs = sizeX * ce.mCspc2;
-            int ys = sizeY * ce.mCspc2 - ce.mCspc;
+            int xs = (int)(sizeX * ce.mCspc2);
+            int ys = sizeY * ce.mCspc2 - ce.mCspc - 3;
             mRectPoints = new Point[] {
-                new Point(r.X, r.Y),
-                new Point(r.X + xs, r.Y),
+                new Point(r.X, r.Y + 3),
+                new Point(r.X + xs, r.Y + 3),
                 new Point(r.X + xs, r.Y + ys),
                 new Point(r.X, r.Y + ys)
             };
@@ -64,27 +63,28 @@ namespace Circuit.UI.Active {
             setPin(3, x0, y0, 0, 1, 0.5, 0, xs - ce.mCspc2, 0);
 
             /* diode */
-            ce.mDiode.SetPosition(ce.Posts[0].X + 16, ce.Posts[0].Y, ce.Posts[1].X + 16, ce.Posts[1].Y);
+            ce.mDiode.SetPosition(ce.Posts[0].X + 10, ce.Posts[0].Y, ce.Posts[1].X + 10, ce.Posts[1].Y);
             mStubs[0] = ce.mDiode.Elm.GetPost(0);
             mStubs[1] = ce.mDiode.Elm.GetPost(1);
 
             /* transistor */
             int midp = (ce.Posts[2].Y + ce.Posts[3].Y) / 2;
-            ce.mTransistor.SetPosition(ce.Posts[2].X - 20, midp, ce.Posts[2].X - 4, midp);
+            ce.mTransistor.SetPosition(ce.Posts[2].X - 18, midp, ce.Posts[2].X - 6, midp);
             mStubs[2] = ce.mTransistor.Elm.GetPost(1);
             mStubs[3] = ce.mTransistor.Elm.GetPost(2);
 
             /* create little arrows */
-            int sx = mStubs[0].X + 2;
+            int sx1 = mStubs[0].X;
+            int sx2 = sx1 + 16;
             int sy = (mStubs[0].Y + mStubs[1].Y) / 2;
             int y = sy - 5;
-            var p1 = new Point(sx, y);
-            var p2 = new Point(sx + 20, y);
-            Utils.CreateArrow(p1.X, p1.Y, p2.X, p2.Y, out mArrow1, 5, 2);
+            var p1 = new Point(sx1, y);
+            var p2 = new Point(sx2, y);
+            Utils.CreateArrow(p1, p2, out mArrow1, 5, 3);
             y = sy + 5;
-            p1 = new Point(sx, y);
-            p2 = new Point(sx + 20, y);
-            Utils.CreateArrow(p1.X, p1.Y, p2.X, p2.Y, out mArrow2, 5, 2);
+            p1 = new Point(sx1, y);
+            p2 = new Point(sx2, y);
+            Utils.CreateArrow(p1, p2, out mArrow2, 5, 3);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -105,16 +105,15 @@ namespace Circuit.UI.Active {
             drawPosts();
 
             /* draw little arrows */
-            var c = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            g.FillPolygon(c, mArrow1);
-            g.FillPolygon(c, mArrow2);
-            g.DrawColor = c;
-            int sx = mStubs[0].X + 2;
-            int sy = (mStubs[0].Y + mStubs[1].Y) / 2;
-            for (int i = 0; i != 2; i++) {
-                int y = sy + i * 10 - 5;
-                g.DrawLine(sx + 10, y, sx + 15, y);
-            }
+            var br = g.DrawColor;
+            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            var sx1 = mArrow1[0].X - 8;
+            var sx2 = sx1 + 2;
+            g.DrawLine(sx1, mArrow1[0].Y, sx2, mArrow1[0].Y);
+            g.DrawLine(sx1, mArrow2[0].Y, sx2, mArrow2[0].Y);
+            g.FillPolygon(g.DrawColor, mArrow1);
+            g.FillPolygon(g.DrawColor, mArrow2);
+            g.DrawColor = br;
         }
 
         public override void GetInfo(string[] arr) {
