@@ -133,13 +133,13 @@ namespace Circuit.UI.Output {
                     return Pointer + mScopePointCount - w;
                 }
 
-                public void Reset(int spc, int sp, bool full) {
+                public void Reset(int scopePoints, int speed, bool full) {
                     int oldSpc = mScopePointCount;
-                    mScopePointCount = spc;
-                    if (Speed != sp) {
+                    mScopePointCount = scopePoints;
+                    if (Speed != speed) {
                         oldSpc = 0; /* throw away old data */
                     }
-                    Speed = sp;
+                    Speed = speed;
                     var oldMin = MinValues;
                     var oldMax = MaxValues;
                     MinValues = new double[mScopePointCount];
