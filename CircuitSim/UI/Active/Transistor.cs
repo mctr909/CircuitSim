@@ -19,6 +19,8 @@ namespace Circuit.UI.Active {
 
         Point[] mRectPoly;
         Point[] mArrowPoly;
+        Point[] mPosC = new Point[3];
+        Point[] mPosE = new Point[3];
 
         public Transistor(Point pos, bool pnpflag) : base(pos) {
             Elm = new ElmTransistor(pnpflag);
@@ -70,10 +72,8 @@ namespace Circuit.UI.Active {
             var hsm = (HS / 8 + 1) * 8;
             var hs1 = HS * mDsign * ce.NPN;
             var hs2 = hsm * mDsign * ce.NPN;
-            ce.Coll = new Point[3];
-            ce.Emit = new Point[3];
-            interpPointAB(ref ce.Coll[0], ref ce.Emit[0], 1, hs2);
-            interpPointAB(ref ce.Coll[2], ref ce.Emit[2], 1, hs1);
+            interpPointAB(ref mPosC[1], ref mPosE[1], 1, hs1);
+            interpPointAB(ref mPosC[2], ref mPosE[2], 1, hs2);
 
             /* calc rectangle edges */
             var rect = new Point[4];
@@ -81,7 +81,7 @@ namespace Circuit.UI.Active {
             interpPointAB(ref rect[2], ref rect[3], 1 - (BODY_LEN - BASE_THICK) / mLen, HS);
 
             /* calc points where collector/emitter leads contact rectangle */
-            interpPointAB(ref ce.Coll[1], ref ce.Emit[1], 1 - (BODY_LEN - BASE_THICK) / mLen, 6 * mDsign * ce.NPN);
+            interpPointAB(ref mPosC[0], ref mPosE[0], 1 - (BODY_LEN - BASE_THICK) / mLen, 6 * mDsign * ce.NPN);
 
             /* calc point where base lead contacts rectangle */
             if (mDsign < 0) {
@@ -95,17 +95,16 @@ namespace Circuit.UI.Active {
 
             /* arrow */
             if (ce.NPN == 1) {
-                var e0 = ce.Emit[2];
-                var e1 = ce.Emit[1];
-                Utils.CreateArrow(e1.X, e1.Y, e0.X, e0.Y, out mArrowPoly, 8, 3);
+                Utils.CreateArrow(mPosE[0], mPosE[1], out mArrowPoly, 8, 3);
             } else {
-                var e0 = ce.Emit[2];
                 var pt = new Point();
                 interpPoint(ref pt, 1 - BODY_LEN / mLen, -5 * mDsign * ce.NPN);
-                Utils.CreateArrow(e0.X, e0.Y, pt.X, pt.Y, out mArrowPoly, 8, 3);
+                Utils.CreateArrow(mPosE[1], pt, out mArrowPoly, 8, 3);
             }
-
             setTextPos();
+
+            ce.Post[1] = mPosC[2];
+            ce.Post[2] = mPosE[2];
         }
 
         void setTextPos() {
@@ -129,11 +128,11 @@ namespace Circuit.UI.Active {
             var ce = (ElmTransistor)Elm;
 
             /* draw collector */
-            drawLead(ce.Coll[0], ce.Coll[2]);
-            drawLead(ce.Coll[2], ce.Coll[1]);
+            drawLead(mPosC[2], mPosC[1]);
+            drawLead(mPosC[1], mPosC[0]);
             /* draw emitter */
-            drawLead(ce.Emit[0], ce.Emit[2]);
-            drawLead(ce.Emit[2], ce.Emit[1]);
+            drawLead(mPosE[2], mPosE[1]);
+            drawLead(mPosE[1], mPosE[0]);
             /* draw arrow */
             g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mArrowPoly);
             /* draw base */
@@ -143,9 +142,9 @@ namespace Circuit.UI.Active {
             mCurCountB = updateDotCount(-ce.Ib, mCurCountB);
             drawDots(mTbase, Elm.Post[0], mCurCountB);
             mCurCountC = updateDotCount(-ce.Ic, mCurCountC);
-            drawDots(ce.Coll[1], ce.Coll[0], mCurCountC);
+            drawDots(mPosC[0], mPosC[2], mCurCountC);
             mCurCountE = updateDotCount(-ce.Ie, mCurCountE);
-            drawDots(ce.Emit[1], ce.Emit[0], mCurCountE);
+            drawDots(mPosE[0], mPosE[2], mCurCountE);
 
             /* draw base rectangle */
             g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mRectPoly);

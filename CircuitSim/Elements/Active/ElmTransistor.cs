@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 
 namespace Circuit.Elements.Active {
     class ElmTransistor : BaseElement {
@@ -24,9 +23,6 @@ namespace Circuit.Elements.Active {
         public double Vc { get { return Volts[IdxC]; } }
         public double Ve { get { return Volts[IdxE]; } }
 
-        public Point[] Coll;
-        public Point[] Emit;
-
         double mFgain;
         double mInv_fgain;
         double mGmin;
@@ -50,10 +46,6 @@ namespace Circuit.Elements.Active {
         }
 
         public override int PostCount { get { return 3; } }
-
-        public override Point GetPost(int n) {
-            return (n == 0) ? Post[0] : (n == 1) ? Coll[0] : Emit[0];
-        }
 
         public override double GetVoltageDiff() { return Volts[IdxC] - Volts[IdxE]; }
 
