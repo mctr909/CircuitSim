@@ -189,7 +189,7 @@ namespace Circuit {
             mG.DrawPolygon(mPenLine, p);
         }
 
-        public void FillRectangle(int x, int y, int width, int height) {
+        public virtual void FillRectangle(int x, int y, int width, int height) {
             mG.FillRectangle(mPenFill.Brush, x, y, width, height);
         }
 

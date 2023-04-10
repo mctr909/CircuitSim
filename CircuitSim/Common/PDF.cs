@@ -31,15 +31,6 @@ class PDF {
                 );
             }
         }
-        public override Color FillColor {
-            set {
-                mSw.WriteLine("{0} {1} {2} rg",
-                    (value.R / 255.0).ToString("0.##"),
-                    (value.G / 255.0).ToString("0.##"),
-                    (value.B / 255.0).ToString("0.##")
-                );
-            }
-        }
 
         public Page(int width, int height) : base(width, height) {
             mMs = new MemoryStream();
@@ -167,6 +158,14 @@ class PDF {
             writeLS(p.X, p.Y);
         }
 
+        public override void FillRectangle(int x, int y, int width, int heght) {
+            writeM(x, y);
+            writeL(x + width, y);
+            writeL(x + width, y + heght);
+            writeL(x, y + heght);
+            writeLF(x, y);
+        }
+
         public override void FillPolygon(Color color, Point[] poly) {
             var p = poly[0];
             writeM(p.X, p.Y);
@@ -255,11 +254,15 @@ class PDF {
             );
         }
 
-        void writeL(PointF p) {
+        void writeL(float x, float y) {
             mSw.WriteLine("{0} {1} l",
-                (p.X + mOfsX).ToString("0.##"),
-                (p.Y + mOfsY).ToString("0.##")
+                (x + mOfsX).ToString("0.##"),
+                (y + mOfsY).ToString("0.##")
             );
+        }
+
+        void writeL(PointF p) {
+            writeL(p.X, p.Y);
         }
 
         void writeLS(float x, float y) {
@@ -269,11 +272,15 @@ class PDF {
             );
         }
 
-        void writeLF(PointF p) {
+        void writeLF(float x, float y) {
             mSw.WriteLine("{0} {1} l f",
-                (p.X + mOfsX).ToString("0.##"),
-                (p.Y + mOfsY).ToString("0.##")
+                (x + mOfsX).ToString("0.##"),
+                (y + mOfsY).ToString("0.##")
             );
+        }
+
+        void writeLF(PointF p) {
+            writeLF(p.X, p.Y);
         }
 
         byte[] comp(MemoryStream ms) {

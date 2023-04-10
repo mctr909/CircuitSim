@@ -1097,44 +1097,32 @@ namespace Circuit.UI.Output {
                         g.DrawColor = mSomethingSelected ? Plot.GRAY : plot.Color;
                     }
                 }
+                g.FillColor = g.DrawColor;
 
                 var idxBegin = plot.StartIndex(BoundingBox.Width);
-                var idx0 = idxBegin & (mScopePointCount - 1);
                 var arrMaxV = plot.MaxValues;
                 var arrMinV = plot.MinValues;
-                var max_o = (int)(gridMult * (arrMaxV[idx0] - gridMid));
-                var min_o = (int)(gridMult * (arrMinV[idx0] - gridMid));
                 int ox = 0;
+                int oy = (int)(gridMult * (arrMinV[idxBegin & (mScopePointCount - 1)] - gridMid));
                 for (int px = 0; px != BoundingBox.Width; px++) {
                     int idx = (px + idxBegin) & (mScopePointCount - 1);
-                    var max_n = (int)(gridMult * (arrMaxV[idx] - gridMid));
-                    var min_n = (int)(gridMult * (arrMinV[idx] - gridMid));
-                    if (min_n < minRangeLo || max_n > minRangeHi) {
+                    var max = (int)(gridMult * (arrMaxV[idx] - gridMid));
+                    var min = (int)(gridMult * (arrMinV[idx] - gridMid));
+                    if (min < minRangeLo || max > minRangeHi) {
                         mReduceRange = false;
                         minRangeLo = -1000;
                         minRangeHi = 1000;
                     }
-                    if (maxY < min_n) {
+                    if (maxY < min) {
                         continue;
                     }
-                    var dmax = max_n - max_o;
-                    var dmin = min_n - min_o;
-                    if (0 < dmax) {
-                        g.DrawLine(ox, maxY - max_o, px, maxY - max_o);
-                    } else if (dmin < 0) {
-                        g.DrawLine(ox, maxY - min_o, px, maxY - min_o);
+                    if (Math.Abs(min - oy) < Math.Abs(max - oy)) {
+                        g.DrawLine(ox, maxY - (min + oy) / 2.0f, px, maxY - max);
+                        oy = max;
                     } else {
-                        if (dmax * dmax < dmin * dmin) {
-                            g.DrawLine(ox, maxY - max_o, px, maxY - max_n);
-                        } else {
-                            g.DrawLine(ox, maxY - min_o, px, maxY - min_n);
-                        }
+                        g.DrawLine(ox, maxY - (max + oy) / 2.0f, px, maxY - min);
+                        oy = min;
                     }
-                    if (min_n != max_n) {
-                        g.DrawLine(px, maxY - min_n, px, maxY - max_n);
-                    }
-                    max_o = max_n;
-                    min_o = min_n;
                     ox = px;
                 }
             }
