@@ -1,23 +1,18 @@
 ﻿using System;
-using System.Drawing;
 
 namespace Circuit.Elements.Active {
     class ElmMosfet : BaseElement {
         const int IdxG = 0;
         const int IdxS = 1;
         const int IdxD = 2;
-        const int POST_G = 0;
-        const int POST_S = 1;
-        const int POST_D = 2;
-        const int POST_BODY = 3;
 
+        const double BackwardCompatibilityHfe = 0.02;
         const double DiodeVcrit = 0.6347668814648425;
         const double DiodeVscale = 0.05173;
         const double DiodeLeakage = 1.7143528192808883E-07;
         const double DiodeVdCoef = 19.331142470520007;
 
         public const double DefaultThreshold = 1.5;
-        public const double BackwardCompatibilityHfe = 0.02;
 
         public static double LastHfe;
 
@@ -40,10 +35,6 @@ namespace Circuit.Elements.Active {
         public double Vs { get { return Volts[IdxS]; } }
         public double Vd { get { return Volts[IdxD]; } }
 
-        public Point[] Src;
-        public Point[] Drn;
-        public Point[] Body;
-
         int mDiode1Node0;
         int mDiode1Node1;
         int mDiode2Node0;
@@ -65,27 +56,6 @@ namespace Circuit.Elements.Active {
         }
 
         public override int PostCount { get { return 3; } }
-
-        /* post
-         * 0 = gate
-         * 1 = source for NPN
-         * 2 = drain for NPN
-         * 3 = body (if present)
-         * for PNP, 1 is drain, 2 is source */
-        public override Point GetPost(int n) {
-            switch (n) {
-            case POST_G:
-                return Post[0];
-            case POST_S:
-                return Src[0];
-            case POST_D:
-                return Drn[0];
-            case POST_BODY:
-                return Body[0];
-            default:
-                return new Point();
-            }
-        }
 
         public override double GetVoltageDiff() { return Volts[IdxD] - Volts[IdxS]; }
 
