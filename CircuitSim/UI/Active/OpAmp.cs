@@ -16,6 +16,9 @@ namespace Circuit.UI.Active {
 
         Point[] mTextp;
         Point[] mTriangle;
+        Point mPosOut = new Point();
+        Point[] mPosIn1 = new Point[2];
+        Point[] mPosIn2 = new Point[2];
 
         public OpAmp(Point pos) : base(pos) {
             mNoDiagonal = true;
@@ -52,11 +55,9 @@ namespace Circuit.UI.Active {
         public override void Draw(CustomGraphics g) {
             setBbox(mOpHeight * 2);
 
-            var ce = (ElmOpAmp)Elm;
-
-            drawLead(ce.In1p[0], ce.In1p[1]);
-            drawLead(ce.In2p[0], ce.In2p[1]);
-            drawLeadB();
+            drawLead(mPosIn1[0], mPosIn1[1]);
+            drawLead(mPosIn2[0], mPosIn2[1]);
+            drawLead(mLead2, mPosOut);
 
             g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             g.DrawPolygon(mTriangle);
@@ -65,8 +66,8 @@ namespace Circuit.UI.Active {
             drawLead(mTextp[2], mTextp[3]);
             drawLead(mTextp[4], mTextp[5]);
 
-            CurCount = updateDotCount(ce.Current, CurCount);
-            drawDotsB(-CurCount);
+            CurCount = updateDotCount(Elm.Current, CurCount);
+            drawDots(mLead2, mPosOut, -CurCount);
             drawPosts();
         }
 
@@ -81,11 +82,9 @@ namespace Circuit.UI.Active {
             if ((DumpInfo.Flags & FLAG_SWAP) != 0) {
                 hs = -hs;
             }
-            var ce = (ElmOpAmp)Elm;
-            ce.In1p = new Point[2];
-            ce.In2p = new Point[2];
-            interpPointAB(ref ce.In1p[0], ref ce.In2p[0], 0, hs);
-            interpLeadAB(ref ce.In1p[1], ref ce.In2p[1], 0, hs);
+            interpPointAB(ref mPosIn1[0], ref mPosIn2[0], 0, hs);
+            interpLeadAB(ref mPosIn1[1], ref mPosIn2[1], 0, hs);
+            mPosOut = Elm.Post[1];
 
             var signp = new Point[2];
             interpLeadAB(ref signp[0], ref signp[1], 0.2, hs);
@@ -101,6 +100,10 @@ namespace Circuit.UI.Active {
             var tris = new Point[2];
             interpLeadAB(ref tris[0], ref tris[1], 0, hs * 2);
             mTriangle = new Point[] { tris[0], tris[1], mLead2 };
+
+            Elm.Post[0] = mPosIn1[0];
+            Elm.Post[1] = mPosIn2[0];
+            Elm.Post[2] = mPosOut;
         }
 
         public override void GetInfo(string[] arr) {
