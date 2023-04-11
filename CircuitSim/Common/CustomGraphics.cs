@@ -85,6 +85,13 @@ namespace Circuit {
             mG = Graphics.FromImage(mImage);
         }
 
+        public CustomGraphics(Bitmap image) {
+            Width = image.Width;
+            Height = image.Height;
+            mImage = image;
+            mG = Graphics.FromImage(mImage);
+        }
+
         public void CopyTo(Graphics g) {
             g.DrawImage(mImage, 0, 0);
         }

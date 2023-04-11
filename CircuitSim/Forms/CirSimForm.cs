@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-using Circuit.Elements;
 using Circuit.Elements.Active;
 using Circuit.Elements.Passive;
 
 using Circuit.UI;
 using Circuit.UI.Passive;
 using Circuit.UI.Output;
+using Circuit.Forms;
 
 namespace Circuit {
     public partial class CirSimForm : Form {
@@ -55,7 +55,6 @@ namespace Circuit {
         public static double CurrentMult { get; set; } = 0;
         public static bool IsRunning { get; private set; }
         public static MOUSE_MODE MouseMode { get; private set; } = MOUSE_MODE.SELECT;
-        public static int SelectedScope { get; private set; } = -1;
         public static BaseUI DragElm { get; private set; }
         public static int MouseCursorX { get; private set; } = -1;
         public static int MouseCursorY { get; private set; } = -1;
@@ -67,7 +66,7 @@ namespace Circuit {
         #endregion
 
         #region Variable
-        static class Mouse {
+        public static class Mouse {
             public static BaseUI GripElm = null;
             public static ELEMENTS EditElm = ELEMENTS.INVALID;
             public static MOUSE_MODE TempMode = MOUSE_MODE.SELECT;
@@ -84,6 +83,10 @@ namespace Circuit {
             public static Rectangle SelectedArea;
         }
 
+        public static CirSimForm Instance = null;
+
+        static ScopeForm mScopeForm = new ScopeForm();
+
         static string mFileName = "";
         static ScrollValuePopup mScrollValuePopup;
         static bool mNeedsRepaint;
@@ -97,7 +100,6 @@ namespace Circuit {
         SplitContainer mSplitContainer;
 
         static ContextMenuStrip mContextMenu = null;
-        Point mContextMenuLocation;
         ElementPopupMenu mElementPopupMenu;
         ScopePopupMenu mScopePopupMenu;
 
@@ -140,6 +142,7 @@ namespace Circuit {
 
         public CirSimForm() {
             InitializeComponent();
+            Instance = this;
 
             mMenuItems = new MenuItems(this);
             ControlPanel.Init();
@@ -170,7 +173,7 @@ namespace Circuit {
                 mPixCir.MouseMove += new MouseEventHandler((s, e) => { onMouseMove(e); });
                 mPixCir.MouseUp += new MouseEventHandler((s, e) => { onMouseUp(e); });
                 mPixCir.MouseWheel += new MouseEventHandler((s, e) => { onMouseWheel((PictureBox)s, e); });
-                mPixCir.MouseClick += new MouseEventHandler((s, e) => { onClick((PictureBox)s, e); });
+                mPixCir.MouseClick += new MouseEventHandler((s, e) => { onClick(e); });
                 mPixCir.MouseLeave += new EventHandler((s, e) => { onMouseLeave(); });
                 mPixCir.DoubleClick += new EventHandler((s, e) => { onDoubleClick(e); });
             }
@@ -210,6 +213,7 @@ namespace Circuit {
         private void Form1_Load(object sender, EventArgs e) {
             Width = 800;
             Height = 600;
+            mScopeForm.Show();
         }
 
         public void Performed(MENU_ITEM item) {
@@ -314,7 +318,7 @@ namespace Circuit {
             }
 
             if (item == ELEMENT_MENU_ITEM.EDIT) {
-                doEdit(mMenuElm, mContextMenuLocation);
+                doEdit(mMenuElm, mMenuClient);
             }
             if (item == ELEMENT_MENU_ITEM.SPLIT) {
                 doSplit(mMenuElm);
@@ -323,7 +327,7 @@ namespace Circuit {
                 doFlip();
             }
             if (item == ELEMENT_MENU_ITEM.SLIDERS) {
-                doSliders(mMenuElm, mContextMenuLocation);
+                doSliders(mMenuElm, mMenuClient);
             }
 
             if (item == ELEMENT_MENU_ITEM.VIEW_IN_SCOPE && mMenuElm != null) {
@@ -729,10 +733,10 @@ namespace Circuit {
             }
 
             if (code == Keys.Back || code == Keys.Delete) {
-                if (SelectedScope != -1 && null != Scope.Property.List[SelectedScope]) {
+                if (ScopeForm.SelectedScope != -1 && null != Scope.Property.List[ScopeForm.SelectedScope]) {
                     /* Treat DELETE key with scope selected as "remove scope", not delete */
-                    Scope.Property.List[SelectedScope].SetElm(null);
-                    SelectedScope = -1;
+                    Scope.Property.List[ScopeForm.SelectedScope].SetElm(null);
+                    ScopeForm.SelectedScope = -1;
                 } else {
                     mMenuElm = null;
                     PushUndo();
@@ -755,12 +759,12 @@ namespace Circuit {
         #endregion
 
         #region Mouse event method
-        void onClick(Control s, MouseEventArgs e) {
+        void onClick(MouseEventArgs e) {
             if (e.Button == MouseButtons.Middle) {
                 scrollValues(0);
             }
             if (e.Button == MouseButtons.Right) {
-                onContextMenu(s, e);
+                onContextMenu(e);
             }
         }
 
@@ -819,13 +823,13 @@ namespace Circuit {
                 }
             }
 
-            if ((SelectedScope != -1 && Scope.Property.List[SelectedScope].CursorInSettingsWheel) ||
-                (SelectedScope == -1 && Mouse.GripElm != null && (Mouse.GripElm is Scope) &&
+            if ((ScopeForm.SelectedScope != -1 && Scope.Property.List[ScopeForm.SelectedScope].CursorInSettingsWheel) ||
+                (ScopeForm.SelectedScope == -1 && Mouse.GripElm != null && (Mouse.GripElm is Scope) &&
                 ((Scope)Mouse.GripElm).Properties.CursorInSettingsWheel)) {
                 Console.WriteLine("Doing something");
                 Scope.Property s;
-                if (SelectedScope != -1) {
-                    s = Scope.Property.List[SelectedScope];
+                if (ScopeForm.SelectedScope != -1) {
+                    s = Scope.Property.List[ScopeForm.SelectedScope];
                 } else {
                     s = ((Scope)Mouse.GripElm).Properties;
                 }
@@ -1634,7 +1638,7 @@ namespace Circuit {
                 }
             }
 
-            SelectedScope = -1;
+            ScopeForm.SelectedScope = -1;
             if (newMouseElm == null) {
                 /* the mouse pointer was not in any of the bounding boxes, but we
                 /* might still be close to a post */
@@ -1682,14 +1686,6 @@ namespace Circuit {
                         }
                     }
                 }
-                for (int i = 0; i != Scope.Property.Count; i++) {
-                    var s = Scope.Property.List[i];
-                    if (s.BoundingBox.Contains(mx, my)) {
-                        newMouseElm = s.UI;
-                        SelectedScope = i;
-                        break;
-                    }
-                }
             } else {
                 Mouse.Post = -1;
                 /* look for post close to the mouse pointer */
@@ -1704,9 +1700,15 @@ namespace Circuit {
             setMouseElm(newMouseElm);
         }
 
-        void onContextMenu(Control ctrl, MouseEventArgs e) {
+        void onContextMenu(MouseEventArgs e) {
             mMenuClient.X = Location.X + e.X;
             mMenuClient.Y = Location.Y + e.Y;
+            doPopupMenu();
+        }
+
+        public void doPopupMenu(int x, int y) {
+            mMenuClient.X = x;
+            mMenuClient.Y = y;
             doPopupMenu();
         }
 
@@ -1714,36 +1716,33 @@ namespace Circuit {
             mMenuElm = Mouse.GripElm;
             mMenuScope = -1;
             mMenuPlotWave = -1;
-            if (SelectedScope != -1) {
-                if (Scope.Property.List[SelectedScope].CanMenu) {
-                    mMenuScope = SelectedScope;
-                    mMenuPlotWave = Scope.Property.List[SelectedScope].SelectedPlot;
-                    mContextMenu = mScopePopupMenu.Show(mMenuClient.X, Bottom, Scope.Property.List, SelectedScope, false);
-                    mContextMenuLocation = mContextMenu.Location;
+            if (ScopeForm.SelectedScope != -1) {
+                if (Scope.Property.List[ScopeForm.SelectedScope].CanMenu) {
+                    mMenuScope = ScopeForm.SelectedScope;
+                    mMenuPlotWave = Scope.Property.List[ScopeForm.SelectedScope].SelectedPlot;
+                    mContextMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, Scope.Property.List, ScopeForm.SelectedScope, false);
                 }
             } else if (Mouse.GripElm != null) {
                 if (!(Mouse.GripElm is Scope)) {
                     mContextMenu = mElementPopupMenu.Show(mMenuClient.X, mMenuClient.Y, Mouse.GripElm);
-                    mContextMenuLocation = mContextMenu.Location;
                 } else {
                     var s = (Scope)Mouse.GripElm;
                     if (s.Properties.CanMenu) {
                         mMenuPlotWave = s.Properties.SelectedPlot;
                         mContextMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, new Scope.Property[] { s.Properties }, 0, true);
-                        mContextMenuLocation = mContextMenu.Location;
                     }
                 }
             }
         }
 
         void clearMouseElm() {
-            SelectedScope = -1;
+            ScopeForm.SelectedScope = -1;
             setMouseElm(null);
             PlotXElm = PlotYElm = null;
         }
 
         void scrollValues(int deltay) {
-            if (Mouse.GripElm != null && !DialogIsShowing() && SelectedScope == -1) {
+            if (Mouse.GripElm != null && !DialogIsShowing() && ScopeForm.SelectedScope == -1) {
                 if ((Mouse.GripElm is Resistor) || (Mouse.GripElm is Capacitor) || (Mouse.GripElm is Inductor)) {
                     mScrollValuePopup = new ScrollValuePopup(deltay, Mouse.GripElm);
                     mScrollValuePopup.Show(
@@ -2080,10 +2079,9 @@ namespace Circuit {
                 mAnalyzeFlag = false;
             }
 
-            Scope.Property.Setup(BaseUI.Context.Height - mCircuitArea.Height);
-
             var g = BaseUI.Context;
             PDF.Page pdfG = null;
+            PDF.Page scopeG = null;
             var bkIsRun = IsRunning;
             var bkPrint = ControlPanel.ChkPrintable.Checked;
             if (g.DoPrint) {
@@ -2095,6 +2093,7 @@ namespace Circuit {
                     ControlPanel.ChkPrintable.Checked = false;
                 }
                 pdfG = new PDF.Page(g.Width, g.Height);
+                scopeG = new PDF.Page(mScopeForm.Width, mScopeForm.Height);
                 g = pdfG;
                 BaseUI.Context = pdfG;
             }
@@ -2214,68 +2213,7 @@ namespace Circuit {
             }
             g.ClearTransform();
 
-            if (null == pdfG) {
-                var bScopeArea = ControlPanel.ChkPrintable.Checked ? Brushes.White : Brushes.Black;
-                g.FillRectangle(bScopeArea,
-                    0, mCircuitArea.Height,
-                    mCircuitArea.Width, g.Height - mCircuitArea.Height
-                );
-                g.SetPlotBottom(0, mCircuitArea.Height - 2);
-                {
-                    g.DrawColor = Mouse.IsOverSplitter ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-                    g.DrawLine(0, -2, mCircuitArea.Width, -2);
-                    g.DrawLine(0, 0, mCircuitArea.Width, 0);
-                }
-                g.ClearTransform();
-
-                var ct = Scope.Property.Count;
-                if (Circuit.StopMessage != null) {
-                    ct = 0;
-                }
-                for (int i = 0; i != ct; i++) {
-                    Scope.Property.List[i].Draw(g);
-                }
-
-                if (Circuit.StopMessage != null) {
-                    g.DrawLeftText(Circuit.StopMessage, 10, mCircuitArea.Height - 10);
-                } else {
-                    var info = new string[10];
-                    if (Mouse.GripElm != null) {
-                        if (Mouse.Post == -1) {
-                            Mouse.GripElm.GetInfo(info);
-                        } else {
-                            info[0] = "V = " + Mouse.GripElm.DispPostVoltage(Mouse.Post);
-                        }
-                    } else {
-                        info[0] = "t = " + Utils.TimeText(Circuit.Time);
-                        info[1] = "time step = " + Utils.TimeText(ControlPanel.TimeStep);
-                    }
-
-                    /* count lines of data */
-                    {
-                        int infoIdx;
-                        for (infoIdx = 0; infoIdx < info.Length - 1 && info[infoIdx] != null; infoIdx++)
-                            ;
-                        int badnodes = Circuit.BadConnectionList.Count;
-                        if (badnodes > 0) {
-                            info[infoIdx++] = badnodes + ((badnodes == 1) ? " bad connection" : " bad connections");
-                        }
-                    }
-
-                    int x = 0;
-                    if (ct != 0) {
-                        x = Scope.Property.List[ct - 1].RightEdge + 20;
-                    }
-                    x = Math.Max(x, g.Width * 2 / 3);
-                    g.SetPlotBottom(x, mCircuitArea.Height);
-                    {
-                        for (int i = 0; i < info.Length && info[i] != null; i++) {
-                            g.DrawLeftText(info[i], 0, 15 * (i + 1));
-                        }
-                    }
-                    g.ClearTransform();
-                }
-            }
+            mScopeForm.Draw(scopeG);
 
             if (null != mPixCir.Image) {
                 mPixCir.Image.Dispose();
@@ -2299,6 +2237,7 @@ namespace Circuit {
             } else {
                 var pdf = new PDF();
                 pdf.AddPage(pdfG);
+                pdf.AddPage(scopeG);
                 var saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Filter = "PDFファイル(*.pdf)|*.pdf";
                 saveFileDialog.FileName = Path.GetFileNameWithoutExtension(mFileName);

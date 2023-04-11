@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-
+using Circuit.Elements;
 using Circuit.Elements.Output;
 using Circuit.Forms;
 using Circuit.UI.Passive;
@@ -79,6 +79,113 @@ namespace Circuit.UI.Output {
             drawPosts();
         }
 
+        public class Plot {
+            public static readonly Color RED = Color.FromArgb(0xBF, 0x00, 0x00);
+            public static readonly Color GREEN = Color.FromArgb(0x00, 0xBF, 0x00);
+            public static readonly Color BLUE = Color.FromArgb(0x2F, 0x2F, 0xCF);
+            public static readonly Color PURPLE = Color.FromArgb(0xBF, 0x00, 0xBF);
+            public static readonly Color MAGENTA = Color.FromArgb(0xEC, 0x00, 0x8C);
+            public static readonly Color CYAN = Color.FromArgb(0x00, 0xCF, 0xCF);
+            public static readonly Color YELLOW = Color.FromArgb(0xCF, 0xCF, 0x00);
+            public static readonly Color GRAY = Color.FromArgb(0xA0, 0xA0, 0xA0);
+            public static readonly Color[] COLORS = {
+                RED,
+                GREEN,
+                BLUE,
+                PURPLE,
+                MAGENTA,
+                CYAN,
+                YELLOW,
+                GRAY
+            };
+
+            public enum E_COLOR : int {
+                RED,
+                GREEN,
+                BLUE,
+                PURPLE,
+                MAGENTA,
+                CYAN,
+                YELLOW,
+                GRAY,
+                INVALID
+            }
+
+            public BaseUI UI;
+            public double[] MinValues;
+            public double[] MaxValues;
+            public int Speed;
+            public int Pointer;
+
+            BaseElement mElm;
+            int mCounter;
+            int mScopePointCount;
+
+            public Color Color { get; private set; }
+            public E_COLOR ColorIndex { get; private set; } = E_COLOR.INVALID;
+
+            public Plot(BaseUI e) {
+                UI = e;
+                mElm = e.Elm;
+            }
+
+            public void SetColor(int index) {
+                if (0 <= index) {
+                    ColorIndex = (E_COLOR)(index % COLORS.Length);
+                } else {
+                    ColorIndex = E_COLOR.GREEN;
+                }
+                Color = COLORS[(int)ColorIndex];
+            }
+
+            public int StartIndex(int w) {
+                return Pointer + mScopePointCount - w;
+            }
+
+            public void Reset(int scopePoints, int speed, bool full) {
+                var oldSpc = mScopePointCount;
+                mScopePointCount = scopePoints;
+                if (Speed != speed) {
+                    oldSpc = 0;
+                }
+                Speed = speed;
+                var oldMin = MinValues;
+                var oldMax = MaxValues;
+                MinValues = new double[mScopePointCount];
+                MaxValues = new double[mScopePointCount];
+                if (oldMin != null && !full) {
+                    for (int i = 0; i != mScopePointCount && i != oldSpc; i++) {
+                        int i1 = (-i) & (mScopePointCount - 1);
+                        int i2 = (Pointer - i) & (oldSpc - 1);
+                        MinValues[i1] = oldMin[i2];
+                        MaxValues[i1] = oldMax[i2];
+                    }
+                } else {
+                    mCounter = 0;
+                }
+                Pointer = 0;
+            }
+
+            public void TimeStep() {
+                if (mElm == null) {
+                    return;
+                }
+                var v = mElm.GetVoltageDiff();
+                if (v < MinValues[Pointer]) {
+                    MinValues[Pointer] = v;
+                }
+                if (v > MaxValues[Pointer]) {
+                    MaxValues[Pointer] = v;
+                }
+                mCounter++;
+                if (mCounter >= Speed) {
+                    Pointer = (Pointer + 1) & (mScopePointCount - 1);
+                    MinValues[Pointer] = MaxValues[Pointer] = v;
+                    mCounter = 0;
+                }
+            }
+        }
+
         public class Property {
             #region CONST
             const int INFO_WIDTH = 120;
@@ -87,111 +194,6 @@ namespace Circuit.UI.Output {
 
             readonly double[] MULTA = new double[] { 1.5, 2.0, 1.5 };
             #endregion
-
-            public class Plot {
-                public static readonly Color RED = Color.FromArgb(0xBF, 0x00, 0x00);
-                public static readonly Color YELLOW = Color.FromArgb(0xCF, 0xCF, 0x00);
-                public static readonly Color GREEN = Color.FromArgb(0x00, 0xBF, 0x00);
-                public static readonly Color BLUE = Color.FromArgb(0x2F, 0x2F, 0xCF);
-                public static readonly Color PURPLE = Color.FromArgb(0xBF, 0x00, 0xBF);
-                public static readonly Color GRAY = Color.FromArgb(0xA0, 0xA0, 0xA0);
-
-                public static readonly Color[] COLORS = {
-                GREEN,
-                YELLOW,
-                RED,
-                BLUE,
-                PURPLE
-            };
-                public enum E_COLOR : int {
-                    GREEN,
-                    YELLOW,
-                    RED,
-                    BLUE,
-                    PURPLE,
-                    INVALID
-                }
-
-                public BaseUI UI;
-
-                public double[] MinValues { get; private set; }
-                public double[] MaxValues { get; private set; }
-                public int Pointer { get; private set; }
-                public int Speed { get; private set; }
-                public double LastValue { get; private set; }
-                public Color Color { get; private set; }
-                public E_COLOR ColorIndex { get; private set; } = E_COLOR.INVALID;
-
-                int mScopePointCount;
-                int mCounter;
-
-                public Plot(BaseUI e) {
-                    UI = e;
-                }
-
-                public int StartIndex(int w) {
-                    return Pointer + mScopePointCount - w;
-                }
-
-                public void Reset(int scopePoints, int speed, bool full) {
-                    int oldSpc = mScopePointCount;
-                    mScopePointCount = scopePoints;
-                    if (Speed != speed) {
-                        oldSpc = 0; /* throw away old data */
-                    }
-                    Speed = speed;
-                    var oldMin = MinValues;
-                    var oldMax = MaxValues;
-                    MinValues = new double[mScopePointCount];
-                    MaxValues = new double[mScopePointCount];
-                    if (oldMin != null && !full) {
-                        /* preserve old data if possible */
-                        int i;
-                        for (i = 0; i != mScopePointCount && i != oldSpc; i++) {
-                            int i1 = (-i) & (mScopePointCount - 1);
-                            int i2 = (Pointer - i) & (oldSpc - 1);
-                            MinValues[i1] = oldMin[i2];
-                            MaxValues[i1] = oldMax[i2];
-                        }
-                    } else {
-                        mCounter = 0;
-                    }
-                    Pointer = 0;
-                }
-
-                public void TimeStep() {
-                    if (UI == null) {
-                        return;
-                    }
-                    double v = UI.Elm.GetVoltageDiff();
-                    if (v < MinValues[Pointer]) {
-                        MinValues[Pointer] = v;
-                    }
-                    if (v > MaxValues[Pointer]) {
-                        MaxValues[Pointer] = v;
-                    }
-                    LastValue = v;
-                    mCounter++;
-                    if (mCounter >= Speed) {
-                        Pointer = (Pointer + 1) & (mScopePointCount - 1);
-                        MinValues[Pointer] = MaxValues[Pointer] = v;
-                        mCounter = 0;
-                    }
-                }
-
-                public string GetUnitText(double v) {
-                    return Utils.VoltageText(v);
-                }
-
-                public void SetColor(int index) {
-                    if (0 <= index) {
-                        ColorIndex = (E_COLOR)(index % COLORS.Length);
-                    } else {
-                        ColorIndex = E_COLOR.GREEN;
-                    }
-                    Color = COLORS[(int)ColorIndex];
-                }
-            }
 
             public static int Count { get; set; }
             public static Property[] List { get; set; } = new Property[20];
@@ -306,16 +308,6 @@ namespace Circuit.UI.Output {
             public bool CanMenu {
                 get { return Plots[0].UI != null; }
             }
-            public bool ViewingWire {
-                get {
-                    foreach (var plot in Plots) {
-                        if (plot.UI is Wire) {
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-            }
             public bool NeedToRemove {
                 get {
                     bool ret = true;
@@ -405,7 +397,7 @@ namespace Circuit.UI.Output {
             }
 
             #region [public method]
-            public static void Setup(int height) {
+            public static void Setup(CustomGraphics g) {
                 /* check scopes to make sure the elements still exist, and remove
                 /* unused scopes/columns */
                 int pos = -1;
@@ -444,7 +436,7 @@ namespace Circuit.UI.Output {
                 if (colct <= 2) {
                     iw = iw * 3 / 2;
                 }
-                int w = (BaseUI.Context.Width - iw) / colct;
+                int w = (g.Width - iw) / colct;
                 int marg = 10;
                 if (w < marg * 2) {
                     w = marg * 2;
@@ -460,7 +452,12 @@ namespace Circuit.UI.Output {
                     }
                     if (s.Position > pos) {
                         pos = s.Position;
-                        colh = height / scopeColCount[pos];
+                        var div = scopeColCount[pos];
+                        if (0 < div) {
+                            colh = g.Height / div;
+                        } else {
+                            colh = g.Height;
+                        }
                         row = 0;
                         speed = s.Speed;
                     }
@@ -469,7 +466,7 @@ namespace Circuit.UI.Output {
                         s.Speed = speed;
                         s.ResetGraph();
                     }
-                    var r = new Rectangle(pos * w, BaseUI.Context.Height - height + colh * row, w - marg, colh);
+                    var r = new Rectangle(pos * w, colh * row, w - marg, colh);
                     row++;
                     if (!r.Equals(s.BoundingBox)) {
                         s.SetRect(r);
@@ -686,6 +683,7 @@ namespace Circuit.UI.Output {
                         var subElm = CirSimForm.UIList[subElmIdx];
                         var color = (int)Enum.Parse(typeof(Plot.E_COLOR), subElmCol[1]);
                         var p = new Plot(subElm);
+                        p.Speed = Speed;
                         p.SetColor(color);
                         Plots.Add(p);
                     }
@@ -721,7 +719,9 @@ namespace Circuit.UI.Output {
                     ResetGraph();
                 }
 
-                drawSettingsWheel(g, isFloat);
+                if (isFloat) {
+                    drawSettingsWheel(g);
+                }
 
                 if (mMaxScale) {
                     mScale = 1e-4;
@@ -731,7 +731,7 @@ namespace Circuit.UI.Output {
 
                 foreach (var p in Plots) {
                     calcPlotScale(p);
-                    if (CirSimForm.SelectedScope == -1 && p.UI != null && p.UI.IsMouseElm) {
+                    if (ScopeForm.SelectedScope == -1 && p.UI != null && p.UI.IsMouseElm) {
                         mSomethingSelected = true;
                     }
                     mReduceRange = true;
@@ -813,8 +813,9 @@ namespace Circuit.UI.Output {
             }
 
             void setValue(BaseUI ce) {
-                Plots = new List<Plot>();
-                Plots.Add(new Plot(ce));
+                Plots = new List<Plot>() {
+                    new Plot(ce)
+                };
                 mShowV = true;
                 ResetGraph();
             }
@@ -876,12 +877,12 @@ namespace Circuit.UI.Output {
                 if (CirSimForm.DialogIsShowing()) {
                     return;
                 }
-                if (!BoundingBox.Contains(CirSimForm.MouseCursorX, CirSimForm.MouseCursorY)) {
+                if (!BoundingBox.Contains(ScopeForm.MouseCursorX, ScopeForm.MouseCursorY)) {
                     SelectedPlot = -1;
                     return;
                 }
                 int ipa = Plots[0].StartIndex(BoundingBox.Width);
-                int ip = (CirSimForm.MouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
+                int ip = (ScopeForm.MouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
                 int maxy = (BoundingBox.Height - 1) / 2;
                 int y = maxy;
                 int i;
@@ -892,7 +893,7 @@ namespace Circuit.UI.Output {
                     var plot = Plots[i];
                     var scale = mScale;
                     int maxvy = (int)(maxy / scale * plot.MaxValues[ip]);
-                    int dist = Math.Abs(CirSimForm.MouseCursorY - (BoundingBox.Y + y - maxvy));
+                    int dist = Math.Abs(ScopeForm.MouseCursorY - (BoundingBox.Y + y - maxvy));
                     if (dist < bestdist) {
                         bestdist = dist;
                         best = i;
@@ -909,7 +910,7 @@ namespace Circuit.UI.Output {
                 }
             }
 
-            void drawSettingsWheel(CustomGraphics g, bool isFloat) {
+            void drawSettingsWheel(CustomGraphics g) {
                 const int outR = 6 * 18 / 16;
                 const int inR = 4 * 18 / 16;
                 const int inR45 = 3 * 18 / 16;
@@ -920,11 +921,7 @@ namespace Circuit.UI.Output {
                     } else {
                         g.DrawColor = Color.DarkGray;
                     }
-                    if (isFloat) {
-                        g.SetPlotFloat(BoundingBox.X + 12, BoundingBox.Y + BoundingBox.Height - 16);
-                    } else {
-                        g.SetPlotBottom(BoundingBox.X + 12, BoundingBox.Y + BoundingBox.Height - 16);
-                    }
+                    g.SetPlotFloat(BoundingBox.X + 12, BoundingBox.Y + BoundingBox.Height - 16);
                     {
                         g.DrawCircle(new Point(), inR);
                         g.DrawLine(-outR, 0, -inR, 0);
@@ -944,7 +941,7 @@ namespace Circuit.UI.Output {
                 if (CirSimForm.DialogIsShowing()) {
                     return;
                 }
-                if (!BoundingBox.Contains(CirSimForm.MouseCursorX, CirSimForm.MouseCursorY)) {
+                if (!BoundingBox.Contains(ScopeForm.MouseCursorX, ScopeForm.MouseCursorY)) {
                     return;
                 }
                 if (SelectedPlot < 0 && !mShowFFT) {
@@ -952,24 +949,24 @@ namespace Circuit.UI.Output {
                 }
                 var info = new string[4];
                 int ipa = Plots[0].StartIndex(BoundingBox.Width);
-                int ip = (CirSimForm.MouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
+                int ip = (ScopeForm.MouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
                 int ct = 0;
                 int maxy = (BoundingBox.Height - 1) / 2;
                 int y = maxy;
                 if (mShowV && SelectedPlot >= 0) {
                     var plot = Plots[SelectedPlot];
-                    info[ct++] = plot.GetUnitText(plot.MaxValues[ip]);
+                    info[ct++] = Utils.VoltageText(plot.MaxValues[ip]);
                     int maxvy = (int)(mMainGridMult * (plot.MaxValues[ip] - mMainGridMid));
                     g.FillColor = plot.Color;
-                    g.FillCircle(CirSimForm.MouseCursorX, BoundingBox.Y + y - maxvy, 3);
+                    g.FillCircle(ScopeForm.MouseCursorX, BoundingBox.Y + y - maxvy, 3);
                 }
                 if (mShowV && Plots.Count > 0) {
-                    double t = Circuit.Time - ControlPanel.TimeStep * Speed * (BoundingBox.X + BoundingBox.Width - CirSimForm.MouseCursorX);
+                    double t = Circuit.Time - ControlPanel.TimeStep * Speed * (BoundingBox.X + BoundingBox.Width - ScopeForm.MouseCursorX);
                     info[ct++] = Utils.TimeText(t);
                 }
                 if (mShowFFT) {
                     double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * 2);
-                    var posX = CirSimForm.MouseCursorX - mFFTBoundingBox.X;
+                    var posX = ScopeForm.MouseCursorX - mFFTBoundingBox.X;
                     if (posX < 0) {
                         posX = 0;
                     }
@@ -985,9 +982,9 @@ namespace Circuit.UI.Output {
                 }
 
                 g.DrawColor = CustomGraphics.WhiteColor;
-                g.DrawLine(CirSimForm.MouseCursorX, BoundingBox.Y, CirSimForm.MouseCursorX, BoundingBox.Y + BoundingBox.Height);
+                g.DrawLine(ScopeForm.MouseCursorX, BoundingBox.Y, ScopeForm.MouseCursorX, BoundingBox.Y + BoundingBox.Height);
 
-                int bx = CirSimForm.MouseCursorX;
+                int bx = ScopeForm.MouseCursorX;
                 if (bx < szw / 2) {
                     bx = szw / 2;
                 }
@@ -1091,7 +1088,7 @@ namespace Circuit.UI.Output {
                 if (ControlPanel.ChkPrintable.Checked) {
                     g.DrawColor = plot.Color;
                 } else {
-                    if (selected || (CirSimForm.SelectedScope == -1 && plot.UI.IsMouseElm)) {
+                    if (selected || (ScopeForm.SelectedScope == -1 && plot.UI.IsMouseElm)) {
                         g.DrawColor = CustomGraphics.SelectColor;
                     } else {
                         g.DrawColor = mSomethingSelected ? Plot.GRAY : plot.Color;
@@ -1292,7 +1289,7 @@ namespace Circuit.UI.Output {
                 }
                 if (1 < waveCount) {
                     var rms = Math.Sqrt(endAvg / (end - start));
-                    return plot.GetUnitText(rms) + "rms";
+                    return Utils.VoltageText(rms) + "rms";
                 } else {
                     return "";
                 }
@@ -1373,18 +1370,18 @@ namespace Circuit.UI.Output {
                 if (mShowV && ShowScale) {
                     string vScaleText = "";
                     if (mGridStepY != 0) {
-                        vScaleText = ", V=" + plot.GetUnitText(mGridStepY) + "/div";
+                        vScaleText = ", V=" + Utils.VoltageText(mGridStepY) + "/div";
                     }
                     g.DrawLeftText("H=" + Utils.UnitText(mGridStepX, "s") + "/div" + vScaleText, 0, textY);
                     textY += 12;
                 }
                 if (mShowV && ShowMax) {
-                    g.DrawLeftText(plot.GetUnitText(mMaxValue), 0, textY);
+                    g.DrawLeftText(Utils.VoltageText(mMaxValue), 0, textY);
                     textY += 12;
                 }
                 if (mShowV && ShowMin) {
                     int ym = BoundingBox.Height - 8;
-                    g.DrawLeftText(plot.GetUnitText(mMinValue), 0, ym);
+                    g.DrawLeftText(Utils.VoltageText(mMinValue), 0, ym);
                 }
                 if (ShowRMS) {
                     g.DrawLeftText(calcRMS(), 0, textY);

@@ -45,8 +45,8 @@ namespace Circuit.Forms {
             txtLabel.Text = mScope.Text;
 
             cmbColor.Items.Clear();
-            foreach (var c in Enum.GetValues(typeof(Scope.Property.Plot.E_COLOR))) {
-                if ((Scope.Property.Plot.E_COLOR)c == Scope.Property.Plot.E_COLOR.INVALID) {
+            foreach (var c in Enum.GetValues(typeof(Scope.Plot.E_COLOR))) {
+                if ((Scope.Plot.E_COLOR)c == Scope.Plot.E_COLOR.INVALID) {
                     continue;
                 }
                 cmbColor.Items.Add(c);

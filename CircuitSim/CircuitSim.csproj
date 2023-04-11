@@ -75,6 +75,12 @@
     <Compile Include="Elements\Logic\ElmHalfAdder.cs" />
     <Compile Include="Elements\Logic\ElmLatch.cs" />
     <Compile Include="Elements\Logic\ElmMultiplexer.cs" />
+    <Compile Include="Forms\ScopeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ScopeForm.Designer.cs">
+      <DependentUpon>ScopeForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Active\AnalogSwitch.cs" />
     <Compile Include="Elements\Active\ElmDiode.cs" />
     <Compile Include="UI\Active\Diode.cs" />
@@ -226,6 +232,9 @@
     <Compile Include="Shortcut.cs" />
     <EmbeddedResource Include="Forms\CirSimForm.resx">
       <DependentUpon>CirSimForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ScopeForm.resx">
+      <DependentUpon>ScopeForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ScopeProperties.resx">
       <DependentUpon>ScopeProperties.cs</DependentUpon>

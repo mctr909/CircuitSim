@@ -108,7 +108,7 @@ namespace Circuit.UI.Active {
             var br = g.DrawColor;
             g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             var sx1 = mArrow1[0].X - 8;
-            var sx2 = sx1 + 2;
+            var sx2 = sx1 + 3;
             g.DrawLine(sx1, mArrow1[0].Y, sx2, mArrow1[0].Y);
             g.DrawLine(sx1, mArrow2[0].Y, sx2, mArrow2[0].Y);
             g.FillPolygon(g.DrawColor, mArrow1);
