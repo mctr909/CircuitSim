@@ -63,10 +63,20 @@ namespace Circuit.Elements.Input {
         public override void Reset() { }
 
         public override void AnaStamp() {
+            int n0 = Nodes[0] - 1;
+            int n1 = Nodes[1] - 1;
+            int vn = Circuit.Nodes.Count + mVoltSource - 1;
+            if (n0 < 0 || n1 < 0 || vn < 0) {
+                return;
+            }
+            Circuit.Matrix[vn, n0] -= 1;
+            Circuit.Matrix[vn, n1] += 1;
+            Circuit.Matrix[n0, vn] += 1;
+            Circuit.Matrix[n1, vn] -= 1;
             if (WaveForm == WAVEFORM.DC) {
-                Circuit.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, GetVoltage());
+                Circuit.RightSide[vn] += GetVoltage();
             } else {
-                Circuit.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource);
+                Circuit.RowInfo[vn].RightChanges = true;
             }
         }
 
