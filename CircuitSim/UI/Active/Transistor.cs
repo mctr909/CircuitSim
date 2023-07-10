@@ -85,7 +85,7 @@ namespace Circuit.UI.Active {
 
             /* calc point where base lead contacts rectangle */
             if (mDsign < 0) {
-                interpPoint(ref mTbase, 1 - (BODY_LEN - BASE_THICK + 1) / mLen);
+                interpPoint(ref mTbase, 1 - (BODY_LEN - BASE_THICK) / mLen);
             } else {
                 interpPoint(ref mTbase, 1 - BODY_LEN / mLen);
             }

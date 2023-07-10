@@ -75,7 +75,7 @@ namespace Circuit.UI.Active {
 
             /* create little arrows */
             int sx1 = mStubs[0].X;
-            int sx2 = sx1 + 16;
+            int sx2 = sx1 + 17;
             int sy = (mStubs[0].Y + mStubs[1].Y) / 2;
             int y = sy - 5;
             var p1 = new Point(sx1, y);
@@ -107,8 +107,8 @@ namespace Circuit.UI.Active {
             /* draw little arrows */
             var br = g.DrawColor;
             g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            var sx1 = mArrow1[0].X - 8;
-            var sx2 = sx1 + 3;
+            var sx1 = mArrow1[0].X - 10;
+            var sx2 = sx1 + 5;
             g.DrawLine(sx1, mArrow1[0].Y, sx2, mArrow1[0].Y);
             g.DrawLine(sx1, mArrow2[0].Y, sx2, mArrow2[0].Y);
             g.FillPolygon(g.DrawColor, mArrow1);
