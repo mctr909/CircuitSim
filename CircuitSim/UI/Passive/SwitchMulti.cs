@@ -81,7 +81,6 @@ namespace Circuit.UI.Passive {
             }
             g.FillColor = fillColorBackup;
             /* draw switch */
-            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             g.DrawLine(mLead1, mSwPoles[ce.Position]);
 
             updateDotCount();

@@ -103,6 +103,7 @@ namespace Circuit.UI.Passive {
             g.FillCircle(mLead1.X, mLead1.Y, 2.5f);
             g.FillCircle(mLead2.X, mLead2.Y, 2.5f);
             g.FillColor = fillColorBackup;
+            /* draw switch */
             var p2 = new Point();
             if (ce.Position == 0) {
                 interpLead(ref p2, 1, 2);
@@ -110,7 +111,6 @@ namespace Circuit.UI.Passive {
             } else {
                 interpLead(ref p2, (OPEN_HS - 2.0) / OPEN_HS, OPEN_HS);
             }
-            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             g.DrawLine(mLead1, p2);
             drawPosts();
         }
