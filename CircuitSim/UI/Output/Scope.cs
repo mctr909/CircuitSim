@@ -813,6 +813,9 @@ namespace Circuit.UI.Output {
             }
 
             void setValue(BaseUI ce) {
+                if (null == ce) {
+                    return;
+                }
                 Plots = new List<Plot>() {
                     new Plot(ce)
                 };
