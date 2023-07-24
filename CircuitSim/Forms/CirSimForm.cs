@@ -30,7 +30,6 @@ namespace Circuit {
             DRAG_SELECTED,
             DRAG_POST,
             SELECT,
-            DRAG_SPLITTER
         }
 
         public const int GRID_SIZE = 8;
@@ -73,7 +72,6 @@ namespace Circuit {
             public static MouseButtons Button = MouseButtons.None;
             public static DateTime LastMove = DateTime.Now;
             public static bool IsDragging = false;
-            public static bool IsOverSplitter = false;
             public static long DownTime;
             public static Point InitDragGrid;
             public static Point DragGrid;
@@ -797,11 +795,6 @@ namespace Circuit {
 
             Mouse.IsDragging = true;
 
-            if (Mouse.IsOverSplitter) {
-                Mouse.TempMode = MOUSE_MODE.DRAG_SPLITTER;
-                return;
-            }
-
             if (MouseMode == MOUSE_MODE.SELECT && Mouse.Button == MouseButtons.Left) {
                 /* left mouse */
                 Mouse.TempMode = MouseMode;
@@ -1316,10 +1309,6 @@ namespace Circuit {
                 return;
             }
 
-            if (Mouse.TempMode == MOUSE_MODE.DRAG_SPLITTER) {
-                dragSplitter(MouseCursorX, MouseCursorY);
-                return;
-            }
             var gpos = new Point(
                 inverseTransformX(MouseCursorX),
                 inverseTransformY(MouseCursorY));
@@ -1378,22 +1367,6 @@ namespace Circuit {
             if (changed) {
                 writeRecoveryToStorage();
             }
-            Repaint();
-        }
-
-        void dragSplitter(int x, int y) {
-            double h = mPixCir.Height;
-            if (h < 1) {
-                h = 1;
-            }
-            mScopeHeightFraction = 1.0 - (y / h);
-            if (mScopeHeightFraction < 0.1) {
-                mScopeHeightFraction = 0.1;
-            }
-            if (mScopeHeightFraction > 0.9) {
-                mScopeHeightFraction = 0.9;
-            }
-            setCircuitArea();
             Repaint();
         }
 
@@ -1577,22 +1550,6 @@ namespace Circuit {
             NeedAnalyze();
         }
 
-        bool mouseIsOverSplitter(int x, int y) {
-            bool isOverSplitter = (x >= 0)
-                && (x < mCircuitArea.Width)
-                && (y >= mCircuitArea.Height - 10)
-                && (y <= mCircuitArea.Height + 5);
-            if (isOverSplitter != Mouse.IsOverSplitter) {
-                if (isOverSplitter) {
-                    Cursor = Cursors.HSplit;
-                } else {
-                    setMouseMode(MouseMode);
-                }
-            }
-            Mouse.IsOverSplitter = isOverSplitter;
-            return isOverSplitter;
-        }
-
         /* convert screen coordinates to grid coordinates by inverting circuit transform */
         static int inverseTransformX(double x) {
             return (int)(x - mOfs.X);
@@ -1622,11 +1579,6 @@ namespace Circuit {
 
             Mouse.Post = -1;
             PlotXElm = PlotYElm = null;
-
-            if (mouseIsOverSplitter(mx, my)) {
-                setMouseElm(null);
-                return;
-            }
 
             double minDistance = 8;
             for (int i = 0; i != UICount; i++) {
