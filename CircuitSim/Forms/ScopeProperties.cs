@@ -23,6 +23,10 @@ namespace Circuit.Forms {
         }
 
         private void ScopeProperties_Load(object sender, EventArgs e) {
+            var plotIdx = mScope.SelectedPlot;
+            if (plotIdx < 0 || cmbColor.Items.Count <= plotIdx) {
+                return;
+            }
             chkScale.Checked = mScope.ShowScale;
             chkPeak.Checked = mScope.ShowMax;
             chkNegPeak.Checked = mScope.ShowMin;
@@ -50,10 +54,6 @@ namespace Circuit.Forms {
                     continue;
                 }
                 cmbColor.Items.Add(c);
-            }
-            var plotIdx = mScope.SelectedPlot;
-            if (cmbColor.Items.Count <= plotIdx) {
-                return;
             }
             cmbColor.SelectedIndex = (int)mScope.Plots[plotIdx].ColorIndex;
             setScopeSpeedLabel();

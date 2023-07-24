@@ -30,7 +30,7 @@ namespace Circuit.UI.Gate {
 
         public override void SetPoints() {
             base.SetPoints();
-            int hs = 12;
+            int hs = 10;
             int ww = 12;
             if (ww > mLen / 2) {
                 ww = (int)(mLen / 2);

@@ -8,8 +8,8 @@ namespace Circuit.UI.Gate {
         const int FLAG_SMALL = 1;
         const int FLAG_SCHMITT = 2;
 
-        const int G_WIDTH = 7;
-        const int G_WIDTH2 = 14;
+        const int G_WIDTH = 6;
+        const int G_WIDTH2 = 12;
         const int G_HEIGHT = 8;
         const int CIRCLE_SIZE = 3;
 
