@@ -52,8 +52,10 @@ namespace Circuit.Forms {
                 cmbColor.Items.Add(c);
             }
             var plotIdx = mScope.SelectedPlot;
+            if (cmbColor.Items.Count <= plotIdx) {
+                return;
+            }
             cmbColor.SelectedIndex = (int)mScope.Plots[plotIdx].ColorIndex;
-
             setScopeSpeedLabel();
         }
 
