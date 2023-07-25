@@ -810,10 +810,10 @@ namespace Circuit {
                     Cursor = Cursors.NoMove2D;
                 } else if (mIsPressAlt) {
                     Mouse.TempMode = MOUSE_MODE.SPLIT;
-                    Cursor = Cursors.Arrow;
+                    Cursor = Cursors.Cross;
                 } else {
                     Mouse.TempMode = MOUSE_MODE.SELECT;
-                    Cursor = Cursors.SizeAll;
+                    Cursor = Cursors.Hand;
                 }
             }
 
@@ -904,6 +904,7 @@ namespace Circuit {
                 DragElm.Delete();
             }
             DragElm = null;
+            Cursor = Cursors.Default;
             Repaint();
         }
 
