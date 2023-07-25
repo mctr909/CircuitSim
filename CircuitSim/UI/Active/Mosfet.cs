@@ -202,14 +202,14 @@ namespace Circuit.UI.Active {
                 string s = "" + (ce.Vt * ce.Pnp);
                 drawCenteredLText(s, DumpInfo.P2.X, DumpInfo.P2.Y, false);
             }
-            CurCount = updateDotCount(-ce.Current, CurCount);
+            updateDotCount(-ce.Current, ref CurCount);
             drawDots(mPosS[0], mPosS[1], CurCount);
             drawDots(mPosD[1], mPosD[0], CurCount);
             drawDots(mPosS[1], mPosD[1], CurCount);
 
             if (ShowBulk) {
-                mCurcountBody1 = updateDotCount(ce.DiodeCurrent1, mCurcountBody1);
-                mCurcountBody2 = updateDotCount(ce.DiodeCurrent2, mCurcountBody2);
+                updateDotCount(ce.DiodeCurrent1, ref mCurcountBody1);
+                updateDotCount(ce.DiodeCurrent2, ref mCurcountBody2);
                 drawDots(mPosS[0], mPosB[0], -mCurcountBody1);
                 drawDots(mPosB[0], mPosD[0], mCurcountBody2);
             }

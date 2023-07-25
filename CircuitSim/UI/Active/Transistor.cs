@@ -139,11 +139,11 @@ namespace Circuit.UI.Active {
             drawLead(Elm.Post[0], mTbase);
 
             /* draw dots */
-            mCurCountB = updateDotCount(-ce.Ib, mCurCountB);
+            updateDotCount(-ce.Ib, ref mCurCountB);
             drawDots(mTbase, Elm.Post[0], mCurCountB);
-            mCurCountC = updateDotCount(-ce.Ic, mCurCountC);
+            updateDotCount(-ce.Ic, ref mCurCountC);
             drawDots(mPosC[0], mPosC[2], mCurCountC);
-            mCurCountE = updateDotCount(-ce.Ie, mCurCountE);
+            updateDotCount(-ce.Ie, ref mCurCountE);
             drawDots(mPosE[0], mPosE[2], mCurCountE);
 
             /* draw base rectangle */

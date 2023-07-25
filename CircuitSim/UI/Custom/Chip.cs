@@ -169,7 +169,7 @@ namespace Circuit.UI.Custom {
                 var a = p.post;
                 var b = p.stub;
                 drawLead(a, b);
-                p.curcount = updateDotCount(p.current, p.curcount);
+                updateDotCount(p.current, ref p.curcount);
                 drawDots(b, a, p.curcount);
                 if (p.bubble) {
                     g.DrawColor = Color.White;

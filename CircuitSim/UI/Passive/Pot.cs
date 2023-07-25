@@ -153,9 +153,9 @@ namespace Circuit.UI.Passive {
             drawLead(mArrow2, mArrowPoint);
 
             /* draw dot */
-            ce.CurCount1 = updateDotCount(ce.Current1, ce.CurCount1);
-            ce.CurCount2 = updateDotCount(ce.Current2, ce.CurCount2);
-            ce.CurCount3 = updateDotCount(ce.Current3, ce.CurCount3);
+            updateDotCount(ce.Current1, ref ce.CurCount1);
+            updateDotCount(ce.Current2, ref ce.CurCount2);
+            updateDotCount(ce.Current3, ref ce.CurCount3);
             if (CirSimForm.DragElm != this) {
                 drawDots(ce.Post[0], mMidPoint, ce.CurCount1);
                 drawDots(ce.Post[1], mMidPoint, ce.CurCount2);

@@ -49,7 +49,7 @@ namespace Circuit.UI.Gate {
             g.DrawPolygon(gatePoly);
             g.DrawPolygon(symbolPoly);
             g.DrawCircle(pcircle, 3);
-            CurCount = updateDotCount(ce.Current, CurCount);
+            updateDotCount(ce.Current, ref CurCount);
             drawDotsB(CurCount);
         }
 

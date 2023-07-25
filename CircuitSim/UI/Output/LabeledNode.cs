@@ -58,7 +58,7 @@ namespace Circuit.UI.Output {
                     g.DrawLine(DumpInfo.P2.X - sw / 2, ya, DumpInfo.P2.X + sw / 2, ya);
                 }
             }
-            CurCount = updateDotCount(ce.Current, CurCount);
+            updateDotCount(ce.Current, ref CurCount);
             drawDotsA(CurCount);
             drawPosts();
         }

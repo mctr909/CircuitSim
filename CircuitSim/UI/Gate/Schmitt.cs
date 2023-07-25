@@ -21,7 +21,7 @@ namespace Circuit.UI.Gate {
             g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             g.DrawPolygon(gatePoly);
             g.DrawPolygon(symbolPoly);
-            CurCount = updateDotCount(ce.Current, CurCount);
+            updateDotCount(ce.Current, ref CurCount);
             drawDotsB(CurCount);
         }
 

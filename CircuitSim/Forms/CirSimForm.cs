@@ -29,11 +29,13 @@ namespace Circuit {
             DRAG_ROW,
             DRAG_COLUMN,
             SELECT,
-            SELECTED,
+            SELECTED_ITEM,
+            SELECTED_POST,
             SPLIT,
         }
 
         public const int GRID_SIZE = 8;
+        public const int CURRENT_DOT_SIZE = 6;
         public const int POSTGRABSQ = 25;
         public const int MINPOSTGRABSIZE = 256;
 
@@ -743,14 +745,9 @@ namespace Circuit {
                 }
             }
 
-            if (code == Keys.Escape) {
+            if (code == Keys.Escape || e.KeyValue == 32) {
                 mMenuItems.AllUnchecked();
                 setMouseMode(MOUSE_MODE.NONE);
-                Mouse.EditElm = ELEMENTS.INVALID;
-                Mouse.TempMode = MouseMode;
-            }
-            if (e.KeyValue == 32) {
-                setMouseMode(MOUSE_MODE.SELECT);
                 Mouse.EditElm = ELEMENTS.INVALID;
                 Mouse.TempMode = MouseMode;
             }
@@ -796,7 +793,7 @@ namespace Circuit {
 
             Mouse.IsDragging = true;
 
-            if (MouseMode == MOUSE_MODE.NONE && Mouse.Button == MouseButtons.Left) {
+            if (Mouse.TempMode == MOUSE_MODE.NONE && Mouse.Button == MouseButtons.Left) {
                 /* left mouse */
                 Mouse.TempMode = MouseMode;
                 if (mIsPressCtrl && mIsPressAlt) {
@@ -842,7 +839,7 @@ namespace Circuit {
                 return;
             }
 
-            if (Mouse.TempMode != MOUSE_MODE.NONE && Mouse.TempMode != MOUSE_MODE.SELECTED) {
+            if (Mouse.TempMode != MOUSE_MODE.NONE && Mouse.TempMode != MOUSE_MODE.SELECTED_ITEM) {
                 clearSelection();
             }
 
@@ -886,7 +883,7 @@ namespace Circuit {
                 /* IES - and disable any previous selection */
                 if (DragElm.IsCreationFailed) {
                     DragElm.Delete();
-                    if (MouseMode == MOUSE_MODE.SELECT || MouseMode == MOUSE_MODE.SELECTED) {
+                    if (MouseMode == MOUSE_MODE.SELECT || MouseMode == MOUSE_MODE.SELECTED_ITEM) {
                         clearSelection();
                     }
                 } else {
@@ -1332,8 +1329,12 @@ namespace Circuit {
                     changed = true;
                 }
                 break;
-            case MOUSE_MODE.SELECTED:
+            case MOUSE_MODE.SELECTED_ITEM:
                 changed = success = dragSelected(gpos);
+                break;
+            case MOUSE_MODE.SELECTED_POST:
+                drag(SnapGrid(gpos));
+                changed = true;
                 break;
             }
             if (success) {
@@ -1341,7 +1342,7 @@ namespace Circuit {
                 Mouse.DragScreen.Y = MouseCursorY;
                 /* Console.WriteLine("setting dragGridx in mousedragged");*/
                 Mouse.DragGrid = inverseTransform(Mouse.DragScreen);
-                if (!(Mouse.TempMode == MOUSE_MODE.SELECTED && onlyGraphicsElmsSelected())) {
+                if (!(Mouse.TempMode == MOUSE_MODE.SELECTED_ITEM && onlyGraphicsElmsSelected())) {
                     Mouse.DragGrid = SnapGrid(Mouse.DragGrid);
                 }
             }
@@ -1447,11 +1448,11 @@ namespace Circuit {
                 var d1_d2 = Utils.Distance(Mouse.GripElm.DumpInfo.P1, Mouse.GripElm.DumpInfo.P2);
                 var dl = Math.Max(d1_d2 / 4, Utils.DistanceOnLine(Mouse.GripElm.DumpInfo.P1, Mouse.GripElm.DumpInfo.P2, pos));
                 if (dl < Math.Min(d1, d2)) {
-                    dragSelected(pos);
-                    Mouse.TempMode = MOUSE_MODE.SELECTED;
+                    Mouse.TempMode = MOUSE_MODE.SELECTED_ITEM;
                     return;
                 }
                 Mouse.DraggingPost = (d1 < d2) ? 0 : 1;
+                Mouse.TempMode = MOUSE_MODE.SELECTED_POST;
             }
             int dx = pos.X - Mouse.DragGrid.X;
             int dy = pos.Y - Mouse.DragGrid.Y;
@@ -2098,7 +2099,7 @@ namespace Circuit {
                 if (Mouse.TempMode == MOUSE_MODE.DRAG_ROW
                     || Mouse.TempMode == MOUSE_MODE.DRAG_COLUMN
                     || Mouse.TempMode == MOUSE_MODE.SPLIT
-                    || Mouse.TempMode == MOUSE_MODE.SELECTED) {
+                    || Mouse.TempMode == MOUSE_MODE.SELECTED_ITEM) {
                     for (int i = 0; i != UICount; i++) {
                         var ce = GetUI(i);
                         g.DrawPost(ce.DumpInfo.P1);
@@ -2113,7 +2114,7 @@ namespace Circuit {
                 }
 
                 /* draw handles for elm we're creating */
-                if (Mouse.TempMode == MOUSE_MODE.SELECT && Mouse.GripElm != null) {
+                if ((Mouse.TempMode == MOUSE_MODE.SELECT) && Mouse.GripElm != null) {
                     Mouse.GripElm.DrawHandles(g);
                 }
 

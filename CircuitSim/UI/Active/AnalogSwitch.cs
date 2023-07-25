@@ -60,7 +60,7 @@ namespace Circuit.UI.Active {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmAnalogSwitch)Elm;
-            int hs = ce.IsOpen ? OPEN_HS : 0;
+            int hs = ce.IsOpen ? (OPEN_HS - 6) : 0;
             setBbox(OPEN_HS);
 
             draw2Leads();

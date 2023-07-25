@@ -43,7 +43,7 @@ namespace Circuit.UI.Input {
             drawCenteredText(s, DumpInfo.P2.X, DumpInfo.P2.Y, true);
             drawWaveform(g, Elm.Post[1]);
             drawPosts();
-            CurCount = updateDotCount(-ce.Current, CurCount);
+            updateDotCount(-ce.Current, ref CurCount);
             if (CirSimForm.DragElm != this) {
                 drawDotsA(CurCount);
             }

@@ -52,7 +52,7 @@ namespace Circuit.UI.Gate {
             g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             g.DrawPolygon(mGatePoly);
             drawLead(ce.Post[2], mLead3);
-            CurCount = updateDotCount(ce.Current, CurCount);
+            updateDotCount(ce.Current, ref CurCount);
             drawDotsB(CurCount);
             drawPosts();
         }

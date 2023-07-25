@@ -111,8 +111,8 @@ namespace Circuit.UI.Passive {
                 g.DrawCircle(mDots[1], 2.5f);
             }
 
-            ce.CurCounts[0] = updateDotCount(ce.Currents[0], ce.CurCounts[0]);
-            ce.CurCounts[1] = updateDotCount(ce.Currents[1], ce.CurCounts[1]);
+            updateDotCount(ce.Currents[0], ref ce.CurCounts[0]);
+            updateDotCount(ce.Currents[1], ref ce.CurCounts[1]);
             for (int i = 0; i != 2; i++) {
                 drawDots(ce.Post[i], mPtCoil[i], ce.CurCounts[i]);
                 drawDots(mPtCoil[i], mPtCoil[i + 2], ce.CurCounts[i]);

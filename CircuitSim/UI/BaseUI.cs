@@ -68,7 +68,7 @@ namespace Circuit.UI {
 
         protected virtual int NumHandles { get { return 2; } }
 
-        protected double CurCount { get; set; }
+        protected double CurCount;
         #endregion
 
         #region [variable]
@@ -179,23 +179,22 @@ namespace Circuit.UI {
         /// <summary>
         ///  update dot positions (curcount) for drawing current (general case for multiple currents)
         /// </summary>
-        /// <param name="cur"></param>
-        /// <param name="cc"></param>
-        /// <returns></returns>
-        protected double updateDotCount(double cur, double cc) {
+        /// <param name="current"></param>
+        /// <param name="count"></param>
+        protected void updateDotCount(double current, ref double count) {
             if (!CirSimForm.IsRunning) {
-                return cc;
+                return;
             }
-            double cadd = cur * CirSimForm.CurrentMult;
-            cadd %= 8;
-            return cc + cadd;
+            var speed = current * CirSimForm.CurrentMult;
+            speed %= CirSimForm.CURRENT_DOT_SIZE;
+            count += speed;
         }
 
         /// <summary>
         /// update dot positions (curcount) for drawing current (simple case for single current)
         /// </summary>
         protected void updateDotCount() {
-            CurCount = updateDotCount(Elm.Current, CurCount);
+            updateDotCount(Elm.Current, ref CurCount);
         }
 
         protected int getBasicInfo(string[] arr) {
@@ -357,21 +356,22 @@ namespace Circuit.UI {
             if ((!CirSimForm.IsRunning) || pos == 0 || !ControlPanel.ChkShowDots.Checked) {
                 return;
             }
-            var dx = bx - ax;
-            var dy = by - ay;
-            var dr = Math.Sqrt(dx * dx + dy * dy);
-            pos %= CirSimForm.GRID_SIZE;
-            if (pos < 0) {
-                pos += CirSimForm.GRID_SIZE;
-            }
             if (ControlPanel.ChkPrintable.Checked) {
-                Context.FillColor = CustomGraphics.LineColor;
-            } else {
-                Context.FillColor = Color.Yellow;
+                return;
             }
-            for (var di = pos; di < dr; di += CirSimForm.GRID_SIZE) {
-                var x0 = (int)(ax + di * dx / dr);
-                var y0 = (int)(ay + di * dy / dr);
+            Context.FillColor = Color.Yellow;
+            pos %= CirSimForm.CURRENT_DOT_SIZE;
+            if (pos < 0) {
+                pos += CirSimForm.CURRENT_DOT_SIZE;
+            }
+            var nx = bx - ax;
+            var ny = by - ay;
+            var r = (float)Math.Sqrt(nx * nx + ny * ny);
+            nx /= r;
+            ny /= r;
+            for (var di = pos; di < r; di += CirSimForm.CURRENT_DOT_SIZE) {
+                var x0 = (int)(ax + di * nx);
+                var y0 = (int)(ay + di * ny);
                 Context.FillCircle(x0, y0, 0.5f);
             }
         }
