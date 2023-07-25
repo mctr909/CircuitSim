@@ -62,12 +62,6 @@ namespace Circuit.UI {
 
         public virtual bool IsGraphicElmt { get { return false; } }
 
-        /// <summary>
-        /// needed for calculating circuit bounds (need to special-case centered text elements)
-        /// </summary>
-        /// <returns></returns>
-        public virtual bool IsCenteredText { get { return false; } }
-
         public virtual bool CanViewInScope { get { return Elm.PostCount <= 2; } }
 
         public virtual int DefaultFlags { get { return 0; } }
@@ -78,8 +72,6 @@ namespace Circuit.UI {
         #endregion
 
         #region [variable]
-        int mLastHandleGrabbed = -1;
-
         /* length along x and y axes, and sign of difference */
         protected Point mDiff;
         protected int mDsign;
@@ -588,42 +580,6 @@ namespace Circuit.UI {
 
         public void SelectRect(RectangleF r) {
             IsSelected = r.IntersectsWith(DumpInfo.BoundingBox);
-        }
-
-        public int GetHandleGrabbedClose(int xtest, int ytest, int deltaSq, int minSize) {
-            mLastHandleGrabbed = -1;
-            var x12 = DumpInfo.P2.X - DumpInfo.P1.X;
-            var y12 = DumpInfo.P2.Y - DumpInfo.P1.Y;
-            if (Math.Sqrt(x12 * x12 + y12 * y12) >= minSize) {
-                var x1t = xtest - DumpInfo.P1.X;
-                var y1t = ytest - DumpInfo.P1.Y;
-                var x2t = xtest - DumpInfo.P2.X;
-                var y2t = ytest - DumpInfo.P2.Y;
-                if (Math.Sqrt(x1t * x1t + y1t * y1t) <= deltaSq) {
-                    mLastHandleGrabbed = 0;
-                } else if (Math.Sqrt(x2t * x2t + y2t * y2t) <= deltaSq) {
-                    mLastHandleGrabbed = 1;
-                }
-            }
-            return mLastHandleGrabbed;
-        }
-
-        public int GetHandleGrabbedClose(Point testp, int deltaSq, int minSize) {
-            mLastHandleGrabbed = -1;
-            var x12 = DumpInfo.P2.X - DumpInfo.P1.X;
-            var y12 = DumpInfo.P2.Y - DumpInfo.P1.Y;
-            if (Math.Sqrt(x12 * x12 + y12 * y12) >= minSize) {
-                var x1t = testp.X - DumpInfo.P1.X;
-                var y1t = testp.Y - DumpInfo.P1.Y;
-                var x2t = testp.X - DumpInfo.P2.X;
-                var y2t = testp.Y - DumpInfo.P2.Y;
-                if (Math.Sqrt(x1t * x1t + y1t * y1t) <= deltaSq) {
-                    mLastHandleGrabbed = 0;
-                } else if (Math.Sqrt(x2t * x2t + y2t * y2t) <= deltaSq) {
-                    mLastHandleGrabbed = 1;
-                }
-            }
-            return mLastHandleGrabbed;
         }
 
         public string DispPostVoltage(int x) {

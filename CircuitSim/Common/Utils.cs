@@ -59,6 +59,14 @@ namespace Circuit {
             return Math.Sqrt(x * x + y * y);
         }
 
+        public static double DistanceOnLine(PointF a, PointF b, double px, double py) {
+            return DistanceOnLine(a.X, a.Y, b.X, b.Y, px, py);
+        }
+
+        public static double DistanceOnLine(PointF a, PointF b, PointF p) {
+            return DistanceOnLine(a.X, a.Y, b.X, b.Y, p.X, p.Y);
+        }
+
         public static double DistanceOnLine(double ax, double ay, double bx, double by, double px, double py) {
             var abx = bx - ax;
             var aby = by - ay;
