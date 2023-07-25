@@ -359,7 +359,7 @@ namespace Circuit.UI {
             if (ControlPanel.ChkPrintable.Checked) {
                 return;
             }
-            Context.FillColor = Color.Yellow;
+            Context.FillColor = Color.SkyBlue;
             pos %= CirSimForm.CURRENT_DOT_SIZE;
             if (pos < 0) {
                 pos += CirSimForm.CURRENT_DOT_SIZE;

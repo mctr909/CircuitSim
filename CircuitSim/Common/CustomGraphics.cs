@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 
 namespace Circuit {
     public class CustomGraphics {
@@ -118,8 +119,8 @@ namespace Circuit {
                 LineColor = Color.FromArgb(79, 79, 79);
                 TextColor = Color.FromArgb(147, 147, 147);
                 SelectColor = Color.FromArgb(0, 255, 255);
-                PostColor = Color.FromArgb(211, 0, 0);
-                mPenHandle = Pens.Green.Brush;
+                PostColor = Color.FromArgb(0, 147, 0);
+                mPenHandle = new Pen(Color.FromArgb(191, 0, 0)).Brush;
             }
         }
 
