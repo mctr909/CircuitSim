@@ -44,7 +44,7 @@ namespace Circuit.UI {
         public bool NeedsHighlight {
             get {
                 if (null == mMouseElmRef) {
-                    return false;
+                    return IsSelected;
                 }
                 /* Test if the current mouseElm is a ScopeElm and, if so, does it belong to this elm */
                 var isScopeElm = (mMouseElmRef is Scope) && ((Scope)mMouseElmRef).Properties.UI.Equals(this);

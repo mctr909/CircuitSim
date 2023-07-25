@@ -862,18 +862,14 @@ namespace Circuit {
             switch (MouseMode) {
             case MOUSE_MODE.ADD_ELM:
                 break;
-            case MOUSE_MODE.SELECT:
-                if (Mouse.SelectedArea.Width == 0 || Mouse.SelectedArea.Height == 0) {
-                    clearSelection();
-                }
-                MouseMode = MOUSE_MODE.NONE;
-                break;
             case MOUSE_MODE.SELECT_AREA:
                 if (Mouse.SelectedArea.Width == 0 || Mouse.SelectedArea.Height == 0) {
                     clearSelection();
-                    MouseMode = MOUSE_MODE.NONE;
-                } else {
+                }
+                if (hasSelection()) {
                     MouseMode = MOUSE_MODE.DRAG_ITEM;
+                } else {
+                    MouseMode = MOUSE_MODE.NONE;
                 }
                 break;
             case MOUSE_MODE.DRAG_ITEM:
@@ -1341,22 +1337,30 @@ namespace Circuit {
                 break;
             case MOUSE_MODE.SELECT:
                 if (Mouse.GripElm == null) {
-                    selectArea(gpos);
+                    MouseMode = MOUSE_MODE.SELECT_AREA;
                 } else {
-                    drag(SnapGrid(gpos));
-                    changed = true;
+                    var spos = SnapGrid(gpos);
+                    var dumpInfo = Mouse.GripElm.DumpInfo;
+                    var d1 = Utils.Distance(dumpInfo.P1, spos);
+                    var d2 = Utils.Distance(dumpInfo.P2, spos);
+                    var d1_d2 = Utils.Distance(dumpInfo.P1, dumpInfo.P2);
+                    var dl = Math.Max(d1_d2 / 4, Utils.DistanceOnLine(dumpInfo.P1, dumpInfo.P2, spos));
+                    if (dl < Math.Min(d1, d2)) {
+                        MouseMode = MOUSE_MODE.DRAG_ITEM;
+                    } else {
+                        Mouse.DraggingPost = (d1 < d2) ? 0 : 1;
+                        MouseMode = MOUSE_MODE.DRAG_POST;
+                    }
                 }
                 break;
             case MOUSE_MODE.SELECT_AREA:
-                if (Mouse.GripElm == null) {
-                    selectArea(gpos);
-                }
+                selectArea(gpos);
                 break;
             case MOUSE_MODE.DRAG_ITEM:
                 changed = success = dragSelected(gpos);
                 break;
             case MOUSE_MODE.DRAG_POST:
-                drag(SnapGrid(gpos));
+                dragPost(SnapGrid(gpos));
                 changed = true;
                 break;
             }
@@ -1464,20 +1468,7 @@ namespace Circuit {
             return allowed;
         }
 
-        void drag(Point pos) {
-            if (-1 == Mouse.DraggingPost) {
-                var d1 = Utils.Distance(Mouse.GripElm.DumpInfo.P1, pos);
-                var d2 = Utils.Distance(Mouse.GripElm.DumpInfo.P2, pos);
-                var d1_d2 = Utils.Distance(Mouse.GripElm.DumpInfo.P1, Mouse.GripElm.DumpInfo.P2);
-                var dl = Math.Max(d1_d2 / 4, Utils.DistanceOnLine(Mouse.GripElm.DumpInfo.P1, Mouse.GripElm.DumpInfo.P2, pos));
-                if (dl < Math.Min(d1, d2)) {
-                    MouseMode = MOUSE_MODE.DRAG_ITEM;
-                    return;
-                } else {
-                    Mouse.DraggingPost = (d1 < d2) ? 0 : 1;
-                    MouseMode = MOUSE_MODE.DRAG_POST;
-                }
-            }
+        void dragPost(Point pos) {
             int dx = pos.X - Mouse.DragGrid.X;
             int dy = pos.Y - Mouse.DragGrid.Y;
             if (dx == 0 && dy == 0) {
@@ -1536,7 +1527,6 @@ namespace Circuit {
                 var ce = GetUI(i);
                 ce.SelectRect(Mouse.SelectedArea);
             }
-            MouseMode = MOUSE_MODE.SELECT_AREA;
         }
 
         static void setMouseElm(BaseUI ce) {
@@ -2009,7 +1999,7 @@ namespace Circuit {
             }
         }
 
-        bool isSelection() {
+        bool hasSelection() {
             for (int i = 0; i != UICount; i++) {
                 if (GetUI(i).IsSelected) {
                     return true;

@@ -119,7 +119,7 @@ namespace Circuit {
                 TextColor = Color.FromArgb(147, 147, 147);
                 SelectColor = Color.FromArgb(0, 255, 255);
                 PostColor = Color.FromArgb(211, 0, 0);
-                mPenHandle = Pens.Cyan.Brush;
+                mPenHandle = Pens.Green.Brush;
             }
         }
 
@@ -148,20 +148,13 @@ namespace Circuit {
         }
 
         public virtual void DrawPost(PointF p) {
-            mG.FillPie(mPenPost.Brush,
-                p.X - mPenPost.Width / 2, p.Y - mPenPost.Width / 2,
-                mPenPost.Width, mPenPost.Width,
-                0, 360
-            );
+            var d = mPenPost.Width;
+            mG.FillPie(mPenPost.Brush, p.X - d / 2, p.Y - d / 2, d, d, 0, 360);
         }
 
         public virtual void DrawHandle(Point p) {
-            var radius = 4;
-            mG.FillPie(mPenHandle,
-                p.X - radius, p.Y - radius,
-                radius * 2, radius * 2,
-                0, 360
-            );
+            var d = mPenPost.Width;
+            mG.FillPie(mPenHandle, p.X - d / 2, p.Y - d / 2, d, d, 0, 360);
         }
 
         public virtual void DrawLine(float ax, float ay, float bx, float by) {
