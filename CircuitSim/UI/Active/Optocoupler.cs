@@ -32,8 +32,8 @@ namespace Circuit.UI.Active {
             int pos = n % 2;
             var xa = (int)(px + ce.mCspc2 * dx * pos + sx);
             var ya = (int)(py + ce.mCspc2 * dy * pos + sy);
-            setPost(n, new Point((int)(xa + dax * ce.mCspc2), (int)(ya + day * ce.mCspc2)));
-            mStubs[n] = new Point((int)(xa + dax * ce.mCspc), (int)(ya + day * ce.mCspc));
+            mStubs[n] = new Point((int)(xa + dax * ce.mCspc2), (int)(ya + day * ce.mCspc2));
+            setPost(n, mStubs[n]);
         }
 
         public override void SetPoints() {
@@ -61,6 +61,7 @@ namespace Circuit.UI.Active {
             setPin(1, x0, y0, 0, 1, -0.5, 0, 0, 0);
             setPin(2, x0, y0, 0, 1, 0.5, 0, xs - ce.mCspc2, 0);
             setPin(3, x0, y0, 0, 1, 0.5, 0, xs - ce.mCspc2, 0);
+            DumpInfo.P2 = mStubs[2];
 
             /* diode */
             ce.mDiode.SetPosition(ce.Posts[0].X + 10, ce.Posts[0].Y, ce.Posts[1].X + 10, ce.Posts[1].Y);
