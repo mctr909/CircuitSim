@@ -225,22 +225,18 @@ class LZ77 {
             var checkCount = 0;
             var idx = endIndexMap[indexKey] - 1;
             var iMin = startIndexMap[indexKey];
-        indexMapLoop:
-            for (; iMin <= idx; idx--) {
+            while (iMin <= idx) {
                 if (checkCount >= FAST_INDEX_CHECK_MAX
                     || (repeatLengthMax >= FAST_REPEAT_LENGTH && checkCount >= FAST_INDEX_CHECK_MIN)) {
                     break;
                 }
                 checkCount++;
-
                 var index = indexes[idx];
                 for (int j = repeatLengthMax - 1; 0 < j; j--) {
                     if (input[index + j] != input[nowIndex + j]) {
-                        idx--;
                         goto indexMapLoop;
                     }
                 }
-
                 var repeatLength = 258;
                 for (int j = repeatLengthMax; j <= 258; j++) {
                     if (input.Length <= (index + j) || input.Length <= (nowIndex + j) || input[index + j] != input[nowIndex + j]) {
@@ -255,6 +251,8 @@ class LZ77 {
                         break;
                     }
                 }
+            indexMapLoop:
+                idx--;
             }
 
             if (repeatLengthMax >= 3 && nowIndex + repeatLengthMax <= endIndex) {
