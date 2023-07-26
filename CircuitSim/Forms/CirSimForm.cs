@@ -25,14 +25,14 @@ namespace Circuit {
         public enum MOUSE_MODE {
             NONE = 0,
             ADD_ELM,
+            SPLIT,
             SCROLL,
-            DRAG_ROW,
-            DRAG_COLUMN,
             SELECT,
             SELECT_AREA,
             DRAG_ITEM,
             DRAG_POST,
-            SPLIT,
+            DRAG_ROW,
+            DRAG_COLUMN
         }
 
         public const int GRID_SIZE = 8;
@@ -276,6 +276,7 @@ namespace Circuit {
                 break;
             case MENU_ITEM.SELECT_ALL:
                 doSelectAll();
+                MouseMode = MOUSE_MODE.DRAG_ITEM;
                 break;
             case MENU_ITEM.CENTER_CIRCUIT:
                 PushUndo();
