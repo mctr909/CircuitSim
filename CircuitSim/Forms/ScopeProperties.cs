@@ -19,6 +19,13 @@ namespace Circuit.Forms {
             rbSpectrum.Checked = mScope.ShowFFT;
             Left = x;
             Top = y - Height;
+            cmbColor.Items.Clear();
+            foreach (var c in Enum.GetValues(typeof(Scope.Plot.E_COLOR))) {
+                if ((Scope.Plot.E_COLOR)c == Scope.Plot.E_COLOR.INVALID) {
+                    continue;
+                }
+                cmbColor.Items.Add(c);
+            }
             Visible = true;
         }
 
@@ -48,13 +55,6 @@ namespace Circuit.Forms {
             chkLogSpectrum.Enabled = mScope.ShowFFT;
             txtLabel.Text = mScope.Text;
 
-            cmbColor.Items.Clear();
-            foreach (var c in Enum.GetValues(typeof(Scope.Plot.E_COLOR))) {
-                if ((Scope.Plot.E_COLOR)c == Scope.Plot.E_COLOR.INVALID) {
-                    continue;
-                }
-                cmbColor.Items.Add(c);
-            }
             cmbColor.SelectedIndex = (int)mScope.Plots[plotIdx].ColorIndex;
             setScopeSpeedLabel();
         }
