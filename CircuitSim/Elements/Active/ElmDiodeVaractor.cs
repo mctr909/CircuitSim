@@ -18,8 +18,8 @@ namespace Circuit.Elements.Active {
 
         public ElmDiodeVaractor(StringTokenizer st) : base(st) {
             mModelName = st.nextToken();
-            mCapVoltDiff = double.Parse(st.nextToken());
-            mBaseCapacitance = double.Parse(st.nextToken());
+            mCapVoltDiff = st.nextTokenDouble();
+            mBaseCapacitance = st.nextTokenDouble();
         }
 
         public override int AnaVoltageSourceCount { get { return 1; } }

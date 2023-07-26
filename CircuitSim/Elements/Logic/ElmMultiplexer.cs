@@ -10,7 +10,7 @@ namespace Circuit.Elements.Logic {
 
         public ElmMultiplexer(StringTokenizer st) : base(st) {
             try {
-                mSelectBitCount = int.Parse(st.nextToken());
+                mSelectBitCount = st.nextTokenInt();
             } catch { }
         }
 

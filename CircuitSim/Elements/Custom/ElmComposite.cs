@@ -171,7 +171,7 @@ namespace Circuit.Elements.Custom {
             while (modelLinet.HasMoreTokens) {
                 string line = modelLinet.nextToken();
                 var stModel = new StringTokenizer(line, " +\t\n\r\f");
-                var ceType = MenuItems.GetItemFromString(stModel.nextToken());
+                var ceType = stModel.nextTokenEnum<ELEMENTS>();
                 var newce = MenuItems.ConstructElement(ceType);
                 if (stIn != null) {
                     var tint = newce.DumpType;

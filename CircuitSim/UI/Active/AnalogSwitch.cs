@@ -21,8 +21,8 @@ namespace Circuit.UI.Active {
             var elm = new ElmAnalogSwitch();
             Elm = elm;
             try {
-                elm.Ron = double.Parse(st.nextToken());
-                elm.Roff = double.Parse(st.nextToken());
+                elm.Ron = st.nextTokenDouble();
+                elm.Roff = st.nextTokenDouble();
             } catch { }
         }
 

@@ -15,7 +15,7 @@ namespace Circuit.UI.Custom {
         }
 
         public GraphicText(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-            mSize = int.Parse(st.nextToken());
+            mSize = st.nextTokenInt();
             mText = st.nextToken();
             mText = Utils.Unescape(mText);
         }

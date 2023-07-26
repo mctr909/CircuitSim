@@ -11,7 +11,7 @@ namespace Circuit.Elements.Logic {
 
         public ElmDeMultiplexer(Chip chip, StringTokenizer st) : base(st) {
             try {
-                mSelectBitCount = int.Parse(st.nextToken());
+                mSelectBitCount = st.nextTokenInt();
             } catch { }
         }
 

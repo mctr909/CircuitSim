@@ -276,15 +276,6 @@ namespace Circuit {
             }
         }
 
-        public static ELEMENTS GetItemFromString(string v) {
-            ELEMENTS e;
-            if (Enum.TryParse(v, out e)) {
-                return e;
-            } else {
-                return ELEMENTS.INVALID;
-            }
-        }
-
         public void AllUnchecked() {
             for (int i = 0; i < mMainMenuItems.Count; i++) {
                 if (mMainMenuItems[i].Checked) {
