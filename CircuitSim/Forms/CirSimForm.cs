@@ -121,8 +121,6 @@ namespace Circuit {
         string mRecovery;
         string mClipboard = "";
 
-        double mScopeHeightFraction = 0.2;
-
         static Point mScroll;
         static Rectangle mCircuitArea;
 
@@ -977,15 +975,8 @@ namespace Circuit {
                 BaseUI.Context.Dispose();
             }
             BaseUI.Context = CustomGraphics.FromImage(width, height);
-            setCircuitArea();
+            mCircuitArea = new Rectangle(0, 0, width, height);
             SetSimRunning(isRunning);
-        }
-
-        void setCircuitArea() {
-            int height = mPixCir.Height;
-            int width = mPixCir.Width;
-            int h = (int)(height * mScopeHeightFraction);
-            mCircuitArea = new Rectangle(0, 0, width, height - h);
         }
 
         void centreCircuit() {
