@@ -20,7 +20,8 @@ namespace Circuit.UI.Output {
 
         public Scope(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             mNoDiagonal = false;
-            string sStr = st.nextToken();
+            string sStr;
+            st.nextToken(out sStr);
             var sst = new StringTokenizer(sStr, "\t");
             Properties = new Property();
             Elm = new ElmScope(Properties);
@@ -229,7 +230,7 @@ namespace Circuit.UI.Output {
             #endregion
 
             #region [public property]
-            public int Position { get; set; }
+            public int Position;
             public Rectangle BoundingBox { get; private set; }
             public int RightEdge { get { return BoundingBox.X + BoundingBox.Width; } }
             public int Speed {
@@ -650,13 +651,14 @@ namespace Circuit.UI.Output {
                 if (vPlot.UI == null) {
                     return null;
                 }
-                var dumpList = new List<object>();
-                dumpList.Add("o");
-                dumpList.Add(vPlot.Speed);
-                dumpList.Add(mFlags);
-                dumpList.Add(mScale.ToString("0.000000"));
-                dumpList.Add(Position);
-                dumpList.Add(Plots.Count);
+                var dumpList = new List<object>() {
+                    "o",
+                    vPlot.Speed,
+                    mFlags,
+                    mScale.ToString("0.000000"),
+                    Position,
+                    Plots.Count
+                };
                 foreach (var p in Plots) {
                     dumpList.Add(CirSimForm.GetUIIndex(p.UI) + "_" + p.ColorIndex);
                 }
@@ -670,15 +672,22 @@ namespace Circuit.UI.Output {
                 initialize();
                 Plots = new List<Plot>();
 
-                Speed = st.nextTokenInt();
-                mFlags = st.nextTokenInt();
+                st.nextTokenInt(out mSpeed, 1);
+                ResetGraph();
+
+                int flags;
+                st.nextTokenInt(out flags);
+                mFlags = flags;
                 mScale = st.nextTokenDouble();
-                Position = st.nextTokenInt();
+                st.nextTokenInt(out Position);
 
                 try {
-                    int plotCount = st.nextTokenInt();
+                    int plotCount;
+                    st.nextTokenInt(out plotCount);
                     for (int i = 0; i != plotCount; i++) {
-                        var subElmCol = st.nextToken().Split('_');
+                        string temp;
+                        st.nextToken(out temp);
+                        var subElmCol = temp.Split('_');
                         var subElmIdx = int.Parse(subElmCol[0]);
                         var subElm = CirSimForm.UIList[subElmIdx];
                         var color = (int)Enum.Parse(typeof(Plot.E_COLOR), subElmCol[1]);
@@ -692,7 +701,9 @@ namespace Circuit.UI.Output {
                 }
 
                 if (st.HasMoreTokens) {
-                    Text = Utils.Unescape(st.nextToken());
+                    string temp;
+                    st.nextToken(out temp);
+                    Text = Utils.Unescape(temp);
                 } else {
                     Text = "";
                 }

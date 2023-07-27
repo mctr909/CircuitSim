@@ -1,13 +1,12 @@
 ﻿using System.Windows.Forms;
 
-using Circuit.Elements;
 using Circuit.UI;
 
 namespace Circuit {
     public class Adjustable {
         /* index of value in getEditInfo() list that this slider controls */
-        public int EditItemR { get; private set; }
-        public int EditItemC { get; private set; }
+        public int EditItemR;
+        public int EditItemC;
 
         public double Value {
             get { return MinValue + (MaxValue - MinValue) * Slider.Value / 100; }
@@ -38,16 +37,18 @@ namespace Circuit {
         }
 
         public Adjustable(StringTokenizer st) {
-            int e = st.nextTokenInt();
+            int e;
+            st.nextTokenInt(out e);
             if (e == -1) {
                 return;
             }
             UI = CirSimForm.UIList[e];
-            EditItemR = st.nextTokenInt();
+            st.nextTokenInt(out EditItemR);
             EditItemC = 0;
             MinValue = st.nextTokenDouble();
             MaxValue = st.nextTokenDouble();
-            SliderText = Utils.Unescape(st.nextToken());
+            st.nextToken(out SliderText);
+            SliderText = Utils.Unescape(SliderText);
         }
 
         public void CreateSlider() {

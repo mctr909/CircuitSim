@@ -72,9 +72,9 @@ namespace Circuit.Elements.Active {
             double fwdrop = defaultdrop;
             double zvoltage = 0;
             if (model) {
-                try {
-                    mModelName = Utils.Unescape(st.nextToken());
-                } catch { }
+                if (st.nextToken(out mModelName, mModelName)) {
+                    mModelName = Utils.Unescape(mModelName);
+                }
             } else {
                 if (forwardDrop) {
                     try {
