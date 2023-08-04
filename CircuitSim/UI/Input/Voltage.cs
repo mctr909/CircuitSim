@@ -210,8 +210,9 @@ namespace Circuit.UI.Input {
                 var xl = 10;
                 var x0 = 0;
                 var y0 = 0;
+                var ph = elm.Phase + elm.PhaseOffset;
                 for (var i = -xl; i <= xl; i++) {
-                    var yy = y + (int)(.95 * Math.Sin(i * Math.PI / xl) * h);
+                    var yy = y + (int)(.95 * Math.Sin(i * Math.PI / xl + ph) * h);
                     if (i != -xl) {
                         g.DrawLine(x0, y0, x + i, yy);
                     }
@@ -226,7 +227,7 @@ namespace Circuit.UI.Input {
                 if (ControlPanel.ChkShowValues.Checked) {
                     var s = Utils.UnitText(elm.MaxVoltage, "V\r\n");
                     s += Utils.UnitText(elm.Frequency, "Hz\r\n");
-                    s += Utils.UnitText(elm.Phase * 180 / Math.PI, "deg");
+                    s += Utils.UnitText((elm.Phase + elm.PhaseOffset) * 180 / Math.PI, "deg");
                     drawValues(s, 0, 5);
                 }
                 if (ControlPanel.ChkShowName.Checked) {
