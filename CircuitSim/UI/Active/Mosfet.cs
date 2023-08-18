@@ -10,7 +10,6 @@ namespace Circuit.UI.Active {
         const int FLAG_DIGITAL = 4;
         const int FLAG_FLIP = 8;
         const int FLAG_HIDE_BULK = 16;
-        const int FLAG_BODY_DIODE = 32;
         const int FLAGS_GLOBAL = (FLAG_HIDE_BULK | FLAG_DIGITAL);
 
         const int HS = 10;
@@ -38,7 +37,6 @@ namespace Circuit.UI.Active {
         public Mosfet(Point pos, bool pnpflag) : base(pos) {
             Elm = new ElmMosfet(pnpflag);
             DumpInfo.Flags = pnpflag ? FLAG_PNP : 0;
-            DumpInfo.Flags |= FLAG_BODY_DIODE;
             mNoDiagonal = true;
             DumpInfo.ReferenceName = "Tr";
         }
@@ -53,8 +51,6 @@ namespace Circuit.UI.Active {
             mNoDiagonal = true;
             mGlobalFlags = DumpInfo.Flags & (FLAGS_GLOBAL);
             Elm = new ElmMosfet((f & FLAG_PNP) != 0, vt, hfe);
-            var ce = (ElmMosfet)Elm;
-            ce.DoBodyDiode = 0 != (DumpInfo.Flags & FLAG_BODY_DIODE);
         }
 
         public override bool CanViewInScope { get { return true; } }
@@ -275,9 +271,6 @@ namespace Circuit.UI.Active {
             if (r == 5 && !ShowBulk) {
                 return new ElementInfo("デジタル", DrawDigital);
             }
-            if (r == 5 && ShowBulk) {
-                return new ElementInfo("還流ダイオード", (DumpInfo.Flags & FLAG_BODY_DIODE) != 0);
-            }
             return null;
         }
 
@@ -308,10 +301,6 @@ namespace Circuit.UI.Active {
                 mGlobalFlags = ei.CheckBox.Checked
                     ? (mGlobalFlags | FLAG_DIGITAL) : (mGlobalFlags & ~FLAG_DIGITAL);
                 SetPoints();
-            }
-            if (n == 5 && ShowBulk) {
-                DumpInfo.Flags = ei.ChangeFlag(DumpInfo.Flags, FLAG_BODY_DIODE);
-                ce.DoBodyDiode = 0 != (DumpInfo.Flags & FLAG_BODY_DIODE);
             }
         }
     }

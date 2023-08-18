@@ -22,7 +22,6 @@ namespace Circuit.Elements.Active {
 
         public double Vt;
         public double Hfe; /* hfe = 1/(RdsON*(Vgs-Vt)) */
-        public bool DoBodyDiode;
 
         public int Pnp { get; private set; }
         public int BodyTerminal { get; private set; }
@@ -74,23 +73,21 @@ namespace Circuit.Elements.Active {
 
             BodyTerminal = (Pnp == -1) ? IdxD : IdxS;
 
-            if (DoBodyDiode) {
-                mDiode1Node0 = Nodes[IdxS];
-                mDiode2Node1 = Nodes[IdxD];
-                if (Pnp == -1) {
-                    /* pnp: diodes conduct when S or D are higher than body */
-                    mDiode1Node1 = Nodes[IdxD];
-                    mDiode2Node0 = Nodes[IdxD];
-                } else {
-                    /* npn: diodes conduct when body is higher than S or D */
-                    mDiode1Node1 = Nodes[IdxS];
-                    mDiode2Node0 = Nodes[IdxS];
-                }
-                Circuit.RowInfo[mDiode1Node0 - 1].LeftChanges = true;
-                Circuit.RowInfo[mDiode1Node1 - 1].LeftChanges = true;
-                Circuit.RowInfo[mDiode2Node0 - 1].LeftChanges = true;
-                Circuit.RowInfo[mDiode2Node1 - 1].LeftChanges = true;
+            mDiode1Node0 = Nodes[IdxS];
+            mDiode2Node1 = Nodes[IdxD];
+            if (Pnp == -1) {
+                /* pnp: diodes conduct when S or D are higher than body */
+                mDiode1Node1 = Nodes[IdxD];
+                mDiode2Node0 = Nodes[IdxD];
+            } else {
+                /* npn: diodes conduct when body is higher than S or D */
+                mDiode1Node1 = Nodes[IdxS];
+                mDiode2Node0 = Nodes[IdxS];
             }
+            Circuit.RowInfo[mDiode1Node0 - 1].LeftChanges = true;
+            Circuit.RowInfo[mDiode1Node1 - 1].LeftChanges = true;
+            Circuit.RowInfo[mDiode2Node0 - 1].LeftChanges = true;
+            Circuit.RowInfo[mDiode2Node1 - 1].LeftChanges = true;
         }
 
         public override double CirGetCurrentIntoNode(int n) {
@@ -178,16 +175,12 @@ namespace Circuit.Elements.Active {
             }
 
             /* 還流ダイオード */
-            if (DoBodyDiode) {
-                var vbs = (Volts[BodyTerminal] - Volts[IdxS]) * Pnp;
-                var vbd = (Volts[BodyTerminal] - Volts[IdxD]) * Pnp;
-                DiodeDoStep(mDiode1Node0, mDiode1Node1, vbs, ref mDiode1LastVoltDiff);
-                DiodeDoStep(mDiode2Node0, mDiode2Node1, vbd, ref mDiode2LastVoltDiff);
-                DiodeCurrent1 = (Math.Exp(vbs * DiodeVdCoef) - 1) * DiodeLeakage * Pnp;
-                DiodeCurrent2 = (Math.Exp(vbd * DiodeVdCoef) - 1) * DiodeLeakage * Pnp;
-            } else {
-                DiodeCurrent1 = DiodeCurrent2 = 0;
-            }
+            var vbs = (Volts[BodyTerminal] - Volts[IdxS]) * Pnp;
+            var vbd = (Volts[BodyTerminal] - Volts[IdxD]) * Pnp;
+            DiodeDoStep(mDiode1Node0, mDiode1Node1, vbs, ref mDiode1LastVoltDiff);
+            DiodeDoStep(mDiode2Node0, mDiode2Node1, vbd, ref mDiode2LastVoltDiff);
+            DiodeCurrent1 = (Math.Exp(vbs * DiodeVdCoef) - 1) * DiodeLeakage * Pnp;
+            DiodeCurrent2 = (Math.Exp(vbd * DiodeVdCoef) - 1) * DiodeLeakage * Pnp;
 
             var rowD = Circuit.RowInfo[Nodes[idxD] - 1].MapRow;
             var rowS = Circuit.RowInfo[Nodes[idxS] - 1].MapRow;
@@ -265,16 +258,12 @@ namespace Circuit.Elements.Active {
                 Mode = 2;
             }
 
-            if (DoBodyDiode) {
-                var vbs = (Volts[BodyTerminal] - Volts[IdxS]) * Pnp;
-                var vbd = (Volts[BodyTerminal] - Volts[IdxD]) * Pnp;
-                DiodeDoStep(mDiode1Node0, mDiode1Node1, vbs, ref mDiode1LastVoltDiff);
-                DiodeDoStep(mDiode2Node0, mDiode2Node1, vbd, ref mDiode2LastVoltDiff);
-                DiodeCurrent1 = (Math.Exp(vbs * DiodeVdCoef) - 1) * DiodeLeakage * Pnp;
-                DiodeCurrent2 = (Math.Exp(vbd * DiodeVdCoef) - 1) * DiodeLeakage * Pnp;
-            } else {
-                DiodeCurrent1 = DiodeCurrent2 = 0;
-            }
+            var vbs = (Volts[BodyTerminal] - Volts[IdxS]) * Pnp;
+            var vbd = (Volts[BodyTerminal] - Volts[IdxD]) * Pnp;
+            DiodeDoStep(mDiode1Node0, mDiode1Node1, vbs, ref mDiode1LastVoltDiff);
+            DiodeDoStep(mDiode2Node0, mDiode2Node1, vbd, ref mDiode2LastVoltDiff);
+            DiodeCurrent1 = (Math.Exp(vbs * DiodeVdCoef) - 1) * DiodeLeakage * Pnp;
+            DiodeCurrent2 = (Math.Exp(vbd * DiodeVdCoef) - 1) * DiodeLeakage * Pnp;
 
             /* flip ids if we swapped source and drain above */
             if (idxS == 2 && Pnp == 1 || idxS == 1 && Pnp == -1) {
