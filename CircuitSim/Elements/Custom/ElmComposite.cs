@@ -169,13 +169,16 @@ namespace Circuit.Elements.Custom {
             /* Build compElmList and compNodeHash from input string */
 
             while (modelLinet.HasMoreTokens) {
-                string line = modelLinet.nextToken();
+                string line;
+                modelLinet.nextToken(out line);
                 var stModel = new StringTokenizer(line, " +\t\n\r\f");
-                var ceType = stModel.nextTokenEnum<ELEMENTS>();
+                ELEMENTS ceType;
+                stModel.nextTokenEnum(out ceType, ELEMENTS.INVALID);
                 var newce = MenuItems.ConstructElement(ceType);
                 if (stIn != null) {
                     var tint = newce.DumpType;
-                    string dumpedCe = stIn.nextToken();
+                    string dumpedCe;
+                    stIn.nextToken(out dumpedCe);
                     dumpedCe = Utils.Unescape(dumpedCe);
                     var stCe = new StringTokenizer(dumpedCe, "_");
                     // TODO: CompositeElm loadComposite
@@ -187,7 +190,8 @@ namespace Circuit.Elements.Custom {
 
                 int thisPost = 0;
                 while (stModel.HasMoreTokens) {
-                    int nodeOfThisPost = stModel.nextTokenInt();
+                    int nodeOfThisPost;
+                    stModel.nextTokenInt(out nodeOfThisPost);
                     cnLink = new CircuitNode.LINK();
                     cnLink.Num = thisPost;
                     cnLink.Elm = newce.Elm;

@@ -12,7 +12,7 @@ namespace Circuit.Elements.Output {
         }
 
         public ElmLabeledNode(StringTokenizer st) : base() {
-            Text = st.nextToken();
+            st.nextToken(out Text);
             Text = Utils.Unescape(Text);
         }
 

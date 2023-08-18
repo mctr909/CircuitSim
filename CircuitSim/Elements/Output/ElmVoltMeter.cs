@@ -32,12 +32,8 @@ namespace Circuit.Elements.Output {
         }
 
         public ElmVoltMeter(StringTokenizer st) : base() {
-            Meter = TP_VOL;
-            Scale = E_SCALE.AUTO;
-            try {
-                Meter = st.nextTokenInt(); /* get meter type from saved dump */
-                Scale = st.nextTokenEnum<E_SCALE>();
-            } catch { }
+            st.nextTokenInt(out Meter, TP_VOL);
+            st.nextTokenEnum(out Scale, E_SCALE.AUTO);
         }
 
         public override void CirIterationFinished() {

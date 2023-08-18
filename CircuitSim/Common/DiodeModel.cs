@@ -181,13 +181,16 @@ namespace Circuit {
         }
 
         public static void UndumpModel(StringTokenizer st) {
-            string name = Utils.Unescape(st.nextToken());
-            var dm = getModelWithName(name);
-            dm.undump(st);
+            string name;
+            if (st.nextToken(out name)) {
+                name = Utils.Unescape(name);
+                var dm = getModelWithName(name);
+                dm.undump(st);
+            }
         }
 
         void undump(StringTokenizer st) {
-            flags = st.nextTokenInt();
+            st.nextTokenInt(out flags);
             SaturationCurrent = st.nextTokenDouble();
             SeriesResistance = st.nextTokenDouble();
             EmissionCoefficient = st.nextTokenDouble();

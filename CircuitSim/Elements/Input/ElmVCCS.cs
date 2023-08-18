@@ -22,11 +22,11 @@ namespace Circuit.Elements.Input {
         }
 
         public ElmVCCS(Chip ui, StringTokenizer st) : base(st) {
-            InputCount = st.nextTokenInt();
-            try {
-                ExprString = Utils.Unescape(st.nextToken());
+            st.nextTokenInt(out InputCount, InputCount);
+            if (st.nextToken(out ExprString, ExprString)) {
+                ExprString = Utils.Unescape(ExprString);
                 ParseExpr();
-            } catch { }
+            }
             SetupPins(ui);
         }
 

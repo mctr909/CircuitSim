@@ -1175,7 +1175,8 @@ namespace Circuit {
                 string line = Encoding.UTF8.GetString(b, p, linelen);
                 var st = new StringTokenizer(line, " +\t\n\r\f");
                 while (st.HasMoreTokens) {
-                    string type = st.nextToken();
+                    string type;
+                    st.nextToken(out type);
                     int tint = type.ElementAt(0);
                     try {
                         if (subs && tint != '.') {
@@ -1221,18 +1222,22 @@ namespace Circuit {
                             //CustomCompositeModel.UndumpModel(st);
                             break;
                         }
-                        var p1 = new Point(
-                            st.nextTokenInt(),
-                            st.nextTokenInt());
-                        var p2 = new Point(
-                            st.nextTokenInt(),
-                            st.nextTokenInt());
-                        int f = st.nextTokenInt();
+                        int x, y;
+                        st.nextTokenInt(out x);
+                        st.nextTokenInt(out y);
+                        var p1 = new Point(x, y);
+                        st.nextTokenInt(out x);
+                        st.nextTokenInt(out y);
+                        var p2 = new Point(x, y);
+                        int f;
+                        st.nextTokenInt(out f);
                         var dumpId = MenuItems.GetDumpIdFromString(type);
                         var newce = MenuItems.CreateCe(dumpId, p1, p2, f, st);
                         try {
                             if (st.HasMoreTokens) {
-                                newce.DumpInfo.ReferenceName = Utils.Unescape(st.nextToken());
+                                string v;
+                                st.nextToken(out v);
+                                newce.DumpInfo.ReferenceName = Utils.Unescape(v);
                             } else {
                                 newce.DumpInfo.ReferenceName = "";
                             }
@@ -1271,7 +1276,8 @@ namespace Circuit {
         }
 
         void readOptions(StringTokenizer st) {
-            int flags = st.nextTokenInt();
+            int flags;
+            st.nextTokenInt(out flags);
             ControlPanel.ChkShowDots.Checked = (flags & 1) != 0;
             ControlPanel.ChkShowValues.Checked = (flags & 16) == 0;
 
@@ -1279,7 +1285,9 @@ namespace Circuit {
             double sp = st.nextTokenDouble();
             int sp2 = (int)(Math.Log(10 * sp) * 24 + 61.5);
             ControlPanel.TrbSpeed.Value = sp2;
-            ControlPanel.TrbCurrent.Value = st.nextTokenInt();
+            int v;
+            st.nextTokenInt(out v);
+            ControlPanel.TrbCurrent.Value = v;
         }
 
         bool doSwitch(Point pos) {

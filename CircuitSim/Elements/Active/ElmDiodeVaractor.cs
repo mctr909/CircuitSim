@@ -17,7 +17,7 @@ namespace Circuit.Elements.Active {
         }
 
         public ElmDiodeVaractor(StringTokenizer st) : base(st) {
-            mModelName = st.nextToken();
+            st.nextToken(out mModelName, mModelName);
             mCapVoltDiff = st.nextTokenDouble();
             mBaseCapacitance = st.nextTokenDouble();
         }
