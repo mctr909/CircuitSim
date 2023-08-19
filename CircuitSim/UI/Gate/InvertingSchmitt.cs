@@ -55,18 +55,20 @@ namespace Circuit.UI.Gate {
 
         public override void SetPoints() {
             base.SetPoints();
-            int hs = 16;
-            int ww = 16;
+            int hs = 10;
+            int ww = 12;
             if (ww > mLen / 2) {
                 ww = (int)(mLen / 2);
             }
             setLead1(0.5 - ww / mLen);
             setLead2(0.5 + (ww + 2) / mLen);
             interpPoint(ref pcircle, 0.5 + (ww - 2) / mLen);
+
             gatePoly = new Point[3];
             interpLeadAB(ref gatePoly[0], ref gatePoly[1], 0, hs);
             interpPoint(ref gatePoly[2], 0.5 + (ww - 5) / mLen);
-            Utils.CreateSchmitt(Elm.Post[0], Elm.Post[1], out symbolPoly, 1, .5 - (ww - 9) / mLen);
+
+            Utils.CreateSchmitt(Elm.Post[0], Elm.Post[1], out symbolPoly, 0.8, .5 - (ww - 7) / mLen);
             setBbox(hs);
         }
 

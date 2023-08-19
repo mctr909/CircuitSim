@@ -6,7 +6,7 @@ using Circuit.Elements.Gate;
 
 namespace Circuit.UI.Gate {
     class TriState : BaseUI {
-        const int BODY_LEN = 32;
+        const int BODY_LEN = 16;
 
         Point mLead3;
         Point[] mGatePoly;

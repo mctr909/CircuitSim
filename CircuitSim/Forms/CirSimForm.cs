@@ -36,7 +36,7 @@ namespace Circuit {
         }
 
         public const int GRID_SIZE = 8;
-        public const int CURRENT_DOT_SIZE = 6;
+        public const int CURRENT_DOT_SIZE = 8;
         public const int POSTGRABSQ = 25;
         public const int MINPOSTGRABSIZE = 256;
 

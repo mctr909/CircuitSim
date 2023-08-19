@@ -6,7 +6,6 @@ using Circuit.Elements.Active;
 namespace Circuit.UI.Active {
     class Mosfet : BaseUI {
         const int FLAG_PNP = 1;
-        const int FLAG_SHOWVT = 2;
         const int FLAG_FLIP = 8;
 
         const int HS = 10;
@@ -72,19 +71,21 @@ namespace Circuit.UI.Active {
             interpPointAB(ref mPosS[2], ref mPosD[2], 1 - 12 / mLen, -hs2 * 4 / 3);
 
             mGate = new Point[3];
-            interpPointAB(ref mGate[0], ref mGate[2], 1 - 18 / mLen, hs2 / 2);
+            interpPointAB(ref mGate[0], ref mGate[2], 1 - 16 / mLen, hs2 * 0.8);
             Utils.InterpPoint(mGate[0], mGate[2], ref mGate[1], .5);
 
             Utils.InterpPoint(mPosS[0], mPosD[0], ref mPosB[0], .5);
             Utils.InterpPoint(mPosS[1], mPosD[1], ref mPosB[1], .5);
 
-            var b0 = mPosB[0];
-            var b1 = mPosB[1];
+            Point a0, a1;
             if (ce.Pnp == 1) {
-                Utils.CreateArrow(b0.X, b0.Y, b1.X, b1.Y, out mArrowPoly, 8, 3);
+                a0 = mPosB[0];
+                a1 = mPosB[1];
             } else {
-                Utils.CreateArrow(b1.X, b1.Y, b0.X, b0.Y, out mArrowPoly, 8, 3);
+                a0 = mPosB[1];
+                a1 = mPosB[0];
             }
+            Utils.CreateArrow(a0.X, a0.Y, a1.X, a1.Y, out mArrowPoly, 8, 3);
 
             mPs1 = new Point[SEGMENTS];
             mPs2 = new Point[SEGMENTS];
@@ -148,17 +149,13 @@ namespace Circuit.UI.Active {
             drawLead(Elm.Post[0], mGate[1]);
             drawLead(mGate[0], mGate[2]);
 
-            if ((DumpInfo.Flags & FLAG_SHOWVT) != 0) {
-                string s = "" + (ce.Vt * ce.Pnp);
-                drawCenteredLText(s, DumpInfo.P2.X, DumpInfo.P2.Y, false);
-            }
+            /* draw current */
             updateDotCount(-ce.Current, ref CurCount);
+            updateDotCount(ce.DiodeCurrent1, ref mCurcountBody1);
+            updateDotCount(ce.DiodeCurrent2, ref mCurcountBody2);
             drawDots(mPosS[0], mPosS[1], CurCount);
             drawDots(mPosD[1], mPosD[0], CurCount);
             drawDots(mPosS[1], mPosD[1], CurCount);
-
-            updateDotCount(ce.DiodeCurrent1, ref mCurcountBody1);
-            updateDotCount(ce.DiodeCurrent2, ref mCurcountBody2);
             drawDots(mPosS[0], mPosB[0], -mCurcountBody1);
             drawDots(mPosB[0], mPosD[0], mCurcountBody2);
 

@@ -116,7 +116,7 @@ namespace Circuit {
                 mPenHandle = Pens.Red.Brush;
             } else {
                 WhiteColor = Color.FromArgb(191, 191, 191);
-                LineColor = Color.FromArgb(79, 79, 79);
+                LineColor = Color.FromArgb(95, 95, 95);
                 TextColor = Color.FromArgb(147, 147, 147);
                 SelectColor = Color.FromArgb(0, 255, 255);
                 PostColor = Color.FromArgb(0, 147, 0);

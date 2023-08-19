@@ -56,7 +56,8 @@ namespace Circuit {
             Name = name;
             Value = val;
             Textf = new TextBox() {
-                Text = val.ToString()
+                Text = val.ToString(),
+                Width = 60
             };
             Textf.Font = new Font("Arial", 9);
             NoSliders = noSliders;

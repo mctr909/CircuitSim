@@ -27,8 +27,8 @@ namespace Circuit.UI.Gate {
 
         public override void SetPoints() {
             base.SetPoints();
-            int hs = 16;
-            int ww = 16;
+            int hs = 10;
+            int ww = 12;
             if (ww > mLen / 2) {
                 ww = (int)(mLen / 2);
             }
@@ -36,7 +36,7 @@ namespace Circuit.UI.Gate {
             setLead2(0.5 + (ww - 4) / mLen);
             gatePoly = new Point[3];
             interpLeadAB(ref gatePoly[0], ref gatePoly[1], 0, hs);
-            interpPoint(ref gatePoly[2], 0.5 + (ww - 5) / mLen);
+            interpPoint(ref gatePoly[2], 0.5 + (ww - 2) / mLen);
         }
 
         public override void GetInfo(string[] arr) {
