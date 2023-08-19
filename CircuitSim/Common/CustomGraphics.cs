@@ -211,10 +211,6 @@ namespace Circuit {
             mG.Transform = new Matrix(1, 0, 0, 1, p.X, p.Y);
         }
 
-        public virtual void SetPlotBottom(int x, int y) {
-            mG.Transform = new Matrix(1, 0, 0, 1, x, y);
-        }
-
         public virtual void SetPlotFloat(int x, int y) {
             mG.Transform = new Matrix(1, 0, 0, 1, x, y);
         }

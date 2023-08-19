@@ -298,11 +298,6 @@ class PDF {
             mBoardOfsY = p.Y;
         }
 
-        public override void SetPlotBottom(int x, int y) {
-            mOfsX = x;
-            mOfsY = 2 * Height - (mImage.Height - y);
-        }
-
         public override void SetPlotFloat(int x, int y) {
             mOfsX = x - mBoardOfsX;
             mOfsY = y - mBoardOfsY;

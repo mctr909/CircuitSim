@@ -2021,7 +2021,7 @@ namespace Circuit {
 
             var g = BaseUI.Context;
             PDF.Page pdfG = null;
-            PDF.Page scopeG = null;
+            PDF.Page pdfScopeG = null;
             var bkIsRun = IsRunning;
             var bkPrint = ControlPanel.ChkPrintable.Checked;
             if (g.DoPrint) {
@@ -2033,7 +2033,7 @@ namespace Circuit {
                     ControlPanel.ChkPrintable.Checked = false;
                 }
                 pdfG = new PDF.Page(g.Width, g.Height);
-                scopeG = new PDF.Page(mScopeForm.Width, mScopeForm.Height);
+                pdfScopeG = new PDF.Page(mScopeForm.Width, mScopeForm.Height);
                 g = pdfG;
                 BaseUI.Context = pdfG;
             }
@@ -2153,7 +2153,7 @@ namespace Circuit {
             }
             g.ClearTransform();
 
-            mScopeForm.Draw(scopeG);
+            mScopeForm.Draw(pdfScopeG);
 
             if (null != mPixCir.Image) {
                 mPixCir.Image.Dispose();
@@ -2177,7 +2177,7 @@ namespace Circuit {
             } else {
                 var pdf = new PDF();
                 pdf.AddPage(pdfG);
-                pdf.AddPage(scopeG);
+                pdf.AddPage(pdfScopeG);
                 var saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Filter = "PDFファイル(*.pdf)|*.pdf";
                 saveFileDialog.FileName = Path.GetFileNameWithoutExtension(mFileName);

@@ -761,8 +761,9 @@ namespace Circuit.UI.Output {
                     g.SetPlotFloat(BoundingBox.X, BoundingBox.Y);
                     g.DrawRectangle(new Rectangle(0, 0, BoundingBox.Width, BoundingBox.Height));
                 } else {
-                    g.SetPlotBottom(BoundingBox.X, BoundingBox.Y);
+                    g.SetPlotFloat(BoundingBox.X, BoundingBox.Y);
                 }
+
                 {
                     if (mShowFFT) {
                         drawFFTGridLines(g);
