@@ -7,26 +7,18 @@ namespace Circuit.UI.Active {
     class Mosfet : BaseUI {
         const int FLAG_PNP = 1;
         const int FLAG_SHOWVT = 2;
-        const int FLAG_DIGITAL = 4;
         const int FLAG_FLIP = 8;
-        const int FLAG_HIDE_BULK = 16;
-        const int FLAGS_GLOBAL = (FLAG_HIDE_BULK | FLAG_DIGITAL);
 
         const int HS = 10;
 
         const int SEGMENTS = 6;
         const double SEG_F = 1.0 / SEGMENTS;
 
-        static int mGlobalFlags;
-
         double mCurcountBody1;
         double mCurcountBody2;
 
-        int mPcircler;
-
         Point[] mGate;
         Point[] mArrowPoly;
-        Point mPcircle;
 
         Point[] mPs1;
         Point[] mPs2;
@@ -49,7 +41,6 @@ namespace Circuit.UI.Active {
                 hfe = st.nextTokenDouble();
             } catch { }
             mNoDiagonal = true;
-            mGlobalFlags = DumpInfo.Flags & (FLAGS_GLOBAL);
             Elm = new ElmMosfet((f & FLAG_PNP) != 0, vt, hfe);
         }
 
@@ -63,17 +54,9 @@ namespace Circuit.UI.Active {
             optionList.Add(ce.Hfe);
         }
 
-        bool DrawDigital { get { return (DumpInfo.Flags & FLAG_DIGITAL) != 0; } }
-
-        bool ShowBulk { get { return (DumpInfo.Flags & (FLAG_DIGITAL | FLAG_HIDE_BULK)) == 0; } }
-
         public override void SetPoints() {
             base.SetPoints();
             var ce = (ElmMosfet)Elm;
-
-            /* these two flags apply to all mosfets */
-            DumpInfo.Flags &= ~FLAGS_GLOBAL;
-            DumpInfo.Flags |= mGlobalFlags;
 
             /* find the coordinates of the various points we need to draw the MOSFET. */
             var hsm = (HS / 8 + 1) * 8;
@@ -92,32 +75,15 @@ namespace Circuit.UI.Active {
             interpPointAB(ref mGate[0], ref mGate[2], 1 - 18 / mLen, hs2 / 2);
             Utils.InterpPoint(mGate[0], mGate[2], ref mGate[1], .5);
 
-            if (ShowBulk) {
-                Utils.InterpPoint(mPosS[0], mPosD[0], ref mPosB[0], .5);
-                Utils.InterpPoint(mPosS[1], mPosD[1], ref mPosB[1], .5);
-            }
+            Utils.InterpPoint(mPosS[0], mPosD[0], ref mPosB[0], .5);
+            Utils.InterpPoint(mPosS[1], mPosD[1], ref mPosB[1], .5);
 
-            if (!DrawDigital) {
-                var b0 = mPosB[0];
-                var b1 = mPosB[1];
-                if (ce.Pnp == 1) {
-                    if (ShowBulk) {
-                        Utils.CreateArrow(b0.X, b0.Y, b1.X, b1.Y, out mArrowPoly, 8, 3);
-                    } else {
-                        Utils.CreateArrow(mPosS[1], mPosS[0], out mArrowPoly, 8, 3);
-                    }
-                } else {
-                    if (ShowBulk) {
-                        Utils.CreateArrow(b1.X, b1.Y, b0.X, b0.Y, out mArrowPoly, 8, 3);
-                    } else {
-                        Utils.CreateArrow(mPosD[0], mPosD[1], out mArrowPoly, 8, 3);
-                    }
-                }
-            } else if (ce.Pnp == -1) {
-                interpPoint(ref mGate[1], 1 - 36 / mLen);
-                int dist = (mDsign < 0) ? 32 : 31;
-                interpPoint(ref mPcircle, 1 - dist / mLen);
-                mPcircler = 3;
+            var b0 = mPosB[0];
+            var b1 = mPosB[1];
+            if (ce.Pnp == 1) {
+                Utils.CreateArrow(b0.X, b0.Y, b1.X, b1.Y, out mArrowPoly, 8, 3);
+            } else {
+                Utils.CreateArrow(b1.X, b1.Y, b0.X, b0.Y, out mArrowPoly, 8, 3);
             }
 
             mPs1 = new Point[SEGMENTS];
@@ -148,11 +114,6 @@ namespace Circuit.UI.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            /* pick up global flags changes */
-            if ((DumpInfo.Flags & FLAGS_GLOBAL) != mGlobalFlags) {
-                SetPoints();
-            }
-
             setBbox(HS);
 
             var ce = (ElmMosfet)Elm;
@@ -168,7 +129,7 @@ namespace Circuit.UI.Active {
             drawLead(mPosD[1], mPosD[2]);
 
             /* draw line connecting source and drain */
-            bool enhancement = ce.Vt > 0 && ShowBulk;
+            bool enhancement = ce.Vt > 0;
             for (int i = 0; i != SEGMENTS; i++) {
                 if ((i == 1 || i == 4) && enhancement) {
                     continue;
@@ -177,22 +138,15 @@ namespace Circuit.UI.Active {
             }
 
             /* draw bulk connection */
-            if (ShowBulk) {
-                drawLead(ce.Pnp == -1 ? mPosD[0] : mPosS[0], mPosB[0]);
-                drawLead(mPosB[0], mPosB[1]);
-            }
+            drawLead(ce.Pnp == -1 ? mPosD[0] : mPosS[0], mPosB[0]);
+            drawLead(mPosB[0], mPosB[1]);
 
             /* draw arrow */
-            if (!DrawDigital) {
-                g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mArrowPoly);
-            }
+            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mArrowPoly);
 
             /* draw gate */
             drawLead(Elm.Post[0], mGate[1]);
             drawLead(mGate[0], mGate[2]);
-            if (DrawDigital && ce.Pnp == -1) {
-                g.DrawCircle(mPcircle, mPcircler);
-            }
 
             if ((DumpInfo.Flags & FLAG_SHOWVT) != 0) {
                 string s = "" + (ce.Vt * ce.Pnp);
@@ -203,12 +157,10 @@ namespace Circuit.UI.Active {
             drawDots(mPosD[1], mPosD[0], CurCount);
             drawDots(mPosS[1], mPosD[1], CurCount);
 
-            if (ShowBulk) {
-                updateDotCount(ce.DiodeCurrent1, ref mCurcountBody1);
-                updateDotCount(ce.DiodeCurrent2, ref mCurcountBody2);
-                drawDots(mPosS[0], mPosB[0], -mCurcountBody1);
-                drawDots(mPosB[0], mPosD[0], mCurcountBody2);
-            }
+            updateDotCount(ce.DiodeCurrent1, ref mCurcountBody1);
+            updateDotCount(ce.DiodeCurrent2, ref mCurcountBody2);
+            drawDots(mPosS[0], mPosB[0], -mCurcountBody1);
+            drawDots(mPosB[0], mPosD[0], mCurcountBody2);
 
             drawPosts();
 
@@ -235,12 +187,10 @@ namespace Circuit.UI.Active {
             arr[3] = ((ce.Pnp == 1) ? "Vds = " : "Vsd = ") + Utils.VoltageText(ce.Vd - ce.Vs);
             arr[4] = (ce.Mode == 0) ? "off" : (ce.Mode == 1) ? "線形" : "飽和";
             arr[5] = "gm = " + Utils.UnitText(ce.Gm, "A/V");
-            if (ShowBulk) {
-                arr[6] = "Ib = " + Utils.UnitText(
-                    ce.BodyTerminal == 1 ? -ce.DiodeCurrent1 :
-                    ce.BodyTerminal == 2 ? ce.DiodeCurrent2 :
-                    -ce.Pnp * (ce.DiodeCurrent1 + ce.DiodeCurrent2), "A");
-            }
+            arr[6] = "Ib = " + Utils.UnitText(
+                ce.BodyTerminal == 1 ? -ce.DiodeCurrent1 :
+                ce.BodyTerminal == 2 ? ce.DiodeCurrent2 :
+                -ce.Pnp * (ce.DiodeCurrent1 + ce.DiodeCurrent2), "A");
         }
 
         public override string GetScopeText() {
@@ -263,13 +213,7 @@ namespace Circuit.UI.Active {
                 return new ElementInfo("hfe", ce.Hfe);
             }
             if (r == 3) {
-                return new ElementInfo("バルク表示", ShowBulk);
-            }
-            if (r == 4) {
                 return new ElementInfo("ドレイン/ソース 入れ替え", (DumpInfo.Flags & FLAG_FLIP) != 0);
-            }
-            if (r == 5 && !ShowBulk) {
-                return new ElementInfo("デジタル", DrawDigital);
             }
             return null;
         }
@@ -287,19 +231,8 @@ namespace Circuit.UI.Active {
                 ce.Hfe = ElmMosfet.LastHfe = ei.Value;
             }
             if (n == 3) {
-                mGlobalFlags = (!ei.CheckBox.Checked)
-                    ? (mGlobalFlags | FLAG_HIDE_BULK) : (mGlobalFlags & ~(FLAG_HIDE_BULK | FLAG_DIGITAL));
-                SetPoints();
-                ei.NewDialog = true;
-            }
-            if (n == 4) {
                 DumpInfo.Flags = ei.CheckBox.Checked
                     ? (DumpInfo.Flags | FLAG_FLIP) : (DumpInfo.Flags & ~FLAG_FLIP);
-                SetPoints();
-            }
-            if (n == 5 && !ShowBulk) {
-                mGlobalFlags = ei.CheckBox.Checked
-                    ? (mGlobalFlags | FLAG_DIGITAL) : (mGlobalFlags & ~FLAG_DIGITAL);
                 SetPoints();
             }
         }
