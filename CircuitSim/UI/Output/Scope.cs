@@ -4,7 +4,6 @@ using System.Drawing;
 using Circuit.Elements;
 using Circuit.Elements.Output;
 using Circuit.Forms;
-using Circuit.UI.Passive;
 
 namespace Circuit.UI.Output {
     public class Scope : BaseUI {
@@ -191,7 +190,8 @@ namespace Circuit.UI.Output {
             #region CONST
             const int INFO_WIDTH = 120;
             const int FLAG_PLOTS = 4096;
-            const double Mindb = -100.0;
+            const double FFT_MIN = -100.0;
+            const double SCALE_MIN = 1e-9;
 
             readonly double[] MULTA = new double[] { 1.5, 2.0, 1.5 };
             #endregion
@@ -254,7 +254,7 @@ namespace Circuit.UI.Output {
                     if (Plots.Count == 0) {
                         return;
                     }
-                    mScale = Math.Max(1e-4, value);
+                    mScale = Math.Max(SCALE_MIN, value);
                 }
             }
             public string Text { get; set; }
@@ -735,7 +735,7 @@ namespace Circuit.UI.Output {
                 }
 
                 if (mMaxScale) {
-                    mScale = 1e-4;
+                    mScale = SCALE_MIN;
                 }
                 mReduceRange = false;
                 mSomethingSelected = false;  /* is one of our plots selected? */
@@ -793,7 +793,7 @@ namespace Circuit.UI.Output {
                 drawCrosshairs(g);
 
                 if (5 < Plots[0].Pointer && !ManualScale) {
-                    if (1e-4 < mScale && mReduceRange) {
+                    if (SCALE_MIN < mScale && mReduceRange) {
                         mScale /= 2;
                     }
                 }
@@ -803,7 +803,6 @@ namespace Circuit.UI.Output {
             #region [private method]
             void initialize() {
                 ResetGraph();
-                mScale = 5;
                 mScale = 0.1;
                 Speed = 64;
                 ShowMax = true;
@@ -837,8 +836,8 @@ namespace Circuit.UI.Output {
 
             /* calculate maximum and minimum values for all plots of given units */
             void calcMaxAndMin() {
-                mMaxValue = -1e8;
-                mMinValue = 1e8;
+                mMaxValue = double.MinValue;
+                mMinValue = double.MaxValue;
                 for (int si = 0; si != Plots.Count; si++) {
                     var plot = Plots[si];
                     int ipa = plot.StartIndex(BoundingBox.Width);
@@ -1037,8 +1036,8 @@ namespace Circuit.UI.Output {
                         mShowNegative = true;
                     }
                     var gridMax = (mx - mn) * 0.55;  /* leave space at top and bottom */
-                    if (gridMax * gridMax < 0.01) {
-                        gridMax = 0.1;
+                    if (gridMax * gridMax < SCALE_MIN * SCALE_MIN) {
+                        gridMax = SCALE_MIN;
                     }
                     gridMid = (mx + mn) * 0.5;
                     gridMult = maxY / gridMax;
@@ -1050,7 +1049,7 @@ namespace Circuit.UI.Output {
                     minRangeHi = 10 - (int)(gridMid * gridMult);
 
                     int multIdx = 0;
-                    mGridStepY = 1e-8;
+                    mGridStepY = 1e-12;
                     while (mGridStepY < 20 * gridMax / maxY) {
                         mGridStepY *= MULTA[(multIdx++) % 3];
                     }
@@ -1166,7 +1165,7 @@ namespace Circuit.UI.Output {
                     int y = mFFTBoundingBox.Height * i / yDivs;
                     string s;
                     if (LogSpectrum) {
-                        s = (Mindb * i / yDivs).ToString() + "db";
+                        s = (FFT_MIN * i / yDivs).ToString() + "db";
                     } else {
                         s = (1.0 * (yDivs - i) / yDivs).ToString();
                     }
@@ -1209,15 +1208,15 @@ namespace Circuit.UI.Output {
                 var y0 = 0.0f;
                 g.DrawColor = Color.Red;
                 if (LogSpectrum) {
-                    var ymult = -bottom / Mindb;
+                    var ymult = -bottom / FFT_MIN;
                     for (int i = 0; i < mScopePointCount / 2; i++) {
                         var mag = mFft.Magnitude(real[i], imag[i]);
                         if (0 == mag) {
                             mag = 1;
                         }
                         var db = 20 * Math.Log10(mag / maxM);
-                        if (db < Mindb) {
-                            db = Mindb;
+                        if (db < FFT_MIN) {
+                            db = FFT_MIN;
                         }
                         var y1 = (float)(-db * ymult);
                         x1 += scaleX;

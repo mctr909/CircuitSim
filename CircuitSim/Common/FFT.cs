@@ -3,9 +3,9 @@
 namespace Circuit {
     class FFT {
         public int Size { get; private set; }
-        private int bits;
-        private double[] cosTable;
-        private double[] sinTable;
+        int bits;
+        double[] cosTable;
+        double[] sinTable;
 
         public FFT(int n) {
             Size = n;
