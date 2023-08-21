@@ -12,8 +12,8 @@ namespace Circuit.UI.Passive {
         const int BODY_LEN = 5;
         const int HS = 6;
 
-        Point[] mPlate1;
-        Point[] mPlate2;
+        PointF[] mPlate1;
+        PointF[] mPlate2;
 
         public Capacitor(Point pos, int dummy) : base(pos) {
             DumpInfo.ReferenceName = mLastReferenceName;
@@ -53,17 +53,17 @@ namespace Circuit.UI.Passive {
             base.SetPoints();
             var f1 = 0.5 - BODY_LEN * 0.5 / mLen;
             var f2 = 0.5 + BODY_LEN * 0.5 / mLen;
-            var dw = 1.0 / mLen;
+            var dw = 0.8 / mLen;
             /* calc leads */
             setLead1(f1 - 0.1 / mLen);
             setLead2(f2 + 0.1 / mLen);
             /* calc plates */
-            mPlate1 = new Point[4];
+            mPlate1 = new PointF[4];
             Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate1[0], f1 - dw, -HS);
             Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate1[1], f1 - dw, HS);
             Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate1[2], f1 + dw, HS);
             Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate1[3], f1 + dw, -HS);
-            mPlate2 = new Point[4];
+            mPlate2 = new PointF[4];
             Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate2[0], f2 - dw, -HS);
             Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate2[1], f2 - dw, HS);
             Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate2[2], f2 + dw, HS);

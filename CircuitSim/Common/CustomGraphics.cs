@@ -207,6 +207,11 @@ namespace Circuit {
             mG.FillPolygon(mPenFill.Brush, p);
         }
 
+        public virtual void FillPolygon(Color color, PointF[] p) {
+            mPenFill.Color = color;
+            mG.FillPolygon(mPenFill.Brush, p);
+        }
+
         public virtual void ScrollBoard(Point p) {
             mG.Transform = new Matrix(1, 0, 0, 1, p.X, p.Y);
         }

@@ -14,10 +14,10 @@ namespace Circuit.UI.Active {
         double mCurcountBody2;
 
         Point mGate;
-        Point[] mPolyGate;
+        PointF[] mPolyGate;
         Point[] mArrowPoly;
 
-        Point[][] mPolyConn;
+        PointF[][] mPolyConn;
         Point[] mPosS = new Point[4];
         Point[] mPosD = new Point[4];
         Point[] mPosB = new Point[2];
@@ -87,39 +87,38 @@ namespace Circuit.UI.Active {
             bool enhancement = ce.Vt > 0;
             var posS = mPosS[2];
             var posD = mPosD[2];
+            var connThick = 1.0;
             if (enhancement) {
-                var sdLen = Utils.Distance(posS, posD);
-                var sdLenH = sdLen * 0.5;
-                var pD = new Point[4];
-                Utils.InterpPoint(posS, posD, ref pD[0], (sdLen - 6.0) / sdLen, -1);
-                Utils.InterpPoint(posS, posD, ref pD[1], (sdLen - 6.0) / sdLen, 1);
-                Utils.InterpPoint(posS, posD, ref pD[2], 1.0, 1);
-                Utils.InterpPoint(posS, posD, ref pD[3], 1.0, -1);
-                var pG = new Point[4];
-                Utils.InterpPoint(posS, posD, ref pG[0], (sdLenH - 3.0) / sdLen, -1);
-                Utils.InterpPoint(posS, posD, ref pG[1], (sdLenH - 3.0) / sdLen, 1);
-                Utils.InterpPoint(posS, posD, ref pG[2], (sdLenH + 3.0) / sdLen, 1);
-                Utils.InterpPoint(posS, posD, ref pG[3], (sdLenH + 3.0) / sdLen, -1);
-                var pS = new Point[4];
-                Utils.InterpPoint(posS, posD, ref pS[0], 0.0, -1);
-                Utils.InterpPoint(posS, posD, ref pS[1], 0.0, 1);
-                Utils.InterpPoint(posS, posD, ref pS[2], 6.0 / sdLen, 1);
-                Utils.InterpPoint(posS, posD, ref pS[3], 6.0 / sdLen, -1);
-                mPolyConn = new Point[][] { pD, pG, pS };
+                var pD = new PointF[4];
+                Utils.InterpPoint(posS, posD, ref pD[0], 0.75, -connThick);
+                Utils.InterpPoint(posS, posD, ref pD[1], 0.75, connThick);
+                Utils.InterpPoint(posS, posD, ref pD[2], 1.0, connThick);
+                Utils.InterpPoint(posS, posD, ref pD[3], 1.0, -connThick);
+                var pG = new PointF[4];
+                Utils.InterpPoint(posS, posD, ref pG[0], 3 / 8.0, -connThick);
+                Utils.InterpPoint(posS, posD, ref pG[1], 3 / 8.0, connThick);
+                Utils.InterpPoint(posS, posD, ref pG[2], 5 / 8.0, connThick);
+                Utils.InterpPoint(posS, posD, ref pG[3], 5 / 8.0, -connThick);
+                var pS = new PointF[4];
+                Utils.InterpPoint(posS, posD, ref pS[0], 0.0, -connThick);
+                Utils.InterpPoint(posS, posD, ref pS[1], 0.0, connThick);
+                Utils.InterpPoint(posS, posD, ref pS[2], 0.25, connThick);
+                Utils.InterpPoint(posS, posD, ref pS[3], 0.25, -connThick);
+                mPolyConn = new PointF[][] { pD, pG, pS };
             } else {
-                mPolyConn = new Point[1][];
-                mPolyConn[0] = new Point[4];
-                Utils.InterpPoint(posS, posD, ref mPolyConn[0][0], 0.0, -1);
-                Utils.InterpPoint(posS, posD, ref mPolyConn[0][1], 0.0, 1);
-                Utils.InterpPoint(posS, posD, ref mPolyConn[0][2], 1.0, 1);
-                Utils.InterpPoint(posS, posD, ref mPolyConn[0][3], 1.0, -1);
+                mPolyConn = new PointF[1][];
+                mPolyConn[0] = new PointF[4];
+                Utils.InterpPoint(posS, posD, ref mPolyConn[0][0], 0.0, -connThick);
+                Utils.InterpPoint(posS, posD, ref mPolyConn[0][1], 0.0, connThick);
+                Utils.InterpPoint(posS, posD, ref mPolyConn[0][2], 1.0, connThick);
+                Utils.InterpPoint(posS, posD, ref mPolyConn[0][3], 1.0, -connThick);
             }
 
-            mPolyGate = new Point[4];
-            Utils.InterpPoint(gate[0], gate[1], ref mPolyGate[0], 0.0, -1);
-            Utils.InterpPoint(gate[0], gate[1], ref mPolyGate[1], 0.0, 1);
-            Utils.InterpPoint(gate[0], gate[1], ref mPolyGate[2], 1.0, 1);
-            Utils.InterpPoint(gate[0], gate[1], ref mPolyGate[3], 1.0, -1);
+            mPolyGate = new PointF[4];
+            Utils.InterpPoint(gate[0], gate[1], ref mPolyGate[0], 0.0, -connThick);
+            Utils.InterpPoint(gate[0], gate[1], ref mPolyGate[1], 0.0, connThick);
+            Utils.InterpPoint(gate[0], gate[1], ref mPolyGate[2], 1.0, connThick);
+            Utils.InterpPoint(gate[0], gate[1], ref mPolyGate[3], 1.0, -connThick);
 
             setTextPos();
 

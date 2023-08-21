@@ -97,6 +97,18 @@ namespace Circuit {
         }
 
         /// <summary>
+        /// calculate point fraction f between a and b, linearly interpolated, return it in c
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="ret"></param>
+        /// <param name="f"></param>
+        public static void InterpPoint(Point a, Point b, ref PointF ret, double f) {
+            ret.X = (float)(a.X * (1 - f) + b.X * f);
+            ret.Y = (float)(a.Y * (1 - f) + b.Y * f);
+        }
+
+        /// <summary>
         /// Returns a point fraction f along the line between a and b and offset perpendicular by g
         /// </summary>
         /// <param name="a">1st Point</param>
@@ -115,6 +127,28 @@ namespace Circuit {
                 g /= r;
                 ret.X = (int)Math.Floor(a.X * (1 - f) + b.X * f + g * gx + 0.45);
                 ret.Y = (int)Math.Floor(a.Y * (1 - f) + b.Y * f + g * gy + 0.45);
+            }
+        }
+
+        /// <summary>
+        /// Returns a point fraction f along the line between a and b and offset perpendicular by g
+        /// </summary>
+        /// <param name="a">1st Point</param>
+        /// <param name="b">2nd Point</param>
+        /// <param name="ret">Returns interpolated point</param>
+        /// <param name="f">Fraction along line</param>
+        /// <param name="g">Fraction perpendicular to line</param>
+        public static void InterpPoint(Point a, Point b, ref PointF ret, double f, double g) {
+            var gx = b.Y - a.Y;
+            var gy = a.X - b.X;
+            var r = Math.Sqrt(gx * gx + gy * gy);
+            if (0.0 == r) {
+                ret.X = a.X;
+                ret.Y = a.Y;
+            } else {
+                g /= r;
+                ret.X = (float)(a.X * (1 - f) + b.X * f + g * gx);
+                ret.Y = (float)(a.Y * (1 - f) + b.Y * f + g * gy);
             }
         }
 

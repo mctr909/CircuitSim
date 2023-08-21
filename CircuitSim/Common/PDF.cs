@@ -177,6 +177,17 @@ class PDF {
             writeLF(p);
         }
 
+        public override void FillPolygon(Color color, PointF[] poly) {
+            var p = poly[0];
+            writeM(p.X, p.Y);
+            for (int i = 1; i < poly.Length; i++) {
+                p = poly[i];
+                writeL(p);
+            }
+            p = poly[0];
+            writeLF(p);
+        }
+
         public override void FillCircle(int cx, int cy, float radius) {
             fillCircleF(cx, cy, radius);
         }
