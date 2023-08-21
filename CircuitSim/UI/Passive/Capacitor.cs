@@ -52,22 +52,29 @@ namespace Circuit.UI.Passive {
         public override void SetPoints() {
             base.SetPoints();
             var f1 = 0.5 - BODY_LEN * 0.5 / mLen;
-            var f2 = 1.0 - f1;
+            var f2 = 0.5 + BODY_LEN * 0.5 / mLen;
+            var dw = 1.0 / mLen;
             /* calc leads */
-            setLead1(f1);
-            setLead2(f2);
+            setLead1(f1 - 0.1 / mLen);
+            setLead2(f2 + 0.1 / mLen);
             /* calc plates */
-            mPlate1 = new Point[2];
-            mPlate2 = new Point[2];
-            interpPointAB(ref mPlate1[0], ref mPlate1[1], f1, HS);
-            interpPointAB(ref mPlate2[0], ref mPlate2[1], f2, HS);
+            mPlate1 = new Point[4];
+            Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate1[0], f1 - dw, -HS);
+            Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate1[1], f1 - dw, HS);
+            Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate1[2], f1 + dw, HS);
+            Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate1[3], f1 + dw, -HS);
+            mPlate2 = new Point[4];
+            Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate2[0], f2 - dw, -HS);
+            Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate2[1], f2 - dw, HS);
+            Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate2[2], f2 + dw, HS);
+            Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate2[3], f2 + dw, -HS);
             setTextPos();
         }
 
         void setTextPos() {
             if (mHorizontal) {
-                interpPoint(ref mValuePos, 0.5, -12 * mDsign);
-                interpPoint(ref mNamePos, 0.5, 11 * mDsign);
+                interpPoint(ref mValuePos, 0.5, -11 * mDsign);
+                interpPoint(ref mNamePos, 0.5, 12 * mDsign);
             } else if (mVertical) {
                 interpPoint(ref mValuePos, 0.5, 3 * mDsign);
                 interpPoint(ref mNamePos, 0.5, -20 * mDsign);
@@ -79,14 +86,17 @@ namespace Circuit.UI.Passive {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmCapacitor)Elm;
+            var lineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+
             setBbox(HS);
             drawLeadA();
             drawLeadB();
 
             /* draw first lead and plate */
-            drawLead(mPlate1[0], mPlate1[1]);
+            g.FillPolygon(lineColor, mPlate1);
+
             /* draw second lead and plate */
-            drawLead(mPlate2[0], mPlate2[1]);
+            g.FillPolygon(lineColor, mPlate2);
 
             updateDotCount();
             if (CirSimForm.DragElm != this) {
