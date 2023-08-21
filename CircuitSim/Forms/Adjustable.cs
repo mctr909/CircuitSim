@@ -56,9 +56,11 @@ namespace Circuit {
             CreateSlider(ei);
         }
 
-        public void CreateSlider(ElementInfo ei) {
+        public void CreateSlider(ElementInfo ei, int group = 0) {
             int intValue = (int)((ei.Value - MinValue) * 100 / (MaxValue - MinValue));
-            ControlPanel.AddSlider(Label = new Label() { Text = SliderText });
+            ControlPanel.AddSlider(Label = new Label() {
+                Text = SliderText
+            });
             ControlPanel.AddSlider(Slider = new TrackBar() {
                 SmallChange = 1,
                 LargeChange = 10,

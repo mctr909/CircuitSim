@@ -7,7 +7,7 @@ namespace Circuit {
         public string Name { get; private set; }
         public string Text { get; set; }
         public double Value { get; set; }
-        public bool NoSliders { get; private set; } = true;
+
         public bool NewDialog { get; set; }
 
         public ComboBox Choice;
@@ -23,6 +23,7 @@ namespace Circuit {
         internal TextBox LabelBox;
 
         readonly Font mTextFont = new Font("Arial", 11);
+        bool mEnableSliders = false;
 
         public ElementInfo(string name = "") {
             Name = name;
@@ -46,7 +47,7 @@ namespace Circuit {
             TextString.Text = text;
         }
 
-        public ElementInfo(string valueName, double val, bool noSliders = false) {
+        public ElementInfo(string valueName, double val, bool enableSliders = true) {
             Name = valueName;
             Value = val;
             TextDouble = new TextBox() {
@@ -55,7 +56,7 @@ namespace Circuit {
                 TextAlign = HorizontalAlignment.Right
             };
             TextDouble.Font = mTextFont;
-            NoSliders = noSliders;
+            mEnableSliders = enableSliders;
         }
 
         public ElementInfo(string valueName, int val) {
@@ -67,7 +68,6 @@ namespace Circuit {
                 Width = 60
             };
             TextInt.Font = mTextFont;
-            NoSliders = true;
         }
 
         public ElementInfo(string buttonName, EventHandler e) {
@@ -108,10 +108,7 @@ namespace Circuit {
         }
 
         public bool CanCreateAdjustable() {
-            return Choice == null
-                && CheckBox == null
-                && Button == null
-                && !NoSliders;
+            return mEnableSliders;
         }
     }
 }

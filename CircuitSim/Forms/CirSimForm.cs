@@ -1010,7 +1010,7 @@ namespace Circuit {
             return new Rectangle(minx, miny, maxx - minx, maxy - miny);
         }
 
-        void doEdit(Editable eable, Point location) {
+        void doEdit(BaseUI eable, Point location) {
             clearSelection();
             PushUndo();
             if (EditDialog != null) {

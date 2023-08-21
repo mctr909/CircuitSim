@@ -62,7 +62,7 @@ namespace Circuit.UI.Custom {
                 return new ElementInfo("テキスト", mText, true);
             }
             if (r == 1) {
-                return new ElementInfo("サイズ", mSize, true);
+                return new ElementInfo("サイズ", mSize, false);
             }
             return null;
         }

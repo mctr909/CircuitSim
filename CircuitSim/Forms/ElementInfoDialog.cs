@@ -9,15 +9,10 @@ using Circuit.UI;
 using Circuit.UI.Input;
 
 namespace Circuit {
-    public interface Editable {
-        ElementInfo GetElementInfo(int r, int c);
-        void SetElementValue(int r, int c, ElementInfo ei);
-    }
-
     public class ElementInfoDialog : Form {
         const double ROOT2 = 1.41421356237309504880;
 
-        Editable mElm;
+        BaseUI mElm;
         Button mBtnApply;
         Button mBtnCancel;
         ElementInfo[,] mEInfos;
@@ -26,7 +21,7 @@ namespace Circuit {
         Panel mPnlCommonButtons;
         bool mCloseOnEnter = true;
 
-        public ElementInfoDialog(Editable ce) : base() {
+        public ElementInfoDialog(BaseUI ce) : base() {
             Text = "Edit Component";
             mElm = ce;
 
@@ -259,6 +254,14 @@ namespace Circuit {
             mPnlCustomCtrl.Controls.Clear();
             mPnlCustomCtrl.Width = 0;
             mPnlCustomCtrl.Height = 0;
+
+            if (string.IsNullOrEmpty(mElm.DumpInfo.ReferenceName)) {
+                Text = string.Format("{0} 設定", mElm.GetType().Name);
+            } else {
+                Text = string.Format("{0} [{1}] 設定",
+                    mElm.GetType().Name,
+                    mElm.DumpInfo.ReferenceName);
+            }
 
             for (; ; iRow++) {
                 var ei = mElm.GetElementInfo(iRow, iCol);

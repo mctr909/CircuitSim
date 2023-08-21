@@ -7,6 +7,11 @@ using Circuit.UI.Input;
 using Circuit.UI.Output;
 
 namespace Circuit.UI {
+    public interface Editable {
+        ElementInfo GetElementInfo(int r, int c);
+        void SetElementValue(int r, int c, ElementInfo ei);
+    }
+    
     public abstract class BaseUI : Editable {
         public BaseElement Elm;
         public static CustomGraphics Context;
