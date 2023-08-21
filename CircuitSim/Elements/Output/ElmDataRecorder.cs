@@ -10,8 +10,7 @@
         }
 
         public ElmDataRecorder(StringTokenizer st) : base() {
-            int v;
-            st.nextTokenInt(out v);
+            var v = st.nextTokenInt();
             setDataCount(v);
         }
 

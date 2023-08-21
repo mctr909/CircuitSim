@@ -11,7 +11,14 @@ namespace Circuit.UI {
         ElementInfo GetElementInfo(int r, int c);
         void SetElementValue(int r, int c, ElementInfo ei);
     }
-    
+
+    public class BaseLink {
+        public virtual int GetGroup(int id) { return 0; }
+        public virtual void SetValue(BaseElement element, int linkID, double value) { }
+        public virtual void Load(StringTokenizer st) { }
+        public virtual void Dump(List<object> optionList) { }
+    }
+
     public abstract class BaseUI : Editable {
         public BaseElement Elm;
         public static CustomGraphics Context;
@@ -40,6 +47,7 @@ namespace Circuit.UI {
             get {
                 var optionList = new List<object>();
                 dump(optionList);
+                mLink.Dump(optionList);
                 return DumpInfo.GetValue(DumpType, optionList);
             }
         }
@@ -74,6 +82,8 @@ namespace Circuit.UI {
         protected virtual int NumHandles { get { return 2; } }
 
         protected double CurCount;
+
+        protected virtual BaseLink mLink { get; set; } = new BaseLink();
         #endregion
 
         #region [variable]
@@ -519,6 +529,21 @@ namespace Circuit.UI {
             for (int loop = 0; loop != loopCt; loop++) {
                 Utils.InterpPoint(a, b, ref pos, (loop + 0.5) / loopCt, 0);
                 Context.DrawArc(pos, w, dir, -180);
+            }
+        }
+
+        protected void setLinkedValues<T>(int linkID, double value) {
+            mLink.SetValue(Elm, linkID, value);
+            if (mLink.GetGroup(linkID) == 0) {
+                return;
+            }
+            for (int i = 0; i != CirSimForm.UICount; i++) {
+                var u2 = CirSimForm.GetUI(i);
+                if (u2 is T) {
+                    if (u2.mLink.GetGroup(linkID) == mLink.GetGroup(linkID)) {
+                        mLink.SetValue(u2.Elm, linkID, value);
+                    }
+                }
             }
         }
         #endregion

@@ -53,13 +53,13 @@ namespace Circuit.UI.Input {
             }
             if (c == 1) {
                 if (r == 2) {
-                    return new ElementInfo("連動グループ", LinkBias);
+                    return new ElementInfo("連動グループ", Link.Bias);
                 }
                 if (r == 3) {
-                    return new ElementInfo("連動グループ", LinkFrequency);
+                    return new ElementInfo("連動グループ", Link.Frequency);
                 }
                 if (r == 5) {
-                    return new ElementInfo("連動グループ", LinkPhaseOffset);
+                    return new ElementInfo("連動グループ", Link.PhaseOffset);
                 }
                 if (r < 5) {
                     return new ElementInfo();
@@ -96,13 +96,13 @@ namespace Circuit.UI.Input {
             }
             if (c == 1) {
                 if (r == 2) {
-                    LinkBias = (int)ei.Value;
+                    Link.Bias = (int)ei.Value;
                 }
                 if (r == 3) {
-                    LinkFrequency = (int)ei.Value;
+                    Link.Frequency = (int)ei.Value;
                 }
                 if (r == 5) {
-                    LinkPhaseOffset = (int)ei.Value;
+                    Link.PhaseOffset = (int)ei.Value;
                 }
             }
         }
@@ -143,52 +143,16 @@ namespace Circuit.UI.Input {
                     ce.MaxVoltage = val;
                     break;
                 case VALUE_NAME_BIAS:
-                    ce.Bias = val;
-                    if (LinkBias != 0) {
-                        for (int i = 0; i != CirSimForm.UICount; i++) {
-                            var o = CirSimForm.GetUI(i);
-                            if (o is Voltage) {
-                                var u2 = (Voltage)o;
-                                var e2 = (ElmVoltage)o.Elm;
-                                if (u2.LinkBias == LinkBias) {
-                                    e2.Bias = ce.Bias;
-                                }
-                            }
-                        }
-                    }
+                    setLinkedValues<Voltage>(VoltageLink.BIAS, val);
                     break;
                 case VALUE_NAME_HZ:
-                    ce.Frequency = val;
-                    if (LinkFrequency != 0) {
-                        for (int i = 0; i != CirSimForm.UICount; i++) {
-                            var o = CirSimForm.GetUI(i);
-                            if (o is Voltage) {
-                                var u2 = (Voltage)o;
-                                var e2 = (ElmVoltage)o.Elm;
-                                if (u2.LinkFrequency == LinkFrequency) {
-                                    e2.Frequency = ce.Frequency;
-                                }
-                            }
-                        }
-                    }
+                    setLinkedValues<Voltage>(VoltageLink.FREQUENCY, val);
                     break;
                 case VALUE_NAME_PHASE:
                     ce.Phase = val * Math.PI / 180;
                     break;
                 case VALUE_NAME_PHASE_OFS:
-                    ce.PhaseOffset = val * Math.PI / 180;
-                    if (LinkPhaseOffset != 0) {
-                        for (int i = 0; i != CirSimForm.UICount; i++) {
-                            var o = CirSimForm.GetUI(i);
-                            if (o is Voltage) {
-                                var u2 = (Voltage)o;
-                                var e2 = (ElmVoltage)o.Elm;
-                                if (u2.LinkPhaseOffset == LinkPhaseOffset) {
-                                    e2.PhaseOffset = ce.PhaseOffset;
-                                }
-                            }
-                        }
-                    }
+                    setLinkedValues<Voltage>(VoltageLink.PHASE_OFFSET, val);
                     break;
                 }
                 CirSimForm.NeedAnalyze();

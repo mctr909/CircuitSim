@@ -14,7 +14,7 @@
 
 		public ElmStopTrigger(StringTokenizer st) : base() {
 			TriggerVoltage = st.nextTokenDouble();
-			st.nextTokenInt(out Type);
+            Type = st.nextTokenInt();
 			Delay = st.nextTokenDouble();
 		}
 

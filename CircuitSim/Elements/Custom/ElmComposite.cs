@@ -190,8 +190,7 @@ namespace Circuit.Elements.Custom {
 
                 int thisPost = 0;
                 while (stModel.HasMoreTokens) {
-                    int nodeOfThisPost;
-                    stModel.nextTokenInt(out nodeOfThisPost);
+                    var nodeOfThisPost = stModel.nextTokenInt();
                     cnLink = new CircuitNode.LINK();
                     cnLink.Num = thisPost;
                     cnLink.Elm = newce.Elm;

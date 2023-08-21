@@ -192,7 +192,7 @@ namespace Circuit {
         }
 
         void undump(StringTokenizer st) {
-            st.nextTokenInt(out flags);
+            flags = st.nextTokenInt();
             SaturationCurrent = st.nextTokenDouble();
             SeriesResistance = st.nextTokenDouble();
             EmissionCoefficient = st.nextTokenDouble();

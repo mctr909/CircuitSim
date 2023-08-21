@@ -58,14 +58,12 @@ namespace Circuit {
             }
         }
 
-        public bool nextTokenInt(out int returnValue, int defaultValue = 0) {
+        public int nextTokenInt(int defaultValue = 0) {
             try {
-                returnValue = int.Parse(mList[mIndex++]);
-                return true;
+                return int.Parse(mList[mIndex++]);
             } catch (Exception e) {
                 Console.WriteLine(e);
-                returnValue = defaultValue;
-                return false;
+                return defaultValue;
             }
         }
 

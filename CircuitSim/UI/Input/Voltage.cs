@@ -2,10 +2,51 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
+using Circuit.Elements;
 using Circuit.Elements.Input;
 
 namespace Circuit.UI.Input {
+    class VoltageLink : BaseLink {
+        public const int BIAS = 0;
+        public const int FREQUENCY = 1;
+        public const int PHASE_OFFSET = 2;
+        public int Bias = 0;
+        public int Frequency = 0;
+        public int PhaseOffset = 0;
+        public override int GetGroup(int id) {
+            switch (id) {
+            case BIAS: return Bias;
+            case FREQUENCY: return Frequency;
+            case PHASE_OFFSET: return PhaseOffset;
+            default: return 0;
+            }
+        }
+        public override void SetValue(BaseElement element, int linkID, double value) {
+            var elm = (ElmVoltage)element;
+            switch (linkID) {
+            case BIAS:
+                elm.Bias = value;
+                break;
+            case FREQUENCY:
+                elm.Frequency = value;
+                break;
+            case PHASE_OFFSET:
+                elm.PhaseOffset = value * Math.PI / 180;
+                break;
+            }
+        }
+        public override void Load(StringTokenizer st) {
+            Bias = st.nextTokenInt();
+            Frequency = st.nextTokenInt();
+            PhaseOffset = st.nextTokenInt();
+        }
+        public override void Dump(List<object> optionList) {
+            optionList.Add(Bias);
+            optionList.Add(Frequency);
+            optionList.Add(PhaseOffset);
+        }
+    }
+
     class Voltage : BaseUI {
         const int FLAG_COS = 2;
         const int FLAG_PULSE_DUTY = 4;
@@ -23,9 +64,8 @@ namespace Circuit.UI.Input {
         public const string VALUE_NAME_PHASE_OFS = "オフセット位相(deg.)";
         public const string VALUE_NAME_DUTY = "デューティ比";
 
-        public int LinkBias;
-        public int LinkFrequency;
-        public int LinkPhaseOffset;
+        protected override BaseLink mLink { get; set; } = new VoltageLink();
+        protected VoltageLink Link { get { return (VoltageLink)mLink; } }
 
         Point mPs1;
         Point mPs2;
@@ -36,13 +76,9 @@ namespace Circuit.UI.Input {
             DumpInfo.ReferenceName = "";
         }
 
-        public Voltage(Point p1, Point p2, int f) : base(p1, p2, f) { }
-
         public Voltage(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new ElmVoltage(st);
-            st.nextTokenInt(out LinkBias);
-            st.nextTokenInt(out LinkFrequency);
-            st.nextTokenInt(out LinkPhaseOffset);
+            Link.Load(st);
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.VOLTAGE; } }
@@ -63,9 +99,6 @@ namespace Circuit.UI.Input {
             optionList.Add((elm.Phase * 180 / Math.PI).ToString("0"));
             optionList.Add((elm.PhaseOffset * 180 / Math.PI).ToString("0"));
             optionList.Add(elm.DutyCycle.ToString("0.00"));
-            optionList.Add(LinkBias);
-            optionList.Add(LinkFrequency);
-            optionList.Add(LinkPhaseOffset);
         }
 
         public override void SetPoints() {
@@ -333,13 +366,13 @@ namespace Circuit.UI.Input {
             }
             if (c == 1) {
                 if (r == 3) {
-                    return new ElementInfo("連動グループ", LinkBias);
+                    return new ElementInfo("連動グループ", Link.Bias);
                 }
                 if (r == 4) {
-                    return new ElementInfo("連動グループ", LinkFrequency);
+                    return new ElementInfo("連動グループ", Link.Frequency);
                 }
                 if (r == 6) {
-                    return new ElementInfo("連動グループ", LinkPhaseOffset);
+                    return new ElementInfo("連動グループ", Link.PhaseOffset);
                 }
                 if (r < 7) {
                     return new ElementInfo();
@@ -413,13 +446,13 @@ namespace Circuit.UI.Input {
             }
             if (c == 1) {
                 if (r == 3) {
-                    LinkBias = (int)ei.Value;
+                    Link.Bias = (int)ei.Value;
                 }
                 if (r == 4) {
-                    LinkFrequency = (int)ei.Value;
+                    Link.Frequency = (int)ei.Value;
                 }
                 if (r == 6) {
-                    LinkPhaseOffset = (int)ei.Value;
+                    Link.PhaseOffset = (int)ei.Value;
                 }
             }
         }
@@ -466,52 +499,16 @@ namespace Circuit.UI.Input {
                     e1.MaxVoltage = val;
                     break;
                 case VALUE_NAME_BIAS:
-                    e1.Bias = val;
-                    if (LinkBias != 0) {
-                        for (int i = 0; i != CirSimForm.UICount; i++) {
-                            var o = CirSimForm.GetUI(i);
-                            if (o is Voltage) {
-                                var u2 = (Voltage)o;
-                                var e2 = (ElmVoltage)o.Elm;
-                                if (u2.LinkBias == LinkBias) {
-                                    e2.Bias = e1.Bias;
-                                }
-                            }
-                        }
-                    }
+                    setLinkedValues<Voltage>(VoltageLink.BIAS, val);
                     break;
                 case VALUE_NAME_HZ:
-                    e1.Frequency = val;
-                    if (LinkFrequency != 0) {
-                        for (int i = 0; i != CirSimForm.UICount; i++) {
-                            var o = CirSimForm.GetUI(i);
-                            if (o is Voltage) {
-                                var u2 = (Voltage)o;
-                                var e2 = (ElmVoltage)o.Elm;
-                                if (u2.LinkFrequency == LinkFrequency) {
-                                    e2.Frequency = e1.Frequency;
-                                }
-                            }
-                        }
-                    }
+                    setLinkedValues<Voltage>(VoltageLink.FREQUENCY, val);
                     break;
                 case VALUE_NAME_PHASE:
                     e1.Phase = val * Math.PI / 180;
                     break;
                 case VALUE_NAME_PHASE_OFS:
-                    e1.PhaseOffset = val * Math.PI / 180;
-                    if (LinkPhaseOffset != 0) {
-                        for (int i = 0; i != CirSimForm.UICount; i++) {
-                            var o = CirSimForm.GetUI(i);
-                            if (o is Voltage) {
-                                var u2 = (Voltage)o;
-                                var e2 = (ElmVoltage)o.Elm;
-                                if (u2.LinkPhaseOffset == LinkPhaseOffset) {
-                                    e2.PhaseOffset = e1.PhaseOffset;
-                                }
-                            }
-                        }
-                    }
+                    setLinkedValues<Voltage>(VoltageLink.PHASE_OFFSET, val);
                     break;
                 case VALUE_NAME_DUTY:
                     e1.DutyCycle = val;

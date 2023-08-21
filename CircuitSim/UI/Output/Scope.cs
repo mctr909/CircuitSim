@@ -672,18 +672,16 @@ namespace Circuit.UI.Output {
                 initialize();
                 Plots = new List<Plot>();
 
-                st.nextTokenInt(out mSpeed, 1);
+                mSpeed = st.nextTokenInt(1);
                 ResetGraph();
 
-                int flags;
-                st.nextTokenInt(out flags);
+                var flags = st.nextTokenInt();
                 mFlags = flags;
                 mScale = st.nextTokenDouble();
-                st.nextTokenInt(out Position);
+                Position = st.nextTokenInt();
 
                 try {
-                    int plotCount;
-                    st.nextTokenInt(out plotCount);
+                    var plotCount = st.nextTokenInt();
                     for (int i = 0; i != plotCount; i++) {
                         string temp;
                         st.nextToken(out temp);

@@ -26,7 +26,7 @@ namespace Circuit.Elements.Output {
         }
 
         public ElmAmmeter(StringTokenizer st) : base() {
-            st.nextTokenInt(out Meter);
+            Meter = st.nextTokenInt();
             st.nextTokenEnum(out Scale, E_SCALE.AUTO);
         }
 

@@ -22,9 +22,9 @@ namespace Circuit.UI.Passive {
         public Switch(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             var elm = new ElmSwitch();
             Elm = elm;
-            st.nextTokenInt(out elm.Position);
+            elm.Position = st.nextTokenInt();
             st.nextTokenBool(out elm.Momentary, false);
-            st.nextTokenInt(out elm.Link);
+            elm.Link = st.nextTokenInt();
         }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.SWITCH; } }

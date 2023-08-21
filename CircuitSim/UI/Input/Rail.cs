@@ -11,9 +11,7 @@ namespace Circuit.UI.Input {
             Elm = new ElmRail(wf);
         }
 
-        public Rail(Point p1, Point p2, int f, StringTokenizer st): base(p1, p2, f) {
-            Elm = new ElmRail(st);
-        }
+        public Rail(Point p1, Point p2, int f, StringTokenizer st): base(p1, p2, f, st) { }
 
         protected override int NumHandles { get { return 1; } }
 

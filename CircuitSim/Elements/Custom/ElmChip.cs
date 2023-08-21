@@ -19,8 +19,7 @@ namespace Circuit.Elements.Custom {
 
         public ElmChip(StringTokenizer st) : base() {
             if (NeedsBits()) {
-                int v;
-                st.nextTokenInt(out v, Bits);
+                var v = st.nextTokenInt(Bits);
                 Bits = v;
             }
             int i;

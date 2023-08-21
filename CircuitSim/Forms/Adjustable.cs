@@ -37,13 +37,12 @@ namespace Circuit {
         }
 
         public Adjustable(StringTokenizer st) {
-            int e;
-            st.nextTokenInt(out e);
+            var e = st.nextTokenInt();
             if (e == -1) {
                 return;
             }
             UI = CirSimForm.UIList[e];
-            st.nextTokenInt(out EditItemR);
+            EditItemR = st.nextTokenInt();
             EditItemC = 0;
             MinValue = st.nextTokenDouble();
             MaxValue = st.nextTokenDouble();

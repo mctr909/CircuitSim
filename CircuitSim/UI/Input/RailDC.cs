@@ -36,7 +36,7 @@ namespace Circuit.UI.Input {
                     return new ElementInfo();
                 }
                 if (r == 2) {
-                    return new ElementInfo("連動グループ", LinkBias);
+                    return new ElementInfo("連動グループ", Link.Bias);
                 }
             }
             return null;
@@ -57,7 +57,7 @@ namespace Circuit.UI.Input {
             }
             if (c == 1) {
                 if (r == 2) {
-                    LinkBias = (int)ei.Value;
+                    Link.Bias = (int)ei.Value;
                 }
             }
         }
@@ -82,19 +82,7 @@ namespace Circuit.UI.Input {
                     ce.MaxVoltage = val;
                     break;
                 case VALUE_NAME_BIAS:
-                    ce.Bias = val;
-                    if (LinkBias != 0) {
-                        for (int i = 0; i != CirSimForm.UICount; i++) {
-                            var o = CirSimForm.GetUI(i);
-                            if (o is Voltage) {
-                                var u2 = (Voltage)o;
-                                var e2 = (ElmVoltage)o.Elm;
-                                if (u2.LinkBias == LinkBias) {
-                                    e2.Bias = ce.Bias;
-                                }
-                            }
-                        }
-                    }
+                    setLinkedValues<Voltage>(VoltageLink.BIAS, val);
                     break;
                 }
                 CirSimForm.NeedAnalyze();

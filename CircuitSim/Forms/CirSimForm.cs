@@ -1224,15 +1224,13 @@ namespace Circuit {
                             //CustomCompositeModel.UndumpModel(st);
                             break;
                         }
-                        int x, y;
-                        st.nextTokenInt(out x);
-                        st.nextTokenInt(out y);
+                        var x = st.nextTokenInt();
+                        var y = st.nextTokenInt();
                         var p1 = new Point(x, y);
-                        st.nextTokenInt(out x);
-                        st.nextTokenInt(out y);
+                        x = st.nextTokenInt();
+                        y = st.nextTokenInt();
                         var p2 = new Point(x, y);
-                        int f;
-                        st.nextTokenInt(out f);
+                        var f = st.nextTokenInt();
                         var dumpId = MenuItems.GetDumpIdFromString(type);
                         var newce = MenuItems.CreateCe(dumpId, p1, p2, f, st);
                         try {
@@ -1278,8 +1276,7 @@ namespace Circuit {
         }
 
         void readOptions(StringTokenizer st) {
-            int flags;
-            st.nextTokenInt(out flags);
+            var flags = st.nextTokenInt();
             ControlPanel.ChkShowDots.Checked = (flags & 1) != 0;
             ControlPanel.ChkShowValues.Checked = (flags & 16) == 0;
 
@@ -1287,8 +1284,7 @@ namespace Circuit {
             double sp = st.nextTokenDouble();
             int sp2 = (int)(Math.Log(10 * sp) * 24 + 61.5);
             ControlPanel.TrbSpeed.Value = sp2;
-            int v;
-            st.nextTokenInt(out v);
+            var v = st.nextTokenInt();
             ControlPanel.TrbCurrent.Value = v;
         }
 

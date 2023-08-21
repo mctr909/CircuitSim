@@ -19,10 +19,10 @@ namespace Circuit.UI.Passive {
         public SwitchMulti(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             var elm = new ElmSwitchMulti();
             Elm = elm;
-            st.nextTokenInt(out elm.Position);
+            elm.Position = st.nextTokenInt();
             st.nextTokenBool(out elm.Momentary, false);
-            st.nextTokenInt(out elm.Link);
-            st.nextTokenInt(out elm.ThrowCount);
+            elm.Link = st.nextTokenInt();
+            elm.ThrowCount = st.nextTokenInt();
             elm.AllocNodes();
             mNoDiagonal = true;
         }

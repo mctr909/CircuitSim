@@ -10,7 +10,7 @@ namespace Circuit.Elements.Logic {
         public ElmDeMultiplexer() : base() { }
 
         public ElmDeMultiplexer(Chip chip, StringTokenizer st) : base(st) {
-            st.nextTokenInt(out mSelectBitCount, mSelectBitCount);
+            mSelectBitCount = st.nextTokenInt(mSelectBitCount);
         }
 
         public override int PostCount { get { return mqPin + 1; } }

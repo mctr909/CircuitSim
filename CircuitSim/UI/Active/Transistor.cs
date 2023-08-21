@@ -29,11 +29,10 @@ namespace Circuit.UI.Active {
         }
 
         public Transistor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            int npn;
             var vbe = 0.0;
             var vbc = 0.0;
             var hfe = 100.0;
-            st.nextTokenInt(out npn, 1);
+            var npn = st.nextTokenInt(1);
             try {
                 vbe = st.nextTokenDouble();
                 vbc = st.nextTokenDouble();

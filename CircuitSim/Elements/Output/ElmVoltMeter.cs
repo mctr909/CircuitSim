@@ -32,7 +32,7 @@ namespace Circuit.Elements.Output {
         }
 
         public ElmVoltMeter(StringTokenizer st) : base() {
-            st.nextTokenInt(out Meter, TP_VOL);
+            Meter = st.nextTokenInt(TP_VOL);
             st.nextTokenEnum(out Scale, E_SCALE.AUTO);
         }
 
