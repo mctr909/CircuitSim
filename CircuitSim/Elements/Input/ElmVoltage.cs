@@ -25,9 +25,6 @@ namespace Circuit.Elements.Input {
         public double DutyCycle;
         public double NoiseValue;
         public WAVEFORM WaveForm;
-        public int LinkBias;
-        public int LinkFrequency;
-        public int LinkPhaseOffset;
 
         public ElmVoltage(WAVEFORM wf) {
             WaveForm = wf;
@@ -49,9 +46,6 @@ namespace Circuit.Elements.Input {
                 PhaseOffset = st.nextTokenDouble() * Math.PI / 180;
                 DutyCycle = st.nextTokenDouble();
             } catch { }
-            st.nextTokenInt(out LinkBias);
-            st.nextTokenInt(out LinkFrequency);
-            st.nextTokenInt(out LinkPhaseOffset);
         }
 
         public override int PostCount { get { return 2; } }

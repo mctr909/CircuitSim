@@ -53,13 +53,13 @@ namespace Circuit.UI.Input {
             }
             if (c == 1) {
                 if (r == 2) {
-                    return new ElementInfo("連動グループ", elm.LinkBias);
+                    return new ElementInfo("連動グループ", LinkBias);
                 }
                 if (r == 3) {
-                    return new ElementInfo("連動グループ", elm.LinkFrequency);
+                    return new ElementInfo("連動グループ", LinkFrequency);
                 }
                 if (r == 5) {
-                    return new ElementInfo("連動グループ", elm.LinkPhaseOffset);
+                    return new ElementInfo("連動グループ", LinkPhaseOffset);
                 }
                 if (r < 5) {
                     return new ElementInfo();
@@ -96,13 +96,13 @@ namespace Circuit.UI.Input {
             }
             if (c == 1) {
                 if (r == 2) {
-                    elm.LinkBias = (int)ei.Value;
+                    LinkBias = (int)ei.Value;
                 }
                 if (r == 3) {
-                    elm.LinkFrequency = (int)ei.Value;
+                    LinkFrequency = (int)ei.Value;
                 }
                 if (r == 5) {
-                    elm.LinkPhaseOffset = (int)ei.Value;
+                    LinkPhaseOffset = (int)ei.Value;
                 }
             }
         }
@@ -144,13 +144,14 @@ namespace Circuit.UI.Input {
                     break;
                 case VALUE_NAME_BIAS:
                     ce.Bias = val;
-                    if (ce.LinkBias != 0) {
+                    if (LinkBias != 0) {
                         for (int i = 0; i != CirSimForm.UICount; i++) {
-                            var o = CirSimForm.GetUI(i).Elm;
-                            if (o is ElmVoltage) {
-                                var s2 = (ElmVoltage)o;
-                                if (s2.LinkBias == ce.LinkBias) {
-                                    s2.Bias = ce.Bias;
+                            var o = CirSimForm.GetUI(i);
+                            if (o is Voltage) {
+                                var s2 = (Voltage)o;
+                                var e2 = (ElmVoltage)o.Elm;
+                                if (s2.LinkBias == LinkBias) {
+                                    e2.Bias = ce.Bias;
                                 }
                             }
                         }
@@ -158,13 +159,14 @@ namespace Circuit.UI.Input {
                     break;
                 case VALUE_NAME_HZ:
                     ce.Frequency = val;
-                    if (ce.LinkFrequency != 0) {
+                    if (LinkFrequency != 0) {
                         for (int i = 0; i != CirSimForm.UICount; i++) {
-                            var o = CirSimForm.GetUI(i).Elm;
-                            if (o is ElmVoltage) {
-                                var s2 = (ElmVoltage)o;
-                                if (s2.LinkFrequency == ce.LinkFrequency) {
-                                    s2.Frequency = ce.Frequency;
+                            var o = CirSimForm.GetUI(i);
+                            if (o is Voltage) {
+                                var u2 = (Voltage)o;
+                                var e2 = (ElmVoltage)o.Elm;
+                                if (u2.LinkFrequency == LinkFrequency) {
+                                    e2.Frequency = ce.Frequency;
                                 }
                             }
                         }
@@ -175,13 +177,14 @@ namespace Circuit.UI.Input {
                     break;
                 case VALUE_NAME_PHASE_OFS:
                     ce.PhaseOffset = val * Math.PI / 180;
-                    if (ce.LinkPhaseOffset != 0) {
+                    if (LinkPhaseOffset != 0) {
                         for (int i = 0; i != CirSimForm.UICount; i++) {
-                            var o = CirSimForm.GetUI(i).Elm;
-                            if (o is ElmVoltage) {
-                                var s2 = (ElmVoltage)o;
-                                if (s2.LinkPhaseOffset == ce.LinkPhaseOffset) {
-                                    s2.PhaseOffset = ce.PhaseOffset;
+                            var o = CirSimForm.GetUI(i);
+                            if (o is Voltage) {
+                                var u2 = (Voltage)o;
+                                var e2 = (ElmVoltage)o.Elm;
+                                if (u2.LinkPhaseOffset == LinkPhaseOffset) {
+                                    e2.PhaseOffset = ce.PhaseOffset;
                                 }
                             }
                         }
