@@ -163,6 +163,24 @@ namespace Circuit {
             }
         }
 
+        public static void InterpPointAB(Point inA, Point inB, ref Point outA, ref Point outB, double f, double g) {
+            var gx = inB.Y - inA.Y;
+            var gy = inA.X - inB.X;
+            var r = Math.Sqrt(gx * gx + gy * gy);
+            if (0.0 == r) {
+                outA.X = inA.X;
+                outA.Y = inA.Y;
+                outB.X = inB.X;
+                outB.Y = inB.Y;
+            } else {
+                g /= r;
+                outA.X = (int)Math.Floor(inA.X * (1 - f) + inB.X * f + g * gx + 0.5);
+                outA.Y = (int)Math.Floor(inA.Y * (1 - f) + inB.Y * f + g * gy + 0.5);
+                outB.X = (int)Math.Floor(inA.X * (1 - f) + inB.X * f - g * gx + 0.5);
+                outB.Y = (int)Math.Floor(inA.Y * (1 - f) + inB.Y * f - g * gy + 0.5);
+            }
+        }
+
         public static void CreateArrow(Point a, Point b, out Point[] ret, double al, double aw) {
             CreateArrow(a.X, a.Y, b.X, b.Y, out ret, al, aw);
         }

@@ -10,17 +10,14 @@ namespace Circuit.UI.Active {
 
         const int HS = 10;
 
-        const int SEGMENTS = 6;
-        const double SEG_F = 1.0 / SEGMENTS;
-
         double mCurcountBody1;
         double mCurcountBody2;
 
-        Point[] mGate;
+        Point mGate;
+        Point[] mPolyGate;
         Point[] mArrowPoly;
 
-        Point[] mPs1;
-        Point[] mPs2;
+        Point[][] mPolyConn;
         Point[] mPosS = new Point[4];
         Point[] mPosD = new Point[4];
         Point[] mPosB = new Point[2];
@@ -70,9 +67,9 @@ namespace Circuit.UI.Active {
             interpPointAB(ref mPosS[1], ref mPosD[1], 1 - 12 / mLen, -hs2);
             interpPointAB(ref mPosS[2], ref mPosD[2], 1 - 12 / mLen, -hs2 * 4 / 3);
 
-            mGate = new Point[3];
-            interpPointAB(ref mGate[0], ref mGate[2], 1 - 16 / mLen, hs2 * 0.8);
-            Utils.InterpPoint(mGate[0], mGate[2], ref mGate[1], .5);
+            var gate = new Point[2];
+            interpPointAB(ref gate[0], ref gate[1], 1 - 16 / mLen, hs2 * 0.8);
+            Utils.InterpPoint(gate[0], gate[1], ref mGate, .5);
 
             Utils.InterpPoint(mPosS[0], mPosD[0], ref mPosB[0], .5);
             Utils.InterpPoint(mPosS[1], mPosD[1], ref mPosB[1], .5);
@@ -87,12 +84,42 @@ namespace Circuit.UI.Active {
             }
             Utils.CreateArrow(a0.X, a0.Y, a1.X, a1.Y, out mArrowPoly, 8, 3);
 
-            mPs1 = new Point[SEGMENTS];
-            mPs2 = new Point[SEGMENTS];
-            for (int i = 0; i != SEGMENTS; i++) {
-                Utils.InterpPoint(mPosS[1], mPosD[1], ref mPs1[i], i * SEG_F);
-                Utils.InterpPoint(mPosS[1], mPosD[1], ref mPs2[i], (i + 1) * SEG_F);
+            bool enhancement = ce.Vt > 0;
+            var posS = mPosS[2];
+            var posD = mPosD[2];
+            if (enhancement) {
+                var sdLen = Utils.Distance(posS, posD);
+                var sdLenH = sdLen * 0.5;
+                var pD = new Point[4];
+                Utils.InterpPoint(posS, posD, ref pD[0], (sdLen - 6.0) / sdLen, -1);
+                Utils.InterpPoint(posS, posD, ref pD[1], (sdLen - 6.0) / sdLen, 1);
+                Utils.InterpPoint(posS, posD, ref pD[2], 1.0, 1);
+                Utils.InterpPoint(posS, posD, ref pD[3], 1.0, -1);
+                var pG = new Point[4];
+                Utils.InterpPoint(posS, posD, ref pG[0], (sdLenH - 3.0) / sdLen, -1);
+                Utils.InterpPoint(posS, posD, ref pG[1], (sdLenH - 3.0) / sdLen, 1);
+                Utils.InterpPoint(posS, posD, ref pG[2], (sdLenH + 3.0) / sdLen, 1);
+                Utils.InterpPoint(posS, posD, ref pG[3], (sdLenH + 3.0) / sdLen, -1);
+                var pS = new Point[4];
+                Utils.InterpPoint(posS, posD, ref pS[0], 0.0, -1);
+                Utils.InterpPoint(posS, posD, ref pS[1], 0.0, 1);
+                Utils.InterpPoint(posS, posD, ref pS[2], 6.0 / sdLen, 1);
+                Utils.InterpPoint(posS, posD, ref pS[3], 6.0 / sdLen, -1);
+                mPolyConn = new Point[][] { pD, pG, pS };
+            } else {
+                mPolyConn = new Point[1][];
+                mPolyConn[0] = new Point[4];
+                Utils.InterpPoint(posS, posD, ref mPolyConn[0][0], 0.0, -1);
+                Utils.InterpPoint(posS, posD, ref mPolyConn[0][1], 0.0, 1);
+                Utils.InterpPoint(posS, posD, ref mPolyConn[0][2], 1.0, 1);
+                Utils.InterpPoint(posS, posD, ref mPolyConn[0][3], 1.0, -1);
             }
+
+            mPolyGate = new Point[4];
+            Utils.InterpPoint(gate[0], gate[1], ref mPolyGate[0], 0.0, -1);
+            Utils.InterpPoint(gate[0], gate[1], ref mPolyGate[1], 0.0, 1);
+            Utils.InterpPoint(gate[0], gate[1], ref mPolyGate[2], 1.0, 1);
+            Utils.InterpPoint(gate[0], gate[1], ref mPolyGate[3], 1.0, -1);
 
             setTextPos();
 
@@ -118,36 +145,29 @@ namespace Circuit.UI.Active {
             setBbox(HS);
 
             var ce = (ElmMosfet)Elm;
+            var lineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
 
-            /* draw source/drain terminals */
+            /* draw line connecting terminals to source/gate/drain */
             drawLead(mPosS[1], mPosS[3]);
             drawLead(mPosD[1], mPosD[3]);
             drawLead(mPosS[3], mPosS[0]);
             drawLead(mPosD[3], mPosD[0]);
-
-            /* draw little extensions of that line */
-            drawLead(mPosS[1], mPosS[2]);
-            drawLead(mPosD[1], mPosD[2]);
-
-            /* draw line connecting source and drain */
-            bool enhancement = ce.Vt > 0;
-            for (int i = 0; i != SEGMENTS; i++) {
-                if ((i == 1 || i == 4) && enhancement) {
-                    continue;
-                }
-                drawLead(mPs1[i], mPs2[i]);
-            }
+            drawLead(Elm.Post[0], mGate);
 
             /* draw bulk connection */
             drawLead(ce.Pnp == -1 ? mPosD[0] : mPosS[0], mPosB[0]);
             drawLead(mPosB[0], mPosB[1]);
 
+            /* draw source/drain */
+            for (int i = 0; i != mPolyConn.Length; i++) {
+                g.FillPolygon(lineColor, mPolyConn[i]);
+            }
+
             /* draw arrow */
-            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mArrowPoly);
+            g.FillPolygon(lineColor, mArrowPoly);
 
             /* draw gate */
-            drawLead(Elm.Post[0], mGate[1]);
-            drawLead(mGate[0], mGate[2]);
+            g.FillPolygon(lineColor, mPolyGate);
 
             /* draw current */
             updateDotCount(-ce.Current, ref CurCount);
