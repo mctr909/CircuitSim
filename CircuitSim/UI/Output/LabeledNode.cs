@@ -87,7 +87,7 @@ namespace Circuit.UI.Output {
         public override void SetElementValue(int n, int c, ElementInfo ei) {
             var ce = (ElmLabeledNode)Elm;
             if (n == 0) {
-                ce.Text = ei.Textf.Text;
+                ce.Text = ei.Text;
             }
             if (n == 1) {
                 DumpInfo.Flags = ei.ChangeFlag(DumpInfo.Flags, FLAG_INTERNAL);

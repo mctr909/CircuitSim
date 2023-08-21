@@ -169,7 +169,7 @@ namespace Circuit.UI.Passive {
                 setTextPos();
             }
             if (n == 1) {
-                DumpInfo.ReferenceName = ei.Textf.Text;
+                DumpInfo.ReferenceName = ei.Text;
                 mLastReferenceName = DumpInfo.ReferenceName;
                 setTextPos();
             }

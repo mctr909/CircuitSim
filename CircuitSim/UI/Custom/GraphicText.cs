@@ -69,7 +69,7 @@ namespace Circuit.UI.Custom {
 
         public override void SetElementValue(int n, int c, ElementInfo ei) {
             if (n == 0) {
-                mText = ei.Textf.Text;
+                mText = ei.Text;
             }
             if (n == 1) {
                 mSize = (int)ei.Value;

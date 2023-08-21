@@ -85,10 +85,10 @@ namespace Circuit {
         #region Inputs and Sources
         VOLTAGE,
         VOLTAGE_DC,
-        VOLTAGE_AC,
+        VOLTAGE_SIN,
         RAIL,
         RAIL_DC,
-        RAIL_AC,
+        RAIL_SIN,
         CLOCK,
         SWEEP,
         OSC_AM,
@@ -463,14 +463,15 @@ namespace Circuit {
             var inputMenuBar = new ToolStripMenuItem();
             inputMenuBar.Text = "入力(I)";
             inputMenuBar.Font = menuFont;
-            addElementItem(inputMenuBar, "直流電圧源(2端子)", ELEMENTS.VOLTAGE_DC);
-            addElementItem(inputMenuBar, "交流電圧源(2端子)", ELEMENTS.VOLTAGE_AC);
-            addElementItem(inputMenuBar, "パルス源(2端子)", ELEMENTS.VOLTAGE);
-            addElementItem(inputMenuBar, "定電流源", ELEMENTS.CURRENT);
+            addElementItem(inputMenuBar, "2端子電圧源(直流)", ELEMENTS.VOLTAGE_DC);
+            addElementItem(inputMenuBar, "2端子電圧源(正弦波)", ELEMENTS.VOLTAGE_SIN);
+            addElementItem(inputMenuBar, "2端子電圧源(パルス)", ELEMENTS.VOLTAGE);
             inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(inputMenuBar, "直流電圧源(1端子)", ELEMENTS.RAIL_DC);
-            addElementItem(inputMenuBar, "交流電圧源(1端子)", ELEMENTS.RAIL_AC);
-            addElementItem(inputMenuBar, "パルス源(1端子)", ELEMENTS.RAIL);
+            addElementItem(inputMenuBar, "1端子電圧源(直流)", ELEMENTS.RAIL_DC);
+            addElementItem(inputMenuBar, "1端子電圧源(正弦波)", ELEMENTS.RAIL_SIN);
+            addElementItem(inputMenuBar, "1端子電圧源(パルス)", ELEMENTS.RAIL);
+            inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(inputMenuBar, "定電流源", ELEMENTS.CURRENT);
             inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(inputMenuBar, "クロック", ELEMENTS.CLOCK);
             addElementItem(inputMenuBar, "スイープ", ELEMENTS.SWEEP);
@@ -634,18 +635,18 @@ namespace Circuit {
             #region Inputs and Sources
             case ELEMENTS.VOLTAGE_DC:
                 return new VoltageDC(pos);
-            case ELEMENTS.VOLTAGE_AC:
+            case ELEMENTS.VOLTAGE_SIN:
                 return new VoltageAC(pos);
             case ELEMENTS.VOLTAGE:
-                return new Voltage(pos, Elements.Input.ElmVoltage.WAVEFORM.PULSE);
+                return new Voltage(pos, Elements.Input.ElmVoltage.WAVEFORM.PULSE_MONOPOLE);
             case ELEMENTS.CURRENT:
                 return new Current(pos);
             case ELEMENTS.RAIL_DC:
                 return new RailDC(pos);
-            case ELEMENTS.RAIL_AC:
+            case ELEMENTS.RAIL_SIN:
                 return new RailAC(pos);
             case ELEMENTS.RAIL:
-                return new Rail(pos, Elements.Input.ElmVoltage.WAVEFORM.PULSE);
+                return new Rail(pos, Elements.Input.ElmVoltage.WAVEFORM.PULSE_MONOPOLE);
             case ELEMENTS.CLOCK:
                 return new RailClock(pos);
             case ELEMENTS.SWEEP:

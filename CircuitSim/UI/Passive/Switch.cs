@@ -132,7 +132,7 @@ namespace Circuit.UI.Passive {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("連動グループ", ce.Link, true);
+                return new ElementInfo("連動グループ", ce.Link);
             }
             return null;
         }

@@ -60,7 +60,7 @@ namespace Circuit.UI.Input {
         public override void SetElementValue(int n, int c, ElementInfo ei) {
             var ce = (ElmVCCS)Elm;
             if (n == 0) {
-                ce.ExprString = ei.Textf.Text.Replace(" ", "").Replace("\r", "").Replace("\n", "");
+                ce.ExprString = ei.Text.Replace(" ", "").Replace("\r", "").Replace("\n", "");
                 ce.ParseExpr();
                 return;
             }

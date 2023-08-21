@@ -173,7 +173,7 @@ namespace Circuit.UI.Passive {
                 ce.CouplingCoef = ei.Value;
             }
             if (n == 3) {
-                DumpInfo.ReferenceName = ei.Textf.Text;
+                DumpInfo.ReferenceName = ei.Text;
                 setNamePos();
             }
             if (n == 4) {

@@ -12,69 +12,85 @@ namespace Circuit {
 
         public ComboBox Choice;
         public CheckBox CheckBox;
-        public Button Button;
-        public TextBox Textf;
 
-        public TextBox MinBox;
-        public TextBox MaxBox;
-        public TextBox LabelBox;
+        internal TextBox TextString;
+        internal TextBox TextDouble;
+        internal TextBox TextInt;
+        internal Button Button;
+
+        internal TextBox MinBox;
+        internal TextBox MaxBox;
+        internal TextBox LabelBox;
+
+        readonly Font mTextFont = new Font("Arial", 11);
 
         public ElementInfo(string name = "") {
             Name = name;
         }
 
-        public ElementInfo(string name, string text, bool multiLine = false) {
-            Name = name;
+        public ElementInfo(string textTitle, string text, bool multiLine = false) {
+            Name = textTitle;
             Value = 0;
             Text = text;
             if (multiLine) {
-                Textf = new TextBox() {
+                TextString = new TextBox() {
                     Multiline = true,
                     Height = 100,
                     Width = 300,
-                    ScrollBars = ScrollBars.Vertical,
-                    Text = text
+                    ScrollBars = ScrollBars.Vertical
                 };
-                Textf.Font = new Font("Arial", 9);
             } else {
-                Textf = new TextBox() {
-                    Text = text
-                };
-                Textf.Font = new Font("Arial", 9);
+                TextString = new TextBox();
             }
+            TextString.Font = mTextFont;
+            TextString.Text = text;
         }
 
-        public ElementInfo(string name, EventHandler e) {
-            Button = new Button() {
+        public ElementInfo(string valueName, double val, bool noSliders = false) {
+            Name = valueName;
+            Value = val;
+            TextDouble = new TextBox() {
+                Text = val.ToString(),
+                Width = 60,
+                TextAlign = HorizontalAlignment.Right
+            };
+            TextDouble.Font = mTextFont;
+            NoSliders = noSliders;
+        }
+
+        public ElementInfo(string valueName, int val) {
+            Name = valueName;
+            Value = val;
+            TextInt = new TextBox()
+            {
+                Text = val.ToString(),
+                Width = 60
+            };
+            TextInt.Font = mTextFont;
+            NoSliders = true;
+        }
+
+        public ElementInfo(string buttonName, EventHandler e) {
+            Button = new Button()
+            {
                 AutoSize = true,
-                Text = name
+                Text = buttonName
             };
             Button.Click += e;
         }
 
-        public ElementInfo(string name, double val, bool noSliders = false) {
-            Name = name;
-            Value = val;
-            Textf = new TextBox() {
-                Text = val.ToString(),
-                Width = 60
-            };
-            Textf.Font = new Font("Arial", 9);
-            NoSliders = noSliders;
-        }
-
-        public ElementInfo(string name, bool val) {
-            Name = name;
+        public ElementInfo(string checkboxName, bool val) {
+            Name = checkboxName;
             Value = 0;
             CheckBox = new CheckBox() {
                 AutoSize = true,
-                Text = name,
+                Text = checkboxName,
                 Checked = val
             };
         }
 
-        public ElementInfo(string name, int defaultIndex, string[] val) {
-            Name = name;
+        public ElementInfo(string listName, int defaultIndex, string[] val) {
+            Name = listName;
             Value = 0;
             Choice = new ComboBox();
             Choice.AutoSize = true;

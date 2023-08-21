@@ -36,7 +36,7 @@ namespace Circuit.UI.Input {
                     return new ElementInfo();
                 }
                 if (r == 2) {
-                    return new ElementInfo("連動グループ", elm.LinkBias, true);
+                    return new ElementInfo("連動グループ", elm.LinkBias);
                 }
             }
             return null;
@@ -46,7 +46,7 @@ namespace Circuit.UI.Input {
             var elm = (ElmVoltage)Elm;
             if (c == 0) {
                 if (r == 0) {
-                    DumpInfo.ReferenceName = ei.Textf.Text;
+                    DumpInfo.ReferenceName = ei.Text;
                 }
                 if (r == 1) {
                     elm.MaxVoltage = ei.Value;

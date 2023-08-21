@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -20,10 +21,6 @@ namespace Circuit {
         Button mBtnApply;
         Button mBtnCancel;
         ElementInfo[,] mEInfos;
-
-        int mMaxX = 0;
-        int mOfsX = 0;
-        int mOfsY = 0;
 
         Panel mPnlCustomCtrl;
         Panel mPnlCommonButtons;
@@ -168,16 +165,29 @@ namespace Circuit {
                     if (ei == null) {
                         continue;
                     }
-                    if (ei.Textf != null && ei.Text == null) {
+                    if (ei.TextString != null) {
                         try {
-                            ei.Value = parseUnits(ei);
+                            ei.Text = ei.TextString.Text;
+                        } catch (Exception ex) {
+                            throw ex;
+                        }
+                    } else if (ei.TextInt != null) {
+                        try {
+                            ei.Value = int.Parse(ei.TextInt.Text);
                         } catch (FormatException ex) {
                             MessageBox.Show(ex.Message);
                         } catch (Exception ex) {
                             throw ex;
                         }
-                    }
-                    if (ei.Button != null) {
+                    } else if (ei.TextDouble != null) {
+                        try {
+                            ei.Value = ParseUnits(ei.TextDouble.Text);
+                        } catch (FormatException ex) {
+                            MessageBox.Show(ex.Message);
+                        } catch (Exception ex) {
+                            throw ex;
+                        }
+                    } else if (ei.Button != null) {
                         continue;
                     }
                     mElm.SetElementValue(r, c, ei);
@@ -241,10 +251,11 @@ namespace Circuit {
         void buildDialog() {
             int iRow = 0;
             int iCol = 0;
+            int maxX = 0;
+            int ofsX = 0;
+            int ofsY = 0;
+            List<int> listOfsY = new List<int>();
 
-            mOfsX = 0;
-            mOfsY = 0;
-            mMaxX = 0;
             mPnlCustomCtrl.Controls.Clear();
             mPnlCustomCtrl.Width = 0;
             mPnlCustomCtrl.Height = 0;
@@ -255,37 +266,54 @@ namespace Circuit {
                     if (0 == iRow) {
                         break;
                     }
-                    mOfsX = mMaxX + 4;
-                    mOfsY = 0;
-                    mMaxX = 0;
+                    ofsX = maxX + 4;
+                    maxX = 0;
                     iRow = -1;
                     iCol++;
                     continue;
+                }
+                if (0 == iCol) {
+                    listOfsY.Add(ofsY);
+                } else {
+                    if (iRow < listOfsY.Count) {
+                        ofsY = listOfsY[iRow];
+                    } else {
+                        continue;
+                    }
                 }
                 if (ei.Choice != null) {
                     ei.Choice.AutoSize = true;
                     ei.Choice.SelectedValueChanged += new EventHandler((s, e) => {
                         itemStateChanged(s);
                     });
-                    insertCtrl(mPnlCustomCtrl, ei.Name, ei.Choice);
+                    insertCtrl(mPnlCustomCtrl, ei.Name, ei.Choice, ofsX, ref ofsY, ref maxX);
                 } else if (ei.CheckBox != null) {
                     ei.CheckBox.CheckedChanged += new EventHandler((s, e) => {
                         itemStateChanged(s);
                     });
-                    insertCtrl(mPnlCustomCtrl, ei.Name, ei.CheckBox);
+                    insertCtrl(mPnlCustomCtrl, ei.Name, ei.CheckBox, ofsX, ref ofsY, ref maxX);
                 } else if (ei.Button != null) {
                     ei.Button.Click += new EventHandler((s, e) => {
                         itemStateChanged(s);
                     });
-                    insertCtrl(mPnlCustomCtrl, ei.Name, ei.Button);
-                } else if (ei.Textf != null) {
-                    insertCtrl(mPnlCustomCtrl, ei.Name, ei.Textf);
-                    if (ei.Text == null) {
-                        ei.Textf.Text = unitString(ei);
+                    insertCtrl(mPnlCustomCtrl, ei.Name, ei.Button, ofsX, ref ofsY, ref maxX);
+                } else if (ei.TextString != null) {
+                    insertCtrl(mPnlCustomCtrl, ei.Name, ei.TextString, ofsX, ref ofsY, ref maxX);
+                    if (null == ei.Text) {
+                        ei.TextString.Text = "";
+                    } else {
+                        ei.TextString.Text = ei.Text;
                     }
                     mCloseOnEnter = false;
+                } else if (ei.TextInt != null) {
+                    insertCtrl(mPnlCustomCtrl, ei.Name, ei.TextInt, ofsX, ref ofsY, ref maxX);
+                    ei.TextInt.Text = ((int)ei.Value).ToString();
+                    mCloseOnEnter = false;
+                } else if (ei.TextDouble != null) {
+                    insertCtrl(mPnlCustomCtrl, ei.Name, ei.TextDouble, ofsX, ref ofsY, ref maxX);
+                    ei.TextDouble.Text = unitString(ei);
+                    mCloseOnEnter = false;
                 } else {
-                    mOfsY += 37;
                     continue;
                 }
                 mEInfos[iRow, iCol] = ei;
@@ -297,32 +325,32 @@ namespace Circuit {
             Height = mPnlCommonButtons.Bottom + 42;
         }
 
-        void insertCtrl(Control parent, string name, Control ctrl) {
+        void insertCtrl(Control parent, string name, Control ctrl, int ofsX, ref int ofsY, ref int maxX) {
             if (ctrl is CheckBox) {
-                ctrl.Top = mOfsY + 9;
+                ctrl.Top = ofsY + 9;
             } else {
                 var lbl = new Label() {
-                    Left = mOfsX + 4,
-                    Top = mOfsY,
+                    Left = ofsX + 4,
+                    Top = ofsY,
                     AutoSize = true,
                     Text = name,
                     TextAlign = ContentAlignment.BottomLeft
                 };
                 parent.Controls.Add(lbl);
-                mMaxX = Math.Max(mMaxX, lbl.Right);
-                ctrl.Top = mOfsY + 12;
+                maxX = Math.Max(maxX, lbl.Right);
+                ctrl.Top = ofsY + 12;
             }
-            ctrl.Left = mOfsX + 4;
+            ctrl.Left = ofsX + 4;
             parent.Controls.Add(ctrl);
 
-            mOfsY += Math.Max(37, ctrl.Height + 16);
-            mMaxX = Math.Max(mMaxX, ctrl.Right);
+            ofsY += Math.Max(38, ctrl.Height + 17);
+            maxX = Math.Max(maxX, ctrl.Right);
 
-            if (parent.Width < mMaxX) {
-                parent.Width = mMaxX;
+            if (parent.Width < maxX) {
+                parent.Width = maxX;
             }
-            if (parent.Height < mOfsY) {
-                parent.Height = mOfsY;
+            if (parent.Height < ofsY) {
+                parent.Height = ofsY;
             }
         }
 
@@ -338,11 +366,6 @@ namespace Circuit {
                 return UnitString(ei, ei.Value / ROOT2) + "rms";
             }
             return UnitString(ei, ei.Value);
-        }
-
-        double parseUnits(ElementInfo ei) {
-            string s = ei.Textf.Text;
-            return ParseUnits(s);
         }
 
         private void InitializeComponent() {

@@ -43,8 +43,8 @@ namespace Circuit.UI.Input {
         protected override void dump(List<object> optionList) {
             var elm = (ElmVoltage)Elm;
             /* set flag so we know if duty cycle is correct for pulse waveforms */
-            if (elm.WaveForm == ElmVoltage.WAVEFORM.PULSE ||
-                elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_BOTH) {
+            if (elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_MONOPOLE ||
+                elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_DIPOLE) {
                 DumpInfo.Flags |= FLAG_PULSE_DUTY;
             } else {
                 DumpInfo.Flags &= ~FLAG_PULSE_DUTY;
@@ -102,7 +102,7 @@ namespace Circuit.UI.Input {
                 drawWaveform(g, mPs1);
                 string inds;
                 if (0 < elm.Bias || (0 == elm.Bias &&
-                    (ElmVoltage.WAVEFORM.PULSE == elm.WaveForm || ElmVoltage.WAVEFORM.PULSE_BOTH == elm.WaveForm))) {
+                    (ElmVoltage.WAVEFORM.PULSE_MONOPOLE == elm.WaveForm || ElmVoltage.WAVEFORM.PULSE_DIPOLE == elm.WaveForm))) {
                     inds = "+";
                 } else {
                     inds = "*";
@@ -149,6 +149,10 @@ namespace Circuit.UI.Input {
             case ElmVoltage.WAVEFORM.DC: {
                 break;
             }
+            case ElmVoltage.WAVEFORM.NOISE: {
+                drawCenteredText("Noise", x, y, true);
+                break;
+            }
             case ElmVoltage.WAVEFORM.SQUARE:
                 if (elm.MaxVoltage < 0) {
                     g.DrawLine(x - h, y + h, x - h, y);
@@ -164,7 +168,7 @@ namespace Circuit.UI.Input {
                     g.DrawLine(x + h, y, x + h, y + h);
                 }
                 break;
-            case ElmVoltage.WAVEFORM.PULSE:
+            case ElmVoltage.WAVEFORM.PULSE_MONOPOLE:
                 if (elm.MaxVoltage < 0) {
                     g.DrawLine(x + h, y, x + h, y);
                     g.DrawLine(x + h, y, w, y);
@@ -179,7 +183,7 @@ namespace Circuit.UI.Input {
                     g.DrawLine(x + h, y, x + h, y);
                 }
                 break;
-            case ElmVoltage.WAVEFORM.PULSE_BOTH:
+            case ElmVoltage.WAVEFORM.PULSE_DIPOLE:
                 g.DrawLine(x - h, y - h, x - h, y);
                 g.DrawLine(x - h, y - h, wh, y - h);
                 g.DrawLine(wh, y - h, wh, y);
@@ -202,11 +206,7 @@ namespace Circuit.UI.Input {
                 g.DrawLine(x + xl, y + h, x + xl * 2, y);
                 break;
             }
-            case ElmVoltage.WAVEFORM.NOISE: {
-                drawCenteredText("Noise", x, y, true);
-                break;
-            }
-            case ElmVoltage.WAVEFORM.AC: {
+            case ElmVoltage.WAVEFORM.SIN: {
                 var xl = 10;
                 var x0 = 0;
                 var y0 = 0;
@@ -240,15 +240,16 @@ namespace Circuit.UI.Input {
             var elm = (ElmVoltage)Elm;
             switch (elm.WaveForm) {
             case ElmVoltage.WAVEFORM.DC:
-            case ElmVoltage.WAVEFORM.AC:
+            case ElmVoltage.WAVEFORM.SIN:
             case ElmVoltage.WAVEFORM.SQUARE:
-            case ElmVoltage.WAVEFORM.PULSE:
-            case ElmVoltage.WAVEFORM.PULSE_BOTH:
+            case ElmVoltage.WAVEFORM.PULSE_MONOPOLE:
+            case ElmVoltage.WAVEFORM.PULSE_DIPOLE:
             case ElmVoltage.WAVEFORM.SAWTOOTH:
             case ElmVoltage.WAVEFORM.TRIANGLE:
             case ElmVoltage.WAVEFORM.NOISE:
             case ElmVoltage.WAVEFORM.PWM_DIPOLE:
             case ElmVoltage.WAVEFORM.PWM_POSITIVE:
+            case ElmVoltage.WAVEFORM.PWM_NEGATIVE:
                 arr[0] = elm.WaveForm.ToString(); break;
             }
 
@@ -258,7 +259,7 @@ namespace Circuit.UI.Input {
             if (elm.WaveForm != ElmVoltage.WAVEFORM.DC && elm.WaveForm != ElmVoltage.WAVEFORM.NOISE) {
                 arr[i++] = "f = " + Utils.UnitText(elm.Frequency, "Hz");
                 arr[i++] = "Vmax = " + Utils.VoltageText(elm.MaxVoltage);
-                if (elm.WaveForm == ElmVoltage.WAVEFORM.AC && elm.Bias == 0) {
+                if (elm.WaveForm == ElmVoltage.WAVEFORM.SIN && elm.Bias == 0) {
                     arr[i++] = "V(rms) = " + Utils.VoltageText(elm.MaxVoltage / 1.41421356);
                 }
                 if (elm.Bias != 0) {
@@ -276,17 +277,17 @@ namespace Circuit.UI.Input {
                 if (r == 0) {
                     var ei = new ElementInfo("波形");
                     ei.Choice = new ComboBox();
-                    ei.Choice.Width = 100;
                     ei.Choice.Items.Add(ElmVoltage.WAVEFORM.DC);
-                    ei.Choice.Items.Add(ElmVoltage.WAVEFORM.AC);
+                    ei.Choice.Items.Add(ElmVoltage.WAVEFORM.SIN);
                     ei.Choice.Items.Add(ElmVoltage.WAVEFORM.SQUARE);
                     ei.Choice.Items.Add(ElmVoltage.WAVEFORM.TRIANGLE);
                     ei.Choice.Items.Add(ElmVoltage.WAVEFORM.SAWTOOTH);
-                    ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PULSE);
-                    ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PULSE_BOTH);
+                    ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PULSE_MONOPOLE);
+                    ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PULSE_DIPOLE);
                     ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PWM_MONOPOLE);
                     ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PWM_DIPOLE);
                     ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PWM_POSITIVE);
+                    ei.Choice.Items.Add(ElmVoltage.WAVEFORM.PWM_NEGATIVE);
                     ei.Choice.Items.Add(ElmVoltage.WAVEFORM.NOISE);
                     ei.Choice.SelectedIndex = (int)elm.WaveForm;
                     return ei;
@@ -313,24 +314,25 @@ namespace Circuit.UI.Input {
                 if (r == 6) {
                     return new ElementInfo(VALUE_NAME_PHASE_OFS, double.Parse((elm.PhaseOffset * 180 / Math.PI).ToString("0.00")));
                 }
-                if (r == 7 && (elm.WaveForm == ElmVoltage.WAVEFORM.PULSE
-                    || elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_BOTH
+                if (r == 7 && (elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_MONOPOLE
+                    || elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_DIPOLE
                     || elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE
                     || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_MONOPOLE
                     || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_DIPOLE
-                    || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_POSITIVE)) {
+                    || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_POSITIVE
+                    || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_NEGATIVE)) {
                     return new ElementInfo(VALUE_NAME_DUTY, elm.DutyCycle * 100);
                 }
             }
             if (c == 1) {
                 if (r == 3) {
-                    return new ElementInfo("連動グループ", elm.LinkBias, true);
+                    return new ElementInfo("連動グループ", elm.LinkBias);
                 }
                 if (r == 4) {
-                    return new ElementInfo("連動グループ", elm.LinkFrequency, true);
+                    return new ElementInfo("連動グループ", elm.LinkFrequency);
                 }
                 if (r == 6) {
-                    return new ElementInfo("連動グループ", elm.LinkPhaseOffset, true);
+                    return new ElementInfo("連動グループ", elm.LinkPhaseOffset);
                 }
                 if (r < 7) {
                     return new ElementInfo();
@@ -353,16 +355,16 @@ namespace Circuit.UI.Input {
                     }
 
                     /* change duty cycle if we're changing to or from pulse */
-                    if (elm.WaveForm == ElmVoltage.WAVEFORM.PULSE && ow != ElmVoltage.WAVEFORM.PULSE) {
+                    if (elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_MONOPOLE && ow != ElmVoltage.WAVEFORM.PULSE_MONOPOLE) {
                         elm.DutyCycle = DEFAULT_PULSE_DUTY;
-                    } else if (ow == ElmVoltage.WAVEFORM.PULSE && elm.WaveForm != ElmVoltage.WAVEFORM.PULSE) {
+                    } else if (ow == ElmVoltage.WAVEFORM.PULSE_MONOPOLE && elm.WaveForm != ElmVoltage.WAVEFORM.PULSE_MONOPOLE) {
                         elm.DutyCycle = .5;
                     }
 
                     SetPoints();
                 }
                 if (r == 1) {
-                    DumpInfo.ReferenceName = ei.Textf.Text;
+                    DumpInfo.ReferenceName = ei.Text;
                 }
                 if (r == 2) {
                     elm.MaxVoltage = ei.Value;
@@ -390,12 +392,13 @@ namespace Circuit.UI.Input {
                 if (r == 6) {
                     elm.PhaseOffset = ei.Value * Math.PI / 180;
                 }
-                if (elm.WaveForm == ElmVoltage.WAVEFORM.PULSE
-                   || elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_BOTH
+                if (elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_MONOPOLE
+                   || elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_DIPOLE
                    || elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE
                    || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_MONOPOLE
                    || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_DIPOLE
-                   || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_POSITIVE) {
+                   || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_POSITIVE
+                   || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_NEGATIVE) {
                     if (r == 7) {
                         elm.DutyCycle = ei.Value * .01;
                     }

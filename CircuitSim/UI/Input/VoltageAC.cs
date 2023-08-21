@@ -5,7 +5,7 @@ using Circuit.Elements.Input;
 
 namespace Circuit.UI.Input {
     class VoltageAC : Voltage {
-        public VoltageAC(Point pos) : base(pos, ElmVoltage.WAVEFORM.AC) { }
+        public VoltageAC(Point pos) : base(pos, ElmVoltage.WAVEFORM.SIN) { }
 
         public VoltageAC(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) { }
 
@@ -19,7 +19,7 @@ namespace Circuit.UI.Input {
             int i = 3;
             arr[i++] = "f = " + Utils.UnitText(elm.Frequency, "Hz");
             arr[i++] = "Vmax = " + Utils.VoltageText(elm.MaxVoltage);
-            if (elm.WaveForm == ElmVoltage.WAVEFORM.AC && elm.Bias == 0) {
+            if (elm.WaveForm == ElmVoltage.WAVEFORM.SIN && elm.Bias == 0) {
                 arr[i++] = "V(rms) = " + Utils.VoltageText(elm.MaxVoltage / 1.41421356);
             }
             if (elm.Bias != 0) {
@@ -53,13 +53,13 @@ namespace Circuit.UI.Input {
             }
             if (c == 1) {
                 if (r == 2) {
-                    return new ElementInfo("連動グループ", elm.LinkBias, true);
+                    return new ElementInfo("連動グループ", elm.LinkBias);
                 }
                 if (r == 3) {
-                    return new ElementInfo("連動グループ", elm.LinkFrequency, true);
+                    return new ElementInfo("連動グループ", elm.LinkFrequency);
                 }
                 if (r == 5) {
-                    return new ElementInfo("連動グループ", elm.LinkPhaseOffset, true);
+                    return new ElementInfo("連動グループ", elm.LinkPhaseOffset);
                 }
                 if (r < 5) {
                     return new ElementInfo();
@@ -72,7 +72,7 @@ namespace Circuit.UI.Input {
             var elm = (ElmVoltage)Elm;
             if (c == 0) {
                 if (r == 0) {
-                    DumpInfo.ReferenceName = ei.Textf.Text;
+                    DumpInfo.ReferenceName = ei.Text;
                 }
                 if (r == 1) {
                     elm.MaxVoltage = ei.Value;

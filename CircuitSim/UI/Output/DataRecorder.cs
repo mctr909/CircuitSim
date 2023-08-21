@@ -88,7 +88,7 @@ namespace Circuit.UI.Output {
                 ce.setDataCount((int)ei.Value);
             }
             if (n == 1) {
-                mName = ei.Textf.Text;
+                mName = ei.Text;
             }
             if (n == 2) {
                 return;

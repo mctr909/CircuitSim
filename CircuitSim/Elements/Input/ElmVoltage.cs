@@ -4,15 +4,16 @@ namespace Circuit.Elements.Input {
     class ElmVoltage : BaseElement {
         public enum WAVEFORM {
             DC,
-            AC,
+            SIN,
             SQUARE,
             TRIANGLE,
             SAWTOOTH,
-            PULSE,
-            PULSE_BOTH,
+            PULSE_MONOPOLE,
+            PULSE_DIPOLE,
             PWM_MONOPOLE,
             PWM_DIPOLE,
             PWM_POSITIVE,
+            PWM_NEGATIVE,
             NOISE
         }
 
@@ -102,7 +103,7 @@ namespace Circuit.Elements.Input {
             switch (WaveForm) {
             case WAVEFORM.DC:
                 return MaxVoltage + Bias;
-            case WAVEFORM.AC:
+            case WAVEFORM.SIN:
                 return Math.Sin(wt) * MaxVoltage + Bias;
             case WAVEFORM.SQUARE:
                 return Bias + (cycle > duty ? -MaxVoltage : MaxVoltage);
@@ -110,22 +111,22 @@ namespace Circuit.Elements.Input {
                 return Bias + triangleFunc(cycle) * MaxVoltage;
             case WAVEFORM.SAWTOOTH:
                 return Bias + cycle * (MaxVoltage / Math.PI) - MaxVoltage;
-            case WAVEFORM.PULSE:
+            case WAVEFORM.PULSE_MONOPOLE:
                 return cycle < duty ? (MaxVoltage + Bias) : Bias;
-            case WAVEFORM.PULSE_BOTH:
+            case WAVEFORM.PULSE_DIPOLE:
                 if (cycle < Math.PI) {
                     return 2 * cycle < duty ? (Bias + MaxVoltage) : Bias;
                 } else {
                     return 2 * (cycle - Math.PI) < duty ? (Bias - MaxVoltage) : Bias;
                 }
             case WAVEFORM.PWM_MONOPOLE: {
-                var maxwt = 2 * Math.PI * t / (128 * ControlPanel.TimeStep);
+                var maxwt = 2 * Math.PI * t / (64 * ControlPanel.TimeStep);
                 var cr = triangleFunc(maxwt % (2 * Math.PI)) * 0.5 + 0.5;
                 var sg = DutyCycle * Math.Sin(wt) * 0.5 + 0.5;
                 return Bias + (cr < sg ? MaxVoltage : 0);
             }
             case WAVEFORM.PWM_DIPOLE: {
-                var maxwt = 2 * Math.PI * t / (128 * ControlPanel.TimeStep);
+                var maxwt = 2 * Math.PI * t / (64 * ControlPanel.TimeStep);
                 var cr = triangleFunc(maxwt % (2 * Math.PI)) * 0.5 + 0.5;
                 var sg = DutyCycle * Math.Sin(wt);
                 if (0.0 <= sg) {
@@ -135,11 +136,21 @@ namespace Circuit.Elements.Input {
                 }
             }
             case WAVEFORM.PWM_POSITIVE: {
-                var maxwt = 2 * Math.PI * t / (128 * ControlPanel.TimeStep);
+                var maxwt = 2 * Math.PI * t / (64 * ControlPanel.TimeStep);
                 var cr = triangleFunc(maxwt % (2 * Math.PI)) * 0.5 + 0.5;
                 var sg = DutyCycle * Math.Sin(wt);
-                if (0.0 <= sg) {
+                if (0.0 < sg) {
                     return Bias + (cr < sg ? MaxVoltage : 0);
+                } else {
+                    return Bias;
+                }
+            }
+            case WAVEFORM.PWM_NEGATIVE: {
+                var maxwt = 2 * Math.PI * t / (64 * ControlPanel.TimeStep);
+                var cr = triangleFunc(maxwt % (2 * Math.PI)) * 0.5 + 0.5;
+                var sg = DutyCycle * Math.Sin(wt);
+                if (0.0 > sg) {
+                    return Bias + (cr < -sg ? MaxVoltage : 0);
                 } else {
                     return Bias;
                 }

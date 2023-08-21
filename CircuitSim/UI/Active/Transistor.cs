@@ -203,7 +203,7 @@ namespace Circuit.UI.Active {
 
         public override void SetElementValue(int n, int c, ElementInfo ei) {
             if (n == 0) {
-                DumpInfo.ReferenceName = ei.Textf.Text;
+                DumpInfo.ReferenceName = ei.Text;
                 setTextPos();
             }
             if (n == 1) {

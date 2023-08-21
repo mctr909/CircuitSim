@@ -139,10 +139,6 @@ namespace Circuit.UI.Active {
 
         public override void SetElementValue(int n, int c, ElementInfo ei) {
             var ce = (ElmDiode)Elm;
-            if (n == 0) {
-                DumpInfo.ReferenceName = ei.Textf.Text;
-                setTextPos();
-            }
             if (!mCustomModelUI && n == 1) {
                 int ix = ei.Choice.SelectedIndex;
                 if (ix >= mModels.Count) {
@@ -157,6 +153,10 @@ namespace Circuit.UI.Active {
                 return;
             }
             base.SetElementValue(n, c, ei);
+            if (n == 0) {
+                DumpInfo.ReferenceName = ei.Text;
+                setTextPos();
+            }
         }
 
         protected void setup() {

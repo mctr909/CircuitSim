@@ -231,7 +231,7 @@ namespace Circuit.UI.Passive {
                 ce.MaxResistance = ei.Value;
             }
             if (n == 1) {
-                DumpInfo.ReferenceName = ei.Textf.Text;
+                DumpInfo.ReferenceName = ei.Text;
                 mLabel.Text = DumpInfo.ReferenceName;
                 ControlPanel.SetSliderPanelHeight();
                 setNamePos();
