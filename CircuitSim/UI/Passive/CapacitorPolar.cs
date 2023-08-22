@@ -30,23 +30,22 @@ namespace Circuit.UI.Passive {
         public override void SetPoints() {
             base.SetPoints();
             double f = (mLen / 2 - 4) / mLen;
-            if (DumpInfo.P2.Y > DumpInfo.P1.Y) {
-                mPlusPoint.Y += 4;
-            }
-            if (DumpInfo.P1.Y > DumpInfo.P2.Y) {
-                mPlusPoint.Y += 3;
-            }
             if (DumpInfo.P1.Y == DumpInfo.P2.Y) {
                 interpPost(ref mPlusPoint, f - 5 / mLen, 5 * mDsign);
             } else {
                 interpPost(ref mPlusPoint, f - 5 / mLen, -5 * mDsign);
             }
+            if (DumpInfo.P2.Y > DumpInfo.P1.Y) {
+                mPlusPoint.Y += 1;
+            }
+            if (DumpInfo.P1.Y > DumpInfo.P2.Y) {
+                mPlusPoint.Y += 3;
+            }
         }
 
         public override void Draw(CustomGraphics g) {
             base.Draw(g);
-            int w = (int)g.GetTextSize("+").Width;
-            g.DrawLeftText("+", mPlusPoint.X - w / 2, mPlusPoint.Y);
+            drawCenteredText("+", mPlusPoint, true);
         }
 
         public override void GetInfo(string[] arr) {
