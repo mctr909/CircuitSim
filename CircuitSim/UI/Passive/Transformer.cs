@@ -10,9 +10,9 @@ namespace Circuit.UI.Passive {
 
         const int BODY_LEN = 24;
 
-        Point[] mPtCoil;
-        Point[] mPtCore;
-        Point[] mDots;
+        PointF[] mPtCoil;
+        PointF[] mPtCore;
+        PointF[] mDots;
 
         public Transformer(Point pos) : base(pos) {
             Elm = new ElmTransformer();
@@ -63,8 +63,8 @@ namespace Circuit.UI.Passive {
             }
             base.SetPoints();
             ce.Post[1].Y = ce.Post[0].Y;
-            mPtCoil = new Point[4];
-            mPtCore = new Point[4];
+            mPtCoil = new PointF[4];
+            mPtCore = new PointF[4];
             interpPost(ref ce.Post[2], 0, -mDsign * height);
             interpPost(ref ce.Post[3], 1, -mDsign * height);
             var pce = 0.5 - 10.0 / width;
@@ -76,16 +76,16 @@ namespace Circuit.UI.Passive {
                 Utils.InterpPoint(ce.Post[i], ce.Post[i + 1], ref mPtCore[i + 1], 1 - pcd);
             }
             if (-1 == ce.Polarity) {
-                mDots = new Point[2];
+                mDots = new PointF[2];
                 var dotp = Math.Abs(7.0 / height);
                 Utils.InterpPoint(mPtCoil[0], mPtCoil[2], ref mDots[0], dotp, -7 * mDsign);
                 Utils.InterpPoint(mPtCoil[3], mPtCoil[1], ref mDots[1], dotp, -7 * mDsign);
                 var x = ce.Post[1];
                 ce.Post[1] = ce.Post[3];
                 ce.Post[3] = x;
-                x = mPtCoil[1];
+                var t = mPtCoil[1];
                 mPtCoil[1] = mPtCoil[3];
-                mPtCoil[3] = x;
+                mPtCoil[3] = t;
             } else {
                 mDots = null;
             }
@@ -100,8 +100,8 @@ namespace Circuit.UI.Passive {
             drawLine(ce.Post[2], mPtCoil[2]);
             drawLine(ce.Post[3], mPtCoil[3]);
 
-            drawCoil(mPtCoil[0], mPtCoil[2], ce.Volts[ElmTransformer.PRI_T], ce.Volts[ElmTransformer.PRI_B], 90 * mDsign);
-            drawCoil(mPtCoil[1], mPtCoil[3], ce.Volts[ElmTransformer.SEC_T], ce.Volts[ElmTransformer.SEC_B], -90 * mDsign * ce.Polarity);
+            drawCoil(mPtCoil[0], mPtCoil[2], 90 * mDsign);
+            drawCoil(mPtCoil[1], mPtCoil[3], -90 * mDsign * ce.Polarity);
 
             drawLine(mPtCore[0], mPtCore[2]);
             drawLine(mPtCore[1], mPtCore[3]);
@@ -188,7 +188,7 @@ namespace Circuit.UI.Passive {
 
         void setNamePos() {
             var wn = Context.GetTextSize(DumpInfo.ReferenceName).Width;
-            mNamePos = new Point((int)(mPtCore[0].X - wn / 2 + 2), mPtCore[0].Y - 8);
+            mNamePos = new Point((int)(mPtCore[0].X - wn / 2 + 2), (int)mPtCore[0].Y - 8);
         }
     }
 }

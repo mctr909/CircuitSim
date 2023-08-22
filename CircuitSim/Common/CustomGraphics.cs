@@ -127,7 +127,7 @@ namespace Circuit {
             return new CustomGraphics(width, height);
         }
 
-        public virtual void DrawLeftText(string s, int x, int y) {
+        public virtual void DrawLeftText(string s, float x, float y) {
             mG.DrawString(s, mTextFont, mTextBrush, x, y, mAlignLeft);
         }
 
@@ -161,7 +161,7 @@ namespace Circuit {
             mG.FillPie(mPenHandle, p.X - d / 2, p.Y - d / 2, d, d, 0, 360);
         }
 
-        public virtual void DrawCurrent(int cx, int cy, float radius) {
+        public virtual void DrawCurrent(float cx, float cy, float radius) {
             mG.FillPie(Brushes.Snow, cx - radius, cy - radius, radius * 2, radius * 2, 0, 360);
         }
 
@@ -188,7 +188,7 @@ namespace Circuit {
             mG.DrawArc(mPenLine, p.X - radius, p.Y - radius, radius * 2, radius * 2, 0, 360);
         }
 
-        public virtual void DrawArc(Point p, float diameter, float start, float sweep) {
+        public virtual void DrawArc(PointF p, float diameter, float start, float sweep) {
             var md = diameter * .98f;
             mG.DrawArc(mPenLine, p.X - md / 2, p.Y - md / 2, md, md, start, sweep);
         }

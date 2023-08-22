@@ -35,12 +35,12 @@ namespace Circuit.UI.Passive {
             optionList.Add(ce.ThrowCount);
         }
 
-        public override Rectangle GetSwitchRect() {
+        public override RectangleF GetSwitchRect() {
             var ce = (ElmSwitchMulti)Elm;
-            var l1 = new Rectangle(mLead1.X, mLead1.Y, 0, 0);
-            var s0 = new Rectangle((int)mSwPoles[0].X, (int)mSwPoles[0].Y, 0, 0);
-            var s1 = new Rectangle((int)mSwPoles[ce.ThrowCount - 1].X, (int)mSwPoles[ce.ThrowCount - 1].Y, 0, 0);
-            return Rectangle.Union(l1, Rectangle.Union(s0, s1));
+            var l1 = new RectangleF(mLead1.X, mLead1.Y, 0, 0);
+            var s0 = new RectangleF(mSwPoles[0].X, mSwPoles[0].Y, 0, 0);
+            var s1 = new RectangleF(mSwPoles[ce.ThrowCount - 1].X, mSwPoles[ce.ThrowCount - 1].Y, 0, 0);
+            return RectangleF.Union(l1, RectangleF.Union(s0, s1));
         }
 
         public override void SetPoints() {

@@ -56,13 +56,11 @@ namespace Circuit.UI.Passive {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmInductor)Elm;
-            double v1 = Elm.Volts[0];
-            double v2 = Elm.Volts[1];
             int hs = 8;
             setBbox(hs);
 
             draw2Leads();
-            drawCoil(mLead1, mLead2, v1, v2);
+            drawCoil(mLead1, mLead2);
 
             drawValue(ce.Inductance);
             drawName();

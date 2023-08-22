@@ -98,8 +98,8 @@ namespace Circuit.UI {
         protected PointF mDir;
 
         /* lead points (ends of wire stubs for simple two-terminal elements) */
-        protected Point mLead1;
-        protected Point mLead2;
+        protected PointF mLead1;
+        protected PointF mLead2;
 
         protected bool mVertical;
         protected bool mHorizontal;
@@ -144,18 +144,14 @@ namespace Circuit.UI {
             setLead2((mLen + len) / (2 * mLen));
         }
 
-        protected void setBbox(int ax, int ay, int bx, int by, double w) {
+        protected void setBbox(float ax, float ay, float bx, float by, double w) {
             DumpInfo.SetBbox(ax, ay, bx, by);
-            var dpx = (int)(mDir.X * w);
-            var dpy = (int)(mDir.Y * w);
+            var dpx = (float)(mDir.X * w);
+            var dpy = (float)(mDir.Y * w);
             DumpInfo.AdjustBbox(
                 ax + dpx, ay + dpy,
                 ax - dpx, ay - dpy
             );
-        }
-
-        protected void setBbox(int ax, int ay, Point b, double w) {
-            setBbox(ax, ay, b.X, b.Y, w);
         }
 
         /// <summary>
@@ -164,13 +160,13 @@ namespace Circuit.UI {
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <param name="w"></param>
-        protected void setBbox(Point a, Point b, double w) {
+        protected void setBbox(PointF a, PointF b, double w) {
             setBbox(a.X, a.Y, b.X, b.Y, w);
         }
 
         protected void setBbox(double w) {
-            var dpx = (int)(mDir.X * w);
-            var dpy = (int)(mDir.Y * w);
+            var dpx = (float)(mDir.X * w);
+            var dpy = (float)(mDir.Y * w);
             DumpInfo.SetBbox(
                 Elm.Post[0].X + dpx, Elm.Post[0].Y + dpy,
                 Elm.Post[0].X - dpx, Elm.Post[0].Y - dpy
@@ -677,7 +673,7 @@ namespace Circuit.UI {
             }
         }
 
-        protected void drawCoil(Point a, Point b, double v1, double v2) {
+        protected void drawCoil(PointF a, PointF b) {
             var coilLen = (float)Utils.Distance(a, b);
             if (0 == coilLen) {
                 return;
@@ -687,14 +683,14 @@ namespace Circuit.UI {
             var loopCt = (int)Math.Ceiling(coilLen / 11);
             var w = coilLen / loopCt;
             var th = (float)(Utils.Angle(a, b) * 180 / Math.PI);
-            var pos = new Point();
+            var pos = new PointF();
             for (int loop = 0; loop != loopCt; loop++) {
                 Utils.InterpPoint(a, b, ref pos, (loop + 0.5) / loopCt, 0);
                 Context.DrawArc(pos, w, th, -180);
             }
         }
 
-        protected void drawCoil(Point a, Point b, double v1, double v2, float dir) {
+        protected void drawCoil(PointF a, PointF b, float dir) {
             var coilLen = (float)Utils.Distance(a, b);
             if (0 == coilLen) {
                 return;
@@ -706,7 +702,7 @@ namespace Circuit.UI {
             if (Utils.Angle(a, b) < 0) {
                 dir = -dir;
             }
-            var pos = new Point();
+            var pos = new PointF();
             for (int loop = 0; loop != loopCt; loop++) {
                 Utils.InterpPoint(a, b, ref pos, (loop + 0.5) / loopCt, 0);
                 Context.DrawArc(pos, w, dir, -180);

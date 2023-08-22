@@ -75,7 +75,7 @@ class PDF {
             sw.Flush();
         }
 
-        public override void DrawLeftText(string s, int x, int y) {
+        public override void DrawLeftText(string s, float x, float y) {
             writeText(s, x, y);
         }
 
@@ -103,7 +103,7 @@ class PDF {
             fillCircleF(p.X, p.Y, 4);
         }
 
-        public override void DrawCurrent(int cx, int cy, float radius) { }
+        public override void DrawCurrent(float cx, float cy, float radius) { }
 
         public override void DrawLine(float ax, float ay, float bx, float by) {
             writeM(ax, ay);
@@ -148,7 +148,7 @@ class PDF {
             writeLS(p.X, p.Y);
         }
 
-        public override void DrawArc(Point c, float diameter, float start, float sweep) {
+        public override void DrawArc(PointF c, float diameter, float start, float sweep) {
             var poly = polyCircle(c.X, c.Y, diameter * 0.5f, start, sweep);
             var p = poly[0];
             writeM(p.X, p.Y);

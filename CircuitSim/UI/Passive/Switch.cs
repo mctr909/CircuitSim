@@ -78,13 +78,13 @@ namespace Circuit.UI.Passive {
             }
         }
 
-        public virtual Rectangle GetSwitchRect() {
+        public virtual RectangleF GetSwitchRect() {
             var p1 = new PointF();
             interpLead(ref p1, 0, 24);
-            var l1 = new Rectangle(mLead1.X, mLead1.Y, 0, 0);
-            var l2 = new Rectangle(mLead2.X, mLead2.Y, 0, 0);
-            var p = new Rectangle((int)p1.X, (int)p1.Y, 0, 0);
-            return Rectangle.Union(l1, Rectangle.Union(l2, p));
+            var l1 = new RectangleF(mLead1.X, mLead1.Y, 0, 0);
+            var l2 = new RectangleF(mLead2.X, mLead2.Y, 0, 0);
+            var p = new RectangleF(p1.X, p1.Y, 0, 0);
+            return RectangleF.Union(l1, RectangleF.Union(l2, p));
         }
 
         public override void SetPoints() {

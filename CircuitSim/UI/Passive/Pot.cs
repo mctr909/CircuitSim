@@ -17,8 +17,8 @@ namespace Circuit.UI.Passive {
         Point mCorner2;
         Point mArrowPoint;
         PointF mMidPoint;
-        Point mArrow1;
-        Point mArrow2;
+        PointF mArrow1;
+        PointF mArrow2;
         PointF[] mPs1;
         PointF[] mPs2;
         PointF[] mRect1;

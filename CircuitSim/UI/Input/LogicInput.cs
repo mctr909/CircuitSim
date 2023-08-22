@@ -27,8 +27,8 @@ namespace Circuit.UI.Input {
             optionList.Add(((ElmLogicInput)Elm).mLoV);
         }
 
-        public override Rectangle GetSwitchRect() {
-            return new Rectangle(DumpInfo.P2.X - 10, DumpInfo.P2.Y - 10, 20, 20);
+        public override RectangleF GetSwitchRect() {
+            return new RectangleF(DumpInfo.P2.X - 10, DumpInfo.P2.Y - 10, 20, 20);
         }
 
         public override void SetPoints() {

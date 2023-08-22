@@ -46,7 +46,7 @@ namespace Circuit.UI.Input {
             interpPost(ref mTextPos, 0.5, 16 * sign);
             var p2 = new PointF();
             interpLead(ref p2, 0.8);
-            Utils.CreateArrow(mCenter.X, mCenter.Y, p2.X, p2.Y, out mArrow, 8, 4);
+            Utils.CreateArrow(mCenter, p2, out mArrow, 8, 4);
         }
 
         public override void Draw(CustomGraphics g) {
