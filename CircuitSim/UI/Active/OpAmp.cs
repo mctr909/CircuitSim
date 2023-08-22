@@ -55,19 +55,18 @@ namespace Circuit.UI.Active {
         public override void Draw(CustomGraphics g) {
             setBbox(mOpHeight * 2);
 
-            drawLead(mPosIn1[0], mPosIn1[1]);
-            drawLead(mPosIn2[0], mPosIn2[1]);
-            drawLead(mLead2, mPosOut);
+            drawLine(mPosIn1[0], mPosIn1[1]);
+            drawLine(mPosIn2[0], mPosIn2[1]);
+            drawLine(mLead2, mPosOut);
 
-            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            g.DrawPolygon(mTriangle);
+            drawPolygon(mTriangle);
 
-            drawLead(mTextp[0], mTextp[1]);
-            drawLead(mTextp[2], mTextp[3]);
-            drawLead(mTextp[4], mTextp[5]);
+            drawLine(mTextp[0], mTextp[1]);
+            drawLine(mTextp[2], mTextp[3]);
+            drawLine(mTextp[4], mTextp[5]);
 
             updateDotCount(Elm.Current, ref CurCount);
-            drawDots(mLead2, mPosOut, -CurCount);
+            drawCurrent(mLead2, mPosOut, -CurCount);
             drawPosts();
         }
 

@@ -43,8 +43,8 @@ namespace Circuit.UI.Output {
             base.Draw(g); /* BC required for highlighting */
             var ce = (ElmAmmeter)Elm;
 
-            drawLead(Elm.Post[0], Elm.Post[1]);
-            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mArrowPoly);
+            drawLine(Elm.Post[0], Elm.Post[1]);
+            fillPolygon(mArrowPoly);
             doDots();
             setBbox(3);
             string s = "A";

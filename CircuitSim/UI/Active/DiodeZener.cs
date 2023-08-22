@@ -51,12 +51,12 @@ namespace Circuit.UI.Active {
             draw2Leads();
 
             /* draw arrow thingy */
-            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mPoly);
+            fillPolygon(mPoly);
             /* draw thing arrow is pointing to */
-            drawLead(mCathode[0], mCathode[1]);
+            drawLine(mCathode[0], mCathode[1]);
             /* draw wings on cathode */
-            drawLead(mWing[0], mCathode[0]);
-            drawLead(mWing[1], mCathode[1]);
+            drawLine(mWing[0], mCathode[0]);
+            drawLine(mWing[1], mCathode[1]);
 
             doDots();
             drawPosts();

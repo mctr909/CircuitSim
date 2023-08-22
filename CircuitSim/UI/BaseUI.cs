@@ -187,7 +187,7 @@ namespace Circuit.UI {
         protected void doDots() {
             updateDotCount();
             if (CirSimForm.DragElm != this) {
-                drawDots(Elm.Post[0], Elm.Post[1], CurCount);
+                drawCurrent(Elm.Post[0], Elm.Post[1], CurCount);
             }
         }
 
@@ -295,240 +295,6 @@ namespace Circuit.UI {
                 a.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f + g * gy + 0.5);
                 b.X = (int)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f - g * gx + 0.5);
                 b.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f - g * gy + 0.5);
-            }
-        }
-
-        protected void drawPosts() {
-            /* we normally do this in updateCircuit() now because the logic is more complicated.
-             * we only handle the case where we have to draw all the posts.  That happens when
-             * this element is selected or is being created */
-            if (CirSimForm.DragElm == null && !NeedsHighlight) {
-                return;
-            }
-            if (CirSimForm.MouseMode == CirSimForm.MOUSE_MODE.DRAG_ROW || CirSimForm.MouseMode == CirSimForm.MOUSE_MODE.DRAG_COLUMN) {
-                return;
-            }
-            for (int i = 0; i < Elm.PostCount; i++) {
-                var p = Elm.GetPost(i);
-                Context.DrawPost(p);
-            }
-        }
-
-        protected void drawLead(Point a, Point b) {
-            drawLead(a.X, a.Y, b.X, b.Y);
-        }
-
-        protected void drawLead(float ax, float ay, Point b) {
-            drawLead(ax, ay, b.X, b.Y);
-        }
-
-        protected void drawLead(Point a, float bx, float by) {
-            drawLead(a.X, a.Y, bx, by);
-        }
-
-        protected void drawLead(float ax, float ay, float bx, float by) {
-            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            Context.DrawLine(ax, ay, bx, by);
-        }
-
-        protected void drawLeadA() {
-            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            Context.DrawLine(Elm.Post[0], mLead1);
-        }
-
-        protected void drawLeadB() {
-            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            Context.DrawLine(mLead2, Elm.Post[1]);
-        }
-
-        protected void draw2Leads() {
-            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            /* draw first lead */
-            Context.DrawLine(Elm.Post[0], mLead1);
-            /* draw second lead */
-            Context.DrawLine(mLead2, Elm.Post[1]);
-        }
-
-        /// <summary>
-        /// draw current dots from point a to b
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <param name="pos"></param>
-        protected void drawDots(Point a, Point b, double pos) {
-            drawDots(a.X, a.Y, b.X, b.Y, pos);
-        }
-
-        protected void drawDots(float ax, float ay, Point b, double pos) {
-            drawDots(ax, ay, b.X, b.Y, pos);
-        }
-
-        protected void drawDots(Point a, float bx, float by, double pos) {
-            drawDots(a.X, a.Y, bx, by, pos);
-        }
-
-        protected void drawDots(float ax, float ay, float bx, float by, double pos) {
-            if ((!CirSimForm.IsRunning) || pos == 0 || !ControlPanel.ChkShowDots.Checked) {
-                return;
-            }
-            if (ControlPanel.ChkPrintable.Checked) {
-                return;
-            }
-            Context.FillColor = Color.SkyBlue;
-            pos %= CirSimForm.CURRENT_DOT_SIZE;
-            if (pos < 0) {
-                pos += CirSimForm.CURRENT_DOT_SIZE;
-            }
-            var nx = bx - ax;
-            var ny = by - ay;
-            var r = (float)Math.Sqrt(nx * nx + ny * ny);
-            nx /= r;
-            ny /= r;
-            for (var di = pos; di < r; di += CirSimForm.CURRENT_DOT_SIZE) {
-                var x0 = (int)(ax + di * nx);
-                var y0 = (int)(ay + di * ny);
-                Context.FillCircle(x0, y0, 0.5f);
-            }
-        }
-
-        protected void drawDotsA(double pos) {
-            drawDots(Elm.Post[0], mLead1, pos);
-        }
-
-        protected void drawDotsB(double pos) {
-            drawDots(mLead2, Elm.Post[1], pos);
-        }
-
-        protected void drawCenteredText(string s, int x, int y, bool cx) {
-            var fs = Context.GetTextSize(s);
-            int w = (int)fs.Width;
-            int h2 = (int)fs.Height / 2;
-            if (cx) {
-                DumpInfo.AdjustBbox(x - w / 2, y - h2, x + w / 2, y + h2);
-            } else {
-                DumpInfo.AdjustBbox(x, y - h2, x + w, y + h2);
-            }
-            Context.DrawCenteredText(s, x, y);
-        }
-
-        protected void drawCenteredText(string s, Point p, bool cx) {
-            drawCenteredText(s, p.X, p.Y, cx);
-        }
-
-        protected void drawCenteredLText(string s, int x, int y, bool cx) {
-            var fs = Context.GetTextSizeL(s);
-            int w = (int)fs.Width;
-            int h2 = (int)fs.Height / 2;
-            if (cx) {
-                DumpInfo.AdjustBbox(x - w / 2, y - h2, x + w / 2, y + h2);
-            } else {
-                DumpInfo.AdjustBbox(x, y - h2, x + w, y + h2);
-            }
-            Context.DrawCenteredLText(s, x, y);
-        }
-
-        protected void drawCenteredLText(string s, Point p, bool cx) {
-            drawCenteredLText(s, p.X, p.Y, cx);
-        }
-
-        /// <summary>
-        /// draw component values (number of resistor ohms, etc).
-        /// </summary>
-        /// <param name="s"></param>
-        protected void drawValues(string s, int offsetX = 0, int offsetY = 0) {
-            if (s == null) {
-                return;
-            }
-            var textSize = Context.GetTextSize(s);
-            int xc, yc;
-            if (this is Rail || this is Sweep) {
-                xc = DumpInfo.P2.X;
-                yc = DumpInfo.P2.Y;
-            } else {
-                xc = (DumpInfo.P2.X + DumpInfo.P1.X) / 2;
-                yc = (DumpInfo.P2.Y + DumpInfo.P1.Y) / 2;
-            }
-            Context.DrawRightText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
-        }
-
-        /// <summary>
-        /// draw component name
-        /// </summary>
-        /// <param name="s"></param>
-        protected void drawName(string s, int offsetX = 0, int offsetY = 0) {
-            if (s == null) {
-                return;
-            }
-            var textSize = Context.GetTextSize(s);
-            int xc, yc;
-            if (this is Rail) {
-                xc = DumpInfo.P2.X;
-                yc = DumpInfo.P2.Y;
-            } else {
-                xc = (DumpInfo.P2.X + DumpInfo.P1.X) / 2;
-                yc = (DumpInfo.P2.Y + DumpInfo.P1.Y) / 2;
-            }
-            Context.DrawLeftText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
-        }
-
-        protected void drawValue(double value) {
-            if (ControlPanel.ChkShowValues.Checked) {
-                var s = Utils.UnitText(value);
-                if (mVertical) {
-                    Context.DrawCenteredVText(s, mValuePos.X, mValuePos.Y);
-                } else if (mHorizontal) {
-                    Context.DrawCenteredText(s, mValuePos.X, mValuePos.Y);
-                } else {
-                    Context.DrawLeftText(s, mValuePos.X, mValuePos.Y);
-                }
-            }
-        }
-
-        protected void drawName() {
-            if (ControlPanel.ChkShowName.Checked) {
-                if (mVertical) {
-                    Context.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
-                } else if(mHorizontal) {
-                    Context.DrawCenteredText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
-                } else {
-                    Context.DrawRightText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
-                }
-            }
-        }
-
-        protected void drawCoil(Point a, Point b, double v1, double v2) {
-            var coilLen = (float)Utils.Distance(a, b);
-            if (0 == coilLen) {
-                return;
-            }
-            /* draw more loops for a longer coil */
-            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            var loopCt = (int)Math.Ceiling(coilLen / 11);
-            var w = coilLen / loopCt;
-            var th = (float)(Utils.Angle(a, b) * 180 / Math.PI);
-            var pos = new Point();
-            for (int loop = 0; loop != loopCt; loop++) {
-                Utils.InterpPoint(a, b, ref pos, (loop + 0.5) / loopCt, 0);
-                Context.DrawArc(pos, w, th, -180);
-            }
-        }
-
-        protected void drawCoil(Point a, Point b, double v1, double v2, float dir) {
-            var coilLen = (float)Utils.Distance(a, b);
-            if (0 == coilLen) {
-                return;
-            }
-            /* draw more loops for a longer coil */
-            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            var loopCt = (int)Math.Ceiling(coilLen / 9);
-            float w = coilLen / loopCt;
-            if (Utils.Angle(a, b) < 0) {
-                dir = -dir;
-            }
-            var pos = new Point();
-            for (int loop = 0; loop != loopCt; loop++) {
-                Utils.InterpPoint(a, b, ref pos, (loop + 0.5) / loopCt, 0);
-                Context.DrawArc(pos, w, dir, -180);
             }
         }
 
@@ -702,6 +468,246 @@ namespace Circuit.UI {
         public virtual void SetElementValue(int r, int c, ElementInfo ei) { }
 
         public virtual EventHandler CreateSlider(ElementInfo ei, Adjustable adj) { return null; }
+        #endregion
+
+        #region [draw method]
+        protected void drawLine(Point a, Point b) {
+            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawLine(a.X, a.Y, b.X, b.Y);
+        }
+
+        protected void drawLine(float ax, float ay, float bx, float by) {
+            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawLine(ax, ay, bx, by);
+        }
+
+        protected void drawCircle(Point p, float radius) {
+            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawCircle(p, radius);
+        }
+
+        protected void drawPolygon(Point[] p) {
+            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawPolygon(p);
+        }
+
+        protected void fillPolygon(Point[] p) {
+            var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.FillPolygon(color, p);
+        }
+
+        protected void fillPolygon(PointF[] p) {
+            var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.FillPolygon(color, p);
+        }
+
+        protected void drawPosts() {
+            /* we normally do this in updateCircuit() now because the logic is more complicated.
+             * we only handle the case where we have to draw all the posts.  That happens when
+             * this element is selected or is being created */
+            if (CirSimForm.DragElm == null && !NeedsHighlight) {
+                return;
+            }
+            if (CirSimForm.MouseMode == CirSimForm.MOUSE_MODE.DRAG_ROW || CirSimForm.MouseMode == CirSimForm.MOUSE_MODE.DRAG_COLUMN) {
+                return;
+            }
+            for (int i = 0; i < Elm.PostCount; i++) {
+                var p = Elm.GetPost(i);
+                Context.DrawPost(p);
+            }
+        }
+
+        protected void drawLeadA() {
+            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawLine(Elm.Post[0], mLead1);
+        }
+
+        protected void drawLeadB() {
+            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawLine(mLead2, Elm.Post[1]);
+        }
+
+        protected void draw2Leads() {
+            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            /* draw first lead */
+            Context.DrawLine(Elm.Post[0], mLead1);
+            /* draw second lead */
+            Context.DrawLine(mLead2, Elm.Post[1]);
+        }
+
+        /// <summary>
+        /// draw current dots from point a to b
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="pos"></param>
+        protected void drawCurrent(Point a, Point b, double pos) {
+            drawCurrent(a.X, a.Y, b.X, b.Y, pos);
+        }
+
+        protected void drawCurrent(float ax, float ay, float bx, float by, double pos) {
+            if ((!CirSimForm.IsRunning) || pos == 0 || !ControlPanel.ChkShowDots.Checked) {
+                return;
+            }
+            if (ControlPanel.ChkPrintable.Checked) {
+                return;
+            }
+            pos %= CirSimForm.CURRENT_DOT_SIZE;
+            if (pos < 0) {
+                pos += CirSimForm.CURRENT_DOT_SIZE;
+            }
+            var nx = bx - ax;
+            var ny = by - ay;
+            var r = (float)Math.Sqrt(nx * nx + ny * ny);
+            nx /= r;
+            ny /= r;
+            for (var di = pos; di < r; di += CirSimForm.CURRENT_DOT_SIZE) {
+                var x0 = (int)(ax + di * nx);
+                var y0 = (int)(ay + di * ny);
+                Context.DrawCurrent(x0, y0, 0.5f);
+            }
+        }
+
+        protected void drawCurrentA(double pos) {
+            drawCurrent(Elm.Post[0], mLead1, pos);
+        }
+
+        protected void drawCurrentB(double pos) {
+            drawCurrent(mLead2, Elm.Post[1], pos);
+        }
+
+        protected void drawCenteredText(string s, int x, int y, bool cx) {
+            var fs = Context.GetTextSize(s);
+            int w = (int)fs.Width;
+            int h2 = (int)fs.Height / 2;
+            if (cx) {
+                DumpInfo.AdjustBbox(x - w / 2, y - h2, x + w / 2, y + h2);
+            } else {
+                DumpInfo.AdjustBbox(x, y - h2, x + w, y + h2);
+            }
+            Context.DrawCenteredText(s, x, y);
+        }
+
+        protected void drawCenteredText(string s, Point p, bool cx) {
+            drawCenteredText(s, p.X, p.Y, cx);
+        }
+
+        protected void drawCenteredLText(string s, int x, int y, bool cx) {
+            var fs = Context.GetTextSizeL(s);
+            int w = (int)fs.Width;
+            int h2 = (int)fs.Height / 2;
+            if (cx) {
+                DumpInfo.AdjustBbox(x - w / 2, y - h2, x + w / 2, y + h2);
+            } else {
+                DumpInfo.AdjustBbox(x, y - h2, x + w, y + h2);
+            }
+            Context.DrawCenteredLText(s, x, y);
+        }
+
+        protected void drawCenteredLText(string s, Point p, bool cx) {
+            drawCenteredLText(s, p.X, p.Y, cx);
+        }
+
+        /// <summary>
+        /// draw component values (number of resistor ohms, etc).
+        /// </summary>
+        /// <param name="s"></param>
+        protected void drawValues(string s, int offsetX = 0, int offsetY = 0) {
+            if (s == null) {
+                return;
+            }
+            var textSize = Context.GetTextSize(s);
+            int xc, yc;
+            if (this is Rail || this is Sweep) {
+                xc = DumpInfo.P2.X;
+                yc = DumpInfo.P2.Y;
+            } else {
+                xc = (DumpInfo.P2.X + DumpInfo.P1.X) / 2;
+                yc = (DumpInfo.P2.Y + DumpInfo.P1.Y) / 2;
+            }
+            Context.DrawRightText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
+        }
+
+        /// <summary>
+        /// draw component name
+        /// </summary>
+        /// <param name="s"></param>
+        protected void drawName(string s, int offsetX = 0, int offsetY = 0) {
+            if (s == null) {
+                return;
+            }
+            var textSize = Context.GetTextSize(s);
+            int xc, yc;
+            if (this is Rail) {
+                xc = DumpInfo.P2.X;
+                yc = DumpInfo.P2.Y;
+            } else {
+                xc = (DumpInfo.P2.X + DumpInfo.P1.X) / 2;
+                yc = (DumpInfo.P2.Y + DumpInfo.P1.Y) / 2;
+            }
+            Context.DrawLeftText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
+        }
+
+        protected void drawValue(double value) {
+            if (ControlPanel.ChkShowValues.Checked) {
+                var s = Utils.UnitText(value);
+                if (mVertical) {
+                    Context.DrawCenteredVText(s, mValuePos.X, mValuePos.Y);
+                } else if (mHorizontal) {
+                    Context.DrawCenteredText(s, mValuePos.X, mValuePos.Y);
+                } else {
+                    Context.DrawLeftText(s, mValuePos.X, mValuePos.Y);
+                }
+            }
+        }
+
+        protected void drawName() {
+            if (ControlPanel.ChkShowName.Checked) {
+                if (mVertical) {
+                    Context.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
+                } else if (mHorizontal) {
+                    Context.DrawCenteredText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
+                } else {
+                    Context.DrawRightText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
+                }
+            }
+        }
+
+        protected void drawCoil(Point a, Point b, double v1, double v2) {
+            var coilLen = (float)Utils.Distance(a, b);
+            if (0 == coilLen) {
+                return;
+            }
+            /* draw more loops for a longer coil */
+            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            var loopCt = (int)Math.Ceiling(coilLen / 11);
+            var w = coilLen / loopCt;
+            var th = (float)(Utils.Angle(a, b) * 180 / Math.PI);
+            var pos = new Point();
+            for (int loop = 0; loop != loopCt; loop++) {
+                Utils.InterpPoint(a, b, ref pos, (loop + 0.5) / loopCt, 0);
+                Context.DrawArc(pos, w, th, -180);
+            }
+        }
+
+        protected void drawCoil(Point a, Point b, double v1, double v2, float dir) {
+            var coilLen = (float)Utils.Distance(a, b);
+            if (0 == coilLen) {
+                return;
+            }
+            /* draw more loops for a longer coil */
+            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            var loopCt = (int)Math.Ceiling(coilLen / 9);
+            float w = coilLen / loopCt;
+            if (Utils.Angle(a, b) < 0) {
+                dir = -dir;
+            }
+            var pos = new Point();
+            for (int loop = 0; loop != loopCt; loop++) {
+                Utils.InterpPoint(a, b, ref pos, (loop + 0.5) / loopCt, 0);
+                Context.DrawArc(pos, w, dir, -180);
+            }
+        }
         #endregion
     }
 }

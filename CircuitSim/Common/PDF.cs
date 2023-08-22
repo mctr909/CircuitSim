@@ -103,6 +103,8 @@ class PDF {
             fillCircleF(p.X, p.Y, 4);
         }
 
+        public override void DrawCurrent(int cx, int cy, float radius) { }
+
         public override void DrawLine(float ax, float ay, float bx, float by) {
             writeM(ax, ay);
             writeLS(bx, by);

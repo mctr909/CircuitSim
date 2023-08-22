@@ -66,10 +66,9 @@ namespace Circuit.UI.Active {
             draw2Leads();
 
             interpLead(ref mPs, 1, hs);
-            g.DrawColor = CustomGraphics.WhiteColor;
-            g.DrawLine(mLead1, mPs);
+            drawLine(mLead1, mPs);
 
-            drawLead(ce.Post[2], mLead3);
+            drawLine(ce.Post[2], mLead3);
 
             if (!ce.IsOpen) {
                 doDots();

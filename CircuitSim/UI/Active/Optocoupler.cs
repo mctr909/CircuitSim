@@ -90,14 +90,14 @@ namespace Circuit.UI.Active {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmOptocoupler)Elm;
-            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            g.DrawPolygon(mRectPoints);
+
+            drawPolygon(mRectPoints);
 
             /* draw stubs */
             for (int i = 0; i != 4; i++) {
                 var a = ce.Posts[i];
                 var b = mStubs[i];
-                drawLead(a, b);
+                drawLine(a, b);
             }
 
             ce.mDiode.Draw(g);
@@ -106,15 +106,12 @@ namespace Circuit.UI.Active {
             drawPosts();
 
             /* draw little arrows */
-            var br = g.DrawColor;
-            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             var sx1 = mArrow1[0].X - 10;
             var sx2 = sx1 + 5;
-            g.DrawLine(sx1, mArrow1[0].Y, sx2, mArrow1[0].Y);
-            g.DrawLine(sx1, mArrow2[0].Y, sx2, mArrow2[0].Y);
-            g.FillPolygon(g.DrawColor, mArrow1);
-            g.FillPolygon(g.DrawColor, mArrow2);
-            g.DrawColor = br;
+            drawLine(sx1, mArrow1[0].Y, sx2, mArrow1[0].Y);
+            drawLine(sx1, mArrow2[0].Y, sx2, mArrow2[0].Y);
+            fillPolygon(mArrow1);
+            fillPolygon(mArrow2);
         }
 
         public override void GetInfo(string[] arr) {

@@ -168,16 +168,13 @@ namespace Circuit.UI.Custom {
                 var p = ce.Pins[i];
                 var a = p.post;
                 var b = p.stub;
-                drawLead(a, b);
+                drawLine(a, b);
                 updateDotCount(p.current, ref p.curcount);
-                drawDots(b, a, p.curcount);
+                drawCurrent(b, a, p.curcount);
                 if (p.bubble) {
-                    g.DrawColor = Color.White;
-                    g.DrawCircle(p.bubblePos, 1);
-                    g.DrawColor = CustomGraphics.LineColor;
-                    g.DrawCircle(p.bubblePos, 3);
+                    drawCircle(p.bubblePos, 1);
+                    drawCircle(p.bubblePos, 3);
                 }
-                g.DrawColor = p.selected ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
                 var bkSize = CustomGraphics.TextSize;
                 CustomGraphics.TextSize = 12 * csize;
                 while (true) {
@@ -190,16 +187,15 @@ namespace Circuit.UI.Custom {
                     g.DrawCenteredText(p.text, p.textloc.X, p.textloc.Y);
                     if (p.lineOver) {
                         int ya = p.textloc.Y;
-                        g.DrawLine(p.textloc.X - txtW / 2, ya, p.textloc.X + txtW / 2, ya);
+                        drawLine(p.textloc.X - txtW / 2, ya, p.textloc.X + txtW / 2, ya);
                     }
                     break;
                 }
                 CustomGraphics.TextSize = bkSize;
             }
-            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            g.DrawPolygon(rectPoints);
+            drawPolygon(rectPoints);
             if (clockPoints != null) {
-                g.DrawPolygon(clockPoints);
+                drawPolygon(clockPoints);
             }
             drawPosts();
         }

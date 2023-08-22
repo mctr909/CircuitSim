@@ -127,26 +127,26 @@ namespace Circuit.UI.Active {
             var ce = (ElmTransistor)Elm;
 
             /* draw collector */
-            drawLead(mPosC[2], mPosC[1]);
-            drawLead(mPosC[1], mPosC[0]);
+            drawLine(mPosC[2], mPosC[1]);
+            drawLine(mPosC[1], mPosC[0]);
             /* draw emitter */
-            drawLead(mPosE[2], mPosE[1]);
-            drawLead(mPosE[1], mPosE[0]);
+            drawLine(mPosE[2], mPosE[1]);
+            drawLine(mPosE[1], mPosE[0]);
             /* draw arrow */
-            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mArrowPoly);
+            fillPolygon(mArrowPoly);
             /* draw base */
-            drawLead(Elm.Post[0], mTbase);
+            drawLine(Elm.Post[0], mTbase);
 
             /* draw dots */
             updateDotCount(-ce.Ib, ref mCurCountB);
-            drawDots(mTbase, Elm.Post[0], mCurCountB);
+            drawCurrent(mTbase, Elm.Post[0], mCurCountB);
             updateDotCount(-ce.Ic, ref mCurCountC);
-            drawDots(mPosC[0], mPosC[2], mCurCountC);
+            drawCurrent(mPosC[0], mPosC[2], mCurCountC);
             updateDotCount(-ce.Ie, ref mCurCountE);
-            drawDots(mPosE[0], mPosE[2], mCurCountE);
+            drawCurrent(mPosE[0], mPosE[2], mCurCountE);
 
             /* draw base rectangle */
-            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mRectPoly);
+            fillPolygon(mRectPoly);
 
             drawPosts();
 

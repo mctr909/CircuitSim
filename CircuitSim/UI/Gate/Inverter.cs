@@ -57,16 +57,15 @@ namespace Circuit.UI.Gate {
             var ce = (ElmInverter)Elm;
             drawPosts();
             draw2Leads();
-            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             if (Gate.UseAnsiGates()) {
-                g.DrawPolygon(mGatePolyAnsi);
+                drawPolygon(mGatePolyAnsi);
             } else {
-                g.DrawPolygon(mGatePolyEuro);
+                drawPolygon(mGatePolyEuro);
                 drawCenteredLText("1", mCenter, true);
             }
-            g.DrawCircle(mPcircle, 3);
+            drawCircle(mPcircle, 3);
             updateDotCount(ce.Current, ref CurCount);
-            drawDotsB(CurCount);
+            drawCurrentB(CurCount);
         }
 
         public override void GetInfo(string[] arr) {

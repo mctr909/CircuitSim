@@ -52,9 +52,9 @@ namespace Circuit.UI.Input {
         public override void Draw(CustomGraphics g) {
             draw2Leads();
 
-            g.DrawCircle(mCenter, BODY_LEN / 2);
-            drawLead(mAshaft1, mAshaft2);
-            g.FillPolygon(NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor, mArrow);
+            drawCircle(mCenter, BODY_LEN / 2);
+            drawLine(mAshaft1, mAshaft2);
+            fillPolygon(mArrow);
 
             setBbox(BODY_LEN);
             doDots();

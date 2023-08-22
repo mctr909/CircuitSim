@@ -49,11 +49,10 @@ namespace Circuit.UI.Gate {
 
             draw2Leads();
 
-            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            g.DrawPolygon(mGatePoly);
-            drawLead(ce.Post[2], mLead3);
+            drawPolygon(mGatePoly);
+            drawLine(ce.Post[2], mLead3);
             updateDotCount(ce.Current, ref CurCount);
-            drawDotsB(CurCount);
+            drawCurrentB(CurCount);
             drawPosts();
         }
 

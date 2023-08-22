@@ -45,11 +45,9 @@ namespace Circuit.UI.Input {
 
             drawLeadA();
 
-            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-
             int xc = Elm.Post[1].X;
             int yc = Elm.Post[1].Y;
-            g.DrawCircle(Elm.Post[1], SIZE / 2);
+            drawCircle(Elm.Post[1], SIZE / 2);
 
             DumpInfo.AdjustBbox(
                 xc - SIZE, yc - SIZE,
@@ -70,14 +68,13 @@ namespace Circuit.UI.Input {
 
             int x0 = 0;
             var y0 = 0.0f;
-            g.DrawColor = CustomGraphics.LineColor;
             for (int i = -xl; i <= xl; i++) {
                 var yy = yc + (float)(0.95 * Math.Sin(i * Math.PI * w / xl) * wl);
                 if (i == -xl) {
                     x0 = xc + i;
                     y0 = yy;
                 } else {
-                    g.DrawLine(x0, y0, xc + i, yy);
+                    drawLine(x0, y0, xc + i, yy);
                     x0 = xc + i;
                     y0 = yy;
                 }
@@ -91,7 +88,7 @@ namespace Circuit.UI.Input {
             drawPosts();
             updateDotCount(-ce.Current, ref CurCount);
             if (CirSimForm.DragElm != this) {
-                drawDotsA(CurCount);
+                drawCurrentA(CurCount);
             }
         }
 

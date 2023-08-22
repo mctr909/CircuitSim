@@ -89,32 +89,30 @@ namespace Circuit.UI.Gate {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmGate)Elm;
             for (int i = 0; i != ce.InputCount; i++) {
-                drawLead(ce.InPosts[i], mInGates[i]);
+                drawLine(ce.InPosts[i], mInGates[i]);
             }
             drawLeadB();
-            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             if (UseAnsiGates()) {
-                g.DrawPolygon(mGatePolyAnsi);
+                drawPolygon(mGatePolyAnsi);
             } else {
-                g.DrawPolygon(mGatePolyEuro);
+                drawPolygon(mGatePolyEuro);
                 var center = new Point();
                 interpPoint(ref center, 0.5);
                 drawCenteredLText(gateText, center, true);
             }
             if (ce.HasSchmittInputs) {
-                g.DrawColor = CustomGraphics.WhiteColor;
-                g.DrawPolygon(mSchmittPoly);
+                drawPolygon(mSchmittPoly);
             }
             if (mLinePoints != null && UseAnsiGates()) {
                 for (int i = 0; i != mLinePoints.Length - 1; i++) {
-                    drawLead(mLinePoints[i], mLinePoints[i + 1]);
+                    drawLine(mLinePoints[i], mLinePoints[i + 1]);
                 }
             }
             if (ce.IsInverting) {
-                g.DrawCircle(mCirclePos, CIRCLE_SIZE);
+                drawCircle(mCirclePos, CIRCLE_SIZE);
             }
             updateDotCount(ce.Current, ref CurCount);
-            drawDotsB(CurCount);
+            drawCurrentB(CurCount);
             drawPosts();
         }
 

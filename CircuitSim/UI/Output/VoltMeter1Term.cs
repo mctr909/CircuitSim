@@ -23,11 +23,6 @@ namespace Circuit.UI.Output {
 
         public override void Draw(CustomGraphics g) {
             setBbox(1);
-            if (NeedsHighlight) {
-                g.DrawColor = CustomGraphics.SelectColor;
-            } else {
-                g.DrawColor = CustomGraphics.LineColor;
-            }
             drawLeadA();
             if (mustShowVoltage()) {
                 drawCenteredText(drawValues(), DumpInfo.P2.X, DumpInfo.P2.Y, true);

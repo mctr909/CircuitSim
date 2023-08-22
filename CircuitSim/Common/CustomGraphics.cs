@@ -158,6 +158,10 @@ namespace Circuit {
             mG.FillPie(mPenHandle, p.X - d / 2, p.Y - d / 2, d, d, 0, 360);
         }
 
+        public virtual void DrawCurrent(int cx, int cy, float radius) {
+            mG.FillPie(Brushes.Snow, cx - radius, cy - radius, radius * 2, radius * 2, 0, 360);
+        }
+
         public virtual void DrawLine(float ax, float ay, float bx, float by) {
             mG.DrawLine(mPenLine, ax, ay, bx, by);
         }
@@ -192,10 +196,6 @@ namespace Circuit {
 
         public virtual void FillRectangle(int x, int y, int width, int height) {
             mG.FillRectangle(mPenFill.Brush, x, y, width, height);
-        }
-
-        public void FillRectangle(Brush brush, int x, int y, int width, int height) {
-            mG.FillRectangle(brush, x, y, width, height);
         }
 
         public virtual void FillCircle(int cx, int cy, float radius) {

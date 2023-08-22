@@ -116,16 +116,16 @@ namespace Circuit.UI.Passive {
             if (ControlPanel.ChkUseAnsiSymbols.Checked) {
                 /* draw zigzag */
                 for (int i = 0; i < SEGMENTS; i++) {
-                    drawLead(mP1[i], mP2[i]);
+                    drawLine(mP1[i], mP2[i]);
                 }
             } else {
                 /* draw rectangle */
-                drawLead(mRect1[0], mRect2[0]);
+                drawLine(mRect1[0], mRect2[0]);
                 for (int i = 0, j = 1; i < SEGMENTS; i++, j++) {
-                    drawLead(mRect1[j], mRect3[j]);
-                    drawLead(mRect2[j], mRect4[j]);
+                    drawLine(mRect1[j], mRect3[j]);
+                    drawLine(mRect2[j], mRect4[j]);
                 }
-                drawLead(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
+                drawLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
             }
 
             drawValue(ce.Resistance);

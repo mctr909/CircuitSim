@@ -130,37 +130,37 @@ namespace Circuit.UI.Passive {
                     if (i >= divide) {
                         v = vs + (vr - vs) * (i - divide) / (SEGMENTS - divide);
                     }
-                    drawLead(mPs1[i], mPs2[i]);
+                    drawLine(mPs1[i], mPs2[i]);
                 }
             } else {
                 /* draw rectangle */
-                drawLead(mRect1[0], mRect2[0]);
+                drawLine(mRect1[0], mRect2[0]);
                 for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
                     double v = vl + (vs - vl) * i / divide;
                     if (i >= divide) {
                         v = vs + (vr - vs) * (i - divide) / (SEGMENTS - divide);
                     }
-                    drawLead(mRect1[j], mRect3[j]);
-                    drawLead(mRect2[j], mRect4[j]);
+                    drawLine(mRect1[j], mRect3[j]);
+                    drawLine(mRect2[j], mRect4[j]);
                 }
-                drawLead(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
+                drawLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
             }
 
             /* draw slider */
-            drawLead(ce.Post[2], mCorner2);
-            drawLead(mCorner2, mArrowPoint);
-            drawLead(mArrow1, mArrowPoint);
-            drawLead(mArrow2, mArrowPoint);
+            drawLine(ce.Post[2], mCorner2);
+            drawLine(mCorner2, mArrowPoint);
+            drawLine(mArrow1, mArrowPoint);
+            drawLine(mArrow2, mArrowPoint);
 
             /* draw dot */
             updateDotCount(ce.Current1, ref ce.CurCount1);
             updateDotCount(ce.Current2, ref ce.CurCount2);
             updateDotCount(ce.Current3, ref ce.CurCount3);
             if (CirSimForm.DragElm != this) {
-                drawDots(ce.Post[0], mMidPoint, ce.CurCount1);
-                drawDots(ce.Post[1], mMidPoint, ce.CurCount2);
-                drawDots(ce.Post[2], mCorner2, ce.CurCount3);
-                drawDots(mCorner2, mMidPoint, ce.CurCount3 + Utils.Distance(ce.Post[2], mCorner2));
+                drawCurrent(ce.Post[0], mMidPoint, ce.CurCount1);
+                drawCurrent(ce.Post[1], mMidPoint, ce.CurCount2);
+                drawCurrent(ce.Post[2], mCorner2, ce.CurCount3);
+                drawCurrent(mCorner2, mMidPoint, ce.CurCount3 + Utils.Distance(ce.Post[2], mCorner2));
             }
             drawPosts();
 

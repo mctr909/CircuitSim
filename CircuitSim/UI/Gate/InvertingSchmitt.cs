@@ -45,12 +45,11 @@ namespace Circuit.UI.Gate {
             var ce = (ElmInvertingSchmitt)Elm;
             drawPosts();
             draw2Leads();
-            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            g.DrawPolygon(gatePoly);
-            g.DrawPolygon(symbolPoly);
-            g.DrawCircle(pcircle, 3);
+            drawPolygon(gatePoly);
+            drawPolygon(symbolPoly);
+            drawCircle(pcircle, 3);
             updateDotCount(ce.Current, ref CurCount);
-            drawDotsB(CurCount);
+            drawCurrentB(CurCount);
         }
 
         public override void SetPoints() {

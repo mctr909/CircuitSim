@@ -43,8 +43,7 @@ namespace Circuit.UI.Output {
             double len = (selected || CirSimForm.DragElm == this || mustShowVoltage()) ? 16 : mLen - 32;
             calcLeads((int)len);
 
-            drawLeadA();
-            drawLeadB();
+            draw2Leads();
 
             if (this == CirSimForm.PlotXElm) {
                 drawCenteredLText("X", mCenter, true);

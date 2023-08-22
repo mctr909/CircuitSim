@@ -86,22 +86,19 @@ namespace Circuit.UI.Passive {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmCapacitor)Elm;
-            var lineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
 
             setBbox(HS);
-            drawLeadA();
-            drawLeadB();
+            draw2Leads();
 
             /* draw first lead and plate */
-            g.FillPolygon(lineColor, mPlate1);
-
+            fillPolygon(mPlate1);
             /* draw second lead and plate */
-            g.FillPolygon(lineColor, mPlate2);
+            fillPolygon(mPlate2);
 
             updateDotCount();
             if (CirSimForm.DragElm != this) {
-                drawDotsA(CurCount);
-                drawDotsB(CurCount);
+                drawCurrentA(CurCount);
+                drawCurrentB(CurCount);
             }
             drawPosts();
 

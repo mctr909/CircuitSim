@@ -75,11 +75,9 @@ namespace Circuit.UI.Active {
                 return;
             }
 
-            drawLead(Elm.Post[0], mLedLead1);
-            drawLead(mLedLead2, Elm.Post[1]);
-
-            g.DrawColor = CustomGraphics.LineColor;
-            g.DrawCircle(mLedCenter, CR);
+            drawLine(Elm.Post[0], mLedLead1);
+            drawLine(mLedLead2, Elm.Post[1]);
+            drawCircle(mLedCenter, CR);
 
             var ce = (ElmDiode)Elm;
 
@@ -99,8 +97,8 @@ namespace Circuit.UI.Active {
 
             setBbox(CR_INNER);
             updateDotCount();
-            drawDots(Elm.Post[0], mLedLead1, CurCount);
-            drawDots(Elm.Post[1], mLedLead2, -CurCount);
+            drawCurrent(Elm.Post[0], mLedLead1, CurCount);
+            drawCurrent(Elm.Post[1], mLedLead2, -CurCount);
             drawPosts();
         }
 

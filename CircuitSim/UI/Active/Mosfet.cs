@@ -144,39 +144,38 @@ namespace Circuit.UI.Active {
             setBbox(HS);
 
             var ce = (ElmMosfet)Elm;
-            var lineColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
 
             /* draw line connecting terminals to source/gate/drain */
-            drawLead(mPosS[1], mPosS[3]);
-            drawLead(mPosD[1], mPosD[3]);
-            drawLead(mPosS[3], mPosS[0]);
-            drawLead(mPosD[3], mPosD[0]);
-            drawLead(Elm.Post[0], mGate);
+            drawLine(mPosS[1], mPosS[3]);
+            drawLine(mPosD[1], mPosD[3]);
+            drawLine(mPosS[3], mPosS[0]);
+            drawLine(mPosD[3], mPosD[0]);
+            drawLine(Elm.Post[0], mGate);
 
             /* draw bulk connection */
-            drawLead(ce.Pnp == -1 ? mPosD[0] : mPosS[0], mPosB[0]);
-            drawLead(mPosB[0], mPosB[1]);
+            drawLine(ce.Pnp == -1 ? mPosD[0] : mPosS[0], mPosB[0]);
+            drawLine(mPosB[0], mPosB[1]);
 
             /* draw source/drain */
             for (int i = 0; i != mPolyConn.Length; i++) {
-                g.FillPolygon(lineColor, mPolyConn[i]);
+                fillPolygon(mPolyConn[i]);
             }
 
             /* draw arrow */
-            g.FillPolygon(lineColor, mArrowPoly);
+            fillPolygon(mArrowPoly);
 
             /* draw gate */
-            g.FillPolygon(lineColor, mPolyGate);
+            fillPolygon(mPolyGate);
 
             /* draw current */
             updateDotCount(-ce.Current, ref CurCount);
             updateDotCount(ce.DiodeCurrent1, ref mCurcountBody1);
             updateDotCount(ce.DiodeCurrent2, ref mCurcountBody2);
-            drawDots(mPosS[0], mPosS[1], CurCount);
-            drawDots(mPosD[1], mPosD[0], CurCount);
-            drawDots(mPosS[1], mPosD[1], CurCount);
-            drawDots(mPosS[0], mPosB[0], -mCurcountBody1);
-            drawDots(mPosB[0], mPosD[0], mCurcountBody2);
+            drawCurrent(mPosS[0], mPosS[1], CurCount);
+            drawCurrent(mPosD[1], mPosD[0], CurCount);
+            drawCurrent(mPosS[1], mPosD[1], CurCount);
+            drawCurrent(mPosS[0], mPosB[0], -mCurcountBody1);
+            drawCurrent(mPosB[0], mPosD[0], mCurcountBody2);
 
             drawPosts();
 

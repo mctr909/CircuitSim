@@ -95,28 +95,27 @@ namespace Circuit.UI.Passive {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmTransformer)Elm;
 
-            drawLead(ce.Post[0], mPtCoil[0]);
-            drawLead(ce.Post[1], mPtCoil[1]);
-            drawLead(ce.Post[2], mPtCoil[2]);
-            drawLead(ce.Post[3], mPtCoil[3]);
+            drawLine(ce.Post[0], mPtCoil[0]);
+            drawLine(ce.Post[1], mPtCoil[1]);
+            drawLine(ce.Post[2], mPtCoil[2]);
+            drawLine(ce.Post[3], mPtCoil[3]);
 
             drawCoil(mPtCoil[0], mPtCoil[2], ce.Volts[ElmTransformer.PRI_T], ce.Volts[ElmTransformer.PRI_B], 90 * mDsign);
             drawCoil(mPtCoil[1], mPtCoil[3], ce.Volts[ElmTransformer.SEC_T], ce.Volts[ElmTransformer.SEC_B], -90 * mDsign * ce.Polarity);
 
-            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            g.DrawLine(mPtCore[0], mPtCore[2]);
-            g.DrawLine(mPtCore[1], mPtCore[3]);
+            drawLine(mPtCore[0], mPtCore[2]);
+            drawLine(mPtCore[1], mPtCore[3]);
             if (mDots != null) {
-                g.DrawCircle(mDots[0], 2.5f);
-                g.DrawCircle(mDots[1], 2.5f);
+                drawCircle(mDots[0], 2.5f);
+                drawCircle(mDots[1], 2.5f);
             }
 
             updateDotCount(ce.Currents[0], ref ce.CurCounts[0]);
             updateDotCount(ce.Currents[1], ref ce.CurCounts[1]);
             for (int i = 0; i != 2; i++) {
-                drawDots(ce.Post[i], mPtCoil[i], ce.CurCounts[i]);
-                drawDots(mPtCoil[i], mPtCoil[i + 2], ce.CurCounts[i]);
-                drawDots(ce.Post[i + 2], mPtCoil[i + 2], -ce.CurCounts[i]);
+                drawCurrent(ce.Post[i], mPtCoil[i], ce.CurCounts[i]);
+                drawCurrent(mPtCoil[i], mPtCoil[i + 2], ce.CurCounts[i]);
+                drawCurrent(ce.Post[i + 2], mPtCoil[i + 2], -ce.CurCounts[i]);
             }
 
             drawPosts();

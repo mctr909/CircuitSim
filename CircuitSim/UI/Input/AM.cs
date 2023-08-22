@@ -43,11 +43,11 @@ namespace Circuit.UI.Input {
 
             string s = "AM";
             drawCenteredText(s, DumpInfo.P2.X, DumpInfo.P2.Y, true);
-            drawWaveform(g, Elm.Post[1]);
+            drawWaveform(Elm.Post[1]);
             drawPosts();
             updateDotCount(-ce.Current, ref CurCount);
             if (CirSimForm.DragElm != this) {
-                drawDotsA(CurCount);
+                drawCurrentA(CurCount);
             }
         }
 
@@ -103,9 +103,8 @@ namespace Circuit.UI.Input {
             }
         }
 
-        void drawWaveform(CustomGraphics g, Point p) {
-            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            g.DrawCircle(p, SIZE / 2);
+        void drawWaveform(Point p) {
+            drawCircle(p, SIZE / 2);
             DumpInfo.AdjustBbox(p.X - SIZE, p.Y - SIZE, p.X + SIZE, p.Y + SIZE);
         }
     }

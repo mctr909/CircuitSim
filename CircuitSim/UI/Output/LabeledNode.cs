@@ -42,7 +42,6 @@ namespace Circuit.UI.Output {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmLabeledNode)Elm;
             drawLeadA();
-            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
             var str = ce.Text;
             var lineOver = false;
             if (str.StartsWith("/")) {
@@ -55,11 +54,11 @@ namespace Circuit.UI.Output {
                 if (lineOver) {
                     int ya = DumpInfo.P2.Y - asc;
                     int sw = (int)g.GetTextSize(str).Width;
-                    g.DrawLine(DumpInfo.P2.X - sw / 2, ya, DumpInfo.P2.X + sw / 2, ya);
+                    drawLine(DumpInfo.P2.X - sw / 2, ya, DumpInfo.P2.X + sw / 2, ya);
                 }
             }
             updateDotCount(ce.Current, ref CurCount);
-            drawDotsA(CurCount);
+            drawCurrentA(CurCount);
             drawPosts();
         }
 

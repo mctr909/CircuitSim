@@ -96,11 +96,8 @@ namespace Circuit.UI.Passive {
             var ce = (ElmSwitch)Elm;
             setBbox(OPEN_HS);
             draw2Leads();
-            var fillColorBackup = g.FillColor;
-            g.FillColor = CustomGraphics.PostColor;
-            g.FillCircle(mLead1.X, mLead1.Y, 2.5f);
-            g.FillCircle(mLead2.X, mLead2.Y, 2.5f);
-            g.FillColor = fillColorBackup;
+            g.DrawPost(mLead1);
+            g.DrawPost(mLead2);
             /* draw switch */
             var p2 = new Point();
             if (ce.Position == 0) {
@@ -109,7 +106,7 @@ namespace Circuit.UI.Passive {
             } else {
                 interpLead(ref p2, (OPEN_HS - 2.0) / OPEN_HS, OPEN_HS);
             }
-            g.DrawLine(mLead1, p2);
+            drawLine(mLead1, p2);
             drawPosts();
         }
 

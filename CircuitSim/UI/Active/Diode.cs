@@ -88,14 +88,13 @@ namespace Circuit.UI.Active {
 
             draw2Leads();
 
-            var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             /* draw arrow thingy */
-            g.FillPolygon(color, mPoly);
+            fillPolygon(mPoly);
             /* draw thing arrow is pointing to */
             if (mCathode.Length < 4) {
-                drawLead(mCathode[0], mCathode[1]);
+                drawLine(mCathode[0], mCathode[1]);
             } else {
-                g.FillPolygon(color, mCathode);
+                fillPolygon(mCathode);
             }
         }
 

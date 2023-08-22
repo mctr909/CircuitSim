@@ -131,10 +131,10 @@ namespace Circuit.UI.Input {
                 setBbox(hs);
 
                 interpLeadAB(ref mPs1, ref mPs2, 0, hs * 0.5);
-                drawLead(mPs1, mPs2);
+                drawLine(mPs1, mPs2);
 
                 interpLeadAB(ref mPs1, ref mPs2, 1, hs);
-                drawLead(mPs1, mPs2);
+                drawLine(mPs1, mPs2);
 
                 string s = Utils.UnitText(elm.MaxVoltage, "V");
                 g.DrawRightText(s, mTextPos.X, mTextPos.Y);
@@ -156,10 +156,10 @@ namespace Circuit.UI.Input {
 
             if (CirSimForm.DragElm != this) {
                 if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
-                    drawDots(Elm.Post[0], Elm.Post[1], CurCount);
+                    drawCurrent(Elm.Post[0], Elm.Post[1], CurCount);
                 } else {
-                    drawDotsA(CurCount);
-                    drawDotsB(CurCount);
+                    drawCurrentA(CurCount);
+                    drawCurrentB(CurCount);
                 }
             }
             drawPosts();
@@ -171,8 +171,7 @@ namespace Circuit.UI.Input {
             var elm = (ElmVoltage)Elm;
 
             if (elm.WaveForm != ElmVoltage.WAVEFORM.NOISE) {
-                g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-                g.DrawCircle(p, BODY_LEN / 2);
+                drawCircle(p, BODY_LEN / 2);
             }
 
             DumpInfo.AdjustBbox(
@@ -185,8 +184,6 @@ namespace Circuit.UI.Input {
             w = Math.Max(x - h + 1, Math.Min(x + h - 1, w));
             var wh = (int)(h * elm.DutyCycle - h + x);
 
-            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-
             switch (elm.WaveForm) {
             case ElmVoltage.WAVEFORM.DC: {
                 break;
@@ -197,55 +194,55 @@ namespace Circuit.UI.Input {
             }
             case ElmVoltage.WAVEFORM.SQUARE:
                 if (elm.MaxVoltage < 0) {
-                    g.DrawLine(x - h, y + h, x - h, y);
-                    g.DrawLine(x - h, y + h, w, y + h);
-                    g.DrawLine(w, y + h, w, y - h);
-                    g.DrawLine(x + h, y - h, w, y - h);
-                    g.DrawLine(x + h, y, x + h, y - h);
+                    drawLine(x - h, y + h, x - h, y);
+                    drawLine(x - h, y + h, w, y + h);
+                    drawLine(w, y + h, w, y - h);
+                    drawLine(x + h, y - h, w, y - h);
+                    drawLine(x + h, y, x + h, y - h);
                 } else {
-                    g.DrawLine(x - h, y - h, x - h, y);
-                    g.DrawLine(x - h, y - h, w, y - h);
-                    g.DrawLine(w, y - h, w, y + h);
-                    g.DrawLine(x + h, y + h, w, y + h);
-                    g.DrawLine(x + h, y, x + h, y + h);
+                    drawLine(x - h, y - h, x - h, y);
+                    drawLine(x - h, y - h, w, y - h);
+                    drawLine(w, y - h, w, y + h);
+                    drawLine(x + h, y + h, w, y + h);
+                    drawLine(x + h, y, x + h, y + h);
                 }
                 break;
             case ElmVoltage.WAVEFORM.PULSE_MONOPOLE:
                 if (elm.MaxVoltage < 0) {
-                    g.DrawLine(x + h, y, x + h, y);
-                    g.DrawLine(x + h, y, w, y);
-                    g.DrawLine(w, y + h, w, y);
-                    g.DrawLine(x - h, y + h, w, y + h);
-                    g.DrawLine(x - h, y + h, x - h, y);
+                    drawLine(x + h, y, x + h, y);
+                    drawLine(x + h, y, w, y);
+                    drawLine(w, y + h, w, y);
+                    drawLine(x - h, y + h, w, y + h);
+                    drawLine(x - h, y + h, x - h, y);
                 } else {
-                    g.DrawLine(x - h, y - h, x - h, y);
-                    g.DrawLine(x - h, y - h, w, y - h);
-                    g.DrawLine(w, y - h, w, y);
-                    g.DrawLine(x + h, y, w, y);
-                    g.DrawLine(x + h, y, x + h, y);
+                    drawLine(x - h, y - h, x - h, y);
+                    drawLine(x - h, y - h, w, y - h);
+                    drawLine(w, y - h, w, y);
+                    drawLine(x + h, y, w, y);
+                    drawLine(x + h, y, x + h, y);
                 }
                 break;
             case ElmVoltage.WAVEFORM.PULSE_DIPOLE:
-                g.DrawLine(x - h, y - h, x - h, y);
-                g.DrawLine(x - h, y - h, wh, y - h);
-                g.DrawLine(wh, y - h, wh, y);
-                g.DrawLine(wh, y, x, y);
-                g.DrawLine(x, y, x, y + h);
-                g.DrawLine(x, y + h, wh + h, y + h);
-                g.DrawLine(wh + h, y + h, wh + h, y);
-                g.DrawLine(wh + h, y, x + h, y);
+                drawLine(x - h, y - h, x - h, y);
+                drawLine(x - h, y - h, wh, y - h);
+                drawLine(wh, y - h, wh, y);
+                drawLine(wh, y, x, y);
+                drawLine(x, y, x, y + h);
+                drawLine(x, y + h, wh + h, y + h);
+                drawLine(wh + h, y + h, wh + h, y);
+                drawLine(wh + h, y, x + h, y);
                 break;
             case ElmVoltage.WAVEFORM.SAWTOOTH:
-                g.DrawLine(x, y - h, x - h, y);
-                g.DrawLine(x, y - h, x, y + h);
-                g.DrawLine(x, y + h, x + h, y);
+                drawLine(x, y - h, x - h, y);
+                drawLine(x, y - h, x, y + h);
+                drawLine(x, y + h, x + h, y);
                 break;
             case ElmVoltage.WAVEFORM.TRIANGLE: {
                 int xl = 5;
-                g.DrawLine(x - xl * 2, y, x - xl, y - h);
-                g.DrawLine(x - xl, y - h, x, y);
-                g.DrawLine(x, y, x + xl, y + h);
-                g.DrawLine(x + xl, y + h, x + xl * 2, y);
+                drawLine(x - xl * 2, y, x - xl, y - h);
+                drawLine(x - xl, y - h, x, y);
+                drawLine(x, y, x + xl, y + h);
+                drawLine(x + xl, y + h, x + xl * 2, y);
                 break;
             }
             case ElmVoltage.WAVEFORM.SIN: {
@@ -256,7 +253,7 @@ namespace Circuit.UI.Input {
                 for (var i = -xl; i <= xl; i++) {
                     var yy = y + (int)(.95 * Math.Sin(i * Math.PI / xl + ph) * h);
                     if (i != -xl) {
-                        g.DrawLine(x0, y0, x + i, yy);
+                        drawLine(x0, y0, x + i, yy);
                     }
                     x0 = x + i;
                     y0 = yy;

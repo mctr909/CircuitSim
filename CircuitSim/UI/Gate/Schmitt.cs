@@ -18,11 +18,10 @@ namespace Circuit.UI.Gate {
             var ce = (ElmSchmitt)Elm;
             drawPosts();
             draw2Leads();
-            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            g.DrawPolygon(gatePoly);
-            g.DrawPolygon(symbolPoly);
+            drawPolygon(gatePoly);
+            drawPolygon(symbolPoly);
             updateDotCount(ce.Current, ref CurCount);
-            drawDotsB(CurCount);
+            drawCurrentB(CurCount);
         }
 
         public override void SetPoints() {
