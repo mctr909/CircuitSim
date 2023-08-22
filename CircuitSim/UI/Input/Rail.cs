@@ -45,7 +45,7 @@ namespace Circuit.UI.Input {
             setBbox(BODY_LEN);
 
             drawLeadA();
-            drawRail(g);
+            drawRail();
             drawPosts();
             updateDotCount(-Elm.Current, ref CurCount);
             if (CirSimForm.DragElm != this) {
@@ -53,7 +53,7 @@ namespace Circuit.UI.Input {
             }
         }
 
-        void drawRail(CustomGraphics g) {
+        void drawRail() {
             var elm = (ElmVoltage)Elm;
             if (elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE && (DumpInfo.Flags & FLAG_CLOCK) != 0) {
                 drawCenteredText("CLK", DumpInfo.P2.X, DumpInfo.P2.Y, true);
@@ -71,7 +71,7 @@ namespace Circuit.UI.Input {
                 }
                 drawCenteredText(s, DumpInfo.P2.X, DumpInfo.P2.Y, true);
             } else {
-                drawWaveform(g, Elm.Post[1]);
+                drawWaveform(Elm.Post[1]);
             }
         }
     }

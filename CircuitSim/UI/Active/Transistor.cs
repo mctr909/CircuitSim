@@ -136,19 +136,18 @@ namespace Circuit.UI.Active {
             fillPolygon(mArrowPoly);
             /* draw base */
             drawLine(Elm.Post[0], mTbase);
-
-            /* draw dots */
-            updateDotCount(-ce.Ib, ref mCurCountB);
-            drawCurrent(mTbase, Elm.Post[0], mCurCountB);
-            updateDotCount(-ce.Ic, ref mCurCountC);
-            drawCurrent(mPosC[0], mPosC[2], mCurCountC);
-            updateDotCount(-ce.Ie, ref mCurCountE);
-            drawCurrent(mPosE[0], mPosE[2], mCurCountE);
-
             /* draw base rectangle */
             fillPolygon(mRectPoly);
 
             drawPosts();
+
+            /* draw dots */
+            updateDotCount(-ce.Ib, ref mCurCountB);
+            updateDotCount(-ce.Ic, ref mCurCountC);
+            updateDotCount(-ce.Ie, ref mCurCountE);
+            drawCurrent(mTbase, Elm.Post[0], mCurCountB);
+            drawCurrent(mPosE[1], mTbase, mCurCountB);
+            drawCurrent(mPosE[1], mPosC[1], mCurCountC);
 
             if (ControlPanel.ChkShowName.Checked) {
                 if (mVertical) {

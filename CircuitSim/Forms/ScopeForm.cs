@@ -156,7 +156,7 @@ namespace Circuit.Forms {
                         ;
                     int badnodes = Circuit.BadConnectionList.Count;
                     if (badnodes > 0) {
-                        info[infoIdx++] = badnodes + ((badnodes == 1) ? " bad connection" : " bad connections");
+                        info[infoIdx++] = badnodes + " bad connection";
                     }
                 }
 

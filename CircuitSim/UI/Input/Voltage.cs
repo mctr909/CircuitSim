@@ -141,7 +141,7 @@ namespace Circuit.UI.Input {
             } else {
                 setBbox(BODY_LEN);
                 interpLead(ref mPs1, 0.5);
-                drawWaveform(g, mPs1);
+                drawWaveform(mPs1);
                 string inds;
                 if (0 < elm.Bias || (0 == elm.Bias &&
                     (ElmVoltage.WAVEFORM.PULSE_MONOPOLE == elm.WaveForm || ElmVoltage.WAVEFORM.PULSE_DIPOLE == elm.WaveForm))) {
@@ -165,7 +165,7 @@ namespace Circuit.UI.Input {
             drawPosts();
         }
 
-        protected void drawWaveform(CustomGraphics g, Point p) {
+        protected void drawWaveform(Point p) {
             var x = p.X;
             var y = p.Y;
             var elm = (ElmVoltage)Elm;

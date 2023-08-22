@@ -160,24 +160,19 @@ namespace Circuit.UI.Active {
             for (int i = 0; i != mPolyConn.Length; i++) {
                 fillPolygon(mPolyConn[i]);
             }
-
+            /* draw gate */
+            fillPolygon(mPolyGate);
             /* draw arrow */
             fillPolygon(mArrowPoly);
 
-            /* draw gate */
-            fillPolygon(mPolyGate);
+            drawPosts();
 
             /* draw current */
             updateDotCount(-ce.Current, ref CurCount);
             updateDotCount(ce.DiodeCurrent1, ref mCurcountBody1);
             updateDotCount(ce.DiodeCurrent2, ref mCurcountBody2);
-            drawCurrent(mPosS[0], mPosS[1], CurCount);
-            drawCurrent(mPosD[1], mPosD[0], CurCount);
-            drawCurrent(mPosS[1], mPosD[1], CurCount);
-            drawCurrent(mPosS[0], mPosB[0], -mCurcountBody1);
-            drawCurrent(mPosB[0], mPosD[0], mCurcountBody2);
-
-            drawPosts();
+            drawCurrent(mPosS[0], mPosB[0], CurCount - mCurcountBody1);
+            drawCurrent(mPosB[0], mPosD[0], CurCount + mCurcountBody2);
 
             if (ControlPanel.ChkShowName.Checked) {
                 if (mVertical) {
