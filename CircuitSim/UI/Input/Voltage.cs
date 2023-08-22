@@ -189,7 +189,7 @@ namespace Circuit.UI.Input {
                 break;
             }
             case ElmVoltage.WAVEFORM.NOISE: {
-                drawCenteredText("Noise", x, y, true);
+                drawCenteredText("Noise", p, true);
                 break;
             }
             case ElmVoltage.WAVEFORM.SQUARE:

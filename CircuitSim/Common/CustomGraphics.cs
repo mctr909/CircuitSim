@@ -18,8 +18,7 @@ namespace Circuit {
         };
         static readonly StringFormat mAlignCenterV = new StringFormat() {
             Alignment = StringAlignment.Center,
-            LineAlignment = StringAlignment.Near,
-            FormatFlags = StringFormatFlags.DirectionVertical
+            LineAlignment = StringAlignment.Near
         };
 
         protected static Font mTextFontL = new Font("Arial", 11.0f);
@@ -136,16 +135,20 @@ namespace Circuit {
             mG.DrawString(s, mTextFont, mTextBrush, x, y, mAlignRight);
         }
 
-        public virtual void DrawCenteredText(string s, int x, int y) {
-            mG.DrawString(s, mTextFont, mTextBrush, x, y, mAlignCenter);
+        public virtual void DrawCenteredText(string s, Point p) {
+            mG.DrawString(s, mTextFont, mTextBrush, p.X, p.Y, mAlignCenter);
         }
 
-        public virtual void DrawCenteredLText(string s, int x, int y) {
-            mG.DrawString(s, mTextFontL, mTextBrush, x, y + 1, mAlignCenter);
+        public virtual void DrawCenteredLText(string s, Point p) {
+            mG.DrawString(s, mTextFontL, mTextBrush, p.X, p.Y + 1, mAlignCenter);
         }
 
-        public virtual void DrawCenteredVText(string s, int x, int y) {
-            mG.DrawString(s, mTextFont, mTextBrush, x, y, mAlignCenterV);
+        public virtual void DrawCenteredVText(string s, Point p) {
+            mG.TranslateTransform(p.X, p.Y);
+            mG.RotateTransform(-90);
+            mG.DrawString(s, mTextFont, mTextBrush, 0, 0, mAlignCenterV);
+            mG.RotateTransform(90);
+            mG.TranslateTransform(-p.X, -p.Y);
         }
 
         public virtual void DrawPost(PointF p) {

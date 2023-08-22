@@ -48,7 +48,7 @@ namespace Circuit.UI.Output {
                 lineOver = true;
                 str = str.Substring(1);
             }
-            drawCenteredText(str, DumpInfo.P2.X, DumpInfo.P2.Y, true);
+            drawCenteredText(str, DumpInfo.P2, true);
             if (lineOver) {
                 int asc = (int)(CustomGraphics.TextSize + 0.5);
                 if (lineOver) {

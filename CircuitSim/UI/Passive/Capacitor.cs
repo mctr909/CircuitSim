@@ -73,11 +73,11 @@ namespace Circuit.UI.Passive {
 
         void setTextPos() {
             if (mHorizontal) {
-                interpPost(ref mValuePos, 0.5, -11 * mDsign);
-                interpPost(ref mNamePos, 0.5, 12 * mDsign);
+                interpPost(ref mValuePos, 0.5, -13 * mDsign);
+                interpPost(ref mNamePos, 0.5, 11 * mDsign);
             } else if (mVertical) {
-                interpPost(ref mValuePos, 0.5, 3 * mDsign);
-                interpPost(ref mNamePos, 0.5, -20 * mDsign);
+                interpPost(ref mValuePos, 0.5, 5 * mDsign);
+                interpPost(ref mNamePos, 0.5, -18 * mDsign);
             } else {
                 interpPost(ref mValuePos, 0.5, 8 * mDsign);
                 interpPost(ref mNamePos, 0.5, -8 * mDsign);

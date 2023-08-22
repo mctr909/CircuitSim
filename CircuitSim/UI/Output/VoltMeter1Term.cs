@@ -25,7 +25,7 @@ namespace Circuit.UI.Output {
             setBbox(1);
             drawLeadA();
             if (mustShowVoltage()) {
-                drawCenteredText(drawValues(), DumpInfo.P2.X, DumpInfo.P2.Y, true);
+                drawCenteredText(drawValues(), DumpInfo.P2, true);
             }
         }
     }

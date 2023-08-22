@@ -57,9 +57,9 @@ namespace Circuit.UI.Output {
                 break;
             }
             if (mVertical) {
-                g.DrawCenteredVText(s, mTextPos.X, mTextPos.Y);
+                g.DrawCenteredVText(s, mTextPos);
             } else {
-                g.DrawCenteredText(s, mTextPos.X, mTextPos.Y);
+                g.DrawCenteredText(s, mTextPos);
             }
             drawPosts();
         }

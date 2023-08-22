@@ -47,7 +47,7 @@ namespace Circuit.UI.Passive {
                 interpPost(ref mNamePos, 0.5, 10 * mDsign);
             } else if (mVertical) {
                 interpPost(ref mValuePos, 0.5, mDsign);
-                interpPost(ref mNamePos, 0.5, -20 * mDsign);
+                interpPost(ref mNamePos, 0.5, -18 * mDsign);
             } else {
                 interpPost(ref mValuePos, 0.5, 8 * mDsign);
                 interpPost(ref mNamePos, 0.5, -8 * mDsign);

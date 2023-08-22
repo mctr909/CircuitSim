@@ -83,16 +83,16 @@ class PDF {
             writeText(s, x, y, GetTextSize(s).Width);
         }
 
-        public override void DrawCenteredText(string s, int x, int y) {
-            writeText(s, x, y, GetTextSize(s).Width * 0.5f);
+        public override void DrawCenteredText(string s, Point p) {
+            writeText(s, p.X, p.Y, GetTextSize(s).Width * 0.5f);
         }
 
-        public override void DrawCenteredLText(string s, int x, int y) {
-            writeTextL(s, x, y, GetTextSizeL(s).Width * 0.5f);
+        public override void DrawCenteredLText(string s, Point p) {
+            writeTextL(s, p.X, p.Y, GetTextSizeL(s).Width * 0.5f);
         }
 
-        public override void DrawCenteredVText(string s, int x, int y) {
-            writeTextV(s, x, y, GetTextSize(s).Width * 0.5f);
+        public override void DrawCenteredVText(string s, Point p) {
+            writeTextV(s, p.X, p.Y, GetTextSize(s).Width * 0.5f);
         }
 
         public override void DrawPost(PointF p) {

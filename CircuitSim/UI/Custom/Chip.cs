@@ -184,7 +184,7 @@ namespace Circuit.UI.Custom {
                         CustomGraphics.TextSize -= 0.5f;
                         continue;
                     }
-                    g.DrawCenteredText(p.text, p.textloc.X, p.textloc.Y);
+                    g.DrawCenteredText(p.text, p.textloc);
                     if (p.lineOver) {
                         int ya = p.textloc.Y;
                         drawLine(p.textloc.X - txtW / 2, ya, p.textloc.X + txtW / 2, ya);

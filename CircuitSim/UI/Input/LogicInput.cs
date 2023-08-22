@@ -43,7 +43,7 @@ namespace Circuit.UI.Input {
             if (isNumeric) {
                 s = "" + ce.Position;
             }
-            drawCenteredLText(s, DumpInfo.P2.X, DumpInfo.P2.Y, true);
+            drawCenteredLText(s, DumpInfo.P2, true);
             drawLeadA();
             updateDotCount();
             drawCurrentA(CurCount);

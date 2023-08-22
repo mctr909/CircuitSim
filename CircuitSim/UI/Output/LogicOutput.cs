@@ -45,7 +45,7 @@ namespace Circuit.UI.Output {
             }
             ce.mValue = s;
             setBbox(Elm.Post[0], mLead1, 0);
-            drawCenteredLText(s, DumpInfo.P2.X, DumpInfo.P2.Y, true);
+            drawCenteredLText(s, DumpInfo.P2, true);
             drawLeadA();
             drawPosts();
         }

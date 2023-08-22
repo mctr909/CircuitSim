@@ -471,13 +471,14 @@ namespace Circuit {
             addElementItem(inputMenuBar, "1端子電圧源(正弦波)", ELEMENTS.RAIL_SIN);
             addElementItem(inputMenuBar, "1端子電圧源(パルス)", ELEMENTS.RAIL);
             inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(inputMenuBar, "定電流源", ELEMENTS.CURRENT);
-            inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(inputMenuBar, "クロック", ELEMENTS.CLOCK);
             addElementItem(inputMenuBar, "スイープ", ELEMENTS.SWEEP);
             addElementItem(inputMenuBar, "ノイズ", ELEMENTS.NOISE);
+            inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(inputMenuBar, "AM発信器", ELEMENTS.OSC_AM);
             addElementItem(inputMenuBar, "FM発信器", ELEMENTS.OSC_FM);
+            inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(inputMenuBar, "定電流源", ELEMENTS.CURRENT);
             mainMenuBar.Items.Add(inputMenuBar);
             #endregion
 

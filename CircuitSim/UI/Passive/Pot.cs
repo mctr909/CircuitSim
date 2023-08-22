@@ -191,7 +191,7 @@ namespace Circuit.UI.Passive {
             }
             if (ControlPanel.ChkShowName.Checked) {
                 if (mVertical) {
-                    g.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
+                    g.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos);
                 } else {
                     g.DrawLeftText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
                 }

@@ -576,36 +576,28 @@ namespace Circuit.UI {
             drawCurrent(mLead2, Elm.Post[1], pos);
         }
 
-        protected void drawCenteredText(string s, int x, int y, bool cx) {
+        protected void drawCenteredText(string s, Point p, bool cx) {
             var fs = Context.GetTextSize(s);
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
             if (cx) {
-                DumpInfo.AdjustBbox(x - w / 2, y - h2, x + w / 2, y + h2);
+                DumpInfo.AdjustBbox(p.X - w / 2, p.Y - h2, p.X + w / 2, p.Y + h2);
             } else {
-                DumpInfo.AdjustBbox(x, y - h2, x + w, y + h2);
+                DumpInfo.AdjustBbox(p.X, p.Y - h2, p.X + w, p.Y + h2);
             }
-            Context.DrawCenteredText(s, x, y);
+            Context.DrawCenteredText(s, p);
         }
 
-        protected void drawCenteredText(string s, Point p, bool cx) {
-            drawCenteredText(s, p.X, p.Y, cx);
-        }
-
-        protected void drawCenteredLText(string s, int x, int y, bool cx) {
+        protected void drawCenteredLText(string s, Point p, bool cx) {
             var fs = Context.GetTextSizeL(s);
             int w = (int)fs.Width;
             int h2 = (int)fs.Height / 2;
             if (cx) {
-                DumpInfo.AdjustBbox(x - w / 2, y - h2, x + w / 2, y + h2);
+                DumpInfo.AdjustBbox(p.X - w / 2, p.Y - h2, p.X + w / 2, p.Y + h2);
             } else {
-                DumpInfo.AdjustBbox(x, y - h2, x + w, y + h2);
+                DumpInfo.AdjustBbox(p.X, p.Y - h2, p.X + w, p.Y + h2);
             }
-            Context.DrawCenteredLText(s, x, y);
-        }
-
-        protected void drawCenteredLText(string s, Point p, bool cx) {
-            drawCenteredLText(s, p.X, p.Y, cx);
+            Context.DrawCenteredLText(s, p);
         }
 
         /// <summary>
@@ -652,9 +644,9 @@ namespace Circuit.UI {
             if (ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.UnitText(value);
                 if (mVertical) {
-                    Context.DrawCenteredVText(s, mValuePos.X, mValuePos.Y);
+                    Context.DrawCenteredVText(s, mValuePos);
                 } else if (mHorizontal) {
-                    Context.DrawCenteredText(s, mValuePos.X, mValuePos.Y);
+                    Context.DrawCenteredText(s, mValuePos);
                 } else {
                     Context.DrawLeftText(s, mValuePos.X, mValuePos.Y);
                 }
@@ -664,9 +656,9 @@ namespace Circuit.UI {
         protected void drawName() {
             if (ControlPanel.ChkShowName.Checked) {
                 if (mVertical) {
-                    Context.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
+                    Context.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos);
                 } else if (mHorizontal) {
-                    Context.DrawCenteredText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
+                    Context.DrawCenteredText(DumpInfo.ReferenceName, mNamePos);
                 } else {
                     Context.DrawRightText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
                 }

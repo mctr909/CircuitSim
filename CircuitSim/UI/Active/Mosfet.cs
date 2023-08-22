@@ -176,9 +176,9 @@ namespace Circuit.UI.Active {
 
             if (ControlPanel.ChkShowName.Checked) {
                 if (mVertical) {
-                    g.DrawCenteredText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
+                    g.DrawCenteredText(DumpInfo.ReferenceName, mNamePos);
                 } else {
-                    g.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
+                    g.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos);
                 }
             }
         }
