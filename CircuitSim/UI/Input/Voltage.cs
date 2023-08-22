@@ -76,6 +76,8 @@ namespace Circuit.UI.Input {
             DumpInfo.ReferenceName = "";
         }
 
+        public Voltage(Point p1, Point p2, int f) : base(p1, p2, f) { }
+
         public Voltage(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new ElmVoltage(st);
             Link.Load(st);
