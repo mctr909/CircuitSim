@@ -13,14 +13,14 @@ namespace Circuit.UI.Active {
         double mCurcountBody1;
         double mCurcountBody2;
 
-        Point mGate;
+        PointF mGate;
         PointF[] mPolyGate;
         PointF[] mArrowPoly;
 
         PointF[][] mPolyConn;
-        Point[] mPosS = new Point[4];
-        Point[] mPosD = new Point[4];
-        Point[] mPosB = new Point[2];
+        PointF[] mPosS = new PointF[4];
+        PointF[] mPosD = new PointF[4];
+        PointF[] mPosB = new PointF[2];
 
         public Mosfet(Point pos, bool pnpflag) : base(pos) {
             Elm = new ElmMosfet(pnpflag);
@@ -67,14 +67,14 @@ namespace Circuit.UI.Active {
             interpPostAB(ref mPosS[1], ref mPosD[1], 1 - 12 / mLen, -hs2);
             interpPostAB(ref mPosS[2], ref mPosD[2], 1 - 12 / mLen, -hs2 * 4 / 3);
 
-            var gate = new Point[2];
+            var gate = new PointF[2];
             interpPostAB(ref gate[0], ref gate[1], 1 - 16 / mLen, hs2 * 0.8);
             Utils.InterpPoint(gate[0], gate[1], ref mGate, .5);
 
             Utils.InterpPoint(mPosS[0], mPosD[0], ref mPosB[0], .5);
             Utils.InterpPoint(mPosS[1], mPosD[1], ref mPosB[1], .5);
 
-            Point a0, a1;
+            PointF a0, a1;
             if (ce.Pnp == 1) {
                 a0 = mPosB[0];
                 a1 = mPosB[1];
@@ -82,7 +82,7 @@ namespace Circuit.UI.Active {
                 a0 = mPosB[1];
                 a1 = mPosB[0];
             }
-            Utils.CreateArrow(a0.X, a0.Y, a1.X, a1.Y, out mArrowPoly, 8, 3);
+            Utils.CreateArrow(a0, a1, out mArrowPoly, 8, 3);
 
             bool enhancement = ce.Vt > 0;
             var posS = mPosS[2];
@@ -122,8 +122,10 @@ namespace Circuit.UI.Active {
 
             setTextPos();
 
-            ce.Post[1] = mPosS[0];
-            ce.Post[2] = mPosD[0];
+            ce.Post[1].X = (int)mPosS[0].X;
+            ce.Post[1].Y = (int)mPosS[0].Y;
+            ce.Post[2].X = (int)mPosD[0].X;
+            ce.Post[2].Y = (int)mPosD[0].Y;
         }
 
         void setTextPos() {

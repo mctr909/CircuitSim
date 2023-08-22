@@ -8,7 +8,7 @@ namespace Circuit.UI.Passive {
         const int OPEN_HS = 8;
         const int BODY_LEN = 24;
 
-        Point[] mSwPoles;
+        PointF[] mSwPoles;
 
         public SwitchMulti(Point pos) : base(pos, 0) {
             Elm = new ElmSwitchMulti();
@@ -38,8 +38,8 @@ namespace Circuit.UI.Passive {
         public override Rectangle GetSwitchRect() {
             var ce = (ElmSwitchMulti)Elm;
             var l1 = new Rectangle(mLead1.X, mLead1.Y, 0, 0);
-            var s0 = new Rectangle(mSwPoles[0].X, mSwPoles[0].Y, 0, 0);
-            var s1 = new Rectangle(mSwPoles[ce.ThrowCount - 1].X, mSwPoles[ce.ThrowCount - 1].Y, 0, 0);
+            var s0 = new Rectangle((int)mSwPoles[0].X, (int)mSwPoles[0].Y, 0, 0);
+            var s1 = new Rectangle((int)mSwPoles[ce.ThrowCount - 1].X, (int)mSwPoles[ce.ThrowCount - 1].Y, 0, 0);
             return Rectangle.Union(l1, Rectangle.Union(s0, s1));
         }
 
@@ -48,7 +48,7 @@ namespace Circuit.UI.Passive {
             var ce = (ElmSwitchMulti)Elm;
             calcLeads(BODY_LEN);
             ce.SwPosts = new Point[ce.ThrowCount];
-            mSwPoles = new Point[2 + ce.ThrowCount];
+            mSwPoles = new PointF[2 + ce.ThrowCount];
             int i;
             for (i = 0; i != ce.ThrowCount; i++) {
                 int hs = -OPEN_HS * (i - (ce.ThrowCount - 1) / 2);

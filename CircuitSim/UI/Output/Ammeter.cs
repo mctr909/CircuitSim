@@ -7,7 +7,7 @@ namespace Circuit.UI.Output {
     class Ammeter : BaseUI {
         const int FLAG_SHOWCURRENT = 1;
 
-        Point mMid;
+        PointF mMid;
         PointF[] mArrowPoly;
         Point mTextPos;
 

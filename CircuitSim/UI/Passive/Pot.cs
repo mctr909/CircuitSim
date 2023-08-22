@@ -16,15 +16,15 @@ namespace Circuit.UI.Passive {
 
         Point mCorner2;
         Point mArrowPoint;
-        Point mMidPoint;
+        PointF mMidPoint;
         Point mArrow1;
         Point mArrow2;
-        Point[] mPs1;
-        Point[] mPs2;
-        Point[] mRect1;
-        Point[] mRect2;
-        Point[] mRect3;
-        Point[] mRect4;
+        PointF[] mPs1;
+        PointF[] mPs2;
+        PointF[] mRect1;
+        PointF[] mRect2;
+        PointF[] mRect3;
+        PointF[] mRect4;
 
         TrackBar mSlider;
         Label mLabel;
@@ -245,8 +245,8 @@ namespace Circuit.UI.Passive {
             /* set zigzag */
             int oy = 0;
             int ny;
-            mPs1 = new Point[SEGMENTS + 1];
-            mPs2 = new Point[SEGMENTS + 1];
+            mPs1 = new PointF[SEGMENTS + 1];
+            mPs2 = new PointF[SEGMENTS + 1];
             for (int i = 0; i != SEGMENTS; i++) {
                 switch (i & 3) {
                 case 0:
@@ -265,10 +265,10 @@ namespace Circuit.UI.Passive {
             }
 
             /* set rectangle */
-            mRect1 = new Point[SEGMENTS + 2];
-            mRect2 = new Point[SEGMENTS + 2];
-            mRect3 = new Point[SEGMENTS + 2];
-            mRect4 = new Point[SEGMENTS + 2];
+            mRect1 = new PointF[SEGMENTS + 2];
+            mRect2 = new PointF[SEGMENTS + 2];
+            mRect3 = new PointF[SEGMENTS + 2];
+            mRect4 = new PointF[SEGMENTS + 2];
             interpLeadAB(ref mRect1[0], ref mRect2[0], 0, HS);
             for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
                 interpLeadAB(ref mRect1[j], ref mRect2[j], i * SEG_F, HS);

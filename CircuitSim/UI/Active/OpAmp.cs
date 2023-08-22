@@ -14,11 +14,11 @@ namespace Circuit.UI.Active {
         const int mOpHeight = 8;
         const int mOpWidth = 16;
 
-        Point[] mTextp;
-        Point[] mTriangle;
+        PointF[] mTextp;
+        PointF[] mTriangle;
         Point mPosOut = new Point();
-        Point[] mPosIn1 = new Point[2];
-        Point[] mPosIn2 = new Point[2];
+        PointF[] mPosIn1 = new PointF[2];
+        PointF[] mPosIn2 = new PointF[2];
 
         public OpAmp(Point pos) : base(pos) {
             mNoDiagonal = true;
@@ -85,23 +85,25 @@ namespace Circuit.UI.Active {
             interpLeadAB(ref mPosIn1[1], ref mPosIn2[1], 0, hs);
             mPosOut = Elm.Post[1];
 
-            var signp = new Point[2];
+            var signp = new PointF[2];
             interpLeadAB(ref signp[0], ref signp[1], 0.2, hs);
-            mTextp = new Point[] {
-                new Point(signp[0].X - 3, signp[0].Y),
-                new Point(signp[0].X + 3, signp[0].Y),
-                new Point(signp[1].X - 3, signp[1].Y),
-                new Point(signp[1].X + 3, signp[1].Y),
-                new Point(signp[1].X, signp[1].Y - 3),
-                new Point(signp[1].X, signp[1].Y + 3)
+            mTextp = new PointF[] {
+                new PointF(signp[0].X - 3, signp[0].Y),
+                new PointF(signp[0].X + 3, signp[0].Y),
+                new PointF(signp[1].X - 3, signp[1].Y),
+                new PointF(signp[1].X + 3, signp[1].Y),
+                new PointF(signp[1].X, signp[1].Y - 3),
+                new PointF(signp[1].X, signp[1].Y + 3)
             };
 
-            var tris = new Point[2];
+            var tris = new PointF[2];
             interpLeadAB(ref tris[0], ref tris[1], 0, hs * 2);
-            mTriangle = new Point[] { tris[0], tris[1], mLead2 };
+            mTriangle = new PointF[] { tris[0], tris[1], mLead2 };
 
-            Elm.Post[0] = mPosIn1[0];
-            Elm.Post[1] = mPosIn2[0];
+            Elm.Post[0].X = (int)mPosIn1[0].X;
+            Elm.Post[0].Y = (int)mPosIn1[0].Y;
+            Elm.Post[1].X = (int)mPosIn2[0].X;
+            Elm.Post[1].Y = (int)mPosIn2[0].Y;
             Elm.Post[2] = mPosOut;
         }
 

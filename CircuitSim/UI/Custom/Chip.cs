@@ -19,8 +19,8 @@ namespace Circuit.UI.Custom {
         int cspc;
         int cspc2;
 
-        Point[] rectPoints;
-        Point[] clockPoints;
+        PointF[] rectPoints;
+        PointF[] clockPoints;
         public int sizeX;
         public int sizeY;
 
@@ -76,7 +76,7 @@ namespace Circuit.UI.Custom {
                     bubblePos = new Point(xa + dax * 10 * mElm.csize, ya + day * 10 * mElm.csize);
                 }
                 if (clock) {
-                    mElm.clockPoints = new Point[3];
+                    mElm.clockPoints = new PointF[3];
                     mElm.clockPoints[0] = new Point(
                         xa + dax * mElm.cspc - dx * mElm.cspc / 2,
                         ya + day * mElm.cspc - dy * mElm.cspc / 2
@@ -223,7 +223,7 @@ namespace Circuit.UI.Custom {
             var r = new Point(x0 - cspc, y0 - cspc);
             int xs = sizeX * cspc2;
             int ys = sizeY * cspc2;
-            rectPoints = new Point[] {
+            rectPoints = new PointF[] {
                 new Point(r.X, r.Y),
                 new Point(r.X + xs, r.Y),
                 new Point(r.X + xs, r.Y + ys),

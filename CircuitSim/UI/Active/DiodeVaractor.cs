@@ -5,8 +5,8 @@ using Circuit.Elements.Active;
 
 namespace Circuit.UI.Active {
     class DiodeVaractor : Diode {
-        Point[] mPlate1;
-        Point[] mPlate2;
+        PointF[] mPlate1;
+        PointF[] mPlate2;
 
         public DiodeVaractor(Point pos) : base(pos) {
             Elm = new ElmDiodeVaractor();
@@ -34,14 +34,14 @@ namespace Circuit.UI.Active {
             var plate11 = (BODY_LEN - 4.0) / BODY_LEN;
             var plate12 = (BODY_LEN - 5.0) / BODY_LEN;
             var plate21 = (BODY_LEN - 1.0) / BODY_LEN;
-            var pa = new Point[2];
+            var pa = new PointF[2];
             interpLeadAB(ref pa[0], ref pa[1], 0, HS);
-            var arrowPoint = new Point();
+            var arrowPoint = new PointF();
             interpLead(ref arrowPoint, plate11);
-            mPoly = new Point[] { pa[0], pa[1], arrowPoint };
+            mPoly = new PointF[] { pa[0], pa[1], arrowPoint };
             // calc plates
-            mPlate1 = new Point[4];
-            mPlate2 = new Point[4];
+            mPlate1 = new PointF[4];
+            mPlate2 = new PointF[4];
             interpLeadAB(ref mPlate1[0], ref mPlate1[1], plate11, HS);
             interpLeadAB(ref mPlate1[3], ref mPlate1[2], plate12, HS);
             interpLeadAB(ref mPlate2[0], ref mPlate2[1], plate21, HS);

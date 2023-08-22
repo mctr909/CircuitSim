@@ -5,9 +5,9 @@ using Circuit.Elements.Gate;
 
 namespace Circuit.UI.Gate {
     class InvertingSchmitt : BaseUI {
-        protected Point[] gatePoly;
-        protected Point[] symbolPoly;
-        Point pcircle;
+        protected PointF[] gatePoly;
+        protected PointF[] symbolPoly;
+        PointF pcircle;
 
         double dlt;
         double dut;
@@ -63,7 +63,7 @@ namespace Circuit.UI.Gate {
             setLead2(0.5 + (ww + 2) / mLen);
             interpPost(ref pcircle, 0.5 + (ww - 2) / mLen);
 
-            gatePoly = new Point[3];
+            gatePoly = new PointF[3];
             interpLeadAB(ref gatePoly[0], ref gatePoly[1], 0, hs);
             interpPost(ref gatePoly[2], 0.5 + (ww - 5) / mLen);
 

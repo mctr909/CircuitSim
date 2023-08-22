@@ -6,8 +6,8 @@ namespace Circuit.UI.Passive {
     class Ground : BaseUI {
         const int BODY_LEN = 8;
 
-        Point mP1;
-        Point mP2;
+        PointF mP1;
+        PointF mP2;
 
         public Ground(Point pos) : base(pos) {
             Elm = new ElmGround();
@@ -30,7 +30,7 @@ namespace Circuit.UI.Passive {
                 drawLine(mP1, mP2);
             }
             doDots();
-            setBbox(Elm.Post[0], mP1, 11);
+            setBbox(Elm.Post[0].X, Elm.Post[0].X, (int)mP1.X, (int)mP1.Y, 11);
             drawPosts();
         }
 

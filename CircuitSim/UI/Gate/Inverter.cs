@@ -5,10 +5,10 @@ using Circuit.Elements.Gate;
 
 namespace Circuit.UI.Gate {
     class Inverter : BaseUI {
-        Point[] mGatePolyEuro;
-        Point[] mGatePolyAnsi;
-        Point mCenter;
-        Point mPcircle;
+        PointF[] mGatePolyEuro;
+        PointF[] mGatePolyAnsi;
+        PointF mCenter;
+        PointF mPcircle;
 
         public Inverter(Point pos) : base(pos) {
             Elm = new ElmInverter();
@@ -39,12 +39,12 @@ namespace Circuit.UI.Gate {
             setLead2(0.5 + (ww + 2) / mLen);
             interpPost(ref mPcircle, 0.5 + (ww - 2) / mLen);
 
-            mGatePolyAnsi = new Point[3];
+            mGatePolyAnsi = new PointF[3];
             interpLeadAB(ref mGatePolyAnsi[0], ref mGatePolyAnsi[1], 0, hs);
             interpPost(ref mGatePolyAnsi[2], 0.5 + (ww - 5) / mLen);
 
-            mGatePolyEuro = new Point[4];
-            var l2 = new Point();
+            mGatePolyEuro = new PointF[4];
+            var l2 = new PointF();
             interpPost(ref l2, 0.5 + (ww - 5) / mLen); /* make room for circle */
             Utils.InterpPoint(mLead1, l2, ref mGatePolyEuro[0], ref mGatePolyEuro[1], 0, hs);
             Utils.InterpPoint(mLead1, l2, ref mGatePolyEuro[3], ref mGatePolyEuro[2], 1, hs);

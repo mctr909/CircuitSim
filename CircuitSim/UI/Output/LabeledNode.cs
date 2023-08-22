@@ -8,7 +8,7 @@ namespace Circuit.UI.Output {
         const int FLAG_INTERNAL = 1;
         const int CircleSize = 17;
 
-        Point mPos;
+        PointF mPos;
 
         public LabeledNode(Point pos) : base(pos) {
             Elm = new ElmLabeledNode();
@@ -36,7 +36,7 @@ namespace Circuit.UI.Output {
                 setLead1(1 - 0.5 * Context.GetTextSize(ce.Text).Width / mLen);
             }
             interpPost(ref mPos, 1 + 11.0 / mLen);
-            setBbox(Elm.Post[0], mPos, CircleSize);
+            setBbox(Elm.Post[0].X, Elm.Post[0].Y, (int)mPos.X, (int)mPos.Y, CircleSize);
         }
 
         public override void Draw(CustomGraphics g) {

@@ -18,14 +18,14 @@ namespace Circuit.UI.Gate {
         protected int mHs2;
         protected int mWw;
 
-        protected Point[] mGatePolyEuro;
-        protected Point[] mGatePolyAnsi;
+        protected PointF[] mGatePolyEuro;
+        protected PointF[] mGatePolyAnsi;
 
-        protected Point mCirclePos;
-        protected Point[] mLinePoints;
+        protected PointF mCirclePos;
+        protected PointF[] mLinePoints;
 
-        Point[] mSchmittPoly;
-        Point[] mInGates;
+        PointF[] mSchmittPoly;
+        PointF[] mInGates;
 
         protected virtual string gateText { get { return null; } }
 
@@ -68,7 +68,7 @@ namespace Circuit.UI.Gate {
             }
             calcLeads(mWw * 2);
             ce.InPosts = new Point[ce.InputCount];
-            mInGates = new Point[ce.InputCount];
+            mInGates = new PointF[ce.InputCount];
             ce.AllocNodes();
             int i0 = -ce.InputCount / 2;
             for (i = 0; i != ce.InputCount; i++, i0++) {
@@ -96,7 +96,7 @@ namespace Circuit.UI.Gate {
                 drawPolygon(mGatePolyAnsi);
             } else {
                 drawPolygon(mGatePolyEuro);
-                var center = new Point();
+                var center = new PointF();
                 interpPost(ref center, 0.5);
                 drawCenteredLText(gateText, center, true);
             }
@@ -161,7 +161,7 @@ namespace Circuit.UI.Gate {
         }
 
         protected void createEuroGatePolygon() {
-            mGatePolyEuro = new Point[4];
+            mGatePolyEuro = new PointF[4];
             interpLeadAB(ref mGatePolyEuro[0], ref mGatePolyEuro[1], 0, mHs2);
             interpLeadAB(ref mGatePolyEuro[3], ref mGatePolyEuro[2], 1, mHs2);
         }

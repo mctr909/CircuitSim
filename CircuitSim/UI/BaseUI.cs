@@ -231,6 +231,11 @@ namespace Circuit.UI {
             p.Y = (int)Math.Floor(Elm.Post[0].Y * (1 - f) + Elm.Post[1].Y * f + 0.5);
         }
 
+        protected void interpPost(ref PointF p, double f) {
+            p.X = (float)(Elm.Post[0].X * (1 - f) + Elm.Post[1].X * f);
+            p.Y = (float)(Elm.Post[0].Y * (1 - f) + Elm.Post[1].Y * f);
+        }
+
         protected void interpPost(ref Point p, double f, double g) {
             var gx = Elm.Post[1].Y - Elm.Post[0].Y;
             var gy = Elm.Post[0].X - Elm.Post[1].X;
@@ -245,7 +250,7 @@ namespace Circuit.UI {
             }
         }
 
-        protected void interpPostAB(ref Point a, ref Point b, double f, double g) {
+        protected void interpPostAB(ref PointF a, ref PointF b, double f, double g) {
             var gx = Elm.Post[1].Y - Elm.Post[0].Y;
             var gy = Elm.Post[0].X - Elm.Post[1].X;
             var r = Math.Sqrt(gx * gx + gy * gy);
@@ -254,19 +259,19 @@ namespace Circuit.UI {
                 b = Elm.Post[1];
             } else {
                 g /= r;
-                a.X = (int)Math.Floor(Elm.Post[0].X * (1 - f) + Elm.Post[1].X * f + g * gx + 0.5);
-                a.Y = (int)Math.Floor(Elm.Post[0].Y * (1 - f) + Elm.Post[1].Y * f + g * gy + 0.5);
-                b.X = (int)Math.Floor(Elm.Post[0].X * (1 - f) + Elm.Post[1].X * f - g * gx + 0.5);
-                b.Y = (int)Math.Floor(Elm.Post[0].Y * (1 - f) + Elm.Post[1].Y * f - g * gy + 0.5);
+                a.X = (float)(Elm.Post[0].X * (1 - f) + Elm.Post[1].X * f + g * gx);
+                a.Y = (float)(Elm.Post[0].Y * (1 - f) + Elm.Post[1].Y * f + g * gy);
+                b.X = (float)(Elm.Post[0].X * (1 - f) + Elm.Post[1].X * f - g * gx);
+                b.Y = (float)(Elm.Post[0].Y * (1 - f) + Elm.Post[1].Y * f - g * gy);
             }
         }
 
-        protected void interpLead(ref Point p, double f) {
-            p.X = (int)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f + 0.5);
-            p.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f + 0.5);
+        protected void interpLead(ref PointF p, double f) {
+            p.X = (float)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f);
+            p.Y = (float)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f);
         }
 
-        protected void interpLead(ref Point p, double f, double g) {
+        protected void interpLead(ref PointF p, double f, double g) {
             var gx = mLead2.Y - mLead1.Y;
             var gy = mLead1.X - mLead2.X;
             var r = Math.Sqrt(gx * gx + gy * gy);
@@ -275,12 +280,12 @@ namespace Circuit.UI {
                 p.Y = mLead1.Y;
             } else {
                 g /= r;
-                p.X = (int)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f + g * gx + 0.5);
-                p.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f + g * gy + 0.5);
+                p.X = (float)(mLead1.X * (1 - f) + mLead2.X * f + g * gx);
+                p.Y = (float)(mLead1.Y * (1 - f) + mLead2.Y * f + g * gy);
             }
         }
 
-        protected void interpLeadAB(ref Point a, ref Point b, double f, double g) {
+        protected void interpLeadAB(ref PointF a, ref PointF b, double f, double g) {
             var gx = mLead2.Y - mLead1.Y;
             var gy = mLead1.X - mLead2.X;
             var r = Math.Sqrt(gx * gx + gy * gy);
@@ -291,10 +296,10 @@ namespace Circuit.UI {
                 b.Y = mLead2.Y;
             } else {
                 g /= r;
-                a.X = (int)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f + g * gx + 0.5);
-                a.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f + g * gy + 0.5);
-                b.X = (int)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f - g * gx + 0.5);
-                b.Y = (int)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f - g * gy + 0.5);
+                a.X = (float)(mLead1.X * (1 - f) + mLead2.X * f + g * gx);
+                a.Y = (float)(mLead1.Y * (1 - f) + mLead2.Y * f + g * gy);
+                b.X = (float)(mLead1.X * (1 - f) + mLead2.X * f - g * gx);
+                b.Y = (float)(mLead1.Y * (1 - f) + mLead2.Y * f - g * gy);
             }
         }
 
@@ -471,7 +476,7 @@ namespace Circuit.UI {
         #endregion
 
         #region [draw method]
-        protected void drawLine(Point a, Point b) {
+        protected void drawLine(PointF a, PointF b) {
             Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawLine(a.X, a.Y, b.X, b.Y);
         }
@@ -481,19 +486,14 @@ namespace Circuit.UI {
             Context.DrawLine(ax, ay, bx, by);
         }
 
-        protected void drawCircle(Point p, float radius) {
+        protected void drawCircle(PointF p, float radius) {
             Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawCircle(p, radius);
         }
 
-        protected void drawPolygon(Point[] p) {
+        protected void drawPolygon(PointF[] p) {
             Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawPolygon(p);
-        }
-
-        protected void fillPolygon(Point[] p) {
-            var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            Context.FillPolygon(color, p);
         }
 
         protected void fillPolygon(PointF[] p) {
@@ -541,7 +541,7 @@ namespace Circuit.UI {
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <param name="pos"></param>
-        protected void drawCurrent(Point a, Point b, double pos) {
+        protected void drawCurrent(PointF a, PointF b, double pos) {
             drawCurrent(a.X, a.Y, b.X, b.Y, pos);
         }
 
@@ -576,26 +576,38 @@ namespace Circuit.UI {
             drawCurrent(mLead2, Elm.Post[1], pos);
         }
 
-        protected void drawCenteredText(string s, Point p, bool cx) {
+        protected void drawCenteredText(string s, PointF p, bool cx) {
             var fs = Context.GetTextSize(s);
-            int w = (int)fs.Width;
-            int h2 = (int)fs.Height / 2;
+            var w = fs.Width;
+            var h2 = fs.Height / 2;
             if (cx) {
-                DumpInfo.AdjustBbox(p.X - w / 2, p.Y - h2, p.X + w / 2, p.Y + h2);
+                DumpInfo.AdjustBbox(
+                    (int)(p.X - w / 2), (int)(p.Y - h2),
+                    (int)(p.X + w / 2), (int)(p.Y + h2)
+                );
             } else {
-                DumpInfo.AdjustBbox(p.X, p.Y - h2, p.X + w, p.Y + h2);
+                DumpInfo.AdjustBbox(
+                    (int)p.X, (int)(p.Y - h2),
+                    (int)(p.X + w), (int)(p.Y + h2)
+                );
             }
             Context.DrawCenteredText(s, p);
         }
 
-        protected void drawCenteredLText(string s, Point p, bool cx) {
+        protected void drawCenteredLText(string s, PointF p, bool cx) {
             var fs = Context.GetTextSizeL(s);
-            int w = (int)fs.Width;
-            int h2 = (int)fs.Height / 2;
+            var w = fs.Width;
+            var h2 = fs.Height / 2;
             if (cx) {
-                DumpInfo.AdjustBbox(p.X - w / 2, p.Y - h2, p.X + w / 2, p.Y + h2);
+                DumpInfo.AdjustBbox(
+                    (int)(p.X - w / 2), (int)(p.Y - h2),
+                    (int)(p.X + w / 2), (int)(p.Y + h2)
+                );
             } else {
-                DumpInfo.AdjustBbox(p.X, p.Y - h2, p.X + w, p.Y + h2);
+                DumpInfo.AdjustBbox(
+                    (int)p.X, (int)(p.Y - h2),
+                    (int)(p.X + w), (int)(p.Y + h2)
+                );
             }
             Context.DrawCenteredLText(s, p);
         }

@@ -135,11 +135,11 @@ namespace Circuit {
             mG.DrawString(s, mTextFont, mTextBrush, x, y, mAlignRight);
         }
 
-        public virtual void DrawCenteredText(string s, Point p) {
+        public virtual void DrawCenteredText(string s, PointF p) {
             mG.DrawString(s, mTextFont, mTextBrush, p.X, p.Y, mAlignCenter);
         }
 
-        public virtual void DrawCenteredLText(string s, Point p) {
+        public virtual void DrawCenteredLText(string s, PointF p) {
             mG.DrawString(s, mTextFontL, mTextBrush, p.X, p.Y + 1, mAlignCenter);
         }
 
@@ -193,7 +193,7 @@ namespace Circuit {
             mG.DrawArc(mPenLine, p.X - md / 2, p.Y - md / 2, md, md, start, sweep);
         }
 
-        public virtual void DrawPolygon(Point[] p) {
+        public virtual void DrawPolygon(PointF[] p) {
             mG.DrawPolygon(mPenLine, p);
         }
 
@@ -201,13 +201,8 @@ namespace Circuit {
             mG.FillRectangle(mPenFill.Brush, x, y, width, height);
         }
 
-        public virtual void FillCircle(int cx, int cy, float radius) {
+        public virtual void FillCircle(float cx, float cy, float radius) {
             mG.FillPie(mPenFill.Brush, cx - radius, cy - radius, radius * 2, radius * 2, 0, 360);
-        }
-
-        public virtual void FillPolygon(Color color, Point[] p) {
-            mPenFill.Color = color;
-            mG.FillPolygon(mPenFill.Brush, p);
         }
 
         public virtual void FillPolygon(Color color, PointF[] p) {

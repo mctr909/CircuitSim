@@ -30,7 +30,7 @@ namespace Circuit.UI.Gate {
              * 11   = right,
              * 12-21= bottom curve,
              * 22   = bottom left */
-            mGatePolyAnsi = new Point[23];
+            mGatePolyAnsi = new PointF[23];
             interpLeadAB(ref mGatePolyAnsi[0], ref mGatePolyAnsi[22], 0, mHs2);
             for (int i = 0; i != 10; i++) {
                 double a = i * .1;

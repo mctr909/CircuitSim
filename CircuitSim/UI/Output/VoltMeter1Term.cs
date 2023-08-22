@@ -18,7 +18,7 @@ namespace Circuit.UI.Output {
                 setLead1(1 - 0.5 * Context.GetTextSize("1.99mV").Width / mLen);
             }
             interpPost(ref mCenter, 1 + 11.0 / mLen);
-            setBbox(Elm.Post[0], mCenter, 0);
+            setBbox(Elm.Post[0].X, Elm.Post[0].Y, (int)mCenter.X, (int)mCenter.Y, 0);
         }
 
         public override void Draw(CustomGraphics g) {

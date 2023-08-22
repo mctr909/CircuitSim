@@ -7,7 +7,7 @@ namespace Circuit.UI.Output {
     class VoltMeter : BaseUI {
         protected const int FLAG_SHOWVOLTAGE = 1;
 
-        protected Point mCenter;
+        protected PointF mCenter;
         Point mPlusPoint;
 
         public VoltMeter(Point pos) : base(pos) {

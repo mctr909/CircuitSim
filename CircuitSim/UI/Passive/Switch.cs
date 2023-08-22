@@ -79,11 +79,11 @@ namespace Circuit.UI.Passive {
         }
 
         public virtual Rectangle GetSwitchRect() {
-            var p1 = new Point();
+            var p1 = new PointF();
             interpLead(ref p1, 0, 24);
             var l1 = new Rectangle(mLead1.X, mLead1.Y, 0, 0);
             var l2 = new Rectangle(mLead2.X, mLead2.Y, 0, 0);
-            var p = new Rectangle(p1.X, p1.Y, 0, 0);
+            var p = new Rectangle((int)p1.X, (int)p1.Y, 0, 0);
             return Rectangle.Union(l1, Rectangle.Union(l2, p));
         }
 
@@ -99,7 +99,7 @@ namespace Circuit.UI.Passive {
             g.DrawPost(mLead1);
             g.DrawPost(mLead2);
             /* draw switch */
-            var p2 = new Point();
+            var p2 = new PointF();
             if (ce.Position == 0) {
                 interpLead(ref p2, 1, 2);
                 doDots();

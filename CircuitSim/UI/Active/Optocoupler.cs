@@ -6,7 +6,7 @@ using Circuit.UI.Custom;
 namespace Circuit.UI.Active {
     class Optocoupler : Composite {
         Point[] mStubs;
-        Point[] mRectPoints;
+        PointF[] mRectPoints;
         PointF[] mArrow1;
         PointF[] mArrow2;
 
@@ -48,7 +48,7 @@ namespace Circuit.UI.Active {
             int sizeY = 2;
             int xs = (int)(sizeX * ce.mCspc2);
             int ys = sizeY * ce.mCspc2 - ce.mCspc - 3;
-            mRectPoints = new Point[] {
+            mRectPoints = new PointF[] {
                 new Point(r.X, r.Y + 3),
                 new Point(r.X + xs, r.Y + 3),
                 new Point(r.X + xs, r.Y + ys),

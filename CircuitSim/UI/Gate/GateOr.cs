@@ -31,9 +31,9 @@ namespace Circuit.UI.Gate {
              * 16    = right,
              * 17-32 = bottom curve,
              * 33-39 = left curve */
-            mGatePolyAnsi = new Point[40];
+            mGatePolyAnsi = new PointF[40];
             if (this is GateXor) {
-                mLinePoints = new Point[7];
+                mLinePoints = new PointF[7];
             }
             for (int i = 0; i != 16; i++) {
                 double a = i / 16.0;

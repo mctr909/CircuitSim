@@ -83,11 +83,11 @@ class PDF {
             writeText(s, x, y, GetTextSize(s).Width);
         }
 
-        public override void DrawCenteredText(string s, Point p) {
+        public override void DrawCenteredText(string s, PointF p) {
             writeText(s, p.X, p.Y, GetTextSize(s).Width * 0.5f);
         }
 
-        public override void DrawCenteredLText(string s, Point p) {
+        public override void DrawCenteredLText(string s, PointF p) {
             writeTextL(s, p.X, p.Y, GetTextSizeL(s).Width * 0.5f);
         }
 
@@ -125,7 +125,7 @@ class PDF {
             DrawLine(x0, y1, x0, y0);
         }
 
-        public override void DrawPolygon(Point[] poly) {
+        public override void DrawPolygon(PointF[] poly) {
             var p = poly[0];
             writeM(p.X, p.Y);
             for (int i = 1; i < poly.Length; i++) {
@@ -168,17 +168,6 @@ class PDF {
             writeLF(x, y);
         }
 
-        public override void FillPolygon(Color color, Point[] poly) {
-            var p = poly[0];
-            writeM(p.X, p.Y);
-            for (int i = 1; i < poly.Length; i++) {
-                p = poly[i];
-                writeL(p);
-            }
-            p = poly[0];
-            writeLF(p);
-        }
-
         public override void FillPolygon(Color color, PointF[] poly) {
             var p = poly[0];
             writeM(p.X, p.Y);
@@ -190,7 +179,7 @@ class PDF {
             writeLF(p);
         }
 
-        public override void FillCircle(int cx, int cy, float radius) {
+        public override void FillCircle(float cx, float cy, float radius) {
             fillCircleF(cx, cy, radius);
         }
 

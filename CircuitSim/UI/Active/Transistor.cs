@@ -15,12 +15,12 @@ namespace Circuit.UI.Active {
         double mCurCountE;
         double mCurCountB;
 
-        Point mTbase;
+        PointF mTbase;
 
-        Point[] mRectPoly;
+        PointF[] mRectPoly;
         PointF[] mArrowPoly;
-        Point[] mPosC = new Point[3];
-        Point[] mPosE = new Point[3];
+        PointF[] mPosC = new PointF[3];
+        PointF[] mPosE = new PointF[3];
 
         public Transistor(Point pos, bool pnpflag) : base(pos) {
             Elm = new ElmTransistor(pnpflag);
@@ -75,7 +75,7 @@ namespace Circuit.UI.Active {
             interpPostAB(ref mPosC[2], ref mPosE[2], 1, hs2);
 
             /* calc rectangle edges */
-            var rect = new Point[4];
+            var rect = new PointF[4];
             interpPostAB(ref rect[0], ref rect[1], 1 - BODY_LEN / mLen, HS);
             interpPostAB(ref rect[2], ref rect[3], 1 - (BODY_LEN - BASE_THICK) / mLen, HS);
 
@@ -90,7 +90,7 @@ namespace Circuit.UI.Active {
             }
 
             /* rectangle */
-            mRectPoly = new Point[] { rect[0], rect[2], rect[3], rect[1] };
+            mRectPoly = new PointF[] { rect[0], rect[2], rect[3], rect[1] };
 
             /* arrow */
             if (ce.NPN == 1) {
@@ -102,8 +102,10 @@ namespace Circuit.UI.Active {
             }
             setTextPos();
 
-            ce.Post[1] = mPosC[2];
-            ce.Post[2] = mPosE[2];
+            ce.Post[1].X = (int)mPosC[2].X;
+            ce.Post[1].Y = (int)mPosC[2].Y;
+            ce.Post[2].X = (int)mPosE[2].X;
+            ce.Post[2].Y = (int)mPosE[2].Y;
         }
 
         void setTextPos() {

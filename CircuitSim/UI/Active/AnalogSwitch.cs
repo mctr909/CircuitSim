@@ -10,7 +10,7 @@ namespace Circuit.UI.Active {
         const int OPEN_HS = 16;
         const int BODY_LEN = 24;
 
-        Point mPs;
+        PointF mPs;
         Point mLead3;
 
         public AnalogSwitch(Point pos) : base(pos) {
@@ -53,7 +53,7 @@ namespace Circuit.UI.Active {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(BODY_LEN);
-            mPs = new Point();
+            mPs = new PointF();
             interpPost(ref ((ElmAnalogSwitch)Elm).Post[2], 0.5, -OPEN_HS);
             interpPost(ref mLead3, 0.5, -OPEN_HS / 2);
         }

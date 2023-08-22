@@ -11,8 +11,8 @@ namespace Circuit.UI.Active {
         protected const int HS = 5;
         protected int BODY_LEN = 9;
 
-        protected Point[] mPoly;
-        protected Point[] mCathode;
+        protected PointF[] mPoly;
+        protected PointF[] mCathode;
 
         protected List<DiodeModel> mModels;
         protected bool mCustomModelUI;
@@ -57,12 +57,12 @@ namespace Circuit.UI.Active {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(BODY_LEN);
-            mCathode = new Point[4];
+            mCathode = new PointF[4];
             interpLeadAB(ref mCathode[0], ref mCathode[1], (BODY_LEN - 1.0) / BODY_LEN, HS);
             interpLeadAB(ref mCathode[3], ref mCathode[2], 1, HS);
-            var pa = new Point[2];
+            var pa = new PointF[2];
             interpLeadAB(ref pa[0], ref pa[1], 0, HS);
-            mPoly = new Point[] { pa[0], pa[1], mLead2 };
+            mPoly = new PointF[] { pa[0], pa[1], mLead2 };
             setTextPos();
         }
 

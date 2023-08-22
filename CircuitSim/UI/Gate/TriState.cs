@@ -9,7 +9,7 @@ namespace Circuit.UI.Gate {
         const int BODY_LEN = 16;
 
         Point mLead3;
-        Point[] mGatePoly;
+        PointF[] mGatePoly;
 
         public TriState(Point pos) : base(pos) {
             Elm = new ElmTriState();
@@ -35,7 +35,7 @@ namespace Circuit.UI.Gate {
             if (ww > mLen / 2) {
                 ww = (int)(mLen / 2);
             }
-            mGatePoly = new Point[3];
+            mGatePoly = new PointF[3];
             interpLeadAB(ref mGatePoly[0], ref mGatePoly[1], 0, hs);
             interpPost(ref mGatePoly[2], 0.5 + ww / mLen);
             interpPost(ref ((ElmTriState)Elm).Post[2], 0.5, -hs);

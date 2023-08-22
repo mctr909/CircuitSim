@@ -67,8 +67,8 @@ namespace Circuit.UI.Input {
         protected override BaseLink mLink { get; set; } = new VoltageLink();
         protected VoltageLink Link { get { return (VoltageLink)mLink; } }
 
-        Point mPs1;
-        Point mPs2;
+        PointF mPs1;
+        PointF mPs2;
         Point mTextPos;
 
         public Voltage(Point pos, ElmVoltage.WAVEFORM wf) : base(pos) {
@@ -165,7 +165,7 @@ namespace Circuit.UI.Input {
             drawPosts();
         }
 
-        protected void drawWaveform(Point p) {
+        protected void drawWaveform(PointF p) {
             var x = p.X;
             var y = p.Y;
             var elm = (ElmVoltage)Elm;
@@ -175,12 +175,12 @@ namespace Circuit.UI.Input {
             }
 
             DumpInfo.AdjustBbox(
-                x - BODY_LEN, y - BODY_LEN,
-                x + BODY_LEN, y + BODY_LEN
+                (int)(x - BODY_LEN), (int)(y - BODY_LEN),
+                (int)(x + BODY_LEN), (int)(y + BODY_LEN)
             );
 
             var h = 7;
-            var w = (int)(h * 2 * elm.DutyCycle - h + x);
+            var w = (float)(h * 2 * elm.DutyCycle - h + x);
             w = Math.Max(x - h + 1, Math.Min(x + h - 1, w));
             var wh = (int)(h * elm.DutyCycle - h + x);
 
@@ -247,8 +247,8 @@ namespace Circuit.UI.Input {
             }
             case ElmVoltage.WAVEFORM.SIN: {
                 var xl = 10;
-                var x0 = 0;
-                var y0 = 0;
+                var x0 = 0F;
+                var y0 = 0F;
                 var ph = elm.Phase + elm.PhaseOffset;
                 for (var i = -xl; i <= xl; i++) {
                     var yy = y + (int)(.95 * Math.Sin(i * Math.PI / xl + ph) * h);

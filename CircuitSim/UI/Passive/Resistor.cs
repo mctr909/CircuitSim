@@ -14,12 +14,12 @@ namespace Circuit.UI.Passive {
         const int EU_HEIGHT = 4;
         const double SEG_F = 1.0 / SEGMENTS;
 
-        Point[] mP1;
-        Point[] mP2;
-        Point[] mRect1;
-        Point[] mRect2;
-        Point[] mRect3;
-        Point[] mRect4;
+        PointF[] mP1;
+        PointF[] mP2;
+        PointF[] mRect1;
+        PointF[] mRect2;
+        PointF[] mRect3;
+        PointF[] mRect4;
 
         public Resistor(Point pos) : base(pos) {
             Elm = new ElmResistor();
@@ -67,8 +67,8 @@ namespace Circuit.UI.Passive {
 
         void setPoly() {
             /* zigzag */
-            mP1 = new Point[SEGMENTS];
-            mP2 = new Point[SEGMENTS];
+            mP1 = new PointF[SEGMENTS];
+            mP2 = new PointF[SEGMENTS];
             int oy = 0;
             int ny;
             for (int i = 0; i != SEGMENTS; i++) {
@@ -89,10 +89,10 @@ namespace Circuit.UI.Passive {
             }
 
             /* rectangle */
-            mRect1 = new Point[SEGMENTS + 2];
-            mRect2 = new Point[SEGMENTS + 2];
-            mRect3 = new Point[SEGMENTS + 2];
-            mRect4 = new Point[SEGMENTS + 2];
+            mRect1 = new PointF[SEGMENTS + 2];
+            mRect2 = new PointF[SEGMENTS + 2];
+            mRect3 = new PointF[SEGMENTS + 2];
+            mRect4 = new PointF[SEGMENTS + 2];
             interpLeadAB(ref mRect1[0], ref mRect2[0], 0, EU_HEIGHT);
             for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
                 interpLeadAB(ref mRect1[j], ref mRect2[j], i * SEG_F, EU_HEIGHT);

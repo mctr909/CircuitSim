@@ -16,9 +16,9 @@ namespace Circuit.UI.Active {
         double mColorG;
         double mColorB;
 
-        Point mLedLead1;
-        Point mLedLead2;
-        Point mLedCenter;
+        PointF mLedLead1;
+        PointF mLedLead2;
+        PointF mLedCenter;
 
         public DiodeLED(Point pos) : base(pos, "D") {
             var ce = (ElmDiode)Elm;
