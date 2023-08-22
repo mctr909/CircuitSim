@@ -54,14 +54,14 @@ namespace Circuit.UI.Passive {
 
         void setTextPos() {
             if (mHorizontal) {
-                interpPoint(ref mValuePos, 0.5, -11 * mDsign);
-                interpPoint(ref mNamePos, 0.5, 10 * mDsign);
+                interpPost(ref mValuePos, 0.5, -11 * mDsign);
+                interpPost(ref mNamePos, 0.5, 10 * mDsign);
             } else if (mVertical) {
-                interpPoint(ref mValuePos, 0.5, 2 * mDsign);
-                interpPoint(ref mNamePos, 0.5, -20 * mDsign);
+                interpPost(ref mValuePos, 0.5, 2 * mDsign);
+                interpPost(ref mNamePos, 0.5, -20 * mDsign);
             } else {
-                interpPoint(ref mValuePos, 0.5, 10 * mDsign);
-                interpPoint(ref mNamePos, 0.5, -10 * mDsign);
+                interpPost(ref mValuePos, 0.5, 10 * mDsign);
+                interpPost(ref mNamePos, 0.5, -10 * mDsign);
             }
         }
 

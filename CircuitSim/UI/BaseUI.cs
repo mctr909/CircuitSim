@@ -219,19 +219,19 @@ namespace Circuit.UI {
         }
 
         protected void setLead1(double w) {
-            interpPoint(ref mLead1, w);
+            interpPost(ref mLead1, w);
         }
 
         protected void setLead2(double w) {
-            interpPoint(ref mLead2, w);
+            interpPost(ref mLead2, w);
         }
 
-        protected void interpPoint(ref Point p, double f) {
+        protected void interpPost(ref Point p, double f) {
             p.X = (int)Math.Floor(Elm.Post[0].X * (1 - f) + Elm.Post[1].X * f + 0.5);
             p.Y = (int)Math.Floor(Elm.Post[0].Y * (1 - f) + Elm.Post[1].Y * f + 0.5);
         }
 
-        protected void interpPoint(ref Point p, double f, double g) {
+        protected void interpPost(ref Point p, double f, double g) {
             var gx = Elm.Post[1].Y - Elm.Post[0].Y;
             var gy = Elm.Post[0].X - Elm.Post[1].X;
             var r = Math.Sqrt(gx * gx + gy * gy);
@@ -245,7 +245,7 @@ namespace Circuit.UI {
             }
         }
 
-        protected void interpPointAB(ref Point a, ref Point b, double f, double g) {
+        protected void interpPostAB(ref Point a, ref Point b, double f, double g) {
             var gx = Elm.Post[1].Y - Elm.Post[0].Y;
             var gy = Elm.Post[0].X - Elm.Post[1].X;
             var r = Math.Sqrt(gx * gx + gy * gy);

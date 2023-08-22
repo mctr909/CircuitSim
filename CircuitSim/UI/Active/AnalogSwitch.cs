@@ -54,8 +54,8 @@ namespace Circuit.UI.Active {
             base.SetPoints();
             calcLeads(BODY_LEN);
             mPs = new Point();
-            interpPoint(ref ((ElmAnalogSwitch)Elm).Post[2], 0.5, -OPEN_HS);
-            interpPoint(ref mLead3, 0.5, -OPEN_HS / 2);
+            interpPost(ref ((ElmAnalogSwitch)Elm).Post[2], 0.5, -OPEN_HS);
+            interpPost(ref mLead3, 0.5, -OPEN_HS / 2);
         }
 
         public override void Draw(CustomGraphics g) {

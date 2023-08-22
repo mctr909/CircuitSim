@@ -37,9 +37,9 @@ namespace Circuit.UI.Gate {
             }
             mGatePoly = new Point[3];
             interpLeadAB(ref mGatePoly[0], ref mGatePoly[1], 0, hs);
-            interpPoint(ref mGatePoly[2], 0.5 + ww / mLen);
-            interpPoint(ref ((ElmTriState)Elm).Post[2], 0.5, -hs);
-            interpPoint(ref mLead3, 0.5, -hs / 2);
+            interpPost(ref mGatePoly[2], 0.5 + ww / mLen);
+            interpPost(ref ((ElmTriState)Elm).Post[2], 0.5, -hs);
+            interpPost(ref mLead3, 0.5, -hs / 2);
         }
 
         public override void Draw(CustomGraphics g) {

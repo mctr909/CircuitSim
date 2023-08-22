@@ -8,7 +8,7 @@ namespace Circuit.UI.Output {
         const int FLAG_SHOWCURRENT = 1;
 
         Point mMid;
-        Point[] mArrowPoly;
+        PointF[] mArrowPoly;
         Point mTextPos;
 
         public Ammeter(Point pos) : base(pos) {
@@ -30,12 +30,12 @@ namespace Circuit.UI.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            interpPoint(ref mMid, 0.5 + 4 / mLen);
+            interpPost(ref mMid, 0.5 + 4 / mLen);
             Utils.CreateArrow(Elm.Post[0], mMid, out mArrowPoly, 9, 5);
             if (mVertical) {
-                interpPoint(ref mTextPos, 0.5, -21 * mDsign);
+                interpPost(ref mTextPos, 0.5, -21 * mDsign);
             } else {
-                interpPoint(ref mTextPos, 0.5, 12 * mDsign);
+                interpPost(ref mTextPos, 0.5, 12 * mDsign);
             }
         }
 

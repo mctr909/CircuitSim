@@ -32,8 +32,8 @@ namespace Circuit.UI.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            interpPoint(ref mCenter, 0.5);
-            interpPoint(ref mPlusPoint, 8.0 / mLen, 6 * mDsign);
+            interpPost(ref mCenter, 0.5);
+            interpPost(ref mPlusPoint, 8.0 / mLen, 6 * mDsign);
         }
 
         public override void Draw(CustomGraphics g) {

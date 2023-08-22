@@ -7,7 +7,7 @@ namespace Circuit.UI.Input {
     class Current : BaseUI {
         const int BODY_LEN = 28;
 
-        Point[] mArrow;
+        PointF[] mArrow;
         Point mAshaft1;
         Point mAshaft2;
         Point mCenter;
@@ -43,7 +43,7 @@ namespace Circuit.UI.Input {
             } else {
                 sign = -mDsign;
             }
-            interpPoint(ref mTextPos, 0.5, 16 * sign);
+            interpPost(ref mTextPos, 0.5, 16 * sign);
             var p2 = new Point();
             interpLead(ref p2, 0.8);
             Utils.CreateArrow(mCenter.X, mCenter.Y, p2.X, p2.Y, out mArrow, 8, 4);

@@ -17,7 +17,7 @@ namespace Circuit.UI.Output {
             } else {
                 setLead1(1 - 0.5 * Context.GetTextSize("1.99mV").Width / mLen);
             }
-            interpPoint(ref mCenter, 1 + 11.0 / mLen);
+            interpPost(ref mCenter, 1 + 11.0 / mLen);
             setBbox(Elm.Post[0], mCenter, 0);
         }
 

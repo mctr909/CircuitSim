@@ -33,7 +33,7 @@ namespace Circuit.UI.Output {
         public override void Draw(CustomGraphics g) {
             var str = "export";
 
-            interpPoint(ref mLead1, 1 - ((int)g.GetTextSize(str).Width / 2) / mLen);
+            interpPost(ref mLead1, 1 - ((int)g.GetTextSize(str).Width / 2) / mLen);
             setBbox(Elm.Post[0], mLead1, 0);
 
             drawCenteredText(str, DumpInfo.P2.X, DumpInfo.P2.Y, true);

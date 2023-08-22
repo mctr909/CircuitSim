@@ -81,7 +81,7 @@ namespace Circuit.UI.Active {
             if ((DumpInfo.Flags & FLAG_SWAP) != 0) {
                 hs = -hs;
             }
-            interpPointAB(ref mPosIn1[0], ref mPosIn2[0], 0, hs);
+            interpPostAB(ref mPosIn1[0], ref mPosIn2[0], 0, hs);
             interpLeadAB(ref mPosIn1[1], ref mPosIn2[1], 0, hs);
             mPosOut = Elm.Post[1];
 

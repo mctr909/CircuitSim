@@ -68,11 +68,11 @@ namespace Circuit.UI.Active {
 
         protected void setTextPos() {
             if (mHorizontal) {
-                interpPoint(ref mNamePos, 0.5, 13 * mDsign);
+                interpPost(ref mNamePos, 0.5, 13 * mDsign);
             } else if (mVertical) {
-                interpPoint(ref mNamePos, 0.5, -22 * mDsign);
+                interpPost(ref mNamePos, 0.5, -22 * mDsign);
             } else {
-                interpPoint(ref mNamePos, 0.5, -10 * mDsign);
+                interpPost(ref mNamePos, 0.5, -10 * mDsign);
             }
         }
 

@@ -116,9 +116,9 @@ namespace Circuit.UI.Input {
                 sign = mDsign;
             }
             if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
-                interpPoint(ref mTextPos, 0.5, -2 * BODY_LEN_DC * sign);
+                interpPost(ref mTextPos, 0.5, -2 * BODY_LEN_DC * sign);
             } else {
-                interpPoint(ref mTextPos, (mLen / 2 + 0.6 * BODY_LEN) / mLen, 7 * sign);
+                interpPost(ref mTextPos, (mLen / 2 + 0.6 * BODY_LEN) / mLen, 7 * sign);
             }
         }
 

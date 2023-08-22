@@ -37,9 +37,9 @@ namespace Circuit.UI.Passive {
                 mPlusPoint.Y += 3;
             }
             if (DumpInfo.P1.Y == DumpInfo.P2.Y) {
-                interpPoint(ref mPlusPoint, f - 5 / mLen, 5 * mDsign);
+                interpPost(ref mPlusPoint, f - 5 / mLen, 5 * mDsign);
             } else {
-                interpPoint(ref mPlusPoint, f - 5 / mLen, -5 * mDsign);
+                interpPost(ref mPlusPoint, f - 5 / mLen, -5 * mDsign);
             }
         }
 

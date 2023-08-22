@@ -37,15 +37,15 @@ namespace Circuit.UI.Gate {
             }
             setLead1(0.5 - ww / mLen);
             setLead2(0.5 + (ww + 2) / mLen);
-            interpPoint(ref mPcircle, 0.5 + (ww - 2) / mLen);
+            interpPost(ref mPcircle, 0.5 + (ww - 2) / mLen);
 
             mGatePolyAnsi = new Point[3];
             interpLeadAB(ref mGatePolyAnsi[0], ref mGatePolyAnsi[1], 0, hs);
-            interpPoint(ref mGatePolyAnsi[2], 0.5 + (ww - 5) / mLen);
+            interpPost(ref mGatePolyAnsi[2], 0.5 + (ww - 5) / mLen);
 
             mGatePolyEuro = new Point[4];
             var l2 = new Point();
-            interpPoint(ref l2, 0.5 + (ww - 5) / mLen); /* make room for circle */
+            interpPost(ref l2, 0.5 + (ww - 5) / mLen); /* make room for circle */
             Utils.InterpPoint(mLead1, l2, ref mGatePolyEuro[0], ref mGatePolyEuro[1], 0, hs);
             Utils.InterpPoint(mLead1, l2, ref mGatePolyEuro[3], ref mGatePolyEuro[2], 1, hs);
             Utils.InterpPoint(mLead1, l2, ref mCenter, .5);

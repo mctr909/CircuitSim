@@ -75,7 +75,7 @@ namespace Circuit.UI.Gate {
                 if (i0 == 0 && (ce.InputCount & 1) == 0) {
                     i0++;
                 }
-                interpPoint(ref ce.InPosts[i], 0, hs * i0);
+                interpPost(ref ce.InPosts[i], 0, hs * i0);
                 interpLead(ref mInGates[i], 0, hs * i0);
                 ce.Volts[i] = (ce.LastOutput ^ ce.IsInverting) ? 5 : 0;
             }
@@ -97,7 +97,7 @@ namespace Circuit.UI.Gate {
             } else {
                 drawPolygon(mGatePolyEuro);
                 var center = new Point();
-                interpPoint(ref center, 0.5);
+                interpPost(ref center, 0.5);
                 drawCenteredLText(gateText, center, true);
             }
             if (ce.HasSchmittInputs) {

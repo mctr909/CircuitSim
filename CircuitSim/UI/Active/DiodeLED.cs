@@ -64,9 +64,9 @@ namespace Circuit.UI.Active {
 
         public override void SetPoints() {
             base.SetPoints();
-            interpPoint(ref mLedLead1, 0.5 - CR / mLen);
-            interpPoint(ref mLedLead2, 0.5 + CR / mLen);
-            interpPoint(ref mLedCenter, 0.5);
+            interpPost(ref mLedLead1, 0.5 - CR / mLen);
+            interpPost(ref mLedLead2, 0.5 + CR / mLen);
+            interpPost(ref mLedCenter, 0.5);
         }
 
         public override void Draw(CustomGraphics g) {

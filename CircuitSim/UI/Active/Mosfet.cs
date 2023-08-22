@@ -15,7 +15,7 @@ namespace Circuit.UI.Active {
 
         Point mGate;
         PointF[] mPolyGate;
-        Point[] mArrowPoly;
+        PointF[] mArrowPoly;
 
         PointF[][] mPolyConn;
         Point[] mPosS = new Point[4];
@@ -62,13 +62,13 @@ namespace Circuit.UI.Active {
                 hs1 = -hs1;
                 hs2 = -hs2;
             }
-            interpPointAB(ref mPosS[0], ref mPosD[0], 1, -hs1);
-            interpPointAB(ref mPosS[3], ref mPosD[3], 1, -hs2);
-            interpPointAB(ref mPosS[1], ref mPosD[1], 1 - 12 / mLen, -hs2);
-            interpPointAB(ref mPosS[2], ref mPosD[2], 1 - 12 / mLen, -hs2 * 4 / 3);
+            interpPostAB(ref mPosS[0], ref mPosD[0], 1, -hs1);
+            interpPostAB(ref mPosS[3], ref mPosD[3], 1, -hs2);
+            interpPostAB(ref mPosS[1], ref mPosD[1], 1 - 12 / mLen, -hs2);
+            interpPostAB(ref mPosS[2], ref mPosD[2], 1 - 12 / mLen, -hs2 * 4 / 3);
 
             var gate = new Point[2];
-            interpPointAB(ref gate[0], ref gate[1], 1 - 16 / mLen, hs2 * 0.8);
+            interpPostAB(ref gate[0], ref gate[1], 1 - 16 / mLen, hs2 * 0.8);
             Utils.InterpPoint(gate[0], gate[1], ref mGate, .5);
 
             Utils.InterpPoint(mPosS[0], mPosD[0], ref mPosB[0], .5);
@@ -136,7 +136,7 @@ namespace Circuit.UI.Active {
                     mNamePos = new Point(Elm.Post[1].X - 16, Elm.Post[1].Y);
                 }
             } else {
-                interpPoint(ref mNamePos, 0.5, 10 * mDsign);
+                interpPost(ref mNamePos, 0.5, 10 * mDsign);
             }
         }
 

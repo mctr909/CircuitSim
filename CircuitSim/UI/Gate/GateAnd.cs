@@ -40,7 +40,7 @@ namespace Circuit.UI.Gate {
             mGatePolyAnsi[11] = mLead2;
 
             if (ce.IsInverting) {
-                interpPoint(ref mCirclePos, 0.5 + (mWw + 3) / mLen);
+                interpPost(ref mCirclePos, 0.5 + (mWw + 3) / mLen);
                 setLead2(0.5 + (mWw + 6) / mLen);
             }
         }

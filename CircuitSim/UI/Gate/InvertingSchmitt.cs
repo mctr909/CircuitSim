@@ -61,11 +61,11 @@ namespace Circuit.UI.Gate {
             }
             setLead1(0.5 - ww / mLen);
             setLead2(0.5 + (ww + 2) / mLen);
-            interpPoint(ref pcircle, 0.5 + (ww - 2) / mLen);
+            interpPost(ref pcircle, 0.5 + (ww - 2) / mLen);
 
             gatePoly = new Point[3];
             interpLeadAB(ref gatePoly[0], ref gatePoly[1], 0, hs);
-            interpPoint(ref gatePoly[2], 0.5 + (ww - 5) / mLen);
+            interpPost(ref gatePoly[2], 0.5 + (ww - 5) / mLen);
 
             Utils.CreateSchmitt(Elm.Post[0], Elm.Post[1], out symbolPoly, 0.8, .5 - (ww - 7) / mLen);
             setBbox(hs);

@@ -18,7 +18,7 @@ namespace Circuit.UI.Active {
         Point mTbase;
 
         Point[] mRectPoly;
-        Point[] mArrowPoly;
+        PointF[] mArrowPoly;
         Point[] mPosC = new Point[3];
         Point[] mPosE = new Point[3];
 
@@ -71,22 +71,22 @@ namespace Circuit.UI.Active {
             var hsm = (HS / 8 + 1) * 8;
             var hs1 = HS * mDsign * ce.NPN;
             var hs2 = hsm * mDsign * ce.NPN;
-            interpPointAB(ref mPosC[1], ref mPosE[1], 1, hs1);
-            interpPointAB(ref mPosC[2], ref mPosE[2], 1, hs2);
+            interpPostAB(ref mPosC[1], ref mPosE[1], 1, hs1);
+            interpPostAB(ref mPosC[2], ref mPosE[2], 1, hs2);
 
             /* calc rectangle edges */
             var rect = new Point[4];
-            interpPointAB(ref rect[0], ref rect[1], 1 - BODY_LEN / mLen, HS);
-            interpPointAB(ref rect[2], ref rect[3], 1 - (BODY_LEN - BASE_THICK) / mLen, HS);
+            interpPostAB(ref rect[0], ref rect[1], 1 - BODY_LEN / mLen, HS);
+            interpPostAB(ref rect[2], ref rect[3], 1 - (BODY_LEN - BASE_THICK) / mLen, HS);
 
             /* calc points where collector/emitter leads contact rectangle */
-            interpPointAB(ref mPosC[0], ref mPosE[0], 1 - (BODY_LEN - BASE_THICK) / mLen, 6 * mDsign * ce.NPN);
+            interpPostAB(ref mPosC[0], ref mPosE[0], 1 - (BODY_LEN - BASE_THICK) / mLen, 6 * mDsign * ce.NPN);
 
             /* calc point where base lead contacts rectangle */
             if (mDsign < 0) {
-                interpPoint(ref mTbase, 1 - (BODY_LEN - BASE_THICK) / mLen);
+                interpPost(ref mTbase, 1 - (BODY_LEN - BASE_THICK) / mLen);
             } else {
-                interpPoint(ref mTbase, 1 - BODY_LEN / mLen);
+                interpPost(ref mTbase, 1 - BODY_LEN / mLen);
             }
 
             /* rectangle */
@@ -97,7 +97,7 @@ namespace Circuit.UI.Active {
                 Utils.CreateArrow(mPosE[0], mPosE[1], out mArrowPoly, 8, 3);
             } else {
                 var pt = new Point();
-                interpPoint(ref pt, 1 - BODY_LEN / mLen, -5 * mDsign * ce.NPN);
+                interpPost(ref pt, 1 - BODY_LEN / mLen, -5 * mDsign * ce.NPN);
                 Utils.CreateArrow(mPosE[1], pt, out mArrowPoly, 8, 3);
             }
             setTextPos();
@@ -118,7 +118,7 @@ namespace Circuit.UI.Active {
                     mNamePos = new Point(Elm.Post[1].X - 16, Elm.Post[1].Y);
                 }
             } else {
-                interpPoint(ref mNamePos, 0.5, 10 * mDsign);
+                interpPost(ref mNamePos, 0.5, 10 * mDsign);
             }
         }
 

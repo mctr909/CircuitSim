@@ -7,8 +7,8 @@ namespace Circuit.UI.Active {
     class Optocoupler : Composite {
         Point[] mStubs;
         Point[] mRectPoints;
-        Point[] mArrow1;
-        Point[] mArrow2;
+        PointF[] mArrow1;
+        PointF[] mArrow2;
 
         public Optocoupler(Point pos) : base(pos) {
             Elm = new ElmOptocoupler();

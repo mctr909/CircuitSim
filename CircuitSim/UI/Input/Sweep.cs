@@ -36,7 +36,7 @@ namespace Circuit.UI.Input {
         public override void SetPoints() {
             base.SetPoints();
             setLead1(1 - 0.5 * SIZE / mLen);
-            interpPoint(ref mTextPos, 1.0 + 0.66 * SIZE / Utils.Distance(Elm.Post[0], Elm.Post[1]), 24 * mDsign);
+            interpPost(ref mTextPos, 1.0 + 0.66 * SIZE / Utils.Distance(Elm.Post[0], Elm.Post[1]), 24 * mDsign);
         }
 
         public override void Draw(CustomGraphics g) {

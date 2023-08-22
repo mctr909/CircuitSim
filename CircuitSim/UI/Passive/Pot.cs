@@ -101,10 +101,10 @@ namespace Circuit.UI.Passive {
             var ce = (ElmPot)Elm;
             ce.Position = mSlider.Value * 0.0099 + 0.0001;
             int soff = (int)((ce.Position - 0.5) * BODY_LEN);
-            interpPoint(ref ce.Post[2], 0.5, offset);
-            interpPoint(ref mCorner2, soff / mLen + 0.5, offset);
-            interpPoint(ref mArrowPoint, soff / mLen + 0.5, 8 * Math.Sign(offset));
-            interpPoint(ref mMidPoint, soff / mLen + 0.5);
+            interpPost(ref ce.Post[2], 0.5, offset);
+            interpPost(ref mCorner2, soff / mLen + 0.5, offset);
+            interpPost(ref mArrowPoint, soff / mLen + 0.5, 8 * Math.Sign(offset));
+            interpPost(ref mMidPoint, soff / mLen + 0.5);
             double clen = Math.Abs(offset) - 8;
             Utils.InterpPoint(mCorner2, mArrowPoint, ref mArrow1, ref mArrow2, (clen - 8) / clen, 4);
 
@@ -282,19 +282,19 @@ namespace Circuit.UI.Passive {
             if (Math.Abs(mDiff.Y) < Math.Abs(mDiff.X)) {
                 if (0 < mDiff.X) {
                     /* upper slider */
-                    interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, 14 * mDsign);
+                    interpPost(ref mNamePos, 0.5 + wn / mLen * mDsign, 14 * mDsign);
                 } else {
                     /* lower slider */
-                    interpPoint(ref mNamePos, 0.5 + wn / mLen * mDsign, -12 * mDsign);
+                    interpPost(ref mNamePos, 0.5 + wn / mLen * mDsign, -12 * mDsign);
                 }
             } else {
                 if (mDiff.Y != 0) {
                     if (0 < mDiff.Y) {
                         /* right slider */
-                        interpPoint(ref mNamePos, 0.5, -20 * mDsign);
+                        interpPost(ref mNamePos, 0.5, -20 * mDsign);
                     } else {
                         /* left slider */
-                        interpPoint(ref mNamePos, 0.5, 2 * mDsign);
+                        interpPost(ref mNamePos, 0.5, 2 * mDsign);
                     }
                 }
             }

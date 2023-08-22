@@ -56,7 +56,7 @@ namespace Circuit.UI.Passive {
                     hs = OPEN_HS;
                 }
                 interpLead(ref mSwPoles[i], 1, hs);
-                interpPoint(ref ce.SwPosts[i], 1, hs);
+                interpPost(ref ce.SwPosts[i], 1, hs);
             }
             mSwPoles[i] = mLead2; /* for center off */
             ce.PosCount = ce.ThrowCount;

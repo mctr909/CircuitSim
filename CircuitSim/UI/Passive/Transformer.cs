@@ -65,8 +65,8 @@ namespace Circuit.UI.Passive {
             ce.Post[1].Y = ce.Post[0].Y;
             mPtCoil = new Point[4];
             mPtCore = new Point[4];
-            interpPoint(ref ce.Post[2], 0, -mDsign * height);
-            interpPoint(ref ce.Post[3], 1, -mDsign * height);
+            interpPost(ref ce.Post[2], 0, -mDsign * height);
+            interpPost(ref ce.Post[3], 1, -mDsign * height);
             var pce = 0.5 - 10.0 / width;
             var pcd = 0.5 - 1.0 / width;
             for (int i = 0; i != 4; i += 2) {

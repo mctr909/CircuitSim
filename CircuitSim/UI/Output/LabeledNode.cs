@@ -35,7 +35,7 @@ namespace Circuit.UI.Output {
             } else {
                 setLead1(1 - 0.5 * Context.GetTextSize(ce.Text).Width / mLen);
             }
-            interpPoint(ref mPos, 1 + 11.0 / mLen);
+            interpPost(ref mPos, 1 + 11.0 / mLen);
             setBbox(Elm.Post[0], mPos, CircleSize);
         }
 
