@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Windows.Forms;
 
 namespace Circuit {
     public class CustomGraphics {
@@ -177,10 +176,10 @@ namespace Circuit {
             mG.DrawRectangle(mPenLine, rect);
         }
 
-        public void DrawDashRectangle(int x, int y, int w, int h) {
+        public virtual void DrawDashRectangle(float x, float y, float w, float h) {
             mPenLine.DashStyle = DashStyle.Dash;
-            mPenLine.DashPattern = new float[] { 3, 5 };
-            mG.DrawRectangle(mPenLine, new Rectangle(x, y, w, h));
+            mPenLine.DashPattern = new float[] { 2, 3 };
+            mG.DrawRectangle(mPenLine, x, y, w, h);
             mPenLine.DashStyle = DashStyle.Solid;
         }
 

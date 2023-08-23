@@ -99,9 +99,7 @@ class PDF {
             fillCircleF(p.X, p.Y, 2.5f);
         }
 
-        public override void DrawHandle(Point p) {
-            fillCircleF(p.X, p.Y, 4);
-        }
+        public override void DrawHandle(Point p) { }
 
         public override void DrawCurrent(float cx, float cy, float radius) { }
 
@@ -119,6 +117,17 @@ class PDF {
             var x1 = x0 + rect.Width - 1;
             var y0 = rect.Y;
             var y1 = y0 + rect.Height - 1;
+            DrawLine(x0, y0, x1, y0);
+            DrawLine(x1, y0, x1, y1);
+            DrawLine(x1, y1, x0, y1);
+            DrawLine(x0, y1, x0, y0);
+        }
+
+        public override void DrawDashRectangle(float x, float y, float w, float h) {
+            var x0 = x;
+            var x1 = x0 + w - 1;
+            var y0 = y;
+            var y1 = y0 + h - 1;
             DrawLine(x0, y0, x1, y0);
             DrawLine(x1, y0, x1, y1);
             DrawLine(x1, y1, x0, y1);

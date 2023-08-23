@@ -482,6 +482,11 @@ namespace Circuit.UI {
             Context.DrawLine(ax, ay, bx, by);
         }
 
+        protected void drawDashRectangle(float x, float y, float w, float h) {
+            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawDashRectangle(x, y, w, h);
+        }
+
         protected void drawCircle(PointF p, float radius) {
             Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawCircle(p, radius);

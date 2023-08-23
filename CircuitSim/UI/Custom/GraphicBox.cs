@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace Circuit.UI.Custom {
     class GraphicBox : Graphic {
@@ -19,7 +20,18 @@ namespace Circuit.UI.Custom {
         }
 
         public override double Distance(int x, int y) {
-            return DumpInfo.BoxDistance(x, y);
+            var x1 = DumpInfo.P1.X;
+            var y1 = DumpInfo.P1.Y;
+            var x2 = DumpInfo.P2.X;
+            var y2 = DumpInfo.P2.Y;
+            DumpInfo.BoundingBox.Width = 0;
+            DumpInfo.BoundingBox.Height = 0;
+            return Math.Min(
+                Utils.DistanceOnLine(x1, y1, x2, y1, x, y), Math.Min(
+                Utils.DistanceOnLine(x1, y1, x1, y2, x, y), Math.Min(
+                Utils.DistanceOnLine(x2, y2, x2, y1, x, y),
+                Utils.DistanceOnLine(x2, y2, x1, y2, x, y)
+            )));
         }
 
         public override void Drag(Point p) {
@@ -27,20 +39,23 @@ namespace Circuit.UI.Custom {
         }
 
         public override void Draw(CustomGraphics g) {
-            g.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             DumpInfo.SetBbox(DumpInfo.P1, DumpInfo.P2);
             var x1 = DumpInfo.P1.X;
             var y1 = DumpInfo.P1.Y;
             var x2 = DumpInfo.P2.X;
             var y2 = DumpInfo.P2.Y;
             if (x1 < x2 && y1 < y2) {
-                g.DrawDashRectangle(x1, y1, x2 - x1, y2 - y1);
+                drawDashRectangle(x1, y1, x2 - x1, y2 - y1);
             } else if (x1 > x2 && y1 < y2) {
-                g.DrawDashRectangle(x2, y1, x1 - x2, y2 - y1);
+                drawDashRectangle(x2, y1, x1 - x2, y2 - y1);
             } else if (x1 < x2 && y1 > y2) {
-                g.DrawDashRectangle(x1, y2, x2 - x1, y1 - y2);
+                drawDashRectangle(x1, y2, x2 - x1, y1 - y2);
             } else {
-                g.DrawDashRectangle(x2, y2, x1 - x2, y1 - y2);
+                drawDashRectangle(x2, y2, x1 - x2, y1 - y2);
+            }
+            if (NeedsHighlight) {
+                Context.DrawPost(DumpInfo.P1);
+                Context.DrawPost(DumpInfo.P2);
             }
         }
 
