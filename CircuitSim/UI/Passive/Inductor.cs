@@ -9,6 +9,10 @@ namespace Circuit.UI.Passive {
         protected static string mLastReferenceName = "L";
 
         const int BODY_LEN = 24;
+        const int COIL_WIDTH = 8;
+
+        PointF[] mCoilPos;
+        float mCoilAngle;
 
         public Inductor(Point pos) : base(pos) {
             Elm = new ElmInductor();
@@ -38,7 +42,22 @@ namespace Circuit.UI.Passive {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(BODY_LEN);
+            setBbox(COIL_WIDTH);
+            setCoilPos(mLead1, mLead2);
             setTextPos();
+        }
+
+        void setCoilPos(PointF a, PointF b) {
+            var coilLen = (float)Utils.Distance(a, b);
+            var loopCt = (int)Math.Ceiling(coilLen / 11);
+            var arr = new List<PointF>();
+            for (int loop = 0; loop != loopCt; loop++) {
+                var p = new PointF();
+                Utils.InterpPoint(a, b, ref p, (loop + 0.5) / loopCt, 0);
+                arr.Add(p);
+            }
+            mCoilPos = arr.ToArray();
+            mCoilAngle = (float)(Utils.Angle(a, b) * 180 / Math.PI);
         }
 
         void setTextPos() {
@@ -56,15 +75,12 @@ namespace Circuit.UI.Passive {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmInductor)Elm;
-            int hs = 8;
-            setBbox(hs);
-
             draw2Leads();
-            drawCoil(mLead1, mLead2);
-
+            foreach(var p in mCoilPos) {
+                Context.DrawArc(p, COIL_WIDTH, mCoilAngle, -180);
+            }
             drawValue(ce.Inductance);
             drawName();
-
             doDots();
             drawPosts();
         }

@@ -243,9 +243,6 @@ namespace Circuit {
             case MENU_ITEM.PRINT:
                 BaseUI.Context.DoPrint = true;
                 break;
-            case MENU_ITEM.RECOVER:
-                doRecover();
-                break;
             }
 
             if (Mouse.GripElm != null) {
@@ -628,11 +625,11 @@ namespace Circuit {
                     return;
                 }
                 IsRunning = true;
-                ControlPanel.BtnRunStop.Text = "RUN";
+                ControlPanel.BtnRunStop.Text = "停止";
             } else {
                 IsRunning = false;
                 mAnalyzeFlag = false;
-                ControlPanel.BtnRunStop.Text = "STOP";
+                ControlPanel.BtnRunStop.Text = "実行";
                 Repaint();
             }
         }
@@ -1285,7 +1282,7 @@ namespace Circuit {
             int sp2 = (int)(Math.Log(10 * sp) * 24 + 61.5);
             ControlPanel.TrbSpeed.Value = sp2;
             var v = st.nextTokenInt();
-            ControlPanel.TrbCurrent.Value = v;
+            ControlPanel.TrbCurrent.Value = v * ControlPanel.TrbCurrent.Maximum / 50;
         }
 
         bool doSwitch(Point pos) {
@@ -1722,7 +1719,7 @@ namespace Circuit {
             enableUndoRedo();
         }
 
-        void doRecover() {
+        public void Reload() {
             PushUndo();
             readCircuit(mRecovery);
         }
@@ -2030,7 +2027,7 @@ namespace Circuit {
             if (IsRunning) {
                 if (mLastTime != 0) {
                     int inc = (int)(sysTime - mLastTime);
-                    double c = ControlPanel.TrbCurrent.Value;
+                    var c = ControlPanel.TrbCurrent.Value * 50.0 / ControlPanel.TrbCurrent.Maximum;
                     c = Math.Exp(c / 3.5 - 14.2);
                     CurrentMult = 1.7 * inc * c;
                 }

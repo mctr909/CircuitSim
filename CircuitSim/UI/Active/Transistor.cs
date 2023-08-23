@@ -69,7 +69,7 @@ namespace Circuit.UI.Active {
 
             /* calc collector, emitter posts */
             var hsm = (HS / 8 + 1) * 8;
-            var hs1 = (HS - 1) * mDsign * ce.NPN;
+            var hs1 = (HS - 2) * mDsign * ce.NPN;
             var hs2 = hsm * mDsign * ce.NPN;
             interpPostAB(ref mPosC[1], ref mPosE[1], 1, hs1);
             interpPostAB(ref mPosC[2], ref mPosE[2], 1, hs2);

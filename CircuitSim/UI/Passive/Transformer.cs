@@ -13,6 +13,10 @@ namespace Circuit.UI.Passive {
         PointF[] mPtCoil;
         PointF[] mPtCore;
         PointF[] mDots;
+        PointF[] mCoilPosA;
+        PointF[] mCoilPosB;
+        float mCoilWidth;
+        float mCoilAngle;
 
         public Transformer(Point pos) : base(pos) {
             Elm = new ElmTransformer();
@@ -89,7 +93,33 @@ namespace Circuit.UI.Passive {
             } else {
                 mDots = null;
             }
+            setBbox(ce.Post[0], ce.Post[ce.Polarity == 1 ? 3 : 1], 0);
+            setCoilPos(mPtCoil[0], mPtCoil[2], 90 * mDsign, out mCoilPosA);
+            setCoilPos(mPtCoil[1], mPtCoil[3], -90 * mDsign * ce.Polarity, out mCoilPosB);
             setNamePos();
+        }
+
+        void setCoilPos(PointF a, PointF b, float dir, out PointF[] pos) {
+            var coilLen = (float)Utils.Distance(a, b);
+            var loopCt = (int)Math.Ceiling(coilLen / 9);
+            mCoilWidth = coilLen / loopCt;
+            if (Utils.Angle(a, b) < 0) {
+                mCoilAngle = -dir;
+            } else {
+                mCoilAngle = dir;
+            }
+            var arr = new List<PointF>();
+            for (int loop = 0; loop != loopCt; loop++) {
+                var p = new PointF();
+                Utils.InterpPoint(a, b, ref p, (loop + 0.5) / loopCt, 0);
+                arr.Add(p);
+            }
+            pos = arr.ToArray();
+        }
+
+        void setNamePos() {
+            var wn = Context.GetTextSize(DumpInfo.ReferenceName).Width;
+            mNamePos = new Point((int)(mPtCore[0].X - wn / 2 + 2), (int)mPtCore[0].Y - 8);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -100,8 +130,12 @@ namespace Circuit.UI.Passive {
             drawLine(ce.Post[2], mPtCoil[2]);
             drawLine(ce.Post[3], mPtCoil[3]);
 
-            drawCoil(mPtCoil[0], mPtCoil[2], 90 * mDsign);
-            drawCoil(mPtCoil[1], mPtCoil[3], -90 * mDsign * ce.Polarity);
+            foreach (var p in mCoilPosA) {
+                Context.DrawArc(p, mCoilWidth, mCoilAngle, 180);
+            }
+            foreach (var p in mCoilPosB) {
+                Context.DrawArc(p, mCoilWidth, mCoilAngle, -180);
+            }
 
             drawLine(mPtCore[0], mPtCore[2]);
             drawLine(mPtCore[1], mPtCore[3]);
@@ -119,7 +153,6 @@ namespace Circuit.UI.Passive {
             }
 
             drawPosts();
-            setBbox(ce.Post[0], ce.Post[ce.Polarity == 1 ? 3 : 1], 0);
 
             if (ControlPanel.ChkShowName.Checked) {
                 g.DrawLeftText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
@@ -184,11 +217,6 @@ namespace Circuit.UI.Passive {
                 }
                 SetPoints();
             }
-        }
-
-        void setNamePos() {
-            var wn = Context.GetTextSize(DumpInfo.ReferenceName).Width;
-            mNamePos = new Point((int)(mPtCore[0].X - wn / 2 + 2), (int)mPtCore[0].Y - 8);
         }
     }
 }

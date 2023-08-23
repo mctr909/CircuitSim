@@ -214,11 +214,6 @@ namespace Circuit.UI {
             interpPost(ref mLead2, w);
         }
 
-        protected void interpPost(ref Point p, double f) {
-            p.X = (int)Math.Floor(Elm.Post[0].X * (1 - f) + Elm.Post[1].X * f + 0.5);
-            p.Y = (int)Math.Floor(Elm.Post[0].Y * (1 - f) + Elm.Post[1].Y * f + 0.5);
-        }
-
         protected void interpPost(ref PointF p, double f) {
             p.X = (float)(Elm.Post[0].X * (1 - f) + Elm.Post[1].X * f);
             p.Y = (float)(Elm.Post[0].Y * (1 - f) + Elm.Post[1].Y * f);
@@ -681,42 +676,6 @@ namespace Circuit.UI {
                 } else {
                     Context.DrawRightText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
                 }
-            }
-        }
-
-        protected void drawCoil(PointF a, PointF b) {
-            var coilLen = (float)Utils.Distance(a, b);
-            if (0 == coilLen) {
-                return;
-            }
-            /* draw more loops for a longer coil */
-            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            var loopCt = (int)Math.Ceiling(coilLen / 11);
-            var w = coilLen / loopCt;
-            var th = (float)(Utils.Angle(a, b) * 180 / Math.PI);
-            var pos = new PointF();
-            for (int loop = 0; loop != loopCt; loop++) {
-                Utils.InterpPoint(a, b, ref pos, (loop + 0.5) / loopCt, 0);
-                Context.DrawArc(pos, w, th, -180);
-            }
-        }
-
-        protected void drawCoil(PointF a, PointF b, float dir) {
-            var coilLen = (float)Utils.Distance(a, b);
-            if (0 == coilLen) {
-                return;
-            }
-            /* draw more loops for a longer coil */
-            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            var loopCt = (int)Math.Ceiling(coilLen / 9);
-            float w = coilLen / loopCt;
-            if (Utils.Angle(a, b) < 0) {
-                dir = -dir;
-            }
-            var pos = new PointF();
-            for (int loop = 0; loop != loopCt; loop++) {
-                Utils.InterpPoint(a, b, ref pos, (loop + 0.5) / loopCt, 0);
-                Context.DrawArc(pos, w, dir, -180);
             }
         }
         #endregion

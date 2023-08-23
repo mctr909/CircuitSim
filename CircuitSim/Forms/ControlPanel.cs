@@ -8,6 +8,7 @@ namespace Circuit {
         public static Panel VerticalPanel { get; private set; }
         public static Button BtnReset { get; private set; }
         public static Button BtnRunStop { get; private set; }
+        public static Button BtnReload { get; private set; }
         public static TrackBar TrbSpeed { get; private set; }
         public static TrackBar TrbCurrent { get; private set; }
         public static CheckBox ChkShowDots { get; private set; }
@@ -44,24 +45,32 @@ namespace Circuit {
             int ofsY = 0;
             VerticalPanel = new Panel();
 
-            /* Reset */
-            BtnReset = new Button() { AutoSize = true, Text = "Reset" };
+            /* リセット */
+            BtnReset = new Button() { AutoSize = true, Text = "リセット" };
             BtnReset.Click += new EventHandler((s, e) => { CirSimForm.ResetButton_onClick(); });
             BtnReset.Left = 4;
             BtnReset.Top = ofsY;
             VerticalPanel.Controls.Add(BtnReset);
             ofsY += BtnReset.Height + 4;
 
-            /* Run */
-            BtnRunStop = new Button() { AutoSize = true, Text = "RUN" };
+            /* 実行 */
+            BtnRunStop = new Button() { AutoSize = true, Text = "実行" };
             BtnRunStop.Click += new EventHandler((s, e) => { CirSimForm.SetSimRunning(!CirSimForm.IsRunning); });
             BtnRunStop.Left = 4;
             BtnRunStop.Top = ofsY;
             VerticalPanel.Controls.Add(BtnRunStop);
             ofsY += BtnRunStop.Height + 4;
 
-            /* Simulation Speed */
-            var lbl = new Label() { Left = 4, Top = ofsY, AutoSize = true, Text = "Simulation Speed" };
+            /* 再読み込み */
+            BtnReload = new Button() { AutoSize = true, Text = "再読み込み" };
+            BtnReload.Click += new EventHandler((s, e) => { CirSimForm.Instance.Reload(); });
+            BtnReload.Left = 4;
+            BtnReload.Top = ofsY;
+            VerticalPanel.Controls.Add(BtnReload);
+            ofsY += BtnReload.Height + 4;
+
+            /* 実行速度 */
+            var lbl = new Label() { Left = 4, Top = ofsY, AutoSize = true, Text = "実行速度" };
             VerticalPanel.Controls.Add(lbl);
             ofsY += lbl.Height;
             TrbSpeed = new TrackBar() {
@@ -79,20 +88,38 @@ namespace Circuit {
             VerticalPanel.Controls.Add(TrbSpeed);
             ofsY += TrbSpeed.Height + 4;
 
-            /* Current Speed */
-            lbl = new Label() { Left = 4, Top = ofsY, AutoSize = true, Text = "Current Speed" };
+            /* 電流表示速度 */
+            lbl = new Label() { Left = 4, Top = ofsY, AutoSize = true, Text = "電流表示速度" };
             VerticalPanel.Controls.Add(lbl);
+            ofsY += lbl.Height;
+            lbl = new Label() { Left = 12, Top = ofsY, AutoSize = true, Text = "1" };
+            VerticalPanel.Controls.Add(lbl);
+            lbl = new Label() { Left = 31, Top = ofsY, AutoSize = true, Text = "100m" };
+            VerticalPanel.Controls.Add(lbl);
+            lbl = new Label() { Left = 62, Top = ofsY, AutoSize = true, Text = "10m" };
+            VerticalPanel.Controls.Add(lbl);
+            lbl = new Label() { Left = 94, Top = ofsY, AutoSize = true, Text = "1m" };
+            VerticalPanel.Controls.Add(lbl);
+
+            lbl = new Label() { Left = 118, Top = ofsY, AutoSize = true, Text = "100u" };
+            VerticalPanel.Controls.Add(lbl);
+            lbl = new Label() { Left = 149, Top = ofsY, AutoSize = true, Text = "10u" };
+            VerticalPanel.Controls.Add(lbl);
+
+            lbl = new Label() { Left = 181, Top = ofsY, AutoSize = true, Text = "1u" };
+            VerticalPanel.Controls.Add(lbl);
+
             ofsY += lbl.Height;
             TrbCurrent = new TrackBar() {
                 Left = 4,
                 Top = ofsY,
-                Minimum = 1,
-                Maximum = 100,
+                Minimum = 0,
+                Maximum = 48,
                 SmallChange = 1,
-                LargeChange = 10,
-                TickFrequency = 10,
+                LargeChange = 4,
+                TickFrequency = 8,
                 TickStyle = TickStyle.TopLeft,
-                Value = 50,
+                Value = 24,
                 Width = 200
             };
             VerticalPanel.Controls.Add(TrbCurrent);
@@ -183,7 +210,6 @@ namespace Circuit {
             ChkShowValues.Checked = true;
             ChkUseAnsiSymbols.Checked = true;
             TrbSpeed.Value = 57;
-            TrbCurrent.Value = 50;
         }
 
         public static void SetSliderPanelHeight() {
