@@ -91,7 +91,7 @@ class PDF {
             writeTextL(s, p.X, p.Y, GetTextSizeL(s).Width * 0.5f);
         }
 
-        public override void DrawCenteredVText(string s, Point p) {
+        public override void DrawCenteredVText(string s, PointF p) {
             writeTextV(s, p.X, p.Y, GetTextSize(s).Width * 0.5f);
         }
 

@@ -24,6 +24,14 @@ namespace Circuit.UI {
         public static CustomGraphics Context;
         static BaseUI mMouseElmRef = null;
 
+        protected BaseUI(Point pos) {
+            DumpInfo = new DumpInfo(pos, DefaultFlags);
+        }
+
+        protected BaseUI(Point p1, Point p2, int f) {
+            DumpInfo = new DumpInfo(p1, p2, f);
+        }
+
         #region [property]
         public abstract DUMP_ID DumpType { get; }
 
@@ -86,7 +94,7 @@ namespace Circuit.UI {
         protected virtual BaseLink mLink { get; set; } = new BaseLink();
         #endregion
 
-        #region [variable]
+        #region [protected variable]
         /* length along x and y axes, and sign of difference */
         protected Point mDiff;
         protected int mDsign;
@@ -109,22 +117,6 @@ namespace Circuit.UI {
         /* if subclasses set this to true, element will be horizontal or vertical only */
         protected bool mNoDiagonal;
         #endregion
-
-        protected BaseUI() { }
-
-        /// <summary>
-        /// create new element with one post at pos, to be dragged out by user
-        /// </summary>
-        protected BaseUI(Point pos) {
-            DumpInfo = new DumpInfo(pos, DefaultFlags);
-        }
-
-        /// <summary>
-        /// create element between p1 and p2 from undump
-        /// </summary>
-        protected BaseUI(Point p1, Point p2, int f) {
-            DumpInfo = new DumpInfo(p1, p2, f);
-        }
 
         #region [protected method]
         protected virtual void dump(List<object> optionList) { }
@@ -243,6 +235,20 @@ namespace Circuit.UI {
                 g /= r;
                 p.X = (int)Math.Floor(Elm.Post[0].X * (1 - f) + Elm.Post[1].X * f + g * gx + 0.5);
                 p.Y = (int)Math.Floor(Elm.Post[0].Y * (1 - f) + Elm.Post[1].Y * f + g * gy + 0.5);
+            }
+        }
+
+        protected void interpPost(ref PointF p, double f, double g) {
+            var gx = Elm.Post[1].Y - Elm.Post[0].Y;
+            var gy = Elm.Post[0].X - Elm.Post[1].X;
+            var r = Math.Sqrt(gx * gx + gy * gy);
+            if (0.0 == r) {
+                p.X = Elm.Post[0].X;
+                p.Y = Elm.Post[0].Y;
+            } else {
+                g /= r;
+                p.X = (float)(Elm.Post[0].X * (1 - f) + Elm.Post[1].X * f + g * gx);
+                p.Y = (float)(Elm.Post[0].Y * (1 - f) + Elm.Post[1].Y * f + g * gy);
             }
         }
 
@@ -617,7 +623,7 @@ namespace Circuit.UI {
         /// draw component values (number of resistor ohms, etc).
         /// </summary>
         /// <param name="s"></param>
-        protected void drawValues(string s, int offsetX = 0, int offsetY = 0) {
+        protected void drawValues(string s, int offsetX, int offsetY) {
             if (s == null) {
                 return;
             }
@@ -633,11 +639,24 @@ namespace Circuit.UI {
             Context.DrawRightText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
         }
 
+        protected void drawValue(double value) {
+            if (ControlPanel.ChkShowValues.Checked) {
+                var s = Utils.UnitText(value);
+                if (mVertical) {
+                    Context.DrawCenteredVText(s, mValuePos);
+                } else if (mHorizontal) {
+                    Context.DrawCenteredText(s, mValuePos);
+                } else {
+                    Context.DrawLeftText(s, mValuePos.X, mValuePos.Y);
+                }
+            }
+        }
+
         /// <summary>
         /// draw component name
         /// </summary>
         /// <param name="s"></param>
-        protected void drawName(string s, int offsetX = 0, int offsetY = 0) {
+        protected void drawName(string s, int offsetX, int offsetY) {
             if (s == null) {
                 return;
             }
@@ -651,19 +670,6 @@ namespace Circuit.UI {
                 yc = (DumpInfo.P2.Y + DumpInfo.P1.Y) / 2;
             }
             Context.DrawLeftText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
-        }
-
-        protected void drawValue(double value) {
-            if (ControlPanel.ChkShowValues.Checked) {
-                var s = Utils.UnitText(value);
-                if (mVertical) {
-                    Context.DrawCenteredVText(s, mValuePos);
-                } else if (mHorizontal) {
-                    Context.DrawCenteredText(s, mValuePos);
-                } else {
-                    Context.DrawLeftText(s, mValuePos.X, mValuePos.Y);
-                }
-            }
         }
 
         protected void drawName() {

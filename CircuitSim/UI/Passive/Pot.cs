@@ -28,6 +28,7 @@ namespace Circuit.UI.Passive {
 
         TrackBar mSlider;
         Label mLabel;
+        string mName;
 
         public Pot(Point pos) : base(pos) {
             Elm = new ElmPot();
@@ -108,9 +109,8 @@ namespace Circuit.UI.Passive {
             double clen = Math.Abs(offset) - 8;
             Utils.InterpPoint(mCorner2, mArrowPoint, ref mArrow1, ref mArrow2, (clen - 8) / clen, 4);
 
-            setNamePos();
-
             setPoly();
+            setTextPos();
         }
 
         public override void Draw(CustomGraphics g) {
@@ -189,12 +189,10 @@ namespace Circuit.UI.Passive {
                     g.DrawLeftText(s2, Math.Max(mArrow1.X, mArrow2.X), y);
                 }
             }
-            if (ControlPanel.ChkShowName.Checked) {
-                if (mVertical) {
-                    g.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos);
-                } else {
-                    g.DrawLeftText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
-                }
+            if (mVertical) {
+                g.DrawCenteredVText(mName, mNamePos);
+            } else {
+                g.DrawLeftText(mName, mNamePos.X, mNamePos.Y);
             }
         }
 
@@ -234,11 +232,11 @@ namespace Circuit.UI.Passive {
                 DumpInfo.ReferenceName = ei.Text;
                 mLabel.Text = DumpInfo.ReferenceName;
                 ControlPanel.SetSliderPanelHeight();
-                setNamePos();
             }
             if (n == 2) {
                 DumpInfo.Flags = ei.ChangeFlag(DumpInfo.Flags, FLAG_SHOW_VALUES);
             }
+            setTextPos();
         }
 
         void setPoly() {
@@ -277,8 +275,19 @@ namespace Circuit.UI.Passive {
             interpLeadAB(ref mRect1[SEGMENTS + 1], ref mRect2[SEGMENTS + 1], 1, HS);
         }
 
-        void setNamePos() {
-            var wn = Context.GetTextSize(DumpInfo.ReferenceName).Width * 0.5;
+        void setTextPos() {
+            mName = "";
+            if (ControlPanel.ChkShowName.Checked) {
+                mName += DumpInfo.ReferenceName;
+            }
+            if (ControlPanel.ChkShowValues.Checked) {
+                if (!string.IsNullOrEmpty(mName)) {
+                    mName += " ";
+                }
+                var ce = (ElmPot)Elm;
+                mName += Utils.UnitText(ce.MaxResistance);
+            }
+            var wn = Context.GetTextSize(mName).Width * 0.5;
             if (Math.Abs(mDiff.Y) < Math.Abs(mDiff.X)) {
                 if (0 < mDiff.X) {
                     /* upper slider */

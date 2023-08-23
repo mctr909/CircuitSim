@@ -7,7 +7,7 @@ namespace Circuit.UI.Active {
     class Transistor : BaseUI {
         const int FLAG_FLIP = 1;
 
-        const int BODY_LEN = 12;
+        const int BODY_LEN = 13;
         const int HS = 12;
         const int BASE_THICK = 2;
 
@@ -69,7 +69,7 @@ namespace Circuit.UI.Active {
 
             /* calc collector, emitter posts */
             var hsm = (HS / 8 + 1) * 8;
-            var hs1 = HS * mDsign * ce.NPN;
+            var hs1 = (HS - 1) * mDsign * ce.NPN;
             var hs2 = hsm * mDsign * ce.NPN;
             interpPostAB(ref mPosC[1], ref mPosE[1], 1, hs1);
             interpPostAB(ref mPosC[2], ref mPosE[2], 1, hs2);
@@ -80,7 +80,7 @@ namespace Circuit.UI.Active {
             interpPostAB(ref rect[2], ref rect[3], 1 - (BODY_LEN - BASE_THICK) / mLen, HS);
 
             /* calc points where collector/emitter leads contact rectangle */
-            interpPostAB(ref mPosC[0], ref mPosE[0], 1 - (BODY_LEN - BASE_THICK) / mLen, 6 * mDsign * ce.NPN);
+            interpPostAB(ref mPosC[0], ref mPosE[0], 1 - (BODY_LEN - BASE_THICK * 0.5) / mLen, 5 * mDsign * ce.NPN);
 
             /* calc point where base lead contacts rectangle */
             if (mDsign < 0) {
@@ -96,9 +96,9 @@ namespace Circuit.UI.Active {
             if (ce.NPN == 1) {
                 Utils.CreateArrow(mPosE[0], mPosE[1], out mArrowPoly, 8, 3);
             } else {
-                var pt = new Point();
-                interpPost(ref pt, 1 - BODY_LEN / mLen, -5 * mDsign * ce.NPN);
-                Utils.CreateArrow(mPosE[1], pt, out mArrowPoly, 8, 3);
+                var b = new PointF();
+                interpPost(ref b, 1 - (BODY_LEN - 1) / mLen, -5 * mDsign * ce.NPN);
+                Utils.CreateArrow(mPosE[1], b, out mArrowPoly, 8, 3);
             }
             setTextPos();
 
@@ -148,7 +148,11 @@ namespace Circuit.UI.Active {
             updateDotCount(-ce.Ic, ref mCurCountC);
             updateDotCount(-ce.Ie, ref mCurCountE);
             drawCurrent(mTbase, Elm.Post[0], mCurCountB);
-            drawCurrent(mPosE[1], mTbase, mCurCountB);
+            if (0 <= ce.NPN * ce.Ic) {
+                drawCurrent(mPosE[1], mTbase, mCurCountB);
+            } else {
+                drawCurrent(mPosC[1], mTbase, mCurCountB);
+            }
             drawCurrent(mPosE[1], mPosC[1], mCurCountC);
 
             if (ControlPanel.ChkShowName.Checked) {

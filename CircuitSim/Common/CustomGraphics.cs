@@ -142,7 +142,7 @@ namespace Circuit {
             mG.DrawString(s, mTextFontL, mTextBrush, p.X, p.Y + 1, mAlignCenter);
         }
 
-        public virtual void DrawCenteredVText(string s, Point p) {
+        public virtual void DrawCenteredVText(string s, PointF p) {
             mG.TranslateTransform(p.X, p.Y);
             mG.RotateTransform(-90);
             mG.DrawString(s, mTextFont, mTextBrush, 0, 0, mAlignCenterV);

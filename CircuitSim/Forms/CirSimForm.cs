@@ -2017,31 +2017,6 @@ namespace Circuit {
                 mAnalyzeFlag = false;
             }
 
-            var g = BaseUI.Context;
-            PDF.Page pdfG = null;
-            PDF.Page pdfScopeG = null;
-            var bkIsRun = IsRunning;
-            var bkPrint = ControlPanel.ChkPrintable.Checked;
-            if (g.DoPrint) {
-                g.DoPrint = false;
-                if (bkIsRun) {
-                    IsRunning = false;
-                }
-                if (bkPrint) {
-                    ControlPanel.ChkPrintable.Checked = false;
-                }
-                pdfG = new PDF.Page(g.Width, g.Height);
-                pdfScopeG = new PDF.Page(mScopeForm.Width, mScopeForm.Height);
-                g = pdfG;
-                BaseUI.Context = pdfG;
-            }
-
-            if (ControlPanel.ChkPrintable.Checked) {
-                g.Clear(Color.White);
-            } else {
-                g.Clear(Color.Black);
-            }
-
             if (IsRunning) {
                 try {
                     runCircuit(didAnalyze);
@@ -2068,90 +2043,27 @@ namespace Circuit {
                 mLastSysTime = sysTime;
             }
 
-            g.ScrollBoard(mScroll);
-            {
-                if (null == pdfG) {
-                    var pdfX0 = 0;
-                    var pdfX1 = (int)PDF.Page.Width * 2;
-                    var pdfY0 = 0;
-                    var pdfY1 = (int)PDF.Page.Height * 2;
-                    g.DrawColor = Color.Yellow;
-                    g.DrawLine(pdfX0, pdfY0, pdfX1, pdfY0);
-                    g.DrawLine(pdfX1, pdfY0, pdfX1, pdfY1);
-                    g.DrawLine(pdfX1, pdfY1, pdfX0, pdfY1);
-                    g.DrawLine(pdfX0, pdfY1, pdfX0, pdfY0);
+            var g = BaseUI.Context;
+            PDF.Page pdfCircuit = null;
+            PDF.Page pdfScope = null;
+            var bkIsRun = IsRunning;
+            var bkPrint = ControlPanel.ChkPrintable.Checked;
+            if (g.DoPrint) {
+                g.DoPrint = false;
+                if (bkIsRun) {
+                    IsRunning = false;
                 }
-
-                /* draw elements */
-                for (int i = 0; i != UICount; i++) {
-                    var ui = UIList[i];
-                    ui.Draw(g);
-                    if (ui is Scope) {
-                        g.ScrollBoard(mScroll);
-                    }
+                if (bkPrint) {
+                    ControlPanel.ChkPrintable.Checked = false;
                 }
-
-                /* draw posts normally */
-                if (MouseMode != MOUSE_MODE.DRAG_ROW && MouseMode != MOUSE_MODE.DRAG_COLUMN) {
-                    for (int i = 0; i != Circuit.PostDrawList.Count; i++) {
-                        g.DrawPost(Circuit.PostDrawList[i]);
-                    }
-                }
-
-                /* for some mouse modes, what matters is not the posts but the endpoints (which are only
-                /* the same for 2-terminal elements).  We draw those now if needed */
-                if (MouseMode == MOUSE_MODE.DRAG_ROW
-                    || MouseMode == MOUSE_MODE.DRAG_COLUMN
-                    || MouseMode == MOUSE_MODE.SPLIT
-                    || MouseMode == MOUSE_MODE.DRAG_ITEM) {
-                    for (int i = 0; i != UICount; i++) {
-                        var ce = GetUI(i);
-                        g.DrawPost(ce.DumpInfo.P1);
-                        g.DrawPost(ce.DumpInfo.P2);
-                        if (ce != Mouse.GripElm || MouseMode != MOUSE_MODE.SPLIT) {
-                            g.DrawHandle(ce.DumpInfo.P1);
-                            g.DrawHandle(ce.DumpInfo.P2);
-                        } else {
-                            ce.DrawHandles(g);
-                        }
-                    }
-                }
-
-                /* draw handles for elm we're creating */
-                if ((MouseMode == MOUSE_MODE.SELECT) && Mouse.GripElm != null) {
-                    Mouse.GripElm.DrawHandles(g);
-                }
-
-                /* draw handles for elm we're dragging */
-                if (DragElm != null && (DragElm.DumpInfo.P1.X != DragElm.DumpInfo.P2.X || DragElm.DumpInfo.P1.Y != DragElm.DumpInfo.P2.Y)) {
-                    DragElm.Draw(g);
-                    DragElm.DrawHandles(g);
-                }
-
-                /* draw bad connections.  do this last so they will not be overdrawn. */
-                for (int i = 0; i != Circuit.BadConnectionList.Count; i++) {
-                    var cn = Circuit.BadConnectionList[i];
-                    g.DrawHandle(cn);
-                }
-
-                if (0 < Mouse.SelectedArea.Width) {
-                    g.DrawColor = CustomGraphics.SelectColor;
-                    g.DrawRectangle(Mouse.SelectedArea);
-                }
-
-                /* draw cross hair */
-                if (ControlPanel.ChkCrossHair.Checked && MouseCursorX >= 0
-                    && MouseCursorX <= mCircuitArea.Width && MouseCursorY <= mCircuitArea.Height) {
-                    int x = SnapGrid(inverseTransformX(MouseCursorX));
-                    int y = SnapGrid(inverseTransformY(MouseCursorY));
-                    g.DrawColor = Color.Gray;
-                    g.DrawLine(x, inverseTransformY(0), x, inverseTransformY(mCircuitArea.Height));
-                    g.DrawLine(inverseTransformX(0), y, inverseTransformX(mCircuitArea.Width), y);
-                }
+                pdfCircuit = new PDF.Page(g.Width, g.Height);
+                pdfScope = new PDF.Page(mScopeForm.Width, mScopeForm.Height);
+                g = pdfCircuit;
+                BaseUI.Context = pdfCircuit;
             }
-            g.ClearTransform();
 
-            mScopeForm.Draw(pdfScopeG);
+            drawCircuit(g);
+            mScopeForm.Draw(pdfScope);
 
             if (null != mPixCir.Image) {
                 mPixCir.Image.Dispose();
@@ -2167,27 +2079,27 @@ namespace Circuit {
                 }
             }
 
-            if (null == pdfG) {
-                mBmp = new Bitmap(g.Width, g.Height);
-                mContext = Graphics.FromImage(mBmp);
-                BaseUI.Context.CopyTo(mContext);
-                mPixCir.Image = mBmp;
-            } else {
+            if (g is PDF.Page) {
                 var pdf = new PDF();
-                pdf.AddPage(pdfG);
-                pdf.AddPage(pdfScopeG);
+                pdf.AddPage(pdfCircuit);
+                pdf.AddPage(pdfScope);
                 var saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Filter = "PDFファイル(*.pdf)|*.pdf";
                 saveFileDialog.FileName = Path.GetFileNameWithoutExtension(mFileName);
                 saveFileDialog.ShowDialog();
                 try {
                     pdf.Save(saveFileDialog.FileName);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     MessageBox.Show(ex.ToString());
                 }
                 IsRunning = bkIsRun;
                 ControlPanel.ChkPrintable.Checked = bkPrint;
                 BaseUI.Context = CustomGraphics.FromImage(g.Width, g.Height);
+            } else {
+                mBmp = new Bitmap(g.Width, g.Height);
+                mContext = Graphics.FromImage(mBmp);
+                BaseUI.Context.CopyTo(mContext);
+                mPixCir.Image = mBmp;
             }
             mLastFrameTime = mLastTime;
         }
@@ -2240,6 +2152,91 @@ namespace Circuit {
                 }
             }
             mLastIterTime = lit;
+        }
+
+        static void drawCircuit(CustomGraphics g) {
+            g.Clear(ControlPanel.ChkPrintable.Checked ? Color.White : Color.Black);
+            g.ScrollBoard(mScroll);
+
+            if (!(g is PDF.Page)) {
+                var pdfX0 = 0;
+                var pdfX1 = (int)PDF.Page.Width * 2;
+                var pdfY0 = 0;
+                var pdfY1 = (int)PDF.Page.Height * 2;
+                g.DrawColor = Color.Yellow;
+                g.DrawLine(pdfX0, pdfY0, pdfX1, pdfY0);
+                g.DrawLine(pdfX1, pdfY0, pdfX1, pdfY1);
+                g.DrawLine(pdfX1, pdfY1, pdfX0, pdfY1);
+                g.DrawLine(pdfX0, pdfY1, pdfX0, pdfY0);
+            }
+
+            /* draw elements */
+            for (int i = 0; i != UICount; i++) {
+                var ui = UIList[i];
+                ui.Draw(g);
+                if (ui is Scope) {
+                    g.ScrollBoard(mScroll);
+                }
+            }
+
+            /* draw posts normally */
+            if (MouseMode != MOUSE_MODE.DRAG_ROW && MouseMode != MOUSE_MODE.DRAG_COLUMN) {
+                for (int i = 0; i != Circuit.PostDrawList.Count; i++) {
+                    g.DrawPost(Circuit.PostDrawList[i]);
+                }
+            }
+
+            /* for some mouse modes, what matters is not the posts but the endpoints (which are only
+            /* the same for 2-terminal elements).  We draw those now if needed */
+            if (MouseMode == MOUSE_MODE.DRAG_ROW
+                || MouseMode == MOUSE_MODE.DRAG_COLUMN
+                || MouseMode == MOUSE_MODE.SPLIT
+                || MouseMode == MOUSE_MODE.DRAG_ITEM) {
+                for (int i = 0; i != UICount; i++) {
+                    var ce = GetUI(i);
+                    g.DrawPost(ce.DumpInfo.P1);
+                    g.DrawPost(ce.DumpInfo.P2);
+                    if (ce != Mouse.GripElm || MouseMode != MOUSE_MODE.SPLIT) {
+                        g.DrawHandle(ce.DumpInfo.P1);
+                        g.DrawHandle(ce.DumpInfo.P2);
+                    } else {
+                        ce.DrawHandles(g);
+                    }
+                }
+            }
+
+            /* draw handles for elm we're creating */
+            if ((MouseMode == MOUSE_MODE.SELECT) && Mouse.GripElm != null) {
+                Mouse.GripElm.DrawHandles(g);
+            }
+
+            /* draw handles for elm we're dragging */
+            if (DragElm != null && (DragElm.DumpInfo.P1.X != DragElm.DumpInfo.P2.X || DragElm.DumpInfo.P1.Y != DragElm.DumpInfo.P2.Y)) {
+                DragElm.Draw(g);
+                DragElm.DrawHandles(g);
+            }
+
+            /* draw bad connections.  do this last so they will not be overdrawn. */
+            for (int i = 0; i != Circuit.BadConnectionList.Count; i++) {
+                var cn = Circuit.BadConnectionList[i];
+                g.DrawHandle(cn);
+            }
+
+            if (0 < Mouse.SelectedArea.Width) {
+                g.DrawColor = CustomGraphics.SelectColor;
+                g.DrawRectangle(Mouse.SelectedArea);
+            }
+
+            /* draw cross hair */
+            if (ControlPanel.ChkCrossHair.Checked && MouseCursorX >= 0
+                && MouseCursorX <= mCircuitArea.Width && MouseCursorY <= mCircuitArea.Height) {
+                int x = SnapGrid(inverseTransformX(MouseCursorX));
+                int y = SnapGrid(inverseTransformY(MouseCursorY));
+                g.DrawColor = Color.Gray;
+                g.DrawLine(x, inverseTransformY(0), x, inverseTransformY(mCircuitArea.Height));
+                g.DrawLine(inverseTransformX(0), y, inverseTransformX(mCircuitArea.Width), y);
+            }
+            g.ClearTransform();
         }
         #endregion
     }

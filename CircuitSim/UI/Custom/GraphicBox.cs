@@ -39,6 +39,7 @@ namespace Circuit.UI.Custom {
         }
 
         public override void Draw(CustomGraphics g) {
+            DumpInfo.P2 = CirSimForm.SnapGrid(DumpInfo.P2);
             DumpInfo.SetBbox(DumpInfo.P1, DumpInfo.P2);
             var x1 = DumpInfo.P1.X;
             var y1 = DumpInfo.P1.Y;

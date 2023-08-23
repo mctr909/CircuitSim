@@ -105,11 +105,23 @@ namespace Circuit {
 
             /* Show Values */
             ChkShowValues = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "値を表示" };
+            ChkShowValues.CheckedChanged += new EventHandler((s, e) => {
+                for (int i = 0; i != CirSimForm.UICount; i++) {
+                    var ce = CirSimForm.GetUI(i);
+                    ce.SetPoints();
+                }
+            });
             VerticalPanel.Controls.Add(ChkShowValues);
             ofsY += ChkShowValues.Height + 4;
 
             /* Show Name */
             ChkShowName = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "名前を表示" };
+            ChkShowName.CheckedChanged += new EventHandler((s, e) => {
+                for (int i = 0; i != CirSimForm.UICount; i++) {
+                    var ce = CirSimForm.GetUI(i);
+                    ce.SetPoints();
+                }
+            });
             VerticalPanel.Controls.Add(ChkShowName);
             ofsY += ChkShowName.Height + 4;
 
