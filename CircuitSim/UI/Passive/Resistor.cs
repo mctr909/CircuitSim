@@ -29,11 +29,7 @@ namespace Circuit.UI.Passive {
         public Resistor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             var elm = new ElmResistor();
             Elm = elm;
-            try {
-                elm.Resistance = st.nextTokenDouble();
-            } catch (Exception ex) {
-                throw new Exception("Resistor load error:{0}", ex);
-            }
+            elm.Resistance = st.nextTokenDouble(1e3);
         }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.RESISTOR; } }

@@ -38,16 +38,10 @@ namespace Circuit.UI.Active {
                 Console.WriteLine("model name wparams = " + ce.mModelName);
                 setup();
             }
-            mColorR = 1.0;
-            mColorG = 0.0;
-            mColorB = 0.0;
-            mMaxBrightnessCurrent = 0.01;
-            try {
-                mColorR = st.nextTokenDouble();
-                mColorG = st.nextTokenDouble();
-                mColorB = st.nextTokenDouble();
-                mMaxBrightnessCurrent = st.nextTokenDouble();
-            } catch { }
+            mColorR = st.nextTokenDouble(1.0);
+            mColorG = st.nextTokenDouble();
+            mColorB = st.nextTokenDouble();
+            mMaxBrightnessCurrent = st.nextTokenDouble(1e-3);
         }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }

@@ -20,7 +20,7 @@ namespace Circuit.UI.Passive {
             var elm = new ElmSwitchMulti();
             Elm = elm;
             elm.Position = st.nextTokenInt();
-            st.nextTokenBool(out elm.Momentary, false);
+            elm.Momentary = st.nextTokenBool(false);
             elm.Link = st.nextTokenInt();
             elm.ThrowCount = st.nextTokenInt();
             elm.AllocNodes();

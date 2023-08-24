@@ -27,7 +27,7 @@ namespace Circuit.Elements.Output {
 
         public ElmAmmeter(StringTokenizer st) : base() {
             Meter = st.nextTokenInt();
-            st.nextTokenEnum(out Scale, E_SCALE.AUTO);
+            Scale = st.nextTokenEnum(E_SCALE.AUTO);
         }
 
         public override int PostCount { get { return 2; } }

@@ -28,15 +28,11 @@ namespace Circuit.UI.Passive {
         public Transformer(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             var elm = new ElmTransformer();
             Elm = elm;
-            try {
-                elm.PInductance = st.nextTokenDouble();
-                elm.Ratio = st.nextTokenDouble();
-                elm.Currents[0] = st.nextTokenDouble();
-                elm.Currents[1] = st.nextTokenDouble();
-                elm.CouplingCoef = st.nextTokenDouble();
-            } catch (Exception ex) {
-                throw new Exception("Transformer load error:{0}", ex);
-            }
+            elm.PInductance = st.nextTokenDouble(1e3);
+            elm.Ratio = st.nextTokenDouble(1);
+            elm.Currents[0] = st.nextTokenDouble(0);
+            elm.Currents[1] = st.nextTokenDouble(0);
+            elm.CouplingCoef = st.nextTokenDouble(0.999);
             elm.AllocNodes();
             mNoDiagonal = true;
         }

@@ -29,15 +29,10 @@ namespace Circuit.UI.Active {
         }
 
         public Transistor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            var vbe = 0.0;
-            var vbc = 0.0;
-            var hfe = 100.0;
             var npn = st.nextTokenInt(1);
-            try {
-                vbe = st.nextTokenDouble();
-                vbc = st.nextTokenDouble();
-                hfe = st.nextTokenDouble();
-            } catch { }
+            var vbe = st.nextTokenDouble();
+            var vbc = st.nextTokenDouble();
+            var hfe = st.nextTokenDouble(100);
             Elm = new ElmTransistor(npn, hfe, vbe, vbc);
             setup();
         }

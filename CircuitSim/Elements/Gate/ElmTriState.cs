@@ -14,12 +14,8 @@ namespace Circuit.Elements.Gate {
         }
 
         public ElmTriState(StringTokenizer st) : base() {
-            Ron = 0.1;
-            Roff = 1e10;
-            try {
-                Ron = st.nextTokenDouble();
-                Roff = st.nextTokenDouble();
-            } catch { }
+            Ron = st.nextTokenDouble(0.1);
+            Roff = st.nextTokenDouble(1e10);
         }
 
         public override int PostCount { get { return 3; } }

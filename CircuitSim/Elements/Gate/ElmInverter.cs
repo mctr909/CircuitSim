@@ -13,13 +13,8 @@ namespace Circuit.Elements.Gate {
         }
 
         public ElmInverter(StringTokenizer st) : base() {
-            try {
-                SlewRate = st.nextTokenDouble();
-                HighVoltage = st.nextTokenDouble();
-            } catch {
-                SlewRate = 0.5;
-                HighVoltage = 5;
-            }
+            SlewRate = st.nextTokenDouble(0.5);
+            HighVoltage = st.nextTokenDouble(5);
         }
 
         public override int PostCount { get { return 2; } }

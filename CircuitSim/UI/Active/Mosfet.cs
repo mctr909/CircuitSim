@@ -30,12 +30,8 @@ namespace Circuit.UI.Active {
         }
 
         public Mosfet(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            var vt = ElmMosfet.DefaultThreshold;
-            var hfe = ElmMosfet.DefaultHfe;
-            try {
-                vt = st.nextTokenDouble();
-                hfe = st.nextTokenDouble();
-            } catch { }
+            var vt = st.nextTokenDouble(ElmMosfet.DefaultThreshold);
+            var hfe = st.nextTokenDouble(ElmMosfet.DefaultHfe);
             mNoDiagonal = true;
             Elm = new ElmMosfet((f & FLAG_PNP) != 0, vt, hfe);
         }

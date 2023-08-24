@@ -30,12 +30,8 @@ namespace Circuit.Elements.Gate {
 
         public ElmGate(StringTokenizer st) : base() {
             InputCount = st.nextTokenInt(InputCount);
-            double lastOutputVoltage = st.nextTokenDouble();
-            try {
-                HighVoltage = st.nextTokenDouble();
-            } catch {
-                HighVoltage = 5;
-            }
+            var lastOutputVoltage = st.nextTokenDouble();
+            HighVoltage = st.nextTokenDouble(5);
             LastOutput = HighVoltage * 0.5 < lastOutputVoltage;
         }
 

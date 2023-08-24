@@ -182,15 +182,15 @@ namespace Circuit {
                 if (ei.LabelBox == null) {  // haven't created UI yet?
                     continue;
                 }
-                try {
+                {
                     adj.SliderText = ei.LabelBox.Text;
                     adj.Label.Text = adj.SliderText;
-                    double d = ElementInfoDialog.ParseUnits(ei.MinBox.Text);
+                    var d = ElementInfoDialog.ParseUnits(ei.MinBox.Text);
                     adj.MinValue = d;
                     d = ElementInfoDialog.ParseUnits(ei.MaxBox.Text);
                     adj.MaxValue = d;
                     adj.Value = ei.Value;
-                } catch { }
+                }
             }
         }
 

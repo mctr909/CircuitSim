@@ -20,10 +20,8 @@ namespace Circuit.UI.Active {
         public AnalogSwitch(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
             var elm = new ElmAnalogSwitch();
             Elm = elm;
-            try {
-                elm.Ron = st.nextTokenDouble();
-                elm.Roff = st.nextTokenDouble();
-            } catch { }
+            elm.Ron = st.nextTokenDouble(1e-3);
+            elm.Roff = st.nextTokenDouble(1e9);
         }
 
         protected override void dump(List<object> optionList) {

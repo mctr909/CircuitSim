@@ -13,20 +13,18 @@ namespace Circuit.Elements.Input {
         public ElmAM() : base() {
             MaxVoltage = 5;
             CarrierFreq = 1000;
-            SignalFreq = 40;
+            SignalFreq = 50;
             Depth = 0.1;
             Phase = 0.0;
             Reset();
         }
 
         public ElmAM(StringTokenizer st) : base() {
-            try {
-                CarrierFreq = st.nextTokenDouble();
-                SignalFreq = st.nextTokenDouble();
-                MaxVoltage = st.nextTokenDouble();
-                Phase = st.nextTokenDouble();
-                Depth = st.nextTokenDouble();
-            } catch { }
+            CarrierFreq = st.nextTokenDouble(1000);
+            SignalFreq = st.nextTokenDouble(50);
+            MaxVoltage = st.nextTokenDouble(5);
+            Phase = st.nextTokenDouble();
+            Depth = st.nextTokenDouble(0.1);
             Reset();
         }
 

@@ -31,12 +31,8 @@ namespace Circuit.UI.Passive {
         public Capacitor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             var elm = new ElmCapacitor();
             Elm = elm;
-            try {
-                elm.Capacitance = st.nextTokenDouble();
-                elm.VoltDiff = st.nextTokenDouble();
-            } catch (Exception ex) {
-                throw new Exception("Capacitor load error:{0}", ex);
-            }
+            elm.Capacitance = st.nextTokenDouble(1e-5);
+            elm.VoltDiff = st.nextTokenDouble(0);
         }
         
         public override DUMP_ID Shortcut { get { return DUMP_ID.CAPACITOR; } }

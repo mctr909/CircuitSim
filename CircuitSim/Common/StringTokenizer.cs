@@ -36,25 +36,21 @@ namespace Circuit {
             }
         }
 
-        public bool nextTokenEnum<T>(out T returnValue, T defaultValue) {
+        public T nextTokenEnum<T>(T defaultValue) {
             try {
-                returnValue = (T)Enum.Parse(typeof(T), mList[mIndex++]);
-                return true;
+                return (T)Enum.Parse(typeof(T), mList[mIndex++]);
             } catch (Exception e) {
                 Console.WriteLine(e);
-                returnValue = defaultValue;
-                return false;
+                return defaultValue;
             }
         }
 
-        public bool nextTokenBool(out bool returnValue, bool defaultValue) {
+        public bool nextTokenBool(bool defaultValue) {
             try {
-                returnValue = bool.Parse(mList[mIndex++]);
-                return true;
+                return bool.Parse(mList[mIndex++]);
             } catch (Exception e) {
                 Console.WriteLine(e);
-                returnValue = defaultValue;
-                return false;
+                return defaultValue;
             }
         }
 
@@ -67,11 +63,12 @@ namespace Circuit {
             }
         }
 
-        public double nextTokenDouble() {
+        public double nextTokenDouble(double defaultValue = 0) {
             try {
                 return double.Parse(mList[mIndex++]);
-            } catch {
-                return 0;
+            } catch (Exception e) {
+                Console.WriteLine(e);
+                return defaultValue;
             }
         }
     }

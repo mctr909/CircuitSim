@@ -56,6 +56,9 @@ namespace Circuit {
         }
 
         public void CreateSlider(ElementInfo ei, int group = 0) {
+            if (null == ei) {
+                return;
+            }
             int intValue = (int)((ei.Value - MinValue) * 100 / (MaxValue - MinValue));
             ControlPanel.AddSlider(Label = new Label() {
                 Text = SliderText

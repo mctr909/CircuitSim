@@ -10,11 +10,7 @@
         }
 
         public ElmLogicOutput(StringTokenizer st) : base() {
-            try {
-                mThreshold = st.nextTokenDouble();
-            } catch {
-                mThreshold = 2.5;
-            }
+            mThreshold = st.nextTokenDouble(2.5);
         }
 
         public override int PostCount { get { return 1; } }

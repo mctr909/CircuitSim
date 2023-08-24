@@ -11,13 +11,8 @@ namespace Circuit.Elements.Input {
         }
 
         public ElmLogicInput(StringTokenizer st) {
-            try {
-                mHiV = st.nextTokenDouble();
-                mLoV = st.nextTokenDouble();
-            } catch {
-                mHiV = 5;
-                mLoV = 0;
-            }
+            mHiV = st.nextTokenDouble(5);
+            mLoV = st.nextTokenDouble(0);
         }
 
         public override int AnaVoltageSourceCount { get { return 1; } }

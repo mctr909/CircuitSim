@@ -20,13 +20,9 @@ namespace Circuit.UI.Passive {
         }
 
         public Inductor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            try {
-                var ind = st.nextTokenDouble();
-                var c = st.nextTokenDouble();
-                Elm = new ElmInductor(ind, c);
-            } catch (Exception ex) {
-                throw new Exception("Inductor load error:{0}", ex);
-            }
+            var ind = st.nextTokenDouble(1e-4);
+            var c = st.nextTokenDouble(0);
+            Elm = new ElmInductor(ind, c);
         }
 
         public override DUMP_ID Shortcut { get { return DUMP_ID.INDUCTOR; } }

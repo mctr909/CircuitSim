@@ -77,9 +77,7 @@ namespace Circuit.Elements.Active {
                 }
             } else {
                 if (forwardDrop) {
-                    try {
-                        fwdrop = st.nextTokenDouble();
-                    } catch { }
+                    fwdrop = st.nextTokenDouble();
                 }
                 mModel = DiodeModel.GetModelWithParameters(fwdrop, zvoltage);
                 mModelName = mModel.Name;

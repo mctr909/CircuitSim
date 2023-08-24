@@ -20,19 +20,11 @@ namespace Circuit.Elements.Gate {
         }
 
         public ElmInvertingSchmitt(StringTokenizer st) : base() {
-            try {
-                SlewRate = st.nextTokenDouble();
-                LowerTrigger = st.nextTokenDouble();
-                UpperTrigger = st.nextTokenDouble();
-                LogicOnLevel = st.nextTokenDouble();
-                LogicOffLevel = st.nextTokenDouble();
-            } catch {
-                SlewRate = 0.5;
-                LowerTrigger = 1.66;
-                UpperTrigger = 3.33;
-                LogicOnLevel = 5;
-                LogicOffLevel = 0;
-            }
+            SlewRate = st.nextTokenDouble(0.5);
+            LowerTrigger = st.nextTokenDouble(1.66);
+            UpperTrigger = st.nextTokenDouble(3.33);
+            LogicOnLevel = st.nextTokenDouble(5);
+            LogicOffLevel = st.nextTokenDouble(0);
         }
 
         public override int PostCount { get { return 2; } }

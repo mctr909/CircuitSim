@@ -19,10 +19,7 @@ namespace Circuit.UI.Input {
         }
 
         public Current(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            try {
-                Elm = new ElmCurrent(st.nextTokenDouble());
-            } catch {
-            }
+            Elm = new ElmCurrent(st.nextTokenDouble());
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.CURRENT; } }

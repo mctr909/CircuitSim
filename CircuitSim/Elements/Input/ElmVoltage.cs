@@ -30,22 +30,17 @@ namespace Circuit.Elements.Input {
             WaveForm = wf;
             MaxVoltage = 5;
             Frequency = 100;
-            DutyCycle = .5;
+            DutyCycle = 0.5;
         }
 
         public ElmVoltage(StringTokenizer st) {
-            Frequency = 100;
-            MaxVoltage = 5;
-            st.nextTokenEnum(out WaveForm, WAVEFORM.DC);
-            DutyCycle = .5;
-            try {
-                Frequency = st.nextTokenDouble();
-                MaxVoltage = st.nextTokenDouble();
-                Bias = st.nextTokenDouble();
-                Phase = st.nextTokenDouble() * Math.PI / 180;
-                PhaseOffset = st.nextTokenDouble() * Math.PI / 180;
-                DutyCycle = st.nextTokenDouble();
-            } catch { }
+            WaveForm = st.nextTokenEnum(WAVEFORM.DC);
+            Frequency = st.nextTokenDouble(100);
+            MaxVoltage = st.nextTokenDouble(5);
+            Bias = st.nextTokenDouble();
+            Phase = st.nextTokenDouble() * Math.PI / 180;
+            PhaseOffset = st.nextTokenDouble() * Math.PI / 180;
+            DutyCycle = st.nextTokenDouble(0.5);
         }
 
         public override int PostCount { get { return 2; } }

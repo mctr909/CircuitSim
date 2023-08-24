@@ -68,10 +68,8 @@ namespace Circuit.Forms {
         }
 
         private void txtManualScale_TextChanged(object sender, EventArgs e) {
-            try {
-                double d = ElementInfoDialog.ParseUnits(txtManualScale.Text);
-                mScope.ScaleValue = d;
-            } catch { }
+            var d = ElementInfoDialog.ParseUnits(txtManualScale.Text);
+            mScope.ScaleValue = d;
         }
 
         private void txtLabel_TextChanged(object sender, EventArgs e) {

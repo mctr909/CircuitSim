@@ -1230,15 +1230,13 @@ namespace Circuit {
                         var f = st.nextTokenInt();
                         var dumpId = MenuItems.GetDumpIdFromString(type);
                         var newce = MenuItems.CreateCe(dumpId, p1, p2, f, st);
-                        try {
-                            if (st.HasMoreTokens) {
-                                string v;
-                                st.nextToken(out v);
-                                newce.DumpInfo.ReferenceName = Utils.Unescape(v);
-                            } else {
-                                newce.DumpInfo.ReferenceName = "";
-                            }
-                        } catch { }
+                        if (st.HasMoreTokens) {
+                            string v;
+                            st.nextToken(out v);
+                            newce.DumpInfo.ReferenceName = Utils.Unescape(v);
+                        } else {
+                            newce.DumpInfo.ReferenceName = "";
+                        }
                         if (newce == null) {
                             Console.WriteLine("unrecognized dump type: " + type);
                             break;

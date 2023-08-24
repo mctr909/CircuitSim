@@ -172,8 +172,7 @@ namespace Circuit.Elements.Custom {
                 string line;
                 modelLinet.nextToken(out line);
                 var stModel = new StringTokenizer(line, " +\t\n\r\f");
-                ELEMENTS ceType;
-                stModel.nextTokenEnum(out ceType, ELEMENTS.INVALID);
+                var ceType = stModel.nextTokenEnum(ELEMENTS.INVALID);
                 var newce = MenuItems.ConstructElement(ceType);
                 if (stIn != null) {
                     var tint = newce.DumpType;
