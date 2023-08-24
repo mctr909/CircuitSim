@@ -620,6 +620,7 @@ namespace Circuit {
         }
 
         public static void SetSimRunning(bool s) {
+            Console.WriteLine(Circuit.StopMessage);
             if (s) {
                 if (Circuit.StopMessage != null) {
                     return;

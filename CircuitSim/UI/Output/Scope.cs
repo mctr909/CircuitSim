@@ -695,6 +695,8 @@ namespace Circuit.UI.Output {
                         Plots.Add(p);
                     }
                 } catch (Exception ex) {
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.StackTrace);
                     throw ex;
                 }
 

@@ -159,7 +159,7 @@ namespace Circuit {
             public double Value;
         }
 
-        const int SubIterMax = 100;
+        const int SubIterMax = 1000;
         const bool DEBUG = false;
 
         public static double[,] Matrix;
