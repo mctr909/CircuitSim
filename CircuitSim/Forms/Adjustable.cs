@@ -74,7 +74,9 @@ namespace Circuit {
                 Width = 175,
                 Height = 23
             });
-            Slider.ValueChanged += UI.CreateSlider(ei, this);
+            Slider.ValueChanged += new System.EventHandler((s, e) => {
+                UI.SetPoints();
+            });
         }
 
         public void DeleteSlider() {
