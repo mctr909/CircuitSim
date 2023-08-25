@@ -956,8 +956,7 @@ namespace Circuit {
                     }
                     if (double.IsNaN(res) || double.IsInfinity(res)) {
                         Console.WriteLine((ri.IsConst ? ("RowInfo[" + j + "]") : ("RightSide[" + ri.MapCol + "]")) + " is NaN/infinite");
-                        Converged = false;
-                        break;
+                        return false;
                     }
                     if (j < Nodes.Count - 1) {
                         var cn = getCircuitNode(j + 1);

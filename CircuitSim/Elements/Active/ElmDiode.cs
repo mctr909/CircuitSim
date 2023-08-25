@@ -141,9 +141,7 @@ namespace Circuit.Elements.Active {
 
         public override void CirDoIteration() {
             var voltdiff = Volts[0] - Volts[mDiodeEndNode];
-
-            /* used to have 0.1 here, but needed 0.01 for peak detector */
-            if (0.01 < Math.Abs(voltdiff - mLastVoltDiff)) {
+            if (0.001 < Math.Abs(voltdiff - mLastVoltDiff)) {
                 Circuit.Converged = false;
             }
 

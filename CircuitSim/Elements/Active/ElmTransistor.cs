@@ -84,7 +84,7 @@ namespace Circuit.Elements.Active {
         public override void CirDoIteration() {
             double vbc = Volts[IdxB] - Volts[IdxC]; /* typically negative */
             double vbe = Volts[IdxB] - Volts[IdxE]; /* typically positive */
-            if (0.01 < Math.Abs(vbc - mLastVbc) || 0.01 < Math.Abs(vbe - mLastVbe)) {
+            if (0.001 < Math.Abs(vbc - mLastVbc) || 0.001 < Math.Abs(vbe - mLastVbe)) {
                 /* not converge 0.01 */
                 Circuit.Converged = false;
             }

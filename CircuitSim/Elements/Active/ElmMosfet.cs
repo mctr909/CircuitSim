@@ -286,8 +286,7 @@ namespace Circuit.Elements.Active {
         }
 
         static void DiodeDoStep(int n0, int n1, double voltdiff, ref double lastVoltDiff) {
-            /* used to have 0.1 here, but needed 0.01 for peak detector */
-            if (0.01 < Math.Abs(voltdiff - lastVoltDiff)) {
+            if (0.001 < Math.Abs(voltdiff - lastVoltDiff)) {
                 Circuit.Converged = false;
             }
 
