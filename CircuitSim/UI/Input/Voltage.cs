@@ -51,8 +51,11 @@ namespace Circuit.UI.Input {
         const int FLAG_PULSE_DUTY = 4;
         const double DEFAULT_PULSE_DUTY = 0.5;
 
-        protected const int BODY_LEN = 30;
+        protected const int BODY_LEN = 32;
         const int BODY_LEN_DC = 6;
+        const int DX = 12;
+        const int DX_H = 6;
+        const int H = 10;
 
         public const string VALUE_NAME_V = "電圧(V)";
         public const string VALUE_NAME_AMP = "振幅(V)";
@@ -67,6 +70,8 @@ namespace Circuit.UI.Input {
 
         PointF mPs1;
         PointF mPs2;
+        PointF mPs3;
+        PointF mPs4;
         PointF[] mWaveFormPos;
         Point mTextPos;
 
@@ -119,58 +124,29 @@ namespace Circuit.UI.Input {
             } else {
                 interpPost(ref mTextPos, (mLen / 2 + 0.6 * BODY_LEN) / mLen, 7 * sign);
             }
-        }
 
-        public override void Draw(CustomGraphics g) {
             DumpInfo.SetBbox(DumpInfo.P1, DumpInfo.P2);
-            draw2Leads();
-            var elm = (ElmVoltage)Elm;
             if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                 int hs = 10;
                 setBbox(hs);
-
                 interpLeadAB(ref mPs1, ref mPs2, 0, hs * 0.5);
-                drawLine(mPs1, mPs2);
-
-                interpLeadAB(ref mPs1, ref mPs2, 1, hs);
-                drawLine(mPs1, mPs2);
-
-                string s = Utils.UnitText(elm.MaxVoltage, "V");
-                g.DrawRightText(s, mTextPos.X, mTextPos.Y);
+                interpLeadAB(ref mPs3, ref mPs4, 1, hs);
             } else {
                 setBbox(BODY_LEN);
                 interpLead(ref mPs1, 0.5);
-                drawWaveform(mPs1);
-                string inds;
-                if (0 < elm.Bias || (0 == elm.Bias &&
-                    (ElmVoltage.WAVEFORM.PULSE_MONOPOLE == elm.WaveForm || ElmVoltage.WAVEFORM.PULSE_DIPOLE == elm.WaveForm))) {
-                    inds = "+";
-                } else {
-                    inds = "*";
-                }
-                drawCenteredLText(inds, mTextPos, true);
             }
 
-            updateDotCount();
-
-            if (CirSimForm.DragElm != this) {
-                if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
-                    drawCurrent(Elm.Post[0], Elm.Post[1], CurCount);
-                } else {
-                    drawCurrentA(CurCount);
-                    drawCurrentB(CurCount);
-                }
-            }
-            drawPosts();
+            setWaveform();
         }
 
-        protected void drawWaveform(PointF p) {
-            var x = p.X;
-            var y = p.Y;
-            var elm = (ElmVoltage)Elm;
-
-            if (elm.WaveForm != ElmVoltage.WAVEFORM.NOISE) {
-                drawCircle(p, BODY_LEN / 2);
+        void setWaveform() {
+            float x, y;
+            if (this is Rail) {
+                x = Elm.Post[1].X;
+                y = Elm.Post[1].Y;
+            } else {
+                x = mPs1.X;
+                y = mPs1.Y;
             }
 
             DumpInfo.AdjustBbox(
@@ -178,22 +154,14 @@ namespace Circuit.UI.Input {
                 (int)(x + BODY_LEN), (int)(y + BODY_LEN)
             );
 
-            switch (elm.WaveForm) {
-            case ElmVoltage.WAVEFORM.DC:
-                return;
-            case ElmVoltage.WAVEFORM.NOISE:
-                drawCenteredText("Noise", p, true);
-                return;
-            }
-
-            const int DX = 12;
-            const int DX_H = 6;
-            const int H = 8;
+            var elm = (ElmVoltage)Elm;
             var duty = Math.Min(1, Math.Max(0, elm.DutyCycle));
-            var w = (float)(x - DX + 2 * DX * duty);
-            var wh = (float)(x - DX + DX * duty);
-            var wp = (float)(DX * duty / 3.0);
+            var w = (float)(2 * DX * duty);
+            var w2 = (float)(DX * duty);
+            var w3 = (float)(DX * duty / 3.0);
             var ph = 0 < duty ? H : 0;
+            var pp = 0 == duty ? 0 : 1;
+            var pm = 1 == duty ? 0 : 1;
 
             switch (elm.WaveForm) {
             case ElmVoltage.WAVEFORM.SIN: {
@@ -208,10 +176,10 @@ namespace Circuit.UI.Input {
             case ElmVoltage.WAVEFORM.SQUARE:
                 mWaveFormPos = new PointF[] {
                     new PointF(x - DX, y),
-                    new PointF(x - DX, y - H),
-                    new PointF(w, y - H),
-                    new PointF(w, y + H),
-                    new PointF(x + DX, y + H),
+                    new PointF(x - DX, y - H * pp),
+                    new PointF(x - DX + w, y - H * pp),
+                    new PointF(x - DX + w, y + H * pm),
+                    new PointF(x + DX, y + H * pm),
                     new PointF(x + DX, y)
                 };
                 break;
@@ -237,16 +205,16 @@ namespace Circuit.UI.Input {
                     mWaveFormPos = new PointF[] {
                         new PointF(x - DX, y),
                         new PointF(x - DX, y + ph),
-                        new PointF(w, y + ph),
-                        new PointF(w, y),
+                        new PointF(x - DX + w, y + ph),
+                        new PointF(x - DX + w, y),
                         new PointF(x + DX, y)
                     };
                 } else {
                     mWaveFormPos = new PointF[] {
                         new PointF(x - DX, y),
                         new PointF(x - DX, y - ph),
-                        new PointF(w, y - ph),
-                        new PointF(w, y),
+                        new PointF(x - DX + w, y - ph),
+                        new PointF(x - DX + w, y),
                         new PointF(x + DX, y)
                     };
                 }
@@ -255,18 +223,33 @@ namespace Circuit.UI.Input {
                 mWaveFormPos = new PointF[] {
                     new PointF(x - DX, y),
                     new PointF(x - DX, y - ph),
-                    new PointF(wh, y - ph),
-                    new PointF(wh, y),
+                    new PointF(x - DX + w2, y - ph),
+                    new PointF(x - DX + w2, y),
                     new PointF(x, y),
                     new PointF(x, y + ph),
-                    new PointF(wh + DX, y + ph),
-                    new PointF(wh + DX, y),
+                    new PointF(x + w2, y + ph),
+                    new PointF(x + w2, y),
                     new PointF(x + DX, y)
                 };
                 break;
             case ElmVoltage.WAVEFORM.PWM_MONOPOLE:
                 mWaveFormPos = new PointF[] {
                     new PointF(x - DX, y),
+                    new PointF(x - DX, y - H),
+                    new PointF(x - DX, y),
+                    new PointF(x - DX_H - w3, y),
+                    new PointF(x - DX_H - w3, y - H),
+                    new PointF(x - DX_H + w3, y - H),
+                    new PointF(x - DX_H + w3, y),
+                    new PointF(x, y),
+                    new PointF(x, y - H),
+                    new PointF(x, y),
+                    new PointF(x + DX_H - w3, y),
+                    new PointF(x + DX_H - w3, y - H),
+                    new PointF(x + DX_H + w3, y - H),
+                    new PointF(x + DX_H + w3, y),
+                    new PointF(x + DX, y),
+                    new PointF(x + DX, y - H),
                     new PointF(x + DX, y)
                 };
                 break;
@@ -276,20 +259,20 @@ namespace Circuit.UI.Input {
                     new PointF(x - DX + 1, y),
                     new PointF(x - DX + 1, y - ph),
                     new PointF(x - DX + 1, y),
-                    new PointF(x - DX_H - wp, y),
-                    new PointF(x - DX_H - wp, y - ph),
-                    new PointF(x - DX_H + wp, y - ph),
-                    new PointF(x - DX_H + wp, y),
+                    new PointF(x - DX_H - w3, y),
+                    new PointF(x - DX_H - w3, y - ph),
+                    new PointF(x - DX_H + w3, y - ph),
+                    new PointF(x - DX_H + w3, y),
                     new PointF(x - 1, y),
                     new PointF(x - 1, y - ph),
                     new PointF(x - 1, y),
                     new PointF(x + 1, y),
                     new PointF(x + 1, y + ph),
                     new PointF(x + 1, y),
-                    new PointF(x + DX_H - wp, y),
-                    new PointF(x + DX_H - wp, y + ph),
-                    new PointF(x + DX_H + wp, y + ph),
-                    new PointF(x + DX_H + wp, y),
+                    new PointF(x + DX_H - w3, y),
+                    new PointF(x + DX_H - w3, y + ph),
+                    new PointF(x + DX_H + w3, y + ph),
+                    new PointF(x + DX_H + w3, y),
                     new PointF(x + DX - 1, y),
                     new PointF(x + DX - 1, y + ph),
                     new PointF(x + DX - 1, y),
@@ -302,10 +285,10 @@ namespace Circuit.UI.Input {
                     new PointF(x - DX + 1, y),
                     new PointF(x - DX + 1, y - ph),
                     new PointF(x - DX + 1, y),
-                    new PointF(x - DX_H - wp, y),
-                    new PointF(x - DX_H - wp, y - ph),
-                    new PointF(x - DX_H + wp, y - ph),
-                    new PointF(x - DX_H + wp, y),
+                    new PointF(x - DX_H - w3, y),
+                    new PointF(x - DX_H - w3, y - ph),
+                    new PointF(x - DX_H + w3, y - ph),
+                    new PointF(x - DX_H + w3, y),
                     new PointF(x - 1, y),
                     new PointF(x - 1, y - ph),
                     new PointF(x - 1, y),
@@ -318,10 +301,10 @@ namespace Circuit.UI.Input {
                     new PointF(x + 1, y),
                     new PointF(x + 1, y - ph),
                     new PointF(x + 1, y),
-                    new PointF(x + DX_H - wp, y),
-                    new PointF(x + DX_H - wp, y - ph),
-                    new PointF(x + DX_H + wp, y - ph),
-                    new PointF(x + DX_H + wp, y),
+                    new PointF(x + DX_H - w3, y),
+                    new PointF(x + DX_H - w3, y - ph),
+                    new PointF(x + DX_H + w3, y - ph),
+                    new PointF(x + DX_H + w3, y),
                     new PointF(x + DX - 1, y),
                     new PointF(x + DX - 1, y - ph),
                     new PointF(x + DX - 1, y),
@@ -335,18 +318,57 @@ namespace Circuit.UI.Input {
                 };
                 break;
             }
-            drawPolygon(mWaveFormPos);
+        }
 
-            if (elm.WaveForm != ElmVoltage.WAVEFORM.NOISE) {
-                if (ControlPanel.ChkShowValues.Checked) {
-                    var s = Utils.UnitText(elm.MaxVoltage, "V\r\n");
-                    s += Utils.UnitText(elm.Frequency, "Hz\r\n");
-                    s += Utils.UnitText((elm.Phase + elm.PhaseOffset) * 180 / Math.PI, "deg");
-                    drawValues(s, 0, 5);
+        public override void Draw(CustomGraphics g) {
+            draw2Leads();
+            var elm = (ElmVoltage)Elm;
+            if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
+                drawLine(mPs1, mPs2);
+                drawLine(mPs3, mPs4);
+                var s = Utils.UnitText(elm.MaxVoltage, "V");
+                g.DrawRightText(s, mTextPos.X, mTextPos.Y);
+            } else {
+                drawWaveform(mPs1);
+                string inds;
+                if (0 < elm.Bias || (0 == elm.Bias &&
+                    (ElmVoltage.WAVEFORM.PULSE_MONOPOLE == elm.WaveForm || ElmVoltage.WAVEFORM.PULSE_DIPOLE == elm.WaveForm))) {
+                    inds = "+";
+                } else {
+                    inds = "*";
                 }
-                if (ControlPanel.ChkShowName.Checked) {
-                    drawName(DumpInfo.ReferenceName, 0, -11);
+                drawCenteredLText(inds, mTextPos, true);
+            }
+
+            updateDotCount();
+
+            if (CirSimForm.DragElm != this) {
+                if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
+                    drawCurrent(Elm.Post[0], Elm.Post[1], CurCount);
+                } else {
+                    drawCurrentA(CurCount);
+                    drawCurrentB(CurCount);
                 }
+            }
+            drawPosts();
+        }
+
+        protected void drawWaveform(PointF p) {
+            var elm = (ElmVoltage)Elm;
+            if (elm.WaveForm == ElmVoltage.WAVEFORM.NOISE) {
+                drawCenteredText("Noise", p, true);
+                return;
+            }
+            drawCircle(p, BODY_LEN / 2);
+            drawPolyline(mWaveFormPos);
+            if (ControlPanel.ChkShowValues.Checked) {
+                var s = Utils.UnitText(elm.MaxVoltage, "V\r\n");
+                s += Utils.UnitText(elm.Frequency, "Hz\r\n");
+                s += Utils.UnitText((elm.Phase + elm.PhaseOffset) * 180 / Math.PI, "deg");
+                drawValues(s, 0, 5);
+            }
+            if (ControlPanel.ChkShowName.Checked) {
+                drawName(DumpInfo.ReferenceName, 0, -11);
             }
         }
 
@@ -527,6 +549,7 @@ namespace Circuit.UI.Input {
                     Link.PhaseOffset = (int)ei.Value;
                 }
             }
+            setWaveform();
         }
 
         public override EventHandler CreateSlider(ElementInfo ei, Adjustable adj) {

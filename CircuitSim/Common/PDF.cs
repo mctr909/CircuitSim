@@ -134,6 +134,15 @@ class PDF {
             DrawLine(x0, y1, x0, y0);
         }
 
+        public override void DrawPolyline(PointF[] poly) {
+            var pa = poly[0];
+            for (int i = 1; i < poly.Length; i++) {
+                var pb = poly[i];
+                DrawLine(pa, pb);
+                pa = pb;
+            }
+        }
+
         public override void DrawPolygon(PointF[] poly) {
             var p = poly[0];
             writeM(p.X, p.Y);

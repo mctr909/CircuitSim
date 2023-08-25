@@ -92,20 +92,22 @@ namespace Circuit {
             lbl = new Label() { Left = 4, Top = ofsY, AutoSize = true, Text = "電流表示速度" };
             VerticalPanel.Controls.Add(lbl);
             ofsY += lbl.Height;
-            lbl = new Label() { Left = 12, Top = ofsY, AutoSize = true, Text = "1" };
+            lbl = new Label() { Left = 9, Top = ofsY, AutoSize = true, Text = "10" };
             VerticalPanel.Controls.Add(lbl);
-            lbl = new Label() { Left = 31, Top = ofsY, AutoSize = true, Text = "100m" };
-            VerticalPanel.Controls.Add(lbl);
-            lbl = new Label() { Left = 62, Top = ofsY, AutoSize = true, Text = "10m" };
-            VerticalPanel.Controls.Add(lbl);
-            lbl = new Label() { Left = 94, Top = ofsY, AutoSize = true, Text = "1m" };
+            lbl = new Label() { Left = 37, Top = ofsY, AutoSize = true, Text = "1" };
             VerticalPanel.Controls.Add(lbl);
 
-            lbl = new Label() { Left = 118, Top = ofsY, AutoSize = true, Text = "100u" };
+            lbl = new Label() { Left = 50, Top = ofsY, AutoSize = true, Text = "100m" };
             VerticalPanel.Controls.Add(lbl);
-            lbl = new Label() { Left = 149, Top = ofsY, AutoSize = true, Text = "10u" };
+            lbl = new Label() { Left = 80, Top = ofsY, AutoSize = true, Text = "10m" };
+            VerticalPanel.Controls.Add(lbl);
+            lbl = new Label() { Left = 106, Top = ofsY, AutoSize = true, Text = "1m" };
             VerticalPanel.Controls.Add(lbl);
 
+            lbl = new Label() { Left = 128, Top = ofsY, AutoSize = true, Text = "100u" };
+            VerticalPanel.Controls.Add(lbl);
+            lbl = new Label() { Left = 155, Top = ofsY, AutoSize = true, Text = "10u" };
+            VerticalPanel.Controls.Add(lbl);
             lbl = new Label() { Left = 181, Top = ofsY, AutoSize = true, Text = "1u" };
             VerticalPanel.Controls.Add(lbl);
 
@@ -113,13 +115,13 @@ namespace Circuit {
             TrbCurrent = new TrackBar() {
                 Left = 4,
                 Top = ofsY,
-                Minimum = 0,
-                Maximum = 48,
+                Minimum = -2,
+                Maximum = 12,
                 SmallChange = 1,
-                LargeChange = 4,
-                TickFrequency = 8,
+                LargeChange = 1,
+                TickFrequency = 2,
                 TickStyle = TickStyle.TopLeft,
-                Value = 24,
+                Value = 6,
                 Width = 200
             };
             VerticalPanel.Controls.Add(TrbCurrent);

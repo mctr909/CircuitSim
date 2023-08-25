@@ -498,6 +498,11 @@ namespace Circuit.UI {
             Context.DrawPolygon(p);
         }
 
+        protected void drawPolyline(PointF[] p) {
+            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawPolyline(p);
+        }
+
         protected void fillPolygon(PointF[] p) {
             var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.FillPolygon(color, p);

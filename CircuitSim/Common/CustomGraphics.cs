@@ -192,6 +192,10 @@ namespace Circuit {
             mG.DrawArc(mPenLine, p.X - md / 2, p.Y - md / 2, md, md, start, sweep);
         }
 
+        public virtual void DrawPolyline(PointF[] p) {
+            mG.DrawLines(mPenLine, p);
+        }
+
         public virtual void DrawPolygon(PointF[] p) {
             mG.DrawPolygon(mPenLine, p);
         }
