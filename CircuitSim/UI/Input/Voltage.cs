@@ -249,9 +249,8 @@ namespace Circuit.UI.Input {
                 var xl = 10;
                 var x0 = 0F;
                 var y0 = 0F;
-                var ph = elm.Phase + elm.PhaseOffset;
                 for (var i = -xl; i <= xl; i++) {
-                    var yy = y + (int)(.95 * Math.Sin(i * Math.PI / xl + ph) * h);
+                    var yy = y + (int)(.95 * Math.Sin(i * Math.PI / xl) * h);
                     if (i != -xl) {
                         drawLine(x0, y0, x + i, yy);
                     }
