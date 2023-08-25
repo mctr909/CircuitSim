@@ -48,12 +48,10 @@ namespace Circuit.UI.Input {
     }
 
     class Voltage : BaseUI {
-        const int FLAG_COS = 2;
         const int FLAG_PULSE_DUTY = 4;
-
         const double DEFAULT_PULSE_DUTY = 0.5;
 
-        protected const int BODY_LEN = 28;
+        protected const int BODY_LEN = 30;
         const int BODY_LEN_DC = 6;
 
         public const string VALUE_NAME_V = "電圧(V)";
@@ -69,6 +67,7 @@ namespace Circuit.UI.Input {
 
         PointF mPs1;
         PointF mPs2;
+        PointF[] mWaveFormPos;
         Point mTextPos;
 
         public Voltage(Point pos, ElmVoltage.WAVEFORM wf) : base(pos) {
@@ -179,87 +178,164 @@ namespace Circuit.UI.Input {
                 (int)(x + BODY_LEN), (int)(y + BODY_LEN)
             );
 
-            var h = 7;
-            var w = (float)(h * 2 * elm.DutyCycle - h + x);
-            w = Math.Max(x - h + 1, Math.Min(x + h - 1, w));
-            var wh = (int)(h * elm.DutyCycle - h + x);
+            switch (elm.WaveForm) {
+            case ElmVoltage.WAVEFORM.DC:
+                return;
+            case ElmVoltage.WAVEFORM.NOISE:
+                drawCenteredText("Noise", p, true);
+                return;
+            }
+
+            const int DX = 12;
+            const int DX_H = 6;
+            const int H = 8;
+            var duty = Math.Min(1, Math.Max(0, elm.DutyCycle));
+            var w = (float)(x - DX + 2 * DX * duty);
+            var wh = (float)(x - DX + DX * duty);
+            var wp = (float)(DX * duty / 3.0);
+            var ph = 0 < duty ? H : 0;
 
             switch (elm.WaveForm) {
-            case ElmVoltage.WAVEFORM.DC: {
-                break;
-            }
-            case ElmVoltage.WAVEFORM.NOISE: {
-                drawCenteredText("Noise", p, true);
+            case ElmVoltage.WAVEFORM.SIN: {
+                mWaveFormPos = new PointF[DX * 2 + 1];
+                for (int t = -DX, c = 0; t <= DX; t++, c++) {
+                    var yy = y + (int)(.95 * Math.Sin(t * Math.PI / DX) * H);
+                    mWaveFormPos[c].X = x + t;
+                    mWaveFormPos[c].Y = yy;
+                }
                 break;
             }
             case ElmVoltage.WAVEFORM.SQUARE:
-                if (elm.MaxVoltage < 0) {
-                    drawLine(x - h, y + h, x - h, y);
-                    drawLine(x - h, y + h, w, y + h);
-                    drawLine(w, y + h, w, y - h);
-                    drawLine(x + h, y - h, w, y - h);
-                    drawLine(x + h, y, x + h, y - h);
-                } else {
-                    drawLine(x - h, y - h, x - h, y);
-                    drawLine(x - h, y - h, w, y - h);
-                    drawLine(w, y - h, w, y + h);
-                    drawLine(x + h, y + h, w, y + h);
-                    drawLine(x + h, y, x + h, y + h);
-                }
+                mWaveFormPos = new PointF[] {
+                    new PointF(x - DX, y),
+                    new PointF(x - DX, y - H),
+                    new PointF(w, y - H),
+                    new PointF(w, y + H),
+                    new PointF(x + DX, y + H),
+                    new PointF(x + DX, y)
+                };
+                break;
+            case ElmVoltage.WAVEFORM.TRIANGLE:
+                mWaveFormPos = new PointF[] {
+                    new PointF(x - DX, y),
+                    new PointF(x - DX_H, y - H),
+                    new PointF(x, y),
+                    new PointF(x + DX_H, y + H),
+                    new PointF(x + DX, y)
+                };
+                break;
+            case ElmVoltage.WAVEFORM.SAWTOOTH:
+                mWaveFormPos = new PointF[] {
+                    new PointF(x - DX, y),
+                    new PointF(x, y - H),
+                    new PointF(x, y + H),
+                    new PointF(x + DX, y)
+                };
                 break;
             case ElmVoltage.WAVEFORM.PULSE_MONOPOLE:
                 if (elm.MaxVoltage < 0) {
-                    drawLine(x + h, y, x + h, y);
-                    drawLine(x + h, y, w, y);
-                    drawLine(w, y + h, w, y);
-                    drawLine(x - h, y + h, w, y + h);
-                    drawLine(x - h, y + h, x - h, y);
+                    mWaveFormPos = new PointF[] {
+                        new PointF(x - DX, y),
+                        new PointF(x - DX, y + ph),
+                        new PointF(w, y + ph),
+                        new PointF(w, y),
+                        new PointF(x + DX, y)
+                    };
                 } else {
-                    drawLine(x - h, y - h, x - h, y);
-                    drawLine(x - h, y - h, w, y - h);
-                    drawLine(w, y - h, w, y);
-                    drawLine(x + h, y, w, y);
-                    drawLine(x + h, y, x + h, y);
+                    mWaveFormPos = new PointF[] {
+                        new PointF(x - DX, y),
+                        new PointF(x - DX, y - ph),
+                        new PointF(w, y - ph),
+                        new PointF(w, y),
+                        new PointF(x + DX, y)
+                    };
                 }
                 break;
             case ElmVoltage.WAVEFORM.PULSE_DIPOLE:
-                drawLine(x - h, y - h, x - h, y);
-                drawLine(x - h, y - h, wh, y - h);
-                drawLine(wh, y - h, wh, y);
-                drawLine(wh, y, x, y);
-                drawLine(x, y, x, y + h);
-                drawLine(x, y + h, wh + h, y + h);
-                drawLine(wh + h, y + h, wh + h, y);
-                drawLine(wh + h, y, x + h, y);
+                mWaveFormPos = new PointF[] {
+                    new PointF(x - DX, y),
+                    new PointF(x - DX, y - ph),
+                    new PointF(wh, y - ph),
+                    new PointF(wh, y),
+                    new PointF(x, y),
+                    new PointF(x, y + ph),
+                    new PointF(wh + DX, y + ph),
+                    new PointF(wh + DX, y),
+                    new PointF(x + DX, y)
+                };
                 break;
-            case ElmVoltage.WAVEFORM.SAWTOOTH:
-                drawLine(x, y - h, x - h, y);
-                drawLine(x, y - h, x, y + h);
-                drawLine(x, y + h, x + h, y);
+            case ElmVoltage.WAVEFORM.PWM_MONOPOLE:
+                mWaveFormPos = new PointF[] {
+                    new PointF(x - DX, y),
+                    new PointF(x + DX, y)
+                };
                 break;
-            case ElmVoltage.WAVEFORM.TRIANGLE: {
-                int xl = 5;
-                drawLine(x - xl * 2, y, x - xl, y - h);
-                drawLine(x - xl, y - h, x, y);
-                drawLine(x, y, x + xl, y + h);
-                drawLine(x + xl, y + h, x + xl * 2, y);
+            case ElmVoltage.WAVEFORM.PWM_DIPOLE:
+                mWaveFormPos = new PointF[] {
+                    new PointF(x - DX, y),
+                    new PointF(x - DX + 1, y),
+                    new PointF(x - DX + 1, y - ph),
+                    new PointF(x - DX + 1, y),
+                    new PointF(x - DX_H - wp, y),
+                    new PointF(x - DX_H - wp, y - ph),
+                    new PointF(x - DX_H + wp, y - ph),
+                    new PointF(x - DX_H + wp, y),
+                    new PointF(x - 1, y),
+                    new PointF(x - 1, y - ph),
+                    new PointF(x - 1, y),
+                    new PointF(x + 1, y),
+                    new PointF(x + 1, y + ph),
+                    new PointF(x + 1, y),
+                    new PointF(x + DX_H - wp, y),
+                    new PointF(x + DX_H - wp, y + ph),
+                    new PointF(x + DX_H + wp, y + ph),
+                    new PointF(x + DX_H + wp, y),
+                    new PointF(x + DX - 1, y),
+                    new PointF(x + DX - 1, y + ph),
+                    new PointF(x + DX - 1, y),
+                    new PointF(x + DX, y)
+                };
+                break;
+            case ElmVoltage.WAVEFORM.PWM_POSITIVE:
+                mWaveFormPos = new PointF[] {
+                    new PointF(x - DX, y),
+                    new PointF(x - DX + 1, y),
+                    new PointF(x - DX + 1, y - ph),
+                    new PointF(x - DX + 1, y),
+                    new PointF(x - DX_H - wp, y),
+                    new PointF(x - DX_H - wp, y - ph),
+                    new PointF(x - DX_H + wp, y - ph),
+                    new PointF(x - DX_H + wp, y),
+                    new PointF(x - 1, y),
+                    new PointF(x - 1, y - ph),
+                    new PointF(x - 1, y),
+                    new PointF(x + DX, y)
+                };
+                break;
+            case ElmVoltage.WAVEFORM.PWM_NEGATIVE:
+                mWaveFormPos = new PointF[] {
+                    new PointF(x - DX, y),
+                    new PointF(x + 1, y),
+                    new PointF(x + 1, y - ph),
+                    new PointF(x + 1, y),
+                    new PointF(x + DX_H - wp, y),
+                    new PointF(x + DX_H - wp, y - ph),
+                    new PointF(x + DX_H + wp, y - ph),
+                    new PointF(x + DX_H + wp, y),
+                    new PointF(x + DX - 1, y),
+                    new PointF(x + DX - 1, y - ph),
+                    new PointF(x + DX - 1, y),
+                    new PointF(x + DX, y)
+                };
+                break;
+            default:
+                mWaveFormPos = new PointF[] {
+                    new PointF(x - DX, y),
+                    new PointF(x + DX, y)
+                };
                 break;
             }
-            case ElmVoltage.WAVEFORM.SIN: {
-                var xl = 10;
-                var x0 = 0F;
-                var y0 = 0F;
-                for (var i = -xl; i <= xl; i++) {
-                    var yy = y + (int)(.95 * Math.Sin(i * Math.PI / xl) * h);
-                    if (i != -xl) {
-                        drawLine(x0, y0, x + i, yy);
-                    }
-                    x0 = x + i;
-                    y0 = yy;
-                }
-                break;
-            }
-            }
+            drawPolygon(mWaveFormPos);
 
             if (elm.WaveForm != ElmVoltage.WAVEFORM.NOISE) {
                 if (ControlPanel.ChkShowValues.Checked) {
@@ -393,12 +469,10 @@ namespace Circuit.UI.Input {
                     }
 
                     /* change duty cycle if we're changing to or from pulse */
-                    if (elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_MONOPOLE && ow != ElmVoltage.WAVEFORM.PULSE_MONOPOLE) {
+                    if (elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_MONOPOLE && ow != ElmVoltage.WAVEFORM.PULSE_MONOPOLE ||
+                        elm.WaveForm != ElmVoltage.WAVEFORM.PULSE_MONOPOLE && ow == ElmVoltage.WAVEFORM.PULSE_MONOPOLE) {
                         elm.DutyCycle = DEFAULT_PULSE_DUTY;
-                    } else if (ow == ElmVoltage.WAVEFORM.PULSE_MONOPOLE && elm.WaveForm != ElmVoltage.WAVEFORM.PULSE_MONOPOLE) {
-                        elm.DutyCycle = .5;
                     }
-
                     SetPoints();
                 }
                 if (r == 1) {
