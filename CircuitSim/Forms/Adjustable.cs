@@ -68,13 +68,7 @@ namespace Circuit {
                 Width = 175,
                 Height = 23
             });
-            Slider.ValueChanged += new System.EventHandler((s, e) => {
-                ei.Value = Value;
-                UI.SetElementValue(EditItemR, EditItemC, ei);
-                CirSimForm.NeedAnalyze();
-                CirSimForm.Repaint();
-            });
-            UI.CreateSlider(ei, this);
+            Slider.ValueChanged += UI.CreateSlider(ei, this);
         }
 
         public void DeleteSlider() {

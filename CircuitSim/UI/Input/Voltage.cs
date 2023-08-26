@@ -7,14 +7,17 @@ using Circuit.Elements.Input;
 
 namespace Circuit.UI.Input {
     class VoltageLink : BaseLink {
-        public const int BIAS = 0;
-        public const int FREQUENCY = 1;
-        public const int PHASE_OFFSET = 2;
+        public const int VOLTAGE = 0;
+        public const int BIAS = 1;
+        public const int FREQUENCY = 2;
+        public const int PHASE_OFFSET = 3;
+        public int Voltage = 0;
         public int Bias = 0;
         public int Frequency = 0;
         public int PhaseOffset = 0;
         public override int GetGroup(int id) {
             switch (id) {
+            case VOLTAGE: return Voltage;
             case BIAS: return Bias;
             case FREQUENCY: return Frequency;
             case PHASE_OFFSET: return PhaseOffset;
@@ -24,6 +27,9 @@ namespace Circuit.UI.Input {
         public override void SetValue(BaseElement element, int linkID, double value) {
             var elm = (ElmVoltage)element;
             switch (linkID) {
+            case VOLTAGE:
+                elm.MaxVoltage = value;
+                break;
             case BIAS:
                 elm.Bias = value;
                 break;
@@ -36,11 +42,13 @@ namespace Circuit.UI.Input {
             }
         }
         public override void Load(StringTokenizer st) {
+            Voltage = st.nextTokenInt();
             Bias = st.nextTokenInt();
             Frequency = st.nextTokenInt();
             PhaseOffset = st.nextTokenInt();
         }
         public override void Dump(List<object> optionList) {
+            optionList.Add(Voltage);
             optionList.Add(Bias);
             optionList.Add(Frequency);
             optionList.Add(PhaseOffset);
@@ -461,6 +469,9 @@ namespace Circuit.UI.Input {
                 }
             }
             if (c == 1) {
+                if (r == 2) {
+                    return new ElementInfo("連動グループ", Link.Voltage);
+                }
                 if (r == 3) {
                     return new ElementInfo("連動グループ", Link.Bias);
                 }
@@ -539,6 +550,9 @@ namespace Circuit.UI.Input {
                 }
             }
             if (c == 1) {
+                if (r == 2) {
+                    Link.Voltage = (int)ei.Value;
+                }
                 if (r == 3) {
                     Link.Bias = (int)ei.Value;
                 }
@@ -591,7 +605,7 @@ namespace Circuit.UI.Input {
                 switch (ei.Name) {
                 case VALUE_NAME_V:
                 case VALUE_NAME_AMP:
-                    e1.MaxVoltage = val;
+                    setLinkedValues<Voltage>(VoltageLink.VOLTAGE, val);
                     break;
                 case VALUE_NAME_BIAS:
                     setLinkedValues<Voltage>(VoltageLink.BIAS, val);
@@ -609,7 +623,6 @@ namespace Circuit.UI.Input {
                     e1.DutyCycle = val;
                     break;
                 }
-                CirSimForm.NeedAnalyze();
             });
         }
     }

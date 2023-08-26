@@ -79,13 +79,12 @@ namespace Circuit.UI.Input {
                 var val = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
                 switch (ei.Name) {
                 case VALUE_NAME_V:
-                    ce.MaxVoltage = val;
+                    setLinkedValues<Voltage>(VoltageLink.VOLTAGE, val);
                     break;
                 case VALUE_NAME_BIAS:
                     setLinkedValues<Voltage>(VoltageLink.BIAS, val);
                     break;
                 }
-                CirSimForm.NeedAnalyze();
             });
         }
     }

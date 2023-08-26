@@ -52,6 +52,9 @@ namespace Circuit.UI.Input {
                 }
             }
             if (c == 1) {
+                if (r == 1) {
+                    return new ElementInfo("連動グループ", Link.Voltage);
+                }
                 if (r == 2) {
                     return new ElementInfo("連動グループ", Link.Bias);
                 }
@@ -95,6 +98,9 @@ namespace Circuit.UI.Input {
                 }
             }
             if (c == 1) {
+                if (r == 1) {
+                    Link.Voltage = (int)ei.Value;
+                }
                 if (r == 2) {
                     Link.Bias = (int)ei.Value;
                 }
@@ -140,7 +146,7 @@ namespace Circuit.UI.Input {
                 var val = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
                 switch (ei.Name) {
                 case VALUE_NAME_AMP:
-                    ce.MaxVoltage = val;
+                    setLinkedValues<Voltage>(VoltageLink.VOLTAGE, val);
                     break;
                 case VALUE_NAME_BIAS:
                     setLinkedValues<Voltage>(VoltageLink.BIAS, val);
@@ -155,7 +161,6 @@ namespace Circuit.UI.Input {
                     setLinkedValues<Voltage>(VoltageLink.PHASE_OFFSET, val);
                     break;
                 }
-                CirSimForm.NeedAnalyze();
             });
         }
     }
