@@ -33,17 +33,17 @@ namespace Circuit.UI.Active {
 
         public override void Drag(Point pos) {
             pos = CirSimForm.SnapGrid(pos);
-            if (Math.Abs(DumpInfo.P1.X - pos.X) < Math.Abs(DumpInfo.P1.Y - pos.Y)) {
-                pos.X = DumpInfo.P1.X;
+            if (Math.Abs(Post.A.X - pos.X) < Math.Abs(Post.A.Y - pos.Y)) {
+                pos.X = Post.A.X;
             } else {
-                pos.Y = DumpInfo.P1.Y;
+                pos.Y = Post.A.Y;
             }
-            int q1 = Math.Abs(DumpInfo.P1.X - pos.X) + Math.Abs(DumpInfo.P1.Y - pos.Y);
+            int q1 = Math.Abs(Post.A.X - pos.X) + Math.Abs(Post.A.Y - pos.Y);
             int q2 = (q1 / 2) % CirSimForm.GRID_SIZE;
             if (q2 != 0) {
                 return;
             }
-            DumpInfo.SetP2(pos);
+            Post.B = pos;
             SetPoints();
         }
 
@@ -86,7 +86,7 @@ namespace Circuit.UI.Active {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("ノーマリクローズ", (DumpInfo.Flags & FLAG_INVERT) != 0);
+                return new ElementInfo("ノーマリクローズ", (mFlags & FLAG_INVERT) != 0);
             }
             if (r == 1) {
                 return new ElementInfo("オン抵抗(Ω)", ce.Ron);
@@ -100,8 +100,8 @@ namespace Circuit.UI.Active {
         public override void SetElementValue(int n, int c, ElementInfo ei) {
             var ce = (ElmAnalogSwitch)Elm;
             if (n == 0) {
-                DumpInfo.Flags = ei.CheckBox.Checked ? (DumpInfo.Flags | FLAG_INVERT) : (DumpInfo.Flags & ~FLAG_INVERT);
-                ce.Invert = 0 != (DumpInfo.Flags & FLAG_INVERT);
+                mFlags = ei.CheckBox.Checked ? (mFlags | FLAG_INVERT) : (mFlags & ~FLAG_INVERT);
+                ce.Invert = 0 != (mFlags & FLAG_INVERT);
             }
             if (n == 1 && 0 < ei.Value) {
                 ce.Ron = ei.Value;

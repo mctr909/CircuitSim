@@ -21,7 +21,7 @@ namespace Circuit.UI.Active {
 
         public Diode(Point pos, string referenceName) : base(pos) {
             Elm = new ElmDiode();
-            DumpInfo.ReferenceName = referenceName;
+            ReferenceName = referenceName;
             setup();
         }
 
@@ -37,21 +37,9 @@ namespace Circuit.UI.Active {
         public override DUMP_ID DumpType { get { return DUMP_ID.DIODE; } }
 
         protected override void dump(List<object> optionList) {
-            DumpInfo.Flags |= FLAG_MODEL;
+            mFlags |= FLAG_MODEL;
             var ce = (ElmDiode)Elm;
             optionList.Add(Utils.Escape(ce.mModelName));
-        }
-
-        public override void UpdateModels() {
-            setup();
-        }
-
-        public override string DumpModel() {
-            var ce = (ElmDiode)Elm;
-            if (ce.mModel.BuiltIn || ce.mModel.Dumped) {
-                return null;
-            }
-            return ce.mModel.Dump();
         }
 
         public override void SetPoints() {
@@ -99,12 +87,11 @@ namespace Circuit.UI.Active {
         public override void GetInfo(string[] arr) {
             var ce = (ElmDiode)Elm;
             if (ce.mModel.OldStyle) {
-                arr[0] = "diode";
+                arr[0] = "ダイオード";
             } else {
-                arr[0] = "diode (" + ce.mModelName + ")";
+                arr[0] = "ダイオード (" + ce.mModelName + ")";
             }
-            arr[1] = "I = " + Utils.CurrentText(ce.Current);
-            arr[2] = "Vd = " + Utils.VoltageText(ce.GetVoltageDiff());
+            getBasicInfo(1, arr);
             if (ce.mModel.OldStyle) {
                 arr[3] = "Vf = " + Utils.VoltageText(ce.mModel.FwDrop);
             }
@@ -116,7 +103,7 @@ namespace Circuit.UI.Active {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("名前", DumpInfo.ReferenceName);
+                return new ElementInfo("名前", ReferenceName);
             }
             if (!mCustomModelUI && r == 1) {
                 var ei = new ElementInfo("モデル");
@@ -151,7 +138,7 @@ namespace Circuit.UI.Active {
             }
             base.SetElementValue(n, c, ei);
             if (n == 0) {
-                DumpInfo.ReferenceName = ei.Text;
+                ReferenceName = ei.Text;
                 setTextPos();
             }
         }

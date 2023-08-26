@@ -41,8 +41,8 @@ namespace Circuit.UI.Active {
             var ce = (ElmOptocoupler)Elm;
 
             // adapted from ChipElm
-            int x0 = DumpInfo.P1.X + ce.mCspc;
-            int y0 = DumpInfo.P1.Y;
+            int x0 = Post.A.X + ce.mCspc;
+            int y0 = Post.A.Y;
             var r = new Point(x0 - ce.mCspc, y0 - ce.mCspc / 2);
             var sizeX = 1.5f;
             int sizeY = 2;
@@ -54,14 +54,14 @@ namespace Circuit.UI.Active {
                 new Point(r.X + xs, r.Y + ys),
                 new Point(r.X, r.Y + ys)
             };
-            DumpInfo.SetBbox(r, mRectPoints[2]);
+            Post.SetBbox(r, mRectPoints[2]);
 
             mStubs = new Point[4];
             setPin(0, x0, y0, 0, 1, -0.5, 0, 0, 0);
             setPin(1, x0, y0, 0, 1, -0.5, 0, 0, 0);
             setPin(2, x0, y0, 0, 1, 0.5, 0, xs - ce.mCspc2, 0);
             setPin(3, x0, y0, 0, 1, 0.5, 0, xs - ce.mCspc2, 0);
-            DumpInfo.P2 = mStubs[2];
+            Post.B = mStubs[2];
 
             /* diode */
             ce.mDiode.SetPosition(ce.Posts[0].X + 10, ce.Posts[0].Y, ce.Posts[1].X + 10, ce.Posts[1].Y);

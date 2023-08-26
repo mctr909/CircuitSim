@@ -351,7 +351,7 @@ namespace Circuit {
             }
 
             if (item == ELEMENT_MENU_ITEM.VIEW_IN_FLOAT_SCOPE && mMenuElm != null) {
-                var newScope = new Scope(SnapGrid(mMenuElm.DumpInfo.P1.X + 50, mMenuElm.DumpInfo.P1.Y + 50));
+                var newScope = new Scope(SnapGrid(mMenuElm.Post.A.X + 50, mMenuElm.Post.A.Y + 50));
                 UIList.Add(newScope);
                 newScope.SetScopeElm(mMenuElm);
             }
@@ -389,7 +389,7 @@ namespace Circuit {
             }
 
             if (item == SCOPE_MENU_ITEM.UNDOCK && 0 <= mMenuScope) {
-                var newScope = new Scope(SnapGrid(mMenuElm.DumpInfo.P1.X + 50, mMenuElm.DumpInfo.P1.Y + 50));
+                var newScope = new Scope(SnapGrid(mMenuElm.Post.A.X + 50, mMenuElm.Post.A.Y + 50));
                 UIList.Add(newScope);
                 newScope.SetElmScope(Scope.Property.List[mMenuScope]);
                 /* remove scope from list.  setupScopes() will fix the positions */
@@ -611,12 +611,6 @@ namespace Circuit {
                 return true;
             }
             return false;
-        }
-
-        public static void UpdateModels() {
-            for (int i = 0; i != UICount; i++) {
-                UIList[i].UpdateModels();
-            }
         }
 
         public static void SetSimRunning(bool s) {
@@ -901,7 +895,6 @@ namespace Circuit {
                     }
                 } else {
                     UIList.Add(DragElm);
-                    DragElm.DraggingDone();
                     circuitChanged = true;
                     writeRecoveryToStorage();
                 }
@@ -1002,10 +995,10 @@ namespace Circuit {
             int maxx = 0, maxy = 0;
             for (int i = 0; i < UICount; i++) {
                 var ce = GetUI(i);
-                minx = Math.Min(ce.DumpInfo.P1.X, Math.Min(ce.DumpInfo.P2.X, minx));
-                miny = Math.Min(ce.DumpInfo.P1.Y, Math.Min(ce.DumpInfo.P2.Y, miny));
-                maxx = Math.Max(ce.DumpInfo.P1.X, Math.Max(ce.DumpInfo.P2.X, maxx));
-                maxy = Math.Max(ce.DumpInfo.P1.Y, Math.Max(ce.DumpInfo.P2.Y, maxy));
+                minx = Math.Min(ce.Post.A.X, Math.Min(ce.Post.B.X, minx));
+                miny = Math.Min(ce.Post.A.Y, Math.Min(ce.Post.B.Y, miny));
+                maxx = Math.Max(ce.Post.A.X, Math.Max(ce.Post.B.X, maxx));
+                maxy = Math.Max(ce.Post.A.Y, Math.Max(ce.Post.B.Y, maxy));
             }
             return new Rectangle(minx, miny, maxx - minx, maxy - miny);
         }
@@ -1114,11 +1107,7 @@ namespace Circuit {
             int i;
             for (i = 0; i != UICount; i++) {
                 var ce = GetUI(i);
-                string m = ce.DumpModel();
-                if (!string.IsNullOrEmpty(m)) {
-                    dump += m + "\n";
-                }
-                dump += ce.Dump + "\n";
+                dump += ce.Dump() + "\n";
             }
             for (i = 0; i != Scope.Property.Count; i++) {
                 string d = Scope.Property.List[i].Dump();
@@ -1234,9 +1223,9 @@ namespace Circuit {
                         if (st.HasMoreTokens) {
                             string v;
                             st.nextToken(out v);
-                            newce.DumpInfo.ReferenceName = Utils.Unescape(v);
+                            newce.ReferenceName = Utils.Unescape(v);
                         } else {
-                            newce.DumpInfo.ReferenceName = "";
+                            newce.ReferenceName = "";
                         }
                         if (newce == null) {
                             Console.WriteLine("unrecognized dump type: " + type);
@@ -1264,11 +1253,6 @@ namespace Circuit {
             if ((flags & RC_NO_CENTER) == 0) {
                 centreCircuit();
             }
-            if ((flags & RC_SUBCIRCUITS) != 0) {
-                UpdateModels();
-            }
-            // TODO: readCircuit
-            //AudioInputElm.clearCache();  /* to save memory */
         }
 
         void readOptions(StringTokenizer st) {
@@ -1334,11 +1318,11 @@ namespace Circuit {
                     MouseMode = MOUSE_MODE.SELECT_AREA;
                 } else {
                     var spos = SnapGrid(gpos);
-                    var dumpInfo = Mouse.GripElm.DumpInfo;
-                    var d1 = Utils.Distance(dumpInfo.P1, spos);
-                    var d2 = Utils.Distance(dumpInfo.P2, spos);
-                    var d1_d2 = Utils.Distance(dumpInfo.P1, dumpInfo.P2);
-                    var dl = Math.Max(d1_d2 / 4, Utils.DistanceOnLine(dumpInfo.P1, dumpInfo.P2, spos));
+                    var dumpInfo = Mouse.GripElm.Post;
+                    var d1 = Utils.Distance(dumpInfo.A, spos);
+                    var d2 = Utils.Distance(dumpInfo.B, spos);
+                    var d1_d2 = Utils.Distance(dumpInfo.A, dumpInfo.B);
+                    var dl = Math.Max(d1_d2 / 4, Utils.DistanceOnLine(dumpInfo.A, dumpInfo.B, spos));
                     if (dl < Math.Min(d1, d2)) {
                         MouseMode = MOUSE_MODE.DRAG_ITEM;
                     } else {
@@ -1392,11 +1376,11 @@ namespace Circuit {
             }
             for (int i = 0; i != UICount; i++) {
                 var ce = GetUI(i);
-                if (ce.DumpInfo.P1.Y == Mouse.DragGrid.Y) {
-                    ce.MovePoint(0, 0, dy);
+                if (ce.Post.A.Y == Mouse.DragGrid.Y) {
+                    ce.Move(0, dy, 0);
                 }
-                if (ce.DumpInfo.P2.Y == Mouse.DragGrid.Y) {
-                    ce.MovePoint(1, 0, dy);
+                if (ce.Post.B.Y == Mouse.DragGrid.Y) {
+                    ce.Move(0, dy, 1);
                 }
             }
             removeZeroLengthElements();
@@ -1409,11 +1393,11 @@ namespace Circuit {
             }
             for (int i = 0; i != UICount; i++) {
                 var ce = GetUI(i);
-                if (ce.DumpInfo.P1.X == Mouse.DragGrid.X) {
-                    ce.MovePoint(0, dx, 0);
+                if (ce.Post.A.X == Mouse.DragGrid.X) {
+                    ce.Move(dx, 0, 0);
                 }
-                if (ce.DumpInfo.P1.X == Mouse.DragGrid.X) {
-                    ce.MovePoint(1, dx, 0);
+                if (ce.Post.A.X == Mouse.DragGrid.X) {
+                    ce.Move(dx, 0, 1);
                 }
             }
             removeZeroLengthElements();
@@ -1468,7 +1452,7 @@ namespace Circuit {
             if (dx == 0 && dy == 0) {
                 return;
             }
-            Mouse.GripElm.MovePoint(Mouse.DraggingPost, dx, dy);
+            Mouse.GripElm.Move(dx, dy, Mouse.DraggingPost);
             NeedAnalyze();
         }
 
@@ -1495,17 +1479,17 @@ namespace Circuit {
             if (ce == null || !(ce is Wire)) {
                 return;
             }
-            if (ce.DumpInfo.P1.X == ce.DumpInfo.P2.X) {
-                pos.X = ce.DumpInfo.P1.X;
+            if (ce.Post.A.X == ce.Post.B.X) {
+                pos.X = ce.Post.A.X;
             } else {
-                pos.Y = ce.DumpInfo.P1.Y;
+                pos.Y = ce.Post.A.Y;
             }
             /* don't create zero-length wire */
-            if (pos.X == ce.DumpInfo.P1.X && pos.Y == ce.DumpInfo.P1.Y || pos.X == ce.DumpInfo.P2.X && pos.Y == ce.DumpInfo.P2.Y) {
+            if (pos.X == ce.Post.A.X && pos.Y == ce.Post.A.Y || pos.X == ce.Post.B.X && pos.Y == ce.Post.B.Y) {
                 return;
             }
             var newWire = new Wire(pos);
-            newWire.Drag(new Point(ce.DumpInfo.P2.X, ce.DumpInfo.P2.Y));
+            newWire.Drag(new Point(ce.Post.B.X, ce.Post.B.Y));
             ce.Drag(pos);
             UIList.Add(newWire);
             NeedAnalyze();
@@ -1538,7 +1522,7 @@ namespace Circuit {
         void removeZeroLengthElements() {
             for (int i = UICount - 1; i >= 0; i--) {
                 var ce = GetUI(i);
-                if (ce.DumpInfo.P1.X == ce.DumpInfo.P2.X && ce.DumpInfo.P1.Y == ce.DumpInfo.P2.Y) {
+                if (ce.Post.A.X == ce.Post.B.X && ce.Post.A.Y == ce.Post.B.Y) {
                     UIList.RemoveAt(i);
                     /*Console.WriteLine("delete element: {0} {1}\t{2} {3}\t{4}", ce.GetType(), ce.x1, ce.y1, ce.x2, ce.y2); */
                     ce.Delete();
@@ -1623,7 +1607,7 @@ namespace Circuit {
                                 break;
                             }
                         }
-                        if (ce.DumpInfo.BoundingBox.Contains(gx, gy)) {
+                        if (ce.Post.BoundingBox.Contains(gx, gy)) {
                             newMouseElm = ce;
                             break;
                         }
@@ -1634,7 +1618,7 @@ namespace Circuit {
                 /* look for post close to the mouse pointer */
                 for (int i = 0; i != newMouseElm.Elm.PostCount; i++) {
                     var pt = newMouseElm.Elm.GetPost(i);
-                    if (Utils.Distance(pt, gx, gy) < 16) {
+                    if (Utils.Distance(pt, gx, gy) < 5) {
                         Mouse.Post = i;
                     }
                 }
@@ -1749,7 +1733,7 @@ namespace Circuit {
                 /* elm by number get's messed up in the dump. For now we will just ignore them
                 /* until I can be bothered to come up with something better */
                 if (willDelete(ce) && !(ce is Scope)) {
-                    mClipboard += ce.Dump + "\n";
+                    mClipboard += ce.Dump() + "\n";
                 }
             }
             writeClipboardToStorage();
@@ -1830,13 +1814,9 @@ namespace Circuit {
             DiodeModel.ClearDumpedFlags();
             for (int i = UICount - 1; i >= 0; i--) {
                 var ce = GetUI(i);
-                string m = ce.DumpModel();
-                if (!string.IsNullOrEmpty(m)) {
-                    r += m + "\n";
-                }
                 /* See notes on do cut why we don't copy ScopeElms. */
                 if (ce.IsSelected && !(ce is Scope)) {
-                    r += ce.Dump + "\n";
+                    r += ce.Dump() + "\n";
                 }
             }
             return r;
@@ -1872,7 +1852,7 @@ namespace Circuit {
             var oldbb = new RectangleF();
             for (i = 0; i != UICount; i++) {
                 var ce = GetUI(i);
-                var bb = ce.DumpInfo.BoundingBox;
+                var bb = ce.Post.BoundingBox;
                 if (0 == i) {
                     oldbb = bb;
                 } else {
@@ -1894,7 +1874,7 @@ namespace Circuit {
             for (i = oldsz; i != UICount; i++) {
                 var ce = GetUI(i);
                 ce.IsSelected = true;
-                var bb = ce.DumpInfo.BoundingBox;
+                var bb = ce.Post.BoundingBox;
                 if (0 == i) {
                     newbb = bb;
                 } else {
@@ -2190,11 +2170,11 @@ namespace Circuit {
                 || MouseMode == MOUSE_MODE.DRAG_ITEM) {
                 for (int i = 0; i != UICount; i++) {
                     var ce = GetUI(i);
-                    g.DrawPost(ce.DumpInfo.P1);
-                    g.DrawPost(ce.DumpInfo.P2);
+                    g.DrawPost(ce.Post.A);
+                    g.DrawPost(ce.Post.B);
                     if (ce != Mouse.GripElm || MouseMode != MOUSE_MODE.SPLIT) {
-                        g.DrawHandle(ce.DumpInfo.P1);
-                        g.DrawHandle(ce.DumpInfo.P2);
+                        g.DrawHandle(ce.Post.A);
+                        g.DrawHandle(ce.Post.B);
                     } else {
                         ce.DrawHandles(g);
                     }
@@ -2207,7 +2187,7 @@ namespace Circuit {
             }
 
             /* draw handles for elm we're dragging */
-            if (DragElm != null && (DragElm.DumpInfo.P1.X != DragElm.DumpInfo.P2.X || DragElm.DumpInfo.P1.Y != DragElm.DumpInfo.P2.Y)) {
+            if (DragElm != null && (DragElm.Post.A.X != DragElm.Post.B.X || DragElm.Post.A.Y != DragElm.Post.B.Y)) {
                 DragElm.Draw(g);
                 DragElm.DrawHandles(g);
             }

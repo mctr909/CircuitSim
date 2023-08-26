@@ -63,8 +63,8 @@ namespace Circuit.UI.Input {
         }
 
         public override void GetInfo(string[] arr) {
-            arr[0] = "current source";
-            getBasicInfo(arr);
+            arr[0] = "電流源";
+            getBasicInfo(1, arr);
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {

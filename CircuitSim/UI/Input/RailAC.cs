@@ -33,38 +33,35 @@ namespace Circuit.UI.Input {
             var elm = (ElmVoltage)Elm;
             if (c == 0) {
                 if (r == 0) {
-                    return new ElementInfo("名前", DumpInfo.ReferenceName);
-                }
-                if (r == 1) {
                     return new ElementInfo(VALUE_NAME_AMP, elm.MaxVoltage);
                 }
-                if (r == 2) {
+                if (r == 1) {
                     return new ElementInfo(VALUE_NAME_BIAS, elm.Bias);
                 }
-                if (r == 3) {
+                if (r == 2) {
                     return new ElementInfo(VALUE_NAME_HZ, elm.Frequency);
                 }
-                if (r == 4) {
+                if (r == 3) {
                     return new ElementInfo(VALUE_NAME_PHASE, double.Parse((elm.Phase * 180 / Math.PI).ToString("0.00")));
                 }
-                if (r == 5) {
+                if (r == 4) {
                     return new ElementInfo(VALUE_NAME_PHASE_OFS, double.Parse((elm.PhaseOffset * 180 / Math.PI).ToString("0.00")));
                 }
             }
             if (c == 1) {
-                if (r == 1) {
+                if (r == 0) {
                     return new ElementInfo("連動グループ", Link.Voltage);
                 }
-                if (r == 2) {
+                if (r == 1) {
                     return new ElementInfo("連動グループ", Link.Bias);
                 }
-                if (r == 3) {
+                if (r == 2) {
                     return new ElementInfo("連動グループ", Link.Frequency);
                 }
-                if (r == 5) {
+                if (r == 4) {
                     return new ElementInfo("連動グループ", Link.PhaseOffset);
                 }
-                if (r < 5) {
+                if (r < 4) {
                     return new ElementInfo();
                 }
             }
@@ -75,39 +72,36 @@ namespace Circuit.UI.Input {
             var elm = (ElmVoltage)Elm;
             if (c == 0) {
                 if (r == 0) {
-                    DumpInfo.ReferenceName = ei.Text;
-                }
-                if (r == 1) {
                     elm.MaxVoltage = ei.Value;
                 }
-                if (r == 2) {
+                if (r == 1) {
                     elm.Bias = ei.Value;
                 }
-                if (r == 3) {
+                if (r == 2) {
                     elm.Frequency = ei.Value;
                     var maxfreq = 1 / (8 * ControlPanel.TimeStep);
                     if (maxfreq < elm.Frequency) {
                         elm.Frequency = maxfreq;
                     }
                 }
-                if (r == 4) {
+                if (r == 3) {
                     elm.Phase = ei.Value * Math.PI / 180;
                 }
-                if (r == 5) {
+                if (r == 4) {
                     elm.PhaseOffset = ei.Value * Math.PI / 180;
                 }
             }
             if (c == 1) {
-                if (r == 1) {
+                if (r == 0) {
                     Link.Voltage = (int)ei.Value;
                 }
-                if (r == 2) {
+                if (r == 1) {
                     Link.Bias = (int)ei.Value;
                 }
-                if (r == 3) {
+                if (r == 2) {
                     Link.Frequency = (int)ei.Value;
                 }
-                if (r == 5) {
+                if (r == 4) {
                     Link.PhaseOffset = (int)ei.Value;
                 }
             }

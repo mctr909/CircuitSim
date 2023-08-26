@@ -348,13 +348,13 @@ namespace Circuit {
             switch (id) {
             case DUMP_ID.WIRE:
                 return new SHORTCUT(Keys.F1, false);
-            case DUMP_ID.GROUND:
-                return new SHORTCUT(Keys.F2, false);
             case DUMP_ID.RESISTOR:
-                return new SHORTCUT(Keys.F3, false);
+                return new SHORTCUT(Keys.F2, false);
             case DUMP_ID.CAPACITOR:
-                return new SHORTCUT(Keys.F4, false);
+                return new SHORTCUT(Keys.F3, false);
             case DUMP_ID.INDUCTOR:
+                return new SHORTCUT(Keys.F4, false);
+            case DUMP_ID.GROUND:
                 return new SHORTCUT(Keys.F5, false);
             case DUMP_ID.INVALID:
             default:
@@ -402,6 +402,9 @@ namespace Circuit {
             basicMenuBar.Text = "基本(B)";
             basicMenuBar.Font = menuFont;
             addElementItem(basicMenuBar, "配線", ELEMENTS.WIRE);
+            addElementItem(basicMenuBar, "抵抗", ELEMENTS.RESISTOR);
+            addElementItem(basicMenuBar, "コンデンサ", ELEMENTS.CAPACITOR);
+            addElementItem(basicMenuBar, "コイル", ELEMENTS.INDUCTOR);
             addElementItem(basicMenuBar, "接地", ELEMENTS.GROUND);
             basicMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(basicMenuBar, "矩形", ELEMENTS.BOX);
@@ -413,10 +416,6 @@ namespace Circuit {
             var passMenuBar = new ToolStripMenuItem();
             passMenuBar.Text = "受動素子(P)";
             passMenuBar.Font = menuFont;
-            addElementItem(passMenuBar, "抵抗", ELEMENTS.RESISTOR);
-            addElementItem(passMenuBar, "コンデンサ", ELEMENTS.CAPACITOR);
-            addElementItem(passMenuBar, "コイル", ELEMENTS.INDUCTOR);
-            passMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(passMenuBar, "可変抵抗", ELEMENTS.POT);
             addElementItem(passMenuBar, "コンデンサ(有極性)", ELEMENTS.CAPACITOR_POLER);
             addElementItem(passMenuBar, "トランス", ELEMENTS.TRANSFORMER);

@@ -20,7 +20,7 @@ namespace Circuit.UI.Custom {
         protected override void dump(List<object> optionList) {
             var ce = (ElmComposite)Elm;
             for (int i = 0; i < ce.CompElmList.Count; i++) {
-                string tstring = ce.CompElmList[i].Dump;
+                string tstring = ce.CompElmList[i].Dump();
                 var rg = new Regex("[A-Za-z0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+ ");
                 var rgString = rg.Replace(tstring, "", 1).Replace(" ", "_"); /* remove unused tint x1 y1 x2 y2 coords for internal components */
                 var escString = Utils.Escape(rgString);
@@ -41,7 +41,7 @@ namespace Circuit.UI.Custom {
                 if ((mask & (1 << i)) == 0) {
                     continue;
                 }
-                string tstring = ce.CompElmList[i].Dump;
+                string tstring = ce.CompElmList[i].Dump();
                 var rg = new Regex("[A-Za-z0-9]+ 0 0 0 0 0 ");
                 tstring = rg.Replace(tstring, "", 1).Replace(" ", "_"); /* remove unused tint x1 y1 x2 y2 coords for internal components */
                 if ("" == dumpStr) {
@@ -53,7 +53,7 @@ namespace Circuit.UI.Custom {
             return dumpStr;
         }
 
-        bool useEscape() { return (DumpInfo.Flags & FLAG_ESCAPE) != 0; }
+        bool useEscape() { return (mFlags & FLAG_ESCAPE) != 0; }
 
         protected void setPost(int n, Point p) {
             ((ElmComposite)Elm).Posts[n] = p;

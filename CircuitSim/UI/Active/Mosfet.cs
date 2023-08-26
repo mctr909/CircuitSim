@@ -24,9 +24,9 @@ namespace Circuit.UI.Active {
 
         public Mosfet(Point pos, bool pnpflag) : base(pos) {
             Elm = new ElmMosfet(pnpflag);
-            DumpInfo.Flags = pnpflag ? FLAG_PNP : 0;
+            mFlags = pnpflag ? FLAG_PNP : 0;
             mNoDiagonal = true;
-            DumpInfo.ReferenceName = "Tr";
+            ReferenceName = "Tr";
         }
 
         public Mosfet(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -54,7 +54,7 @@ namespace Circuit.UI.Active {
             var hsm = (HS / 8 + 1) * 8;
             int hs1 = hsm * mDsign;
             var hs2 = HS * mDsign;
-            if ((DumpInfo.Flags & FLAG_FLIP) != 0) {
+            if ((mFlags & FLAG_FLIP) != 0) {
                 hs1 = -hs1;
                 hs2 = -hs2;
             }
@@ -165,17 +165,17 @@ namespace Circuit.UI.Active {
             drawPosts();
 
             /* draw current */
-            updateDotCount(-ce.Current, ref CurCount);
+            updateDotCount(-ce.Current, ref mCurCount);
             updateDotCount(ce.DiodeCurrent1, ref mCurcountBody1);
             updateDotCount(ce.DiodeCurrent2, ref mCurcountBody2);
-            drawCurrent(mPosS[0], mPosB[0], CurCount - mCurcountBody1);
-            drawCurrent(mPosB[0], mPosD[0], CurCount + mCurcountBody2);
+            drawCurrent(mPosS[0], mPosB[0], mCurCount - mCurcountBody1);
+            drawCurrent(mPosB[0], mPosD[0], mCurCount + mCurcountBody2);
 
             if (ControlPanel.ChkShowName.Checked) {
                 if (mVertical) {
-                    g.DrawCenteredText(DumpInfo.ReferenceName, mNamePos);
+                    g.DrawCenteredText(ReferenceName, mNamePos);
                 } else {
-                    g.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos);
+                    g.DrawCenteredVText(ReferenceName, mNamePos);
                 }
             }
         }
@@ -201,7 +201,7 @@ namespace Circuit.UI.Active {
         }
 
         public override string GetScopeText() {
-            return (string.IsNullOrEmpty(DumpInfo.ReferenceName) ? "MOSFET" : DumpInfo.ReferenceName) + " "
+            return (string.IsNullOrEmpty(ReferenceName) ? "MOSFET" : ReferenceName) + " "
                 + ((((ElmMosfet)Elm).Pnp == 1) ? "Vds(nCh.)" : "Vds(pCh.)");
         }
 
@@ -211,7 +211,7 @@ namespace Circuit.UI.Active {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("名前", DumpInfo.ReferenceName);
+                return new ElementInfo("名前", ReferenceName);
             }
             if (r == 1) {
                 return new ElementInfo("閾値電圧", ce.Pnp * ce.Vt);
@@ -220,7 +220,7 @@ namespace Circuit.UI.Active {
                 return new ElementInfo("hfe", ce.Hfe);
             }
             if (r == 3) {
-                return new ElementInfo("ドレイン/ソース 入れ替え", (DumpInfo.Flags & FLAG_FLIP) != 0);
+                return new ElementInfo("ドレイン/ソース 入れ替え", (mFlags & FLAG_FLIP) != 0);
             }
             return null;
         }
@@ -228,7 +228,7 @@ namespace Circuit.UI.Active {
         public override void SetElementValue(int n, int c, ElementInfo ei) {
             var ce = (ElmMosfet)Elm;
             if (n == 0) {
-                DumpInfo.ReferenceName = ei.Text;
+                ReferenceName = ei.Text;
                 setTextPos();
             }
             if (n == 1) {
@@ -238,8 +238,7 @@ namespace Circuit.UI.Active {
                 ce.Hfe = ElmMosfet.LastHfe = ei.Value;
             }
             if (n == 3) {
-                DumpInfo.Flags = ei.CheckBox.Checked
-                    ? (DumpInfo.Flags | FLAG_FLIP) : (DumpInfo.Flags & ~FLAG_FLIP);
+                mFlags = ei.CheckBox.Checked ? (mFlags | FLAG_FLIP) : (mFlags & ~FLAG_FLIP);
                 SetPoints();
             }
         }

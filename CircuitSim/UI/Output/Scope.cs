@@ -10,15 +10,14 @@ namespace Circuit.UI.Output {
         public Property Properties;
 
         public Scope(Point pos) : base(pos) {
-            mNoDiagonal = false;
-            DumpInfo.SetP2(DumpInfo.P1.X + 128, DumpInfo.P1.Y + 64);
+            Post.B.X = Post.A.X + 128;
+            Post.B.Y = Post.A.Y + 64;
             Properties = new Property();
             Elm = new ElmScope(Properties);
             SetPoints();
         }
 
         public Scope(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            mNoDiagonal = false;
             string sStr;
             st.nextToken(out sStr);
             var sst = new StringTokenizer(sStr, "\t");
@@ -45,10 +44,10 @@ namespace Circuit.UI.Output {
         }
 
         public void SetScopeRect() {
-            int i1 = CirSimForm.TransformX(Math.Min(DumpInfo.P1.X, DumpInfo.P2.X));
-            int i2 = CirSimForm.TransformX(Math.Max(DumpInfo.P1.X, DumpInfo.P2.X));
-            int j1 = CirSimForm.TransformY(Math.Min(DumpInfo.P1.Y, DumpInfo.P2.Y));
-            int j2 = CirSimForm.TransformY(Math.Max(DumpInfo.P1.Y, DumpInfo.P2.Y));
+            int i1 = CirSimForm.TransformX(Math.Min(Post.A.X, Post.B.X));
+            int i2 = CirSimForm.TransformX(Math.Max(Post.A.X, Post.B.X));
+            int j1 = CirSimForm.TransformY(Math.Min(Post.A.Y, Post.B.Y));
+            int j2 = CirSimForm.TransformY(Math.Max(Post.A.Y, Post.B.Y));
             var r = new Rectangle(i1, j1, i2 - i1, j2 - j1);
             if (!r.Equals(Properties.BoundingBox)) {
                 Properties.SetRect(r);

@@ -15,8 +15,8 @@ namespace Circuit.UI.Input {
 
         public Sweep(Point pos) : base(pos) {
             Elm = new ElmSweep();
-            DumpInfo.Flags = FLAG_BIDIR;
-            ((ElmSweep)Elm).BothSides = 0 != (DumpInfo.Flags & FLAG_BIDIR);
+            mFlags = FLAG_BIDIR;
+            ((ElmSweep)Elm).BothSides = 0 != (mFlags & FLAG_BIDIR);
         }
 
         public Sweep(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -49,7 +49,7 @@ namespace Circuit.UI.Input {
             int yc = Elm.Post[1].Y;
             drawCircle(Elm.Post[1], SIZE / 2);
 
-            DumpInfo.AdjustBbox(
+            Post.AdjustBbox(
                 xc - SIZE, yc - SIZE,
                 xc + SIZE, yc + SIZE
             );
@@ -86,15 +86,15 @@ namespace Circuit.UI.Input {
             }
 
             drawPosts();
-            updateDotCount(-ce.Current, ref CurCount);
+            updateDotCount(-ce.Current, ref mCurCount);
             if (CirSimForm.DragElm != this) {
-                drawCurrentA(CurCount);
+                drawCurrentA(mCurCount);
             }
         }
 
         public override void GetInfo(string[] arr) {
             var ce = (ElmSweep)Elm;
-            arr[0] = "sweep " + (((DumpInfo.Flags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
+            arr[0] = "sweep " + (((mFlags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
             arr[1] = "I = " + Utils.CurrentAbsText(ce.Current);
             arr[2] = "V = " + Utils.VoltageText(ce.Volts[0]);
             arr[3] = "f = " + Utils.UnitText(ce.Frequency, "Hz");
@@ -108,22 +108,22 @@ namespace Circuit.UI.Input {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("振幅(V)", ce.MaxV);
+                return new ElementInfo("振幅", ce.MaxV);
             }
             if (r == 1) {
-                return new ElementInfo("最小周波数(Hz)", ce.MinF);
+                return new ElementInfo("最小周波数", ce.MinF);
             }
             if (r == 2) {
-                return new ElementInfo("最大周波数(Hz)", ce.MaxF);
+                return new ElementInfo("最大周波数", ce.MaxF);
             }
             if (r == 3) {
                 return new ElementInfo("スウィープ時間(sec)", ce.SweepTime);
             }
             if (r == 4) {
-                return new ElementInfo("周波数対数変化", (DumpInfo.Flags & FLAG_LOG) != 0);
+                return new ElementInfo("周波数対数変化", (mFlags & FLAG_LOG) != 0);
             }
             if (r == 5) {
-                return new ElementInfo("双方向周波数遷移", (DumpInfo.Flags & FLAG_BIDIR) != 0);
+                return new ElementInfo("双方向周波数遷移", (mFlags & FLAG_BIDIR) != 0);
             }
             return null;
         }
@@ -150,18 +150,18 @@ namespace Circuit.UI.Input {
                 ce.SweepTime = ei.Value;
             }
             if (n == 4) {
-                DumpInfo.Flags &= ~FLAG_LOG;
+                mFlags &= ~FLAG_LOG;
                 if (ei.CheckBox.Checked) {
-                    DumpInfo.Flags |= FLAG_LOG;
+                    mFlags |= FLAG_LOG;
                 }
-                ce.IsLog = 0 != (DumpInfo.Flags & FLAG_LOG);
+                ce.IsLog = 0 != (mFlags & FLAG_LOG);
             }
             if (n == 5) {
-                DumpInfo.Flags &= ~FLAG_BIDIR;
+                mFlags &= ~FLAG_BIDIR;
                 if (ei.CheckBox.Checked) {
-                    DumpInfo.Flags |= FLAG_BIDIR;
+                    mFlags |= FLAG_BIDIR;
                 }
-                ce.BothSides = 0 != (DumpInfo.Flags & FLAG_BIDIR);
+                ce.BothSides = 0 != (mFlags & FLAG_BIDIR);
             }
             ce.setParams();
         }

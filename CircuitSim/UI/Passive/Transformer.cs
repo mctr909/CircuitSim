@@ -22,7 +22,7 @@ namespace Circuit.UI.Passive {
             Elm = new ElmTransformer();
             Elm.AllocNodes();
             mNoDiagonal = true;
-            DumpInfo.ReferenceName = "T";
+            ReferenceName = "T";
         }
 
         public Transformer(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -50,16 +50,16 @@ namespace Circuit.UI.Passive {
 
         public override void Drag(Point pos) {
             pos = CirSimForm.SnapGrid(pos);
-            DumpInfo.SetP2(pos);
+            Post.B = pos;
             SetPoints();
         }
 
         public override void SetPoints() {
             var ce = (ElmTransformer)Elm;
-            var width = Math.Max(BODY_LEN, Math.Abs(DumpInfo.P2.X - DumpInfo.P1.X));
-            var height = Math.Max(BODY_LEN, Math.Abs(DumpInfo.P2.Y - DumpInfo.P1.Y));
-            if (DumpInfo.P2.X == DumpInfo.P1.X) {
-                DumpInfo.SetP2(DumpInfo.P2.X, DumpInfo.P1.Y);
+            var width = Math.Max(BODY_LEN, Math.Abs(Post.B.X - Post.A.X));
+            var height = Math.Max(BODY_LEN, Math.Abs(Post.B.Y - Post.A.Y));
+            if (Post.B.X == Post.A.X) {
+                Post.B.Y = Post.A.Y;
             }
             base.SetPoints();
             ce.Post[1].Y = ce.Post[0].Y;
@@ -114,7 +114,7 @@ namespace Circuit.UI.Passive {
         }
 
         void setNamePos() {
-            var wn = Context.GetTextSize(DumpInfo.ReferenceName).Width;
+            var wn = Context.GetTextSize(ReferenceName).Width;
             mNamePos = new Point((int)(mPtCore[0].X - wn / 2 + 2), (int)mPtCore[0].Y - 8);
         }
 
@@ -151,7 +151,7 @@ namespace Circuit.UI.Passive {
             drawPosts();
 
             if (ControlPanel.ChkShowName.Checked) {
-                g.DrawLeftText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
+                g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
             }
         }
 
@@ -181,7 +181,7 @@ namespace Circuit.UI.Passive {
                 return new ElementInfo("結合係数(0～1)", ce.CouplingCoef);
             }
             if (r == 3) {
-                return new ElementInfo("名前", DumpInfo.ReferenceName);
+                return new ElementInfo("名前", ReferenceName);
             }
             if (r == 4) {
                 return new ElementInfo("極性反転", ce.Polarity == -1);
@@ -201,15 +201,15 @@ namespace Circuit.UI.Passive {
                 ce.CouplingCoef = ei.Value;
             }
             if (n == 3) {
-                DumpInfo.ReferenceName = ei.Text;
+                ReferenceName = ei.Text;
                 setNamePos();
             }
             if (n == 4) {
                 ce.Polarity = ei.CheckBox.Checked ? -1 : 1;
                 if (ei.CheckBox.Checked) {
-                    DumpInfo.Flags |= FLAG_REVERSE;
+                    mFlags |= FLAG_REVERSE;
                 } else {
-                    DumpInfo.Flags &= ~FLAG_REVERSE;
+                    mFlags &= ~FLAG_REVERSE;
                 }
                 SetPoints();
             }

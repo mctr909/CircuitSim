@@ -55,13 +55,13 @@ namespace Circuit.UI.Custom {
             }
 
             public void setPoint(int px, int py, int dx, int dy, int dax, int day, int sx, int sy) {
-                if ((mElm.DumpInfo.Flags & FLAG_FLIP_X) != 0) {
+                if ((mElm.mFlags & FLAG_FLIP_X) != 0) {
                     dx = -dx;
                     dax = -dax;
                     px += mElm.cspc2 * (mElm.sizeX - 1);
                     sx = -sx;
                 }
-                if ((mElm.DumpInfo.Flags & FLAG_FLIP_Y) != 0) {
+                if ((mElm.mFlags & FLAG_FLIP_Y) != 0) {
                     dy = -dy;
                     day = -day;
                     py += mElm.cspc2 * (mElm.sizeY - 1);
@@ -154,8 +154,8 @@ namespace Circuit.UI.Custom {
             csize = s;
             cspc = 8 * s;
             cspc2 = cspc * 2;
-            DumpInfo.Flags &= ~FLAG_SMALL;
-            DumpInfo.Flags |= (s == 1) ? FLAG_SMALL : 0;
+            mFlags &= ~FLAG_SMALL;
+            mFlags |= (s == 1) ? FLAG_SMALL : 0;
         }
 
         public override void Draw(CustomGraphics g) {
@@ -202,12 +202,12 @@ namespace Circuit.UI.Custom {
 
         public override void Drag(Point pos) {
             pos = CirSimForm.SnapGrid(pos);
-            if (pos.X < DumpInfo.P1.X) {
-                pos.X = DumpInfo.P1.X;
-                pos.Y = DumpInfo.P1.Y;
+            if (pos.X < Post.A.X) {
+                pos.X = Post.A.X;
+                pos.Y = Post.A.Y;
             } else {
-                DumpInfo.SetPosition(
-                    DumpInfo.P1.X, pos.Y,
+                Post.SetPosition(
+                    Post.A.X, pos.Y,
                     CirSimForm.SnapGrid(pos.X), pos.Y
                 );
             }
@@ -218,8 +218,8 @@ namespace Circuit.UI.Custom {
             var ce = (ElmChip)Elm;
             clockPoints = null;
             int hs = cspc;
-            int x0 = DumpInfo.P1.X + cspc2;
-            int y0 = DumpInfo.P1.Y;
+            int x0 = Post.A.X + cspc2;
+            int y0 = Post.A.Y;
             var r = new Point(x0 - cspc, y0 - cspc);
             int xs = sizeX * cspc2;
             int ys = sizeY * cspc2;
@@ -229,7 +229,7 @@ namespace Circuit.UI.Custom {
                 new Point(r.X + xs, r.Y + ys),
                 new Point(r.X, r.Y + ys)
             };
-            DumpInfo.SetBbox(r, rectPoints[2]);
+            Post.SetBbox(r, rectPoints[2]);
             for (int i = 0; i != ce.PostCount; i++) {
                 var p = ce.Pins[i];
                 switch (p.side) {
@@ -252,8 +252,8 @@ namespace Circuit.UI.Custom {
         /* see if we can move pin to position xp, yp, and return the new position */
         public bool getPinPos(int xp, int yp, int pin, int[] pos) {
             var ce = (ElmChip)Elm;
-            int x0 = DumpInfo.P1.X + cspc2;
-            int y0 = DumpInfo.P1.Y;
+            int x0 = Post.A.X + cspc2;
+            int y0 = Post.A.Y;
             int xr = x0 - cspc;
             int yr = y0 - cspc;
             double xd = (xp - xr) / (double)cspc2 - .5;
@@ -327,10 +327,10 @@ namespace Circuit.UI.Custom {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("Flip X", (DumpInfo.Flags & FLAG_FLIP_X) != 0);
+                return new ElementInfo("Flip X", (mFlags & FLAG_FLIP_X) != 0);
             }
             if (r == 1) {
-                return new ElementInfo("Flip Y", (DumpInfo.Flags & FLAG_FLIP_Y) != 0);
+                return new ElementInfo("Flip Y", (mFlags & FLAG_FLIP_Y) != 0);
             }
             return null;
         }
@@ -338,17 +338,17 @@ namespace Circuit.UI.Custom {
         public override void SetElementValue(int n, int c, ElementInfo ei) {
             if (n == 0) {
                 if (ei.CheckBox.Checked) {
-                    DumpInfo.Flags |= FLAG_FLIP_X;
+                    mFlags |= FLAG_FLIP_X;
                 } else {
-                    DumpInfo.Flags &= ~FLAG_FLIP_X;
+                    mFlags &= ~FLAG_FLIP_X;
                 }
                 SetPoints();
             }
             if (n == 1) {
                 if (ei.CheckBox.Checked) {
-                    DumpInfo.Flags |= FLAG_FLIP_Y;
+                    mFlags |= FLAG_FLIP_Y;
                 } else {
-                    DumpInfo.Flags &= ~FLAG_FLIP_Y;
+                    mFlags &= ~FLAG_FLIP_Y;
                 }
                 SetPoints();
             }

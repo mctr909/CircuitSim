@@ -10,11 +10,12 @@ namespace Circuit.UI.Active {
 
         public DiodeVaractor(Point pos) : base(pos) {
             Elm = new ElmDiodeVaractor();
-            DumpInfo.ReferenceName = "Vc";
+            ReferenceName = "Vc";
         }
 
         public DiodeVaractor(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
             Elm = new ElmDiodeVaractor(st);
+            setup();
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.VARACTOR; } }
@@ -64,8 +65,8 @@ namespace Circuit.UI.Active {
         public override void GetInfo(string[] arr) {
             base.GetInfo(arr);
             var ce = (ElmDiodeVaractor)Elm;
-            arr[0] = "varactor";
-            arr[5] = "C = " + Utils.UnitText(ce.mCapacitance, "F");
+            arr[0] = "可変容量ダイオード";
+            arr[5] = "静電容量：" + Utils.UnitText(ce.mCapacitance, "F");
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
@@ -74,7 +75,7 @@ namespace Circuit.UI.Active {
                 return null;
             }
             if (r == 2) {
-                return new ElementInfo("静電容量(F) @ 0V", ce.mBaseCapacitance);
+                return new ElementInfo("静電容量 @ 0V", ce.mBaseCapacitance);
             }
             return base.GetElementInfo(r, c);
         }

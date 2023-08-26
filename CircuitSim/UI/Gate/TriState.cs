@@ -51,24 +51,24 @@ namespace Circuit.UI.Gate {
 
             drawPolygon(mGatePoly);
             drawLine(ce.Post[2], mLead3);
-            updateDotCount(ce.Current, ref CurCount);
-            drawCurrentB(CurCount);
+            updateDotCount(ce.Current, ref mCurCount);
+            drawCurrentB(mCurCount);
             drawPosts();
         }
 
         public override void Drag(Point pos) {
             pos = CirSimForm.SnapGrid(pos);
-            if (Math.Abs(DumpInfo.P1.X - pos.X) < Math.Abs(DumpInfo.P1.Y - pos.Y)) {
-                pos.X = DumpInfo.P1.X;
+            if (Math.Abs(Post.A.X - pos.X) < Math.Abs(Post.A.Y - pos.Y)) {
+                pos.X = Post.A.X;
             } else {
-                pos.Y = DumpInfo.P1.Y;
+                pos.Y = Post.A.Y;
             }
-            int q1 = Math.Abs(DumpInfo.P1.X - pos.X) + Math.Abs(DumpInfo.P1.Y - pos.Y);
+            int q1 = Math.Abs(Post.A.X - pos.X) + Math.Abs(Post.A.Y - pos.Y);
             int q2 = (q1 / 2) % CirSimForm.GRID_SIZE;
             if (q2 != 0) {
                 return;
             }
-            DumpInfo.SetP2(pos);
+            Post.B = pos;
             SetPoints();
         }
 

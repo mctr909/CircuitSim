@@ -16,7 +16,7 @@ namespace Circuit.UI.Input {
             Link.Load(st);
         }
 
-        protected override int NumHandles { get { return 1; } }
+        protected override int mNumHandles { get { return 1; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.RAIL; } }
 
@@ -37,7 +37,7 @@ namespace Circuit.UI.Input {
                 w = mLen * 0.8;
             }
             if (elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE
-                && (DumpInfo.Flags & FLAG_CLOCK) != 0 || elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
+                && (mFlags & FLAG_CLOCK) != 0 || elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                 setLead1(1 - (w - 5) / mLen);
             } else {
                 setLead1(1 - w / mLen);
@@ -47,16 +47,16 @@ namespace Circuit.UI.Input {
             drawLeadA();
             drawRail();
             drawPosts();
-            updateDotCount(-Elm.Current, ref CurCount);
+            updateDotCount(-Elm.Current, ref mCurCount);
             if (CirSimForm.DragElm != this) {
-                drawCurrentA(CurCount);
+                drawCurrentA(mCurCount);
             }
         }
 
         void drawRail() {
             var elm = (ElmVoltage)Elm;
-            if (elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE && (DumpInfo.Flags & FLAG_CLOCK) != 0) {
-                drawCenteredText("CLK", DumpInfo.P2, true);
+            if (elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
+                drawCenteredText("CLK", Post.B, true);
             } else if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                 var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
                 double v = elm.GetVoltage();
@@ -69,7 +69,7 @@ namespace Circuit.UI.Input {
                 if (elm.GetVoltage() > 0) {
                     s = "+" + s;
                 }
-                drawCenteredText(s, DumpInfo.P2, true);
+                drawCenteredText(s, Post.B, true);
             } else {
                 drawWaveform(Elm.Post[1]);
             }

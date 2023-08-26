@@ -22,23 +22,20 @@ namespace Circuit.UI.Input {
             var elm = (ElmVoltage)Elm;
             if (c == 0) {
                 if (r == 0) {
-                    return new ElementInfo("名前", DumpInfo.ReferenceName);
-                }
-                if (r == 1) {
                     return new ElementInfo(VALUE_NAME_V, elm.MaxVoltage);
                 }
-                if (r == 2) {
+                if (r == 1) {
                     return new ElementInfo(VALUE_NAME_BIAS, elm.Bias);
                 }
             }
             if (c == 1) {
-                if (r == 1) {
+                if (r == 0) {
                     return new ElementInfo("連動グループ", Link.Voltage);
                 }
-                if (r == 2) {
+                if (r == 1) {
                     return new ElementInfo("連動グループ", Link.Bias);
                 }
-                if (r < 2) {
+                if (r < 1) {
                     return new ElementInfo();
                 }
             }
@@ -49,20 +46,17 @@ namespace Circuit.UI.Input {
             var elm = (ElmVoltage)Elm;
             if (c == 0) {
                 if (r == 0) {
-                    DumpInfo.ReferenceName = ei.Text;
-                }
-                if (r == 1) {
                     elm.MaxVoltage = ei.Value;
                 }
-                if (r == 2) {
+                if (r == 1) {
                     elm.Bias = ei.Value;
                 }
             }
             if (c == 1) {
-                if (r == 1) {
+                if (r == 0) {
                     Link.Voltage = (int)ei.Value;
                 }
-                if (r == 2) {
+                if (r == 1) {
                     Link.Bias = (int)ei.Value;
                 }
             }

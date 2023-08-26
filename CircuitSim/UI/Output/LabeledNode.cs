@@ -12,14 +12,14 @@ namespace Circuit.UI.Output {
 
         public LabeledNode(Point pos) : base(pos) {
             Elm = new ElmLabeledNode();
-            DumpInfo.ReferenceName = "label";
+            ReferenceName = "label";
         }
 
         public LabeledNode(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new ElmLabeledNode(st);
         }
 
-        public bool IsInternal { get { return (DumpInfo.Flags & FLAG_INTERNAL) != 0; } }
+        public bool IsInternal { get { return (mFlags & FLAG_INTERNAL) != 0; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.LABELED_NODE; } }
 
@@ -48,25 +48,25 @@ namespace Circuit.UI.Output {
                 lineOver = true;
                 str = str.Substring(1);
             }
-            drawCenteredText(str, DumpInfo.P2, true);
+            drawCenteredText(str, Post.B, true);
             if (lineOver) {
                 int asc = (int)(CustomGraphics.TextSize + 0.5);
                 if (lineOver) {
-                    int ya = DumpInfo.P2.Y - asc;
+                    int ya = Post.B.Y - asc;
                     int sw = (int)g.GetTextSize(str).Width;
-                    drawLine(DumpInfo.P2.X - sw / 2, ya, DumpInfo.P2.X + sw / 2, ya);
+                    drawLine(Post.B.X - sw / 2, ya, Post.B.X + sw / 2, ya);
                 }
             }
-            updateDotCount(ce.Current, ref CurCount);
-            drawCurrentA(CurCount);
+            updateDotCount(ce.Current, ref mCurCount);
+            drawCurrentA(mCurCount);
             drawPosts();
         }
 
         public override void GetInfo(string[] arr) {
             var ce = (ElmLabeledNode)Elm;
             arr[0] = ce.Text;
-            arr[1] = "I = " + Utils.CurrentText(ce.Current);
-            arr[2] = "V = " + Utils.VoltageText(ce.Volts[0]);
+            arr[1] = "電流：" + Utils.CurrentText(ce.Current);
+            arr[2] = "電位：" + Utils.VoltageText(ce.Volts[0]);
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
@@ -89,7 +89,7 @@ namespace Circuit.UI.Output {
                 ce.Text = ei.Text;
             }
             if (n == 1) {
-                DumpInfo.Flags = ei.ChangeFlag(DumpInfo.Flags, FLAG_INTERNAL);
+                mFlags = ei.ChangeFlag(mFlags, FLAG_INTERNAL);
             }
         }
     }

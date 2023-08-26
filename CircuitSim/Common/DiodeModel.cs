@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Circuit.UI;
-
 namespace Circuit {
-    class DiodeModel : Editable {
+    class DiodeModel {
         /* Electron thermal voltage at SPICE's default temperature of 27 C (300.15 K): */
         const double VT = 0.025865;
 
@@ -263,7 +261,6 @@ namespace Circuit {
                 BreakdownVoltage = Math.Abs(ei.Value);
             }
             updateModel();
-            CirSimForm.UpdateModels();
         }
 
         public string Dump() {
@@ -274,10 +271,6 @@ namespace Circuit {
                 + " " + SeriesResistance
                 + " " + EmissionCoefficient
                 + " " + BreakdownVoltage;
-        }
-
-        int compareTo(DiodeModel dm) {
-            return Name.CompareTo(dm.Name);
         }
     }
 }

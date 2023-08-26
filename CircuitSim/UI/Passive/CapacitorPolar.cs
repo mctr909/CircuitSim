@@ -32,15 +32,15 @@ namespace Circuit.UI.Passive {
         public override void SetPoints() {
             base.SetPoints();
             double f = (mLen / 2 - 4) / mLen;
-            if (DumpInfo.P1.Y == DumpInfo.P2.Y) {
+            if (Post.A.Y == Post.B.Y) {
                 interpPost(ref mPlusPoint, f - 5 / mLen, 5 * mDsign);
             } else {
                 interpPost(ref mPlusPoint, f - 5 / mLen, -5 * mDsign);
             }
-            if (DumpInfo.P2.Y > DumpInfo.P1.Y) {
+            if (Post.B.Y > Post.A.Y) {
                 mPlusPoint.Y += 1;
             }
-            if (DumpInfo.P1.Y > DumpInfo.P2.Y) {
+            if (Post.A.Y > Post.B.Y) {
                 mPlusPoint.Y += 3;
             }
         }
@@ -60,7 +60,7 @@ namespace Circuit.UI.Passive {
                 return null;
             }
             if (r == 2) {
-                return new ElementInfo("耐逆電圧(V)", ((ElmPolarCapacitor)Elm).MaxNegativeVoltage);
+                return new ElementInfo("耐逆電圧", ((ElmPolarCapacitor)Elm).MaxNegativeVoltage);
             }
             return base.GetElementInfo(r, c);
         }

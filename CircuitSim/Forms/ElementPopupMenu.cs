@@ -79,7 +79,7 @@ namespace Circuit {
                 return false;
             }
             var we = (Wire)ce;
-            if (we.DumpInfo.P1.X == we.DumpInfo.P2.X || we.DumpInfo.P1.Y == we.DumpInfo.P2.Y) {
+            if (we.Post.A.X == we.Post.B.X || we.Post.A.Y == we.Post.B.Y) {
                 return true;
             }
             return false;

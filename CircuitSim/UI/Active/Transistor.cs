@@ -24,7 +24,7 @@ namespace Circuit.UI.Active {
 
         public Transistor(Point pos, bool pnpflag) : base(pos) {
             Elm = new ElmTransistor(pnpflag);
-            DumpInfo.ReferenceName = "Tr";
+            ReferenceName = "Tr";
             setup();
         }
 
@@ -58,7 +58,7 @@ namespace Circuit.UI.Active {
             base.SetPoints();
             var ce = (ElmTransistor)Elm;
 
-            if ((DumpInfo.Flags & FLAG_FLIP) != 0) {
+            if ((mFlags & FLAG_FLIP) != 0) {
                 mDsign = -mDsign;
             }
 
@@ -105,8 +105,8 @@ namespace Circuit.UI.Active {
         }
 
         void setTextPos() {
-            var txtW = Context.GetTextSize(DumpInfo.ReferenceName).Width;
-            var swap = 0 < (DumpInfo.Flags & FLAG_FLIP) ? -1 : 1;
+            var txtW = Context.GetTextSize(ReferenceName).Width;
+            var swap = 0 < (mFlags & FLAG_FLIP) ? -1 : 1;
             if (mVertical) {
                 mNamePos = new Point(Elm.Post[1].X, Elm.Post[1].Y + HS * swap * mDsign * 2 / 3);
             } else if (mHorizontal) {
@@ -152,16 +152,16 @@ namespace Circuit.UI.Active {
 
             if (ControlPanel.ChkShowName.Checked) {
                 if (mVertical) {
-                    g.DrawCenteredText(DumpInfo.ReferenceName, mNamePos);
+                    g.DrawCenteredText(ReferenceName, mNamePos);
                 } else {
-                    g.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos);
+                    g.DrawCenteredVText(ReferenceName, mNamePos);
                 }
             }
         }
 
         public override string GetScopeText() {
             var ce = (ElmTransistor)Elm;
-            return (string.IsNullOrEmpty(DumpInfo.ReferenceName) ? "トランジスタ" : DumpInfo.ReferenceName)
+            return (string.IsNullOrEmpty(ReferenceName) ? "トランジスタ" : ReferenceName)
                 + " Vce(" + (1 == ce.NPN ? "npn)" : " pnp)");
         }
 
@@ -189,20 +189,20 @@ namespace Circuit.UI.Active {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("名前", DumpInfo.ReferenceName);
+                return new ElementInfo("名前", ReferenceName);
             }
             if (r == 1) {
                 return new ElementInfo("hfe", ((ElmTransistor)Elm).Hfe);
             }
             if (r == 2) {
-                return new ElementInfo("エミッタ/コレクタ 入れ替え", (DumpInfo.Flags & FLAG_FLIP) != 0);
+                return new ElementInfo("エミッタ/コレクタ 入れ替え", (mFlags & FLAG_FLIP) != 0);
             }
             return null;
         }
 
         public override void SetElementValue(int n, int c, ElementInfo ei) {
             if (n == 0) {
-                DumpInfo.ReferenceName = ei.Text;
+                ReferenceName = ei.Text;
                 setTextPos();
             }
             if (n == 1) {
@@ -211,9 +211,9 @@ namespace Circuit.UI.Active {
             }
             if (n == 2) {
                 if (ei.CheckBox.Checked) {
-                    DumpInfo.Flags |= FLAG_FLIP;
+                    mFlags |= FLAG_FLIP;
                 } else {
-                    DumpInfo.Flags &= ~FLAG_FLIP;
+                    mFlags &= ~FLAG_FLIP;
                 }
                 SetPoints();
             }

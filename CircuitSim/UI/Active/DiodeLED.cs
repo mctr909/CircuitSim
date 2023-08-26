@@ -89,8 +89,8 @@ namespace Circuit.UI.Active {
             g.FillCircle(mLedCenter.X, mLedCenter.Y, CR_INNER);
 
             updateDotCount();
-            drawCurrent(Elm.Post[0], mLedLead1, CurCount);
-            drawCurrent(Elm.Post[1], mLedLead2, -CurCount);
+            drawCurrent(Elm.Post[0], mLedLead1, mCurCount);
+            drawCurrent(Elm.Post[1], mLedLead2, -mCurCount);
             drawPosts();
         }
 

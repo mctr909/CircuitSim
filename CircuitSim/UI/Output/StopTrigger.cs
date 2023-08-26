@@ -35,7 +35,7 @@ namespace Circuit.UI.Output {
 			}
 			setLead1(1 - w / mLen);
 			setBbox(Elm.Post[0], mLead1, 0);
-			drawCenteredText(s, DumpInfo.P2, true);
+			drawCenteredText(s, Post.B, true);
 			drawLeadA();
 			drawPosts();
 		}
@@ -55,7 +55,7 @@ namespace Circuit.UI.Output {
 				return null;
 			}
 			if (r == 0) {
-				var ei = new ElementInfo("閾値電圧(V)", ce.TriggerVoltage);
+				var ei = new ElementInfo("閾値電圧", ce.TriggerVoltage);
 				return ei;
 			}
 			if (r == 1) {

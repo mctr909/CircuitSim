@@ -64,8 +64,8 @@ namespace Circuit.UI.Gate {
                 drawCenteredLText("1", mCenter, true);
             }
             drawCircle(mPcircle, 3);
-            updateDotCount(ce.Current, ref CurCount);
-            drawCurrentB(CurCount);
+            updateDotCount(ce.Current, ref mCurCount);
+            drawCurrentB(mCurCount);
         }
 
         public override void GetInfo(string[] arr) {
@@ -84,7 +84,7 @@ namespace Circuit.UI.Gate {
                 return new ElementInfo("Slew Rate (V/ns)", ce.SlewRate);
             }
             if (r == 1) {
-                return new ElementInfo("High Voltage (V)", ce.HighVoltage);
+                return new ElementInfo("High電圧", ce.HighVoltage);
             }
             return null;
         }

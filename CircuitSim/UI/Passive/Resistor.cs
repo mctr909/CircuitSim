@@ -23,7 +23,7 @@ namespace Circuit.UI.Passive {
 
         public Resistor(Point pos) : base(pos) {
             Elm = new ElmResistor();
-            DumpInfo.ReferenceName = mLastReferenceName;
+            ReferenceName = mLastReferenceName;
         }
 
         public Resistor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -133,14 +133,19 @@ namespace Circuit.UI.Passive {
 
         public override void GetInfo(string[] arr) {
             var ce = (ElmResistor)Elm;
-            arr[0] = string.IsNullOrEmpty(DumpInfo.ReferenceName) ? "抵抗" : DumpInfo.ReferenceName;
-            getBasicInfo(arr);
-            arr[3] = "R = " + Utils.UnitText(ce.Resistance, CirSimForm.OHM_TEXT);
+            if (string.IsNullOrEmpty(ReferenceName)) {
+                arr[0] = "抵抗：" + Utils.UnitText(ce.Resistance, CirSimForm.OHM_TEXT);
+                getBasicInfo(1, arr);
+            } else {
+                arr[0] = ReferenceName;
+                arr[1] = "抵抗：" + Utils.UnitText(ce.Resistance, CirSimForm.OHM_TEXT);
+                getBasicInfo(2, arr);
+            }
         }
 
         public override string GetScopeText() {
             var ce = (ElmResistor)Elm;
-            return (string.IsNullOrEmpty(DumpInfo.ReferenceName) ? "抵抗" : DumpInfo.ReferenceName) + " "
+            return (string.IsNullOrEmpty(ReferenceName) ? "抵抗" : ReferenceName) + " "
                 + Utils.UnitText(ce.Resistance, CirSimForm.OHM_TEXT);
         }
 
@@ -153,7 +158,7 @@ namespace Circuit.UI.Passive {
                 return new ElementInfo("レジスタンス(Ω)", ce.Resistance);
             }
             if (r == 1) {
-                return new ElementInfo("名前", DumpInfo.ReferenceName);
+                return new ElementInfo("名前", ReferenceName);
             }
             return null;
         }
@@ -165,8 +170,8 @@ namespace Circuit.UI.Passive {
                 setTextPos();
             }
             if (n == 1) {
-                DumpInfo.ReferenceName = ei.Text;
-                mLastReferenceName = DumpInfo.ReferenceName;
+                ReferenceName = ei.Text;
+                mLastReferenceName = ReferenceName;
                 setTextPos();
             }
         }

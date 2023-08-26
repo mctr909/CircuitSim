@@ -33,8 +33,8 @@ namespace Circuit.UI.Passive {
         public Pot(Point pos) : base(pos) {
             Elm = new ElmPot();
             Elm.AllocNodes();
-            DumpInfo.Flags = FLAG_SHOW_VALUES;
-            DumpInfo.ReferenceName = "VR";
+            mFlags = FLAG_SHOW_VALUES;
+            ReferenceName = "VR";
             createSlider();
         }
 
@@ -53,10 +53,6 @@ namespace Circuit.UI.Passive {
             var ce = (ElmPot)Elm;
             optionList.Add(ce.MaxResistance);
             optionList.Add(ce.Position);
-        }
-
-        public override void SetMouseElm(bool v) {
-            base.SetMouseElm(v);
         }
 
         public override void Delete() {
@@ -148,7 +144,7 @@ namespace Circuit.UI.Passive {
             }
             drawPosts();
 
-            if (ControlPanel.ChkShowValues.Checked && ce.Resistance1 > 0 && (DumpInfo.Flags & FLAG_SHOW_VALUES) != 0) {
+            if (ControlPanel.ChkShowValues.Checked && ce.Resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
                 /* check for vertical pot with 3rd terminal on left */
                 bool reverseY = (ce.Post[2].X < mLead1.X && mLead1.X == mLead2.X);
                 /* check for horizontal pot with 3rd terminal on top */
@@ -199,10 +195,10 @@ namespace Circuit.UI.Passive {
                 return new ElementInfo("レジスタンス(Ω)", ce.MaxResistance);
             }
             if (r == 1) {
-                return new ElementInfo("名前", DumpInfo.ReferenceName);
+                return new ElementInfo("名前", ReferenceName);
             }
             if (r == 2) {
-                return new ElementInfo("値を表示", (DumpInfo.Flags & FLAG_SHOW_VALUES) != 0);
+                return new ElementInfo("値を表示", (mFlags & FLAG_SHOW_VALUES) != 0);
             }
             return null;
         }
@@ -213,12 +209,12 @@ namespace Circuit.UI.Passive {
                 ce.MaxResistance = ei.Value;
             }
             if (n == 1) {
-                DumpInfo.ReferenceName = ei.Text;
-                mLabel.Text = DumpInfo.ReferenceName;
+                ReferenceName = ei.Text;
+                mLabel.Text = ReferenceName;
                 ControlPanel.SetSliderPanelHeight();
             }
             if (n == 2) {
-                DumpInfo.Flags = ei.ChangeFlag(DumpInfo.Flags, FLAG_SHOW_VALUES);
+                mFlags = ei.ChangeFlag(mFlags, FLAG_SHOW_VALUES);
             }
             setTextPos();
         }
@@ -262,7 +258,7 @@ namespace Circuit.UI.Passive {
         void setTextPos() {
             mName = "";
             if (ControlPanel.ChkShowName.Checked) {
-                mName += DumpInfo.ReferenceName;
+                mName += ReferenceName;
             }
             if (ControlPanel.ChkShowValues.Checked) {
                 if (!string.IsNullOrEmpty(mName)) {
@@ -297,7 +293,7 @@ namespace Circuit.UI.Passive {
             var ce = (ElmPot)Elm;
             ControlPanel.AddSlider(mLabel = new Label() {
                 TextAlign = ContentAlignment.BottomLeft,
-                Text = DumpInfo.ReferenceName
+                Text = ReferenceName
             });
             int value = (int)(ce.Position * 100);
             ControlPanel.AddSlider(mSlider = new TrackBar() {

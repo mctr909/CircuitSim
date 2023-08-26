@@ -7,35 +7,26 @@ using Circuit.UI.Input;
 using Circuit.UI.Output;
 
 namespace Circuit.UI {
-    public interface Editable {
-        ElementInfo GetElementInfo(int r, int c);
-        void SetElementValue(int r, int c, ElementInfo ei);
-    }
-
-    public class BaseLink {
-        public virtual int GetGroup(int id) { return 0; }
-        public virtual void SetValue(BaseElement element, int linkID, double value) { }
-        public virtual void Load(StringTokenizer st) { }
-        public virtual void Dump(List<object> optionList) { }
-    }
-
-    public abstract class BaseUI : Editable {
+    public abstract class BaseUI {
         public BaseElement Elm;
+        public string ReferenceName;
         public static CustomGraphics Context;
         static BaseUI mMouseElmRef = null;
 
         protected BaseUI(Point pos) {
-            DumpInfo = new DumpInfo(pos, DefaultFlags);
+            Post = new Post(pos);
+            mFlags = 0;
         }
 
         protected BaseUI(Point p1, Point p2, int f) {
-            DumpInfo = new DumpInfo(p1, p2, f);
+            Post = new Post(p1, p2);
+            mFlags = f;
         }
 
         #region [property]
         public abstract DUMP_ID DumpType { get; }
 
-        public DumpInfo DumpInfo { get; protected set; }
+        public Post Post { get; protected set; }
 
         public bool IsSelected { get; set; }
 
@@ -47,20 +38,6 @@ namespace Circuit.UI {
                 return mMouseElmRef.Equals(this);
             }
         }
-
-        /// <summary>
-        /// dump component state for export/undo
-        /// </summary>
-        public string Dump {
-            get {
-                var optionList = new List<object>();
-                dump(optionList);
-                mLink.Dump(optionList);
-                return DumpInfo.GetValue(DumpType, optionList);
-            }
-        }
-
-        public bool NeedsShortcut { get { return Shortcut > 0 && (int)Shortcut <= 127; } }
 
         public bool NeedsHighlight {
             get {
@@ -79,22 +56,21 @@ namespace Circuit.UI {
         /// called when an element is done being dragged out;
         /// </summary>
         /// <returns>returns true if it's zero size and should be deleted</returns>
-        public virtual bool IsCreationFailed { get { return DumpInfo.IsCreationFailed; } }
+        public virtual bool IsCreationFailed { get { return Post.IsCreationFailed; } }
 
         public virtual bool IsGraphicElmt { get { return false; } }
 
         public virtual bool CanViewInScope { get { return Elm.PostCount <= 2; } }
 
-        public virtual int DefaultFlags { get { return 0; } }
-
-        protected virtual int NumHandles { get { return 2; } }
-
-        protected double CurCount;
+        protected virtual int mNumHandles { get { return 2; } }
 
         protected virtual BaseLink mLink { get; set; } = new BaseLink();
         #endregion
 
         #region [protected variable]
+        protected int mFlags;
+        protected double mCurCount;
+
         /* length along x and y axes, and sign of difference */
         protected Point mDiff;
         protected int mDsign;
@@ -118,6 +94,170 @@ namespace Circuit.UI {
         protected bool mNoDiagonal;
         #endregion
 
+        #region [public method]
+        /// <summary>
+        /// dump component state for export/undo
+        /// </summary>
+        public string Dump() {
+            var valueList = new List<object>();
+            valueList.Add(DumpType);
+            Post.Dump(valueList);
+            valueList.Add(mFlags);
+            dump(valueList);
+            mLink.Dump(valueList);
+            if (!string.IsNullOrWhiteSpace(ReferenceName)) {
+                valueList.Add(Utils.Escape(ReferenceName));
+            }
+            return string.Join(" ", valueList.ToArray());
+        }
+
+        /// <summary>
+        /// this is used to set the position of an internal element so we can draw it inside the parent
+        /// </summary>
+        /// <param name="ax"></param>
+        /// <param name="ay"></param>
+        /// <param name="bx"></param>
+        /// <param name="by"></param>
+        public void SetPosition(int ax, int ay, int bx, int by) {
+            Post.SetPosition(ax, ay, bx, by);
+            SetPoints();
+        }
+
+        public void Move(int dx, int dy) {
+            Post.Move(dx, dy);
+            SetPoints();
+        }
+
+        public void Move(int dx, int dy, int n) {
+            Post.Move(dx, dy, n);
+            SetPoints();
+        }
+
+        /// <summary>
+        /// determine if moving this element by (dx,dy) will put it on top of another element
+        /// </summary>
+        /// <param name="dx"></param>
+        /// <param name="dy"></param>
+        /// <returns></returns>
+        public bool AllowMove(int dx, int dy) {
+            int nx = Post.A.X + dx;
+            int ny = Post.A.Y + dy;
+            int nx2 = Post.B.X + dx;
+            int ny2 = Post.B.Y + dy;
+            for (int i = 0; i != CirSimForm.UICount; i++) {
+                var ce = CirSimForm.GetUI(i);
+                var ceP1 = ce.Post.A;
+                var ceP2 = ce.Post.B;
+                if (ceP1.X == nx && ceP1.Y == ny && ceP2.X == nx2 && ceP2.Y == ny2) {
+                    return false;
+                }
+                if (ceP1.X == nx2 && ceP1.Y == ny2 && ceP2.X == nx && ceP2.Y == ny) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public void FlipPosts() {
+            Post.FlipPosts();
+            SetPoints();
+        }
+
+        public void SetMouseElm(bool v) {
+            if (v) {
+                mMouseElmRef = this;
+            } else if (mMouseElmRef == this) {
+                mMouseElmRef = null;
+            }
+        }
+
+        public void SelectRect(RectangleF r) {
+            IsSelected = r.IntersectsWith(Post.BoundingBox);
+        }
+
+        public void DrawHandles(CustomGraphics g) {
+            g.DrawHandle(Post.A);
+            if (2 <= mNumHandles) {
+                g.DrawHandle(Post.B);
+            }
+        }
+
+        public string GetPostVoltage(int n) {
+            if (n < Elm.Volts.Length) {
+                return Utils.UnitText(Elm.Volts[n], "V");
+            } else {
+                return "";
+            }
+        }
+        #endregion
+
+        #region [public virtual method]
+        public virtual double Distance(int x, int y) {
+            return Post.Distance(x, y);
+        }
+
+        public virtual void Delete() {
+            if (mMouseElmRef == this) {
+                mMouseElmRef = null;
+            }
+            CirSimForm.DeleteSliders(this);
+        }
+
+        public virtual void Draw(CustomGraphics g) { }
+
+        /// <summary>
+        /// draw second point to xx, yy
+        /// </summary>
+        /// <param name="pos"></param>
+        public virtual void Drag(Point pos) {
+            Post.Drag(pos, mNoDiagonal);
+            SetPoints();
+        }
+
+        /// <summary>
+        /// calculate post locations and other convenience values used for drawing.
+        /// Called when element is moved
+        /// </summary>
+        public virtual void SetPoints() {
+            mDiff.X = Post.B.X - Post.A.X;
+            mDiff.Y = Post.B.Y - Post.A.Y;
+            mLen = Math.Sqrt(mDiff.X * mDiff.X + mDiff.Y * mDiff.Y);
+            mDsign = (mDiff.Y == 0) ? Math.Sign(mDiff.X) : Math.Sign(mDiff.Y);
+            var sx = Post.B.X - Post.A.X;
+            var sy = Post.B.Y - Post.A.Y;
+            var r = (float)Math.Sqrt(sx * sx + sy * sy);
+            if (r == 0) {
+                mDir.X = 0;
+                mDir.Y = 0;
+            } else {
+                mDir.X = sy / r;
+                mDir.Y = -sx / r;
+            }
+            mVertical = Post.A.X == Post.B.X;
+            mHorizontal = Post.A.Y == Post.B.Y;
+            Elm.Post[0] = Post.A;
+            Elm.Post[1] = Post.B;
+        }
+
+        /// <summary>
+        /// get component info for display in lower right
+        /// </summary>
+        /// <param name="arr"></param>
+        public virtual void GetInfo(string[] arr) { }
+
+        public virtual string GetScopeText() {
+            var info = new string[10];
+            GetInfo(info);
+            return info[0];
+        }
+
+        public virtual ElementInfo GetElementInfo(int r, int c) { return null; }
+
+        public virtual void SetElementValue(int r, int c, ElementInfo ei) { }
+
+        public virtual EventHandler CreateSlider(ElementInfo ei, Adjustable adj) { return null; }
+        #endregion
+
         #region [protected method]
         protected virtual void dump(List<object> optionList) { }
 
@@ -137,10 +277,10 @@ namespace Circuit.UI {
         }
 
         protected void setBbox(float ax, float ay, float bx, float by, double w) {
-            DumpInfo.SetBbox(ax, ay, bx, by);
+            Post.SetBbox(ax, ay, bx, by);
             var dpx = (float)(mDir.X * w);
             var dpy = (float)(mDir.Y * w);
-            DumpInfo.AdjustBbox(
+            Post.AdjustBbox(
                 ax + dpx, ay + dpy,
                 ax - dpx, ay - dpy
             );
@@ -159,11 +299,11 @@ namespace Circuit.UI {
         protected void setBbox(double w) {
             var dpx = (float)(mDir.X * w);
             var dpy = (float)(mDir.Y * w);
-            DumpInfo.SetBbox(
+            Post.SetBbox(
                 Elm.Post[0].X + dpx, Elm.Post[0].Y + dpy,
                 Elm.Post[0].X - dpx, Elm.Post[0].Y - dpy
             );
-            DumpInfo.AdjustBbox(
+            Post.AdjustBbox(
                 Elm.Post[0].X + dpx, Elm.Post[0].Y + dpy,
                 Elm.Post[0].X - dpx, Elm.Post[0].Y - dpy
             );
@@ -175,7 +315,7 @@ namespace Circuit.UI {
         protected void doDots() {
             updateDotCount();
             if (CirSimForm.DragElm != this) {
-                drawCurrent(Elm.Post[0], Elm.Post[1], CurCount);
+                drawCurrent(Elm.Post[0], Elm.Post[1], mCurCount);
             }
         }
 
@@ -197,13 +337,12 @@ namespace Circuit.UI {
         /// update dot positions (curcount) for drawing current (simple case for single current)
         /// </summary>
         protected void updateDotCount() {
-            updateDotCount(Elm.Current, ref CurCount);
+            updateDotCount(Elm.Current, ref mCurCount);
         }
 
-        protected int getBasicInfo(string[] arr) {
-            arr[1] = "I = " + Utils.CurrentAbsText(Elm.Current);
-            arr[2] = "Vd = " + Utils.VoltageAbsText(Elm.GetVoltageDiff());
-            return 3;
+        protected void getBasicInfo(int begin, params string[] arr) {
+            arr[begin] = "電流：" + Utils.CurrentAbsText(Elm.Current);
+            arr[begin + 1] = "電位差：" + Utils.VoltageAbsText(Elm.GetVoltageDiff());
         }
 
         protected void setLead1(double w) {
@@ -309,167 +448,11 @@ namespace Circuit.UI {
                 var u2 = CirSimForm.GetUI(i);
                 if (u2 is T) {
                     if (u2.mLink.GetGroup(linkID) == mLink.GetGroup(linkID)) {
-                        mLink.SetValue(u2.Elm, linkID, value);
+                        u2.mLink.SetValue(u2.Elm, linkID, value);
                     }
                 }
             }
         }
-        #endregion
-
-        #region [public method]
-        public void DrawHandles(CustomGraphics g) {
-            g.DrawHandle(DumpInfo.P1);
-            if (2 <= NumHandles) {
-                g.DrawHandle(DumpInfo.P2);
-            }
-        }
-
-        /// <summary>
-        /// this is used to set the position of an internal element so we can draw it inside the parent
-        /// </summary>
-        /// <param name="ax"></param>
-        /// <param name="ay"></param>
-        /// <param name="bx"></param>
-        /// <param name="by"></param>
-        public void SetPosition(int ax, int ay, int bx, int by) {
-            DumpInfo.SetPosition(ax, ay, bx, by);
-            SetPoints();
-        }
-
-        public void Move(int dx, int dy) {
-            DumpInfo.Move(dx, dy);
-            SetPoints();
-        }
-
-        public void MovePoint(int n, int dx, int dy) {
-            DumpInfo.MovePoint(n, dx, dy);
-            SetPoints();
-        }
-
-        public void FlipPosts() {
-            DumpInfo.FlipPosts();
-            SetPoints();
-        }
-
-        /// <summary>
-        /// determine if moving this element by (dx,dy) will put it on top of another element
-        /// </summary>
-        /// <param name="dx"></param>
-        /// <param name="dy"></param>
-        /// <returns></returns>
-        public bool AllowMove(int dx, int dy) {
-            int nx = DumpInfo.P1.X + dx;
-            int ny = DumpInfo.P1.Y + dy;
-            int nx2 = DumpInfo.P2.X + dx;
-            int ny2 = DumpInfo.P2.Y + dy;
-            for (int i = 0; i != CirSimForm.UICount; i++) {
-                var ce = CirSimForm.GetUI(i);
-                var ceP1 = ce.DumpInfo.P1;
-                var ceP2 = ce.DumpInfo.P2;
-                if (ceP1.X == nx && ceP1.Y == ny && ceP2.X == nx2 && ceP2.Y == ny2) {
-                    return false;
-                }
-                if (ceP1.X == nx2 && ceP1.Y == ny2 && ceP2.X == nx && ceP2.Y == ny) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public void SelectRect(RectangleF r) {
-            IsSelected = r.IntersectsWith(DumpInfo.BoundingBox);
-        }
-
-        public string DispPostVoltage(int x) {
-            if (x < Elm.Volts.Length) {
-                return Utils.UnitText(Elm.Volts[x], "V");
-            } else {
-                return "";
-            }
-        }
-        #endregion
-
-        #region [virtual method]
-        public virtual double Distance(int x, int y) {
-            return DumpInfo.Distance(x, y);
-        }
-
-        public virtual void Delete() {
-            if (mMouseElmRef == this) {
-                mMouseElmRef = null;
-            }
-            CirSimForm.DeleteSliders(this);
-        }
-
-        public virtual void Draw(CustomGraphics g) { }
-
-        /// <summary>
-        /// draw second point to xx, yy
-        /// </summary>
-        /// <param name="pos"></param>
-        public virtual void Drag(Point pos) {
-            DumpInfo.Drag(pos, mNoDiagonal);
-            SetPoints();
-        }
-
-        public virtual void DraggingDone() { }
-
-        /// <summary>
-        /// calculate post locations and other convenience values used for drawing.
-        /// Called when element is moved
-        /// </summary>
-        public virtual void SetPoints() {
-            mDiff.X = DumpInfo.P2.X - DumpInfo.P1.X;
-            mDiff.Y = DumpInfo.P2.Y - DumpInfo.P1.Y;
-            mLen = Math.Sqrt(mDiff.X * mDiff.X + mDiff.Y * mDiff.Y);
-            mDsign = (mDiff.Y == 0) ? Math.Sign(mDiff.X) : Math.Sign(mDiff.Y);
-            var sx = DumpInfo.P2.X - DumpInfo.P1.X;
-            var sy = DumpInfo.P2.Y - DumpInfo.P1.Y;
-            var r = (float)Math.Sqrt(sx * sx + sy * sy);
-            if (r == 0) {
-                mDir.X = 0;
-                mDir.Y = 0;
-            } else {
-                mDir.X = sy / r;
-                mDir.Y = -sx / r;
-            }
-            mVertical = DumpInfo.P1.X == DumpInfo.P2.X;
-            mHorizontal = DumpInfo.P1.Y == DumpInfo.P2.Y;
-            Elm.Post[0] = DumpInfo.P1;
-            Elm.Post[1] = DumpInfo.P2;
-        }
-
-        public virtual void SetMouseElm(bool v) {
-            if (v) {
-                mMouseElmRef = this;
-            } else if (mMouseElmRef == this) {
-                mMouseElmRef = null;
-            }
-        }
-
-        /// <summary>
-        /// get component info for display in lower right
-        /// </summary>
-        /// <param name="arr"></param>
-        public virtual void GetInfo(string[] arr) { }
-
-        public virtual bool CanShowValueInScope(int v) { return false; }
-
-        public virtual string GetScopeText() {
-            var info = new string[10];
-            GetInfo(info);
-            return info[0];
-        }
-
-        public virtual string DumpModel() { return null; }
-
-        public virtual void UpdateModels() { }
-
-        public virtual ElementInfo GetElementInfo(int r, int c) { return null; }
-
-        public virtual void SetElementValue(int r, int c, ElementInfo ei) { }
-
-        public virtual EventHandler CreateSlider(ElementInfo ei, Adjustable adj) { return null; }
         #endregion
 
         #region [draw method]
@@ -588,12 +571,12 @@ namespace Circuit.UI {
             var w = fs.Width;
             var h2 = fs.Height / 2;
             if (cx) {
-                DumpInfo.AdjustBbox(
+                Post.AdjustBbox(
                     (int)(p.X - w / 2), (int)(p.Y - h2),
                     (int)(p.X + w / 2), (int)(p.Y + h2)
                 );
             } else {
-                DumpInfo.AdjustBbox(
+                Post.AdjustBbox(
                     (int)p.X, (int)(p.Y - h2),
                     (int)(p.X + w), (int)(p.Y + h2)
                 );
@@ -606,12 +589,12 @@ namespace Circuit.UI {
             var w = fs.Width;
             var h2 = fs.Height / 2;
             if (cx) {
-                DumpInfo.AdjustBbox(
+                Post.AdjustBbox(
                     (int)(p.X - w / 2), (int)(p.Y - h2),
                     (int)(p.X + w / 2), (int)(p.Y + h2)
                 );
             } else {
-                DumpInfo.AdjustBbox(
+                Post.AdjustBbox(
                     (int)p.X, (int)(p.Y - h2),
                     (int)(p.X + w), (int)(p.Y + h2)
                 );
@@ -630,11 +613,11 @@ namespace Circuit.UI {
             var textSize = Context.GetTextSize(s);
             int xc, yc;
             if (this is Rail || this is Sweep) {
-                xc = DumpInfo.P2.X;
-                yc = DumpInfo.P2.Y;
+                xc = Post.B.X;
+                yc = Post.B.Y;
             } else {
-                xc = (DumpInfo.P2.X + DumpInfo.P1.X) / 2;
-                yc = (DumpInfo.P2.Y + DumpInfo.P1.Y) / 2;
+                xc = (Post.B.X + Post.A.X) / 2;
+                yc = (Post.B.Y + Post.A.Y) / 2;
             }
             Context.DrawRightText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
         }
@@ -663,11 +646,11 @@ namespace Circuit.UI {
             var textSize = Context.GetTextSize(s);
             int xc, yc;
             if (this is Rail) {
-                xc = DumpInfo.P2.X;
-                yc = DumpInfo.P2.Y;
+                xc = Post.B.X;
+                yc = Post.B.Y;
             } else {
-                xc = (DumpInfo.P2.X + DumpInfo.P1.X) / 2;
-                yc = (DumpInfo.P2.Y + DumpInfo.P1.Y) / 2;
+                xc = (Post.B.X + Post.A.X) / 2;
+                yc = (Post.B.Y + Post.A.Y) / 2;
             }
             Context.DrawLeftText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
         }
@@ -675,11 +658,11 @@ namespace Circuit.UI {
         protected void drawName() {
             if (ControlPanel.ChkShowName.Checked) {
                 if (mVertical) {
-                    Context.DrawCenteredVText(DumpInfo.ReferenceName, mNamePos);
+                    Context.DrawCenteredVText(ReferenceName, mNamePos);
                 } else if (mHorizontal) {
-                    Context.DrawCenteredText(DumpInfo.ReferenceName, mNamePos);
+                    Context.DrawCenteredText(ReferenceName, mNamePos);
                 } else {
-                    Context.DrawRightText(DumpInfo.ReferenceName, mNamePos.X, mNamePos.Y);
+                    Context.DrawRightText(ReferenceName, mNamePos.X, mNamePos.Y);
                 }
             }
         }

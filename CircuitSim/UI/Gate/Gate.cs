@@ -34,14 +34,14 @@ namespace Circuit.UI.Gate {
         public Gate(Point pos) : base(pos) {
             mNoDiagonal = true;
             if (mLastSchmitt) {
-                DumpInfo.Flags |= FLAG_SCHMITT;
+                mFlags |= FLAG_SCHMITT;
             }
-            DumpInfo.Flags |= FLAG_SMALL;
+            mFlags |= FLAG_SMALL;
         }
 
         public Gate(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             mNoDiagonal = true;
-            DumpInfo.Flags |= FLAG_SMALL;
+            mFlags |= FLAG_SMALL;
         }
 
         public static bool UseAnsiGates() { return ControlPanel.ChkUseAnsiSymbols.Checked; }
@@ -111,8 +111,8 @@ namespace Circuit.UI.Gate {
             if (ce.IsInverting) {
                 drawCircle(mCirclePos, CIRCLE_SIZE);
             }
-            updateDotCount(ce.Current, ref CurCount);
-            drawCurrentB(CurCount);
+            updateDotCount(ce.Current, ref mCurCount);
+            drawCurrentB(mCurCount);
             drawPosts();
         }
 
@@ -132,7 +132,7 @@ namespace Circuit.UI.Gate {
                 return new ElementInfo("入力数", ce.InputCount);
             }
             if (r == 1) {
-                return new ElementInfo("閾値(V)", ce.HighVoltage);
+                return new ElementInfo("High電圧", ce.HighVoltage);
             }
             if (r == 2) {
                 return new ElementInfo("シュミットトリガー", ce.HasSchmittInputs);
@@ -151,11 +151,11 @@ namespace Circuit.UI.Gate {
             }
             if (n == 2) {
                 if (ei.CheckBox.Checked) {
-                    DumpInfo.Flags |= FLAG_SCHMITT;
+                    mFlags |= FLAG_SCHMITT;
                 } else {
-                    DumpInfo.Flags &= ~FLAG_SCHMITT;
+                    mFlags &= ~FLAG_SCHMITT;
                 }
-                mLastSchmitt = ce.HasSchmittInputs = 0 != (DumpInfo.Flags & FLAG_SCHMITT);
+                mLastSchmitt = ce.HasSchmittInputs = 0 != (mFlags & FLAG_SCHMITT);
                 SetPoints();
             }
         }

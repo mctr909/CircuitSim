@@ -22,7 +22,7 @@ namespace Circuit.UI.Input {
             var elm = (ElmVoltage)Elm;
             if (c == 0) {
                 if (r == 0) {
-                    return new ElementInfo("名前", DumpInfo.ReferenceName);
+                    return new ElementInfo("名前", ReferenceName);
                 }
                 if (r == 1) {
                     return new ElementInfo(VALUE_NAME_V, elm.MaxVoltage);
@@ -46,7 +46,7 @@ namespace Circuit.UI.Input {
             var elm = (ElmVoltage)Elm;
             if (c == 0) {
                 if (r == 0) {
-                    DumpInfo.ReferenceName = ei.Text;
+                    ReferenceName = ei.Text;
                 }
                 if (r == 1) {
                     elm.MaxVoltage = ei.Value;

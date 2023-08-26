@@ -24,18 +24,18 @@ namespace Circuit.UI.Custom {
         public override DUMP_ID DumpType { get { return DUMP_ID.TEXT; } }
 
         protected override void dump(List<object> optionList) {
-            DumpInfo.Flags |= FLAG_ESCAPE;
+            mFlags |= FLAG_ESCAPE;
             optionList.Add(mFontSize);
             optionList.Add(Utils.Escape(mText));
         }
 
         public override double Distance(int x, int y) {
-            return DumpInfo.BoxDistance(DumpInfo.BoundingBox, x, y);
+            return Post.BoxDistance(Post.BoundingBox, x, y);
         }
 
         public override void Drag(Point p) {
             p = CirSimForm.SnapGrid(p);
-            DumpInfo.SetPosition(p.X, p.Y, p.X + 16, p.Y);
+            Post.SetPosition(p.X, p.Y, p.X + 16, p.Y);
             setTextSize();
         }
 
@@ -46,7 +46,7 @@ namespace Circuit.UI.Custom {
             if (NeedsHighlight) {
                 CustomGraphics.TextColor = CustomGraphics.SelectColor;
             }
-            g.DrawLeftText(mText, DumpInfo.P1.X, (int)(DumpInfo.P1.Y + mTextSize.Height / 2));
+            g.DrawLeftText(mText, Post.A.X, (int)(Post.A.Y + mTextSize.Height / 2));
             CustomGraphics.TextSize = sizeBk;
             CustomGraphics.TextColor = colorBk;
         }
@@ -78,11 +78,9 @@ namespace Circuit.UI.Custom {
             var sizeBk = CustomGraphics.TextSize;
             CustomGraphics.TextSize = mFontSize;
             mTextSize = Context.GetTextSize(mText);
-            DumpInfo.SetP2(
-                (int)(DumpInfo.P1.X + mTextSize.Width),
-                (int)(DumpInfo.P1.Y + mTextSize.Height)
-            );
-            DumpInfo.SetBbox(DumpInfo.P1, DumpInfo.P2);
+            Post.B.X = (int)(Post.A.X + mTextSize.Width);
+            Post.B.Y = (int)(Post.A.Y + mTextSize.Height);
+            Post.SetBbox(Post.A, Post.B);
             CustomGraphics.TextSize = sizeBk;
         }
     }

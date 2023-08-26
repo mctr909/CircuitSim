@@ -255,12 +255,12 @@ namespace Circuit {
             mPnlCustomCtrl.Width = 0;
             mPnlCustomCtrl.Height = 0;
 
-            if (string.IsNullOrEmpty(mElm.DumpInfo.ReferenceName)) {
+            if (string.IsNullOrEmpty(mElm.ReferenceName)) {
                 Text = string.Format("{0} 設定", mElm.GetType().Name);
             } else {
                 Text = string.Format("{0} [{1}] 設定",
                     mElm.GetType().Name,
-                    mElm.DumpInfo.ReferenceName);
+                    mElm.ReferenceName);
             }
 
             for (; ; iRow++) {

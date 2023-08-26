@@ -29,8 +29,7 @@ namespace Circuit.UI.Passive {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "ワイヤ";
-            arr[1] = "I = " + Utils.CurrentAbsText(Elm.Current);
-            arr[2] = "V = " + Utils.VoltageText(Elm.Volts[0]);
+            getBasicInfo(1, arr);
         }
     }
 }

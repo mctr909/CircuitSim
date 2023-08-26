@@ -61,7 +61,7 @@ namespace Circuit.UI.Passive {
             mSwPoles[i] = mLead2; /* for center off */
             ce.PosCount = ce.ThrowCount;
             setBbox(OPEN_HS);
-            DumpInfo.AdjustBbox(ce.SwPosts[0], ce.SwPosts[ce.ThrowCount - 1]);
+            Post.AdjustBbox(ce.SwPosts[0], ce.SwPosts[ce.ThrowCount - 1]);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -81,9 +81,9 @@ namespace Circuit.UI.Passive {
             drawLine(mLead1, mSwPoles[ce.Position]);
 
             updateDotCount();
-            drawCurrentA(CurCount);
+            drawCurrentA(mCurCount);
             if (ce.Position != 2) {
-                drawCurrent(mSwPoles[ce.Position], ce.SwPosts[ce.Position], CurCount);
+                drawCurrent(mSwPoles[ce.Position], ce.SwPosts[ce.Position], mCurCount);
             }
             drawPosts();
         }

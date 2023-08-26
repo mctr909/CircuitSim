@@ -65,8 +65,8 @@ namespace Circuit.UI.Active {
         public override void GetInfo(string[] arr) {
             var ce = (ElmDiode)Elm;
             base.GetInfo(arr);
-            arr[0] = "Zener diode";
-            arr[5] = "Vz = " + Utils.VoltageText(ce.mModel.BreakdownVoltage);
+            arr[0] = "ツェナーダイオード";
+            arr[5] = "降伏電圧：" + Utils.VoltageText(ce.mModel.BreakdownVoltage);
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
@@ -75,13 +75,9 @@ namespace Circuit.UI.Active {
                 return null;
             }
             if (r == 2) {
-                return new ElementInfo("ブレークダウン電圧(V)", ce.mModel.BreakdownVoltage);
+                return new ElementInfo("降伏電圧", ce.mModel.BreakdownVoltage);
             }
             return base.GetElementInfo(r, c);
-        }
-
-        void setLastModelName(string n) {
-            mLastZenerModelName = n;
         }
     }
 }

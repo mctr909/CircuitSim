@@ -48,8 +48,8 @@ namespace Circuit.UI.Gate {
             drawPolygon(gatePoly);
             drawPolygon(symbolPoly);
             drawCircle(pcircle, 3);
-            updateDotCount(ce.Current, ref CurCount);
-            drawCurrentB(CurCount);
+            updateDotCount(ce.Current, ref mCurCount);
+            drawCurrentB(mCurCount);
         }
 
         public override void SetPoints() {

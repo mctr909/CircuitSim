@@ -14,8 +14,8 @@ namespace Circuit.UI.Input {
 
         public FM(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new ElmFM(st);
-            if ((DumpInfo.Flags & FLAG_COS) != 0) {
-                DumpInfo.Flags &= ~FLAG_COS;
+            if ((mFlags & FLAG_COS) != 0) {
+                mFlags &= ~FLAG_COS;
             }
         }
 
@@ -40,18 +40,18 @@ namespace Circuit.UI.Input {
             drawLeadA();
 
             string s = "FM";
-            drawCenteredText(s, DumpInfo.P2, true);
+            drawCenteredText(s, Post.B, true);
             drawWaveform(Elm.Post[1]);
             drawPosts();
-            updateDotCount(-ce.Current, ref CurCount);
+            updateDotCount(-ce.Current, ref mCurCount);
             if (CirSimForm.DragElm != this) {
-                drawCurrentA(CurCount);
+                drawCurrentA(mCurCount);
             }
         }
 
         void drawWaveform(Point p) {
             drawCircle(p, SIZE / 2);
-            DumpInfo.AdjustBbox(p.X - SIZE, p.Y - SIZE, p.X + SIZE, p.Y + SIZE);
+            Post.AdjustBbox(p.X - SIZE, p.Y - SIZE, p.X + SIZE, p.Y + SIZE);
         }
 
         public override void GetInfo(string[] arr) {
@@ -71,13 +71,13 @@ namespace Circuit.UI.Input {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("振幅(V)", ce.MaxVoltage);
+                return new ElementInfo("振幅", ce.MaxVoltage);
             }
             if (r == 1) {
-                return new ElementInfo("搬送波周波数(Hz)", ce.CarrierFreq);
+                return new ElementInfo("搬送波周波数", ce.CarrierFreq);
             }
             if (r == 2) {
-                return new ElementInfo("信号周波数(Hz)", ce.Signalfreq);
+                return new ElementInfo("信号周波数", ce.Signalfreq);
             }
             if (r == 3) {
                 return new ElementInfo("周波数偏移(Hz)", ce.Deviation);

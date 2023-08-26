@@ -8,7 +8,7 @@ namespace Circuit.UI.Input {
     class LogicInput : Switch {
         const int FLAG_NUMERIC = 2;
 
-        bool isNumeric { get { return (DumpInfo.Flags & (FLAG_NUMERIC)) != 0; } }
+        bool isNumeric { get { return (mFlags & (FLAG_NUMERIC)) != 0; } }
 
         public LogicInput(Point pos) : base(pos, 0) {
             Elm = new ElmLogicInput();
@@ -18,7 +18,7 @@ namespace Circuit.UI.Input {
             Elm = new ElmLogicInput(st);
         }
 
-        protected override int NumHandles { get { return 1; } }
+        protected override int mNumHandles { get { return 1; } }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.LOGIC_I; } }
 
@@ -28,7 +28,7 @@ namespace Circuit.UI.Input {
         }
 
         public override RectangleF GetSwitchRect() {
-            return new RectangleF(DumpInfo.P2.X - 10, DumpInfo.P2.Y - 10, 20, 20);
+            return new RectangleF(Post.B.X - 10, Post.B.Y - 10, 20, 20);
         }
 
         public override void SetPoints() {
@@ -43,10 +43,10 @@ namespace Circuit.UI.Input {
             if (isNumeric) {
                 s = "" + ce.Position;
             }
-            drawCenteredLText(s, DumpInfo.P2, true);
+            drawCenteredLText(s, Post.B, true);
             drawLeadA();
             updateDotCount();
-            drawCurrentA(CurCount);
+            drawCurrentA(mCurCount);
             drawPosts();
         }
 
@@ -70,10 +70,10 @@ namespace Circuit.UI.Input {
                 return new ElementInfo("モーメンタリ", ce.Momentary);
             }
             if (r == 1) {
-                return new ElementInfo("H電圧(V)", ((ElmLogicInput)Elm).mHiV);
+                return new ElementInfo("High電圧", ((ElmLogicInput)Elm).mHiV);
             }
             if (r == 2) {
-                return new ElementInfo("L電圧(V)", ((ElmLogicInput)Elm).mLoV);
+                return new ElementInfo("Low電圧", ((ElmLogicInput)Elm).mLoV);
             }
             if (r == 3) {
                 return new ElementInfo("数値表示", isNumeric);
@@ -94,9 +94,9 @@ namespace Circuit.UI.Input {
             }
             if (n == 3) {
                 if (ei.CheckBox.Checked) {
-                    DumpInfo.Flags |= FLAG_NUMERIC;
+                    mFlags |= FLAG_NUMERIC;
                 } else {
-                    DumpInfo.Flags &= ~FLAG_NUMERIC;
+                    mFlags &= ~FLAG_NUMERIC;
                 }
             }
         }

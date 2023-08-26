@@ -22,8 +22,8 @@ namespace Circuit.UI.Active {
 
         public OpAmp(Point pos) : base(pos) {
             mNoDiagonal = true;
-            DumpInfo.Flags = FLAG_GAIN; /* need to do this before setSize() */
-            DumpInfo.Flags |= FLAG_SMALL;
+            mFlags = FLAG_GAIN; /* need to do this before setSize() */
+            mFlags |= FLAG_SMALL;
             Elm = new ElmOpAmp();
         }
 
@@ -36,7 +36,7 @@ namespace Circuit.UI.Active {
             elm.Volts[ElmOpAmp.V_N] = st.nextTokenDouble();
             elm.Volts[ElmOpAmp.V_P] = st.nextTokenDouble();
             mNoDiagonal = true;
-            DumpInfo.Flags |= FLAG_SMALL;
+            mFlags |= FLAG_SMALL;
             setGain();
         }
 
@@ -44,7 +44,7 @@ namespace Circuit.UI.Active {
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmOpAmp)Elm;
-            DumpInfo.Flags |= FLAG_GAIN;
+            mFlags |= FLAG_GAIN;
             optionList.Add(ce.MaxOut);
             optionList.Add(ce.MinOut);
             optionList.Add(ce.Gain);
@@ -60,7 +60,7 @@ namespace Circuit.UI.Active {
             }
             calcLeads(ww * 2);
             int hs = HEIGHT * mDsign;
-            if ((DumpInfo.Flags & FLAG_SWAP) != 0) {
+            if ((mFlags & FLAG_SWAP) != 0) {
                 hs = -hs;
             }
             interpPostAB(ref mPosIn1[0], ref mPosIn2[0], 0, hs);
@@ -101,8 +101,8 @@ namespace Circuit.UI.Active {
             drawLine(mTextp[2], mTextp[3]);
             drawLine(mTextp[4], mTextp[5]);
 
-            updateDotCount(Elm.Current, ref CurCount);
-            drawCurrent(mLead2, mPosOut, -CurCount);
+            updateDotCount(Elm.Current, ref mCurCount);
+            drawCurrent(mLead2, mPosOut, -mCurCount);
             drawPosts();
         }
 
@@ -126,10 +126,10 @@ namespace Circuit.UI.Active {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("+電源(V)", ce.MaxOut);
+                return new ElementInfo("+電源", ce.MaxOut);
             }
             if (r == 1) {
-                return new ElementInfo("-電源(V)", ce.MinOut);
+                return new ElementInfo("-電源", ce.MinOut);
             }
             if (r == 2) {
                 return new ElementInfo("ゲイン(db)", 20 * Math.Log10(ce.Gain));
@@ -151,13 +151,13 @@ namespace Circuit.UI.Active {
         }
 
         void setGain() {
-            if ((DumpInfo.Flags & FLAG_GAIN) != 0) {
+            if ((mFlags & FLAG_GAIN) != 0) {
                 return;
             }
             var ce = (ElmOpAmp)Elm;
             /* gain of 100000 breaks e-amp-dfdx.txt
              * gain was 1000, but it broke amp-schmitt.txt */
-            ce.Gain = ((DumpInfo.Flags & FLAG_LOWGAIN) != 0) ? 1000 : 100000;
+            ce.Gain = ((mFlags & FLAG_LOWGAIN) != 0) ? 1000 : 100000;
         }
     }
 }

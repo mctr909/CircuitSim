@@ -16,7 +16,7 @@ namespace Circuit.UI.Passive {
 
         public Inductor(Point pos) : base(pos) {
             Elm = new ElmInductor();
-            DumpInfo.ReferenceName = mLastReferenceName;
+            ReferenceName = mLastReferenceName;
         }
 
         public Inductor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -83,14 +83,19 @@ namespace Circuit.UI.Passive {
 
         public override void GetInfo(string[] arr) {
             var ce = (ElmInductor)Elm;
-            arr[0] = string.IsNullOrEmpty(DumpInfo.ReferenceName) ? "コイル" : DumpInfo.ReferenceName;
-            getBasicInfo(arr);
-            arr[3] = "L = " + Utils.UnitText(ce.Inductance, "H");
+            if (string.IsNullOrEmpty(ReferenceName)) {
+                arr[0] = "コイル：" + Utils.UnitText(ce.Inductance, "H");
+                getBasicInfo(1, arr);
+            } else {
+                arr[0] = ReferenceName;
+                arr[1] = "コイル：" + Utils.UnitText(ce.Inductance, "H");
+                getBasicInfo(2, arr);
+            }
         }
 
         public override string GetScopeText() {
             var ce = (ElmInductor)Elm;
-            return (string.IsNullOrEmpty(DumpInfo.ReferenceName) ? "コイル" : DumpInfo.ReferenceName) + " "
+            return (string.IsNullOrEmpty(ReferenceName) ? "コイル" : ReferenceName) + " "
                 + Utils.UnitText(ce.Inductance, "H");
         }
 
@@ -103,7 +108,7 @@ namespace Circuit.UI.Passive {
                 return new ElementInfo("インダクタンス(H)", ce.Inductance);
             }
             if (r == 1) {
-                return new ElementInfo("名前", DumpInfo.ReferenceName);
+                return new ElementInfo("名前", ReferenceName);
             }
             return null;
         }
@@ -115,8 +120,8 @@ namespace Circuit.UI.Passive {
                 setTextPos();
             }
             if (n == 1) {
-                DumpInfo.ReferenceName = ei.Text;
-                mLastReferenceName = DumpInfo.ReferenceName;
+                ReferenceName = ei.Text;
+                mLastReferenceName = ReferenceName;
                 setTextPos();
             }
             ce.Setup(ce.Inductance, Elm.Current);

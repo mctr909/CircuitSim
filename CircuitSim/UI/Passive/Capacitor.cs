@@ -16,16 +16,16 @@ namespace Circuit.UI.Passive {
         PointF[] mPlate2;
 
         public Capacitor(Point pos, int dummy) : base(pos) {
-            DumpInfo.ReferenceName = mLastReferenceName;
+            ReferenceName = mLastReferenceName;
         }
 
         public Capacitor(Point pos) : base(pos) {
             Elm = new ElmCapacitor();
-            DumpInfo.ReferenceName = mLastReferenceName;
+            ReferenceName = mLastReferenceName;
         }
 
         public Capacitor(Point p1, Point p2, int f) : base(p1, p2, f) {
-            DumpInfo.ReferenceName = mLastReferenceName;
+            ReferenceName = mLastReferenceName;
         }
 
         public Capacitor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -93,8 +93,8 @@ namespace Circuit.UI.Passive {
 
             updateDotCount();
             if (CirSimForm.DragElm != this) {
-                drawCurrentA(CurCount);
-                drawCurrentB(CurCount);
+                drawCurrentA(mCurCount);
+                drawCurrentB(mCurCount);
             }
             drawPosts();
 
@@ -104,14 +104,19 @@ namespace Circuit.UI.Passive {
 
         public override void GetInfo(string[] arr) {
             var ce = (ElmCapacitor)Elm;
-            arr[0] = string.IsNullOrEmpty(DumpInfo.ReferenceName) ? "コンデンサ" : DumpInfo.ReferenceName;
-            getBasicInfo(arr);
-            arr[3] = "C = " + Utils.UnitText(ce.Capacitance, "F");
+            if (string.IsNullOrEmpty(ReferenceName)) {
+                arr[0] = "コンデンサ：" + Utils.UnitText(ce.Capacitance, "F");
+                getBasicInfo(1, arr);
+            } else {
+                arr[0] = ReferenceName;
+                arr[1] = "コンデンサ：" + Utils.UnitText(ce.Capacitance, "F");
+                getBasicInfo(2, arr);
+            }
         }
 
         public override string GetScopeText() {
             var ce = (ElmCapacitor)Elm;
-            return (string.IsNullOrEmpty(DumpInfo.ReferenceName) ? "コンデンサ" : DumpInfo.ReferenceName) + " "
+            return (string.IsNullOrEmpty(ReferenceName) ? "コンデンサ" : ReferenceName) + " "
                 + Utils.UnitText(ce.Capacitance, "F");
         }
 
@@ -124,7 +129,7 @@ namespace Circuit.UI.Passive {
                 return new ElementInfo("キャパシタンス(F)", ce.Capacitance);
             }
             if (r == 1) {
-                return new ElementInfo("名前", DumpInfo.ReferenceName);
+                return new ElementInfo("名前", ReferenceName);
             }
             return null;
         }
@@ -136,8 +141,8 @@ namespace Circuit.UI.Passive {
                 setTextPos();
             }
             if (n == 1) {
-                DumpInfo.ReferenceName = ei.Text;
-                mLastReferenceName = DumpInfo.ReferenceName;
+                ReferenceName = ei.Text;
+                mLastReferenceName = ReferenceName;
                 setTextPos();
             }
         }

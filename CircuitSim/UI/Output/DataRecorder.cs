@@ -36,7 +36,7 @@ namespace Circuit.UI.Output {
             interpPost(ref mLead1, 1 - ((int)g.GetTextSize(str).Width / 2) / mLen);
             setBbox(Elm.Post[0], mLead1, 0);
 
-            drawCenteredText(str, DumpInfo.P2, true);
+            drawCenteredText(str, Post.B, true);
             drawLeadA();
             drawPosts();
         }

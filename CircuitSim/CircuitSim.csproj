@@ -102,6 +102,7 @@
     <Compile Include="UI\Active\DiodeVaractor.cs" />
     <Compile Include="UI\Active\DiodeZener.cs" />
     <Compile Include="Elements\BaseElement.cs" />
+    <Compile Include="UI\BaseLink.cs" />
     <Compile Include="UI\Custom\GraphicBox.cs" />
     <Compile Include="Elements\Custom\ElmChip.cs" />
     <Compile Include="UI\Custom\Chip.cs" />
@@ -110,7 +111,7 @@
     <Compile Include="UI\Custom\Graphic.cs" />
     <Compile Include="Elements\Custom\ElmGraphic.cs" />
     <Compile Include="UI\Custom\GraphicText.cs" />
-    <Compile Include="UI\DumpInfo.cs" />
+    <Compile Include="UI\Post.cs" />
     <Compile Include="Elements\Gate\ElmGateAnd.cs" />
     <Compile Include="UI\Gate\GateAnd.cs" />
     <Compile Include="Elements\Gate\ElmGate.cs" />
