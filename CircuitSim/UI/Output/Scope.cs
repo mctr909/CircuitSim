@@ -1140,7 +1140,7 @@ namespace Circuit.UI.Output {
 
             void drawFFTGridLines(CustomGraphics g) {
                 const int xDivs = 20;
-                const int yDivs = 5;
+                const int yDivs = 10;
                 int prevEnd = 0;
                 double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * xDivs * 2);
                 var gridBottom = mFFTBoundingBox.Height - 1;
@@ -1206,7 +1206,7 @@ namespace Circuit.UI.Output {
                 var x0 = 1.0f * mFFTBoundingBox.X;
                 var x1 = x0;
                 var y0 = 0.0f;
-                g.DrawColor = Color.Red;
+                g.DrawColor = Color.Green;
                 if (LogSpectrum) {
                     var ymult = -bottom / FFT_MIN;
                     for (int i = 0; i < mScopePointCount / 2; i++) {

@@ -71,6 +71,7 @@ namespace Circuit {
             Slider.ValueChanged += new System.EventHandler((s, e) => {
                 ei.Value = Value;
                 UI.SetElementValue(EditItemR, EditItemC, ei);
+                CirSimForm.NeedAnalyze();
                 CirSimForm.Repaint();
             });
             UI.CreateSlider(ei, this);

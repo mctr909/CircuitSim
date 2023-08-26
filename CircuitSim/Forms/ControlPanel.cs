@@ -207,7 +207,7 @@ namespace Circuit {
         }
 
         public static void Reset() {
-            TimeStep = 10e-6;
+            TimeStep = 1e-6;
             ChkShowDots.Checked = false;
             ChkShowValues.Checked = true;
             ChkUseAnsiSymbols.Checked = true;
