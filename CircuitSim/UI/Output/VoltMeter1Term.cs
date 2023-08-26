@@ -2,6 +2,8 @@
 
 namespace Circuit.UI.Output {
     class VoltMeter1Term : VoltMeter {
+        PointF mTextPos;
+
         public VoltMeter1Term(Point pos) : base(pos) {}
 
         public VoltMeter1Term(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {}
@@ -13,19 +15,18 @@ namespace Circuit.UI.Output {
         public override void SetPoints() {
             base.SetPoints();
             if (mVertical) {
-                setLead1(1 - 0.5 * Context.GetTextSize("1.99mV").Height / mLen);
+                interpLead(ref mTextPos, 1 - 0.5 * Context.GetTextSize("-9.99mV").Height / mLen);
             } else {
-                setLead1(1 - 0.5 * Context.GetTextSize("1.99mV").Width / mLen);
+                interpLead(ref mTextPos, 1 - 0.5 * Context.GetTextSize("-9.99mV").Width / mLen);
             }
             interpPost(ref mCenter, 1 + 11.0 / mLen);
-            setBbox(Elm.Post[0].X, Elm.Post[0].Y, (int)mCenter.X, (int)mCenter.Y, 0);
+            setBbox(1);
         }
 
         public override void Draw(CustomGraphics g) {
-            setBbox(1);
             drawLeadA();
             if (mustShowVoltage()) {
-                drawCenteredText(drawValues(), DumpInfo.P2, true);
+                drawCenteredText(drawValues(), mTextPos, true);
             }
         }
     }

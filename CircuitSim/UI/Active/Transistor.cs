@@ -101,6 +101,7 @@ namespace Circuit.UI.Active {
             ce.Post[1].Y = (int)mPosC[2].Y;
             ce.Post[2].X = (int)mPosE[2].X;
             ce.Post[2].Y = (int)mPosE[2].Y;
+            setBbox(16);
         }
 
         void setTextPos() {
@@ -120,7 +121,6 @@ namespace Circuit.UI.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            setBbox(16);
             var ce = (ElmTransistor)Elm;
 
             /* draw collector */

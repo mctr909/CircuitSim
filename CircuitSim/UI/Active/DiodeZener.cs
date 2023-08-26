@@ -34,6 +34,7 @@ namespace Circuit.UI.Active {
 
         public override void SetPoints() {
             base.SetPoints();
+            setBbox(HS);
             mCathode = new PointF[2];
             mWing = new PointF[2];
             var pa = new PointF[2];
@@ -46,8 +47,6 @@ namespace Circuit.UI.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            setBbox(HS);
-
             draw2Leads();
 
             /* draw arrow thingy */

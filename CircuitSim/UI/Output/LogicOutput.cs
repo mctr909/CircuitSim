@@ -27,11 +27,12 @@ namespace Circuit.UI.Output {
         public override void SetPoints() {
             base.SetPoints();
             setLead1(1 - 12 / mLen);
+            setBbox(Elm.Post[0], mLead1, 0);
         }
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmLogicOutput)Elm;
-            string s = (ce.Volts[0] < ce.mThreshold) ? "L" : "H";
+            var s = (ce.Volts[0] < ce.mThreshold) ? "L" : "H";
             if (isTernary) {
                 if (ce.Volts[0] > 3.75) {
                     s = "2";
@@ -44,7 +45,6 @@ namespace Circuit.UI.Output {
                 s = (ce.Volts[0] < ce.mThreshold) ? "0" : "1";
             }
             ce.mValue = s;
-            setBbox(Elm.Post[0], mLead1, 0);
             drawCenteredLText(s, DumpInfo.P2, true);
             drawLeadA();
             drawPosts();

@@ -11,8 +11,8 @@ namespace Circuit.UI.Active {
         protected const int FLAG_LOWGAIN = 4;
         protected const int FLAG_GAIN = 8;
 
-        const int mOpHeight = 8;
-        const int mOpWidth = 16;
+        const int HEIGHT = 8;
+        const int WIDTH = 16;
 
         PointF[] mTextp;
         PointF[] mTriangle;
@@ -52,32 +52,14 @@ namespace Circuit.UI.Active {
             optionList.Add(ce.Volts[ElmOpAmp.V_P].ToString("0.000000"));
         }
 
-        public override void Draw(CustomGraphics g) {
-            setBbox(mOpHeight * 2);
-
-            drawLine(mPosIn1[0], mPosIn1[1]);
-            drawLine(mPosIn2[0], mPosIn2[1]);
-            drawLine(mLead2, mPosOut);
-
-            drawPolygon(mTriangle);
-
-            drawLine(mTextp[0], mTextp[1]);
-            drawLine(mTextp[2], mTextp[3]);
-            drawLine(mTextp[4], mTextp[5]);
-
-            updateDotCount(Elm.Current, ref CurCount);
-            drawCurrent(mLead2, mPosOut, -CurCount);
-            drawPosts();
-        }
-
         public override void SetPoints() {
             base.SetPoints();
-            int ww = mOpWidth;
+            int ww = WIDTH;
             if (ww > mLen / 2) {
                 ww = (int)(mLen / 2);
             }
             calcLeads(ww * 2);
-            int hs = mOpHeight * mDsign;
+            int hs = HEIGHT * mDsign;
             if ((DumpInfo.Flags & FLAG_SWAP) != 0) {
                 hs = -hs;
             }
@@ -105,6 +87,23 @@ namespace Circuit.UI.Active {
             Elm.Post[1].X = (int)mPosIn2[0].X;
             Elm.Post[1].Y = (int)mPosIn2[0].Y;
             Elm.Post[2] = mPosOut;
+            setBbox(HEIGHT * 2);
+        }
+
+        public override void Draw(CustomGraphics g) {
+            drawLine(mPosIn1[0], mPosIn1[1]);
+            drawLine(mPosIn2[0], mPosIn2[1]);
+            drawLine(mLead2, mPosOut);
+
+            drawPolygon(mTriangle);
+
+            drawLine(mTextp[0], mTextp[1]);
+            drawLine(mTextp[2], mTextp[3]);
+            drawLine(mTextp[4], mTextp[5]);
+
+            updateDotCount(Elm.Current, ref CurCount);
+            drawCurrent(mLead2, mPosOut, -CurCount);
+            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

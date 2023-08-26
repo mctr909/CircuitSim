@@ -90,11 +90,11 @@ namespace Circuit.UI.Passive {
         public override void SetPoints() {
             base.SetPoints();
             calcLeads(BODY_LEN);
+            setBbox(OPEN_HS);
         }
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmSwitch)Elm;
-            setBbox(OPEN_HS);
             draw2Leads();
             g.DrawPost(mLead1);
             g.DrawPost(mLead2);

@@ -7,15 +7,16 @@ namespace Circuit.UI.Custom {
         const int FLAG_ESCAPE = 4;
 
         string mText;
-        int mSize;
+        int mFontSize;
+        SizeF mTextSize;
 
         public GraphicText(Point pos) : base(pos) {
             mText = "Text";
-            mSize = 11;
+            mFontSize = 11;
         }
 
         public GraphicText(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-            mSize = st.nextTokenInt(11);
+            mFontSize = st.nextTokenInt(11);
             st.nextToken(out mText);
             mText = Utils.Unescape(mText);
         }
@@ -24,7 +25,7 @@ namespace Circuit.UI.Custom {
 
         protected override void dump(List<object> optionList) {
             DumpInfo.Flags |= FLAG_ESCAPE;
-            optionList.Add(mSize);
+            optionList.Add(mFontSize);
             optionList.Add(Utils.Escape(mText));
         }
 
@@ -33,23 +34,19 @@ namespace Circuit.UI.Custom {
         }
 
         public override void Drag(Point p) {
+            p = CirSimForm.SnapGrid(p);
             DumpInfo.SetPosition(p.X, p.Y, p.X + 16, p.Y);
+            setTextSize();
         }
 
         public override void Draw(CustomGraphics g) {
             var sizeBk = CustomGraphics.TextSize;
             var colorBk = CustomGraphics.TextColor;
-            CustomGraphics.TextSize = mSize;
-            var size = g.GetTextSize(mText);
-            DumpInfo.SetP2(
-                (int)(DumpInfo.P1.X + size.Width),
-                (int)(DumpInfo.P1.Y + size.Height)
-            );
+            CustomGraphics.TextSize = mFontSize;
             if (NeedsHighlight) {
                 CustomGraphics.TextColor = CustomGraphics.SelectColor;
             }
-            g.DrawLeftText(mText, DumpInfo.P1.X, (int)(DumpInfo.P1.Y + size.Height / 2));
-            DumpInfo.SetBbox(DumpInfo.P1, DumpInfo.P2);
+            g.DrawLeftText(mText, DumpInfo.P1.X, (int)(DumpInfo.P1.Y + mTextSize.Height / 2));
             CustomGraphics.TextSize = sizeBk;
             CustomGraphics.TextColor = colorBk;
         }
@@ -62,7 +59,7 @@ namespace Circuit.UI.Custom {
                 return new ElementInfo("テキスト", mText, true);
             }
             if (r == 1) {
-                return new ElementInfo("サイズ", mSize, false);
+                return new ElementInfo("サイズ", mFontSize, false);
             }
             return null;
         }
@@ -72,8 +69,21 @@ namespace Circuit.UI.Custom {
                 mText = ei.Text;
             }
             if (n == 1) {
-                mSize = (int)ei.Value;
+                mFontSize = (int)ei.Value;
             }
+            setTextSize();
+        }
+
+        void setTextSize() {
+            var sizeBk = CustomGraphics.TextSize;
+            CustomGraphics.TextSize = mFontSize;
+            mTextSize = Context.GetTextSize(mText);
+            DumpInfo.SetP2(
+                (int)(DumpInfo.P1.X + mTextSize.Width),
+                (int)(DumpInfo.P1.Y + mTextSize.Height)
+            );
+            DumpInfo.SetBbox(DumpInfo.P1, DumpInfo.P2);
+            CustomGraphics.TextSize = sizeBk;
         }
     }
 }

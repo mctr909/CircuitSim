@@ -18,12 +18,12 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
+            setBbox(3);
         }
 
         public override void Draw(CustomGraphics g) {
             drawLine(Elm.Post[0], Elm.Post[1]);
             doDots();
-            setBbox(3);
             drawPosts();
         }
 

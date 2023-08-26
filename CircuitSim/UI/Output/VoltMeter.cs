@@ -32,17 +32,13 @@ namespace Circuit.UI.Output {
 
         public override void SetPoints() {
             base.SetPoints();
+            setBbox(8);
+            calcLeads(16);
             interpPost(ref mCenter, 0.5);
             interpPost(ref mPlusPoint, 8.0 / mLen, 6 * mDsign);
         }
 
         public override void Draw(CustomGraphics g) {
-            int hs = 8;
-            setBbox(hs);
-            bool selected = NeedsHighlight;
-            double len = (selected || CirSimForm.DragElm == this || mustShowVoltage()) ? 16 : mLen - 32;
-            calcLeads((int)len);
-
             draw2Leads();
 
             if (this == CirSimForm.PlotXElm) {

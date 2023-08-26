@@ -30,6 +30,7 @@ namespace Circuit.UI.Output {
 
         public override void SetPoints() {
             base.SetPoints();
+            setBbox(3);
             interpPost(ref mMid, 0.5 + 4 / mLen);
             Utils.CreateArrow(Elm.Post[0], mMid, out mArrowPoly, 9, 5);
             if (mVertical) {
@@ -46,7 +47,7 @@ namespace Circuit.UI.Output {
             drawLine(Elm.Post[0], Elm.Post[1]);
             fillPolygon(mArrowPoly);
             doDots();
-            setBbox(3);
+
             string s = "A";
             switch (ce.Meter) {
             case ElmAmmeter.AM_VOL:

@@ -53,6 +53,7 @@ namespace Circuit.UI.Passive {
             /* calc leads */
             setLead1(f1 - 0.1 / mLen);
             setLead2(f2 + 0.1 / mLen);
+            setBbox(HS);
             /* calc plates */
             mPlate1 = new PointF[4];
             Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate1[0], f1 - dw, -HS);
@@ -83,7 +84,6 @@ namespace Circuit.UI.Passive {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmCapacitor)Elm;
 
-            setBbox(HS);
             draw2Leads();
 
             /* draw first lead and plate */

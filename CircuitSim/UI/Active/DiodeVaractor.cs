@@ -51,7 +51,7 @@ namespace Circuit.UI.Active {
 
         public override void Draw(CustomGraphics g) {
             // draw leads and diode arrow
-            drawDiode(g);
+            drawDiode();
             // draw first plate
             fillPolygon(mPlate1);
             // draw second plate

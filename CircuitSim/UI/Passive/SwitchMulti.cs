@@ -60,15 +60,17 @@ namespace Circuit.UI.Passive {
             }
             mSwPoles[i] = mLead2; /* for center off */
             ce.PosCount = ce.ThrowCount;
+            setBbox(OPEN_HS);
+            DumpInfo.AdjustBbox(ce.SwPosts[0], ce.SwPosts[ce.ThrowCount - 1]);
         }
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmSwitchMulti)Elm;
-            setBbox(OPEN_HS);
-            DumpInfo.AdjustBbox(ce.SwPosts[0], ce.SwPosts[ce.ThrowCount - 1]);
+
             /* draw first lead */
             drawLeadA();
             g.DrawPost(mLead1);
+
             /* draw other leads */
             for (int i = 0; i < ce.ThrowCount; i++) {
                 var pole = mSwPoles[i];

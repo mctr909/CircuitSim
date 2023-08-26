@@ -58,6 +58,7 @@ namespace Circuit.UI.Active {
 
         public override void SetPoints() {
             base.SetPoints();
+            setBbox(CR_INNER);
             interpPost(ref mLedLead1, 0.5 - CR / mLen);
             interpPost(ref mLedLead2, 0.5 + CR / mLen);
             interpPost(ref mLedCenter, 0.5);
@@ -74,22 +75,19 @@ namespace Circuit.UI.Active {
             drawCircle(mLedCenter, CR);
 
             var ce = (ElmDiode)Elm;
-
-            double w = ce.Current / mMaxBrightnessCurrent;
-            if (0 < w) {
-                w = 255 * (1 + .2 * Math.Log(w));
+            var lum = ce.Current / mMaxBrightnessCurrent;
+            if (0 < lum) {
+                lum = 255 * (1 + .2 * Math.Log(lum));
             }
-            if (255 < w) {
-                w = 255;
+            if (255 < lum) {
+                lum = 255;
             }
-            if (w < 0) {
-                w = 0;
+            if (lum < 0) {
+                lum = 0;
             }
-
-            g.FillColor = Color.FromArgb((int)(mColorR * w), (int)(mColorG * w), (int)(mColorB * w));
+            g.FillColor = Color.FromArgb((int)(mColorR * lum), (int)(mColorG * lum), (int)(mColorB * lum));
             g.FillCircle(mLedCenter.X, mLedCenter.Y, CR_INNER);
 
-            setBbox(CR_INNER);
             updateDotCount();
             drawCurrent(Elm.Post[0], mLedLead1, CurCount);
             drawCurrent(Elm.Post[1], mLedLead2, -CurCount);

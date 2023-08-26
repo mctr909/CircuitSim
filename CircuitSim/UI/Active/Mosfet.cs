@@ -122,6 +122,7 @@ namespace Circuit.UI.Active {
             ce.Post[1].Y = (int)mPosS[0].Y;
             ce.Post[2].X = (int)mPosD[0].X;
             ce.Post[2].Y = (int)mPosD[0].Y;
+            setBbox(HS);
         }
 
         void setTextPos() {
@@ -139,8 +140,6 @@ namespace Circuit.UI.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            setBbox(HS);
-
             var ce = (ElmMosfet)Elm;
 
             /* draw line connecting terminals to source/gate/drain */

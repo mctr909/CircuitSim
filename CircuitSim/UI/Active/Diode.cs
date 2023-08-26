@@ -64,6 +64,7 @@ namespace Circuit.UI.Active {
             interpLeadAB(ref pa[0], ref pa[1], 0, HS);
             mPoly = new PointF[] { pa[0], pa[1], mLead2 };
             setTextPos();
+            setBbox(HS);
         }
 
         protected void setTextPos() {
@@ -77,17 +78,14 @@ namespace Circuit.UI.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            drawDiode(g);
+            drawDiode();
             doDots();
             drawPosts();
             drawName();
         }
 
-        protected void drawDiode(CustomGraphics g) {
-            setBbox(HS);
-
+        protected void drawDiode() {
             draw2Leads();
-
             /* draw arrow thingy */
             fillPolygon(mPoly);
             /* draw thing arrow is pointing to */

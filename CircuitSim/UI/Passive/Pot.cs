@@ -93,6 +93,7 @@ namespace Circuit.UI.Passive {
             mLen = Utils.Distance(Elm.Post[0], Elm.Post[1]);
 
             calcLeads(BODY_LEN);
+            setBbox(HS);
 
             /* set slider */
             var ce = (ElmPot)Elm;
@@ -100,7 +101,7 @@ namespace Circuit.UI.Passive {
             int soff = (int)((ce.Position - 0.5) * BODY_LEN);
             interpPost(ref ce.Post[2], 0.5, offset);
             interpPost(ref mCorner2, soff / mLen + 0.5, offset);
-            interpPost(ref mArrowPoint, soff / mLen + 0.5, 8 * Math.Sign(offset));
+            interpPost(ref mArrowPoint, soff / mLen + 0.5, 7 * Math.Sign(offset));
             interpPost(ref mMidPoint, soff / mLen + 0.5);
             double clen = Math.Abs(offset) - 8;
             Utils.InterpPoint(mCorner2, mArrowPoint, ref mArrow1, ref mArrow2, (clen - 8) / clen, 4);
@@ -111,31 +112,18 @@ namespace Circuit.UI.Passive {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmPot)Elm;
-            double vl = ce.Volts[ElmPot.V_L];
-            double vr = ce.Volts[ElmPot.V_R];
-            double vs = ce.Volts[ElmPot.V_S];
-            setBbox(HS);
-            draw2Leads();
 
-            int divide = (int)(SEGMENTS * ce.Position);
+            draw2Leads();
 
             if (ControlPanel.ChkUseAnsiSymbols.Checked) {
                 /* draw zigzag */
                 for (int i = 0; i != SEGMENTS; i++) {
-                    double v = vl + (vs - vl) * i / divide;
-                    if (i >= divide) {
-                        v = vs + (vr - vs) * (i - divide) / (SEGMENTS - divide);
-                    }
                     drawLine(mPs1[i], mPs2[i]);
                 }
             } else {
                 /* draw rectangle */
                 drawLine(mRect1[0], mRect2[0]);
                 for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
-                    double v = vl + (vs - vl) * i / divide;
-                    if (i >= divide) {
-                        v = vs + (vr - vs) * (i - divide) / (SEGMENTS - divide);
-                    }
                     drawLine(mRect1[j], mRect3[j]);
                     drawLine(mRect2[j], mRect4[j]);
                 }
