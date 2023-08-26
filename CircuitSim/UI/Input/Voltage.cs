@@ -583,7 +583,7 @@ namespace Circuit.UI.Input {
                 break;
             case VALUE_NAME_DUTY:
                 adj.MinValue = 0;
-                adj.MaxValue = 1;
+                adj.MaxValue = 100;
                 break;
             }
             return new EventHandler((s, e) => {

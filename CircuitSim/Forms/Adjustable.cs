@@ -4,21 +4,6 @@ using Circuit.UI;
 
 namespace Circuit {
     public class Adjustable {
-        /* index of value in getEditInfo() list that this slider controls */
-        public int EditItemR;
-        public int EditItemC;
-
-        public double Value {
-            get { return MinValue + (MaxValue - MinValue) * Slider.Value / 100; }
-            set {
-                int intValue = (int)((value - MinValue) * 100 / (MaxValue - MinValue));
-                mSettingValue = true; /* don't recursively set value again in execute() */
-                Slider.Value = (intValue < Slider.Minimum) ? Slider.Minimum :
-                    (Slider.Maximum < intValue) ? Slider.Maximum : intValue;
-                mSettingValue = false;
-            }
-        }
-
         public TrackBar Slider;
         public Label Label;
         public BaseUI UI;
@@ -26,7 +11,16 @@ namespace Circuit {
         public double MaxValue;
         public string SliderText;
 
-        bool mSettingValue;
+        public int EditItemR { get; private set; }
+        public int EditItemC { get; private set; }
+        public double Value {
+            get { return MinValue + (MaxValue - MinValue) * Slider.Value / 100; }
+            set {
+                int intValue = (int)((value - MinValue) * 100 / (MaxValue - MinValue));
+                Slider.Value = (intValue < Slider.Minimum) ? Slider.Minimum :
+                    (Slider.Maximum < intValue) ? Slider.Maximum : intValue;
+            }
+        }
 
         public Adjustable(BaseUI ce, int itemR) {
             MinValue = 1;
@@ -55,7 +49,7 @@ namespace Circuit {
             CreateSlider(ei);
         }
 
-        public void CreateSlider(ElementInfo ei, int group = 0) {
+        public void CreateSlider(ElementInfo ei) {
             if (null == ei) {
                 return;
             }
@@ -75,24 +69,16 @@ namespace Circuit {
                 Height = 23
             });
             Slider.ValueChanged += new System.EventHandler((s, e) => {
-                UI.SetPoints();
+                ei.Value = Value;
+                UI.SetElementValue(EditItemR, EditItemC, ei);
+                CirSimForm.Repaint();
             });
+            UI.CreateSlider(ei, this);
         }
 
         public void DeleteSlider() {
             ControlPanel.RemoveSlider(Label);
             ControlPanel.RemoveSlider(Slider);
-        }
-
-        public void Execute() {
-            CirSimForm.NeedAnalyze();
-            if (mSettingValue) {
-                return;
-            }
-            var ei = UI.GetElementInfo(EditItemR, EditItemC);
-            ei.Value = Value;
-            UI.SetElementValue(EditItemR, EditItemC, ei);
-            CirSimForm.Repaint();
         }
 
         public string Dump() {
