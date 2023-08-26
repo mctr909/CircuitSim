@@ -23,6 +23,7 @@ namespace Circuit {
         protected static Font mTextFontL = new Font("Arial", 11.0f);
 
         static Font mTextFont = new Font("Arial", 9.0f);
+        static Font mElementFont = new Font("MS Gothic", 9.0f);
         static Brush mTextBrush = Brushes.Black;
         static Color mTextColor;
         static Pen mPenPost = new Pen(Color.Red, 5.0f);
@@ -124,6 +125,10 @@ namespace Circuit {
 
         public static CustomGraphics FromImage(int width, int height) {
             return new CustomGraphics(width, height);
+        }
+
+        public void DrawElementText(string s, float x, float y) {
+            mG.DrawString(s, mElementFont, mTextBrush, x, y, mAlignLeft);
         }
 
         public virtual void DrawLeftText(string s, float x, float y) {

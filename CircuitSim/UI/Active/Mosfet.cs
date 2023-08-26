@@ -181,20 +181,18 @@ namespace Circuit.UI.Active {
         }
 
         public override void GetInfo(string[] arr) {
-            getFetInfo(arr, "MOSFET");
+            getFetInfo(arr);
         }
 
-        void getFetInfo(string[] arr, string n) {
+        void getFetInfo(string[] arr) {
             var ce = (ElmMosfet)Elm;
-            arr[0] = ((ce.Pnp == -1) ? "p-" : "n-") + n;
-            arr[0] += " (Vt=" + Utils.VoltageText(ce.Pnp * ce.Vt);
-            arr[0] += ", Hfe=" + ce.Hfe + ")";
-            arr[1] = ((ce.Pnp == 1) ? "Ids = " : "Isd = ") + Utils.CurrentText(ce.Current);
-            arr[2] = "Vgs = " + Utils.VoltageText(ce.Vg - (ce.Pnp == -1 ? ce.Vd : ce.Vs));
-            arr[3] = ((ce.Pnp == 1) ? "Vds = " : "Vsd = ") + Utils.VoltageText(ce.Vd - ce.Vs);
-            arr[4] = (ce.Mode == 0) ? "off" : (ce.Mode == 1) ? "線形" : "飽和";
-            arr[5] = "gm = " + Utils.UnitText(ce.Gm, "A/V");
-            arr[6] = "Ib = " + Utils.UnitText(
+            arr[0] = ((ce.Pnp == -1) ? "p-MOSFET" : "n-MOSFET") + "(閾値電圧：" + Utils.VoltageText(ce.Pnp * ce.Vt) + ")";
+            arr[1] = (ce.Mode == 0) ? "off" : (ce.Mode == 1) ? "線形" : "飽和";
+            arr[2] = "Vgs：" + Utils.VoltageText(ce.Vg - (ce.Pnp == -1 ? ce.Vd : ce.Vs));
+            arr[3] = ((ce.Pnp == 1) ? "Vds：" : "Vsd：") + Utils.VoltageText(ce.Vd - ce.Vs);
+            arr[4] = ((ce.Pnp == 1) ? "Ids：" : "Isd：") + Utils.CurrentText(ce.Current);
+            arr[5] = "gm：" + Utils.UnitText(ce.Gm, "A/V");
+            arr[6] = "Ib：" + Utils.UnitText(
                 ce.BodyTerminal == 1 ? -ce.DiodeCurrent1 :
                 ce.BodyTerminal == 2 ? ce.DiodeCurrent2 :
                 -ce.Pnp * (ce.DiodeCurrent1 + ce.DiodeCurrent2), "A");

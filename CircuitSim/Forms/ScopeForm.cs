@@ -166,7 +166,7 @@ namespace Circuit.Forms {
                 }
                 {
                     for (int i = 0; i < info.Length && info[i] != null; i++) {
-                        g.DrawLeftText(info[i], x, 15 * (i + 1));
+                        g.DrawElementText(info[i], x, 15 * (i + 1));
                     }
                 }
             }

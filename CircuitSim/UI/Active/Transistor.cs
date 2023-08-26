@@ -167,7 +167,7 @@ namespace Circuit.UI.Active {
 
         public override void GetInfo(string[] arr) {
             var ce = (ElmTransistor)Elm;
-            arr[0] = "transistor (" + ((ce.NPN == -1) ? "PNP)" : "NPN)") + " hfe=" + ce.Hfe.ToString("0.000");
+            arr[0] = ((ce.NPN == -1) ? "PNP" : "NPN") + "トランジスタ(" + "hfe：" + Utils.UnitText(ce.Hfe) + ")";
             double vbc = ce.Vb - ce.Vc;
             double vbe = ce.Vb - ce.Ve;
             double vce = ce.Vc - ce.Ve;
@@ -176,12 +176,11 @@ namespace Circuit.UI.Active {
             } else {
                 arr[1] = vbe * ce.NPN > .2 ? "fwd active" : "cutoff";
             }
-            arr[1] = arr[1];
-            arr[2] = "Ic = " + Utils.CurrentText(ce.Ic);
-            arr[3] = "Ib = " + Utils.CurrentText(ce.Ib);
-            arr[4] = "Vbe = " + Utils.VoltageText(vbe);
-            arr[5] = "Vbc = " + Utils.VoltageText(vbc);
-            arr[6] = "Vce = " + Utils.VoltageText(vce);
+            arr[2] = "Vce：" + Utils.VoltageText(vce);
+            arr[3] = "Vbe：" + Utils.VoltageText(vbe);
+            arr[4] = "Vbc：" + Utils.VoltageText(vbc);
+            arr[5] = "Ic：" + Utils.CurrentText(ce.Ic);
+            arr[6] = "Ib：" + Utils.CurrentText(ce.Ib);
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
