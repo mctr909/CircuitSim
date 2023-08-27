@@ -9,7 +9,6 @@ using Circuit.UI.Output;
 namespace Circuit.UI {
     public abstract class BaseUI {
         public BaseElement Elm;
-        public string ReferenceName;
         public static CustomGraphics Context;
 
         static BaseUI mMouseElmRef = null;
@@ -25,9 +24,7 @@ namespace Circuit.UI {
         }
 
         #region [property]
-        public abstract DUMP_ID DumpType { get; }
-
-        public virtual DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }
+        public string ReferenceName { get; set; }
 
         public Post Post { get; protected set; }
 
@@ -52,6 +49,10 @@ namespace Circuit.UI {
                 return mMouseElmRef.Equals(this) || IsSelected || isScopeElm;
             }
         }
+
+        public abstract DUMP_ID DumpType { get; }
+
+        public virtual DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }
 
         /// <summary>
         /// called when an element is done being dragged out;
