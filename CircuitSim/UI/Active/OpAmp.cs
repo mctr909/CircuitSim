@@ -55,11 +55,11 @@ namespace Circuit.UI.Active {
         public override void SetPoints() {
             base.SetPoints();
             int ww = WIDTH;
-            if (ww > mLen / 2) {
-                ww = (int)(mLen / 2);
+            if (ww > Post.Len / 2) {
+                ww = (int)(Post.Len / 2);
             }
             calcLeads(ww * 2);
-            int hs = HEIGHT * mDsign;
+            int hs = HEIGHT * Post.Dsign;
             if ((mFlags & FLAG_SWAP) != 0) {
                 hs = -hs;
             }

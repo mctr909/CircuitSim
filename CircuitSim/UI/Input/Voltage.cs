@@ -122,15 +122,15 @@ namespace Circuit.UI.Input {
             calcLeads((elm.WaveForm == ElmVoltage.WAVEFORM.DC) ? BODY_LEN_DC : BODY_LEN);
 
             int sign;
-            if (mHorizontal) {
-                sign = -mDsign;
+            if (Post.Horizontal) {
+                sign = -Post.Dsign;
             } else {
-                sign = mDsign;
+                sign = Post.Dsign;
             }
             if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                 interpPost(ref mTextPos, 0.5, -2 * BODY_LEN_DC * sign);
             } else {
-                interpPost(ref mTextPos, (mLen / 2 + 0.6 * BODY_LEN) / mLen, 7 * sign);
+                interpPost(ref mTextPos, (Post.Len / 2 + 0.6 * BODY_LEN) / Post.Len, 7 * sign);
             }
 
             Post.SetBbox(Post.A, Post.B);

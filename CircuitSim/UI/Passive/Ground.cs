@@ -25,7 +25,7 @@ namespace Circuit.UI.Passive {
             for (int i = 0; i != 3; i++) {
                 var a = BODY_LEN - i * 3;
                 var b = i * BODY_LEN * 0.5;
-                interpPostAB(ref mP1, ref mP2, 1 + b / mLen, a);
+                interpPostAB(ref mP1, ref mP2, 1 + b / Post.Len, a);
                 drawLine(mP1, mP2);
             }
             drawLine(Elm.Post[0], Elm.Post[1]);

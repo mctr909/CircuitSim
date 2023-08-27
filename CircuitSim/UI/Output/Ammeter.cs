@@ -31,12 +31,12 @@ namespace Circuit.UI.Output {
         public override void SetPoints() {
             base.SetPoints();
             setBbox(3);
-            interpPost(ref mMid, 0.5 + 4 / mLen);
+            interpPost(ref mMid, 0.5 + 4 / Post.Len);
             Utils.CreateArrow(Elm.Post[0], mMid, out mArrowPoly, 9, 5);
-            if (mVertical) {
-                interpPost(ref mTextPos, 0.5, -21 * mDsign);
+            if (Post.Vertical) {
+                interpPost(ref mTextPos, 0.5, -21 * Post.Dsign);
             } else {
-                interpPost(ref mTextPos, 0.5, 12 * mDsign);
+                interpPost(ref mTextPos, 0.5, 12 * Post.Dsign);
             }
         }
 
@@ -57,7 +57,7 @@ namespace Circuit.UI.Output {
                 s = Utils.UnitTextWithScale(ce.RmsI, "A(rms)", ce.Scale);
                 break;
             }
-            if (mVertical) {
+            if (Post.Vertical) {
                 g.DrawCenteredVText(s, mTextPos);
             } else {
                 g.DrawCenteredText(s, mTextPos);

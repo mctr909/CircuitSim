@@ -59,29 +59,32 @@ namespace Circuit.UI.Active {
             var ce = (ElmTransistor)Elm;
 
             if ((mFlags & FLAG_FLIP) != 0) {
-                mDsign = -mDsign;
+                Post.Dsign = -Post.Dsign;
             }
 
             /* calc collector, emitter posts */
             var hsm = (HS / 8 + 1) * 8;
-            var hs1 = (HS - 2) * mDsign * ce.NPN;
-            var hs2 = hsm * mDsign * ce.NPN;
+            var hs1 = (HS - 2) * Post.Dsign * ce.NPN;
+            var hs2 = hsm * Post.Dsign * ce.NPN;
             interpPostAB(ref mPosC[1], ref mPosE[1], 1, hs1);
             interpPostAB(ref mPosC[2], ref mPosE[2], 1, hs2);
 
             /* calc rectangle edges */
             var rect = new PointF[4];
-            interpPostAB(ref rect[0], ref rect[1], 1 - BODY_LEN / mLen, HS);
-            interpPostAB(ref rect[2], ref rect[3], 1 - (BODY_LEN - BASE_THICK) / mLen, HS);
+            interpPostAB(ref rect[0], ref rect[1], 1 - BODY_LEN / Post.Len, HS);
+            interpPostAB(ref rect[2], ref rect[3], 1 - (BODY_LEN - BASE_THICK) / Post.Len, HS);
 
             /* calc points where collector/emitter leads contact rectangle */
-            interpPostAB(ref mPosC[0], ref mPosE[0], 1 - (BODY_LEN - BASE_THICK * 0.5) / mLen, 5 * mDsign * ce.NPN);
+            interpPostAB(ref mPosC[0], ref mPosE[0],
+                1 - (BODY_LEN - BASE_THICK * 0.5) / Post.Len,
+                5 * Post.Dsign * ce.NPN
+            );
 
             /* calc point where base lead contacts rectangle */
-            if (mDsign < 0) {
-                interpPost(ref mTbase, 1 - (BODY_LEN - BASE_THICK) / mLen);
+            if (Post.Dsign < 0) {
+                interpPost(ref mTbase, 1 - (BODY_LEN - BASE_THICK) / Post.Len);
             } else {
-                interpPost(ref mTbase, 1 - BODY_LEN / mLen);
+                interpPost(ref mTbase, 1 - BODY_LEN / Post.Len);
             }
 
             /* rectangle */
@@ -92,7 +95,7 @@ namespace Circuit.UI.Active {
                 Utils.CreateArrow(mPosE[0], mPosE[1], out mArrowPoly, 8, 3);
             } else {
                 var b = new PointF();
-                interpPost(ref b, 1 - (BODY_LEN - 1) / mLen, -5 * mDsign * ce.NPN);
+                interpPost(ref b, 1 - (BODY_LEN - 1) / Post.Len, -5 * Post.Dsign * ce.NPN);
                 Utils.CreateArrow(mPosE[1], b, out mArrowPoly, 8, 3);
             }
             setTextPos();
@@ -105,18 +108,17 @@ namespace Circuit.UI.Active {
         }
 
         void setTextPos() {
-            var txtW = Context.GetTextSize(ReferenceName).Width;
             var swap = 0 < (mFlags & FLAG_FLIP) ? -1 : 1;
-            if (mVertical) {
-                mNamePos = new Point(Elm.Post[1].X, Elm.Post[1].Y + HS * swap * mDsign * 2 / 3);
-            } else if (mHorizontal) {
-                if (0 < mDsign * swap) {
+            if (Post.Horizontal) {
+                if (0 < Post.Dsign * swap) {
                     mNamePos = new Point(Elm.Post[1].X - 1, Elm.Post[1].Y);
                 } else {
                     mNamePos = new Point(Elm.Post[1].X - 16, Elm.Post[1].Y);
                 }
+            } else if (Post.Vertical) {
+                mNamePos = new Point(Elm.Post[1].X, Elm.Post[1].Y + HS * swap * Post.Dsign * 2 / 3);
             } else {
-                interpPost(ref mNamePos, 0.5, 10 * mDsign);
+                interpPost(ref mNamePos, 0.5, 10 * Post.Dsign);
             }
         }
 
@@ -151,7 +153,7 @@ namespace Circuit.UI.Active {
             drawCurrent(mPosE[1], mPosC[1], mCurCountC);
 
             if (ControlPanel.ChkShowName.Checked) {
-                if (mVertical) {
+                if (Post.Vertical) {
                     g.DrawCenteredText(ReferenceName, mNamePos);
                 } else {
                     g.DrawCenteredVText(ReferenceName, mNamePos);

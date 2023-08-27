@@ -52,19 +52,19 @@ namespace Circuit.UI.Active {
 
             /* find the coordinates of the various points we need to draw the MOSFET. */
             var hsm = (HS / 8 + 1) * 8;
-            int hs1 = hsm * mDsign;
-            var hs2 = HS * mDsign;
+            int hs1 = hsm * Post.Dsign;
+            var hs2 = HS * Post.Dsign;
             if ((mFlags & FLAG_FLIP) != 0) {
                 hs1 = -hs1;
                 hs2 = -hs2;
             }
             interpPostAB(ref mPosS[0], ref mPosD[0], 1, -hs1);
             interpPostAB(ref mPosS[3], ref mPosD[3], 1, -hs2);
-            interpPostAB(ref mPosS[1], ref mPosD[1], 1 - 12 / mLen, -hs2);
-            interpPostAB(ref mPosS[2], ref mPosD[2], 1 - 12 / mLen, -hs2 * 4 / 3);
+            interpPostAB(ref mPosS[1], ref mPosD[1], 1 - 12 / Post.Len, -hs2);
+            interpPostAB(ref mPosS[2], ref mPosD[2], 1 - 12 / Post.Len, -hs2 * 4 / 3);
 
             var gate = new PointF[2];
-            interpPostAB(ref gate[0], ref gate[1], 1 - 16 / mLen, hs2 * 0.8);
+            interpPostAB(ref gate[0], ref gate[1], 1 - 16 / Post.Len, hs2 * 0.8);
             Utils.InterpPoint(gate[0], gate[1], ref mGate, .5);
 
             Utils.InterpPoint(mPosS[0], mPosD[0], ref mPosB[0], .5);
@@ -126,16 +126,16 @@ namespace Circuit.UI.Active {
         }
 
         void setTextPos() {
-            if (mVertical) {
-                mNamePos = new Point(Elm.Post[1].X, Elm.Post[1].Y + HS * mDsign * 2 / 3);
-            } else if (mHorizontal) {
-                if (0 < mDsign) {
+            if (Post.Horizontal) {
+                if (0 < Post.Dsign) {
                     mNamePos = new Point(Elm.Post[1].X - 1, Elm.Post[1].Y);
                 } else {
                     mNamePos = new Point(Elm.Post[1].X - 16, Elm.Post[1].Y);
                 }
+            } else if (Post.Vertical) {
+                mNamePos = new Point(Elm.Post[1].X, Elm.Post[1].Y + HS * Post.Dsign * 2 / 3);
             } else {
-                interpPost(ref mNamePos, 0.5, 10 * mDsign);
+                interpPost(ref mNamePos, 0.5, 10 * Post.Dsign);
             }
         }
 
@@ -172,7 +172,7 @@ namespace Circuit.UI.Active {
             drawCurrent(mPosB[0], mPosD[0], mCurCount + mCurcountBody2);
 
             if (ControlPanel.ChkShowName.Checked) {
-                if (mVertical) {
+                if (Post.Vertical) {
                     g.DrawCenteredText(ReferenceName, mNamePos);
                 } else {
                     g.DrawCenteredVText(ReferenceName, mNamePos);

@@ -32,12 +32,12 @@ namespace Circuit.UI.Gate {
             calcLeads(BODY_LEN);
             int hs = BODY_LEN / 2;
             int ww = BODY_LEN / 2;
-            if (ww > mLen / 2) {
-                ww = (int)(mLen / 2);
+            if (ww > Post.Len / 2) {
+                ww = (int)(Post.Len / 2);
             }
             mGatePoly = new PointF[3];
             interpLeadAB(ref mGatePoly[0], ref mGatePoly[1], 0, hs);
-            interpPost(ref mGatePoly[2], 0.5 + ww / mLen);
+            interpPost(ref mGatePoly[2], 0.5 + ww / Post.Len);
             interpPost(ref ((ElmTriState)Elm).Post[2], 0.5, -hs);
             interpPost(ref mLead3, 0.5, -hs / 2);
         }

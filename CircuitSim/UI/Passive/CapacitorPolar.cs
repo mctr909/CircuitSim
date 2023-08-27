@@ -31,11 +31,11 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
-            double f = (mLen / 2 - 4) / mLen;
+            var f = (Post.Len / 2 - 4) / Post.Len;
             if (Post.A.Y == Post.B.Y) {
-                interpPost(ref mPlusPoint, f - 5 / mLen, 5 * mDsign);
+                interpPost(ref mPlusPoint, f - 5 / Post.Len, 5 * Post.Dsign);
             } else {
-                interpPost(ref mPlusPoint, f - 5 / mLen, -5 * mDsign);
+                interpPost(ref mPlusPoint, f - 5 / Post.Len, -5 * Post.Dsign);
             }
             if (Post.B.Y > Post.A.Y) {
                 mPlusPoint.Y += 1;

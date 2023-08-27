@@ -63,30 +63,31 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
+            Post.Vertical = Math.Abs(Post.Diff.X) <= Math.Abs(Post.Diff.Y);
+            Post.Horizontal = !Post.Vertical;
+
             int offset = 0;
-            int myLen = 0;
-            mVertical = Math.Abs(mDiff.X) <= Math.Abs(mDiff.Y);
-            if (mVertical) {
+            if (Post.Vertical) {
                 /* vertical */
-                myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(mDiff.Y)
-                    * ((Math.Abs(mDiff.Y) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
-                if (mDiff.Y != 0) {
+                var myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(Post.Diff.Y)
+                    * ((Math.Abs(Post.Diff.Y) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
+                if (Post.Diff.Y != 0) {
                     Elm.Post[1].Y = Elm.Post[0].Y + myLen;
-                    offset = (0 < mDiff.Y) ? mDiff.X : -mDiff.X;
+                    offset = (0 < Post.Diff.Y) ? Post.Diff.X : -Post.Diff.X;
                     Elm.Post[1].X = Elm.Post[0].X;
                 }
             } else {
                 /* horizontal */
-                myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(mDiff.X)
-                    * ((Math.Abs(mDiff.X) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
+                var myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(Post.Diff.X)
+                    * ((Math.Abs(Post.Diff.X) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
                 Elm.Post[1].X = Elm.Post[0].X + myLen;
-                offset = (mDiff.X < 0) ? mDiff.Y : -mDiff.Y;
+                offset = (Post.Diff.X < 0) ? Post.Diff.Y : -Post.Diff.Y;
                 Elm.Post[1].Y = Elm.Post[0].Y;
             }
             if (offset < CirSimForm.GRID_SIZE) {
                 offset = CirSimForm.GRID_SIZE;
             }
-            mLen = Utils.Distance(Elm.Post[0], Elm.Post[1]);
+            Post.Len = Utils.Distance(Elm.Post[0], Elm.Post[1]);
 
             calcLeads(BODY_LEN);
             setBbox(HS);
@@ -96,9 +97,9 @@ namespace Circuit.UI.Passive {
             ce.Position = mSlider.Value * 0.0099 + 0.0001;
             int soff = (int)((ce.Position - 0.5) * BODY_LEN);
             interpPost(ref ce.Post[2], 0.5, offset);
-            interpPost(ref mCorner2, soff / mLen + 0.5, offset);
-            interpPost(ref mArrowPoint, soff / mLen + 0.5, 7 * Math.Sign(offset));
-            interpPost(ref mMidPoint, soff / mLen + 0.5);
+            interpPost(ref mCorner2, soff / Post.Len + 0.5, offset);
+            interpPost(ref mArrowPoint, soff / Post.Len + 0.5, 7 * Math.Sign(offset));
+            interpPost(ref mMidPoint, soff / Post.Len + 0.5);
             double clen = Math.Abs(offset) - 8;
             Utils.InterpPoint(mCorner2, mArrowPoint, ref mArrow1, ref mArrow2, (clen - 8) / clen, 4);
 
@@ -159,17 +160,16 @@ namespace Circuit.UI.Passive {
                 var txtWidth1 = (int)g.GetTextSize(s1).Width;
                 var txtWidth2 = (int)g.GetTextSize(s2).Width;
 
-                /* vertical? */
-                if (mLead1.X == mLead2.X) {
-                    g.DrawLeftText(s1, reverseY ? (mArrowPoint.X - txtWidth1) : mArrowPoint.X, (int)(Math.Min(mArrow1.Y, mArrow2.Y) + txtHeightHalf * 3));
-                    g.DrawLeftText(s2, reverseY ? (mArrowPoint.X - txtWidth2) : mArrowPoint.X, (int)(Math.Max(mArrow1.Y, mArrow2.Y) - txtHeightHalf * 3));
-                } else {
+                if (Post.Horizontal) {
                     var y = (int)(mArrowPoint.Y + (reverseX ? -txtHeightHalf : txtHeightHalf));
                     g.DrawLeftText(s1, Math.Min(mArrow1.X, mArrow2.X) - txtWidth1, y);
                     g.DrawLeftText(s2, Math.Max(mArrow1.X, mArrow2.X), y);
+                } else {
+                    g.DrawLeftText(s1, reverseY ? (mArrowPoint.X - txtWidth1) : mArrowPoint.X, (int)(Math.Min(mArrow1.Y, mArrow2.Y) + txtHeightHalf * 3));
+                    g.DrawLeftText(s2, reverseY ? (mArrowPoint.X - txtWidth2) : mArrowPoint.X, (int)(Math.Max(mArrow1.Y, mArrow2.Y) - txtHeightHalf * 3));
                 }
             }
-            if (mVertical) {
+            if (Post.Vertical) {
                 g.DrawCenteredVText(mName, mNamePos);
             } else {
                 g.DrawLeftText(mName, mNamePos.X, mNamePos.Y);
@@ -268,23 +268,23 @@ namespace Circuit.UI.Passive {
                 mName += Utils.UnitText(ce.MaxResistance);
             }
             var wn = Context.GetTextSize(mName).Width * 0.5;
-            if (Math.Abs(mDiff.Y) < Math.Abs(mDiff.X)) {
-                if (0 < mDiff.X) {
-                    /* upper slider */
-                    interpPost(ref mNamePos, 0.5 + wn / mLen * mDsign, 14 * mDsign);
-                } else {
-                    /* lower slider */
-                    interpPost(ref mNamePos, 0.5 + wn / mLen * mDsign, -12 * mDsign);
-                }
-            } else {
-                if (mDiff.Y != 0) {
-                    if (0 < mDiff.Y) {
+            if (Post.Horizontal) {
+                if (Post.Diff.Y != 0) {
+                    if (0 < Post.Diff.Y) {
                         /* right slider */
-                        interpPost(ref mNamePos, 0.5, -20 * mDsign);
+                        interpPost(ref mNamePos, 0.5, -20 * Post.Dsign);
                     } else {
                         /* left slider */
-                        interpPost(ref mNamePos, 0.5, 2 * mDsign);
+                        interpPost(ref mNamePos, 0.5, 2 * Post.Dsign);
                     }
+                }
+            } else {
+                if (0 < Post.Diff.X) {
+                    /* upper slider */
+                    interpPost(ref mNamePos, 0.5 + wn / Post.Len * Post.Dsign, 14 * Post.Dsign);
+                } else {
+                    /* lower slider */
+                    interpPost(ref mNamePos, 0.5 + wn / Post.Len * Post.Dsign, -12 * Post.Dsign);
                 }
             }
         }

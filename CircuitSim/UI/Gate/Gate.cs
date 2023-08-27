@@ -60,11 +60,11 @@ namespace Circuit.UI.Gate {
             int hs = G_HEIGHT;
             int i;
             mWw = G_WIDTH2;
-            if (mWw > mLen / 2) {
-                mWw = (int)(mLen / 2);
+            if (mWw > Post.Len / 2) {
+                mWw = (int)(Post.Len / 2);
             }
-            if (ce.IsInverting && mWw + 8 > mLen / 2) {
-                mWw = (int)(mLen / 2 - 8);
+            if (ce.IsInverting && mWw + 8 > Post.Len / 2) {
+                mWw = (int)(Post.Len / 2 - 8);
             }
             calcLeads(mWw * 2);
             ce.InPosts = new Point[ce.InputCount];

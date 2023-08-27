@@ -65,8 +65,8 @@ namespace Circuit.UI.Passive {
             ce.Post[1].Y = ce.Post[0].Y;
             mPtCoil = new PointF[4];
             mPtCore = new PointF[4];
-            interpPost(ref ce.Post[2], 0, -mDsign * height);
-            interpPost(ref ce.Post[3], 1, -mDsign * height);
+            interpPost(ref ce.Post[2], 0, -Post.Dsign * height);
+            interpPost(ref ce.Post[3], 1, -Post.Dsign * height);
             var pce = 0.5 - 10.0 / width;
             var pcd = 0.5 - 1.0 / width;
             for (int i = 0; i != 4; i += 2) {
@@ -78,8 +78,8 @@ namespace Circuit.UI.Passive {
             if (-1 == ce.Polarity) {
                 mDots = new PointF[2];
                 var dotp = Math.Abs(7.0 / height);
-                Utils.InterpPoint(mPtCoil[0], mPtCoil[2], ref mDots[0], dotp, -7 * mDsign);
-                Utils.InterpPoint(mPtCoil[3], mPtCoil[1], ref mDots[1], dotp, -7 * mDsign);
+                Utils.InterpPoint(mPtCoil[0], mPtCoil[2], ref mDots[0], dotp, -7 * Post.Dsign);
+                Utils.InterpPoint(mPtCoil[3], mPtCoil[1], ref mDots[1], dotp, -7 * Post.Dsign);
                 var x = ce.Post[1];
                 ce.Post[1] = ce.Post[3];
                 ce.Post[3] = x;
@@ -90,8 +90,8 @@ namespace Circuit.UI.Passive {
                 mDots = null;
             }
             setBbox(ce.Post[0], ce.Post[ce.Polarity == 1 ? 3 : 1], 0);
-            setCoilPos(mPtCoil[0], mPtCoil[2], 90 * mDsign, out mCoilPosA);
-            setCoilPos(mPtCoil[1], mPtCoil[3], -90 * mDsign * ce.Polarity, out mCoilPosB);
+            setCoilPos(mPtCoil[0], mPtCoil[2], 90 * Post.Dsign, out mCoilPosA);
+            setCoilPos(mPtCoil[1], mPtCoil[3], -90 * Post.Dsign * ce.Polarity, out mCoilPosB);
             setNamePos();
         }
 

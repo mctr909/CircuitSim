@@ -33,7 +33,7 @@ namespace Circuit.UI.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            setLead1(1 - 0.5 * SIZE / mLen);
+            setLead1(1 - 0.5 * SIZE / Post.Len);
         }
 
         public override void Draw(CustomGraphics g) {

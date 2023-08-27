@@ -35,10 +35,10 @@ namespace Circuit.UI.Input {
             interpLead(ref mAshaft2, 0.6);
             interpLead(ref mCenter, 0.5);
             int sign;
-            if (mHorizontal) {
-                sign = mDsign;
+            if (Post.Horizontal) {
+                sign = Post.Dsign;
             } else {
-                sign = -mDsign;
+                sign = -Post.Dsign;
             }
             interpPost(ref mTextPos, 0.5, 16 * sign);
             var p2 = new PointF();

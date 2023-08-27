@@ -30,10 +30,10 @@ namespace Circuit.UI.Output {
 		public override void Draw(CustomGraphics g) {
 			string s = "trigger";
 			double w = g.GetTextSize(s).Width / 2;
-			if (w > mLen * 0.8) {
-				w = mLen * 0.8;
+			if (w > Post.Len * 0.8) {
+				w = Post.Len * 0.8;
 			}
-			setLead1(1 - w / mLen);
+			setLead1(1 - w / Post.Len);
 			setBbox(Elm.Post[0], mLead1, 0);
 			drawCenteredText(s, Post.B, true);
 			drawLeadA();

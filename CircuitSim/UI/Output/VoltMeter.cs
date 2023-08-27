@@ -35,7 +35,7 @@ namespace Circuit.UI.Output {
             setBbox(8);
             calcLeads(16);
             interpPost(ref mCenter, 0.5);
-            interpPost(ref mPlusPoint, 8.0 / mLen, 6 * mDsign);
+            interpPost(ref mPlusPoint, 8.0 / Post.Len, 6 * Post.Dsign);
         }
 
         public override void Draw(CustomGraphics g) {

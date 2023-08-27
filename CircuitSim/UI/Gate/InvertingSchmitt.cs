@@ -56,18 +56,18 @@ namespace Circuit.UI.Gate {
             base.SetPoints();
             int hs = 10;
             int ww = 12;
-            if (ww > mLen / 2) {
-                ww = (int)(mLen / 2);
+            if (ww > Post.Len / 2) {
+                ww = (int)(Post.Len / 2);
             }
-            setLead1(0.5 - ww / mLen);
-            setLead2(0.5 + (ww + 2) / mLen);
-            interpPost(ref pcircle, 0.5 + (ww - 2) / mLen);
+            setLead1(0.5 - ww / Post.Len);
+            setLead2(0.5 + (ww + 2) / Post.Len);
+            interpPost(ref pcircle, 0.5 + (ww - 2) / Post.Len);
 
             gatePoly = new PointF[3];
             interpLeadAB(ref gatePoly[0], ref gatePoly[1], 0, hs);
-            interpPost(ref gatePoly[2], 0.5 + (ww - 5) / mLen);
+            interpPost(ref gatePoly[2], 0.5 + (ww - 5) / Post.Len);
 
-            Utils.CreateSchmitt(Elm.Post[0], Elm.Post[1], out symbolPoly, 0.8, .5 - (ww - 7) / mLen);
+            Utils.CreateSchmitt(Elm.Post[0], Elm.Post[1], out symbolPoly, 0.8, .5 - (ww - 7) / Post.Len);
             setBbox(hs);
         }
 

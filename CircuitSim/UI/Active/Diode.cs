@@ -56,12 +56,12 @@ namespace Circuit.UI.Active {
         }
 
         protected void setTextPos() {
-            if (mHorizontal) {
-                interpPost(ref mNamePos, 0.5, 13 * mDsign);
-            } else if (mVertical) {
-                interpPost(ref mNamePos, 0.5, -22 * mDsign);
+            if (Post.Vertical) {
+                interpPost(ref mNamePos, 0.5, -22 * Post.Dsign);
+            } else if (Post.Horizontal) {
+                interpPost(ref mNamePos, 0.5, 13 * Post.Dsign);
             } else {
-                interpPost(ref mNamePos, 0.5, -10 * mDsign);
+                interpPost(ref mNamePos, 0.5, -10 * Post.Dsign);
             }
         }
 
@@ -145,10 +145,6 @@ namespace Circuit.UI.Active {
 
         protected void setup() {
             ((ElmDiode)Elm).Setup();
-        }
-
-        void setLastModelName(string n) {
-            ElmDiode.lastModelName = n;
         }
     }
 }

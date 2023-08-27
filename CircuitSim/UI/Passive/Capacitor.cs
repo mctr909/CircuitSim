@@ -47,12 +47,12 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
-            var f1 = 0.5 - BODY_LEN * 0.5 / mLen;
-            var f2 = 0.5 + BODY_LEN * 0.5 / mLen;
-            var dw = 0.8 / mLen;
+            var f1 = 0.5 - BODY_LEN * 0.5 / Post.Len;
+            var f2 = 0.5 + BODY_LEN * 0.5 / Post.Len;
+            var dw = 0.8 / Post.Len;
             /* calc leads */
-            setLead1(f1 - 0.1 / mLen);
-            setLead2(f2 + 0.1 / mLen);
+            setLead1(f1 - 0.1 / Post.Len);
+            setLead2(f2 + 0.1 / Post.Len);
             setBbox(HS);
             /* calc plates */
             mPlate1 = new PointF[4];
@@ -69,15 +69,15 @@ namespace Circuit.UI.Passive {
         }
 
         void setTextPos() {
-            if (mHorizontal) {
-                interpPost(ref mValuePos, 0.5, -13 * mDsign);
-                interpPost(ref mNamePos, 0.5, 11 * mDsign);
-            } else if (mVertical) {
-                interpPost(ref mValuePos, 0.5, 5 * mDsign);
-                interpPost(ref mNamePos, 0.5, -18 * mDsign);
+            if (Post.Horizontal) {
+                interpPost(ref mValuePos, 0.5, -13 * Post.Dsign);
+                interpPost(ref mNamePos, 0.5, 11 * Post.Dsign);
+            } else if (Post.Vertical) {
+                interpPost(ref mValuePos, 0.5, 5 * Post.Dsign);
+                interpPost(ref mNamePos, 0.5, -18 * Post.Dsign);
             } else {
-                interpPost(ref mValuePos, 0.5, 8 * mDsign);
-                interpPost(ref mNamePos, 0.5, -8 * mDsign);
+                interpPost(ref mValuePos, 0.5, 8 * Post.Dsign);
+                interpPost(ref mNamePos, 0.5, -8 * Post.Dsign);
             }
         }
 

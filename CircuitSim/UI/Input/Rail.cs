@@ -22,7 +22,7 @@ namespace Circuit.UI.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            setLead1(1 - BODY_LEN / mLen);
+            setLead1(1 - BODY_LEN / Post.Len);
         }
 
         public string getRailText() {
@@ -33,14 +33,14 @@ namespace Circuit.UI.Input {
             var elm = (ElmVoltage)Elm;
             var rt = getRailText();
             double w = rt == null ? (BODY_LEN * 0.5) : g.GetTextSize(rt).Width / 2;
-            if (w > mLen * 0.8) {
-                w = mLen * 0.8;
+            if (w > Post.Len * 0.8) {
+                w = Post.Len * 0.8;
             }
             if (elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE
                 && (mFlags & FLAG_CLOCK) != 0 || elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
-                setLead1(1 - (w - 5) / mLen);
+                setLead1(1 - (w - 5) / Post.Len);
             } else {
-                setLead1(1 - w / mLen);
+                setLead1(1 - w / Post.Len);
             }
             setBbox(BODY_LEN);
 

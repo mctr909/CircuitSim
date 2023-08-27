@@ -8,6 +8,13 @@ namespace Circuit.UI {
         public Point B;
         public RectangleF BoundingBox;
 
+        public bool Vertical;
+        public bool Horizontal;
+        public double Len;
+        public int Dsign;
+        public PointF Dir;
+        public Point Diff;
+
         public bool IsCreationFailed {
             get { return A.X == B.X && A.Y == B.Y; }
         }
@@ -25,6 +32,24 @@ namespace Circuit.UI {
             A = p1;
             B = p2;
             BoundingBox = getBoundingBox();
+        }
+
+        public void SetValue() {
+            var sx = B.X - A.X;
+            var sy = B.Y - A.Y;
+            Len = Math.Sqrt(sx * sx + sy * sy);
+            Diff.X = sx;
+            Diff.Y = sy;
+            Dsign = (Diff.Y == 0) ? Math.Sign(Diff.X) : Math.Sign(Diff.Y);
+            if (Len == 0) {
+                Dir.X = 0;
+                Dir.Y = 0;
+            } else {
+                Dir.X = (float)(sy / Len);
+                Dir.Y = -(float)(sx / Len);
+            }
+            Vertical = A.X == B.X;
+            Horizontal = A.Y == B.Y;
         }
 
         public void Dump(List<object> valueList) {

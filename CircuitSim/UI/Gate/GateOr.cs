@@ -40,7 +40,7 @@ namespace Circuit.UI.Gate {
                 double b = 1 - a * a;
                 interpLeadAB(ref mGatePolyAnsi[i], ref mGatePolyAnsi[32 - i], 0.5 + a / 2, b * mHs2);
             }
-            double ww2 = (mWw == 0) ? mLen * 2 : mWw * 2;
+            double ww2 = (mWw == 0) ? Post.Len * 2 : mWw * 2;
             for (int i = 0; i != 7; i++) {
                 double a = (i - 3) / 3.0;
                 double b = 6 * (1 - a * a) - 3;
@@ -52,8 +52,8 @@ namespace Circuit.UI.Gate {
             mGatePolyAnsi[16] = mLead2;
 
             if (ce.IsInverting) {
-                interpPost(ref mCirclePos, 0.5 + (mWw + 3) / mLen);
-                setLead2(0.5 + (mWw + 6) / mLen);
+                interpPost(ref mCirclePos, 0.5 + (mWw + 3) / Post.Len);
+                setLead2(0.5 + (mWw + 6) / Post.Len);
             }
         }
     }

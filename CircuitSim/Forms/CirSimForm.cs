@@ -1489,7 +1489,7 @@ namespace Circuit {
                 return;
             }
             var newWire = new Wire(pos);
-            newWire.Drag(new Point(ce.Post.B.X, ce.Post.B.Y));
+            newWire.Drag(ce.Post.B);
             ce.Drag(pos);
             UIList.Add(newWire);
             NeedAnalyze();

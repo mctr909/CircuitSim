@@ -11,6 +11,7 @@ namespace Circuit.UI {
         public BaseElement Elm;
         public string ReferenceName;
         public static CustomGraphics Context;
+
         static BaseUI mMouseElmRef = null;
 
         protected BaseUI(Point pos) {
@@ -25,6 +26,8 @@ namespace Circuit.UI {
 
         #region [property]
         public abstract DUMP_ID DumpType { get; }
+
+        public virtual DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }
 
         public Post Post { get; protected set; }
 
@@ -50,8 +53,6 @@ namespace Circuit.UI {
             }
         }
 
-        public virtual DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }
-
         /// <summary>
         /// called when an element is done being dragged out;
         /// </summary>
@@ -71,26 +72,11 @@ namespace Circuit.UI {
         protected int mFlags;
         protected double mCurCount;
 
-        /* length along x and y axes, and sign of difference */
-        protected Point mDiff;
-        protected int mDsign;
-
-        /* length of element */
-        protected double mLen;
-
-        /* direction of element */
-        protected PointF mDir;
-
-        /* lead points (ends of wire stubs for simple two-terminal elements) */
         protected PointF mLead1;
         protected PointF mLead2;
-
-        protected bool mVertical;
-        protected bool mHorizontal;
         protected Point mNamePos;
         protected Point mValuePos;
 
-        /* if subclasses set this to true, element will be horizontal or vertical only */
         protected bool mNoDiagonal;
         #endregion
 
@@ -219,22 +205,7 @@ namespace Circuit.UI {
         /// Called when element is moved
         /// </summary>
         public virtual void SetPoints() {
-            mDiff.X = Post.B.X - Post.A.X;
-            mDiff.Y = Post.B.Y - Post.A.Y;
-            mLen = Math.Sqrt(mDiff.X * mDiff.X + mDiff.Y * mDiff.Y);
-            mDsign = (mDiff.Y == 0) ? Math.Sign(mDiff.X) : Math.Sign(mDiff.Y);
-            var sx = Post.B.X - Post.A.X;
-            var sy = Post.B.Y - Post.A.Y;
-            var r = (float)Math.Sqrt(sx * sx + sy * sy);
-            if (r == 0) {
-                mDir.X = 0;
-                mDir.Y = 0;
-            } else {
-                mDir.X = sy / r;
-                mDir.Y = -sx / r;
-            }
-            mVertical = Post.A.X == Post.B.X;
-            mHorizontal = Post.A.Y == Post.B.Y;
+            Post.SetValue();
             Elm.Post[0] = Post.A;
             Elm.Post[1] = Post.B;
         }
@@ -267,19 +238,19 @@ namespace Circuit.UI {
         /// </summary>
         /// <param name="len"></param>
         protected void calcLeads(int len) {
-            if (mLen < len || len == 0) {
+            if (Post.Len < len || len == 0) {
                 mLead1 = Elm.Post[0];
                 mLead2 = Elm.Post[1];
                 return;
             }
-            setLead1((mLen - len) / (2 * mLen));
-            setLead2((mLen + len) / (2 * mLen));
+            setLead1((Post.Len - len) / (2 * Post.Len));
+            setLead2((Post.Len + len) / (2 * Post.Len));
         }
 
         protected void setBbox(float ax, float ay, float bx, float by, double w) {
             Post.SetBbox(ax, ay, bx, by);
-            var dpx = (float)(mDir.X * w);
-            var dpy = (float)(mDir.Y * w);
+            var dpx = (float)(Post.Dir.X * w);
+            var dpy = (float)(Post.Dir.Y * w);
             Post.AdjustBbox(
                 ax + dpx, ay + dpy,
                 ax - dpx, ay - dpy
@@ -297,8 +268,8 @@ namespace Circuit.UI {
         }
 
         protected void setBbox(double w) {
-            var dpx = (float)(mDir.X * w);
-            var dpy = (float)(mDir.Y * w);
+            var dpx = (float)(Post.Dir.X * w);
+            var dpy = (float)(Post.Dir.Y * w);
             Post.SetBbox(
                 Elm.Post[0].X + dpx, Elm.Post[0].Y + dpy,
                 Elm.Post[0].X - dpx, Elm.Post[0].Y - dpy
@@ -625,10 +596,10 @@ namespace Circuit.UI {
         protected void drawValue(double value) {
             if (ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.UnitText(value);
-                if (mVertical) {
-                    Context.DrawCenteredVText(s, mValuePos);
-                } else if (mHorizontal) {
+                if (Post.Horizontal) {
                     Context.DrawCenteredText(s, mValuePos);
+                } else if (Post.Vertical) {
+                    Context.DrawCenteredVText(s, mValuePos);
                 } else {
                     Context.DrawLeftText(s, mValuePos.X, mValuePos.Y);
                 }
@@ -657,10 +628,10 @@ namespace Circuit.UI {
 
         protected void drawName() {
             if (ControlPanel.ChkShowName.Checked) {
-                if (mVertical) {
-                    Context.DrawCenteredVText(ReferenceName, mNamePos);
-                } else if (mHorizontal) {
+                if (Post.Horizontal) {
                     Context.DrawCenteredText(ReferenceName, mNamePos);
+                } else if (Post.Vertical) {
+                    Context.DrawCenteredVText(ReferenceName, mNamePos);
                 } else {
                     Context.DrawRightText(ReferenceName, mNamePos.X, mNamePos.Y);
                 }
