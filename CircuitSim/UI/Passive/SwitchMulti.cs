@@ -90,9 +90,10 @@ namespace Circuit.UI.Passive {
 
         public override void GetInfo(string[] arr) {
             var ce = (ElmSwitchMulti)Elm;
-            arr[0] = "switch (" + (ce.Link == 0 ? "S" : "D")
+            arr[0] = "スイッチ(" + (ce.Link == 0 ? "S" : "D")
                 + "P" + ((ce.ThrowCount > 2) ? ce.ThrowCount + "T)" : "DT)");
-            arr[1] = "I = " + Utils.CurrentAbsText(ce.Current);
+            arr[1] = "電位：" + Utils.VoltageText(ce.Volts[0]);
+            arr[2] = "電流：" + Utils.CurrentAbsText(ce.Current);
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
