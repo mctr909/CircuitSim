@@ -16,11 +16,6 @@ namespace Circuit.Elements.Active {
          * vzcoef is the multiplicative equivalent of dividing by vt (for speed). */
         const double VZ_COEF = 1 / VT;
 
-        /// <summary>
-        /// User-specified diode parameters for Zener voltage.
-        /// </summary>
-        public double Zvoltage;
-
         bool mHasResistance;
         int mNodes0;
         int mNodes1;
@@ -46,6 +41,11 @@ namespace Circuit.Elements.Active {
         /// Voltage offset for Zener breakdown exponential, calculated from user-specified Zener voltage.
         /// </summary>
         double mZoffset;
+
+        /// <summary>
+        /// User-specified diode parameters for Zener voltage.
+        /// </summary>
+        double mZvoltage;
 
         /// <summary>
         /// Critical voltages for limiting the normal diode.
@@ -93,7 +93,7 @@ namespace Circuit.Elements.Active {
             mModel = DiodeModel.GetModelWithNameOrCopy(mModelName, mModel);
             mModelName = mModel.Name;
             mLeakage = mModel.SaturationCurrent;
-            Zvoltage = mModel.BreakdownVoltage;
+            mZvoltage = mModel.BreakdownVoltage;
             mVscale = mModel.VScale;
             mVdCoef = mModel.VdCoef;
 
@@ -102,12 +102,12 @@ namespace Circuit.Elements.Active {
             /* translated, *positive* critical voltage for limiting in Zener breakdown region;
              * limitstep() uses this with translated voltages in an analogous fashion to vcrit. */
             mVzCrit = VT * Math.Log(VT / (Math.Sqrt(2) * mLeakage));
-            if (Zvoltage == 0) {
+            if (mZvoltage == 0) {
                 mZoffset = 0;
             } else {
                 /* calculate offset which will give us 5mA at zvoltage */
                 double i = -0.005;
-                mZoffset = Zvoltage - Math.Log(-(1 + i / mLeakage)) / VZ_COEF;
+                mZoffset = mZvoltage - Math.Log(-(1 + i / mLeakage)) / VZ_COEF;
             }
 
             mHasResistance = 0 < mModel.SeriesResistance;
@@ -206,7 +206,7 @@ namespace Circuit.Elements.Active {
                 }
                 double geq;
                 double nc;
-                if (voltdiff >= 0 || Zvoltage == 0) {
+                if (voltdiff >= 0 || mZvoltage == 0) {
                     /* regular diode or forward-biased zener */
                     var eval = Math.Exp(voltdiff * mVdCoef);
                     geq = mVdCoef * mLeakage * eval + gmin;
@@ -268,7 +268,7 @@ namespace Circuit.Elements.Active {
         public override void CirSetVoltage(int n, double c) {
             Volts[n] = c;
             var voltdiff = Volts[0] - Volts[mDiodeEndNode];
-            if (voltdiff >= 0 || Zvoltage == 0) {
+            if (voltdiff >= 0 || mZvoltage == 0) {
                 Current = mLeakage * (Math.Exp(voltdiff * mVdCoef) - 1);
             } else {
                 Current = mLeakage * (

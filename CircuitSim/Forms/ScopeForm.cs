@@ -138,16 +138,8 @@ namespace Circuit.Forms {
                 g.DrawLeftText(Circuit.StopMessage, 10, -10);
             } else {
                 var info = new string[10];
-                if (Mouse.GripElm != null) {
-                    if (Mouse.Post == -1) {
-                        Mouse.GripElm.GetInfo(info);
-                    } else {
-                        info[0] = "電位：" + Mouse.GripElm.GetPostVoltage(Mouse.Post);
-                    }
-                } else {
-                    info[0] = "時間：" + Utils.TimeText(Circuit.Time);
-                    info[1] = "単位時間：" + Utils.TimeText(ControlPanel.TimeStep);
-                }
+                info[0] = "時間：" + Utils.TimeText(Circuit.Time);
+                info[1] = "単位時間：" + Utils.TimeText(ControlPanel.TimeStep);
 
                 /* count lines of data */
                 {

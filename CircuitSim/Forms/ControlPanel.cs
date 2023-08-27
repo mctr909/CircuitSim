@@ -11,6 +11,7 @@ namespace Circuit {
         public static Button BtnReload { get; private set; }
         public static TrackBar TrbSpeed { get; private set; }
         public static TrackBar TrbCurrent { get; private set; }
+        public static Label LblSelectInfo { get; private set; }
         public static CheckBox ChkShowDots { get; private set; }
         public static CheckBox ChkShowValues { get; private set; }
         public static CheckBox ChkShowName { get; private set; }
@@ -45,29 +46,46 @@ namespace Circuit {
             int ofsY = 0;
             VerticalPanel = new Panel();
 
-            /* リセット */
-            BtnReset = new Button() { AutoSize = true, Text = "リセット" };
-            BtnReset.Click += new EventHandler((s, e) => { CirSimForm.ResetButton_onClick(); });
-            BtnReset.Left = 4;
-            BtnReset.Top = ofsY;
-            VerticalPanel.Controls.Add(BtnReset);
-            ofsY += BtnReset.Height + 4;
-
             /* 実行 */
             BtnRunStop = new Button() { AutoSize = true, Text = "実行" };
             BtnRunStop.Click += new EventHandler((s, e) => { CirSimForm.SetSimRunning(!CirSimForm.IsRunning); });
+            BtnRunStop.Width = 50;
             BtnRunStop.Left = 4;
             BtnRunStop.Top = ofsY;
             VerticalPanel.Controls.Add(BtnRunStop);
-            ofsY += BtnRunStop.Height + 4;
+
+            /* リセット */
+            BtnReset = new Button() { AutoSize = true, Text = "リセット" };
+            BtnReset.Click += new EventHandler((s, e) => { CirSimForm.ResetButton_onClick(); });
+            BtnReset.Width = 50;
+            BtnReset.Left = BtnRunStop.Right + 4;
+            BtnReset.Top = ofsY;
+            VerticalPanel.Controls.Add(BtnReset);
 
             /* 再読み込み */
             BtnReload = new Button() { AutoSize = true, Text = "再読み込み" };
             BtnReload.Click += new EventHandler((s, e) => { CirSimForm.Instance.Reload(); });
-            BtnReload.Left = 4;
+            BtnReload.Left = BtnReset.Right + 4;
             BtnReload.Top = ofsY;
             VerticalPanel.Controls.Add(BtnReload);
             ofsY += BtnReload.Height + 4;
+
+            /* TimeStep */
+            ofsY += 8;
+            var lblTimeStep = new Label() { Left = 4, Top = ofsY, AutoSize = true, Text = "単位時間(sec)" };
+            VerticalPanel.Controls.Add(lblTimeStep);
+            ofsY += lblTimeStep.Height + 4;
+            mTxtTimeStep = new TextBox() { Left = 4, Top = ofsY, Width = 80 };
+            mTxtTimeStep.TextChanged += new EventHandler((s, e) => {
+                var tmp = 0.0;
+                if (Utils.TextToNum(mTxtTimeStep.Text, out tmp)) {
+                    mTimeStep = tmp;
+                } else {
+                    mTxtTimeStep.Text = Utils.UnitText(mTimeStep, "");
+                }
+            });
+            VerticalPanel.Controls.Add(mTxtTimeStep);
+            ofsY += mTxtTimeStep.Height + 4;
 
             /* 実行速度 */
             var lbl = new Label() { Left = 4, Top = ofsY, AutoSize = true, Text = "実行速度" };
@@ -86,7 +104,7 @@ namespace Circuit {
                 Width = 200
             };
             VerticalPanel.Controls.Add(TrbSpeed);
-            ofsY += TrbSpeed.Height + 4;
+            ofsY += TrbSpeed.Height;
 
             /* 電流表示速度 */
             lbl = new Label() { Left = 4, Top = ofsY, AutoSize = true, Text = "電流表示速度" };
@@ -126,6 +144,20 @@ namespace Circuit {
             };
             VerticalPanel.Controls.Add(TrbCurrent);
             ofsY += TrbCurrent.Height + 4;
+
+            /* 選択情報 */
+            lbl = new Label() { Left = 4, Top = ofsY, AutoSize = true, Text = "選択情報" };
+            VerticalPanel.Controls.Add(lbl);
+            ofsY += lbl.Height;
+            LblSelectInfo = new Label() {
+                Left = 4,
+                Top = ofsY,
+                Width = 200,
+                Height = 100,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            VerticalPanel.Controls.Add(LblSelectInfo);
+            ofsY += LblSelectInfo.Height + 4;
 
             /* Show Current */
             ChkShowDots = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "電流を表示" };
@@ -174,23 +206,6 @@ namespace Circuit {
             ChkCrossHair = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "ポインターを表示" };
             VerticalPanel.Controls.Add(ChkCrossHair);
             ofsY += ChkCrossHair.Height + 4;
-
-            /* TimeStep */
-            ofsY += 8;
-            var lblTimeStep = new Label() { Left = 4, Top = ofsY, AutoSize = true, Text = "単位時間(sec)" };
-            VerticalPanel.Controls.Add(lblTimeStep);
-            ofsY += lblTimeStep.Height + 4;
-            mTxtTimeStep = new TextBox() { Left = 4, Top = ofsY, Width = 80 };
-            mTxtTimeStep.TextChanged += new EventHandler((s, e) => {
-                var tmp = 0.0;
-                if(Utils.TextToNum(mTxtTimeStep.Text, out tmp)) {
-                    mTimeStep = tmp;
-                } else {
-                    mTxtTimeStep.Text = Utils.UnitText(mTimeStep, "");
-                }
-            });
-            VerticalPanel.Controls.Add(mTxtTimeStep);
-            ofsY += mTxtTimeStep.Height + 4;
 
             /* SliderPanel */
             mSliderPanel = new Panel() {

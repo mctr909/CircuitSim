@@ -2041,6 +2041,24 @@ namespace Circuit {
             drawCircuit(g);
             mScopeForm.Draw(pdfScope);
 
+            var info = new string[10];
+            if (Mouse.GripElm == null) {
+                ControlPanel.LblSelectInfo.Text = "";
+            } else {
+                if (Mouse.Post == -1) {
+                    Mouse.GripElm.GetInfo(info);
+                } else {
+                    info[0] = "電位：" + Mouse.GripElm.GetPostVoltage(Mouse.Post);
+                }
+                ControlPanel.LblSelectInfo.Text = "";
+                foreach (var str in info) {
+                    if (string.IsNullOrEmpty(str)) {
+                        break;
+                    }
+                    ControlPanel.LblSelectInfo.Text += str + "\n";
+                }
+            }
+
             if (null != mPixCir.Image) {
                 mPixCir.Image.Dispose();
                 mPixCir.Image = null;

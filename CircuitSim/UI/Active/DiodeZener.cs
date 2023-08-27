@@ -18,8 +18,8 @@ namespace Circuit.UI.Active {
         public DiodeZener(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
             if ((f & FLAG_MODEL) == 0) {
                 var ce = (ElmDiode)Elm;
-                ce.Zvoltage = st.nextTokenDouble(5.6);
-                ce.mModel = DiodeModel.GetModelWithParameters(ce.mModel.FwDrop, ce.Zvoltage);
+                var vz = st.nextTokenDouble(5.6);
+                ce.mModel = DiodeModel.GetModelWithParameters(ce.mModel.FwDrop, vz);
                 ce.mModelName = ce.mModel.Name;
             }
             setup();
@@ -63,7 +63,7 @@ namespace Circuit.UI.Active {
             var ce = (ElmDiode)Elm;
             base.GetInfo(arr);
             arr[0] = "ツェナーダイオード";
-            arr[5] = "降伏電圧：" + Utils.VoltageText(ce.mModel.BreakdownVoltage);
+            arr[3] = "降伏電圧：" + Utils.VoltageText(ce.mModel.BreakdownVoltage);
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
@@ -72,17 +72,13 @@ namespace Circuit.UI.Active {
                 return null;
             }
             if (r == 2) {
-                return new ElementInfo("降伏電圧", ce.Zvoltage);
+                return new ElementInfo("降伏電圧", ce.mModel.BreakdownVoltage);
             }
             return base.GetElementInfo(r, c);
         }
 
         public override void SetElementValue(int n, int c, ElementInfo ei) {
-            base.SetElementValue(n - 4, c, ei);
-            var ce = (ElmDiode)Elm;
-            if (n == 2) {
-                ce.Zvoltage = ei.Value;
-            }
+            base.SetElementValue(n, c, ei);
         }
     }
 }

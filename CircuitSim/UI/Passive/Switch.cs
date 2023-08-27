@@ -112,14 +112,14 @@ namespace Circuit.UI.Passive {
 
         public override void GetInfo(string[] arr) {
             var ce = (ElmSwitch)Elm;
-            arr[0] = (ce.Momentary) ? "push switch" : "switch";
+            arr[0] = ce.Momentary ? "プッシュスイッチ(" : "スイッチ(";
             if (ce.Position == 1) {
-                arr[1] = "open";
-                arr[2] = "Vd = " + Utils.VoltageAbsText(ce.GetVoltageDiff());
+                arr[0] += "OFF)";
+                arr[1] = "電位差：" + Utils.VoltageAbsText(ce.GetVoltageDiff());
             } else {
-                arr[1] = "closed";
-                arr[2] = "V = " + Utils.VoltageText(ce.Volts[0]);
-                arr[3] = "I = " + Utils.CurrentAbsText(ce.Current);
+                arr[0] += "ON)";
+                arr[1] = "電位：" + Utils.VoltageText(ce.Volts[0]);
+                arr[2] = "電流：" + Utils.CurrentAbsText(ce.Current);
             }
         }
 
