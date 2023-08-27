@@ -107,11 +107,7 @@ namespace Circuit.UI {
         }
 
         public void SetBbox(PointF a, PointF b) {
-            SetBbox((int)a.X, (int)a.Y, (int)b.X, (int)b.Y);
-        }
-
-        public void SetBbox(Point a, int bx, int by) {
-            SetBbox(a.X, a.Y, bx, by);
+            SetBbox(a.X, a.Y, b.X, b.Y);
         }
 
         public void SetBbox(float ax, float ay, float bx, float by) {
