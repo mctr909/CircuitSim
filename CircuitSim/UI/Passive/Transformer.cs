@@ -158,7 +158,7 @@ namespace Circuit.UI.Passive {
         public override void GetInfo(string[] arr) {
             var ce = (ElmTransformer)Elm;
             arr[0] = "トランス：" + Utils.UnitText(ce.PInductance, "H");
-            arr[1] = "巻数比：(1:" + ce.Ratio + ")";
+            arr[1] = "2次側巻数比：" + ce.Ratio;
             arr[2] = "電位差(1次)：" + Utils.VoltageText(ce.Volts[ElmTransformer.PRI_T] - ce.Volts[ElmTransformer.PRI_B]);
             arr[3] = "電位差(2次)：" + Utils.VoltageText(ce.Volts[ElmTransformer.SEC_T] - ce.Volts[ElmTransformer.SEC_B]);
             arr[4] = "電流(1次)：" + Utils.CurrentText(ce.Currents[0]);

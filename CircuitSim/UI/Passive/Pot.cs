@@ -95,13 +95,15 @@ namespace Circuit.UI.Passive {
             /* set slider */
             var ce = (ElmPot)Elm;
             ce.Position = mSlider.Value * 0.0099 + 0.0001;
-            int soff = (int)((ce.Position - 0.5) * BODY_LEN);
-            interpPost(ref ce.Post[2], 0.5, offset);
-            interpPost(ref mCorner2, soff / Post.Len + 0.5, offset);
-            interpPost(ref mArrowPoint, soff / Post.Len + 0.5, 7 * Math.Sign(offset));
-            interpPost(ref mMidPoint, soff / Post.Len + 0.5);
-            double clen = Math.Abs(offset) - 8;
-            Utils.InterpPoint(mCorner2, mArrowPoint, ref mArrow1, ref mArrow2, (clen - 8) / clen, 4);
+            var poff = 0.5;
+            var woff = -7.0;
+            int soff = (int)((ce.Position - poff) * BODY_LEN);
+            interpPost(ref ce.Post[2], poff, offset);
+            interpPost(ref mCorner2, soff / Post.Len + poff, offset);
+            interpPost(ref mArrowPoint, soff / Post.Len + poff, 7 * Math.Sign(offset));
+            interpPost(ref mMidPoint, soff / Post.Len + poff);
+            var clen = Math.Abs(offset) + woff;
+            Utils.InterpPoint(mCorner2, mArrowPoint, ref mArrow1, ref mArrow2, (clen + woff) / clen, 4);
 
             setPoly();
             setTextPos();
@@ -178,7 +180,7 @@ namespace Circuit.UI.Passive {
 
         public override void GetInfo(string[] arr) {
             var ce = (ElmPot)Elm;
-            arr[0] = "可変抵抗";
+            arr[0] = "可変抵抗：" + Utils.UnitText(ce.MaxResistance, CirSimForm.OHM_TEXT);
             arr[1] = "Vd：" + Utils.VoltageAbsText(ce.GetVoltageDiff());
             arr[2] = "R1：" + Utils.UnitText(ce.Resistance1, CirSimForm.OHM_TEXT);
             arr[3] = "R2：" + Utils.UnitText(ce.Resistance2, CirSimForm.OHM_TEXT);

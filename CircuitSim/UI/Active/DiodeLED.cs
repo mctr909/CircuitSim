@@ -97,11 +97,7 @@ namespace Circuit.UI.Active {
         public override void GetInfo(string[] arr) {
             base.GetInfo(arr);
             var ce = (ElmDiode)Elm;
-            if (ce.mModel.OldStyle) {
-                arr[0] = "LED";
-            } else {
-                arr[0] = "LED (" + ce.mModelName + ")";
-            }
+            arr[0] = "LED";
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
