@@ -846,6 +846,11 @@ namespace Circuit {
                 return;
             }
             DragElm = MenuItems.ConstructElement(Mouse.EditElm, gpos);
+            if (Mouse.EditElm != ELEMENTS.WIRE && !ControlPanel.ChkContinuousArrangement.Checked) {
+                Performed(ELEMENTS.WIRE);
+                mMenuItems.ClearCheck();
+                mMenuItems.tsmWire.Checked = true;
+            }
         }
 
         void onMouseUp(MouseEventArgs e) {
@@ -1095,7 +1100,7 @@ namespace Circuit {
             //CustomCompositeModel.ClearDumpedFlags();
             DiodeModel.ClearDumpedFlags();
 
-            int f = ControlPanel.ChkShowDots.Checked ? 1 : 0;
+            int f = ControlPanel.ChkShowCurrent.Checked ? 1 : 0;
             f |= ControlPanel.ChkShowValues.Checked ? 0 : 16;
 
             /* 32 = linear scale in afilter */
@@ -1257,7 +1262,7 @@ namespace Circuit {
 
         void readOptions(StringTokenizer st) {
             var flags = st.nextTokenInt();
-            ControlPanel.ChkShowDots.Checked = (flags & 1) != 0;
+            ControlPanel.ChkShowCurrent.Checked = (flags & 1) != 0;
             ControlPanel.ChkShowValues.Checked = (flags & 16) == 0;
 
             ControlPanel.TimeStep = st.nextTokenDouble();

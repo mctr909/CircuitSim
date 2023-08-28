@@ -469,7 +469,7 @@ namespace Circuit.UI {
         }
 
         protected void drawCurrent(float ax, float ay, float bx, float by, double pos) {
-            if ((!CirSimForm.IsRunning) || pos == 0 || !ControlPanel.ChkShowDots.Checked) {
+            if ((!CirSimForm.IsRunning) || pos == 0 || !ControlPanel.ChkShowCurrent.Checked) {
                 return;
             }
             if (ControlPanel.ChkPrintable.Checked) {

@@ -12,7 +12,8 @@ namespace Circuit {
         public static TrackBar TrbSpeed { get; private set; }
         public static TrackBar TrbCurrent { get; private set; }
         public static Label LblSelectInfo { get; private set; }
-        public static CheckBox ChkShowDots { get; private set; }
+        public static CheckBox ChkContinuousArrangement { get; private set; }
+        public static CheckBox ChkShowCurrent { get; private set; }
         public static CheckBox ChkShowValues { get; private set; }
         public static CheckBox ChkShowName { get; private set; }
         public static CheckBox ChkUseAnsiSymbols { get; private set; }
@@ -70,7 +71,7 @@ namespace Circuit {
             VerticalPanel.Controls.Add(BtnReload);
             ofsY += BtnReload.Height + 4;
 
-            /* TimeStep */
+            /* 単位時間 */
             ofsY += 8;
             var lblTimeStep = new Label() { Left = 4, Top = ofsY, AutoSize = true, Text = "単位時間(sec)" };
             VerticalPanel.Controls.Add(lblTimeStep);
@@ -145,12 +146,17 @@ namespace Circuit {
             VerticalPanel.Controls.Add(TrbCurrent);
             ofsY += TrbCurrent.Height;
 
-            /* Show Current */
-            ChkShowDots = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "電流を表示" };
-            VerticalPanel.Controls.Add(ChkShowDots);
-            ofsY += ChkShowDots.Height + 4;
+            /* 連続で配置 */
+            ChkContinuousArrangement = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "連続で配置" };
+            VerticalPanel.Controls.Add(ChkContinuousArrangement);
+            ofsY += ChkContinuousArrangement.Height + 4;
 
-            /* Show Values */
+            /* 電流を表示 */
+            ChkShowCurrent = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "電流を表示" };
+            VerticalPanel.Controls.Add(ChkShowCurrent);
+            ofsY += ChkShowCurrent.Height + 4;
+
+            /* 値を表示 */
             ChkShowValues = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "値を表示" };
             ChkShowValues.CheckedChanged += new EventHandler((s, e) => {
                 for (int i = 0; i != CirSimForm.UICount; i++) {
@@ -161,7 +167,7 @@ namespace Circuit {
             VerticalPanel.Controls.Add(ChkShowValues);
             ofsY += ChkShowValues.Height + 4;
 
-            /* Show Name */
+            /* 名前を表示 */
             ChkShowName = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "名前を表示" };
             ChkShowName.CheckedChanged += new EventHandler((s, e) => {
                 for (int i = 0; i != CirSimForm.UICount; i++) {
@@ -177,7 +183,7 @@ namespace Circuit {
             VerticalPanel.Controls.Add(ChkUseAnsiSymbols);
             ofsY += ChkUseAnsiSymbols.Height + 4;
 
-            /* White Background */
+            /* 白黒表示 */
             ChkPrintable = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "白黒表示" };
             ChkPrintable.CheckedChanged += new EventHandler((s, e) => {
                 CustomGraphics.SetColor(ChkPrintable.Checked);
@@ -188,7 +194,7 @@ namespace Circuit {
             VerticalPanel.Controls.Add(ChkPrintable);
             ofsY += ChkPrintable.Height + 4;
 
-            /* Show Cursor Cross Hairs */
+            /* ポインターを表示 */
             ChkCrossHair = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "ポインターを表示" };
             VerticalPanel.Controls.Add(ChkCrossHair);
             ofsY += ChkCrossHair.Height + 4;
@@ -224,7 +230,7 @@ namespace Circuit {
 
         public static void Reset() {
             TimeStep = 1e-6;
-            ChkShowDots.Checked = false;
+            ChkShowCurrent.Checked = false;
             ChkShowValues.Checked = true;
             ChkUseAnsiSymbols.Checked = true;
             TrbSpeed.Value = 57;

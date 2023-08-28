@@ -11,6 +11,7 @@ using Circuit.UI.Output;
 using Circuit.UI.Gate;
 //using Circuit.UI.Logic;
 using Circuit.UI.Custom;
+using static System.Windows.Forms.ToolStripItem;
 
 namespace Circuit {
     public enum MENU_ITEM {
@@ -261,6 +262,9 @@ namespace Circuit {
         CirSimForm mSim;
         List<ToolStripMenuItem> mMainMenuItems = new List<ToolStripMenuItem>();
         Font menuFont = new Font("Segoe UI", 9.0f);
+        MenuStrip mMainMenuBar = null;
+
+        public ToolStripMenuItem tsmWire = null;
 
         public MenuItems(CirSimForm sim) {
             mSim = sim;
@@ -284,10 +288,10 @@ namespace Circuit {
             }
         }
 
-        void addElementItem(ToolStripMenuItem menu, string title, ELEMENTS item) {
+        ToolStripMenuItem addElementItem(ToolStripMenuItem menu, string title, ELEMENTS item) {
             var elm = ConstructElement(item);
             if (elm == null) {
-                return;
+                return null;
             } else {
                 elm.Delete();
             }
@@ -319,6 +323,7 @@ namespace Circuit {
             });
             mMainMenuItems.Add(mi);
             menu.DropDownItems.Add(mi);
+            return mi;
         }
 
         void addMenuItem(ToolStripMenuItem menu, string title, MENU_ITEM item, SHORTCUT shortCut) {
@@ -363,6 +368,8 @@ namespace Circuit {
         }
 
         public void ComposeMainMenu(MenuStrip mainMenuBar) {
+            mMainMenuBar = mainMenuBar;
+
             #region File
             var fileMenuBar = new ToolStripMenuItem();
             fileMenuBar.Text = "ファイル(F)";
@@ -401,7 +408,7 @@ namespace Circuit {
             var basicMenuBar = new ToolStripMenuItem();
             basicMenuBar.Text = "基本(B)";
             basicMenuBar.Font = menuFont;
-            addElementItem(basicMenuBar, "配線", ELEMENTS.WIRE);
+            tsmWire = addElementItem(basicMenuBar, "配線", ELEMENTS.WIRE);
             addElementItem(basicMenuBar, "抵抗", ELEMENTS.RESISTOR);
             addElementItem(basicMenuBar, "コンデンサ", ELEMENTS.CAPACITOR);
             addElementItem(basicMenuBar, "コイル", ELEMENTS.INDUCTOR);
@@ -570,6 +577,22 @@ namespace Circuit {
             //addMenuItem(achipMenuBar, "Add Monostable", ITEM.MonostableElm);
             //mainMenuBar.Items.Add(achipMenuBar);
             #endregion
+        }
+
+        public void ClearCheck() {
+            foreach (var i1 in mMainMenuBar.Items) {
+                if (!(i1 is ToolStripMenuItem)) {
+                    continue;
+                }
+                var ia = (ToolStripMenuItem)i1;
+                foreach (var i2 in ia.DropDownItems) {
+                    if (!(i2 is ToolStripMenuItem)) {
+                        continue;
+                    }
+                    var ib = (ToolStripMenuItem)i2;
+                    ib.Checked = false;
+                }
+            }
         }
 
         public static BaseUI ConstructElement(ELEMENTS n, Point pos = new Point()) {
