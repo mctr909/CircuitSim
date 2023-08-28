@@ -232,47 +232,14 @@ namespace Circuit.UI {
         /// Posts are where the user connects wires; leads are ends of wire stubs drawn inside the element.
         /// </summary>
         /// <param name="len"></param>
-        protected void calcLeads(int len) {
-            if (Post.Len < len || len == 0) {
+        protected void calcLeads(int bodyLength) {
+            if (Post.Len < bodyLength || bodyLength == 0) {
                 mLead1 = Elm.Post[0];
                 mLead2 = Elm.Post[1];
                 return;
             }
-            setLead1((Post.Len - len) / (2 * Post.Len));
-            setLead2((Post.Len + len) / (2 * Post.Len));
-        }
-
-        protected void setBbox(float ax, float ay, float bx, float by, double w) {
-            Post.SetBbox(ax, ay, bx, by);
-            var dpx = (float)(Post.Dir.X * w);
-            var dpy = (float)(Post.Dir.Y * w);
-            Post.AdjustBbox(
-                ax + dpx, ay + dpy,
-                ax - dpx, ay - dpy
-            );
-        }
-
-        /// <summary>
-        /// set bounding box for an element from a to b with width w
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <param name="w"></param>
-        protected void setBbox(PointF a, PointF b, double w) {
-            setBbox(a.X, a.Y, b.X, b.Y, w);
-        }
-
-        protected void setBbox(double w) {
-            var dpx = (float)(Post.Dir.X * w);
-            var dpy = (float)(Post.Dir.Y * w);
-            Post.SetBbox(
-                Elm.Post[0].X + dpx, Elm.Post[0].Y + dpy,
-                Elm.Post[0].X - dpx, Elm.Post[0].Y - dpy
-            );
-            Post.AdjustBbox(
-                Elm.Post[0].X + dpx, Elm.Post[0].Y + dpy,
-                Elm.Post[0].X - dpx, Elm.Post[0].Y - dpy
-            );
+            setLead1((Post.Len - bodyLength) / (2 * Post.Len));
+            setLead2((Post.Len + bodyLength) / (2 * Post.Len));
         }
 
         /// <summary>

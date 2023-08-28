@@ -48,6 +48,7 @@ namespace Circuit.UI.Active {
 
         public override void SetPoints() {
             base.SetPoints();
+            Post.SetBbox(HS);
             var ce = (ElmMosfet)Elm;
 
             /* find the coordinates of the various points we need to draw the MOSFET. */
@@ -122,7 +123,6 @@ namespace Circuit.UI.Active {
             ce.Post[1].Y = (int)mPosS[0].Y;
             ce.Post[2].X = (int)mPosD[0].X;
             ce.Post[2].Y = (int)mPosD[0].Y;
-            setBbox(HS);
         }
 
         void setTextPos() {

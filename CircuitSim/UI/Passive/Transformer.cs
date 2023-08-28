@@ -89,7 +89,7 @@ namespace Circuit.UI.Passive {
             } else {
                 mDots = null;
             }
-            setBbox(ce.Post[0], ce.Post[ce.Polarity == 1 ? 3 : 1], 0);
+            Post.SetBbox(ce.Post[0], ce.Post[ce.Polarity == 1 ? 3 : 1], 0);
             setCoilPos(mPtCoil[0], mPtCoil[2], 90 * Post.Dsign, out mCoilPosA);
             setCoilPos(mPtCoil[1], mPtCoil[3], -90 * Post.Dsign * ce.Polarity, out mCoilPosB);
             setNamePos();

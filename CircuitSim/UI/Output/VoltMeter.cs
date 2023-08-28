@@ -32,7 +32,7 @@ namespace Circuit.UI.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            setBbox(8);
+            Post.SetBbox(0);
             calcLeads(16);
             interpPost(ref mCenter, 0.5);
             interpPost(ref mPlusPoint, 8.0 / Post.Len, 6 * Post.Dsign);

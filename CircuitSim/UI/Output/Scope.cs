@@ -73,7 +73,7 @@ namespace Circuit.UI.Output {
 
         public override void Draw(CustomGraphics g) {
             SetScopeRect();
-            setBbox(0);
+            Post.SetBbox(0);
             Properties.Draw(g, true);
             drawPosts();
         }

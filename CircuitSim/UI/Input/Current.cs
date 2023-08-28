@@ -47,13 +47,13 @@ namespace Circuit.UI.Input {
         }
 
         public override void Draw(CustomGraphics g) {
+            Post.SetBbox(BODY_LEN);
             draw2Leads();
 
             drawCircle(mCenter, BODY_LEN / 2);
             drawLine(mAshaft1, mAshaft2);
             fillPolygon(mArrow);
 
-            setBbox(BODY_LEN);
             doDots();
             if (ControlPanel.ChkShowValues.Checked) {
                 string s = Utils.UnitText(mCurrentValue, "A");

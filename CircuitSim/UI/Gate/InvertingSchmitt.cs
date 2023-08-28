@@ -55,6 +55,7 @@ namespace Circuit.UI.Gate {
         public override void SetPoints() {
             base.SetPoints();
             int hs = 10;
+            Post.SetBbox(hs);
             int ww = 12;
             if (ww > Post.Len / 2) {
                 ww = (int)(Post.Len / 2);
@@ -68,7 +69,6 @@ namespace Circuit.UI.Gate {
             interpPost(ref gatePoly[2], 0.5 + (ww - 5) / Post.Len);
 
             Utils.CreateSchmitt(Elm.Post[0], Elm.Post[1], out symbolPoly, 0.8, .5 - (ww - 7) / Post.Len);
-            setBbox(hs);
         }
 
         public override void GetInfo(string[] arr) {

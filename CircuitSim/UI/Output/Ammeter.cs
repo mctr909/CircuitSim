@@ -30,7 +30,7 @@ namespace Circuit.UI.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            setBbox(3);
+            Post.SetBbox(0);
             interpPost(ref mMid, 0.5 + 4 / Post.Len);
             Utils.CreateArrow(Elm.Post[0], mMid, out mArrowPoly, 9, 5);
             if (Post.Vertical) {

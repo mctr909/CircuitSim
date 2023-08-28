@@ -22,6 +22,7 @@ namespace Circuit.UI.Input {
 
         public override void SetPoints() {
             base.SetPoints();
+            Post.SetBbox(BODY_LEN);
             setLead1(1 - BODY_LEN / Post.Len);
         }
 
@@ -42,8 +43,7 @@ namespace Circuit.UI.Input {
             } else {
                 setLead1(1 - w / Post.Len);
             }
-            setBbox(BODY_LEN);
-
+            
             drawLeadA();
             drawRail();
             drawPosts();

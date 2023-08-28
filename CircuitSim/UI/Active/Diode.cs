@@ -44,6 +44,7 @@ namespace Circuit.UI.Active {
 
         public override void SetPoints() {
             base.SetPoints();
+            Post.SetBbox(HS);
             calcLeads(BODY_LEN);
             mCathode = new PointF[4];
             interpLeadAB(ref mCathode[0], ref mCathode[1], (BODY_LEN - 1.0) / BODY_LEN, HS);
@@ -52,7 +53,6 @@ namespace Circuit.UI.Active {
             interpLeadAB(ref pa[0], ref pa[1], 0, HS);
             mPoly = new PointF[] { pa[0], pa[1], mLead2 };
             setTextPos();
-            setBbox(HS);
         }
 
         protected void setTextPos() {

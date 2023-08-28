@@ -35,6 +35,11 @@ namespace Circuit.UI.Input {
 
         public override void SetPoints() {
             base.SetPoints();
+            Post.SetBbox(SIZE);
+            Post.AdjustBbox(
+                Elm.Post[1].X - SIZE, Elm.Post[1].Y - SIZE,
+                Elm.Post[1].X + SIZE, Elm.Post[1].Y + SIZE
+            );
             setLead1(1 - 0.5 * SIZE / Post.Len);
             interpPost(ref mTextPos,
                 1.0 + 0.66 * SIZE / Utils.Distance(Elm.Post[0], Elm.Post[1]),
@@ -44,18 +49,12 @@ namespace Circuit.UI.Input {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmSweep)Elm;
-            setBbox(SIZE);
-
+            
             drawLeadA();
 
             int xc = Elm.Post[1].X;
             int yc = Elm.Post[1].Y;
             drawCircle(Elm.Post[1], SIZE / 2);
-
-            Post.AdjustBbox(
-                xc - SIZE, yc - SIZE,
-                xc + SIZE, yc + SIZE
-            );
 
             int wl = 7;
             int xl = 10;

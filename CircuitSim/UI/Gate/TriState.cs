@@ -29,6 +29,7 @@ namespace Circuit.UI.Gate {
 
         public override void SetPoints() {
             base.SetPoints();
+            Post.SetBbox(BODY_LEN);
             calcLeads(BODY_LEN);
             int hs = BODY_LEN / 2;
             int ww = BODY_LEN / 2;
@@ -44,11 +45,7 @@ namespace Circuit.UI.Gate {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmTriState)Elm;
-            int hs = 16;
-            setBbox(hs);
-
             draw2Leads();
-
             drawPolygon(mGatePoly);
             drawLine(ce.Post[2], mLead3);
             updateDotCount(ce.Current, ref mCurCount);

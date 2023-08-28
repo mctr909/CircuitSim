@@ -36,7 +36,7 @@ namespace Circuit.UI.Input {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmFM)Elm;
-            setBbox(SIZE);
+            Post.SetBbox(SIZE);
             drawLeadA();
 
             string s = "FM";

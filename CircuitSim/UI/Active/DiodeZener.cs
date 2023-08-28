@@ -31,7 +31,7 @@ namespace Circuit.UI.Active {
 
         public override void SetPoints() {
             base.SetPoints();
-            setBbox(HS);
+            Post.SetBbox(HS);
             mCathode = new PointF[2];
             mWing = new PointF[2];
             var pa = new PointF[2];

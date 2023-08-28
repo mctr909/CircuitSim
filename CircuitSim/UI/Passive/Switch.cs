@@ -89,8 +89,8 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
+            Post.SetBbox(OPEN_HS);
             calcLeads(BODY_LEN);
-            setBbox(OPEN_HS);
         }
 
         public override void Draw(CustomGraphics g) {

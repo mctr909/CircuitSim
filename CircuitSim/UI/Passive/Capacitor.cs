@@ -47,13 +47,13 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
+            Post.SetBbox(HS);
             var f1 = 0.5 - BODY_LEN * 0.5 / Post.Len;
             var f2 = 0.5 + BODY_LEN * 0.5 / Post.Len;
             var dw = 0.8 / Post.Len;
             /* calc leads */
             setLead1(f1 - 0.1 / Post.Len);
             setLead2(f2 + 0.1 / Post.Len);
-            setBbox(HS);
             /* calc plates */
             mPlate1 = new PointF[4];
             Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate1[0], f1 - dw, -HS);

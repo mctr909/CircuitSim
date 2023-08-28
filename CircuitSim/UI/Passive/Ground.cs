@@ -30,7 +30,7 @@ namespace Circuit.UI.Passive {
             }
             drawLine(Elm.Post[0], Elm.Post[1]);
             doDots();
-            setBbox(Elm.Post[0].X, Elm.Post[0].X, (int)mP1.X, (int)mP1.Y, 11);
+            Post.SetBbox(Elm.Post[0], mP1, 11);
             drawPosts();
         }
 

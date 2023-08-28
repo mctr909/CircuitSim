@@ -37,8 +37,8 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
+            Post.SetBbox(COIL_WIDTH);
             calcLeads(BODY_LEN);
-            setBbox(COIL_WIDTH);
             setCoilPos(mLead1, mLead2);
             setTextPos();
         }

@@ -31,6 +31,7 @@ namespace Circuit.UI.Gate {
         public override void SetPoints() {
             base.SetPoints();
             int hs = 10;
+            Post.SetBbox(hs);
             int ww = 12;
             if (ww > Post.Len / 2) {
                 ww = (int)(Post.Len / 2);
@@ -49,8 +50,6 @@ namespace Circuit.UI.Gate {
             Utils.InterpPoint(mLead1, l2, ref mGatePolyEuro[0], ref mGatePolyEuro[1], 0, hs);
             Utils.InterpPoint(mLead1, l2, ref mGatePolyEuro[3], ref mGatePolyEuro[2], 1, hs);
             Utils.InterpPoint(mLead1, l2, ref mCenter, .5);
-
-            setBbox(hs);
         }
 
         public override void Draw(CustomGraphics g) {

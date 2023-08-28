@@ -136,11 +136,11 @@ namespace Circuit.UI.Input {
             Post.SetBbox(Post.A, Post.B);
             if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                 int hs = 10;
-                setBbox(hs);
+                Post.SetBbox(hs);
                 interpLeadAB(ref mPs1, ref mPs2, 0, hs * 0.5);
                 interpLeadAB(ref mPs3, ref mPs4, 1, hs);
             } else {
-                setBbox(BODY_LEN);
+                Post.SetBbox(BODY_LEN);
                 interpLead(ref mPs1, 0.5);
             }
 

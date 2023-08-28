@@ -60,7 +60,7 @@ namespace Circuit.UI.Passive {
             }
             mSwPoles[i] = mLead2; /* for center off */
             ce.PosCount = ce.ThrowCount;
-            setBbox(OPEN_HS);
+            Post.SetBbox(OPEN_HS);
             Post.AdjustBbox(ce.SwPosts[0], ce.SwPosts[ce.ThrowCount - 1]);
         }
 

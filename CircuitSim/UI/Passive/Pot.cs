@@ -63,6 +63,7 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
+            Post.SetBbox(HS);
             Post.Vertical = Math.Abs(Post.Diff.X) <= Math.Abs(Post.Diff.Y);
             Post.Horizontal = !Post.Vertical;
 
@@ -90,8 +91,7 @@ namespace Circuit.UI.Passive {
             Post.Len = Utils.Distance(Elm.Post[0], Elm.Post[1]);
 
             calcLeads(BODY_LEN);
-            setBbox(HS);
-
+            
             /* set slider */
             var ce = (ElmPot)Elm;
             ce.Position = mSlider.Value * 0.0099 + 0.0001;

@@ -49,8 +49,8 @@ namespace Circuit.UI.Active {
 
         public override void SetPoints() {
             base.SetPoints();
+            Post.SetBbox(OPEN_HS);
             calcLeads(BODY_LEN);
-            setBbox(OPEN_HS);
             interpPost(ref ((ElmAnalogSwitch)Elm).Post[2], 0.5, -OPEN_HS);
             interpPost(ref mLead3, 0.5, -OPEN_HS / 2);
         }

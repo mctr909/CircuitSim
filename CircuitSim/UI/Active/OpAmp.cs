@@ -54,6 +54,7 @@ namespace Circuit.UI.Active {
 
         public override void SetPoints() {
             base.SetPoints();
+            Post.SetBbox(HEIGHT * 2);
             int ww = WIDTH;
             if (ww > Post.Len / 2) {
                 ww = (int)(Post.Len / 2);
@@ -87,7 +88,6 @@ namespace Circuit.UI.Active {
             Elm.Post[1].X = (int)mPosIn2[0].X;
             Elm.Post[1].Y = (int)mPosIn2[0].Y;
             Elm.Post[2] = mPosOut;
-            setBbox(HEIGHT * 2);
         }
 
         public override void Draw(CustomGraphics g) {

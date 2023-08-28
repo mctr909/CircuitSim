@@ -119,6 +119,35 @@ namespace Circuit.UI {
             BoundingBox.Height = by - ay + 1;
         }
 
+        public void SetBbox(PointF a, PointF b, double w) {
+            SetBbox(a.X, a.Y, b.X, b.Y, w);
+        }
+
+        public void SetBbox(float ax, float ay, float bx, float by, double w) {
+            SetBbox(ax, ay, bx, by);
+            var dpx = (float)(Dir.X * w);
+            var dpy = (float)(Dir.Y * w);
+            AdjustBbox(
+                ax + dpx, ay + dpy,
+                ax - dpx, ay - dpy
+            );
+        }
+
+        public void SetBbox(double bodyLength) {
+            var dpx = (float)(Dir.X * bodyLength);
+            var dpy = (float)(Dir.Y * bodyLength);
+            var posX = A.X;
+            var posY = A.Y;
+            SetBbox(
+                posX + dpx, posY + dpy,
+                posX - dpx, posY - dpy
+            );
+            AdjustBbox(
+                posX + dpx, posY + dpy,
+                posX - dpx, posY - dpy
+            );
+        }
+
         public void AdjustBbox(float x1, float y1, float x2, float y2) {
             if (x1 > x2) { var q = x1; x1 = x2; x2 = q; }
             if (y1 > y2) { var q = y1; y1 = y2; y2 = q; }
