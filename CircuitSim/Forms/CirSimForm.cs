@@ -846,11 +846,6 @@ namespace Circuit {
                 return;
             }
             DragElm = MenuItems.ConstructElement(Mouse.EditElm, gpos);
-            if (Mouse.EditElm != ELEMENTS.WIRE && !ControlPanel.ChkContinuousArrangement.Checked) {
-                Performed(ELEMENTS.WIRE);
-                mMenuItems.ClearCheck();
-                mMenuItems.tsmWire.Checked = true;
-            }
         }
 
         void onMouseUp(MouseEventArgs e) {
@@ -859,6 +854,12 @@ namespace Circuit {
 
             switch (MouseMode) {
             case MOUSE_MODE.ADD_ELM:
+                if (Mouse.EditElm != ELEMENTS.WIRE && !ControlPanel.ChkContinuousArrangement.Checked) {
+                    Performed(ELEMENTS.WIRE);
+                    mMenuItems.AllUnchecked();
+                    mMenuItems.tsmWire.Checked = true;
+                    mMenuItems.tsmWire.OwnerItem.BackColor = Color.LightBlue;
+                }
                 break;
             case MOUSE_MODE.SELECT_AREA:
                 if (Mouse.SelectedArea.Width == 0 || Mouse.SelectedArea.Height == 0) {

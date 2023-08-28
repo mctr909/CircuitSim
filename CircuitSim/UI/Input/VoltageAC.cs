@@ -13,19 +13,15 @@ namespace Circuit.UI.Input {
 
         public override void GetInfo(string[] arr) {
             var elm = (ElmVoltage)Elm;
-            arr[0] = "AC";
-            arr[1] = "I = " + Utils.CurrentText(elm.Current);
-            arr[2] = "Vd = " + Utils.VoltageText(elm.GetVoltageDiff());
-            int i = 3;
-            arr[i++] = "f = " + Utils.UnitText(elm.Frequency, "Hz");
-            arr[i++] = "Vmax = " + Utils.VoltageText(elm.MaxVoltage);
-            if (elm.WaveForm == ElmVoltage.WAVEFORM.SIN && elm.Bias == 0) {
-                arr[i++] = "V(rms) = " + Utils.VoltageText(elm.MaxVoltage / 1.41421356);
-            }
+            arr[0] = "交流電源";
+            arr[1] = "電流：" + Utils.CurrentText(elm.Current);
+            arr[2] = "振幅：" + Utils.VoltageText(elm.MaxVoltage);
+            arr[3] = "周波数：" + Utils.UnitText(elm.Frequency, "Hz");
+            var phase = elm.Phase + elm.PhaseOffset;
+            phase %= 2 * Math.PI;
+            arr[4] = "位相：" + Utils.UnitText3digit(phase * 180 / Math.PI, "deg");
             if (elm.Bias != 0) {
-                arr[i++] = "Voff = " + Utils.VoltageText(elm.Bias);
-            } else if (elm.Frequency > 500) {
-                arr[i++] = "wavelength = " + Utils.UnitText(2.9979e8 / elm.Frequency, "m");
+                arr[5] = "バイアス：" + Utils.VoltageText(elm.Bias);
             }
         }
 

@@ -13,30 +13,30 @@ namespace Circuit.UI.Input {
 
         public override void GetInfo(string[] arr) {
             var elm = (ElmVoltage)Elm;
-            arr[0] = "DC";
-            arr[1] = "I = " + Utils.CurrentText(elm.Current);
-            arr[2] = "V = " + Utils.VoltageText(elm.GetVoltageDiff());
+            arr[0] = "直流電源";
+            arr[1] = "電圧：" + Utils.VoltageText(elm.GetVoltageDiff() + elm.Bias);
+            arr[2] = "電流：" + Utils.CurrentText(elm.Current);
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
             var elm = (ElmVoltage)Elm;
             if (c == 0) {
                 if (r == 0) {
-                    return new ElementInfo("名前", ReferenceName);
-                }
-                if (r == 1) {
                     return new ElementInfo(VALUE_NAME_V, elm.MaxVoltage);
                 }
-                if (r == 2) {
+                if (r == 1) {
                     return new ElementInfo(VALUE_NAME_BIAS, elm.Bias);
                 }
             }
             if (c == 1) {
-                if (r < 2) {
-                    return new ElementInfo();
+                if (r == 0) {
+                    return new ElementInfo("連動グループ", Link.Voltage);
                 }
-                if (r == 2) {
+                if (r == 1) {
                     return new ElementInfo("連動グループ", Link.Bias);
+                }
+                if (r < 1) {
+                    return new ElementInfo();
                 }
             }
             return null;
@@ -46,17 +46,17 @@ namespace Circuit.UI.Input {
             var elm = (ElmVoltage)Elm;
             if (c == 0) {
                 if (r == 0) {
-                    ReferenceName = ei.Text;
-                }
-                if (r == 1) {
                     elm.MaxVoltage = ei.Value;
                 }
-                if (r == 2) {
+                if (r == 1) {
                     elm.Bias = ei.Value;
                 }
             }
             if (c == 1) {
-                if (r == 2) {
+                if (r == 0) {
+                    Link.Voltage = (int)ei.Value;
+                }
+                if (r == 1) {
                     Link.Bias = (int)ei.Value;
                 }
             }

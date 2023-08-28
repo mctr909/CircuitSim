@@ -269,24 +269,24 @@ namespace Circuit.UI.Passive {
                 var ce = (ElmPot)Elm;
                 mName += Utils.UnitText(ce.MaxResistance);
             }
-            var wn = Context.GetTextSize(mName).Width * 0.5;
             if (Post.Horizontal) {
+                var wn = Context.GetTextSize(mName).Width * 0.5;
                 if (Post.Diff.Y != 0) {
                     if (0 < Post.Diff.Y) {
                         /* right slider */
-                        interpPost(ref mNamePos, 0.5, -20 * Post.Dsign);
+                        interpPost(ref mNamePos, 0.5 + wn / Post.Len, -12 * Post.Dsign);
                     } else {
                         /* left slider */
-                        interpPost(ref mNamePos, 0.5, 2 * Post.Dsign);
+                        interpPost(ref mNamePos, 0.5 - wn / Post.Len, 12 * Post.Dsign);
                     }
                 }
             } else {
                 if (0 < Post.Diff.X) {
                     /* upper slider */
-                    interpPost(ref mNamePos, 0.5 + wn / Post.Len * Post.Dsign, 14 * Post.Dsign);
+                    interpPost(ref mNamePos, 0.5, -17 * Post.Dsign);
                 } else {
                     /* lower slider */
-                    interpPost(ref mNamePos, 0.5 + wn / Post.Len * Post.Dsign, -12 * Post.Dsign);
+                    interpPost(ref mNamePos, 0.5, 5 * Post.Dsign);
                 }
             }
         }

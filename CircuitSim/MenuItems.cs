@@ -262,7 +262,6 @@ namespace Circuit {
         CirSimForm mSim;
         List<ToolStripMenuItem> mMainMenuItems = new List<ToolStripMenuItem>();
         Font menuFont = new Font("Segoe UI", 9.0f);
-        MenuStrip mMainMenuBar = null;
 
         public ToolStripMenuItem tsmWire = null;
 
@@ -318,7 +317,7 @@ namespace Circuit {
                         }
                     }
                     mi.Checked = true;
-                    mi.OwnerItem.BackColor = Color.LightGray;
+                    mi.OwnerItem.BackColor = Color.LightBlue;
                 }
             });
             mMainMenuItems.Add(mi);
@@ -368,8 +367,6 @@ namespace Circuit {
         }
 
         public void ComposeMainMenu(MenuStrip mainMenuBar) {
-            mMainMenuBar = mainMenuBar;
-
             #region File
             var fileMenuBar = new ToolStripMenuItem();
             fileMenuBar.Text = "ファイル(F)";
@@ -403,6 +400,9 @@ namespace Circuit {
             addMenuItem(editMenuBar, "中心に移動(E)", MENU_ITEM.CENTER_CIRCUIT, new SHORTCUT(Keys.E));
             mainMenuBar.Items.Add(editMenuBar);
             #endregion
+
+            mainMenuBar.Items.Add(new ToolStripSeparator());
+            mainMenuBar.Items.Add(new ToolStripSeparator());
 
             #region Basic Element
             var basicMenuBar = new ToolStripMenuItem();
@@ -577,22 +577,6 @@ namespace Circuit {
             //addMenuItem(achipMenuBar, "Add Monostable", ITEM.MonostableElm);
             //mainMenuBar.Items.Add(achipMenuBar);
             #endregion
-        }
-
-        public void ClearCheck() {
-            foreach (var i1 in mMainMenuBar.Items) {
-                if (!(i1 is ToolStripMenuItem)) {
-                    continue;
-                }
-                var ia = (ToolStripMenuItem)i1;
-                foreach (var i2 in ia.DropDownItems) {
-                    if (!(i2 is ToolStripMenuItem)) {
-                        continue;
-                    }
-                    var ib = (ToolStripMenuItem)i2;
-                    ib.Checked = false;
-                }
-            }
         }
 
         public static BaseUI ConstructElement(ELEMENTS n, Point pos = new Point()) {
