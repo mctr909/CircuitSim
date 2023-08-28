@@ -143,21 +143,7 @@ namespace Circuit {
                 Width = 200
             };
             VerticalPanel.Controls.Add(TrbCurrent);
-            ofsY += TrbCurrent.Height + 4;
-
-            /* 選択情報 */
-            lbl = new Label() { Left = 4, Top = ofsY, AutoSize = true, Text = "選択情報" };
-            VerticalPanel.Controls.Add(lbl);
-            ofsY += lbl.Height;
-            LblSelectInfo = new Label() {
-                Left = 4,
-                Top = ofsY,
-                Width = 200,
-                Height = 100,
-                BorderStyle = BorderStyle.FixedSingle
-            };
-            VerticalPanel.Controls.Add(LblSelectInfo);
-            ofsY += LblSelectInfo.Height + 4;
+            ofsY += TrbCurrent.Height;
 
             /* Show Current */
             ChkShowDots = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "電流を表示" };
@@ -206,6 +192,21 @@ namespace Circuit {
             ChkCrossHair = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "ポインターを表示" };
             VerticalPanel.Controls.Add(ChkCrossHair);
             ofsY += ChkCrossHair.Height + 4;
+
+            /* 選択情報 */
+            lbl = new Label() { Left = 4, Top = ofsY, AutoSize = true, Text = "選択情報" };
+            VerticalPanel.Controls.Add(lbl);
+            ofsY += lbl.Height;
+            LblSelectInfo = new Label()
+            {
+                Left = 4,
+                Top = ofsY,
+                Width = 200,
+                Height = 100,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            VerticalPanel.Controls.Add(LblSelectInfo);
+            ofsY += LblSelectInfo.Height + 4;
 
             /* SliderPanel */
             mSliderPanel = new Panel() {
