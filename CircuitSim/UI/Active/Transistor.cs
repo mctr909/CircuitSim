@@ -161,22 +161,16 @@ namespace Circuit.UI.Active {
             }
         }
 
-        public override string GetScopeText() {
-            var ce = (ElmTransistor)Elm;
-            return (string.IsNullOrEmpty(ReferenceName) ? "トランジスタ" : ReferenceName)
-                + " Vce(" + (1 == ce.NPN ? "npn)" : " pnp)");
-        }
-
         public override void GetInfo(string[] arr) {
             var ce = (ElmTransistor)Elm;
             arr[0] = ((ce.NPN == -1) ? "PNP" : "NPN") + "トランジスタ(" + "hfe：" + Utils.UnitText(ce.Hfe) + ")";
-            double vbc = ce.Vb - ce.Vc;
-            double vbe = ce.Vb - ce.Ve;
-            double vce = ce.Vc - ce.Ve;
-            if (vbc * ce.NPN > .2) {
-                arr[1] = vbe * ce.NPN > .2 ? "saturation" : "reverse active";
+            var vbc = ce.Vb - ce.Vc;
+            var vbe = ce.Vb - ce.Ve;
+            var vce = ce.Vc - ce.Ve;
+            if (vbc * ce.NPN > 0.2) {
+                arr[1] = "動作領域：" + (vbe * ce.NPN > 0.2 ? "飽和" : "逆流");
             } else {
-                arr[1] = vbe * ce.NPN > .2 ? "fwd active" : "cutoff";
+                arr[1] = "動作領域：" + (vbe * ce.NPN > 0.2 ? "活性" : "遮断");
             }
             arr[2] = "Vce：" + Utils.VoltageText(vce);
             arr[3] = "Vbe：" + Utils.VoltageText(vbe);

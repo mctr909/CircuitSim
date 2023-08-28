@@ -71,8 +71,8 @@ namespace Circuit.UI.Gate {
         public override void GetInfo(string[] arr) {
             var ce = (ElmInverter)Elm;
             arr[0] = "inverter";
-            arr[1] = "Vi = " + Utils.VoltageText(ce.Volts[0]);
-            arr[2] = "Vo = " + Utils.VoltageText(ce.Volts[1]);
+            arr[1] = "Vin：" + Utils.VoltageText(ce.Volts[0]);
+            arr[2] = "Vout：" + Utils.VoltageText(ce.Volts[1]);
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {

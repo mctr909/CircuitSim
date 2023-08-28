@@ -143,12 +143,6 @@ namespace Circuit.UI.Passive {
             }
         }
 
-        public override string GetScopeText() {
-            var ce = (ElmResistor)Elm;
-            return (string.IsNullOrEmpty(ReferenceName) ? "抵抗" : ReferenceName) + " "
-                + Utils.UnitText(ce.Resistance, CirSimForm.OHM_TEXT);
-        }
-
         public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (ElmResistor)Elm;
             if (c != 0) {

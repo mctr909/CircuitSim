@@ -217,12 +217,6 @@ namespace Circuit.UI {
         /// <param name="arr"></param>
         public virtual void GetInfo(string[] arr) { }
 
-        public virtual string GetScopeText() {
-            var info = new string[10];
-            GetInfo(info);
-            return info[0];
-        }
-
         public virtual ElementInfo GetElementInfo(int r, int c) { return null; }
 
         public virtual void SetElementValue(int r, int c, ElementInfo ei) { }

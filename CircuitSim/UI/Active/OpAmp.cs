@@ -108,16 +108,14 @@ namespace Circuit.UI.Active {
 
         public override void GetInfo(string[] arr) {
             var ce = (ElmOpAmp)Elm;
-            arr[0] = "op-amp";
-            arr[1] = "V+ = " + Utils.VoltageText(ce.Volts[ElmOpAmp.V_P]);
-            arr[2] = "V- = " + Utils.VoltageText(ce.Volts[ElmOpAmp.V_N]);
-            /* sometimes the voltage goes slightly outside range,
-             * to make convergence easier.  so we hide that here. */
-            double vo = Math.Max(Math.Min(ce.Volts[ElmOpAmp.V_O], ce.MaxOut), ce.MinOut);
-            arr[3] = "Vout = " + Utils.VoltageText(vo);
-            arr[4] = "Iout = " + Utils.CurrentText(-ce.Current);
-            arr[5] = "range = " + Utils.VoltageText(ce.MinOut)
-                + " to " + Utils.VoltageText(ce.MaxOut);
+            arr[0] = "オペアンプ";
+            arr[1] = "+電源：" + Utils.VoltageText(ce.MaxOut);
+            arr[2] = "-電源：" + Utils.VoltageText(ce.MinOut);
+            arr[3] = "Vin(+)：" + Utils.VoltageText(ce.Volts[ElmOpAmp.V_P]);
+            arr[4] = "Vin(-)：" + Utils.VoltageText(ce.Volts[ElmOpAmp.V_N]);
+            var vo = Math.Max(Math.Min(ce.Volts[ElmOpAmp.V_O], ce.MaxOut), ce.MinOut);
+            arr[5] = "Vout：" + Utils.VoltageText(vo);
+            arr[6] = "Iout：" + Utils.CurrentText(-ce.Current);
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {

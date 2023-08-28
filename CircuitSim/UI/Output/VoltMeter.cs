@@ -58,8 +58,12 @@ namespace Circuit.UI.Output {
 
         public override void GetInfo(string[] arr) {
             var ce = (ElmVoltMeter)Elm;
-            arr[0] = "voltmeter";
-            arr[1] = "Vd = " + Utils.VoltageText(ce.GetVoltageDiff());
+            arr[0] = "電圧計";
+            if (this is VoltMeter1Term) {
+                arr[1] = "電位：" + Utils.VoltageText(ce.GetVoltageDiff());
+            } else {
+                arr[1] = "電位差：" + Utils.VoltageText(ce.GetVoltageDiff());
+            }
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {

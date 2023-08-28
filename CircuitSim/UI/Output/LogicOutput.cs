@@ -52,12 +52,12 @@ namespace Circuit.UI.Output {
 
         public override void GetInfo(string[] arr) {
             var ce = (ElmLogicOutput)Elm;
-            arr[0] = "logic output";
-            arr[1] = (ce.Volts[0] < ce.mThreshold) ? "low" : "high";
+            arr[0] = "ロジック出力";
+            arr[1] = (ce.Volts[0] < ce.mThreshold) ? "Low" : "High";
             if (isNumeric) {
                 arr[1] = ce.mValue;
             }
-            arr[2] = "V = " + Utils.VoltageText(ce.Volts[0]);
+            arr[2] = "電位：" + Utils.VoltageText(ce.Volts[0]);
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {

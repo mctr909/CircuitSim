@@ -71,7 +71,7 @@ namespace Circuit.UI.Active {
             Utils.InterpPoint(mPosS[1], mPosD[1], ref mPosB[1], .5);
 
             PointF a0, a1;
-            if (ce.Pnp == 1) {
+            if (ce.Nch == 1) {
                 a0 = mPosB[0];
                 a1 = mPosB[1];
             } else {
@@ -150,7 +150,7 @@ namespace Circuit.UI.Active {
             drawLine(Elm.Post[0], mGate);
 
             /* draw bulk connection */
-            drawLine(ce.Pnp == -1 ? mPosD[0] : mPosS[0], mPosB[0]);
+            drawLine(ce.Nch == -1 ? mPosD[0] : mPosS[0], mPosB[0]);
             drawLine(mPosB[0], mPosB[1]);
 
             /* draw source/drain */
@@ -181,26 +181,20 @@ namespace Circuit.UI.Active {
         }
 
         public override void GetInfo(string[] arr) {
-            getFetInfo(arr);
-        }
-
-        void getFetInfo(string[] arr) {
             var ce = (ElmMosfet)Elm;
-            arr[0] = ((ce.Pnp == -1) ? "p-MOSFET" : "n-MOSFET") + "(閾値電圧：" + Utils.VoltageText(ce.Pnp * ce.Vt) + ")";
-            arr[1] = (ce.Mode == 0) ? "off" : (ce.Mode == 1) ? "線形" : "飽和";
-            arr[2] = "Vgs：" + Utils.VoltageText(ce.Vg - (ce.Pnp == -1 ? ce.Vd : ce.Vs));
-            arr[3] = ((ce.Pnp == 1) ? "Vds：" : "Vsd：") + Utils.VoltageText(ce.Vd - ce.Vs);
-            arr[4] = ((ce.Pnp == 1) ? "Ids：" : "Isd：") + Utils.CurrentText(ce.Current);
+            arr[0] = ((ce.Nch == -1) ? "Pch MOSFET" : "Nch MOSFET") + "(閾値電圧：" + Utils.VoltageText(ce.Nch * ce.Vt) + ")";
+            arr[1] = "動作領域：" + (
+                (ce.Mode == 0) ? "遮断" :
+                (ce.Mode == 1) ? "活性" : "飽和"
+            );
+            arr[2] = "Vgs：" + Utils.VoltageText(ce.Vg - (ce.Nch == -1 ? ce.Vd : ce.Vs));
+            arr[3] = ((ce.Nch == 1) ? "Vds：" : "Vsd：") + Utils.VoltageText(ce.Vd - ce.Vs);
+            arr[4] = ((ce.Nch == 1) ? "Ids：" : "Isd：") + Utils.CurrentText(ce.Current);
             arr[5] = "gm：" + Utils.UnitText(ce.Gm, "A/V");
             arr[6] = "Ib：" + Utils.UnitText(
                 ce.BodyTerminal == 1 ? -ce.DiodeCurrent1 :
                 ce.BodyTerminal == 2 ? ce.DiodeCurrent2 :
-                -ce.Pnp * (ce.DiodeCurrent1 + ce.DiodeCurrent2), "A");
-        }
-
-        public override string GetScopeText() {
-            return (string.IsNullOrEmpty(ReferenceName) ? "MOSFET" : ReferenceName) + " "
-                + ((((ElmMosfet)Elm).Pnp == 1) ? "Vds(nCh.)" : "Vds(pCh.)");
+                -ce.Nch * (ce.DiodeCurrent1 + ce.DiodeCurrent2), "A");
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
@@ -212,7 +206,7 @@ namespace Circuit.UI.Active {
                 return new ElementInfo("名前", ReferenceName);
             }
             if (r == 1) {
-                return new ElementInfo("閾値電圧", ce.Pnp * ce.Vt);
+                return new ElementInfo("閾値電圧", ce.Nch * ce.Vt);
             }
             if (r == 2) {
                 return new ElementInfo("hfe", ce.Hfe);
@@ -230,7 +224,7 @@ namespace Circuit.UI.Active {
                 setTextPos();
             }
             if (n == 1) {
-                ce.Vt = ce.Pnp * ei.Value;
+                ce.Vt = ce.Nch * ei.Value;
             }
             if (n == 2 && ei.Value > 0) {
                 ce.Hfe = ElmMosfet.LastHfe = ei.Value;

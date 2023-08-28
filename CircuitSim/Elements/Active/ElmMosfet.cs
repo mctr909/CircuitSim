@@ -23,7 +23,7 @@ namespace Circuit.Elements.Active {
         public double Vt;
         public double Hfe; /* hfe = 1/(RdsON*(Vgs-Vt)) */
 
-        public int Pnp { get; private set; }
+        public int Nch { get; private set; }
         public int BodyTerminal { get; private set; }
         public int Mode { get; private set; } = 0;
         public double Gm { get; private set; } = 0;
@@ -43,12 +43,12 @@ namespace Circuit.Elements.Active {
         double[] mLastV = new double[] { 0.0, 0.0, 0.0 };
 
         public ElmMosfet(bool pnpflag) : base() {
-            Pnp = pnpflag ? -1 : 1;
+            Nch = pnpflag ? -1 : 1;
             Hfe = DefaultHfe;
             Vt = DefaultThreshold;
         }
         public ElmMosfet(bool pnpflag, double vt, double hfe) : base() {
-            Pnp = pnpflag ? -1 : 1;
+            Nch = pnpflag ? -1 : 1;
             Vt = vt;
             Hfe = hfe;
             AllocNodes();
@@ -71,11 +71,11 @@ namespace Circuit.Elements.Active {
             Circuit.RowInfo[Nodes[IdxS] - 1].LeftChanges = true;
             Circuit.RowInfo[Nodes[IdxD] - 1].LeftChanges = true;
 
-            BodyTerminal = (Pnp == -1) ? IdxD : IdxS;
+            BodyTerminal = (Nch == -1) ? IdxD : IdxS;
 
             mDiode1Node0 = Nodes[IdxS];
             mDiode2Node1 = Nodes[IdxD];
-            if (Pnp == -1) {
+            if (Nch == -1) {
                 /* pnp: diodes conduct when S or D are higher than body */
                 mDiode1Node1 = Nodes[IdxD];
                 mDiode2Node0 = Nodes[IdxD];
@@ -130,7 +130,7 @@ namespace Circuit.Elements.Active {
              * ドレインとソースを入れ替える
              * (電流の計算を単純化するため) */
             int idxS, idxD;
-            if (Pnp * Volts[IdxD] < Pnp * Volts[IdxS]) {
+            if (Nch * Volts[IdxD] < Nch * Volts[IdxS]) {
                 idxS = IdxD;
                 idxD = IdxS;
             } else {
@@ -142,8 +142,8 @@ namespace Circuit.Elements.Active {
             var Vgs = Volts[IdxG] - Volts[idxS];
             var Vds = Volts[idxD] - Volts[idxS];
             {
-                var tmpVgsVt = Vgs * Pnp - Vt;
-                var tmpVds = Vds * Pnp;
+                var tmpVgsVt = Vgs * Nch - Vt;
+                var tmpVds = Vds * Nch;
                 if (tmpVgsVt < 0.0) {
                     /* mode: off */
                     /* 電流を0にするべきだが特異な行列となるため
@@ -170,17 +170,17 @@ namespace Circuit.Elements.Active {
             /* ドレインソース間電圧が負の場合
              * ドレインとソースを入れ替えているため電流を反転 */
             var realIds = Current;
-            if (idxS == 2 && Pnp == 1 || idxS == 1 && Pnp == -1) {
+            if (idxS == 2 && Nch == 1 || idxS == 1 && Nch == -1) {
                 Current = -Current;
             }
 
             /* 還流ダイオード */
-            var vbs = (Volts[BodyTerminal] - Volts[IdxS]) * Pnp;
-            var vbd = (Volts[BodyTerminal] - Volts[IdxD]) * Pnp;
+            var vbs = (Volts[BodyTerminal] - Volts[IdxS]) * Nch;
+            var vbd = (Volts[BodyTerminal] - Volts[IdxD]) * Nch;
             DiodeDoStep(mDiode1Node0, mDiode1Node1, vbs, ref mDiode1LastVoltDiff);
             DiodeDoStep(mDiode2Node0, mDiode2Node1, vbd, ref mDiode2LastVoltDiff);
-            DiodeCurrent1 = (Math.Exp(vbs * DiodeVdCoef) - 1) * DiodeLeakage * Pnp;
-            DiodeCurrent2 = (Math.Exp(vbd * DiodeVdCoef) - 1) * DiodeLeakage * Pnp;
+            DiodeCurrent1 = (Math.Exp(vbs * DiodeVdCoef) - 1) * DiodeLeakage * Nch;
+            DiodeCurrent2 = (Math.Exp(vbd * DiodeVdCoef) - 1) * DiodeLeakage * Nch;
 
             var rowD = Circuit.RowInfo[Nodes[idxD] - 1].MapRow;
             var rowS = Circuit.RowInfo[Nodes[idxS] - 1].MapRow;
@@ -209,7 +209,7 @@ namespace Circuit.Elements.Active {
                 Circuit.Matrix[rowS, colri.MapCol] += Gds + Gm;
             }
 
-            var rs = -Pnp * realIds + Gds * Vds + Gm * Vgs;
+            var rs = -Nch * realIds + Gds * Vds + Gm * Vgs;
             rowD = Circuit.RowInfo[Nodes[idxD] - 1].MapRow;
             rowS = Circuit.RowInfo[Nodes[idxS] - 1].MapRow;
             Circuit.RightSide[rowD] += rs;
@@ -225,14 +225,14 @@ namespace Circuit.Elements.Active {
              * (opposite for PNP) */
             var idxS = IdxS;
             var idxD = IdxD;
-            if (Pnp * Volts[idxD] < Pnp * Volts[idxS]) {
+            if (Nch * Volts[idxD] < Nch * Volts[idxS]) {
                 idxS = IdxD;
                 idxD = IdxS;
             }
             var vgs = Volts[IdxG] - Volts[idxS];
             var vds = Volts[idxD] - Volts[idxS];
-            vgs *= Pnp;
-            vds *= Pnp;
+            vgs *= Nch;
+            vds *= Nch;
 
             Current = 0;
             Gm = 0;
@@ -258,15 +258,15 @@ namespace Circuit.Elements.Active {
                 Mode = 2;
             }
 
-            var vbs = (Volts[BodyTerminal] - Volts[IdxS]) * Pnp;
-            var vbd = (Volts[BodyTerminal] - Volts[IdxD]) * Pnp;
+            var vbs = (Volts[BodyTerminal] - Volts[IdxS]) * Nch;
+            var vbd = (Volts[BodyTerminal] - Volts[IdxD]) * Nch;
             DiodeDoStep(mDiode1Node0, mDiode1Node1, vbs, ref mDiode1LastVoltDiff);
             DiodeDoStep(mDiode2Node0, mDiode2Node1, vbd, ref mDiode2LastVoltDiff);
-            DiodeCurrent1 = (Math.Exp(vbs * DiodeVdCoef) - 1) * DiodeLeakage * Pnp;
-            DiodeCurrent2 = (Math.Exp(vbd * DiodeVdCoef) - 1) * DiodeLeakage * Pnp;
+            DiodeCurrent1 = (Math.Exp(vbs * DiodeVdCoef) - 1) * DiodeLeakage * Nch;
+            DiodeCurrent2 = (Math.Exp(vbd * DiodeVdCoef) - 1) * DiodeLeakage * Nch;
 
             /* flip ids if we swapped source and drain above */
-            if (idxS == 2 && Pnp == 1 || idxS == 1 && Pnp == -1) {
+            if (idxS == 2 && Nch == 1 || idxS == 1 && Nch == -1) {
                 Current = -Current;
             }
 

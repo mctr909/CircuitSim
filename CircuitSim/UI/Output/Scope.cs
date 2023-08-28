@@ -339,27 +339,6 @@ namespace Circuit.UI.Output {
                     return 50 < BoundingBox.Height && 50 < BoundingBox.Width;
                 }
             }
-            string mScopeText {
-                get {
-                    /* stacked scopes?  don't show text */
-                    if (StackCount != 1) {
-                        return null;
-                    }
-                    /* multiple elms?  don't show text (unless one is selected) */
-                    if (SelectedPlot < 0 && SingleUI == null) {
-                        return null;
-                    }
-                    var plot = Plots[0];
-                    if (0 <= SelectedPlot && SelectedPlot < Plots.Count) {
-                        plot = Plots[SelectedPlot];
-                    }
-                    if (plot.UI == null) {
-                        return "";
-                    } else {
-                        return plot.UI.GetScopeText();
-                    }
-                }
-            }
             int mFlags {
                 set {
                     mShowV = (value & 2) != 0;
@@ -1371,10 +1350,7 @@ namespace Circuit.UI.Output {
 
             void drawInfoTexts(CustomGraphics g) {
                 string t = Text;
-                if (string.IsNullOrEmpty(t)) {
-                    t = mScopeText;
-                }
-                var textY = 8;
+                var textY = 4;
                 if (!string.IsNullOrEmpty(t)) {
                     g.DrawLeftText(t, 0, textY);
                     textY += 12;

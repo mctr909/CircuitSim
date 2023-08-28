@@ -35,8 +35,8 @@ namespace Circuit.UI.Passive {
         }
 
         public override void GetInfo(string[] arr) {
-            arr[0] = "ground";
-            arr[1] = "I = " + Utils.CurrentText(Elm.Current);
+            arr[0] = "接地";
+            arr[1] = "電流：" + Utils.CurrentText(Elm.Current);
         }
     }
 }

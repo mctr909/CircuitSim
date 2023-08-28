@@ -119,8 +119,8 @@ namespace Circuit.UI.Gate {
         public override void GetInfo(string[] arr) {
             var ce = (ElmGate)Elm;
             arr[0] = gateName;
-            arr[1] = "Vout = " + Utils.VoltageText(ce.Volts[ce.InputCount]);
-            arr[2] = "Iout = " + Utils.CurrentText(ce.Current);
+            arr[1] = "Vout：" + Utils.VoltageText(ce.Volts[ce.InputCount]);
+            arr[2] = "Iout：" + Utils.CurrentText(ce.Current);
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {

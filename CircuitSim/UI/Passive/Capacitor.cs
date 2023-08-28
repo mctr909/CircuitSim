@@ -114,12 +114,6 @@ namespace Circuit.UI.Passive {
             }
         }
 
-        public override string GetScopeText() {
-            var ce = (ElmCapacitor)Elm;
-            return (string.IsNullOrEmpty(ReferenceName) ? "コンデンサ" : ReferenceName) + " "
-                + Utils.UnitText(ce.Capacitance, "F");
-        }
-
         public override ElementInfo GetElementInfo(int r, int c) {
             var ce = (ElmCapacitor)Elm;
             if (c != 0) {

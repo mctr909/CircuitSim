@@ -52,13 +52,13 @@ namespace Circuit.UI.Input {
 
         public override void GetInfo(string[] arr) {
             var ce = (ElmLogicInput)Elm;
-            arr[0] = "logic input";
-            arr[1] = 0 != ce.Position ? "high" : "low";
+            arr[0] = "ロジック入力";
+            arr[1] = 0 != ce.Position ? "High" : "Low";
             if (isNumeric) {
                 arr[1] = 0 != ce.Position ? "1" : "0";
             }
             arr[1] += " (" + Utils.VoltageText(ce.Volts[0]) + ")";
-            arr[2] = "I = " + Utils.CurrentText(ce.Current);
+            arr[2] = "電流：" + Utils.CurrentText(ce.Current);
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {

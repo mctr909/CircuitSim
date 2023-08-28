@@ -179,11 +179,11 @@ namespace Circuit.UI.Passive {
         public override void GetInfo(string[] arr) {
             var ce = (ElmPot)Elm;
             arr[0] = "可変抵抗";
-            arr[1] = "Vd = " + Utils.VoltageAbsText(ce.GetVoltageDiff());
-            arr[2] = "R1 = " + Utils.UnitText(ce.Resistance1, CirSimForm.OHM_TEXT);
-            arr[3] = "R2 = " + Utils.UnitText(ce.Resistance2, CirSimForm.OHM_TEXT);
-            arr[4] = "I1 = " + Utils.CurrentAbsText(ce.Current1);
-            arr[5] = "I2 = " + Utils.CurrentAbsText(ce.Current2);
+            arr[1] = "Vd：" + Utils.VoltageAbsText(ce.GetVoltageDiff());
+            arr[2] = "R1：" + Utils.UnitText(ce.Resistance1, CirSimForm.OHM_TEXT);
+            arr[3] = "R2：" + Utils.UnitText(ce.Resistance2, CirSimForm.OHM_TEXT);
+            arr[4] = "I1：" + Utils.CurrentAbsText(ce.Current1);
+            arr[5] = "I2：" + Utils.CurrentAbsText(ce.Current2);
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
