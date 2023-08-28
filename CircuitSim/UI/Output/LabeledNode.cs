@@ -30,11 +30,13 @@ namespace Circuit.UI.Output {
         public override void SetPoints() {
             base.SetPoints();
             var ce = (ElmLabeledNode)Elm;
+            double txtSize;
             if (Post.Vertical) {
-                setLead1(1 - 0.5 * Context.GetTextSize(ce.Text).Height / Post.Len);
+                txtSize = Context.GetTextSize(ce.Text).Height / Post.Len;
             } else {
-                setLead1(1 - 0.5 * Context.GetTextSize(ce.Text).Width / Post.Len);
+                txtSize = Context.GetTextSize(ce.Text).Width / Post.Len;
             }
+            setLead1(1 - txtSize / 2);
             interpPost(ref mPos, 1 + 11.0 / Post.Len);
             Post.SetBbox(Elm.Post[0], mPos, LabelSize);
         }

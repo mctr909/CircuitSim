@@ -231,6 +231,10 @@ namespace Circuit {
             return unitText(v, u);
         }
 
+        public static string UnitText3digit(double v, string u = "") {
+            return unitText(v, u, false);
+        }
+
         public static string TimeText(double v) {
             if (v >= 60) {
                 double h = Math.Floor(v / 3600);

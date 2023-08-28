@@ -67,13 +67,13 @@ namespace Circuit.UI.Output {
 
         public override void GetInfo(string[] arr) {
             var ce = (ElmAmmeter)Elm;
-            arr[0] = "Ammeter";
+            arr[0] = "電流計";
             switch (ce.Meter) {
             case ElmAmmeter.AM_VOL:
-                arr[1] = "I = " + Utils.UnitText(ce.Current, "A");
+                arr[1] = "電流：" + Utils.CurrentText(ce.Current);
                 break;
             case ElmAmmeter.AM_RMS:
-                arr[1] = "Irms = " + Utils.UnitText(ce.RmsI, "A");
+                arr[1] = "電流(rms)：" + Utils.CurrentText(ce.RmsI);
                 break;
             }
         }

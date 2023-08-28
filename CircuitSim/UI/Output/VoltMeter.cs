@@ -60,9 +60,9 @@ namespace Circuit.UI.Output {
             var ce = (ElmVoltMeter)Elm;
             arr[0] = "電圧計";
             if (this is VoltMeter1Term) {
-                arr[1] = "電位：" + Utils.VoltageText(ce.GetVoltageDiff());
+                arr[1] = "電位：" + drawValues();
             } else {
-                arr[1] = "電位差：" + Utils.VoltageText(ce.GetVoltageDiff());
+                arr[1] = "電位差：" + drawValues();
             }
         }
 

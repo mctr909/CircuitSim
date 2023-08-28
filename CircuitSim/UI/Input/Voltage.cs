@@ -401,10 +401,10 @@ namespace Circuit.UI.Input {
             int i = 2;
             if (elm.WaveForm != ElmVoltage.WAVEFORM.DC && elm.WaveForm != ElmVoltage.WAVEFORM.NOISE) {
                 arr[i++] = "振幅：" + Utils.VoltageText(elm.MaxVoltage);
-                arr[i++] = "周波数：" + Utils.UnitText(elm.Frequency, "Hz");
+                arr[i++] = "周波数：" + Utils.UnitText3digit(elm.Frequency, "Hz");
                 var phase = elm.Phase + elm.PhaseOffset;
                 phase %= 2 * Math.PI;
-                arr[i++] = "位相：" + Utils.UnitText(phase * 180 / Math.PI, "deg");
+                arr[i++] = "位相：" + Utils.UnitText3digit(phase * 180 / Math.PI, "deg");
             }
         }
 
