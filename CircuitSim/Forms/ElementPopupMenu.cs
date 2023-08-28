@@ -43,7 +43,7 @@ namespace Circuit {
             });
             mMenuItems.Add(new ToolStripSeparator());
 
-            mMenuItems.Add(mScope = new ToolStripMenuItem() { Text = "画面下部にスコープを表示" });
+            mMenuItems.Add(mScope = new ToolStripMenuItem() { Text = "スコープをウィンドウ表示" });
             mScope.Click += new EventHandler((s, e) => {
                 sim.Performed(ELEMENT_MENU_ITEM.VIEW_IN_SCOPE);
             });

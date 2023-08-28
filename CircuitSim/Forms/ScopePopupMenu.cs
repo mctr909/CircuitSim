@@ -38,7 +38,7 @@ namespace Circuit {
         public ScopePopupMenu() {
             mPopupMenu = new ContextMenuStrip();
             /* スコープの表示場所 */
-            mPopupMenu.Items.Add(mDock = new ToolStripMenuItem() { Text = "画面下部に表示" });
+            mPopupMenu.Items.Add(mDock = new ToolStripMenuItem() { Text = "ウィンドウに表示" });
             mDock.Click += new EventHandler((s, e) => {
                 CirSimForm.Performed(SCOPE_MENU_ITEM.DOCK);
             });

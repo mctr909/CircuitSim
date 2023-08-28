@@ -43,17 +43,6 @@ namespace Circuit.UI.Output {
             Properties.ResetGraph();
         }
 
-        public void SetScopeRect() {
-            int i1 = CirSimForm.TransformX(Math.Min(Post.A.X, Post.B.X));
-            int i2 = CirSimForm.TransformX(Math.Max(Post.A.X, Post.B.X));
-            int j1 = CirSimForm.TransformY(Math.Min(Post.A.Y, Post.B.Y));
-            int j2 = CirSimForm.TransformY(Math.Max(Post.A.Y, Post.B.Y));
-            var r = new Rectangle(i1, j1, i2 - i1, j2 - j1);
-            if (!r.Equals(Properties.BoundingBox)) {
-                Properties.SetRect(r);
-            }
-        }
-
         public void SetElmScope(Property s) {
             Properties = s;
         }
@@ -68,12 +57,17 @@ namespace Circuit.UI.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            SetScopeRect();
+            int x1 = CirSimForm.TransformX(Math.Min(Post.A.X, Post.B.X));
+            int x2 = CirSimForm.TransformX(Math.Max(Post.A.X, Post.B.X));
+            int y1 = CirSimForm.TransformY(Math.Min(Post.A.Y, Post.B.Y));
+            int y2 = CirSimForm.TransformY(Math.Max(Post.A.Y, Post.B.Y));
+            var r = new Rectangle(x1, y1, x2 - x1, y2 - y1);
+            if (!r.Equals(Properties.BoundingBox)) {
+                Properties.SetRect(r);
+            }
         }
 
         public override void Draw(CustomGraphics g) {
-            SetScopeRect();
-            Post.SetBbox(0);
             Properties.Draw(g, true);
             drawPosts();
         }
@@ -1350,7 +1344,7 @@ namespace Circuit.UI.Output {
 
             void drawInfoTexts(CustomGraphics g) {
                 string t = Text;
-                var textY = 4;
+                var textY = 8;
                 if (!string.IsNullOrEmpty(t)) {
                     g.DrawLeftText(t, 0, textY);
                     textY += 12;
