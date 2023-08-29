@@ -1,9 +1,9 @@
-$ 0 1E-06 0.318 50
-RAIL 72 64 56 64 4 PULSE 1000 0.1 0 0 0 0.75 0 0 0
-CAPACITOR 72 64 144 64 0 1E-07 0.084898 C
-RESISTOR 144 64 144 136 0 5000 R
-GROUND 144 136 144 144 0
-LABELED_NODE 144 64 232 64 0 Vout
-TEXT 168 83 461 181 4 9 H(ω)\s\q\sR\s/\s(R\s\p\s1/jωC)\r\n\s\q\s1\s/\s(1\s\p\s1/jωCR)\r\n\s\q\sjωCR\s/\s(1\s\p\sjωCR)\r\n\s\q\sjωCR\s/\s(1\s\p\sjωCR)\s*\s(1\s-\sjωCR)\s/\s(1\s-\sjωCR)\r\n\s\q\s(ωCR)^2\s/\s{1\s\p\s(ωCR)^2}\s\p\sj[ωCR\s/\s{1\s\p\s(ωCR)^2}]\r\nθ\s\q\sarctan(1/ωCR)\r\nfc\s\q\s1\s/\s2πCR
-o 32 4098 0.100000 0 2 4_GREEN 0_YELLOW
-38 2 0 100 5000 R
+$ 0 1E-06 0.088 2
+CAPACITOR 72 64 144 64 0 1E-07 0.998721 C
+RESISTOR 144 64 144 120 0 100 R
+GROUND 144 120 144 128 0
+LABELED_NODE 144 64 192 64 0 Vout
+TEXT 168 83 523 219 4 11 H(w)\s\q\sR\s/\s(R\s\p\s1/jwC)\r\n\s\q\s1\s/\s(1\s\p\s1/jwCR)\r\n\s\q\sjwCR\s/\s(1\s\p\sjwCR)\r\n\s\q\sjwCR\s/\s(1\s\p\sjwCR)\s*\s(1\s-\sjwCR)\s/\s(1\s-\sjwCR)\r\n\s\q\s(wCR)^2\s/\s{1\s\p\s(wCR)^2}\s\p\sj[wCR\s/\s{1\s\p\s(wCR)^2}]\r\n\r\nθ\s\q\sarctan(1/wCR)\r\nfc\s\q\s1\s/\s2πCR
+RAIL 72 64 56 64 0 SQUARE 1000 1 0 0 0 0.50 0 0 0 0
+o 8 4098 3.200000 0 1 3_GREEN
+38 1 0 100 5000 R
