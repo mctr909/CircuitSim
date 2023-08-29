@@ -33,10 +33,14 @@ namespace Circuit.UI.Custom {
             return Post.BoxDistance(Post.BoundingBox, x, y);
         }
 
+        public override void SetPoints() {
+            base.SetPoints();
+            setTextSize();
+        }
+
         public override void Drag(Point p) {
             p = CirSimForm.SnapGrid(p);
             Post.SetPosition(p.X, p.Y, p.X + 16, p.Y);
-            setTextSize();
         }
 
         public override void Draw(CustomGraphics g) {

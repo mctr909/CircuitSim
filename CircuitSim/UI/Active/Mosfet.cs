@@ -134,7 +134,11 @@ namespace Circuit.UI.Active {
                     mNamePos = new Point(Elm.Post[1].X - 6, Elm.Post[1].Y);
                 }
             } else if (Post.Vertical) {
-                mNamePos = new Point(Elm.Post[1].X, Elm.Post[1].Y + 13 * Post.Dsign * 2 / 3);
+                if (0 < Post.Dsign) {
+                    mNamePos = new Point(Elm.Post[1].X, Elm.Post[1].Y + 15 * 2 / 3);
+                } else {
+                    mNamePos = new Point(Elm.Post[1].X, Elm.Post[1].Y - 13 * 2 / 3);
+                }
             } else {
                 interpPost(ref mNamePos, 0.5, 10 * Post.Dsign);
             }
