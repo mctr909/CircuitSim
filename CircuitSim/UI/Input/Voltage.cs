@@ -375,9 +375,6 @@ namespace Circuit.UI.Input {
                 s += Utils.UnitText((elm.Phase + elm.PhaseOffset) * 180 / Math.PI, "deg");
                 drawValues(s, 0, 5);
             }
-            if (ControlPanel.ChkShowName.Checked) {
-                drawName(ReferenceName, 0, -11);
-            }
         }
 
         public override void GetInfo(string[] arr) {

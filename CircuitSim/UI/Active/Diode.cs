@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -56,12 +57,28 @@ namespace Circuit.UI.Active {
         }
 
         protected void setTextPos() {
-            if (Post.Vertical) {
-                interpPost(ref mNamePos, 0.5, -22 * Post.Dsign);
-            } else if (Post.Horizontal) {
-                interpPost(ref mNamePos, 0.5, 13 * Post.Dsign);
-            } else {
+            var abX = Post.B.X - Post.A.X;
+            var abY = Post.B.Y - Post.A.Y;
+            mTextRot = Math.Atan2(abY, abX);
+            var deg = -mTextRot * 180 / Math.PI;
+            if (deg < 0.0) {
+                deg += 360;
+            }
+            if (45 * 3 <= deg && deg < 45 * 7) {
+                mTextRot += Math.PI;
+            }
+            if (0 < deg && deg < 45 * 3) {
+                interpPost(ref mValuePos, 0.5, 12 * Post.Dsign);
                 interpPost(ref mNamePos, 0.5, -10 * Post.Dsign);
+            } else if (45 * 3 <= deg && deg <= 180) {
+                interpPost(ref mNamePos, 0.5, 10 * Post.Dsign);
+                interpPost(ref mValuePos, 0.5, -14 * Post.Dsign);
+            } else if (180 < deg && deg < 45 * 7) {
+                interpPost(ref mNamePos, 0.5, -10 * Post.Dsign);
+                interpPost(ref mValuePos, 0.5, 12 * Post.Dsign);
+            } else {
+                interpPost(ref mNamePos, 0.5, 12 * Post.Dsign);
+                interpPost(ref mValuePos, 0.5, -12 * Post.Dsign);
             }
         }
 

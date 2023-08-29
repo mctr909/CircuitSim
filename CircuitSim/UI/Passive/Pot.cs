@@ -283,10 +283,10 @@ namespace Circuit.UI.Passive {
             } else {
                 if (0 < Post.Diff.X) {
                     /* upper slider */
-                    interpPost(ref mNamePos, 0.5, -17 * Post.Dsign);
+                    interpPost(ref mNamePos, 0.5, -10 * Post.Dsign);
                 } else {
                     /* lower slider */
-                    interpPost(ref mNamePos, 0.5, 5 * Post.Dsign);
+                    interpPost(ref mNamePos, 0.5, 11 * Post.Dsign);
                 }
             }
         }

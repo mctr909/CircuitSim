@@ -91,6 +91,10 @@ class PDF {
             writeTextL(s, p.X, p.Y, GetTextSizeL(s).Width * 0.5f);
         }
 
+        public override void DrawCenteredRText(string s, PointF p, double theta) {
+            writeTextR(s, p.X, p.Y, theta, GetTextSize(s).Width * 0.5f);
+        }
+
         public override void DrawCenteredVText(string s, PointF p) {
             writeTextV(s, p.X, p.Y, GetTextSize(s).Width * 0.5f);
         }
@@ -239,10 +243,12 @@ class PDF {
             writeFontSize(TextSize);
             var ofsY = TextSize * PIX_SCALE * 0.5f;
             var strs = s.Replace("\r", "").Split('\n');
+            x += (float)mOfsX;
+            y += (float)mOfsY;
             foreach (var str in strs) {
                 mSw.WriteLine("1 0 0 -1 {0} {1} Tm",
-                    (x + mOfsX - ofsX * PIX_SCALE).ToString("0.##"),
-                    (y + mOfsY + ofsY).ToString("0.##")
+                    (x - ofsX * PIX_SCALE).ToString("0.##"),
+                    (y + ofsY).ToString("0.##")
                 );
                 writeText(str.Replace("\n", ""));
                 ofsY += TextSize * (PIX_SCALE + 0.2f);
@@ -251,18 +257,40 @@ class PDF {
 
         void writeTextL(string s, float x, float y, float ofsX = 0.0f) {
             writeFontSize(LTextSize);
+            x += (float)mOfsX;
+            y += (float)mOfsY;
             mSw.WriteLine("1 0 0 -1 {0} {1} Tm",
-                (x + mOfsX - ofsX * PIX_SCALE).ToString("0.##"),
-                (y + mOfsY + LTextSize * PIX_SCALE * 0.5f).ToString("0.##")
+                (x - ofsX * PIX_SCALE).ToString("0.##"),
+                (y + LTextSize * PIX_SCALE * 0.5f).ToString("0.##")
+            );
+            writeText(s);
+        }
+
+        void writeTextR(string s, float x, float y, double theta, float ofsX = 0.0f) {
+            writeFontSize(TextSize);
+            x += (float)mOfsX;
+            y += (float)mOfsY;
+            var ofsY = TextSize * 0.5;
+            var cos = Math.Cos(theta);
+            var sin = Math.Sin(theta);
+            var rx = ofsX * cos + ofsY * sin;
+            var ry = ofsX * sin - ofsY * cos;
+            mSw.WriteLine("{0} {1} {2} {3} {4} {5} Tm",
+                cos.ToString("0.##"), sin.ToString("0.##"),
+                sin.ToString("0.##"), (-cos).ToString("0.##"),
+                (x - rx * PIX_SCALE).ToString("0.##"),
+                (y - ry * PIX_SCALE).ToString("0.##")
             );
             writeText(s);
         }
 
         void writeTextV(string s, float x, float y, float ofsY = 0.0f) {
             writeFontSize(TextSize);
+            x += (float)mOfsX + TextSize * PIX_SCALE * 0.5f;
+            y += (float)mOfsY + ofsY * PIX_SCALE;
             mSw.WriteLine("0 -1 -1 0 {0} {1} Tm",
-                (x + mOfsX + TextSize * TEXT_SCALE).ToString("0.##"),
-                (y + mOfsY + ofsY * PIX_SCALE).ToString("0.##")
+                x.ToString("0.##"),
+                y.ToString("0.##")
             );
             writeText(s);
         }

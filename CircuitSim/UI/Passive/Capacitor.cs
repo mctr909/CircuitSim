@@ -69,15 +69,28 @@ namespace Circuit.UI.Passive {
         }
 
         void setTextPos() {
-            if (Post.Horizontal) {
-                interpPost(ref mValuePos, 0.5, -13 * Post.Dsign);
-                interpPost(ref mNamePos, 0.5, 11 * Post.Dsign);
-            } else if (Post.Vertical) {
-                interpPost(ref mValuePos, 0.5, 5 * Post.Dsign);
-                interpPost(ref mNamePos, 0.5, -18 * Post.Dsign);
+            var abX = Post.B.X - Post.A.X;
+            var abY = Post.B.Y - Post.A.Y;
+            mTextRot = Math.Atan2(abY, abX);
+            var deg = -mTextRot * 180 / Math.PI;
+            if (deg < 0.0) {
+                deg += 360;
+            }
+            if (45 * 3 <= deg && deg < 45 * 7) {
+                mTextRot += Math.PI;
+            }
+            if (0 < deg && deg < 45 * 3) {
+                interpPost(ref mValuePos, 0.5, 12 * Post.Dsign);
+                interpPost(ref mNamePos, 0.5, -10 * Post.Dsign);
+            } else if (45 * 3 <= deg && deg <= 180) {
+                interpPost(ref mNamePos, 0.5, 10 * Post.Dsign);
+                interpPost(ref mValuePos, 0.5, -14 * Post.Dsign);
+            } else if (180 < deg && deg < 45 * 7) {
+                interpPost(ref mNamePos, 0.5, -10 * Post.Dsign);
+                interpPost(ref mValuePos, 0.5, 12 * Post.Dsign);
             } else {
-                interpPost(ref mValuePos, 0.5, 8 * Post.Dsign);
-                interpPost(ref mNamePos, 0.5, -8 * Post.Dsign);
+                interpPost(ref mNamePos, 0.5, 12 * Post.Dsign);
+                interpPost(ref mValuePos, 0.5, -12 * Post.Dsign);
             }
         }
 
@@ -91,15 +104,15 @@ namespace Circuit.UI.Passive {
             /* draw second lead and plate */
             fillPolygon(mPlate2);
 
+            drawName();
+            drawValue(Utils.UnitText(ce.Capacitance));
+
             updateDotCount();
             if (CirSimForm.DragElm != this) {
                 drawCurrentA(mCurCount);
                 drawCurrentB(mCurCount);
             }
             drawPosts();
-
-            drawValue(ce.Capacitance);
-            drawName();
         }
 
         public override void GetInfo(string[] arr) {

@@ -70,10 +70,11 @@ namespace Circuit.UI {
         #region [protected variable]
         protected PointF mLead1;
         protected PointF mLead2;
-        protected Point mNamePos;
-        protected Point mValuePos;
+        protected PointF mNamePos;
+        protected PointF mValuePos;
         protected int mFlags;
         protected double mCurCount;
+        protected double mTextRot;
         protected bool mNoDiagonal;
         #endregion
 
@@ -513,6 +514,17 @@ namespace Circuit.UI {
             Context.DrawCenteredText(s, p);
         }
 
+        protected void drawCenteredRText(string s, PointF p, double theta) {
+            var fs = Context.GetTextSize(s);
+            var w = fs.Width;
+            var h2 = fs.Height / 2;
+            Post.AdjustBbox(
+                (int)(p.X - w / 2), (int)(p.Y - h2),
+                (int)(p.X + w / 2), (int)(p.Y + h2)
+            );
+            Context.DrawCenteredRText(s, p, theta);
+        }
+
         protected void drawCenteredLText(string s, PointF p, bool cx) {
             var fs = Context.GetTextSizeL(s);
             var w = fs.Width;
@@ -551,48 +563,15 @@ namespace Circuit.UI {
             Context.DrawRightText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
         }
 
-        protected void drawValue(double value) {
+        protected void drawValue(string s) {
             if (ControlPanel.ChkShowValues.Checked) {
-                var s = Utils.UnitText(value);
-                if (Post.Horizontal) {
-                    Context.DrawCenteredText(s, mValuePos);
-                } else if (Post.Vertical) {
-                    Context.DrawCenteredVText(s, mValuePos);
-                } else {
-                    Context.DrawLeftText(s, mValuePos.X, mValuePos.Y);
-                }
+                drawCenteredRText(s, mValuePos, mTextRot);
             }
-        }
-
-        /// <summary>
-        /// draw component name
-        /// </summary>
-        /// <param name="s"></param>
-        protected void drawName(string s, int offsetX, int offsetY) {
-            if (s == null) {
-                return;
-            }
-            var textSize = Context.GetTextSize(s);
-            int xc, yc;
-            if (this is Rail) {
-                xc = Post.B.X;
-                yc = Post.B.Y;
-            } else {
-                xc = (Post.B.X + Post.A.X) / 2;
-                yc = (Post.B.Y + Post.A.Y) / 2;
-            }
-            Context.DrawLeftText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
         }
 
         protected void drawName() {
             if (ControlPanel.ChkShowName.Checked) {
-                if (Post.Horizontal) {
-                    Context.DrawCenteredText(ReferenceName, mNamePos);
-                } else if (Post.Vertical) {
-                    Context.DrawCenteredVText(ReferenceName, mNamePos);
-                } else {
-                    Context.DrawRightText(ReferenceName, mNamePos.X, mNamePos.Y);
-                }
+                drawCenteredRText(ReferenceName, mNamePos, mTextRot);
             }
         }
         #endregion

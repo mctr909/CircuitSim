@@ -112,9 +112,9 @@ namespace Circuit.UI.Active {
             var swap = 0 < (mFlags & FLAG_FLIP) ? -1 : 1;
             if (Post.Horizontal) {
                 if (0 < Post.Dsign * swap) {
-                    mNamePos = new Point(Elm.Post[1].X - 1, Elm.Post[1].Y);
+                    mNamePos = new Point(Elm.Post[1].X + 8, Elm.Post[1].Y);
                 } else {
-                    mNamePos = new Point(Elm.Post[1].X - 16, Elm.Post[1].Y);
+                    mNamePos = new Point(Elm.Post[1].X - 5, Elm.Post[1].Y);
                 }
             } else if (Post.Vertical) {
                 mNamePos = new Point(Elm.Post[1].X, Elm.Post[1].Y + HS * swap * Post.Dsign * 2 / 3);

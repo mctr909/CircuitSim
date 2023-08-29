@@ -128,9 +128,9 @@ namespace Circuit.UI.Active {
         void setTextPos() {
             if (Post.Horizontal) {
                 if (0 < Post.Dsign) {
-                    mNamePos = new Point(Elm.Post[1].X - 1, Elm.Post[1].Y);
+                    mNamePos = new Point(Elm.Post[1].X + 8, Elm.Post[1].Y);
                 } else {
-                    mNamePos = new Point(Elm.Post[1].X - 16, Elm.Post[1].Y);
+                    mNamePos = new Point(Elm.Post[1].X - 5, Elm.Post[1].Y);
                 }
             } else if (Post.Vertical) {
                 mNamePos = new Point(Elm.Post[1].X, Elm.Post[1].Y + HS * Post.Dsign * 2 / 3);

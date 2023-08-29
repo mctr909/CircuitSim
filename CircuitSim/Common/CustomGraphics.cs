@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 
 namespace Circuit {
@@ -14,10 +15,6 @@ namespace Circuit {
         static readonly StringFormat mAlignCenter = new StringFormat() {
             Alignment = StringAlignment.Center,
             LineAlignment = StringAlignment.Center
-        };
-        static readonly StringFormat mAlignCenterV = new StringFormat() {
-            Alignment = StringAlignment.Center,
-            LineAlignment = StringAlignment.Near
         };
 
         protected static Font mTextFontL = new Font("Arial", 11.0f);
@@ -147,10 +144,18 @@ namespace Circuit {
             mG.DrawString(s, mTextFontL, mTextBrush, p.X, p.Y + 1, mAlignCenter);
         }
 
+        public virtual void DrawCenteredRText(string s, PointF p, double theta) {
+            mG.TranslateTransform(p.X, p.Y);
+            mG.RotateTransform((float)(theta * 180 / Math.PI));
+            mG.DrawString(s, mTextFont, mTextBrush, 0, 0, mAlignCenter);
+            mG.RotateTransform(-(float)(theta * 180 / Math.PI));
+            mG.TranslateTransform(-p.X, -p.Y);
+        }
+
         public virtual void DrawCenteredVText(string s, PointF p) {
             mG.TranslateTransform(p.X, p.Y);
             mG.RotateTransform(-90);
-            mG.DrawString(s, mTextFont, mTextBrush, 0, 0, mAlignCenterV);
+            mG.DrawString(s, mTextFont, mTextBrush, 0, 0, mAlignCenter);
             mG.RotateTransform(90);
             mG.TranslateTransform(-p.X, -p.Y);
         }

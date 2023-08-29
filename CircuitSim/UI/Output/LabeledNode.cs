@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 using Circuit.Elements.Output;
@@ -8,11 +9,10 @@ namespace Circuit.UI.Output {
         const int FLAG_INTERNAL = 1;
         const int LabelSize = 17;
 
-        PointF mPos;
+        PointF[] mTextPoly;
 
         public LabeledNode(Point pos) : base(pos) {
             Elm = new ElmLabeledNode();
-            ReferenceName = "label";
         }
 
         public LabeledNode(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -29,16 +29,41 @@ namespace Circuit.UI.Output {
 
         public override void SetPoints() {
             base.SetPoints();
+            setTextPos();
+        }
+
+        void setTextPos() {
             var ce = (ElmLabeledNode)Elm;
-            double txtSize;
-            if (Post.Vertical) {
-                txtSize = Context.GetTextSize(ce.Text).Height / Post.Len;
-            } else {
-                txtSize = Context.GetTextSize(ce.Text).Width / Post.Len;
+            var txtW = Context.GetTextSize(ce.Text).Width;
+            var txtH = Context.GetTextSize(ce.Text).Height;
+            var pw = txtW / Post.Len;
+            var ph = 0.5 * (txtH - 1);
+            setLead1(1);
+            interpPost(ref mNamePos, 1 + 0.5 * pw, -txtH / Post.Len);
+            Post.SetBbox(Post.A, Post.B, LabelSize);
+            var p1 = new PointF();
+            var p2 = new PointF();
+            var p3 = new PointF();
+            var p4 = new PointF();
+            var p5 = new PointF();
+            interpPost(ref p1, 1, -ph);
+            interpPost(ref p2, 1, ph);
+            interpPost(ref p3, 1 + pw, ph);
+            interpPost(ref p4, 1 + pw + ph / Post.Len, 0);
+            interpPost(ref p5, 1 + pw, -ph);
+            mTextPoly = new PointF[] {
+                p1, p2, p3, p4, p5, p1
+            };
+            var abX = Post.B.X - Post.A.X;
+            var abY = Post.B.Y - Post.A.Y;
+            mTextRot = Math.Atan2(abY, abX);
+            var deg = -mTextRot * 180 / Math.PI;
+            if (deg < 0.0) {
+                deg += 360;
             }
-            setLead1(1 - txtSize / 2);
-            interpPost(ref mPos, 1 + 11.0 / Post.Len);
-            Post.SetBbox(Elm.Post[0], mPos, LabelSize);
+            if (45 * 3 <= deg && deg < 45 * 7) {
+                mTextRot += Math.PI;
+            }
         }
 
         public override void Draw(CustomGraphics g) {
@@ -50,7 +75,8 @@ namespace Circuit.UI.Output {
                 lineOver = true;
                 str = str.Substring(1);
             }
-            drawCenteredText(str, Post.B, true);
+            drawCenteredRText(str, mNamePos, mTextRot);
+            drawPolyline(mTextPoly);
             if (lineOver) {
                 int asc = (int)(CustomGraphics.TextSize + 0.5);
                 if (lineOver) {
@@ -93,6 +119,7 @@ namespace Circuit.UI.Output {
             if (n == 1) {
                 mFlags = ei.ChangeFlag(mFlags, FLAG_INTERNAL);
             }
+            setTextPos();
         }
     }
 }

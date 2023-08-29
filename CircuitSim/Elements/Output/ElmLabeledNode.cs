@@ -8,7 +8,7 @@ namespace Circuit.Elements.Output {
         int mNodeNumber;
 
         public ElmLabeledNode() : base() {
-            Text = "label";
+            Text = "output";
         }
 
         public ElmLabeledNode(StringTokenizer st) : base() {
