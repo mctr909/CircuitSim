@@ -139,27 +139,15 @@ namespace Circuit.Forms {
             } else {
                 var info = new string[10];
                 info[0] = "時間：" + Utils.TimeText(Circuit.Time);
-                info[1] = "単位時間：" + Utils.TimeText(ControlPanel.TimeStep);
-
-                /* count lines of data */
-                {
-                    int infoIdx;
-                    for (infoIdx = 0; infoIdx < info.Length - 1 && info[infoIdx] != null; infoIdx++)
-                        ;
-                    int badnodes = Circuit.BadConnectionList.Count;
-                    if (badnodes > 0) {
-                        info[infoIdx++] = badnodes + " bad connection";
-                    }
+                info[1] = "単位：" + Utils.TimeText(ControlPanel.TimeStep);
+                int x;
+                if (ct == 0) {
+                    x = 0;
+                } else {
+                    x = Scope.Property.List[ct - 1].RightEdge + 4;
                 }
-
-                int x = 0;
-                if (ct != 0) {
-                    x = Scope.Property.List[ct - 1].RightEdge + 20;
-                }
-                {
-                    for (int i = 0; i < info.Length && info[i] != null; i++) {
-                        g.DrawElementText(info[i], x, 15 * (i + 1));
-                    }
+                for (int i = 0; i < info.Length && info[i] != null; i++) {
+                    g.DrawElementText(info[i], x, 15 * (i + 1));
                 }
             }
 

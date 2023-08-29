@@ -58,7 +58,7 @@ namespace Circuit.UI.Input {
             if (elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
                 drawCenteredText("CLK", Post.B, true);
             } else if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
-                var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
+                var color = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
                 double v = elm.GetVoltage();
                 string s;
                 if (Math.Abs(v) < 1) {

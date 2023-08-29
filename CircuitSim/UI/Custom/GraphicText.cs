@@ -43,7 +43,7 @@ namespace Circuit.UI.Custom {
             var sizeBk = CustomGraphics.TextSize;
             var colorBk = CustomGraphics.TextColor;
             CustomGraphics.TextSize = mFontSize;
-            if (NeedsHighlight) {
+            if (mNeedsHighlight) {
                 CustomGraphics.TextColor = CustomGraphics.SelectColor;
             }
             g.DrawLeftText(mText, Post.A.X, (int)(Post.A.Y + mTextSize.Height / 2));

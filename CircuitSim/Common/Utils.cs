@@ -246,7 +246,7 @@ namespace Circuit {
                 }
                 return h + ":" + ((m >= 10) ? "" : "0") + m + ":" + ((v >= 10) ? "" : "0") + v.ToString("0.00");
             }
-            return unitText(v, "s", false);
+            return unitText(v, "s", false, false);
         }
 
         public static string UnitTextWithScale(double val, string utext, E_SCALE scale) {
@@ -297,35 +297,34 @@ namespace Circuit {
             return double.TryParse(text, out num);
         }
 
-        static string unitText(double v, string u, bool isShort = true) {
+        static string unitText(double v, string u, bool isShort = true, bool sign = true) {
             double va = Math.Abs(v);
             if (va < 1e-14) {
-                /* this used to return null, but then wires would display "null" with 0V */
-                return " 0.00" + u;
+                return (sign ? " 0.00" : "0.00") + u;
             }
             if (va < 1e-8) {
-                return format(v * 1e12, isShort) + "p" + u;
+                return format(v * 1e12, isShort, sign) + "p" + u;
             }
             if (va < 1e-3) {
-                return format(v * 1e6, isShort) + "u" + u;
+                return format(v * 1e6, isShort, sign) + "u" + u;
             }
             if (va < 1) {
-                return format(v * 1e3, isShort) + "m" + u;
+                return format(v * 1e3, isShort, sign) + "m" + u;
             }
             if (va < 1e3) {
-                return format(v, isShort) + u;
+                return format(v, isShort, sign) + u;
             }
             if (va < 1e6) {
-                return format(v * 1e-3, isShort) + "k" + u;
+                return format(v * 1e-3, isShort, sign) + "k" + u;
             }
             if (va < 1e9) {
-                return format(v * 1e-6, isShort) + "M" + u;
+                return format(v * 1e-6, isShort, sign) + "M" + u;
             }
-            return format(v * 1e-9, isShort) + "G" + u;
+            return format(v * 1e-9, isShort, sign) + "G" + u;
         }
 
-        static string format(double v, bool isShort) {
-            return isShort ? v.ToString("0.##") : v.ToString("+0.00;-0.00");
+        static string format(double v, bool isShort, bool sign) {
+            return isShort ? v.ToString("0.##") : v.ToString(sign ? "+0.00;-0.00" : "0.00");
         }
     }
 }

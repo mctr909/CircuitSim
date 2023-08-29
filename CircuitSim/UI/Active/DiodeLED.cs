@@ -65,7 +65,7 @@ namespace Circuit.UI.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            if (NeedsHighlight || this == CirSimForm.DragElm) {
+            if (mNeedsHighlight || this == CirSimForm.DragElm) {
                 base.Draw(g);
                 return;
             }

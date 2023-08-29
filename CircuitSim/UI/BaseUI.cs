@@ -11,7 +11,7 @@ namespace Circuit.UI {
         public BaseElement Elm;
         public static CustomGraphics Context;
 
-        static BaseUI mMouseElmRef = null;
+        static BaseUI mMouseElm = null;
 
         protected BaseUI(Point pos) {
             Post = new Post(pos);
@@ -32,21 +32,10 @@ namespace Circuit.UI {
 
         public bool IsMouseElm {
             get {
-                if (null == mMouseElmRef) {
+                if (null == mMouseElm) {
                     return false;
                 }
-                return mMouseElmRef.Equals(this);
-            }
-        }
-
-        public bool NeedsHighlight {
-            get {
-                if (null == mMouseElmRef) {
-                    return IsSelected;
-                }
-                /* Test if the current mouseElm is a ScopeElm and, if so, does it belong to this elm */
-                var isScopeElm = (mMouseElmRef is Scope) && ((Scope)mMouseElmRef).Properties.UI.Equals(this);
-                return mMouseElmRef.Equals(this) || IsSelected || isScopeElm;
+                return mMouseElm.Equals(this);
             }
         }
 
@@ -60,9 +49,18 @@ namespace Circuit.UI {
         /// <returns>returns true if it's zero size and should be deleted</returns>
         public virtual bool IsCreationFailed { get { return Post.IsCreationFailed; } }
 
-        public virtual bool IsGraphicElmt { get { return false; } }
-
         public virtual bool CanViewInScope { get { return Elm.PostCount <= 2; } }
+
+        protected bool mNeedsHighlight {
+            get {
+                if (null == mMouseElm) {
+                    return IsSelected;
+                }
+                /* Test if the current mouseElm is a ScopeElm and, if so, does it belong to this elm */
+                var isScopeElm = (mMouseElm is Scope) && ((Scope)mMouseElm).Properties.UI.Equals(this);
+                return mMouseElm.Equals(this) || IsSelected || isScopeElm;
+            }
+        }
 
         protected virtual int mNumHandles { get { return 2; } }
 
@@ -70,14 +68,12 @@ namespace Circuit.UI {
         #endregion
 
         #region [protected variable]
-        protected int mFlags;
-        protected double mCurCount;
-
         protected PointF mLead1;
         protected PointF mLead2;
         protected Point mNamePos;
         protected Point mValuePos;
-
+        protected int mFlags;
+        protected double mCurCount;
         protected bool mNoDiagonal;
         #endregion
 
@@ -152,9 +148,9 @@ namespace Circuit.UI {
 
         public void SetMouseElm(bool v) {
             if (v) {
-                mMouseElmRef = this;
-            } else if (mMouseElmRef == this) {
-                mMouseElmRef = null;
+                mMouseElm = this;
+            } else if (mMouseElm == this) {
+                mMouseElm = null;
             }
         }
 
@@ -184,8 +180,8 @@ namespace Circuit.UI {
         }
 
         public virtual void Delete() {
-            if (mMouseElmRef == this) {
-                mMouseElmRef = null;
+            if (mMouseElm == this) {
+                mMouseElm = null;
             }
             CirSimForm.DeleteSliders(this);
         }
@@ -390,37 +386,37 @@ namespace Circuit.UI {
 
         #region [draw method]
         protected void drawLine(PointF a, PointF b) {
-            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawColor = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawLine(a.X, a.Y, b.X, b.Y);
         }
 
         protected void drawLine(float ax, float ay, float bx, float by) {
-            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawColor = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawLine(ax, ay, bx, by);
         }
 
         protected void drawDashRectangle(float x, float y, float w, float h) {
-            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawColor = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawDashRectangle(x, y, w, h);
         }
 
         protected void drawCircle(PointF p, float radius) {
-            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawColor = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawCircle(p, radius);
         }
 
         protected void drawPolygon(PointF[] p) {
-            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawColor = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawPolygon(p);
         }
 
         protected void drawPolyline(PointF[] p) {
-            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawColor = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawPolyline(p);
         }
 
         protected void fillPolygon(PointF[] p) {
-            var color = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            var color = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.FillPolygon(color, p);
         }
 
@@ -428,7 +424,7 @@ namespace Circuit.UI {
             /* we normally do this in updateCircuit() now because the logic is more complicated.
              * we only handle the case where we have to draw all the posts.  That happens when
              * this element is selected or is being created */
-            if (CirSimForm.DragElm == null && !NeedsHighlight) {
+            if (CirSimForm.DragElm == null && !mNeedsHighlight) {
                 return;
             }
             if (CirSimForm.MouseMode == CirSimForm.MOUSE_MODE.DRAG_ROW || CirSimForm.MouseMode == CirSimForm.MOUSE_MODE.DRAG_COLUMN) {
@@ -441,17 +437,17 @@ namespace Circuit.UI {
         }
 
         protected void drawLeadA() {
-            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawColor = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawLine(Elm.Post[0], mLead1);
         }
 
         protected void drawLeadB() {
-            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawColor = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawLine(mLead2, Elm.Post[1]);
         }
 
         protected void draw2Leads() {
-            Context.DrawColor = NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawColor = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             /* draw first lead */
             Context.DrawLine(Elm.Post[0], mLead1);
             /* draw second lead */

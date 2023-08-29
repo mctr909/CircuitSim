@@ -181,7 +181,7 @@ namespace Circuit.UI.Output {
 
         public class Property {
             #region CONST
-            const int INFO_WIDTH = 80;
+            const int INFO_WIDTH = 60;
             const int FLAG_PLOTS = 4096;
             const double FFT_MIN = -100.0;
             const double SCALE_MIN = 1e-9;

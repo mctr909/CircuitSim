@@ -13,8 +13,6 @@ using Circuit.UI;
 using Circuit.UI.Passive;
 using Circuit.UI.Output;
 using Circuit.Forms;
-using Circuit.Elements.Input;
-using Circuit.UI.Input;
 
 namespace Circuit {
     public partial class CirSimForm : Form {
