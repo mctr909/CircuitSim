@@ -71,22 +71,8 @@ namespace Circuit.UI.Output {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmLabeledNode)Elm;
             drawLeadA();
-            var str = ce.Text;
-            var lineOver = false;
-            if (str.StartsWith("/")) {
-                lineOver = true;
-                str = str.Substring(1);
-            }
-            drawCenteredRText(str, mNamePos, mTextRot);
+            drawCenteredRText(ce.Text, mNamePos, mTextRot);
             drawPolyline(mTextPoly);
-            if (lineOver) {
-                int asc = (int)(CustomGraphics.TextSize + 0.5);
-                if (lineOver) {
-                    int ya = Post.B.Y - asc;
-                    int sw = (int)g.GetTextSize(str).Width;
-                    drawLine(Post.B.X - sw / 2, ya, Post.B.X + sw / 2, ya);
-                }
-            }
             updateDotCount(ce.Current, ref mCurCount);
             drawCurrentA(mCurCount);
             drawPosts();
