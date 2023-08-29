@@ -39,8 +39,7 @@ namespace Circuit.UI.Output {
             var pw = txtW / Post.Len;
             var ph = 0.5 * (txtH - 1);
             setLead1(1);
-            interpPost(ref mNamePos, 1 + 0.5 * pw, -txtH / Post.Len);
-            Post.SetBbox(Post.A, Post.B, LabelSize);
+            Post.SetBbox(Post.A, Post.B, txtH);
             var p1 = new PointF();
             var p2 = new PointF();
             var p3 = new PointF();
@@ -63,6 +62,9 @@ namespace Circuit.UI.Output {
             }
             if (45 * 3 <= deg && deg < 45 * 7) {
                 mTextRot += Math.PI;
+                interpPost(ref mNamePos, 1 + 0.5 * pw, txtH / Post.Len);
+            } else {
+                interpPost(ref mNamePos, 1 + 0.5 * pw, -txtH / Post.Len);
             }
         }
 

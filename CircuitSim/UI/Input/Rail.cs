@@ -23,6 +23,7 @@ namespace Circuit.UI.Input {
         public override void SetPoints() {
             base.SetPoints();
             Post.SetBbox(BODY_LEN);
+            mNamePos = Post.B;
             setLead1(1 - BODY_LEN / Post.Len);
         }
 
@@ -56,7 +57,7 @@ namespace Circuit.UI.Input {
         void drawRail() {
             var elm = (ElmVoltage)Elm;
             if (elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
-                drawCenteredText("CLK", Post.B, true);
+                drawCenteredText("CLK", mNamePos, true);
             } else if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                 var color = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
                 double v = elm.GetVoltage();
@@ -69,7 +70,7 @@ namespace Circuit.UI.Input {
                 if (elm.GetVoltage() > 0) {
                     s = "+" + s;
                 }
-                drawCenteredText(s, Post.B, true);
+                drawCenteredText(s, mNamePos, true);
             } else {
                 drawWaveform(Elm.Post[1]);
             }

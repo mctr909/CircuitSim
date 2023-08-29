@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 using Circuit.Elements.Active;
@@ -128,12 +129,12 @@ namespace Circuit.UI.Active {
         void setTextPos() {
             if (Post.Horizontal) {
                 if (0 < Post.Dsign) {
-                    mNamePos = new Point(Elm.Post[1].X + 8, Elm.Post[1].Y);
+                    mNamePos = new Point(Elm.Post[1].X + 10, Elm.Post[1].Y);
                 } else {
-                    mNamePos = new Point(Elm.Post[1].X - 5, Elm.Post[1].Y);
+                    mNamePos = new Point(Elm.Post[1].X - 6, Elm.Post[1].Y);
                 }
             } else if (Post.Vertical) {
-                mNamePos = new Point(Elm.Post[1].X, Elm.Post[1].Y + HS * Post.Dsign * 2 / 3);
+                mNamePos = new Point(Elm.Post[1].X, Elm.Post[1].Y + 13 * Post.Dsign * 2 / 3);
             } else {
                 interpPost(ref mNamePos, 0.5, 10 * Post.Dsign);
             }
@@ -175,7 +176,7 @@ namespace Circuit.UI.Active {
                 if (Post.Vertical) {
                     g.DrawCenteredText(ReferenceName, mNamePos);
                 } else {
-                    g.DrawCenteredVText(ReferenceName, mNamePos);
+                    drawCenteredRText(ReferenceName, mNamePos, -Math.PI / 2);
                 }
             }
         }

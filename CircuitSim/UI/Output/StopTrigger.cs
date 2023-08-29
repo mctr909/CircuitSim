@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 using Circuit.Elements.Output;
@@ -25,17 +26,33 @@ namespace Circuit.UI.Output {
 	 	public override void SetPoints() {
 			base.SetPoints();
 			mLead1 = new Point();
+			setTextPos();
+		}
+
+		void setTextPos() {
+			ReferenceName = "stop trigger";
+			var txtW = Context.GetTextSize(ReferenceName).Width;
+			var txtH = Context.GetTextSize(ReferenceName).Height;
+			var pw = txtW / Post.Len;
+			setLead1(1);
+			Post.SetBbox(Post.A, Post.B, txtH);
+			var abX = Post.B.X - Post.A.X;
+			var abY = Post.B.Y - Post.A.Y;
+			mTextRot = Math.Atan2(abY, abX);
+			var deg = -mTextRot * 180 / Math.PI;
+			if (deg < 0.0) {
+				deg += 360;
+			}
+			if (45 * 3 <= deg && deg < 45 * 7) {
+				mTextRot += Math.PI;
+				interpPost(ref mNamePos, 1 + 0.5 * pw, txtH / Post.Len);
+			} else {
+				interpPost(ref mNamePos, 1 + 0.5 * pw, -txtH / Post.Len);
+			}
 		}
 
 		public override void Draw(CustomGraphics g) {
-			string s = "trigger";
-			double w = g.GetTextSize(s).Width / 2;
-			if (w > Post.Len * 0.8) {
-				w = Post.Len * 0.8;
-			}
-			setLead1(1 - w / Post.Len);
-            Post.SetBbox(Elm.Post[0], mLead1, 0);
-			drawCenteredText(s, Post.B, true);
+			drawCenteredRText(ReferenceName, mNamePos, mTextRot);
 			drawLeadA();
 			drawPosts();
 		}
