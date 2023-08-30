@@ -870,6 +870,7 @@ namespace Circuit {
             case MOUSE_MODE.DRAG_ITEM:
                 clearSelection();
                 MouseMode = MOUSE_MODE.NONE;
+                Post.Dragging = EPOST.INVALID;
                 break;
             case MOUSE_MODE.SPLIT:
                 doSplit(Mouse.GripElm);
@@ -1318,6 +1319,8 @@ namespace Circuit {
                 if (Mouse.GripElm == null) {
                     MouseMode = MOUSE_MODE.SELECT_AREA;
                 } else {
+                    Post.Dragging = EPOST.INVALID;
+                    Post.Hovering = EPOST.INVALID;
                     var dumpInfo = Mouse.GripElm.Post;
                     var d1 = Utils.Distance(dumpInfo.A, gpos);
                     var d2 = Utils.Distance(dumpInfo.B, gpos);
@@ -1327,7 +1330,7 @@ namespace Circuit {
                     } else if (d2 <= CustomGraphics.HANDLE_RADIUS) {
                         Post.Dragging = EPOST.B;
                         MouseMode = MOUSE_MODE.DRAG_POST;
-                    } else if (Utils.DistanceOnLine(dumpInfo.A, dumpInfo.B, gpos) <= CustomGraphics.HANDLE_RADIUS * 2) {
+                    } else if (Utils.DistanceOnLine(dumpInfo.A, dumpInfo.B, gpos) <= CustomGraphics.HANDLE_RADIUS) {
                         Post.Dragging = EPOST.INVALID;
                         MouseMode = MOUSE_MODE.DRAG_ITEM;
                     }
@@ -1588,7 +1591,7 @@ namespace Circuit {
                         newMouseElm = ce;
                         break;
                     }
-                    if (Utils.DistanceOnLine(p1, p2, gx, gy) <= CustomGraphics.HANDLE_RADIUS * 2) {
+                    if (Utils.DistanceOnLine(p1, p2, gx, gy) <= CustomGraphics.HANDLE_RADIUS) {
                         newMouseElm = ce;
                         break;
                     }
@@ -1597,13 +1600,12 @@ namespace Circuit {
                         break;
                     }
                 }
-            } else {
+            }
+            if (newMouseElm != null) {
                 var ce = newMouseElm;
-                var p1 = ce.Post.A;
-                var p2 = ce.Post.B;
-                if (Utils.Distance(p1, gx, gy) <= CustomGraphics.HANDLE_RADIUS) {
+                if (Utils.Distance(ce.Post.A, gx, gy) <= CustomGraphics.HANDLE_RADIUS) {
                     Post.Hovering = EPOST.A;
-                } else if(Utils.Distance(p2, gx, gy) <= CustomGraphics.HANDLE_RADIUS) {
+                } else if (Utils.Distance(ce.Post.B, gx, gy) <= CustomGraphics.HANDLE_RADIUS) {
                     Post.Hovering = EPOST.B;
                 }
             }
