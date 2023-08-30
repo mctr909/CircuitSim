@@ -112,7 +112,7 @@ namespace Circuit.UI {
             SetPoints();
         }
 
-        public void Move(int dx, int dy, int n) {
+        public void Move(int dx, int dy, EPOST n) {
             Post.Move(dx, dy, n);
             SetPoints();
         }
@@ -170,9 +170,10 @@ namespace Circuit.UI {
             }
         }
 
-        public string GetPostVoltage(int n) {
-            if (n < Elm.Volts.Length) {
-                return Utils.UnitText(Elm.Volts[n], "V");
+        public string GetPostVoltage(EPOST n) {
+            var ni = (int)n;
+            if (ni < Elm.Volts.Length) {
+                return Utils.UnitText(Elm.Volts[ni], "V");
             } else {
                 return "";
             }

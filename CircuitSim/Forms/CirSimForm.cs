@@ -79,8 +79,8 @@ namespace Circuit {
             public static Point InitDragGrid;
             public static Point DragGrid;
             public static Point DragScreen;
-            public static int DraggingPost;
-            public static int HoveringPost = -1;
+            public static EPOST DraggingPost = EPOST.INVALID;
+            public static EPOST HoveringPost = EPOST.INVALID;
             public static Rectangle SelectedArea;
         }
 
@@ -1324,13 +1324,15 @@ namespace Circuit {
                     var dumpInfo = Mouse.GripElm.Post;
                     var d1 = Utils.Distance(dumpInfo.A, spos);
                     var d2 = Utils.Distance(dumpInfo.B, spos);
-                    var d1_d2 = Utils.Distance(dumpInfo.A, dumpInfo.B);
-                    var dl = Math.Max(d1_d2 / 4, Utils.DistanceOnLine(dumpInfo.A, dumpInfo.B, spos));
-                    if (dl < Math.Min(d1, d2)) {
-                        MouseMode = MOUSE_MODE.DRAG_ITEM;
-                    } else {
-                        Mouse.DraggingPost = (d1 < d2) ? 0 : 1;
+                    if (d1 <= CustomGraphics.POST_RADIUS) {
+                        Mouse.DraggingPost = EPOST.A;
                         MouseMode = MOUSE_MODE.DRAG_POST;
+                    } else if (d2 <= CustomGraphics.POST_RADIUS) {
+                        Mouse.DraggingPost = EPOST.B;
+                        MouseMode = MOUSE_MODE.DRAG_POST;
+                    } else if (Utils.DistanceOnLine(dumpInfo.A, dumpInfo.B, spos) <= CustomGraphics.POST_RADIUS * 2) {
+                        Mouse.DraggingPost = EPOST.INVALID;
+                        MouseMode = MOUSE_MODE.DRAG_ITEM;
                     }
                 }
                 break;
@@ -1380,10 +1382,10 @@ namespace Circuit {
             for (int i = 0; i != UICount; i++) {
                 var ce = GetUI(i);
                 if (ce.Post.A.Y == Mouse.DragGrid.Y) {
-                    ce.Move(0, dy, 0);
+                    ce.Move(0, dy, EPOST.A);
                 }
                 if (ce.Post.B.Y == Mouse.DragGrid.Y) {
-                    ce.Move(0, dy, 1);
+                    ce.Move(0, dy, EPOST.B);
                 }
             }
             removeZeroLengthElements();
@@ -1397,10 +1399,10 @@ namespace Circuit {
             for (int i = 0; i != UICount; i++) {
                 var ce = GetUI(i);
                 if (ce.Post.A.X == Mouse.DragGrid.X) {
-                    ce.Move(dx, 0, 0);
+                    ce.Move(dx, 0, EPOST.A);
                 }
                 if (ce.Post.A.X == Mouse.DragGrid.X) {
-                    ce.Move(dx, 0, 1);
+                    ce.Move(dx, 0, EPOST.B);
                 }
             }
             removeZeroLengthElements();
@@ -1559,9 +1561,9 @@ namespace Circuit {
             Mouse.DragGrid.Y = SnapGrid(gy);
             Mouse.DragScreen.X = mx;
             Mouse.DragScreen.Y = my;
-            Mouse.DraggingPost = -1;
+            Mouse.DraggingPost = EPOST.INVALID;
+            Mouse.HoveringPost = EPOST.INVALID;
 
-            Mouse.HoveringPost = -1;
             PlotXElm = PlotYElm = null;
 
             double minDistance = 8;
@@ -1580,50 +1582,35 @@ namespace Circuit {
                 /* might still be close to a post */
                 for (int i = 0; i != UICount; i++) {
                     var ce = GetUI(i);
-                    var elm = ce.Elm;
-                    if (2 == elm.PostCount) {
-                        var p1 = elm.GetPost(0);
-                        var p2 = elm.GetPost(1);
-                        if (Utils.Distance(p1, gx, gy) < 5) {
-                            /// TODO: select post
-                            newMouseElm = ce;
-                            Mouse.HoveringPost = 0;
-                            break;
-                        }
-                        if (Utils.Distance(p2, gx, gy) < 5) {
-                            /// TODO: select post
-                            newMouseElm = ce;
-                            Mouse.HoveringPost = 1;
-                            break;
-                        }
-                        if (Utils.DistanceOnLine(p1, p2, gx, gy) < 8) {
-                            newMouseElm = ce;
-                            break;
-                        }
-                    } else {
-                        for (int j = elm.PostCount - 1; 0 <= j; j--) {
-                            var pt = elm.GetPost(j);
-                            if (Utils.Distance(pt, gx, gy) < 5) {
-                                /// TODO: select post
-                                newMouseElm = ce;
-                                Mouse.HoveringPost = j;
-                                break;
-                            }
-                        }
-                        if (ce.Post.BoundingBox.Contains(gx, gy)) {
-                            newMouseElm = ce;
-                            break;
-                        }
+                    var p1 = ce.Post.A;
+                    var p2 = ce.Post.B;
+                    if (Utils.Distance(p1, gx, gy) <= CustomGraphics.POST_RADIUS) {
+                        newMouseElm = ce;
+                        break;
+                    }
+                    if (Utils.Distance(p2, gx, gy) <= CustomGraphics.POST_RADIUS) {
+                        newMouseElm = ce;
+                        break;
+                    }
+                    if (Utils.DistanceOnLine(p1, p2, gx, gy) <= CustomGraphics.POST_RADIUS * 2) {
+                        newMouseElm = ce;
+                        break;
+                    }
+                    if (ce.Post.BoundingBox.Contains(gx, gy)) {
+                        newMouseElm = ce;
+                        break;
                     }
                 }
             } else {
-                Mouse.HoveringPost = -1;
-                /* look for post close to the mouse pointer */
-                for (int i = 0; i != newMouseElm.Elm.PostCount; i++) {
-                    var pt = newMouseElm.Elm.GetPost(i);
-                    if (Utils.Distance(pt, gx, gy) < 5) {
-                        Mouse.HoveringPost = i;
-                    }
+                var ce = newMouseElm;
+                var p1 = ce.Post.A;
+                var p2 = ce.Post.B;
+                if (Utils.Distance(p1, gx, gy) <= CustomGraphics.POST_RADIUS) {
+                    Mouse.HoveringPost = EPOST.A;
+                } else if(Utils.Distance(p2, gx, gy) <= CustomGraphics.POST_RADIUS) {
+                    Mouse.HoveringPost = EPOST.B;
+                } else if (Utils.DistanceOnLine(p1, p2, gx, gy) <= CustomGraphics.POST_RADIUS * 2) {
+                    Mouse.HoveringPost = EPOST.BOTH;
                 }
             }
             Repaint();
@@ -2048,7 +2035,7 @@ namespace Circuit {
             if (Mouse.GripElm == null) {
                 ControlPanel.LblSelectInfo.Text = "";
             } else {
-                if (Mouse.HoveringPost == -1) {
+                if (Mouse.HoveringPost == EPOST.INVALID) {
                     Mouse.GripElm.GetInfo(info);
                 } else {
                     info[0] = "電位：" + Mouse.GripElm.GetPostVoltage(Mouse.HoveringPost);
@@ -2210,11 +2197,13 @@ namespace Circuit {
 
             if (Mouse.GripElm != null) {
                 var ce = Mouse.GripElm;
-                if (0 <= Mouse.HoveringPost) {
-                    ce.DrawHandle(ce.Elm.GetPost(Mouse.HoveringPost));
-                }
-                if (0 <= Mouse.DraggingPost) {
-                    ce.DrawHandle(ce.Elm.GetPost(Mouse.DraggingPost));
+                if (EPOST.A == Mouse.HoveringPost) {
+                    ce.DrawHandle(ce.Post.A);
+                } else if (EPOST.B == Mouse.HoveringPost) {
+                    ce.DrawHandle(ce.Post.B);
+                } else if (EPOST.BOTH == Mouse.HoveringPost) {
+                    g.DrawPost(ce.Post.A);
+                    g.DrawPost(ce.Post.B);
                 }
             }
 

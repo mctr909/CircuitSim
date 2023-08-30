@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using System.Drawing;
 
 namespace Circuit.UI {
+    public enum EPOST {
+        A,
+        B,
+        BOTH,
+        INVALID
+    }
+
     public class Post {
         public Point A;
         public Point B;
@@ -59,7 +66,7 @@ namespace Circuit.UI {
         public void FlipPosts() {
             var old = A;
             A = B;
-            B= old;
+            B = old;
         }
 
         public void Drag(Point pos, bool noDiagonal) {
@@ -90,10 +97,10 @@ namespace Circuit.UI {
             BoundingBox.Y += dy;
         }
 
-        public void Move(int dx, int dy, int n) {
+        public void Move(int dx, int dy, EPOST n) {
             var old = A;
             var old2 = B;
-            if (n == 0) {
+            if (n == EPOST.A) {
                 A.X += dx;
                 A.Y += dy;
             } else {

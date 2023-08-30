@@ -35,6 +35,8 @@ namespace Circuit {
         protected Bitmap mImage;
         Graphics mG;
 
+        public const float POST_RADIUS = 2.5f;
+
         public static Color SelectColor { get; private set; }
         public static Color WhiteColor { get; private set; }
         public static Color LineColor { get; private set; }
@@ -153,12 +155,19 @@ namespace Circuit {
         }
 
         public virtual void DrawPost(PointF p) {
-            var d = mPenPost.Width;
-            mG.FillPie(mPenPost.Brush, p.X - d / 2, p.Y - d / 2, d, d, 0, 360);
+            mG.FillPie(mPenPost.Brush,
+                p.X - POST_RADIUS, p.Y - POST_RADIUS,
+                POST_RADIUS * 2, POST_RADIUS * 2,
+                0, 360
+            );
         }
 
         public virtual void DrawHandle(Point p) {
-            mG.FillPie(mPenHandle.Brush, p.X - 2.5f, p.Y - 2.5f, 5, 5, 0, 360);
+            mG.FillPie(mPenHandle.Brush,
+                p.X - POST_RADIUS, p.Y - POST_RADIUS,
+                POST_RADIUS * 2, POST_RADIUS * 2,
+                0, 360
+            );
         }
 
         public virtual void DrawCurrent(float cx, float cy, float radius) {
