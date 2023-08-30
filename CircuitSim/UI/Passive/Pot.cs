@@ -172,7 +172,7 @@ namespace Circuit.UI.Passive {
                 }
             }
             if (Post.Vertical) {
-                g.DrawCenteredVText(mName, mNamePos);
+                drawCenteredText(mName, mNamePos, -Math.PI / 2);
             } else {
                 g.DrawLeftText(mName, mNamePos.X, mNamePos.Y);
             }

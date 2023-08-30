@@ -83,20 +83,16 @@ class PDF {
             writeText(s, x, y, GetTextSize(s).Width);
         }
 
-        public override void DrawCenteredText(string s, PointF p) {
-            writeText(s, p.X, p.Y, GetTextSize(s).Width * 0.5f);
+        public override void DrawRightText(string s, PointF p) {
+            DrawRightText(s, (int)p.X, (int)p.Y);
+        }
+
+        public override void DrawCenteredText(string s, PointF p, double rotateAngle) {
+            writeTextR(s, p.X, p.Y, rotateAngle, GetTextSize(s).Width * 0.5f);
         }
 
         public override void DrawCenteredLText(string s, PointF p) {
             writeTextL(s, p.X, p.Y, GetTextSizeL(s).Width * 0.5f);
-        }
-
-        public override void DrawCenteredRText(string s, PointF p, double theta) {
-            writeTextR(s, p.X, p.Y, theta, GetTextSize(s).Width * 0.5f);
-        }
-
-        public override void DrawCenteredVText(string s, PointF p) {
-            writeTextV(s, p.X, p.Y, GetTextSize(s).Width * 0.5f);
         }
 
         public override void DrawPost(PointF p) {
@@ -280,17 +276,6 @@ class PDF {
                 sin.ToString("0.##"), (-cos).ToString("0.##"),
                 (x - rx * PIX_SCALE).ToString("0.##"),
                 (y - ry * PIX_SCALE).ToString("0.##")
-            );
-            writeText(s);
-        }
-
-        void writeTextV(string s, float x, float y, float ofsY = 0.0f) {
-            writeFontSize(TextSize);
-            x += (float)mOfsX + TextSize * PIX_SCALE * 0.5f;
-            y += (float)mOfsY + ofsY * PIX_SCALE;
-            mSw.WriteLine("0 -1 -1 0 {0} {1} Tm",
-                x.ToString("0.##"),
-                y.ToString("0.##")
             );
             writeText(s);
         }

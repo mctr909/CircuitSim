@@ -26,7 +26,7 @@ namespace Circuit.UI.Output {
         public override void Draw(CustomGraphics g) {
             drawLeadA();
             if (mustShowVoltage()) {
-                drawCenteredText(drawValues(), mTextPos, true);
+                drawCenteredText(drawValues(), mTextPos);
             }
         }
     }

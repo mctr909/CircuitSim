@@ -6,7 +6,7 @@ using Circuit.Elements.Input;
 namespace Circuit.UI.Input {
     class FM : BaseUI {
         const int FLAG_COS = 2;
-        const int SIZE = 28;
+        const int SIZE = 32;
 
         public FM(Point pos) : base(pos) {
             Elm = new ElmFM();
@@ -40,7 +40,7 @@ namespace Circuit.UI.Input {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmFM)Elm;
             drawLeadA();
-            drawCenteredRText(ReferenceName, mNamePos, 0);
+            drawCenteredText(ReferenceName, mNamePos);
             drawWaveform(Elm.Post[1]);
             drawPosts();
             updateDotCount(-ce.Current, ref mCurCount);

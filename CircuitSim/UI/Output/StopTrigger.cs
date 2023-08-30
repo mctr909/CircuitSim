@@ -52,7 +52,7 @@ namespace Circuit.UI.Output {
 		}
 
 		public override void Draw(CustomGraphics g) {
-			drawCenteredRText(ReferenceName, mNamePos, mTextRot);
+			drawCenteredText(ReferenceName, mNamePos, mTextRot);
 			drawLeadA();
 			drawPosts();
 		}

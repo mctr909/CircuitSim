@@ -5,7 +5,7 @@ using Circuit.Elements.Input;
 
 namespace Circuit.UI.Input {
     class Current : BaseUI {
-        const int BODY_LEN = 28;
+        const int BODY_LEN = 24;
 
         PointF[] mArrow;
         PointF mAshaft1;
@@ -57,7 +57,7 @@ namespace Circuit.UI.Input {
             doDots();
             if (ControlPanel.ChkShowValues.Checked) {
                 string s = Utils.UnitText(mCurrentValue, "A");
-                g.DrawRightText(s, mTextPos.X, mTextPos.Y);
+                g.DrawRightText(s, mTextPos);
             }
             drawPosts();
         }

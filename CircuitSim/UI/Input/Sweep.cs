@@ -9,9 +9,7 @@ namespace Circuit.UI.Input {
         const int FLAG_LOG = 1;
         const int FLAG_BIDIR = 2;
 
-        const int SIZE = 28;
-
-        Point mTextPos;
+        const int SIZE = 32;
 
         public Sweep(Point pos) : base(pos) {
             Elm = new ElmSweep();
@@ -21,6 +19,9 @@ namespace Circuit.UI.Input {
 
         public Sweep(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new ElmSweep(st);
+            var ce = (ElmSweep)Elm;
+            ce.IsLog = 0 != (mFlags & FLAG_LOG);
+            ce.BothSides = 0 != (mFlags & FLAG_BIDIR);
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.SWEEP; } }
@@ -41,10 +42,6 @@ namespace Circuit.UI.Input {
                 Elm.Post[1].X + SIZE, Elm.Post[1].Y + SIZE
             );
             setLead1(1 - 0.5 * SIZE / Post.Len);
-            interpPost(ref mTextPos,
-                1.0 + 0.66 * SIZE / Utils.Distance(Elm.Post[0], Elm.Post[1]),
-                24 * Post.Dsign
-            );
         }
 
         public override void Draw(CustomGraphics g) {
@@ -56,7 +53,7 @@ namespace Circuit.UI.Input {
             int yc = Elm.Post[1].Y;
             drawCircle(Elm.Post[1], SIZE / 2);
 
-            int wl = 7;
+            int wl = 11;
             int xl = 10;
             long tm = DateTime.Now.ToFileTimeUtc();
             tm %= 2000;

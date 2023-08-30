@@ -57,7 +57,7 @@ namespace Circuit.UI.Input {
         void drawRail() {
             var elm = (ElmVoltage)Elm;
             if (elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
-                drawCenteredText("CLK", mNamePos, true);
+                drawCenteredText("CLK", mNamePos);
             } else if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                 var color = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
                 double v = elm.GetVoltage();
@@ -70,7 +70,7 @@ namespace Circuit.UI.Input {
                 if (elm.GetVoltage() > 0) {
                     s = "+" + s;
                 }
-                drawCenteredText(s, mNamePos, true);
+                drawCenteredText(s, mNamePos);
             } else {
                 drawWaveform(Elm.Post[1]);
             }

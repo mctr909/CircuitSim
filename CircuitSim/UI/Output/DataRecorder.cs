@@ -75,7 +75,7 @@ namespace Circuit.UI.Output {
 
         public override void Draw(CustomGraphics g) {
             drawLeadA();
-            drawCenteredRText(ReferenceName, mNamePos, mTextRot);
+            drawCenteredText(ReferenceName, mNamePos, mTextRot);
             drawPolyline(mTextPoly);
             drawPosts();
         }

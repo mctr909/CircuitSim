@@ -23,8 +23,8 @@ namespace Circuit {
         static Font mElementFont = new Font("MS Gothic", 9.0f);
         static Brush mTextBrush = Brushes.Black;
         static Color mTextColor;
-        static Pen mPenPost = new Pen(Color.Red, 5.0f);
-        static Brush mPenHandle;
+        static Pen mPenPost = new Pen(Color.Green, 5.0f);
+        static Pen mPenHandle = new Pen(Color.Red, 1.0f);
 
         Pen mPenLine = new Pen(Color.White, 1.0f) {
             StartCap = LineCap.Triangle,
@@ -107,16 +107,16 @@ namespace Circuit {
                 WhiteColor = Color.Gray;
                 LineColor = Color.Black;
                 TextColor = Color.Black;
-                SelectColor = Color.Red;
+                SelectColor = Color.Black;
                 PostColor = Color.Black;
-                mPenHandle = Pens.Red.Brush;
+                mPenHandle.Color = Color.Black;
             } else {
                 WhiteColor = Color.FromArgb(191, 191, 191);
                 LineColor = Color.FromArgb(95, 95, 95);
                 TextColor = Color.FromArgb(147, 147, 147);
                 SelectColor = Color.FromArgb(0, 255, 255);
-                PostColor = Color.FromArgb(0, 147, 0);
-                mPenHandle = new Pen(Color.FromArgb(191, 0, 0)).Brush;
+                PostColor = Color.FromArgb(0, 127, 0);
+                mPenHandle.Color = Color.FromArgb(211, 0, 0);
             }
         }
 
@@ -132,32 +132,24 @@ namespace Circuit {
             mG.DrawString(s, mTextFont, mTextBrush, x, y, mAlignLeft);
         }
 
+        public virtual void DrawRightText(string s, PointF p) {
+            mG.DrawString(s, mTextFont, mTextBrush, p.X, p.Y, mAlignRight);
+        }
+
         public virtual void DrawRightText(string s, int x, int y) {
             mG.DrawString(s, mTextFont, mTextBrush, x, y, mAlignRight);
         }
 
-        public virtual void DrawCenteredText(string s, PointF p) {
-            mG.DrawString(s, mTextFont, mTextBrush, p.X, p.Y, mAlignCenter);
+        public virtual void DrawCenteredText(string s, PointF p, double rotateAngle) {
+            mG.TranslateTransform(p.X, p.Y);
+            mG.RotateTransform((float)(rotateAngle * 180 / Math.PI));
+            mG.DrawString(s, mTextFont, mTextBrush, 0, 0, mAlignCenter);
+            mG.RotateTransform(-(float)(rotateAngle * 180 / Math.PI));
+            mG.TranslateTransform(-p.X, -p.Y);
         }
 
         public virtual void DrawCenteredLText(string s, PointF p) {
             mG.DrawString(s, mTextFontL, mTextBrush, p.X, p.Y + 1, mAlignCenter);
-        }
-
-        public virtual void DrawCenteredRText(string s, PointF p, double theta) {
-            mG.TranslateTransform(p.X, p.Y);
-            mG.RotateTransform((float)(theta * 180 / Math.PI));
-            mG.DrawString(s, mTextFont, mTextBrush, 0, 0, mAlignCenter);
-            mG.RotateTransform(-(float)(theta * 180 / Math.PI));
-            mG.TranslateTransform(-p.X, -p.Y);
-        }
-
-        public virtual void DrawCenteredVText(string s, PointF p) {
-            mG.TranslateTransform(p.X, p.Y);
-            mG.RotateTransform(-90);
-            mG.DrawString(s, mTextFont, mTextBrush, 0, 0, mAlignCenter);
-            mG.RotateTransform(90);
-            mG.TranslateTransform(-p.X, -p.Y);
         }
 
         public virtual void DrawPost(PointF p) {
@@ -166,8 +158,7 @@ namespace Circuit {
         }
 
         public virtual void DrawHandle(Point p) {
-            var d = mPenPost.Width;
-            mG.FillPie(mPenHandle, p.X - d / 2, p.Y - d / 2, d, d, 0, 360);
+            mG.FillPie(mPenHandle.Brush, p.X - 2.5f, p.Y - 2.5f, 5, 5, 0, 360);
         }
 
         public virtual void DrawCurrent(float cx, float cy, float radius) {

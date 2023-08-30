@@ -160,9 +160,9 @@ namespace Circuit.UI.Active {
 
             if (ControlPanel.ChkShowName.Checked) {
                 if (Post.Vertical) {
-                    g.DrawCenteredText(ReferenceName, mNamePos);
+                    drawCenteredText(ReferenceName, mNamePos);
                 } else {
-                    drawCenteredRText(ReferenceName, mNamePos, -Math.PI / 2);
+                    drawCenteredText(ReferenceName, mNamePos, -Math.PI / 2);
                 }
             }
         }

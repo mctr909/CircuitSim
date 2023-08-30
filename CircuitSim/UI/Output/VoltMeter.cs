@@ -49,7 +49,7 @@ namespace Circuit.UI.Output {
             }
 
             if (mustShowVoltage()) {
-                drawCenteredText(drawValues(), mCenter, true);
+                drawCenteredText(drawValues(), mCenter);
             }
 
             drawCenteredLText("+", mPlusPoint, true);

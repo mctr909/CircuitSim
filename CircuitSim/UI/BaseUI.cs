@@ -159,6 +159,10 @@ namespace Circuit.UI {
             IsSelected = r.IntersectsWith(Post.BoundingBox);
         }
 
+        public void DrawHandle(Point pos) {
+            Context.DrawHandle(pos);
+        }
+
         public void DrawHandles(CustomGraphics g) {
             g.DrawHandle(Post.A);
             if (2 <= mNumHandles) {
@@ -496,33 +500,15 @@ namespace Circuit.UI {
             drawCurrent(mLead2, Elm.Post[1], pos);
         }
 
-        protected void drawCenteredText(string s, PointF p, bool cx) {
-            var fs = Context.GetTextSize(s);
-            var w = fs.Width;
-            var h2 = fs.Height / 2;
-            if (cx) {
-                Post.AdjustBbox(
-                    (int)(p.X - w / 2), (int)(p.Y - h2),
-                    (int)(p.X + w / 2), (int)(p.Y + h2)
-                );
-            } else {
-                Post.AdjustBbox(
-                    (int)p.X, (int)(p.Y - h2),
-                    (int)(p.X + w), (int)(p.Y + h2)
-                );
-            }
-            Context.DrawCenteredText(s, p);
-        }
-
-        protected void drawCenteredRText(string s, PointF p, double theta) {
-            var fs = Context.GetTextSize(s);
+        protected void drawCenteredText(string text, PointF centerPos, double rotateAngle = 0) {
+            var fs = Context.GetTextSize(text);
             var w = fs.Width;
             var h2 = fs.Height / 2;
             Post.AdjustBbox(
-                (int)(p.X - w / 2), (int)(p.Y - h2),
-                (int)(p.X + w / 2), (int)(p.Y + h2)
+                (int)(centerPos.X - w / 2), (int)(centerPos.Y - h2),
+                (int)(centerPos.X + w / 2), (int)(centerPos.Y + h2)
             );
-            Context.DrawCenteredRText(s, p, theta);
+            Context.DrawCenteredText(text, centerPos, rotateAngle);
         }
 
         protected void drawCenteredLText(string s, PointF p, bool cx) {
@@ -565,13 +551,13 @@ namespace Circuit.UI {
 
         protected void drawValue(string s) {
             if (ControlPanel.ChkShowValues.Checked) {
-                drawCenteredRText(s, mValuePos, mTextRot);
+                drawCenteredText(s, mValuePos, mTextRot);
             }
         }
 
         protected void drawName() {
             if (ControlPanel.ChkShowName.Checked) {
-                drawCenteredRText(ReferenceName, mNamePos, mTextRot);
+                drawCenteredText(ReferenceName, mNamePos, mTextRot);
             }
         }
         #endregion

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 using Circuit.Elements.Output;
@@ -58,9 +59,9 @@ namespace Circuit.UI.Output {
                 break;
             }
             if (Post.Vertical) {
-                g.DrawCenteredVText(s, mTextPos);
+                drawCenteredText(s, mTextPos, -Math.PI / 2);
             } else {
-                g.DrawCenteredText(s, mTextPos);
+                drawCenteredText(s, mTextPos);
             }
             drawPosts();
         }

@@ -47,7 +47,7 @@ namespace Circuit.UI.Passive {
 
         public override void Draw(CustomGraphics g) {
             base.Draw(g);
-            drawCenteredText("+", mPlusPoint, true);
+            drawCenteredText("+", mPlusPoint);
         }
 
         public override void GetInfo(string[] arr) {

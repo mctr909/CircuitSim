@@ -71,7 +71,7 @@ namespace Circuit.UI.Output {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmLabeledNode)Elm;
             drawLeadA();
-            drawCenteredRText(ce.Text, mNamePos, mTextRot);
+            drawCenteredText(ce.Text, mNamePos, mTextRot);
             drawPolyline(mTextPoly);
             updateDotCount(ce.Current, ref mCurCount);
             drawCurrentA(mCurCount);
