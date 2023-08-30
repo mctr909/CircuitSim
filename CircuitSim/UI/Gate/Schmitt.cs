@@ -16,7 +16,6 @@ namespace Circuit.UI.Gate {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmSchmitt)Elm;
-            drawPosts();
             draw2Leads();
             drawPolygon(gatePoly);
             drawPolygon(symbolPoly);

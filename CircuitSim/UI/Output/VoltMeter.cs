@@ -53,7 +53,6 @@ namespace Circuit.UI.Output {
             }
 
             drawCenteredLText("+", mPlusPoint, true);
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

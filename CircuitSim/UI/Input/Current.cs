@@ -59,7 +59,6 @@ namespace Circuit.UI.Input {
                 string s = Utils.UnitText(mCurrentValue, "A");
                 g.DrawRightText(s, mTextPos);
             }
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

@@ -55,7 +55,6 @@ namespace Circuit.UI.Active {
             drawLine(mWing[1], mCathode[1]);
 
             doDots();
-            drawPosts();
             drawName();
         }
 

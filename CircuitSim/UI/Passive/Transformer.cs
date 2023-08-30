@@ -148,8 +148,6 @@ namespace Circuit.UI.Passive {
                 drawCurrent(ce.Post[i + 2], mPtCoil[i + 2], -ce.CurCounts[i]);
             }
 
-            drawPosts();
-
             if (ControlPanel.ChkShowName.Checked) {
                 g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
             }

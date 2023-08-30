@@ -75,7 +75,6 @@ namespace Circuit.UI.Output {
             drawPolyline(mTextPoly);
             updateDotCount(ce.Current, ref mCurCount);
             drawCurrentA(mCurCount);
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

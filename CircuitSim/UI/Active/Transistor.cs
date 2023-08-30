@@ -144,8 +144,6 @@ namespace Circuit.UI.Active {
             /* draw base rectangle */
             fillPolygon(mRectPoly);
 
-            drawPosts();
-
             /* draw dots */
             updateDotCount(-ce.Ib, ref mCurCountB);
             updateDotCount(-ce.Ic, ref mCurCountC);

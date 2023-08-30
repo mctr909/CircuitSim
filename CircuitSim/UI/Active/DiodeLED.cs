@@ -91,7 +91,6 @@ namespace Circuit.UI.Active {
             updateDotCount();
             drawCurrent(Elm.Post[0], mLedLead1, mCurCount);
             drawCurrent(Elm.Post[1], mLedLead2, -mCurCount);
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

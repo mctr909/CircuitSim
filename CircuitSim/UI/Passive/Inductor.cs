@@ -91,7 +91,6 @@ namespace Circuit.UI.Passive {
             drawName();
             drawValue(Utils.UnitText(ce.Inductance));
             doDots();
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

@@ -113,7 +113,6 @@ namespace Circuit.UI.Gate {
             }
             updateDotCount(ce.Current, ref mCurCount);
             drawCurrentB(mCurCount);
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

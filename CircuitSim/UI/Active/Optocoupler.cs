@@ -103,8 +103,6 @@ namespace Circuit.UI.Active {
             ce.mDiode.Draw(g);
             ce.mTransistor.Draw(g);
 
-            drawPosts();
-
             /* draw little arrows */
             var sx1 = mArrow1[0].X - 10;
             var sx2 = sx1 + 5;

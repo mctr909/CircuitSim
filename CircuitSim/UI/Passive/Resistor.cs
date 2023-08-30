@@ -141,7 +141,6 @@ namespace Circuit.UI.Passive {
             drawValue(Utils.UnitText(ce.Resistance));
 
             doDots();
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

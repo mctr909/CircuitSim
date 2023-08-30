@@ -36,6 +36,7 @@ namespace Circuit {
         Graphics mG;
 
         public const float POST_RADIUS = 2.5f;
+        public const float HANDLE_RADIUS = 4.5f;
 
         public static Color SelectColor { get; private set; }
         public static Color WhiteColor { get; private set; }
@@ -162,10 +163,10 @@ namespace Circuit {
             );
         }
 
-        public virtual void DrawHandle(Point p) {
+        public virtual void DrawHandle(PointF p) {
             mG.FillPie(mPenHandle.Brush,
-                p.X - POST_RADIUS, p.Y - POST_RADIUS,
-                POST_RADIUS * 2, POST_RADIUS * 2,
+                p.X - HANDLE_RADIUS, p.Y - HANDLE_RADIUS,
+                HANDLE_RADIUS * 2, HANDLE_RADIUS * 2,
                 0, 360
             );
         }

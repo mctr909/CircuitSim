@@ -24,7 +24,6 @@ namespace Circuit.UI.Passive {
         public override void Draw(CustomGraphics g) {
             drawLine(Elm.Post[0], Elm.Post[1]);
             doDots();
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

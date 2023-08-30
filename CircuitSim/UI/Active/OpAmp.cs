@@ -70,6 +70,7 @@ namespace Circuit.UI.Active {
 
             var signp = new PointF[2];
             interpLeadAB(ref signp[0], ref signp[1], 0.2, hs);
+
             mTextp = new PointF[] {
                 new PointF(signp[0].X - 3, signp[0].Y),
                 new PointF(signp[0].X + 3, signp[0].Y),
@@ -103,7 +104,6 @@ namespace Circuit.UI.Active {
 
             updateDotCount(Elm.Current, ref mCurCount);
             drawCurrent(mLead2, mPosOut, -mCurCount);
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

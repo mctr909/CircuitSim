@@ -47,7 +47,6 @@ namespace Circuit.UI.Output {
             ce.mValue = s;
             drawCenteredLText(s, Post.B, true);
             drawLeadA();
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

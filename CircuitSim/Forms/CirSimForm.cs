@@ -79,8 +79,6 @@ namespace Circuit {
             public static Point InitDragGrid;
             public static Point DragGrid;
             public static Point DragScreen;
-            public static EPOST DraggingPost = EPOST.INVALID;
-            public static EPOST HoveringPost = EPOST.INVALID;
             public static Rectangle SelectedArea;
         }
 
@@ -1320,18 +1318,17 @@ namespace Circuit {
                 if (Mouse.GripElm == null) {
                     MouseMode = MOUSE_MODE.SELECT_AREA;
                 } else {
-                    var spos = SnapGrid(gpos);
                     var dumpInfo = Mouse.GripElm.Post;
-                    var d1 = Utils.Distance(dumpInfo.A, spos);
-                    var d2 = Utils.Distance(dumpInfo.B, spos);
-                    if (d1 <= CustomGraphics.POST_RADIUS) {
-                        Mouse.DraggingPost = EPOST.A;
+                    var d1 = Utils.Distance(dumpInfo.A, gpos);
+                    var d2 = Utils.Distance(dumpInfo.B, gpos);
+                    if (d1 <= CustomGraphics.HANDLE_RADIUS) {
+                        Post.Dragging = EPOST.A;
                         MouseMode = MOUSE_MODE.DRAG_POST;
-                    } else if (d2 <= CustomGraphics.POST_RADIUS) {
-                        Mouse.DraggingPost = EPOST.B;
+                    } else if (d2 <= CustomGraphics.HANDLE_RADIUS) {
+                        Post.Dragging = EPOST.B;
                         MouseMode = MOUSE_MODE.DRAG_POST;
-                    } else if (Utils.DistanceOnLine(dumpInfo.A, dumpInfo.B, spos) <= CustomGraphics.POST_RADIUS * 2) {
-                        Mouse.DraggingPost = EPOST.INVALID;
+                    } else if (Utils.DistanceOnLine(dumpInfo.A, dumpInfo.B, gpos) <= CustomGraphics.HANDLE_RADIUS * 2) {
+                        Post.Dragging = EPOST.INVALID;
                         MouseMode = MOUSE_MODE.DRAG_ITEM;
                     }
                 }
@@ -1457,7 +1454,7 @@ namespace Circuit {
             if (dx == 0 && dy == 0) {
                 return;
             }
-            Mouse.GripElm.Move(dx, dy, Mouse.DraggingPost);
+            Mouse.GripElm.Move(dx, dy, Post.Dragging);
             NeedAnalyze();
         }
 
@@ -1556,13 +1553,12 @@ namespace Circuit {
             int gx = inverseTransformX(mx);
             int gy = inverseTransformY(my);
 
-            /*Console.WriteLine("Settingd draggridx in mouseEvent");*/
             Mouse.DragGrid.X = SnapGrid(gx);
             Mouse.DragGrid.Y = SnapGrid(gy);
             Mouse.DragScreen.X = mx;
             Mouse.DragScreen.Y = my;
-            Mouse.DraggingPost = EPOST.INVALID;
-            Mouse.HoveringPost = EPOST.INVALID;
+            Post.Dragging = EPOST.INVALID;
+            Post.Hovering = EPOST.INVALID;
 
             PlotXElm = PlotYElm = null;
 
@@ -1584,15 +1580,15 @@ namespace Circuit {
                     var ce = GetUI(i);
                     var p1 = ce.Post.A;
                     var p2 = ce.Post.B;
-                    if (Utils.Distance(p1, gx, gy) <= CustomGraphics.POST_RADIUS) {
+                    if (Utils.Distance(p1, gx, gy) <= CustomGraphics.HANDLE_RADIUS) {
                         newMouseElm = ce;
                         break;
                     }
-                    if (Utils.Distance(p2, gx, gy) <= CustomGraphics.POST_RADIUS) {
+                    if (Utils.Distance(p2, gx, gy) <= CustomGraphics.HANDLE_RADIUS) {
                         newMouseElm = ce;
                         break;
                     }
-                    if (Utils.DistanceOnLine(p1, p2, gx, gy) <= CustomGraphics.POST_RADIUS * 2) {
+                    if (Utils.DistanceOnLine(p1, p2, gx, gy) <= CustomGraphics.HANDLE_RADIUS * 2) {
                         newMouseElm = ce;
                         break;
                     }
@@ -1605,12 +1601,10 @@ namespace Circuit {
                 var ce = newMouseElm;
                 var p1 = ce.Post.A;
                 var p2 = ce.Post.B;
-                if (Utils.Distance(p1, gx, gy) <= CustomGraphics.POST_RADIUS) {
-                    Mouse.HoveringPost = EPOST.A;
-                } else if(Utils.Distance(p2, gx, gy) <= CustomGraphics.POST_RADIUS) {
-                    Mouse.HoveringPost = EPOST.B;
-                } else if (Utils.DistanceOnLine(p1, p2, gx, gy) <= CustomGraphics.POST_RADIUS * 2) {
-                    Mouse.HoveringPost = EPOST.BOTH;
+                if (Utils.Distance(p1, gx, gy) <= CustomGraphics.HANDLE_RADIUS) {
+                    Post.Hovering = EPOST.A;
+                } else if(Utils.Distance(p2, gx, gy) <= CustomGraphics.HANDLE_RADIUS) {
+                    Post.Hovering = EPOST.B;
                 }
             }
             Repaint();
@@ -2035,10 +2029,10 @@ namespace Circuit {
             if (Mouse.GripElm == null) {
                 ControlPanel.LblSelectInfo.Text = "";
             } else {
-                if (Mouse.HoveringPost == EPOST.INVALID) {
+                if (Post.Hovering == EPOST.INVALID) {
                     Mouse.GripElm.GetInfo(info);
                 } else {
-                    info[0] = "電位：" + Mouse.GripElm.GetPostVoltage(Mouse.HoveringPost);
+                    info[0] = "電位：" + Mouse.GripElm.GetPostVoltage(Post.Hovering);
                 }
                 ControlPanel.LblSelectInfo.Text = "";
                 foreach (var str in info) {
@@ -2155,56 +2149,42 @@ namespace Circuit {
             }
 
             /* draw elements */
-            for (int i = 0; i != UICount; i++) {
-                var ui = UIList[i];
+            foreach (var ui in UIList) {
                 ui.Draw(g);
                 if (ui is Scope) {
                     g.ScrollBoard(mScroll);
                 }
             }
 
-            /* draw posts normally */
-            if (MouseMode != MOUSE_MODE.DRAG_ROW && MouseMode != MOUSE_MODE.DRAG_COLUMN) {
-                for (int i = 0; i != Circuit.PostDrawList.Count; i++) {
-                    g.DrawPost(Circuit.PostDrawList[i]);
+            /* draw posts */
+            foreach (var p in Circuit.DrawPostList) {
+                g.DrawPost(p);
+            }
+            if (MouseMode == MOUSE_MODE.DRAG_ITEM || MouseMode == MOUSE_MODE.DRAG_POST) {
+                foreach(var p in Circuit.UndrawPostList) {
+                    g.DrawPost(p);
                 }
             }
-
-            /* for some mouse modes, what matters is not the posts but the endpoints (which are only
-            /* the same for 2-terminal elements).  We draw those now if needed */
-            if (MouseMode == MOUSE_MODE.DRAG_ROW
-                || MouseMode == MOUSE_MODE.DRAG_COLUMN
-                || MouseMode == MOUSE_MODE.SPLIT
-                || MouseMode == MOUSE_MODE.DRAG_ITEM) {
-                for (int i = 0; i != UICount; i++) {
-                    var ce = GetUI(i);
-                    g.DrawPost(ce.Post.A);
-                    g.DrawPost(ce.Post.B);
-                }
-            }
-
-            /* draw handles for elm we're dragging */
             if (ConstructElm != null && (ConstructElm.Post.A.X != ConstructElm.Post.B.X || ConstructElm.Post.A.Y != ConstructElm.Post.B.Y)) {
                 ConstructElm.Draw(g);
-                ConstructElm.DrawHandles();
+                g.DrawPost(ConstructElm.Post.A);
+                g.DrawPost(ConstructElm.Post.B);
             }
-
-            /* draw bad connections.  do this last so they will not be overdrawn. */
-            for (int i = 0; i != Circuit.BadConnectionList.Count; i++) {
-                var cn = Circuit.BadConnectionList[i];
-                g.DrawPost(cn);
-            }
-
             if (Mouse.GripElm != null) {
                 var ce = Mouse.GripElm;
-                if (EPOST.A == Mouse.HoveringPost) {
-                    ce.DrawHandle(ce.Post.A);
-                } else if (EPOST.B == Mouse.HoveringPost) {
-                    ce.DrawHandle(ce.Post.B);
-                } else if (EPOST.BOTH == Mouse.HoveringPost) {
+                if (EPOST.A == Post.Hovering) {
+                    g.DrawHandle(ce.Post.A);
+                    g.DrawPost(ce.Post.B);
+                } else if (EPOST.B == Post.Hovering) {
+                    g.DrawPost(ce.Post.A);
+                    g.DrawHandle(ce.Post.B);
+                } else {
                     g.DrawPost(ce.Post.A);
                     g.DrawPost(ce.Post.B);
                 }
+            }
+            foreach (var p in Circuit.BadConnectionList) {
+                g.DrawPost(p);
             }
 
             if (0 < Mouse.SelectedArea.Width) {

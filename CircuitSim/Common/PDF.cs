@@ -94,12 +94,12 @@ class PDF {
         public override void DrawCenteredLText(string s, PointF p) {
             writeTextL(s, p.X, p.Y, GetTextSizeL(s).Width * 0.5f);
         }
-
+        
         public override void DrawPost(PointF p) {
             fillCircleF(p.X, p.Y, 2.5f);
         }
 
-        public override void DrawHandle(Point p) { }
+        public override void DrawHandle(PointF p) { }
 
         public override void DrawCurrent(float cx, float cy, float radius) { }
 

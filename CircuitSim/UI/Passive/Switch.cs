@@ -107,7 +107,6 @@ namespace Circuit.UI.Passive {
                 interpLead(ref p2, (OPEN_HS - 2.0) / OPEN_HS, OPEN_HS);
             }
             drawLine(mLead1, p2);
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

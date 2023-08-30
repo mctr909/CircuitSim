@@ -145,7 +145,6 @@ namespace Circuit.UI.Passive {
                 drawCurrent(ce.Post[2], mCorner2, ce.CurCount3);
                 drawCurrent(mCorner2, mMidPoint, ce.CurCount3 + Utils.Distance(ce.Post[2], mCorner2));
             }
-            drawPosts();
 
             if (ControlPanel.ChkShowValues.Checked && ce.Resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
                 /* check for vertical pot with 3rd terminal on left */

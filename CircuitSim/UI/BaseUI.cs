@@ -159,17 +159,6 @@ namespace Circuit.UI {
             IsSelected = r.IntersectsWith(Post.BoundingBox);
         }
 
-        public void DrawHandle(Point pos) {
-            Context.DrawHandle(pos);
-        }
-
-        public void DrawHandles() {
-            Context.DrawHandle(Post.A);
-            if (2 <= mNumHandles) {
-                Context.DrawHandle(Post.B);
-            }
-        }
-
         public string GetPostVoltage(EPOST n) {
             var ni = (int)n;
             if (ni < Elm.Volts.Length) {
@@ -424,22 +413,6 @@ namespace Circuit.UI {
         protected void fillPolygon(PointF[] p) {
             var color = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.FillPolygon(color, p);
-        }
-
-        protected void drawPosts() {
-            /* we normally do this in updateCircuit() now because the logic is more complicated.
-             * we only handle the case where we have to draw all the posts.  That happens when
-             * this element is selected or is being created */
-            if (CirSimForm.ConstructElm == null && !mNeedsHighlight) {
-                return;
-            }
-            if (CirSimForm.MouseMode == CirSimForm.MOUSE_MODE.DRAG_ROW || CirSimForm.MouseMode == CirSimForm.MOUSE_MODE.DRAG_COLUMN) {
-                return;
-            }
-            for (int i = 0; i < Elm.PostCount; i++) {
-                var p = Elm.GetPost(i);
-                Context.DrawPost(p);
-            }
         }
 
         protected void drawLeadA() {

@@ -77,7 +77,6 @@ namespace Circuit.UI.Output {
             drawLeadA();
             drawCenteredText(ReferenceName, mNamePos, mTextRot);
             drawPolyline(mTextPoly);
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

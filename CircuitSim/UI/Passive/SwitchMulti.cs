@@ -85,7 +85,6 @@ namespace Circuit.UI.Passive {
             if (ce.Position != 2) {
                 drawCurrent(mSwPoles[ce.Position], ce.SwPosts[ce.Position], mCurCount);
             }
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

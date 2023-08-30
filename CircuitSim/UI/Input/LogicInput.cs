@@ -47,7 +47,6 @@ namespace Circuit.UI.Input {
             drawLeadA();
             updateDotCount();
             drawCurrentA(mCurCount);
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

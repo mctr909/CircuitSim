@@ -85,7 +85,6 @@ namespace Circuit.UI.Active {
         public override void Draw(CustomGraphics g) {
             drawDiode();
             doDots();
-            drawPosts();
             drawName();
         }
 

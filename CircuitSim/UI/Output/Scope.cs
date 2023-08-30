@@ -69,7 +69,6 @@ namespace Circuit.UI.Output {
 
         public override void Draw(CustomGraphics g) {
             Properties.Draw(g, true);
-            drawPosts();
         }
 
         public class Plot {

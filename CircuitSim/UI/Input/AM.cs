@@ -44,7 +44,6 @@ namespace Circuit.UI.Input {
             drawLeadA();
             drawCenteredText(ReferenceName, mNamePos);
             drawWaveform(Elm.Post[1]);
-            drawPosts();
             updateDotCount(-ce.Current, ref mCurCount);
             if (CirSimForm.ConstructElm != this) {
                 drawCurrentA(mCurCount);

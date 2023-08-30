@@ -68,7 +68,6 @@ namespace Circuit.UI.Active {
             if (!ce.IsOpen) {
                 doDots();
             }
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

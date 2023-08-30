@@ -356,7 +356,6 @@ namespace Circuit.UI.Input {
                     drawCurrentB(mCurCount);
                 }
             }
-            drawPosts();
         }
 
         protected void drawWaveform(PointF p) {

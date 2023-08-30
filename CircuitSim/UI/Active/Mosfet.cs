@@ -167,8 +167,6 @@ namespace Circuit.UI.Active {
             /* draw arrow */
             fillPolygon(mArrowPoly);
 
-            drawPosts();
-
             /* draw current */
             updateDotCount(-ce.Current, ref mCurCount);
             updateDotCount(ce.DiodeCurrent1, ref mCurcountBody1);

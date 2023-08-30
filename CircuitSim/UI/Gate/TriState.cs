@@ -50,7 +50,6 @@ namespace Circuit.UI.Gate {
             drawLine(ce.Post[2], mLead3);
             updateDotCount(ce.Current, ref mCurCount);
             drawCurrentB(mCurCount);
-            drawPosts();
         }
 
         public override void Drag(Point pos) {

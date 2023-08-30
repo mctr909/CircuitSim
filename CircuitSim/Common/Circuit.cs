@@ -186,7 +186,8 @@ namespace Circuit {
         #endregion
 
         #region property
-        public static List<Point> PostDrawList { get; private set; } = new List<Point>();
+        public static List<Point> DrawPostList { get; private set; } = new List<Point>();
+        public static List<Point> UndrawPostList { get; private set; } = new List<Point>();
         public static List<Point> BadConnectionList { get; private set; } = new List<Point>();
         public static BaseElement StopElm { get; set; }
         public static double Time { get; set; }
@@ -437,11 +438,14 @@ namespace Circuit {
         /* others should be drawn.  We can't use the node list anymore because wires have the same
         /* node number at both ends. */
         static void makePostDrawList() {
-            PostDrawList = new List<Point>();
+            DrawPostList = new List<Point>();
+            UndrawPostList = new List<Point>();
             BadConnectionList = new List<Point>();
             foreach (var entry in mPostCountMap) {
-                if (entry.Value != 2) {
-                    PostDrawList.Add(entry.Key);
+                if (2 == entry.Value) {
+                    UndrawPostList.Add(entry.Key);
+                } else {
+                    DrawPostList.Add(entry.Key);
                 }
                 /* look for bad connections, posts not connected to other elements which intersect
                 /* other elements' bounding boxes */
@@ -606,7 +610,8 @@ namespace Circuit {
 
         public static void AnalyzeCircuit() {
             if (0 == mElmList.Count) {
-                PostDrawList = new List<Point>();
+                DrawPostList = new List<Point>();
+                UndrawPostList = new List<Point>();
                 BadConnectionList = new List<Point>();
                 return;
             }

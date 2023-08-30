@@ -112,7 +112,6 @@ namespace Circuit.UI.Passive {
                 drawCurrentA(mCurCount);
                 drawCurrentB(mCurCount);
             }
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

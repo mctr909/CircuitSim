@@ -54,7 +54,6 @@ namespace Circuit.UI.Gate {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmInverter)Elm;
-            drawPosts();
             draw2Leads();
             if (Gate.UseAnsiGates()) {
                 drawPolygon(mGatePolyAnsi);

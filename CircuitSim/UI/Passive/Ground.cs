@@ -31,7 +31,6 @@ namespace Circuit.UI.Passive {
             drawLine(Elm.Post[0], Elm.Post[1]);
             doDots();
             Post.SetBbox(Elm.Post[0], mP1, 11);
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {

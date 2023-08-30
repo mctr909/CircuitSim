@@ -54,7 +54,6 @@ namespace Circuit.UI.Output {
 		public override void Draw(CustomGraphics g) {
 			drawCenteredText(ReferenceName, mNamePos, mTextRot);
 			drawLeadA();
-			drawPosts();
 		}
 
 		public override void GetInfo(string[] arr) {

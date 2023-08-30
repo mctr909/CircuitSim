@@ -58,7 +58,6 @@ namespace Circuit.UI.Active {
             // draw second plate
             fillPolygon(mPlate2);
             doDots();
-            drawPosts();
             drawName();
         }
 

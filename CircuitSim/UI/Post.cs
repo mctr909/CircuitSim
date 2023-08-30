@@ -6,11 +6,13 @@ namespace Circuit.UI {
     public enum EPOST {
         A,
         B,
-        BOTH,
         INVALID
     }
 
     public class Post {
+        public static EPOST Dragging = EPOST.INVALID;
+        public static EPOST Hovering = EPOST.INVALID;
+
         public Point A;
         public Point B;
         public RectangleF BoundingBox;

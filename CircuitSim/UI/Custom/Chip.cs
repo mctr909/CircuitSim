@@ -197,7 +197,6 @@ namespace Circuit.UI.Custom {
             if (clockPoints != null) {
                 drawPolygon(clockPoints);
             }
-            drawPosts();
         }
 
         public override void Drag(Point pos) {

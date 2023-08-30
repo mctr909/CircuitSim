@@ -63,7 +63,6 @@ namespace Circuit.UI.Output {
             } else {
                 drawCenteredText(s, mTextPos);
             }
-            drawPosts();
         }
 
         public override void GetInfo(string[] arr) {
