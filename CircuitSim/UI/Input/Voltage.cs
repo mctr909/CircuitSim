@@ -348,7 +348,7 @@ namespace Circuit.UI.Input {
 
             updateDotCount();
 
-            if (CirSimForm.DragElm != this) {
+            if (CirSimForm.ConstructElm != this) {
                 if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                     drawCurrent(Elm.Post[0], Elm.Post[1], mCurCount);
                 } else {

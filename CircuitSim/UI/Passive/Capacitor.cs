@@ -108,7 +108,7 @@ namespace Circuit.UI.Passive {
             drawValue(Utils.UnitText(ce.Capacitance));
 
             updateDotCount();
-            if (CirSimForm.DragElm != this) {
+            if (CirSimForm.ConstructElm != this) {
                 drawCurrentA(mCurCount);
                 drawCurrentB(mCurCount);
             }

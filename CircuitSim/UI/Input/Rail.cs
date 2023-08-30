@@ -49,7 +49,7 @@ namespace Circuit.UI.Input {
             drawRail();
             drawPosts();
             updateDotCount(-Elm.Current, ref mCurCount);
-            if (CirSimForm.DragElm != this) {
+            if (CirSimForm.ConstructElm != this) {
                 drawCurrentA(mCurCount);
             }
         }

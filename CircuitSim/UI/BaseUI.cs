@@ -163,10 +163,10 @@ namespace Circuit.UI {
             Context.DrawHandle(pos);
         }
 
-        public void DrawHandles(CustomGraphics g) {
-            g.DrawHandle(Post.A);
+        public void DrawHandles() {
+            Context.DrawHandle(Post.A);
             if (2 <= mNumHandles) {
-                g.DrawHandle(Post.B);
+                Context.DrawHandle(Post.B);
             }
         }
 
@@ -248,7 +248,7 @@ namespace Circuit.UI {
         /// </summary>
         protected void doDots() {
             updateDotCount();
-            if (CirSimForm.DragElm != this) {
+            if (CirSimForm.ConstructElm != this) {
                 drawCurrent(Elm.Post[0], Elm.Post[1], mCurCount);
             }
         }
@@ -429,7 +429,7 @@ namespace Circuit.UI {
             /* we normally do this in updateCircuit() now because the logic is more complicated.
              * we only handle the case where we have to draw all the posts.  That happens when
              * this element is selected or is being created */
-            if (CirSimForm.DragElm == null && !mNeedsHighlight) {
+            if (CirSimForm.ConstructElm == null && !mNeedsHighlight) {
                 return;
             }
             if (CirSimForm.MouseMode == CirSimForm.MOUSE_MODE.DRAG_ROW || CirSimForm.MouseMode == CirSimForm.MOUSE_MODE.DRAG_COLUMN) {

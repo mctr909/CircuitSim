@@ -139,7 +139,7 @@ namespace Circuit.UI.Passive {
             updateDotCount(ce.Current1, ref ce.CurCount1);
             updateDotCount(ce.Current2, ref ce.CurCount2);
             updateDotCount(ce.Current3, ref ce.CurCount3);
-            if (CirSimForm.DragElm != this) {
+            if (CirSimForm.ConstructElm != this) {
                 drawCurrent(ce.Post[0], mMidPoint, ce.CurCount1);
                 drawCurrent(ce.Post[1], mMidPoint, ce.CurCount2);
                 drawCurrent(ce.Post[2], mCorner2, ce.CurCount3);

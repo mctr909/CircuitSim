@@ -58,7 +58,7 @@ namespace Circuit {
         public static double CurrentMult { get; set; } = 0;
         public static bool IsRunning { get; private set; }
         public static MOUSE_MODE MouseMode { get; private set; } = MOUSE_MODE.NONE;
-        public static BaseUI DragElm { get; private set; }
+        public static BaseUI ConstructElm { get; private set; }
         public static int MouseCursorX { get; private set; } = -1;
         public static int MouseCursorY { get; private set; } = -1;
         public static List<BaseUI> UIList { get; private set; }
@@ -80,7 +80,7 @@ namespace Circuit {
             public static Point DragGrid;
             public static Point DragScreen;
             public static int DraggingPost;
-            public static int Post = -1;
+            public static int HoveringPost = -1;
             public static Rectangle SelectedArea;
         }
 
@@ -843,7 +843,7 @@ namespace Circuit {
             if (!mCircuitArea.Contains(MouseCursorX, MouseCursorY)) {
                 return;
             }
-            DragElm = MenuItems.ConstructElement(Mouse.EditElm, gpos);
+            ConstructElm = MenuItems.ConstructElement(Mouse.EditElm, gpos);
         }
 
         void onMouseUp(MouseEventArgs e) {
@@ -889,28 +889,27 @@ namespace Circuit {
                 mHeldSwitchElm = null;
                 circuitChanged = true;
             }
-            if (DragElm != null) {
+            if (ConstructElm != null) {
                 /* if the element is zero size then don't create it */
-                /* IES - and disable any previous selection */
-                if (DragElm.IsCreationFailed) {
-                    DragElm.Delete();
+                if (ConstructElm.IsCreationFailed) {
+                    ConstructElm.Delete();
                     if (MouseMode == MOUSE_MODE.SELECT || MouseMode == MOUSE_MODE.DRAG_ITEM) {
                         clearSelection();
                     }
                 } else {
-                    UIList.Add(DragElm);
+                    UIList.Add(ConstructElm);
                     circuitChanged = true;
                     writeRecoveryToStorage();
                 }
-                DragElm = null;
+                ConstructElm = null;
             }
             if (circuitChanged) {
                 NeedAnalyze();
             }
-            if (DragElm != null) {
-                DragElm.Delete();
+            if (ConstructElm != null) {
+                ConstructElm.Delete();
             }
-            DragElm = null;
+            ConstructElm = null;
             Cursor = Cursors.Default;
             Repaint();
         }
@@ -1301,8 +1300,8 @@ namespace Circuit {
                 return;
             }
             bool changed = false;
-            if (DragElm != null) {
-                DragElm.Drag(gpos);
+            if (ConstructElm != null) {
+                ConstructElm.Drag(gpos);
             }
             bool success = true;
             switch (MouseMode) {
@@ -1562,7 +1561,7 @@ namespace Circuit {
             Mouse.DragScreen.Y = my;
             Mouse.DraggingPost = -1;
 
-            Mouse.Post = -1;
+            Mouse.HoveringPost = -1;
             PlotXElm = PlotYElm = null;
 
             double minDistance = 8;
@@ -1588,13 +1587,13 @@ namespace Circuit {
                         if (Utils.Distance(p1, gx, gy) < 5) {
                             /// TODO: select post
                             newMouseElm = ce;
-                            Mouse.Post = 0;
+                            Mouse.HoveringPost = 0;
                             break;
                         }
                         if (Utils.Distance(p2, gx, gy) < 5) {
                             /// TODO: select post
                             newMouseElm = ce;
-                            Mouse.Post = 1;
+                            Mouse.HoveringPost = 1;
                             break;
                         }
                         if (Utils.DistanceOnLine(p1, p2, gx, gy) < 8) {
@@ -1607,7 +1606,7 @@ namespace Circuit {
                             if (Utils.Distance(pt, gx, gy) < 5) {
                                 /// TODO: select post
                                 newMouseElm = ce;
-                                Mouse.Post = j;
+                                Mouse.HoveringPost = j;
                                 break;
                             }
                         }
@@ -1618,12 +1617,12 @@ namespace Circuit {
                     }
                 }
             } else {
-                Mouse.Post = -1;
+                Mouse.HoveringPost = -1;
                 /* look for post close to the mouse pointer */
                 for (int i = 0; i != newMouseElm.Elm.PostCount; i++) {
                     var pt = newMouseElm.Elm.GetPost(i);
                     if (Utils.Distance(pt, gx, gy) < 5) {
-                        Mouse.Post = i;
+                        Mouse.HoveringPost = i;
                     }
                 }
             }
@@ -2049,10 +2048,10 @@ namespace Circuit {
             if (Mouse.GripElm == null) {
                 ControlPanel.LblSelectInfo.Text = "";
             } else {
-                if (Mouse.Post == -1) {
+                if (Mouse.HoveringPost == -1) {
                     Mouse.GripElm.GetInfo(info);
                 } else {
-                    info[0] = "電位：" + Mouse.GripElm.GetPostVoltage(Mouse.Post);
+                    info[0] = "電位：" + Mouse.GripElm.GetPostVoltage(Mouse.HoveringPost);
                 }
                 ControlPanel.LblSelectInfo.Text = "";
                 foreach (var str in info) {
@@ -2194,30 +2193,29 @@ namespace Circuit {
                     var ce = GetUI(i);
                     g.DrawPost(ce.Post.A);
                     g.DrawPost(ce.Post.B);
-                    if (ce != Mouse.GripElm || MouseMode != MOUSE_MODE.SPLIT) {
-                        g.DrawHandle(ce.Post.A);
-                        g.DrawHandle(ce.Post.B);
-                    } else {
-                        ce.DrawHandles(g);
-                    }
                 }
             }
 
-            /* draw handles for elm we're creating */
-            if ((MouseMode == MOUSE_MODE.SELECT) && Mouse.GripElm != null) {
-                Mouse.GripElm.DrawHandles(g);
-            }
-
             /* draw handles for elm we're dragging */
-            if (DragElm != null && (DragElm.Post.A.X != DragElm.Post.B.X || DragElm.Post.A.Y != DragElm.Post.B.Y)) {
-                DragElm.Draw(g);
-                DragElm.DrawHandles(g);
+            if (ConstructElm != null && (ConstructElm.Post.A.X != ConstructElm.Post.B.X || ConstructElm.Post.A.Y != ConstructElm.Post.B.Y)) {
+                ConstructElm.Draw(g);
+                ConstructElm.DrawHandles();
             }
 
             /* draw bad connections.  do this last so they will not be overdrawn. */
             for (int i = 0; i != Circuit.BadConnectionList.Count; i++) {
                 var cn = Circuit.BadConnectionList[i];
-                g.DrawHandle(cn);
+                g.DrawPost(cn);
+            }
+
+            if (Mouse.GripElm != null) {
+                var ce = Mouse.GripElm;
+                if (0 <= Mouse.HoveringPost) {
+                    ce.DrawHandle(ce.Elm.GetPost(Mouse.HoveringPost));
+                }
+                if (0 <= Mouse.DraggingPost) {
+                    ce.DrawHandle(ce.Elm.GetPost(Mouse.DraggingPost));
+                }
             }
 
             if (0 < Mouse.SelectedArea.Width) {
