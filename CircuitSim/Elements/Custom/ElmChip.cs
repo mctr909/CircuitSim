@@ -7,7 +7,7 @@ namespace Circuit.Elements.Custom {
     abstract class ElmChip : BaseElement {
         protected bool lastClock;
 
-        public override Point GetTerm(int n) {
+        public override Point GetNodePos(int n) {
             return Pins[n].post;
         }
 

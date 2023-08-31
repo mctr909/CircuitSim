@@ -11,8 +11,7 @@ namespace Circuit.Elements {
         }
 
         protected int mVoltSource;
-
-        public Point[] Term = new Point[4];
+        protected Point[] mNodePos = new Point[4];
 
         #region [property]
         public abstract int TermCount { get; }
@@ -48,10 +47,6 @@ namespace Circuit.Elements {
         #endregion
 
         #region [method]
-        public virtual Point GetTerm(int n) { return Term[n]; }
-
-        public virtual double GetVoltageDiff() { return Volts[0] - Volts[1]; }
-
         /// <summary>
         /// allocate nodes/volts arrays we need
         /// </summary>
@@ -63,6 +58,17 @@ namespace Circuit.Elements {
                 Volts = new double[n];
             }
         }
+
+        public void SetNodePos(params PointF[] node) {
+            for (int i = 0; i < node.Length; i++) {
+                mNodePos[i].X = (int)node[i].X;
+                mNodePos[i].Y = (int)node[i].Y;
+            }
+        }
+
+        public virtual Point GetNodePos(int n) { return mNodePos[n]; }
+
+        public virtual double GetVoltageDiff() { return Volts[0] - Volts[1]; }
 
         /// <summary>
         /// handle reset button
@@ -135,13 +141,13 @@ namespace Circuit.Elements {
         #endregion
 
         #region [method(Circuit)]
-        public int CirGetNodeAtPoint(int xp, int yp) {
+        public int CirGetNodeAtPoint(Point p) {
             if (TermCount == 2) {
-                return (Term[0].X == xp && Term[0].Y == yp) ? 0 : 1;
+                return (mNodePos[0].X == p.X && mNodePos[0].Y == p.Y) ? 0 : 1;
             }
             for (int i = 0; i != TermCount; i++) {
-                var p = GetTerm(i);
-                if (p.X == xp && p.Y == yp) {
+                var nodePos = GetNodePos(i);
+                if (nodePos.X == p.X && nodePos.Y == p.Y) {
                     return i;
                 }
             }

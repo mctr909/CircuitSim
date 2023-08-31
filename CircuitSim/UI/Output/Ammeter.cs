@@ -10,7 +10,7 @@ namespace Circuit.UI.Output {
 
         PointF mMid;
         PointF[] mArrowPoly;
-        Point mTextPos;
+        PointF mTextPos;
 
         public Ammeter(Point pos) : base(pos) {
             Elm = new ElmAmmeter();

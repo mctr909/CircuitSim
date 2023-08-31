@@ -187,8 +187,7 @@ namespace Circuit.UI {
         /// </summary>
         public virtual void SetPoints() {
             Post.SetValue();
-            Elm.Term[0] = Post.A;
-            Elm.Term[1] = Post.B;
+            Elm.SetNodePos(Post.A, Post.B);
         }
 
         /// <summary>
@@ -267,8 +266,8 @@ namespace Circuit.UI {
         }
 
         protected void interpPost(ref PointF p, double f) {
-            p.X = (float)(Elm.Term[0].X * (1 - f) + Elm.Term[1].X * f);
-            p.Y = (float)(Elm.Term[0].Y * (1 - f) + Elm.Term[1].Y * f);
+            p.X = (float)(Post.A.X * (1 - f) + Post.B.X * f);
+            p.Y = (float)(Post.A.Y * (1 - f) + Post.B.Y * f);
         }
 
         protected void interpPost(ref Point p, double f, double g) {

@@ -2166,20 +2166,40 @@ namespace Circuit {
             }
             if (ConstructElm != null && (ConstructElm.Post.A.X != ConstructElm.Post.B.X || ConstructElm.Post.A.Y != ConstructElm.Post.B.Y)) {
                 ConstructElm.Draw(g);
-                g.DrawPost(ConstructElm.Post.A);
-                g.DrawPost(ConstructElm.Post.B);
+                var ce = ConstructElm.Elm;
+                for (int i = ce.TermCount - 1; 0 <= i; i--) {
+                    var p = ce.GetNodePos(i);
+                    g.DrawPost(p);
+                }
+                g.DrawHandle(ConstructElm.Post.B);
             }
             if (Mouse.GripElm != null) {
                 var ce = Mouse.GripElm;
-                if (EPOST.A == Post.Hovering) {
+                switch (Post.Hovering) {
+                case EPOST.A:
                     g.DrawHandle(ce.Post.A);
                     g.DrawPost(ce.Post.B);
-                } else if (EPOST.B == Post.Hovering) {
+                    break;
+                case EPOST.B:
                     g.DrawPost(ce.Post.A);
                     g.DrawHandle(ce.Post.B);
-                } else {
-                    g.DrawPost(ce.Post.A);
-                    g.DrawPost(ce.Post.B);
+                    break;
+                default:
+                    switch (Post.Dragging) {
+                    case EPOST.A:
+                        g.DrawHandle(ce.Post.A);
+                        g.DrawPost(ce.Post.B);
+                        break;
+                    case EPOST.B:
+                        g.DrawPost(ce.Post.A);
+                        g.DrawHandle(ce.Post.B);
+                        break;
+                    default:
+                        g.DrawPost(ce.Post.A);
+                        g.DrawPost(ce.Post.B);
+                        break;
+                    }
+                    break;
                 }
             }
             foreach (var p in Circuit.BadConnectionList) {

@@ -8,7 +8,7 @@ namespace Circuit.UI.Output {
         protected const int FLAG_SHOWVOLTAGE = 1;
 
         protected PointF mCenter;
-        Point mPlusPoint;
+        PointF mPlusPoint;
 
         public VoltMeter(Point pos) : base(pos) {
             Elm = new ElmVoltMeter();

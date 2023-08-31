@@ -8,7 +8,8 @@ namespace Circuit.UI.Gate {
     class TriState : BaseUI {
         const int BODY_LEN = 16;
 
-        Point mLead3;
+        PointF mCtrlLead;
+        PointF mCtrlTerm;
         PointF[] mGatePoly;
 
         public TriState(Point pos) : base(pos) {
@@ -39,15 +40,16 @@ namespace Circuit.UI.Gate {
             mGatePoly = new PointF[3];
             interpLeadAB(ref mGatePoly[0], ref mGatePoly[1], 0, hs);
             interpPost(ref mGatePoly[2], 0.5 + ww / Post.Len);
-            interpPost(ref ((ElmTriState)Elm).Term[2], 0.5, -hs);
-            interpPost(ref mLead3, 0.5, -hs / 2);
+            interpPost(ref mCtrlTerm, 0.5, -hs);
+            interpPost(ref mCtrlLead, 0.5, -hs / 2);
+            Elm.SetNodePos(Post.A, Post.B, mCtrlTerm);
         }
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmTriState)Elm;
             draw2Leads();
             drawPolygon(mGatePoly);
-            drawLine(ce.Term[2], mLead3);
+            drawLine(mCtrlTerm, mCtrlLead);
             updateDotCount(ce.Current, ref mCurCount);
             drawCurrentB(mCurCount);
         }

@@ -10,11 +10,19 @@ namespace Circuit.UI.Passive {
 
         const int BODY_LEN = 24;
 
-        PointF[] mPtCoil;
-        PointF[] mPtCore;
+        PointF mTermPri1;
+        PointF mTermPri2;
+        PointF mTermSec1;
+        PointF mTermSec2;
+        PointF mCoilPri1;
+        PointF mCoilSec1;
+        PointF mCoilPri2;
+        PointF mCoilSec2;
+
+        PointF[] mCore;
         PointF[] mDots;
-        PointF[] mCoilPosA;
-        PointF[] mCoilPosB;
+        PointF[] mCoilPri;
+        PointF[] mCoilSec;
         float mCoilWidth;
         float mCoilAngle;
 
@@ -58,47 +66,53 @@ namespace Circuit.UI.Passive {
             var ce = (ElmTransformer)Elm;
             var width = Math.Max(BODY_LEN, Math.Abs(Post.B.X - Post.A.X));
             var height = Math.Max(BODY_LEN, Math.Abs(Post.B.Y - Post.A.Y));
+
             if (Post.B.X == Post.A.X) {
                 Post.B.Y = Post.A.Y;
             }
             base.SetPoints();
 
-            ce.Term[1].Y = ce.Term[0].Y;
-            var t2 = new PointF();
-            var t3 = new PointF();
-            Utils.InterpPoint(ce.Term[0], ce.Term[1], ref t2, 0, -Post.Dsign * height);
-            Utils.InterpPoint(ce.Term[0], ce.Term[1], ref t3, 1, -Post.Dsign * height);
-            ce.Term[2] = new Point((int)t2.X, (int)t2.Y);
-            ce.Term[3] = new Point((int)t3.X, (int)t3.Y);
+            mTermPri1 = Post.A;
+            mTermSec1 = Post.B;
+            mTermSec1.Y = mTermPri1.Y;
 
-            mPtCoil = new PointF[4];
-            mPtCore = new PointF[4];
+            Utils.InterpPoint(mTermPri1, mTermSec1, ref mTermPri2, 0, -Post.Dsign * height);
+            Utils.InterpPoint(mTermPri1, mTermSec1, ref mTermSec2, 1, -Post.Dsign * height);
+
             var pce = 0.5 - 10.0 / width;
+            Utils.InterpPoint(mTermPri1, mTermSec1, ref mCoilPri1, pce);
+            Utils.InterpPoint(mTermPri1, mTermSec1, ref mCoilSec1, 1 - pce);
+            Utils.InterpPoint(mTermPri2, mTermSec2, ref mCoilPri2, pce);
+            Utils.InterpPoint(mTermPri2, mTermSec2, ref mCoilSec2, 1 - pce);
+
             var pcd = 0.5 - 1.0 / width;
-            for (int i = 0; i != 4; i += 2) {
-                Utils.InterpPoint(ce.Term[i], ce.Term[i + 1], ref mPtCoil[i], pce);
-                Utils.InterpPoint(ce.Term[i], ce.Term[i + 1], ref mPtCoil[i + 1], 1 - pce);
-                Utils.InterpPoint(ce.Term[i], ce.Term[i + 1], ref mPtCore[i], pcd);
-                Utils.InterpPoint(ce.Term[i], ce.Term[i + 1], ref mPtCore[i + 1], 1 - pcd);
-            }
+            mCore = new PointF[4];
+            Utils.InterpPoint(mTermPri1, mTermSec1, ref mCore[0], pcd);
+            Utils.InterpPoint(mTermPri1, mTermSec1, ref mCore[1], 1 - pcd);
+            Utils.InterpPoint(mTermPri2, mTermSec2, ref mCore[2], pcd);
+            Utils.InterpPoint(mTermPri2, mTermSec2, ref mCore[3], 1 - pcd);
+
             if (-1 == ce.Polarity) {
                 mDots = new PointF[2];
                 var dotp = Math.Abs(7.0 / height);
-                Utils.InterpPoint(mPtCoil[0], mPtCoil[2], ref mDots[0], dotp, -7 * Post.Dsign);
-                Utils.InterpPoint(mPtCoil[3], mPtCoil[1], ref mDots[1], dotp, -7 * Post.Dsign);
-                var x = ce.Term[1];
-                ce.Term[1] = ce.Term[3];
-                ce.Term[3] = x;
-                var t = mPtCoil[1];
-                mPtCoil[1] = mPtCoil[3];
-                mPtCoil[3] = t;
+                Utils.InterpPoint(mCoilPri1, mCoilPri2, ref mDots[0], dotp, -7 * Post.Dsign);
+                Utils.InterpPoint(mCoilSec2, mCoilSec1, ref mDots[1], dotp, -7 * Post.Dsign);
+                var x = mTermSec1;
+                mTermSec1 = mTermSec2;
+                mTermSec2 = x;
+                var t = mCoilSec1;
+                mCoilSec1 = mCoilSec2;
+                mCoilSec2 = t;
             } else {
                 mDots = null;
             }
-            Post.SetBbox(ce.Term[0], ce.Term[ce.Polarity == 1 ? 3 : 1], 0);
-            setCoilPos(mPtCoil[0], mPtCoil[2], 90 * Post.Dsign, out mCoilPosA);
-            setCoilPos(mPtCoil[1], mPtCoil[3], -90 * Post.Dsign * ce.Polarity, out mCoilPosB);
+
+            setCoilPos(mCoilPri1, mCoilPri2, 90 * Post.Dsign, out mCoilPri);
+            setCoilPos(mCoilSec1, mCoilSec2, -90 * Post.Dsign * ce.Polarity, out mCoilSec);
             setNamePos();
+
+            Post.SetBbox(mTermPri1, ce.Polarity == 1 ? mTermSec2 : mTermSec1, 0);
+            ce.SetNodePos(mTermPri1, mTermSec1, mTermPri2, mTermSec2);
         }
 
         void setCoilPos(PointF a, PointF b, float dir, out PointF[] pos) {
@@ -121,26 +135,27 @@ namespace Circuit.UI.Passive {
 
         void setNamePos() {
             var wn = Context.GetTextSize(ReferenceName).Width;
-            mNamePos = new Point((int)(mPtCore[0].X - wn / 2 + 2), (int)mPtCore[0].Y - 8);
+            mNamePos = new Point((int)(mCore[0].X - wn / 2 + 2), (int)mCore[0].Y - 8);
         }
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmTransformer)Elm;
 
-            drawLine(ce.Term[0], mPtCoil[0]);
-            drawLine(ce.Term[1], mPtCoil[1]);
-            drawLine(ce.Term[2], mPtCoil[2]);
-            drawLine(ce.Term[3], mPtCoil[3]);
+            drawLine(mTermPri1, mCoilPri1);
+            drawLine(mTermSec1, mCoilSec1);
+            drawLine(mTermPri2, mCoilPri2);
+            drawLine(mTermSec2, mCoilSec2);
 
-            foreach (var p in mCoilPosA) {
+            foreach (var p in mCoilPri) {
                 Context.DrawArc(p, mCoilWidth, mCoilAngle, 180);
             }
-            foreach (var p in mCoilPosB) {
+            foreach (var p in mCoilSec) {
                 Context.DrawArc(p, mCoilWidth, mCoilAngle, -180);
             }
 
-            drawLine(mPtCore[0], mPtCore[2]);
-            drawLine(mPtCore[1], mPtCore[3]);
+            drawLine(mCore[0], mCore[2]);
+            drawLine(mCore[1], mCore[3]);
+
             if (mDots != null) {
                 drawCircle(mDots[0], 2.5f);
                 drawCircle(mDots[1], 2.5f);
@@ -148,11 +163,12 @@ namespace Circuit.UI.Passive {
 
             updateDotCount(ce.Currents[0], ref ce.CurCounts[0]);
             updateDotCount(ce.Currents[1], ref ce.CurCounts[1]);
-            for (int i = 0; i != 2; i++) {
-                drawCurrent(ce.Term[i], mPtCoil[i], ce.CurCounts[i]);
-                drawCurrent(mPtCoil[i], mPtCoil[i + 2], ce.CurCounts[i]);
-                drawCurrent(ce.Term[i + 2], mPtCoil[i + 2], -ce.CurCounts[i]);
-            }
+            drawCurrent(mTermPri1, mCoilPri1, ce.CurCounts[0]);
+            drawCurrent(mCoilPri1, mCoilPri2, ce.CurCounts[0]);
+            drawCurrent(mCoilPri2, mTermPri2, ce.CurCounts[0]);
+            drawCurrent(mTermSec1, mCoilSec1, ce.CurCounts[1]);
+            drawCurrent(mCoilSec1, mCoilSec2, ce.CurCounts[1]);
+            drawCurrent(mCoilSec2, mTermSec2, ce.CurCounts[1]);
 
             if (ControlPanel.ChkShowName.Checked) {
                 g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);

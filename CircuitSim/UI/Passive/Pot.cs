@@ -14,6 +14,10 @@ namespace Circuit.UI.Passive {
         const int SEGMENTS = 12;
         const double SEG_F = 1.0 / SEGMENTS;
 
+        PointF mTermA;
+        PointF mTermB;
+        PointF mTermSlider;
+
         PointF mCorner2;
         PointF mArrowPoint;
         PointF mMidPoint;
@@ -67,56 +71,60 @@ namespace Circuit.UI.Passive {
             Post.Vertical = Math.Abs(Post.Diff.X) <= Math.Abs(Post.Diff.Y);
             Post.Horizontal = !Post.Vertical;
 
+            mTermA = Post.A;
+            mTermB = Post.B;
+
             int offset = 0;
             if (Post.Vertical) {
                 /* vertical */
                 var myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(Post.Diff.Y)
                     * ((Math.Abs(Post.Diff.Y) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
                 if (Post.Diff.Y != 0) {
-                    Elm.Term[1].X = Elm.Term[0].X;
-                    Elm.Term[1].Y = Elm.Term[0].Y + myLen;
+                    mTermB.X = mTermA.X;
+                    mTermB.Y = mTermA.Y + myLen;
                     offset = (0 < Post.Diff.Y) ? Post.Diff.X : -Post.Diff.X;
                 }
             } else {
                 /* horizontal */
                 var myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(Post.Diff.X)
                     * ((Math.Abs(Post.Diff.X) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
-                Elm.Term[1].X = Elm.Term[0].X + myLen;
-                Elm.Term[1].Y = Elm.Term[0].Y;
+                mTermB.X = mTermA.X + myLen;
+                mTermB.Y = mTermA.Y;
                 offset = (Post.Diff.X < 0) ? Post.Diff.Y : -Post.Diff.Y;
             }
             if (offset < CirSimForm.GRID_SIZE) {
                 offset = CirSimForm.GRID_SIZE;
             }
-            Post.Len = Utils.Distance(Elm.Term[0], Elm.Term[1]);
+            Post.Len = Utils.Distance(mTermA, mTermB);
 
-            calcLeads(BODY_LEN);
-            
+            Utils.InterpPoint(mTermA, mTermB, ref mLead1, (Post.Len - BODY_LEN) / (2 * Post.Len));
+            Utils.InterpPoint(mTermA, mTermB, ref mLead2, (Post.Len + BODY_LEN) / (2 * Post.Len));
+
             /* set slider */
             var ce = (ElmPot)Elm;
             ce.Position = mSlider.Value * 0.0099 + 0.0001;
             var poff = 0.5;
             var woff = -7.0;
             int soff = (int)((ce.Position - poff) * BODY_LEN);
-            var t2 = new PointF();
-            Utils.InterpPoint(ce.Term[0], ce.Term[1], ref t2, poff, offset);
-            Utils.InterpPoint(ce.Term[0], ce.Term[1], ref mCorner2, soff / Post.Len + poff, offset);
-            Utils.InterpPoint(ce.Term[0], ce.Term[1], ref mArrowPoint, soff / Post.Len + poff, 7 * Math.Sign(offset));
-            Utils.InterpPoint(ce.Term[0], ce.Term[1], ref mMidPoint, soff / Post.Len + poff);
-            ce.Term[2] = new Point((int)t2.X, (int)t2.Y);
+            Utils.InterpPoint(mTermA, mTermB, ref mTermSlider, poff, offset);
+            Utils.InterpPoint(mTermA, mTermB, ref mCorner2, soff / Post.Len + poff, offset);
+            Utils.InterpPoint(mTermA, mTermB, ref mArrowPoint, soff / Post.Len + poff, 7 * Math.Sign(offset));
+            Utils.InterpPoint(mTermA, mTermB, ref mMidPoint, soff / Post.Len + poff);
 
             var clen = Math.Abs(offset) + woff;
             Utils.InterpPoint(mCorner2, mArrowPoint, ref mArrow1, ref mArrow2, (clen + woff) / clen, 4);
 
             setPoly();
             setTextPos();
+
+            ce.SetNodePos(mTermA, mTermB, mTermSlider);
         }
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmPot)Elm;
 
-            drawLine(ce.Term[0], mLead1);
-            drawLine(mLead2, ce.Term[1]);
+            drawLine(mTermA, mLead1);
+            drawLine(mLead2, mTermB);
 
             if (ControlPanel.ChkUseAnsiSymbols.Checked) {
                 /* draw zigzag */
@@ -134,7 +142,7 @@ namespace Circuit.UI.Passive {
             }
 
             /* draw slider */
-            drawLine(ce.Term[2], mCorner2);
+            drawLine(mTermSlider, mCorner2);
             drawLine(mCorner2, mArrowPoint);
             drawLine(mArrow1, mArrowPoint);
             drawLine(mArrow2, mArrowPoint);
@@ -144,17 +152,17 @@ namespace Circuit.UI.Passive {
             updateDotCount(ce.Current2, ref ce.CurCount2);
             updateDotCount(ce.Current3, ref ce.CurCount3);
             if (CirSimForm.ConstructElm != this) {
-                drawCurrent(ce.Term[0], mMidPoint, ce.CurCount1);
-                drawCurrent(ce.Term[1], mMidPoint, ce.CurCount2);
-                drawCurrent(ce.Term[2], mCorner2, ce.CurCount3);
-                drawCurrent(mCorner2, mMidPoint, ce.CurCount3 + Utils.Distance(ce.Term[2], mCorner2));
+                drawCurrent(mTermA, mMidPoint, ce.CurCount1);
+                drawCurrent(mTermB, mMidPoint, ce.CurCount2);
+                drawCurrent(mTermSlider, mCorner2, ce.CurCount3);
+                drawCurrent(mCorner2, mMidPoint, ce.CurCount3 + Utils.Distance(mTermSlider, mCorner2));
             }
 
             if (ControlPanel.ChkShowValues.Checked && ce.Resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
                 /* check for vertical pot with 3rd terminal on left */
-                bool reverseY = (ce.Term[2].X < mLead1.X && mLead1.X == mLead2.X);
+                bool reverseY = (mTermSlider.X < mLead1.X && mLead1.X == mLead2.X);
                 /* check for horizontal pot with 3rd terminal on top */
-                bool reverseX = (ce.Term[2].Y < mLead1.Y && mLead1.X != mLead2.X);
+                bool reverseX = (mTermSlider.Y < mLead1.Y && mLead1.X != mLead2.X);
                 /* check if we need to swap texts (if leads are reversed, e.g. drawn right to left) */
                 bool rev = (mLead1.X == mLead2.X && mLead1.Y < mLead2.Y) || (mLead1.Y == mLead2.Y && mLead1.X > mLead2.X);
 
@@ -252,12 +260,12 @@ namespace Circuit.UI.Passive {
             mRect2 = new PointF[SEGMENTS + 2];
             mRect3 = new PointF[SEGMENTS + 2];
             mRect4 = new PointF[SEGMENTS + 2];
-            Utils.InterpPoint(Elm.Term[0], Elm.Term[1], ref mRect1[0], ref mRect2[0], 0, HS);
+            Utils.InterpPoint(mTermA, mTermB, ref mRect1[0], ref mRect2[0], 0, HS);
             for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
-                Utils.InterpPoint(Elm.Term[0], Elm.Term[1], ref mRect1[j], ref mRect2[j], i * SEG_F, HS);
-                Utils.InterpPoint(Elm.Term[0], Elm.Term[1], ref mRect3[j], ref mRect4[j], (i + 1) * SEG_F, HS);
+                Utils.InterpPoint(mTermA, mTermB, ref mRect1[j], ref mRect2[j], i * SEG_F, HS);
+                Utils.InterpPoint(mTermA, mTermB, ref mRect3[j], ref mRect4[j], (i + 1) * SEG_F, HS);
             }
-            Utils.InterpPoint(Elm.Term[0], Elm.Term[1], ref mRect1[SEGMENTS + 1], ref mRect2[SEGMENTS + 1], 1, HS);
+            Utils.InterpPoint(mTermA, mTermB, ref mRect1[SEGMENTS + 1], ref mRect2[SEGMENTS + 1], 1, HS);
         }
 
         void setTextPos() {
@@ -277,19 +285,19 @@ namespace Circuit.UI.Passive {
                 if (Post.Diff.Y != 0) {
                     if (0 < Post.Diff.Y) {
                         /* right slider */
-                        Utils.InterpPoint(Elm.Term[0], Elm.Term[1], ref mNamePos, 0.5 + wn / Post.Len, -12 * Post.Dsign);
+                        Utils.InterpPoint(mTermA, mTermB, ref mNamePos, 0.5 + wn / Post.Len, -12 * Post.Dsign);
                     } else {
                         /* left slider */
-                        Utils.InterpPoint(Elm.Term[0], Elm.Term[1], ref mNamePos, 0.5 - wn / Post.Len, 12 * Post.Dsign);
+                        Utils.InterpPoint(mTermA, mTermB, ref mNamePos, 0.5 - wn / Post.Len, 12 * Post.Dsign);
                     }
                 }
             } else {
                 if (0 < Post.Diff.X) {
                     /* upper slider */
-                    Utils.InterpPoint(Elm.Term[0], Elm.Term[1], ref mNamePos, 0.5, -10 * Post.Dsign);
+                    Utils.InterpPoint(mTermA, mTermB, ref mNamePos, 0.5, -10 * Post.Dsign);
                 } else {
                     /* lower slider */
-                    Utils.InterpPoint(Elm.Term[0], Elm.Term[1], ref mNamePos, 0.5, 11 * Post.Dsign);
+                    Utils.InterpPoint(mTermA, mTermB, ref mNamePos, 0.5, 11 * Post.Dsign);
                 }
             }
         }

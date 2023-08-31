@@ -318,8 +318,8 @@ namespace Circuit {
                 var elm = (ElmWire)ce;
                 elm.HasWireInfo = false;
                 mWireInfoList.Add(new WireInfo(elm));
-                var p1 = elm.GetTerm(0);
-                var p2 = elm.GetTerm(1);
+                var p1 = elm.GetNodePos(0);
+                var p2 = elm.GetNodePos(1);
                 var cp1 = mNodeMap.ContainsKey(p1);
                 var cp2 = mNodeMap.ContainsKey(p2);
                 if (cp1 && cp2) {
@@ -391,15 +391,16 @@ namespace Circuit {
                     /* That would create a circular dependency */
                     bool notReady = (ce is ElmWire) && !((ElmWire)ce).HasWireInfo;
 
-                    var pt = ce.GetTerm(cnl.Num);
-
                     /* which post does this element connect to, if any? */
-                    if (pt.X == wire.Term[0].X && pt.Y == wire.Term[0].Y) {
+                    var elmPos = ce.GetNodePos(cnl.Num);
+                    var wirePosA = wire.GetNodePos(0);
+                    var wirePosB = wire.GetNodePos(1);
+                    if (elmPos.X == wirePosA.X && elmPos.Y == wirePosA.Y) {
                         neighbors0.Add(ce);
                         if (notReady) {
                             isReady0 = false;
                         }
-                    } else if (pt.X == wire.Term[1].X && pt.Y == wire.Term[1].Y) {
+                    } else if (elmPos.X == wirePosB.X && elmPos.Y == wirePosB.Y) {
                         neighbors1.Add(ce);
                         if (notReady) {
                             isReady1 = false;
@@ -458,7 +459,7 @@ namespace Circuit {
                         int k;
                         int pc = ce.TermCount;
                         for (k = 0; k != pc; k++) {
-                            if (ce.GetTerm(k).Equals(cn)) {
+                            if (ce.GetNodePos(k).Equals(cn)) {
                                 break;
                             }
                         }
@@ -646,7 +647,7 @@ namespace Circuit {
                 /* is ground */
                 if (!gotGround && volt != null && !gotRail) {
                     var cn = new CircuitNode();
-                    var pt = volt.GetTerm(0);
+                    var pt = volt.GetNodePos(0);
                     Nodes.Add(cn);
                     /* update node map */
                     if (mNodeMap.ContainsKey(pt)) {
@@ -676,7 +677,7 @@ namespace Circuit {
 
                     /* allocate a node for each post and match posts to nodes */
                     for (int j = 0; j < posts; j++) {
-                        var pt = ce.GetTerm(j);
+                        var pt = ce.GetNodePos(j);
                         if (mPostCountMap.ContainsKey(pt)) {
                             int g = mPostCountMap[pt];
                             mPostCountMap[pt] = g + 1;
@@ -992,10 +993,10 @@ namespace Circuit {
                 var wi = mWireInfoList[i];
                 var we = wi.Wire;
                 double cur = 0;
-                var p = we.GetTerm(wi.Post);
+                var p = we.GetNodePos(wi.Post);
                 for (int j = 0; j < wi.Neighbors.Count; j++) {
                     var ce = wi.Neighbors[j];
-                    int n = ce.CirGetNodeAtPoint(p.X, p.Y);
+                    var n = ce.CirGetNodeAtPoint(p);
                     cur += ce.CirGetCurrentIntoNode(n);
                 }
                 if (wi.Post == 0) {

@@ -19,7 +19,7 @@ namespace Circuit.Elements.Custom {
 
         public int NumPosts { get; protected set; } = 0;
 
-        public override Point GetTerm(int n) {
+        public override Point GetNodePos(int n) {
             return Posts[n];
         }
 

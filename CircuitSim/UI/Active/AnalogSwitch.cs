@@ -10,7 +10,8 @@ namespace Circuit.UI.Active {
         const int OPEN_HS = 16;
         const int BODY_LEN = 24;
 
-        Point mLead3;
+        PointF mCtrlTerm;
+        PointF mCtrlLead;
 
         public AnalogSwitch(Point pos) : base(pos) {
             Elm = new ElmAnalogSwitch();
@@ -51,8 +52,9 @@ namespace Circuit.UI.Active {
             base.SetPoints();
             Post.SetBbox(OPEN_HS);
             calcLeads(BODY_LEN);
-            interpPost(ref ((ElmAnalogSwitch)Elm).Term[2], 0.5, -OPEN_HS);
-            interpPost(ref mLead3, 0.5, -OPEN_HS / 2);
+            interpPost(ref mCtrlTerm, 0.5, -OPEN_HS);
+            interpPost(ref mCtrlLead, 0.5, -OPEN_HS / 3);
+            Elm.SetNodePos(Post.A, Post.B, mCtrlTerm);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -63,7 +65,7 @@ namespace Circuit.UI.Active {
 
             draw2Leads();
             drawLine(mLead1, ps);
-            drawLine(ce.Term[2], mLead3);
+            drawLine(mCtrlTerm, mCtrlLead);
 
             if (!ce.IsOpen) {
                 doDots();

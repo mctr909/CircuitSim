@@ -11,7 +11,7 @@ namespace Circuit.UI.Input {
         PointF mAshaft1;
         PointF mAshaft2;
         PointF mCenter;
-        Point mTextPos;
+        PointF mTextPos;
         double mCurrentValue;
 
         public Current(Point pos) : base(pos) {

@@ -5,7 +5,7 @@ using Circuit.Elements.Passive;
 
 namespace Circuit.UI.Passive {
     class CapacitorPolar : Capacitor {
-        Point mPlusPoint;
+        PointF mPlusPoint;
 
         public CapacitorPolar(Point pos) : base(pos) {
             Elm = new ElmPolarCapacitor();

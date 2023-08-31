@@ -15,9 +15,9 @@ namespace Circuit.Elements.Gate {
 
         public bool LastOutput { get; private set; }
 
-        public override Point GetTerm(int n) {
+        public override Point GetNodePos(int n) {
             if (n == InputCount) {
-                return Term[1];
+                return mNodePos[1];
             }
             return InPosts[n];
         }

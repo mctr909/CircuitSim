@@ -11,8 +11,8 @@ namespace Circuit.Elements.Passive {
 
         public override int TermCount { get { return 1 + ThrowCount; } }
 
-        public override Point GetTerm(int n) {
-            return (n == 0) ? Term[0] : SwPosts[n - 1];
+        public override Point GetNodePos(int n) {
+            return (n == 0) ? mNodePos[0] : SwPosts[n - 1];
         }
 
         public override bool AnaGetConnection(int n1, int n2) {

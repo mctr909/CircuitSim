@@ -103,10 +103,7 @@ namespace Circuit.UI.Active {
             }
             setTextPos();
 
-            ce.Term[1].X = (int)mPosC[2].X;
-            ce.Term[1].Y = (int)mPosC[2].Y;
-            ce.Term[2].X = (int)mPosE[2].X;
-            ce.Term[2].Y = (int)mPosE[2].Y;
+            ce.SetNodePos(Post.A, mPosC[2], mPosE[2]);
         }
 
         void setTextPos() {
