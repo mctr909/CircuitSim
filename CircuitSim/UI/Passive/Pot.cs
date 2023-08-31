@@ -73,17 +73,17 @@ namespace Circuit.UI.Passive {
                 var myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(Post.Diff.Y)
                     * ((Math.Abs(Post.Diff.Y) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
                 if (Post.Diff.Y != 0) {
+                    Elm.Term[1].X = Elm.Term[0].X;
                     Elm.Term[1].Y = Elm.Term[0].Y + myLen;
                     offset = (0 < Post.Diff.Y) ? Post.Diff.X : -Post.Diff.X;
-                    Elm.Term[1].X = Elm.Term[0].X;
                 }
             } else {
                 /* horizontal */
                 var myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(Post.Diff.X)
                     * ((Math.Abs(Post.Diff.X) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
                 Elm.Term[1].X = Elm.Term[0].X + myLen;
-                offset = (Post.Diff.X < 0) ? Post.Diff.Y : -Post.Diff.Y;
                 Elm.Term[1].Y = Elm.Term[0].Y;
+                offset = (Post.Diff.X < 0) ? Post.Diff.Y : -Post.Diff.Y;
             }
             if (offset < CirSimForm.GRID_SIZE) {
                 offset = CirSimForm.GRID_SIZE;

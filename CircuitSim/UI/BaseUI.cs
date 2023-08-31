@@ -214,8 +214,8 @@ namespace Circuit.UI {
         /// <param name="len"></param>
         protected void calcLeads(int bodyLength) {
             if (Post.Len < bodyLength || bodyLength == 0) {
-                mLead1 = Elm.Term[0];
-                mLead2 = Elm.Term[1];
+                mLead1 = Post.A;
+                mLead2 = Post.B;
                 return;
             }
             setLead1((Post.Len - bodyLength) / (2 * Post.Len));
