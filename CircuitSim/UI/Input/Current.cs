@@ -56,7 +56,7 @@ namespace Circuit.UI.Input {
 
             doDots();
             if (ControlPanel.ChkShowValues.Checked) {
-                string s = Utils.UnitText(mCurrentValue, "A");
+                var s = Utils.CurrentText(mCurrentValue);
                 g.DrawRightText(s, mTextPos);
             }
         }

@@ -334,7 +334,7 @@ namespace Circuit.UI.Input {
             if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                 drawLine(mPs1, mPs2);
                 drawLine(mPs3, mPs4);
-                var s = Utils.UnitText(elm.MaxVoltage, "V");
+                var s = Utils.VoltageText(elm.MaxVoltage);
                 g.DrawRightText(s, mTextPos);
             } else {
                 drawWaveform(mPs1);
@@ -367,7 +367,7 @@ namespace Circuit.UI.Input {
             drawCircle(p, BODY_LEN / 2);
             drawPolyline(mWaveFormPos);
             if (ControlPanel.ChkShowValues.Checked) {
-                var s = Utils.UnitText(elm.MaxVoltage, "V\r\n");
+                var s = Utils.VoltageText(elm.MaxVoltage) + "\r\n";
                 s += Utils.UnitText(elm.Frequency, "Hz\r\n");
                 s += Utils.UnitText((elm.Phase + elm.PhaseOffset) * 180 / Math.PI, "deg");
                 drawValues(s, 0, 5);

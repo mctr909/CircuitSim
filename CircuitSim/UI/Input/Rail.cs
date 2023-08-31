@@ -58,17 +58,8 @@ namespace Circuit.UI.Input {
             if (elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
                 drawCenteredText("CLK", mNamePos);
             } else if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
-                var color = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.WhiteColor;
-                double v = elm.GetVoltage();
-                string s;
-                if (Math.Abs(v) < 1) {
-                    s = v.ToString("0.000") + " V";
-                } else {
-                    s = Utils.UnitText(v, "V");
-                }
-                if (elm.GetVoltage() > 0) {
-                    s = "+" + s;
-                }
+                var v = elm.GetVoltage();
+                var s = Utils.VoltageText(v);
                 drawCenteredText(s, mNamePos);
             } else {
                 drawWaveform(Elm.Post[1]);
