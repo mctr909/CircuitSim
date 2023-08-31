@@ -20,8 +20,6 @@ namespace Circuit.UI.Input {
             Link.Load(st);
         }
 
-        protected override int mNumHandles { get { return 1; } }
-
         public override DUMP_ID DumpType { get { return DUMP_ID.RAIL; } }
 
         public override void SetPoints() {

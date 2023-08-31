@@ -62,8 +62,6 @@ namespace Circuit.UI {
             }
         }
 
-        protected virtual int mNumHandles { get { return 2; } }
-
         protected virtual BaseLink mLink { get; set; } = new BaseLink();
         #endregion
 

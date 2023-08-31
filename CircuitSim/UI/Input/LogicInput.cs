@@ -18,8 +18,6 @@ namespace Circuit.UI.Input {
             Elm = new ElmLogicInput(st);
         }
 
-        protected override int mNumHandles { get { return 1; } }
-
         public override DUMP_ID DumpType { get { return DUMP_ID.LOGIC_I; } }
 
         protected override void dump(List<object> optionList) {
