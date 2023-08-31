@@ -32,8 +32,8 @@ namespace Circuit.UI.Passive {
                 mLine[i] = new PointF[] { pa, pb };
             }
             interpPost(ref pb, 1 - BODY_LEN / Post.Len);
-            mLine[3] = new PointF[] { pb, Elm.Post[0] };
-            Post.SetBbox(Elm.Post[0], pa, 11);
+            mLine[3] = new PointF[] { pb, Post.A };
+            Post.SetBbox(Post.A, pa, 11);
         }
 
         public override void Draw(CustomGraphics g) {

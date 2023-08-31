@@ -54,7 +54,7 @@ namespace Circuit.Elements.Active {
             AllocNodes();
         }
 
-        public override int PostCount { get { return 3; } }
+        public override int TermCount { get { return 3; } }
 
         public override double GetVoltageDiff() { return Volts[IdxD] - Volts[IdxS]; }
 

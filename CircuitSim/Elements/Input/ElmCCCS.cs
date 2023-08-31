@@ -19,7 +19,7 @@ namespace Circuit.Elements.Input {
 
         public override int AnaVoltageSourceCount { get { return 1; } }
 
-        public override int PostCount { get { return 4; } }
+        public override int TermCount { get { return 4; } }
 
         public override void SetupPins(Chip ui) {
             ui.sizeX = 2;

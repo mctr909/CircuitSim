@@ -1955,7 +1955,7 @@ namespace Circuit {
                     }
                 }
                 s = cs;
-                for (int j = 0; j < e.PostCount; j++) {
+                for (int j = 0; j < e.TermCount; j++) {
                     s = s + " " + e.Nodes[j];
                 }
                 Console.WriteLine(s);

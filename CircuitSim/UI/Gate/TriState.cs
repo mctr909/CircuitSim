@@ -39,7 +39,7 @@ namespace Circuit.UI.Gate {
             mGatePoly = new PointF[3];
             interpLeadAB(ref mGatePoly[0], ref mGatePoly[1], 0, hs);
             interpPost(ref mGatePoly[2], 0.5 + ww / Post.Len);
-            interpPost(ref ((ElmTriState)Elm).Post[2], 0.5, -hs);
+            interpPost(ref ((ElmTriState)Elm).Term[2], 0.5, -hs);
             interpPost(ref mLead3, 0.5, -hs / 2);
         }
 
@@ -47,7 +47,7 @@ namespace Circuit.UI.Gate {
             var ce = (ElmTriState)Elm;
             draw2Leads();
             drawPolygon(mGatePoly);
-            drawLine(ce.Post[2], mLead3);
+            drawLine(ce.Term[2], mLead3);
             updateDotCount(ce.Current, ref mCurCount);
             drawCurrentB(mCurCount);
         }

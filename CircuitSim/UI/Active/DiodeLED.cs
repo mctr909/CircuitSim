@@ -70,8 +70,8 @@ namespace Circuit.UI.Active {
                 return;
             }
 
-            drawLine(Elm.Post[0], mLedLead1);
-            drawLine(mLedLead2, Elm.Post[1]);
+            drawLine(Post.A, mLedLead1);
+            drawLine(mLedLead2, Post.B);
             drawCircle(mLedCenter, CR);
 
             var ce = (ElmDiode)Elm;
@@ -89,8 +89,8 @@ namespace Circuit.UI.Active {
             g.FillCircle(mLedCenter.X, mLedCenter.Y, CR_INNER);
 
             updateDotCount();
-            drawCurrent(Elm.Post[0], mLedLead1, mCurCount);
-            drawCurrent(Elm.Post[1], mLedLead2, -mCurCount);
+            drawCurrent(Post.A, mLedLead1, mCurCount);
+            drawCurrent(Post.B, mLedLead2, -mCurCount);
         }
 
         public override void GetInfo(string[] arr) {

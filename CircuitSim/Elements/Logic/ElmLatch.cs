@@ -10,7 +10,7 @@ namespace Circuit.Elements.Logic {
 
         public ElmLatch(StringTokenizer st) : base(st) { }
 
-        public override int PostCount { get { return Bits * 2 + 1; } }
+        public override int TermCount { get { return Bits * 2 + 1; } }
 
         public override int AnaVoltageSourceCount { get { return Bits; } }
 
@@ -19,7 +19,7 @@ namespace Circuit.Elements.Logic {
         public override void SetupPins(Chip chip) {
             chip.sizeX = 2;
             chip.sizeY = Bits + 1;
-            Pins = new Chip.Pin[PostCount];
+            Pins = new Chip.Pin[TermCount];
             for (var i = 0; i != Bits; i++) {
                 Pins[i] = new Chip.Pin(chip, Bits - 1 - i, Chip.SIDE_W, "I" + i);
             }

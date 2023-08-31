@@ -73,22 +73,22 @@ namespace Circuit.UI.Passive {
                 var myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(Post.Diff.Y)
                     * ((Math.Abs(Post.Diff.Y) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
                 if (Post.Diff.Y != 0) {
-                    Elm.Post[1].Y = Elm.Post[0].Y + myLen;
+                    Elm.Term[1].Y = Elm.Term[0].Y + myLen;
                     offset = (0 < Post.Diff.Y) ? Post.Diff.X : -Post.Diff.X;
-                    Elm.Post[1].X = Elm.Post[0].X;
+                    Elm.Term[1].X = Elm.Term[0].X;
                 }
             } else {
                 /* horizontal */
                 var myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(Post.Diff.X)
                     * ((Math.Abs(Post.Diff.X) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
-                Elm.Post[1].X = Elm.Post[0].X + myLen;
+                Elm.Term[1].X = Elm.Term[0].X + myLen;
                 offset = (Post.Diff.X < 0) ? Post.Diff.Y : -Post.Diff.Y;
-                Elm.Post[1].Y = Elm.Post[0].Y;
+                Elm.Term[1].Y = Elm.Term[0].Y;
             }
             if (offset < CirSimForm.GRID_SIZE) {
                 offset = CirSimForm.GRID_SIZE;
             }
-            Post.Len = Utils.Distance(Elm.Post[0], Elm.Post[1]);
+            Post.Len = Utils.Distance(Elm.Term[0], Elm.Term[1]);
 
             calcLeads(BODY_LEN);
             
@@ -98,7 +98,7 @@ namespace Circuit.UI.Passive {
             var poff = 0.5;
             var woff = -7.0;
             int soff = (int)((ce.Position - poff) * BODY_LEN);
-            interpPost(ref ce.Post[2], poff, offset);
+            interpPost(ref ce.Term[2], poff, offset);
             interpPost(ref mCorner2, soff / Post.Len + poff, offset);
             interpPost(ref mArrowPoint, soff / Post.Len + poff, 7 * Math.Sign(offset));
             interpPost(ref mMidPoint, soff / Post.Len + poff);
@@ -130,7 +130,7 @@ namespace Circuit.UI.Passive {
             }
 
             /* draw slider */
-            drawLine(ce.Post[2], mCorner2);
+            drawLine(ce.Term[2], mCorner2);
             drawLine(mCorner2, mArrowPoint);
             drawLine(mArrow1, mArrowPoint);
             drawLine(mArrow2, mArrowPoint);
@@ -140,17 +140,17 @@ namespace Circuit.UI.Passive {
             updateDotCount(ce.Current2, ref ce.CurCount2);
             updateDotCount(ce.Current3, ref ce.CurCount3);
             if (CirSimForm.ConstructElm != this) {
-                drawCurrent(ce.Post[0], mMidPoint, ce.CurCount1);
-                drawCurrent(ce.Post[1], mMidPoint, ce.CurCount2);
-                drawCurrent(ce.Post[2], mCorner2, ce.CurCount3);
-                drawCurrent(mCorner2, mMidPoint, ce.CurCount3 + Utils.Distance(ce.Post[2], mCorner2));
+                drawCurrent(ce.Term[0], mMidPoint, ce.CurCount1);
+                drawCurrent(ce.Term[1], mMidPoint, ce.CurCount2);
+                drawCurrent(ce.Term[2], mCorner2, ce.CurCount3);
+                drawCurrent(mCorner2, mMidPoint, ce.CurCount3 + Utils.Distance(ce.Term[2], mCorner2));
             }
 
             if (ControlPanel.ChkShowValues.Checked && ce.Resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
                 /* check for vertical pot with 3rd terminal on left */
-                bool reverseY = (ce.Post[2].X < mLead1.X && mLead1.X == mLead2.X);
+                bool reverseY = (ce.Term[2].X < mLead1.X && mLead1.X == mLead2.X);
                 /* check for horizontal pot with 3rd terminal on top */
-                bool reverseX = (ce.Post[2].Y < mLead1.Y && mLead1.X != mLead2.X);
+                bool reverseX = (ce.Term[2].Y < mLead1.Y && mLead1.X != mLead2.X);
                 /* check if we need to swap texts (if leads are reversed, e.g. drawn right to left) */
                 bool rev = (mLead1.X == mLead2.X && mLead1.Y < mLead2.Y) || (mLead1.Y == mLead2.Y && mLead1.X > mLead2.X);
 

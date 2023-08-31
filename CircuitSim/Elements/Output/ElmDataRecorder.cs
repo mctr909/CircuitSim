@@ -14,7 +14,7 @@
             setDataCount(v);
         }
 
-        public override int PostCount { get { return 1; } }
+        public override int TermCount { get { return 1; } }
 
         public override double GetVoltageDiff() { return Volts[0]; }
 

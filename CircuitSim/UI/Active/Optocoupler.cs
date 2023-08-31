@@ -65,14 +65,14 @@ namespace Circuit.UI.Active {
 
             /* diode */
             ce.mDiode.SetPosition(ce.Posts[0].X + 10, ce.Posts[0].Y, ce.Posts[1].X + 10, ce.Posts[1].Y);
-            mStubs[0] = ce.mDiode.Elm.GetPost(0);
-            mStubs[1] = ce.mDiode.Elm.GetPost(1);
+            mStubs[0] = ce.mDiode.Elm.GetTerm(0);
+            mStubs[1] = ce.mDiode.Elm.GetTerm(1);
 
             /* transistor */
             int midp = (ce.Posts[2].Y + ce.Posts[3].Y) / 2;
             ce.mTransistor.SetPosition(ce.Posts[2].X - 18, midp, ce.Posts[2].X - 6, midp);
-            mStubs[2] = ce.mTransistor.Elm.GetPost(1);
-            mStubs[3] = ce.mTransistor.Elm.GetPost(2);
+            mStubs[2] = ce.mTransistor.Elm.GetTerm(1);
+            mStubs[3] = ce.mTransistor.Elm.GetTerm(2);
 
             /* create little arrows */
             int sx1 = mStubs[0].X;

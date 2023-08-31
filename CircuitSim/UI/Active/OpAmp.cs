@@ -66,7 +66,7 @@ namespace Circuit.UI.Active {
             }
             interpPostAB(ref mPosIn1[0], ref mPosIn2[0], 0, hs);
             interpLeadAB(ref mPosIn1[1], ref mPosIn2[1], 0, hs);
-            mPosOut = Elm.Post[1];
+            mPosOut = Post.B;
 
             var signp = new PointF[2];
             interpLeadAB(ref signp[0], ref signp[1], 0.2, hs);
@@ -84,11 +84,11 @@ namespace Circuit.UI.Active {
             interpLeadAB(ref tris[0], ref tris[1], 0, hs * 2);
             mTriangle = new PointF[] { tris[0], tris[1], mLead2 };
 
-            Elm.Post[0].X = (int)mPosIn1[0].X;
-            Elm.Post[0].Y = (int)mPosIn1[0].Y;
-            Elm.Post[1].X = (int)mPosIn2[0].X;
-            Elm.Post[1].Y = (int)mPosIn2[0].Y;
-            Elm.Post[2] = mPosOut;
+            Elm.Term[0].X = (int)mPosIn1[0].X;
+            Elm.Term[0].Y = (int)mPosIn1[0].Y;
+            Elm.Term[1].X = (int)mPosIn2[0].X;
+            Elm.Term[1].Y = (int)mPosIn2[0].Y;
+            Elm.Term[2] = mPosOut;
         }
 
         public override void Draw(CustomGraphics g) {

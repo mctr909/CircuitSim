@@ -11,7 +11,7 @@ namespace Circuit.Elements.Output {
         public int Meter;
         public E_SCALE Scale;
 
-        public override int PostCount { get { return 2; } }
+        public override int TermCount { get { return 2; } }
 
         public double RmsV { get; private set; } = 0;
         public double LastMaxV { get; private set; }

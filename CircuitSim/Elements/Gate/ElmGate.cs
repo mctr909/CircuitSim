@@ -15,9 +15,9 @@ namespace Circuit.Elements.Gate {
 
         public bool LastOutput { get; private set; }
 
-        public override Point GetPost(int n) {
+        public override Point GetTerm(int n) {
             if (n == InputCount) {
-                return Post[1];
+                return Term[1];
             }
             return InPosts[n];
         }
@@ -37,7 +37,7 @@ namespace Circuit.Elements.Gate {
 
         public override int AnaVoltageSourceCount { get { return 1; } }
 
-        public override int PostCount { get { return InputCount + 1; } }
+        public override int TermCount { get { return InputCount + 1; } }
 
         public override double CirGetCurrentIntoNode(int n) {
             if (n == InputCount) {

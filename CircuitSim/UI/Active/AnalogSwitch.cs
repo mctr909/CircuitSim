@@ -51,7 +51,7 @@ namespace Circuit.UI.Active {
             base.SetPoints();
             Post.SetBbox(OPEN_HS);
             calcLeads(BODY_LEN);
-            interpPost(ref ((ElmAnalogSwitch)Elm).Post[2], 0.5, -OPEN_HS);
+            interpPost(ref ((ElmAnalogSwitch)Elm).Term[2], 0.5, -OPEN_HS);
             interpPost(ref mLead3, 0.5, -OPEN_HS / 2);
         }
 
@@ -63,7 +63,7 @@ namespace Circuit.UI.Active {
 
             draw2Leads();
             drawLine(mLead1, ps);
-            drawLine(ce.Post[2], mLead3);
+            drawLine(ce.Term[2], mLead3);
 
             if (!ce.IsOpen) {
                 doDots();

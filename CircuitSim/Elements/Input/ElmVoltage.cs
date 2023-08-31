@@ -43,7 +43,7 @@ namespace Circuit.Elements.Input {
             DutyCycle = st.nextTokenDouble(0.5);
         }
 
-        public override int PostCount { get { return 2; } }
+        public override int TermCount { get { return 2; } }
 
         public override int AnaVoltageSourceCount { get { return 1; } }
 

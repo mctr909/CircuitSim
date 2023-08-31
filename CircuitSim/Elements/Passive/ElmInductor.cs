@@ -12,7 +12,7 @@
             Current = c;
         }
 
-        public override int PostCount { get { return 2; } }
+        public override int TermCount { get { return 2; } }
 
         public void Setup(double ic, double cr) {
             Inductance = ic;

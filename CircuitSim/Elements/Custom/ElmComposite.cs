@@ -19,7 +19,7 @@ namespace Circuit.Elements.Custom {
 
         public int NumPosts { get; protected set; } = 0;
 
-        public override Point GetPost(int n) {
+        public override Point GetTerm(int n) {
             return Posts[n];
         }
 
@@ -40,7 +40,7 @@ namespace Circuit.Elements.Custom {
             AllocNodes();
         }
 
-        public override int PostCount { get { return NumPosts; } }
+        public override int TermCount { get { return NumPosts; } }
 
         public override int AnaVoltageSourceCount { get { return mVoltageSources.Count; } }
 
@@ -228,7 +228,7 @@ namespace Circuit.Elements.Custom {
                 int inodes = cee.AnaInternalNodeCount;
                 for (int j = 0; j != inodes; j++) {
                     cnLink = new CircuitNode.LINK();
-                    cnLink.Num = j + cee.PostCount;
+                    cnLink.Num = j + cee.TermCount;
                     cnLink.Elm = cee;
                     cn = new CircuitNode();
                     cn.Links.Add(cnLink);

@@ -9,10 +9,10 @@ namespace Circuit.Elements.Passive {
 
         public override int AnaVoltageSourceCount { get { return 1; } }
 
-        public override int PostCount { get { return 1 + ThrowCount; } }
+        public override int TermCount { get { return 1 + ThrowCount; } }
 
-        public override Point GetPost(int n) {
-            return (n == 0) ? Post[0] : SwPosts[n - 1];
+        public override Point GetTerm(int n) {
+            return (n == 0) ? Term[0] : SwPosts[n - 1];
         }
 
         public override bool AnaGetConnection(int n1, int n2) {

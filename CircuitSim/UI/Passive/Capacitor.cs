@@ -56,15 +56,15 @@ namespace Circuit.UI.Passive {
             setLead2(f2 + 0.1 / Post.Len);
             /* calc plates */
             mPlate1 = new PointF[4];
-            Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate1[0], f1 - dw, -HS);
-            Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate1[1], f1 - dw, HS);
-            Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate1[2], f1 + dw, HS);
-            Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate1[3], f1 + dw, -HS);
+            interpPost(ref mPlate1[0], f1 - dw, -HS);
+            interpPost(ref mPlate1[1], f1 - dw, HS);
+            interpPost(ref mPlate1[2], f1 + dw, HS);
+            interpPost(ref mPlate1[3], f1 + dw, -HS);
             mPlate2 = new PointF[4];
-            Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate2[0], f2 - dw, -HS);
-            Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate2[1], f2 - dw, HS);
-            Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate2[2], f2 + dw, HS);
-            Utils.InterpPoint(Elm.Post[0], Elm.Post[1], ref mPlate2[3], f2 + dw, -HS);
+            interpPost(ref mPlate2[0], f2 - dw, -HS);
+            interpPost(ref mPlate2[1], f2 - dw, HS);
+            interpPost(ref mPlate2[2], f2 + dw, HS);
+            interpPost(ref mPlate2[3], f2 + dw, -HS);
             setTextPos();
         }
 

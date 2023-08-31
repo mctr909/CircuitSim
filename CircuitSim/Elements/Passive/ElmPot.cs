@@ -16,7 +16,7 @@
         public double Current2 { get; private set; }
         public double Current3 { get; private set; }
 
-        public override int PostCount { get { return 3; } }
+        public override int TermCount { get { return 3; } }
 
         public override void Reset() {
             CurCount1 = CurCount2 = CurCount3 = 0;

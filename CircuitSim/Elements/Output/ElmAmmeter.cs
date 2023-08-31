@@ -30,7 +30,7 @@ namespace Circuit.Elements.Output {
             Scale = st.nextTokenEnum(E_SCALE.AUTO);
         }
 
-        public override int PostCount { get { return 2; } }
+        public override int TermCount { get { return 2; } }
 
         public override bool IsWire { get { return true; } }
 

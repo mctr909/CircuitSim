@@ -27,7 +27,7 @@ namespace Circuit.Elements.Gate {
             LogicOffLevel = st.nextTokenDouble(0);
         }
 
-        public override int PostCount { get { return 2; } }
+        public override int TermCount { get { return 2; } }
 
         public override double GetVoltageDiff() { return Volts[0]; }
 

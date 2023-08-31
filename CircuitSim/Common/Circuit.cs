@@ -318,8 +318,8 @@ namespace Circuit {
                 var elm = (ElmWire)ce;
                 elm.HasWireInfo = false;
                 mWireInfoList.Add(new WireInfo(elm));
-                var p1 = elm.GetPost(0);
-                var p2 = elm.GetPost(1);
+                var p1 = elm.GetTerm(0);
+                var p2 = elm.GetTerm(1);
                 var cp1 = mNodeMap.ContainsKey(p1);
                 var cp2 = mNodeMap.ContainsKey(p2);
                 if (cp1 && cp2) {
@@ -391,15 +391,15 @@ namespace Circuit {
                     /* That would create a circular dependency */
                     bool notReady = (ce is ElmWire) && !((ElmWire)ce).HasWireInfo;
 
-                    var pt = ce.GetPost(cnl.Num);
+                    var pt = ce.GetTerm(cnl.Num);
 
                     /* which post does this element connect to, if any? */
-                    if (pt.X == wire.Post[0].X && pt.Y == wire.Post[0].Y) {
+                    if (pt.X == wire.Term[0].X && pt.Y == wire.Term[0].Y) {
                         neighbors0.Add(ce);
                         if (notReady) {
                             isReady0 = false;
                         }
-                    } else if (pt.X == wire.Post[1].X && pt.Y == wire.Post[1].Y) {
+                    } else if (pt.X == wire.Term[1].X && pt.Y == wire.Term[1].Y) {
                         neighbors1.Add(ce);
                         if (notReady) {
                             isReady1 = false;
@@ -456,9 +456,9 @@ namespace Circuit {
                         var ce = mElmList[j];
                         /* does this post belong to the elm? */
                         int k;
-                        int pc = ce.PostCount;
+                        int pc = ce.TermCount;
                         for (k = 0; k != pc; k++) {
-                            if (ce.GetPost(k).Equals(cn)) {
+                            if (ce.GetTerm(k).Equals(cn)) {
                                 break;
                             }
                         }
@@ -646,7 +646,7 @@ namespace Circuit {
                 /* is ground */
                 if (!gotGround && volt != null && !gotRail) {
                     var cn = new CircuitNode();
-                    var pt = volt.GetPost(0);
+                    var pt = volt.GetTerm(0);
                     Nodes.Add(cn);
                     /* update node map */
                     if (mNodeMap.ContainsKey(pt)) {
@@ -672,11 +672,11 @@ namespace Circuit {
                     }
                     int inodes = ce.AnaInternalNodeCount;
                     int ivs = ce.AnaVoltageSourceCount;
-                    int posts = ce.PostCount;
+                    int posts = ce.TermCount;
 
                     /* allocate a node for each post and match posts to nodes */
                     for (int j = 0; j < posts; j++) {
-                        var pt = ce.GetPost(j);
+                        var pt = ce.GetTerm(j);
                         if (mPostCountMap.ContainsKey(pt)) {
                             int g = mPostCountMap[pt];
                             mPostCountMap[pt] = g + 1;
@@ -843,7 +843,7 @@ namespace Circuit {
 
                 /* look for voltage source or wire loops.  we do this for voltage sources or wire-like elements (not actual wires
                 /* because those are optimized out, so the findPath won't work) */
-                if (2 == ce.PostCount) {
+                if (2 == ce.TermCount) {
                     if ((ce is ElmVoltage) || (ce.IsWire && !(ce is ElmWire))) {
                         var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Nodes[1], mElmList, Nodes.Count);
                         if (fpi.FindPath(ce.Nodes[0])) {
@@ -854,7 +854,7 @@ namespace Circuit {
                 } else if (ce is ElmSwitchMulti) {
                     /* for Switch2Elms we need to do extra work to look for wire loops */
                     var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Nodes[0], mElmList, Nodes.Count);
-                    for (int j = 1; j < ce.PostCount; j++) {
+                    for (int j = 1; j < ce.TermCount; j++) {
                         if (ce.AnaGetConnection(0, j) && fpi.FindPath(ce.Nodes[j])) {
                             Stop("Voltage source/wire loop with no resistance!", ce);
                             return;
@@ -992,7 +992,7 @@ namespace Circuit {
                 var wi = mWireInfoList[i];
                 var we = wi.Wire;
                 double cur = 0;
-                var p = we.GetPost(wi.Post);
+                var p = we.GetTerm(wi.Post);
                 for (int j = 0; j < wi.Neighbors.Count; j++) {
                     var ce = wi.Neighbors[j];
                     int n = ce.CirGetNodeAtPoint(p.X, p.Y);

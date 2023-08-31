@@ -45,7 +45,7 @@ namespace Circuit.Elements.Active {
             Volts[IdxE] = -vbc;
         }
 
-        public override int PostCount { get { return 3; } }
+        public override int TermCount { get { return 3; } }
 
         public override double GetVoltageDiff() { return Volts[IdxC] - Volts[IdxE]; }
 

@@ -8,7 +8,7 @@
 
         public bool IsOpen { get; private set; }
 
-        public override int PostCount { get { return 3; } }
+        public override int TermCount { get { return 3; } }
 
         public override bool AnaGetConnection(int n1, int n2) { return !(n1 == 2 || n2 == 2); }
 

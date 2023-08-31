@@ -143,7 +143,7 @@ namespace Circuit.UI.Custom {
             if (ce.NeedsBits()) {
                 optionList.Add(ce.Bits);
             }
-            for (int i = 0; i != ce.PostCount; i++) {
+            for (int i = 0; i != ce.TermCount; i++) {
                 if (ce.Pins[i].state) {
                     optionList.Add(ce.Volts[i].ToString("0.000000"));
                 }
@@ -164,7 +164,7 @@ namespace Circuit.UI.Custom {
 
         public void drawChip(CustomGraphics g) {
             var ce = (ElmChip)Elm;
-            for (int i = 0; i != ce.PostCount; i++) {
+            for (int i = 0; i != ce.TermCount; i++) {
                 var p = ce.Pins[i];
                 var a = p.post;
                 var b = p.stub;
@@ -229,7 +229,7 @@ namespace Circuit.UI.Custom {
                 new Point(r.X, r.Y + ys)
             };
             Post.SetBbox(r, rectPoints[2]);
-            for (int i = 0; i != ce.PostCount; i++) {
+            for (int i = 0; i != ce.TermCount; i++) {
                 var p = ce.Pins[i];
                 switch (p.side) {
                 case SIDE_N:
@@ -283,7 +283,7 @@ namespace Circuit.UI.Custom {
                 return false;
             }
 
-            for (int i = 0; i != ce.PostCount; i++) {
+            for (int i = 0; i != ce.TermCount; i++) {
                 if (pin == i) {
                     continue;
                 }
@@ -298,7 +298,7 @@ namespace Circuit.UI.Custom {
             var ce = (ElmChip)Elm;
             arr[0] = getChipName();
             int a = 1;
-            for (int i = 0; i != ce.PostCount; i++) {
+            for (int i = 0; i != ce.TermCount; i++) {
                 var p = ce.Pins[i];
                 if (arr[a] != null) {
                     arr[a] += "; ";

@@ -2,7 +2,7 @@
     class ElmResistor : BaseElement {
         public double Resistance = 1000;
 
-        public override int PostCount { get { return 2; } }
+        public override int TermCount { get { return 2; } }
 
         public override void AnaStamp() {
             var g = 1.0 / Resistance;

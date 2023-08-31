@@ -5,14 +5,14 @@ namespace Circuit.Elements.Gate {
     class ElmHalfAdder : ElmChip {
         public ElmHalfAdder() : base() { }
 
-        public override int PostCount { get { return 4; } }
+        public override int TermCount { get { return 4; } }
 
         public override int AnaVoltageSourceCount { get { return 2; } }
 
         public override void SetupPins(Chip chip) {
             chip.sizeX = 2;
             chip.sizeY = 2;
-            Pins = new Chip.Pin[PostCount];
+            Pins = new Chip.Pin[TermCount];
             Pins[0] = new Chip.Pin(chip, 0, Chip.SIDE_E, "S");
             Pins[0].output = true;
             Pins[1] = new Chip.Pin(chip, 1, Chip.SIDE_E, "C");

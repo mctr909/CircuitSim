@@ -8,7 +8,7 @@ namespace Circuit.Elements.Input {
 
         public ElmRail(StringTokenizer st): base(st) { }
 
-        public override int PostCount { get { return 1; } }
+        public override int TermCount { get { return 1; } }
 
         public override double GetVoltageDiff() { return Volts[0]; }
 

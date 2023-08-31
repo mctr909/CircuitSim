@@ -7,7 +7,7 @@
 
         public double VoltDiff = 0.0;
 
-        public override int PostCount { get { return 2; } }
+        public override int TermCount { get { return 2; } }
 
         public override void Reset() {
             base.Reset();

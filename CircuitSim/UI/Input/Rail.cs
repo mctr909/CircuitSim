@@ -70,7 +70,7 @@ namespace Circuit.UI.Input {
                 var s = Utils.VoltageText(v);
                 drawCenteredText(s, mNamePos);
             } else {
-                drawWaveform(Elm.Post[1]);
+                drawWaveform(Post.B);
             }
         }
     }

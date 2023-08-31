@@ -12,10 +12,10 @@ namespace Circuit.Elements {
 
         protected int mVoltSource;
 
-        public Point[] Post = new Point[4];
+        public Point[] Term = new Point[4];
 
         #region [property]
-        public abstract int PostCount { get; }
+        public abstract int TermCount { get; }
 
         public int[] Nodes { get; protected set; }
 
@@ -44,11 +44,11 @@ namespace Circuit.Elements {
         /// get number of nodes that can be retrieved by ConnectionNode
         /// </summary>
         /// <returns></returns>
-        public virtual int AnaConnectionNodeCount { get { return PostCount; } }
+        public virtual int AnaConnectionNodeCount { get { return TermCount; } }
         #endregion
 
         #region [method]
-        public virtual Point GetPost(int n) { return Post[n]; }
+        public virtual Point GetTerm(int n) { return Term[n]; }
 
         public virtual double GetVoltageDiff() { return Volts[0] - Volts[1]; }
 
@@ -56,7 +56,7 @@ namespace Circuit.Elements {
         /// allocate nodes/volts arrays we need
         /// </summary>
         public void AllocNodes() {
-            int n = PostCount + AnaInternalNodeCount;
+            int n = TermCount + AnaInternalNodeCount;
             /* preserve voltages if possible */
             if (Nodes == null || Nodes.Length != n) {
                 Nodes = new int[n];
@@ -68,7 +68,7 @@ namespace Circuit.Elements {
         /// handle reset button
         /// </summary>
         public virtual void Reset() {
-            for (int i = 0; i != PostCount + AnaInternalNodeCount; i++) {
+            for (int i = 0; i != TermCount + AnaInternalNodeCount; i++) {
                 Volts[i] = 0;
             }
         }
@@ -136,11 +136,11 @@ namespace Circuit.Elements {
 
         #region [method(Circuit)]
         public int CirGetNodeAtPoint(int xp, int yp) {
-            if (PostCount == 2) {
-                return (Post[0].X == xp && Post[0].Y == yp) ? 0 : 1;
+            if (TermCount == 2) {
+                return (Term[0].X == xp && Term[0].Y == yp) ? 0 : 1;
             }
-            for (int i = 0; i != PostCount; i++) {
-                var p = GetPost(i);
+            for (int i = 0; i != TermCount; i++) {
+                var p = GetTerm(i);
                 if (p.X == xp && p.Y == yp) {
                     return i;
                 }
@@ -148,7 +148,7 @@ namespace Circuit.Elements {
             return 0;
         }
         public virtual double CirGetCurrentIntoNode(int n) {
-            if (n == 0 && PostCount == 2) {
+            if (n == 0 && TermCount == 2) {
                 return -Current;
             } else {
                 return Current;

@@ -12,7 +12,7 @@ namespace Circuit.Elements.Logic {
             mSelectBitCount = st.nextTokenInt(mSelectBitCount);
         }
 
-        public override int PostCount { get { return mOutputCount + mSelectBitCount + 1; } }
+        public override int TermCount { get { return mOutputCount + mSelectBitCount + 1; } }
 
         public override int AnaVoltageSourceCount { get { return 1; } }
 
@@ -24,7 +24,7 @@ namespace Circuit.Elements.Logic {
             }
             chip.sizeY = mOutputCount + 1;
 
-            Pins = new Chip.Pin[PostCount];
+            Pins = new Chip.Pin[TermCount];
             for (var i = 0; i != mOutputCount; i++) {
                 Pins[i] = new Chip.Pin(chip, i, Chip.SIDE_W, "I" + i);
             }

@@ -16,7 +16,7 @@ namespace Circuit.Elements.Output {
             Text = Utils.Unescape(Text);
         }
 
-        public override int PostCount { get { return 1; } }
+        public override int TermCount { get { return 1; } }
 
         public override int AnaConnectionNodeCount { get { return 2; } }
 

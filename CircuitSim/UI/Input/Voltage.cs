@@ -150,8 +150,8 @@ namespace Circuit.UI.Input {
         void setWaveform() {
             float x, y;
             if (this is Rail) {
-                x = Elm.Post[1].X;
-                y = Elm.Post[1].Y;
+                x = Post.B.X;
+                y = Post.B.Y;
             } else {
                 x = mPs1.X;
                 y = mPs1.Y;
@@ -350,7 +350,7 @@ namespace Circuit.UI.Input {
 
             if (CirSimForm.ConstructElm != this) {
                 if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
-                    drawCurrent(Elm.Post[0], Elm.Post[1], mCurCount);
+                    drawCurrent(Post.A, Post.B, mCurCount);
                 } else {
                     drawCurrentA(mCurCount);
                     drawCurrentB(mCurCount);

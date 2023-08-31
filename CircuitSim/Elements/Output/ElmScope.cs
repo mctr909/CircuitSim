@@ -6,7 +6,7 @@ namespace Circuit.Elements.Output {
 
         public ElmScope(Scope.Property scope) { mScope = scope; }
 
-        public override int PostCount { get { return 0; } }
+        public override int TermCount { get { return 0; } }
 
         public override void Reset() {
             base.Reset();

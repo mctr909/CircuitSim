@@ -38,8 +38,8 @@ namespace Circuit.UI.Input {
             base.SetPoints();
             Post.SetBbox(SIZE);
             Post.AdjustBbox(
-                Elm.Post[1].X - SIZE, Elm.Post[1].Y - SIZE,
-                Elm.Post[1].X + SIZE, Elm.Post[1].Y + SIZE
+                Post.B.X - SIZE, Post.B.Y - SIZE,
+                Post.B.X + SIZE, Post.B.Y + SIZE
             );
             setLead1(1 - 0.5 * SIZE / Post.Len);
         }
@@ -49,9 +49,9 @@ namespace Circuit.UI.Input {
             
             drawLeadA();
 
-            int xc = Elm.Post[1].X;
-            int yc = Elm.Post[1].Y;
-            drawCircle(Elm.Post[1], SIZE / 2);
+            int xc = Post.B.X;
+            int yc = Post.B.Y;
+            drawCircle(Post.B, SIZE / 2);
 
             int wl = 11;
             int xl = 10;

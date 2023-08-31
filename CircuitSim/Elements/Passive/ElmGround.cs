@@ -2,7 +2,7 @@
     class ElmGround : BaseElement {
         public override int AnaVoltageSourceCount { get { return 1; } }
 
-        public override int PostCount { get { return 1; } }
+        public override int TermCount { get { return 1; } }
 
         public override double GetVoltageDiff() { return 0; }
 

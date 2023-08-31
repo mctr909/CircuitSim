@@ -33,7 +33,7 @@ namespace Circuit.UI.Output {
             base.SetPoints();
             Post.SetBbox(0);
             interpPost(ref mMid, 0.5 + 4 / Post.Len);
-            Utils.CreateArrow(Elm.Post[0], mMid, out mArrowPoly, 9, 5);
+            Utils.CreateArrow(Post.A, mMid, out mArrowPoly, 9, 5);
             if (Post.Vertical) {
                 interpPost(ref mTextPos, 0.5, -21 * Post.Dsign);
             } else {
@@ -45,7 +45,7 @@ namespace Circuit.UI.Output {
             base.Draw(g); /* BC required for highlighting */
             var ce = (ElmAmmeter)Elm;
 
-            drawLine(Elm.Post[0], Elm.Post[1]);
+            drawLine(Post.A, Post.B);
             fillPolygon(mArrowPoly);
             doDots();
 

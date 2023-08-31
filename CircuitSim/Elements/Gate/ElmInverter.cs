@@ -17,7 +17,7 @@ namespace Circuit.Elements.Gate {
             HighVoltage = st.nextTokenDouble(5);
         }
 
-        public override int PostCount { get { return 2; } }
+        public override int TermCount { get { return 2; } }
 
         public override int AnaVoltageSourceCount { get { return 1; } }
 

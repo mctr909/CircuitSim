@@ -12,7 +12,7 @@
 
         public override int AnaVoltageSourceCount { get { return 1; } }
 
-        public override int PostCount { get { return 3; } }
+        public override int TermCount { get { return 3; } }
 
         public override double GetVoltageDiff() { return Volts[V_O] - Volts[V_P]; }
 

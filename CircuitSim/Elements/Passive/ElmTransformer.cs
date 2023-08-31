@@ -22,7 +22,7 @@ namespace Circuit.Elements.Passive {
         double mA3;
         double mA4;
 
-        public override int PostCount { get { return 4; } }
+        public override int TermCount { get { return 4; } }
 
         public override void Reset() {
             /* need to set current-source values here in case one of the nodes is node 0.  In that case

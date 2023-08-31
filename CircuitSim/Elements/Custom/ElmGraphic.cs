@@ -2,6 +2,6 @@
     class ElmGraphic : BaseElement {
         public ElmGraphic() : base() { }
 
-        public override int PostCount { get { return 0; } }
+        public override int TermCount { get { return 0; } }
     }
 }

@@ -49,7 +49,7 @@ namespace Circuit.UI {
         /// <returns>returns true if it's zero size and should be deleted</returns>
         public virtual bool IsCreationFailed { get { return Post.IsCreationFailed; } }
 
-        public virtual bool CanViewInScope { get { return Elm.PostCount <= 2; } }
+        public virtual bool CanViewInScope { get { return Elm.TermCount <= 2; } }
 
         protected bool mNeedsHighlight {
             get {
@@ -189,8 +189,8 @@ namespace Circuit.UI {
         /// </summary>
         public virtual void SetPoints() {
             Post.SetValue();
-            Elm.Post[0] = Post.A;
-            Elm.Post[1] = Post.B;
+            Elm.Term[0] = Post.A;
+            Elm.Term[1] = Post.B;
         }
 
         /// <summary>
@@ -216,8 +216,8 @@ namespace Circuit.UI {
         /// <param name="len"></param>
         protected void calcLeads(int bodyLength) {
             if (Post.Len < bodyLength || bodyLength == 0) {
-                mLead1 = Elm.Post[0];
-                mLead2 = Elm.Post[1];
+                mLead1 = Elm.Term[0];
+                mLead2 = Elm.Term[1];
                 return;
             }
             setLead1((Post.Len - bodyLength) / (2 * Post.Len));
@@ -230,7 +230,7 @@ namespace Circuit.UI {
         protected void doDots() {
             updateDotCount();
             if (CirSimForm.ConstructElm != this) {
-                drawCurrent(Elm.Post[0], Elm.Post[1], mCurCount);
+                drawCurrent(Post.A, Post.B, mCurCount);
             }
         }
 
@@ -269,51 +269,51 @@ namespace Circuit.UI {
         }
 
         protected void interpPost(ref PointF p, double f) {
-            p.X = (float)(Elm.Post[0].X * (1 - f) + Elm.Post[1].X * f);
-            p.Y = (float)(Elm.Post[0].Y * (1 - f) + Elm.Post[1].Y * f);
+            p.X = (float)(Elm.Term[0].X * (1 - f) + Elm.Term[1].X * f);
+            p.Y = (float)(Elm.Term[0].Y * (1 - f) + Elm.Term[1].Y * f);
         }
 
         protected void interpPost(ref Point p, double f, double g) {
-            var gx = Elm.Post[1].Y - Elm.Post[0].Y;
-            var gy = Elm.Post[0].X - Elm.Post[1].X;
+            var gx = Elm.Term[1].Y - Elm.Term[0].Y;
+            var gy = Elm.Term[0].X - Elm.Term[1].X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                p.X = Elm.Post[0].X;
-                p.Y = Elm.Post[0].Y;
+                p.X = Elm.Term[0].X;
+                p.Y = Elm.Term[0].Y;
             } else {
                 g /= r;
-                p.X = (int)Math.Floor(Elm.Post[0].X * (1 - f) + Elm.Post[1].X * f + g * gx + 0.5);
-                p.Y = (int)Math.Floor(Elm.Post[0].Y * (1 - f) + Elm.Post[1].Y * f + g * gy + 0.5);
+                p.X = (int)Math.Floor(Elm.Term[0].X * (1 - f) + Elm.Term[1].X * f + g * gx + 0.5);
+                p.Y = (int)Math.Floor(Elm.Term[0].Y * (1 - f) + Elm.Term[1].Y * f + g * gy + 0.5);
             }
         }
 
         protected void interpPost(ref PointF p, double f, double g) {
-            var gx = Elm.Post[1].Y - Elm.Post[0].Y;
-            var gy = Elm.Post[0].X - Elm.Post[1].X;
+            var gx = Elm.Term[1].Y - Elm.Term[0].Y;
+            var gy = Elm.Term[0].X - Elm.Term[1].X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                p.X = Elm.Post[0].X;
-                p.Y = Elm.Post[0].Y;
+                p.X = Elm.Term[0].X;
+                p.Y = Elm.Term[0].Y;
             } else {
                 g /= r;
-                p.X = (float)(Elm.Post[0].X * (1 - f) + Elm.Post[1].X * f + g * gx);
-                p.Y = (float)(Elm.Post[0].Y * (1 - f) + Elm.Post[1].Y * f + g * gy);
+                p.X = (float)(Elm.Term[0].X * (1 - f) + Elm.Term[1].X * f + g * gx);
+                p.Y = (float)(Elm.Term[0].Y * (1 - f) + Elm.Term[1].Y * f + g * gy);
             }
         }
 
         protected void interpPostAB(ref PointF a, ref PointF b, double f, double g) {
-            var gx = Elm.Post[1].Y - Elm.Post[0].Y;
-            var gy = Elm.Post[0].X - Elm.Post[1].X;
+            var gx = Elm.Term[1].Y - Elm.Term[0].Y;
+            var gy = Elm.Term[0].X - Elm.Term[1].X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                a = Elm.Post[0];
-                b = Elm.Post[1];
+                a = Elm.Term[0];
+                b = Elm.Term[1];
             } else {
                 g /= r;
-                a.X = (float)(Elm.Post[0].X * (1 - f) + Elm.Post[1].X * f + g * gx);
-                a.Y = (float)(Elm.Post[0].Y * (1 - f) + Elm.Post[1].Y * f + g * gy);
-                b.X = (float)(Elm.Post[0].X * (1 - f) + Elm.Post[1].X * f - g * gx);
-                b.Y = (float)(Elm.Post[0].Y * (1 - f) + Elm.Post[1].Y * f - g * gy);
+                a.X = (float)(Elm.Term[0].X * (1 - f) + Elm.Term[1].X * f + g * gx);
+                a.Y = (float)(Elm.Term[0].Y * (1 - f) + Elm.Term[1].Y * f + g * gy);
+                b.X = (float)(Elm.Term[0].X * (1 - f) + Elm.Term[1].X * f - g * gx);
+                b.Y = (float)(Elm.Term[0].Y * (1 - f) + Elm.Term[1].Y * f - g * gy);
             }
         }
 
@@ -408,20 +408,20 @@ namespace Circuit.UI {
 
         protected void drawLeadA() {
             Context.DrawColor = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            Context.DrawLine(Elm.Post[0], mLead1);
+            Context.DrawLine(Post.A, mLead1);
         }
 
         protected void drawLeadB() {
             Context.DrawColor = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            Context.DrawLine(mLead2, Elm.Post[1]);
+            Context.DrawLine(mLead2, Post.B);
         }
 
         protected void draw2Leads() {
             Context.DrawColor = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             /* draw first lead */
-            Context.DrawLine(Elm.Post[0], mLead1);
+            Context.DrawLine(Elm.Term[0], mLead1);
             /* draw second lead */
-            Context.DrawLine(mLead2, Elm.Post[1]);
+            Context.DrawLine(mLead2, Elm.Term[1]);
         }
 
         /// <summary>
@@ -458,11 +458,11 @@ namespace Circuit.UI {
         }
 
         protected void drawCurrentA(double pos) {
-            drawCurrent(Elm.Post[0], mLead1, pos);
+            drawCurrent(Post.A, mLead1, pos);
         }
 
         protected void drawCurrentB(double pos) {
-            drawCurrent(mLead2, Elm.Post[1], pos);
+            drawCurrent(mLead2, Post.B, pos);
         }
 
         protected void drawCenteredText(string text, PointF centerPos, double rotateAngle = 0) {

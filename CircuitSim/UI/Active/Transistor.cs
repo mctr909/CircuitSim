@@ -103,25 +103,25 @@ namespace Circuit.UI.Active {
             }
             setTextPos();
 
-            ce.Post[1].X = (int)mPosC[2].X;
-            ce.Post[1].Y = (int)mPosC[2].Y;
-            ce.Post[2].X = (int)mPosE[2].X;
-            ce.Post[2].Y = (int)mPosE[2].Y;
+            ce.Term[1].X = (int)mPosC[2].X;
+            ce.Term[1].Y = (int)mPosC[2].Y;
+            ce.Term[2].X = (int)mPosE[2].X;
+            ce.Term[2].Y = (int)mPosE[2].Y;
         }
 
         void setTextPos() {
             var swap = 0 < (mFlags & FLAG_FLIP) ? -1 : 1;
             if (Post.Horizontal) {
                 if (0 < Post.Dsign * swap) {
-                    mNamePos = new Point(Elm.Post[1].X + 10, Elm.Post[1].Y);
+                    mNamePos = new Point(Post.B.X + 10, Post.B.Y);
                 } else {
-                    mNamePos = new Point(Elm.Post[1].X - 6, Elm.Post[1].Y);
+                    mNamePos = new Point(Post.B.X - 6, Post.B.Y);
                 }
             } else if (Post.Vertical) {
                 if (0 < Post.Dsign) {
-                    mNamePos = new Point(Elm.Post[1].X, Elm.Post[1].Y + 15 * swap * 2 / 3);
+                    mNamePos = new Point(Post.B.X, Post.B.Y + 15 * swap * 2 / 3);
                 } else {
-                    mNamePos = new Point(Elm.Post[1].X, Elm.Post[1].Y - 13 * swap * 2 / 3);
+                    mNamePos = new Point(Post.B.X, Post.B.Y - 13 * swap * 2 / 3);
                 }
             } else {
                 interpPost(ref mNamePos, 0.5, 10 * Post.Dsign);
@@ -140,7 +140,7 @@ namespace Circuit.UI.Active {
             /* draw arrow */
             fillPolygon(mArrowPoly);
             /* draw base */
-            drawLine(Elm.Post[0], mTbase);
+            drawLine(Post.A, mTbase);
             /* draw base rectangle */
             fillPolygon(mRectPoly);
 
@@ -148,7 +148,7 @@ namespace Circuit.UI.Active {
             updateDotCount(-ce.Ib, ref mCurCountB);
             updateDotCount(-ce.Ic, ref mCurCountC);
             updateDotCount(-ce.Ie, ref mCurCountE);
-            drawCurrent(mTbase, Elm.Post[0], mCurCountB);
+            drawCurrent(mTbase, Post.A, mCurCountB);
             if (0 <= ce.NPN * ce.Ic) {
                 drawCurrent(mPosE[1], mTbase, mCurCountB);
             } else {

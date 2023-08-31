@@ -67,7 +67,7 @@ namespace Circuit.UI.Gate {
             interpLeadAB(ref gatePoly[0], ref gatePoly[1], 0, hs);
             interpPost(ref gatePoly[2], 0.5 + (ww - 5) / Post.Len);
 
-            Utils.CreateSchmitt(Elm.Post[0], Elm.Post[1], out symbolPoly, 0.8, .5 - (ww - 7) / Post.Len);
+            Utils.CreateSchmitt(Post.A, Post.B, out symbolPoly, 0.8, .5 - (ww - 7) / Post.Len);
         }
 
         public override void GetInfo(string[] arr) {

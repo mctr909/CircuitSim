@@ -85,7 +85,7 @@ namespace Circuit.Elements.Active {
             Setup();
         }
 
-        public override int PostCount { get { return 2; } }
+        public override int TermCount { get { return 2; } }
 
         public override int AnaInternalNodeCount { get { return mHasResistance ? 1 : 0; } }
 

@@ -7,7 +7,7 @@ namespace Circuit.Elements.Custom {
     abstract class ElmChip : BaseElement {
         protected bool lastClock;
 
-        public override Point GetPost(int n) {
+        public override Point GetTerm(int n) {
             return Pins[n].post;
         }
 
@@ -23,7 +23,7 @@ namespace Circuit.Elements.Custom {
                 Bits = v;
             }
             int i;
-            for (i = 0; i != PostCount; i++) {
+            for (i = 0; i != TermCount; i++) {
                 if (Pins == null) {
                     Volts[i] = st.nextTokenDouble();
                 } else if (Pins[i].state) {
@@ -38,7 +38,7 @@ namespace Circuit.Elements.Custom {
         public virtual void SetupPins(Chip ui) { }
 
         public override void Reset() {
-            for (int i = 0; i != PostCount; i++) {
+            for (int i = 0; i != TermCount; i++) {
                 Pins[i].value = false;
                 Pins[i].curcount = 0;
                 Volts[i] = 0;
@@ -51,7 +51,7 @@ namespace Circuit.Elements.Custom {
         }
 
         public override void AnaSetVoltageSource(int j, int vs) {
-            for (int i = 0; i != PostCount; i++) {
+            for (int i = 0; i != TermCount; i++) {
                 var p = Pins[i];
                 if (p.output && j-- == 0) {
                     p.voltSource = vs;
@@ -62,7 +62,7 @@ namespace Circuit.Elements.Custom {
         }
 
         public override void AnaStamp() {
-            for (int i = 0; i != PostCount; i++) {
+            for (int i = 0; i != TermCount; i++) {
                 var p = Pins[i];
                 if (p.output) {
                     Circuit.StampVoltageSource(0, Nodes[i], p.voltSource);
@@ -72,14 +72,14 @@ namespace Circuit.Elements.Custom {
 
         public override void CirDoIteration() {
             int i;
-            for (i = 0; i != PostCount; i++) {
+            for (i = 0; i != TermCount; i++) {
                 var p = Pins[i];
                 if (!p.output) {
                     p.value = Volts[i] > 2.5;
                 }
             }
             execute();
-            for (i = 0; i != PostCount; i++) {
+            for (i = 0; i != TermCount; i++) {
                 var p = Pins[i];
                 if (p.output) {
                     Circuit.UpdateVoltageSource(p.voltSource, p.value ? 5 : 0);
@@ -90,7 +90,7 @@ namespace Circuit.Elements.Custom {
         protected virtual void execute() { }
 
         public override void CirSetCurrent(int x, double c) {
-            for (int i = 0; i != PostCount; i++) {
+            for (int i = 0; i != TermCount; i++) {
                 if (Pins[i].output && Pins[i].voltSource == x) {
                     Pins[i].current = c;
                 }

@@ -5,7 +5,7 @@
         public int PosCount = 2;
         public int Link = 0;
 
-        public override int PostCount { get { return 2; } }
+        public override int TermCount { get { return 2; } }
         public override bool IsWire { get { return Position == 0; } }
         public override int AnaVoltageSourceCount { get { return (1 == Position) ? 0 : 1; } }
 

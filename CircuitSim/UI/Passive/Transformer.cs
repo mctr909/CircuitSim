@@ -62,34 +62,34 @@ namespace Circuit.UI.Passive {
                 Post.B.Y = Post.A.Y;
             }
             base.SetPoints();
-            ce.Post[1].Y = ce.Post[0].Y;
+            ce.Term[1].Y = ce.Term[0].Y;
             mPtCoil = new PointF[4];
             mPtCore = new PointF[4];
-            interpPost(ref ce.Post[2], 0, -Post.Dsign * height);
-            interpPost(ref ce.Post[3], 1, -Post.Dsign * height);
+            interpPost(ref ce.Term[2], 0, -Post.Dsign * height);
+            interpPost(ref ce.Term[3], 1, -Post.Dsign * height);
             var pce = 0.5 - 10.0 / width;
             var pcd = 0.5 - 1.0 / width;
             for (int i = 0; i != 4; i += 2) {
-                Utils.InterpPoint(ce.Post[i], ce.Post[i + 1], ref mPtCoil[i], pce);
-                Utils.InterpPoint(ce.Post[i], ce.Post[i + 1], ref mPtCoil[i + 1], 1 - pce);
-                Utils.InterpPoint(ce.Post[i], ce.Post[i + 1], ref mPtCore[i], pcd);
-                Utils.InterpPoint(ce.Post[i], ce.Post[i + 1], ref mPtCore[i + 1], 1 - pcd);
+                Utils.InterpPoint(ce.Term[i], ce.Term[i + 1], ref mPtCoil[i], pce);
+                Utils.InterpPoint(ce.Term[i], ce.Term[i + 1], ref mPtCoil[i + 1], 1 - pce);
+                Utils.InterpPoint(ce.Term[i], ce.Term[i + 1], ref mPtCore[i], pcd);
+                Utils.InterpPoint(ce.Term[i], ce.Term[i + 1], ref mPtCore[i + 1], 1 - pcd);
             }
             if (-1 == ce.Polarity) {
                 mDots = new PointF[2];
                 var dotp = Math.Abs(7.0 / height);
                 Utils.InterpPoint(mPtCoil[0], mPtCoil[2], ref mDots[0], dotp, -7 * Post.Dsign);
                 Utils.InterpPoint(mPtCoil[3], mPtCoil[1], ref mDots[1], dotp, -7 * Post.Dsign);
-                var x = ce.Post[1];
-                ce.Post[1] = ce.Post[3];
-                ce.Post[3] = x;
+                var x = ce.Term[1];
+                ce.Term[1] = ce.Term[3];
+                ce.Term[3] = x;
                 var t = mPtCoil[1];
                 mPtCoil[1] = mPtCoil[3];
                 mPtCoil[3] = t;
             } else {
                 mDots = null;
             }
-            Post.SetBbox(ce.Post[0], ce.Post[ce.Polarity == 1 ? 3 : 1], 0);
+            Post.SetBbox(ce.Term[0], ce.Term[ce.Polarity == 1 ? 3 : 1], 0);
             setCoilPos(mPtCoil[0], mPtCoil[2], 90 * Post.Dsign, out mCoilPosA);
             setCoilPos(mPtCoil[1], mPtCoil[3], -90 * Post.Dsign * ce.Polarity, out mCoilPosB);
             setNamePos();
@@ -121,10 +121,10 @@ namespace Circuit.UI.Passive {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmTransformer)Elm;
 
-            drawLine(ce.Post[0], mPtCoil[0]);
-            drawLine(ce.Post[1], mPtCoil[1]);
-            drawLine(ce.Post[2], mPtCoil[2]);
-            drawLine(ce.Post[3], mPtCoil[3]);
+            drawLine(ce.Term[0], mPtCoil[0]);
+            drawLine(ce.Term[1], mPtCoil[1]);
+            drawLine(ce.Term[2], mPtCoil[2]);
+            drawLine(ce.Term[3], mPtCoil[3]);
 
             foreach (var p in mCoilPosA) {
                 Context.DrawArc(p, mCoilWidth, mCoilAngle, 180);
@@ -143,9 +143,9 @@ namespace Circuit.UI.Passive {
             updateDotCount(ce.Currents[0], ref ce.CurCounts[0]);
             updateDotCount(ce.Currents[1], ref ce.CurCounts[1]);
             for (int i = 0; i != 2; i++) {
-                drawCurrent(ce.Post[i], mPtCoil[i], ce.CurCounts[i]);
+                drawCurrent(ce.Term[i], mPtCoil[i], ce.CurCounts[i]);
                 drawCurrent(mPtCoil[i], mPtCoil[i + 2], ce.CurCounts[i]);
-                drawCurrent(ce.Post[i + 2], mPtCoil[i + 2], -ce.CurCounts[i]);
+                drawCurrent(ce.Term[i + 2], mPtCoil[i + 2], -ce.CurCounts[i]);
             }
 
             if (ControlPanel.ChkShowName.Checked) {

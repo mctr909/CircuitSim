@@ -120,24 +120,24 @@ namespace Circuit.UI.Active {
 
             setTextPos();
 
-            ce.Post[1].X = (int)mPosS[0].X;
-            ce.Post[1].Y = (int)mPosS[0].Y;
-            ce.Post[2].X = (int)mPosD[0].X;
-            ce.Post[2].Y = (int)mPosD[0].Y;
+            ce.Term[1].X = (int)mPosS[0].X;
+            ce.Term[1].Y = (int)mPosS[0].Y;
+            ce.Term[2].X = (int)mPosD[0].X;
+            ce.Term[2].Y = (int)mPosD[0].Y;
         }
 
         void setTextPos() {
             if (Post.Horizontal) {
                 if (0 < Post.Dsign) {
-                    mNamePos = new Point(Elm.Post[1].X + 10, Elm.Post[1].Y);
+                    mNamePos = new Point(Post.B.X + 10, Post.B.Y);
                 } else {
-                    mNamePos = new Point(Elm.Post[1].X - 6, Elm.Post[1].Y);
+                    mNamePos = new Point(Post.B.X - 6, Post.B.Y);
                 }
             } else if (Post.Vertical) {
                 if (0 < Post.Dsign) {
-                    mNamePos = new Point(Elm.Post[1].X, Elm.Post[1].Y + 15 * 2 / 3);
+                    mNamePos = new Point(Post.B.X, Post.B.Y + 15 * 2 / 3);
                 } else {
-                    mNamePos = new Point(Elm.Post[1].X, Elm.Post[1].Y - 13 * 2 / 3);
+                    mNamePos = new Point(Post.B.X, Post.B.Y - 13 * 2 / 3);
                 }
             } else {
                 interpPost(ref mNamePos, 0.5, 10 * Post.Dsign);
@@ -152,7 +152,7 @@ namespace Circuit.UI.Active {
             drawLine(mPosD[1], mPosD[3]);
             drawLine(mPosS[3], mPosS[0]);
             drawLine(mPosD[3], mPosD[0]);
-            drawLine(Elm.Post[0], mGate);
+            drawLine(Post.A, mGate);
 
             /* draw bulk connection */
             drawLine(ce.Nch == -1 ? mPosD[0] : mPosS[0], mPosB[0]);

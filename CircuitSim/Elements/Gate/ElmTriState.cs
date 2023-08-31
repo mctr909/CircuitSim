@@ -18,7 +18,7 @@ namespace Circuit.Elements.Gate {
             Roff = st.nextTokenDouble(1e10);
         }
 
-        public override int PostCount { get { return 3; } }
+        public override int TermCount { get { return 3; } }
 
         public override int AnaInternalNodeCount { get { return 1; } }
 

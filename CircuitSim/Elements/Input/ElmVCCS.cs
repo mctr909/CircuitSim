@@ -32,7 +32,7 @@ namespace Circuit.Elements.Input {
 
         public override int AnaVoltageSourceCount { get { return 0; } }
 
-        public override int PostCount { get { return InputCount + 2; } }
+        public override int TermCount { get { return InputCount + 2; } }
 
         public override void SetupPins(Chip ui) {
             ui.sizeX = 2;
