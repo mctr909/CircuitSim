@@ -417,9 +417,9 @@ namespace Circuit.UI {
         protected void draw2Leads() {
             Context.DrawColor = mNeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             /* draw first lead */
-            Context.DrawLine(Elm.Term[0], mLead1);
+            Context.DrawLine(Post.A, mLead1);
             /* draw second lead */
-            Context.DrawLine(mLead2, Elm.Term[1]);
+            Context.DrawLine(mLead2, Post.B);
         }
 
         /// <summary>

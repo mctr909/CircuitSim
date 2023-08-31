@@ -62,11 +62,17 @@ namespace Circuit.UI.Passive {
                 Post.B.Y = Post.A.Y;
             }
             base.SetPoints();
+
             ce.Term[1].Y = ce.Term[0].Y;
+            var t2 = new PointF();
+            var t3 = new PointF();
+            Utils.InterpPoint(ce.Term[0], ce.Term[1], ref t2, 0, -Post.Dsign * height);
+            Utils.InterpPoint(ce.Term[0], ce.Term[1], ref t3, 1, -Post.Dsign * height);
+            ce.Term[2] = new Point((int)t2.X, (int)t2.Y);
+            ce.Term[3] = new Point((int)t3.X, (int)t3.Y);
+
             mPtCoil = new PointF[4];
             mPtCore = new PointF[4];
-            interpPost(ref ce.Term[2], 0, -Post.Dsign * height);
-            interpPost(ref ce.Term[3], 1, -Post.Dsign * height);
             var pce = 0.5 - 10.0 / width;
             var pcd = 0.5 - 1.0 / width;
             for (int i = 0; i != 4; i += 2) {

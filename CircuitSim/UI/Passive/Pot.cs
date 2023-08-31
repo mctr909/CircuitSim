@@ -14,8 +14,8 @@ namespace Circuit.UI.Passive {
         const int SEGMENTS = 12;
         const double SEG_F = 1.0 / SEGMENTS;
 
-        Point mCorner2;
-        Point mArrowPoint;
+        PointF mCorner2;
+        PointF mArrowPoint;
         PointF mMidPoint;
         PointF mArrow1;
         PointF mArrow2;
@@ -98,10 +98,13 @@ namespace Circuit.UI.Passive {
             var poff = 0.5;
             var woff = -7.0;
             int soff = (int)((ce.Position - poff) * BODY_LEN);
-            interpPost(ref ce.Term[2], poff, offset);
-            interpPost(ref mCorner2, soff / Post.Len + poff, offset);
-            interpPost(ref mArrowPoint, soff / Post.Len + poff, 7 * Math.Sign(offset));
-            interpPost(ref mMidPoint, soff / Post.Len + poff);
+            var t2 = new PointF();
+            Utils.InterpPoint(ce.Term[0], ce.Term[1], ref t2, poff, offset);
+            Utils.InterpPoint(ce.Term[0], ce.Term[1], ref mCorner2, soff / Post.Len + poff, offset);
+            Utils.InterpPoint(ce.Term[0], ce.Term[1], ref mArrowPoint, soff / Post.Len + poff, 7 * Math.Sign(offset));
+            Utils.InterpPoint(ce.Term[0], ce.Term[1], ref mMidPoint, soff / Post.Len + poff);
+            ce.Term[2] = new Point((int)t2.X, (int)t2.Y);
+
             var clen = Math.Abs(offset) + woff;
             Utils.InterpPoint(mCorner2, mArrowPoint, ref mArrow1, ref mArrow2, (clen + woff) / clen, 4);
 
@@ -112,7 +115,8 @@ namespace Circuit.UI.Passive {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmPot)Elm;
 
-            draw2Leads();
+            drawLine(ce.Term[0], mLead1);
+            drawLine(mLead2, ce.Term[1]);
 
             if (ControlPanel.ChkUseAnsiSymbols.Checked) {
                 /* draw zigzag */
