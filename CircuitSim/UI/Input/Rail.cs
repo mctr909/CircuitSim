@@ -7,6 +7,10 @@ namespace Circuit.UI.Input {
     class Rail : Voltage {
         protected const int FLAG_CLOCK = 1;
 
+        PointF mC;
+        PointF mLa;
+        PointF mLb;
+
         public Rail(Point pos, ElmVoltage.WAVEFORM wf) : base(pos, wf) {
             Elm = new ElmRail(wf);
         }
@@ -23,8 +27,10 @@ namespace Circuit.UI.Input {
         public override void SetPoints() {
             base.SetPoints();
             Post.SetBbox(BODY_LEN);
-            mNamePos = Post.B;
-            setLead1(1 - BODY_LEN / Post.Len);
+            interpPost(ref mNamePos, 1 + 0.35 * BODY_LEN / Post.Len);
+            interpPost(ref mC, 1);
+            interpPost(ref mLa, 1, -5);
+            interpPost(ref mLb, 1, 5);
         }
 
         public string getRailText() {
@@ -40,7 +46,7 @@ namespace Circuit.UI.Input {
             }
             if (elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE
                 && (mFlags & FLAG_CLOCK) != 0 || elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
-                setLead1(1 - (w - 5) / Post.Len);
+                setLead1(1);
             } else {
                 setLead1(1 - w / Post.Len);
             }
@@ -58,6 +64,8 @@ namespace Circuit.UI.Input {
             if (elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
                 drawCenteredText("CLK", mNamePos);
             } else if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
+                drawLine(mLa, mLb);
+                drawCircle(mC, 3);
                 var v = elm.GetVoltage();
                 var s = Utils.VoltageText(v);
                 drawCenteredText(s, mNamePos);

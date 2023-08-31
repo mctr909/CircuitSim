@@ -80,8 +80,9 @@ namespace Circuit.UI.Input {
             }
 
             if (ControlPanel.ChkShowValues.Checked) {
-                string s = Utils.UnitText(ce.Frequency, "Hz");
-                drawValues(s, 20, -15);
+                string s = Utils.VoltageAbsText(ce.MaxV) + "\r\n"
+                    + Utils.UnitText(ce.Frequency, "Hz");
+                drawValues(s, 25, 0);
             }
 
             updateDotCount(-ce.Current, ref mCurCount);
