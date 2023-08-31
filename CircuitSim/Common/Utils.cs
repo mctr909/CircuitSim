@@ -216,7 +216,7 @@ namespace Circuit {
         }
 
         public static string VoltageAbsText(double v) {
-            return unitText(Math.Abs(v), "V", false);
+            return unitText(Math.Abs(v), "V", false, false);
         }
 
         public static string CurrentText(double i) {
@@ -224,7 +224,7 @@ namespace Circuit {
         }
 
         public static string CurrentAbsText(double i) {
-            return unitText(Math.Abs(i), "A", false);
+            return unitText(Math.Abs(i), "A", false, false);
         }
 
         public static string UnitText(double v, string u = "") {

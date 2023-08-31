@@ -81,12 +81,12 @@ namespace Circuit {
                 CirSimForm.Performed(SCOPE_MENU_ITEM.RESET);
             });
             mPopupMenu.Items.Add(new ToolStripSeparator());
-            var speedUp = new ToolStripMenuItem() { Text = "速度(x2)" };
+            var speedUp = new ToolStripMenuItem() { Text = "速度を上げる" };
             mPopupMenu.Items.Add(speedUp);
             speedUp.Click += new EventHandler((s, e) => {
                 CirSimForm.Performed(SCOPE_MENU_ITEM.SPEED_UP);
             });
-            var speedDown = new ToolStripMenuItem() { Text = "速度(x0.5)" };
+            var speedDown = new ToolStripMenuItem() { Text = "速度を下げる" };
             mPopupMenu.Items.Add(speedDown);
             speedDown.Click += new EventHandler((s, e) => {
                 CirSimForm.Performed(SCOPE_MENU_ITEM.SPEED_DOWN);

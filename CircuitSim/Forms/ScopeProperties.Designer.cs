@@ -42,10 +42,10 @@
             this.grpDispGraph = new System.Windows.Forms.GroupBox();
             this.grpDispValue = new System.Windows.Forms.GroupBox();
             this.grpScale = new System.Windows.Forms.GroupBox();
+            ((System.ComponentModel.ISupportInitialize)(this.tbSpeed)).BeginInit();
             this.grpDispGraph.SuspendLayout();
             this.grpDispValue.SuspendLayout();
             this.grpScale.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tbSpeed)).BeginInit();
             this.SuspendLayout();
             // 
             // chkScale
@@ -202,12 +202,12 @@
             // 
             // lblScopeSpeed
             // 
-            this.lblScopeSpeed.AutoSize = true;
             this.lblScopeSpeed.Location = new System.Drawing.Point(118, 40);
             this.lblScopeSpeed.Name = "lblScopeSpeed";
             this.lblScopeSpeed.Size = new System.Drawing.Size(71, 12);
             this.lblScopeSpeed.TabIndex = 13;
             this.lblScopeSpeed.Text = "999.99uS/div";
+            this.lblScopeSpeed.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // grpDispGraph
             // 
@@ -271,6 +271,7 @@
             this.grpScale.ResumeLayout(false);
             this.grpScale.PerformLayout();
             this.ResumeLayout(false);
+
         }
 
         #endregion

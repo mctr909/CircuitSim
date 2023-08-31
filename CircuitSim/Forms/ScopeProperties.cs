@@ -27,6 +27,7 @@ namespace Circuit.Forms {
                 cmbColor.Items.Add(c);
             }
             Visible = true;
+            setScopeSpeedLabel();
         }
 
         private void ScopeProperties_Load(object sender, EventArgs e) {

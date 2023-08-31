@@ -2018,9 +2018,7 @@ namespace Circuit {
                 if (bkIsRun) {
                     IsRunning = false;
                 }
-                if (bkPrint) {
-                    ControlPanel.ChkPrintable.Checked = false;
-                }
+                ControlPanel.ChkPrintable.Checked = true;
                 pdfCircuit = new PDF.Page(g.Width, g.Height);
                 pdfScope = new PDF.Page(mScopeForm.Width, mScopeForm.Height);
                 g = pdfCircuit;

@@ -184,8 +184,6 @@ namespace Circuit.UI.Output {
             const int FLAG_PLOTS = 4096;
             const double FFT_MIN = -100.0;
             const double SCALE_MIN = 1e-9;
-
-            readonly double[] MULTA = new double[] { 1.5, 2.0, 1.5 };
             #endregion
 
             public static int Count { get; set; }
@@ -207,6 +205,7 @@ namespace Circuit.UI.Output {
 
             int mSpeed;
 
+            double mGridDivX;
             double mGridStepX;
             double mGridStepY;
             double mMaxValue;
@@ -681,13 +680,24 @@ namespace Circuit.UI.Output {
             }
 
             public double CalcGridStepX() {
-                int multIdx = 0;
-                var step = 1e-9;
-                var baseT = ControlPanel.TimeStep * Speed;
-                while (step < baseT * 20) {
-                    step *= MULTA[(multIdx++) % 3];
+                var baseT = 10 * ControlPanel.TimeStep * Speed;
+                mGridStepX = 1e-9;
+                mGridDivX = 10;
+                for (int i = 0; mGridStepX < baseT; i++) {
+                    var m = i % 2;
+                    var exp = Math.Pow(10, (i - m) / 2);
+                    switch (m) {
+                    case 0:
+                        mGridStepX = 1e-9 * exp;
+                        mGridDivX = 10;
+                        break;
+                    case 1:
+                        mGridStepX = 2e-9 * exp;
+                        mGridDivX = 5;
+                        break;
+                    }
                 }
-                return step;
+                return mGridStepX;
             }
 
             public void Draw(CustomGraphics g, bool isFloat = false) {
@@ -742,17 +752,10 @@ namespace Circuit.UI.Output {
                     }
                     if (mShowV) {
                         /* Vertical (T) gridlines */
-                        mGridStepX = CalcGridStepX();
-
+                        CalcGridStepX();
                         /* draw volts on top (last), then current underneath, then everything else */
                         for (int i = 0; i != Plots.Count; i++) {
-                            if (i != SelectedPlot) {
-                                drawPlot(g, Plots[i], false);
-                            }
-                        }
-                        /* draw selection on top.  only works if selection chosen from scope */
-                        if (SelectedPlot >= 0 && SelectedPlot < Plots.Count) {
-                            drawPlot(g, Plots[SelectedPlot], true);
+                            drawPlot(g, i);
                         }
                     }
                     if (Plots.Count > 0) {
@@ -877,7 +880,7 @@ namespace Circuit.UI.Output {
                 for (i = 0; i != Plots.Count; i++) {
                     var plot = Plots[i];
                     var scale = mScale;
-                    int maxvy = (int)(maxy / scale * plot.MaxValues[ip]);
+                    int maxvy = (int)Math.Min(BoundingBox.Y, maxy / scale * plot.MaxValues[ip]);
                     int dist = Math.Abs(ScopeForm.MouseCursorY - (BoundingBox.Y + y - maxvy));
                     if (dist < bestdist) {
                         bestdist = dist;
@@ -983,7 +986,8 @@ namespace Circuit.UI.Output {
                 }
             }
 
-            void drawPlot(CustomGraphics g, Plot plot, bool selected) {
+            void drawPlot(CustomGraphics g, int plotIndex) {
+                var plot = Plots[plotIndex];
                 if (plot.UI == null) {
                     return;
                 }
@@ -1012,29 +1016,41 @@ namespace Circuit.UI.Output {
                     }
                     gridMid = (mx + mn) * 0.5;
                     gridMult = maxY / gridMax;
-                    if (selected) {
+                    if (plotIndex == SelectedPlot) {
                         mMainGridMult = gridMult;
                         mMainGridMid = gridMid;
                     }
                     minRangeLo = -10 - (int)(gridMid * gridMult);
                     minRangeHi = 10 - (int)(gridMid * gridMult);
 
-                    int multIdx = 0;
                     mGridStepY = 1e-12;
-                    while (mGridStepY < 20 * gridMax / maxY) {
-                        mGridStepY *= MULTA[(multIdx++) % 3];
+                    for (int i = 0; mGridStepY < 10 * gridMax / maxY; i++) {
+                        var m = i % 3;
+                        var exp = Math.Pow(10, (i - m) / 3);
+                        switch (m) {
+                        case 0:
+                            mGridStepY = 1e-12 * exp;
+                            break;
+                        case 1:
+                            mGridStepY = 2e-12 * exp;
+                            break;
+                        case 2:
+                            mGridStepY = 5e-12 * exp;
+                            break;
+                        }
                     }
                 }
 
-                {
+                if (plotIndex == 0) {
                     var minorDiv = Color.FromArgb(0x30, 0x30, 0x30);
-                    var majorDiv = Color.FromArgb(0xA0, 0xA0, 0xA0);
+                    var majorDiv = Color.FromArgb(0x7F, 0x7F, 0x7F);
                     if (ControlPanel.ChkPrintable.Checked) {
-                        minorDiv = Color.FromArgb(0xDF, 0xDF, 0xDF);
+                        minorDiv = Color.FromArgb(0xCF, 0xCF, 0xCF);
                         majorDiv = Color.FromArgb(0x7F, 0x7F, 0x7F);
                     }
 
                     /* horizontal gridlines */
+                    g.DrawColor = minorDiv;
                     var showGridlines = mGridStepY != 0;
                     for (int ll = -100; ll <= 100; ll++) {
                         if (ll != 0 && !showGridlines) {
@@ -1044,14 +1060,23 @@ namespace Circuit.UI.Output {
                         if (ly < 0 || BoundingBox.Height <= ly) {
                             continue;
                         }
-                        g.DrawColor = ll == 0 ? majorDiv : minorDiv;
-                        g.DrawLine(0, ly, BoundingBox.Width - 1, ly);
+                        if (ll != 0) {
+                            g.DrawLine(0, ly, BoundingBox.Width - 1, ly);
+                        }
+                    }
+                    {
+                        var ly = (float)(maxY + gridMid * gridMult);
+                        if (0 <= ly && ly < BoundingBox.Height) {
+                            g.DrawColor = majorDiv;
+                            g.DrawLine(0, ly, BoundingBox.Width - 1, ly);
+                        }
                     }
 
                     /* vertical gridlines */
                     var baseT = ControlPanel.TimeStep * Speed;
                     var beginT = Circuit.Time - BoundingBox.Width * baseT;
                     var endT = Circuit.Time - (Circuit.Time % mGridStepX);
+                    g.DrawColor = minorDiv;
                     for (int ll = 0; ; ll++) {
                         var t = endT - mGridStepX * ll;
                         var lx = (float)((t - beginT) / baseT);
@@ -1061,26 +1086,36 @@ namespace Circuit.UI.Output {
                         if (t < 0 || BoundingBox.Width <= lx) {
                             continue;
                         }
-                        if (((t + mGridStepX / 4) % (mGridStepX * 10)) < mGridStepX) {
-                            g.DrawColor = majorDiv;
+                        if (((t + mGridStepX / 4) % (mGridStepX * mGridDivX)) < mGridStepX) {
                         } else {
-                            g.DrawColor = minorDiv;
+                            g.DrawLine(lx, 0, lx, BoundingBox.Height - 1);
                         }
-                        g.DrawLine(lx, 0, lx, BoundingBox.Height - 1);
+                    }
+                    g.DrawColor = majorDiv;
+                    for (int ll = 0; ; ll++) {
+                        var t = endT - mGridStepX * ll;
+                        var lx = (float)((t - beginT) / baseT);
+                        if (lx < 0) {
+                            break;
+                        }
+                        if (t < 0 || BoundingBox.Width <= lx) {
+                            continue;
+                        }
+                        if (((t + mGridStepX / 4) % (mGridStepX * mGridDivX)) < mGridStepX) {
+                            g.DrawLine(lx, 0, lx, BoundingBox.Height - 1);
+                        }
                     }
                 }
 
                 if (ControlPanel.ChkPrintable.Checked) {
                     g.DrawColor = plot.Color;
                 } else {
-                    if (selected || (ScopeForm.SelectedScope == -1 && plot.UI.IsMouseElm)) {
+                    if (plotIndex == SelectedPlot || (ScopeForm.SelectedScope == -1 && plot.UI.IsMouseElm)) {
                         g.DrawColor = CustomGraphics.SelectColor;
                     } else {
                         g.DrawColor = mSomethingSelected ? Plot.GRAY : plot.Color;
                     }
                 }
-                g.FillColor = g.DrawColor;
-
                 var idxBegin = plot.StartIndex(BoundingBox.Width);
                 var arrMaxV = plot.MaxValues;
                 var arrMinV = plot.MinValues;
@@ -1098,14 +1133,15 @@ namespace Circuit.UI.Output {
                     if (maxY < min) {
                         continue;
                     }
+                    int vy;
                     if (Math.Abs(min - oy) < Math.Abs(max - oy)) {
-                        g.DrawLine(ox, maxY - (min + oy) / 2.0f, px, maxY - max);
-                        oy = max;
+                        vy = max;
                     } else {
-                        g.DrawLine(ox, maxY - (max + oy) / 2.0f, px, maxY - min);
-                        oy = min;
+                        vy = min;
                     }
+                    g.DrawLine(ox, maxY - oy, px, maxY - vy);
                     ox = px;
+                    oy = vy;
                 }
             }
 
@@ -1352,9 +1388,9 @@ namespace Circuit.UI.Output {
                 if (mShowV && ShowScale) {
                     string vScaleText = "";
                     if (mGridStepY != 0) {
-                        vScaleText = ", V=" + Utils.VoltageText(mGridStepY) + "/div";
+                        vScaleText = ", V=" + Utils.VoltageAbsText(mGridStepY) + "/div";
                     }
-                    g.DrawLeftText("H=" + Utils.UnitText(mGridStepX, "s") + "/div" + vScaleText, 0, textY);
+                    g.DrawLeftText("H=" + Utils.TimeText(mGridStepX) + "/div" + vScaleText, 0, textY);
                     textY += 12;
                 }
                 if (mShowV && ShowMax) {
