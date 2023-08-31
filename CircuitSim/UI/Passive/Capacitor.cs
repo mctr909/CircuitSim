@@ -41,8 +41,8 @@ namespace Circuit.UI.Passive {
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmCapacitor)Elm;
-            optionList.Add(ce.Capacitance);
-            optionList.Add(ce.VoltDiff.ToString("0.000000"));
+            optionList.Add(ce.Capacitance.ToString("g3"));
+            optionList.Add(ce.VoltDiff.ToString("g3"));
         }
 
         public override void SetPoints() {

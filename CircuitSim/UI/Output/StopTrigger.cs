@@ -18,9 +18,9 @@ namespace Circuit.UI.Output {
 
 		protected override void dump(List<object> optionList) {
 			var ce = (ElmStopTrigger)Elm;
-			optionList.Add(ce.TriggerVoltage);
+			optionList.Add(ce.TriggerVoltage.ToString("g3"));
 			optionList.Add(ce.Type);
-			optionList.Add(ce.Delay);
+			optionList.Add(ce.Delay.ToString("g3"));
 		}
 
 	 	public override void SetPoints() {

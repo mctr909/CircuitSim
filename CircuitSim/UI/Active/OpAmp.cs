@@ -48,8 +48,8 @@ namespace Circuit.UI.Active {
             optionList.Add(ce.MaxOut);
             optionList.Add(ce.MinOut);
             optionList.Add(ce.Gain);
-            optionList.Add(ce.Volts[ElmOpAmp.V_N].ToString("0.000000"));
-            optionList.Add(ce.Volts[ElmOpAmp.V_P].ToString("0.000000"));
+            optionList.Add(ce.Volts[ElmOpAmp.V_N].ToString("g3"));
+            optionList.Add(ce.Volts[ElmOpAmp.V_P].ToString("g3"));
         }
 
         public override void SetPoints() {

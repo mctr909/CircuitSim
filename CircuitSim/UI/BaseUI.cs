@@ -158,15 +158,6 @@ namespace Circuit.UI {
         public void SelectRect(RectangleF r) {
             IsSelected = r.IntersectsWith(Post.BoundingBox);
         }
-
-        public string GetPostVoltage(EPOST n) {
-            var ni = (int)n;
-            if (ni < Elm.Volts.Length) {
-                return Utils.UnitText(Elm.Volts[ni], "V");
-            } else {
-                return "";
-            }
-        }
         #endregion
 
         #region [public virtual method]

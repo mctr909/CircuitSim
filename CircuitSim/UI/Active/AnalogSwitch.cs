@@ -25,8 +25,8 @@ namespace Circuit.UI.Active {
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmAnalogSwitch)Elm;
-            optionList.Add(ce.Ron);
-            optionList.Add(ce.Roff);
+            optionList.Add(ce.Ron.ToString("g3"));
+            optionList.Add(ce.Roff.ToString("g3"));
         }
 
         public override DUMP_ID DumpType { get { return DUMP_ID.ANALOG_SW; } }

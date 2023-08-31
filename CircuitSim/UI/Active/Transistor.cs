@@ -45,8 +45,8 @@ namespace Circuit.UI.Active {
         protected override void dump(List<object> optionList) {
             var ce = (ElmTransistor)Elm;
             optionList.Add(ce.NPN);
-            optionList.Add((ce.Vb - ce.Vc).ToString("0.000000"));
-            optionList.Add((ce.Vb - ce.Ve).ToString("0.000000"));
+            optionList.Add((ce.Vb - ce.Vc).ToString("g3"));
+            optionList.Add((ce.Vb - ce.Ve).ToString("g3"));
             optionList.Add(ce.Hfe);
         }
 

@@ -28,10 +28,10 @@ namespace Circuit.UI.Input {
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmSweep)Elm;
-            optionList.Add(ce.MinF);
-            optionList.Add(ce.MaxF);
-            optionList.Add(ce.MaxV);
-            optionList.Add(ce.SweepTime);
+            optionList.Add(ce.MinF.ToString("g3"));
+            optionList.Add(ce.MaxF.ToString("g3"));
+            optionList.Add(ce.MaxV.ToString("g3"));
+            optionList.Add(ce.SweepTime.ToString("g3"));
         }
 
         public override void SetPoints() {

@@ -23,8 +23,8 @@ namespace Circuit.UI.Gate {
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmTriState)Elm;
-            optionList.Add(ce.Ron);
-            optionList.Add(ce.Roff);
+            optionList.Add(ce.Ron.ToString("g3"));
+            optionList.Add(ce.Roff.ToString("g3"));
         }
 
         public override void SetPoints() {

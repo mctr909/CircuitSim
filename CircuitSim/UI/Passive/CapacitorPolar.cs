@@ -24,8 +24,8 @@ namespace Circuit.UI.Passive {
         public override DUMP_ID DumpType { get { return DUMP_ID.CAPACITOR_POLAR; } }
 
         protected override void dump(List<object> optionList) {
-            optionList.Add(((ElmPolarCapacitor)Elm).Capacitance);
-            optionList.Add(((ElmPolarCapacitor)Elm).VoltDiff);
+            optionList.Add(((ElmPolarCapacitor)Elm).Capacitance.ToString("g3"));
+            optionList.Add(((ElmPolarCapacitor)Elm).VoltDiff.ToString("g3"));
             optionList.Add(((ElmPolarCapacitor)Elm).MaxNegativeVoltage);
         }
 

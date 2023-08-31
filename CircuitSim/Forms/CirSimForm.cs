@@ -311,47 +311,49 @@ namespace Circuit {
             if (mContextMenu != null) {
                 mContextMenu.Close();
             }
-
-            if (item == ELEMENT_MENU_ITEM.EDIT) {
+            switch (item) {
+            case ELEMENT_MENU_ITEM.EDIT:
                 doEdit(mMenuElm, mMenuClient);
-            }
-            if (item == ELEMENT_MENU_ITEM.SPLIT) {
+                break;
+            case ELEMENT_MENU_ITEM.SPLIT_WIRE:
                 doSplit(mMenuElm);
-            }
-            if (item == ELEMENT_MENU_ITEM.FLIP) {
+                break;
+            case ELEMENT_MENU_ITEM.FLIP_POST:
                 doFlip();
-            }
-            if (item == ELEMENT_MENU_ITEM.SLIDERS) {
+                break;
+            case ELEMENT_MENU_ITEM.SLIDERS:
                 doSliders(mMenuElm, mMenuClient);
-            }
-
-            if (item == ELEMENT_MENU_ITEM.VIEW_IN_SCOPE && mMenuElm != null) {
-                int i;
-                for (i = 0; i != Scope.Property.Count; i++) {
-                    if (Scope.Property.List[i].UI == null) {
-                        break;
+                break;
+            case ELEMENT_MENU_ITEM.SCOPE_WINDOW:
+                if (mMenuElm != null) {
+                    int i;
+                    for (i = 0; i != Scope.Property.Count; i++) {
+                        if (Scope.Property.List[i].UI == null) {
+                            break;
+                        }
+                    }
+                    if (i == Scope.Property.Count) {
+                        if (Scope.Property.Count == Scope.Property.List.Length) {
+                            return;
+                        }
+                        Scope.Property.Count++;
+                        Scope.Property.List[i] = new Scope.Property();
+                        Scope.Property.List[i].Position = i;
+                    }
+                    Scope.Property.List[i].SetElm(mMenuElm);
+                    if (i > 0) {
+                        Scope.Property.List[i].Speed = Scope.Property.List[i - 1].Speed;
                     }
                 }
-                if (i == Scope.Property.Count) {
-                    if (Scope.Property.Count == Scope.Property.List.Length) {
-                        return;
-                    }
-                    Scope.Property.Count++;
-                    Scope.Property.List[i] = new Scope.Property();
-                    Scope.Property.List[i].Position = i;
+                break;
+            case ELEMENT_MENU_ITEM.SCOPE_FLOAT:
+                if (mMenuElm != null) {
+                    var newScope = new Scope(SnapGrid(mMenuElm.Post.A.X + 50, mMenuElm.Post.A.Y + 50));
+                    UIList.Add(newScope);
+                    newScope.SetScopeElm(mMenuElm);
                 }
-                Scope.Property.List[i].SetElm(mMenuElm);
-                if (i > 0) {
-                    Scope.Property.List[i].Speed = Scope.Property.List[i - 1].Speed;
-                }
+                break;
             }
-
-            if (item == ELEMENT_MENU_ITEM.VIEW_IN_FLOAT_SCOPE && mMenuElm != null) {
-                var newScope = new Scope(SnapGrid(mMenuElm.Post.A.X + 50, mMenuElm.Post.A.Y + 50));
-                UIList.Add(newScope);
-                newScope.SetScopeElm(mMenuElm);
-            }
-
             Repaint();
         }
 
@@ -373,7 +375,13 @@ namespace Circuit {
                 }
             }
 
-            if (item == SCOPE_MENU_ITEM.DOCK) {
+            if (null == s) {
+                deleteUnusedScopeElms();
+                return;
+            }
+
+            switch (item) {
+            case SCOPE_MENU_ITEM.DOCK:
                 if (Scope.Property.Count == Scope.Property.List.Length) {
                     return;
                 }
@@ -382,55 +390,50 @@ namespace Circuit {
                 Scope.Property.List[Scope.Property.Count].Position = Scope.Property.Count;
                 Scope.Property.Count++;
                 doDelete(false);
-            }
-
-            if (item == SCOPE_MENU_ITEM.UNDOCK && 0 <= mMenuScope) {
-                var newScope = new Scope(SnapGrid(mMenuElm.Post.A.X + 50, mMenuElm.Post.A.Y + 50));
-                UIList.Add(newScope);
-                newScope.SetElmScope(Scope.Property.List[mMenuScope]);
-                /* remove scope from list.  setupScopes() will fix the positions */
-                for (int i = mMenuScope; i < Scope.Property.Count; i++) {
-                    Scope.Property.List[i] = Scope.Property.List[i + 1];
+                break;
+            case SCOPE_MENU_ITEM.UNDOCK:
+                if (0 <= mMenuScope) {
+                    var newScope = new Scope(SnapGrid(mMenuElm.Post.A.X + 50, mMenuElm.Post.A.Y + 50));
+                    UIList.Add(newScope);
+                    newScope.SetElmScope(Scope.Property.List[mMenuScope]);
+                    /* remove scope from list.  setupScopes() will fix the positions */
+                    for (int i = mMenuScope; i < Scope.Property.Count; i++) {
+                        Scope.Property.List[i] = Scope.Property.List[i + 1];
+                    }
+                    Scope.Property.Count--;
                 }
-                Scope.Property.Count--;
-            }
-
-            if (null == s) {
-                deleteUnusedScopeElms();
-                return;
-            }
-
-            if (item == SCOPE_MENU_ITEM.REMOVE_SCOPE) {
+                break;
+            case SCOPE_MENU_ITEM.REMOVE_SCOPE:
                 s.SetElm(null);  /* setupScopes() will clean this up */
-            }
-            if (item == SCOPE_MENU_ITEM.REMOVE_WAVE) {
+                break;
+            case SCOPE_MENU_ITEM.REMOVE_WAVE:
                 s.RemoveWave(mMenuPlotWave);
-            }
-            if (item == SCOPE_MENU_ITEM.SPEED_UP) {
+                break;
+            case SCOPE_MENU_ITEM.SPEED_UP:
                 s.SpeedUp();
-            }
-            if (item == SCOPE_MENU_ITEM.SPEED_DOWN) {
+                break;
+            case SCOPE_MENU_ITEM.SPEED_DOWN:
                 s.SlowDown();
-            }
-            if (item == SCOPE_MENU_ITEM.MAX_SCALE) {
+                break;
+            case SCOPE_MENU_ITEM.MAX_SCALE:
                 s.MaxScale();
-            }
-            if (item == SCOPE_MENU_ITEM.STACK) {
+                break;
+            case SCOPE_MENU_ITEM.STACK:
                 Scope.Property.Stack(mMenuScope);
-            }
-            if (item == SCOPE_MENU_ITEM.UNSTACK) {
+                break;
+            case SCOPE_MENU_ITEM.UNSTACK:
                 Scope.Property.Unstack(mMenuScope);
-            }
-            if (item == SCOPE_MENU_ITEM.COMBINE) {
+                break;
+            case SCOPE_MENU_ITEM.COMBINE:
                 Scope.Property.Combine(mMenuScope);
-            }
-            if (item == SCOPE_MENU_ITEM.RESET) {
+                break;
+            case SCOPE_MENU_ITEM.RESET:
                 s.ResetGraph(true);
-            }
-            if (item == SCOPE_MENU_ITEM.PROPERTIES) {
+                break;
+            case SCOPE_MENU_ITEM.PROPERTIES:
                 s.Properties(mPixCir.Left + mPixCir.Width / 2, mPixCir.Bottom);
+                break;
             }
-
             deleteUnusedScopeElms();
         }
 
@@ -2031,11 +2034,7 @@ namespace Circuit {
             if (Mouse.GripElm == null) {
                 ControlPanel.LblSelectInfo.Text = "";
             } else {
-                if (Post.Hovering == EPOST.INVALID) {
-                    Mouse.GripElm.GetInfo(info);
-                } else {
-                    info[0] = "電位：" + Mouse.GripElm.GetPostVoltage(Post.Hovering);
-                }
+                Mouse.GripElm.GetInfo(info);
                 ControlPanel.LblSelectInfo.Text = "";
                 foreach (var str in info) {
                     if (string.IsNullOrEmpty(str)) {

@@ -34,7 +34,7 @@ namespace Circuit.UI.Gate {
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmInvertingSchmitt)Elm;
-            optionList.Add(ce.SlewRate);
+            optionList.Add(ce.SlewRate.ToString("g3"));
             optionList.Add(ce.LowerTrigger);
             optionList.Add(ce.UpperTrigger);
             optionList.Add(ce.LogicOnLevel);

@@ -38,7 +38,7 @@ namespace Circuit.UI.Passive {
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmResistor)Elm;
-            optionList.Add(ce.Resistance);
+            optionList.Add(ce.Resistance.ToString("g3"));
         }
 
         public override void SetPoints() {

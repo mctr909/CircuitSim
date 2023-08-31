@@ -31,8 +31,8 @@ namespace Circuit.UI.Passive {
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmInductor)Elm;
-            optionList.Add(ce.Inductance);
-            optionList.Add(ce.Current.ToString("0.000000"));
+            optionList.Add(ce.Inductance.ToString("g3"));
+            optionList.Add(ce.Current.ToString("g3"));
         }
 
         public override void SetPoints() {

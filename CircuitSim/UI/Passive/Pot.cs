@@ -51,7 +51,7 @@ namespace Circuit.UI.Passive {
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmPot)Elm;
-            optionList.Add(ce.MaxResistance);
+            optionList.Add(ce.MaxResistance.ToString("g3"));
             optionList.Add(ce.Position);
         }
 

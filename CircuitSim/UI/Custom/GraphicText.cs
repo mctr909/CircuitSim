@@ -3,9 +3,6 @@ using System.Drawing;
 
 namespace Circuit.UI.Custom {
     class GraphicText : Graphic {
-        const int FLAG_BAR = 2;
-        const int FLAG_ESCAPE = 4;
-
         string mText;
         int mFontSize;
         SizeF mTextSize;
@@ -24,7 +21,6 @@ namespace Circuit.UI.Custom {
         public override DUMP_ID DumpType { get { return DUMP_ID.TEXT; } }
 
         protected override void dump(List<object> optionList) {
-            mFlags |= FLAG_ESCAPE;
             optionList.Add(mFontSize);
             optionList.Add(Utils.Escape(mText));
         }
@@ -41,6 +37,7 @@ namespace Circuit.UI.Custom {
         public override void Drag(Point p) {
             p = CirSimForm.SnapGrid(p);
             Post.SetPosition(p.X, p.Y, p.X + 16, p.Y);
+            setTextSize();
         }
 
         public override void Draw(CustomGraphics g) {

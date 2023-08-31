@@ -41,10 +41,10 @@ namespace Circuit.UI.Passive {
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmTransformer)Elm;
-            optionList.Add(ce.PInductance);
+            optionList.Add(ce.PInductance.ToString("g3"));
             optionList.Add(ce.Ratio);
-            optionList.Add(ce.Currents[0].ToString("0.000000"));
-            optionList.Add(ce.Currents[1].ToString("0.000000"));
+            optionList.Add(ce.Currents[0].ToString("g3"));
+            optionList.Add(ce.Currents[1].ToString("g3"));
             optionList.Add(ce.CouplingCoef);
         }
 

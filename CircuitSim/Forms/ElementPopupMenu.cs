@@ -9,66 +9,70 @@ using Circuit.UI.Passive;
 namespace Circuit {
     public enum ELEMENT_MENU_ITEM {
         EDIT,
-        SLIDERS,
-        FLIP,
-        SPLIT,
-        VIEW_IN_SCOPE,
-        VIEW_IN_FLOAT_SCOPE
+        SCOPE_WINDOW,
+        SCOPE_FLOAT,
+        FLIP_POST,
+        SPLIT_WIRE,
+        SLIDERS
     }
 
     public class ElementPopupMenu {
-        List<ToolStripItem> mMenuItems;
+        ToolStripItem[] mMenuItems;
         ToolStripMenuItem mEdit;
-        ToolStripMenuItem mScope;
-        ToolStripMenuItem mFloatScope;
-        ToolStripMenuItem mFlip;
+        ToolStripMenuItem mScopeWindow;
+        ToolStripMenuItem mScopeFloat;
+        ToolStripMenuItem mFlipPosts;
         ToolStripMenuItem mSplit;
         ToolStripMenuItem mSlider;
 
         public ElementPopupMenu(CirSimForm sim) {
-            mMenuItems = new List<ToolStripItem>();
-            mMenuItems.Add(mEdit = new ToolStripMenuItem() { Text = "編集" });
+            mEdit = new ToolStripMenuItem() { Text = "編集" };
             mEdit.Click += new EventHandler((s, e) => {
                 sim.Performed(ELEMENT_MENU_ITEM.EDIT);
             });
-            mMenuItems.Add(new ToolStripSeparator());
-
-            mMenuItems.Add(mSplit = new ToolStripMenuItem() { Text = "線の分割" });
+            mScopeWindow = new ToolStripMenuItem() { Text = "スコープをウィンドウ表示" };
+            mScopeWindow.Click += new EventHandler((s, e) => {
+                sim.Performed(ELEMENT_MENU_ITEM.SCOPE_WINDOW);
+            });
+            mScopeFloat = new ToolStripMenuItem() { Text = "スコープを任意の場所に表示" };
+            mScopeFloat.Click += new EventHandler((s, e) => {
+                sim.Performed(ELEMENT_MENU_ITEM.SCOPE_FLOAT);
+            });
+            mSplit = new ToolStripMenuItem() { Text = "線の分割" };
             mSplit.Click += new EventHandler((s, e) => {
-                sim.Performed(ELEMENT_MENU_ITEM.SPLIT);
+                sim.Performed(ELEMENT_MENU_ITEM.SPLIT_WIRE);
             });
-            mMenuItems.Add(mFlip = new ToolStripMenuItem() { Text = "端子の入れ替え" });
-            mFlip.Click += new EventHandler((s, e) => {
-                sim.Performed(ELEMENT_MENU_ITEM.FLIP);
+            mFlipPosts = new ToolStripMenuItem() { Text = "端子の入れ替え" };
+            mFlipPosts.Click += new EventHandler((s, e) => {
+                sim.Performed(ELEMENT_MENU_ITEM.FLIP_POST);
             });
-            mMenuItems.Add(new ToolStripSeparator());
-
-            mMenuItems.Add(mScope = new ToolStripMenuItem() { Text = "スコープをウィンドウ表示" });
-            mScope.Click += new EventHandler((s, e) => {
-                sim.Performed(ELEMENT_MENU_ITEM.VIEW_IN_SCOPE);
-            });
-            mMenuItems.Add(mFloatScope = new ToolStripMenuItem() { Text = "任意の場所にスコープを表示" });
-            mFloatScope.Click += new EventHandler((s, e) => {
-                sim.Performed(ELEMENT_MENU_ITEM.VIEW_IN_FLOAT_SCOPE);
-            });
-            mMenuItems.Add(new ToolStripSeparator());
-
-            mMenuItems.Add(mSlider = new ToolStripMenuItem() { Text = "スライダーを作成" });
+            mSlider = new ToolStripMenuItem() { Text = "スライダーを作成" };
             mSlider.Click += new EventHandler((s, e) => {
                 sim.Performed(ELEMENT_MENU_ITEM.SLIDERS);
             });
+            mMenuItems = new List<ToolStripItem>() {
+                mEdit,
+                new ToolStripSeparator(),
+                mScopeWindow,
+                mScopeFloat,
+                new ToolStripSeparator(),
+                mSplit,
+                mFlipPosts,
+                new ToolStripSeparator(),
+                mSlider
+            }.ToArray();
         }
 
         public ContextMenuStrip Show(int px, int py, BaseUI mouseElm) {
-            mScope.Enabled = mouseElm.CanViewInScope;
-            mFloatScope.Enabled = mouseElm.CanViewInScope;
             mEdit.Enabled = mouseElm.GetElementInfo(0, 0) != null;
-            mFlip.Enabled = 2 == mouseElm.Elm.PostCount;
+            mScopeWindow.Enabled = mouseElm.CanViewInScope;
+            mScopeFloat.Enabled = mouseElm.CanViewInScope;
+            mFlipPosts.Enabled = 2 == mouseElm.Elm.PostCount;
             mSplit.Enabled = canSplit(mouseElm);
             mSlider.Enabled = sliderItemEnabled(mouseElm);
 
             var popupMenu = new ContextMenuStrip();
-            popupMenu.Items.AddRange(mMenuItems.ToArray());
+            popupMenu.Items.AddRange(mMenuItems);
             popupMenu.Show();
             popupMenu.Location = new Point(px, py);
             return popupMenu;
