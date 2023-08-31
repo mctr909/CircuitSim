@@ -252,12 +252,12 @@ namespace Circuit.UI.Passive {
             mRect2 = new PointF[SEGMENTS + 2];
             mRect3 = new PointF[SEGMENTS + 2];
             mRect4 = new PointF[SEGMENTS + 2];
-            interpLeadAB(ref mRect1[0], ref mRect2[0], 0, HS);
+            Utils.InterpPoint(Elm.Term[0], Elm.Term[1], ref mRect1[0], ref mRect2[0], 0, HS);
             for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
-                interpLeadAB(ref mRect1[j], ref mRect2[j], i * SEG_F, HS);
-                interpLeadAB(ref mRect3[j], ref mRect4[j], (i + 1) * SEG_F, HS);
+                Utils.InterpPoint(Elm.Term[0], Elm.Term[1], ref mRect1[j], ref mRect2[j], i * SEG_F, HS);
+                Utils.InterpPoint(Elm.Term[0], Elm.Term[1], ref mRect3[j], ref mRect4[j], (i + 1) * SEG_F, HS);
             }
-            interpLeadAB(ref mRect1[SEGMENTS + 1], ref mRect2[SEGMENTS + 1], 1, HS);
+            Utils.InterpPoint(Elm.Term[0], Elm.Term[1], ref mRect1[SEGMENTS + 1], ref mRect2[SEGMENTS + 1], 1, HS);
         }
 
         void setTextPos() {
@@ -277,19 +277,19 @@ namespace Circuit.UI.Passive {
                 if (Post.Diff.Y != 0) {
                     if (0 < Post.Diff.Y) {
                         /* right slider */
-                        interpPost(ref mNamePos, 0.5 + wn / Post.Len, -12 * Post.Dsign);
+                        Utils.InterpPoint(Elm.Term[0], Elm.Term[1], ref mNamePos, 0.5 + wn / Post.Len, -12 * Post.Dsign);
                     } else {
                         /* left slider */
-                        interpPost(ref mNamePos, 0.5 - wn / Post.Len, 12 * Post.Dsign);
+                        Utils.InterpPoint(Elm.Term[0], Elm.Term[1], ref mNamePos, 0.5 - wn / Post.Len, 12 * Post.Dsign);
                     }
                 }
             } else {
                 if (0 < Post.Diff.X) {
                     /* upper slider */
-                    interpPost(ref mNamePos, 0.5, -10 * Post.Dsign);
+                    Utils.InterpPoint(Elm.Term[0], Elm.Term[1], ref mNamePos, 0.5, -10 * Post.Dsign);
                 } else {
                     /* lower slider */
-                    interpPost(ref mNamePos, 0.5, 11 * Post.Dsign);
+                    Utils.InterpPoint(Elm.Term[0], Elm.Term[1], ref mNamePos, 0.5, 11 * Post.Dsign);
                 }
             }
         }

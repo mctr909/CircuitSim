@@ -272,46 +272,46 @@ namespace Circuit.UI {
         }
 
         protected void interpPost(ref Point p, double f, double g) {
-            var gx = Elm.Term[1].Y - Elm.Term[0].Y;
-            var gy = Elm.Term[0].X - Elm.Term[1].X;
+            var gx = Post.B.Y - Post.A.Y;
+            var gy = Post.A.X - Post.B.X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                p.X = Elm.Term[0].X;
-                p.Y = Elm.Term[0].Y;
+                p.X = Post.A.X;
+                p.Y = Post.A.Y;
             } else {
                 g /= r;
-                p.X = (int)Math.Floor(Elm.Term[0].X * (1 - f) + Elm.Term[1].X * f + g * gx + 0.5);
-                p.Y = (int)Math.Floor(Elm.Term[0].Y * (1 - f) + Elm.Term[1].Y * f + g * gy + 0.5);
+                p.X = (int)Math.Floor(Post.A.X * (1 - f) + Post.B.X * f + g * gx + 0.5);
+                p.Y = (int)Math.Floor(Post.A.Y * (1 - f) + Post.B.Y * f + g * gy + 0.5);
             }
         }
 
         protected void interpPost(ref PointF p, double f, double g) {
-            var gx = Elm.Term[1].Y - Elm.Term[0].Y;
-            var gy = Elm.Term[0].X - Elm.Term[1].X;
+            var gx = Post.B.Y - Post.A.Y;
+            var gy = Post.A.X - Post.B.X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                p.X = Elm.Term[0].X;
-                p.Y = Elm.Term[0].Y;
+                p.X = Post.A.X;
+                p.Y = Post.A.Y;
             } else {
                 g /= r;
-                p.X = (float)(Elm.Term[0].X * (1 - f) + Elm.Term[1].X * f + g * gx);
-                p.Y = (float)(Elm.Term[0].Y * (1 - f) + Elm.Term[1].Y * f + g * gy);
+                p.X = (float)(Post.A.X * (1 - f) + Post.B.X * f + g * gx);
+                p.Y = (float)(Post.A.Y * (1 - f) + Post.B.Y * f + g * gy);
             }
         }
 
         protected void interpPostAB(ref PointF a, ref PointF b, double f, double g) {
-            var gx = Elm.Term[1].Y - Elm.Term[0].Y;
-            var gy = Elm.Term[0].X - Elm.Term[1].X;
+            var gx = Post.B.Y - Post.A.Y;
+            var gy = Post.A.X - Post.B.X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                a = Elm.Term[0];
-                b = Elm.Term[1];
+                a = Post.A;
+                b = Post.B;
             } else {
                 g /= r;
-                a.X = (float)(Elm.Term[0].X * (1 - f) + Elm.Term[1].X * f + g * gx);
-                a.Y = (float)(Elm.Term[0].Y * (1 - f) + Elm.Term[1].Y * f + g * gy);
-                b.X = (float)(Elm.Term[0].X * (1 - f) + Elm.Term[1].X * f - g * gx);
-                b.Y = (float)(Elm.Term[0].Y * (1 - f) + Elm.Term[1].Y * f - g * gy);
+                a.X = (float)(Post.A.X * (1 - f) + Post.B.X * f + g * gx);
+                a.Y = (float)(Post.A.Y * (1 - f) + Post.B.Y * f + g * gy);
+                b.X = (float)(Post.A.X * (1 - f) + Post.B.X * f - g * gx);
+                b.Y = (float)(Post.A.Y * (1 - f) + Post.B.Y * f - g * gy);
             }
         }
 
