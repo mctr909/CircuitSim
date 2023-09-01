@@ -1042,10 +1042,13 @@ namespace Circuit.UI.Output {
                 }
 
                 if (plotIndex == 0) {
-                    var minorDiv = Color.FromArgb(0x30, 0x30, 0x30);
-                    var majorDiv = Color.FromArgb(0x7F, 0x7F, 0x7F);
+                    Color minorDiv;
+                    Color majorDiv;
                     if (ControlPanel.ChkPrintable.Checked) {
                         minorDiv = Color.FromArgb(0xCF, 0xCF, 0xCF);
+                        majorDiv = Color.FromArgb(0x7F, 0x7F, 0x7F);
+                    } else {
+                        minorDiv = Color.FromArgb(0x30, 0x30, 0x30);
                         majorDiv = Color.FromArgb(0x7F, 0x7F, 0x7F);
                     }
 
@@ -1138,10 +1141,19 @@ namespace Circuit.UI.Output {
                         minRangeHi = 1000;
                     }
                     if (maxY < minB) {
+                        rect[0].X++;
+                        rect[1].X++;
+                        rect[2].X++;
+                        rect[3].X++;
+                        rect[4].X++;
                         continue;
                     }
                     float dw;
-                    if (1 <= Math.Abs(maxB - minB) && 1 <= Math.Abs(maxA - minA)) {
+                    var sa = Math.Abs(maxA - minA);
+                    var sb = Math.Abs(maxB - minB);
+                    if (1 <= sa && 1 <= sb) {
+                        dw = 0;
+                    } else if (1 <= sa || 1 <= sb) {
                         dw = 0;
                     } else {
                         dw = 0.5f;
