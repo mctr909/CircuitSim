@@ -29,6 +29,11 @@ class PDF {
                     (value.G / 255.0).ToString("0.##"),
                     (value.B / 255.0).ToString("0.##")
                 );
+                mSw.WriteLine("{0} {1} {2} rg",
+                    (value.R / 255.0).ToString("0.##"),
+                    (value.G / 255.0).ToString("0.##"),
+                    (value.B / 255.0).ToString("0.##")
+                );
             }
         }
 

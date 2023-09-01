@@ -1119,12 +1119,19 @@ namespace Circuit.UI.Output {
                 var idxBegin = plot.StartIndex(BoundingBox.Width);
                 var arrMaxV = plot.MaxValues;
                 var arrMinV = plot.MinValues;
-                int ox = 0;
-                int oy = (int)(gridMult * (arrMinV[idxBegin & (mScopePointCount - 1)] - gridMid));
-                for (int px = 0; px != BoundingBox.Width; px++) {
-                    int idx = (px + idxBegin) & (mScopePointCount - 1);
-                    var max = (int)(gridMult * (arrMaxV[idx] - gridMid));
-                    var min = (int)(gridMult * (arrMinV[idx] - gridMid));
+                var omax = (float)(gridMult * (arrMaxV[idxBegin & (mScopePointCount - 1)] - gridMid));
+                var omin = (float)(gridMult * (arrMinV[idxBegin & (mScopePointCount - 1)] - gridMid));
+                var rect = new PointF[] {
+                    new PointF(-0.6f, 0),
+                    new PointF(0.6f, 0),
+                    new PointF(0.6f, 0),
+                    new PointF(-0.6f, 0),
+                    new PointF(-0.6f, 0)
+                };
+                for (int i = 0; i != BoundingBox.Width; i++) {
+                    var idx = (i + idxBegin) & (mScopePointCount - 1);
+                    var max = (float)(gridMult * (arrMaxV[idx] - gridMid));
+                    var min = (float)(gridMult * (arrMinV[idx] - gridMid));
                     if (min < minRangeLo || max > minRangeHi) {
                         mReduceRange = false;
                         minRangeLo = -1000;
@@ -1133,15 +1140,25 @@ namespace Circuit.UI.Output {
                     if (maxY < min) {
                         continue;
                     }
-                    int vy;
-                    if (Math.Abs(min - oy) < Math.Abs(max - oy)) {
-                        vy = max;
+                    float dw;
+                    if (1 <= Math.Abs(max - min) || 1 <= Math.Abs(omax - omin)) {
+                        dw = 0;
                     } else {
-                        vy = min;
+                        dw = 0.5f;
                     }
-                    g.DrawLine(ox, maxY - oy, px, maxY - vy);
-                    ox = px;
-                    oy = vy;
+                    rect[0].Y = maxY - omin + dw;
+                    rect[1].Y = maxY - min + dw;
+                    rect[2].Y = maxY - max - dw;
+                    rect[3].Y = maxY - omax - dw;
+                    rect[4].Y = maxY - omin + dw;
+                    omax = max;
+                    omin = min;
+                    g.FillPolygon(g.DrawColor, rect);
+                    rect[0].X++;
+                    rect[1].X++;
+                    rect[2].X++;
+                    rect[3].X++;
+                    rect[4].X++;
                 }
             }
 
