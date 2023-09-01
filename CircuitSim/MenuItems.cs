@@ -430,7 +430,6 @@ namespace Circuit {
             //activeBlockMenuBar.Text = "モジュール(M)";
             //activeBlockMenuBar.Font = menuFont;
             //addElementItem(activeBlocMenuBar, "Add Op Amp (real)", ITEM.OpAmpRealElm);
-            //addElementItem(activeBlocMenuBar, "Add Analog Switch (SPDT)", ITEM.AnalogSwitch2Elm);
             //addElementItem(activeBlocMenuBar, "Add CCII+", ITEM.CC2Elm);
             //addElementItem(activeBlocMenuBar, "Add CCII-", ITEM.CC2NegElm);
             //addElementItem(activeBlocMenuBar, "Add OTA (LM13700 style)", ITEM.OTAElm);
@@ -438,7 +437,6 @@ namespace Circuit {
             //addElementItem(activeBlockMenuBar, "Add Voltage-Controlled Current Source", ELEMENTS.VCCS);
             //addElementItem(activeBlocMenuBar, "Add Current-Controlled Voltage Source", ITEM.CCVSElm);
             //addElementItem(activeBlockMenuBar, "Add Current-Controlled Current Source", ELEMENTS.CCCS);
-            //addElementItem(activeBlockMenuBar, "カスタムモジュール", ELEMENTS.CustomCompositeElm);
             //mainMenuBar.Items.Add(activeBlockMenuBar);
             #endregion
 
@@ -581,8 +579,6 @@ namespace Circuit {
                 return new CCCS(pos);
             //case ELEMENTS.CCVSElm:
             //    return null; //(CircuitElm)new CCVSElm(x1, y1);
-            //case ELEMENTS.CustomCompositeElm:
-            //    return new CustomCompositeElm(pos);
             #endregion
 
             #region Logic Gates
@@ -851,9 +847,7 @@ namespace Circuit {
             //case 405: return new LEDArrayElm(x1, y1, x2, y2, f, st);
             //case 406: return new CustomTransformerElm(x1, y1, x2, y2, f, st);
             //case 409: return new OpAmpRealElm(x1, y1, x2, y2, f, st);
-            //case DUMP_ID.CUSTOM_COMPOSITE:
-            //    return new CustomCompositeElm(p1, p2, f, st);
-                //case 411: return new AudioInputElm(x1, y1, x2, y2, f, st);
+            //case 411: return new AudioInputElm(x1, y1, x2, y2, f, st);
             }
             return null;
         }

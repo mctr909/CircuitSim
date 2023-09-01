@@ -437,116 +437,6 @@ namespace Circuit {
             deleteUnusedScopeElms();
         }
 
-        // Todo: GetCircuitAsComposite
-        //public CustomCompositeModel GetCircuitAsComposite() {
-        //    string nodeDump = "";
-        //    string dump = "";
-        //    CustomLogicModel.clearDumpedFlags();
-        //    DiodeModel.ClearDumpedFlags();
-        //    var extList = new List<ExtListEntry>();
-
-        //    bool sel = isSelection();
-
-        //    // mapping of node labels -> node numbers
-        //    var nodeNameHash = new Dictionary<string, int>();
-
-        //    // mapping of node numbers -> equivalent node numbers (if they both have the same label)
-        //    var nodeNumberHash = new Dictionary<int, int>();
-
-        //    var used = new bool[mCir.NodeList.Count];
-
-        //    // find all the labeled nodes, get a list of them, and create a node number map
-        //    for (int i = 0; i != ElmCount; i++) {
-        //        var ce = getElm(i).Item1;
-        //        if (sel && !ce.IsSelected) {
-        //            continue;
-        //        }
-        //        if (ce is LabeledNodeElm) {
-        //            var lne = (LabeledNodeElm)ce;
-        //            var label = lne.Text;
-        //            // this node name already seen?  map the new node number to the old one
-        //            if (nodeNameHash.ContainsKey(label)) {
-        //                var map = nodeNameHash[label];
-        //                if (nodeNumberHash.ContainsKey(lne.CirNodes[0]) && nodeNumberHash[lne.CirNodes[0]] != map) {
-        //                    MessageBox.Show("Can't have a node with two labels!");
-        //                    return null;
-        //                }
-        //                nodeNumberHash.Add(lne.CirNodes[0], map);
-        //                continue;
-        //            }
-        //            nodeNameHash.Add(label, lne.CirNodes[0]);
-        //            // put an entry in nodeNumberHash so we can detect if we try to map it to something else later
-        //            nodeNumberHash.Add(lne.CirNodes[0], lne.CirNodes[0]);
-        //            if (lne.IsInternal) {
-        //                continue;
-        //            }
-        //            // create ext list entry for external nodes
-        //            var ent = new ExtListEntry(label, ce.CirNodes[0]);
-        //            extList.Add(ent);
-        //        }
-        //    }
-
-        //    // output all the elements
-        //    for (int i = 0; i != ElmCount; i++) {
-        //        var ce = getElm(i).Item1;
-        //        if (sel && !ce.IsSelected) {
-        //            continue;
-        //        }
-        //        // don't need these elements dumped
-        //        if ((ce is WireElm) || (ce is ScopeElm)) {
-        //            continue;
-        //        }
-        //        if (nodeDump.Length > 0) {
-        //            nodeDump += "\r";
-        //        }
-        //        // TODO: GetCircuitAsComposite
-        //        nodeDump += ELEMENTS.RAIL_AC;
-        //        for (int j = 0; j != ce.CirPostCount; j++) {
-        //            int n = ce.CirNodes[j];
-        //            int n0 = nodeNumberHash.ContainsKey(n) ? nodeNumberHash[n] : n;
-        //            used[n0] = true;
-        //            nodeDump += " " + n0;
-        //        }
-
-        //        // save positions
-        //        int x1 = ce.P1.X;
-        //        int y1 = ce.P1.Y;
-        //        int x2 = ce.P2.X;
-        //        int y2 = ce.P2.Y;
-
-        //        // set them to 0 so they're easy to remove
-        //        ce.P1.X = ce.P1.Y = ce.P2.X = ce.P2.Y = 0;
-
-        //        string tstring = ce.Dump;
-        //        var rg = new Regex("[A-Za-z0-9]+ 0 0 0 0 ");
-        //        tstring = rg.Replace(tstring, "", 1); // remove unused tint_x1 y1 x2 y2 coords for internal components
-
-        //        // restore positions
-        //        ce.P1.X = x1;
-        //        ce.P1.Y = y1;
-        //        ce.P2.X = x2;
-        //        ce.P2.Y = y2;
-        //        if (dump.Length > 0) {
-        //            dump += " ";
-        //        }
-        //        dump += CustomLogicModel.escape(tstring);
-        //    }
-
-        //    for (int i = 0; i != extList.Count; i++) {
-        //        var ent = extList[i];
-        //        if (!used[ent.node]) {
-        //            MessageBox.Show("Node \"" + ent.name + "\" is not used!");
-        //            return null;
-        //        }
-        //    }
-
-        //    var ccm = new CustomCompositeModel();
-        //    ccm.NodeList = nodeDump;
-        //    ccm.ElmDump = dump;
-        //    ccm.ExtList = extList;
-        //    return ccm;
-        //}
-
         #region Public method
         public static BaseUI GetUI(int n) {
             if (n >= UIList.Count) {
@@ -1096,8 +986,6 @@ namespace Circuit {
         static string dumpCircuit() {
             // Todo: CustomLogicModel
             //CustomLogicModel.clearDumpedFlags();
-            // Todo: CustomCompositeModel
-            //CustomCompositeModel.ClearDumpedFlags();
             DiodeModel.ClearDumpedFlags();
 
             int f = ControlPanel.ChkShowCurrent.Checked ? 1 : 0;
@@ -1209,11 +1097,6 @@ namespace Circuit {
                         if (tint == '&') {
                             var adj = new Adjustable(st);
                             Adjustables.Add(adj);
-                            break;
-                        }
-                        if (tint == '.') {
-                            // Todo: CustomCompositeModel
-                            //CustomCompositeModel.UndumpModel(st);
                             break;
                         }
                         var x = st.nextTokenInt();
@@ -1798,8 +1681,6 @@ namespace Circuit {
             string r = "";
             // Todo: CustomLogicModel
             //CustomLogicModel.clearDumpedFlags();
-            // Todo: CustomCompositeModel
-            //CustomCompositeModel.ClearDumpedFlags();
             DiodeModel.ClearDumpedFlags();
             for (int i = UICount - 1; i >= 0; i--) {
                 var ce = GetUI(i);
