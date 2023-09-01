@@ -1119,40 +1119,40 @@ namespace Circuit.UI.Output {
                 var idxBegin = plot.StartIndex(BoundingBox.Width);
                 var arrMaxV = plot.MaxValues;
                 var arrMinV = plot.MinValues;
-                var omax = (float)(gridMult * (arrMaxV[idxBegin & (mScopePointCount - 1)] - gridMid));
-                var omin = (float)(gridMult * (arrMinV[idxBegin & (mScopePointCount - 1)] - gridMid));
+                var maxA = (float)(gridMult * (arrMaxV[idxBegin & (mScopePointCount - 1)] - gridMid));
+                var minA = (float)(gridMult * (arrMinV[idxBegin & (mScopePointCount - 1)] - gridMid));
                 var rect = new PointF[] {
-                    new PointF(-0.6f, 0),
-                    new PointF(0.6f, 0),
-                    new PointF(0.6f, 0),
-                    new PointF(-0.6f, 0),
-                    new PointF(-0.6f, 0)
+                    new PointF(-0.5f, 0),
+                    new PointF(0.5f, 0),
+                    new PointF(0.5f, 0),
+                    new PointF(-0.5f, 0),
+                    new PointF(-0.5f, 0)
                 };
                 for (int i = 0; i != BoundingBox.Width; i++) {
                     var idx = (i + idxBegin) & (mScopePointCount - 1);
-                    var max = (float)(gridMult * (arrMaxV[idx] - gridMid));
-                    var min = (float)(gridMult * (arrMinV[idx] - gridMid));
-                    if (min < minRangeLo || max > minRangeHi) {
+                    var maxB = (float)(gridMult * (arrMaxV[idx] - gridMid));
+                    var minB = (float)(gridMult * (arrMinV[idx] - gridMid));
+                    if (minB < minRangeLo || maxB > minRangeHi) {
                         mReduceRange = false;
                         minRangeLo = -1000;
                         minRangeHi = 1000;
                     }
-                    if (maxY < min) {
+                    if (maxY < minB) {
                         continue;
                     }
                     float dw;
-                    if (1 <= Math.Abs(max - min) || 1 <= Math.Abs(omax - omin)) {
+                    if (1 <= Math.Abs(maxB - minB) && 1 <= Math.Abs(maxA - minA)) {
                         dw = 0;
                     } else {
                         dw = 0.5f;
                     }
-                    rect[0].Y = maxY - omin + dw;
-                    rect[1].Y = maxY - min + dw;
-                    rect[2].Y = maxY - max - dw;
-                    rect[3].Y = maxY - omax - dw;
-                    rect[4].Y = maxY - omin + dw;
-                    omax = max;
-                    omin = min;
+                    rect[0].Y = maxY - minA + dw;
+                    rect[1].Y = maxY - minB + dw;
+                    rect[2].Y = maxY - maxB - dw;
+                    rect[3].Y = maxY - maxA - dw;
+                    rect[4].Y = maxY - minA + dw;
+                    maxA = maxB;
+                    minA = minB;
                     g.FillPolygon(g.DrawColor, rect);
                     rect[0].X++;
                     rect[1].X++;
