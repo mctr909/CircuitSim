@@ -16,18 +16,18 @@ namespace Circuit.UI.Output {
             Elm = new ElmLogicOutput(st);
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.LOGIC_O; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.LOGIC_O; } }
 
-        bool isTernary { get { return (mFlags & FLAG_TERNARY) != 0; } }
+        bool isTernary { get { return (_Flags & FLAG_TERNARY) != 0; } }
 
-        bool isNumeric { get { return (mFlags & (FLAG_TERNARY | FLAG_NUMERIC)) != 0; } }
+        bool isNumeric { get { return (_Flags & (FLAG_TERNARY | FLAG_NUMERIC)) != 0; } }
 
-        bool needsPullDown { get { return (mFlags & FLAG_PULLDOWN) != 0; } }
+        bool needsPullDown { get { return (_Flags & FLAG_PULLDOWN) != 0; } }
 
         public override void SetPoints() {
             base.SetPoints();
             setLead1(1 - 12 / Post.Len);
-            Post.SetBbox(Post.A, mLead1, 0);
+            Post.SetBbox(Post.A, _Lead1, 0);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -86,24 +86,24 @@ namespace Circuit.UI.Output {
             }
             if (n == 1) {
                 if (ei.CheckBox.Checked) {
-                    mFlags = FLAG_PULLDOWN;
+                    _Flags = FLAG_PULLDOWN;
                 } else {
-                    mFlags &= ~FLAG_PULLDOWN;
+                    _Flags &= ~FLAG_PULLDOWN;
                 }
                 ce.needsPullDown = needsPullDown;
             }
             if (n == 2) {
                 if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_NUMERIC;
+                    _Flags |= FLAG_NUMERIC;
                 } else {
-                    mFlags &= ~FLAG_NUMERIC;
+                    _Flags &= ~FLAG_NUMERIC;
                 }
             }
             if (n == 3) {
                 if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_TERNARY;
+                    _Flags |= FLAG_TERNARY;
                 } else {
-                    mFlags &= ~FLAG_TERNARY;
+                    _Flags &= ~FLAG_TERNARY;
                 }
             }
         }

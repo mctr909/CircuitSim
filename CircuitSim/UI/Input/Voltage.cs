@@ -73,8 +73,8 @@ namespace Circuit.UI.Input {
         public const string VALUE_NAME_PHASE_OFS = "オフセット位相(deg)";
         public const string VALUE_NAME_DUTY = "デューティ比";
 
-        protected override BaseLink mLink { get; set; } = new VoltageLink();
-        protected VoltageLink Link { get { return (VoltageLink)mLink; } }
+        protected override BaseLink _Link { get; set; } = new VoltageLink();
+        protected VoltageLink Link { get { return (VoltageLink)_Link; } }
 
         PointF mPs1;
         PointF mPs2;
@@ -95,16 +95,16 @@ namespace Circuit.UI.Input {
             Link.Load(st);
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.VOLTAGE; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.VOLTAGE; } }
 
         protected override void dump(List<object> optionList) {
             var elm = (ElmVoltage)Elm;
             /* set flag so we know if duty cycle is correct for pulse waveforms */
             if (elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_MONOPOLE ||
                 elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_DIPOLE) {
-                mFlags |= FLAG_PULSE_DUTY;
+                _Flags |= FLAG_PULSE_DUTY;
             } else {
-                mFlags &= ~FLAG_PULSE_DUTY;
+                _Flags &= ~FLAG_PULSE_DUTY;
             }
             optionList.Add(elm.WaveForm);
             optionList.Add(elm.Frequency);
@@ -119,7 +119,7 @@ namespace Circuit.UI.Input {
             base.SetPoints();
 
             var elm = (ElmVoltage)Elm;
-            calcLeads((elm.WaveForm == ElmVoltage.WAVEFORM.DC) ? BODY_LEN_DC : BODY_LEN);
+            setLeads((elm.WaveForm == ElmVoltage.WAVEFORM.DC) ? BODY_LEN_DC : BODY_LEN);
 
             int sign;
             if (Post.Horizontal) {
@@ -350,10 +350,10 @@ namespace Circuit.UI.Input {
 
             if (CirSimForm.ConstructElm != this) {
                 if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
-                    drawCurrent(Post.A, Post.B, mCurCount);
+                    drawCurrent(Post.A, Post.B, _CurCount);
                 } else {
-                    drawCurrentA(mCurCount);
-                    drawCurrentB(mCurCount);
+                    drawCurrentA(_CurCount);
+                    drawCurrentB(_CurCount);
                 }
             }
         }

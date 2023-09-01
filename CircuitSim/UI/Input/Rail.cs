@@ -20,12 +20,12 @@ namespace Circuit.UI.Input {
             Link.Load(st);
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.RAIL; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.RAIL; } }
 
         public override void SetPoints() {
             base.SetPoints();
             Post.SetBbox(BODY_LEN);
-            interpPost(ref mNamePos, 1 + 0.35 * BODY_LEN / Post.Len);
+            interpPost(ref _NamePos, 1 + 0.35 * BODY_LEN / Post.Len);
             interpPost(ref mC, 1);
             interpPost(ref mLa, 1, -5);
             interpPost(ref mLb, 1, 5);
@@ -43,7 +43,7 @@ namespace Circuit.UI.Input {
                 w = Post.Len * 0.8;
             }
             if (elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE
-                && (mFlags & FLAG_CLOCK) != 0 || elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
+                && (_Flags & FLAG_CLOCK) != 0 || elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                 setLead1(1);
             } else {
                 setLead1(1 - w / Post.Len);
@@ -51,22 +51,22 @@ namespace Circuit.UI.Input {
             
             drawLeadA();
             drawRail();
-            updateDotCount(-Elm.Current, ref mCurCount);
+            updateDotCount(-Elm.Current, ref _CurCount);
             if (CirSimForm.ConstructElm != this) {
-                drawCurrentA(mCurCount);
+                drawCurrentA(_CurCount);
             }
         }
 
         void drawRail() {
             var elm = (ElmVoltage)Elm;
-            if (elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
-                drawCenteredText("CLK", mNamePos);
+            if (elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE && (_Flags & FLAG_CLOCK) != 0) {
+                drawCenteredText("CLK", _NamePos);
             } else if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                 drawLine(mLa, mLb);
                 drawCircle(mC, 3);
                 var v = elm.GetVoltage();
                 var s = Utils.VoltageText(v);
-                drawCenteredText(s, mNamePos);
+                drawCenteredText(s, _NamePos);
             } else {
                 drawWaveform(Post.B);
             }

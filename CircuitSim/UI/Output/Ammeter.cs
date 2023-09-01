@@ -14,14 +14,14 @@ namespace Circuit.UI.Output {
 
         public Ammeter(Point pos) : base(pos) {
             Elm = new ElmAmmeter();
-            mFlags = FLAG_SHOWCURRENT;
+            _Flags = FLAG_SHOWCURRENT;
         }
 
         public Ammeter(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new ElmAmmeter(st);
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.AMMETER; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.AMMETER; } }
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmAmmeter)Elm;

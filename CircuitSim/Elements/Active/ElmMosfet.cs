@@ -42,13 +42,13 @@ namespace Circuit.Elements.Active {
         double mDiode2LastVoltDiff;
         double[] mLastV = new double[] { 0.0, 0.0, 0.0 };
 
-        public ElmMosfet(bool pnpflag) : base() {
-            Nch = pnpflag ? -1 : 1;
+        public ElmMosfet(bool pChFlag) : base() {
+            Nch = pChFlag ? -1 : 1;
             Hfe = DefaultHfe;
             Vt = DefaultThreshold;
         }
-        public ElmMosfet(bool pnpflag, double vt, double hfe) : base() {
-            Nch = pnpflag ? -1 : 1;
+        public ElmMosfet(bool pChFlag, double vt, double hfe) : base() {
+            Nch = pChFlag ? -1 : 1;
             Vt = vt;
             Hfe = hfe;
             AllocNodes();

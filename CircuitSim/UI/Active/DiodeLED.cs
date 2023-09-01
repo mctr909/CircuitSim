@@ -44,9 +44,7 @@ namespace Circuit.UI.Active {
             mMaxBrightnessCurrent = st.nextTokenDouble(1e-3);
         }
 
-        public override DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }
-
-        public override DUMP_ID DumpType { get { return DUMP_ID.LED; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.LED; } }
 
         protected override void dump(List<object> optionList) {
             base.dump(optionList);
@@ -65,7 +63,7 @@ namespace Circuit.UI.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            if (mNeedsHighlight || this == CirSimForm.ConstructElm) {
+            if (_NeedsHighlight || this == CirSimForm.ConstructElm) {
                 base.Draw(g);
                 return;
             }
@@ -89,8 +87,8 @@ namespace Circuit.UI.Active {
             g.FillCircle(mLedCenter.X, mLedCenter.Y, CR_INNER);
 
             updateDotCount();
-            drawCurrent(Post.A, mLedLead1, mCurCount);
-            drawCurrent(Post.B, mLedLead2, -mCurCount);
+            drawCurrent(Post.A, mLedLead1, _CurCount);
+            drawCurrent(Post.B, mLedLead2, -_CurCount);
         }
 
         public override void GetInfo(string[] arr) {

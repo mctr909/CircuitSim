@@ -16,9 +16,7 @@ namespace Circuit.UI.Passive {
             Elm = new ElmGround();
         }
 
-        public override DUMP_ID Shortcut { get { return DUMP_ID.GROUND; } }
-
-        public override DUMP_ID DumpType { get { return DUMP_ID.GROUND; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.GROUND; } }
 
         public override void SetPoints() {
             base.SetPoints();

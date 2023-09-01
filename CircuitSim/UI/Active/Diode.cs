@@ -18,9 +18,7 @@ namespace Circuit.UI.Active {
         protected List<DiodeModel> mModels;
         protected bool mCustomModelUI;
 
-        public Diode(Point pos) : base(pos) { }
-
-        public Diode(Point pos, string referenceName) : base(pos) {
+        public Diode(Point pos, string referenceName = "D") : base(pos) {
             Elm = new ElmDiode();
             ReferenceName = referenceName;
             setup();
@@ -33,12 +31,10 @@ namespace Circuit.UI.Active {
             setup();
         }
 
-        public override DUMP_ID Shortcut { get { return DUMP_ID.DIODE; } }
-
-        public override DUMP_ID DumpType { get { return DUMP_ID.DIODE; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.DIODE; } }
 
         protected override void dump(List<object> optionList) {
-            mFlags |= FLAG_MODEL;
+            _Flags |= FLAG_MODEL;
             var ce = (ElmDiode)Elm;
             optionList.Add(Utils.Escape(ce.mModelName));
         }
@@ -46,39 +42,39 @@ namespace Circuit.UI.Active {
         public override void SetPoints() {
             base.SetPoints();
             Post.SetBbox(HS);
-            calcLeads(BODY_LEN);
+            setLeads(BODY_LEN);
             mCathode = new PointF[4];
             interpLeadAB(ref mCathode[0], ref mCathode[1], (BODY_LEN - 1.0) / BODY_LEN, HS);
             interpLeadAB(ref mCathode[3], ref mCathode[2], 1, HS);
             var pa = new PointF[2];
             interpLeadAB(ref pa[0], ref pa[1], 0, HS);
-            mPoly = new PointF[] { pa[0], pa[1], mLead2 };
+            mPoly = new PointF[] { pa[0], pa[1], _Lead2 };
             setTextPos();
         }
 
         protected void setTextPos() {
             var abX = Post.B.X - Post.A.X;
             var abY = Post.B.Y - Post.A.Y;
-            mTextRot = Math.Atan2(abY, abX);
-            var deg = -mTextRot * 180 / Math.PI;
+            _TextRot = Math.Atan2(abY, abX);
+            var deg = -_TextRot * 180 / Math.PI;
             if (deg < 0.0) {
                 deg += 360;
             }
             if (45 * 3 <= deg && deg < 45 * 7) {
-                mTextRot += Math.PI;
+                _TextRot += Math.PI;
             }
             if (0 < deg && deg < 45 * 3) {
-                interpPost(ref mValuePos, 0.5, 12 * Post.Dsign);
-                interpPost(ref mNamePos, 0.5, -10 * Post.Dsign);
+                interpPost(ref _ValuePos, 0.5, 12 * Post.Dsign);
+                interpPost(ref _NamePos, 0.5, -10 * Post.Dsign);
             } else if (45 * 3 <= deg && deg <= 180) {
-                interpPost(ref mNamePos, 0.5, 10 * Post.Dsign);
-                interpPost(ref mValuePos, 0.5, -14 * Post.Dsign);
+                interpPost(ref _NamePos, 0.5, 10 * Post.Dsign);
+                interpPost(ref _ValuePos, 0.5, -14 * Post.Dsign);
             } else if (180 < deg && deg < 45 * 7) {
-                interpPost(ref mNamePos, 0.5, -10 * Post.Dsign);
-                interpPost(ref mValuePos, 0.5, 12 * Post.Dsign);
+                interpPost(ref _NamePos, 0.5, -10 * Post.Dsign);
+                interpPost(ref _ValuePos, 0.5, 12 * Post.Dsign);
             } else {
-                interpPost(ref mNamePos, 0.5, 12 * Post.Dsign);
-                interpPost(ref mValuePos, 0.5, -12 * Post.Dsign);
+                interpPost(ref _NamePos, 0.5, 12 * Post.Dsign);
+                interpPost(ref _ValuePos, 0.5, -12 * Post.Dsign);
             }
         }
 

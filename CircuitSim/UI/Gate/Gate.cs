@@ -32,16 +32,16 @@ namespace Circuit.UI.Gate {
         protected virtual string gateName { get { return ""; } }
 
         public Gate(Point pos) : base(pos) {
-            mNoDiagonal = true;
+            Post.NoDiagonal = true;
             if (mLastSchmitt) {
-                mFlags |= FLAG_SCHMITT;
+                _Flags |= FLAG_SCHMITT;
             }
-            mFlags |= FLAG_SMALL;
+            _Flags |= FLAG_SMALL;
         }
 
         public Gate(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            mNoDiagonal = true;
-            mFlags |= FLAG_SMALL;
+            Post.NoDiagonal = true;
+            _Flags |= FLAG_SMALL;
         }
 
         public static bool UseAnsiGates() { return ControlPanel.ChkUseAnsiSymbols.Checked; }
@@ -66,7 +66,7 @@ namespace Circuit.UI.Gate {
             if (ce.IsInverting && mWw + 8 > Post.Len / 2) {
                 mWw = (int)(Post.Len / 2 - 8);
             }
-            calcLeads(mWw * 2);
+            setLeads(mWw * 2);
             ce.InPosts = new Point[ce.InputCount];
             mInGates = new PointF[ce.InputCount];
             ce.AllocNodes();
@@ -82,7 +82,7 @@ namespace Circuit.UI.Gate {
             mHs2 = G_WIDTH * (ce.InputCount / 2 + 1);
             Post.SetBbox(mHs2);
             if (ce.HasSchmittInputs) {
-                Utils.CreateSchmitt(mLead1, mLead2, out mSchmittPoly, 1, .47f);
+                Utils.CreateSchmitt(_Lead1, _Lead2, out mSchmittPoly, 1, .47f);
             }
         }
 
@@ -111,8 +111,8 @@ namespace Circuit.UI.Gate {
             if (ce.IsInverting) {
                 drawCircle(mCirclePos, CIRCLE_SIZE);
             }
-            updateDotCount(ce.Current, ref mCurCount);
-            drawCurrentB(mCurCount);
+            updateDotCount(ce.Current, ref _CurCount);
+            drawCurrentB(_CurCount);
         }
 
         public override void GetInfo(string[] arr) {
@@ -150,11 +150,11 @@ namespace Circuit.UI.Gate {
             }
             if (n == 2) {
                 if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_SCHMITT;
+                    _Flags |= FLAG_SCHMITT;
                 } else {
-                    mFlags &= ~FLAG_SCHMITT;
+                    _Flags &= ~FLAG_SCHMITT;
                 }
-                mLastSchmitt = ce.HasSchmittInputs = 0 != (mFlags & FLAG_SCHMITT);
+                mLastSchmitt = ce.HasSchmittInputs = 0 != (_Flags & FLAG_SCHMITT);
                 SetPoints();
             }
         }

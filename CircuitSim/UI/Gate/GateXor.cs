@@ -12,7 +12,7 @@ namespace Circuit.UI.Gate {
             Elm = new ElmGateXor();
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.XOR_GATE; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.XOR_GATE; } }
 
         protected override string gateName { get { return "XOR gate"; } }
 

@@ -12,9 +12,7 @@ namespace Circuit.UI.Passive {
             Elm = new ElmWire();
         }
 
-        public override DUMP_ID Shortcut { get { return DUMP_ID.WIRE; } }
-
-        public override DUMP_ID DumpType { get { return DUMP_ID.WIRE; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.WIRE; } }
 
         public override void SetPoints() {
             base.SetPoints();

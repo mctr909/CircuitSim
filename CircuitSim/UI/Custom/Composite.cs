@@ -15,7 +15,7 @@ namespace Circuit.UI.Custom {
 
         public override bool CanViewInScope { get { return false; } }
 
-        public override abstract DUMP_ID DumpType { get; }
+        public override abstract DUMP_ID DumpId { get; }
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmComposite)Elm;
@@ -53,7 +53,7 @@ namespace Circuit.UI.Custom {
             return dumpStr;
         }
 
-        bool useEscape() { return (mFlags & FLAG_ESCAPE) != 0; }
+        bool useEscape() { return (_Flags & FLAG_ESCAPE) != 0; }
 
         protected void setPost(int n, Point p) {
             ((ElmComposite)Elm).Posts[n] = p;

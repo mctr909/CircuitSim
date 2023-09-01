@@ -29,7 +29,7 @@ namespace Circuit.UI.Passive {
         public Transformer(Point pos) : base(pos) {
             Elm = new ElmTransformer();
             Elm.AllocNodes();
-            mNoDiagonal = true;
+            Post.NoDiagonal = true;
             ReferenceName = "T";
         }
 
@@ -42,10 +42,10 @@ namespace Circuit.UI.Passive {
             elm.Currents[1] = st.nextTokenDouble(0);
             elm.CouplingCoef = st.nextTokenDouble(0.999);
             elm.AllocNodes();
-            mNoDiagonal = true;
+            Post.NoDiagonal = true;
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.TRANSFORMER; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.TRANSFORMER; } }
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmTransformer)Elm;
@@ -135,7 +135,7 @@ namespace Circuit.UI.Passive {
 
         void setNamePos() {
             var wn = Context.GetTextSize(ReferenceName).Width;
-            mNamePos = new Point((int)(mCore[0].X - wn / 2 + 2), (int)mCore[0].Y - 8);
+            _NamePos = new Point((int)(mCore[0].X - wn / 2 + 2), (int)mCore[0].Y - 8);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -171,7 +171,7 @@ namespace Circuit.UI.Passive {
             drawCurrent(mCoilSec2, mTermSec2, ce.CurCounts[1]);
 
             if (ControlPanel.ChkShowName.Checked) {
-                g.DrawLeftText(ReferenceName, mNamePos.X, mNamePos.Y);
+                g.DrawLeftText(ReferenceName, _NamePos.X, _NamePos.Y);
             }
         }
 
@@ -226,9 +226,9 @@ namespace Circuit.UI.Passive {
             if (n == 4) {
                 ce.Polarity = ei.CheckBox.Checked ? -1 : 1;
                 if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_REVERSE;
+                    _Flags |= FLAG_REVERSE;
                 } else {
-                    mFlags &= ~FLAG_REVERSE;
+                    _Flags &= ~FLAG_REVERSE;
                 }
                 SetPoints();
             }

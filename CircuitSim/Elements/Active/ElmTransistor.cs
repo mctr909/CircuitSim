@@ -30,8 +30,8 @@ namespace Circuit.Elements.Active {
         double mLastVbc;
         double mLastVbe;
 
-        public ElmTransistor(bool pnpflag) {
-            NPN = pnpflag ? -1 : 1;
+        public ElmTransistor(bool pnpFlag) {
+            NPN = pnpFlag ? -1 : 1;
             Hfe = 100;
         }
 

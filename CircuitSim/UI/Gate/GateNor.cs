@@ -12,7 +12,7 @@ namespace Circuit.UI.Gate {
             ((ElmGate)Elm).IsInverting = true;
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.NOR_GATE; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.NOR_GATE; } }
 
         protected override string gateName { get { return "NOR gate"; } }
     }

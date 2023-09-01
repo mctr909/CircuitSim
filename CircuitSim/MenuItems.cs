@@ -9,9 +9,7 @@ using Circuit.UI.Active;
 using Circuit.UI.Input;
 using Circuit.UI.Output;
 using Circuit.UI.Gate;
-//using Circuit.UI.Logic;
 using Circuit.UI.Custom;
-using static System.Windows.Forms.ToolStripItem;
 
 namespace Circuit {
     public enum MENU_ITEM {
@@ -38,22 +36,23 @@ namespace Circuit {
         SEPARATE_ALL
     }
 
-    public enum ELEMENTS {
-        INVALID,
-        SCOPE,
+    public enum DUMP_ID {
+        INVALID = 0,
+        BOX,
+        TEXT,
 
         #region Passive Components
         WIRE,
         GROUND,
         SWITCH,
+        SWITCH_MULTI,
         SWITCH_PUSH_C,
         SWITCH_PUSH_NC,
         SWITCH_PUSH_NO,
-        SWITCH_MULTI,
         RESISTOR,
         POT,
         CAPACITOR,
-        CAPACITOR_POLER,
+        CAPACITOR_POLAR,
         INDUCTOR,
         TRANSFORMER,
         #endregion
@@ -63,205 +62,101 @@ namespace Circuit {
         ZENER,
         VARACTOR,
         LED,
+        TRANSISTOR,
         TRANSISTOR_N,
         TRANSISTOR_P,
+        MOSFET,
         MOSFET_N,
         MOSFET_P,
-        JfetElm,
-        NJfetElm,
-        PJfetElm,
-        SCRElm,
-        DiacElm,
-        TriacElm,
-        DarlingtonElm,
-        NDarlingtonElm,
-        PDarlingtonElm,
-        TunnelDiodeElm,
-        TriodeElm,
-        PhotoResistorElm,
-        ThermistorElm,
+        OPAMP,
+        OPAMP_SWAP,
+        ANALOG_SW,
+        OPTO_COUPLER,
         #endregion
 
         #region Inputs and Sources
+        CURRENT,
         VOLTAGE,
-        VOLTAGE_DC,
-        VOLTAGE_SIN,
+        DC,
+        AC,
+
         RAIL,
         RAIL_DC,
-        RAIL_SIN,
+        RAIL_AC,
         CLOCK,
         SWEEP,
-        OSC_AM,
-        OSC_FM,
-        CURRENT,
-        SquareRailElm,
-        AntennaElm,
         NOISE,
-        AudioInputElm,
+        AM,
+        FM,
+
+        CCCS,
+        VCCS,
         #endregion
 
         #region Outputs and Labels
-        OUTPUT,
-        VOLTMETER2,
-        VOLTMETER1,
         AMMETER,
+        VOLTMETER,
+        VOLTMETER1,
+        SCOPE,
+        LABELED_NODE,
         DATA_RECORDER,
-        OUTPUT_AUDIO,
-        LampElm,
-        TEXT,
-        BOX,
-        TestPointElm,
-        LEDArrayElm,
         STOP_TRIGGER,
         #endregion
 
-        #region Active Building Blocks
-        OPAMP,
-        OPAMP_SWAP,
-        OpAmpRealElm,
-        ANALOG_SWITCH,
-        AnalogSwitch2Elm,
-        TRISTATE,
-        SCHMITT,
-        SCHMITT_INV,
-        CC2Elm,
-        CC2NegElm,
-        ComparatorElm,
-        ComparatorSwapElm,
-        OTAElm,
-        VCVSElm,
-        VCCS,
-        CCVSElm,
-        CCCS,
-        OPTOCOUPLER,
-        CustomCompositeElm,
-        #endregion
-
         #region Logic Gates
-        LOGIC_INPUT,
-        LOGIC_OUTPUT,
-        NOT_GATE,
-        NAND_GATE,
-        NOR_GATE,
+        LOGIC_I,
+        LOGIC_O,
+        INVERT,
         AND_GATE,
+        NAND_GATE,
         OR_GATE,
+        NOR_GATE,
         XOR_GATE,
         #endregion
 
         #region Digital Chips
-        DFlipFlopElm,
-        JKFlipFlopElm,
-        TFlipFlopElm,
-        SevenSegElm,
-        SevenSegDecoderElm,
-        MultiplexerElm,
-        DeMultiplexerElm,
-        SipoShiftElm,
-        PisoShiftElm,
-        CounterElm,
-        DecadeElm,
-        RingCounterElm,
-        LatchElm,
-        SeqGenElm,
-        FullAdderElm,
-        HalfAdderElm,
+        FLIP_FLOP_D,
+        FLIP_FLOP_JK,
+        FLIP_FLOP_T,
+        RING_COUNTER,
+        COUNTER,
+        LATCH,
+        TRISTATE,
+        SCHMITT,
+        INVERT_SCHMITT,
+        MULTIPLEXER,
+        DEMULTIPLEXER,
+        SHIFT_REGISTER_PISO,
+        SHIFT_REGISTER_SIPO,
+        HALF_ADDER,
+        FULL_ADDER,
+        SRAM,
         CUSTOM_LOGIC,
-        UserDefinedLogicElm,
-        SRAMElm,
         #endregion
-
-        #region Analog and Hybrid Chips
-        TimerElm,
-        PhaseCompElm,
-        DACElm,
-        ADCElm,
-        VCOElm,
-        MonostableElm,
-        #endregion
-    }
-
-    public enum DUMP_ID {
-        INVALID = 0,
-        ADJUSTABLE = 38,
-        OPAMP = 'a',
-        BOX = 'b',
-        CAPACITOR = 'c',
-        DIODE = 'd',
-        MOSFET = 'f',
-        GROUND = 'g',
-        CURRENT = 'i',
-        INDUCTOR = 'l',
-        BIPOLER_NPN = 'n',
-        BIPOLER_PNP = 'p',
-        TRANSISTOR = 't',
-        VOLTAGE = 'v',
-        WIRE = 'w',
-        RESISTOR = 'r',
-        GRAPHIC = 'G',
-        INVERT = 'I',
-        LOGIC_I = 'L',
-        LOGIC_O = 'M',
-        NMOS = 'N',
-        PMOS = 'P',
-        RAIL = 'R',
-        SWITCH = 's',
-        SWITCH_MULTI = 'S',
-        TRANSFORMER = 'T',
-        TEXT = 'x',
-        VOLTMETER = '>',
-        VOLTMETER1 = 'V',
-        AND_GATE = 150,
-        NAND_GATE = 151,
-        OR_GATE = 152,
-        NOR_GATE = 153,
-        XOR_GATE = 154,
-        FLIP_FLOP_D = 155,
-        FLIP_FLOP_JK = 156,
-        FLIP_FLOP_T = 193,
-        ANALOG_SW = 159,
-        LED = 162,
-        RING_COUNTER = 163,
-        COUNTER = 164,
-        LATCH = 168,
-        SWEEP = 170,
-        POT = 174,
-        VARACTOR = 176,
-        ZENER = 177,
-        TRISTATE = 180,
-        SCHMITT = 182,
-        INVERT_SCHMITT = 183,
-        MULTIPLEXER = 184,
-        DEMULTIPLEXER = 185,
-        SHIFT_REGISTER_PISO = 186,
-        SHIFT_REGISTER_SIPO = 189,
-        HALF_ADDER = 195,
-        FULL_ADDER = 196,
-        AM = 200,
-        FM = 201,
-        DC,
-        AC,
-        RAIL_DC,
-        RAIL_AC,
-        LABELED_NODE = 207,
-        CUSTOM_LOGIC = 208,
-        CAPACITOR_POLAR = 209,
-        DATA_RECORDER = 210,
-        WAVE_OUT = 211,
-        VCCS = 213,
-        CCCS = 215,
-        AMMETER = 370,
-        COMPARATOR = 401,
-        SCOPE = 403,
-        OPTO_COUPLER = 407,
-        STOP_TRIGGER = 408,
-        CUSTOM_COMPOSITE = 410,
-        SRAM = 413,
     }
 
     public class MenuItems {
         CirSimForm mSim;
         List<ToolStripMenuItem> mMainMenuItems = new List<ToolStripMenuItem>();
         Font menuFont = new Font("Segoe UI", 9.0f);
+
+        SHORTCUT shortcut(DUMP_ID id) {
+            switch (id) {
+            case DUMP_ID.WIRE:
+                return new SHORTCUT(Keys.F1, false);
+            case DUMP_ID.RESISTOR:
+                return new SHORTCUT(Keys.F2, false);
+            case DUMP_ID.CAPACITOR:
+                return new SHORTCUT(Keys.F3, false);
+            case DUMP_ID.INDUCTOR:
+                return new SHORTCUT(Keys.F4, false);
+            case DUMP_ID.GROUND:
+                return new SHORTCUT(Keys.F5, false);
+            case DUMP_ID.INVALID:
+            default:
+                return new SHORTCUT();
+            }
+        }
 
         public ToolStripMenuItem tsmWire = null;
 
@@ -287,7 +182,7 @@ namespace Circuit {
             }
         }
 
-        ToolStripMenuItem addElementItem(ToolStripMenuItem menu, string title, ELEMENTS item) {
+        ToolStripMenuItem addElementItem(ToolStripMenuItem menu, string title, DUMP_ID item) {
             var elm = ConstructElement(item);
             if (elm == null) {
                 return null;
@@ -295,7 +190,7 @@ namespace Circuit {
                 elm.Delete();
             }
             ToolStripMenuItem mi;
-            var sc = shortcut(elm.Shortcut);
+            var sc = shortcut(elm.DumpId);
             if (sc.Key == Keys.None) {
                 mi = new ToolStripMenuItem();
             } else {
@@ -348,24 +243,6 @@ namespace Circuit {
             menu.DropDownItems.Add(mi);
         }
 
-        SHORTCUT shortcut(DUMP_ID id) {
-            switch (id) {
-            case DUMP_ID.WIRE:
-                return new SHORTCUT(Keys.F1, false);
-            case DUMP_ID.RESISTOR:
-                return new SHORTCUT(Keys.F2, false);
-            case DUMP_ID.CAPACITOR:
-                return new SHORTCUT(Keys.F3, false);
-            case DUMP_ID.INDUCTOR:
-                return new SHORTCUT(Keys.F4, false);
-            case DUMP_ID.GROUND:
-                return new SHORTCUT(Keys.F5, false);
-            case DUMP_ID.INVALID:
-            default:
-                return new SHORTCUT();
-            }
-        }
-
         public void ComposeMainMenu(MenuStrip mainMenuBar) {
             #region File
             var fileMenuBar = new ToolStripMenuItem();
@@ -408,14 +285,14 @@ namespace Circuit {
             var basicMenuBar = new ToolStripMenuItem();
             basicMenuBar.Text = "基本(B)";
             basicMenuBar.Font = menuFont;
-            tsmWire = addElementItem(basicMenuBar, "配線", ELEMENTS.WIRE);
-            addElementItem(basicMenuBar, "抵抗", ELEMENTS.RESISTOR);
-            addElementItem(basicMenuBar, "コンデンサ", ELEMENTS.CAPACITOR);
-            addElementItem(basicMenuBar, "コイル", ELEMENTS.INDUCTOR);
-            addElementItem(basicMenuBar, "接地", ELEMENTS.GROUND);
+            tsmWire = addElementItem(basicMenuBar, "配線", DUMP_ID.WIRE);
+            addElementItem(basicMenuBar, "抵抗", DUMP_ID.RESISTOR);
+            addElementItem(basicMenuBar, "コンデンサ", DUMP_ID.CAPACITOR);
+            addElementItem(basicMenuBar, "コイル", DUMP_ID.INDUCTOR);
+            addElementItem(basicMenuBar, "接地", DUMP_ID.GROUND);
             basicMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(basicMenuBar, "矩形", ELEMENTS.BOX);
-            addElementItem(basicMenuBar, "テキスト", ELEMENTS.TEXT);
+            addElementItem(basicMenuBar, "矩形", DUMP_ID.BOX);
+            addElementItem(basicMenuBar, "テキスト", DUMP_ID.TEXT);
             mainMenuBar.Items.Add(basicMenuBar);
             #endregion
 
@@ -423,9 +300,9 @@ namespace Circuit {
             var passMenuBar = new ToolStripMenuItem();
             passMenuBar.Text = "受動素子(P)";
             passMenuBar.Font = menuFont;
-            addElementItem(passMenuBar, "可変抵抗", ELEMENTS.POT);
-            addElementItem(passMenuBar, "コンデンサ(有極性)", ELEMENTS.CAPACITOR_POLER);
-            addElementItem(passMenuBar, "トランス", ELEMENTS.TRANSFORMER);
+            addElementItem(passMenuBar, "可変抵抗", DUMP_ID.POT);
+            addElementItem(passMenuBar, "コンデンサ(有極性)", DUMP_ID.CAPACITOR_POLAR);
+            addElementItem(passMenuBar, "トランス", DUMP_ID.TRANSFORMER);
             mainMenuBar.Items.Add(passMenuBar);
             #endregion
 
@@ -433,21 +310,21 @@ namespace Circuit {
             var activeMenuBar = new ToolStripMenuItem();
             activeMenuBar.Text = "能動素子(A)";
             activeMenuBar.Font = menuFont;
-            addElementItem(activeMenuBar, "ダイオード", ELEMENTS.DIODE);
-            addElementItem(activeMenuBar, "ツェナーダイオード", ELEMENTS.ZENER);
-            addElementItem(activeMenuBar, "可変容量ダイオード ", ELEMENTS.VARACTOR);
-            addElementItem(activeMenuBar, "LED", ELEMENTS.LED);
+            addElementItem(activeMenuBar, "ダイオード", DUMP_ID.DIODE);
+            addElementItem(activeMenuBar, "ツェナーダイオード", DUMP_ID.ZENER);
+            addElementItem(activeMenuBar, "可変容量ダイオード ", DUMP_ID.VARACTOR);
+            addElementItem(activeMenuBar, "LED", DUMP_ID.LED);
             activeMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(activeMenuBar, "NPNトランジスタ", ELEMENTS.TRANSISTOR_N);
-            addElementItem(activeMenuBar, "PNPトランジスタ", ELEMENTS.TRANSISTOR_P);
-            addElementItem(activeMenuBar, "Nch MOSトランジスタ", ELEMENTS.MOSFET_N);
-            addElementItem(activeMenuBar, "Pch MOSトランジスタ", ELEMENTS.MOSFET_P);
+            addElementItem(activeMenuBar, "NPNトランジスタ", DUMP_ID.TRANSISTOR_N);
+            addElementItem(activeMenuBar, "PNPトランジスタ", DUMP_ID.TRANSISTOR_P);
+            addElementItem(activeMenuBar, "Nch MOSトランジスタ", DUMP_ID.MOSFET_N);
+            addElementItem(activeMenuBar, "Pch MOSトランジスタ", DUMP_ID.MOSFET_P);
             activeMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(activeMenuBar, "オペアンプ(-側が上)", ELEMENTS.OPAMP);
-            addElementItem(activeMenuBar, "オペアンプ(+側が上)", ELEMENTS.OPAMP_SWAP);
+            addElementItem(activeMenuBar, "オペアンプ(-側が上)", DUMP_ID.OPAMP);
+            addElementItem(activeMenuBar, "オペアンプ(+側が上)", DUMP_ID.OPAMP_SWAP);
             activeMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(activeMenuBar, "フォトカプラ", ELEMENTS.OPTOCOUPLER);
-            addElementItem(activeMenuBar, "アナログスイッチ", ELEMENTS.ANALOG_SWITCH);
+            addElementItem(activeMenuBar, "フォトカプラ", DUMP_ID.OPTO_COUPLER);
+            addElementItem(activeMenuBar, "アナログスイッチ", DUMP_ID.ANALOG_SW);
             mainMenuBar.Items.Add(activeMenuBar);
             #endregion
 
@@ -455,11 +332,11 @@ namespace Circuit {
             var switchMenuBar = new ToolStripMenuItem();
             switchMenuBar.Text = "スイッチ(S)";
             switchMenuBar.Font = menuFont;
-            addElementItem(switchMenuBar, "スイッチ", ELEMENTS.SWITCH);
-            addElementItem(switchMenuBar, "切り替えスイッチ", ELEMENTS.SWITCH_MULTI);
-            addElementItem(switchMenuBar, "プッシュスイッチ(C接点)", ELEMENTS.SWITCH_PUSH_C);
-            addElementItem(switchMenuBar, "プッシュスイッチ(NC)", ELEMENTS.SWITCH_PUSH_NC);
-            addElementItem(switchMenuBar, "プッシュスイッチ(NO)", ELEMENTS.SWITCH_PUSH_NO);
+            addElementItem(switchMenuBar, "スイッチ", DUMP_ID.SWITCH);
+            addElementItem(switchMenuBar, "切り替えスイッチ", DUMP_ID.SWITCH_MULTI);
+            addElementItem(switchMenuBar, "プッシュスイッチ(C接点)", DUMP_ID.SWITCH_PUSH_C);
+            addElementItem(switchMenuBar, "プッシュスイッチ(NC)", DUMP_ID.SWITCH_PUSH_NC);
+            addElementItem(switchMenuBar, "プッシュスイッチ(NO)", DUMP_ID.SWITCH_PUSH_NO);
             mainMenuBar.Items.Add(switchMenuBar);
             #endregion
 
@@ -467,22 +344,22 @@ namespace Circuit {
             var inputMenuBar = new ToolStripMenuItem();
             inputMenuBar.Text = "入力(I)";
             inputMenuBar.Font = menuFont;
-            addElementItem(inputMenuBar, "2端子電圧源(直流)", ELEMENTS.VOLTAGE_DC);
-            addElementItem(inputMenuBar, "2端子電圧源(正弦波)", ELEMENTS.VOLTAGE_SIN);
-            addElementItem(inputMenuBar, "2端子電圧源(パルス)", ELEMENTS.VOLTAGE);
+            addElementItem(inputMenuBar, "2端子電圧源(直流)", DUMP_ID.DC);
+            addElementItem(inputMenuBar, "2端子電圧源(正弦波)", DUMP_ID.AC);
+            addElementItem(inputMenuBar, "2端子電圧源(パルス)", DUMP_ID.VOLTAGE);
             inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(inputMenuBar, "1端子電圧源(直流)", ELEMENTS.RAIL_DC);
-            addElementItem(inputMenuBar, "1端子電圧源(正弦波)", ELEMENTS.RAIL_SIN);
-            addElementItem(inputMenuBar, "1端子電圧源(パルス)", ELEMENTS.RAIL);
+            addElementItem(inputMenuBar, "1端子電圧源(直流)", DUMP_ID.RAIL_DC);
+            addElementItem(inputMenuBar, "1端子電圧源(正弦波)", DUMP_ID.RAIL_AC);
+            addElementItem(inputMenuBar, "1端子電圧源(パルス)", DUMP_ID.RAIL);
             inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(inputMenuBar, "クロック", ELEMENTS.CLOCK);
-            addElementItem(inputMenuBar, "スイープ", ELEMENTS.SWEEP);
-            addElementItem(inputMenuBar, "ノイズ", ELEMENTS.NOISE);
+            addElementItem(inputMenuBar, "クロック", DUMP_ID.CLOCK);
+            addElementItem(inputMenuBar, "スイープ", DUMP_ID.SWEEP);
+            addElementItem(inputMenuBar, "ノイズ", DUMP_ID.NOISE);
             inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(inputMenuBar, "AM発信器", ELEMENTS.OSC_AM);
-            addElementItem(inputMenuBar, "FM発信器", ELEMENTS.OSC_FM);
+            addElementItem(inputMenuBar, "AM発信器", DUMP_ID.AM);
+            addElementItem(inputMenuBar, "FM発信器", DUMP_ID.FM);
             inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(inputMenuBar, "定電流源", ELEMENTS.CURRENT);
+            addElementItem(inputMenuBar, "定電流源", DUMP_ID.CURRENT);
             mainMenuBar.Items.Add(inputMenuBar);
             #endregion
 
@@ -490,16 +367,16 @@ namespace Circuit {
             var outputMenuBar = new ToolStripMenuItem();
             outputMenuBar.Text = "計測器/出力(O)";
             outputMenuBar.Font = menuFont;
-            addElementItem(outputMenuBar, "出力ピン", ELEMENTS.OUTPUT);
+            addElementItem(outputMenuBar, "出力ピン", DUMP_ID.LABELED_NODE);
             outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(outputMenuBar, "電圧計(2端子)", ELEMENTS.VOLTMETER2);
-            addElementItem(outputMenuBar, "電圧計(1端子)", ELEMENTS.VOLTMETER1);
-            addElementItem(outputMenuBar, "電流計", ELEMENTS.AMMETER);
+            addElementItem(outputMenuBar, "電圧計(2端子)", DUMP_ID.VOLTMETER);
+            addElementItem(outputMenuBar, "電圧計(1端子)", DUMP_ID.VOLTMETER1);
+            addElementItem(outputMenuBar, "電流計", DUMP_ID.AMMETER);
             outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(outputMenuBar, "データ出力", ELEMENTS.DATA_RECORDER);
-            addElementItem(outputMenuBar, "音声ファイル出力", ELEMENTS.OUTPUT_AUDIO);
+            addElementItem(outputMenuBar, "データ出力", DUMP_ID.DATA_RECORDER);
+            //addElementItem(outputMenuBar, "音声ファイル出力", DUMP_ID.OUTPUT_AUDIO);
             outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(outputMenuBar, "停止トリガー", ELEMENTS.STOP_TRIGGER);
+            addElementItem(outputMenuBar, "停止トリガー", DUMP_ID.STOP_TRIGGER);
             mainMenuBar.Items.Add(outputMenuBar);
             #endregion
 
@@ -507,19 +384,19 @@ namespace Circuit {
             var gateMenuBar = new ToolStripMenuItem();
             gateMenuBar.Text = "論理ゲート(G)";
             gateMenuBar.Font = menuFont;
-            addElementItem(gateMenuBar, "入力", ELEMENTS.LOGIC_INPUT);
-            addElementItem(gateMenuBar, "出力", ELEMENTS.LOGIC_OUTPUT);
+            addElementItem(gateMenuBar, "入力", DUMP_ID.LOGIC_I);
+            addElementItem(gateMenuBar, "出力", DUMP_ID.LOGIC_O);
             gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(gateMenuBar, "3ステートバッファ", ELEMENTS.TRISTATE);
-            addElementItem(gateMenuBar, "シュミットトリガ", ELEMENTS.SCHMITT);
-            addElementItem(gateMenuBar, "シュミットトリガ(NOT)", ELEMENTS.SCHMITT_INV);
+            addElementItem(gateMenuBar, "3ステートバッファ", DUMP_ID.TRISTATE);
+            addElementItem(gateMenuBar, "シュミットトリガ", DUMP_ID.SCHMITT);
+            addElementItem(gateMenuBar, "シュミットトリガ(NOT)", DUMP_ID.INVERT_SCHMITT);
             gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(gateMenuBar, "AND", ELEMENTS.AND_GATE);
-            addElementItem(gateMenuBar, "OR", ELEMENTS.OR_GATE);
-            addElementItem(gateMenuBar, "NOT", ELEMENTS.NOT_GATE);
-            addElementItem(gateMenuBar, "NAND", ELEMENTS.NAND_GATE);
-            addElementItem(gateMenuBar, "NOR", ELEMENTS.NOR_GATE);
-            addElementItem(gateMenuBar, "XOR", ELEMENTS.XOR_GATE);
+            addElementItem(gateMenuBar, "AND", DUMP_ID.AND_GATE);
+            addElementItem(gateMenuBar, "OR", DUMP_ID.OR_GATE);
+            addElementItem(gateMenuBar, "NOT", DUMP_ID.INVERT);
+            addElementItem(gateMenuBar, "NAND", DUMP_ID.NAND_GATE);
+            addElementItem(gateMenuBar, "NOR", DUMP_ID.NOR_GATE);
+            addElementItem(gateMenuBar, "XOR", DUMP_ID.XOR_GATE);
             mainMenuBar.Items.Add(gateMenuBar);
             #endregion
 
@@ -579,105 +456,105 @@ namespace Circuit {
             #endregion
         }
 
-        public static BaseUI ConstructElement(ELEMENTS n, Point pos = new Point()) {
+        public static BaseUI ConstructElement(DUMP_ID n, Point pos = new Point()) {
             switch (n) {
             #region Passive Components
-            case ELEMENTS.WIRE:
+            case DUMP_ID.WIRE:
                 return new Wire(pos);
-            case ELEMENTS.GROUND:
+            case DUMP_ID.GROUND:
                 return new Ground(pos);
-            case ELEMENTS.SWITCH:
+            case DUMP_ID.SWITCH:
                 return new Switch(pos);
-            case ELEMENTS.SWITCH_PUSH_C:
+            case DUMP_ID.SWITCH_PUSH_C:
                 return new SwitchPushC(pos);
-            case ELEMENTS.SWITCH_PUSH_NC:
+            case DUMP_ID.SWITCH_PUSH_NC:
                 return new SwitchPushNC(pos);
-            case ELEMENTS.SWITCH_PUSH_NO:
+            case DUMP_ID.SWITCH_PUSH_NO:
                 return new SwitchPushNO(pos);
-            case ELEMENTS.SWITCH_MULTI:
+            case DUMP_ID.SWITCH_MULTI:
                 return new SwitchMulti(pos);
-            case ELEMENTS.RESISTOR:
+            case DUMP_ID.RESISTOR:
                 return new Resistor(pos);
-            case ELEMENTS.POT:
+            case DUMP_ID.POT:
                 return new Pot(pos);
-            case ELEMENTS.CAPACITOR:
+            case DUMP_ID.CAPACITOR:
                 return new Capacitor(pos);
-            case ELEMENTS.CAPACITOR_POLER:
+            case DUMP_ID.CAPACITOR_POLAR:
                 return new CapacitorPolar(pos);
-            case ELEMENTS.INDUCTOR:
+            case DUMP_ID.INDUCTOR:
                 return new Inductor(pos);
-            case ELEMENTS.TRANSFORMER:
+            case DUMP_ID.TRANSFORMER:
                 return new Transformer(pos);
             #endregion
 
             #region Active Components
-            case ELEMENTS.DIODE:
-                return new Diode(pos, "D");
-            case ELEMENTS.ZENER:
+            case DUMP_ID.DIODE:
+                return new Diode(pos);
+            case DUMP_ID.ZENER:
                 return new DiodeZener(pos);
-            case ELEMENTS.VARACTOR:
+            case DUMP_ID.VARACTOR:
                 return new DiodeVaractor(pos);
-            case ELEMENTS.LED:
+            case DUMP_ID.LED:
                 return new DiodeLED(pos);
-            case ELEMENTS.TRANSISTOR_N:
+            case DUMP_ID.TRANSISTOR_N:
                 return new TransistorN(pos);
-            case ELEMENTS.TRANSISTOR_P:
+            case DUMP_ID.TRANSISTOR_P:
                 return new TransistorP(pos);
-            case ELEMENTS.MOSFET_N:
+            case DUMP_ID.MOSFET_N:
                 return new MosfetN(pos);
-            case ELEMENTS.MOSFET_P:
+            case DUMP_ID.MOSFET_P:
                 return new MosfetP(pos);
-            case ELEMENTS.OPAMP:
+            case DUMP_ID.OPAMP:
                 return new OpAmp(pos);
-            case ELEMENTS.OPAMP_SWAP:
+            case DUMP_ID.OPAMP_SWAP:
                 return new OpAmpSwap(pos);
-            case ELEMENTS.ANALOG_SWITCH:
+            case DUMP_ID.ANALOG_SW:
                 return new AnalogSwitch(pos);
-            case ELEMENTS.OPTOCOUPLER:
+            case DUMP_ID.OPTO_COUPLER:
                 return new Optocoupler(pos);
             #endregion
 
             #region Inputs and Sources
-            case ELEMENTS.VOLTAGE_DC:
+            case DUMP_ID.VOLTAGE:
+                return new Voltage(pos, Elements.Input.ElmVoltage.WAVEFORM.TRIANGLE);
+            case DUMP_ID.DC:
                 return new VoltageDC(pos);
-            case ELEMENTS.VOLTAGE_SIN:
+            case DUMP_ID.AC:
                 return new VoltageAC(pos);
-            case ELEMENTS.VOLTAGE:
-                return new Voltage(pos, Elements.Input.ElmVoltage.WAVEFORM.PULSE_MONOPOLE);
-            case ELEMENTS.CURRENT:
-                return new Current(pos);
-            case ELEMENTS.RAIL_DC:
+            case DUMP_ID.RAIL:
+                return new Rail(pos, Elements.Input.ElmVoltage.WAVEFORM.TRIANGLE);
+            case DUMP_ID.RAIL_DC:
                 return new RailDC(pos);
-            case ELEMENTS.RAIL_SIN:
+            case DUMP_ID.RAIL_AC:
                 return new RailAC(pos);
-            case ELEMENTS.RAIL:
-                return new Rail(pos, Elements.Input.ElmVoltage.WAVEFORM.PULSE_MONOPOLE);
-            case ELEMENTS.CLOCK:
+            case DUMP_ID.CLOCK:
                 return new RailClock(pos);
-            case ELEMENTS.SWEEP:
-                return new Sweep(pos);
-            case ELEMENTS.OSC_AM:
-                return new AM(pos);
-            case ELEMENTS.OSC_FM:
-                return new FM(pos);
-            case ELEMENTS.NOISE:
+            case DUMP_ID.NOISE:
                 return new RailNoise(pos);
+            case DUMP_ID.SWEEP:
+                return new Sweep(pos);
+            case DUMP_ID.AM:
+                return new AM(pos);
+            case DUMP_ID.FM:
+                return new FM(pos);
+            case DUMP_ID.CURRENT:
+                return new Current(pos);
             #endregion
 
             #region Outputs and Labels
-            case ELEMENTS.OUTPUT:
-                return new LabeledNode(pos);
-            case ELEMENTS.VOLTMETER2:
+            case DUMP_ID.VOLTMETER:
                 return new VoltMeter(pos);
-            case ELEMENTS.VOLTMETER1:
+            case DUMP_ID.VOLTMETER1:
                 return new VoltMeter1Term(pos);
-            case ELEMENTS.AMMETER:
+            case DUMP_ID.AMMETER:
                 return new Ammeter(pos);
-            case ELEMENTS.DATA_RECORDER:
+            case DUMP_ID.LABELED_NODE:
+                return new LabeledNode(pos);
+            case DUMP_ID.DATA_RECORDER:
                 return new DataRecorder(pos);
-            case ELEMENTS.STOP_TRIGGER:
+            case DUMP_ID.STOP_TRIGGER:
                 return new StopTrigger(pos);
-            case ELEMENTS.SCOPE:
+            case DUMP_ID.SCOPE:
                 return new Scope(pos);
             #endregion
 
@@ -698,9 +575,9 @@ namespace Circuit {
             //    return null; //(CircuitElm)new OTAElm(x1, y1);
             //case ELEMENTS.VCVSElm:
             //    return null; //(CircuitElm)new VCVSElm(x1, y1);
-            case ELEMENTS.VCCS:
+            case DUMP_ID.VCCS:
                 return new VCCS(pos);
-            case ELEMENTS.CCCS:
+            case DUMP_ID.CCCS:
                 return new CCCS(pos);
             //case ELEMENTS.CCVSElm:
             //    return null; //(CircuitElm)new CCVSElm(x1, y1);
@@ -709,27 +586,27 @@ namespace Circuit {
             #endregion
 
             #region Logic Gates
-            case ELEMENTS.LOGIC_INPUT:
+            case DUMP_ID.LOGIC_I:
                 return new LogicInput(pos);
-            case ELEMENTS.LOGIC_OUTPUT:
+            case DUMP_ID.LOGIC_O:
                 return new LogicOutput(pos);
-            case ELEMENTS.TRISTATE:
+            case DUMP_ID.TRISTATE:
                 return new TriState(pos);
-            case ELEMENTS.SCHMITT_INV:
+            case DUMP_ID.INVERT_SCHMITT:
                 return new InvertingSchmitt(pos);
-            case ELEMENTS.SCHMITT:
+            case DUMP_ID.SCHMITT:
                 return new Schmitt(pos);
-            case ELEMENTS.NOT_GATE:
+            case DUMP_ID.INVERT:
                 return new Inverter(pos);
-            case ELEMENTS.AND_GATE:
+            case DUMP_ID.AND_GATE:
                 return new GateAnd(pos);
-            case ELEMENTS.NAND_GATE:
+            case DUMP_ID.NAND_GATE:
                 return new GateNand(pos);
-            case ELEMENTS.OR_GATE:
+            case DUMP_ID.OR_GATE:
                 return new GateOr(pos);
-            case ELEMENTS.NOR_GATE:
+            case DUMP_ID.NOR_GATE:
                 return new GateNor(pos);
-            case ELEMENTS.XOR_GATE:
+            case DUMP_ID.XOR_GATE:
                 return new GateXor(pos);
             #endregion
 
@@ -775,9 +652,9 @@ namespace Circuit {
             //    return new SRAMElm(pos);
             #endregion
 
-            case ELEMENTS.BOX:
+            case DUMP_ID.BOX:
                 return new GraphicBox(pos);
-            case ELEMENTS.TEXT:
+            case DUMP_ID.TEXT:
                 return new GraphicText(pos);
 
             default:

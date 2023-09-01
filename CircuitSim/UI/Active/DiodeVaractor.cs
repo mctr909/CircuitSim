@@ -8,9 +8,9 @@ namespace Circuit.UI.Active {
         PointF[] mPlate1;
         PointF[] mPlate2;
 
-        public DiodeVaractor(Point pos) : base(pos) {
+        public DiodeVaractor(Point pos) : base(pos, "Vc") {
             Elm = new ElmDiodeVaractor();
-            ReferenceName = "Vc";
+            setup();
         }
 
         public DiodeVaractor(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
@@ -18,9 +18,7 @@ namespace Circuit.UI.Active {
             setup();
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.VARACTOR; } }
-
-        public override DUMP_ID Shortcut { get { return DUMP_ID.VARACTOR; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.VARACTOR; } }
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmDiodeVaractor)Elm;

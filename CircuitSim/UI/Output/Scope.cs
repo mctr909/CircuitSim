@@ -30,7 +30,7 @@ namespace Circuit.UI.Output {
 
         public override bool CanViewInScope { get { return false; } }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.SCOPE; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.SCOPE; } }
 
         protected override void dump(List<object> optionList) {
             string sStr = Properties.Dump().Replace(' ', '\t');

@@ -23,8 +23,8 @@ namespace Circuit.UI.Active {
         PointF[] mPosC = new PointF[3];
         PointF[] mPosE = new PointF[3];
 
-        public Transistor(Point pos, bool pnpflag) : base(pos) {
-            Elm = new ElmTransistor(pnpflag);
+        public Transistor(Point pos, bool pnpFlag) : base(pos) {
+            Elm = new ElmTransistor(pnpFlag);
             ReferenceName = "Tr";
             setup();
         }
@@ -40,7 +40,7 @@ namespace Circuit.UI.Active {
 
         public override bool CanViewInScope { get { return true; } }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.TRANSISTOR; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.TRANSISTOR; } }
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmTransistor)Elm;
@@ -52,7 +52,7 @@ namespace Circuit.UI.Active {
 
         void setup() {
             ((ElmTransistor)Elm).Setup();
-            mNoDiagonal = true;
+            Post.NoDiagonal = true;
         }
 
         public override void SetPoints() {
@@ -61,7 +61,7 @@ namespace Circuit.UI.Active {
 
             var ce = (ElmTransistor)Elm;
 
-            if ((mFlags & FLAG_FLIP) != 0) {
+            if ((_Flags & FLAG_FLIP) != 0) {
                 Post.Dsign = -Post.Dsign;
             }
 
@@ -107,21 +107,21 @@ namespace Circuit.UI.Active {
         }
 
         void setTextPos() {
-            var swap = 0 < (mFlags & FLAG_FLIP) ? -1 : 1;
+            var swap = 0 < (_Flags & FLAG_FLIP) ? -1 : 1;
             if (Post.Horizontal) {
                 if (0 < Post.Dsign * swap) {
-                    mNamePos = new Point(Post.B.X + 10, Post.B.Y);
+                    _NamePos = new Point(Post.B.X + 10, Post.B.Y);
                 } else {
-                    mNamePos = new Point(Post.B.X - 6, Post.B.Y);
+                    _NamePos = new Point(Post.B.X - 6, Post.B.Y);
                 }
             } else if (Post.Vertical) {
                 if (0 < Post.Dsign) {
-                    mNamePos = new Point(Post.B.X, Post.B.Y + 15 * swap * 2 / 3);
+                    _NamePos = new Point(Post.B.X, Post.B.Y + 15 * swap * 2 / 3);
                 } else {
-                    mNamePos = new Point(Post.B.X, Post.B.Y - 13 * swap * 2 / 3);
+                    _NamePos = new Point(Post.B.X, Post.B.Y - 13 * swap * 2 / 3);
                 }
             } else {
-                interpPost(ref mNamePos, 0.5, 10 * Post.Dsign);
+                interpPost(ref _NamePos, 0.5, 10 * Post.Dsign);
             }
         }
 
@@ -155,9 +155,9 @@ namespace Circuit.UI.Active {
 
             if (ControlPanel.ChkShowName.Checked) {
                 if (Post.Vertical) {
-                    drawCenteredText(ReferenceName, mNamePos);
+                    drawCenteredText(ReferenceName, _NamePos);
                 } else {
-                    drawCenteredText(ReferenceName, mNamePos, -Math.PI / 2);
+                    drawCenteredText(ReferenceName, _NamePos, -Math.PI / 2);
                 }
             }
         }
@@ -191,7 +191,7 @@ namespace Circuit.UI.Active {
                 return new ElementInfo("hfe", ((ElmTransistor)Elm).Hfe);
             }
             if (r == 2) {
-                return new ElementInfo("エミッタ/コレクタ 入れ替え", (mFlags & FLAG_FLIP) != 0);
+                return new ElementInfo("エミッタ/コレクタ 入れ替え", (_Flags & FLAG_FLIP) != 0);
             }
             return null;
         }
@@ -207,9 +207,9 @@ namespace Circuit.UI.Active {
             }
             if (n == 2) {
                 if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_FLIP;
+                    _Flags |= FLAG_FLIP;
                 } else {
-                    mFlags &= ~FLAG_FLIP;
+                    _Flags &= ~FLAG_FLIP;
                 }
                 SetPoints();
             }

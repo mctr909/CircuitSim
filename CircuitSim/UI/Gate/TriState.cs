@@ -20,7 +20,7 @@ namespace Circuit.UI.Gate {
             Elm = new ElmTriState(st);
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.TRISTATE; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.TRISTATE; } }
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmTriState)Elm;
@@ -31,7 +31,7 @@ namespace Circuit.UI.Gate {
         public override void SetPoints() {
             base.SetPoints();
             Post.SetBbox(BODY_LEN);
-            calcLeads(BODY_LEN);
+            setLeads(BODY_LEN);
             int hs = BODY_LEN / 2;
             int ww = BODY_LEN / 2;
             if (ww > Post.Len / 2) {
@@ -50,8 +50,8 @@ namespace Circuit.UI.Gate {
             draw2Leads();
             drawPolygon(mGatePoly);
             drawLine(mCtrlTerm, mCtrlLead);
-            updateDotCount(ce.Current, ref mCurCount);
-            drawCurrentB(mCurCount);
+            updateDotCount(ce.Current, ref _CurCount);
+            drawCurrentB(_CurCount);
         }
 
         public override void Drag(Point pos) {

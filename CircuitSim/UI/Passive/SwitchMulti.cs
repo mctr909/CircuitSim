@@ -13,7 +13,7 @@ namespace Circuit.UI.Passive {
         public SwitchMulti(Point pos) : base(pos, 0) {
             Elm = new ElmSwitchMulti();
             Elm.AllocNodes();
-            mNoDiagonal = true;
+            Post.NoDiagonal = true;
         }
 
         public SwitchMulti(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -24,10 +24,10 @@ namespace Circuit.UI.Passive {
             elm.Link = st.nextTokenInt();
             elm.ThrowCount = st.nextTokenInt();
             elm.AllocNodes();
-            mNoDiagonal = true;
+            Post.NoDiagonal = true;
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.SWITCH_MULTI; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.SWITCH_MULTI; } }
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmSwitchMulti)Elm;
@@ -37,7 +37,7 @@ namespace Circuit.UI.Passive {
 
         public override RectangleF GetSwitchRect() {
             var ce = (ElmSwitchMulti)Elm;
-            var l1 = new RectangleF(mLead1.X, mLead1.Y, 0, 0);
+            var l1 = new RectangleF(_Lead1.X, _Lead1.Y, 0, 0);
             var s0 = new RectangleF(mSwPoles[0].X, mSwPoles[0].Y, 0, 0);
             var s1 = new RectangleF(mSwPoles[ce.ThrowCount - 1].X, mSwPoles[ce.ThrowCount - 1].Y, 0, 0);
             return RectangleF.Union(l1, RectangleF.Union(s0, s1));
@@ -45,8 +45,8 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
+            setLeads(BODY_LEN);
             var ce = (ElmSwitchMulti)Elm;
-            calcLeads(BODY_LEN);
             ce.SwPosts = new Point[ce.ThrowCount];
             mSwPoles = new PointF[2 + ce.ThrowCount];
             int i;
@@ -58,7 +58,7 @@ namespace Circuit.UI.Passive {
                 interpLead(ref mSwPoles[i], 1, hs);
                 interpPost(ref ce.SwPosts[i], 1, hs);
             }
-            mSwPoles[i] = mLead2; /* for center off */
+            mSwPoles[i] = _Lead2; /* for center off */
             ce.PosCount = ce.ThrowCount;
             Post.SetBbox(OPEN_HS);
             Post.AdjustBbox(ce.SwPosts[0], ce.SwPosts[ce.ThrowCount - 1]);
@@ -69,7 +69,7 @@ namespace Circuit.UI.Passive {
 
             /* draw first lead */
             drawLeadA();
-            g.DrawPost(mLead1);
+            g.DrawPost(_Lead1);
 
             /* draw other leads */
             for (int i = 0; i < ce.ThrowCount; i++) {
@@ -78,12 +78,12 @@ namespace Circuit.UI.Passive {
                 g.DrawPost(pole);
             }
             /* draw switch */
-            drawLine(mLead1, mSwPoles[ce.Position]);
+            drawLine(_Lead1, mSwPoles[ce.Position]);
 
             updateDotCount();
-            drawCurrentA(mCurCount);
+            drawCurrentA(_CurCount);
             if (ce.Position != 2) {
-                drawCurrent(mSwPoles[ce.Position], ce.SwPosts[ce.Position], mCurCount);
+                drawCurrent(mSwPoles[ce.Position], ce.SwPosts[ce.Position], _CurCount);
             }
         }
 

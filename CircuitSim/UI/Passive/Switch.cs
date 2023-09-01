@@ -27,8 +27,7 @@ namespace Circuit.UI.Passive {
             elm.Link = st.nextTokenInt();
         }
 
-        public override DUMP_ID Shortcut { get { return DUMP_ID.SWITCH; } }
-        public override DUMP_ID DumpType { get { return DUMP_ID.SWITCH; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.SWITCH; } }
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmSwitch)Elm;
@@ -81,8 +80,8 @@ namespace Circuit.UI.Passive {
         public virtual RectangleF GetSwitchRect() {
             var p1 = new PointF();
             interpLead(ref p1, 0, 24);
-            var l1 = new RectangleF(mLead1.X, mLead1.Y, 0, 0);
-            var l2 = new RectangleF(mLead2.X, mLead2.Y, 0, 0);
+            var l1 = new RectangleF(_Lead1.X, _Lead1.Y, 0, 0);
+            var l2 = new RectangleF(_Lead2.X, _Lead2.Y, 0, 0);
             var p = new RectangleF(p1.X, p1.Y, 0, 0);
             return RectangleF.Union(l1, RectangleF.Union(l2, p));
         }
@@ -90,14 +89,14 @@ namespace Circuit.UI.Passive {
         public override void SetPoints() {
             base.SetPoints();
             Post.SetBbox(OPEN_HS);
-            calcLeads(BODY_LEN);
+            setLeads(BODY_LEN);
         }
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmSwitch)Elm;
             draw2Leads();
-            g.DrawPost(mLead1);
-            g.DrawPost(mLead2);
+            g.DrawPost(_Lead1);
+            g.DrawPost(_Lead2);
             /* draw switch */
             var p2 = new PointF();
             if (ce.Position == 0) {
@@ -106,7 +105,7 @@ namespace Circuit.UI.Passive {
             } else {
                 interpLead(ref p2, (OPEN_HS - 2.0) / OPEN_HS, OPEN_HS);
             }
-            drawLine(mLead1, p2);
+            drawLine(_Lead1, p2);
         }
 
         public override void GetInfo(string[] arr) {

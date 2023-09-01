@@ -13,24 +13,24 @@ namespace Circuit.UI.Gate {
         double dut;
 
         public InvertingSchmitt(Point pos, int dummy) : base(pos) {
-            mNoDiagonal = true;
+            Post.NoDiagonal = true;
         }
 
         public InvertingSchmitt(Point pos) : base(pos) {
             Elm = new ElmInvertingSchmitt();
-            mNoDiagonal = true;
+            Post.NoDiagonal = true;
         }
 
         public InvertingSchmitt(Point p1, Point p2, int f) : base(p1, p2, f) {
-            mNoDiagonal = true;
+            Post.NoDiagonal = true;
         }
 
         public InvertingSchmitt(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new ElmInvertingSchmitt(st);
-            mNoDiagonal = true;
+            Post.NoDiagonal = true;
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.INVERT_SCHMITT; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.INVERT_SCHMITT; } }
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmInvertingSchmitt)Elm;
@@ -47,8 +47,8 @@ namespace Circuit.UI.Gate {
             drawPolygon(gatePoly);
             drawPolygon(symbolPoly);
             drawCircle(pcircle, 3);
-            updateDotCount(ce.Current, ref mCurCount);
-            drawCurrentB(mCurCount);
+            updateDotCount(ce.Current, ref _CurCount);
+            drawCurrentB(_CurCount);
         }
 
         public override void SetPoints() {

@@ -13,7 +13,7 @@ namespace Circuit.UI.Input {
             Elm = new ElmCCCS(this, st);
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.CCCS; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.CCCS; } }
 
         public override ElementInfo GetElementInfo(int r, int c) {
             /* can't set number of inputs */

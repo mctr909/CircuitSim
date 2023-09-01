@@ -9,7 +9,7 @@ namespace Circuit.UI.Input {
 
         public VoltageAC(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) { }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.AC; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.AC; } }
 
         public override void GetInfo(string[] arr) {
             var elm = (ElmVoltage)Elm;

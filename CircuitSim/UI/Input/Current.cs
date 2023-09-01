@@ -22,7 +22,7 @@ namespace Circuit.UI.Input {
             Elm = new ElmCurrent(st.nextTokenDouble());
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.CURRENT; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.CURRENT; } }
 
         protected override void dump(List<object> optionList) {
             optionList.Add(mCurrentValue);
@@ -30,7 +30,7 @@ namespace Circuit.UI.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads(BODY_LEN);
+            setLeads(BODY_LEN);
             interpLead(ref mAshaft1, 0.25);
             interpLead(ref mAshaft2, 0.6);
             interpLead(ref mCenter, 0.5);

@@ -32,9 +32,7 @@ namespace Circuit.UI.Passive {
             elm.Resistance = st.nextTokenDouble(1e3);
         }
 
-        public override DUMP_ID Shortcut { get { return DUMP_ID.RESISTOR; } }
-
-        public override DUMP_ID DumpType { get { return DUMP_ID.RESISTOR; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.RESISTOR; } }
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmResistor)Elm;
@@ -43,7 +41,7 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
-            calcLeads(BODY_LEN);
+            setLeads(BODY_LEN);
             setTextPos();
             setPoly();
         }
@@ -51,26 +49,26 @@ namespace Circuit.UI.Passive {
         void setTextPos() {
             var abX = Post.B.X - Post.A.X;
             var abY = Post.B.Y - Post.A.Y;
-            mTextRot = Math.Atan2(abY, abX);
-            var deg = -mTextRot * 180 / Math.PI;
+            _TextRot = Math.Atan2(abY, abX);
+            var deg = -_TextRot * 180 / Math.PI;
             if (deg < 0.0) {
                 deg += 360;
             }
             if (45 * 3 <= deg && deg < 45 * 7) {
-                mTextRot += Math.PI;
+                _TextRot += Math.PI;
             }
             if (0 < deg && deg < 45 * 3) {
-                interpPost(ref mValuePos, 0.5, 11 * Post.Dsign);
-                interpPost(ref mNamePos, 0.5, -9 * Post.Dsign);
+                interpPost(ref _ValuePos, 0.5, 11 * Post.Dsign);
+                interpPost(ref _NamePos, 0.5, -9 * Post.Dsign);
             } else if (45 * 3 <= deg && deg <= 180) {
-                interpPost(ref mNamePos, 0.5, 9 * Post.Dsign);
-                interpPost(ref mValuePos, 0.5, -13 * Post.Dsign);
+                interpPost(ref _NamePos, 0.5, 9 * Post.Dsign);
+                interpPost(ref _ValuePos, 0.5, -13 * Post.Dsign);
             } else if (180 < deg && deg < 45 * 7) {
-                interpPost(ref mNamePos, 0.5, -9 * Post.Dsign);
-                interpPost(ref mValuePos, 0.5, 11 * Post.Dsign);
+                interpPost(ref _NamePos, 0.5, -9 * Post.Dsign);
+                interpPost(ref _ValuePos, 0.5, 11 * Post.Dsign);
             } else {
-                interpPost(ref mNamePos, 0.5, 11 * Post.Dsign);
-                interpPost(ref mValuePos, 0.5, -11 * Post.Dsign);
+                interpPost(ref _NamePos, 0.5, 11 * Post.Dsign);
+                interpPost(ref _ValuePos, 0.5, -11 * Post.Dsign);
             }
         }
 
@@ -112,7 +110,7 @@ namespace Circuit.UI.Passive {
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmResistor)Elm;
-            var len = (float)Utils.Distance(mLead1, mLead2);
+            var len = (float)Utils.Distance(_Lead1, _Lead2);
             if (0 == len) {
                 return;
             }

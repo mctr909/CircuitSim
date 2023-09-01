@@ -12,15 +12,15 @@ namespace Circuit.UI.Gate {
             Elm = new ElmSchmitt(st);
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.SCHMITT; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.SCHMITT; } }
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmSchmitt)Elm;
             draw2Leads();
             drawPolygon(gatePoly);
             drawPolygon(symbolPoly);
-            updateDotCount(ce.Current, ref mCurCount);
-            drawCurrentB(mCurCount);
+            updateDotCount(ce.Current, ref _CurCount);
+            drawCurrentB(_CurCount);
         }
 
         public override void SetPoints() {

@@ -13,7 +13,7 @@ namespace Circuit.UI.Custom {
             Post.SetBbox(Post.A, Post.B);
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.BOX; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.BOX; } }
 
         public override bool IsCreationFailed {
             get { return Post.BoxIsCreationFailed; }
@@ -53,7 +53,7 @@ namespace Circuit.UI.Custom {
             } else {
                 drawDashRectangle(x2, y2, x1 - x2, y1 - y2);
             }
-            if (mNeedsHighlight) {
+            if (_NeedsHighlight) {
                 Context.DrawPost(Post.A);
                 Context.DrawPost(Post.B);
             }

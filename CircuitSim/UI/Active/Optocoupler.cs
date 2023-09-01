@@ -14,7 +14,7 @@ namespace Circuit.UI.Active {
             Elm = new ElmOptocoupler();
             var ce = (ElmOptocoupler)Elm;
             ce.Posts = new Point[((ElmOptocoupler)Elm).NumPosts];
-            mNoDiagonal = true;
+            Post.NoDiagonal = true;
         }
 
         public Optocoupler(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -22,10 +22,10 @@ namespace Circuit.UI.Active {
             var ce = (ElmOptocoupler)Elm;
             ce.Posts = new Point[((ElmOptocoupler)Elm).NumPosts];
             /* pass st=null since we don't need to undump any of the sub-elements */
-            mNoDiagonal = true;
+            Post.NoDiagonal = true;
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.OPTO_COUPLER; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.OPTO_COUPLER; } }
 
         void setPin(int n, int px, int py, double dx, double dy, double dax, double day, int sx, int sy) {
             var ce = (ElmOptocoupler)Elm;

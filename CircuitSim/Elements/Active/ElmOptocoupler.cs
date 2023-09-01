@@ -7,9 +7,9 @@ namespace Circuit.Elements.Active {
     class ElmOptocoupler : ElmComposite {
         static readonly int[] EXTERNAL_NODES = { 6, 2, 4, 5 };
         static readonly string MODEL_STRING
-            = ELEMENTS.DIODE + " 6 1\r"
-            + ELEMENTS.CCCS +" 1 2 3 4\r"
-            + ELEMENTS.TRANSISTOR_N + " 3 4 5";
+            = DUMP_ID.DIODE + " 6 1\r"
+            + DUMP_ID.CCCS +" 1 2 3 4\r"
+            + DUMP_ID.TRANSISTOR_N + " 3 4 5";
         static readonly string EXPR = @"max(0, min(0.0001,
     select {i-0.003,
         ( -80000000000*i^5 +800000000*i^4 -3000000*i^3 +5177.20*i^2 +0.2453*i -0.00005 )*1.040/700,

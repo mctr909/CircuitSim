@@ -35,9 +35,7 @@ namespace Circuit.UI.Passive {
             elm.VoltDiff = st.nextTokenDouble(0);
         }
         
-        public override DUMP_ID Shortcut { get { return DUMP_ID.CAPACITOR; } }
-
-        public override DUMP_ID DumpType { get { return DUMP_ID.CAPACITOR; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.CAPACITOR; } }
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmCapacitor)Elm;
@@ -48,13 +46,12 @@ namespace Circuit.UI.Passive {
         public override void SetPoints() {
             base.SetPoints();
             Post.SetBbox(HS);
+            /* calc leads */
+            setLeads(BODY_LEN);
+            /* calc plates */
+            var dw = 0.8 / Post.Len;
             var f1 = 0.5 - BODY_LEN * 0.5 / Post.Len;
             var f2 = 0.5 + BODY_LEN * 0.5 / Post.Len;
-            var dw = 0.8 / Post.Len;
-            /* calc leads */
-            setLead1(f1 - 0.1 / Post.Len);
-            setLead2(f2 + 0.1 / Post.Len);
-            /* calc plates */
             mPlate1 = new PointF[4];
             interpPost(ref mPlate1[0], f1 - dw, -HS);
             interpPost(ref mPlate1[1], f1 - dw, HS);
@@ -71,26 +68,26 @@ namespace Circuit.UI.Passive {
         void setTextPos() {
             var abX = Post.B.X - Post.A.X;
             var abY = Post.B.Y - Post.A.Y;
-            mTextRot = Math.Atan2(abY, abX);
-            var deg = -mTextRot * 180 / Math.PI;
+            _TextRot = Math.Atan2(abY, abX);
+            var deg = -_TextRot * 180 / Math.PI;
             if (deg < 0.0) {
                 deg += 360;
             }
             if (45 * 3 <= deg && deg < 45 * 7) {
-                mTextRot += Math.PI;
+                _TextRot += Math.PI;
             }
             if (0 < deg && deg < 45 * 3) {
-                interpPost(ref mValuePos, 0.5, 12 * Post.Dsign);
-                interpPost(ref mNamePos, 0.5, -10 * Post.Dsign);
+                interpPost(ref _ValuePos, 0.5, 12 * Post.Dsign);
+                interpPost(ref _NamePos, 0.5, -10 * Post.Dsign);
             } else if (45 * 3 <= deg && deg <= 180) {
-                interpPost(ref mNamePos, 0.5, 10 * Post.Dsign);
-                interpPost(ref mValuePos, 0.5, -14 * Post.Dsign);
+                interpPost(ref _NamePos, 0.5, 10 * Post.Dsign);
+                interpPost(ref _ValuePos, 0.5, -14 * Post.Dsign);
             } else if (180 < deg && deg < 45 * 7) {
-                interpPost(ref mNamePos, 0.5, -10 * Post.Dsign);
-                interpPost(ref mValuePos, 0.5, 12 * Post.Dsign);
+                interpPost(ref _NamePos, 0.5, -10 * Post.Dsign);
+                interpPost(ref _ValuePos, 0.5, 12 * Post.Dsign);
             } else {
-                interpPost(ref mNamePos, 0.5, 12 * Post.Dsign);
-                interpPost(ref mValuePos, 0.5, -12 * Post.Dsign);
+                interpPost(ref _NamePos, 0.5, 12 * Post.Dsign);
+                interpPost(ref _ValuePos, 0.5, -12 * Post.Dsign);
             }
         }
 
@@ -109,8 +106,8 @@ namespace Circuit.UI.Passive {
 
             updateDotCount();
             if (CirSimForm.ConstructElm != this) {
-                drawCurrentA(mCurCount);
-                drawCurrentB(mCurCount);
+                drawCurrentA(_CurCount);
+                drawCurrentB(_CurCount);
             }
         }
 

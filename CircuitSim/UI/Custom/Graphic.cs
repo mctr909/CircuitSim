@@ -12,6 +12,6 @@ namespace Circuit.UI.Custom {
             Elm = new ElmGraphic();
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.INVALID; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.INVALID; } }
     }
 }

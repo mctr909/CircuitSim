@@ -19,9 +19,7 @@ namespace Circuit.UI.Passive {
             elm.MaxNegativeVoltage = st.nextTokenDouble();
         }
 
-        public override DUMP_ID Shortcut { get { return DUMP_ID.INVALID; } }
-
-        public override DUMP_ID DumpType { get { return DUMP_ID.CAPACITOR_POLAR; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.CAPACITOR_POLAR; } }
 
         protected override void dump(List<object> optionList) {
             optionList.Add(((ElmPolarCapacitor)Elm).Capacitance.ToString("g3"));

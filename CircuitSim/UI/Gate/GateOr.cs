@@ -16,7 +16,7 @@ namespace Circuit.UI.Gate {
             Elm = new ElmGateOr(st);
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.OR_GATE; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.OR_GATE; } }
 
         protected override string gateName { get { return "OR gate"; } }
 
@@ -49,7 +49,7 @@ namespace Circuit.UI.Gate {
                     interpLead(ref mLinePoints[i], (b - 5) / ww2, a * mHs2);
                 }
             }
-            mGatePolyAnsi[16] = mLead2;
+            mGatePolyAnsi[16] = _Lead2;
 
             if (ce.IsInverting) {
                 interpPost(ref mCirclePos, 0.5 + (mWw + 3) / Post.Len);

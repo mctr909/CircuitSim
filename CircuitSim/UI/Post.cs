@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Circuit.UI.Passive;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -19,6 +20,7 @@ namespace Circuit.UI {
 
         public bool Vertical;
         public bool Horizontal;
+        public bool NoDiagonal;
         public double Len;
         public int Dsign;
         public PointF Dir;
@@ -71,9 +73,9 @@ namespace Circuit.UI {
             B = old;
         }
 
-        public void Drag(Point pos, bool noDiagonal) {
+        public void Drag(Point pos) {
             pos = CirSimForm.SnapGrid(pos);
-            if (noDiagonal) {
+            if (NoDiagonal) {
                 if (Math.Abs(A.X - pos.X) < Math.Abs(A.Y - pos.Y)) {
                     pos.X = A.X;
                 } else {
@@ -100,18 +102,21 @@ namespace Circuit.UI {
         }
 
         public void Move(int dx, int dy, EPOST n) {
-            var old = A;
-            var old2 = B;
-            if (n == EPOST.A) {
-                A.X += dx;
-                A.Y += dy;
-            } else {
+            var oldA = A;
+            var oldB = B;
+            switch(n) {
+            case EPOST.A:
+                A.X += A.X + dx;
+                A.Y += A.Y + dy;
+                break;
+            case EPOST.B:
                 B.X += dx;
                 B.Y += dy;
+                break;
             }
             if (A.X == B.X && A.Y == B.Y) {
-                A = old;
-                B = old2;
+                A = oldA;
+                B = oldB;
             }
         }
 

@@ -8,9 +8,7 @@ namespace Circuit.UI.Output {
 
         public VoltMeter1Term(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {}
 
-        public override DUMP_ID Shortcut { get { return DUMP_ID.VOLTMETER1; } }
-
-        public override DUMP_ID DumpType { get { return DUMP_ID.VOLTMETER1; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.VOLTMETER1; } }
 
         public override void SetPoints() {
             base.SetPoints();

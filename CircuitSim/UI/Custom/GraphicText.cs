@@ -18,7 +18,7 @@ namespace Circuit.UI.Custom {
             mText = Utils.Unescape(mText);
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.TEXT; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.TEXT; } }
 
         protected override void dump(List<object> optionList) {
             optionList.Add(mFontSize);
@@ -44,7 +44,7 @@ namespace Circuit.UI.Custom {
             var sizeBk = CustomGraphics.TextSize;
             var colorBk = CustomGraphics.TextColor;
             CustomGraphics.TextSize = mFontSize;
-            if (mNeedsHighlight) {
+            if (_NeedsHighlight) {
                 CustomGraphics.TextColor = CustomGraphics.SelectColor;
             }
             g.DrawLeftText(mText, Post.A.X, (int)(Post.A.Y + mTextSize.Height / 2));

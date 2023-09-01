@@ -12,12 +12,12 @@ namespace Circuit.UI.Gate {
 
         public Inverter(Point pos) : base(pos) {
             Elm = new ElmInverter();
-            mNoDiagonal = true;
+            Post.NoDiagonal = true;
         }
 
         public Inverter(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new ElmInverter(st);
-            mNoDiagonal = true;
+            Post.NoDiagonal = true;
         }
 
         protected override void dump(List<object> optionList) {
@@ -26,7 +26,7 @@ namespace Circuit.UI.Gate {
             optionList.Add(ce.HighVoltage);
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.INVERT; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.INVERT; } }
 
         public override void SetPoints() {
             base.SetPoints();
@@ -47,9 +47,9 @@ namespace Circuit.UI.Gate {
             mGatePolyEuro = new PointF[4];
             var l2 = new PointF();
             interpPost(ref l2, 0.5 + (ww - 5) / Post.Len); /* make room for circle */
-            Utils.InterpPoint(mLead1, l2, ref mGatePolyEuro[0], ref mGatePolyEuro[1], 0, hs);
-            Utils.InterpPoint(mLead1, l2, ref mGatePolyEuro[3], ref mGatePolyEuro[2], 1, hs);
-            Utils.InterpPoint(mLead1, l2, ref mCenter, .5);
+            Utils.InterpPoint(_Lead1, l2, ref mGatePolyEuro[0], ref mGatePolyEuro[1], 0, hs);
+            Utils.InterpPoint(_Lead1, l2, ref mGatePolyEuro[3], ref mGatePolyEuro[2], 1, hs);
+            Utils.InterpPoint(_Lead1, l2, ref mCenter, .5);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -62,8 +62,8 @@ namespace Circuit.UI.Gate {
                 drawCenteredLText("1", mCenter, true);
             }
             drawCircle(mPcircle, 3);
-            updateDotCount(ce.Current, ref mCurCount);
-            drawCurrentB(mCurCount);
+            updateDotCount(ce.Current, ref _CurCount);
+            drawCurrentB(_CurCount);
         }
 
         public override void GetInfo(string[] arr) {

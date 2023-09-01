@@ -37,7 +37,7 @@ namespace Circuit.UI.Passive {
         public Pot(Point pos) : base(pos) {
             Elm = new ElmPot();
             Elm.AllocNodes();
-            mFlags = FLAG_SHOW_VALUES;
+            _Flags = FLAG_SHOW_VALUES;
             ReferenceName = "VR";
             createSlider();
         }
@@ -51,7 +51,7 @@ namespace Circuit.UI.Passive {
             createSlider();
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.POT; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.POT; } }
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmPot)Elm;
@@ -97,8 +97,8 @@ namespace Circuit.UI.Passive {
             }
             Post.Len = Utils.Distance(mTermA, mTermB);
 
-            Utils.InterpPoint(mTermA, mTermB, ref mLead1, (Post.Len - BODY_LEN) / (2 * Post.Len));
-            Utils.InterpPoint(mTermA, mTermB, ref mLead2, (Post.Len + BODY_LEN) / (2 * Post.Len));
+            Utils.InterpPoint(mTermA, mTermB, ref _Lead1, (Post.Len - BODY_LEN) / (2 * Post.Len));
+            Utils.InterpPoint(mTermA, mTermB, ref _Lead2, (Post.Len + BODY_LEN) / (2 * Post.Len));
 
             /* set slider */
             var ce = (ElmPot)Elm;
@@ -123,8 +123,8 @@ namespace Circuit.UI.Passive {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmPot)Elm;
 
-            drawLine(mTermA, mLead1);
-            drawLine(mLead2, mTermB);
+            drawLine(mTermA, _Lead1);
+            drawLine(_Lead2, mTermB);
 
             if (ControlPanel.ChkUseAnsiSymbols.Checked) {
                 /* draw zigzag */
@@ -158,13 +158,13 @@ namespace Circuit.UI.Passive {
                 drawCurrent(mCorner2, mMidPoint, ce.CurCount3 + Utils.Distance(mTermSlider, mCorner2));
             }
 
-            if (ControlPanel.ChkShowValues.Checked && ce.Resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
+            if (ControlPanel.ChkShowValues.Checked && ce.Resistance1 > 0 && (_Flags & FLAG_SHOW_VALUES) != 0) {
                 /* check for vertical pot with 3rd terminal on left */
-                bool reverseY = (mTermSlider.X < mLead1.X && mLead1.X == mLead2.X);
+                bool reverseY = (mTermSlider.X < _Lead1.X && _Lead1.X == _Lead2.X);
                 /* check for horizontal pot with 3rd terminal on top */
-                bool reverseX = (mTermSlider.Y < mLead1.Y && mLead1.X != mLead2.X);
+                bool reverseX = (mTermSlider.Y < _Lead1.Y && _Lead1.X != _Lead2.X);
                 /* check if we need to swap texts (if leads are reversed, e.g. drawn right to left) */
-                bool rev = (mLead1.X == mLead2.X && mLead1.Y < mLead2.Y) || (mLead1.Y == mLead2.Y && mLead1.X > mLead2.X);
+                bool rev = (_Lead1.X == _Lead2.X && _Lead1.Y < _Lead2.Y) || (_Lead1.Y == _Lead2.Y && _Lead1.X > _Lead2.X);
 
                 /* draw units */
                 var s1 = Utils.UnitText(rev ? ce.Resistance2 : ce.Resistance1, "");
@@ -183,9 +183,9 @@ namespace Circuit.UI.Passive {
                 }
             }
             if (Post.Vertical) {
-                drawCenteredText(mName, mNamePos, -Math.PI / 2);
+                drawCenteredText(mName, _NamePos, -Math.PI / 2);
             } else {
-                g.DrawLeftText(mName, mNamePos.X, mNamePos.Y);
+                g.DrawLeftText(mName, _NamePos.X, _NamePos.Y);
             }
         }
 
@@ -211,7 +211,7 @@ namespace Circuit.UI.Passive {
                 return new ElementInfo("名前", ReferenceName);
             }
             if (r == 2) {
-                return new ElementInfo("値を表示", (mFlags & FLAG_SHOW_VALUES) != 0);
+                return new ElementInfo("値を表示", (_Flags & FLAG_SHOW_VALUES) != 0);
             }
             return null;
         }
@@ -227,7 +227,7 @@ namespace Circuit.UI.Passive {
                 ControlPanel.SetSliderPanelHeight();
             }
             if (n == 2) {
-                mFlags = ei.ChangeFlag(mFlags, FLAG_SHOW_VALUES);
+                _Flags = ei.ChangeFlag(_Flags, FLAG_SHOW_VALUES);
             }
             setTextPos();
         }
@@ -285,19 +285,19 @@ namespace Circuit.UI.Passive {
                 if (Post.Diff.Y != 0) {
                     if (0 < Post.Diff.Y) {
                         /* right slider */
-                        Utils.InterpPoint(mTermA, mTermB, ref mNamePos, 0.5 + wn / Post.Len, -12 * Post.Dsign);
+                        Utils.InterpPoint(mTermA, mTermB, ref _NamePos, 0.5 + wn / Post.Len, -12 * Post.Dsign);
                     } else {
                         /* left slider */
-                        Utils.InterpPoint(mTermA, mTermB, ref mNamePos, 0.5 - wn / Post.Len, 12 * Post.Dsign);
+                        Utils.InterpPoint(mTermA, mTermB, ref _NamePos, 0.5 - wn / Post.Len, 12 * Post.Dsign);
                     }
                 }
             } else {
                 if (0 < Post.Diff.X) {
                     /* upper slider */
-                    Utils.InterpPoint(mTermA, mTermB, ref mNamePos, 0.5, -10 * Post.Dsign);
+                    Utils.InterpPoint(mTermA, mTermB, ref _NamePos, 0.5, -10 * Post.Dsign);
                 } else {
                     /* lower slider */
-                    Utils.InterpPoint(mTermA, mTermB, ref mNamePos, 0.5, 11 * Post.Dsign);
+                    Utils.InterpPoint(mTermA, mTermB, ref _NamePos, 0.5, 11 * Post.Dsign);
                 }
             }
         }

@@ -13,16 +13,14 @@ namespace Circuit.UI.Output {
         public VoltMeter(Point pos) : base(pos) {
             Elm = new ElmVoltMeter();
             /* default for new elements */
-            mFlags = FLAG_SHOWVOLTAGE;
+            _Flags = FLAG_SHOWVOLTAGE;
         }
 
         public VoltMeter(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new ElmVoltMeter(st);
         }
 
-        public override DUMP_ID Shortcut { get { return DUMP_ID.VOLTMETER; } }
-
-        public override DUMP_ID DumpType { get { return DUMP_ID.VOLTMETER; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.VOLTMETER; } }
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmVoltMeter)Elm;
@@ -33,7 +31,7 @@ namespace Circuit.UI.Output {
         public override void SetPoints() {
             base.SetPoints();
             Post.SetBbox(0);
-            calcLeads(16);
+            setLeads(16);
             interpPost(ref mCenter, 0.5);
             interpPost(ref mPlusPoint, 8.0 / Post.Len, 6 * Post.Dsign);
         }
@@ -109,7 +107,7 @@ namespace Circuit.UI.Output {
         }
 
         protected bool mustShowVoltage() {
-            return (mFlags & FLAG_SHOWVOLTAGE) != 0;
+            return (_Flags & FLAG_SHOWVOLTAGE) != 0;
         }
     }
 }

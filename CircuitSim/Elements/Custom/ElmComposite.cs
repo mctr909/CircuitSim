@@ -172,10 +172,10 @@ namespace Circuit.Elements.Custom {
                 string line;
                 modelLinet.nextToken(out line);
                 var stModel = new StringTokenizer(line, " +\t\n\r\f");
-                var ceType = stModel.nextTokenEnum(ELEMENTS.INVALID);
+                var ceType = stModel.nextTokenEnum(DUMP_ID.INVALID);
                 var newce = MenuItems.ConstructElement(ceType);
                 if (stIn != null) {
-                    var tint = newce.DumpType;
+                    var tint = newce.DumpId;
                     string dumpedCe;
                     stIn.nextToken(out dumpedCe);
                     dumpedCe = Utils.Unescape(dumpedCe);

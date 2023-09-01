@@ -30,7 +30,7 @@ namespace Circuit.UI.Active {
             optionList.Add(ce.Roff.ToString("g3"));
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.ANALOG_SW; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.ANALOG_SW; } }
 
         public override void Drag(Point pos) {
             pos = CirSimForm.SnapGrid(pos);
@@ -51,7 +51,7 @@ namespace Circuit.UI.Active {
         public override void SetPoints() {
             base.SetPoints();
             Post.SetBbox(OPEN_HS);
-            calcLeads(BODY_LEN);
+            setLeads(BODY_LEN);
             interpPost(ref mCtrlTerm, 0.5, -OPEN_HS);
             interpPost(ref mCtrlLead, 0.5, -OPEN_HS / 3);
             Elm.SetNodePos(Post.A, Post.B, mCtrlTerm);
@@ -64,7 +64,7 @@ namespace Circuit.UI.Active {
             interpLead(ref ps, 1, hs);
 
             draw2Leads();
-            drawLine(mLead1, ps);
+            drawLine(_Lead1, ps);
             drawLine(mCtrlTerm, mCtrlLead);
 
             if (!ce.IsOpen) {
@@ -86,7 +86,7 @@ namespace Circuit.UI.Active {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("ノーマリクローズ", (mFlags & FLAG_INVERT) != 0);
+                return new ElementInfo("ノーマリクローズ", (_Flags & FLAG_INVERT) != 0);
             }
             if (r == 1) {
                 return new ElementInfo("オン抵抗(Ω)", ce.Ron);
@@ -100,8 +100,8 @@ namespace Circuit.UI.Active {
         public override void SetElementValue(int n, int c, ElementInfo ei) {
             var ce = (ElmAnalogSwitch)Elm;
             if (n == 0) {
-                mFlags = ei.CheckBox.Checked ? (mFlags | FLAG_INVERT) : (mFlags & ~FLAG_INVERT);
-                ce.Invert = 0 != (mFlags & FLAG_INVERT);
+                _Flags = ei.CheckBox.Checked ? (_Flags | FLAG_INVERT) : (_Flags & ~FLAG_INVERT);
+                ce.Invert = 0 != (_Flags & FLAG_INVERT);
             }
             if (n == 1 && 0 < ei.Value) {
                 ce.Ron = ei.Value;

@@ -19,9 +19,9 @@ namespace Circuit.UI.Output {
             Elm = new ElmLabeledNode(st);
         }
 
-        public bool IsInternal { get { return (mFlags & FLAG_INTERNAL) != 0; } }
+        public bool IsInternal { get { return (_Flags & FLAG_INTERNAL) != 0; } }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.LABELED_NODE; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.LABELED_NODE; } }
 
         protected override void dump(List<object> optionList) {
             optionList.Add(((ElmLabeledNode)Elm).Text);
@@ -55,26 +55,26 @@ namespace Circuit.UI.Output {
             };
             var abX = Post.B.X - Post.A.X;
             var abY = Post.B.Y - Post.A.Y;
-            mTextRot = Math.Atan2(abY, abX);
-            var deg = -mTextRot * 180 / Math.PI;
+            _TextRot = Math.Atan2(abY, abX);
+            var deg = -_TextRot * 180 / Math.PI;
             if (deg < 0.0) {
                 deg += 360;
             }
             if (45 * 3 <= deg && deg < 45 * 7) {
-                mTextRot += Math.PI;
-                interpPost(ref mNamePos, 1 + 0.5 * pw, txtH / Post.Len);
+                _TextRot += Math.PI;
+                interpPost(ref _NamePos, 1 + 0.5 * pw, txtH / Post.Len);
             } else {
-                interpPost(ref mNamePos, 1 + 0.5 * pw, -txtH / Post.Len);
+                interpPost(ref _NamePos, 1 + 0.5 * pw, -txtH / Post.Len);
             }
         }
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmLabeledNode)Elm;
             drawLeadA();
-            drawCenteredText(ce.Text, mNamePos, mTextRot);
+            drawCenteredText(ce.Text, _NamePos, _TextRot);
             drawPolyline(mTextPoly);
-            updateDotCount(ce.Current, ref mCurCount);
-            drawCurrentA(mCurCount);
+            updateDotCount(ce.Current, ref _CurCount);
+            drawCurrentA(_CurCount);
         }
 
         public override void GetInfo(string[] arr) {
@@ -104,7 +104,7 @@ namespace Circuit.UI.Output {
                 ce.Text = ei.Text;
             }
             if (n == 1) {
-                mFlags = ei.ChangeFlag(mFlags, FLAG_INTERNAL);
+                _Flags = ei.ChangeFlag(_Flags, FLAG_INTERNAL);
             }
             setTextPos();
         }

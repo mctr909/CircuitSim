@@ -71,7 +71,7 @@ namespace Circuit {
         #region Variable
         public static class Mouse {
             public static BaseUI GripElm = null;
-            public static ELEMENTS EditElm = ELEMENTS.INVALID;
+            public static DUMP_ID EditElm = DUMP_ID.INVALID;
             public static MouseButtons Button = MouseButtons.None;
             public static DateTime LastMove = DateTime.Now;
             public static bool IsDragging = false;
@@ -297,7 +297,7 @@ namespace Circuit {
             Repaint();
         }
 
-        public void Performed(ELEMENTS item) {
+        public void Performed(DUMP_ID item) {
             if (mContextMenu != null) {
                 mContextMenu.Close();
             }
@@ -740,7 +740,7 @@ namespace Circuit {
             if (code == Keys.Escape || e.KeyValue == 32) {
                 mMenuItems.AllUnchecked();
                 MouseMode = MOUSE_MODE.NONE;
-                Mouse.EditElm = ELEMENTS.INVALID;
+                Mouse.EditElm = DUMP_ID.INVALID;
             }
         }
         #endregion
@@ -853,8 +853,8 @@ namespace Circuit {
 
             switch (MouseMode) {
             case MOUSE_MODE.ADD_ELM:
-                if (Mouse.EditElm != ELEMENTS.WIRE && !ControlPanel.ChkContinuousArrangement.Checked) {
-                    Performed(ELEMENTS.WIRE);
+                if (Mouse.EditElm != DUMP_ID.WIRE && !ControlPanel.ChkContinuousArrangement.Checked) {
+                    Performed(DUMP_ID.WIRE);
                     mMenuItems.AllUnchecked();
                     mMenuItems.tsmWire.Checked = true;
                     mMenuItems.tsmWire.OwnerItem.BackColor = Color.LightBlue;
@@ -1206,7 +1206,7 @@ namespace Circuit {
                             DiodeModel.UndumpModel(st);
                             break;
                         }
-                        if (tint == (int)DUMP_ID.ADJUSTABLE) {
+                        if (tint == '&') {
                             var adj = new Adjustable(st);
                             Adjustables.Add(adj);
                             break;

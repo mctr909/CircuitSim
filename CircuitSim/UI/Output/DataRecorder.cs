@@ -20,7 +20,7 @@ namespace Circuit.UI.Output {
             Elm = new ElmDataRecorder(st);
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.DATA_RECORDER; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.DATA_RECORDER; } }
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmDataRecorder)Elm;
@@ -29,7 +29,7 @@ namespace Circuit.UI.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            mLead1 = new Point();
+            _Lead1 = new Point();
             setTextPos();
         }
 
@@ -60,22 +60,22 @@ namespace Circuit.UI.Output {
             };
             var abX = Post.B.X - Post.A.X;
             var abY = Post.B.Y - Post.A.Y;
-            mTextRot = Math.Atan2(abY, abX);
-            var deg = -mTextRot * 180 / Math.PI;
+            _TextRot = Math.Atan2(abY, abX);
+            var deg = -_TextRot * 180 / Math.PI;
             if (deg < 0.0) {
                 deg += 360;
             }
             if (45 * 3 <= deg && deg < 45 * 7) {
-                mTextRot += Math.PI;
-                interpPost(ref mNamePos, 1 + 0.5 * pw, txtH / Post.Len);
+                _TextRot += Math.PI;
+                interpPost(ref _NamePos, 1 + 0.5 * pw, txtH / Post.Len);
             } else {
-                interpPost(ref mNamePos, 1 + 0.5 * pw, -txtH / Post.Len);
+                interpPost(ref _NamePos, 1 + 0.5 * pw, -txtH / Post.Len);
             }
         }
 
         public override void Draw(CustomGraphics g) {
             drawLeadA();
-            drawCenteredText(ReferenceName, mNamePos, mTextRot);
+            drawCenteredText(ReferenceName, _NamePos, _TextRot);
             drawPolyline(mTextPoly);
         }
 

@@ -15,12 +15,12 @@ namespace Circuit.UI.Input {
 
         public AM(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new ElmAM(st);
-            if ((mFlags & FLAG_COS) != 0) {
-                mFlags &= ~FLAG_COS;
+            if ((_Flags & FLAG_COS) != 0) {
+                _Flags &= ~FLAG_COS;
             }
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.AM; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.AM; } }
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmAM)Elm;
@@ -34,7 +34,7 @@ namespace Circuit.UI.Input {
         public override void SetPoints() {
             base.SetPoints();
             setLead1(1 - 0.5 * SIZE / Post.Len);
-            interpPost(ref mNamePos, 1);
+            interpPost(ref _NamePos, 1);
             ReferenceName = "AM";
             Post.SetBbox(SIZE);
         }
@@ -42,11 +42,11 @@ namespace Circuit.UI.Input {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmAM)Elm;
             drawLeadA();
-            drawCenteredText(ReferenceName, mNamePos);
+            drawCenteredText(ReferenceName, _NamePos);
             drawWaveform(Post.B);
-            updateDotCount(-ce.Current, ref mCurCount);
+            updateDotCount(-ce.Current, ref _CurCount);
             if (CirSimForm.ConstructElm != this) {
-                drawCurrentA(mCurCount);
+                drawCurrentA(_CurCount);
             }
         }
 

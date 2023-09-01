@@ -19,7 +19,7 @@ namespace Circuit.UI.Input {
             Elm = new ElmVCCS(this, st);
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.VCCS; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.VCCS; } }
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmVCCS)Elm;

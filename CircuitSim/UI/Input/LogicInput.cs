@@ -8,7 +8,7 @@ namespace Circuit.UI.Input {
     class LogicInput : Switch {
         const int FLAG_NUMERIC = 2;
 
-        bool isNumeric { get { return (mFlags & (FLAG_NUMERIC)) != 0; } }
+        bool isNumeric { get { return (_Flags & (FLAG_NUMERIC)) != 0; } }
 
         public LogicInput(Point pos) : base(pos, 0) {
             Elm = new ElmLogicInput();
@@ -18,7 +18,7 @@ namespace Circuit.UI.Input {
             Elm = new ElmLogicInput(st);
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.LOGIC_I; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.LOGIC_I; } }
 
         protected override void dump(List<object> optionList) {
             optionList.Add(((ElmLogicInput)Elm).mHiV);
@@ -32,7 +32,7 @@ namespace Circuit.UI.Input {
         public override void SetPoints() {
             base.SetPoints();
             setLead1(1 - 12 / Post.Len);
-            Post.SetBbox(Post.A, mLead1, 0);
+            Post.SetBbox(Post.A, _Lead1, 0);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -44,7 +44,7 @@ namespace Circuit.UI.Input {
             drawCenteredLText(s, Post.B, true);
             drawLeadA();
             updateDotCount();
-            drawCurrentA(mCurCount);
+            drawCurrentA(_CurCount);
         }
 
         public override void GetInfo(string[] arr) {
@@ -91,9 +91,9 @@ namespace Circuit.UI.Input {
             }
             if (n == 3) {
                 if (ei.CheckBox.Checked) {
-                    mFlags |= FLAG_NUMERIC;
+                    _Flags |= FLAG_NUMERIC;
                 } else {
-                    mFlags &= ~FLAG_NUMERIC;
+                    _Flags &= ~FLAG_NUMERIC;
                 }
             }
         }

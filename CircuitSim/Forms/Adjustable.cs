@@ -78,7 +78,7 @@ namespace Circuit {
 
         public string Dump() {
             return string.Join(" ",
-                (int)DUMP_ID.ADJUSTABLE,
+                (int)'&',
                 CirSimForm.GetUIIndex(UI),
                 EditItemR,
                 MinValue,

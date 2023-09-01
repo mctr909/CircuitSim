@@ -21,9 +21,9 @@ namespace Circuit.UI.Active {
         PointF[] mPosIn2 = new PointF[2];
 
         public OpAmp(Point pos) : base(pos) {
-            mNoDiagonal = true;
-            mFlags = FLAG_GAIN; /* need to do this before setSize() */
-            mFlags |= FLAG_SMALL;
+            Post.NoDiagonal = true;
+            _Flags = FLAG_GAIN; /* need to do this before setSize() */
+            _Flags |= FLAG_SMALL;
             Elm = new ElmOpAmp();
         }
 
@@ -35,16 +35,16 @@ namespace Circuit.UI.Active {
             elm.Gain = st.nextTokenDouble();
             elm.Volts[ElmOpAmp.V_N] = st.nextTokenDouble();
             elm.Volts[ElmOpAmp.V_P] = st.nextTokenDouble();
-            mNoDiagonal = true;
-            mFlags |= FLAG_SMALL;
+            Post.NoDiagonal = true;
+            _Flags |= FLAG_SMALL;
             setGain();
         }
 
-        public override DUMP_ID DumpType { get { return DUMP_ID.OPAMP; } }
+        public override DUMP_ID DumpId { get { return DUMP_ID.OPAMP; } }
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmOpAmp)Elm;
-            mFlags |= FLAG_GAIN;
+            _Flags |= FLAG_GAIN;
             optionList.Add(ce.MaxOut);
             optionList.Add(ce.MinOut);
             optionList.Add(ce.Gain);
@@ -59,9 +59,9 @@ namespace Circuit.UI.Active {
             if (ww > Post.Len / 2) {
                 ww = (int)(Post.Len / 2);
             }
-            calcLeads(ww * 2);
+            setLeads(ww * 2);
             int hs = HEIGHT * Post.Dsign;
-            if ((mFlags & FLAG_SWAP) != 0) {
+            if ((_Flags & FLAG_SWAP) != 0) {
                 hs = -hs;
             }
             interpPostAB(ref mPosIn1[0], ref mPosIn2[0], 0, hs);
@@ -82,7 +82,7 @@ namespace Circuit.UI.Active {
 
             var tris = new PointF[2];
             interpLeadAB(ref tris[0], ref tris[1], 0, hs * 2);
-            mTriangle = new PointF[] { tris[0], tris[1], mLead2 };
+            mTriangle = new PointF[] { tris[0], tris[1], _Lead2 };
 
             Elm.SetNodePos(mPosIn1[0], mPosIn2[0], mPosOut);
         }
@@ -90,7 +90,7 @@ namespace Circuit.UI.Active {
         public override void Draw(CustomGraphics g) {
             drawLine(mPosIn1[0], mPosIn1[1]);
             drawLine(mPosIn2[0], mPosIn2[1]);
-            drawLine(mLead2, mPosOut);
+            drawLine(_Lead2, mPosOut);
 
             drawPolygon(mTriangle);
 
@@ -98,8 +98,8 @@ namespace Circuit.UI.Active {
             drawLine(mTextp[2], mTextp[3]);
             drawLine(mTextp[4], mTextp[5]);
 
-            updateDotCount(Elm.Current, ref mCurCount);
-            drawCurrent(mLead2, mPosOut, -mCurCount);
+            updateDotCount(Elm.Current, ref _CurCount);
+            drawCurrent(_Lead2, mPosOut, -_CurCount);
         }
 
         public override void GetInfo(string[] arr) {
@@ -145,13 +145,13 @@ namespace Circuit.UI.Active {
         }
 
         void setGain() {
-            if ((mFlags & FLAG_GAIN) != 0) {
+            if ((_Flags & FLAG_GAIN) != 0) {
                 return;
             }
             var ce = (ElmOpAmp)Elm;
             /* gain of 100000 breaks e-amp-dfdx.txt
              * gain was 1000, but it broke amp-schmitt.txt */
-            ce.Gain = ((mFlags & FLAG_LOWGAIN) != 0) ? 1000 : 100000;
+            ce.Gain = ((_Flags & FLAG_LOWGAIN) != 0) ? 1000 : 100000;
         }
     }
 }
