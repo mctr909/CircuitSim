@@ -106,8 +106,8 @@ namespace Circuit.UI {
             var oldB = B;
             switch(n) {
             case EPOST.A:
-                A.X += A.X + dx;
-                A.Y += A.Y + dy;
+                A.X += dx;
+                A.Y += dy;
                 break;
             case EPOST.B:
                 B.X += dx;

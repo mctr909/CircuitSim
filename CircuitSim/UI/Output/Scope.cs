@@ -72,13 +72,13 @@ namespace Circuit.UI.Output {
         }
 
         public class Plot {
-            public static readonly Color RED = Color.FromArgb(0xBF, 0x00, 0x00);
-            public static readonly Color GREEN = Color.FromArgb(0x00, 0xBF, 0x00);
-            public static readonly Color BLUE = Color.FromArgb(0x2F, 0x2F, 0xCF);
+            public static readonly Color RED = Color.FromArgb(0xCF, 0x00, 0x00);
+            public static readonly Color GREEN = Color.FromArgb(0x00, 0xCF, 0x00);
+            public static readonly Color BLUE = Color.FromArgb(0x1F, 0x1F, 0xEF);
             public static readonly Color PURPLE = Color.FromArgb(0xBF, 0x00, 0xBF);
-            public static readonly Color MAGENTA = Color.FromArgb(0xEC, 0x00, 0x8C);
-            public static readonly Color CYAN = Color.FromArgb(0x00, 0xCF, 0xCF);
-            public static readonly Color YELLOW = Color.FromArgb(0xCF, 0xCF, 0x00);
+            public static readonly Color MAGENTA = Color.FromArgb(0xFF, 0x00, 0x8F);
+            public static readonly Color CYAN = Color.FromArgb(0x00, 0xBF, 0xBF);
+            public static readonly Color YELLOW = Color.FromArgb(0xBF, 0xBF, 0x00);
             public static readonly Color GRAY = Color.FromArgb(0xA0, 0xA0, 0xA0);
             public static readonly Color[] COLORS = {
                 RED,
@@ -992,9 +992,7 @@ namespace Circuit.UI.Output {
                     return;
                 }
 
-                int maxY = (BoundingBox.Height - 1) / 2;
-                int minRangeLo;
-                int minRangeHi;
+                var centerY = (BoundingBox.Height - 1) / 2.0f;
                 double gridMid;
                 double gridMult;
                 {
@@ -1015,16 +1013,14 @@ namespace Circuit.UI.Output {
                         gridMax = SCALE_MIN;
                     }
                     gridMid = (mx + mn) * 0.5;
-                    gridMult = maxY / gridMax;
+                    gridMult = centerY / gridMax;
                     if (plotIndex == SelectedPlot) {
                         mMainGridMult = gridMult;
                         mMainGridMid = gridMid;
                     }
-                    minRangeLo = -10 - (int)(gridMid * gridMult);
-                    minRangeHi = 10 - (int)(gridMid * gridMult);
 
                     mGridStepY = 1e-12;
-                    for (int i = 0; mGridStepY < 10 * gridMax / maxY; i++) {
+                    for (int i = 0; mGridStepY < 10 * gridMax / centerY; i++) {
                         var m = i % 3;
                         var exp = Math.Pow(10, (i - m) / 3);
                         switch (m) {
@@ -1059,7 +1055,7 @@ namespace Circuit.UI.Output {
                         if (ll != 0 && !showGridlines) {
                             continue;
                         }
-                        var ly = (float)(maxY - (ll * mGridStepY - gridMid) * gridMult);
+                        var ly = (float)(centerY - (ll * mGridStepY - gridMid) * gridMult);
                         if (ly < 0 || BoundingBox.Height <= ly) {
                             continue;
                         }
@@ -1068,7 +1064,7 @@ namespace Circuit.UI.Output {
                         }
                     }
                     {
-                        var ly = (float)(maxY + gridMid * gridMult);
+                        var ly = (float)(centerY + gridMid * gridMult);
                         if (0 <= ly && ly < BoundingBox.Height) {
                             g.DrawColor = majorDiv;
                             g.DrawLine(0, ly, BoundingBox.Width - 1, ly);
@@ -1122,56 +1118,33 @@ namespace Circuit.UI.Output {
                 var idxBegin = plot.StartIndex(BoundingBox.Width);
                 var arrMaxV = plot.MaxValues;
                 var arrMinV = plot.MinValues;
-                var maxA = (float)(gridMult * (arrMaxV[idxBegin & (mScopePointCount - 1)] - gridMid));
-                var minA = (float)(gridMult * (arrMinV[idxBegin & (mScopePointCount - 1)] - gridMid));
-                var rect = new PointF[] {
-                    new PointF(-0.5f, 0),
-                    new PointF(0.5f, 0),
-                    new PointF(0.5f, 0),
-                    new PointF(-0.5f, 0),
-                    new PointF(-0.5f, 0)
-                };
-                for (int i = 0; i != BoundingBox.Width; i++) {
-                    var idx = (i + idxBegin) & (mScopePointCount - 1);
-                    var maxB = (float)(gridMult * (arrMaxV[idx] - gridMid));
-                    var minB = (float)(gridMult * (arrMinV[idx] - gridMid));
-                    if (minB < minRangeLo || maxB > minRangeHi) {
-                        mReduceRange = false;
-                        minRangeLo = -1000;
-                        minRangeHi = 1000;
+                var rect = new PointF[BoundingBox.Width * 2 + 1];
+                for (int x = 0; x != BoundingBox.Width; x++) {
+                    var idx = (x + idxBegin) & (mScopePointCount - 1);
+                    var v = (float)(gridMult * (arrMaxV[idx] - gridMid));
+                    if (centerY < v) {
+                        v = centerY;
                     }
-                    if (maxY < minB) {
-                        rect[0].X++;
-                        rect[1].X++;
-                        rect[2].X++;
-                        rect[3].X++;
-                        rect[4].X++;
-                        continue;
+                    if (v < -centerY) {
+                        v = -centerY;
                     }
-                    float dw;
-                    var sa = Math.Abs(maxA - minA);
-                    var sb = Math.Abs(maxB - minB);
-                    if (1 <= sa && 1 <= sb) {
-                        dw = 0;
-                    } else if (1 <= sa || 1 <= sb) {
-                        dw = 0;
-                    } else {
-                        dw = 0.5f;
-                    }
-                    rect[0].Y = maxY - minA + dw;
-                    rect[1].Y = maxY - minB + dw;
-                    rect[2].Y = maxY - maxB - dw;
-                    rect[3].Y = maxY - maxA - dw;
-                    rect[4].Y = maxY - minA + dw;
-                    maxA = maxB;
-                    minA = minB;
-                    g.FillPolygon(g.DrawColor, rect);
-                    rect[0].X++;
-                    rect[1].X++;
-                    rect[2].X++;
-                    rect[3].X++;
-                    rect[4].X++;
+                    rect[x].X = x;
+                    rect[x].Y = centerY - v - 0.5f;
                 }
+                for (int x = BoundingBox.Width - 1, i = BoundingBox.Width; 0 <= x; x--, i++) {
+                    var idx = (x + idxBegin) & (mScopePointCount - 1);
+                    var v = (float)(gridMult * (arrMinV[idx] - gridMid));
+                    if (centerY < v) {
+                        v = centerY;
+                    }
+                    if (v < -centerY) {
+                        v = -centerY;
+                    }
+                    rect[i].X = x;
+                    rect[i].Y = centerY - v + 0.5f;
+                }
+                rect[BoundingBox.Width * 2] = rect[0];
+                g.FillPolygon(g.DrawColor, rect);
             }
 
             void drawFFTGridLines(CustomGraphics g) {
