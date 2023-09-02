@@ -227,12 +227,26 @@ namespace Circuit {
             return unitText(Math.Abs(i), "A", false, false);
         }
 
+        public static string FrequencyText(double v, bool isShort = false) {
+            return unitText(v, "Hz", isShort, false);
+        }
+
+        public static string PhaseText(double rad) {
+            if (rad < -Math.PI) {
+                rad += Math.PI * 2;
+            }
+            if (Math.PI < rad) {
+                rad -= Math.PI * 2;
+            }
+            return unitText(rad * 180 / Math.PI, "deg");
+        }
+
         public static string UnitText(double v, string u = "") {
             return unitText(v, u);
         }
 
-        public static string UnitText3digit(double v, string u = "") {
-            return unitText(v, u, false);
+        public static string UnitText3digit(double v, string u = "", bool sign = true) {
+            return unitText(v, u, false, sign);
         }
 
         public static string TimeText(double v) {
@@ -300,7 +314,7 @@ namespace Circuit {
         static string unitText(double v, string u, bool isShort = true, bool sign = true) {
             double va = Math.Abs(v);
             if (va < 1e-14) {
-                return (sign ? " 0.00" : "0.00") + u;
+                return (isShort ? "0" : (sign ? " 0.00" : "0.00")) + u;
             }
             if (va < 1e-8) {
                 return format(v * 1e12, isShort, sign) + "p" + u;

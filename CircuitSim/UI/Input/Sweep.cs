@@ -80,8 +80,8 @@ namespace Circuit.UI.Input {
             }
 
             if (ControlPanel.ChkShowValues.Checked) {
-                string s = Utils.VoltageAbsText(ce.MaxV) + "\r\n"
-                    + Utils.UnitText(ce.Frequency, "Hz");
+                string s = Utils.UnitText(ce.MaxV, "V\r\n")
+                    + Utils.FrequencyText(ce.Frequency);
                 drawValues(s, 25, 0);
             }
 
@@ -96,8 +96,8 @@ namespace Circuit.UI.Input {
             arr[0] = "sweep " + (((_Flags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
             arr[1] = "I = " + Utils.CurrentAbsText(ce.Current);
             arr[2] = "V = " + Utils.VoltageText(ce.Volts[0]);
-            arr[3] = "f = " + Utils.UnitText(ce.Frequency, "Hz");
-            arr[4] = "range = " + Utils.UnitText(ce.MinF, "Hz") + " .. " + Utils.UnitText(ce.MaxF, "Hz");
+            arr[3] = "f = " + Utils.FrequencyText(ce.Frequency);
+            arr[4] = "range = " + Utils.FrequencyText(ce.MinF) + " .. " + Utils.FrequencyText(ce.MaxF);
             arr[5] = "time = " + Utils.UnitText(ce.SweepTime, "s");
         }
 

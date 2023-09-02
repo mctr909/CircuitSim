@@ -498,13 +498,9 @@ namespace Circuit.UI {
             }
             var textSize = Context.GetTextSize(s);
             int xc, yc;
-            if (this is Rail || this is Sweep) {
-                xc = Post.B.X;
-                yc = Post.B.Y;
-            } else {
-                xc = (Post.B.X + Post.A.X) / 2;
-                yc = (Post.B.Y + Post.A.Y) / 2;
-            }
+            xc = Post.B.X;
+            yc = Post.B.Y;
+            yc = Post.B.Y;
             Context.DrawRightText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
         }
 

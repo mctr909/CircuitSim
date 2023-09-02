@@ -62,8 +62,8 @@ namespace Circuit.UI.Input {
         protected const int BODY_LEN = 28;
         const int BODY_LEN_DC = 6;
         const int WAVE_HEIGHT = 5;
-        const int DX = 12;
-        const int DX_H = 6;
+        const int DX = 10;
+        const int DX_H = 5;
 
         public const string VALUE_NAME_V = "電圧";
         public const string VALUE_NAME_AMP = "振幅";
@@ -82,6 +82,7 @@ namespace Circuit.UI.Input {
         PointF mPs4;
         PointF[] mWaveFormPos;
         PointF mTextPos;
+        PointF mSignPos;
 
         public Voltage(Point pos, ElmVoltage.WAVEFORM wf) : base(pos) {
             Elm = new ElmVoltage(wf);
@@ -127,21 +128,18 @@ namespace Circuit.UI.Input {
             } else {
                 sign = Post.Dsign;
             }
-            if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
-                interpPost(ref mTextPos, 0.5, -2 * BODY_LEN_DC * sign);
-            } else {
-                interpPost(ref mTextPos, (Post.Len / 2 + 0.6 * BODY_LEN) / Post.Len, 7 * sign);
-            }
-
+            interpPost(ref mSignPos, (Post.Len / 2 + 0.6 * BODY_LEN) / Post.Len, 7 * sign);
             Post.SetBbox(Post.A, Post.B);
             if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                 int hs = 10;
                 Post.SetBbox(hs);
                 interpLeadAB(ref mPs1, ref mPs2, 0, hs * 0.5);
                 interpLeadAB(ref mPs3, ref mPs4, 1, hs);
+                interpPost(ref mTextPos, 0.5, -2 * BODY_LEN_DC * sign);
             } else {
                 Post.SetBbox(BODY_LEN);
                 interpLead(ref mPs1, 0.5);
+                interpPost(ref mTextPos, 0.5, -16 * sign);
             }
 
             setWaveform();
@@ -334,15 +332,21 @@ namespace Circuit.UI.Input {
             if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                 drawLine(mPs1, mPs2);
                 drawLine(mPs3, mPs4);
-                var s = Utils.VoltageText(elm.MaxVoltage);
+                var s = Utils.UnitText(elm.MaxVoltage, "V");
                 g.DrawRightText(s, mTextPos);
             } else {
                 drawWaveform(mPs1);
+                if (ControlPanel.ChkShowValues.Checked) {
+                    var s = Utils.UnitText(elm.MaxVoltage, "V\r\n");
+                    s += Utils.FrequencyText(elm.Frequency, true) + "\r\n";
+                    s += Utils.PhaseText(elm.Phase + elm.PhaseOffset);
+                    g.DrawRightText(s, mTextPos);
+                }
                 if (0 < elm.Bias || (0 == elm.Bias &&
                     (ElmVoltage.WAVEFORM.PULSE_MONOPOLE == elm.WaveForm || ElmVoltage.WAVEFORM.PULSE_DIPOLE == elm.WaveForm))) {
-                    drawCenteredLText("+", mTextPos, true);
+                    drawCenteredLText("+", mSignPos, true);
                 } else {
-                    drawCenteredLText("*", mTextPos, true);
+                    drawCenteredLText("*", mSignPos, true);
                 }
             }
 
@@ -359,19 +363,8 @@ namespace Circuit.UI.Input {
         }
 
         protected void drawWaveform(PointF p) {
-            var elm = (ElmVoltage)Elm;
-            if (elm.WaveForm == ElmVoltage.WAVEFORM.NOISE) {
-                drawCenteredText("Noise", p);
-                return;
-            }
             drawCircle(p, BODY_LEN / 2);
             drawPolyline(mWaveFormPos);
-            if (ControlPanel.ChkShowValues.Checked) {
-                var s = Utils.VoltageText(elm.MaxVoltage) + "\r\n";
-                s += Utils.UnitText(elm.Frequency, "Hz\r\n");
-                s += Utils.UnitText((elm.Phase + elm.PhaseOffset) * 180 / Math.PI, "deg");
-                drawValues(s, 0, 5);
-            }
         }
 
         public override void GetInfo(string[] arr) {
@@ -395,7 +388,7 @@ namespace Circuit.UI.Input {
             int i = 2;
             if (elm.WaveForm != ElmVoltage.WAVEFORM.DC && elm.WaveForm != ElmVoltage.WAVEFORM.NOISE) {
                 arr[i++] = "振幅：" + Utils.VoltageText(elm.MaxVoltage);
-                arr[i++] = "周波数：" + Utils.UnitText3digit(elm.Frequency, "Hz");
+                arr[i++] = "周波数：" + Utils.FrequencyText(elm.Frequency);
                 var phase = elm.Phase + elm.PhaseOffset;
                 phase %= 2 * Math.PI;
                 arr[i++] = "位相：" + Utils.UnitText3digit(phase * 180 / Math.PI, "deg");

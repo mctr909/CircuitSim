@@ -55,8 +55,8 @@ namespace Circuit.UI.Input {
             arr[0] = "AM Source";
             arr[1] = "I = " + Utils.CurrentText(ce.Current);
             arr[2] = "V = " + Utils.VoltageText(ce.GetVoltageDiff());
-            arr[3] = "cf = " + Utils.UnitText(ce.CarrierFreq, "Hz");
-            arr[4] = "sf = " + Utils.UnitText(ce.SignalFreq, "Hz");
+            arr[3] = "cf = " + Utils.FrequencyText(ce.CarrierFreq);
+            arr[4] = "sf = " + Utils.FrequencyText(ce.SignalFreq);
             arr[5] = "Vmax = " + Utils.VoltageText(ce.MaxVoltage);
         }
 

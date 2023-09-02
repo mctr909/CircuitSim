@@ -16,7 +16,7 @@ namespace Circuit.UI.Input {
             arr[0] = "交流電源";
             arr[1] = "電流：" + Utils.CurrentText(elm.Current);
             arr[2] = "振幅：" + Utils.VoltageText(elm.MaxVoltage);
-            arr[3] = "周波数：" + Utils.UnitText(elm.Frequency, "Hz");
+            arr[3] = "周波数：" + Utils.FrequencyText(elm.Frequency);
             var phase = elm.Phase + elm.PhaseOffset;
             phase %= 2 * Math.PI;
             arr[4] = "位相：" + Utils.UnitText3digit(phase * 180 / Math.PI, "deg");

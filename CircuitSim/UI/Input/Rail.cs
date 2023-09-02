@@ -25,10 +25,10 @@ namespace Circuit.UI.Input {
         public override void SetPoints() {
             base.SetPoints();
             Post.SetBbox(BODY_LEN);
-            interpPost(ref _NamePos, 1 + 0.35 * BODY_LEN / Post.Len);
+            interpPost(ref _NamePos, 1 + 12 / Post.Len);
             interpPost(ref mC, 1);
-            interpPost(ref mLa, 1, -5);
-            interpPost(ref mLb, 1, 5);
+            interpPost(ref mLa, 1, -6);
+            interpPost(ref mLb, 1, 6);
         }
 
         public string getRailText() {
@@ -42,13 +42,20 @@ namespace Circuit.UI.Input {
             if (w > Post.Len * 0.8) {
                 w = Post.Len * 0.8;
             }
-            if (elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE
-                && (_Flags & FLAG_CLOCK) != 0 || elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
+            switch (elm.WaveForm) {
+            case ElmVoltage.WAVEFORM.DC:
+            case ElmVoltage.WAVEFORM.NOISE:
                 setLead1(1);
-            } else {
+                break;
+            case ElmVoltage.WAVEFORM.SQUARE:
+                if ((_Flags & FLAG_CLOCK) != 0) {
+                    setLead1(1);
+                }
+                break;
+            default:
                 setLead1(1 - w / Post.Len);
+                break;
             }
-            
             drawLeadA();
             drawRail();
             updateDotCount(-Elm.Current, ref _CurCount);
@@ -59,16 +66,24 @@ namespace Circuit.UI.Input {
 
         void drawRail() {
             var elm = (ElmVoltage)Elm;
-            if (elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE && (_Flags & FLAG_CLOCK) != 0) {
-                drawCenteredText("CLK", _NamePos);
-            } else if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
+            if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                 drawLine(mLa, mLb);
-                drawCircle(mC, 3);
+                drawCircle(mC, 4);
                 var v = elm.GetVoltage();
-                var s = Utils.VoltageText(v);
+                var s = Utils.UnitText(v, "V");
                 drawCenteredText(s, _NamePos);
+            } else if(elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE && (_Flags & FLAG_CLOCK) != 0) {
+                drawCenteredText("Clock", _NamePos);
+            } else if (elm.WaveForm == ElmVoltage.WAVEFORM.NOISE) {
+                drawCenteredText("Noise", _NamePos);
             } else {
                 drawWaveform(Post.B);
+                if (ControlPanel.ChkShowValues.Checked) {
+                    var s = Utils.UnitText(elm.MaxVoltage, "V\r\n");
+                    s += Utils.FrequencyText(elm.Frequency, true) + "\r\n";
+                    s += Utils.PhaseText(elm.Phase + elm.PhaseOffset);
+                    drawValues(s, 23, 5);
+                }
             }
         }
     }
