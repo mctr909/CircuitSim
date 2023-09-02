@@ -59,9 +59,9 @@ namespace Circuit.UI.Input {
         const int FLAG_PULSE_DUTY = 4;
         const double DEFAULT_PULSE_DUTY = 0.5;
 
-        protected const int BODY_LEN = 32;
+        protected const int BODY_LEN = 28;
         const int BODY_LEN_DC = 6;
-        const int WAVE_HEIGHT = 9;
+        const int WAVE_HEIGHT = 5;
         const int DX = 12;
         const int DX_H = 6;
 

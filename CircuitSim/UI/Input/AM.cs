@@ -7,7 +7,7 @@ using Circuit.Elements.Input;
 namespace Circuit.UI.Input {
     class AM : BaseUI {
         const int FLAG_COS = 2;
-        const int SIZE = 32;
+        const int SIZE = 28;
 
         public AM(Point pos) : base(pos) {
             Elm = new ElmAM();

@@ -9,7 +9,7 @@ namespace Circuit.UI.Input {
         const int FLAG_LOG = 1;
         const int FLAG_BIDIR = 2;
 
-        const int SIZE = 32;
+        const int SIZE = 28;
 
         public Sweep(Point pos) : base(pos) {
             Elm = new ElmSweep();

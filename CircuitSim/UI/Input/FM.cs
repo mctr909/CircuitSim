@@ -6,7 +6,7 @@ using Circuit.Elements.Input;
 namespace Circuit.UI.Input {
     class FM : BaseUI {
         const int FLAG_COS = 2;
-        const int SIZE = 32;
+        const int SIZE = 28;
 
         public FM(Point pos) : base(pos) {
             Elm = new ElmFM();
