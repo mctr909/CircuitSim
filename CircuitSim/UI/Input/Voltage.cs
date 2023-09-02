@@ -82,6 +82,7 @@ namespace Circuit.UI.Input {
         PointF mPs4;
         PointF[] mWaveFormPos;
         PointF mTextPos;
+        double mTextRot;
         PointF mSignPos;
 
         public Voltage(Point pos, ElmVoltage.WAVEFORM wf) : base(pos) {
@@ -118,10 +119,14 @@ namespace Circuit.UI.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-
             var elm = (ElmVoltage)Elm;
             setLeads((elm.WaveForm == ElmVoltage.WAVEFORM.DC) ? BODY_LEN_DC : BODY_LEN);
+            setTextPos();
+            setWaveform();
+        }
 
+        protected void setTextPos() {
+            var elm = (ElmVoltage)Elm;
             int sign;
             if (Post.Horizontal) {
                 sign = -Post.Dsign;
@@ -135,14 +140,14 @@ namespace Circuit.UI.Input {
                 Post.SetBbox(hs);
                 interpLeadAB(ref mPs1, ref mPs2, 0, hs * 0.5);
                 interpLeadAB(ref mPs3, ref mPs4, 1, hs);
-                interpPost(ref mTextPos, 0.5, -2 * BODY_LEN_DC * sign);
+                var s = Utils.UnitText(elm.MaxVoltage, "V");
+                var w = Context.GetTextSize(s).Width;
+                interpPost(ref mTextPos, 0.5, w * 0.5 + 10);
+                mTextRot = Utils.Angle(Post.A, Post.B) + Math.PI / 2;
             } else {
                 Post.SetBbox(BODY_LEN);
                 interpLead(ref mPs1, 0.5);
-                interpPost(ref mTextPos, 0.5, -16 * sign);
             }
-
-            setWaveform();
         }
 
         void setWaveform() {
@@ -333,14 +338,16 @@ namespace Circuit.UI.Input {
                 drawLine(mPs1, mPs2);
                 drawLine(mPs3, mPs4);
                 var s = Utils.UnitText(elm.MaxVoltage, "V");
-                g.DrawRightText(s, mTextPos);
+                drawCenteredText(s, mTextPos, mTextRot);
             } else {
                 drawWaveform(mPs1);
                 if (ControlPanel.ChkShowValues.Checked) {
                     var s = Utils.UnitText(elm.MaxVoltage, "V\r\n");
                     s += Utils.FrequencyText(elm.Frequency, true) + "\r\n";
                     s += Utils.PhaseText(elm.Phase + elm.PhaseOffset);
-                    g.DrawRightText(s, mTextPos);
+                    var w = g.GetTextSize(s).Width;
+                    interpPost(ref mTextPos, 0.5, w - 4);
+                    drawCenteredText(s, mTextPos);
                 }
                 if (0 < elm.Bias || (0 == elm.Bias &&
                     (ElmVoltage.WAVEFORM.PULSE_MONOPOLE == elm.WaveForm || ElmVoltage.WAVEFORM.PULSE_DIPOLE == elm.WaveForm))) {
@@ -539,6 +546,7 @@ namespace Circuit.UI.Input {
                 }
             }
             setWaveform();
+            setTextPos();
         }
 
         public override EventHandler CreateSlider(ElementInfo ei, Adjustable adj) {

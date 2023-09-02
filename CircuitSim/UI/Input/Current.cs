@@ -40,7 +40,7 @@ namespace Circuit.UI.Input {
             } else {
                 sign = -Post.Dsign;
             }
-            interpPost(ref mTextPos, 0.5, 16 * sign);
+            interpPost(ref mTextPos, 0.5, 30 * sign);
             var p2 = new PointF();
             interpLead(ref p2, 0.8);
             Utils.CreateArrow(mCenter, p2, out mArrow, 8, 4);
@@ -57,7 +57,7 @@ namespace Circuit.UI.Input {
             doDots();
             if (ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.CurrentText(mCurrentValue);
-                g.DrawRightText(s, mTextPos);
+                drawCenteredText(s, mTextPos);
             }
         }
 

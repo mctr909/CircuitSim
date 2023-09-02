@@ -101,6 +101,7 @@ namespace Circuit.UI.Input {
                     Link.PhaseOffset = (int)ei.Value;
                 }
             }
+            setTextPos();
         }
 
         public override EventHandler CreateSlider(ElementInfo ei, Adjustable adj) {

@@ -60,6 +60,7 @@ namespace Circuit.UI.Input {
                     Link.Bias = (int)ei.Value;
                 }
             }
+            setTextPos();
         }
 
         public override EventHandler CreateSlider(ElementInfo ei, Adjustable adj) {

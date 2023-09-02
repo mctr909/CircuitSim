@@ -271,18 +271,22 @@ class PDF {
             writeFontSize(TextSize);
             x += (float)mOfsX;
             y += (float)mOfsY;
-            var ofsY = TextSize * 0.5;
+            var strs = s.Replace("\r", "").Split('\n');
+            var ofsY = TextSize * (2 - strs.Length) * 0.5f;
             var cos = Math.Cos(theta);
             var sin = Math.Sin(theta);
-            var rx = ofsX * cos + ofsY * sin;
-            var ry = ofsX * sin - ofsY * cos;
-            mSw.WriteLine("{0} {1} {2} {3} {4} {5} Tm",
-                cos.ToString("0.##"), sin.ToString("0.##"),
-                sin.ToString("0.##"), (-cos).ToString("0.##"),
-                (x - rx * PIX_SCALE).ToString("0.##"),
-                (y - ry * PIX_SCALE).ToString("0.##")
-            );
-            writeText(s);
+            foreach (var str in strs) {
+                var rx = ofsX * cos + ofsY * sin;
+                var ry = ofsX * sin - ofsY * cos;
+                mSw.WriteLine("{0} {1} {2} {3} {4} {5} Tm",
+                    cos.ToString("0.##"), sin.ToString("0.##"),
+                    sin.ToString("0.##"), (-cos).ToString("0.##"),
+                    (x - rx * PIX_SCALE).ToString("0.##"),
+                    (y - ry * PIX_SCALE).ToString("0.##")
+                );
+                writeText(str);
+                ofsY += TextSize + 0.5f;
+            }
         }
 
         void writeM(float x, float y) {
