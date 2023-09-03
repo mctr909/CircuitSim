@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 
 using Circuit.Elements;
-using Circuit.UI.Input;
 using Circuit.UI.Output;
 
 namespace Circuit.UI {
@@ -74,6 +73,14 @@ namespace Circuit.UI {
         #endregion
 
         #region [public method]
+        public double DistancePostA(Point p) {
+            return Utils.Distance(Post.A, p);
+        }
+
+        public double DistancePostB(Point p) {
+            return Utils.Distance(Post.B, p);
+        }
+
         /// <summary>
         /// dump component state for export/undo
         /// </summary>
@@ -156,8 +163,8 @@ namespace Circuit.UI {
         #endregion
 
         #region [public virtual method]
-        public virtual double Distance(int x, int y) {
-            return Post.Distance(x, y);
+        public virtual double Distance(Point p) {
+            return Utils.DistanceOnLine(Post.A, Post.B, p);
         }
 
         public virtual void Delete() {

@@ -25,8 +25,8 @@ namespace Circuit.UI.Custom {
             optionList.Add(Utils.Escape(mText));
         }
 
-        public override double Distance(int x, int y) {
-            return Post.BoxDistance(Post.BoundingBox, x, y);
+        public override double Distance(Point p) {
+            return Post.BoxDistance(Post.BoundingBox, p);
         }
 
         public override void SetPoints() {

@@ -1,5 +1,4 @@
-﻿using Circuit.UI.Passive;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -7,6 +6,7 @@ namespace Circuit.UI {
     public enum EPOST {
         A,
         B,
+        BOTH,
         INVALID
     }
 
@@ -179,25 +179,12 @@ namespace Circuit.UI {
             AdjustBbox(a.X, a.Y, b.X, b.Y);
         }
 
-        public double Distance(double x, double y) {
-            return Utils.DistanceOnLine(A.X, A.Y, B.X, B.Y, x, y);
-        }
-
-        public double BoxDistance(double x, double y) {
-            return Math.Min(
-                Utils.DistanceOnLine(A.X, A.Y, B.X, A.Y, x, y), Math.Min(
-                Utils.DistanceOnLine(B.X, A.Y, B.X, B.Y, x, y), Math.Min(
-                Utils.DistanceOnLine(B.X, B.Y, A.X, B.Y, x, y),
-                Utils.DistanceOnLine(A.X, B.Y, A.X, A.Y, x, y)
-            )));
-        }
-
-        public double BoxDistance(RectangleF box, double x, double y) {
-            return box.Contains((int)x, (int)y) ? 0 : Math.Min(
-                Utils.DistanceOnLine(A.X, A.Y, B.X, A.Y, x, y), Math.Min(
-                Utils.DistanceOnLine(B.X, A.Y, B.X, B.Y, x, y), Math.Min(
-                Utils.DistanceOnLine(B.X, B.Y, A.X, B.Y, x, y),
-                Utils.DistanceOnLine(A.X, B.Y, A.X, A.Y, x, y)
+        public double BoxDistance(RectangleF box, Point p) {
+            return box.Contains(p.X, p.Y) ? 0 : Math.Min(
+                Utils.DistanceOnLine(A.X, A.Y, B.X, A.Y, p.X, p.Y), Math.Min(
+                Utils.DistanceOnLine(B.X, A.Y, B.X, B.Y, p.X, p.Y), Math.Min(
+                Utils.DistanceOnLine(B.X, B.Y, A.X, B.Y, p.X, p.Y),
+                Utils.DistanceOnLine(A.X, B.Y, A.X, A.Y, p.X, p.Y)
             )));
         }
 

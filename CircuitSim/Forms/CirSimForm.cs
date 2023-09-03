@@ -763,7 +763,6 @@ namespace Circuit {
             case MOUSE_MODE.DRAG_ITEM:
                 clearSelection();
                 MouseMode = MOUSE_MODE.NONE;
-                Post.Dragging = EPOST.INVALID;
                 break;
             case MOUSE_MODE.SPLIT:
                 doSplit(Mouse.GripElm);
@@ -1207,17 +1206,15 @@ namespace Circuit {
                 } else {
                     Post.Dragging = EPOST.INVALID;
                     Post.Hovering = EPOST.INVALID;
-                    var dumpInfo = Mouse.GripElm.Post;
-                    var d1 = Utils.Distance(dumpInfo.A, gpos);
-                    var d2 = Utils.Distance(dumpInfo.B, gpos);
-                    if (d1 <= CustomGraphics.HANDLE_RADIUS) {
+                    var elm = Mouse.GripElm;
+                    if (elm.DistancePostA(gpos) <= CustomGraphics.HANDLE_RADIUS) {
                         Post.Dragging = EPOST.A;
                         MouseMode = MOUSE_MODE.DRAG_POST;
-                    } else if (d2 <= CustomGraphics.HANDLE_RADIUS) {
+                    } else if (elm.DistancePostB(gpos) <= CustomGraphics.HANDLE_RADIUS) {
                         Post.Dragging = EPOST.B;
                         MouseMode = MOUSE_MODE.DRAG_POST;
-                    } else if (Utils.DistanceOnLine(dumpInfo.A, dumpInfo.B, gpos) <= CustomGraphics.HANDLE_RADIUS) {
-                        Post.Dragging = EPOST.INVALID;
+                    } else if (Mouse.GripElm.Distance(gpos) <= CustomGraphics.HANDLE_RADIUS) {
+                        Post.Dragging = EPOST.BOTH;
                         MouseMode = MOUSE_MODE.DRAG_ITEM;
                     }
                 }
@@ -1399,15 +1396,16 @@ namespace Circuit {
         }
 
         static void setMouseElm(BaseUI ce) {
-            if (ce != Mouse.GripElm) {
-                if (Mouse.GripElm != null) {
-                    Mouse.GripElm.SetMouseElm(false);
-                }
-                if (ce != null) {
-                    ce.SetMouseElm(true);
-                }
-                Mouse.GripElm = ce;
+            if (ce == Mouse.GripElm) {
+                return;
             }
+            if (Mouse.GripElm != null) {
+                Mouse.GripElm.SetMouseElm(false);
+            }
+            if (ce != null) {
+                ce.SetMouseElm(true);
+            }
+            Mouse.GripElm = ce;
         }
 
         void removeZeroLengthElements() {
@@ -1436,12 +1434,12 @@ namespace Circuit {
         /* need to break this out into a separate routine to handle selection, */
         /* since we don't get mouse move events on mobile */
         void mouseSelect() {
-            BaseUI newMouseElm = null;
             int mx = MouseCursorX;
             int my = MouseCursorY;
             int gx = inverseTransformX(mx);
             int gy = inverseTransformY(my);
 
+            ScopeForm.SelectedScope = -1;
             Mouse.DragGrid.X = SnapGrid(gx);
             Mouse.DragGrid.Y = SnapGrid(gy);
             Mouse.DragScreen.X = mx;
@@ -1451,52 +1449,33 @@ namespace Circuit {
 
             PlotXElm = PlotYElm = null;
 
-            double minDistance = 8;
+            BaseUI newMouseElm = null;
+            /* the mouse pointer was not in any of the bounding boxes, but we
+            /* might still be close to a post */
             for (int i = 0; i != UICount; i++) {
                 var ce = GetUI(i);
-                var distance = ce.Distance(gx, gy);
-                if (distance < minDistance) {
-                    newMouseElm = ce;
-                    minDistance = distance;
-                }
-            }
-
-            ScopeForm.SelectedScope = -1;
-            if (newMouseElm == null) {
-                /* the mouse pointer was not in any of the bounding boxes, but we
-                /* might still be close to a post */
-                for (int i = 0; i != UICount; i++) {
-                    var ce = GetUI(i);
-                    var p1 = ce.Post.A;
-                    var p2 = ce.Post.B;
-                    if (Utils.Distance(p1, gx, gy) <= CustomGraphics.HANDLE_RADIUS) {
-                        newMouseElm = ce;
-                        break;
-                    }
-                    if (Utils.Distance(p2, gx, gy) <= CustomGraphics.HANDLE_RADIUS) {
-                        newMouseElm = ce;
-                        break;
-                    }
-                    if (Utils.DistanceOnLine(p1, p2, gx, gy) <= CustomGraphics.HANDLE_RADIUS) {
-                        newMouseElm = ce;
-                        break;
-                    }
-                    if (ce.Post.BoundingBox.Contains(gx, gy)) {
-                        newMouseElm = ce;
-                        break;
-                    }
-                }
-            }
-            if (newMouseElm != null) {
-                var ce = newMouseElm;
-                if (Utils.Distance(ce.Post.A, gx, gy) <= CustomGraphics.HANDLE_RADIUS) {
+                if (ce.DistancePostA(Mouse.DragGrid) <= CustomGraphics.HANDLE_RADIUS) {
                     Post.Hovering = EPOST.A;
-                } else if (Utils.Distance(ce.Post.B, gx, gy) <= CustomGraphics.HANDLE_RADIUS) {
-                    Post.Hovering = EPOST.B;
+                    newMouseElm = ce;
+                    break;
                 }
+                if (ce.DistancePostB(Mouse.DragGrid) <= CustomGraphics.HANDLE_RADIUS) {
+                    Post.Hovering = EPOST.B;
+                    newMouseElm = ce;
+                    break;
+                }
+                if (ce.Distance(Mouse.DragGrid) <= CustomGraphics.HANDLE_RADIUS) {
+                    Post.Hovering = EPOST.BOTH;
+                    newMouseElm = ce;
+                    break;
+                }
+            }
+            if (newMouseElm == null) {
+                clearMouseElm();
+            } else {
+                setMouseElm(newMouseElm);
             }
             Repaint();
-            setMouseElm(newMouseElm);
         }
 
         void onContextMenu(MouseEventArgs e) {

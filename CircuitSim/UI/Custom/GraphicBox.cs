@@ -19,24 +19,24 @@ namespace Circuit.UI.Custom {
             get { return Post.BoxIsCreationFailed; }
         }
 
-        public override double Distance(int x, int y) {
+        public override double Distance(Point p) {
             var x1 = Post.A.X;
             var y1 = Post.A.Y;
             var x2 = Post.B.X;
             var y2 = Post.B.Y;
-            Post.BoundingBox.Width = 0;
-            Post.BoundingBox.Height = 0;
             return Math.Min(
-                Utils.DistanceOnLine(x1, y1, x2, y1, x, y), Math.Min(
-                Utils.DistanceOnLine(x1, y1, x1, y2, x, y), Math.Min(
-                Utils.DistanceOnLine(x2, y2, x2, y1, x, y),
-                Utils.DistanceOnLine(x2, y2, x1, y2, x, y)
+                Utils.DistanceOnLine(x1, y1, x2, y1, p.X, p.Y), Math.Min(
+                Utils.DistanceOnLine(x1, y1, x1, y2, p.X, p.Y), Math.Min(
+                Utils.DistanceOnLine(x2, y2, x2, y1, p.X, p.Y),
+                Utils.DistanceOnLine(x2, y2, x1, y2, p.X, p.Y)
             )));
         }
 
         public override void Drag(Point p) {
             Post.B = CirSimForm.SnapGrid(p);
             Post.SetBbox(Post.A, Post.B);
+            Post.BoundingBox.Width = 0;
+            Post.BoundingBox.Height = 0;
         }
 
         public override void Draw(CustomGraphics g) {
