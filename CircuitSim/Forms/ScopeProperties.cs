@@ -24,7 +24,9 @@ namespace Circuit.Forms {
                 }
                 cmbColor.Items.Add(c);
             }
-            cmbColor.SelectedIndex = (int)mScope.Plots[mScope.SelectedPlot].ColorIndex;
+            if (0 <= mScope.SelectedPlot) {
+                cmbColor.SelectedIndex = (int)mScope.Plots[mScope.SelectedPlot].ColorIndex;
+            }
             setScopeSpeedLabel();
             ScopeProperties_Load(null, null);
             Left = Math.Max(0, x - Width / 2);
