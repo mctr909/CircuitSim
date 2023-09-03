@@ -36,6 +36,7 @@
             this.picScope.TabIndex = 0;
             this.picScope.TabStop = false;
             this.picScope.Click += new System.EventHandler(this.picScope_Click);
+            this.picScope.DoubleClick += new System.EventHandler(this.picScope_DoubleClick);
             this.picScope.MouseLeave += new System.EventHandler(this.picScope_MouseLeave);
             this.picScope.MouseMove += new System.Windows.Forms.MouseEventHandler(this.picScope_MouseMove);
             // 

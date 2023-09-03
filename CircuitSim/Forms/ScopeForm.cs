@@ -48,21 +48,40 @@ namespace Circuit.Forms {
         }
 
         private void picScope_Click(object sender, EventArgs e) {
+            var ev = (MouseEventArgs)e;
+            switch (ev.Button) {
+            case MouseButtons.Right:
+                Scope.MenuScope = -1;
+                Scope.MenuPlotWave = -1;
+                if (SelectedScope != -1) {
+                    if (Scope.List[SelectedScope].CanMenu) {
+                        Scope.MenuScope = SelectedScope;
+                        Scope.MenuPlotWave = Scope.List[SelectedScope].SelectedPlot;
+                        mScopePopupMenu.Show(Left + MouseCursorX, Top + MouseCursorY, Scope.List, SelectedScope, false);
+                    }
+                }
+                break;
+            }
+        }
+
+        private void picScope_DoubleClick(object sender, EventArgs e) {
             Scope.MenuScope = -1;
             Scope.MenuPlotWave = -1;
             if (SelectedScope != -1) {
-                if (Scope.Property.List[SelectedScope].CanMenu) {
+                if (Scope.List[SelectedScope].CanMenu) {
+                    var ev = (MouseEventArgs)e;
                     Scope.MenuScope = SelectedScope;
-                    Scope.MenuPlotWave = Scope.Property.List[SelectedScope].SelectedPlot;
-                    mScopePopupMenu.Show(Left + MouseCursorX, Top + MouseCursorY, Scope.Property.List, SelectedScope, false);
+                    var scope = Scope.List[SelectedScope];
+                    Scope.MenuPlotWave = scope.SelectedPlot;
+                    scope.Properties(ev.X + Left, ev.Y + Top);
                 }
             }
         }
 
         void SelectElm() {
             BaseUI selectElm = null;
-            for (int i = 0; i != Scope.Property.Count; i++) {
-                var s = Scope.Property.List[i];
+            for (int i = 0; i != Scope.Count; i++) {
+                var s = Scope.List[i];
                 if (s.BoundingBox.Contains(MouseCursorX, MouseCursorY)) {
                     selectElm = s.UI;
                     SelectedScope = i;
@@ -133,14 +152,14 @@ namespace Circuit.Forms {
             }
 
             g.Clear(ControlPanel.ChkPrintable.Checked ? Color.White : Color.Black);
-            Scope.Property.Setup(g);
+            Scope.Setup(g);
 
-            var ct = Scope.Property.Count;
+            var ct = Scope.Count;
             if (Circuit.StopMessage != null) {
                 ct = 0;
             }
             for (int i = 0; i != ct; i++) {
-                Scope.Property.List[i].Draw(g);
+                Scope.List[i].Draw(g);
             }
 
             if (Circuit.StopMessage != null) {
@@ -153,7 +172,7 @@ namespace Circuit.Forms {
                 if (ct == 0) {
                     x = 0;
                 } else {
-                    x = Scope.Property.List[ct - 1].RightEdge + 4;
+                    x = Scope.List[ct - 1].RightEdge + 4;
                 }
                 for (int i = 0; i < info.Length && info[i] != null; i++) {
                     g.DrawElementText(info[i], x, 15 * (i + 1));

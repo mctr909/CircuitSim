@@ -7,8 +7,11 @@ using Circuit.Forms;
 
 namespace Circuit.UI.Output {
     public class Scope : BaseUI {
+        const int INFO_WIDTH = 60;
         public static int MenuScope = -1;
         public static int MenuPlotWave = -1;
+        public static int Count { get; set; }
+        public static Property[] List { get; set; } = new Property[20];
 
         public Property Properties;
 
@@ -74,6 +77,83 @@ namespace Circuit.UI.Output {
             Properties.Draw(g, true);
         }
 
+        public static void Setup(CustomGraphics g) {
+            /* check scopes to make sure the elements still exist, and remove
+            /* unused scopes/columns */
+            int index = -1;
+            for (int i = 0; i < Count; i++) {
+                if (List[i].NeedToRemove) {
+                    int j;
+                    for (j = i; j != Count; j++) {
+                        List[j] = List[j + 1];
+                    }
+                    Count--;
+                    i--;
+                    continue;
+                }
+                if (List[i].Index > index + 1) {
+                    List[i].Index = index + 1;
+                }
+                index = List[i].Index;
+            }
+
+            while (Count > 0 && List[Count - 1].UI == null) {
+                Count--;
+            }
+
+            if (Count <= 0) {
+                return;
+            }
+
+            index = 0;
+            var scopeColCount = new int[Count];
+            for (int i = 0; i != Count; i++) {
+                index = Math.Max(List[i].Index, index);
+                scopeColCount[List[i].Index]++;
+            }
+            int colct = index + 1;
+            int iw = INFO_WIDTH;
+            if (colct <= 2) {
+                iw = iw * 3 / 2;
+            }
+            int w = (g.Width - iw) / colct;
+            int marg = 10;
+            if (w < marg * 2) {
+                w = marg * 2;
+            }
+
+            index = -1;
+            int colh = 0;
+            int row = 0;
+            int speed = 0;
+            foreach (var s in List) {
+                if (s == null || scopeColCount.Length <= s.Index) {
+                    break;
+                }
+                if (s.Index > index) {
+                    index = s.Index;
+                    var div = scopeColCount[index];
+                    if (0 < div) {
+                        colh = g.Height / div;
+                    } else {
+                        colh = g.Height;
+                    }
+                    row = 0;
+                    speed = s.Speed;
+                }
+                s.StackCount = scopeColCount[index];
+                if (s.Speed != speed) {
+                    s.Speed = speed;
+                    s.ResetGraph();
+                }
+                var r = new Rectangle(index * w, colh * row, w - marg, colh);
+                row++;
+                if (!r.Equals(s.BoundingBox)) {
+                    s.SetRect(r);
+                }
+            }
+        }
+
         public static void Performed(SCOPE_MENU_ITEM item) {
             Property s;
             if (MenuScope == -1) {
@@ -83,7 +163,7 @@ namespace Circuit.UI.Output {
                     return;
                 }
             } else {
-                s = Property.List[MenuScope];
+                s = List[MenuScope];
             }
             switch (item) {
             case SCOPE_MENU_ITEM.REMOVE_SCOPE:
@@ -102,13 +182,13 @@ namespace Circuit.UI.Output {
                 s.MaxScale();
                 break;
             case SCOPE_MENU_ITEM.STACK:
-                Property.Stack(MenuScope);
+                Stack(MenuScope);
                 break;
             case SCOPE_MENU_ITEM.UNSTACK:
-                Property.Unstack(MenuScope);
+                Unstack(MenuScope);
                 break;
             case SCOPE_MENU_ITEM.COMBINE:
-                Property.Combine(MenuScope);
+                Combine(MenuScope);
                 break;
             case SCOPE_MENU_ITEM.RESET:
                 s.ResetGraph(true);
@@ -118,6 +198,48 @@ namespace Circuit.UI.Output {
                 break;
             }
             CirSimForm.DeleteUnusedScopeElms();
+        }
+
+        static void Stack(int s) {
+            if (s == 0) {
+                if (Count < 2) {
+                    return;
+                }
+                s = 1;
+            }
+            if (List[s].Index == List[s - 1].Index) {
+                return;
+            }
+            List[s].Index = List[s - 1].Index;
+            for (s++; s < Count; s++) {
+                List[s].Index--;
+            }
+        }
+
+        static void Unstack(int s) {
+            if (s == 0) {
+                if (Count < 2) {
+                    return;
+                }
+                s = 1;
+            }
+            if (List[s].Index != List[s - 1].Index) {
+                return;
+            }
+            for (; s < Count; s++) {
+                List[s].Index++;
+            }
+        }
+
+        static void Combine(int s) {
+            if (s == 0) {
+                if (Count < 2) {
+                    return;
+                }
+                s = 1;
+            }
+            List[s - 1].Combine(List[s]);
+            List[s].SetElm(null);
         }
 
         public class Plot {
@@ -229,48 +351,14 @@ namespace Circuit.UI.Output {
 
         public class Property {
             #region CONST
-            const int INFO_WIDTH = 60;
             const int FLAG_PLOTS = 4096;
             const double FFT_MIN = -100.0;
             const double SCALE_MIN = 1e-9;
             #endregion
 
-            public static int Count { get; set; }
-            public static Property[] List { get; set; } = new Property[20];
-
-            #region dynamic variable
-            FFT mFft;
-            Rectangle mFFTBoundingBox;
-
-            CustomGraphics mContext;
-
-            public List<Plot> Plots { get; private set; }
-
-            double mScopeTimeStep;
-
-            double mScale;
-            bool mReduceRange;
-            int mScopePointCount;
-
-            int mSpeed;
-
-            double mGridDivX;
-            double mGridStepX;
-            double mGridStepY;
-            double mMaxValue;
-            double mMinValue;
-            double mMainGridMult;
-            double mMainGridMid;
-
-            bool mSomethingSelected;
-            bool mMaxScale;
-            bool mShowNegative;
-            bool mShowV;
-            bool mShowFFT;
-            #endregion
-
             #region [public property]
-            public int Position;
+            public List<Plot> Plots { get; private set; }
+            public int Index { get; set; }
             public Rectangle BoundingBox { get; private set; }
             public int RightEdge { get { return BoundingBox.X + BoundingBox.Width; } }
             public int Speed {
@@ -325,18 +413,6 @@ namespace Circuit.UI.Output {
                 }
             }
 
-            /* get scope element, returning null if there's more than one */
-            public BaseUI SingleUI {
-                get {
-                    var ui = Plots[0].UI;
-                    for (int i = 1; i < Plots.Count; i++) {
-                        if (!Plots[i].UI.Equals(ui)) {
-                            return null;
-                        }
-                    }
-                    return ui;
-                }
-            }
             public BaseUI UI {
                 get {
                     if (0 <= SelectedPlot && SelectedPlot < Plots.Count) {
@@ -410,6 +486,33 @@ namespace Circuit.UI.Output {
             }
             #endregion
 
+            #region [private variable]
+            CustomGraphics mContext;
+
+            FFT mFft;
+            Rectangle mFFTBoundingBox;
+
+            double mScopeTimeStep;
+            double mScale;
+            bool mReduceRange;
+            int mScopePointCount;
+            int mSpeed;
+
+            double mGridDivX;
+            double mGridStepX;
+            double mGridStepY;
+            double mMaxValue;
+            double mMinValue;
+            double mMainGridMult;
+            double mMainGridMid;
+
+            bool mSomethingSelected;
+            bool mMaxScale;
+            bool mShowNegative;
+            bool mShowV;
+            bool mShowFFT;
+            #endregion
+
             public Property() {
                 BoundingBox = new Rectangle(0, 0, 1, 1);
                 allocImage();
@@ -417,157 +520,6 @@ namespace Circuit.UI.Output {
             }
 
             #region [public method]
-            public static void Setup(CustomGraphics g) {
-                /* check scopes to make sure the elements still exist, and remove
-                /* unused scopes/columns */
-                int pos = -1;
-                for (int i = 0; i < Count; i++) {
-                    if (List[i].NeedToRemove) {
-                        int j;
-                        for (j = i; j != Count; j++) {
-                            List[j] = List[j + 1];
-                        }
-                        Count--;
-                        i--;
-                        continue;
-                    }
-                    if (List[i].Position > pos + 1) {
-                        List[i].Position = pos + 1;
-                    }
-                    pos = List[i].Position;
-                }
-
-                while (Count > 0 && List[Count - 1].UI == null) {
-                    Count--;
-                }
-
-                if (Count <= 0) {
-                    return;
-                }
-
-                pos = 0;
-                var scopeColCount = new int[Count];
-                for (int i = 0; i != Count; i++) {
-                    pos = Math.Max(List[i].Position, pos);
-                    scopeColCount[List[i].Position]++;
-                }
-                int colct = pos + 1;
-                int iw = INFO_WIDTH;
-                if (colct <= 2) {
-                    iw = iw * 3 / 2;
-                }
-                int w = (g.Width - iw) / colct;
-                int marg = 10;
-                if (w < marg * 2) {
-                    w = marg * 2;
-                }
-
-                pos = -1;
-                int colh = 0;
-                int row = 0;
-                int speed = 0;
-                foreach (var s in List) {
-                    if (s == null || scopeColCount.Length <= s.Position) {
-                        break;
-                    }
-                    if (s.Position > pos) {
-                        pos = s.Position;
-                        var div = scopeColCount[pos];
-                        if (0 < div) {
-                            colh = g.Height / div;
-                        } else {
-                            colh = g.Height;
-                        }
-                        row = 0;
-                        speed = s.Speed;
-                    }
-                    s.StackCount = scopeColCount[pos];
-                    if (s.Speed != speed) {
-                        s.Speed = speed;
-                        s.ResetGraph();
-                    }
-                    var r = new Rectangle(pos * w, colh * row, w - marg, colh);
-                    row++;
-                    if (!r.Equals(s.BoundingBox)) {
-                        s.SetRect(r);
-                    }
-                }
-            }
-
-            public static void Stack(int s) {
-                if (s == 0) {
-                    if (Count < 2) {
-                        return;
-                    }
-                    s = 1;
-                }
-                if (List[s].Position == List[s - 1].Position) {
-                    return;
-                }
-                List[s].Position = List[s - 1].Position;
-                for (s++; s < Count; s++) {
-                    List[s].Position--;
-                }
-            }
-
-            public static void Unstack(int s) {
-                if (s == 0) {
-                    if (Count < 2) {
-                        return;
-                    }
-                    s = 1;
-                }
-                if (List[s].Position != List[s - 1].Position) {
-                    return;
-                }
-                for (; s < Count; s++) {
-                    List[s].Position++;
-                }
-            }
-
-            public static void Combine(int s) {
-                if (s == 0) {
-                    if (Count < 2) {
-                        return;
-                    }
-                    s = 1;
-                }
-                List[s - 1].Combine(List[s]);
-                List[s].SetElm(null);
-            }
-
-            public static void StackAll() {
-                for (int i = 0; i != Count; i++) {
-                    List[i].Position = 0;
-                    List[i].ShowMax = false;
-                    List[i].ShowMin = false;
-                }
-            }
-
-            public static void UnstackAll() {
-                for (int i = 0; i != Count; i++) {
-                    List[i].Position = i;
-                    List[i].ShowMax = true;
-                }
-            }
-
-            public static void CombineAll() {
-                for (int i = Count - 2; i >= 0; i--) {
-                    List[i].Combine(List[i + 1]);
-                    List[i + 1].SetElm(null);
-                }
-            }
-
-            public static void SeparateAll() {
-                var newscopes = new List<Property>();
-                int ct = 0;
-                for (int i = 0; i < Count; i++) {
-                    ct = List[i].Separate(newscopes, ct);
-                }
-                List = newscopes.ToArray();
-                Count = ct;
-            }
-
             public void ResetGraph(bool full = false) {
                 mScopePointCount = 1;
                 while (mScopePointCount <= BoundingBox.Width) {
@@ -610,21 +562,6 @@ namespace Circuit.UI.Output {
                     Plots.Add(p);
                 }
                 s.Plots.Clear();
-            }
-
-            public int Separate(List<Property> arr, int pos) {
-                foreach (var sp in Plots) {
-                    if (arr.Count <= pos) {
-                        return pos;
-                    }
-                    var s = new Property();
-                    s.setValue(sp.UI);
-                    s.Position = pos;
-                    s.mFlags = mFlags;
-                    s.Speed = Speed;
-                    arr[pos++] = s;
-                }
-                return pos;
             }
 
             public void RemoveWave(int plot) {
@@ -675,7 +612,7 @@ namespace Circuit.UI.Output {
                     vPlot.Speed,
                     mFlags,
                     mScale.ToString("0.000000"),
-                    Position,
+                    Index,
                     Plots.Count
                 };
                 foreach (var p in Plots) {
@@ -697,7 +634,7 @@ namespace Circuit.UI.Output {
                 var flags = st.nextTokenInt();
                 mFlags = flags;
                 mScale = st.nextTokenDouble();
-                Position = st.nextTokenInt();
+                Index = st.nextTokenInt();
 
                 try {
                     var plotCount = st.nextTokenInt();
@@ -824,6 +761,12 @@ namespace Circuit.UI.Output {
             #endregion
 
             #region [private method]
+            void allocImage() {
+                if (mContext == null) {
+                    mContext = CustomGraphics.FromImage(BoundingBox.Width, BoundingBox.Height);
+                }
+            }
+
             void initialize() {
                 ResetGraph();
                 mScale = 0.1;
@@ -855,6 +798,36 @@ namespace Circuit.UI.Output {
                 };
                 mShowV = true;
                 ResetGraph();
+            }
+
+            /* find selected plot */
+            void checkForSelection() {
+                if (CirSimForm.DialogIsShowing()) {
+                    return;
+                }
+                if (!BoundingBox.Contains(ScopeForm.MouseCursorX, ScopeForm.MouseCursorY)) {
+                    SelectedPlot = -1;
+                    return;
+                }
+                int ipa = Plots[0].StartIndex(BoundingBox.Width);
+                int ip = (ScopeForm.MouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
+                int maxy = (BoundingBox.Height - 1) / 2;
+                int y = maxy;
+                int i;
+                int bestdist = 10000;
+                int best = -1;
+
+                for (i = 0; i != Plots.Count; i++) {
+                    var plot = Plots[i];
+                    var scale = mScale;
+                    int maxvy = (int)Math.Min(BoundingBox.Y, maxy / scale * plot.MaxValues[ip]);
+                    int dist = Math.Abs(ScopeForm.MouseCursorY - (BoundingBox.Y + y - maxvy));
+                    if (dist < bestdist) {
+                        bestdist = dist;
+                        best = i;
+                    }
+                }
+                SelectedPlot = best;
             }
 
             /* calculate maximum and minimum values for all plots of given units */
@@ -909,44 +882,134 @@ namespace Circuit.UI.Output {
                 mScale = gridMax;
             }
 
-            /* find selected plot */
-            void checkForSelection() {
-                if (CirSimForm.DialogIsShowing()) {
-                    return;
-                }
-                if (!BoundingBox.Contains(ScopeForm.MouseCursorX, ScopeForm.MouseCursorY)) {
-                    SelectedPlot = -1;
-                    return;
-                }
-                int ipa = Plots[0].StartIndex(BoundingBox.Width);
-                int ip = (ScopeForm.MouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
-                int maxy = (BoundingBox.Height - 1) / 2;
-                int y = maxy;
+            string calcRMS() {
+                var plot = Plots[0];
                 int i;
-                int bestdist = 10000;
-                int best = -1;
+                double avg = 0;
+                int ipa = plot.Pointer + mScopePointCount - BoundingBox.Width;
+                var maxV = plot.MaxValues;
+                var minV = plot.MinValues;
+                double mid = (mMaxValue + mMinValue) / 2;
+                int state = -1;
 
-                for (i = 0; i != Plots.Count; i++) {
-                    var plot = Plots[i];
-                    var scale = mScale;
-                    int maxvy = (int)Math.Min(BoundingBox.Y, maxy / scale * plot.MaxValues[ip]);
-                    int dist = Math.Abs(ScopeForm.MouseCursorY - (BoundingBox.Y + y - maxvy));
-                    if (dist < bestdist) {
-                        bestdist = dist;
-                        best = i;
+                /* skip zeroes */
+                for (i = 0; i != BoundingBox.Width; i++) {
+                    int ip = (i + ipa) & (mScopePointCount - 1);
+                    if (maxV[ip] != 0) {
+                        if (maxV[ip] > mid) {
+                            state = 1;
+                        }
+                        break;
                     }
                 }
-                SelectedPlot = best;
+                int firstState = -state;
+                int start = i;
+                int end = 0;
+                int waveCount = 0;
+                double endAvg = 0;
+                for (; i != BoundingBox.Width; i++) {
+                    int ip = (i + ipa) & (mScopePointCount - 1);
+                    bool sw = false;
+
+                    /* switching polarity? */
+                    if (state == 1) {
+                        if (maxV[ip] < mid) {
+                            sw = true;
+                        }
+                    } else if (minV[ip] > mid) {
+                        sw = true;
+                    }
+
+                    if (sw) {
+                        state = -state;
+                        /* completed a full cycle? */
+                        if (firstState == state) {
+                            if (waveCount == 0) {
+                                start = i;
+                                firstState = state;
+                                avg = 0;
+                            }
+                            waveCount++;
+                            end = i;
+                            endAvg = avg;
+                        }
+                    }
+                    if (waveCount > 0) {
+                        var m = (maxV[ip] + minV[ip]) * .5;
+                        avg += m * m;
+                    }
+                }
+                if (1 < waveCount) {
+                    var rms = Math.Sqrt(endAvg / (end - start));
+                    return Utils.VoltageText(rms) + "rms";
+                } else {
+                    return "";
+                }
+            }
+
+            string calcFrequency() {
+                /* try to get frequency
+                 * get average */
+                double avg = 0;
+                int i;
+                var plot = Plots[0];
+                int ipa = plot.Pointer + mScopePointCount - BoundingBox.Width;
+                var minV = plot.MinValues;
+                var maxV = plot.MaxValues;
+                for (i = 0; i != BoundingBox.Width; i++) {
+                    int ip = (i + ipa) & (mScopePointCount - 1);
+                    avg += minV[ip] + maxV[ip];
+                }
+                avg /= i * 2;
+                int state = 0;
+                double thresh = avg * .05;
+                int oi = 0;
+                double avperiod = 0;
+                int periodct = -1;
+                double avperiod2 = 0;
+                /* count period lengths */
+                for (i = 0; i != BoundingBox.Width; i++) {
+                    int ip = (i + ipa) & (mScopePointCount - 1);
+                    double q = maxV[ip] - avg;
+                    int os = state;
+                    if (q < thresh) {
+                        state = 1;
+                    } else if (q > -thresh) {
+                        state = 2;
+                    }
+                    if (state == 2 && os == 1) {
+                        int pd = i - oi;
+                        oi = i;
+                        /* short periods can't be counted properly */
+                        if (pd < 12) {
+                            continue;
+                        }
+                        /* skip first period, it might be too short */
+                        if (periodct >= 0) {
+                            avperiod += pd;
+                            avperiod2 += pd * pd;
+                        }
+                        periodct++;
+                    }
+                }
+                avperiod /= periodct;
+                avperiod2 /= periodct;
+                double periodstd = Math.Sqrt(avperiod2 - avperiod * avperiod);
+                double freq = 1 / (avperiod * ControlPanel.TimeStep * Speed);
+                /* don't show freq if standard deviation is too great */
+                if (periodct < 1 || periodstd > 2) {
+                    freq = 0;
+                }
+                /* Console.WriteLine(freq + " " + periodstd + " " + periodct); */
+                if (0 == freq) {
+                    return "";
+                } else {
+                    return Utils.FrequencyText(freq);
+                }
             }
             #endregion
 
-            #region Draw Utils
-            void allocImage() {
-                if (mContext == null) {
-                    mContext = CustomGraphics.FromImage(BoundingBox.Width, BoundingBox.Height);
-                }
-            }
-
+            #region [draw method]
             void drawSettingsWheel(CustomGraphics g) {
                 const int outR = 6 * 18 / 16;
                 const int inR = 4 * 18 / 16;
@@ -1299,132 +1362,6 @@ namespace Circuit.UI.Output {
                         y0 = y1;
                         x0 = x1;
                     }
-                }
-            }
-
-            string calcRMS() {
-                var plot = Plots[0];
-                int i;
-                double avg = 0;
-                int ipa = plot.Pointer + mScopePointCount - BoundingBox.Width;
-                var maxV = plot.MaxValues;
-                var minV = plot.MinValues;
-                double mid = (mMaxValue + mMinValue) / 2;
-                int state = -1;
-
-                /* skip zeroes */
-                for (i = 0; i != BoundingBox.Width; i++) {
-                    int ip = (i + ipa) & (mScopePointCount - 1);
-                    if (maxV[ip] != 0) {
-                        if (maxV[ip] > mid) {
-                            state = 1;
-                        }
-                        break;
-                    }
-                }
-                int firstState = -state;
-                int start = i;
-                int end = 0;
-                int waveCount = 0;
-                double endAvg = 0;
-                for (; i != BoundingBox.Width; i++) {
-                    int ip = (i + ipa) & (mScopePointCount - 1);
-                    bool sw = false;
-
-                    /* switching polarity? */
-                    if (state == 1) {
-                        if (maxV[ip] < mid) {
-                            sw = true;
-                        }
-                    } else if (minV[ip] > mid) {
-                        sw = true;
-                    }
-
-                    if (sw) {
-                        state = -state;
-                        /* completed a full cycle? */
-                        if (firstState == state) {
-                            if (waveCount == 0) {
-                                start = i;
-                                firstState = state;
-                                avg = 0;
-                            }
-                            waveCount++;
-                            end = i;
-                            endAvg = avg;
-                        }
-                    }
-                    if (waveCount > 0) {
-                        var m = (maxV[ip] + minV[ip]) * .5;
-                        avg += m * m;
-                    }
-                }
-                if (1 < waveCount) {
-                    var rms = Math.Sqrt(endAvg / (end - start));
-                    return Utils.VoltageText(rms) + "rms";
-                } else {
-                    return "";
-                }
-            }
-
-            string calcFrequency() {
-                /* try to get frequency
-                 * get average */
-                double avg = 0;
-                int i;
-                var plot = Plots[0];
-                int ipa = plot.Pointer + mScopePointCount - BoundingBox.Width;
-                var minV = plot.MinValues;
-                var maxV = plot.MaxValues;
-                for (i = 0; i != BoundingBox.Width; i++) {
-                    int ip = (i + ipa) & (mScopePointCount - 1);
-                    avg += minV[ip] + maxV[ip];
-                }
-                avg /= i * 2;
-                int state = 0;
-                double thresh = avg * .05;
-                int oi = 0;
-                double avperiod = 0;
-                int periodct = -1;
-                double avperiod2 = 0;
-                /* count period lengths */
-                for (i = 0; i != BoundingBox.Width; i++) {
-                    int ip = (i + ipa) & (mScopePointCount - 1);
-                    double q = maxV[ip] - avg;
-                    int os = state;
-                    if (q < thresh) {
-                        state = 1;
-                    } else if (q > -thresh) {
-                        state = 2;
-                    }
-                    if (state == 2 && os == 1) {
-                        int pd = i - oi;
-                        oi = i;
-                        /* short periods can't be counted properly */
-                        if (pd < 12) {
-                            continue;
-                        }
-                        /* skip first period, it might be too short */
-                        if (periodct >= 0) {
-                            avperiod += pd;
-                            avperiod2 += pd * pd;
-                        }
-                        periodct++;
-                    }
-                }
-                avperiod /= periodct;
-                avperiod2 /= periodct;
-                double periodstd = Math.Sqrt(avperiod2 - avperiod * avperiod);
-                double freq = 1 / (avperiod * ControlPanel.TimeStep * Speed);
-                /* don't show freq if standard deviation is too great */
-                if (periodct < 1 || periodstd > 2) {
-                    freq = 0;
-                }
-                /* Console.WriteLine(freq + " " + periodstd + " " + periodct); */
-                if (0 == freq) {
-                    return "";
-                } else {
-                    return Utils.UnitText(freq, "Hz");
                 }
             }
 

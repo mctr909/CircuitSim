@@ -100,10 +100,10 @@ namespace Circuit {
                     continue;
                 }
                 var scope = scopes[i];
-                if (scope.Position == selectedScope.Position) {
+                if (scope.Index == selectedScope.Index) {
                     hasStacks = true;
                 }
-                if (scope.Position < selectedScope.Position) {
+                if (scope.Index < selectedScope.Index) {
                     hasLeft = true;
                 }
             }

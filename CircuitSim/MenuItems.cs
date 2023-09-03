@@ -28,12 +28,7 @@ namespace Circuit {
         DELETE,
         UNDO,
         REDO,
-        CENTER_CIRCUIT,
-
-        STACK_ALL,
-        UNSTACK_ALL,
-        COMBINE_ALL,
-        SEPARATE_ALL
+        CENTER_CIRCUIT
     }
 
     public enum DUMP_ID {

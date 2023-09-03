@@ -287,21 +287,6 @@ namespace Circuit {
                 break;
             }
 
-            switch (item) {
-            case MENU_ITEM.STACK_ALL:
-                Scope.Property.StackAll();
-                break;
-            case MENU_ITEM.UNSTACK_ALL:
-                Scope.Property.UnstackAll();
-                break;
-            case MENU_ITEM.COMBINE_ALL:
-                Scope.Property.CombineAll();
-                break;
-            case MENU_ITEM.SEPARATE_ALL:
-                Scope.Property.SeparateAll();
-                break;
-            }
-
             Repaint();
         }
 
@@ -325,22 +310,22 @@ namespace Circuit {
             case ELEMENT_MENU_ITEM.SCOPE_WINDOW:
                 if (mMenuElm != null) {
                     int i;
-                    for (i = 0; i != Scope.Property.Count; i++) {
-                        if (Scope.Property.List[i].UI == null) {
+                    for (i = 0; i != Scope.Count; i++) {
+                        if (Scope.List[i].UI == null) {
                             break;
                         }
                     }
-                    if (i == Scope.Property.Count) {
-                        if (Scope.Property.Count == Scope.Property.List.Length) {
+                    if (i == Scope.Count) {
+                        if (Scope.Count == Scope.List.Length) {
                             return;
                         }
-                        Scope.Property.Count++;
-                        Scope.Property.List[i] = new Scope.Property();
-                        Scope.Property.List[i].Position = i;
+                        Scope.Count++;
+                        Scope.List[i] = new Scope.Property();
+                        Scope.List[i].Index = i;
                     }
-                    Scope.Property.List[i].SetElm(mMenuElm);
+                    Scope.List[i].SetElm(mMenuElm);
                     if (i > 0) {
-                        Scope.Property.List[i].Speed = Scope.Property.List[i - 1].Speed;
+                        Scope.List[i].Speed = Scope.List[i - 1].Speed;
                     }
                 }
                 break;
@@ -453,8 +438,8 @@ namespace Circuit {
             for (int i = 0; i != UIList.Count; i++) {
                 UIList[i].Elm.Reset();
             }
-            for (int i = 0; i != Scope.Property.Count; i++) {
-                Scope.Property.List[i].ResetGraph(true);
+            for (int i = 0; i != Scope.Count; i++) {
+                Scope.List[i].ResetGraph(true);
             }
             mAnalyzeFlag = true;
             if (Circuit.Time == 0) {
@@ -534,9 +519,9 @@ namespace Circuit {
             }
 
             if (code == Keys.Back || code == Keys.Delete) {
-                if (ScopeForm.SelectedScope != -1 && null != Scope.Property.List[ScopeForm.SelectedScope]) {
+                if (ScopeForm.SelectedScope != -1 && null != Scope.List[ScopeForm.SelectedScope]) {
                     /* Treat DELETE key with scope selected as "remove scope", not delete */
-                    Scope.Property.List[ScopeForm.SelectedScope].SetElm(null);
+                    Scope.List[ScopeForm.SelectedScope].SetElm(null);
                     ScopeForm.SelectedScope = -1;
                 } else {
                     mMenuElm = null;
@@ -612,13 +597,13 @@ namespace Circuit {
                 }
             }
 
-            if ((ScopeForm.SelectedScope != -1 && Scope.Property.List[ScopeForm.SelectedScope].CursorInSettingsWheel) ||
+            if ((ScopeForm.SelectedScope != -1 && Scope.List[ScopeForm.SelectedScope].CursorInSettingsWheel) ||
                 (ScopeForm.SelectedScope == -1 && Mouse.GripElm != null && (Mouse.GripElm is Scope) &&
                 ((Scope)Mouse.GripElm).Properties.CursorInSettingsWheel)) {
                 Console.WriteLine("Doing something");
                 Scope.Property s;
                 if (ScopeForm.SelectedScope != -1) {
-                    s = Scope.Property.List[ScopeForm.SelectedScope];
+                    s = Scope.List[ScopeForm.SelectedScope];
                 } else {
                     s = ((Scope)Mouse.GripElm).Properties;
                 }
@@ -919,8 +904,8 @@ namespace Circuit {
                 var ce = GetUI(i);
                 dump += ce.Dump() + "\n";
             }
-            for (i = 0; i != Scope.Property.Count; i++) {
-                string d = Scope.Property.List[i].Dump();
+            for (i = 0; i != Scope.Count; i++) {
+                string d = Scope.List[i].Dump();
                 if (d != null) {
                     dump += d + "\n";
                 }
@@ -952,7 +937,7 @@ namespace Circuit {
                 }
                 UIList.Clear();
                 ControlPanel.Reset();
-                Scope.Property.Count = 0;
+                Scope.Count = 0;
                 mLastIterTime = 0;
             }
 
@@ -983,9 +968,9 @@ namespace Circuit {
                         }
                         if (tint == 'o') {
                             var sc = new Scope.Property();
-                            sc.Position = Scope.Property.Count;
+                            sc.Index = Scope.Count;
                             sc.Undump(st);
-                            Scope.Property.List[Scope.Property.Count++] = sc;
+                            Scope.List[Scope.Count++] = sc;
                             break;
                         }
                         if (tint == '$') {
@@ -1871,8 +1856,8 @@ namespace Circuit {
                 }
                 Circuit.Time += ControlPanel.TimeStep;
 
-                for (int i = 0; i < Scope.Property.Count; i++) {
-                    Scope.Property.List[i].TimeStep();
+                for (int i = 0; i < Scope.Count; i++) {
+                    Scope.List[i].TimeStep();
                 }
                 for (int i = 0; i < UICount; i++) {
                     if (UIList[i] is Scope) {

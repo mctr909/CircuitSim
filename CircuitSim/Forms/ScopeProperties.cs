@@ -17,8 +17,6 @@ namespace Circuit.Forms {
             Show();
             rbVoltage.Checked = mScope.ShowVoltage;
             rbSpectrum.Checked = mScope.ShowFFT;
-            Left = x;
-            Top = Math.Max(0, y - Height);
             cmbColor.Items.Clear();
             foreach (var c in Enum.GetValues(typeof(Scope.Plot.E_COLOR))) {
                 if ((Scope.Plot.E_COLOR)c == Scope.Plot.E_COLOR.INVALID) {
@@ -26,8 +24,12 @@ namespace Circuit.Forms {
                 }
                 cmbColor.Items.Add(c);
             }
-            Visible = true;
+            cmbColor.SelectedIndex = (int)mScope.Plots[mScope.SelectedPlot].ColorIndex;
             setScopeSpeedLabel();
+            ScopeProperties_Load(null, null);
+            Left = Math.Max(0, x - Width / 2);
+            Top = Math.Max(0, y - Height / 2);
+            Visible = true;
         }
 
         private void ScopeProperties_Load(object sender, EventArgs e) {
