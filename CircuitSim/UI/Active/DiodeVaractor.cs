@@ -30,11 +30,11 @@ namespace Circuit.UI.Active {
         public override void SetPoints() {
             BODY_LEN = 12;
             base.SetPoints();
-            var plate11 = (BODY_LEN - 4.0) / BODY_LEN;
-            var plate12 = (BODY_LEN - 5.0) / BODY_LEN;
-            var plate21 = (BODY_LEN - 1.0) / BODY_LEN;
+            var plate11 = 1.0 - 3.0 / BODY_LEN;
+            var plate12 = 1.0 - 5.0 / BODY_LEN;
+            var plate2 = 1.0 - 1.0 / BODY_LEN;
             var pa = new PointF[2];
-            interpLeadAB(ref pa[0], ref pa[1], 0, HS);
+            interpLeadAB(ref pa[0], ref pa[1], -1.0 / BODY_LEN, HS);
             var arrowPoint = new PointF();
             interpLead(ref arrowPoint, plate11);
             mPoly = new PointF[] { pa[0], pa[1], arrowPoint };
@@ -43,7 +43,7 @@ namespace Circuit.UI.Active {
             mPlate2 = new PointF[4];
             interpLeadAB(ref mPlate1[0], ref mPlate1[1], plate11, HS);
             interpLeadAB(ref mPlate1[3], ref mPlate1[2], plate12, HS);
-            interpLeadAB(ref mPlate2[0], ref mPlate2[1], plate21, HS);
+            interpLeadAB(ref mPlate2[0], ref mPlate2[1], plate2, HS);
             interpLeadAB(ref mPlate2[3], ref mPlate2[2], 1, HS);
             setTextPos();
         }

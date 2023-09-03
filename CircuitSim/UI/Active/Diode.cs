@@ -9,7 +9,7 @@ namespace Circuit.UI.Active {
     class Diode : BaseUI {
         public const int FLAG_FWDROP = 1;
         public const int FLAG_MODEL = 2;
-        protected const int HS = 5;
+        protected const float HS = 5.5f;
         protected int BODY_LEN = 9;
 
         protected PointF[] mPoly;
@@ -45,9 +45,9 @@ namespace Circuit.UI.Active {
             setLeads(BODY_LEN);
             mCathode = new PointF[4];
             interpLeadAB(ref mCathode[0], ref mCathode[1], (BODY_LEN - 1.0) / BODY_LEN, HS);
-            interpLeadAB(ref mCathode[3], ref mCathode[2], 1, HS);
+            interpLeadAB(ref mCathode[3], ref mCathode[2], (BODY_LEN + 1.0) / BODY_LEN, HS);
             var pa = new PointF[2];
-            interpLeadAB(ref pa[0], ref pa[1], 0, HS);
+            interpLeadAB(ref pa[0], ref pa[1], -1.0 / BODY_LEN, HS);
             mPoly = new PointF[] { pa[0], pa[1], _Lead2 };
             setTextPos();
         }
