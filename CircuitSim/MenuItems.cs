@@ -203,7 +203,7 @@ namespace Circuit {
             mi.Font = menuFont;
             mi.Text = title;
             mi.Click += new EventHandler((sender, e) => {
-                mSim.Performed(item);
+                mSim.AddElement(item);
                 if (null != mi.OwnerItem) {
                     for (int i = 0; i < mMainMenuItems.Count; i++) {
                         if (mMainMenuItems[i].Checked) {

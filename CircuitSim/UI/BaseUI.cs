@@ -54,7 +54,9 @@ namespace Circuit.UI {
                     return IsSelected;
                 }
                 /* Test if the current mouseElm is a ScopeElm and, if so, does it belong to this elm */
-                var isScopeElm = (_MouseElm is Scope) && ((Scope)_MouseElm).Properties.UI.Equals(this);
+                var isScopeElm = (_MouseElm is Scope) &&
+                    null != ((Scope)_MouseElm).Properties.UI &&
+                    ((Scope)_MouseElm).Properties.UI.Equals(this);
                 return _MouseElm.Equals(this) || IsSelected || isScopeElm;
             }
         }

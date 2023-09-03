@@ -7,6 +7,9 @@ using Circuit.Forms;
 
 namespace Circuit.UI.Output {
     public class Scope : BaseUI {
+        public static int MenuScope = -1;
+        public static int MenuPlotWave = -1;
+
         public Property Properties;
 
         public Scope(Point pos) : base(pos) {
@@ -69,6 +72,52 @@ namespace Circuit.UI.Output {
 
         public override void Draw(CustomGraphics g) {
             Properties.Draw(g, true);
+        }
+
+        public static void Performed(SCOPE_MENU_ITEM item) {
+            Property s;
+            if (MenuScope == -1) {
+                if (CirSimForm.Mouse.GripElm is Scope) {
+                    s = ((Scope)CirSimForm.Mouse.GripElm).Properties;
+                } else {
+                    return;
+                }
+            } else {
+                s = Property.List[MenuScope];
+            }
+            switch (item) {
+            case SCOPE_MENU_ITEM.REMOVE_SCOPE:
+                s.SetElm(null);  /* setupScopes() will clean this up */
+                break;
+            case SCOPE_MENU_ITEM.REMOVE_WAVE:
+                s.RemoveWave(MenuPlotWave);
+                break;
+            case SCOPE_MENU_ITEM.SPEED_UP:
+                s.SpeedUp();
+                break;
+            case SCOPE_MENU_ITEM.SPEED_DOWN:
+                s.SlowDown();
+                break;
+            case SCOPE_MENU_ITEM.MAX_SCALE:
+                s.MaxScale();
+                break;
+            case SCOPE_MENU_ITEM.STACK:
+                Property.Stack(MenuScope);
+                break;
+            case SCOPE_MENU_ITEM.UNSTACK:
+                Property.Unstack(MenuScope);
+                break;
+            case SCOPE_MENU_ITEM.COMBINE:
+                Property.Combine(MenuScope);
+                break;
+            case SCOPE_MENU_ITEM.RESET:
+                s.ResetGraph(true);
+                break;
+            case SCOPE_MENU_ITEM.PROPERTIES:
+                s.Properties(0, 0);
+                break;
+            }
+            CirSimForm.DeleteUnusedScopeElms();
         }
 
         public class Plot {
@@ -1386,7 +1435,6 @@ namespace Circuit.UI.Output {
                     g.DrawLeftText(t, 0, textY);
                     textY += 12;
                 }
-                var plot = Plots[0];
                 if (mShowV && ShowScale) {
                     string vScaleText = "";
                     if (mGridStepY != 0) {

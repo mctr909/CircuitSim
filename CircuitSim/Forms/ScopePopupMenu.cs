@@ -6,8 +6,6 @@ using Circuit.UI.Output;
 
 namespace Circuit {
     public enum SCOPE_MENU_ITEM {
-        DOCK,
-        UNDOCK,
         REMOVE_SCOPE,
         REMOVE_WAVE,
         SPEED_UP,
@@ -22,9 +20,6 @@ namespace Circuit {
 
     public class ScopePopupMenu {
         ContextMenuStrip mPopupMenu;
-        ToolStripMenuItem mDock;
-        ToolStripMenuItem mUndock;
-        ToolStripSeparator mDockSeparator;
         ToolStripMenuItem mCombine;
         ToolStripMenuItem mStack;
         ToolStripMenuItem mUnstack;
@@ -37,72 +32,62 @@ namespace Circuit {
 
         public ScopePopupMenu() {
             mPopupMenu = new ContextMenuStrip();
-            /* スコープの表示場所 */
-            mPopupMenu.Items.Add(mDock = new ToolStripMenuItem() { Text = "ウィンドウに表示" });
-            mDock.Click += new EventHandler((s, e) => {
-                CirSimForm.Performed(SCOPE_MENU_ITEM.DOCK);
-            });
-            mPopupMenu.Items.Add(mUndock = new ToolStripMenuItem() { Text = "任意の場所に表示" });
-            mUndock.Click += new EventHandler((s, e) => {
-                CirSimForm.Performed(SCOPE_MENU_ITEM.UNDOCK);
-            });
-            mPopupMenu.Items.Add(mDockSeparator = new ToolStripSeparator());
             /* 波形の配置 */
             mPopupMenu.Items.Add(mCombine = new ToolStripMenuItem() { Text = "左のスコープに重ねる" });
             mCombine.Click += new EventHandler((s, e) => {
-                CirSimForm.Performed(SCOPE_MENU_ITEM.COMBINE);
+                Scope.Performed(SCOPE_MENU_ITEM.COMBINE);
             });
             mPopupMenu.Items.Add(mStack = new ToolStripMenuItem() { Text = "左のスコープの下に並べる" });
             mStack.Click += new EventHandler((s, e) => {
-                CirSimForm.Performed(SCOPE_MENU_ITEM.STACK);
+                Scope.Performed(SCOPE_MENU_ITEM.STACK);
             });
             mPopupMenu.Items.Add(mUnstack = new ToolStripMenuItem() { Text = "右横に並べる" });
             mUnstack.Click += new EventHandler((s, e) => {
-                CirSimForm.Performed(SCOPE_MENU_ITEM.UNSTACK);
+                Scope.Performed(SCOPE_MENU_ITEM.UNSTACK);
             });
             mPopupMenu.Items.Add(mStackSeparator = new ToolStripSeparator());
             /* 削除 */
             mPopupMenu.Items.Add(mRemoveScope = new ToolStripMenuItem() { Text = "スコープの削除" });
             mRemoveScope.Click += new EventHandler((s, e) => {
-                CirSimForm.Performed(SCOPE_MENU_ITEM.REMOVE_SCOPE);
+                Scope.Performed(SCOPE_MENU_ITEM.REMOVE_SCOPE);
             });
             mPopupMenu.Items.Add(mRemoveWave = new ToolStripMenuItem() { Text = "選択波形の削除" });
             mRemoveWave.Click += new EventHandler((s, e) => {
-                CirSimForm.Performed(SCOPE_MENU_ITEM.REMOVE_WAVE);
+                Scope.Performed(SCOPE_MENU_ITEM.REMOVE_WAVE);
             });
             mPopupMenu.Items.Add(new ToolStripSeparator());
             /* 波形の状態更新 */
             mPopupMenu.Items.Add(mMaxScale = new ToolStripMenuItem() { Text = "振幅の最大化" });
             mMaxScale.Click += new EventHandler((s, e) => {
-                CirSimForm.Performed(SCOPE_MENU_ITEM.MAX_SCALE);
+                Scope.Performed(SCOPE_MENU_ITEM.MAX_SCALE);
             });
             mPopupMenu.Items.Add(mReset = new ToolStripMenuItem() { Text = "リセット" });
             mReset.Click += new EventHandler((s, e) => {
-                CirSimForm.Performed(SCOPE_MENU_ITEM.RESET);
+                Scope.Performed(SCOPE_MENU_ITEM.RESET);
             });
             mPopupMenu.Items.Add(new ToolStripSeparator());
             var speedUp = new ToolStripMenuItem() { Text = "速度を上げる" };
             mPopupMenu.Items.Add(speedUp);
             speedUp.Click += new EventHandler((s, e) => {
-                CirSimForm.Performed(SCOPE_MENU_ITEM.SPEED_UP);
+                Scope.Performed(SCOPE_MENU_ITEM.SPEED_UP);
             });
             var speedDown = new ToolStripMenuItem() { Text = "速度を下げる" };
             mPopupMenu.Items.Add(speedDown);
             speedDown.Click += new EventHandler((s, e) => {
-                CirSimForm.Performed(SCOPE_MENU_ITEM.SPEED_DOWN);
+                Scope.Performed(SCOPE_MENU_ITEM.SPEED_DOWN);
             });
             mPopupMenu.Items.Add(new ToolStripSeparator());
             /* 設定 */
             mPopupMenu.Items.Add(mProperties = new ToolStripMenuItem() { Text = "詳細設定" });
             mProperties.Click += new EventHandler((s, e) => {
-                CirSimForm.Performed(SCOPE_MENU_ITEM.PROPERTIES);
+                Scope.Performed(SCOPE_MENU_ITEM.PROPERTIES);
             });
         }
 
         public ContextMenuStrip Show(int px, int py, Scope.Property[] scopes, int selectedScopeIndex, bool floating) {
             doScopePopupChecks(scopes, selectedScopeIndex, floating);
             mPopupMenu.Show();
-            mPopupMenu.Location = new Point(px, py - mPopupMenu.Height - 8);
+            mPopupMenu.Location = new Point(px, py - 8);
             return mPopupMenu;
         }
 
@@ -122,9 +107,6 @@ namespace Circuit {
                     hasLeft = true;
                 }
             }
-            mDock.Visible = floating;
-            mUndock.Visible = !floating;
-            mDockSeparator.Visible = !floating;
             mCombine.Visible = !floating && hasLeft;
             mStack.Visible = !floating && hasLeft;
             mUnstack.Visible = !floating && hasStacks;

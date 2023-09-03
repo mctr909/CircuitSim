@@ -18,7 +18,7 @@ namespace Circuit.Forms {
             rbVoltage.Checked = mScope.ShowVoltage;
             rbSpectrum.Checked = mScope.ShowFFT;
             Left = x;
-            Top = y - Height;
+            Top = Math.Max(0, y - Height);
             cmbColor.Items.Clear();
             foreach (var c in Enum.GetValues(typeof(Scope.Plot.E_COLOR))) {
                 if ((Scope.Plot.E_COLOR)c == Scope.Plot.E_COLOR.INVALID) {

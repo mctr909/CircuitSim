@@ -10,6 +10,7 @@ namespace Circuit.Forms {
         public static int MouseCursorX { get; private set; } = -1;
         public static int MouseCursorY { get; private set; } = -1;
         public static int SelectedScope = -1;
+        static ScopePopupMenu mScopePopupMenu = new ScopePopupMenu();
 
         BaseUI mMouseElm = null;
         CustomGraphics mG;
@@ -47,7 +48,15 @@ namespace Circuit.Forms {
         }
 
         private void picScope_Click(object sender, EventArgs e) {
-            Instance.doPopupMenu(Left + MouseCursorX, Top + MouseCursorY);
+            Scope.MenuScope = -1;
+            Scope.MenuPlotWave = -1;
+            if (SelectedScope != -1) {
+                if (Scope.Property.List[SelectedScope].CanMenu) {
+                    Scope.MenuScope = SelectedScope;
+                    Scope.MenuPlotWave = Scope.Property.List[SelectedScope].SelectedPlot;
+                    mScopePopupMenu.Show(Left + MouseCursorX, Top + MouseCursorY, Scope.Property.List, SelectedScope, false);
+                }
+            }
         }
 
         void SelectElm() {

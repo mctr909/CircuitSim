@@ -128,8 +128,6 @@ namespace Circuit {
 
         Point mMenuClient;
         Point mMenuPos;
-        static int mMenuScope = -1;
-        static int mMenuPlotWave = -1;
 
         static long mLastTime = 0;
         static long mLastFrameTime;
@@ -211,6 +209,16 @@ namespace Circuit {
             Width = 800;
             Height = 600;
             mScopeForm.Show();
+        }
+
+        public void AddElement(DUMP_ID item) {
+            if (mContextMenu != null) {
+                mContextMenu.Close();
+            }
+            MouseMode = MOUSE_MODE.ADD_ELM;
+            Cursor = Cursors.Arrow;
+            Mouse.EditElm = item;
+            Repaint();
         }
 
         public void Performed(MENU_ITEM item) {
@@ -297,16 +305,6 @@ namespace Circuit {
             Repaint();
         }
 
-        public void Performed(DUMP_ID item) {
-            if (mContextMenu != null) {
-                mContextMenu.Close();
-            }
-            MouseMode = MOUSE_MODE.ADD_ELM;
-            Cursor = Cursors.Arrow;
-            Mouse.EditElm = item;
-            Repaint();
-        }
-
         public void Performed(ELEMENT_MENU_ITEM item) {
             if (mContextMenu != null) {
                 mContextMenu.Close();
@@ -355,86 +353,6 @@ namespace Circuit {
                 break;
             }
             Repaint();
-        }
-
-        public static void Performed(SCOPE_MENU_ITEM item) {
-            if (mContextMenu != null) {
-                mContextMenu.Close();
-            }
-
-            PushUndo();
-
-            Scope.Property s;
-            if (mMenuScope != -1) {
-                s = Scope.Property.List[mMenuScope];
-            } else {
-                if (Mouse.GripElm is Scope) {
-                    s = ((Scope)Mouse.GripElm).Properties;
-                } else {
-                    return;
-                }
-            }
-
-            if (null == s) {
-                deleteUnusedScopeElms();
-                return;
-            }
-
-            switch (item) {
-            case SCOPE_MENU_ITEM.DOCK:
-                if (Scope.Property.Count == Scope.Property.List.Length) {
-                    return;
-                }
-                Scope.Property.List[Scope.Property.Count] = ((Scope)Mouse.GripElm).Properties;
-                ((Scope)Mouse.GripElm).ClearElmScope();
-                Scope.Property.List[Scope.Property.Count].Position = Scope.Property.Count;
-                Scope.Property.Count++;
-                doDelete(false);
-                break;
-            case SCOPE_MENU_ITEM.UNDOCK:
-                if (0 <= mMenuScope) {
-                    var newScope = new Scope(SnapGrid(mMenuElm.Post.A.X + 50, mMenuElm.Post.A.Y + 50));
-                    UIList.Add(newScope);
-                    newScope.SetElmScope(Scope.Property.List[mMenuScope]);
-                    /* remove scope from list.  setupScopes() will fix the positions */
-                    for (int i = mMenuScope; i < Scope.Property.Count; i++) {
-                        Scope.Property.List[i] = Scope.Property.List[i + 1];
-                    }
-                    Scope.Property.Count--;
-                }
-                break;
-            case SCOPE_MENU_ITEM.REMOVE_SCOPE:
-                s.SetElm(null);  /* setupScopes() will clean this up */
-                break;
-            case SCOPE_MENU_ITEM.REMOVE_WAVE:
-                s.RemoveWave(mMenuPlotWave);
-                break;
-            case SCOPE_MENU_ITEM.SPEED_UP:
-                s.SpeedUp();
-                break;
-            case SCOPE_MENU_ITEM.SPEED_DOWN:
-                s.SlowDown();
-                break;
-            case SCOPE_MENU_ITEM.MAX_SCALE:
-                s.MaxScale();
-                break;
-            case SCOPE_MENU_ITEM.STACK:
-                Scope.Property.Stack(mMenuScope);
-                break;
-            case SCOPE_MENU_ITEM.UNSTACK:
-                Scope.Property.Unstack(mMenuScope);
-                break;
-            case SCOPE_MENU_ITEM.COMBINE:
-                Scope.Property.Combine(mMenuScope);
-                break;
-            case SCOPE_MENU_ITEM.RESET:
-                s.ResetGraph(true);
-                break;
-            case SCOPE_MENU_ITEM.PROPERTIES:
-                s.Properties(mPixCir.Left + mPixCir.Width / 2, mPixCir.Bottom);
-                break;
-            }
-            deleteUnusedScopeElms();
         }
 
         #region Public method
@@ -744,7 +662,7 @@ namespace Circuit {
             switch (MouseMode) {
             case MOUSE_MODE.ADD_ELM:
                 if (Mouse.EditElm != DUMP_ID.WIRE && !ControlPanel.ChkContinuousArrangement.Checked) {
-                    Performed(DUMP_ID.WIRE);
+                    AddElement(DUMP_ID.WIRE);
                     mMenuItems.AllUnchecked();
                     mMenuItems.tsmWire.Checked = true;
                     mMenuItems.tsmWire.OwnerItem.BackColor = Color.LightBlue;
@@ -1479,37 +1397,22 @@ namespace Circuit {
         }
 
         void onContextMenu(MouseEventArgs e) {
+            if (Mouse.GripElm == null) {
+                return;
+            }
             mMenuClient.X = Location.X + e.X;
             mMenuClient.Y = Location.Y + e.Y;
-            doPopupMenu();
-        }
-
-        public void doPopupMenu(int x, int y) {
-            mMenuClient.X = x;
-            mMenuClient.Y = y;
-            doPopupMenu();
-        }
-
-        void doPopupMenu() {
             mMenuElm = Mouse.GripElm;
-            mMenuScope = -1;
-            mMenuPlotWave = -1;
-            if (ScopeForm.SelectedScope != -1) {
-                if (Scope.Property.List[ScopeForm.SelectedScope].CanMenu) {
-                    mMenuScope = ScopeForm.SelectedScope;
-                    mMenuPlotWave = Scope.Property.List[ScopeForm.SelectedScope].SelectedPlot;
-                    mContextMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, Scope.Property.List, ScopeForm.SelectedScope, false);
+            if (Mouse.GripElm is Scope) {
+                Scope.MenuScope = -1;
+                Scope.MenuPlotWave = -1;
+                var s = (Scope)Mouse.GripElm;
+                if (s.Properties.CanMenu) {
+                    Scope.MenuPlotWave = s.Properties.SelectedPlot;
+                    mContextMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, new Scope.Property[] { s.Properties }, 0, true);
                 }
-            } else if (Mouse.GripElm != null) {
-                if (!(Mouse.GripElm is Scope)) {
-                    mContextMenu = mElementPopupMenu.Show(mMenuClient.X, mMenuClient.Y, Mouse.GripElm);
-                } else {
-                    var s = (Scope)Mouse.GripElm;
-                    if (s.Properties.CanMenu) {
-                        mMenuPlotWave = s.Properties.SelectedPlot;
-                        mContextMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, new Scope.Property[] { s.Properties }, 0, true);
-                    }
-                }
+            } else {
+                mContextMenu = mElementPopupMenu.Show(mMenuClient.X, mMenuClient.Y, Mouse.GripElm);
             }
         }
 
@@ -1609,7 +1512,7 @@ namespace Circuit {
             mRecovery = Storage.GetInstance().GetItem("circuitRecovery");
         }
 
-        static void deleteUnusedScopeElms() {
+        public static void DeleteUnusedScopeElms() {
             /* Remove any scopeElms for elements that no longer exist */
             for (int i = UICount - 1; 0 <= i; i--) {
                 var ce = GetUI(i);
@@ -1639,7 +1542,7 @@ namespace Circuit {
                 }
             }
             if (hasDeleted) {
-                deleteUnusedScopeElms();
+                DeleteUnusedScopeElms();
                 NeedAnalyze();
                 writeRecoveryToStorage();
             }
