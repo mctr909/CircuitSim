@@ -1,10 +1,10 @@
-﻿using Circuit.UI.Output;
+﻿using Circuit.Common;
 
 namespace Circuit.Elements.Output {
     class ElmScope : BaseElement {
-        private Scope.Property mScope;
+        private ScopePlot mScope;
 
-        public ElmScope(Scope.Property scope) { mScope = scope; }
+        public ElmScope(ScopePlot scope) { mScope = scope; }
 
         public override int TermCount { get { return 0; } }
 

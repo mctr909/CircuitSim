@@ -1,23 +1,29 @@
-﻿using Circuit.UI;
-using Circuit.UI.Output;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using static Circuit.CirSimForm;
+
+using Circuit.Common;
+using Circuit.UI;
 
 namespace Circuit.Forms {
     public partial class ScopeForm : Form {
-        public static int MouseCursorX { get; private set; } = -1;
-        public static int MouseCursorY { get; private set; } = -1;
-        public static int SelectedScope = -1;
-        static ScopePopupMenu mScopePopupMenu = new ScopePopupMenu();
+        const int INFO_WIDTH = 60;
 
+        public static int PlotCount { get; set; } = 0;
+
+        static ScopePlot[] mPlots = new ScopePlot[20];
+        static int mSelectedPlot = -1;
+        static int mSelectedWave = -1;
+
+        ContextMenuStrip mScopePopupMenu = null;
         BaseUI mMouseElm = null;
         CustomGraphics mG;
         Bitmap mBmp;
         Graphics mContext;
         int mWidth;
         int mHeight;
+        int mMouseCursorX = -1;
+        int mMouseCursorY = -1;
 
         public ScopeForm() {
             InitializeComponent();
@@ -32,18 +38,13 @@ namespace Circuit.Forms {
         }
 
         private void picScope_MouseMove(object sender, MouseEventArgs e) {
-            MouseCursorX = e.X;
-            MouseCursorY = e.Y;
-            SelectedScope = -1;
+            mMouseCursorX = e.X;
+            mMouseCursorY = e.Y;
         }
 
         private void picScope_MouseLeave(object sender, EventArgs e) {
-            MouseCursorX = -1;
-            MouseCursorY = -1;
-            SelectedScope = -1;
-            if (null != mMouseElm) {
-                mMouseElm.SetMouseElm(false);
-                mMouseElm = null;
+            if (null == mScopePopupMenu || !mScopePopupMenu.Visible) {
+                ClearUI();
             }
         }
 
@@ -51,13 +52,12 @@ namespace Circuit.Forms {
             var ev = (MouseEventArgs)e;
             switch (ev.Button) {
             case MouseButtons.Right:
-                Scope.MenuScope = -1;
-                Scope.MenuPlotWave = -1;
-                if (SelectedScope != -1) {
-                    if (Scope.List[SelectedScope].CanMenu) {
-                        Scope.MenuScope = SelectedScope;
-                        Scope.MenuPlotWave = Scope.List[SelectedScope].SelectedPlot;
-                        mScopePopupMenu.Show(Left + MouseCursorX, Top + MouseCursorY, Scope.List, SelectedScope, false);
+                mSelectedWave = -1;
+                if (0 <= mSelectedPlot) {
+                    if (mPlots[mSelectedPlot].CanMenu) {
+                        mSelectedWave = mPlots[mSelectedPlot].SelectedWave;
+                        var menu = new ScopePopupMenu();
+                        mScopePopupMenu = menu.Show(Left + mMouseCursorX, Top + mMouseCursorY, mPlots, mSelectedPlot, false);
                     }
                 }
                 break;
@@ -65,26 +65,24 @@ namespace Circuit.Forms {
         }
 
         private void picScope_DoubleClick(object sender, EventArgs e) {
-            Scope.MenuScope = -1;
-            Scope.MenuPlotWave = -1;
-            if (SelectedScope != -1) {
-                if (Scope.List[SelectedScope].CanMenu) {
+            mSelectedWave = -1;
+            if (mSelectedPlot != -1) {
+                if (mPlots[mSelectedPlot].CanMenu) {
                     var ev = (MouseEventArgs)e;
-                    Scope.MenuScope = SelectedScope;
-                    var scope = Scope.List[SelectedScope];
-                    Scope.MenuPlotWave = scope.SelectedPlot;
+                    var scope = mPlots[mSelectedPlot];
+                    mSelectedWave = scope.SelectedWave;
                     scope.Properties(ev.X + Left, ev.Y + Top);
                 }
             }
         }
 
-        void SelectElm() {
+        void SelectUI() {
             BaseUI selectElm = null;
-            for (int i = 0; i != Scope.Count; i++) {
-                var s = Scope.List[i];
-                if (s.BoundingBox.Contains(MouseCursorX, MouseCursorY)) {
-                    selectElm = s.UI;
-                    SelectedScope = i;
+            for (int i = 0; i != PlotCount; i++) {
+                var plot = mPlots[i];
+                if (plot.BoundingBox.Contains(mMouseCursorX, mMouseCursorY)) {
+                    selectElm = plot.UI;
+                    mSelectedPlot = i;
                     break;
                 }
             }
@@ -94,17 +92,28 @@ namespace Circuit.Forms {
                     mMouseElm = null;
                 }
             } else {
-                if (selectElm != Mouse.GripElm) {
-                    if (null != Mouse.GripElm) {
-                        Mouse.GripElm.SetMouseElm(false);
+                if (selectElm != CirSimForm.Mouse.GripElm) {
+                    if (null != CirSimForm.Mouse.GripElm) {
+                        CirSimForm.Mouse.GripElm.SetMouseElm(false);
                     }
                     if (null != mMouseElm) {
                         mMouseElm.SetMouseElm(false);
                     }
                     selectElm.SetMouseElm(true);
-                    Mouse.GripElm = selectElm;
+                    CirSimForm.Mouse.GripElm = selectElm;
                     mMouseElm = selectElm;
                 }
+            }
+        }
+
+        void ClearUI() {
+            mSelectedPlot = -1;
+            mSelectedWave = -1;
+            mMouseCursorX = -1;
+            mMouseCursorY = -1;
+            if (null != mMouseElm) {
+                mMouseElm.SetMouseElm(false);
+                mMouseElm = null;
             }
         }
 
@@ -142,7 +151,7 @@ namespace Circuit.Forms {
         }
 
         public void Draw(CustomGraphics pdf) {
-            SelectElm();
+            SelectUI();
             SetGraphics();
             CustomGraphics g;
             if (null == pdf) {
@@ -152,14 +161,17 @@ namespace Circuit.Forms {
             }
 
             g.Clear(ControlPanel.ChkPrintable.Checked ? Color.White : Color.Black);
-            Scope.Setup(g);
+            Setup(g.Width, g.Height);
 
-            var ct = Scope.Count;
+            var ct = PlotCount;
             if (Circuit.StopMessage != null) {
                 ct = 0;
             }
             for (int i = 0; i != ct; i++) {
-                Scope.List[i].Draw(g);
+                var plot = mPlots[i];
+                plot.MouseCursorX = mMouseCursorX;
+                plot.MouseCursorY = mMouseCursorY;
+                plot.Draw(g);
             }
 
             if (Circuit.StopMessage != null) {
@@ -172,7 +184,7 @@ namespace Circuit.Forms {
                 if (ct == 0) {
                     x = 0;
                 } else {
-                    x = Scope.List[ct - 1].RightEdge + 4;
+                    x = mPlots[ct - 1].RightEdge + 4;
                 }
                 for (int i = 0; i < info.Length && info[i] != null; i++) {
                     g.DrawElementText(info[i], x, 15 * (i + 1));
@@ -180,6 +192,201 @@ namespace Circuit.Forms {
             }
 
             Flush();
+        }
+
+        static void Setup(int width, int height) {
+            /* check scopes to make sure the elements still exist, and remove
+            /* unused scopes/columns */
+            int index = -1;
+            for (int i = 0; i < PlotCount; i++) {
+                if (mPlots[i].NeedToRemove) {
+                    int j;
+                    for (j = i; j != PlotCount; j++) {
+                        mPlots[j] = mPlots[j + 1];
+                    }
+                    PlotCount--;
+                    i--;
+                    continue;
+                }
+                if (mPlots[i].Index > index + 1) {
+                    mPlots[i].Index = index + 1;
+                }
+                index = mPlots[i].Index;
+            }
+
+            while (PlotCount > 0 && mPlots[PlotCount - 1].UI == null) {
+                PlotCount--;
+            }
+
+            if (PlotCount <= 0) {
+                return;
+            }
+
+            index = 0;
+            var scopeColCount = new int[PlotCount];
+            for (int i = 0; i != PlotCount; i++) {
+                index = Math.Max(mPlots[i].Index, index);
+                scopeColCount[mPlots[i].Index]++;
+            }
+            int colct = index + 1;
+            int iw = INFO_WIDTH;
+            if (colct <= 2) {
+                iw = iw * 3 / 2;
+            }
+            int w = (width - iw) / colct;
+            int marg = 10;
+            if (w < marg * 2) {
+                w = marg * 2;
+            }
+
+            index = -1;
+            int colh = 0;
+            int row = 0;
+            int speed = 0;
+            foreach (var s in mPlots) {
+                if (s == null || scopeColCount.Length <= s.Index) {
+                    break;
+                }
+                if (s.Index > index) {
+                    index = s.Index;
+                    var div = scopeColCount[index];
+                    if (0 < div) {
+                        colh = height / div;
+                    } else {
+                        colh = height;
+                    }
+                    row = 0;
+                    speed = s.Speed;
+                }
+                s.StackCount = scopeColCount[index];
+                if (s.Speed != speed) {
+                    s.Speed = speed;
+                    s.ResetGraph();
+                }
+                var r = new Rectangle(index * w, colh * row, w - marg, colh);
+                row++;
+                if (!r.Equals(s.BoundingBox)) {
+                    s.SetRect(r);
+                }
+            }
+        }
+
+        public static ScopePlot GetSelectedPlot() {
+            if (0 <= mSelectedPlot && mSelectedPlot < mPlots.Length) {
+                return mPlots[mSelectedPlot];
+            }
+            return null;
+        }
+
+        public static string Dump() {
+            var dump = "";
+            for (var i = 0; i != PlotCount; i++) {
+                var d = mPlots[i].Dump();
+                if (d != null) {
+                    dump += d + "\n";
+                }
+            }
+            return dump;
+        }
+
+        public static void Undump(StringTokenizer st) {
+            var plot = new ScopePlot();
+            plot.Index = PlotCount;
+            plot.Undump(st);
+            mPlots[PlotCount++] = plot;
+        }
+
+        public static void ResetGraph() {
+            for (int i = 0; i < PlotCount; i++) {
+                mPlots[i].ResetGraph(true);
+            }
+        }
+
+        public static void TimeStep() {
+            for (int i = 0; i < PlotCount; i++) {
+                mPlots[i].TimeStep();
+            }
+        }
+
+        public static void AddPlot(BaseUI ui) {
+            if (ui == null) {
+                return;
+            }
+            int i;
+            for (i = 0; i != PlotCount; i++) {
+                if (mPlots[i].UI == null) {
+                    break;
+                }
+            }
+            if (i == PlotCount) {
+                if (PlotCount == mPlots.Length) {
+                    return;
+                }
+                PlotCount++;
+                mPlots[i] = new ScopePlot();
+                mPlots[i].Index = i;
+            }
+            mPlots[i].SetUI(ui);
+            if (i > 0) {
+                mPlots[i].Speed = mPlots[i - 1].Speed;
+            }
+        }
+
+        public static void RemoveWave() {
+            if (mSelectedPlot < 0 || mPlots.Length <= mSelectedPlot) {
+                return;
+            }
+            var plot = mPlots[mSelectedPlot];
+            if (mSelectedWave < 0 || plot.Waves.Count <= mSelectedWave) {
+                return;
+            }
+            var p = plot.Waves[mSelectedWave];
+            plot.Waves.Remove(p);
+        }
+
+        public static void Stack() {
+            var p = mSelectedPlot;
+            if (p == 0) {
+                if (PlotCount < 2) {
+                    return;
+                }
+                p = 1;
+            }
+            if (mPlots[p].Index == mPlots[p - 1].Index) {
+                return;
+            }
+            mPlots[p].Index = mPlots[p - 1].Index;
+            for (p++; p < PlotCount; p++) {
+                mPlots[p].Index--;
+            }
+        }
+
+        public static void Unstack() {
+            var p = mSelectedPlot;
+            if (p == 0) {
+                if (PlotCount < 2) {
+                    return;
+                }
+                p = 1;
+            }
+            if (mPlots[p].Index != mPlots[p - 1].Index) {
+                return;
+            }
+            for (; p < PlotCount; p++) {
+                mPlots[p].Index++;
+            }
+        }
+
+        public static void Combine() {
+            var p = mSelectedPlot;
+            if (p == 0) {
+                if (PlotCount < 2) {
+                    return;
+                }
+                p = 1;
+            }
+            mPlots[p - 1].Combine(mPlots[p]);
+            mPlots[p].SetUI(null);
         }
     }
 }

@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using Circuit.Common;
+
 using Circuit.Elements.Active;
 using Circuit.Elements.Passive;
 
@@ -308,32 +310,13 @@ namespace Circuit {
                 doSliders(mMenuElm, mMenuClient);
                 break;
             case ELEMENT_MENU_ITEM.SCOPE_WINDOW:
-                if (mMenuElm != null) {
-                    int i;
-                    for (i = 0; i != Scope.Count; i++) {
-                        if (Scope.List[i].UI == null) {
-                            break;
-                        }
-                    }
-                    if (i == Scope.Count) {
-                        if (Scope.Count == Scope.List.Length) {
-                            return;
-                        }
-                        Scope.Count++;
-                        Scope.List[i] = new Scope.Property();
-                        Scope.List[i].Index = i;
-                    }
-                    Scope.List[i].SetElm(mMenuElm);
-                    if (i > 0) {
-                        Scope.List[i].Speed = Scope.List[i - 1].Speed;
-                    }
-                }
+                ScopeForm.AddPlot(mMenuElm);
                 break;
             case ELEMENT_MENU_ITEM.SCOPE_FLOAT:
                 if (mMenuElm != null) {
                     var newScope = new Scope(SnapGrid(mMenuElm.Post.A.X + 50, mMenuElm.Post.A.Y + 50));
                     UIList.Add(newScope);
-                    newScope.SetScopeElm(mMenuElm);
+                    newScope.SetScopeUI(mMenuElm);
                 }
                 break;
             }
@@ -438,9 +421,7 @@ namespace Circuit {
             for (int i = 0; i != UIList.Count; i++) {
                 UIList[i].Elm.Reset();
             }
-            for (int i = 0; i != Scope.Count; i++) {
-                Scope.List[i].ResetGraph(true);
-            }
+            ScopeForm.ResetGraph();
             mAnalyzeFlag = true;
             if (Circuit.Time == 0) {
                 SetSimRunning(true);
@@ -519,15 +500,9 @@ namespace Circuit {
             }
 
             if (code == Keys.Back || code == Keys.Delete) {
-                if (ScopeForm.SelectedScope != -1 && null != Scope.List[ScopeForm.SelectedScope]) {
-                    /* Treat DELETE key with scope selected as "remove scope", not delete */
-                    Scope.List[ScopeForm.SelectedScope].SetElm(null);
-                    ScopeForm.SelectedScope = -1;
-                } else {
-                    mMenuElm = null;
-                    PushUndo();
-                    doDelete(true);
-                }
+                mMenuElm = null;
+                PushUndo();
+                doDelete(true);
             }
 
             if (code == Keys.Escape || e.KeyValue == 32) {
@@ -597,16 +572,9 @@ namespace Circuit {
                 }
             }
 
-            if ((ScopeForm.SelectedScope != -1 && Scope.List[ScopeForm.SelectedScope].CursorInSettingsWheel) ||
-                (ScopeForm.SelectedScope == -1 && Mouse.GripElm != null && (Mouse.GripElm is Scope) &&
-                ((Scope)Mouse.GripElm).Properties.CursorInSettingsWheel)) {
+            if (Mouse.GripElm != null && (Mouse.GripElm is Scope) && ((Scope)Mouse.GripElm).Plot.CursorInSettingsWheel) {
                 Console.WriteLine("Doing something");
-                Scope.Property s;
-                if (ScopeForm.SelectedScope != -1) {
-                    s = Scope.List[ScopeForm.SelectedScope];
-                } else {
-                    s = ((Scope)Mouse.GripElm).Properties;
-                }
+                var s = ((Scope)Mouse.GripElm).Plot;
                 s.Properties(mPixCir.Left + mPixCir.Width / 2, mPixCir.Bottom);
                 clearSelection();
                 Mouse.IsDragging = false;
@@ -904,12 +872,7 @@ namespace Circuit {
                 var ce = GetUI(i);
                 dump += ce.Dump() + "\n";
             }
-            for (i = 0; i != Scope.Count; i++) {
-                string d = Scope.List[i].Dump();
-                if (d != null) {
-                    dump += d + "\n";
-                }
-            }
+            dump += ScopeForm.Dump();
             for (i = 0; i != Adjustables.Count; i++) {
                 var adj = Adjustables[i];
                 dump += adj.Dump() + "\n";
@@ -937,7 +900,7 @@ namespace Circuit {
                 }
                 UIList.Clear();
                 ControlPanel.Reset();
-                Scope.Count = 0;
+                ScopeForm.PlotCount = 0;
                 mLastIterTime = 0;
             }
 
@@ -967,10 +930,7 @@ namespace Circuit {
                             continue;
                         }
                         if (tint == 'o') {
-                            var sc = new Scope.Property();
-                            sc.Index = Scope.Count;
-                            sc.Undump(st);
-                            Scope.List[Scope.Count++] = sc;
+                            ScopeForm.Undump(st);
                             break;
                         }
                         if (tint == '$') {
@@ -1342,7 +1302,6 @@ namespace Circuit {
             int gx = inverseTransformX(mx);
             int gy = inverseTransformY(my);
 
-            ScopeForm.SelectedScope = -1;
             Mouse.DragGrid.X = SnapGrid(gx);
             Mouse.DragGrid.Y = SnapGrid(gy);
             Mouse.DragScreen.X = mx;
@@ -1389,12 +1348,9 @@ namespace Circuit {
             mMenuClient.Y = Location.Y + e.Y;
             mMenuElm = Mouse.GripElm;
             if (Mouse.GripElm is Scope) {
-                Scope.MenuScope = -1;
-                Scope.MenuPlotWave = -1;
                 var s = (Scope)Mouse.GripElm;
-                if (s.Properties.CanMenu) {
-                    Scope.MenuPlotWave = s.Properties.SelectedPlot;
-                    mContextMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, new Scope.Property[] { s.Properties }, 0, true);
+                if (s.Plot.CanMenu) {
+                    mContextMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, new ScopePlot[] { s.Plot }, 0, true);
                 }
             } else {
                 mContextMenu = mElementPopupMenu.Show(mMenuClient.X, mMenuClient.Y, Mouse.GripElm);
@@ -1402,13 +1358,12 @@ namespace Circuit {
         }
 
         void clearMouseElm() {
-            ScopeForm.SelectedScope = -1;
             setMouseElm(null);
             PlotXElm = PlotYElm = null;
         }
 
         void scrollValues(int deltay) {
-            if (Mouse.GripElm != null && !DialogIsShowing() && ScopeForm.SelectedScope == -1) {
+            if (Mouse.GripElm != null && !DialogIsShowing()) {
                 if ((Mouse.GripElm is Resistor) || (Mouse.GripElm is Capacitor) || (Mouse.GripElm is Inductor)) {
                     mScrollValuePopup = new ScrollValuePopup(deltay, Mouse.GripElm);
                     mScrollValuePopup.Show(
@@ -1501,7 +1456,7 @@ namespace Circuit {
             /* Remove any scopeElms for elements that no longer exist */
             for (int i = UICount - 1; 0 <= i; i--) {
                 var ce = GetUI(i);
-                if ((ce is Scope) && ((Scope)ce).Properties.NeedToRemove) {
+                if ((ce is Scope) && ((Scope)ce).Plot.NeedToRemove) {
                     ce.Delete();
                     UIList.RemoveAt(i);
                 }
@@ -1855,10 +1810,7 @@ namespace Circuit {
                     break;
                 }
                 Circuit.Time += ControlPanel.TimeStep;
-
-                for (int i = 0; i < Scope.Count; i++) {
-                    Scope.List[i].TimeStep();
-                }
+                ScopeForm.TimeStep();
                 for (int i = 0; i < UICount; i++) {
                     if (UIList[i] is Scope) {
                         ((Scope)UIList[i]).StepScope();

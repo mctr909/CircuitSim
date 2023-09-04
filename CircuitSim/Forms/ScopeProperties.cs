@@ -1,31 +1,30 @@
 ﻿using System;
 using System.Windows.Forms;
-
-using Circuit.UI.Output;
+using Circuit.Common;
 
 namespace Circuit.Forms {
     public partial class ScopeProperties : Form {
-        Scope.Property mScope;
+        ScopePlot mPlot;
 
-        public ScopeProperties(Scope.Property scope) {
+        public ScopeProperties(ScopePlot scope) {
             InitializeComponent();
-            mScope = scope;
+            mPlot = scope;
             Visible = false;
         }
 
         public void Show(int x, int y) {
             Show();
-            rbVoltage.Checked = mScope.ShowVoltage;
-            rbSpectrum.Checked = mScope.ShowFFT;
+            rbVoltage.Checked = mPlot.ShowVoltage;
+            rbSpectrum.Checked = mPlot.ShowFFT;
             cmbColor.Items.Clear();
-            foreach (var c in Enum.GetValues(typeof(Scope.Plot.E_COLOR))) {
-                if ((Scope.Plot.E_COLOR)c == Scope.Plot.E_COLOR.INVALID) {
+            foreach (var c in Enum.GetValues(typeof(ScopePlot.E_COLOR))) {
+                if ((ScopePlot.E_COLOR)c == ScopePlot.E_COLOR.INVALID) {
                     continue;
                 }
                 cmbColor.Items.Add(c);
             }
-            if (0 <= mScope.SelectedPlot) {
-                cmbColor.SelectedIndex = (int)mScope.Plots[mScope.SelectedPlot].ColorIndex;
+            if (0 <= mPlot.SelectedWave) {
+                cmbColor.SelectedIndex = (int)mPlot.Waves[mPlot.SelectedWave].Color;
             }
             setScopeSpeedLabel();
             ScopeProperties_Load(null, null);
@@ -35,46 +34,45 @@ namespace Circuit.Forms {
         }
 
         private void ScopeProperties_Load(object sender, EventArgs e) {
-            var plotIdx = mScope.SelectedPlot;
-            if (plotIdx < 0 || cmbColor.Items.Count <= plotIdx) {
+            if (mPlot.SelectedWave < 0 || cmbColor.Items.Count <= mPlot.SelectedWave) {
                 return;
             }
-            chkScale.Checked = mScope.ShowScale;
-            chkPeak.Checked = mScope.ShowMax;
-            chkNegPeak.Checked = mScope.ShowMin;
+            chkScale.Checked = mPlot.ShowScale;
+            chkPeak.Checked = mPlot.ShowMax;
+            chkNegPeak.Checked = mPlot.ShowMin;
             
-            chkScale.Enabled = mScope.ShowVoltage;
-            chkPeak.Enabled = mScope.ShowVoltage;
-            chkNegPeak.Enabled = mScope.ShowVoltage;
-            cmbColor.Enabled = mScope.ShowVoltage;
-            lblColor.Enabled = mScope.ShowVoltage;
+            chkScale.Enabled = mPlot.ShowVoltage;
+            chkPeak.Enabled = mPlot.ShowVoltage;
+            chkNegPeak.Enabled = mPlot.ShowVoltage;
+            cmbColor.Enabled = mPlot.ShowVoltage;
+            lblColor.Enabled = mPlot.ShowVoltage;
 
-            chkRms.Checked = mScope.ShowRMS;
-            chkFreq.Checked = mScope.ShowFreq;
+            chkRms.Checked = mPlot.ShowRMS;
+            chkFreq.Checked = mPlot.ShowFreq;
 
-            tbSpeed.Value = tbSpeed.Maximum - (int)Math.Round(Math.Log(mScope.Speed) / Math.Log(2));
-            txtManualScale.Text = ElementInfoDialog.UnitString(null, mScope.ScaleValue);
-            chkManualScale.Checked = mScope.ManualScale;
-            txtManualScale.Enabled = mScope.ManualScale;
-            chkLogSpectrum.Checked = mScope.LogSpectrum;
-            chkLogSpectrum.Enabled = mScope.ShowFFT;
-            txtLabel.Text = mScope.Text;
+            tbSpeed.Value = tbSpeed.Maximum - (int)Math.Round(Math.Log(mPlot.Speed) / Math.Log(2));
+            txtManualScale.Text = ElementInfoDialog.UnitString(null, mPlot.ScaleValue);
+            chkManualScale.Checked = mPlot.ManualScale;
+            txtManualScale.Enabled = mPlot.ManualScale;
+            chkLogSpectrum.Checked = mPlot.LogSpectrum;
+            chkLogSpectrum.Enabled = mPlot.ShowFFT;
+            txtLabel.Text = mPlot.Text;
 
-            cmbColor.SelectedIndex = (int)mScope.Plots[plotIdx].ColorIndex;
+            cmbColor.SelectedIndex = (int)mPlot.Waves[mPlot.SelectedWave].Color;
             setScopeSpeedLabel();
         }
 
         private void tbSpeed_ValueChanged(object sender, EventArgs e) {
             int newsp = (int)Math.Pow(2, tbSpeed.Maximum - tbSpeed.Value);
-            if (mScope.Speed != newsp) {
-                mScope.Speed = newsp;
+            if (mPlot.Speed != newsp) {
+                mPlot.Speed = newsp;
             }
             setScopeSpeedLabel();
         }
 
         private void txtManualScale_TextChanged(object sender, EventArgs e) {
             var d = ElementInfoDialog.ParseUnits(txtManualScale.Text);
-            mScope.ScaleValue = d;
+            mPlot.ScaleValue = d;
         }
 
         private void txtLabel_TextChanged(object sender, EventArgs e) {
@@ -82,11 +80,11 @@ namespace Circuit.Forms {
             if (label.Length == 0) {
                 label = null;
             }
-            mScope.Text = label;
+            mPlot.Text = label;
         }
 
         private void chkManualScale_CheckedChanged(object sender, EventArgs e) {
-            mScope.ManualScale = chkManualScale.Checked;
+            mPlot.ManualScale = chkManualScale.Checked;
             txtManualScale.Enabled = chkManualScale.Checked;
             if (chkManualScale.Checked) {
                 txtManualScale_TextChanged(sender, e);
@@ -94,46 +92,45 @@ namespace Circuit.Forms {
         }
 
         private void chkScale_CheckedChanged(object sender, EventArgs e) {
-            mScope.ShowScale = chkScale.Checked;
+            mPlot.ShowScale = chkScale.Checked;
         }
 
         private void chkPeak_CheckedChanged(object sender, EventArgs e) {
-            mScope.ShowMax = chkPeak.Checked;
+            mPlot.ShowMax = chkPeak.Checked;
         }
 
         private void chkNegPeak_CheckedChanged(object sender, EventArgs e) {
-            mScope.ShowMin = chkNegPeak.Checked;
+            mPlot.ShowMin = chkNegPeak.Checked;
         }
 
         private void chkRms_CheckedChanged(object sender, EventArgs e) {
-            mScope.ShowRMS = chkRms.Checked;
+            mPlot.ShowRMS = chkRms.Checked;
         }
 
         private void chkFreq_CheckedChanged(object sender, EventArgs e) {
-            mScope.ShowFreq = chkFreq.Checked;
+            mPlot.ShowFreq = chkFreq.Checked;
         }
 
         private void rbVoltage_CheckedChanged(object sender, EventArgs e) {
-            mScope.ShowVoltage = rbVoltage.Checked;
+            mPlot.ShowVoltage = rbVoltage.Checked;
             ScopeProperties_Load(sender, e);
         }
 
         private void rbSpectrum_CheckedChanged(object sender, EventArgs e) {
-            mScope.ShowFFT = rbSpectrum.Checked;
+            mPlot.ShowFFT = rbSpectrum.Checked;
             chkLogSpectrum.Enabled = rbSpectrum.Checked;
         }
 
         private void cmbColor_SelectedIndexChanged(object sender, EventArgs e) {
-            var plotIdx = mScope.SelectedPlot;
-            mScope.Plots[plotIdx].SetColor(cmbColor.SelectedIndex);
+            mPlot.Waves[mPlot.SelectedWave].SetColor(cmbColor.SelectedIndex);
         }
 
         private void chkLogSpectrum_CheckedChanged(object sender, EventArgs e) {
-            mScope.LogSpectrum = chkLogSpectrum.Checked;
+            mPlot.LogSpectrum = chkLogSpectrum.Checked;
         }
 
         private void setScopeSpeedLabel() {
-            lblScopeSpeed.Text = Utils.UnitText(mScope.CalcGridStepX(), "s") + "/div";
+            lblScopeSpeed.Text = Utils.UnitText(mPlot.CalcGridStepX(), "s") + "/div";
         }
     }
 }

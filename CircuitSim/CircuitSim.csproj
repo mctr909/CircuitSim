@@ -69,6 +69,8 @@
   <ItemGroup>
     <Compile Include="Common\Deflate.cs" />
     <Compile Include="Common\PDF.cs" />
+    <Compile Include="Common\ScopePlot.cs" />
+    <Compile Include="Common\ScopeWave.cs" />
     <Compile Include="Elements\Active\ElmAnalogSwitch.cs" />
     <Compile Include="Elements\Logic\ElmDeMultiplexer.cs" />
     <Compile Include="Elements\Logic\ElmFullAdder.cs" />
