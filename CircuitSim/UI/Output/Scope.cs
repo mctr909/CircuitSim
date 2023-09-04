@@ -5,7 +5,7 @@ using Circuit.Common;
 using Circuit.Elements.Output;
 
 namespace Circuit.UI.Output {
-    public class Scope : BaseUI {        
+    public class Scope : BaseUI {
         public ScopePlot Plot;
 
         public Scope(Point pos) : base(pos) {

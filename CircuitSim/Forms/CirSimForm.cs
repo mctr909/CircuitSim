@@ -572,7 +572,7 @@ namespace Circuit {
                 }
             }
 
-            if (Mouse.GripElm != null && (Mouse.GripElm is Scope) && ((Scope)Mouse.GripElm).Plot.CursorInSettingsWheel) {
+            if (Mouse.GripElm != null && Mouse.GripElm is Scope) {
                 Console.WriteLine("Doing something");
                 var s = ((Scope)Mouse.GripElm).Plot;
                 s.Properties(mPixCir.Left + mPixCir.Width / 2, mPixCir.Bottom);

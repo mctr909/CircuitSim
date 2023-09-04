@@ -184,7 +184,7 @@ namespace Circuit.Forms {
                 if (ct == 0) {
                     x = 0;
                 } else {
-                    x = mPlots[ct - 1].RightEdge + 4;
+                    x = mPlots[ct - 1].Right + 4;
                 }
                 for (int i = 0; i < info.Length && info[i] != null; i++) {
                     g.DrawElementText(info[i], x, 15 * (i + 1));
