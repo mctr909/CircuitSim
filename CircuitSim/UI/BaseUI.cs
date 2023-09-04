@@ -438,10 +438,7 @@ namespace Circuit.UI {
         }
 
         protected void drawCurrent(float ax, float ay, float bx, float by, double pos) {
-            if ((!CirSimForm.IsRunning) || pos == 0 || !ControlPanel.ChkShowCurrent.Checked) {
-                return;
-            }
-            if (ControlPanel.ChkPrintable.Checked) {
+            if ((!CirSimForm.IsRunning) || ControlPanel.ChkPrintable.Checked || !ControlPanel.ChkShowCurrent.Checked) {
                 return;
             }
             pos %= CirSimForm.CURRENT_DOT_SIZE;
