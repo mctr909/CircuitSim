@@ -381,65 +381,46 @@ namespace Circuit.UI {
             Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawLine(a.X, a.Y, b.X, b.Y);
         }
-
         protected void drawLine(float ax, float ay, float bx, float by) {
             Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawLine(ax, ay, bx, by);
         }
-
         protected void drawDashRectangle(float x, float y, float w, float h) {
             Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawDashRectangle(x, y, w, h);
         }
-
         protected void drawCircle(PointF p, float radius) {
             Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawCircle(p, radius);
         }
-
         protected void drawPolygon(PointF[] p) {
             Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawPolygon(p);
         }
-
         protected void drawPolyline(PointF[] p) {
             Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawPolyline(p);
         }
-
         protected void fillPolygon(PointF[] p) {
             var color = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.FillPolygon(color, p);
         }
-
         protected void drawLeadA() {
             Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawLine(Post.A, _Lead1);
         }
-
         protected void drawLeadB() {
             Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawLine(_Lead2, Post.B);
         }
-
         protected void draw2Leads() {
             Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            /* draw first lead */
             Context.DrawLine(Post.A, _Lead1);
-            /* draw second lead */
             Context.DrawLine(_Lead2, Post.B);
         }
-
-        /// <summary>
-        /// draw current dots from point a to b
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <param name="pos"></param>
         protected void drawCurrent(PointF a, PointF b, double pos) {
             drawCurrent(a.X, a.Y, b.X, b.Y, pos);
         }
-
         protected void drawCurrent(float ax, float ay, float bx, float by, double pos) {
             if ((!CirSimForm.IsRunning) || ControlPanel.ChkPrintable.Checked || !ControlPanel.ChkShowCurrent.Checked) {
                 return;
@@ -459,15 +440,12 @@ namespace Circuit.UI {
                 Context.DrawCurrent(x0, y0, 0.5f);
             }
         }
-
         protected void drawCurrentA(double pos) {
             drawCurrent(Post.A, _Lead1, pos);
         }
-
         protected void drawCurrentB(double pos) {
             drawCurrent(_Lead2, Post.B, pos);
         }
-
         protected void drawCenteredText(string text, PointF centerPos, double rotateAngle = 0) {
             var fs = Context.GetTextSize(text);
             var w = fs.Width;
@@ -478,7 +456,6 @@ namespace Circuit.UI {
             );
             Context.DrawCenteredText(text, centerPos, rotateAngle);
         }
-
         protected void drawCenteredLText(string s, PointF p, bool cx) {
             var fs = Context.GetTextSizeL(s);
             var w = fs.Width;
@@ -496,29 +473,20 @@ namespace Circuit.UI {
             }
             Context.DrawCenteredLText(s, p);
         }
-
-        /// <summary>
-        /// draw component values (number of resistor ohms, etc).
-        /// </summary>
-        /// <param name="s"></param>
         protected void drawValues(string s, int offsetX, int offsetY) {
             if (s == null) {
                 return;
             }
             var textSize = Context.GetTextSize(s);
-            int xc, yc;
-            xc = Post.B.X;
-            yc = Post.B.Y;
-            yc = Post.B.Y;
+            var xc = Post.B.X;
+            var yc = Post.B.Y;
             Context.DrawRightText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
         }
-
         protected void drawValue(string s) {
             if (ControlPanel.ChkShowValues.Checked) {
                 drawCenteredText(s, _ValuePos, _TextRot);
             }
         }
-
         protected void drawName() {
             if (ControlPanel.ChkShowName.Checked) {
                 drawCenteredText(ReferenceName, _NamePos, _TextRot);

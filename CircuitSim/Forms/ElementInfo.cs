@@ -52,7 +52,7 @@ namespace Circuit {
             Value = val;
             TextDouble = new TextBox() {
                 Text = val.ToString(),
-                Width = 60,
+                Width = 50,
                 TextAlign = HorizontalAlignment.Right
             };
             TextDouble.Font = mTextFont;

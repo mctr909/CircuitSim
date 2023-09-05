@@ -69,8 +69,8 @@ namespace Circuit.UI.Input {
         public const string VALUE_NAME_AMP = "振幅";
         public const string VALUE_NAME_BIAS = "バイアス電圧";
         public const string VALUE_NAME_HZ = "周波数";
-        public const string VALUE_NAME_PHASE = "位相(deg)";
-        public const string VALUE_NAME_PHASE_OFS = "オフセット位相(deg)";
+        public const string VALUE_NAME_PHASE = "位相";
+        public const string VALUE_NAME_PHASE_OFS = "オフセット位相";
         public const string VALUE_NAME_DUTY = "デューティ比";
 
         protected override BaseLink _Link { get; set; } = new VoltageLink();

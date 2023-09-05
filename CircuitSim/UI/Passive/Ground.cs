@@ -10,6 +10,8 @@ namespace Circuit.UI.Passive {
 
         public Ground(Point pos) : base(pos) {
             Elm = new ElmGround();
+            Post.B.Y = pos.Y + CirSimForm.GRID_SIZE;
+            SetPoints();
         }
 
         public Ground(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {

@@ -11,7 +11,7 @@ namespace Circuit.Elements {
         }
 
         protected int mVoltSource;
-        protected Point[] mNodePos = new Point[4];
+        protected Point[] mNodePos;
 
         #region [property]
         public abstract int TermCount { get; }
@@ -60,6 +60,7 @@ namespace Circuit.Elements {
         }
 
         public void SetNodePos(params PointF[] node) {
+            mNodePos = new Point[node.Length];
             for (int i = 0; i < node.Length; i++) {
                 mNodePos[i].X = (int)node[i].X;
                 mNodePos[i].Y = (int)node[i].Y;
@@ -67,6 +68,7 @@ namespace Circuit.Elements {
         }
 
         public void SetNodePos(params Point[] node) {
+            mNodePos = new Point[node.Length];
             for (int i = 0; i < node.Length; i++) {
                 mNodePos[i].X = node[i].X;
                 mNodePos[i].Y = node[i].Y;
