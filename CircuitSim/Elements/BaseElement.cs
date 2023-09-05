@@ -66,6 +66,13 @@ namespace Circuit.Elements {
             }
         }
 
+        public void SetNodePos(params Point[] node) {
+            for (int i = 0; i < node.Length; i++) {
+                mNodePos[i].X = node[i].X;
+                mNodePos[i].Y = node[i].Y;
+            }
+        }
+
         public virtual Point GetNodePos(int n) { return mNodePos[n]; }
 
         public virtual double GetVoltageDiff() { return Volts[0] - Volts[1]; }
