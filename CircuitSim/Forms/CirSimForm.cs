@@ -15,7 +15,6 @@ using Circuit.UI;
 using Circuit.UI.Passive;
 using Circuit.UI.Output;
 using Circuit.Forms;
-using Circuit.UI.Input;
 
 namespace Circuit {
     public partial class CirSimForm : Form {
@@ -103,7 +102,6 @@ namespace Circuit {
 
         static ContextMenuStrip mContextMenu = null;
         ElementPopupMenu mElementPopupMenu;
-        ScopePopupMenu mScopePopupMenu;
 
         static PictureBox mPixCir;
         static Bitmap mBmp = null;
@@ -203,7 +201,6 @@ namespace Circuit {
             ControlPanel.SetSliderPanelHeight();
 
             mElementPopupMenu = new ElementPopupMenu(this);
-            mScopePopupMenu = new ScopePopupMenu();
 
             SetSimRunning(true);
         }
@@ -1339,7 +1336,8 @@ namespace Circuit {
             if (Mouse.GripElm is Scope) {
                 var s = (Scope)Mouse.GripElm;
                 if (s.Plot.CanMenu) {
-                    mContextMenu = mScopePopupMenu.Show(mMenuClient.X, mMenuClient.Y, new ScopePlot[] { s.Plot }, 0, true);
+                    var fm = new ScopePopupMenu();
+                    mContextMenu = fm.Show(mMenuClient.X, mMenuClient.Y, new ScopePlot[] { s.Plot }, 0, true);
                 }
             } else {
                 mContextMenu = mElementPopupMenu.Show(mMenuClient.X, mMenuClient.Y, Mouse.GripElm);

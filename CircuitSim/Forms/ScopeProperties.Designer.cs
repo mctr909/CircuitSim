@@ -131,6 +131,7 @@
             this.txtManualScale.Name = "txtManualScale";
             this.txtManualScale.Size = new System.Drawing.Size(50, 19);
             this.txtManualScale.TabIndex = 9;
+            this.txtManualScale.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.txtManualScale.TextChanged += new System.EventHandler(this.txtManualScale_TextChanged);
             // 
             // cmbColor

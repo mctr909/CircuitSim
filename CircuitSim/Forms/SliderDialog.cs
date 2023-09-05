@@ -185,10 +185,8 @@ namespace Circuit {
                 {
                     adj.SliderText = ei.LabelBox.Text;
                     adj.Label.Text = adj.SliderText;
-                    var d = ElementInfoDialog.ParseUnits(ei.MinBox.Text);
-                    adj.MinValue = d;
-                    d = ElementInfoDialog.ParseUnits(ei.MaxBox.Text);
-                    adj.MaxValue = d;
+                    Utils.ParseUnits(ei.MinBox.Text, out adj.MinValue);
+                    Utils.ParseUnits(ei.MaxBox.Text, out adj.MaxValue);
                     adj.Value = ei.Value;
                 }
             }

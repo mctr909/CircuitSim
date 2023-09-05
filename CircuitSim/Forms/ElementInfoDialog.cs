@@ -105,54 +105,6 @@ namespace Circuit {
             return Utils.UnitText(v);
         }
 
-        public static double ParseUnits(string s) {
-            s = s.Trim();
-            double rmsMult = 1;
-            if (s.EndsWith("rms")) {
-                s = s.Substring(0, s.Length - 3).Trim();
-                rmsMult = ROOT2;
-            }
-            /* rewrite shorthand (eg "2k2") in to normal format (eg 2.2k) using regex */
-            var rg = new Regex("([0-9]+)([pPnNuUmMkKgG])([0-9]+)");
-            s = rg.Replace(s, "$1.$3$2");
-            int len = s.Length;
-            char uc = s.ElementAt(len - 1);
-            double mult = 1;
-            switch (uc) {
-            case 'p':
-            case 'P':
-                mult = 1e-12;
-                break;
-            case 'n':
-            case 'N':
-                mult = 1e-9;
-                break;
-            case 'u':
-            case 'U':
-                mult = 1e-6;
-                break;
-            /* for ohm values, we used to assume mega for lowercase m, otherwise milli */
-            case 'm':
-                mult = 1e-3;
-                break; /*(ei.forceLargeM) ? 1e6 : */
-            case 'k':
-            case 'K':
-                mult = 1e3;
-                break;
-            case 'M':
-                mult = 1e6;
-                break;
-            case 'G':
-            case 'g':
-                mult = 1e9;
-                break;
-            }
-            if (mult != 1) {
-                s = s.Substring(0, len - 1).Trim();
-            }
-            return double.Parse(s) * mult * rmsMult;
-        }
-
         void apply() {
             for (int c = 0; c < 16; c++) {
                 for (int r = 0; r != 16; r++) {
@@ -176,7 +128,9 @@ namespace Circuit {
                         }
                     } else if (ei.TextDouble != null) {
                         try {
-                            ei.Value = ParseUnits(ei.TextDouble.Text);
+                            double tmp;
+                            Utils.ParseUnits(ei.TextDouble.Text, out tmp);
+                            ei.Value = tmp;
                         } catch (FormatException ex) {
                             MessageBox.Show(ex.Message);
                         } catch (Exception ex) {
@@ -189,7 +143,7 @@ namespace Circuit {
 
                     /* update slider if any */
                     if (mElm is BaseUI) {
-                        var adj = CirSimForm.FindAdjustable((BaseUI)mElm, r);
+                        var adj = CirSimForm.FindAdjustable(mElm, r);
                         if (adj != null) {
                             adj.Value = ei.Value;
                         }

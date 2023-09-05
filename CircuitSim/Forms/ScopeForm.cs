@@ -56,8 +56,8 @@ namespace Circuit.Forms {
                 if (0 <= mSelectedPlot) {
                     if (mPlots[mSelectedPlot].CanMenu) {
                         mSelectedWave = mPlots[mSelectedPlot].SelectedWave;
-                        var menu = new ScopePopupMenu();
-                        mScopePopupMenu = menu.Show(Left + mMouseCursorX, Top + mMouseCursorY, mPlots, mSelectedPlot, false);
+                        var fm = new ScopePopupMenu();
+                        mScopePopupMenu = fm.Show(Left + mMouseCursorX, Top + mMouseCursorY, mPlots, mSelectedPlot, false);
                     }
                 }
                 break;

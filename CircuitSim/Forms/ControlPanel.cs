@@ -74,14 +74,18 @@ namespace Circuit {
             var lblTimeStep = new Label() { Left = 4, Top = ofsY, AutoSize = true, Text = "単位時間(sec)" };
             VerticalPanel.Controls.Add(lblTimeStep);
             ofsY += lblTimeStep.Height + 4;
-            mTxtTimeStep = new TextBox() { Left = 4, Top = ofsY, Width = 80 };
+            mTxtTimeStep = new TextBox() {
+                Left = 4, Top = ofsY,
+                Width = 50,
+                TextAlign = HorizontalAlignment.Right,
+                Font = new System.Drawing.Font("MS Gothic", 11)
+            };
             mTxtTimeStep.TextChanged += new EventHandler((s, e) => {
                 var tmp = 0.0;
-                if (Utils.TextToNum(mTxtTimeStep.Text, out tmp)) {
+                if (Utils.ParseUnits(mTxtTimeStep.Text, out tmp)) {
                     mTimeStep = tmp;
-                } else {
-                    mTxtTimeStep.Text = Utils.UnitText(mTimeStep, "");
                 }
+                mTxtTimeStep.Text = Utils.UnitText(mTimeStep, "");
             });
             VerticalPanel.Controls.Add(mTxtTimeStep);
             ofsY += mTxtTimeStep.Height + 4;

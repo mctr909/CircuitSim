@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Circuit {
     enum E_SCALE {
@@ -281,39 +282,50 @@ namespace Circuit {
             return unitText(val, utext, false);
         }
 
-        public static bool TextToNum(string text, out double num) {
-            text = text.Replace(" ", "");
-            if (0 <= text.IndexOf("p")) {
-                var ret = double.TryParse(text.Replace("p", ""), out num);
-                num *= 1e-12;
-                return ret;
+        public static bool ParseUnits(string s, out double ret) {
+            s = s.Trim();
+            if ("" == s) {
+                ret = 0;
+                return false;
             }
-            if (0 <= text.IndexOf("n")) {
-                var ret = double.TryParse(text.Replace("n", ""), out num);
-                num *= 1e-9;
-                return ret;
+            var rg = new Regex("([0-9]+)([pnumkMG])([0-9]+)");
+            s = rg.Replace(s, "$1.$3$2");
+            int len = s.Length;
+            char uc = s.ElementAt(len - 1);
+            double unit = 1;
+            switch (uc) {
+            case 'p':
+                unit = 1e-12;
+                break;
+            case 'n':
+                unit = 1e-9;
+                break;
+            case 'u':
+                unit = 1e-6;
+                break;
+            case 'm':
+                unit = 1e-3;
+                break;
+            case 'k':
+                unit = 1e3;
+                break;
+            case 'M':
+                unit = 1e6;
+                break;
+            case 'G':
+                unit = 1e9;
+                break;
             }
-            if (0 <= text.IndexOf("u")) {
-                var ret = double.TryParse(text.Replace("u", ""), out num);
-                num *= 1e-6;
-                return ret;
+            if (unit != 1) {
+                s = s.Substring(0, len - 1).Trim();
             }
-            if (0 <= text.IndexOf("m")) {
-                var ret = double.TryParse(text.Replace("m", ""), out num);
-                num *= 1e-3;
-                return ret;
+            if (double.TryParse(s, out ret)) {
+                ret *= unit;
+                return true;
+            } else {
+                ret = 0;
+                return false;
             }
-            if (0 <= text.IndexOf("k")) {
-                var ret = double.TryParse(text.Replace("k", ""), out num);
-                num *= 1e+3;
-                return ret;
-            }
-            if (0 <= text.IndexOf("M")) {
-                var ret = double.TryParse(text.Replace("M", ""), out num);
-                num *= 1e+6;
-                return ret;
-            }
-            return double.TryParse(text, out num);
         }
 
         static string unitText(double v, string u, bool isShort = true, bool sign = true) {

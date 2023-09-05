@@ -71,8 +71,13 @@ namespace Circuit.Forms {
         }
 
         private void txtManualScale_TextChanged(object sender, EventArgs e) {
-            var d = ElementInfoDialog.ParseUnits(txtManualScale.Text);
-            mPlot.SetScale(d);
+            double d;
+            if (Utils.ParseUnits(txtManualScale.Text, out d)) {
+                mPlot.SetScale(d);
+            } else {
+                d = mPlot.Scale;
+            }
+            txtManualScale.Text = Utils.UnitText(d);
         }
 
         private void txtLabel_TextChanged(object sender, EventArgs e) {
@@ -122,6 +127,9 @@ namespace Circuit.Forms {
         }
 
         private void cmbColor_SelectedIndexChanged(object sender, EventArgs e) {
+            if (mPlot.SelectedWave < 0) {
+                return;
+            }
             mPlot.Waves[mPlot.SelectedWave].SetColor(cmbColor.SelectedIndex);
         }
 
