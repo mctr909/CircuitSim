@@ -7,8 +7,8 @@ using Circuit.UI;
 namespace Circuit.Common {
     public class ScopePlot {
         const int SPEED_MAX = 1024;
-        const double FFT_MIN = -100.0;
         const double SCALE_MIN = 1e-9;
+        const double FFT_RANGE = 100.0;
         static readonly Color[] COLORS = {
             Color.FromArgb(0xCF, 0x00, 0x00), //RED,
             Color.FromArgb(0x00, 0xCF, 0x00), //GREEN,
@@ -66,6 +66,8 @@ namespace Circuit.Common {
         FFT mFft = new FFT(16);
         double[] mReal = new double[16];
         double[] mImag = new double[16];
+        double mFftMax = 0.0;
+        double mFftMainMax;
         Rectangle mFFTBoundingBox;
         bool mShowNegative;
         bool mSomethingSelected;
@@ -77,7 +79,6 @@ namespace Circuit.Common {
         double mMainGridMid;
         double mMaxValue;
         double mMinValue;
-        double mFftMax;
         int mScopePointCount;
         #endregion
 
@@ -848,11 +849,16 @@ namespace Circuit.Common {
                 }
                 g.DrawLeftText(s, x, BoundingBox.Height - 10);
             }
+            if (Waves.Count == 1) {
+                mFftMax = 0;
+            } else {
+                mFftMax = 20;
+            }
             for (int i = 1; i < yDivs; i++) {
                 int y = mFFTBoundingBox.Height * i / yDivs;
                 string s;
                 if (LogSpectrum) {
-                    s = (FFT_MIN * i / yDivs).ToString() + "db";
+                    s = (mFftMax - FFT_RANGE * i / yDivs).ToString() + "db";
                 } else {
                     s = (1.0 * (yDivs - i) / yDivs).ToString();
                 }
@@ -879,11 +885,11 @@ namespace Circuit.Common {
             }
             mFft.Exec(mReal, mImag);
             if (0 == waveIndex) {
-                mFftMax = SCALE_MIN;
+                mFftMainMax = SCALE_MIN;
                 for (int i = 0; i < mScopePointCount / 2; i++) {
                     var m = mFft.Magnitude(mReal[i], mImag[i]);
-                    if (m > mFftMax) {
-                        mFftMax = m;
+                    if (m > mFftMainMax) {
+                        mFftMainMax = m;
                     }
                 }
             }
@@ -894,17 +900,17 @@ namespace Circuit.Common {
             var y0 = 0.0f;
             g.DrawColor = COLORS[(int)wave.Color];
             if (LogSpectrum) {
-                var ymult = -bottom / FFT_MIN;
+                var ymult = bottom / FFT_RANGE;
                 for (int i = 0; i < mScopePointCount / 2; i++) {
                     var mag = mFft.Magnitude(mReal[i], mImag[i]);
-                    if (0 == mag) {
-                        mag = 1;
+                    if (mag < SCALE_MIN) {
+                        mag = SCALE_MIN;
                     }
-                    var db = 20 * Math.Log10(mag / mFftMax);
-                    if (db < FFT_MIN) {
-                        db = FFT_MIN;
+                    var db = 20 * Math.Log10(mag / mFftMainMax);
+                    if (db < mFftMax - FFT_RANGE) {
+                        db = mFftMax - FFT_RANGE;
                     }
-                    var y1 = (float)(-db * ymult);
+                    var y1 = (float)((mFftMax - db) * ymult);
                     x1 += scaleX;
                     if (0 == i) {
                         g.DrawLine(x0, y1, x1, y1);
@@ -917,7 +923,7 @@ namespace Circuit.Common {
             } else {
                 for (int i = 0; i < mScopePointCount / 2; i++) {
                     var mag = mFft.Magnitude(mReal[i], mImag[i]);
-                    var y1 = bottom - (float)(mag * bottom / mFftMax);
+                    var y1 = bottom - (float)(mag * bottom / mFftMainMax);
                     x1 += scaleX;
                     if (0 == i) {
                         g.DrawLine(x0, y1, x1, y1);
