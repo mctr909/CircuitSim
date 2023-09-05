@@ -37,15 +37,6 @@ namespace Circuit.UI.Output {
             optionList.Add(sStr);
         }
 
-        public void SetScopeUI(BaseUI ui) {
-            Plot.Setup(ui);
-            Plot.ResetGraph();
-        }
-
-        public void StepScope() {
-            Plot.TimeStep();
-        }
-
         public override void SetPoints() {
             base.SetPoints();
             int x1 = CirSimForm.TransformX(Math.Min(Post.A.X, Post.B.X));

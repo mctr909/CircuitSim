@@ -317,7 +317,7 @@ namespace Circuit {
                 if (mMenuElm != null) {
                     var newScope = new Scope(SnapGrid(mMenuElm.Post.A.X + 50, mMenuElm.Post.A.Y + 50));
                     UIList.Add(newScope);
-                    newScope.SetScopeUI(mMenuElm);
+                    newScope.Plot.Setup(mMenuElm);
                 }
                 break;
             }
@@ -571,17 +571,6 @@ namespace Circuit {
                     MouseMode = MOUSE_MODE.SELECT;
                     Cursor = Cursors.Hand;
                 }
-            }
-
-            if (Mouse.GripElm != null && Mouse.GripElm is Scope) {
-                Console.WriteLine("Doing something");
-                var plot = ((Scope)Mouse.GripElm).Plot;
-                var fm = new ScopeProperties(plot);
-                DialogShowing = fm;
-                fm.Show(mPixCir.Left + mPixCir.Width / 2, mPixCir.Bottom);
-                clearSelection();
-                Mouse.IsDragging = false;
-                return;
             }
 
             var gpos = new Point(
@@ -1816,7 +1805,7 @@ namespace Circuit {
                 ScopeForm.TimeStep();
                 for (int i = 0; i < UICount; i++) {
                     if (UIList[i] is Scope) {
-                        ((Scope)UIList[i]).StepScope();
+                        ((Scope)UIList[i]).Plot.TimeStep();
                     }
                 }
 
