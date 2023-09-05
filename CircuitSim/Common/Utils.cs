@@ -70,6 +70,11 @@ namespace Circuit {
         public static double DistanceOnLine(double ax, double ay, double bx, double by, double px, double py) {
             var abx = bx - ax;
             var aby = by - ay;
+            if (0 == abx * abx + aby * aby) {
+                px -= ax;
+                py -= ay;
+                return Math.Sqrt(px * px + py * py);
+            }
             var apx = px - ax;
             var apy = py - ay;
             var r = (apx * abx + apy * aby) / (abx * abx + aby * aby);

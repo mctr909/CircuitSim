@@ -115,6 +115,17 @@ namespace Circuit.UI.Passive {
             ce.SetNodePos(mTermPri1, mTermSec1, mTermPri2, mTermSec2);
         }
 
+        public override double Distance(Point p) {
+            return Math.Min(
+                Utils.DistanceOnLine(mTermPri1, mCoilPri1, p), Math.Min(
+                Utils.DistanceOnLine(mTermSec1, mCoilSec1, p), Math.Min(
+                Utils.DistanceOnLine(mTermPri2, mCoilPri2, p), Math.Min(
+                Utils.DistanceOnLine(mTermSec2, mCoilSec2, p), Math.Min(
+                Utils.DistanceOnLine(mCoilPri1, mCoilSec2, p),
+                Utils.DistanceOnLine(mCoilSec1, mCoilPri2, p)
+            )))));
+        }
+
         void setCoilPos(PointF a, PointF b, float dir, out PointF[] pos) {
             var coilLen = (float)Utils.Distance(a, b);
             var loopCt = (int)Math.Ceiling(coilLen / 9);

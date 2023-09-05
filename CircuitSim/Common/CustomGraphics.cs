@@ -24,7 +24,7 @@ namespace Circuit {
         static Brush mTextBrush = Brushes.Black;
         static Color mTextColor;
         static Pen mPenPost = new Pen(Color.Green, 5.0f);
-        static Pen mPenHandle = new Pen(Color.FromArgb(127, 255, 0, 0), 1.0f);
+        static Pen mPenHandle = new Pen(Color.FromArgb(95, 0, 255, 255), 1.0f);
 
         Pen mPenLine = new Pen(Color.White, 1.0f) {
             StartCap = LineCap.Triangle,
@@ -36,7 +36,7 @@ namespace Circuit {
         Graphics mG;
 
         public const float POST_RADIUS = 2.5f;
-        public const float HANDLE_RADIUS = 5.5f;
+        public const float HANDLE_RADIUS = 6.5f;
 
         public static Color SelectColor { get; private set; }
         public static Color WhiteColor { get; private set; }
@@ -119,7 +119,7 @@ namespace Circuit {
                 TextColor = Color.FromArgb(147, 147, 147);
                 SelectColor = Color.FromArgb(0, 255, 255);
                 PostColor = Color.FromArgb(0, 127, 0);
-                mPenHandle.Color = Color.FromArgb(127, 255, 0, 0);
+                mPenHandle.Color = Color.FromArgb(95, 0, 255, 255);
             }
         }
 

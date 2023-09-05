@@ -24,13 +24,11 @@ namespace Circuit {
         Panel mPnlV;
         Label mLabels;
         TrackBar mTrbValue;
-        int mDeltaY;
         string mName;
         string mUnit;
 
-        public ScrollValuePopup(int dy, BaseUI e) : base() {
+        public ScrollValuePopup(BaseUI e) : base() {
             mMyElm = e;
-            mDeltaY = 0;
             CirSimForm.PushUndo();
             setupValues();
 
@@ -74,7 +72,8 @@ namespace Circuit {
                 Controls.Add(mPnlV);
             }
 
-            doDeltaY(dy);
+            setElmValue();
+            setupLabels();
             Width = mPnlV.Width + 24;
             Height = mPnlV.Height + 48;
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
@@ -98,10 +97,10 @@ namespace Circuit {
         }
 
         void setupValues() {
-            if (mMyElm is Resistor) {
+            if (mMyElm is Resistor || mMyElm is Pot) {
                 mMinPow = -2;
-                mMaxPow = 6;
-                mUnit = "Ω";
+                mMaxPow = 7;
+                mUnit = CirSimForm.OHM_TEXT;
             }
             if (mMyElm is Capacitor) {
                 mMinPow = -11;
@@ -152,26 +151,6 @@ namespace Circuit {
             mTrbValue.Value = thissel;
         }
 
-        void onMouseDown(MouseEventArgs e) {
-            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Middle) {
-                Close(true);
-            } else {
-                Close(false);
-            }
-        }
-
-        void doDeltaY(int dy) {
-            mDeltaY += dy;
-            if (mCurrentIdx + mDeltaY / 3 < 0) {
-                mDeltaY = -3 * mCurrentIdx;
-            }
-            if (mCurrentIdx + mDeltaY / 3 >= mNValues) {
-                mDeltaY = (mNValues - mCurrentIdx - 1) * 3;
-            }
-            setElmValue();
-            setupLabels();
-        }
-
         void setElmValue() {
             int idx = getSelIdx();
             setElmValue(idx);
@@ -198,7 +177,7 @@ namespace Circuit {
         }
 
         int getSelIdx() {
-            var r = mCurrentIdx + mDeltaY / 3;
+            var r = mCurrentIdx;
             if (r < 0) {
                 r = 0;
             }

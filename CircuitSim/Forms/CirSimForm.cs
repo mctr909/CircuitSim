@@ -516,9 +516,6 @@ namespace Circuit {
 
         #region Mouse event method
         void onClick(MouseEventArgs e) {
-            if (e.Button == MouseButtons.Middle) {
-                scrollValues(0);
-            }
             if (e.Button == MouseButtons.Right) {
                 onContextMenu(e);
             }
@@ -669,6 +666,7 @@ namespace Circuit {
         }
 
         void onMouseWheel(Control sender, MouseEventArgs e) {
+            showScrollValues();
         }
 
         void onMouseMove(MouseEventArgs e) {
@@ -1354,15 +1352,16 @@ namespace Circuit {
             PlotXElm = PlotYElm = null;
         }
 
-        void scrollValues(int deltay) {
-            if (Mouse.GripElm != null && !DialogIsShowing()) {
-                if ((Mouse.GripElm is Resistor) || (Mouse.GripElm is Capacitor) || (Mouse.GripElm is Inductor)) {
-                    mScrollValuePopup = new ScrollValuePopup(deltay, Mouse.GripElm);
-                    mScrollValuePopup.Show(
-                        Location.X + MouseCursorX,
-                        Location.Y + MouseCursorY
-                    );
-                }
+        void showScrollValues() {
+            if (Mouse.GripElm == null || DialogIsShowing()) {
+                return;
+            }
+            if (Mouse.GripElm is Resistor || Mouse.GripElm is Pot || Mouse.GripElm is Capacitor || Mouse.GripElm is Inductor) {
+                mScrollValuePopup = new ScrollValuePopup(Mouse.GripElm);
+                mScrollValuePopup.Show(
+                    Location.X + MouseCursorX,
+                    Location.Y + MouseCursorY
+                );
             }
         }
 

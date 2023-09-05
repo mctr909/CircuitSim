@@ -65,6 +65,14 @@ namespace Circuit.UI.Passive {
             base.Delete();
         }
 
+        public override double Distance(Point p) {
+            return Math.Min(
+                Utils.DistanceOnLine(mTermA, mTermB, p), Math.Min(
+                Utils.DistanceOnLine(mArrowPoint, mCorner2, p),
+                Utils.DistanceOnLine(mCorner2, mTermSlider, p)
+            ));
+        }
+
         public override void SetPoints() {
             base.SetPoints();
             Post.SetBbox(HS);
