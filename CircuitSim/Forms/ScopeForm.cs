@@ -69,9 +69,10 @@ namespace Circuit.Forms {
             if (mSelectedPlot != -1) {
                 if (mPlots[mSelectedPlot].CanMenu) {
                     var ev = (MouseEventArgs)e;
-                    var scope = mPlots[mSelectedPlot];
-                    mSelectedWave = scope.SelectedWave;
-                    scope.Properties(ev.X + Left, ev.Y + Top);
+                    var plot = mPlots[mSelectedPlot];
+                    mSelectedWave = plot.SelectedWave;
+                    var fm = new ScopeProperties(plot);
+                    fm.Show(ev.X + Left, ev.Y + Top);
                 }
             }
         }
@@ -81,7 +82,7 @@ namespace Circuit.Forms {
             for (int i = 0; i != PlotCount; i++) {
                 var plot = mPlots[i];
                 if (plot.BoundingBox.Contains(mMouseCursorX, mMouseCursorY)) {
-                    selectElm = plot.UI;
+                    selectElm = plot.GetUI();
                     mSelectedPlot = i;
                     break;
                 }
@@ -214,7 +215,7 @@ namespace Circuit.Forms {
                 index = mPlots[i].Index;
             }
 
-            while (PlotCount > 0 && mPlots[PlotCount - 1].UI == null) {
+            while (PlotCount > 0 && mPlots[PlotCount - 1].GetUI() == null) {
                 PlotCount--;
             }
 
@@ -260,7 +261,7 @@ namespace Circuit.Forms {
                 }
                 s.StackCount = scopeColCount[index];
                 if (s.Speed != speed) {
-                    s.Speed = speed;
+                    s.SetSpeed(speed);
                     s.ResetGraph();
                 }
                 var r = new Rectangle(index * w, colh * row, w - marg, colh);
@@ -314,7 +315,7 @@ namespace Circuit.Forms {
             }
             int i;
             for (i = 0; i != PlotCount; i++) {
-                if (mPlots[i].UI == null) {
+                if (mPlots[i].GetUI() == null) {
                     break;
                 }
             }
@@ -326,9 +327,9 @@ namespace Circuit.Forms {
                 mPlots[i] = new ScopePlot();
                 mPlots[i].Index = i;
             }
-            mPlots[i].SetUI(ui);
+            mPlots[i].Setup(ui);
             if (i > 0) {
-                mPlots[i].Speed = mPlots[i - 1].Speed;
+                mPlots[i].SetSpeed(mPlots[i - 1].Speed);
             }
         }
 
@@ -386,7 +387,7 @@ namespace Circuit.Forms {
                 p = 1;
             }
             mPlots[p - 1].Combine(mPlots[p]);
-            mPlots[p].SetUI(null);
+            mPlots[p].Setup(null);
         }
     }
 }

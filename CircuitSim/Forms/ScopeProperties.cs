@@ -6,14 +6,12 @@ namespace Circuit.Forms {
     public partial class ScopeProperties : Form {
         ScopePlot mPlot;
 
-        public ScopeProperties(ScopePlot scope) {
+        public ScopeProperties(ScopePlot plot) {
             InitializeComponent();
-            mPlot = scope;
-            Visible = false;
+            mPlot = plot;
         }
 
         public void Show(int x, int y) {
-            Show();
             rbVoltage.Checked = mPlot.ShowVoltage;
             rbSpectrum.Checked = mPlot.ShowFFT;
             cmbColor.Items.Clear();
@@ -28,9 +26,11 @@ namespace Circuit.Forms {
             }
             setScopeSpeedLabel();
             ScopeProperties_Load(null, null);
+
+            StartPosition = FormStartPosition.Manual;
             Left = Math.Max(0, x - Width / 2);
             Top = Math.Max(0, y - Height / 2);
-            Visible = true;
+            Show();
         }
 
         private void ScopeProperties_Load(object sender, EventArgs e) {
@@ -51,7 +51,7 @@ namespace Circuit.Forms {
             chkFreq.Checked = mPlot.ShowFreq;
 
             tbSpeed.Value = tbSpeed.Maximum - (int)Math.Round(Math.Log(mPlot.Speed) / Math.Log(2));
-            txtManualScale.Text = ElementInfoDialog.UnitString(null, mPlot.ScaleValue);
+            txtManualScale.Text = ElementInfoDialog.UnitString(null, mPlot.Scale);
             chkManualScale.Checked = mPlot.ManualScale;
             txtManualScale.Enabled = mPlot.ManualScale;
             chkLogSpectrum.Checked = mPlot.LogSpectrum;
@@ -65,14 +65,14 @@ namespace Circuit.Forms {
         private void tbSpeed_ValueChanged(object sender, EventArgs e) {
             int newsp = (int)Math.Pow(2, tbSpeed.Maximum - tbSpeed.Value);
             if (mPlot.Speed != newsp) {
-                mPlot.Speed = newsp;
+                mPlot.SetSpeed(newsp);
             }
             setScopeSpeedLabel();
         }
 
         private void txtManualScale_TextChanged(object sender, EventArgs e) {
             var d = ElementInfoDialog.ParseUnits(txtManualScale.Text);
-            mPlot.ScaleValue = d;
+            mPlot.SetScale(d);
         }
 
         private void txtLabel_TextChanged(object sender, EventArgs e) {
@@ -112,7 +112,7 @@ namespace Circuit.Forms {
         }
 
         private void rbVoltage_CheckedChanged(object sender, EventArgs e) {
-            mPlot.ShowVoltage = rbVoltage.Checked;
+            mPlot.SetShowVoltage(rbVoltage.Checked);
             ScopeProperties_Load(sender, e);
         }
 
@@ -130,7 +130,7 @@ namespace Circuit.Forms {
         }
 
         private void setScopeSpeedLabel() {
-            lblScopeSpeed.Text = Utils.UnitText(mPlot.CalcGridStepX(), "s") + "/div";
+            lblScopeSpeed.Text = Utils.UnitText(mPlot.CalcGridTime(), "s") + "/div";
         }
     }
 }

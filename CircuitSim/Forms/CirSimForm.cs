@@ -15,6 +15,7 @@ using Circuit.UI;
 using Circuit.UI.Passive;
 using Circuit.UI.Output;
 using Circuit.Forms;
+using Circuit.UI.Input;
 
 namespace Circuit {
     public partial class CirSimForm : Form {
@@ -574,8 +575,10 @@ namespace Circuit {
 
             if (Mouse.GripElm != null && Mouse.GripElm is Scope) {
                 Console.WriteLine("Doing something");
-                var s = ((Scope)Mouse.GripElm).Plot;
-                s.Properties(mPixCir.Left + mPixCir.Width / 2, mPixCir.Bottom);
+                var plot = ((Scope)Mouse.GripElm).Plot;
+                var fm = new ScopeProperties(plot);
+                DialogShowing = fm;
+                fm.Show(mPixCir.Left + mPixCir.Width / 2, mPixCir.Bottom);
                 clearSelection();
                 Mouse.IsDragging = false;
                 return;

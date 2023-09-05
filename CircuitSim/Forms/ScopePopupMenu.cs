@@ -141,7 +141,7 @@ namespace Circuit.Forms {
             }
             switch (item) {
             case SCOPE_MENU_ITEM.REMOVE_SCOPE:
-                plot.SetUI(null);
+                plot.Setup(null);
                 break;
             case SCOPE_MENU_ITEM.SPEED_UP:
                 plot.SpeedUp();
@@ -155,9 +155,12 @@ namespace Circuit.Forms {
             case SCOPE_MENU_ITEM.RESET:
                 plot.ResetGraph(true);
                 break;
-            case SCOPE_MENU_ITEM.PROPERTIES:
-                plot.Properties(0, 0);
+            case SCOPE_MENU_ITEM.PROPERTIES: {
+                var fm = new ScopeProperties(plot);
+                fm.Show(0, 0);
+                CirSimForm.DialogShowing = fm;
                 break;
+            }
             }
             CirSimForm.DeleteUnusedScopeElms();
         }

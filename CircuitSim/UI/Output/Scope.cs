@@ -38,7 +38,7 @@ namespace Circuit.UI.Output {
         }
 
         public void SetScopeUI(BaseUI ui) {
-            Plot.SetUI(ui);
+            Plot.Setup(ui);
             Plot.ResetGraph();
         }
 
