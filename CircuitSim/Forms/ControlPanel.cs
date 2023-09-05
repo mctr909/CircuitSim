@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using Circuit.Forms;
-using Circuit.UI.Output;
 
 namespace Circuit {
     static class ControlPanel {
@@ -147,7 +145,12 @@ namespace Circuit {
             ofsY += TrbCurrent.Height;
 
             /* 連続で配置 */
-            ChkContinuousArrangement = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "連続で配置" };
+            ChkContinuousArrangement = new CheckBox() {
+                Left = 4, Top = ofsY,
+                Checked = true,
+                AutoSize = true,
+                Text = "連続で配置"
+            };
             VerticalPanel.Controls.Add(ChkContinuousArrangement);
             ofsY += ChkContinuousArrangement.Height + 4;
 

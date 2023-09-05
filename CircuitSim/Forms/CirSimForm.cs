@@ -603,11 +603,10 @@ namespace Circuit {
 
             switch (MouseMode) {
             case MOUSE_MODE.ADD_ELM:
-                if (Mouse.EditElm != DUMP_ID.WIRE && !ControlPanel.ChkContinuousArrangement.Checked) {
-                    AddElement(DUMP_ID.WIRE);
+                if (!ControlPanel.ChkContinuousArrangement.Checked) {
                     mMenuItems.AllUnchecked();
-                    mMenuItems.tsmWire.Checked = true;
-                    mMenuItems.tsmWire.OwnerItem.BackColor = Color.LightBlue;
+                    MouseMode = MOUSE_MODE.NONE;
+                    Mouse.EditElm = DUMP_ID.INVALID;
                 }
                 break;
             case MOUSE_MODE.SELECT_AREA:
