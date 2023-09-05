@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Circuit.Common;
 using Circuit.UI.Output;
+using Circuit.UI.Passive;
 
 namespace Circuit.Forms {
     public class ScopePopupMenu {
@@ -18,7 +19,7 @@ namespace Circuit.Forms {
             RESET,
             PROPERTIES
         }
-
+        ScopePlot mPlot;
         ContextMenuStrip mPopupMenu;
         ToolStripMenuItem mCombine;
         ToolStripMenuItem mStack;
@@ -31,6 +32,14 @@ namespace Circuit.Forms {
         ToolStripMenuItem mProperties;
 
         public ScopePopupMenu() {
+            if (CirSimForm.Mouse.GripElm is Scope) {
+                mPlot = ((Scope)CirSimForm.Mouse.GripElm).Plot;
+            } else {
+                mPlot = ScopeForm.GetSelectedPlot();
+            }
+            if (null == mPlot) {
+                return;
+            }
             mPopupMenu = new ContextMenuStrip();
             /* 波形の配置 */
             mPopupMenu.Items.Add(mCombine = new ToolStripMenuItem() { Text = "左のスコープに重ねる" });
@@ -57,7 +66,9 @@ namespace Circuit.Forms {
             });
             mPopupMenu.Items.Add(new ToolStripSeparator());
             /* 波形の状態更新 */
-            mPopupMenu.Items.Add(mMaxScale = new ToolStripMenuItem() { Text = "振幅の最大化" });
+            mPopupMenu.Items.Add(mMaxScale = new ToolStripMenuItem() {
+                Text = mPlot.Normarize ? "振幅を最適化しない" : "振幅を最適化"
+            });
             mMaxScale.Click += new EventHandler((s, e) => {
                 performed(SCOPE_MENU_ITEM.MAX_SCALE);
             });
@@ -114,49 +125,41 @@ namespace Circuit.Forms {
             mRemoveWave.Visible = 1 < selectedPlot.Waves.Count;
         }
 
-        static void performed(SCOPE_MENU_ITEM item) {
-            ScopePlot plot;
-            if (CirSimForm.Mouse.GripElm is Scope) {
-                plot = ((Scope)CirSimForm.Mouse.GripElm).Plot;
-            } else {
-                plot = ScopeForm.GetSelectedPlot();
-                if (null == plot) {
-                    return;
-                } else {
-                    switch (item) {
-                    case SCOPE_MENU_ITEM.REMOVE_WAVE:
-                        ScopeForm.RemoveWave();
-                        break;
-                    case SCOPE_MENU_ITEM.STACK:
-                        ScopeForm.Stack();
-                        break;
-                    case SCOPE_MENU_ITEM.UNSTACK:
-                        ScopeForm.Unstack();
-                        break;
-                    case SCOPE_MENU_ITEM.COMBINE:
-                        ScopeForm.Combine();
-                        break;
-                    }
+        void performed(SCOPE_MENU_ITEM item) {
+            if (!(CirSimForm.Mouse.GripElm is Scope)) {
+                switch (item) {
+                case SCOPE_MENU_ITEM.REMOVE_WAVE:
+                    ScopeForm.RemoveWave();
+                    break;
+                case SCOPE_MENU_ITEM.STACK:
+                    ScopeForm.Stack();
+                    break;
+                case SCOPE_MENU_ITEM.UNSTACK:
+                    ScopeForm.Unstack();
+                    break;
+                case SCOPE_MENU_ITEM.COMBINE:
+                    ScopeForm.Combine();
+                    break;
                 }
             }
             switch (item) {
             case SCOPE_MENU_ITEM.REMOVE_SCOPE:
-                plot.Setup(null);
+                mPlot.Setup(null);
                 break;
             case SCOPE_MENU_ITEM.SPEED_UP:
-                plot.SpeedUp();
+                mPlot.SpeedUp();
                 break;
             case SCOPE_MENU_ITEM.SPEED_DOWN:
-                plot.SlowDown();
+                mPlot.SlowDown();
                 break;
             case SCOPE_MENU_ITEM.MAX_SCALE:
-                plot.MaxScale();
+                mPlot.MaxScale();
                 break;
             case SCOPE_MENU_ITEM.RESET:
-                plot.ResetGraph(true);
+                mPlot.ResetGraph(true);
                 break;
             case SCOPE_MENU_ITEM.PROPERTIES: {
-                var fm = new ScopeProperties(plot);
+                var fm = new ScopeProperties(mPlot);
                 fm.Show(0, 0);
                 CirSimForm.DialogShowing = fm;
                 break;

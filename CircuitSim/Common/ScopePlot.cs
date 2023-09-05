@@ -43,7 +43,7 @@ namespace Circuit.Common {
                 ShowMin = (value & 256) != 0;
                 ShowScale = (value & 512) != 0;
                 ShowFFT = (value & 1024) != 0;
-                mMaxScale = (value & 8192) != 0;
+                Normarize = (value & 8192) != 0;
                 ShowRMS = (value & 16384) != 0;
                 LogSpectrum = (value & 65536) != 0;
             }
@@ -55,7 +55,7 @@ namespace Circuit.Common {
                     | (ShowMin ? 256 : 0)
                     | (ShowScale ? 512 : 0)
                     | (ShowFFT ? 1024 : 0)
-                    | (mMaxScale ? 8192 : 0)
+                    | (Normarize ? 8192 : 0)
                     | (ShowRMS ? 16384 : 0)
                     | (LogSpectrum ? 65536 : 0);
             }
@@ -64,8 +64,9 @@ namespace Circuit.Common {
         #region [private variable]
         CustomGraphics mContext;
         FFT mFft = new FFT(16);
+        double[] mReal = new double[16];
+        double[] mImag = new double[16];
         Rectangle mFFTBoundingBox;
-        bool mMaxScale = true;
         bool mShowNegative;
         bool mSomethingSelected;
         double mGridDivX;
@@ -76,6 +77,7 @@ namespace Circuit.Common {
         double mMainGridMid;
         double mMaxValue;
         double mMinValue;
+        double mFftMax;
         int mScopePointCount;
         #endregion
 
@@ -105,6 +107,7 @@ namespace Circuit.Common {
 
         public int Speed { get; private set; } = 64;
         public double Scale { get; private set; } = SCALE_MIN;
+        public bool Normarize { get; private set; } = true;
         public bool ManualScale { get; set; }
         public bool ShowScale { get; set; }
         public bool ShowMax { get; set; }
@@ -267,7 +270,7 @@ namespace Circuit.Common {
             ResetGraph();
         }
         public void MaxScale() {
-            mMaxScale = !mMaxScale;
+            Normarize = !Normarize;
             mShowNegative = false;
         }
         public void ResetGraph(bool full = false) {
@@ -305,13 +308,13 @@ namespace Circuit.Common {
                 ResetGraph();
             }
 
-            if (mMaxScale) {
+            if (Normarize) {
                 Scale = SCALE_MIN;
             }
 
             mSomethingSelected = false;
             foreach (var p in Waves) {
-                calcPlotScale(p);
+                calcScale(p);
                 if (p.UI != null && p.UI.IsMouseElm) {
                     mSomethingSelected = true;
                 }
@@ -336,14 +339,16 @@ namespace Circuit.Common {
             {
                 if (ShowFFT) {
                     drawFFTGridLines(g);
-                    drawFFT(g);
+                    for (int i = 0; i != Waves.Count; i++) {
+                        drawFFT(g, i);
+                    }
                 }
                 if (ShowVoltage) {
                     /* Vertical (T) gridlines */
                     CalcGridTime();
                     /* draw volts on top (last), then current underneath, then everything else */
                     for (int i = 0; i != Waves.Count; i++) {
-                        drawPlot(g, i);
+                        drawWave(g, i);
                     }
                 }
                 if (Waves.Count > 0) {
@@ -354,7 +359,7 @@ namespace Circuit.Common {
 
             drawCrosshairs(g);
 
-            if (5 < Waves[0].Pointer && !ManualScale) {
+            if (5 < Waves[0].Pointer && (!ManualScale || Normarize)) {
                 if (SCALE_MIN < Scale) {
                     Scale /= 2;
                 }
@@ -408,6 +413,10 @@ namespace Circuit.Common {
                 SelectedWave = -1;
                 return;
             }
+            if (ShowFFT) {
+                SelectedWave = 0;
+                return;
+            }
             var ipa = Waves[0].StartIndex(BoundingBox.Width);
             var pointer = (MouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
             var maxy = (BoundingBox.Height - 1) / 2;
@@ -428,10 +437,10 @@ namespace Circuit.Common {
             mMaxValue = double.MinValue;
             mMinValue = double.MaxValue;
             for (int si = 0; si != Waves.Count; si++) {
-                var plot = Waves[si];
-                var ipa = plot.StartIndex(BoundingBox.Width);
-                var maxV = plot.MaxValues;
-                var minV = plot.MinValues;
+                var wave = Waves[si];
+                var ipa = wave.StartIndex(BoundingBox.Width);
+                var maxV = wave.MaxValues;
+                var minV = wave.MinValues;
                 for (int i = 0; i != BoundingBox.Width; i++) {
                     int ip = (i + ipa) & (mScopePointCount - 1);
                     if (maxV[ip] > mMaxValue) {
@@ -443,13 +452,13 @@ namespace Circuit.Common {
                 }
             }
         }
-        void calcPlotScale(ScopeWave plot) {
-            if (ManualScale) {
+        void calcScale(ScopeWave wave) {
+            if (ManualScale && !Normarize) {
                 return;
             }
-            var ipa = plot.StartIndex(BoundingBox.Width);
-            var maxV = plot.MaxValues;
-            var minV = plot.MinValues;
+            var ipa = wave.StartIndex(BoundingBox.Width);
+            var maxV = wave.MaxValues;
+            var minV = wave.MinValues;
             double max = 0;
             double gridMax = Scale;
             for (int i = 0; i != BoundingBox.Width; i++) {
@@ -462,7 +471,7 @@ namespace Circuit.Common {
                 }
             }
             /* scale fixed at maximum? */
-            if (mMaxScale) {
+            if (Normarize) {
                 gridMax = Math.Max(max, gridMax);
             } else {
                 /* adjust in powers of two */
@@ -473,12 +482,12 @@ namespace Circuit.Common {
             Scale = gridMax;
         }
         string calcRMS() {
-            var plot = Waves[0];
+            var wave = Waves[0];
             int i;
             double avg = 0;
-            var ipa = plot.Pointer + mScopePointCount - BoundingBox.Width;
-            var maxV = plot.MaxValues;
-            var minV = plot.MinValues;
+            var ipa = wave.Pointer + mScopePointCount - BoundingBox.Width;
+            var maxV = wave.MaxValues;
+            var minV = wave.MinValues;
             var mid = (mMaxValue + mMinValue) / 2;
             int state = -1;
 
@@ -541,10 +550,10 @@ namespace Circuit.Common {
              * get average */
             double avg = 0;
             int i;
-            var plot = Waves[0];
-            var ipa = plot.Pointer + mScopePointCount - BoundingBox.Width;
-            var minV = plot.MinValues;
-            var maxV = plot.MaxValues;
+            var wave = Waves[0];
+            var ipa = wave.Pointer + mScopePointCount - BoundingBox.Width;
+            var minV = wave.MinValues;
+            var maxV = wave.MaxValues;
             for (i = 0; i != BoundingBox.Width; i++) {
                 int ip = (i + ipa) & (mScopePointCount - 1);
                 avg += minV[ip] + maxV[ip];
@@ -615,10 +624,12 @@ namespace Circuit.Common {
                 int ipa = Waves[0].StartIndex(BoundingBox.Width);
                 int pointer = (MouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
                 if (SelectedWave >= 0) {
-                    var plot = Waves[SelectedWave];
-                    info[ct++] = Utils.VoltageText(plot.MaxValues[pointer]);
-                    var maxvy = (int)(mMainGridMult * (plot.MaxValues[pointer] - mMainGridMid));
-                    g.FillColor = COLORS[(int)plot.Color];
+                    var wave = Waves[SelectedWave];
+                    info[ct++] = Utils.VoltageText(wave.MaxValues[pointer]);
+                    var maxvy = (int)(mMainGridMult * (wave.MaxValues[pointer] - mMainGridMid));
+                    maxvy = Math.Max(-maxy, maxvy);
+                    maxvy = Math.Min(maxy, maxvy);
+                    g.FillColor = COLORS[(int)wave.Color];
                     g.FillCircle(MouseCursorX, BoundingBox.Y + maxy - maxvy, 3);
                 }
                 if (Waves.Count > 0) {
@@ -658,9 +669,9 @@ namespace Circuit.Common {
                 g.DrawLeftText(info[i], bx - w / 2, BoundingBox.Y - 2 - (ct - 1 - i) * 15);
             }
         }
-        void drawPlot(CustomGraphics g, int plotIndex) {
-            var plot = Waves[plotIndex];
-            if (plot.UI == null) {
+        void drawWave(CustomGraphics g, int waveIndex) {
+            var wave = Waves[waveIndex];
+            if (wave.UI == null) {
                 return;
             }
 
@@ -672,7 +683,7 @@ namespace Circuit.Common {
                  * Put it at the bottom if the scope is never negative. */
                 var mx = Scale;
                 var mn = 0.0;
-                if (mMaxScale) {
+                if (Normarize) {
                     /* scale is maxed out, so fix boundaries of scope at maximum and minimum. */
                     mx = mMaxValue;
                     mn = mMinValue;
@@ -686,7 +697,7 @@ namespace Circuit.Common {
                 }
                 gridMid = (mx + mn) * 0.5;
                 gridMult = centerY / gridMax;
-                if (plotIndex == SelectedWave) {
+                if (waveIndex == SelectedWave) {
                     mMainGridMult = gridMult;
                     mMainGridMid = gridMid;
                 }
@@ -709,7 +720,7 @@ namespace Circuit.Common {
                 }
             }
 
-            if (plotIndex == 0) {
+            if (waveIndex == 0) {
                 Color minorDiv;
                 Color majorDiv;
                 if (ControlPanel.ChkPrintable.Checked) {
@@ -779,41 +790,37 @@ namespace Circuit.Common {
             }
 
             if (ControlPanel.ChkPrintable.Checked) {
-                g.DrawColor = COLORS[(int)plot.Color];
+                g.DrawColor = COLORS[(int)wave.Color];
             } else {
-                if (plotIndex == SelectedWave || plot.UI.IsMouseElm) {
+                if (waveIndex == SelectedWave || wave.UI.IsMouseElm) {
                     g.DrawColor = CustomGraphics.SelectColor;
                 } else {
-                    g.DrawColor = mSomethingSelected ? COLORS[(int)E_COLOR.GRAY] : COLORS[(int)plot.Color];
+                    g.DrawColor = mSomethingSelected ? COLORS[(int)E_COLOR.GRAY] : COLORS[(int)wave.Color];
                 }
             }
-            var idxBegin = plot.StartIndex(BoundingBox.Width);
-            var arrMaxV = plot.MaxValues;
-            var arrMinV = plot.MinValues;
+            var idxBegin = wave.StartIndex(BoundingBox.Width);
+            var arrMaxV = wave.MaxValues;
+            var arrMinV = wave.MinValues;
             var rect = new PointF[BoundingBox.Width * 2 + 1];
+            var yMin = 1;
+            var yMax = BoundingBox.Height - 1;
             for (int x = 0; x != BoundingBox.Width; x++) {
                 var idx = (x + idxBegin) & (mScopePointCount - 1);
                 var v = (float)(gridMult * (arrMaxV[idx] - gridMid));
-                if (centerY < v) {
-                    v = centerY;
-                }
-                if (v < -centerY) {
-                    v = -centerY;
-                }
+                var y = centerY - v - 0.5f;
+                y = Math.Max(yMin, y);
+                y = Math.Min(yMax, y);
                 rect[x].X = x;
-                rect[x].Y = centerY - v - 0.5f;
+                rect[x].Y = y;
             }
             for (int x = BoundingBox.Width - 1, i = BoundingBox.Width; 0 <= x; x--, i++) {
                 var idx = (x + idxBegin) & (mScopePointCount - 1);
                 var v = (float)(gridMult * (arrMinV[idx] - gridMid));
-                if (centerY < v) {
-                    v = centerY;
-                }
-                if (v < -centerY) {
-                    v = -centerY;
-                }
+                var y = centerY - v + 0.5f;
+                y = Math.Max(yMin, y);
+                y = Math.Min(yMax, y);
                 rect[i].X = x;
-                rect[i].Y = centerY - v + 0.5f;
+                rect[i].Y = y;
             }
             rect[BoundingBox.Width * 2] = rect[0];
             g.FillPolygon(g.DrawColor, rect);
@@ -855,29 +862,29 @@ namespace Circuit.Common {
                 g.DrawLeftText(s, 0, y + 8);
             }
         }
-        void drawFFT(CustomGraphics g) {
+        void drawFFT(CustomGraphics g, int waveIndex) {
             if (mFft.Size != mScopePointCount) {
                 mFft = new FFT(mScopePointCount);
+                mReal = new double[mScopePointCount];
+                mImag = new double[mScopePointCount];
             }
-            var real = new double[mScopePointCount];
-            var imag = new double[mScopePointCount];
-            var plot = (Waves.Count == 0) ? Waves[0] : Waves[0];
-            var maxV = plot.MaxValues;
-            var minV = plot.MinValues;
-            int ptr = plot.Pointer;
+            var wave = Waves[waveIndex];
+            var maxV = wave.MaxValues;
+            var minV = wave.MinValues;
+            int ptr = wave.Pointer;
             for (int i = 0; i < mScopePointCount; i++) {
-                int ii = (ptr - i + mScopePointCount) & (mScopePointCount - 1);
-                /* need to average max and min or else it could cause average of function to be > 0, which
-                /* produces spike at 0 Hz that hides rest of spectrum */
-                real[i] = 0.5 * (maxV[ii] + minV[ii]) * (0.5 - 0.5 * Math.Cos(2.0 * Math.PI * i / mScopePointCount));
-                imag[i] = 0;
+                var ii = (ptr - i + mScopePointCount) % mScopePointCount;
+                mReal[i] = 0.5 * (maxV[ii] + minV[ii]) * (0.5 - 0.5 * Math.Cos(2.0 * Math.PI * i / mScopePointCount));
+                mImag[i] = 0;
             }
-            mFft.Exec(real, imag);
-            double maxM = 1e-8;
-            for (int i = 0; i < mScopePointCount / 2; i++) {
-                double m = mFft.Magnitude(real[i], imag[i]);
-                if (m > maxM) {
-                    maxM = m;
+            mFft.Exec(mReal, mImag);
+            if (0 == waveIndex) {
+                mFftMax = SCALE_MIN;
+                for (int i = 0; i < mScopePointCount / 2; i++) {
+                    var m = mFft.Magnitude(mReal[i], mImag[i]);
+                    if (m > mFftMax) {
+                        mFftMax = m;
+                    }
                 }
             }
             var bottom = mFFTBoundingBox.Height - 1;
@@ -885,15 +892,15 @@ namespace Circuit.Common {
             var x0 = 1.0f * mFFTBoundingBox.X;
             var x1 = x0;
             var y0 = 0.0f;
-            g.DrawColor = Color.Green;
+            g.DrawColor = COLORS[(int)wave.Color];
             if (LogSpectrum) {
                 var ymult = -bottom / FFT_MIN;
                 for (int i = 0; i < mScopePointCount / 2; i++) {
-                    var mag = mFft.Magnitude(real[i], imag[i]);
+                    var mag = mFft.Magnitude(mReal[i], mImag[i]);
                     if (0 == mag) {
                         mag = 1;
                     }
-                    var db = 20 * Math.Log10(mag / maxM);
+                    var db = 20 * Math.Log10(mag / mFftMax);
                     if (db < FFT_MIN) {
                         db = FFT_MIN;
                     }
@@ -909,8 +916,8 @@ namespace Circuit.Common {
                 }
             } else {
                 for (int i = 0; i < mScopePointCount / 2; i++) {
-                    var mag = mFft.Magnitude(real[i], imag[i]);
-                    var y1 = bottom - (float)(mag * bottom / maxM);
+                    var mag = mFft.Magnitude(mReal[i], mImag[i]);
+                    var y1 = bottom - (float)(mag * bottom / mFftMax);
                     x1 += scaleX;
                     if (0 == i) {
                         g.DrawLine(x0, y1, x1, y1);
