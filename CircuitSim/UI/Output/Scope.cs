@@ -39,10 +39,12 @@ namespace Circuit.UI.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            int x1 = CirSimForm.TransformX(Math.Min(Post.A.X, Post.B.X));
-            int x2 = CirSimForm.TransformX(Math.Max(Post.A.X, Post.B.X));
-            int y1 = CirSimForm.TransformY(Math.Min(Post.A.Y, Post.B.Y));
-            int y2 = CirSimForm.TransformY(Math.Max(Post.A.Y, Post.B.Y));
+            var a = CirSimForm.Mouse.ToScreenPos(Post.A);
+            var b = CirSimForm.Mouse.ToScreenPos(Post.B);
+            int x1 = Math.Min(a.X, b.X);
+            int x2 = Math.Max(a.X, b.X);
+            int y1 = Math.Min(a.Y, b.Y);
+            int y2 = Math.Max(a.Y, b.Y);
             var r = new Rectangle(x1, y1, x2 - x1, y2 - y1);
             if (!r.Equals(Plot.BoundingBox)) {
                 Plot.SetRect(r);
@@ -50,8 +52,8 @@ namespace Circuit.UI.Output {
         }
 
         public override void Draw(CustomGraphics g) {
-            Plot.MouseCursorX = CirSimForm.MouseCursorX;
-            Plot.MouseCursorY = CirSimForm.MouseCursorY;
+            Plot.MouseCursorX = CirSimForm.Mouse.Cursor.X;
+            Plot.MouseCursorY = CirSimForm.Mouse.Cursor.Y;
             Plot.Draw(g, true);
         }
     }

@@ -93,15 +93,14 @@ namespace Circuit.Forms {
                     mMouseElm = null;
                 }
             } else {
-                if (selectElm != CirSimForm.Mouse.GripElm) {
-                    if (null != CirSimForm.Mouse.GripElm) {
-                        CirSimForm.Mouse.GripElm.SetMouseElm(false);
+                if (selectElm != CirSimForm.Mouse.GrippedElm) {
+                    if (null != CirSimForm.Mouse.GrippedElm) {
+                        CirSimForm.Mouse.GrippedElm.SetMouseElm(false);
                     }
                     if (null != mMouseElm) {
                         mMouseElm.SetMouseElm(false);
                     }
-                    selectElm.SetMouseElm(true);
-                    CirSimForm.Mouse.GripElm = selectElm;
+                    CirSimForm.Mouse.GripElm(selectElm);
                     mMouseElm = selectElm;
                 }
             }
