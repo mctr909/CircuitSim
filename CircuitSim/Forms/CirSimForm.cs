@@ -1053,18 +1053,12 @@ namespace Circuit {
                 if (Mouse.GripElm == null) {
                     MouseMode = MOUSE_MODE.SELECT_AREA;
                 } else {
-                    Post.Dragging = EPOST.INVALID;
+                    Post.Dragging = Post.Hovering;
                     Post.Hovering = EPOST.INVALID;
-                    var elm = Mouse.GripElm;
-                    if (elm.DistancePostA(gpos) <= CustomGraphics.HANDLE_RADIUS) {
-                        Post.Dragging = EPOST.A;
-                        MouseMode = MOUSE_MODE.DRAG_POST;
-                    } else if (elm.DistancePostB(gpos) <= CustomGraphics.HANDLE_RADIUS) {
-                        Post.Dragging = EPOST.B;
-                        MouseMode = MOUSE_MODE.DRAG_POST;
-                    } else if (Mouse.GripElm.Distance(gpos) <= CustomGraphics.HANDLE_RADIUS) {
-                        Post.Dragging = EPOST.BOTH;
+                    if (Post.Dragging == EPOST.BOTH) {
                         MouseMode = MOUSE_MODE.DRAG_ITEM;
+                    } else {
+                        MouseMode = MOUSE_MODE.DRAG_POST;
                     }
                 }
                 break;
@@ -1283,45 +1277,39 @@ namespace Circuit {
         /* need to break this out into a separate routine to handle selection, */
         /* since we don't get mouse move events on mobile */
         void mouseSelect() {
-            int mx = MouseCursorX;
-            int my = MouseCursorY;
-            int gx = inverseTransformX(mx);
-            int gy = inverseTransformY(my);
-
-            Mouse.DragGrid.X = SnapGrid(gx);
-            Mouse.DragGrid.Y = SnapGrid(gy);
-            Mouse.DragScreen.X = mx;
-            Mouse.DragScreen.Y = my;
+            var gpos = new Point(inverseTransformX(MouseCursorX), inverseTransformY(MouseCursorY));
+            Mouse.DragGrid.X = SnapGrid(gpos.X);
+            Mouse.DragGrid.Y = SnapGrid(gpos.Y);
+            Mouse.DragScreen.X = MouseCursorX;
+            Mouse.DragScreen.Y = MouseCursorY;
             Post.Dragging = EPOST.INVALID;
             Post.Hovering = EPOST.INVALID;
 
             PlotXElm = PlotYElm = null;
 
-            BaseUI newMouseElm = null;
-            /* the mouse pointer was not in any of the bounding boxes, but we
-            /* might still be close to a post */
+            BaseUI mostNearUI = null;
+            var mostNear = double.MaxValue;
             for (int i = 0; i != UICount; i++) {
                 var ce = GetUI(i);
-                if (ce.DistancePostA(Mouse.DragGrid) <= CustomGraphics.HANDLE_RADIUS) {
-                    Post.Hovering = EPOST.A;
-                    newMouseElm = ce;
-                    break;
-                }
-                if (ce.DistancePostB(Mouse.DragGrid) <= CustomGraphics.HANDLE_RADIUS) {
-                    Post.Hovering = EPOST.B;
-                    newMouseElm = ce;
-                    break;
-                }
-                if (ce.Distance(Mouse.DragGrid) <= CustomGraphics.HANDLE_RADIUS) {
+                var lineD = ce.Distance(gpos);
+                if (lineD <= CustomGraphics.HANDLE_RADIUS && lineD < mostNear) {
                     Post.Hovering = EPOST.BOTH;
-                    newMouseElm = ce;
-                    break;
+                    mostNearUI = ce;
+                    mostNear = lineD;
                 }
             }
-            if (newMouseElm == null) {
+            if (mostNearUI == null) {
                 clearMouseElm();
             } else {
-                setMouseElm(newMouseElm);
+                var postDa = mostNearUI.DistancePostA(gpos);
+                var postDb = mostNearUI.DistancePostB(gpos);
+                if (postDa <= CustomGraphics.HANDLE_RADIUS) {
+                    Post.Hovering = EPOST.A;
+                }
+                if (postDb <= CustomGraphics.HANDLE_RADIUS) {
+                    Post.Hovering = EPOST.B;
+                }
+                setMouseElm(mostNearUI);
             }
             Repaint();
         }
