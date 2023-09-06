@@ -393,6 +393,10 @@ namespace Circuit.UI {
             Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawCircle(p, radius);
         }
+        protected void drawArc(PointF p, float diameter, float start, float sweep) {
+            Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.DrawArc(p, diameter, start, sweep);
+        }
         protected void drawPolygon(PointF[] p) {
             Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawPolygon(p);
@@ -401,9 +405,13 @@ namespace Circuit.UI {
             Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawPolyline(p);
         }
+        protected void fillCircle(PointF p, float radius) {
+            Context.FillColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.FillCircle(p.X, p.Y, radius);
+        }
         protected void fillPolygon(PointF[] p) {
-            var color = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
-            Context.FillPolygon(color, p);
+            Context.FillColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
+            Context.FillPolygon(p);
         }
         protected void drawLeadA() {
             Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
@@ -446,31 +454,16 @@ namespace Circuit.UI {
         protected void drawCurrentB(double pos) {
             drawCurrent(_Lead2, Post.B, pos);
         }
+        protected void drawLeftText(string text, float x, float y) {
+            Context.FontColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.TextColor;
+            Context.DrawLeftText(text, x, y);
+        }
         protected void drawCenteredText(string text, PointF centerPos, double rotateAngle = 0) {
-            var fs = Context.GetTextSize(text);
-            var w = fs.Width;
-            var h2 = fs.Height / 2;
-            Post.AdjustBbox(
-                (int)(centerPos.X - w / 2), (int)(centerPos.Y - h2),
-                (int)(centerPos.X + w / 2), (int)(centerPos.Y + h2)
-            );
+            Context.FontColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.TextColor;
             Context.DrawCenteredText(text, centerPos, rotateAngle);
         }
         protected void drawCenteredLText(string s, PointF p, bool cx) {
-            var fs = Context.GetTextSizeL(s);
-            var w = fs.Width;
-            var h2 = fs.Height / 2;
-            if (cx) {
-                Post.AdjustBbox(
-                    (int)(p.X - w / 2), (int)(p.Y - h2),
-                    (int)(p.X + w / 2), (int)(p.Y + h2)
-                );
-            } else {
-                Post.AdjustBbox(
-                    (int)p.X, (int)(p.Y - h2),
-                    (int)(p.X + w), (int)(p.Y + h2)
-                );
-            }
+            Context.FontColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.TextColor;
             Context.DrawCenteredLText(s, p);
         }
         protected void drawValues(string s, int offsetX, int offsetY) {
@@ -480,7 +473,8 @@ namespace Circuit.UI {
             var textSize = Context.GetTextSize(s);
             var xc = Post.B.X;
             var yc = Post.B.Y;
-            Context.DrawRightText(s, xc + offsetX, (int)(yc - textSize.Height + offsetY));
+            Context.FontColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.TextColor;
+            Context.DrawRightText(s, xc + offsetX, yc - textSize.Height + offsetY);
         }
         protected void drawValue(string s) {
             if (ControlPanel.ChkShowValues.Checked) {

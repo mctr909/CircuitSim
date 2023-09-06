@@ -76,19 +76,25 @@ namespace Circuit.UI.Passive {
             if (45 * 3 <= deg && deg < 45 * 7) {
                 _TextRot += Math.PI;
             }
-            if (0 < deg && deg < 45 * 3) {
-                interpPost(ref _ValuePos, 0.5, 12 * Post.Dsign);
-                interpPost(ref _NamePos, 0.5, -10 * Post.Dsign);
-            } else if (45 * 3 <= deg && deg <= 180) {
-                interpPost(ref _NamePos, 0.5, 10 * Post.Dsign);
-                interpPost(ref _ValuePos, 0.5, -14 * Post.Dsign);
-            } else if (180 < deg && deg < 45 * 7) {
-                interpPost(ref _NamePos, 0.5, -10 * Post.Dsign);
-                interpPost(ref _ValuePos, 0.5, 12 * Post.Dsign);
+            int on, ov;
+            if (0 == deg) {
+                on = 12;
+                ov = -11;
+            } else if (0 < deg && deg < 45 * 3) {
+                on = 10;
+                ov = -13;
+            } else if (45 * 3 <= deg && deg < 180) {
+                on = -10;
+                ov = 14;
+            } else if (180 <= deg && deg < 45 * 7) {
+                on = -10;
+                ov = 13;
             } else {
-                interpPost(ref _NamePos, 0.5, 12 * Post.Dsign);
-                interpPost(ref _ValuePos, 0.5, -12 * Post.Dsign);
+                on = 11;
+                ov = -12;
             }
+            interpPost(ref _NamePos, 0.5, on);
+            interpPost(ref _ValuePos, 0.5, ov);
         }
 
         public override void Draw(CustomGraphics g) {

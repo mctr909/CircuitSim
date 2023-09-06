@@ -41,15 +41,10 @@ namespace Circuit.UI.Custom {
         }
 
         public override void Draw(CustomGraphics g) {
-            var sizeBk = CustomGraphics.TextSize;
-            var colorBk = CustomGraphics.TextColor;
-            CustomGraphics.TextSize = mFontSize;
-            if (_NeedsHighlight) {
-                CustomGraphics.TextColor = CustomGraphics.SelectColor;
-            }
-            g.DrawLeftText(mText, Post.A.X, (int)(Post.A.Y + mTextSize.Height / 2));
-            CustomGraphics.TextSize = sizeBk;
-            CustomGraphics.TextColor = colorBk;
+            var sizeBk = g.FontSize;
+            g.FontSize = mFontSize;
+            drawLeftText(mText, Post.A.X, (int)(Post.A.Y + mTextSize.Height / 2));
+            g.FontSize = sizeBk;
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
@@ -76,13 +71,13 @@ namespace Circuit.UI.Custom {
         }
 
         void setTextSize() {
-            var sizeBk = CustomGraphics.TextSize;
-            CustomGraphics.TextSize = mFontSize;
+            var sizeBk = Context.FontSize;
+            Context.FontSize = mFontSize;
             mTextSize = Context.GetTextSize(mText);
             Post.B.X = (int)(Post.A.X + mTextSize.Width);
             Post.B.Y = (int)(Post.A.Y + mTextSize.Height);
             Post.SetBbox(Post.A, Post.B);
-            CustomGraphics.TextSize = sizeBk;
+            Context.FontSize = sizeBk;
         }
     }
 }

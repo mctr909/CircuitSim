@@ -331,10 +331,10 @@ namespace Circuit.Common {
             }
 
             if (isFloat) {
-                g.SetPlotFloat(BoundingBox.X, BoundingBox.Y);
+                g.SetPlotPos(BoundingBox.Location);
                 g.DrawRectangle(new Rectangle(0, 0, BoundingBox.Width, BoundingBox.Height));
             } else {
-                g.SetPlotFloat(BoundingBox.X, BoundingBox.Y);
+                g.SetPlotPos(BoundingBox.Location);
             }
 
             {
@@ -790,24 +790,15 @@ namespace Circuit.Common {
                 }
             }
 
-            if (ControlPanel.ChkPrintable.Checked) {
-                g.DrawColor = COLORS[(int)wave.Color];
-            } else {
-                if (waveIndex == SelectedWave || wave.UI.IsMouseElm) {
-                    g.DrawColor = CustomGraphics.SelectColor;
-                } else {
-                    g.DrawColor = mSomethingSelected ? COLORS[(int)E_COLOR.GRAY] : COLORS[(int)wave.Color];
-                }
-            }
             var idxBegin = wave.StartIndex(BoundingBox.Width);
-            var arrMaxV = wave.MaxValues;
-            var arrMinV = wave.MinValues;
-            var rect = new PointF[BoundingBox.Width * 2 + 1];
-            var yMin = 1;
+            var vMax = wave.MaxValues;
+            var vMin = wave.MinValues;
             var yMax = BoundingBox.Height - 1;
+            var yMin = 1;
+            var rect = new PointF[BoundingBox.Width * 2 + 1];
             for (int x = 0; x != BoundingBox.Width; x++) {
                 var idx = (x + idxBegin) & (mScopePointCount - 1);
-                var v = (float)(gridMult * (arrMaxV[idx] - gridMid));
+                var v = (float)(gridMult * (vMax[idx] - gridMid));
                 var y = centerY - v - 0.5f;
                 y = Math.Max(yMin, y);
                 y = Math.Min(yMax, y);
@@ -816,7 +807,7 @@ namespace Circuit.Common {
             }
             for (int x = BoundingBox.Width - 1, i = BoundingBox.Width; 0 <= x; x--, i++) {
                 var idx = (x + idxBegin) & (mScopePointCount - 1);
-                var v = (float)(gridMult * (arrMinV[idx] - gridMid));
+                var v = (float)(gridMult * (vMin[idx] - gridMid));
                 var y = centerY - v + 0.5f;
                 y = Math.Max(yMin, y);
                 y = Math.Min(yMax, y);
@@ -824,7 +815,16 @@ namespace Circuit.Common {
                 rect[i].Y = y;
             }
             rect[BoundingBox.Width * 2] = rect[0];
-            g.FillPolygon(g.DrawColor, rect);
+            if (ControlPanel.ChkPrintable.Checked) {
+                g.FillColor = COLORS[(int)wave.Color];
+            } else {
+                if (waveIndex == SelectedWave || wave.UI.IsMouseElm) {
+                    g.FillColor = CustomGraphics.SelectColor;
+                } else {
+                    g.FillColor = mSomethingSelected ? COLORS[(int)E_COLOR.GRAY] : COLORS[(int)wave.Color];
+                }
+            }
+            g.FillPolygon(rect);
         }
         void drawFFTGridLines(CustomGraphics g) {
             const int xDivs = 20;

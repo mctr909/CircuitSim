@@ -53,10 +53,6 @@ namespace Circuit.UI.Custom {
             } else {
                 drawDashRectangle(x2, y2, x1 - x2, y1 - y2);
             }
-            if (_NeedsHighlight) {
-                Context.DrawPost(Post.A);
-                Context.DrawPost(Post.B);
-            }
         }
 
         public override void GetInfo(string[] arr) { }

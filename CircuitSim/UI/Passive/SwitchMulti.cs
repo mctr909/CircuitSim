@@ -69,13 +69,13 @@ namespace Circuit.UI.Passive {
 
             /* draw first lead */
             drawLeadA();
-            g.DrawPost(_Lead1);
+            fillCircle(_Lead1, 2.5f);
 
             /* draw other leads */
             for (int i = 0; i < ce.ThrowCount; i++) {
                 var pole = mSwPoles[i];
                 drawLine(pole, ce.SwPosts[i]);
-                g.DrawPost(pole);
+                fillCircle(pole, 2.5f);
             }
             /* draw switch */
             drawLine(_Lead1, mSwPoles[ce.Position]);

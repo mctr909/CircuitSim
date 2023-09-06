@@ -177,23 +177,23 @@ namespace Circuit.UI.Passive {
                 /* draw units */
                 var s1 = Utils.UnitText(rev ? ce.Resistance2 : ce.Resistance1, "");
                 var s2 = Utils.UnitText(rev ? ce.Resistance1 : ce.Resistance2, "");
-                var txtHeightHalf = CustomGraphics.TextSize * 0.5f;
+                var txtHeightHalf = g.FontSize * 0.5f;
                 var txtWidth1 = (int)g.GetTextSize(s1).Width;
                 var txtWidth2 = (int)g.GetTextSize(s2).Width;
 
                 if (Post.Horizontal) {
                     var y = (int)(mArrowPoint.Y + (reverseX ? -txtHeightHalf : txtHeightHalf));
-                    g.DrawLeftText(s1, Math.Min(mArrow1.X, mArrow2.X) - txtWidth1, y);
-                    g.DrawLeftText(s2, Math.Max(mArrow1.X, mArrow2.X), y);
+                    drawLeftText(s1, Math.Min(mArrow1.X, mArrow2.X) - txtWidth1, y);
+                    drawLeftText(s2, Math.Max(mArrow1.X, mArrow2.X), y);
                 } else {
-                    g.DrawLeftText(s1, reverseY ? (mArrowPoint.X - txtWidth1) : mArrowPoint.X, (int)(Math.Min(mArrow1.Y, mArrow2.Y) + txtHeightHalf * 3));
-                    g.DrawLeftText(s2, reverseY ? (mArrowPoint.X - txtWidth2) : mArrowPoint.X, (int)(Math.Max(mArrow1.Y, mArrow2.Y) - txtHeightHalf * 3));
+                    drawLeftText(s1, reverseY ? (mArrowPoint.X - txtWidth1) : mArrowPoint.X, (int)(Math.Min(mArrow1.Y, mArrow2.Y) + txtHeightHalf * 3));
+                    drawLeftText(s2, reverseY ? (mArrowPoint.X - txtWidth2) : mArrowPoint.X, (int)(Math.Max(mArrow1.Y, mArrow2.Y) - txtHeightHalf * 3));
                 }
             }
             if (Post.Vertical) {
                 drawCenteredText(mName, _NamePos, -Math.PI / 2);
             } else {
-                g.DrawLeftText(mName, _NamePos.X, _NamePos.Y);
+                drawCenteredText(mName, _NamePos);
             }
         }
 
@@ -289,23 +289,20 @@ namespace Circuit.UI.Passive {
                 mName += Utils.UnitText(ce.MaxResistance);
             }
             if (Post.Horizontal) {
-                var wn = Context.GetTextSize(mName).Width * 0.5;
-                if (Post.Diff.Y != 0) {
-                    if (0 < Post.Diff.Y) {
-                        /* right slider */
-                        Utils.InterpPoint(mTermA, mTermB, ref _NamePos, 0.5 + wn / Post.Len, -12 * Post.Dsign);
-                    } else {
-                        /* left slider */
-                        Utils.InterpPoint(mTermA, mTermB, ref _NamePos, 0.5 - wn / Post.Len, 12 * Post.Dsign);
-                    }
+                if (0 < Post.Diff.Y) {
+                    /* right slider */
+                    Utils.InterpPoint(mTermA, mTermB, ref _NamePos, 0.5, -12 * Post.Dsign);
+                } else {
+                    /* left slider */
+                    Utils.InterpPoint(mTermA, mTermB, ref _NamePos, 0.5, 12 * Post.Dsign);
                 }
             } else {
                 if (0 < Post.Diff.X) {
                     /* upper slider */
-                    Utils.InterpPoint(mTermA, mTermB, ref _NamePos, 0.5, -10 * Post.Dsign);
+                    Utils.InterpPoint(mTermA, mTermB, ref _NamePos, 0.5, -9 * Post.Dsign);
                 } else {
                     /* lower slider */
-                    Utils.InterpPoint(mTermA, mTermB, ref _NamePos, 0.5, 11 * Post.Dsign);
+                    Utils.InterpPoint(mTermA, mTermB, ref _NamePos, 0.5, 13 * Post.Dsign);
                 }
             }
         }

@@ -145,8 +145,7 @@ namespace Circuit.UI.Passive {
         }
 
         void setNamePos() {
-            var wn = Context.GetTextSize(ReferenceName).Width;
-            _NamePos = new Point((int)(mCore[0].X - wn / 2 + 2), (int)mCore[0].Y - 8);
+            _NamePos = new Point((int)mCore[0].X + 1, (int)mCore[0].Y - 8);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -158,10 +157,10 @@ namespace Circuit.UI.Passive {
             drawLine(mTermSec2, mCoilSec2);
 
             foreach (var p in mCoilPri) {
-                Context.DrawArc(p, mCoilWidth, mCoilAngle, 180);
+                drawArc(p, mCoilWidth, mCoilAngle, 180);
             }
             foreach (var p in mCoilSec) {
-                Context.DrawArc(p, mCoilWidth, mCoilAngle, -180);
+                drawArc(p, mCoilWidth, mCoilAngle, -180);
             }
 
             drawLine(mCore[0], mCore[2]);
@@ -182,7 +181,7 @@ namespace Circuit.UI.Passive {
             drawCurrent(mCoilSec2, mTermSec2, ce.CurCounts[1]);
 
             if (ControlPanel.ChkShowName.Checked) {
-                g.DrawLeftText(ReferenceName, _NamePos.X, _NamePos.Y);
+                drawCenteredText(ReferenceName, _NamePos);
             }
         }
 

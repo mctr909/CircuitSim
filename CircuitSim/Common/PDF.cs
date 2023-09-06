@@ -19,8 +19,8 @@ class PDF {
         StreamWriter mSw;
         double mOfsX;
         double mOfsY;
-        double mBoardOfsX;
-        double mBoardOfsY;
+        double mCircuitOfsX;
+        double mCircuitOfsY;
 
         public override Color DrawColor {
             set {
@@ -42,8 +42,8 @@ class PDF {
             mSw = new StreamWriter(mMs);
             mOfsX = 0.0;
             mOfsY = 0.0;
-            mBoardOfsX = 0.0;
-            mBoardOfsY = 0.0;
+            mCircuitOfsX = 0.0;
+            mCircuitOfsY = 0.0;
             FONT_SCALE = 1.2f;
             TEXT_SCALE = FONT_SCALE * 1.2f;
             PIX_SCALE = FONT_SCALE * 0.65f;
@@ -84,12 +84,8 @@ class PDF {
             writeText(s, x, y);
         }
 
-        public override void DrawRightText(string s, int x, int y) {
+        public override void DrawRightText(string s, float x, float y) {
             writeText(s, x, y, GetTextSize(s).Width);
-        }
-
-        public override void DrawRightText(string s, PointF p) {
-            DrawRightText(s, (int)p.X, (int)p.Y);
         }
 
         public override void DrawCenteredText(string s, PointF p, double rotateAngle) {
@@ -191,7 +187,7 @@ class PDF {
             writeLF(x, y);
         }
 
-        public override void FillPolygon(Color color, PointF[] poly) {
+        public override void FillPolygon(PointF[] poly) {
             var p = poly[0];
             writeM(p.X, p.Y);
             for (int i = 1; i < poly.Length; i++) {
@@ -241,8 +237,8 @@ class PDF {
         }
 
         void writeText(string s, float x, float y, float ofsX = 0.0f) {
-            writeFontSize(TextSize);
-            var ofsY = TextSize * PIX_SCALE * 0.5f;
+            writeFontSize(FontSize);
+            var ofsY = FontSize * PIX_SCALE * 0.5f;
             var strs = s.Replace("\r", "").Split('\n');
             x += (float)mOfsX;
             y += (float)mOfsY;
@@ -252,7 +248,7 @@ class PDF {
                     (y + ofsY).ToString("0.##")
                 );
                 writeText(str.Replace("\n", ""));
-                ofsY += TextSize * (PIX_SCALE + 0.2f);
+                ofsY += FontSize * (PIX_SCALE + 0.2f);
             }
         }
 
@@ -268,11 +264,11 @@ class PDF {
         }
 
         void writeTextR(string s, float x, float y, double theta, float ofsX = 0.0f) {
-            writeFontSize(TextSize);
+            writeFontSize(FontSize);
             x += (float)mOfsX;
             y += (float)mOfsY;
             var strs = s.Replace("\r", "").Split('\n');
-            var ofsY = TextSize * (2 - strs.Length) * 0.5f;
+            var ofsY = FontSize * (2 - strs.Length) * 0.5f;
             var cos = Math.Cos(theta);
             var sin = Math.Sin(theta);
             foreach (var str in strs) {
@@ -285,7 +281,7 @@ class PDF {
                     (y - ry * PIX_SCALE).ToString("0.##")
                 );
                 writeText(str);
-                ofsY += TextSize + 0.5f;
+                ofsY += FontSize + 0.5f;
             }
         }
 
@@ -335,14 +331,14 @@ class PDF {
             return compMs.ToArray();
         }
 
-        public override void ScrollBoard(Point p) {
-            mBoardOfsX = p.X;
-            mBoardOfsY = p.Y;
+        public override void ScrollCircuit(Point p) {
+            mCircuitOfsX = p.X;
+            mCircuitOfsY = p.Y;
         }
 
-        public override void SetPlotFloat(int x, int y) {
-            mOfsX = x - mBoardOfsX;
-            mOfsY = y - mBoardOfsY;
+        public override void SetPlotPos(Point p) {
+            mOfsX = p.X - mCircuitOfsX;
+            mOfsY = p.Y - mCircuitOfsY;
         }
 
         public override void ClearTransform() {

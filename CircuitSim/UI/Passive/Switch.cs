@@ -95,8 +95,8 @@ namespace Circuit.UI.Passive {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmSwitch)Elm;
             draw2Leads();
-            g.DrawPost(_Lead1);
-            g.DrawPost(_Lead2);
+            fillCircle(_Lead1, 2.5f);
+            fillCircle(_Lead2, 2.5f);
             /* draw switch */
             var p2 = new PointF();
             if (ce.Position == 0) {

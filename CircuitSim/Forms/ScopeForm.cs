@@ -178,18 +178,16 @@ namespace Circuit.Forms {
             if (Circuit.StopMessage != null) {
                 g.DrawLeftText(Circuit.StopMessage, 10, -10);
             } else {
-                var info = new string[10];
-                info[0] = "時間：" + Utils.TimeText(Circuit.Time);
-                info[1] = "単位：" + Utils.TimeText(ControlPanel.TimeStep);
                 int x;
                 if (ct == 0) {
                     x = 0;
                 } else {
                     x = mPlots[ct - 1].Right + 4;
                 }
-                for (int i = 0; i < info.Length && info[i] != null; i++) {
-                    g.DrawElementText(info[i], x, 15 * (i + 1));
-                }
+                var time = "時間：" + Utils.TimeText(Circuit.Time);
+                var unit = "単位：" + Utils.TimeText(ControlPanel.TimeStep);
+                g.DrawLeftText(time, x, 15);
+                g.DrawLeftText(unit, x, 15);
             }
 
             Flush();

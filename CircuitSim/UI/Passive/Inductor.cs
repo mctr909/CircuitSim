@@ -84,7 +84,7 @@ namespace Circuit.UI.Passive {
             var ce = (ElmInductor)Elm;
             draw2Leads();
             foreach(var p in mCoilPos) {
-                Context.DrawArc(p, COIL_WIDTH, mCoilAngle, -180);
+                drawArc(p, COIL_WIDTH, mCoilAngle, -180);
             }
             drawName();
             drawValue(Utils.UnitText(ce.Inductance));

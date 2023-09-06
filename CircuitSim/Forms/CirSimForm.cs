@@ -1821,7 +1821,7 @@ namespace Circuit {
 
         static void drawCircuit(CustomGraphics g) {
             g.Clear(ControlPanel.ChkPrintable.Checked ? Color.White : Color.Black);
-            g.ScrollBoard(mScroll);
+            g.ScrollCircuit(mScroll);
 
             if (!(g is PDF.Page)) {
                 var pdfX0 = 0;
@@ -1839,7 +1839,7 @@ namespace Circuit {
             foreach (var ui in UIList) {
                 ui.Draw(g);
                 if (ui is Scope) {
-                    g.ScrollBoard(mScroll);
+                    g.ScrollCircuit(mScroll);
                 }
             }
 

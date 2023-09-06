@@ -175,13 +175,13 @@ namespace Circuit.UI.Custom {
                     drawCircle(p.bubblePos, 1);
                     drawCircle(p.bubblePos, 3);
                 }
-                var bkSize = CustomGraphics.TextSize;
-                CustomGraphics.TextSize = 12 * csize;
+                var bkSize = g.FontSize;
+                g.FontSize = 12 * csize;
                 while (true) {
                     int txtW = (int)g.GetTextSize(p.text).Width;
                     /* scale font down if it's too big */
                     if (12 * csize < txtW) {
-                        CustomGraphics.TextSize -= 0.5f;
+                        g.FontSize -= 0.5f;
                         continue;
                     }
                     drawCenteredText(p.text, p.textloc);
@@ -191,7 +191,7 @@ namespace Circuit.UI.Custom {
                     }
                     break;
                 }
-                CustomGraphics.TextSize = bkSize;
+                g.FontSize = bkSize;
             }
             drawPolygon(rectPoints);
             if (clockPoints != null) {

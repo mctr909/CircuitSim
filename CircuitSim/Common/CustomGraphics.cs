@@ -17,14 +17,14 @@ namespace Circuit {
             LineAlignment = StringAlignment.Center
         };
 
-        protected static Font mTextFontL = new Font("Arial", 11.0f);
-
-        static Font mTextFont = new Font("Arial", 9.0f);
-        static Font mElementFont = new Font("MS Gothic", 9.0f);
-        static Brush mTextBrush = Brushes.Black;
-        static Color mTextColor;
         static Pen mPenPost = new Pen(Color.Green, 5.0f);
         static Pen mPenHandle = new Pen(Color.FromArgb(95, 0, 255, 255), 1.0f);
+
+        protected static Font mFontL = new Font("Arial", 11.0f);
+
+        protected Bitmap mImage;
+
+        Graphics mG;
 
         Pen mPenLine = new Pen(Color.White, 1.0f) {
             StartCap = LineCap.Triangle,
@@ -32,8 +32,9 @@ namespace Circuit {
             Width = 0.1f
         };
         Pen mPenFill = new Pen(Color.White, 1.0f);
-        protected Bitmap mImage;
-        Graphics mG;
+        Font mFont = new Font("Arial", 9.0f);
+        Brush mFontBrush = Brushes.Black;
+        Color mFontColor;
 
         public const float POST_RADIUS = 2.5f;
         public const float HANDLE_RADIUS = 6.5f;
@@ -45,21 +46,10 @@ namespace Circuit {
             get { return mPenPost.Color; }
             private set { mPenPost.Color = value; }
         }
-        public static Color TextColor {
-            get { return mTextColor; }
-            set {
-                var p = new Pen(value, 1.0f);
-                mTextBrush = p.Brush;
-                mTextColor = value;
-            }
-        }
-        public static float TextSize {
-            get { return mTextFont.Size; }
-            set { mTextFont = new Font(mTextFont.Name, value); }
-        }
+        public static Color TextColor { get; private set; }
         public static float LTextSize {
-            get { return mTextFontL.Size; }
-            set { mTextFontL = new Font(mTextFontL.Name, value); }
+            get { return mFontL.Size; }
+            set { mFontL = new Font(mFontL.Name, value); }
         }
         
         public bool DoPrint { get; set; } = false;
@@ -71,6 +61,18 @@ namespace Circuit {
         public virtual Color FillColor {
             get { return mPenFill.Color; }
             set { mPenFill.Color = value; }
+        }
+        public Color FontColor {
+            get { return mFontColor; }
+            set {
+                var p = new Pen(value, 1.0f);
+                mFontBrush = p.Brush;
+                mFontColor = value;
+            }
+        }
+        public float FontSize {
+            get { return mFont.Size; }
+            set { mFont = new Font(mFont.Name, value); }
         }
 
         public int Width { get; private set; }
@@ -109,16 +111,16 @@ namespace Circuit {
             if (isPrintable) {
                 WhiteColor = Color.Gray;
                 LineColor = Color.Black;
-                TextColor = Color.Black;
                 SelectColor = Color.Black;
                 PostColor = Color.Black;
+                TextColor = Color.Black;
                 mPenHandle.Color = Color.Black;
             } else {
                 WhiteColor = Color.FromArgb(191, 191, 191);
                 LineColor = Color.FromArgb(95, 95, 95);
-                TextColor = Color.FromArgb(147, 147, 147);
                 SelectColor = Color.FromArgb(0, 255, 255);
                 PostColor = Color.FromArgb(0, 127, 0);
+                TextColor = Color.FromArgb(147, 147, 147);
                 mPenHandle.Color = Color.FromArgb(95, 0, 255, 255);
             }
         }
@@ -127,32 +129,25 @@ namespace Circuit {
             return new CustomGraphics(width, height);
         }
 
-        public void DrawElementText(string s, float x, float y) {
-            mG.DrawString(s, mElementFont, mTextBrush, x, y, mAlignLeft);
-        }
-
         public virtual void DrawLeftText(string s, float x, float y) {
-            mG.DrawString(s, mTextFont, mTextBrush, x, y, mAlignLeft);
+            mG.DrawString(s, mFont, mFontBrush, x, y, mAlignLeft);
         }
 
-        public virtual void DrawRightText(string s, PointF p) {
-            mG.DrawString(s, mTextFont, mTextBrush, p.X, p.Y, mAlignRight);
-        }
-
-        public virtual void DrawRightText(string s, int x, int y) {
-            mG.DrawString(s, mTextFont, mTextBrush, x, y, mAlignRight);
+        public virtual void DrawRightText(string s, float x, float y) {
+            mG.DrawString(s, mFont, mFontBrush, x, y, mAlignRight);
         }
 
         public virtual void DrawCenteredText(string s, PointF p, double rotateAngle) {
+            var rot = (float)(rotateAngle * 180 / Math.PI);
+            var mat = mG.Transform;
             mG.TranslateTransform(p.X, p.Y);
-            mG.RotateTransform((float)(rotateAngle * 180 / Math.PI));
-            mG.DrawString(s, mTextFont, mTextBrush, 0, 0, mAlignCenter);
-            mG.RotateTransform(-(float)(rotateAngle * 180 / Math.PI));
-            mG.TranslateTransform(-p.X, -p.Y);
+            mG.RotateTransform(rot);
+            mG.DrawString(s, mFont, mFontBrush, 0, 0, mAlignCenter);
+            mG.Transform = mat;
         }
 
         public virtual void DrawCenteredLText(string s, PointF p) {
-            mG.DrawString(s, mTextFontL, mTextBrush, p.X, p.Y + 1, mAlignCenter);
+            mG.DrawString(s, mFontL, mFontBrush, p.X, p.Y + 1, mAlignCenter);
         }
 
         public virtual void DrawPost(PointF p) {
@@ -219,17 +214,16 @@ namespace Circuit {
             mG.FillPie(mPenFill.Brush, cx - radius, cy - radius, radius * 2, radius * 2, 0, 360);
         }
 
-        public virtual void FillPolygon(Color color, PointF[] p) {
-            mPenFill.Color = color;
+        public virtual void FillPolygon(PointF[] p) {
             mG.FillPolygon(mPenFill.Brush, p);
         }
 
-        public virtual void ScrollBoard(Point p) {
+        public virtual void ScrollCircuit(Point p) {
             mG.Transform = new Matrix(1, 0, 0, 1, p.X, p.Y);
         }
 
-        public virtual void SetPlotFloat(int x, int y) {
-            mG.Transform = new Matrix(1, 0, 0, 1, x, y);
+        public virtual void SetPlotPos(Point p) {
+            mG.Transform = new Matrix(1, 0, 0, 1, p.X, p.Y);
         }
 
         public virtual void ClearTransform() {
@@ -237,11 +231,11 @@ namespace Circuit {
         }
 
         public SizeF GetTextSize(string s) {
-            return mG.MeasureString(s, mTextFont);
+            return mG.MeasureString(s, mFont);
         }
 
         public SizeF GetTextSizeL(string s) {
-            return mG.MeasureString(s, mTextFontL);
+            return mG.MeasureString(s, mFontL);
         }
 
         public void Clear(Color color) {
