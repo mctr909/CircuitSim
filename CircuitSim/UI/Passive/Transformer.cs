@@ -64,12 +64,14 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             var ce = (ElmTransformer)Elm;
+            if (Post.B.Y < Post.A.Y + BODY_LEN) {
+                Post.B.Y = Post.A.Y + BODY_LEN;
+            }
+            if (Post.B.X < Post.A.X + BODY_LEN) {
+                Post.B.X = Post.A.X + BODY_LEN;
+            }
             var width = Math.Max(BODY_LEN, Math.Abs(Post.B.X - Post.A.X));
             var height = Math.Max(BODY_LEN, Math.Abs(Post.B.Y - Post.A.Y));
-
-            if (Post.B.X == Post.A.X) {
-                Post.B.Y = Post.A.Y;
-            }
             base.SetPoints();
 
             mTermPri1 = Post.A;
