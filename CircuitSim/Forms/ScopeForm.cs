@@ -162,6 +162,7 @@ namespace Circuit.Forms {
             }
 
             g.Clear(ControlPanel.ChkPrintable.Checked ? Color.White : Color.Black);
+            g.FontColor = CustomGraphics.TextColor;
             Setup(g.Width, g.Height);
 
             var ct = PlotCount;
@@ -187,7 +188,7 @@ namespace Circuit.Forms {
                 var time = "時間：" + Utils.TimeText(Circuit.Time);
                 var unit = "単位：" + Utils.TimeText(ControlPanel.TimeStep);
                 g.DrawLeftText(time, x, 15);
-                g.DrawLeftText(unit, x, 15);
+                g.DrawLeftText(unit, x, 30);
             }
 
             Flush();
