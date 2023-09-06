@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using Circuit.UI;
 
 namespace Circuit {
-    public static class CirSimMouse {
+    public static class MouseInfo {
         public enum MODE {
             NONE = 0,
             ADD_ELM,
@@ -25,7 +25,6 @@ namespace Circuit {
         public static MouseButtons Button = MouseButtons.None;
         public static EPOST HoveringPost = EPOST.INVALID;
         public static EPOST DraggingPost = EPOST.INVALID;
-        public static DateTime LastMove = DateTime.Now;
         public static bool IsDragging = false;
 
         public static Point Cursor;
@@ -35,22 +34,32 @@ namespace Circuit {
         public static Rectangle SelectedArea;
 
         static Point mLastCursor;
+        static DateTime mLastMove = DateTime.Now;
 
         public static Point CommitCursor() {
             mLastCursor = Cursor;
             return mLastCursor;
         }
+        public static bool Delay() {
+            var now = DateTime.Now;
+            if ((now - mLastMove).Milliseconds < 50) {
+                return true;
+            } else {
+                mLastMove = now;
+                return false;
+            }
+        }
         public static Point GetAbsPos() {
             return new Point(Cursor.X - Offset.X, Cursor.Y - Offset.Y);
         }
-        public static void SetCursor(Point p) {
-            Cursor = p;
+        public static void SetCursor(Point cursor) {
+            Cursor = cursor;
         }
-        public static void SelectArea(Point p) {
-            int x1 = Math.Min(p.X, DragBegin.X);
-            int x2 = Math.Max(p.X, DragBegin.X);
-            int y1 = Math.Min(p.Y, DragBegin.Y);
-            int y2 = Math.Max(p.Y, DragBegin.Y);
+        public static void SelectArea(Point pos) {
+            int x1 = Math.Min(pos.X, DragBegin.X);
+            int x2 = Math.Max(pos.X, DragBegin.X);
+            int y1 = Math.Min(pos.Y, DragBegin.Y);
+            int y2 = Math.Max(pos.Y, DragBegin.Y);
             SelectedArea = new Rectangle(x1, y1, x2 - x1, y2 - y1);
         }
         public static void GripElm(BaseUI ui) {

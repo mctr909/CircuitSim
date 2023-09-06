@@ -41,8 +41,8 @@ namespace Circuit.UI.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            var a = CirSimMouse.ToScreenPos(Post.A);
-            var b = CirSimMouse.ToScreenPos(Post.B);
+            var a = MouseInfo.ToScreenPos(Post.A);
+            var b = MouseInfo.ToScreenPos(Post.B);
             int x1 = Math.Min(a.X, b.X);
             int x2 = Math.Max(a.X, b.X);
             int y1 = Math.Min(a.Y, b.Y);
@@ -54,8 +54,8 @@ namespace Circuit.UI.Output {
         }
 
         public override void Draw(CustomGraphics g) {
-            Plot.MouseCursorX = CirSimMouse.Cursor.X;
-            Plot.MouseCursorY = CirSimMouse.Cursor.Y;
+            Plot.MouseCursorX = MouseInfo.Cursor.X;
+            Plot.MouseCursorY = MouseInfo.Cursor.Y;
             Plot.Draw(g, true);
         }
     }

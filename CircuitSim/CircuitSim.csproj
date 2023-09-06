@@ -77,7 +77,7 @@
     <Compile Include="Elements\Logic\ElmHalfAdder.cs" />
     <Compile Include="Elements\Logic\ElmLatch.cs" />
     <Compile Include="Elements\Logic\ElmMultiplexer.cs" />
-    <Compile Include="CirSimMouse.cs" />
+    <Compile Include="MouseInfo.cs" />
     <Compile Include="Forms\ElementPopupMenu.Designer.cs">
       <DependentUpon>ElementPopupMenu.cs</DependentUpon>
     </Compile>
