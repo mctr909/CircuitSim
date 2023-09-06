@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+
 using Circuit.Common;
 using Circuit.Elements.Output;
+using Circuit.Forms;
 
 namespace Circuit.UI.Output {
     public class Scope : BaseUI {
@@ -39,8 +41,8 @@ namespace Circuit.UI.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            var a = CirSimForm.Mouse.ToScreenPos(Post.A);
-            var b = CirSimForm.Mouse.ToScreenPos(Post.B);
+            var a = CirSimMouse.ToScreenPos(Post.A);
+            var b = CirSimMouse.ToScreenPos(Post.B);
             int x1 = Math.Min(a.X, b.X);
             int x2 = Math.Max(a.X, b.X);
             int y1 = Math.Min(a.Y, b.Y);
@@ -52,8 +54,8 @@ namespace Circuit.UI.Output {
         }
 
         public override void Draw(CustomGraphics g) {
-            Plot.MouseCursorX = CirSimForm.Mouse.Cursor.X;
-            Plot.MouseCursorY = CirSimForm.Mouse.Cursor.Y;
+            Plot.MouseCursorX = CirSimMouse.Cursor.X;
+            Plot.MouseCursorY = CirSimMouse.Cursor.Y;
             Plot.Draw(g, true);
         }
     }

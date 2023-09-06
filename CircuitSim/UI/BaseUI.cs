@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 
 using Circuit.Elements;
+using Circuit.Forms;
 using Circuit.UI.Output;
 
 namespace Circuit.UI {

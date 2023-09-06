@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 
+using Circuit.Forms;
 using Circuit.UI;
 
 namespace Circuit.Common {

@@ -32,8 +32,8 @@ namespace Circuit.Forms {
         ToolStripMenuItem mProperties;
 
         public ScopePopupMenu() {
-            if (CirSimForm.Mouse.GrippedElm is Scope) {
-                mPlot = ((Scope)CirSimForm.Mouse.GrippedElm).Plot;
+            if (CirSimMouse.GrippedElm is Scope) {
+                mPlot = ((Scope)CirSimMouse.GrippedElm).Plot;
             } else {
                 mPlot = ScopeForm.GetSelectedPlot();
             }
@@ -126,7 +126,7 @@ namespace Circuit.Forms {
         }
 
         void performed(SCOPE_MENU_ITEM item) {
-            if (!(CirSimForm.Mouse.GrippedElm is Scope)) {
+            if (!(CirSimMouse.GrippedElm is Scope)) {
                 switch (item) {
                 case SCOPE_MENU_ITEM.REMOVE_WAVE:
                     ScopeForm.RemoveWave();

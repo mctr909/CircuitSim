@@ -101,12 +101,18 @@ namespace Circuit.UI {
         public void Move(int dx, int dy, EPOST n) {
             var oldA = A;
             var oldB = B;
-            switch(n) {
+            switch (n) {
             case EPOST.A:
                 A.X += dx;
                 A.Y += dy;
                 break;
             case EPOST.B:
+                B.X += dx;
+                B.Y += dy;
+                break;
+            case EPOST.BOTH:
+                A.X += dx;
+                A.Y += dy;
                 B.X += dx;
                 B.Y += dy;
                 break;

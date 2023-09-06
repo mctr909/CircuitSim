@@ -1,81 +1,55 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
 using Circuit.UI;
 using Circuit.UI.Passive;
 
-namespace Circuit {
-    public enum ELEMENT_MENU_ITEM {
-        EDIT,
-        SCOPE_WINDOW,
-        SCOPE_FLOAT,
-        FLIP_POST,
-        SPLIT_WIRE,
-        SLIDERS
-    }
-
-    public class ElementPopupMenu {
-        ToolStripItem[] mMenuItems;
-        ToolStripMenuItem mEdit;
-        ToolStripMenuItem mScopeWindow;
-        ToolStripMenuItem mScopeFloat;
-        ToolStripMenuItem mFlipPosts;
-        ToolStripMenuItem mSplit;
-        ToolStripMenuItem mSlider;
-
-        public ElementPopupMenu(CirSimForm sim) {
-            mEdit = new ToolStripMenuItem() { Text = "編集" };
-            mEdit.Click += new EventHandler((s, e) => {
-                sim.Performed(ELEMENT_MENU_ITEM.EDIT);
-            });
-            mScopeWindow = new ToolStripMenuItem() { Text = "スコープをウィンドウ表示" };
-            mScopeWindow.Click += new EventHandler((s, e) => {
-                sim.Performed(ELEMENT_MENU_ITEM.SCOPE_WINDOW);
-            });
-            mScopeFloat = new ToolStripMenuItem() { Text = "スコープを任意の場所に表示" };
-            mScopeFloat.Click += new EventHandler((s, e) => {
-                sim.Performed(ELEMENT_MENU_ITEM.SCOPE_FLOAT);
-            });
-            mSplit = new ToolStripMenuItem() { Text = "線の分割" };
-            mSplit.Click += new EventHandler((s, e) => {
-                sim.Performed(ELEMENT_MENU_ITEM.SPLIT_WIRE);
-            });
-            mFlipPosts = new ToolStripMenuItem() { Text = "端子の入れ替え" };
-            mFlipPosts.Click += new EventHandler((s, e) => {
-                sim.Performed(ELEMENT_MENU_ITEM.FLIP_POST);
-            });
-            mSlider = new ToolStripMenuItem() { Text = "スライダーを作成" };
-            mSlider.Click += new EventHandler((s, e) => {
-                sim.Performed(ELEMENT_MENU_ITEM.SLIDERS);
-            });
-            mMenuItems = new List<ToolStripItem>() {
-                mEdit,
-                new ToolStripSeparator(),
-                mScopeWindow,
-                mScopeFloat,
-                new ToolStripSeparator(),
-                mSplit,
-                mFlipPosts,
-                new ToolStripSeparator(),
-                mSlider
-            }.ToArray();
+namespace Circuit.Forms {
+    public partial class ElementMenu : ContextMenuStrip {
+        public enum Item {
+            EDIT,
+            SCOPE_WINDOW,
+            SCOPE_FLOAT,
+            FLIP_POST,
+            SPLIT_WIRE,
+            SLIDERS
         }
 
-        public ContextMenuStrip Show(int px, int py, BaseUI mouseElm) {
-            mEdit.Enabled = mouseElm.GetElementInfo(0, 0) != null;
-            mScopeWindow.Enabled = mouseElm.CanViewInScope;
-            mScopeFloat.Enabled = mouseElm.CanViewInScope;
-            mFlipPosts.Enabled = 2 == mouseElm.Elm.TermCount;
-            mSplit.Enabled = canSplit(mouseElm);
-            mSlider.Enabled = sliderItemEnabled(mouseElm);
+        public delegate void Callback(Item item);
 
-            var popupMenu = new ContextMenuStrip();
-            popupMenu.Items.AddRange(mMenuItems);
-            popupMenu.Show();
-            popupMenu.Location = new Point(px, py);
-            return popupMenu;
+        public ElementMenu(Callback callback) {
+            InitializeComponent();
+            Edit.Click += new EventHandler((s, e) => {
+                callback(Item.EDIT);
+            });
+            ScopeWindow.Click += new EventHandler((s, e) => {
+                callback(Item.SCOPE_WINDOW);
+            });
+            ScopeFloat.Click += new EventHandler((s, e) => {
+                callback(Item.SCOPE_FLOAT);
+            });
+            SplitWire.Click += new EventHandler((s, e) => {
+                callback(Item.SPLIT_WIRE);
+            });
+            FlipPosts.Click += new EventHandler((s, e) => {
+                callback(Item.FLIP_POST);
+            });
+            Slider.Click += new EventHandler((s, e) => {
+                callback(Item.SLIDERS);
+            });
+        }
+
+        public ContextMenuStrip Show(Point pos, BaseUI mouseElm) {
+            Edit.Enabled = mouseElm.GetElementInfo(0, 0) != null;
+            ScopeWindow.Enabled = mouseElm.CanViewInScope;
+            ScopeFloat.Enabled = mouseElm.CanViewInScope;
+            FlipPosts.Enabled = 2 == mouseElm.Elm.TermCount;
+            SplitWire.Enabled = canSplit(mouseElm);
+            Slider.Enabled = sliderItemEnabled(mouseElm);
+            Show();
+            Location = pos;
+            return this;
         }
 
         bool canSplit(BaseUI ce) {

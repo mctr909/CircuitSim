@@ -6,6 +6,7 @@ using Circuit.Elements;
 using Circuit.Elements.Passive;
 using Circuit.Elements.Input;
 using Circuit.Elements.Output;
+using Circuit.Forms;
 
 namespace Circuit {
     class CircuitNode {
