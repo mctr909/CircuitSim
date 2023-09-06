@@ -211,6 +211,7 @@ namespace Circuit {
             mScopeForm.Show();
         }
 
+        #region Public method
         public void AddElement(DUMP_ID item) {
             if (mContextMenu != null) {
                 mContextMenu.Close();
@@ -240,9 +241,6 @@ namespace Circuit {
                 break;
             case MENU_ITEM.SAVE_FILE:
                 doSaveFile(false);
-                break;
-            case MENU_ITEM.CREATE_MODULE:
-                doCreateSubcircuit();
                 break;
             case MENU_ITEM.PRINT:
                 BaseUI.Context.DoPrint = true;
@@ -321,7 +319,11 @@ namespace Circuit {
             Repaint();
         }
 
-        #region Public method
+        public void Reload() {
+            PushUndo();
+            readCircuit(mRecovery);
+        }
+
         public static BaseUI GetUI(int n) {
             if (n >= UIList.Count) {
                 return null;
@@ -661,28 +663,288 @@ namespace Circuit {
             Repaint();
         }
 
-        void onMouseWheel(Control sender, MouseEventArgs e) {
-            showScrollValues();
-        }
-
         void onMouseMove(MouseEventArgs e) {
             MouseCursorX = e.X;
             MouseCursorY = e.Y;
-            if (33 < (DateTime.Now - Mouse.LastMove).Milliseconds) {
-                Mouse.LastMove = DateTime.Now;
+            var now = DateTime.Now;
+            if (50 < (now - Mouse.LastMove).Milliseconds) {
+                Mouse.LastMove = now;
             } else {
                 return;
             }
             if (Mouse.IsDragging) {
-                mouseDragged();
-                return;
+                mouseDrag();
+            } else {
+                mouseSelect();
             }
-            mouseSelect();
         }
 
         void onMouseLeave() {
             MouseCursorX = -1;
             MouseCursorY = -1;
+        }
+
+        void onMouseWheel(Control sender, MouseEventArgs e) {
+            showScrollValues();
+        }
+
+        void onContextMenu(MouseEventArgs e) {
+            if (Mouse.GripElm == null) {
+                return;
+            }
+            mMenuClient.X = Location.X + e.X;
+            mMenuClient.Y = Location.Y + e.Y;
+            mMenuElm = Mouse.GripElm;
+            if (Mouse.GripElm is Scope) {
+                var s = (Scope)Mouse.GripElm;
+                if (s.Plot.CanMenu) {
+                    var fm = new ScopePopupMenu();
+                    mContextMenu = fm.Show(mMenuClient.X, mMenuClient.Y, new ScopePlot[] { s.Plot }, 0, true);
+                }
+            } else {
+                mContextMenu = mElementPopupMenu.Show(mMenuClient.X, mMenuClient.Y, Mouse.GripElm);
+            }
+        }
+
+        void mouseDrag() {
+            /* ignore right mouse button with no modifiers (needed on PC) */
+            if (Mouse.Button == MouseButtons.Right) {
+                return;
+            }
+            var gpos = new Point(
+                inverseTransformX(MouseCursorX),
+                inverseTransformY(MouseCursorY));
+            if (!mCircuitArea.Contains(MouseCursorX, MouseCursorY)) {
+                return;
+            }
+            bool changed = false;
+            if (ConstructElm != null) {
+                ConstructElm.Drag(gpos);
+            }
+            bool success = true;
+            switch (MouseMode) {
+            case MOUSE_MODE.SCROLL: {
+                int dx = MouseCursorX - Mouse.DragScreen.X;
+                int dy = MouseCursorY - Mouse.DragScreen.Y;
+                if (dx == 0 && dy == 0) {
+                    return;
+                }
+                mScroll.X += dx;
+                mScroll.Y += dy;
+                Mouse.DragScreen.X = MouseCursorX;
+                Mouse.DragScreen.Y = MouseCursorY;
+                break;
+            }   
+            case MOUSE_MODE.DRAG_ROW:
+                dragRow(gpos);
+                changed = true;
+                break;
+            case MOUSE_MODE.DRAG_COLUMN:
+                dragColumn(gpos);
+                changed = true;
+                break;
+            case MOUSE_MODE.SELECT:
+                if (Mouse.GripElm == null) {
+                    MouseMode = MOUSE_MODE.SELECT_AREA;
+                } else {
+                    Post.Dragging = Post.Hovering;
+                    Post.Hovering = EPOST.INVALID;
+                    if (Post.Dragging == EPOST.BOTH) {
+                        MouseMode = MOUSE_MODE.DRAG_ITEM;
+                    } else {
+                        MouseMode = MOUSE_MODE.DRAG_POST;
+                    }
+                }
+                break;
+            case MOUSE_MODE.SELECT_AREA:
+                selectArea(gpos);
+                break;
+            case MOUSE_MODE.DRAG_ITEM:
+                changed = success = dragSelected(gpos);
+                break;
+            case MOUSE_MODE.DRAG_POST:
+                dragPost(gpos);
+                changed = true;
+                break;
+            }
+            if (success) {
+                Mouse.DragScreen.X = MouseCursorX;
+                Mouse.DragScreen.Y = MouseCursorY;
+                /* Console.WriteLine("setting dragGridx in mousedragged");*/
+                Mouse.DragGrid = inverseTransform(Mouse.DragScreen);
+                if (!(MouseMode == MOUSE_MODE.DRAG_ITEM && onlyGraphicsElmsSelected())) {
+                    Mouse.DragGrid = SnapGrid(Mouse.DragGrid);
+                }
+            }
+            if (changed) {
+                writeRecoveryToStorage();
+            }
+            Repaint();
+        }
+
+        void mouseSelect() {
+            var gpos = new Point(inverseTransformX(MouseCursorX), inverseTransformY(MouseCursorY));
+            Mouse.DragGrid.X = SnapGrid(gpos.X);
+            Mouse.DragGrid.Y = SnapGrid(gpos.Y);
+            Mouse.DragScreen.X = MouseCursorX;
+            Mouse.DragScreen.Y = MouseCursorY;
+            Post.Dragging = EPOST.INVALID;
+            Post.Hovering = EPOST.INVALID;
+
+            PlotXElm = PlotYElm = null;
+
+            BaseUI mostNearUI = null;
+            var mostNear = double.MaxValue;
+            for (int i = 0; i != UICount; i++) {
+                var ce = GetUI(i);
+                var lineD = ce.Distance(gpos);
+                if (lineD <= CustomGraphics.HANDLE_RADIUS && lineD < mostNear) {
+                    Post.Hovering = EPOST.BOTH;
+                    mostNearUI = ce;
+                    mostNear = lineD;
+                }
+            }
+            if (mostNearUI == null) {
+                clearMouseElm();
+            } else {
+                var postDa = mostNearUI.DistancePostA(gpos);
+                var postDb = mostNearUI.DistancePostB(gpos);
+                if (postDa <= CustomGraphics.HANDLE_RADIUS) {
+                    Post.Hovering = EPOST.A;
+                }
+                if (postDb <= CustomGraphics.HANDLE_RADIUS) {
+                    Post.Hovering = EPOST.B;
+                }
+                setMouseElm(mostNearUI);
+            }
+            Repaint();
+        }
+
+        void selectArea(Point pos) {
+            int x1 = Math.Min(pos.X, Mouse.InitDragGrid.X);
+            int x2 = Math.Max(pos.X, Mouse.InitDragGrid.X);
+            int y1 = Math.Min(pos.Y, Mouse.InitDragGrid.Y);
+            int y2 = Math.Max(pos.Y, Mouse.InitDragGrid.Y);
+            Mouse.SelectedArea = new Rectangle(x1, y1, x2 - x1, y2 - y1);
+            for (int i = 0; i != UICount; i++) {
+                var ce = GetUI(i);
+                ce.SelectRect(Mouse.SelectedArea);
+            }
+        }
+
+        void dragPost(Point pos) {
+            pos = SnapGrid(pos);
+            int dx = pos.X - Mouse.DragGrid.X;
+            int dy = pos.Y - Mouse.DragGrid.Y;
+            if (dx == 0 && dy == 0) {
+                return;
+            }
+            Mouse.GripElm.Move(dx, dy, Post.Dragging);
+            NeedAnalyze();
+        }
+
+        void dragRow(Point pos) {
+            pos = SnapGrid(pos);
+            int dy = pos.Y - Mouse.DragGrid.Y;
+            if (dy == 0) {
+                return;
+            }
+            for (int i = 0; i != UICount; i++) {
+                var ce = GetUI(i);
+                if (ce.Post.A.Y == Mouse.DragGrid.Y) {
+                    ce.Move(0, dy, EPOST.A);
+                }
+                if (ce.Post.B.Y == Mouse.DragGrid.Y) {
+                    ce.Move(0, dy, EPOST.B);
+                }
+            }
+            removeZeroLengthElements();
+        }
+
+        void dragColumn(Point pos) {
+            pos = SnapGrid(pos);
+            int dx = pos.X - Mouse.DragGrid.X;
+            if (dx == 0) {
+                return;
+            }
+            for (int i = 0; i != UICount; i++) {
+                var ce = GetUI(i);
+                if (ce.Post.A.X == Mouse.DragGrid.X) {
+                    ce.Move(dx, 0, EPOST.A);
+                }
+                if (ce.Post.A.X == Mouse.DragGrid.X) {
+                    ce.Move(dx, 0, EPOST.B);
+                }
+            }
+            removeZeroLengthElements();
+        }
+
+        bool dragSelected(Point pos) {
+            bool me = false;
+            int i;
+            if (Mouse.GripElm != null && !Mouse.GripElm.IsSelected) {
+                Mouse.GripElm.IsSelected = me = true;
+            }
+            if (!onlyGraphicsElmsSelected()) {
+                pos = SnapGrid(pos);
+            }
+            int dx = pos.X - Mouse.DragGrid.X;
+            int dy = pos.Y - Mouse.DragGrid.Y;
+            if (dx == 0 && dy == 0) {
+                /* don't leave mouseElm selected if we selected it above */
+                if (me) {
+                    Mouse.GripElm.IsSelected = false;
+                }
+                return false;
+            }
+            /* check if moves are allowed */
+            bool allowed = true;
+            for (i = 0; allowed && i != UICount; i++) {
+                var ce = GetUI(i);
+                if (ce.IsSelected && !ce.AllowMove(dx, dy)) {
+                    allowed = false;
+                }
+            }
+            if (allowed) {
+                for (i = 0; i != UICount; i++) {
+                    var ce = GetUI(i);
+                    if (ce.IsSelected) {
+                        ce.Move(dx, dy);
+                    }
+                }
+                NeedAnalyze();
+            }
+            /* don't leave mouseElm selected if we selected it above */
+            if (me) {
+                Mouse.GripElm.IsSelected = false;
+            }
+
+            return allowed;
+        }
+
+        bool hasSelection() {
+            for (int i = 0; i != UICount; i++) {
+                if (GetUI(i).IsSelected) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        bool doSwitch(Point pos) {
+            if (Mouse.GripElm == null || !(Mouse.GripElm is Switch)) {
+                return false;
+            }
+            var se = (Switch)Mouse.GripElm;
+            if (!se.GetSwitchRect().Contains(pos)) {
+                return false;
+            }
+            se.Toggle();
+            if (((ElmSwitch)se.Elm).Momentary) {
+                mHeldSwitchElm = se;
+            }
+            NeedAnalyze();
+            return true;
         }
         #endregion
 
@@ -776,17 +1038,6 @@ namespace Circuit {
             SliderDialog.Show(location.X, location.Y);
         }
 
-        void doCreateSubcircuit() {
-            // Todo: doCreateSubcircuit
-            //var dlg = new EditCompositeModelDialog();
-            //if (!dlg.CreateModel()) {
-            //    return;
-            //}
-            //dlg.CreateDialog();
-            //DialogShowing = dlg;
-            //DialogShowing.Show();
-        }
-
         void doOpenFile() {
             var open = new OpenFileDialog();
             open.Filter = "テキストファイル(*.txt)|*.txt";
@@ -847,7 +1098,6 @@ namespace Circuit {
             int f = ControlPanel.ChkShowCurrent.Checked ? 1 : 0;
             f |= ControlPanel.ChkShowValues.Checked ? 0 : 16;
 
-            /* 32 = linear scale in afilter */
             string dump = "$ " + f
                 + " " + ControlPanel.TimeStep
                 + " " + ControlPanel.StepRate
@@ -1004,189 +1254,6 @@ namespace Circuit {
             ControlPanel.TrbCurrent.Value = v * ControlPanel.TrbCurrent.Maximum / 50;
         }
 
-        bool doSwitch(Point pos) {
-            if (Mouse.GripElm == null || !(Mouse.GripElm is Switch)) {
-                return false;
-            }
-            var se = (Switch)Mouse.GripElm;
-            if (!se.GetSwitchRect().Contains(pos)) {
-                return false;
-            }
-            se.Toggle();
-            if (((ElmSwitch)se.Elm).Momentary) {
-                mHeldSwitchElm = se;
-            }
-            NeedAnalyze();
-            return true;
-        }
-
-        void mouseDragged() {
-            /* ignore right mouse button with no modifiers (needed on PC) */
-            if (Mouse.Button == MouseButtons.Right) {
-                return;
-            }
-
-            var gpos = new Point(
-                inverseTransformX(MouseCursorX),
-                inverseTransformY(MouseCursorY));
-            if (!mCircuitArea.Contains(MouseCursorX, MouseCursorY)) {
-                return;
-            }
-            bool changed = false;
-            if (ConstructElm != null) {
-                ConstructElm.Drag(gpos);
-            }
-            bool success = true;
-            switch (MouseMode) {
-            case MOUSE_MODE.SCROLL:
-                scroll(MouseCursorX, MouseCursorY);
-                break;
-            case MOUSE_MODE.DRAG_ROW:
-                dragRow(SnapGrid(gpos));
-                changed = true;
-                break;
-            case MOUSE_MODE.DRAG_COLUMN:
-                dragColumn(SnapGrid(gpos));
-                changed = true;
-                break;
-            case MOUSE_MODE.SELECT:
-                if (Mouse.GripElm == null) {
-                    MouseMode = MOUSE_MODE.SELECT_AREA;
-                } else {
-                    Post.Dragging = Post.Hovering;
-                    Post.Hovering = EPOST.INVALID;
-                    if (Post.Dragging == EPOST.BOTH) {
-                        MouseMode = MOUSE_MODE.DRAG_ITEM;
-                    } else {
-                        MouseMode = MOUSE_MODE.DRAG_POST;
-                    }
-                }
-                break;
-            case MOUSE_MODE.SELECT_AREA:
-                selectArea(gpos);
-                break;
-            case MOUSE_MODE.DRAG_ITEM:
-                changed = success = dragSelected(gpos);
-                break;
-            case MOUSE_MODE.DRAG_POST:
-                dragPost(SnapGrid(gpos));
-                changed = true;
-                break;
-            }
-            if (success) {
-                Mouse.DragScreen.X = MouseCursorX;
-                Mouse.DragScreen.Y = MouseCursorY;
-                /* Console.WriteLine("setting dragGridx in mousedragged");*/
-                Mouse.DragGrid = inverseTransform(Mouse.DragScreen);
-                if (!(MouseMode == MOUSE_MODE.DRAG_ITEM && onlyGraphicsElmsSelected())) {
-                    Mouse.DragGrid = SnapGrid(Mouse.DragGrid);
-                }
-            }
-            if (changed) {
-                writeRecoveryToStorage();
-            }
-            Repaint();
-        }
-
-        void scroll(int x, int y) {
-            int dx = x - Mouse.DragScreen.X;
-            int dy = y - Mouse.DragScreen.Y;
-            if (dx == 0 && dy == 0) {
-                return;
-            }
-            mScroll.X += dx;
-            mScroll.Y += dy;
-            Mouse.DragScreen.X = x;
-            Mouse.DragScreen.Y = y;
-        }
-
-        void dragRow(Point pos) {
-            int dy = pos.Y - Mouse.DragGrid.Y;
-            if (dy == 0) {
-                return;
-            }
-            for (int i = 0; i != UICount; i++) {
-                var ce = GetUI(i);
-                if (ce.Post.A.Y == Mouse.DragGrid.Y) {
-                    ce.Move(0, dy, EPOST.A);
-                }
-                if (ce.Post.B.Y == Mouse.DragGrid.Y) {
-                    ce.Move(0, dy, EPOST.B);
-                }
-            }
-            removeZeroLengthElements();
-        }
-
-        void dragColumn(Point pos) {
-            int dx = pos.X - Mouse.DragGrid.X;
-            if (dx == 0) {
-                return;
-            }
-            for (int i = 0; i != UICount; i++) {
-                var ce = GetUI(i);
-                if (ce.Post.A.X == Mouse.DragGrid.X) {
-                    ce.Move(dx, 0, EPOST.A);
-                }
-                if (ce.Post.A.X == Mouse.DragGrid.X) {
-                    ce.Move(dx, 0, EPOST.B);
-                }
-            }
-            removeZeroLengthElements();
-        }
-
-        bool dragSelected(Point pos) {
-            bool me = false;
-            int i;
-            if (Mouse.GripElm != null && !Mouse.GripElm.IsSelected) {
-                Mouse.GripElm.IsSelected = me = true;
-            }
-            if (!onlyGraphicsElmsSelected()) {
-                pos = SnapGrid(pos);
-            }
-            int dx = pos.X - Mouse.DragGrid.X;
-            int dy = pos.Y - Mouse.DragGrid.Y;
-            if (dx == 0 && dy == 0) {
-                /* don't leave mouseElm selected if we selected it above */
-                if (me) {
-                    Mouse.GripElm.IsSelected = false;
-                }
-                return false;
-            }
-            /* check if moves are allowed */
-            bool allowed = true;
-            for (i = 0; allowed && i != UICount; i++) {
-                var ce = GetUI(i);
-                if (ce.IsSelected && !ce.AllowMove(dx, dy)) {
-                    allowed = false;
-                }
-            }
-            if (allowed) {
-                for (i = 0; i != UICount; i++) {
-                    var ce = GetUI(i);
-                    if (ce.IsSelected) {
-                        ce.Move(dx, dy);
-                    }
-                }
-                NeedAnalyze();
-            }
-            /* don't leave mouseElm selected if we selected it above */
-            if (me) {
-                Mouse.GripElm.IsSelected = false;
-            }
-
-            return allowed;
-        }
-
-        void dragPost(Point pos) {
-            int dx = pos.X - Mouse.DragGrid.X;
-            int dy = pos.Y - Mouse.DragGrid.Y;
-            if (dx == 0 && dy == 0) {
-                return;
-            }
-            Mouse.GripElm.Move(dx, dy, Post.Dragging);
-            NeedAnalyze();
-        }
-
         bool onlyGraphicsElmsSelected() {
             if (Mouse.GripElm != null) {
                 return false;
@@ -1226,18 +1293,6 @@ namespace Circuit {
             NeedAnalyze();
         }
 
-        void selectArea(Point pos) {
-            int x1 = Math.Min(pos.X, Mouse.InitDragGrid.X);
-            int x2 = Math.Max(pos.X, Mouse.InitDragGrid.X);
-            int y1 = Math.Min(pos.Y, Mouse.InitDragGrid.Y);
-            int y2 = Math.Max(pos.Y, Mouse.InitDragGrid.Y);
-            Mouse.SelectedArea = new Rectangle(x1, y1, x2 - x1, y2 - y1);
-            for (int i = 0; i != UICount; i++) {
-                var ce = GetUI(i);
-                ce.SelectRect(Mouse.SelectedArea);
-            }
-        }
-
         static void setMouseElm(BaseUI ce) {
             if (ce == Mouse.GripElm) {
                 return;
@@ -1272,64 +1327,6 @@ namespace Circuit {
         }
         Point inverseTransform(Point pos) {
             return new Point(pos.X - mScroll.X, pos.Y - mScroll.Y);
-        }
-
-        /* need to break this out into a separate routine to handle selection, */
-        /* since we don't get mouse move events on mobile */
-        void mouseSelect() {
-            var gpos = new Point(inverseTransformX(MouseCursorX), inverseTransformY(MouseCursorY));
-            Mouse.DragGrid.X = SnapGrid(gpos.X);
-            Mouse.DragGrid.Y = SnapGrid(gpos.Y);
-            Mouse.DragScreen.X = MouseCursorX;
-            Mouse.DragScreen.Y = MouseCursorY;
-            Post.Dragging = EPOST.INVALID;
-            Post.Hovering = EPOST.INVALID;
-
-            PlotXElm = PlotYElm = null;
-
-            BaseUI mostNearUI = null;
-            var mostNear = double.MaxValue;
-            for (int i = 0; i != UICount; i++) {
-                var ce = GetUI(i);
-                var lineD = ce.Distance(gpos);
-                if (lineD <= CustomGraphics.HANDLE_RADIUS && lineD < mostNear) {
-                    Post.Hovering = EPOST.BOTH;
-                    mostNearUI = ce;
-                    mostNear = lineD;
-                }
-            }
-            if (mostNearUI == null) {
-                clearMouseElm();
-            } else {
-                var postDa = mostNearUI.DistancePostA(gpos);
-                var postDb = mostNearUI.DistancePostB(gpos);
-                if (postDa <= CustomGraphics.HANDLE_RADIUS) {
-                    Post.Hovering = EPOST.A;
-                }
-                if (postDb <= CustomGraphics.HANDLE_RADIUS) {
-                    Post.Hovering = EPOST.B;
-                }
-                setMouseElm(mostNearUI);
-            }
-            Repaint();
-        }
-
-        void onContextMenu(MouseEventArgs e) {
-            if (Mouse.GripElm == null) {
-                return;
-            }
-            mMenuClient.X = Location.X + e.X;
-            mMenuClient.Y = Location.Y + e.Y;
-            mMenuElm = Mouse.GripElm;
-            if (Mouse.GripElm is Scope) {
-                var s = (Scope)Mouse.GripElm;
-                if (s.Plot.CanMenu) {
-                    var fm = new ScopePopupMenu();
-                    mContextMenu = fm.Show(mMenuClient.X, mMenuClient.Y, new ScopePlot[] { s.Plot }, 0, true);
-                }
-            } else {
-                mContextMenu = mElementPopupMenu.Show(mMenuClient.X, mMenuClient.Y, Mouse.GripElm);
-            }
         }
 
         void clearMouseElm() {
@@ -1370,11 +1367,6 @@ namespace Circuit {
             mRedoStack.RemoveAt(mRedoStack.Count - 1);
             readCircuit(tmp, RC_NO_CENTER);
             enableUndoRedo();
-        }
-
-        public void Reload() {
-            PushUndo();
-            readCircuit(mRecovery);
         }
 
         static void enableUndoRedo() {
@@ -1639,15 +1631,6 @@ namespace Circuit {
                 }
                 Console.WriteLine(s);
             }
-        }
-
-        bool hasSelection() {
-            for (int i = 0; i != UICount; i++) {
-                if (GetUI(i).IsSelected) {
-                    return true;
-                }
-            }
-            return false;
         }
 
         static void updateCircuit() {

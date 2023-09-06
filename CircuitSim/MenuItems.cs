@@ -17,7 +17,6 @@ namespace Circuit {
         OPEN_FILE,
         SAVE_FILE,
         OVERWRITE,
-        CREATE_MODULE,
         PRINT,
 
         SELECT,
@@ -249,8 +248,6 @@ namespace Circuit {
             fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addMenuItem(fileMenuBar, "上書き保存(S)", MENU_ITEM.OVERWRITE, new SHORTCUT(Keys.S));
             addMenuItem(fileMenuBar, "名前を付けて保存(A)", MENU_ITEM.SAVE_FILE, new SHORTCUT(Keys.None));
-            fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addMenuItem(fileMenuBar, "モジュールを作成(M)", MENU_ITEM.CREATE_MODULE, new SHORTCUT(Keys.None));
             fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addMenuItem(fileMenuBar, "印刷(P)", MENU_ITEM.PRINT, new SHORTCUT(Keys.None));
             mainMenuBar.Items.Add(fileMenuBar);
