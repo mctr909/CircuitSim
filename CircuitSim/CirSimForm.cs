@@ -52,7 +52,6 @@ namespace Circuit {
         #endregion
 
         #region Variable
-
         public static CirSimForm Instance = null;
 
         static ScopeForm mScopeForm = new ScopeForm();
@@ -133,7 +132,7 @@ namespace Circuit {
                 mPixCir.MouseDown += new MouseEventHandler((s, e) => { onMouseDown(e); });
                 mPixCir.MouseMove += new MouseEventHandler((s, e) => { onMouseMove(e); });
                 mPixCir.MouseUp += new MouseEventHandler((s, e) => { onMouseUp(e); });
-                mPixCir.MouseWheel += new MouseEventHandler((s, e) => { onMouseWheel((PictureBox)s, e); });
+                mPixCir.MouseWheel += new MouseEventHandler((s, e) => { showScrollValues(); });
                 mPixCir.MouseClick += new MouseEventHandler((s, e) => { onClick(e); });
                 mPixCir.MouseLeave += new EventHandler((s, e) => { CirSimMouse.SetCursor(new Point(-1, -1)); });
                 mPixCir.DoubleClick += new EventHandler((s, e) => { onDoubleClick(e); });
@@ -601,10 +600,6 @@ namespace Circuit {
             }
         }
 
-        void onMouseWheel(Control sender, MouseEventArgs e) {
-            showScrollValues();
-        }
-
         void onContextMenu(MouseEventArgs e) {
             if (CirSimMouse.GrippedElm == null) {
                 return;
@@ -619,27 +614,27 @@ namespace Circuit {
                     mContextMenu = fm.Show(mMenuClient.X, mMenuClient.Y, new ScopePlot[] { s.Plot }, 0, true);
                 }
             } else {
-                var menu = new ElementMenu(new ElementMenu.Callback((item) => {
+                var menu = new ElementPopupMenu(new ElementPopupMenu.Callback((item) => {
                     if (mContextMenu != null) {
                         mContextMenu.Close();
                     }
                     switch (item) {
-                    case ElementMenu.Item.EDIT:
+                    case ElementPopupMenu.Item.EDIT:
                         doEdit(mMenuElm, mMenuClient);
                         break;
-                    case ElementMenu.Item.SPLIT_WIRE:
+                    case ElementPopupMenu.Item.SPLIT_WIRE:
                         doSplit(mMenuElm);
                         break;
-                    case ElementMenu.Item.FLIP_POST:
+                    case ElementPopupMenu.Item.FLIP_POST:
                         doFlip();
                         break;
-                    case ElementMenu.Item.SLIDERS:
+                    case ElementPopupMenu.Item.SLIDERS:
                         doSliders(mMenuElm, mMenuClient);
                         break;
-                    case ElementMenu.Item.SCOPE_WINDOW:
+                    case ElementPopupMenu.Item.SCOPE_WINDOW:
                         ScopeForm.AddPlot(mMenuElm);
                         break;
-                    case ElementMenu.Item.SCOPE_FLOAT:
+                    case ElementPopupMenu.Item.SCOPE_FLOAT:
                         if (mMenuElm != null) {
                             var newScope = new Scope(SnapGrid(mMenuElm.Post.A.X + 50, mMenuElm.Post.A.Y + 50));
                             UIList.Add(newScope);
@@ -739,6 +734,23 @@ namespace Circuit {
                 }
             }
             if (mostNearUI == null) {
+                for (int i = 0; i != UICount; i++) {
+                    var ce = GetUI(i);
+                    var postDa = ce.DistancePostA(gpos);
+                    var postDb = ce.DistancePostB(gpos);
+                    if (postDa <= CustomGraphics.HANDLE_RADIUS && postDa < mostNear) {
+                        CirSimMouse.HoveringPost = EPOST.A;
+                        mostNearUI = ce;
+                        mostNear = postDa;
+                    }
+                    if (postDb <= CustomGraphics.HANDLE_RADIUS && postDb < mostNear) {
+                        CirSimMouse.HoveringPost = EPOST.B;
+                        mostNearUI = ce;
+                        mostNear = postDb;
+                    }
+                }
+            }
+            if (mostNearUI == null) {
                 clearMouseElm();
             } else {
                 var postDa = mostNearUI.DistancePostA(gpos);
@@ -764,7 +776,7 @@ namespace Circuit {
 
         void dragRow(Point pos) {
             int dy = pos.Y - CirSimMouse.DragEnd.Y;
-            if (dy == 0) {
+            if (Math.Abs(dy) < GRID_SIZE) {
                 return;
             }
             for (int i = 0; i != UICount; i++) {
@@ -798,7 +810,7 @@ namespace Circuit {
 
         void dragColumn(Point pos) {
             int dx = pos.X - CirSimMouse.DragEnd.X;
-            if (dx == 0) {
+            if (Math.Abs(dx) < GRID_SIZE) {
                 return;
             }
             for (int i = 0; i != UICount; i++) {

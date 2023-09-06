@@ -1,5 +1,5 @@
 ﻿namespace Circuit.Forms {
-    public partial class ElementMenu {
+    partial class ElementPopupMenu {
         /// <summary>
         /// Required designer variable.
         /// </summary>

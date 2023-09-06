@@ -6,7 +6,7 @@ using Circuit.UI;
 using Circuit.UI.Passive;
 
 namespace Circuit.Forms {
-    public partial class ElementMenu : ContextMenuStrip {
+    public partial class ElementPopupMenu : ContextMenuStrip {
         public enum Item {
             EDIT,
             SCOPE_WINDOW,
@@ -18,7 +18,7 @@ namespace Circuit.Forms {
 
         public delegate void Callback(Item item);
 
-        public ElementMenu(Callback callback) {
+        public ElementPopupMenu(Callback callback) {
             InitializeComponent();
             Edit.Click += new EventHandler((s, e) => {
                 callback(Item.EDIT);
