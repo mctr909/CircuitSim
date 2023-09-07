@@ -19,8 +19,8 @@ namespace Circuit.UI.Custom {
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmComposite)Elm;
-            for (int i = 0; i < ce.CompElmList.Count; i++) {
-                string tstring = ce.CompElmList[i].Dump();
+            for (int i = 0; i < ce.CompUIList.Count; i++) {
+                string tstring = ce.CompUIList[i].Dump();
                 var rg = new Regex("[A-Za-z0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+ [0-9]+ ");
                 var rgString = rg.Replace(tstring, "", 1).Replace(" ", "_"); /* remove unused tint x1 y1 x2 y2 coords for internal components */
                 var escString = Utils.Escape(rgString);
@@ -37,11 +37,11 @@ namespace Circuit.UI.Custom {
         protected string dumpElements(int mask) {
             var ce = (ElmComposite)Elm;
             string dumpStr = "";
-            for (int i = 0; i < ce.CompElmList.Count; i++) {
+            for (int i = 0; i < ce.CompUIList.Count; i++) {
                 if ((mask & (1 << i)) == 0) {
                     continue;
                 }
-                string tstring = ce.CompElmList[i].Dump();
+                string tstring = ce.CompUIList[i].Dump();
                 var rg = new Regex("[A-Za-z0-9]+ 0 0 0 0 0 ");
                 tstring = rg.Replace(tstring, "", 1).Replace(" ", "_"); /* remove unused tint x1 y1 x2 y2 coords for internal components */
                 if ("" == dumpStr) {
@@ -58,7 +58,7 @@ namespace Circuit.UI.Custom {
         public override void Delete() {
             var ce = (ElmComposite)Elm;
             for (int i = 0; i < ce.CompElmList.Count; i++) {
-                ce.CompElmList[i].Delete();
+                ce.CompUIList[i].Delete();
             }
             base.Delete();
         }

@@ -9,12 +9,13 @@ namespace Circuit.Elements.Custom {
     class VoltageSourceRecord {
         public int vsNumForElement;
         public int vsNode;
-        public BaseUI elm;
+        public BaseElement elm;
     }
 
     class ElmComposite : BaseElement {
         /* list of elements contained in this subcircuit */
-        public List<BaseUI> CompElmList = new List<BaseUI>();
+        public List<BaseElement> CompElmList = new List<BaseElement>();
+        public List<BaseUI> CompUIList = new List<BaseUI>();
 
         /* list of nodes, mapping each one to a list of elements that reference that node */
         List<CircuitNode> mCompNodeList;
@@ -42,7 +43,7 @@ namespace Circuit.Elements.Custom {
 
         public override void Reset() {
             for (int i = 0; i < CompElmList.Count; i++) {
-                CompElmList[i].Elm.Reset();
+                CompElmList[i].Reset();
             }
         }
 
@@ -86,12 +87,12 @@ namespace Circuit.Elements.Custom {
 
         public override void AnaStamp() {
             for (int i = 0; i < CompElmList.Count; i++) {
-                var cee = CompElmList[i].Elm;
+                var ce = CompElmList[i];
                 /* current sources need special stamp method */
-                if (cee is ElmCurrent) {
-                    ((ElmCurrent)cee).stampCurrentSource(false);
+                if (ce is ElmCurrent) {
+                    ((ElmCurrent)ce).stampCurrentSource(false);
                 } else {
-                    cee.AnaStamp();
+                    ce.AnaStamp();
                 }
             }
         }
@@ -101,25 +102,25 @@ namespace Circuit.Elements.Custom {
          * appropriate source in that component */
         public override void AnaSetVoltageSource(int n, int v) {
             var vsr = mVoltageSources[n];
-            vsr.elm.Elm.AnaSetVoltageSource(vsr.vsNumForElement, v);
+            vsr.elm.AnaSetVoltageSource(vsr.vsNumForElement, v);
             vsr.vsNode = v;
         }
 
         public override void CirPrepareIteration() {
             for (int i = 0; i < CompElmList.Count; i++) {
-                CompElmList[i].Elm.CirPrepareIteration();
+                CompElmList[i].CirPrepareIteration();
             }
         }
 
         public override void CirDoIteration() {
             for (int i = 0; i < CompElmList.Count; i++) {
-                CompElmList[i].Elm.CirDoIteration();
+                CompElmList[i].CirDoIteration();
             }
         }
 
         public override void CirIterationFinished() {
             for (int i = 0; i < CompElmList.Count; i++) {
-                CompElmList[i].Elm.CirIterationFinished();
+                CompElmList[i].CirIterationFinished();
             }
         }
 
@@ -135,7 +136,7 @@ namespace Circuit.Elements.Custom {
         public override void CirSetCurrent(int vsn, double c) {
             for (int i = 0; i < mVoltageSources.Count; i++) {
                 if (mVoltageSources[i].vsNode == vsn) {
-                    mVoltageSources[i].elm.Elm.CirSetCurrent(vsn, c);
+                    mVoltageSources[i].elm.CirSetCurrent(vsn, c);
                 }
             }
         }
@@ -156,7 +157,7 @@ namespace Circuit.Elements.Custom {
             CircuitNode.LINK cnLink;
             VoltageSourceRecord vsRecord;
 
-            CompElmList = new List<BaseUI>();
+            CompElmList = new List<BaseElement>();
             mCompNodeList = new List<CircuitNode>();
             mVoltageSources = new List<VoltageSourceRecord>();
 
@@ -179,7 +180,9 @@ namespace Circuit.Elements.Custom {
                     int flags = 0;
                     newce = MenuItems.CreateCe(tint, new Point(), new Point(), flags, stCe);
                 }
-                CompElmList.Add(newce);
+                newce.ReferenceName = "";
+                CompUIList.Add(newce);
+                CompElmList.Add(newce.Elm);
 
                 int thisPost = 0;
                 while (stModel.HasMoreTokens) {
@@ -217,12 +220,11 @@ namespace Circuit.Elements.Custom {
             /* allocate more nodes for sub-elements' internal nodes */
             for (int i = 0; i != CompElmList.Count; i++) {
                 var ce = CompElmList[i];
-                var cee = ce.Elm;
-                int inodes = cee.AnaInternalNodeCount;
+                int inodes = ce.AnaInternalNodeCount;
                 for (int j = 0; j != inodes; j++) {
                     cnLink = new CircuitNode.LINK();
-                    cnLink.Num = j + cee.TermCount;
-                    cnLink.Elm = cee;
+                    cnLink.Num = j + ce.TermCount;
+                    cnLink.Elm = ce;
                     cn = new CircuitNode();
                     cn.Links.Add(cnLink);
                     mCompNodeList.Add(cn);
@@ -237,7 +239,7 @@ namespace Circuit.Elements.Custom {
 
             /* Enumerate voltage sources */
             for (int i = 0; i < CompElmList.Count; i++) {
-                int cnt = CompElmList[i].Elm.AnaVoltageSourceCount;
+                int cnt = CompElmList[i].AnaVoltageSourceCount;
                 for (int j = 0; j < cnt; j++) {
                     vsRecord = new VoltageSourceRecord();
                     vsRecord.elm = CompElmList[i];

@@ -60,16 +60,16 @@ namespace Circuit.UI.Active {
             Post.B = mPosts[2];
 
             /* diode */
-            ce.Diode.SetPosition(mPosts[0].X + 10, mPosts[0].Y, mPosts[1].X + 10, mPosts[1].Y);
+            ce.DiodeUI.SetPosition(mPosts[0].X + 10, mPosts[0].Y, mPosts[1].X + 10, mPosts[1].Y);
             mStubs = new Point[4];
-            mStubs[0] = ce.Diode.Elm.GetNodePos(0);
-            mStubs[1] = ce.Diode.Elm.GetNodePos(1);
+            mStubs[0] = ce.Diode.GetNodePos(0);
+            mStubs[1] = ce.Diode.GetNodePos(1);
 
             /* transistor */
             int midp = (mPosts[2].Y + mPosts[3].Y) / 2;
-            ce.Transistor.SetPosition(mPosts[2].X - 18, midp, mPosts[2].X - 6, midp);
-            mStubs[2] = ce.Transistor.Elm.GetNodePos(1);
-            mStubs[3] = ce.Transistor.Elm.GetNodePos(2);
+            ce.TransistorUI.SetPosition(mPosts[2].X - 18, midp, mPosts[2].X - 6, midp);
+            mStubs[2] = ce.Transistor.GetNodePos(1);
+            mStubs[3] = ce.Transistor.GetNodePos(2);
 
             /* create little arrows */
             int sx1 = mStubs[0].X;
@@ -97,8 +97,8 @@ namespace Circuit.UI.Active {
                 drawLine(a, b);
             }
 
-            ce.Diode.Draw(g);
-            ce.Transistor.Draw(g);
+            ce.DiodeUI.Draw(g);
+            ce.TransistorUI.Draw(g);
 
             /* draw little arrows */
             var sx1 = mArrow1[0].X - 10;
