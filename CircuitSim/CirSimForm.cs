@@ -1707,6 +1707,15 @@ namespace Circuit {
 
             /* draw elements */
             foreach (var ui in UIList) {
+                if (ui.NeedsHighlight) {
+                    g.DrawColor = CustomGraphics.SelectColor;
+                    g.FillColor = CustomGraphics.SelectColor;
+                    g.FontColor = CustomGraphics.SelectColor;
+                } else {
+                    g.DrawColor = CustomGraphics.LineColor;
+                    g.FillColor = CustomGraphics.LineColor;
+                    g.FontColor = CustomGraphics.TextColor;
+                }
                 ui.Draw(g);
                 if (ui is Scope) {
                     g.ScrollCircuit(MouseInfo.Offset);
@@ -1723,6 +1732,9 @@ namespace Circuit {
                 }
             }
             if (ConstructElm != null && (ConstructElm.Post.A.X != ConstructElm.Post.B.X || ConstructElm.Post.A.Y != ConstructElm.Post.B.Y)) {
+                g.DrawColor = CustomGraphics.LineColor;
+                g.FillColor = CustomGraphics.LineColor;
+                g.FontColor = CustomGraphics.TextColor;
                 ConstructElm.Draw(g);
                 var ce = ConstructElm.Elm;
                 for (int i = ce.TermCount - 1; 0 <= i; i--) {

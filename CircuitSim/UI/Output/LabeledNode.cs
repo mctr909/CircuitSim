@@ -10,6 +10,7 @@ namespace Circuit.UI.Output {
         const int LabelSize = 17;
 
         PointF[] mTextPoly;
+        RectangleF mTextRect;
 
         public LabeledNode(Point pos) : base(pos) {
             Elm = new ElmLabeledNode();
@@ -25,6 +26,13 @@ namespace Circuit.UI.Output {
 
         protected override void dump(List<object> optionList) {
             optionList.Add(((ElmLabeledNode)Elm).Text);
+        }
+
+        public override double Distance(Point p) {
+            return Math.Min(
+                Utils.DistanceOnLine(Post.A, Post.B, p),
+                mTextRect.Contains(p) ? 0 : double.MaxValue
+            );
         }
 
         public override void SetPoints() {
@@ -52,6 +60,21 @@ namespace Circuit.UI.Output {
             mTextPoly = new PointF[] {
                 p1, p2, p3, p4, p5, p1
             };
+            var ax = p1.X;
+            var ay = p1.Y;
+            var bx = p4.X;
+            var by = p3.Y;
+            if (bx < ax) {
+                var t = ax;
+                ax = bx;
+                bx = t;
+            }
+            if (by < ay) {
+                var t = ay;
+                ay = by;
+                by = t;
+            }
+            mTextRect = new RectangleF(ax, ay, bx - ax + 1, by - ay + 1);
             var abX = Post.B.X - Post.A.X;
             var abY = Post.B.Y - Post.A.Y;
             _TextRot = Math.Atan2(abY, abX);

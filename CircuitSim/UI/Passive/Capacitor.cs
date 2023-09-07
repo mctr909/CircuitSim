@@ -107,7 +107,7 @@ namespace Circuit.UI.Passive {
             fillPolygon(mPlate2);
 
             drawName();
-            drawValue(Utils.UnitText(ce.Capacitance));
+            drawValue(Utils.CapacitanceText(ce.Capacitance));
 
             updateDotCount();
             if (CirSimForm.ConstructElm != this) {
@@ -119,11 +119,11 @@ namespace Circuit.UI.Passive {
         public override void GetInfo(string[] arr) {
             var ce = (ElmCapacitor)Elm;
             if (string.IsNullOrEmpty(ReferenceName)) {
-                arr[0] = "コンデンサ：" + Utils.UnitText(ce.Capacitance, "F");
+                arr[0] = "コンデンサ：" + Utils.CapacitanceText(ce.Capacitance, "F");
                 getBasicInfo(1, arr);
             } else {
                 arr[0] = ReferenceName;
-                arr[1] = "コンデンサ：" + Utils.UnitText(ce.Capacitance, "F");
+                arr[1] = "コンデンサ：" + Utils.CapacitanceText(ce.Capacitance, "F");
                 getBasicInfo(2, arr);
             }
         }

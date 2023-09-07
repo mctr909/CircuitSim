@@ -6,6 +6,11 @@ using Circuit.UI.Passive;
 
 namespace Circuit {
     class ScrollValuePopup : Form {
+        static readonly double[] E6 = {
+            1.0, 1.5,
+            2.2, 3.3,
+            4.7, 6.8,
+        };
         static readonly double[] E12 = {
             1.0, 1.2, 1.5, 1.8,
             2.2, 2.7, 3.3, 3.9,
@@ -19,16 +24,17 @@ namespace Circuit {
         int mCurrentIdx;
         int mLastIdx;
 
-        BaseUI mMyElm;
-        ElementInfo mInfo;
         Panel mPnlV;
         Label mLabels;
         TrackBar mTrbValue;
         string mName;
         string mUnit;
 
+        BaseUI mEditElm;
+        ElementInfo mElmInfo;
+
         public ScrollValuePopup(BaseUI e) : base() {
-            mMyElm = e;
+            mEditElm = e;
             CirSimForm.PushUndo();
             setupValues();
 
@@ -97,23 +103,28 @@ namespace Circuit {
         }
 
         void setupValues() {
-            if (mMyElm is Resistor || mMyElm is Pot) {
+            if (mEditElm is Resistor) {
                 mMinPow = -2;
                 mMaxPow = 7;
                 mUnit = CirSimForm.OHM_TEXT;
             }
-            if (mMyElm is Capacitor) {
+            if (mEditElm is Pot) {
+                mMinPow = 1;
+                mMaxPow = 7;
+                mUnit = CirSimForm.OHM_TEXT;
+            }
+            if (mEditElm is Capacitor) {
                 mMinPow = -11;
                 mMaxPow = -3;
                 mUnit = "F";
             }
-            if (mMyElm is Inductor) {
+            if (mEditElm is Inductor) {
                 mMinPow = -6;
                 mMaxPow = 0;
                 mUnit = "H";
             }
-            var valDiv = 12;
-            var valArr = E12;
+            var valDiv = 6;
+            var valArr = E6;
             mValues = new double[2 + (mMaxPow - mMinPow) * valDiv];
             int ptr = 0;
             for (int i = mMinPow; i <= mMaxPow; i++) {
@@ -123,8 +134,8 @@ namespace Circuit {
             }
             mNValues = ptr;
             mValues[mNValues] = 1E99;
-            mInfo = mMyElm.GetElementInfo(0, 0);
-            double currentvalue = mInfo.Value;
+            mElmInfo = mEditElm.GetElementInfo(0, 0);
+            double currentvalue = mElmInfo.Value;
             for (int i = 0; i < mNValues + 1; i++) {
                 if (Utils.UnitText(currentvalue, "") == Utils.UnitText(mValues[i], "")) { /* match to an existing value */
                     mValues[i] = currentvalue; /* Just in case it isn't 100% identical */
@@ -141,13 +152,17 @@ namespace Circuit {
                     break;
                 }
             }
-            mName = mInfo.Name;
+            mName = mElmInfo.Name;
             mLastIdx = mCurrentIdx;
         }
 
         void setupLabels() {
             int thissel = getSelIdx();
-            mLabels.Text = Utils.UnitText(mValues[thissel], mUnit);
+            if ("F" == mUnit) {
+                mLabels.Text = Utils.CapacitanceText(mValues[thissel], mUnit);
+            } else {
+                mLabels.Text = Utils.UnitText(mValues[thissel], mUnit);
+            }
             mTrbValue.Value = thissel;
         }
 
@@ -160,18 +175,22 @@ namespace Circuit {
             mLastIdx = mCurrentIdx;
             mCurrentIdx = tr.Value;
             int thissel = getSelIdx();
-            mInfo.Value = mValues[thissel];
-            mMyElm.SetElementValue(0, 0, mInfo);
+            mElmInfo.Value = mValues[thissel];
+            mEditElm.SetElementValue(0, 0, mElmInfo);
             CirSimForm.NeedAnalyze();
-            mLabels.Text = Utils.UnitText(mValues[thissel], mUnit);
+            if ("F" == mUnit) {
+                mLabels.Text = Utils.CapacitanceText(mValues[thissel], mUnit);
+            } else {
+                mLabels.Text = Utils.UnitText(mValues[thissel], mUnit);
+            }
         }
 
         void setElmValue(int i) {
             if (i != mLastIdx) {
                 mTrbValue.Value = i;
                 mLastIdx = i;
-                mInfo.Value = mValues[i];
-                mMyElm.SetElementValue(0, 0, mInfo);
+                mElmInfo.Value = mValues[i];
+                mEditElm.SetElementValue(0, 0, mElmInfo);
                 CirSimForm.NeedAnalyze();
             }
         }

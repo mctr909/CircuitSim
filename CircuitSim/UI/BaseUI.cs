@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 
 using Circuit.Elements;
-using Circuit.Forms;
 using Circuit.UI.Output;
 
 namespace Circuit.UI {
@@ -39,17 +38,7 @@ namespace Circuit.UI {
             }
         }
 
-        public abstract DUMP_ID DumpId { get; }
-
-        /// <summary>
-        /// called when an element is done being dragged out;
-        /// </summary>
-        /// <returns>returns true if it's zero size and should be deleted</returns>
-        public virtual bool IsCreationFailed { get { return Post.IsCreationFailed; } }
-
-        public virtual bool CanViewInScope { get { return Elm.TermCount <= 2; } }
-
-        protected bool _NeedsHighlight {
+        public bool NeedsHighlight {
             get {
                 if (null == _MouseElm) {
                     return IsSelected;
@@ -64,6 +53,16 @@ namespace Circuit.UI {
                 return _MouseElm.Equals(this) || IsSelected || isScope;
             }
         }
+
+        public abstract DUMP_ID DumpId { get; }
+
+        /// <summary>
+        /// called when an element is done being dragged out;
+        /// </summary>
+        /// <returns>returns true if it's zero size and should be deleted</returns>
+        public virtual bool IsCreationFailed { get { return Post.IsCreationFailed; } }
+
+        public virtual bool CanViewInScope { get { return Elm.TermCount <= 2; } }
 
         protected virtual BaseLink _Link { get; set; } = new BaseLink();
         #endregion
@@ -379,51 +378,39 @@ namespace Circuit.UI {
 
         #region [draw method]
         protected void drawLine(PointF a, PointF b) {
-            Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawLine(a.X, a.Y, b.X, b.Y);
         }
         protected void drawLine(float ax, float ay, float bx, float by) {
-            Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawLine(ax, ay, bx, by);
         }
         protected void drawDashRectangle(float x, float y, float w, float h) {
-            Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawDashRectangle(x, y, w, h);
         }
         protected void drawCircle(PointF p, float radius) {
-            Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawCircle(p, radius);
         }
         protected void drawArc(PointF p, float diameter, float start, float sweep) {
-            Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawArc(p, diameter, start, sweep);
         }
         protected void drawPolygon(PointF[] p) {
-            Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawPolygon(p);
         }
         protected void drawPolyline(PointF[] p) {
-            Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawPolyline(p);
         }
         protected void fillCircle(PointF p, float radius) {
-            Context.FillColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.FillCircle(p.X, p.Y, radius);
         }
         protected void fillPolygon(PointF[] p) {
-            Context.FillColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.FillPolygon(p);
         }
         protected void drawLeadA() {
-            Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawLine(Post.A, _Lead1);
         }
         protected void drawLeadB() {
-            Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawLine(_Lead2, Post.B);
         }
         protected void draw2Leads() {
-            Context.DrawColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.LineColor;
             Context.DrawLine(Post.A, _Lead1);
             Context.DrawLine(_Lead2, Post.B);
         }
@@ -456,15 +443,12 @@ namespace Circuit.UI {
             drawCurrent(_Lead2, Post.B, pos);
         }
         protected void drawLeftText(string text, float x, float y) {
-            Context.FontColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.TextColor;
             Context.DrawLeftText(text, x, y);
         }
         protected void drawCenteredText(string text, PointF centerPos, double rotateAngle = 0) {
-            Context.FontColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.TextColor;
             Context.DrawCenteredText(text, centerPos, rotateAngle);
         }
         protected void drawCenteredLText(string s, PointF p, bool cx) {
-            Context.FontColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.TextColor;
             Context.DrawCenteredLText(s, p);
         }
         protected void drawValues(string s, int offsetX, int offsetY) {
@@ -474,7 +458,6 @@ namespace Circuit.UI {
             var textSize = Context.GetTextSize(s);
             var xc = Post.B.X;
             var yc = Post.B.Y;
-            Context.FontColor = _NeedsHighlight ? CustomGraphics.SelectColor : CustomGraphics.TextColor;
             Context.DrawRightText(s, xc + offsetX, yc - textSize.Height + offsetY);
         }
         protected void drawValue(string s) {

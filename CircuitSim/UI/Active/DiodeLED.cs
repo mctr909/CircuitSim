@@ -62,32 +62,31 @@ namespace Circuit.UI.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            if (_NeedsHighlight || this == CirSimForm.ConstructElm) {
+            if (g is PDF.Page || NeedsHighlight || this == CirSimForm.ConstructElm) {
                 base.Draw(g);
-                return;
+            } else {
+                var ce = (ElmDiode)Elm;
+                var lum = ce.Current / mMaxBrightnessCurrent;
+                if (0 < lum) {
+                    lum = 255 * (1 + .2 * Math.Log(lum));
+                }
+                if (255 < lum) {
+                    lum = 255;
+                }
+                if (lum < 0) {
+                    lum = 0;
+                }
+                drawLine(Post.A, mLedLead1);
+                drawLine(mLedLead2, Post.B);
+                drawCircle(mLedCenter, CR);
+                var bk = g.FillColor;
+                g.FillColor = Color.FromArgb((int)(mColorR * lum), (int)(mColorG * lum), (int)(mColorB * lum));
+                fillCircle(mLedCenter, CR_INNER);
+                g.FillColor = bk;
+                updateDotCount();
+                drawCurrent(Post.A, mLedLead1, _CurCount);
+                drawCurrent(Post.B, mLedLead2, -_CurCount);
             }
-
-            drawLine(Post.A, mLedLead1);
-            drawLine(mLedLead2, Post.B);
-            drawCircle(mLedCenter, CR);
-
-            var ce = (ElmDiode)Elm;
-            var lum = ce.Current / mMaxBrightnessCurrent;
-            if (0 < lum) {
-                lum = 255 * (1 + .2 * Math.Log(lum));
-            }
-            if (255 < lum) {
-                lum = 255;
-            }
-            if (lum < 0) {
-                lum = 0;
-            }
-            g.FillColor = Color.FromArgb((int)(mColorR * lum), (int)(mColorG * lum), (int)(mColorB * lum));
-            g.FillCircle(mLedCenter.X, mLedCenter.Y, CR_INNER);
-
-            updateDotCount();
-            drawCurrent(Post.A, mLedLead1, _CurCount);
-            drawCurrent(Post.B, mLedLead2, -_CurCount);
         }
 
         public override void GetInfo(string[] arr) {

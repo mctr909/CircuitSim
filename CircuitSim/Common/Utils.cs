@@ -247,6 +247,10 @@ namespace Circuit {
             return unitText(rad * 180 / Math.PI, "deg");
         }
 
+        public static string CapacitanceText(double v, string unit = "") {
+            return unitText(v, unit, true, false, true);
+        }
+
         public static string UnitText(double v, string u = "") {
             return unitText(v, u);
         }
@@ -328,12 +332,12 @@ namespace Circuit {
             }
         }
 
-        static string unitText(double v, string u, bool isShort = true, bool sign = true) {
+        static string unitText(double v, string u, bool isShort = true, bool sign = true, bool cap = false) {
             double va = Math.Abs(v);
             if (va < 1e-14) {
                 return (isShort ? "0" : (sign ? " 0.00" : "0.00")) + u;
             }
-            if (va < 1e-8) {
+            if (va < 1e-8 || (cap && va < 1e-7)) {
                 return format(v * 1e12, isShort, sign) + "p" + u;
             }
             if (va < 1e-3) {

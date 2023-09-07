@@ -283,19 +283,13 @@ namespace Circuit {
             addElementItem(basicMenuBar, "コイル", DUMP_ID.INDUCTOR);
             addElementItem(basicMenuBar, "接地", DUMP_ID.GROUND);
             basicMenuBar.DropDownItems.Add(new ToolStripSeparator());
+            addElementItem(basicMenuBar, "可変抵抗", DUMP_ID.POT);
+            addElementItem(basicMenuBar, "有極性コンデンサ", DUMP_ID.CAPACITOR_POLAR);
+            addElementItem(basicMenuBar, "トランス", DUMP_ID.TRANSFORMER);
+            basicMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(basicMenuBar, "矩形", DUMP_ID.BOX);
             addElementItem(basicMenuBar, "テキスト", DUMP_ID.TEXT);
             mainMenuBar.Items.Add(basicMenuBar);
-            #endregion
-
-            #region Passive Components
-            var passMenuBar = new ToolStripMenuItem();
-            passMenuBar.Text = "受動素子(P)";
-            passMenuBar.Font = menuFont;
-            addElementItem(passMenuBar, "可変抵抗", DUMP_ID.POT);
-            addElementItem(passMenuBar, "コンデンサ(有極性)", DUMP_ID.CAPACITOR_POLAR);
-            addElementItem(passMenuBar, "トランス", DUMP_ID.TRANSFORMER);
-            mainMenuBar.Items.Add(passMenuBar);
             #endregion
 
             #region Active Components
