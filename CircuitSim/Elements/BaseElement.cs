@@ -59,20 +59,44 @@ namespace Circuit.Elements {
             }
         }
 
-        public void SetNodePos(params PointF[] node) {
-            mNodePos = new Point[node.Length];
+        public void SetNodePos(PointF pos, params PointF[] node) {
+            mNodePos = new Point[node.Length + 1];
+            mNodePos[0].X = (int)pos.X;
+            mNodePos[0].Y = (int)pos.Y;
+            for (int i = 0; i < node.Length; i++) {
+                mNodePos[i + 1].X = (int)node[i].X;
+                mNodePos[i + 1].Y = (int)node[i].Y;
+            }
+        }
+
+        public void SetNodePos(PointF pos, params Point[] node) {
+            mNodePos = new Point[node.Length + 1];
+            mNodePos[0].X = (int)pos.X;
+            mNodePos[0].Y = (int)pos.Y;
+            for (int i = 0; i < node.Length; i++) {
+                mNodePos[i + 1].X = node[i].X;
+                mNodePos[i + 1].Y = node[i].Y;
+            }
+        }
+
+        public void SetNodePos(PointF[] node, PointF pos) {
+            mNodePos = new Point[node.Length + 1];
             for (int i = 0; i < node.Length; i++) {
                 mNodePos[i].X = (int)node[i].X;
                 mNodePos[i].Y = (int)node[i].Y;
             }
+            mNodePos[node.Length].X = (int)pos.X;
+            mNodePos[node.Length].Y = (int)pos.Y;
         }
 
-        public void SetNodePos(params Point[] node) {
-            mNodePos = new Point[node.Length];
+        public void SetNodePos(Point[] node, PointF pos) {
+            mNodePos = new Point[node.Length + 1];
             for (int i = 0; i < node.Length; i++) {
                 mNodePos[i].X = node[i].X;
                 mNodePos[i].Y = node[i].Y;
             }
+            mNodePos[node.Length].X = (int)pos.X;
+            mNodePos[node.Length].Y = (int)pos.Y;
         }
 
         public virtual Point GetNodePos(int n) { return mNodePos[n]; }

@@ -25,6 +25,7 @@ namespace Circuit.UI.Gate {
         protected PointF[] mLinePoints;
 
         PointF[] mSchmittPoly;
+        PointF[] mInPosts;
         PointF[] mInGates;
 
         protected virtual string gateText { get { return null; } }
@@ -67,7 +68,7 @@ namespace Circuit.UI.Gate {
                 mWw = (int)(Post.Len / 2 - 8);
             }
             setLeads(mWw * 2);
-            ce.InPosts = new Point[ce.InputCount];
+            mInPosts = new PointF[ce.InputCount];
             mInGates = new PointF[ce.InputCount];
             ce.AllocNodes();
             int i0 = -ce.InputCount / 2;
@@ -75,7 +76,7 @@ namespace Circuit.UI.Gate {
                 if (i0 == 0 && (ce.InputCount & 1) == 0) {
                     i0++;
                 }
-                interpPost(ref ce.InPosts[i], 0, hs * i0);
+                interpPost(ref mInPosts[i], 0, hs * i0);
                 interpLead(ref mInGates[i], 0, hs * i0);
                 ce.Volts[i] = (ce.LastOutput ^ ce.IsInverting) ? 5 : 0;
             }
@@ -83,12 +84,13 @@ namespace Circuit.UI.Gate {
             if (ce.HasSchmittInputs) {
                 Utils.CreateSchmitt(_Lead1, _Lead2, out mSchmittPoly, 1, .47f);
             }
+            ce.SetNodePos(mInPosts, Post.B);
         }
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmGate)Elm;
             for (int i = 0; i != ce.InputCount; i++) {
-                drawLine(ce.InPosts[i], mInGates[i]);
+                drawLine(mInPosts[i], mInGates[i]);
             }
             drawLeadB();
             if (UseAnsiGates()) {

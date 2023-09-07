@@ -9,6 +9,7 @@ namespace Circuit.UI.Passive {
         const int BODY_LEN = 24;
 
         PointF[] mSwPoles;
+        PointF[] mSwPosts;
 
         public SwitchMulti(Point pos) : base(pos, 0) {
             Elm = new ElmSwitchMulti();
@@ -47,7 +48,7 @@ namespace Circuit.UI.Passive {
             base.SetPoints();
             setLeads(BODY_LEN);
             var ce = (ElmSwitchMulti)Elm;
-            ce.SwPosts = new Point[ce.ThrowCount];
+            mSwPosts = new PointF[ce.ThrowCount];
             mSwPoles = new PointF[2 + ce.ThrowCount];
             int i;
             for (i = 0; i != ce.ThrowCount; i++) {
@@ -56,10 +57,11 @@ namespace Circuit.UI.Passive {
                     hs = OPEN_HS;
                 }
                 interpLead(ref mSwPoles[i], 1, hs);
-                interpPost(ref ce.SwPosts[i], 1, hs);
+                interpPost(ref mSwPosts[i], 1, hs);
             }
             mSwPoles[i] = _Lead2; /* for center off */
             ce.PosCount = ce.ThrowCount;
+            ce.SetNodePos(Post.A, mSwPosts);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -72,7 +74,7 @@ namespace Circuit.UI.Passive {
             /* draw other leads */
             for (int i = 0; i < ce.ThrowCount; i++) {
                 var pole = mSwPoles[i];
-                drawLine(pole, ce.SwPosts[i]);
+                drawLine(pole, mSwPosts[i]);
                 fillCircle(pole, 2.5f);
             }
             /* draw switch */
@@ -81,7 +83,7 @@ namespace Circuit.UI.Passive {
             updateDotCount();
             drawCurrentA(_CurCount);
             if (ce.Position != 2) {
-                drawCurrent(mSwPoles[ce.Position], ce.SwPosts[ce.Position], _CurCount);
+                drawCurrent(mSwPoles[ce.Position], mSwPosts[ce.Position], _CurCount);
             }
         }
 
