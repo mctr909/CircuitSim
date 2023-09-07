@@ -32,9 +32,9 @@ namespace Circuit.UI.Active {
 
         public Mosfet(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             var vt = st.nextTokenDouble(ElmMosfet.DefaultThreshold);
-            var hfe = st.nextTokenDouble(ElmMosfet.DefaultHfe);
+            var beta = st.nextTokenDouble(ElmMosfet.DefaultBeta);
             Post.NoDiagonal = true;
-            Elm = new ElmMosfet((f & FLAG_PNP) != 0, vt, hfe);
+            Elm = new ElmMosfet((f & FLAG_PNP) != 0, vt, beta);
         }
 
         public override bool CanViewInScope { get { return true; } }
@@ -43,8 +43,8 @@ namespace Circuit.UI.Active {
 
         protected override void dump(List<object> optionList) {
             var ce = (ElmMosfet)Elm;
-            optionList.Add(ce.Vt);
-            optionList.Add(ce.Hfe);
+            optionList.Add(ce.Vth);
+            optionList.Add(ce.Beta);
         }
 
         public override void SetPoints() {
@@ -81,7 +81,7 @@ namespace Circuit.UI.Active {
             }
             Utils.CreateArrow(a0, a1, out mArrowPoly, 8, 3);
 
-            bool enhancement = ce.Vt > 0;
+            bool enhancement = ce.Vth > 0;
             var posS = mPosS[2];
             var posD = mPosD[2];
             var connThick = 1.0;
@@ -181,7 +181,7 @@ namespace Circuit.UI.Active {
 
         public override void GetInfo(string[] arr) {
             var ce = (ElmMosfet)Elm;
-            arr[0] = ((ce.Nch == -1) ? "Pch MOSFET" : "Nch MOSFET") + "(閾値電圧：" + Utils.VoltageText(ce.Nch * ce.Vt) + ")";
+            arr[0] = ((ce.Nch == -1) ? "Pch MOSFET" : "Nch MOSFET") + "(閾値電圧：" + Utils.VoltageText(ce.Nch * ce.Vth) + ")";
             arr[1] = "動作領域：" + (
                 (ce.Mode == 0) ? "遮断" :
                 (ce.Mode == 1) ? "活性" : "飽和"
@@ -205,10 +205,10 @@ namespace Circuit.UI.Active {
                 return new ElementInfo("名前", ReferenceName);
             }
             if (r == 1) {
-                return new ElementInfo("閾値電圧", ce.Nch * ce.Vt);
+                return new ElementInfo("閾値電圧", ce.Nch * ce.Vth);
             }
             if (r == 2) {
-                return new ElementInfo("hfe", ce.Hfe);
+                return new ElementInfo("β", ce.Beta);
             }
             if (r == 3) {
                 return new ElementInfo("ドレイン/ソース 入れ替え", (_Flags & FLAG_FLIP) != 0);
@@ -223,10 +223,10 @@ namespace Circuit.UI.Active {
                 setTextPos();
             }
             if (n == 1) {
-                ce.Vt = ce.Nch * ei.Value;
+                ce.Vth = ce.Nch * ei.Value;
             }
             if (n == 2 && ei.Value > 0) {
-                ce.Hfe = ElmMosfet.LastHfe = ei.Value;
+                ce.Beta = ElmMosfet.LastBeta = ei.Value;
             }
             if (n == 3) {
                 _Flags = ei.CheckBox.Checked ? (_Flags | FLAG_FLIP) : (_Flags & ~FLAG_FLIP);

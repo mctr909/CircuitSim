@@ -14,14 +14,14 @@ namespace Circuit.Elements.Active {
 
         public const double DefaultThreshold = 1.5;
 
-        public static double LastHfe;
+        public static double LastBeta;
 
-        public static double DefaultHfe {
-            get { return LastHfe == 0 ? BackwardCompatibilityHfe : LastHfe; }
+        public static double DefaultBeta {
+            get { return LastBeta == 0 ? BackwardCompatibilityHfe : LastBeta; }
         }
 
-        public double Vt;
-        public double Hfe; /* hfe = 1/(RdsON*(Vgs-Vt)) */
+        public double Vth;
+        public double Beta;
 
         public int Nch { get; private set; }
         public int BodyTerminal { get; private set; }
@@ -44,13 +44,13 @@ namespace Circuit.Elements.Active {
 
         public ElmMosfet(bool pChFlag) : base() {
             Nch = pChFlag ? -1 : 1;
-            Hfe = DefaultHfe;
-            Vt = DefaultThreshold;
+            Beta = DefaultBeta;
+            Vth = DefaultThreshold;
         }
-        public ElmMosfet(bool pChFlag, double vt, double hfe) : base() {
+        public ElmMosfet(bool pChFlag, double vth, double beta) : base() {
             Nch = pChFlag ? -1 : 1;
-            Vt = vt;
-            Hfe = hfe;
+            Vth = vth;
+            Beta = beta;
             AllocNodes();
         }
 
@@ -138,32 +138,29 @@ namespace Circuit.Elements.Active {
                 idxD = IdxD;
             }
 
-            double Gds;
-            var Vgs = Volts[IdxG] - Volts[idxS];
-            var Vds = Volts[idxD] - Volts[idxS];
+            double gds;
+            var vgs = Volts[IdxG] - Volts[idxS];
+            var vds = Volts[idxD] - Volts[idxS];
             {
-                var tmpVgsVt = Vgs * Nch - Vt;
-                var tmpVds = Vds * Nch;
-                if (tmpVgsVt < 0.0) {
-                    /* mode: off */
+                var vgs_vth = vgs * Nch - Vth;
+                var tmpVds = vds * Nch;
+                if (vgs_vth < 0.0) {
+                    /* mode: 遮断領域 */
                     /* 電流を0にするべきだが特異な行列となるため
                      * 100MΩとした時の電流にする */
-                    Gds = 1e-8;
+                    gds = 1e-8;
                     Gm = 0;
-                    Current = tmpVds * Gds;
-                    Mode = 0;
-                } else if (tmpVds < tmpVgsVt) {
+                    Current = tmpVds * gds;
+                } else if (tmpVds < vgs_vth) {
                     /* mode: 線形領域 */
-                    Gds = Hfe * (tmpVgsVt - tmpVds);
-                    Gm = Hfe * tmpVds;
-                    Current = Hfe * (tmpVgsVt * tmpVds - tmpVds * tmpVds * 0.5);
-                    Mode = 1;
+                    gds = Beta * (vgs_vth - tmpVds);
+                    Gm = Beta * tmpVds;
+                    Current = Beta * (vgs_vth * tmpVds - tmpVds * tmpVds * 0.5);
                 } else {
                     /* mode: 飽和領域 */
-                    Gds = 1e-8;
-                    Gm = Hfe * tmpVgsVt;
-                    Current = 0.5 * Hfe * tmpVgsVt * tmpVgsVt + (tmpVds - tmpVgsVt) * Gds;
-                    Mode = 2;
+                    gds = 1e-8;
+                    Gm = Beta * vgs_vth;
+                    Current = 0.5 * Beta * vgs_vth * vgs_vth + (tmpVds - vgs_vth) * gds;
                 }
             }
 
@@ -186,11 +183,11 @@ namespace Circuit.Elements.Active {
             var rowS = Circuit.RowInfo[Nodes[idxS] - 1].MapRow;
             var colri = Circuit.RowInfo[Nodes[idxD] - 1];
             if (colri.IsConst) {
-                Circuit.RightSide[rowD] -= Gds * colri.Value;
-                Circuit.RightSide[rowS] += Gds * colri.Value;
+                Circuit.RightSide[rowD] -= gds * colri.Value;
+                Circuit.RightSide[rowS] += gds * colri.Value;
             } else {
-                Circuit.Matrix[rowD, colri.MapCol] += Gds;
-                Circuit.Matrix[rowS, colri.MapCol] -= Gds;
+                Circuit.Matrix[rowD, colri.MapCol] += gds;
+                Circuit.Matrix[rowS, colri.MapCol] -= gds;
             }
             colri = Circuit.RowInfo[Nodes[IdxG] - 1];
             if (colri.IsConst) {
@@ -202,14 +199,14 @@ namespace Circuit.Elements.Active {
             }
             colri = Circuit.RowInfo[Nodes[idxS] - 1];
             if (colri.IsConst) {
-                Circuit.RightSide[rowD] += (Gds + Gm) * colri.Value;
-                Circuit.RightSide[rowS] -= (Gds + Gm) * colri.Value;
+                Circuit.RightSide[rowD] += (gds + Gm) * colri.Value;
+                Circuit.RightSide[rowS] -= (gds + Gm) * colri.Value;
             } else {
-                Circuit.Matrix[rowD, colri.MapCol] -= Gds + Gm;
-                Circuit.Matrix[rowS, colri.MapCol] += Gds + Gm;
+                Circuit.Matrix[rowD, colri.MapCol] -= gds + Gm;
+                Circuit.Matrix[rowS, colri.MapCol] += gds + Gm;
             }
 
-            var rs = -Nch * realIds + Gds * Vds + Gm * Vgs;
+            var rs = -Nch * realIds + gds * vds + Gm * vgs;
             rowD = Circuit.RowInfo[Nodes[idxD] - 1].MapRow;
             rowS = Circuit.RowInfo[Nodes[idxS] - 1].MapRow;
             Circuit.RightSide[rowD] += rs;
@@ -221,8 +218,6 @@ namespace Circuit.Elements.Active {
             mLastV[IdxS] = Volts[IdxS];
             mLastV[IdxD] = Volts[IdxD];
 
-            /* if drain < source voltage, swap source and drain.
-             * (opposite for PNP) */
             var idxS = IdxS;
             var idxD = IdxD;
             if (Nch * Volts[idxD] < Nch * Volts[idxS]) {
@@ -234,28 +229,26 @@ namespace Circuit.Elements.Active {
             vgs *= Nch;
             vds *= Nch;
 
-            Current = 0;
-            Gm = 0;
-            double Gds = 0;
-            if (vgs < Vt) {
-                /* should be all zero, but that causes a singular matrix,
-                 * so instead we treat it as a large resistor */
-                Gds = 1e-8;
-                Current = vds * Gds;
+            var vgs_vth = vgs - Vth;
+            if (vgs < Vth) {
+                var gds = 1e-8;
+                Gm = 0;
+                Current = vds * gds;
                 Mode = 0;
-            } else if (vds < vgs - Vt) {
-                /* linear */
-                Current = Hfe * ((vgs - Vt) * vds - vds * vds * 0.5);
-                Gm = Hfe * vds;
-                Gds = Hfe * (vgs - vds - Vt);
+            } else if (vds < vgs_vth) {
+                //var gds = Beta * (vgs - vds - Vth);
+                Gm = Beta * vds;
+                Current = Beta * (vgs_vth * vds - vds * vds * 0.5);
                 Mode = 1;
             } else {
-                /* saturation; Gds = 0 */
-                Gm = Hfe * (vgs - Vt);
-                /* use very small Gds to avoid nonconvergence */
-                Gds = 1e-8;
-                Current = 0.5 * Hfe * (vgs - Vt) * (vgs - Vt) + (vds - (vgs - Vt)) * Gds;
+                var gds = 1e-8;
+                Gm = Beta * vgs_vth;
+                Current = 0.5 * Beta * vgs_vth * vgs_vth + (vds - vgs_vth) * gds;
                 Mode = 2;
+            }
+
+            if (idxS == 2 && Nch == 1 || idxS == 1 && Nch == -1) {
+                Current = -Current;
             }
 
             var vbs = (Volts[BodyTerminal] - Volts[IdxS]) * Nch;
@@ -264,19 +257,13 @@ namespace Circuit.Elements.Active {
             DiodeDoStep(mDiode2Node0, mDiode2Node1, vbd, ref mDiode2LastVoltDiff);
             DiodeCurrent1 = (Math.Exp(vbs * DiodeVdCoef) - 1) * DiodeLeakage * Nch;
             DiodeCurrent2 = (Math.Exp(vbd * DiodeVdCoef) - 1) * DiodeLeakage * Nch;
-
-            /* flip ids if we swapped source and drain above */
-            if (idxS == 2 && Nch == 1 || idxS == 1 && Nch == -1) {
-                Current = -Current;
-            }
-
-            /* fix current if body is connected to source or drain */
             if (BodyTerminal == 1) {
                 DiodeCurrent1 = -DiodeCurrent2;
             }
             if (BodyTerminal == 2) {
                 DiodeCurrent2 = -DiodeCurrent1;
             }
+
             if (Math.Abs(vds) > 1e4) {
                 Circuit.Stop("Vdsが最大を超えました", this);
             }

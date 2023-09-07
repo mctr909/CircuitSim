@@ -5,12 +5,12 @@
         public override int TermCount { get { return 2; } }
 
         public override void AnaStamp() {
-            var g = 1.0 / Resistance;
             var n0 = Nodes[0] - 1;
             var n1 = Nodes[1] - 1;
             if (n0 < 0 || n1 < 0) {
                 return;
             }
+            var g = 1.0 / Resistance;
             Circuit.Matrix[n0, n0] += g;
             Circuit.Matrix[n1, n1] += g;
             Circuit.Matrix[n0, n1] -= g;
