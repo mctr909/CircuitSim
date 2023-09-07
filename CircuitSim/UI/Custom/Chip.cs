@@ -228,7 +228,6 @@ namespace Circuit.UI.Custom {
                 new Point(r.X + xs, r.Y + ys),
                 new Point(r.X, r.Y + ys)
             };
-            Post.SetBbox(r, rectPoints[2]);
             for (int i = 0; i != ce.TermCount; i++) {
                 var p = ce.Pins[i];
                 switch (p.side) {

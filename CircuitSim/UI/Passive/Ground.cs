@@ -33,7 +33,6 @@ namespace Circuit.UI.Passive {
             }
             interpPost(ref pb, 1 - BODY_LEN / Post.Len);
             mLine[3] = new PointF[] { pb, Post.A };
-            Post.SetBbox(Post.A, pa, 11);
         }
 
         public override void Draw(CustomGraphics g) {

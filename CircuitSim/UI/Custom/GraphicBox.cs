@@ -5,18 +5,28 @@ namespace Circuit.UI.Custom {
     class GraphicBox : Graphic {
         public GraphicBox(Point pos) : base(pos) {
             Post.B = pos;
-            Post.SetBbox(pos, Post.B);
         }
 
         public GraphicBox(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
             Post.B = b;
-            Post.SetBbox(Post.A, Post.B);
         }
 
         public override DUMP_ID DumpId { get { return DUMP_ID.BOX; } }
 
         public override bool IsCreationFailed {
             get { return Post.BoxIsCreationFailed; }
+        }
+
+        public override void SelectRect(RectangleF r) {
+            var x1 = Post.A.X;
+            var y1 = Post.A.Y;
+            var x2 = Post.B.X;
+            var y2 = Post.B.Y;
+            IsSelected =
+                r.Contains(x1, y1) ||
+                r.Contains(x2, y1) ||
+                r.Contains(x2, y2) ||
+                r.Contains(x1, y2);
         }
 
         public override double Distance(Point p) {
@@ -34,9 +44,6 @@ namespace Circuit.UI.Custom {
 
         public override void Drag(Point p) {
             Post.B = CirSimForm.SnapGrid(p);
-            Post.SetBbox(Post.A, Post.B);
-            Post.BoundingBox.Width = 0;
-            Post.BoundingBox.Height = 0;
         }
 
         public override void Draw(CustomGraphics g) {

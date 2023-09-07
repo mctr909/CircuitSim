@@ -26,7 +26,7 @@ namespace Circuit.UI.Custom {
         }
 
         public override double Distance(Point p) {
-            return Post.BoxDistance(Post.BoundingBox, p);
+            return Post.BoxDistance(Post.GetRect(), p);
         }
 
         public override void SetPoints() {
@@ -76,7 +76,6 @@ namespace Circuit.UI.Custom {
             mTextSize = Context.GetTextSize(mText);
             Post.B.X = (int)(Post.A.X + mTextSize.Width);
             Post.B.Y = (int)(Post.A.Y + mTextSize.Height);
-            Post.SetBbox(Post.A, Post.B);
             Context.FontSize = sizeBk;
         }
     }

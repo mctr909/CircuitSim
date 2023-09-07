@@ -36,11 +36,6 @@ namespace Circuit.UI.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            Post.SetBbox(SIZE);
-            Post.AdjustBbox(
-                Post.B.X - SIZE, Post.B.Y - SIZE,
-                Post.B.X + SIZE, Post.B.Y + SIZE
-            );
             setLead1(1 - 0.5 * SIZE / Post.Len);
         }
 

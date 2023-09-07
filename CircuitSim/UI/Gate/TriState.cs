@@ -30,7 +30,6 @@ namespace Circuit.UI.Gate {
 
         public override void SetPoints() {
             base.SetPoints();
-            Post.SetBbox(BODY_LEN);
             setLeads(BODY_LEN);
             int hs = BODY_LEN / 2;
             int ww = BODY_LEN / 2;

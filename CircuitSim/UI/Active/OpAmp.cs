@@ -54,7 +54,6 @@ namespace Circuit.UI.Active {
 
         public override void SetPoints() {
             base.SetPoints();
-            Post.SetBbox(HEIGHT * 2);
             int ww = WIDTH;
             if (ww > Post.Len / 2) {
                 ww = (int)(Post.Len / 2);

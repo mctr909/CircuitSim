@@ -54,7 +54,6 @@ namespace Circuit.UI.Active {
                 new Point(r.X + xs, r.Y + ys),
                 new Point(r.X, r.Y + ys)
             };
-            Post.SetBbox(r, mRectPoints[2]);
 
             mStubs = new Point[4];
             setPin(0, x0, y0, 0, 1, -0.5, 0, 0, 0);

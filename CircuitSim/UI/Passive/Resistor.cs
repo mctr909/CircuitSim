@@ -121,9 +121,6 @@ namespace Circuit.UI.Passive {
                 return;
             }
 
-            int hs = ControlPanel.ChkUseAnsiSymbols.Checked ? ANSI_HEIGHT : EU_HEIGHT;
-            Post.SetBbox(hs);
-
             draw2Leads();
 
             if (ControlPanel.ChkUseAnsiSymbols.Checked) {

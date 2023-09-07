@@ -60,8 +60,6 @@ namespace Circuit.UI.Passive {
             }
             mSwPoles[i] = _Lead2; /* for center off */
             ce.PosCount = ce.ThrowCount;
-            Post.SetBbox(OPEN_HS);
-            Post.AdjustBbox(ce.SwPosts[0], ce.SwPosts[ce.ThrowCount - 1]);
         }
 
         public override void Draw(CustomGraphics g) {

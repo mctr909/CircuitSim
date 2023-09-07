@@ -75,7 +75,6 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
-            Post.SetBbox(HS);
             Post.Vertical = Math.Abs(Post.Diff.X) <= Math.Abs(Post.Diff.Y);
             Post.Horizontal = !Post.Vertical;
 

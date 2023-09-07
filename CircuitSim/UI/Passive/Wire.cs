@@ -16,7 +16,6 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
-            Post.SetBbox(0);
         }
 
         public override void Draw(CustomGraphics g) {

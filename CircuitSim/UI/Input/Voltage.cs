@@ -134,10 +134,8 @@ namespace Circuit.UI.Input {
                 sign = Post.Dsign;
             }
             interpPost(ref mSignPos, (Post.Len / 2 + 0.6 * BODY_LEN) / Post.Len, 7 * sign);
-            Post.SetBbox(Post.A, Post.B);
             if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
                 int hs = 10;
-                Post.SetBbox(hs);
                 interpLeadAB(ref mPs1, ref mPs2, 0, hs * 0.5);
                 interpLeadAB(ref mPs3, ref mPs4, 1, hs);
                 var s = Utils.UnitText(elm.MaxVoltage, "V");
@@ -145,7 +143,6 @@ namespace Circuit.UI.Input {
                 interpPost(ref mTextPos, 0.5, w * 0.5 + 10);
                 mTextRot = Utils.Angle(Post.A, Post.B) + Math.PI / 2;
             } else {
-                Post.SetBbox(BODY_LEN);
                 interpLead(ref mPs1, 0.5);
             }
         }
@@ -159,11 +156,6 @@ namespace Circuit.UI.Input {
                 x = mPs1.X;
                 y = mPs1.Y;
             }
-
-            Post.AdjustBbox(
-                (int)(x - BODY_LEN), (int)(y - BODY_LEN),
-                (int)(x + BODY_LEN), (int)(y + BODY_LEN)
-            );
 
             var elm = (ElmVoltage)Elm;
             var duty = Math.Min(1, Math.Max(0, elm.DutyCycle));

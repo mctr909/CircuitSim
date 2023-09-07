@@ -80,7 +80,6 @@ namespace Circuit.UI.Gate {
                 ce.Volts[i] = (ce.LastOutput ^ ce.IsInverting) ? 5 : 0;
             }
             mHs2 = G_WIDTH * (ce.InputCount / 2 + 1);
-            Post.SetBbox(mHs2);
             if (ce.HasSchmittInputs) {
                 Utils.CreateSchmitt(_Lead1, _Lead2, out mSchmittPoly, 1, .47f);
             }

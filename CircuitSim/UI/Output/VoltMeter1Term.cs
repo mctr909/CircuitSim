@@ -12,7 +12,6 @@ namespace Circuit.UI.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            Post.SetBbox(0);
             if (Post.Vertical) {
                 interpLead(ref mTextPos, 1 - 0.5 * Context.GetTextSize("-9.99mV").Height / Post.Len);
             } else {

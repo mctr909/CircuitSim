@@ -52,7 +52,6 @@ namespace Circuit.UI.Active {
 
         public override void SetPoints() {
             base.SetPoints();
-            Post.SetBbox(OPEN_HS);
             setLeads(BODY_LEN);
             interpPost(ref mCtrlTerm, 0.5, -OPEN_HS);
             interpPost(ref mCtrlLead, 0.5, -OPEN_HS / 3);

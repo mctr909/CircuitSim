@@ -41,7 +41,6 @@ namespace Circuit.UI.Active {
 
         public override void SetPoints() {
             base.SetPoints();
-            Post.SetBbox(HS);
             setLeads(BODY_LEN);
             mCathode = new PointF[4];
             interpLeadAB(ref mCathode[0], ref mCathode[1], (BODY_LEN - 1.0) / BODY_LEN, HS);

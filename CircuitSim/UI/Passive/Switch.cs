@@ -88,7 +88,6 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
-            Post.SetBbox(OPEN_HS);
             setLeads(BODY_LEN);
         }
 

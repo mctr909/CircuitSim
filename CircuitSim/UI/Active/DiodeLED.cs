@@ -56,7 +56,6 @@ namespace Circuit.UI.Active {
 
         public override void SetPoints() {
             base.SetPoints();
-            Post.SetBbox(CR_INNER);
             interpPost(ref mLedLead1, 0.5 - CR / Post.Len);
             interpPost(ref mLedLead2, 0.5 + CR / Post.Len);
             interpPost(ref mLedCenter, 0.5);

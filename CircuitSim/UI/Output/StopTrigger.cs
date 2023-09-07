@@ -35,7 +35,6 @@ namespace Circuit.UI.Output {
 			var txtH = Context.GetTextSize(ReferenceName).Height;
 			var pw = txtW / Post.Len;
 			setLead1(1);
-			Post.SetBbox(Post.A, Post.B, txtH);
 			var abX = Post.B.X - Post.A.X;
 			var abY = Post.B.Y - Post.A.Y;
 			_TextRot = Math.Atan2(abY, abX);

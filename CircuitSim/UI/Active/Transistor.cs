@@ -57,7 +57,6 @@ namespace Circuit.UI.Active {
 
         public override void SetPoints() {
             base.SetPoints();
-            Post.SetBbox(16);
 
             var ce = (ElmTransistor)Elm;
 

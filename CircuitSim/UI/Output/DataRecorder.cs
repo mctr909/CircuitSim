@@ -44,7 +44,6 @@ namespace Circuit.UI.Output {
             var pw = txtW / Post.Len;
             var ph = 0.5 * (txtH - 1);
             setLead1(1);
-            Post.SetBbox(Post.A, Post.B, txtH);
             var p1 = new PointF();
             var p2 = new PointF();
             var p3 = new PointF();

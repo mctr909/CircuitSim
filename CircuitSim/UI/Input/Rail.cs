@@ -24,7 +24,6 @@ namespace Circuit.UI.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            Post.SetBbox(BODY_LEN);
             interpPost(ref _NamePos, 1 + 12 / Post.Len);
             interpPost(ref mC, 1);
             interpPost(ref mLa, 1, -6);

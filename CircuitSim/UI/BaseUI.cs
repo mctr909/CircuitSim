@@ -162,10 +162,6 @@ namespace Circuit.UI {
                 _MouseElm = null;
             }
         }
-
-        public void SelectRect(RectangleF r) {
-            IsSelected = r.IntersectsWith(Post.BoundingBox);
-        }
         #endregion
 
         #region [public virtual method]
@@ -187,8 +183,12 @@ namespace Circuit.UI {
         /// </summary>
         /// <param name="pos"></param>
         public virtual void Drag(Point pos) {
-            Post.Drag(pos);
+            Post.Drag(CirSimForm.SnapGrid(pos));
             SetPoints();
+        }
+
+        public virtual void SelectRect(RectangleF r) {
+            IsSelected = r.IntersectsWith(Post.GetRect());
         }
 
         /// <summary>

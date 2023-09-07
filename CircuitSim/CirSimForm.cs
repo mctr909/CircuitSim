@@ -1412,7 +1412,7 @@ namespace Circuit {
             var oldbb = new RectangleF();
             for (i = 0; i != UICount; i++) {
                 var ce = GetUI(i);
-                var bb = ce.Post.BoundingBox;
+                var bb = ce.Post.GetRect();
                 if (0 == i) {
                     oldbb = bb;
                 } else {
@@ -1434,7 +1434,7 @@ namespace Circuit {
             for (i = oldsz; i != UICount; i++) {
                 var ce = GetUI(i);
                 ce.IsSelected = true;
-                var bb = ce.Post.BoundingBox;
+                var bb = ce.Post.GetRect();
                 if (0 == i) {
                     newbb = bb;
                 } else {

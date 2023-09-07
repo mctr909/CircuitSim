@@ -113,7 +113,6 @@ namespace Circuit.UI.Passive {
             setCoilPos(mCoilSec1, mCoilSec2, -90 * Post.Dsign * ce.Polarity, out mCoilSec);
             setNamePos();
 
-            Post.SetBbox(mTermPri1, ce.Polarity == 1 ? mTermSec2 : mTermSec1, 0);
             ce.SetNodePos(mTermPri1, mTermSec1, mTermPri2, mTermSec2);
         }
 

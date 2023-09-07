@@ -34,7 +34,6 @@ namespace Circuit.UI.Input {
             setLead1(1 - 0.5 * SIZE / Post.Len);
             interpPost(ref _NamePos, 1);
             ReferenceName = "FM";
-            Post.SetBbox(SIZE);
         }
 
         public override void Draw(CustomGraphics g) {

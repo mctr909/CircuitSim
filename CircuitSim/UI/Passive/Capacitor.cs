@@ -45,7 +45,6 @@ namespace Circuit.UI.Passive {
 
         public override void SetPoints() {
             base.SetPoints();
-            Post.SetBbox(HS);
             /* calc leads */
             setLeads(BODY_LEN);
             /* calc plates */

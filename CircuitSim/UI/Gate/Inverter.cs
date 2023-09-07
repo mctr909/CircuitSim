@@ -31,7 +31,6 @@ namespace Circuit.UI.Gate {
         public override void SetPoints() {
             base.SetPoints();
             int hs = 10;
-            Post.SetBbox(hs);
             int ww = 12;
             if (ww > Post.Len / 2) {
                 ww = (int)(Post.Len / 2);
