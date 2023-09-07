@@ -75,12 +75,10 @@ namespace Circuit.Elements.Active {
 
             mDiode1Node0 = Nodes[IdxS];
             mDiode2Node1 = Nodes[IdxD];
-            if (Nch == -1) {
-                /* pnp: diodes conduct when S or D are higher than body */
+            if (Nch < 0) {
                 mDiode1Node1 = Nodes[IdxD];
                 mDiode2Node0 = Nodes[IdxD];
             } else {
-                /* npn: diodes conduct when body is higher than S or D */
                 mDiode1Node1 = Nodes[IdxS];
                 mDiode2Node0 = Nodes[IdxS];
             }
@@ -151,16 +149,19 @@ namespace Circuit.Elements.Active {
                     gds = 1e-8;
                     Gm = 0;
                     Current = tmpVds * gds;
+                    Mode = 0;
                 } else if (tmpVds < vgs_vth) {
                     /* mode: 線形領域 */
                     gds = Beta * (vgs_vth - tmpVds);
                     Gm = Beta * tmpVds;
                     Current = Beta * (vgs_vth * tmpVds - tmpVds * tmpVds * 0.5);
+                    Mode = 1;
                 } else {
                     /* mode: 飽和領域 */
                     gds = 1e-8;
                     Gm = Beta * vgs_vth;
                     Current = 0.5 * Beta * vgs_vth * vgs_vth + (tmpVds - vgs_vth) * gds;
+                    Mode = 2;
                 }
             }
 
@@ -178,6 +179,12 @@ namespace Circuit.Elements.Active {
             DiodeDoStep(mDiode2Node0, mDiode2Node1, vbd, ref mDiode2LastVoltDiff);
             DiodeCurrent1 = (Math.Exp(vbs * DiodeVdCoef) - 1) * DiodeLeakage * Nch;
             DiodeCurrent2 = (Math.Exp(vbd * DiodeVdCoef) - 1) * DiodeLeakage * Nch;
+            if (BodyTerminal == 1) {
+                DiodeCurrent1 = -DiodeCurrent2;
+            }
+            if (BodyTerminal == 2) {
+                DiodeCurrent2 = -DiodeCurrent1;
+            }
 
             var rowD = Circuit.RowInfo[Nodes[idxD] - 1].MapRow;
             var rowS = Circuit.RowInfo[Nodes[idxS] - 1].MapRow;
@@ -211,65 +218,6 @@ namespace Circuit.Elements.Active {
             rowS = Circuit.RowInfo[Nodes[idxS] - 1].MapRow;
             Circuit.RightSide[rowD] += rs;
             Circuit.RightSide[rowS] -= rs;
-        }
-
-        public override void CirIterationFinished() {
-            mLastV[IdxG] = Volts[IdxG];
-            mLastV[IdxS] = Volts[IdxS];
-            mLastV[IdxD] = Volts[IdxD];
-
-            var idxS = IdxS;
-            var idxD = IdxD;
-            if (Nch * Volts[idxD] < Nch * Volts[idxS]) {
-                idxS = IdxD;
-                idxD = IdxS;
-            }
-            var vgs = Volts[IdxG] - Volts[idxS];
-            var vds = Volts[idxD] - Volts[idxS];
-            vgs *= Nch;
-            vds *= Nch;
-
-            var vgs_vth = vgs - Vth;
-            if (vgs < Vth) {
-                var gds = 1e-8;
-                Gm = 0;
-                Current = vds * gds;
-                Mode = 0;
-            } else if (vds < vgs_vth) {
-                //var gds = Beta * (vgs - vds - Vth);
-                Gm = Beta * vds;
-                Current = Beta * (vgs_vth * vds - vds * vds * 0.5);
-                Mode = 1;
-            } else {
-                var gds = 1e-8;
-                Gm = Beta * vgs_vth;
-                Current = 0.5 * Beta * vgs_vth * vgs_vth + (vds - vgs_vth) * gds;
-                Mode = 2;
-            }
-
-            if (idxS == 2 && Nch == 1 || idxS == 1 && Nch == -1) {
-                Current = -Current;
-            }
-
-            var vbs = (Volts[BodyTerminal] - Volts[IdxS]) * Nch;
-            var vbd = (Volts[BodyTerminal] - Volts[IdxD]) * Nch;
-            DiodeDoStep(mDiode1Node0, mDiode1Node1, vbs, ref mDiode1LastVoltDiff);
-            DiodeDoStep(mDiode2Node0, mDiode2Node1, vbd, ref mDiode2LastVoltDiff);
-            DiodeCurrent1 = (Math.Exp(vbs * DiodeVdCoef) - 1) * DiodeLeakage * Nch;
-            DiodeCurrent2 = (Math.Exp(vbd * DiodeVdCoef) - 1) * DiodeLeakage * Nch;
-            if (BodyTerminal == 1) {
-                DiodeCurrent1 = -DiodeCurrent2;
-            }
-            if (BodyTerminal == 2) {
-                DiodeCurrent2 = -DiodeCurrent1;
-            }
-
-            if (Math.Abs(vds) > 1e4) {
-                Circuit.Stop("Vdsが最大を超えました", this);
-            }
-            if (Math.Abs(Current) > 1e3) {
-                Circuit.Stop("Idsが最大を超えました", this);
-            }
         }
 
         static void DiodeDoStep(int n0, int n1, double voltdiff, ref double lastVoltDiff) {
