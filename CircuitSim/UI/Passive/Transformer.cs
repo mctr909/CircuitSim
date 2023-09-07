@@ -117,14 +117,26 @@ namespace Circuit.UI.Passive {
         }
 
         public override double Distance(Point p) {
-            return Math.Min(
-                Utils.DistanceOnLine(mTermPri1, mCoilPri1, p), Math.Min(
-                Utils.DistanceOnLine(mTermSec1, mCoilSec1, p), Math.Min(
-                Utils.DistanceOnLine(mTermPri2, mCoilPri2, p), Math.Min(
-                Utils.DistanceOnLine(mTermSec2, mCoilSec2, p), Math.Min(
-                Utils.DistanceOnLine(mCoilPri1, mCoilSec2, p),
-                Utils.DistanceOnLine(mCoilSec1, mCoilPri2, p)
-            )))));
+            var ce = (ElmTransformer)Elm;
+            if (ce.Polarity < 0) {
+                return Math.Min(
+                    Utils.DistanceOnLine(mTermPri1, mCoilPri1, p), Math.Min(
+                    Utils.DistanceOnLine(mTermSec2, mCoilSec2, p), Math.Min(
+                    Utils.DistanceOnLine(mTermPri2, mCoilPri2, p), Math.Min(
+                    Utils.DistanceOnLine(mTermSec1, mCoilSec1, p), Math.Min(
+                    Utils.DistanceOnLine(mCoilPri1, mCoilSec1, p),
+                    Utils.DistanceOnLine(mCoilSec2, mCoilPri2, p)
+                )))));
+            } else {
+                return Math.Min(
+                    Utils.DistanceOnLine(mTermPri1, mCoilPri1, p), Math.Min(
+                    Utils.DistanceOnLine(mTermSec1, mCoilSec1, p), Math.Min(
+                    Utils.DistanceOnLine(mTermPri2, mCoilPri2, p), Math.Min(
+                    Utils.DistanceOnLine(mTermSec2, mCoilSec2, p), Math.Min(
+                    Utils.DistanceOnLine(mCoilPri1, mCoilSec2, p),
+                    Utils.DistanceOnLine(mCoilSec1, mCoilPri2, p)
+                )))));
+            }
         }
 
         void setCoilPos(PointF a, PointF b, float dir, out PointF[] pos) {
