@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 
 using Circuit.Elements.Input;
 using Circuit.UI;
@@ -14,8 +13,7 @@ namespace Circuit.Elements.Custom {
 
     class ElmComposite : BaseElement {
         /* list of elements contained in this subcircuit */
-        public List<BaseElement> CompElmList = new List<BaseElement>();
-        public List<BaseUI> CompUIList = new List<BaseUI>();
+        protected List<BaseElement> CompList = new List<BaseElement>();
 
         /* list of nodes, mapping each one to a list of elements that reference that node */
         List<CircuitNode> mCompNodeList;
@@ -25,16 +23,6 @@ namespace Circuit.Elements.Custom {
 
         public ElmComposite() : base() { }
 
-        public ElmComposite(string s, int[] externalNodes) : base() {
-            loadComposite(null, s, externalNodes);
-            AllocNodes();
-        }
-
-        public ElmComposite(StringTokenizer st, string s, int[] externalNodes) : base() {
-            loadComposite(st, s, externalNodes);
-            AllocNodes();
-        }
-
         public override int TermCount { get { return mNumTerms; } }
 
         public override int AnaVoltageSourceCount { get { return mVoltageSources.Count; } }
@@ -42,8 +30,8 @@ namespace Circuit.Elements.Custom {
         public override int AnaInternalNodeCount { get { return mNumNodes - mNumTerms; } }
 
         public override void Reset() {
-            for (int i = 0; i < CompElmList.Count; i++) {
-                CompElmList[i].Reset();
+            for (int i = 0; i < CompList.Count; i++) {
+                CompList[i].Reset();
             }
         }
 
@@ -86,8 +74,8 @@ namespace Circuit.Elements.Custom {
         }
 
         public override void AnaStamp() {
-            for (int i = 0; i < CompElmList.Count; i++) {
-                var ce = CompElmList[i];
+            for (int i = 0; i < CompList.Count; i++) {
+                var ce = CompList[i];
                 /* current sources need special stamp method */
                 if (ce is ElmCurrent) {
                     ((ElmCurrent)ce).stampCurrentSource(false);
@@ -107,20 +95,20 @@ namespace Circuit.Elements.Custom {
         }
 
         public override void CirPrepareIteration() {
-            for (int i = 0; i < CompElmList.Count; i++) {
-                CompElmList[i].CirPrepareIteration();
+            for (int i = 0; i < CompList.Count; i++) {
+                CompList[i].CirPrepareIteration();
             }
         }
 
         public override void CirDoIteration() {
-            for (int i = 0; i < CompElmList.Count; i++) {
-                CompElmList[i].CirDoIteration();
+            for (int i = 0; i < CompList.Count; i++) {
+                CompList[i].CirDoIteration();
             }
         }
 
         public override void CirIterationFinished() {
-            for (int i = 0; i < CompElmList.Count; i++) {
-                CompElmList[i].CirIterationFinished();
+            for (int i = 0; i < CompList.Count; i++) {
+                CompList[i].CirIterationFinished();
             }
         }
 
@@ -150,82 +138,33 @@ namespace Circuit.Elements.Custom {
             return c;
         }
 
-        public void loadComposite(StringTokenizer stIn, string model, int[] externalNodes) {
-            var compNodeHash = new Dictionary<int, CircuitNode>();
-            var modelLinet = new StringTokenizer(model, "\r");
-            CircuitNode cn;
-            CircuitNode.LINK cnLink;
-            VoltageSourceRecord vsRecord;
-
-            CompElmList = new List<BaseElement>();
+        public void SetComposite(Dictionary<int, CircuitNode> nodeHash, List<BaseUI> uiList, int[] externalNodes, string expr) {
+            /* Flatten nodeHash in to compNodeList */
             mCompNodeList = new List<CircuitNode>();
-            mVoltageSources = new List<VoltageSourceRecord>();
-
-            /* Build compElmList and compNodeHash from input string */
-
-            while (modelLinet.HasMoreTokens) {
-                string line;
-                modelLinet.nextToken(out line);
-                var stModel = new StringTokenizer(line, " +\t\n\r\f");
-                var ceType = stModel.nextTokenEnum(DUMP_ID.INVALID);
-                var newce = MenuItems.ConstructElement(ceType);
-                if (stIn != null) {
-                    var tint = newce.DumpId;
-                    string dumpedCe;
-                    stIn.nextToken(out dumpedCe);
-                    dumpedCe = Utils.Unescape(dumpedCe);
-                    var stCe = new StringTokenizer(dumpedCe, "_");
-                    // TODO: CompositeElm loadComposite
-                    //int flags = stCe.nextTokenInt();
-                    int flags = 0;
-                    newce = MenuItems.CreateCe(tint, new Point(), new Point(), flags, stCe);
-                }
-                newce.ReferenceName = "";
-                CompUIList.Add(newce);
-                CompElmList.Add(newce.Elm);
-
-                int thisPost = 0;
-                while (stModel.HasMoreTokens) {
-                    var nodeOfThisPost = stModel.nextTokenInt();
-                    cnLink = new CircuitNode.LINK();
-                    cnLink.Num = thisPost;
-                    cnLink.Elm = newce.Elm;
-                    if (!compNodeHash.ContainsKey(nodeOfThisPost)) {
-                        cn = new CircuitNode();
-                        cn.Links.Add(cnLink);
-                        compNodeHash.Add(nodeOfThisPost, cn);
-                    } else {
-                        cn = compNodeHash[nodeOfThisPost];
-                        cn.Links.Add(cnLink);
-                    }
-                    thisPost++;
-                }
-            }
-
-            /* Flatten compNodeHash in to compNodeList */
             mNumTerms = externalNodes.Length;
             for (int i = 0; i < externalNodes.Length; i++) {
                 /* External Nodes First */
-                if (compNodeHash.ContainsKey(externalNodes[i])) {
-                    mCompNodeList.Add(compNodeHash[externalNodes[i]]);
-                    compNodeHash.Remove(externalNodes[i]);
+                if (nodeHash.ContainsKey(externalNodes[i])) {
+                    mCompNodeList.Add(nodeHash[externalNodes[i]]);
+                    nodeHash.Remove(externalNodes[i]);
                 } else {
                     throw new Exception();
                 }
             }
-            foreach (var entry in compNodeHash) {
+            foreach (var entry in nodeHash) {
                 int key = entry.Key;
-                mCompNodeList.Add(compNodeHash[key]);
+                mCompNodeList.Add(nodeHash[key]);
             }
             /* allocate more nodes for sub-elements' internal nodes */
-            for (int i = 0; i != CompElmList.Count; i++) {
-                var ce = CompElmList[i];
+            for (int i = 0; i != uiList.Count; i++) {
+                var ce = uiList[i].Elm;
+                CompList.Add(ce);
                 int inodes = ce.AnaInternalNodeCount;
                 for (int j = 0; j != inodes; j++) {
-                    cnLink = new CircuitNode.LINK();
+                    var cnLink = new CircuitNode.LINK();
                     cnLink.Num = j + ce.TermCount;
                     cnLink.Elm = ce;
-                    cn = new CircuitNode();
+                    var cn = new CircuitNode();
                     cn.Links.Add(cnLink);
                     mCompNodeList.Add(cn);
                 }
@@ -238,15 +177,21 @@ namespace Circuit.Elements.Custom {
             }*/
 
             /* Enumerate voltage sources */
-            for (int i = 0; i < CompElmList.Count; i++) {
-                int cnt = CompElmList[i].AnaVoltageSourceCount;
+            mVoltageSources = new List<VoltageSourceRecord>();
+            for (int i = 0; i < CompList.Count; i++) {
+                int cnt = CompList[i].AnaVoltageSourceCount;
                 for (int j = 0; j < cnt; j++) {
-                    vsRecord = new VoltageSourceRecord();
-                    vsRecord.elm = CompElmList[i];
+                    var vsRecord = new VoltageSourceRecord();
+                    vsRecord.elm = CompList[i];
                     vsRecord.vsNumForElement = j;
                     mVoltageSources.Add(vsRecord);
                 }
             }
+
+            AllocNodes();
+            Init(expr);
         }
+
+        protected virtual void Init(string expr) { }
     }
 }

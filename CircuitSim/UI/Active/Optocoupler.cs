@@ -4,6 +4,20 @@ using Circuit.UI.Custom;
 
 namespace Circuit.UI.Active {
     class Optocoupler : Composite {
+        static readonly int[] EXTERNAL_NODES = { 6, 2, 4, 5 };
+        static readonly string MODEL_STRING
+            = DUMP_ID.DIODE + " 6 1\r"
+            + DUMP_ID.CCCS + " 1 2 3 4\r"
+            + DUMP_ID.TRANSISTOR_N + " 3 4 5";
+        static readonly string EXPR = @"max(0, min(0.0001,
+    select {i-0.003,
+        ( -80000000000*i^5 +800000000*i^4 -3000000*i^3 +5177.20*i^2 +0.2453*i -0.00005 )*1.040/700,
+        (      9000000*i^5    -998113*i^4   +42174*i^3  -861.32*i^2 +9.0836*i -0.00780 )*0.945/700
+    }
+))";
+
+        Diode mDiode;
+        Transistor mTransistor;
         Point[] mStubs;
         Point[] mPosts;
         PointF[] mRectPoints;
@@ -12,12 +26,17 @@ namespace Circuit.UI.Active {
 
         public Optocoupler(Point pos) : base(pos) {
             Elm = new ElmOptocoupler();
+            loadComposite(null, MODEL_STRING, EXTERNAL_NODES, EXPR);
+            mDiode = (Diode)CompList[0];
+            mTransistor = (Transistor)CompList[2];
             Post.NoDiagonal = true;
         }
 
         public Optocoupler(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            Elm = new ElmOptocoupler(st);
-            /* pass st=null since we don't need to undump any of the sub-elements */
+            Elm = new ElmOptocoupler();
+            loadComposite(st, MODEL_STRING, EXTERNAL_NODES, EXPR);
+            mDiode = (Diode)CompList[0];
+            mTransistor = (Transistor)CompList[2];
             Post.NoDiagonal = true;
         }
 
@@ -60,14 +79,14 @@ namespace Circuit.UI.Active {
             Post.B = mPosts[2];
 
             /* diode */
-            ce.DiodeUI.SetPosition(mPosts[0].X + 10, mPosts[0].Y, mPosts[1].X + 10, mPosts[1].Y);
+            mDiode.SetPosition(mPosts[0].X + 10, mPosts[0].Y, mPosts[1].X + 10, mPosts[1].Y);
             mStubs = new Point[4];
             mStubs[0] = ce.Diode.GetNodePos(0);
             mStubs[1] = ce.Diode.GetNodePos(1);
 
             /* transistor */
             int midp = (mPosts[2].Y + mPosts[3].Y) / 2;
-            ce.TransistorUI.SetPosition(mPosts[2].X - 18, midp, mPosts[2].X - 6, midp);
+            mTransistor.SetPosition(mPosts[2].X - 18, midp, mPosts[2].X - 6, midp);
             mStubs[2] = ce.Transistor.GetNodePos(1);
             mStubs[3] = ce.Transistor.GetNodePos(2);
 
@@ -86,8 +105,6 @@ namespace Circuit.UI.Active {
         }
 
         public override void Draw(CustomGraphics g) {
-            var ce = (ElmOptocoupler)Elm;
-
             drawPolygon(mRectPoints);
 
             /* draw stubs */
@@ -97,8 +114,8 @@ namespace Circuit.UI.Active {
                 drawLine(a, b);
             }
 
-            ce.DiodeUI.Draw(g);
-            ce.TransistorUI.Draw(g);
+            mDiode.Draw(g);
+            mTransistor.Draw(g);
 
             /* draw little arrows */
             var sx1 = mArrow1[0].X - 10;
