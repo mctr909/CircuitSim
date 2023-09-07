@@ -29,33 +29,28 @@ namespace Circuit.UI.Input {
             interpPost(ref mC, 1);
             interpPost(ref mLa, 1, -6);
             interpPost(ref mLb, 1, 6);
-        }
 
-        public string getRailText() {
-            return null;
-        }
-
-        public override void Draw(CustomGraphics g) {
             var elm = (ElmVoltage)Elm;
-            var rt = getRailText();
-            double w = rt == null ? (BODY_LEN * 0.5) : g.GetTextSize(rt).Width / 2;
-            if (w > Post.Len * 0.8) {
-                w = Post.Len * 0.8;
-            }
             switch (elm.WaveForm) {
             case ElmVoltage.WAVEFORM.DC:
             case ElmVoltage.WAVEFORM.NOISE:
                 setLead1(1);
                 break;
-            case ElmVoltage.WAVEFORM.SQUARE:
+            default:
                 if ((_Flags & FLAG_CLOCK) != 0) {
                     setLead1(1);
+                } else {
+                    if (Post.Len * 0.6 < BODY_LEN * 0.5) {
+                        setLead1(0);
+                    } else {
+                        setLead1(1 - BODY_LEN * 0.5 / Post.Len);
+                    }
                 }
                 break;
-            default:
-                setLead1(1 - w / Post.Len);
-                break;
             }
+        }
+
+        public override void Draw(CustomGraphics g) {
             drawLeadA();
             drawRail();
             updateDotCount(-Elm.Current, ref _CurCount);

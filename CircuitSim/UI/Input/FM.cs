@@ -40,17 +40,12 @@ namespace Circuit.UI.Input {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmFM)Elm;
             drawLeadA();
+            drawCircle(Post.B, SIZE / 2);
             drawCenteredText(ReferenceName, _NamePos);
-            drawWaveform(Post.B);
             updateDotCount(-ce.Current, ref _CurCount);
             if (CirSimForm.ConstructElm != this) {
                 drawCurrentA(_CurCount);
             }
-        }
-
-        void drawWaveform(Point p) {
-            drawCircle(p, SIZE / 2);
-            Post.AdjustBbox(p.X - SIZE, p.Y - SIZE, p.X + SIZE, p.Y + SIZE);
         }
 
         public override void GetInfo(string[] arr) {

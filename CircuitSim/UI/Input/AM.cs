@@ -42,8 +42,8 @@ namespace Circuit.UI.Input {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmAM)Elm;
             drawLeadA();
+            drawCircle(Post.B, SIZE / 2);
             drawCenteredText(ReferenceName, _NamePos);
-            drawWaveform(Post.B);
             updateDotCount(-ce.Current, ref _CurCount);
             if (CirSimForm.ConstructElm != this) {
                 drawCurrentA(_CurCount);
@@ -100,11 +100,6 @@ namespace Circuit.UI.Input {
             if (n == 4) {
                 ce.Phase = ei.Value * Math.PI / 180;
             }
-        }
-
-        void drawWaveform(Point p) {
-            drawCircle(p, SIZE / 2);
-            Post.AdjustBbox(p.X - SIZE, p.Y - SIZE, p.X + SIZE, p.Y + SIZE);
         }
     }
 }

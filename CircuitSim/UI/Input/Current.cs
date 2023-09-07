@@ -44,16 +44,14 @@ namespace Circuit.UI.Input {
             var p2 = new PointF();
             interpLead(ref p2, 0.8);
             Utils.CreateArrow(mCenter, p2, out mArrow, 8, 4);
+            Post.SetBbox(BODY_LEN);
         }
 
         public override void Draw(CustomGraphics g) {
-            Post.SetBbox(BODY_LEN);
             draw2Leads();
-
             drawCircle(mCenter, BODY_LEN / 2);
             drawLine(mAshaft1, mAshaft2);
             fillPolygon(mArrow);
-
             doDots();
             if (ControlPanel.ChkShowValues.Checked) {
                 var s = Utils.CurrentText(mCurrentValue);

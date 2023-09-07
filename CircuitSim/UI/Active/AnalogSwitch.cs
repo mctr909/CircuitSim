@@ -12,6 +12,8 @@ namespace Circuit.UI.Active {
 
         PointF mCtrlTerm;
         PointF mCtrlLead;
+        PointF mOpen;
+        PointF mClose;
 
         public AnalogSwitch(Point pos) : base(pos) {
             Elm = new ElmAnalogSwitch();
@@ -54,22 +56,23 @@ namespace Circuit.UI.Active {
             setLeads(BODY_LEN);
             interpPost(ref mCtrlTerm, 0.5, -OPEN_HS);
             interpPost(ref mCtrlLead, 0.5, -OPEN_HS / 3);
+            interpLead(ref mOpen, 1 - 2.0 / BODY_LEN, OPEN_HS - 6);
+            interpLead(ref mClose, 1 - 2.0 / BODY_LEN, 2.5f);
             Elm.SetNodePos(Post.A, Post.B, mCtrlTerm);
         }
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmAnalogSwitch)Elm;
-            var hs = ce.IsOpen ? (OPEN_HS - 6) : 0;
-            var ps = new PointF();
-            interpLead(ref ps, 1, hs);
-
             draw2Leads();
-            drawLine(_Lead1, ps);
             drawLine(mCtrlTerm, mCtrlLead);
-
-            if (!ce.IsOpen) {
-                doDots();
+            fillCircle(_Lead1, 2.5f);
+            fillCircle(_Lead2, 2.5f);
+            if (ce.IsOpen || g is PDF.Page) {
+                drawLine(_Lead1, mOpen);
+            } else {
+                drawLine(_Lead1, mClose);
             }
+            doDots();
         }
 
         public override void GetInfo(string[] arr) {
