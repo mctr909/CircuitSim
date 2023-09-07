@@ -4,6 +4,8 @@ using Circuit.UI.Custom;
 
 namespace Circuit.UI.Active {
     class Optocoupler : Composite {
+        const int CSPC = 8 * 2;
+        const int CSPC2 = CSPC * 2;
         static readonly int[] EXTERNAL_NODES = { 6, 2, 4, 5 };
         static readonly string MODEL_STRING
             = DUMP_ID.DIODE + " 6 1\r"
@@ -43,11 +45,10 @@ namespace Circuit.UI.Active {
         public override DUMP_ID DumpId { get { return DUMP_ID.OPTO_COUPLER; } }
 
         Point getPinPos(int n, int px, int py, double dx, double dy, double dax, double day, int sx, int sy) {
-            var ce = (ElmOptocoupler)Elm;
             int pos = n % 2;
-            var xa = (int)(px + ce.mCspc2 * dx * pos + sx);
-            var ya = (int)(py + ce.mCspc2 * dy * pos + sy);
-            return new Point((int)(xa + dax * ce.mCspc2), (int)(ya + day * ce.mCspc2));
+            var xa = (int)(px + CSPC2 * dx * pos + sx);
+            var ya = (int)(py + CSPC2 * dy * pos + sy);
+            return new Point((int)(xa + dax * CSPC2), (int)(ya + day * CSPC2));
         }
 
         public override void SetPoints() {
@@ -55,13 +56,13 @@ namespace Circuit.UI.Active {
             var ce = (ElmOptocoupler)Elm;
 
             // adapted from ChipElm
-            int x0 = Post.A.X + ce.mCspc;
+            int x0 = Post.A.X + CSPC;
             int y0 = Post.A.Y;
-            var r = new Point(x0 - ce.mCspc, y0 - ce.mCspc / 2);
+            var r = new Point(x0 - CSPC, y0 - CSPC / 2);
             var sizeX = 1.5f;
             int sizeY = 2;
-            int xs = (int)(sizeX * ce.mCspc2);
-            int ys = sizeY * ce.mCspc2 - ce.mCspc - 3;
+            int xs = (int)(sizeX * CSPC2);
+            int ys = sizeY * CSPC2 - CSPC - 3;
             mRectPoints = new PointF[] {
                 new Point(r.X, r.Y + 3),
                 new Point(r.X + xs, r.Y + 3),
@@ -72,8 +73,8 @@ namespace Circuit.UI.Active {
             mPosts = new Point[] {
                 getPinPos(0, x0, y0, 0, 1, -0.5, 0, 0, 0),
                 getPinPos(1, x0, y0, 0, 1, -0.5, 0, 0, 0),
-                getPinPos(2, x0, y0, 0, 1, 0.5, 0, xs - ce.mCspc2, 0),
-                getPinPos(3, x0, y0, 0, 1, 0.5, 0, xs - ce.mCspc2, 0)
+                getPinPos(2, x0, y0, 0, 1, 0.5, 0, xs - CSPC2, 0),
+                getPinPos(3, x0, y0, 0, 1, 0.5, 0, xs - CSPC2, 0)
             };
             Elm.SetNodePos(mPosts);
             Post.B = mPosts[2];
