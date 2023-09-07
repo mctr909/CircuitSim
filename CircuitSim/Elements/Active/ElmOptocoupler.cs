@@ -21,8 +21,8 @@ namespace Circuit.Elements.Active {
         public int mCspc2;
         public double[] mCurCounts;
 
-        public Diode mDiode;
-        public Transistor mTransistor;
+        public Diode Diode;
+        public Transistor Transistor;
 
         public ElmOptocoupler() : base(MODEL_STRING, EXTERNAL_NODES) {
             initOptocoupler();
@@ -35,15 +35,15 @@ namespace Circuit.Elements.Active {
         void initOptocoupler() {
             mCspc = 8 * 2;
             mCspc2 = mCspc * 2;
-            mDiode = (Diode)CompElmList[0];
+            Diode = (Diode)CompElmList[0];
 
             var cccs = (ElmCCCS)CompElmList[1].Elm;
             cccs.SetExpr(EXPR);
-            mTransistor = (Transistor)CompElmList[2];
-            ((ElmTransistor)mTransistor.Elm).SetHfe(700);
+            Transistor = (Transistor)CompElmList[2];
+            ((ElmTransistor)Transistor.Elm).SetHfe(700);
             mCurCounts = new double[4];
-            mDiode.ReferenceName = "";
-            mTransistor.ReferenceName = "";
+            Diode.ReferenceName = "";
+            Transistor.ReferenceName = "";
         }
 
         public override void Reset() {

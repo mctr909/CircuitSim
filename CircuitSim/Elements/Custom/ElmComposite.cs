@@ -15,17 +15,11 @@ namespace Circuit.Elements.Custom {
     class ElmComposite : BaseElement {
         /* list of elements contained in this subcircuit */
         public List<BaseUI> CompElmList = new List<BaseUI>();
-        public Point[] Posts;
-
-        public int NumPosts { get; protected set; } = 0;
-
-        public override Point GetNodePos(int n) {
-            return Posts[n];
-        }
 
         /* list of nodes, mapping each one to a list of elements that reference that node */
         List<CircuitNode> mCompNodeList;
         List<VoltageSourceRecord> mVoltageSources;
+        int mNumTerms = 0;
         int mNumNodes = 0;
 
         public ElmComposite() : base() { }
@@ -40,11 +34,11 @@ namespace Circuit.Elements.Custom {
             AllocNodes();
         }
 
-        public override int TermCount { get { return NumPosts; } }
+        public override int TermCount { get { return mNumTerms; } }
 
         public override int AnaVoltageSourceCount { get { return mVoltageSources.Count; } }
 
-        public override int AnaInternalNodeCount { get { return mNumNodes - NumPosts; } }
+        public override int AnaInternalNodeCount { get { return mNumNodes - mNumTerms; } }
 
         public override void Reset() {
             for (int i = 0; i < CompElmList.Count; i++) {
@@ -206,7 +200,7 @@ namespace Circuit.Elements.Custom {
             }
 
             /* Flatten compNodeHash in to compNodeList */
-            NumPosts = externalNodes.Length;
+            mNumTerms = externalNodes.Length;
             for (int i = 0; i < externalNodes.Length; i++) {
                 /* External Nodes First */
                 if (compNodeHash.ContainsKey(externalNodes[i])) {
@@ -220,7 +214,6 @@ namespace Circuit.Elements.Custom {
                 int key = entry.Key;
                 mCompNodeList.Add(compNodeHash[key]);
             }
-
             /* allocate more nodes for sub-elements' internal nodes */
             for (int i = 0; i != CompElmList.Count; i++) {
                 var ce = CompElmList[i];
@@ -235,7 +228,6 @@ namespace Circuit.Elements.Custom {
                     mCompNodeList.Add(cn);
                 }
             }
-
             mNumNodes = mCompNodeList.Count;
 
             /*Console.WriteLine("Dumping compNodeList");

@@ -55,16 +55,6 @@ namespace Circuit.UI.Custom {
 
         bool useEscape() { return (_Flags & FLAG_ESCAPE) != 0; }
 
-        protected void setPost(int n, Point p) {
-            ((ElmComposite)Elm).Posts[n] = p;
-        }
-
-        void setPost(int n, int x, int y) {
-            var ce = (ElmComposite)Elm;
-            ce.Posts[n].X = x;
-            ce.Posts[n].Y = y;
-        }
-
         public override void Delete() {
             var ce = (ElmComposite)Elm;
             for (int i = 0; i < ce.CompElmList.Count; i++) {

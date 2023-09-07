@@ -59,6 +59,21 @@ namespace Circuit.Elements {
             }
         }
 
+        public void SetNodePos(params PointF[] node) {
+            mNodePos = new Point[node.Length];
+            for (int i = 0; i < node.Length; i++) {
+                mNodePos[i].X = (int)node[i].X;
+                mNodePos[i].Y = (int)node[i].Y;
+            }
+        }
+
+        public void SetNodePos(params Point[] node) {
+            mNodePos = new Point[node.Length];
+            for (int i = 0; i < node.Length; i++) {
+                mNodePos[i] = node[i];
+            }
+        }
+
         public void SetNodePos(PointF pos, params PointF[] node) {
             mNodePos = new Point[node.Length + 1];
             mNodePos[0].X = (int)pos.X;
@@ -74,8 +89,7 @@ namespace Circuit.Elements {
             mNodePos[0].X = (int)pos.X;
             mNodePos[0].Y = (int)pos.Y;
             for (int i = 0; i < node.Length; i++) {
-                mNodePos[i + 1].X = node[i].X;
-                mNodePos[i + 1].Y = node[i].Y;
+                mNodePos[i + 1] = node[i];
             }
         }
 
@@ -92,8 +106,7 @@ namespace Circuit.Elements {
         public void SetNodePos(Point[] node, PointF pos) {
             mNodePos = new Point[node.Length + 1];
             for (int i = 0; i < node.Length; i++) {
-                mNodePos[i].X = node[i].X;
-                mNodePos[i].Y = node[i].Y;
+                mNodePos[i] = node[i];
             }
             mNodePos[node.Length].X = (int)pos.X;
             mNodePos[node.Length].Y = (int)pos.Y;
