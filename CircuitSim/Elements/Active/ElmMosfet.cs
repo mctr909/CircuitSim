@@ -6,7 +6,7 @@ namespace Circuit.Elements.Active {
         const int IdxS = 1;
         const int IdxD = 2;
 
-        const double BackwardCompatibilityHfe = 0.02;
+        const double BackwardCompatibilityBeta = 0.02;
         const double DiodeVcrit = 0.6347668814648425;
         const double DiodeVscale = 0.05173;
         const double DiodeLeakage = 1.7143528192808883E-07;
@@ -17,7 +17,7 @@ namespace Circuit.Elements.Active {
         public static double LastBeta;
 
         public static double DefaultBeta {
-            get { return LastBeta == 0 ? BackwardCompatibilityHfe : LastBeta; }
+            get { return LastBeta == 0 ? BackwardCompatibilityBeta : LastBeta; }
         }
 
         public double Vth;
@@ -34,9 +34,9 @@ namespace Circuit.Elements.Active {
         public double Vs { get { return Volts[IdxS]; } }
         public double Vd { get { return Volts[IdxD]; } }
 
+        double mDiodeLastVoltDiff = 0.0;
         int mDiodeNodeS;
         int mDiodeNodeD;
-        double mDiodeLastVoltDiff;
 
         public ElmMosfet(bool pChFlag) : base() {
             Nch = pChFlag ? -1 : 1;
@@ -205,21 +205,10 @@ namespace Circuit.Elements.Active {
                 Circuit.Converged = false;
             }
             voltdiff = v_new;
-            lastVoltDiff = voltdiff;
-
-            /* To prevent a possible singular matrix or other numeric issues, put a tiny conductance
-             * in parallel with each P-N junction. */
-            var gmin = DiodeLeakage * 0.01;
-            if (Circuit.SubIterations > 100) {
-                /* if we have trouble converging, put a conductance in parallel with the diode.
-                 * Gradually increase the conductance value for each iteration. */
-                gmin = Math.Exp(-9 * Math.Log(10) * (1 - Circuit.SubIterations / 3000.0));
-                if (0.1 < gmin) {
-                    gmin = 0.1;
-                }
-            }
+            lastVoltDiff = v_new;
 
             /* regular diode or forward-biased zener */
+            const double gmin = DiodeLeakage * 0.01;
             var eval = Math.Exp(voltdiff * DiodeVdCoef);
             var geq = DiodeVdCoef * DiodeLeakage * eval + gmin;
             var nc = (eval - 1) * DiodeLeakage - geq * voltdiff;
