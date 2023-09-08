@@ -184,7 +184,7 @@ namespace Circuit.UI.Active {
             arr[0] = ((ce.Nch == -1) ? "Pch MOSFET" : "Nch MOSFET") + "(閾値電圧：" + Utils.VoltageText(ce.Nch * ce.Vth) + ")";
             arr[1] = "動作領域：" + (
                 (ce.Mode == 0) ? "遮断" :
-                (ce.Mode == 1) ? "活性" : "飽和"
+                (ce.Mode == 1) ? "線形" : "飽和"
             );
             arr[2] = "Vgs：" + Utils.VoltageText(ce.Vg - (ce.Nch == -1 ? ce.Vd : ce.Vs));
             arr[3] = ((ce.Nch == 1) ? "Vds：" : "Vsd：") + Utils.VoltageText(ce.Vd - ce.Vs);
