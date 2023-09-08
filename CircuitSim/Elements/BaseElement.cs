@@ -11,10 +11,11 @@ namespace Circuit.Elements {
         }
 
         protected int mVoltSource;
-        protected Point[] mNodePos;
 
         #region [property]
         public abstract int TermCount { get; }
+
+        public Point[] NodePos { get; private set; }
 
         public int[] Nodes { get; protected set; }
 
@@ -60,59 +61,57 @@ namespace Circuit.Elements {
         }
 
         public void SetNodePos(params PointF[] node) {
-            mNodePos = new Point[node.Length];
+            NodePos = new Point[node.Length];
             for (int i = 0; i < node.Length; i++) {
-                mNodePos[i].X = (int)node[i].X;
-                mNodePos[i].Y = (int)node[i].Y;
+                NodePos[i].X = (int)node[i].X;
+                NodePos[i].Y = (int)node[i].Y;
             }
         }
 
         public void SetNodePos(params Point[] node) {
-            mNodePos = new Point[node.Length];
+            NodePos = new Point[node.Length];
             for (int i = 0; i < node.Length; i++) {
-                mNodePos[i] = node[i];
+                NodePos[i] = node[i];
             }
         }
 
         public void SetNodePos(PointF pos, params PointF[] node) {
-            mNodePos = new Point[node.Length + 1];
-            mNodePos[0].X = (int)pos.X;
-            mNodePos[0].Y = (int)pos.Y;
+            NodePos = new Point[node.Length + 1];
+            NodePos[0].X = (int)pos.X;
+            NodePos[0].Y = (int)pos.Y;
             for (int i = 0; i < node.Length; i++) {
-                mNodePos[i + 1].X = (int)node[i].X;
-                mNodePos[i + 1].Y = (int)node[i].Y;
+                NodePos[i + 1].X = (int)node[i].X;
+                NodePos[i + 1].Y = (int)node[i].Y;
             }
         }
 
         public void SetNodePos(PointF pos, params Point[] node) {
-            mNodePos = new Point[node.Length + 1];
-            mNodePos[0].X = (int)pos.X;
-            mNodePos[0].Y = (int)pos.Y;
+            NodePos = new Point[node.Length + 1];
+            NodePos[0].X = (int)pos.X;
+            NodePos[0].Y = (int)pos.Y;
             for (int i = 0; i < node.Length; i++) {
-                mNodePos[i + 1] = node[i];
+                NodePos[i + 1] = node[i];
             }
         }
 
         public void SetNodePos(PointF[] node, PointF pos) {
-            mNodePos = new Point[node.Length + 1];
+            NodePos = new Point[node.Length + 1];
             for (int i = 0; i < node.Length; i++) {
-                mNodePos[i].X = (int)node[i].X;
-                mNodePos[i].Y = (int)node[i].Y;
+                NodePos[i].X = (int)node[i].X;
+                NodePos[i].Y = (int)node[i].Y;
             }
-            mNodePos[node.Length].X = (int)pos.X;
-            mNodePos[node.Length].Y = (int)pos.Y;
+            NodePos[node.Length].X = (int)pos.X;
+            NodePos[node.Length].Y = (int)pos.Y;
         }
 
         public void SetNodePos(Point[] node, PointF pos) {
-            mNodePos = new Point[node.Length + 1];
+            NodePos = new Point[node.Length + 1];
             for (int i = 0; i < node.Length; i++) {
-                mNodePos[i] = node[i];
+                NodePos[i] = node[i];
             }
-            mNodePos[node.Length].X = (int)pos.X;
-            mNodePos[node.Length].Y = (int)pos.Y;
+            NodePos[node.Length].X = (int)pos.X;
+            NodePos[node.Length].Y = (int)pos.Y;
         }
-
-        public virtual Point GetNodePos(int n) { return mNodePos[n]; }
 
         public virtual double GetVoltageDiff() { return Volts[0] - Volts[1]; }
 
@@ -188,11 +187,8 @@ namespace Circuit.Elements {
 
         #region [method(Circuit)]
         public int CirGetNodeAtPoint(Point p) {
-            if (TermCount == 2) {
-                return (mNodePos[0].X == p.X && mNodePos[0].Y == p.Y) ? 0 : 1;
-            }
             for (int i = 0; i != TermCount; i++) {
-                var nodePos = GetNodePos(i);
+                var nodePos = NodePos[i];
                 if (nodePos.X == p.X && nodePos.Y == p.Y) {
                     return i;
                 }

@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Drawing;
 
 using Circuit.UI.Custom;
 
 namespace Circuit.Elements.Custom {
     abstract class ElmChip : BaseElement {
         protected bool lastClock;
-
-        public override Point GetNodePos(int n) {
-            return Pins[n].post;
-        }
 
         public Chip.Pin[] Pins { get; protected set; }
 

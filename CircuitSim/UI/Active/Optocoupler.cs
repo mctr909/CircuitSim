@@ -82,14 +82,14 @@ namespace Circuit.UI.Active {
             /* diode */
             mDiode.SetPosition(mPosts[0].X + 10, mPosts[0].Y, mPosts[1].X + 10, mPosts[1].Y);
             mStubs = new Point[4];
-            mStubs[0] = ce.Diode.GetNodePos(0);
-            mStubs[1] = ce.Diode.GetNodePos(1);
+            mStubs[0] = ce.Diode.NodePos[0];
+            mStubs[1] = ce.Diode.NodePos[1];
 
             /* transistor */
             int midp = (mPosts[2].Y + mPosts[3].Y) / 2;
             mTransistor.SetPosition(mPosts[2].X - 18, midp, mPosts[2].X - 6, midp);
-            mStubs[2] = ce.Transistor.GetNodePos(1);
-            mStubs[3] = ce.Transistor.GetNodePos(2);
+            mStubs[2] = ce.Transistor.NodePos[1];
+            mStubs[3] = ce.Transistor.NodePos[2];
 
             /* create little arrows */
             int sx1 = mStubs[0].X;

@@ -1738,7 +1738,7 @@ namespace Circuit {
                 ConstructElm.Draw(g);
                 var ce = ConstructElm.Elm;
                 for (int i = ce.TermCount - 1; 0 <= i; i--) {
-                    var p = ce.GetNodePos(i);
+                    var p = ce.NodePos[i];
                     g.DrawPost(p);
                 }
                 g.DrawHandle(ConstructElm.Post.B);
