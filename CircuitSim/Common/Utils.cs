@@ -359,7 +359,8 @@ namespace Circuit {
         }
 
         static string format(double v, bool isShort, bool sign) {
-            return isShort ? v.ToString("0.##") : v.ToString(sign ? "+0.00;-0.00" : "0.00");
+            var s = double.Parse(v.ToString("g3"));
+            return isShort ? s.ToString("0.##") : s.ToString(sign ? "+0.##;-0.##" : "0.##");
         }
     }
 }

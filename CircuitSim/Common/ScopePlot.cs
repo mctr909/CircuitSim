@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-using Circuit.Forms;
 using Circuit.UI;
 
 namespace Circuit.Common {
     public class ScopePlot {
+        const int SCALE_INFO_WIDTH = 45;
         const int SPEED_MAX = 1024;
         const double SCALE_MIN = 1e-9;
         const double FFT_RANGE = 100.0;
@@ -38,10 +38,8 @@ namespace Circuit.Common {
         int mFlags {
             set {
                 ShowVoltage = (value & 2) != 0;
-                ShowMax = (value & 4) == 0;
                 ShowFreq = (value & 8) != 0;
                 ManualScale = (value & 16) != 0;
-                ShowMin = (value & 256) != 0;
                 ShowScale = (value & 512) != 0;
                 ShowFFT = (value & 1024) != 0;
                 Normarize = (value & 8192) != 0;
@@ -50,10 +48,8 @@ namespace Circuit.Common {
             }
             get {
                 return (ShowVoltage ? 2 : 0)
-                    | (ShowMax ? 0 : 4)
                     | (ShowFreq ? 8 : 0)
                     | (ManualScale ? 16 : 0)
-                    | (ShowMin ? 256 : 0)
                     | (ShowScale ? 512 : 0)
                     | (ShowFFT ? 1024 : 0)
                     | (Normarize ? 8192 : 0)
@@ -112,8 +108,6 @@ namespace Circuit.Common {
         public bool Normarize { get; private set; } = true;
         public bool ManualScale { get; set; }
         public bool ShowScale { get; set; }
-        public bool ShowMax { get; set; }
-        public bool ShowMin { get; set; }
         public bool ShowRMS { get; set; }
         public bool ShowFreq { get; set; }
         public bool ShowVoltage { get; private set; }
@@ -136,6 +130,7 @@ namespace Circuit.Common {
         }
         public void SetRect(Rectangle rect) {
             int w = BoundingBox.Width;
+            rect.Width -= SCALE_INFO_WIDTH;
             BoundingBox = rect;
             if (BoundingBox.Width != w) {
                 ResetGraph();
@@ -327,7 +322,7 @@ namespace Circuit.Common {
                 mSomethingSelected = true;
             }
 
-            if ((ShowMax || ShowMin) && Waves.Count > 0) {
+            if (Waves.Count > 0) {
                 calcMaxAndMin();
             }
 
@@ -379,9 +374,8 @@ namespace Circuit.Common {
             ResetGraph();
             Scale = 0.1;
             Speed = 64;
-            ShowMax = true;
             ShowVoltage = true;
-            ShowScale = ShowFreq = ManualScale = ShowMin = ShowFFT = false;
+            ShowScale = ShowFreq = ManualScale = ShowFFT = false;
         }
         void setPlot(BaseUI ui) {
             if (null == ui) {
@@ -678,8 +672,8 @@ namespace Circuit.Common {
             }
 
             var centerY = (BoundingBox.Height - 1) / 2.0f;
-            double gridMid;
-            double gridMult;
+            double graphMid;
+            double graphMult;
             {
                 /* if we don't have overlapping scopes of different units, we can move zero around.
                  * Put it at the bottom if the scope is never negative. */
@@ -697,11 +691,11 @@ namespace Circuit.Common {
                     mn = -Scale;
                     mShowNegative = true;
                 }
-                gridMid = (mx + mn) * 0.5;
-                gridMult = centerY / gridMax;
-                if (waveIndex == SelectedWave) {
-                    mMainGridMult = gridMult;
-                    mMainGridMid = gridMid;
+                graphMid = (mx + mn) * 0.5;
+                graphMult = centerY / gridMax;
+                if (waveIndex == 0) {
+                    mMainGridMult = graphMult;
+                    mMainGridMid = graphMid;
                 }
 
                 mGridStepY = 1e-12;
@@ -735,25 +729,12 @@ namespace Circuit.Common {
 
                 /* horizontal gridlines */
                 g.DrawColor = minorDiv;
+                var gridStepY = mGridStepY * graphMult;
+                var gridDivY = (int)(centerY / gridStepY);
                 var showGridlines = mGridStepY != 0;
-                for (int ll = -100; ll <= 100; ll++) {
-                    if (ll != 0 && !showGridlines) {
-                        continue;
-                    }
-                    var ly = (float)(centerY - (ll * mGridStepY - gridMid) * gridMult);
-                    if (ly < 0 || BoundingBox.Height <= ly) {
-                        continue;
-                    }
-                    if (ll != 0) {
-                        g.DrawLine(0, ly, BoundingBox.Width - 1, ly);
-                    }
-                }
-                {
-                    var ly = (float)(centerY + gridMid * gridMult);
-                    if (0 <= ly && ly < BoundingBox.Height) {
-                        g.DrawColor = majorDiv;
-                        g.DrawLine(0, ly, BoundingBox.Width - 1, ly);
-                    }
+                for (int ll = -gridDivY; ll <= gridDivY && showGridlines; ll++) {
+                    var ly = (float)(centerY - ll * gridStepY);
+                    g.DrawLine(0, ly, BoundingBox.Width - 1, ly);
                 }
 
                 /* vertical gridlines */
@@ -789,6 +770,17 @@ namespace Circuit.Common {
                         g.DrawLine(lx, 0, lx, BoundingBox.Height - 1);
                     }
                 }
+
+                if (Normarize) {
+                    g.DrawColor = majorDiv;
+                    g.DrawLine(0, centerY, BoundingBox.Width - 1, centerY);
+                } else {
+                    var ly = (float)(centerY + graphMid * graphMult);
+                    if (0 <= ly && ly < BoundingBox.Height) {
+                        g.DrawColor = majorDiv;
+                        g.DrawLine(0, ly, BoundingBox.Width - 1, ly);
+                    }
+                }
             }
 
             var idxBegin = wave.StartIndex(BoundingBox.Width);
@@ -799,7 +791,7 @@ namespace Circuit.Common {
             var rect = new PointF[BoundingBox.Width * 2 + 1];
             for (int x = 0; x != BoundingBox.Width; x++) {
                 var idx = (x + idxBegin) & (mScopePointCount - 1);
-                var v = (float)(gridMult * (vMax[idx] - gridMid));
+                var v = (float)(graphMult * (vMax[idx] - graphMid));
                 var y = centerY - v - 0.5f;
                 y = Math.Max(yMin, y);
                 y = Math.Min(yMax, y);
@@ -808,7 +800,7 @@ namespace Circuit.Common {
             }
             for (int x = BoundingBox.Width - 1, i = BoundingBox.Width; 0 <= x; x--, i++) {
                 var idx = (x + idxBegin) & (mScopePointCount - 1);
-                var v = (float)(gridMult * (vMin[idx] - gridMid));
+                var v = (float)(graphMult * (vMin[idx] - graphMid));
                 var y = centerY - v + 0.5f;
                 y = Math.Max(yMin, y);
                 y = Math.Min(yMax, y);
@@ -953,13 +945,12 @@ namespace Circuit.Common {
                     g.DrawLeftText("H=" + Utils.TimeText(mGridStepX) + "/div" + vScaleText, 0, textY);
                     textY += 12;
                 }
-                if (ShowMax) {
-                    g.DrawLeftText(Utils.VoltageText(mMaxValue), 0, textY);
-                    textY += 12;
-                }
-                if (ShowMin) {
-                    int ym = BoundingBox.Height - 8;
-                    g.DrawLeftText(Utils.VoltageText(mMinValue), 0, ym);
+                g.DrawLeftText(Utils.VoltageText(mMaxValue), BoundingBox.Width, 6);
+                int ym = BoundingBox.Height - 6;
+                g.DrawLeftText(Utils.VoltageText(mMinValue), BoundingBox.Width, ym);
+                if (Normarize) {
+                    var centerY = (BoundingBox.Height - 1) / 2.0f;
+                    g.DrawLeftText(Utils.VoltageText(mMainGridMid), BoundingBox.Width, centerY);
                 }
             }
 

@@ -7,8 +7,6 @@ using Circuit.UI;
 
 namespace Circuit.Forms {
     public partial class ScopeForm : Form {
-        const int INFO_WIDTH = 60;
-
         public static int PlotCount { get; set; } = 0;
 
         static ScopePlot[] mPlots = new ScopePlot[20];
@@ -177,19 +175,7 @@ namespace Circuit.Forms {
 
             if (Circuit.StopMessage != null) {
                 g.DrawLeftText(Circuit.StopMessage, 10, -10);
-            } else {
-                int x;
-                if (ct == 0) {
-                    x = 0;
-                } else {
-                    x = mPlots[ct - 1].Right + 4;
-                }
-                var time = "時間：" + Utils.TimeText(Circuit.Time);
-                var unit = "単位：" + Utils.TimeText(ControlPanel.TimeStep);
-                g.DrawLeftText(time, x, 15);
-                g.DrawLeftText(unit, x, 30);
             }
-
             Flush();
         }
 
@@ -228,11 +214,7 @@ namespace Circuit.Forms {
                 scopeColCount[mPlots[i].Index]++;
             }
             int colct = index + 1;
-            int iw = INFO_WIDTH;
-            if (colct <= 2) {
-                iw = iw * 3 / 2;
-            }
-            int w = (width - iw) / colct;
+            int w = width / colct;
             int marg = 10;
             if (w < marg * 2) {
                 w = marg * 2;

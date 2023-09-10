@@ -1,7 +1,7 @@
 ﻿namespace Circuit.Elements.Active {
     class ElmAnalogSwitch : BaseElement {
-        public double Ron = 20;
-        public double Roff = 1e10;
+        public double Ron = 100;
+        public double Roff = 1e8;
         public bool Invert;
 
         double mResistance;

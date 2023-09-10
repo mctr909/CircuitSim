@@ -37,28 +37,24 @@ namespace Circuit.Forms {
             if (mPlot.SelectedWave < 0 || cmbColor.Items.Count <= mPlot.SelectedWave) {
                 return;
             }
+            cmbColor.SelectedIndex = (int)mPlot.Waves[mPlot.SelectedWave].Color;
             chkScale.Checked = mPlot.ShowScale;
-            chkPeak.Checked = mPlot.ShowMax;
-            chkNegPeak.Checked = mPlot.ShowMin;
-            
-            chkScale.Enabled = mPlot.ShowVoltage;
-            chkPeak.Enabled = mPlot.ShowVoltage;
-            chkNegPeak.Enabled = mPlot.ShowVoltage;
-            cmbColor.Enabled = mPlot.ShowVoltage;
-            lblColor.Enabled = mPlot.ShowVoltage;
-
             chkRms.Checked = mPlot.ShowRMS;
             chkFreq.Checked = mPlot.ShowFreq;
 
             tbSpeed.Value = tbSpeed.Maximum - (int)Math.Round(Math.Log(mPlot.Speed) / Math.Log(2));
             txtManualScale.Text = ElementInfoDialog.UnitString(null, mPlot.Scale);
             chkManualScale.Checked = mPlot.ManualScale;
+
+            cmbColor.Enabled = mPlot.ShowVoltage;
+            chkScale.Enabled = mPlot.ShowVoltage;
+            lblColor.Enabled = mPlot.ShowVoltage;
             txtManualScale.Enabled = mPlot.ManualScale;
             chkLogSpectrum.Checked = mPlot.LogSpectrum;
             chkLogSpectrum.Enabled = mPlot.ShowFFT;
+
             txtLabel.Text = mPlot.Text;
 
-            cmbColor.SelectedIndex = (int)mPlot.Waves[mPlot.SelectedWave].Color;
             setScopeSpeedLabel();
         }
 
@@ -98,14 +94,6 @@ namespace Circuit.Forms {
 
         private void chkScale_CheckedChanged(object sender, EventArgs e) {
             mPlot.ShowScale = chkScale.Checked;
-        }
-
-        private void chkPeak_CheckedChanged(object sender, EventArgs e) {
-            mPlot.ShowMax = chkPeak.Checked;
-        }
-
-        private void chkNegPeak_CheckedChanged(object sender, EventArgs e) {
-            mPlot.ShowMin = chkNegPeak.Checked;
         }
 
         private void chkRms_CheckedChanged(object sender, EventArgs e) {

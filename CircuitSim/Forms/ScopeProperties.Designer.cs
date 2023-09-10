@@ -25,8 +25,6 @@
         private void InitializeComponent() {
             this.chkScale = new System.Windows.Forms.CheckBox();
             this.chkManualScale = new System.Windows.Forms.CheckBox();
-            this.chkPeak = new System.Windows.Forms.CheckBox();
-            this.chkNegPeak = new System.Windows.Forms.CheckBox();
             this.chkFreq = new System.Windows.Forms.CheckBox();
             this.chkLogSpectrum = new System.Windows.Forms.CheckBox();
             this.chkRms = new System.Windows.Forms.CheckBox();
@@ -70,32 +68,10 @@
             this.chkManualScale.UseVisualStyleBackColor = true;
             this.chkManualScale.CheckedChanged += new System.EventHandler(this.chkManualScale_CheckedChanged);
             // 
-            // chkPeak
-            // 
-            this.chkPeak.AutoSize = true;
-            this.chkPeak.Location = new System.Drawing.Point(96, 16);
-            this.chkPeak.Name = "chkPeak";
-            this.chkPeak.Size = new System.Drawing.Size(60, 16);
-            this.chkPeak.TabIndex = 3;
-            this.chkPeak.Text = "最大値";
-            this.chkPeak.UseVisualStyleBackColor = true;
-            this.chkPeak.CheckedChanged += new System.EventHandler(this.chkPeak_CheckedChanged);
-            // 
-            // chkNegPeak
-            // 
-            this.chkNegPeak.AutoSize = true;
-            this.chkNegPeak.Location = new System.Drawing.Point(96, 38);
-            this.chkNegPeak.Name = "chkNegPeak";
-            this.chkNegPeak.Size = new System.Drawing.Size(60, 16);
-            this.chkNegPeak.TabIndex = 4;
-            this.chkNegPeak.Text = "最小値";
-            this.chkNegPeak.UseVisualStyleBackColor = true;
-            this.chkNegPeak.CheckedChanged += new System.EventHandler(this.chkNegPeak_CheckedChanged);
-            // 
             // chkFreq
             // 
             this.chkFreq.AutoSize = true;
-            this.chkFreq.Location = new System.Drawing.Point(6, 38);
+            this.chkFreq.Location = new System.Drawing.Point(96, 16);
             this.chkFreq.Name = "chkFreq";
             this.chkFreq.Size = new System.Drawing.Size(60, 16);
             this.chkFreq.TabIndex = 5;
@@ -117,7 +93,7 @@
             // chkRms
             // 
             this.chkRms.AutoSize = true;
-            this.chkRms.Location = new System.Drawing.Point(96, 60);
+            this.chkRms.Location = new System.Drawing.Point(96, 38);
             this.chkRms.Name = "chkRms";
             this.chkRms.Size = new System.Drawing.Size(48, 16);
             this.chkRms.TabIndex = 8;
@@ -179,7 +155,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 67);
+            this.label1.Location = new System.Drawing.Point(6, 45);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(79, 12);
             this.label1.TabIndex = 10;
@@ -187,7 +163,7 @@
             // 
             // txtLabel
             // 
-            this.txtLabel.Location = new System.Drawing.Point(6, 82);
+            this.txtLabel.Location = new System.Drawing.Point(6, 60);
             this.txtLabel.Name = "txtLabel";
             this.txtLabel.Size = new System.Drawing.Size(180, 19);
             this.txtLabel.TabIndex = 9;
@@ -231,11 +207,9 @@
             this.grpDispValue.Controls.Add(this.chkScale);
             this.grpDispValue.Controls.Add(this.chkFreq);
             this.grpDispValue.Controls.Add(this.chkRms);
-            this.grpDispValue.Controls.Add(this.chkNegPeak);
-            this.grpDispValue.Controls.Add(this.chkPeak);
             this.grpDispValue.Location = new System.Drawing.Point(4, 183);
             this.grpDispValue.Name = "grpDispValue";
-            this.grpDispValue.Size = new System.Drawing.Size(195, 109);
+            this.grpDispValue.Size = new System.Drawing.Size(195, 86);
             this.grpDispValue.TabIndex = 11;
             this.grpDispValue.TabStop = false;
             this.grpDispValue.Text = "表示する値";
@@ -256,7 +230,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(203, 297);
+            this.ClientSize = new System.Drawing.Size(203, 272);
             this.Controls.Add(this.grpScale);
             this.Controls.Add(this.grpDispValue);
             this.Controls.Add(this.grpDispGraph);
@@ -279,8 +253,6 @@
 
         private System.Windows.Forms.CheckBox chkScale;
         private System.Windows.Forms.CheckBox chkManualScale;
-        private System.Windows.Forms.CheckBox chkPeak;
-        private System.Windows.Forms.CheckBox chkNegPeak;
         private System.Windows.Forms.CheckBox chkFreq;
         private System.Windows.Forms.CheckBox chkLogSpectrum;
         private System.Windows.Forms.CheckBox chkRms;
