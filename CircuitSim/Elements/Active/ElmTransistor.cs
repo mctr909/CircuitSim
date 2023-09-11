@@ -47,7 +47,7 @@ namespace Circuit.Elements.Active {
 
         public override int TermCount { get { return 3; } }
 
-        public override double GetVoltageDiff() { return Volts[IdxC] - Volts[IdxE]; }
+        public override double GetVoltageDiff() { return Volts[IdxB] - Volts[IdxE]; }
 
         public void SetHfe(double hfe) {
             Hfe = hfe;
