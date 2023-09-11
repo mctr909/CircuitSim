@@ -518,7 +518,7 @@ namespace Circuit.UI.Input {
                    || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_DIPOLE
                    || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_POSITIVE
                    || elm.WaveForm == ElmVoltage.WAVEFORM.PWM_NEGATIVE) {
-                    if (r == 7) {
+                    if (r == 6) {
                         elm.DutyCycle = ei.Value * .01;
                     }
                 }
@@ -549,14 +549,20 @@ namespace Circuit.UI.Input {
             case VALUE_NAME_AMP:
                 adj.MinValue = 0;
                 adj.MaxValue = 5;
+                trb.Minimum = 0;
+                trb.Maximum = 100;
                 break;
             case VALUE_NAME_BIAS:
                 adj.MinValue = 0;
                 adj.MaxValue = 5;
+                trb.Minimum = 0;
+                trb.Maximum = 100;
                 break;
             case VALUE_NAME_HZ:
                 adj.MinValue = 0;
                 adj.MaxValue = 1000;
+                trb.Minimum = 0;
+                trb.Maximum = 100;
                 break;
             case VALUE_NAME_PHASE:
                 adj.MinValue = -180;
@@ -573,6 +579,8 @@ namespace Circuit.UI.Input {
             case VALUE_NAME_DUTY:
                 adj.MinValue = 0;
                 adj.MaxValue = 100;
+                trb.Minimum = 0;
+                trb.Maximum = 100;
                 break;
             }
             return new EventHandler((s, e) => {
@@ -595,9 +603,11 @@ namespace Circuit.UI.Input {
                     setLinkedValues<Voltage>(VoltageLink.PHASE_OFFSET, val);
                     break;
                 case VALUE_NAME_DUTY:
-                    e1.DutyCycle = val;
+                    e1.DutyCycle = val * 0.01;
                     break;
                 }
+                setWaveform();
+                setTextPos();
             });
         }
     }
