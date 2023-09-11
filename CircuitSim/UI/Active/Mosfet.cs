@@ -210,6 +210,7 @@ namespace Circuit.UI.Active {
                 return new ElementInfo("閾値電圧", ce.Nch * ce.Vth);
             }
             if (r == 2) {
+                // 2Vds/(Ron*(Vgs-Vth)^2)
                 return new ElementInfo("β", ce.Beta);
             }
             if (r == 3) {
