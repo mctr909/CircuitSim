@@ -914,10 +914,8 @@ namespace Circuit {
                 mElmList[i].CirPrepareIteration();
             }
 
-            int subiter;
-            for (subiter = 0; subiter < SubIterMax; subiter++) {
+            for (SubIterations = 0; SubIterations < SubIterMax; SubIterations++) {
                 Converged = true;
-                SubIterations = subiter;
 
                 Array.Copy(mOrigRightSide, RightSide, mMatrixSize);
                 for (int i = 0; i < mMatrixSize; i++) {
@@ -943,7 +941,7 @@ namespace Circuit {
                     }
                 }
 
-                if (Converged && subiter > 0) {
+                if (Converged && SubIterations > 0) {
                     break;
                 }
 
@@ -978,7 +976,7 @@ namespace Circuit {
                 }
             }
 
-            if (subiter == SubIterMax) {
+            if (SubIterations == SubIterMax) {
                 stop("計算が収束しませんでした");
                 return false;
             }
