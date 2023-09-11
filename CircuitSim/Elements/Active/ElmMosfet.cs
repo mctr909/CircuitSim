@@ -6,7 +6,7 @@ namespace Circuit.Elements.Active {
         const int IdxS = 1;
         const int IdxD = 2;
 
-        const double BackwardCompatibilityBeta = 0.02;
+        const double BackwardCompatibilityBeta = 1;
         const double DiodeVcrit = 0.6347668814648425;
         const double DiodeVscale = 0.05173;
         const double DiodeLeakage = 1.7143528192808883E-07;

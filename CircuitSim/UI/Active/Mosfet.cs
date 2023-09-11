@@ -187,10 +187,12 @@ namespace Circuit.UI.Active {
                 (ce.Mode == 1) ? "線形" : "飽和"
             );
             arr[2] = "Vgs：" + Utils.VoltageText(ce.Vg - (ce.Nch == -1 ? ce.Vd : ce.Vs));
-            arr[3] = ((ce.Nch == 1) ? "Vds：" : "Vsd：") + Utils.VoltageText(ce.Vd - ce.Vs);
+            var vds = ce.Vd - ce.Vs;
+            arr[3] = ((ce.Nch == 1) ? "Vds：" : "Vsd：") + Utils.VoltageText(vds);
             arr[4] = ((ce.Nch == 1) ? "Ids：" : "Isd：") + Utils.CurrentText(ce.Current);
-            arr[5] = "gm：" + Utils.UnitText(ce.Gm, "A/V");
-            arr[6] = "Ib：" + Utils.UnitText(
+            arr[5] = "R：" + Utils.UnitText(vds / ce.Current, CirSimForm.OHM_TEXT);
+            arr[6] = "gm：" + Utils.UnitText(ce.Gm, "A/V");
+            arr[7] = "Ib：" + Utils.UnitText(
                 ce.BodyTerminal == 1 ? -ce.DiodeCurrent1 :
                 ce.BodyTerminal == 2 ? ce.DiodeCurrent2 :
                 -ce.Nch * (ce.DiodeCurrent1 + ce.DiodeCurrent2), "A");
