@@ -33,7 +33,6 @@ namespace Circuit {
     class PathInfo {
         public enum TYPE {
             VOLTAGE,
-            CURRENT,
             INDUCTOR,
             CAPACITOR,
             SHORT
@@ -76,10 +75,11 @@ namespace Circuit {
                 }
                 switch (mType) {
                 case TYPE.INDUCTOR:
-                    break;
-                case TYPE.CURRENT:
                     /* inductors need a path free of current sources */
-                    continue;
+                    if (cee is ElmCurrent) {
+                        continue;
+                    }
+                    break;
                 case TYPE.VOLTAGE:
                     /* when checking for voltage loops, we only care about voltage sources/wires/ground */
                     if (!(cee.IsWire || (cee is ElmVoltage) || (cee is ElmGround))) {
@@ -123,7 +123,7 @@ namespace Circuit {
                     return true;
                 }
 
-                if (mType == TYPE.INDUCTOR) {
+                if (mType == TYPE.INDUCTOR && (cee is ElmInductor)) {
                     /* inductors can use paths with other inductors of matching current */
                     double c = cee.Current;
                     if (nodeA == 0) {
@@ -834,7 +834,7 @@ namespace Circuit {
                 /* look for current sources with no current path */
                 if (ce is ElmCurrent) {
                     var cur = (ElmCurrent)ce;
-                    var fpi = new PathInfo(PathInfo.TYPE.CURRENT, ce, ce.Nodes[1], mElmList, Nodes.Count);
+                    var fpi = new PathInfo(PathInfo.TYPE.INDUCTOR, ce, ce.Nodes[1], mElmList, Nodes.Count);
                     if (!fpi.FindPath(ce.Nodes[0])) {
                         cur.stampCurrentSource(true);
                     } else {
