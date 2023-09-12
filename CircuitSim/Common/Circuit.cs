@@ -6,7 +6,6 @@ using Circuit.Elements;
 using Circuit.Elements.Passive;
 using Circuit.Elements.Input;
 using Circuit.Elements.Output;
-using Circuit.Forms;
 
 namespace Circuit {
     class CircuitNode {
@@ -33,10 +32,11 @@ namespace Circuit {
 
     class PathInfo {
         public enum TYPE {
-            INDUCTOR = 1,
-            VOLTAGE = 2,
-            SHORT = 3,
-            CAPACITOR_V = 4
+            VOLTAGE,
+            CURRENT,
+            INDUCTOR,
+            CAPACITOR,
+            SHORT
         }
 
         TYPE mType;
@@ -76,11 +76,10 @@ namespace Circuit {
                 }
                 switch (mType) {
                 case TYPE.INDUCTOR:
-                    /* inductors need a path free of current sources */
-                    if (cee is ElmCurrent) {
-                        continue;
-                    }
                     break;
+                case TYPE.CURRENT:
+                    /* inductors need a path free of current sources */
+                    continue;
                 case TYPE.VOLTAGE:
                     /* when checking for voltage loops, we only care about voltage sources/wires/ground */
                     if (!(cee.IsWire || (cee is ElmVoltage) || (cee is ElmGround))) {
@@ -93,7 +92,7 @@ namespace Circuit {
                         continue;
                     }
                     break;
-                case TYPE.CAPACITOR_V:
+                case TYPE.CAPACITOR:
                     /* checking for capacitor/voltage source loops */
                     if (!(cee.IsWire || (cee is ElmCapacitor) || (cee is ElmVoltage))) {
                         continue;
@@ -124,7 +123,7 @@ namespace Circuit {
                     return true;
                 }
 
-                if (mType == TYPE.INDUCTOR && (cee is ElmInductor)) {
+                if (mType == TYPE.INDUCTOR) {
                     /* inductors can use paths with other inductors of matching current */
                     double c = cee.Current;
                     if (nodeA == 0) {
@@ -835,7 +834,7 @@ namespace Circuit {
                 /* look for current sources with no current path */
                 if (ce is ElmCurrent) {
                     var cur = (ElmCurrent)ce;
-                    var fpi = new PathInfo(PathInfo.TYPE.INDUCTOR, ce, ce.Nodes[1], mElmList, Nodes.Count);
+                    var fpi = new PathInfo(PathInfo.TYPE.CURRENT, ce, ce.Nodes[1], mElmList, Nodes.Count);
                     if (!fpi.FindPath(ce.Nodes[0])) {
                         cur.stampCurrentSource(true);
                     } else {
@@ -885,7 +884,7 @@ namespace Circuit {
                         /* another capacitor with a nonzero voltage; in that case we will get oscillation unless
                         /* we reset both capacitors to have the same voltage. Rather than check for that, we just
                         /* give an error. */
-                        fpi = new PathInfo(PathInfo.TYPE.CAPACITOR_V, ce, ce.Nodes[1], mElmList, Nodes.Count);
+                        fpi = new PathInfo(PathInfo.TYPE.CAPACITOR, ce, ce.Nodes[1], mElmList, Nodes.Count);
                         if (fpi.FindPath(ce.Nodes[0])) {
                             Stop("Capacitor loop with no resistance!", ce);
                             return;
