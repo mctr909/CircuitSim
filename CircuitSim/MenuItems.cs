@@ -136,16 +136,18 @@ namespace Circuit {
 
         SHORTCUT shortcut(DUMP_ID id) {
             switch (id) {
-            case DUMP_ID.WIRE:
-                return new SHORTCUT(Keys.F1, false);
             case DUMP_ID.RESISTOR:
-                return new SHORTCUT(Keys.F2, false);
+                return new SHORTCUT(Keys.F1, false);
             case DUMP_ID.CAPACITOR:
+                return new SHORTCUT(Keys.F2, false);
+            case DUMP_ID.CAPACITOR_POLAR:
                 return new SHORTCUT(Keys.F3, false);
             case DUMP_ID.INDUCTOR:
                 return new SHORTCUT(Keys.F4, false);
-            case DUMP_ID.GROUND:
+            case DUMP_ID.WIRE:
                 return new SHORTCUT(Keys.F5, false);
+            case DUMP_ID.GROUND:
+                return new SHORTCUT(Keys.F6, false);
             case DUMP_ID.INVALID:
             default:
                 return new SHORTCUT();
@@ -277,14 +279,14 @@ namespace Circuit {
             var basicMenuBar = new ToolStripMenuItem();
             basicMenuBar.Text = "基本(B)";
             basicMenuBar.Font = menuFont;
-            tsmWire = addElementItem(basicMenuBar, "配線", DUMP_ID.WIRE);
-            addElementItem(basicMenuBar, "抵抗", DUMP_ID.RESISTOR);
-            addElementItem(basicMenuBar, "コンデンサ", DUMP_ID.CAPACITOR);
-            addElementItem(basicMenuBar, "コイル", DUMP_ID.INDUCTOR);
+            tsmWire = addElementItem(basicMenuBar, "抵抗", DUMP_ID.RESISTOR);
+            addElementItem(basicMenuBar, "キャパシタ", DUMP_ID.CAPACITOR);
+            addElementItem(basicMenuBar, "キャパシタ(有極性)", DUMP_ID.CAPACITOR_POLAR);
+            addElementItem(basicMenuBar, "インダクタ", DUMP_ID.INDUCTOR);
+            addElementItem(basicMenuBar, "配線", DUMP_ID.WIRE);
             addElementItem(basicMenuBar, "接地", DUMP_ID.GROUND);
             basicMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(basicMenuBar, "可変抵抗", DUMP_ID.POT);
-            addElementItem(basicMenuBar, "有極性コンデンサ", DUMP_ID.CAPACITOR_POLAR);
             addElementItem(basicMenuBar, "トランス", DUMP_ID.TRANSFORMER);
             basicMenuBar.DropDownItems.Add(new ToolStripSeparator());
             addElementItem(basicMenuBar, "矩形", DUMP_ID.BOX);
