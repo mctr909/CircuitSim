@@ -852,39 +852,13 @@ namespace Circuit {
                             return;
                         }
                     }
-                    if (ce is ElmSwitch) {
-                        /* for switch we need to do extra work to look for wire loops */
-                        var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Nodes[0], mElmList, Nodes.Count);
-                        if (fpi.FindPath(ce.Nodes[0])) {
-                            Stop("switch/wire loop with no resistance!", ce);
-                            return;
-                        }
-                    }
-                    if (ce.IsWire && !(ce is ElmWire)) {
-                        /* for switch we need to do extra work to look for wire loops */
-                        var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Nodes[0], mElmList, Nodes.Count);
-                        if (fpi.FindPath(ce.Nodes[0])) {
-                            Stop("wire loop with no resistance!", ce);
-                            return;
-                        }
-                    }
                 } else {
                     /* look for path from rail to ground */
                     if (ce is ElmRail || ce is ElmLogicInput) {
                         var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Nodes[0], mElmList, Nodes.Count);
                         if (fpi.FindPath(0)) {
-                            Stop("Path to ground with no resistance!", ce);
+                            Stop("Voltage source/wire loop with no resistance!", ce);
                             return;
-                        }
-                    }
-                    if (ce is ElmSwitchMulti) {
-                        /* for switch we need to do extra work to look for wire loops */
-                        var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Nodes[0], mElmList, Nodes.Count);
-                        for (int j = 1; j < ce.TermCount; j++) {
-                            if (ce.AnaGetConnection(0, j) && fpi.FindPath(ce.Nodes[j])) {
-                                Stop("switch/wire loop with no resistance!", ce);
-                                return;
-                            }
                         }
                     }
                 }
