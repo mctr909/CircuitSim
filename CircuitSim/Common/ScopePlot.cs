@@ -9,7 +9,7 @@ namespace Circuit.Common {
         const int SCALE_INFO_WIDTH = 45;
         const int SPEED_MAX = 1024;
         const double SCALE_MIN = 1e-9;
-        const double FFT_RANGE = 100.0;
+        const double FFT_RANGE = 60.0;
         static readonly Color[] COLORS = {
             Color.FromArgb(0xCF, 0x00, 0x00), //RED,
             Color.FromArgb(0x00, 0xCF, 0x00), //GREEN,
