@@ -33,17 +33,17 @@ namespace Circuit.Elements.Input {
 
         public override int TermCount { get { return 1; } }
 
-        public override int AnaVoltageSourceCount { get { return 1; } }
+        public override int VoltageSourceCount { get { return 1; } }
 
         public override double GetVoltageDiff() { return Volts[0]; }
 
-        public override bool AnaHasGroundConnection(int n1) { return true; }
+        public override bool HasGroundConnection(int n1) { return true; }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             Circuit.StampVoltageSource(0, Nodes[0], mVoltSource);
         }
 
-        public override void CirDoIteration() {
+        public override void DoIteration() {
             var deltaT = Circuit.Time - mLastTime;
             var signalAmplitude = Math.Sin(2 * Math.PI * (Circuit.Time - mFreqTimeZero) * Signalfreq);
             mCounter += (CarrierFreq + (signalAmplitude * Deviation)) * deltaT;

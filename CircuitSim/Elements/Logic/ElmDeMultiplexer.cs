@@ -15,7 +15,7 @@ namespace Circuit.Elements.Logic {
 
         public override int TermCount { get { return mqPin + 1; } }
 
-        public override int AnaVoltageSourceCount { get { return mOutputCount; } }
+        public override int VoltageSourceCount { get { return mOutputCount; } }
 
         public override void SetupPins(Chip chip) {
             mOutputCount = 1 << mSelectBitCount;

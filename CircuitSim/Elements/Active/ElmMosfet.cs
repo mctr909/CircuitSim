@@ -59,9 +59,9 @@ namespace Circuit.Elements.Active {
             mDiodeLastVoltDiff = 0.0;
         }
 
-        public override bool AnaGetConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
+        public override bool GetConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             BodyTerminal = (Nch < 0) ? IdxD : IdxS;
             mDiodeNodeS = Nodes[IdxS];
             mDiodeNodeD = Nodes[IdxD];
@@ -69,7 +69,7 @@ namespace Circuit.Elements.Active {
             Circuit.RowInfo[Nodes[IdxD] - 1].LeftChanges = true;
         }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
                 return 0;
             }
@@ -82,7 +82,7 @@ namespace Circuit.Elements.Active {
             return -Current + DiodeCurrent2;
         }
 
-        public override void CirDoIteration() {
+        public override void DoIteration() {
             /* ドレインソース間電圧が負の場合
              * ドレインとソースを入れ替える
              * (電流の計算を単純化するため) */

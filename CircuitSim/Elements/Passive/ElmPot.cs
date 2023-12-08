@@ -23,7 +23,7 @@
             base.Reset();
         }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             Resistance1 = MaxResistance * Position;
             Resistance2 = MaxResistance * (1 - Position);
             var g1 = 1.0 / Resistance1;
@@ -41,7 +41,7 @@
             Circuit.Matrix[n1, n2] -= g2;
         }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
                 return -Current1;
             }
@@ -51,7 +51,7 @@
             return -Current3;
         }
 
-        public override void CirSetVoltage(int n, double c) {
+        public override void SetVoltage(int n, double c) {
             Volts[n] = c;
             if (0.0 < Resistance1) { // avoid NaN
                 Current1 = (Volts[V_L] - Volts[V_S]) / Resistance1;

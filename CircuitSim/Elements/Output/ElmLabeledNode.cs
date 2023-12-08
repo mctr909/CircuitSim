@@ -18,12 +18,12 @@ namespace Circuit.Elements.Output {
 
         public override int TermCount { get { return 1; } }
 
-        public override int AnaConnectionNodeCount { get { return 2; } }
+        public override int ConnectionNodeCount { get { return 2; } }
 
         // this is basically a wire, since it just connects two nodes together
         public override bool IsWire { get { return true; } }
 
-        public override int AnaInternalNodeCount {
+        public override int InternalNodeCount {
             get {
                 // this can happen at startup
                 if (mNodeList == null) {
@@ -40,11 +40,11 @@ namespace Circuit.Elements.Output {
             }
         }
 
-        public override int AnaVoltageSourceCount { get { return 1; } }
+        public override int VoltageSourceCount { get { return 1; } }
 
         public override double GetVoltageDiff() { return Volts[0]; }
 
-        public override double CirGetCurrentIntoNode(int n) { return -Current; }
+        public override double GetCurrentIntoNode(int n) { return -Current; }
 
         public static void ResetNodeList() {
             mNodeList = new Dictionary<string, int>();
@@ -52,19 +52,19 @@ namespace Circuit.Elements.Output {
 
         // get connection node (which is the same as regular nodes for all elements but this one).
         // node 0 is the terminal, node 1 is the internal node shared by all nodes with same name
-        public override int AnaGetConnectionNode(int n) {
+        public override int GetConnectionNode(int n) {
             if (n == 0) {
                 return Nodes[0];
             }
             return mNodeNumber;
         }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             Circuit.StampVoltageSource(mNodeNumber, Nodes[0], mVoltSource, 0);
         }
 
-        public override void AnaSetNode(int p, int n) {
-            base.AnaSetNode(p, n);
+        public override void SetNode(int p, int n) {
+            base.SetNode(p, n);
             if (p == 1) {
                 // assign new node
                 mNodeList.Add(Text, n);
@@ -72,9 +72,9 @@ namespace Circuit.Elements.Output {
             }
         }
 
-        public override void CirSetCurrent(int x, double c) { Current = -c; }
+        public override void SetCurrent(int x, double c) { Current = -c; }
 
-        public override void CirSetVoltage(int n, double c) {
+        public override void SetVoltage(int n, double c) {
             if (n == 0) {
                 Volts[0] = c;
             }

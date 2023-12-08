@@ -6,15 +6,15 @@ namespace Circuit.Elements.Passive {
 
         public override bool IsWire { get { return true; } }
 
-        public override int AnaVoltageSourceCount { get { return 1; } }
+        public override int VoltageSourceCount { get { return 1; } }
 
         public override int TermCount { get { return 1 + ThrowCount; } }
 
-        public override bool AnaGetConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             return ComparePair(n1, n2, 0, 1 + Position);
         }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             var n0 = Nodes[0] - 1;
             var n1 = Nodes[Position + 1] - 1;
             int vn = Circuit.Nodes.Count + mVoltSource - 1;
@@ -24,7 +24,7 @@ namespace Circuit.Elements.Passive {
             Circuit.Matrix[n1, vn] -= 1;
         }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
                 return -Current;
             }

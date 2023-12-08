@@ -12,7 +12,7 @@ namespace Circuit.Elements.Logic {
 
         public override int TermCount { get { return Bits * 2 + 1; } }
 
-        public override int AnaVoltageSourceCount { get { return Bits; } }
+        public override int VoltageSourceCount { get { return Bits; } }
 
         public override bool NeedsBits() { return true; }
 

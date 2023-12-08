@@ -10,7 +10,7 @@
 
         double mLastVd;
 
-        public override int AnaVoltageSourceCount { get { return 1; } }
+        public override int VoltageSourceCount { get { return 1; } }
 
         public override int TermCount { get { return 3; } }
 
@@ -18,24 +18,24 @@
 
         /* there is no current path through the op-amp inputs,
          * but there is an indirect path through the output to ground. */
-        public override bool AnaGetConnection(int n1, int n2) { return false; }
+        public override bool GetConnection(int n1, int n2) { return false; }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             int vn = Circuit.Nodes.Count + mVoltSource;
             Circuit.StampNonLinear(vn);
             Circuit.StampMatrix(Nodes[2], vn, 1);
         }
 
-        public override bool AnaHasGroundConnection(int n1) { return n1 == 2; }
+        public override bool HasGroundConnection(int n1) { return n1 == 2; }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 2) {
                 return -Current;
             }
             return 0;
         }
 
-        public override void CirDoIteration() {
+        public override void DoIteration() {
             var vd = Volts[V_P] - Volts[V_N];
             double dx;
             double x;

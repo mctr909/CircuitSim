@@ -19,11 +19,11 @@ namespace Circuit.Elements.Gate {
 
         public override int TermCount { get { return 2; } }
 
-        public override int AnaVoltageSourceCount { get { return 1; } }
+        public override int VoltageSourceCount { get { return 1; } }
 
         public override double GetVoltageDiff() { return Volts[0]; }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 1) {
                 return Current;
             }
@@ -32,19 +32,19 @@ namespace Circuit.Elements.Gate {
 
         /* there is no current path through the inverter input,
          * but there is an indirect path through the output to ground. */
-        public override bool AnaGetConnection(int n1, int n2) { return false; }
+        public override bool GetConnection(int n1, int n2) { return false; }
 
-        public override bool AnaHasGroundConnection(int n1) { return n1 == 1; }
+        public override bool HasGroundConnection(int n1) { return n1 == 1; }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             Circuit.StampVoltageSource(0, Nodes[1], mVoltSource);
         }
 
-        public override void CirPrepareIteration() {
+        public override void PrepareIteration() {
             mLastOutputVoltage = Volts[1];
         }
 
-        public override void CirDoIteration() {
+        public override void DoIteration() {
             double v = Volts[0] > HighVoltage * .5 ? 0 : HighVoltage;
             double maxStep = SlewRate * ControlPanel.TimeStep * 1e9;
             v = Math.Max(Math.Min(mLastOutputVoltage + maxStep, v), mLastOutputVoltage - maxStep);

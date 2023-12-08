@@ -16,12 +16,12 @@
             VoltDiff = 1e-3;
         }
 
-        public override void AnaShorted() {
+        public override void Shorted() {
             base.Reset();
             VoltDiff = Current = mCurSourceValue = 0;
         }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             var n0 = Nodes[0] - 1;
             var n1 = Nodes[1] - 1;
             if (n0 < 0 || n1 < 0) {
@@ -37,18 +37,18 @@
             Circuit.RowInfo[n1].RightChanges = true;
         }
 
-        public override void CirPrepareIteration() {
+        public override void PrepareIteration() {
             mCurSourceValue = -VoltDiff / mCompResistance - Current;
         }
 
-        public override void CirDoIteration() {
+        public override void DoIteration() {
             var r = Circuit.RowInfo[Nodes[0] - 1].MapRow;
             Circuit.RightSide[r] -= mCurSourceValue;
             r = Circuit.RowInfo[Nodes[1] - 1].MapRow;
             Circuit.RightSide[r] += mCurSourceValue;
         }
 
-        public override void CirSetVoltage(int n, double c) {
+        public override void SetVoltage(int n, double c) {
             Volts[n] = c;
             VoltDiff = Volts[0] - Volts[1];
             Current = VoltDiff / mCompResistance + mCurSourceValue;

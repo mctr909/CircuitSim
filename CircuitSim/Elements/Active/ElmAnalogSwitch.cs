@@ -10,14 +10,14 @@
 
         public override int TermCount { get { return 3; } }
 
-        public override bool AnaGetConnection(int n1, int n2) { return !(n1 == 2 || n2 == 2); }
+        public override bool GetConnection(int n1, int n2) { return !(n1 == 2 || n2 == 2); }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             Circuit.RowInfo[Nodes[0] - 1].LeftChanges = true;
             Circuit.RowInfo[Nodes[1] - 1].LeftChanges = true;
         }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
                 return -Current;
             }
@@ -27,7 +27,7 @@
             return Current;
         }
 
-        public override void CirDoIteration() {
+        public override void DoIteration() {
             IsOpen = Volts[2] < 2.5;
             if (Invert) {
                 IsOpen = !IsOpen;
@@ -54,7 +54,7 @@
             }
         }
 
-        public override void CirSetVoltage(int n, double c) {
+        public override void SetVoltage(int n, double c) {
             Volts[n] = c;
             Current = (Volts[0] - Volts[1]) / mResistance;
         }

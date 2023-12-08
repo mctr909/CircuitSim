@@ -7,11 +7,11 @@
 
         public override int TermCount { get { return 2; } }
         public override bool IsWire { get { return Position == 0; } }
-        public override int AnaVoltageSourceCount { get { return (1 == Position) ? 0 : 1; } }
+        public override int VoltageSourceCount { get { return (1 == Position) ? 0 : 1; } }
 
-        public override bool AnaGetConnection(int n1, int n2) { return 0 == Position; }
+        public override bool GetConnection(int n1, int n2) { return 0 == Position; }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             if (Position == 0) {
                 var n0 = Nodes[0] - 1;
                 var n1 = Nodes[1] - 1;
@@ -23,7 +23,7 @@
             }
         }
 
-        public override void CirSetVoltage(int n, double c) {
+        public override void SetVoltage(int n, double c) {
             Volts[n] = c;
             if (Position == 1) {
                 Current = 0;

@@ -34,11 +34,11 @@ namespace Circuit.Elements.Output {
 
         public override bool IsWire { get { return true; } }
 
-        public override int AnaVoltageSourceCount { get { return 1; } }
+        public override int VoltageSourceCount { get { return 1; } }
 
         public override double GetVoltageDiff() { return Volts[0]; }
 
-        public override void CirIterationFinished() {
+        public override void IterationFinished() {
             mCount++; /*how many counts are in a cycle */
             mTotal += Current * Current; /* sum of squares */
             if (Current > mMaxI && mIncreasingI) {
@@ -111,7 +111,7 @@ namespace Circuit.Elements.Output {
             }
         }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             Circuit.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
         }
 

@@ -17,7 +17,7 @@
 
         public override double GetVoltageDiff() { return Volts[0]; }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             if (needsPullDown) {
                 Circuit.StampResistor(Nodes[0], 0, 1e6);
             }

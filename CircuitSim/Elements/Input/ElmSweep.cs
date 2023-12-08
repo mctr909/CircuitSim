@@ -34,7 +34,7 @@ namespace Circuit.Elements.Input {
             Reset();
         }
 
-        public override int AnaVoltageSourceCount { get { return 1; } }
+        public override int VoltageSourceCount { get { return 1; } }
 
         public override int TermCount { get { return 1; } }
 
@@ -64,13 +64,13 @@ namespace Circuit.Elements.Input {
             mSavedTimeStep = ControlPanel.TimeStep;
         }
 
-        public override bool AnaHasGroundConnection(int n1) { return true; }
+        public override bool HasGroundConnection(int n1) { return true; }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             Circuit.StampVoltageSource(0, Nodes[0], mVoltSource);
         }
 
-        public override void CirPrepareIteration() {
+        public override void PrepareIteration() {
             /* has timestep been changed? */
             if (ControlPanel.TimeStep != mSavedTimeStep) {
                 setParams();
@@ -94,7 +94,7 @@ namespace Circuit.Elements.Input {
             }
         }
 
-        public override void CirDoIteration() {
+        public override void DoIteration() {
             var vn = Circuit.Nodes.Count + mVoltSource;
             var row = Circuit.RowInfo[vn - 1].MapRow;
             Circuit.RightSide[row] += mVolt;

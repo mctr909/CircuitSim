@@ -14,7 +14,7 @@ namespace Circuit.Elements.Logic {
 
         public override int TermCount { get { return mOutputCount + mSelectBitCount + 1; } }
 
-        public override int AnaVoltageSourceCount { get { return 1; } }
+        public override int VoltageSourceCount { get { return 1; } }
 
         public override void SetupPins(Chip chip) {
             chip.sizeX = mSelectBitCount + 1;

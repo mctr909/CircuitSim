@@ -22,17 +22,17 @@ namespace Circuit.Elements.Active {
             mBaseCapacitance = st.nextTokenDouble();
         }
 
-        public override int AnaVoltageSourceCount { get { return 1; } }
+        public override int VoltageSourceCount { get { return 1; } }
 
-        public override int AnaInternalNodeCount { get { return 1; } }
+        public override int InternalNodeCount { get { return 1; } }
 
         public override void Reset() {
             base.Reset();
             mCapVoltDiff = 0;
         }
 
-        public override void AnaStamp() {
-            base.AnaStamp();
+        public override void Stamp() {
+            base.Stamp();
             var n0 = Nodes[0] - 1;
             var n1 = Nodes[2] - 1;
             int vn = Circuit.Nodes.Count + mVoltSource - 1;
@@ -44,8 +44,8 @@ namespace Circuit.Elements.Active {
             Circuit.RowInfo[n1].LeftChanges = true;
         }
 
-        public override void CirDoIteration() {
-            base.CirDoIteration();
+        public override void DoIteration() {
+            base.DoIteration();
             var g = 1.0 / mCompResistance;
             var n0 = Nodes[2] - 1;
             var n1 = Nodes[1] - 1;
@@ -57,8 +57,8 @@ namespace Circuit.Elements.Active {
             Circuit.RightSide[vn] += mVoltSourceValue;
         }
 
-        public override void CirPrepareIteration() {
-            base.CirPrepareIteration();
+        public override void PrepareIteration() {
+            base.PrepareIteration();
             // capacitor companion model using trapezoidal approximation
             // (Thevenin equivalent) consists of a voltage source in
             // series with a resistor
@@ -72,12 +72,12 @@ namespace Circuit.Elements.Active {
             mVoltSourceValue = -mCapVoltDiff - mCapCurrent * mCompResistance;
         }
 
-        public override void CirSetVoltage(int n, double c) {
-            base.CirSetVoltage(n, c);
+        public override void SetVoltage(int n, double c) {
+            base.SetVoltage(n, c);
             mCapVoltDiff = Volts[0] - Volts[1];
             Current += mCapCurrent;
         }
 
-        public override void CirSetCurrent(int x, double c) { mCapCurrent = c; }
+        public override void SetCurrent(int x, double c) { mCapCurrent = c; }
     }
 }

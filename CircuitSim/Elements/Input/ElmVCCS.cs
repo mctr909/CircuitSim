@@ -30,7 +30,7 @@ namespace Circuit.Elements.Input {
             SetupPins(ui);
         }
 
-        public override int AnaVoltageSourceCount { get { return 0; } }
+        public override int VoltageSourceCount { get { return 0; } }
 
         public override int TermCount { get { return InputCount + 2; } }
 
@@ -47,20 +47,20 @@ namespace Circuit.Elements.Input {
             mExprState = new Expr.State(InputCount);
         }
 
-        public override bool AnaGetConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             return ComparePair(InputCount, InputCount + 1, n1, n2);
         }
 
-        public override bool AnaHasGroundConnection(int n1) {
+        public override bool HasGroundConnection(int n1) {
             return false;
         }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             Circuit.StampNonLinear(Nodes[InputCount]);
             Circuit.StampNonLinear(Nodes[InputCount + 1]);
         }
 
-        public override void CirDoIteration() {
+        public override void DoIteration() {
             int i;
 
             /* no current path?  give up */

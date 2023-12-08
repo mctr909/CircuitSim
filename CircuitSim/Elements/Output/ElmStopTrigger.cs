@@ -26,7 +26,7 @@
 			Triggered = false;
 		}
 
-		public override void CirIterationFinished() {
+		public override void IterationFinished() {
 			Stopped = false;
 			if (!Triggered && ((Type == 0 && Volts[0] >= TriggerVoltage) || (Type == 1 && Volts[0] <= TriggerVoltage))) {
 				Triggered = true;

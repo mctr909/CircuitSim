@@ -41,11 +41,11 @@ namespace Circuit.Elements.Custom {
             lastClock = false;
         }
 
-        public override bool AnaHasGroundConnection(int n1) {
+        public override bool HasGroundConnection(int n1) {
             return Pins[n1].output;
         }
 
-        public override void AnaSetVoltageSource(int j, int vs) {
+        public override void SetVoltageSource(int j, int vs) {
             for (int i = 0; i != TermCount; i++) {
                 var p = Pins[i];
                 if (p.output && j-- == 0) {
@@ -56,7 +56,7 @@ namespace Circuit.Elements.Custom {
             Console.WriteLine("setVoltageSource failed for " + this);
         }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             for (int i = 0; i != TermCount; i++) {
                 var p = Pins[i];
                 if (p.output) {
@@ -65,7 +65,7 @@ namespace Circuit.Elements.Custom {
             }
         }
 
-        public override void CirDoIteration() {
+        public override void DoIteration() {
             int i;
             for (i = 0; i != TermCount; i++) {
                 var p = Pins[i];
@@ -84,7 +84,7 @@ namespace Circuit.Elements.Custom {
 
         protected virtual void execute() { }
 
-        public override void CirSetCurrent(int x, double c) {
+        public override void SetCurrent(int x, double c) {
             for (int i = 0; i != TermCount; i++) {
                 if (Pins[i].output && Pins[i].voltSource == x) {
                     Pins[i].current = c;
@@ -92,9 +92,9 @@ namespace Circuit.Elements.Custom {
             }
         }
 
-        public override bool AnaGetConnection(int n1, int n2) { return false; }
+        public override bool GetConnection(int n1, int n2) { return false; }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             return Pins[n].current;
         }
     }

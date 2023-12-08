@@ -25,11 +25,11 @@
             LastOutput = HighVoltage * 0.5 < lastOutputVoltage;
         }
 
-        public override int AnaVoltageSourceCount { get { return 1; } }
+        public override int VoltageSourceCount { get { return 1; } }
 
         public override int TermCount { get { return InputCount + 1; } }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == InputCount) {
                 return Current;
             }
@@ -38,17 +38,17 @@
 
         /* there is no current path through the gate inputs,
         * but there is an indirect path through the output to ground. */
-        public override bool AnaGetConnection(int n1, int n2) { return false; }
+        public override bool GetConnection(int n1, int n2) { return false; }
 
-        public override bool AnaHasGroundConnection(int n1) {
+        public override bool HasGroundConnection(int n1) {
             return (n1 == InputCount);
         }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             Circuit.StampVoltageSource(0, Nodes[InputCount], mVoltSource);
         }
 
-        public override void CirDoIteration() {
+        public override void DoIteration() {
             bool f = calcFunction();
             if (IsInverting) {
                 f = !f;

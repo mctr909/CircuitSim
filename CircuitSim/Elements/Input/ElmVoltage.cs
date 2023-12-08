@@ -45,13 +45,13 @@ namespace Circuit.Elements.Input {
 
         public override int TermCount { get { return 2; } }
 
-        public override int AnaVoltageSourceCount { get { return 1; } }
+        public override int VoltageSourceCount { get { return 1; } }
 
         public override double GetVoltageDiff() { return Volts[1] - Volts[0]; }
 
         public override void Reset() { }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             int n0 = Nodes[0] - 1;
             int n1 = Nodes[1] - 1;
             int vn = Circuit.Nodes.Count + mVoltSource - 1;
@@ -69,7 +69,7 @@ namespace Circuit.Elements.Input {
             }
         }
 
-        public override void CirDoIteration() {
+        public override void DoIteration() {
             if (WaveForm != WAVEFORM.DC) {
                 var vn = Circuit.Nodes.Count + mVoltSource;
                 var row = Circuit.RowInfo[vn - 1].MapRow;
@@ -77,7 +77,7 @@ namespace Circuit.Elements.Input {
             }
         }
 
-        public override void CirIterationFinished() {
+        public override void IterationFinished() {
             if (WaveForm == WAVEFORM.NOISE) {
                 NoiseValue = (CirSimForm.Random.NextDouble() * 2 - 1) * MaxVoltage + Bias;
             }

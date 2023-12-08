@@ -25,9 +25,9 @@ namespace Circuit.Elements.Custom {
 
         public override int TermCount { get { return mNumTerms; } }
 
-        public override int AnaVoltageSourceCount { get { return mVoltageSources.Count; } }
+        public override int VoltageSourceCount { get { return mVoltageSources.Count; } }
 
-        public override int AnaInternalNodeCount { get { return mNumNodes - mNumTerms; } }
+        public override int InternalNodeCount { get { return mNumNodes - mNumTerms; } }
 
         public override void Reset() {
             for (int i = 0; i < CompList.Count; i++) {
@@ -36,7 +36,7 @@ namespace Circuit.Elements.Custom {
         }
 
         /* are n1 and n2 connected internally somehow? */
-        public override bool AnaGetConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             var cnLinks1 = mCompNodeList[n1].Links;
             var cnLinks2 = mCompNodeList[n2].Links;
 
@@ -45,7 +45,7 @@ namespace Circuit.Elements.Custom {
                 var link1 = cnLinks1[i];
                 for (int j = 0; j < cnLinks2.Count; j++) {
                     var link2 = cnLinks2[j];
-                    if (link1.Elm == link2.Elm && link1.Elm.AnaGetConnection(link1.Num, link2.Num)) {
+                    if (link1.Elm == link2.Elm && link1.Elm.GetConnection(link1.Num, link2.Num)) {
                         return true;
                     }
                 }
@@ -54,33 +54,33 @@ namespace Circuit.Elements.Custom {
         }
 
         /* is n1 connected to ground somehow? */
-        public override bool AnaHasGroundConnection(int n1) {
+        public override bool HasGroundConnection(int n1) {
             List<CircuitNode.LINK> cnLinks;
             cnLinks = mCompNodeList[n1].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
-                if (cnLinks[i].Elm.AnaHasGroundConnection(cnLinks[i].Num)) {
+                if (cnLinks[i].Elm.HasGroundConnection(cnLinks[i].Num)) {
                     return true;
                 }
             }
             return false;
         }
 
-        public override void AnaSetNode(int p, int n) {
-            base.AnaSetNode(p, n);
+        public override void SetNode(int p, int n) {
+            base.SetNode(p, n);
             var cnLinks = mCompNodeList[p].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
-                cnLinks[i].Elm.AnaSetNode(cnLinks[i].Num, n);
+                cnLinks[i].Elm.SetNode(cnLinks[i].Num, n);
             }
         }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             for (int i = 0; i < CompList.Count; i++) {
                 var ce = CompList[i];
                 /* current sources need special stamp method */
                 if (ce is ElmCurrent) {
                     ((ElmCurrent)ce).stampCurrentSource(false);
                 } else {
-                    ce.AnaStamp();
+                    ce.Stamp();
                 }
             }
         }
@@ -88,52 +88,52 @@ namespace Circuit.Elements.Custom {
         /* Find the component with the nth voltage
          * and set the
          * appropriate source in that component */
-        public override void AnaSetVoltageSource(int n, int v) {
+        public override void SetVoltageSource(int n, int v) {
             var vsr = mVoltageSources[n];
-            vsr.elm.AnaSetVoltageSource(vsr.vsNumForElement, v);
+            vsr.elm.SetVoltageSource(vsr.vsNumForElement, v);
             vsr.vsNode = v;
         }
 
-        public override void CirPrepareIteration() {
+        public override void PrepareIteration() {
             for (int i = 0; i < CompList.Count; i++) {
-                CompList[i].CirPrepareIteration();
+                CompList[i].PrepareIteration();
             }
         }
 
-        public override void CirDoIteration() {
+        public override void DoIteration() {
             for (int i = 0; i < CompList.Count; i++) {
-                CompList[i].CirDoIteration();
+                CompList[i].DoIteration();
             }
         }
 
-        public override void CirIterationFinished() {
+        public override void IterationFinished() {
             for (int i = 0; i < CompList.Count; i++) {
-                CompList[i].CirIterationFinished();
+                CompList[i].IterationFinished();
             }
         }
 
-        public override void CirSetVoltage(int n, double c) {
-            base.CirSetVoltage(n, c);
+        public override void SetVoltage(int n, double c) {
+            base.SetVoltage(n, c);
             var cnLinks = mCompNodeList[n].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
-                cnLinks[i].Elm.CirSetVoltage(cnLinks[i].Num, c);
+                cnLinks[i].Elm.SetVoltage(cnLinks[i].Num, c);
             }
             Volts[n] = c;
         }
 
-        public override void CirSetCurrent(int vsn, double c) {
+        public override void SetCurrent(int vsn, double c) {
             for (int i = 0; i < mVoltageSources.Count; i++) {
                 if (mVoltageSources[i].vsNode == vsn) {
-                    mVoltageSources[i].elm.CirSetCurrent(vsn, c);
+                    mVoltageSources[i].elm.SetCurrent(vsn, c);
                 }
             }
         }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             double c = 0;
             var cnLinks = mCompNodeList[n].Links;
             for (int i = 0; i < cnLinks.Count; i++) {
-                c += cnLinks[i].Elm.CirGetCurrentIntoNode(cnLinks[i].Num);
+                c += cnLinks[i].Elm.GetCurrentIntoNode(cnLinks[i].Num);
             }
             return c;
         }
@@ -159,7 +159,7 @@ namespace Circuit.Elements.Custom {
             for (int i = 0; i != uiList.Count; i++) {
                 var ce = uiList[i].Elm;
                 CompList.Add(ce);
-                int inodes = ce.AnaInternalNodeCount;
+                int inodes = ce.InternalNodeCount;
                 for (int j = 0; j != inodes; j++) {
                     var cnLink = new CircuitNode.LINK();
                     cnLink.Num = j + ce.TermCount;
@@ -179,7 +179,7 @@ namespace Circuit.Elements.Custom {
             /* Enumerate voltage sources */
             mVoltageSources = new List<VoltageSourceRecord>();
             for (int i = 0; i < CompList.Count; i++) {
-                int cnt = CompList[i].AnaVoltageSourceCount;
+                int cnt = CompList[i].VoltageSourceCount;
                 for (int j = 0; j < cnt; j++) {
                     var vsRecord = new VoltageSourceRecord();
                     vsRecord.elm = CompList[i];

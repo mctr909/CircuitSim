@@ -65,13 +65,13 @@ namespace Circuit.Elements.Active {
             mInv_fgain = 1 / mFgain;
         }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             Circuit.RowInfo[Nodes[IdxB] - 1].LeftChanges = true;
             Circuit.RowInfo[Nodes[IdxC] - 1].LeftChanges = true;
             Circuit.RowInfo[Nodes[IdxE] - 1].LeftChanges = true;
         }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 0) {
                 return -Ib;
             }
@@ -81,7 +81,7 @@ namespace Circuit.Elements.Active {
             return -Ie;
         }
 
-        public override void CirDoIteration() {
+        public override void DoIteration() {
             double vbc = Volts[IdxB] - Volts[IdxC]; /* typically negative */
             double vbe = Volts[IdxB] - Volts[IdxE]; /* typically positive */
             if (0.001 < Math.Abs(vbc - mLastVbc) || 0.001 < Math.Abs(vbe - mLastVbe)) {
@@ -165,7 +165,7 @@ namespace Circuit.Elements.Active {
             Circuit.RightSide[rowE] += -Ie + gee * vbe + gec * vbc;
         }
 
-        public override void CirIterationFinished() {
+        public override void IterationFinished() {
             if (Math.Abs(Ic) > 1e12) {
                 Circuit.Stop("Icが最大電流を超えました", this);
             }

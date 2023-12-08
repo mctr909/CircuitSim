@@ -36,7 +36,7 @@ namespace Circuit.Elements.Output {
             Scale = st.nextTokenEnum(E_SCALE.AUTO);
         }
 
-        public override void CirIterationFinished() {
+        public override void IterationFinished() {
             mCount++; /*how many counts are in a cycle */
             double v = GetVoltageDiff();
             mTotal += v * v;
@@ -101,6 +101,6 @@ namespace Circuit.Elements.Output {
             }
         }
 
-        public override bool AnaGetConnection(int n1, int n2) { return false; }
+        public override bool GetConnection(int n1, int n2) { return false; }
     }
 }

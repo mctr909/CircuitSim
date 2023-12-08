@@ -35,7 +35,7 @@ namespace Circuit.Elements.Passive {
             mCurSourceValue1 = mCurSourceValue2 = 0;
         }
 
-        public override bool AnaGetConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             if (ComparePair(n1, n2, 0, 2)) {
                 return true;
             }
@@ -45,7 +45,7 @@ namespace Circuit.Elements.Passive {
             return false;
         }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             /* equations for transformer:
              *   v1 = L1 di1/dt + M  di2/dt
              *   v2 = M  di1/dt + L2 di2/dt
@@ -114,21 +114,21 @@ namespace Circuit.Elements.Passive {
             Circuit.RowInfo[sec_b].RightChanges = true;
         }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n < 2) {
                 return -Currents[n];
             }
             return Currents[n - 2];
         }
 
-        public override void CirPrepareIteration() {
+        public override void PrepareIteration() {
             var voltDiffP = Volts[PRI_T] - Volts[PRI_B];
             var voltDiffS = Volts[SEC_T] - Volts[SEC_B];
             mCurSourceValue1 = voltDiffP * mA1 + voltDiffS * mA2 + Currents[0];
             mCurSourceValue2 = voltDiffP * mA3 + voltDiffS * mA4 + Currents[1];
         }
 
-        public override void CirDoIteration() {
+        public override void DoIteration() {
             var r = Circuit.RowInfo[Nodes[PRI_T] - 1].MapRow;
             Circuit.RightSide[r] -= mCurSourceValue1;
             r = Circuit.RowInfo[Nodes[PRI_B] - 1].MapRow;
@@ -139,7 +139,7 @@ namespace Circuit.Elements.Passive {
             Circuit.RightSide[r] += mCurSourceValue2;
         }
 
-        public override void CirSetVoltage(int n, double c) {
+        public override void SetVoltage(int n, double c) {
             Volts[n] = c;
             var voltDiffP = Volts[PRI_T] - Volts[PRI_B];
             var voltDiffS = Volts[SEC_T] - Volts[SEC_B];

@@ -6,7 +6,7 @@ namespace Circuit.Elements.Gate {
 
         public ElmSchmitt(StringTokenizer st) : base(st) { }
 
-        public override void CirDoIteration() {
+        public override void DoIteration() {
             double v0 = Volts[1];
             double _out;
             if (mState) {//Output is high
@@ -31,7 +31,7 @@ namespace Circuit.Elements.Gate {
             Circuit.UpdateVoltageSource(mVoltSource, _out);
         }
 
-        public override double CirGetCurrentIntoNode(int n) {
+        public override double GetCurrentIntoNode(int n) {
             if (n == 1) {
                 return Current;
             }

@@ -7,7 +7,7 @@ namespace Circuit.Elements.Gate {
 
         public override int TermCount { get { return 5; } }
 
-        public override int AnaVoltageSourceCount { get { return 2; } }
+        public override int VoltageSourceCount { get { return 2; } }
 
         public override void SetupPins(Chip chip) {
             chip.sizeX = 2;

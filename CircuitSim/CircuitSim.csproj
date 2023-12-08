@@ -72,6 +72,8 @@
     <Compile Include="Common\ScopePlot.cs" />
     <Compile Include="Common\ScopeWave.cs" />
     <Compile Include="Elements\Active\ElmAnalogSwitch.cs" />
+    <Compile Include="Common\IAnalyze.cs" />
+    <Compile Include="Common\ICircuit.cs" />
     <Compile Include="Elements\Logic\ElmDeMultiplexer.cs" />
     <Compile Include="Elements\Logic\ElmFullAdder.cs" />
     <Compile Include="Elements\Logic\ElmHalfAdder.cs" />

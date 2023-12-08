@@ -87,7 +87,7 @@ namespace Circuit.Elements.Active {
 
         public override int TermCount { get { return 2; } }
 
-        public override int AnaInternalNodeCount { get { return mHasResistance ? 1 : 0; } }
+        public override int InternalNodeCount { get { return mHasResistance ? 1 : 0; } }
 
         public void Setup() {
             mModel = DiodeModel.GetModelWithNameOrCopy(mModelName, mModel);
@@ -123,7 +123,7 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             if (mHasResistance) {
                 /* create diode from node 0 to internal node */
                 stamp(Nodes[0], Nodes[2]);
@@ -139,7 +139,7 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override void CirDoIteration() {
+        public override void DoIteration() {
             var voltdiff = Volts[0] - Volts[mDiodeEndNode];
             if (0.001 < Math.Abs(voltdiff - mLastVoltDiff)) {
                 Circuit.Converged = false;
@@ -265,7 +265,7 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override void CirSetVoltage(int n, double c) {
+        public override void SetVoltage(int n, double c) {
             Volts[n] = c;
             var voltdiff = Volts[0] - Volts[mDiodeEndNode];
             if (voltdiff >= 0 || mZvoltage == 0) {
@@ -279,7 +279,7 @@ namespace Circuit.Elements.Active {
             }
         }
 
-        public override void CirIterationFinished() {
+        public override void IterationFinished() {
             if (Math.Abs(Current) > 1e12) {
                 Circuit.Stop("最大電流を超えました", this);
             }

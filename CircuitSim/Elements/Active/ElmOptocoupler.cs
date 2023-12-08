@@ -20,7 +20,7 @@ namespace Circuit.Elements.Active {
             base.Reset();
         }
 
-        public override bool AnaGetConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             return n1 / 2 == n2 / 2;
         }
     }

@@ -17,7 +17,7 @@ namespace Circuit.Elements.Input {
             SetupPins(ui);
         }
 
-        public override int AnaVoltageSourceCount { get { return 1; } }
+        public override int VoltageSourceCount { get { return 1; } }
 
         public override int TermCount { get { return 4; } }
 
@@ -36,7 +36,7 @@ namespace Circuit.Elements.Input {
 
         public override bool hasCurrentOutput() { return true; }
 
-        public override bool AnaGetConnection(int n1, int n2) {
+        public override bool GetConnection(int n1, int n2) {
             if (ComparePair(0, 1, n1, n2)) {
                 return true;
             }
@@ -46,7 +46,7 @@ namespace Circuit.Elements.Input {
             return false;
         }
 
-        public override void AnaStamp() {
+        public override void Stamp() {
             /* voltage source (0V) between C+ and C- so we can measure current */
             int vn1 = Pins[1].voltSource;
             Circuit.StampVoltageSource(Nodes[0], Nodes[1], vn1, 0);
@@ -55,7 +55,7 @@ namespace Circuit.Elements.Input {
             Circuit.StampNonLinear(Nodes[3]);
         }
 
-        public override void CirDoIteration() {
+        public override void DoIteration() {
             /* no current path?  give up */
             if (mBroken) {
                 Pins[InputCount].current = 0;
@@ -102,7 +102,7 @@ namespace Circuit.Elements.Input {
             mLastCurrent = cur;
         }
 
-        public override void CirSetCurrent(int vn, double c) {
+        public override void SetCurrent(int vn, double c) {
             if (Pins[1].voltSource == vn) {
                 Pins[0].current = -c;
                 Pins[1].current = c;
