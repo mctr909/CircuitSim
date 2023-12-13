@@ -43,11 +43,11 @@ namespace Circuit {
         public static Random Random { get; set; } = new Random();
         public static double CurrentMult { get; set; } = 0;
         public static bool IsRunning { get; private set; }
-        public static BaseUI ConstructElm { get; private set; }
-        public static List<BaseUI> UIList { get; private set; }
+        public static IUI ConstructElm { get; private set; }
+        public static List<IUI> UIList { get; private set; }
         public static int UICount { get { return null == UIList ? 0 : UIList.Count; } }
-        public static BaseUI PlotXElm { get; private set; }
-        public static BaseUI PlotYElm { get; private set; }
+        public static IUI PlotXElm { get; private set; }
+        public static IUI PlotYElm { get; private set; }
         public static List<Adjustable> Adjustables { get; private set; } = new List<Adjustable>();
         #endregion
 
@@ -80,7 +80,7 @@ namespace Circuit {
 
         static DUMP_ID mAddElm = DUMP_ID.INVALID;
 
-        static BaseUI mMenuElm;
+        static IUI mMenuElm;
         static Switch mHeldSwitchElm;
         Point mMenuClient;
         Point mMenuPos;
@@ -114,7 +114,7 @@ namespace Circuit {
             KeyDown += onKeyDown;
             KeyUp += onKeyUp;
 
-            UIList = new List<BaseUI>();
+            UIList = new List<IUI>();
             mRedoItem = new MenuItem();
             mUndoItem = new MenuItem();
             mPasteItem = new MenuItem();
@@ -205,7 +205,7 @@ namespace Circuit {
                 doSaveFile(false);
                 break;
             case MENU_ITEM.PRINT:
-                BaseUI.Context.DoPrint = true;
+                CustomGraphics.Instance.DoPrint = true;
                 break;
             }
 
@@ -255,14 +255,14 @@ namespace Circuit {
             readCircuit(mRecovery);
         }
 
-        public static BaseUI GetUI(int n) {
+        public static IUI GetUI(int n) {
             if (n >= UIList.Count) {
                 return null;
             }
             return UIList[n];
         }
 
-        public static int GetUIIndex(BaseUI elm) {
+        public static int GetUIIndex(IUI elm) {
             for (int i = 0; i != UICount; i++) {
                 if (elm == UIList[i]) {
                     return i;
@@ -271,7 +271,7 @@ namespace Circuit {
             return -1;
         }
 
-        public static Adjustable FindAdjustable(BaseUI elm, int item) {
+        public static Adjustable FindAdjustable(IUI elm, int item) {
             for (int i = 0; i != Adjustables.Count; i++) {
                 var a = Adjustables[i];
                 if (a.UI == elm && a.EditItemR == item) {
@@ -281,7 +281,7 @@ namespace Circuit {
             return null;
         }
 
-        public static void DeleteSliders(BaseUI elm) {
+        public static void DeleteSliders(IUI elm) {
             if (Adjustables == null) {
                 return;
             }
@@ -719,7 +719,7 @@ namespace Circuit {
 
             PlotXElm = PlotYElm = null;
 
-            BaseUI mostNearUI = null;
+            IUI mostNearUI = null;
             var mostNear = double.MaxValue;
             for (int i = 0; i != UICount; i++) {
                 var ce = GetUI(i);
@@ -916,10 +916,10 @@ namespace Circuit {
 
             mPixCir.Width = width;
             mPixCir.Height = height;
-            if (BaseUI.Context != null) {
-                BaseUI.Context.Dispose();
+            if (CustomGraphics.Instance != null) {
+                CustomGraphics.Instance.Dispose();
             }
-            BaseUI.Context = CustomGraphics.FromImage(width, height);
+            CustomGraphics.Instance = CustomGraphics.FromImage(width, height);
             mCircuitArea = new Rectangle(0, 0, width, height);
             SetSimRunning(isRunning);
         }
@@ -940,7 +940,7 @@ namespace Circuit {
             return new Rectangle(minx, miny, maxx - minx, maxy - miny);
         }
 
-        void doEdit(BaseUI eable, Point location) {
+        void doEdit(IUI eable, Point location) {
             clearSelection();
             PushUndo();
             if (EditDialog != null) {
@@ -951,7 +951,7 @@ namespace Circuit {
             EditDialog.Show(location.X, location.Y);
         }
 
-        void doSliders(BaseUI ce, Point location) {
+        void doSliders(IUI ce, Point location) {
             clearSelection();
             PushUndo();
             if (SliderDialog != null) {
@@ -1196,7 +1196,7 @@ namespace Circuit {
             NeedAnalyze();
         }
 
-        void doSplit(BaseUI ce) {
+        void doSplit(IUI ce) {
             var pos = SnapGrid(MouseInfo.ToAbsPos(mMenuPos));
             if (ce == null || !(ce is Wire)) {
                 return;
@@ -1356,7 +1356,7 @@ namespace Circuit {
             }
         }
 
-        static bool willDelete(BaseUI ce) {
+        static bool willDelete(IUI ce) {
             /* Is this element in the list to be deleted.
             /* This changes the logic from the previous version which would initially only
             /* delete selected elements (which could include the mouseElm) and then delete the
@@ -1569,7 +1569,7 @@ namespace Circuit {
                 mLastSysTime = sysTime;
             }
 
-            var g = BaseUI.Context;
+            var g = CustomGraphics.Instance;
             PDF.Page pdfCircuit = null;
             PDF.Page pdfScope = null;
             var bkIsRun = IsRunning;
@@ -1583,7 +1583,7 @@ namespace Circuit {
                 pdfCircuit = new PDF.Page(g.Width, g.Height);
                 pdfScope = new PDF.Page(mScopeForm.Width, mScopeForm.Height);
                 g = pdfCircuit;
-                BaseUI.Context = pdfCircuit;
+                CustomGraphics.Instance = pdfCircuit;
             }
 
             drawCircuit(g);
@@ -1632,11 +1632,11 @@ namespace Circuit {
                 }
                 IsRunning = bkIsRun;
                 ControlPanel.ChkPrintable.Checked = bkPrint;
-                BaseUI.Context = CustomGraphics.FromImage(g.Width, g.Height);
+                CustomGraphics.Instance = CustomGraphics.FromImage(g.Width, g.Height);
             } else {
                 mBmp = new Bitmap(g.Width, g.Height);
                 mContext = Graphics.FromImage(mBmp);
-                BaseUI.Context.CopyTo(mContext);
+                CustomGraphics.Instance.CopyTo(mContext);
                 mPixCir.Image = mBmp;
             }
             mLastFrameTime = mLastTime;

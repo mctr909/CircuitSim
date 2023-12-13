@@ -30,10 +30,10 @@ namespace Circuit {
         string mName;
         string mUnit;
 
-        BaseUI mEditElm;
+        IUI mEditElm;
         ElementInfo mElmInfo;
 
-        public ScrollValuePopup(BaseUI e) : base() {
+        public ScrollValuePopup(IUI e) : base() {
             mEditElm = e;
             CirSimForm.PushUndo();
             setupValues();

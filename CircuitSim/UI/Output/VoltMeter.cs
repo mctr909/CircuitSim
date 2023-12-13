@@ -13,7 +13,7 @@ namespace Circuit.UI.Output {
         public VoltMeter(Point pos) : base(pos) {
             Elm = new ElmVoltMeter();
             /* default for new elements */
-            _Flags = FLAG_SHOWVOLTAGE;
+            mFlags = FLAG_SHOWVOLTAGE;
         }
 
         public VoltMeter(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -106,7 +106,7 @@ namespace Circuit.UI.Output {
         }
 
         protected bool mustShowVoltage() {
-            return (_Flags & FLAG_SHOWVOLTAGE) != 0;
+            return (mFlags & FLAG_SHOWVOLTAGE) != 0;
         }
     }
 }

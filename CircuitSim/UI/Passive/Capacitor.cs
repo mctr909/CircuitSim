@@ -67,13 +67,13 @@ namespace Circuit.UI.Passive {
         void setTextPos() {
             var abX = Post.B.X - Post.A.X;
             var abY = Post.B.Y - Post.A.Y;
-            _TextRot = Math.Atan2(abY, abX);
-            var deg = -_TextRot * 180 / Math.PI;
+            mTextRot = Math.Atan2(abY, abX);
+            var deg = -mTextRot * 180 / Math.PI;
             if (deg < 0.0) {
                 deg += 360;
             }
             if (45 * 3 <= deg && deg < 45 * 7) {
-                _TextRot += Math.PI;
+                mTextRot += Math.PI;
             }
             int on, ov;
             if (0 == deg) {
@@ -92,8 +92,8 @@ namespace Circuit.UI.Passive {
                 on = 11;
                 ov = -12;
             }
-            interpPost(ref _NamePos, 0.5, on);
-            interpPost(ref _ValuePos, 0.5, ov);
+            interpPost(ref mNamePos, 0.5, on);
+            interpPost(ref mValuePos, 0.5, ov);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -111,8 +111,8 @@ namespace Circuit.UI.Passive {
 
             updateDotCount();
             if (CirSimForm.ConstructElm != this) {
-                drawCurrentA(_CurCount);
-                drawCurrentB(_CurCount);
+                drawCurrentA(mCurCount);
+                drawCurrentB(mCurCount);
             }
         }
 

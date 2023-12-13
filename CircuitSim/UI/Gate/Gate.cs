@@ -35,14 +35,14 @@ namespace Circuit.UI.Gate {
         public Gate(Point pos) : base(pos) {
             Post.NoDiagonal = true;
             if (mLastSchmitt) {
-                _Flags |= FLAG_SCHMITT;
+                mFlags |= FLAG_SCHMITT;
             }
-            _Flags |= FLAG_SMALL;
+            mFlags |= FLAG_SMALL;
         }
 
         public Gate(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Post.NoDiagonal = true;
-            _Flags |= FLAG_SMALL;
+            mFlags |= FLAG_SMALL;
         }
 
         public static bool UseAnsiGates() { return ControlPanel.ChkUseAnsiSymbols.Checked; }
@@ -82,7 +82,7 @@ namespace Circuit.UI.Gate {
             }
             mHs2 = G_WIDTH * (ce.InputCount / 2 + 1);
             if (ce.HasSchmittInputs) {
-                Utils.CreateSchmitt(_Lead1, _Lead2, out mSchmittPoly, 1, .47f);
+                Utils.CreateSchmitt(mLead1, mLead2, out mSchmittPoly, 1, .47f);
             }
             ce.SetNodePos(mInPosts, Post.B);
         }
@@ -112,8 +112,8 @@ namespace Circuit.UI.Gate {
             if (ce.IsInverting) {
                 drawCircle(mCirclePos, CIRCLE_SIZE);
             }
-            updateDotCount(ce.Current, ref _CurCount);
-            drawCurrentB(_CurCount);
+            updateDotCount(ce.Current, ref mCurCount);
+            drawCurrentB(mCurCount);
         }
 
         public override void GetInfo(string[] arr) {
@@ -151,11 +151,11 @@ namespace Circuit.UI.Gate {
             }
             if (n == 2) {
                 if (ei.CheckBox.Checked) {
-                    _Flags |= FLAG_SCHMITT;
+                    mFlags |= FLAG_SCHMITT;
                 } else {
-                    _Flags &= ~FLAG_SCHMITT;
+                    mFlags &= ~FLAG_SCHMITT;
                 }
-                mLastSchmitt = ce.HasSchmittInputs = 0 != (_Flags & FLAG_SCHMITT);
+                mLastSchmitt = ce.HasSchmittInputs = 0 != (mFlags & FLAG_SCHMITT);
                 SetPoints();
             }
         }

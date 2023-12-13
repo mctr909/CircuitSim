@@ -13,9 +13,9 @@ namespace Circuit.UI.Output {
         public override void SetPoints() {
             base.SetPoints();
             if (Post.Vertical) {
-                interpLead(ref mTextPos, 1 - 0.5 * Context.GetTextSize("-9.99mV").Height / Post.Len);
+                interpLead(ref mTextPos, 1 - 0.5 * CustomGraphics.Instance.GetTextSize("-9.99mV").Height / Post.Len);
             } else {
-                interpLead(ref mTextPos, 1 - 0.5 * Context.GetTextSize("-9.99mV").Width / Post.Len);
+                interpLead(ref mTextPos, 1 - 0.5 * CustomGraphics.Instance.GetTextSize("-9.99mV").Width / Post.Len);
             }
             interpPost(ref mCenter, 1 + 11.0 / Post.Len);
         }

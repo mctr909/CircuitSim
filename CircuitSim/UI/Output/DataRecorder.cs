@@ -29,7 +29,7 @@ namespace Circuit.UI.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            _Lead1 = new Point();
+            mLead1 = new Point();
             setTextPos();
         }
 
@@ -39,8 +39,9 @@ namespace Circuit.UI.Output {
             } else {
                 ReferenceName = "CSV " + mColName;
             }
-            var txtW = Context.GetTextSize(ReferenceName).Width;
-            var txtH = Context.GetTextSize(ReferenceName).Height;
+            var txtSize = CustomGraphics.Instance.GetTextSize(ReferenceName);
+            var txtW = txtSize.Width;
+            var txtH = txtSize.Height;
             var pw = txtW / Post.Len;
             var ph = 0.5 * (txtH - 1);
             setLead1(1);
@@ -59,22 +60,22 @@ namespace Circuit.UI.Output {
             };
             var abX = Post.B.X - Post.A.X;
             var abY = Post.B.Y - Post.A.Y;
-            _TextRot = Math.Atan2(abY, abX);
-            var deg = -_TextRot * 180 / Math.PI;
+            mTextRot = Math.Atan2(abY, abX);
+            var deg = -mTextRot * 180 / Math.PI;
             if (deg < 0.0) {
                 deg += 360;
             }
             if (45 * 3 <= deg && deg < 45 * 7) {
-                _TextRot += Math.PI;
-                interpPost(ref _NamePos, 1 + 0.5 * pw, txtH / Post.Len);
+                mTextRot += Math.PI;
+                interpPost(ref mNamePos, 1 + 0.5 * pw, txtH / Post.Len);
             } else {
-                interpPost(ref _NamePos, 1 + 0.5 * pw, -txtH / Post.Len);
+                interpPost(ref mNamePos, 1 + 0.5 * pw, -txtH / Post.Len);
             }
         }
 
         public override void Draw(CustomGraphics g) {
             drawLeadA();
-            drawCenteredText(ReferenceName, _NamePos, _TextRot);
+            drawCenteredText(ReferenceName, mNamePos, mTextRot);
             drawPolyline(mTextPoly);
         }
 

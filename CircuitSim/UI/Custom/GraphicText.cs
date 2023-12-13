@@ -71,12 +71,13 @@ namespace Circuit.UI.Custom {
         }
 
         void setTextSize() {
-            var sizeBk = Context.FontSize;
-            Context.FontSize = mFontSize;
-            mTextSize = Context.GetTextSize(mText);
+            var g = CustomGraphics.Instance;
+            var sizeBk = g.FontSize;
+            g.FontSize = mFontSize;
+            mTextSize = g.GetTextSize(mText);
             Post.B.X = (int)(Post.A.X + mTextSize.Width);
             Post.B.Y = (int)(Post.A.Y + mTextSize.Height);
-            Context.FontSize = sizeBk;
+            g.FontSize = sizeBk;
         }
     }
 }

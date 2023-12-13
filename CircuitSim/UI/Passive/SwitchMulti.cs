@@ -38,7 +38,7 @@ namespace Circuit.UI.Passive {
 
         public override RectangleF GetSwitchRect() {
             var ce = (ElmSwitchMulti)Elm;
-            var l1 = new RectangleF(_Lead1.X, _Lead1.Y, 0, 0);
+            var l1 = new RectangleF(mLead1.X, mLead1.Y, 0, 0);
             var s0 = new RectangleF(mSwPoles[0].X, mSwPoles[0].Y, 0, 0);
             var s1 = new RectangleF(mSwPoles[ce.ThrowCount - 1].X, mSwPoles[ce.ThrowCount - 1].Y, 0, 0);
             return RectangleF.Union(l1, RectangleF.Union(s0, s1));
@@ -59,7 +59,7 @@ namespace Circuit.UI.Passive {
                 interpLead(ref mSwPoles[i], 1, hs);
                 interpPost(ref mSwPosts[i], 1, hs);
             }
-            mSwPoles[i] = _Lead2; /* for center off */
+            mSwPoles[i] = mLead2; /* for center off */
             ce.PosCount = ce.ThrowCount;
             ce.SetNodePos(Post.A, mSwPosts);
         }
@@ -69,7 +69,7 @@ namespace Circuit.UI.Passive {
 
             /* draw first lead */
             drawLeadA();
-            fillCircle(_Lead1, 2.5f);
+            fillCircle(mLead1, 2.5f);
 
             /* draw other leads */
             for (int i = 0; i < ce.ThrowCount; i++) {
@@ -78,12 +78,12 @@ namespace Circuit.UI.Passive {
                 fillCircle(pole, 2.5f);
             }
             /* draw switch */
-            drawLine(_Lead1, mSwPoles[ce.Position]);
+            drawLine(mLead1, mSwPoles[ce.Position]);
 
             updateDotCount();
-            drawCurrentA(_CurCount);
+            drawCurrentA(mCurCount);
             if (ce.Position != 2) {
-                drawCurrent(mSwPoles[ce.Position], mSwPosts[ce.Position], _CurCount);
+                drawCurrent(mSwPoles[ce.Position], mSwPosts[ce.Position], mCurCount);
             }
         }
 

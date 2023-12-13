@@ -122,7 +122,7 @@ namespace Circuit.Common {
         }
 
         #region [get/set method]
-        public BaseUI GetUI() {
+        public IUI GetUI() {
             if (0 <= SelectedWave && SelectedWave < Waves.Count) {
                 return Waves[SelectedWave].UI;
             }
@@ -222,7 +222,7 @@ namespace Circuit.Common {
                 Text = "";
             }
         }
-        public void Setup(BaseUI ui) {
+        public void Setup(IUI ui) {
             setPlot(ui);
             initialize();
         }
@@ -377,7 +377,7 @@ namespace Circuit.Common {
             ShowVoltage = true;
             ShowScale = ShowFreq = ManualScale = ShowFFT = false;
         }
-        void setPlot(BaseUI ui) {
+        void setPlot(IUI ui) {
             if (null == ui) {
                 Waves.Clear();
                 return;
@@ -390,7 +390,7 @@ namespace Circuit.Common {
             if (Waves.Count == 0) {
                 return;
             }
-            var uiList = new List<BaseUI>();
+            var uiList = new List<IUI>();
             foreach (var wave in Waves) {
                 if (null == wave.UI) {
                     continue;

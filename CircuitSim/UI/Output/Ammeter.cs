@@ -14,7 +14,7 @@ namespace Circuit.UI.Output {
 
         public Ammeter(Point pos) : base(pos) {
             Elm = new ElmAmmeter();
-            _Flags = FLAG_SHOWCURRENT;
+            mFlags = FLAG_SHOWCURRENT;
         }
 
         public Ammeter(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {

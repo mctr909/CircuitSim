@@ -15,8 +15,8 @@ namespace Circuit.UI.Input {
 
         public AM(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new ElmAM(st);
-            if ((_Flags & FLAG_COS) != 0) {
-                _Flags &= ~FLAG_COS;
+            if ((mFlags & FLAG_COS) != 0) {
+                mFlags &= ~FLAG_COS;
             }
         }
 
@@ -34,7 +34,7 @@ namespace Circuit.UI.Input {
         public override void SetPoints() {
             base.SetPoints();
             setLead1(1 - 0.5 * SIZE / Post.Len);
-            interpPost(ref _NamePos, 1);
+            interpPost(ref mNamePos, 1);
             ReferenceName = "AM";
         }
 
@@ -42,10 +42,10 @@ namespace Circuit.UI.Input {
             var ce = (ElmAM)Elm;
             drawLeadA();
             drawCircle(Post.B, SIZE / 2);
-            drawCenteredText(ReferenceName, _NamePos);
-            updateDotCount(-ce.Current, ref _CurCount);
+            drawCenteredText(ReferenceName, mNamePos);
+            updateDotCount(-ce.Current, ref mCurCount);
             if (CirSimForm.ConstructElm != this) {
-                drawCurrentA(_CurCount);
+                drawCurrentA(mCurCount);
             }
         }
 

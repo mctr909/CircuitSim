@@ -40,7 +40,7 @@ namespace Circuit.Forms {
             });
         }
 
-        public ContextMenuStrip Show(Point pos, BaseUI mouseElm) {
+        public ContextMenuStrip Show(Point pos, IUI mouseElm) {
             Edit.Enabled = mouseElm.GetElementInfo(0, 0) != null;
             ScopeWindow.Enabled = mouseElm.CanViewInScope;
             ScopeFloat.Enabled = mouseElm.CanViewInScope;
@@ -52,7 +52,7 @@ namespace Circuit.Forms {
             return this;
         }
 
-        bool canSplit(BaseUI ce) {
+        bool canSplit(IUI ce) {
             if (!(ce is Wire)) {
                 return false;
             }
@@ -63,7 +63,7 @@ namespace Circuit.Forms {
             return false;
         }
 
-        bool sliderItemEnabled(BaseUI elm) {
+        bool sliderItemEnabled(IUI elm) {
             if (elm is Pot) {
                 return false;
             }

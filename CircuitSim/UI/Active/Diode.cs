@@ -34,7 +34,7 @@ namespace Circuit.UI.Active {
         public override DUMP_ID DumpId { get { return DUMP_ID.DIODE; } }
 
         protected override void dump(List<object> optionList) {
-            _Flags |= FLAG_MODEL;
+            mFlags |= FLAG_MODEL;
             var ce = (ElmDiode)Elm;
             optionList.Add(Utils.Escape(ce.mModelName));
         }
@@ -47,33 +47,33 @@ namespace Circuit.UI.Active {
             interpLeadAB(ref mCathode[3], ref mCathode[2], (BODY_LEN + 1.0) / BODY_LEN, HS);
             var pa = new PointF[2];
             interpLeadAB(ref pa[0], ref pa[1], -1.0 / BODY_LEN, HS);
-            mPoly = new PointF[] { pa[0], pa[1], _Lead2 };
+            mPoly = new PointF[] { pa[0], pa[1], mLead2 };
             setTextPos();
         }
 
         protected void setTextPos() {
             var abX = Post.B.X - Post.A.X;
             var abY = Post.B.Y - Post.A.Y;
-            _TextRot = Math.Atan2(abY, abX);
-            var deg = -_TextRot * 180 / Math.PI;
+            mTextRot = Math.Atan2(abY, abX);
+            var deg = -mTextRot * 180 / Math.PI;
             if (deg < 0.0) {
                 deg += 360;
             }
             if (45 * 3 <= deg && deg < 45 * 7) {
-                _TextRot += Math.PI;
+                mTextRot += Math.PI;
             }
             if (0 < deg && deg < 45 * 3) {
-                interpPost(ref _ValuePos, 0.5, 12 * Post.Dsign);
-                interpPost(ref _NamePos, 0.5, -10 * Post.Dsign);
+                interpPost(ref mValuePos, 0.5, 12 * Post.Dsign);
+                interpPost(ref mNamePos, 0.5, -10 * Post.Dsign);
             } else if (45 * 3 <= deg && deg <= 180) {
-                interpPost(ref _NamePos, 0.5, 10 * Post.Dsign);
-                interpPost(ref _ValuePos, 0.5, -14 * Post.Dsign);
+                interpPost(ref mNamePos, 0.5, 10 * Post.Dsign);
+                interpPost(ref mValuePos, 0.5, -14 * Post.Dsign);
             } else if (180 < deg && deg < 45 * 7) {
-                interpPost(ref _NamePos, 0.5, -10 * Post.Dsign);
-                interpPost(ref _ValuePos, 0.5, 12 * Post.Dsign);
+                interpPost(ref mNamePos, 0.5, -10 * Post.Dsign);
+                interpPost(ref mValuePos, 0.5, 12 * Post.Dsign);
             } else {
-                interpPost(ref _NamePos, 0.5, 12 * Post.Dsign);
-                interpPost(ref _ValuePos, 0.5, -12 * Post.Dsign);
+                interpPost(ref mNamePos, 0.5, 12 * Post.Dsign);
+                interpPost(ref mValuePos, 0.5, -12 * Post.Dsign);
             }
         }
 

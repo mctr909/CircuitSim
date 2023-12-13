@@ -60,7 +60,7 @@ namespace Circuit.UI.Active {
 
             var ce = (ElmTransistor)Elm;
 
-            if ((_Flags & FLAG_FLIP) != 0) {
+            if ((mFlags & FLAG_FLIP) != 0) {
                 Post.Dsign = -Post.Dsign;
             }
 
@@ -106,21 +106,21 @@ namespace Circuit.UI.Active {
         }
 
         void setTextPos() {
-            var swap = 0 < (_Flags & FLAG_FLIP) ? -1 : 1;
+            var swap = 0 < (mFlags & FLAG_FLIP) ? -1 : 1;
             if (Post.Horizontal) {
                 if (0 < Post.Dsign * swap) {
-                    _NamePos = new Point(Post.B.X + 10, Post.B.Y);
+                    mNamePos = new Point(Post.B.X + 10, Post.B.Y);
                 } else {
-                    _NamePos = new Point(Post.B.X - 6, Post.B.Y);
+                    mNamePos = new Point(Post.B.X - 6, Post.B.Y);
                 }
             } else if (Post.Vertical) {
                 if (0 < Post.Dsign) {
-                    _NamePos = new Point(Post.B.X, Post.B.Y + 15 * swap * 2 / 3);
+                    mNamePos = new Point(Post.B.X, Post.B.Y + 15 * swap * 2 / 3);
                 } else {
-                    _NamePos = new Point(Post.B.X, Post.B.Y - 13 * swap * 2 / 3);
+                    mNamePos = new Point(Post.B.X, Post.B.Y - 13 * swap * 2 / 3);
                 }
             } else {
-                interpPost(ref _NamePos, 0.5, 10 * Post.Dsign);
+                interpPost(ref mNamePos, 0.5, 10 * Post.Dsign);
             }
         }
 
@@ -154,9 +154,9 @@ namespace Circuit.UI.Active {
 
             if (ControlPanel.ChkShowName.Checked) {
                 if (Post.Vertical) {
-                    drawCenteredText(ReferenceName, _NamePos);
+                    drawCenteredText(ReferenceName, mNamePos);
                 } else {
-                    drawCenteredText(ReferenceName, _NamePos, -Math.PI / 2);
+                    drawCenteredText(ReferenceName, mNamePos, -Math.PI / 2);
                 }
             }
         }
@@ -190,7 +190,7 @@ namespace Circuit.UI.Active {
                 return new ElementInfo("hfe", ((ElmTransistor)Elm).Hfe);
             }
             if (r == 2) {
-                return new ElementInfo("エミッタ/コレクタ 入れ替え", (_Flags & FLAG_FLIP) != 0);
+                return new ElementInfo("エミッタ/コレクタ 入れ替え", (mFlags & FLAG_FLIP) != 0);
             }
             return null;
         }
@@ -206,9 +206,9 @@ namespace Circuit.UI.Active {
             }
             if (n == 2) {
                 if (ei.CheckBox.Checked) {
-                    _Flags |= FLAG_FLIP;
+                    mFlags |= FLAG_FLIP;
                 } else {
-                    _Flags &= ~FLAG_FLIP;
+                    mFlags &= ~FLAG_FLIP;
                 }
                 SetPoints();
             }

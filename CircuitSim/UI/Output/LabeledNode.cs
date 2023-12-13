@@ -20,7 +20,7 @@ namespace Circuit.UI.Output {
             Elm = new ElmLabeledNode(st);
         }
 
-        public bool IsInternal { get { return (_Flags & FLAG_INTERNAL) != 0; } }
+        public bool IsInternal { get { return (mFlags & FLAG_INTERNAL) != 0; } }
 
         public override DUMP_ID DumpId { get { return DUMP_ID.LABELED_NODE; } }
 
@@ -42,8 +42,9 @@ namespace Circuit.UI.Output {
 
         void setTextPos() {
             var ce = (ElmLabeledNode)Elm;
-            var txtW = Context.GetTextSize(ce.Text).Width;
-            var txtH = Context.GetTextSize(ce.Text).Height;
+            var txtSize = CustomGraphics.Instance.GetTextSize(ce.Text);
+            var txtW = txtSize.Width;
+            var txtH = txtSize.Height;
             var pw = txtW / Post.Len;
             var ph = 0.5 * (txtH - 1);
             setLead1(1);
@@ -77,26 +78,26 @@ namespace Circuit.UI.Output {
             mTextRect = new RectangleF(ax, ay, bx - ax + 1, by - ay + 1);
             var abX = Post.B.X - Post.A.X;
             var abY = Post.B.Y - Post.A.Y;
-            _TextRot = Math.Atan2(abY, abX);
-            var deg = -_TextRot * 180 / Math.PI;
+            mTextRot = Math.Atan2(abY, abX);
+            var deg = -mTextRot * 180 / Math.PI;
             if (deg < 0.0) {
                 deg += 360;
             }
             if (45 * 3 <= deg && deg < 45 * 7) {
-                _TextRot += Math.PI;
-                interpPost(ref _NamePos, 1 + 0.5 * pw, txtH / Post.Len);
+                mTextRot += Math.PI;
+                interpPost(ref mNamePos, 1 + 0.5 * pw, txtH / Post.Len);
             } else {
-                interpPost(ref _NamePos, 1 + 0.5 * pw, -txtH / Post.Len);
+                interpPost(ref mNamePos, 1 + 0.5 * pw, -txtH / Post.Len);
             }
         }
 
         public override void Draw(CustomGraphics g) {
             var ce = (ElmLabeledNode)Elm;
             drawLeadA();
-            drawCenteredText(ce.Text, _NamePos, _TextRot);
+            drawCenteredText(ce.Text, mNamePos, mTextRot);
             drawPolyline(mTextPoly);
-            updateDotCount(ce.Current, ref _CurCount);
-            drawCurrentA(_CurCount);
+            updateDotCount(ce.Current, ref mCurCount);
+            drawCurrentA(mCurCount);
         }
 
         public override void GetInfo(string[] arr) {
@@ -126,7 +127,7 @@ namespace Circuit.UI.Output {
                 ce.Text = ei.Text;
             }
             if (n == 1) {
-                _Flags = ei.ChangeFlag(_Flags, FLAG_INTERNAL);
+                mFlags = ei.ChangeFlag(mFlags, FLAG_INTERNAL);
             }
             setTextPos();
         }

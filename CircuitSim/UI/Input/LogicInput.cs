@@ -8,7 +8,7 @@ namespace Circuit.UI.Input {
     class LogicInput : Switch {
         const int FLAG_NUMERIC = 2;
 
-        bool isNumeric { get { return (_Flags & (FLAG_NUMERIC)) != 0; } }
+        bool isNumeric { get { return (mFlags & (FLAG_NUMERIC)) != 0; } }
 
         public LogicInput(Point pos) : base(pos, 0) {
             Elm = new ElmLogicInput();
@@ -43,7 +43,7 @@ namespace Circuit.UI.Input {
             drawCenteredLText(s, Post.B, true);
             drawLeadA();
             updateDotCount();
-            drawCurrentA(_CurCount);
+            drawCurrentA(mCurCount);
         }
 
         public override void GetInfo(string[] arr) {
@@ -90,9 +90,9 @@ namespace Circuit.UI.Input {
             }
             if (n == 3) {
                 if (ei.CheckBox.Checked) {
-                    _Flags |= FLAG_NUMERIC;
+                    mFlags |= FLAG_NUMERIC;
                 } else {
-                    _Flags &= ~FLAG_NUMERIC;
+                    mFlags &= ~FLAG_NUMERIC;
                 }
             }
         }

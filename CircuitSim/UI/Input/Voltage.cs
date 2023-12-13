@@ -73,8 +73,8 @@ namespace Circuit.UI.Input {
         public const string VALUE_NAME_PHASE_OFS = "オフセット位相";
         public const string VALUE_NAME_DUTY = "デューティ比";
 
-        protected override BaseLink _Link { get; set; } = new VoltageLink();
-        protected VoltageLink Link { get { return (VoltageLink)_Link; } }
+        protected override BaseLink mLink { get; set; } = new VoltageLink();
+        protected VoltageLink Link { get { return (VoltageLink)mLink; } }
 
         PointF mPs1;
         PointF mPs2;
@@ -104,9 +104,9 @@ namespace Circuit.UI.Input {
             /* set flag so we know if duty cycle is correct for pulse waveforms */
             if (elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_MONOPOLE ||
                 elm.WaveForm == ElmVoltage.WAVEFORM.PULSE_DIPOLE) {
-                _Flags |= FLAG_PULSE_DUTY;
+                mFlags |= FLAG_PULSE_DUTY;
             } else {
-                _Flags &= ~FLAG_PULSE_DUTY;
+                mFlags &= ~FLAG_PULSE_DUTY;
             }
             optionList.Add(elm.WaveForm);
             optionList.Add(elm.Frequency);
@@ -139,7 +139,7 @@ namespace Circuit.UI.Input {
                 interpLeadAB(ref mPs1, ref mPs2, 0, hs * 0.5);
                 interpLeadAB(ref mPs3, ref mPs4, 1, hs);
                 var s = Utils.UnitText(elm.MaxVoltage, "V");
-                var w = Context.GetTextSize(s).Width;
+                var w = CustomGraphics.Instance.GetTextSize(s).Width;
                 interpPost(ref mTextPos, 0.5, w * 0.5 + 10);
                 mTextRot = Utils.Angle(Post.A, Post.B) + Math.PI / 2;
             } else {
@@ -353,10 +353,10 @@ namespace Circuit.UI.Input {
 
             if (CirSimForm.ConstructElm != this) {
                 if (elm.WaveForm == ElmVoltage.WAVEFORM.DC) {
-                    drawCurrent(Post.A, Post.B, _CurCount);
+                    drawCurrent(Post.A, Post.B, mCurCount);
                 } else {
-                    drawCurrentA(_CurCount);
-                    drawCurrentB(_CurCount);
+                    drawCurrentA(mCurCount);
+                    drawCurrentB(mCurCount);
                 }
             }
         }

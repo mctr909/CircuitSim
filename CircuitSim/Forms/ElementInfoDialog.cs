@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 using Circuit.UI;
@@ -12,7 +10,7 @@ namespace Circuit {
     public class ElementInfoDialog : Form {
         const double ROOT2 = 1.41421356237309504880;
 
-        BaseUI mElm;
+        IUI mElm;
         Button mBtnApply;
         Button mBtnCancel;
         ElementInfo[,] mEInfos;
@@ -21,7 +19,7 @@ namespace Circuit {
         Panel mPnlCommonButtons;
         bool mCloseOnEnter = true;
 
-        public ElementInfoDialog(BaseUI ce) : base() {
+        public ElementInfoDialog(IUI ce) : base() {
             Text = "Edit Component";
             mElm = ce;
 

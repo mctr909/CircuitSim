@@ -24,7 +24,7 @@ namespace Circuit.UI.Input {
 
         public override void SetPoints() {
             base.SetPoints();
-            interpPost(ref _NamePos, 1 + 12 / Post.Len);
+            interpPost(ref mNamePos, 1 + 12 / Post.Len);
             interpPost(ref mC, 1);
             interpPost(ref mLa, 1, -6);
             interpPost(ref mLb, 1, 6);
@@ -36,7 +36,7 @@ namespace Circuit.UI.Input {
                 setLead1(1);
                 break;
             default:
-                if ((_Flags & FLAG_CLOCK) != 0) {
+                if ((mFlags & FLAG_CLOCK) != 0) {
                     setLead1(1);
                 } else {
                     if (Post.Len * 0.6 < BODY_LEN * 0.5) {
@@ -52,9 +52,9 @@ namespace Circuit.UI.Input {
         public override void Draw(CustomGraphics g) {
             drawLeadA();
             drawRail();
-            updateDotCount(-Elm.Current, ref _CurCount);
+            updateDotCount(-Elm.Current, ref mCurCount);
             if (CirSimForm.ConstructElm != this) {
-                drawCurrentA(_CurCount);
+                drawCurrentA(mCurCount);
             }
         }
 
@@ -65,11 +65,11 @@ namespace Circuit.UI.Input {
                 drawCircle(mC, 4);
                 var v = elm.GetVoltage();
                 var s = Utils.UnitText(v, "V");
-                drawCenteredText(s, _NamePos);
-            } else if(elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE && (_Flags & FLAG_CLOCK) != 0) {
-                drawCenteredText("Clock", _NamePos);
+                drawCenteredText(s, mNamePos);
+            } else if(elm.WaveForm == ElmVoltage.WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
+                drawCenteredText("Clock", mNamePos);
             } else if (elm.WaveForm == ElmVoltage.WAVEFORM.NOISE) {
-                drawCenteredText("Noise", _NamePos);
+                drawCenteredText("Noise", mNamePos);
             } else {
                 drawWaveform(Post.B);
                 if (ControlPanel.ChkShowValues.Checked) {

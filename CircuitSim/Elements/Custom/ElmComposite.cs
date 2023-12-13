@@ -138,7 +138,7 @@ namespace Circuit.Elements.Custom {
             return c;
         }
 
-        public void SetComposite(Dictionary<int, CircuitNode> nodeHash, List<BaseUI> uiList, int[] externalNodes, string expr) {
+        public void SetComposite(Dictionary<int, CircuitNode> nodeHash, List<IUI> uiList, int[] externalNodes, string expr) {
             /* Flatten nodeHash in to compNodeList */
             mCompNodeList = new List<CircuitNode>();
             mNumTerms = externalNodes.Length;

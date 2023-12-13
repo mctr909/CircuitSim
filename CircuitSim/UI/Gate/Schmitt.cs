@@ -19,8 +19,8 @@ namespace Circuit.UI.Gate {
             draw2Leads();
             drawPolygon(gatePoly);
             drawPolygon(symbolPoly);
-            updateDotCount(ce.Current, ref _CurCount);
-            drawCurrentB(_CurCount);
+            updateDotCount(ce.Current, ref mCurCount);
+            drawCurrentB(mCurCount);
         }
 
         public override void SetPoints() {

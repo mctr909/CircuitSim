@@ -36,7 +36,7 @@ namespace Circuit.UI.Active {
             interpLeadAB(ref mCathode[0], ref mCathode[1], 1, HS);
             Utils.InterpPoint(mCathode[0], mCathode[1], ref mWing[0], -0.2, -HS);
             Utils.InterpPoint(mCathode[1], mCathode[0], ref mWing[1], -0.2, -HS);
-            mPoly = new PointF[] { pa[0], pa[1], _Lead2 };
+            mPoly = new PointF[] { pa[0], pa[1], mLead2 };
             setTextPos();
         }
 

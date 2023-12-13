@@ -13,15 +13,15 @@ namespace Circuit.UI.Input {
 
         public Sweep(Point pos) : base(pos) {
             Elm = new ElmSweep();
-            _Flags = FLAG_BIDIR;
-            ((ElmSweep)Elm).BothSides = 0 != (_Flags & FLAG_BIDIR);
+            mFlags = FLAG_BIDIR;
+            ((ElmSweep)Elm).BothSides = 0 != (mFlags & FLAG_BIDIR);
         }
 
         public Sweep(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             Elm = new ElmSweep(st);
             var ce = (ElmSweep)Elm;
-            ce.IsLog = 0 != (_Flags & FLAG_LOG);
-            ce.BothSides = 0 != (_Flags & FLAG_BIDIR);
+            ce.IsLog = 0 != (mFlags & FLAG_LOG);
+            ce.BothSides = 0 != (mFlags & FLAG_BIDIR);
         }
 
         public override DUMP_ID DumpId { get { return DUMP_ID.SWEEP; } }
@@ -80,15 +80,15 @@ namespace Circuit.UI.Input {
                 drawValues(s, 25, 0);
             }
 
-            updateDotCount(-ce.Current, ref _CurCount);
+            updateDotCount(-ce.Current, ref mCurCount);
             if (CirSimForm.ConstructElm != this) {
-                drawCurrentA(_CurCount);
+                drawCurrentA(mCurCount);
             }
         }
 
         public override void GetInfo(string[] arr) {
             var ce = (ElmSweep)Elm;
-            arr[0] = "sweep " + (((_Flags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
+            arr[0] = "sweep " + (((mFlags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
             arr[1] = "I = " + Utils.CurrentAbsText(ce.Current);
             arr[2] = "V = " + Utils.VoltageText(ce.Volts[0]);
             arr[3] = "f = " + Utils.FrequencyText(ce.Frequency);
@@ -114,10 +114,10 @@ namespace Circuit.UI.Input {
                 return new ElementInfo("スウィープ時間(sec)", ce.SweepTime);
             }
             if (r == 4) {
-                return new ElementInfo("周波数対数変化", (_Flags & FLAG_LOG) != 0);
+                return new ElementInfo("周波数対数変化", (mFlags & FLAG_LOG) != 0);
             }
             if (r == 5) {
-                return new ElementInfo("双方向周波数遷移", (_Flags & FLAG_BIDIR) != 0);
+                return new ElementInfo("双方向周波数遷移", (mFlags & FLAG_BIDIR) != 0);
             }
             return null;
         }
@@ -144,18 +144,18 @@ namespace Circuit.UI.Input {
                 ce.SweepTime = ei.Value;
             }
             if (n == 4) {
-                _Flags &= ~FLAG_LOG;
+                mFlags &= ~FLAG_LOG;
                 if (ei.CheckBox.Checked) {
-                    _Flags |= FLAG_LOG;
+                    mFlags |= FLAG_LOG;
                 }
-                ce.IsLog = 0 != (_Flags & FLAG_LOG);
+                ce.IsLog = 0 != (mFlags & FLAG_LOG);
             }
             if (n == 5) {
-                _Flags &= ~FLAG_BIDIR;
+                mFlags &= ~FLAG_BIDIR;
                 if (ei.CheckBox.Checked) {
-                    _Flags |= FLAG_BIDIR;
+                    mFlags |= FLAG_BIDIR;
                 }
-                ce.BothSides = 0 != (_Flags & FLAG_BIDIR);
+                ce.BothSides = 0 != (mFlags & FLAG_BIDIR);
             }
             ce.setParams();
         }

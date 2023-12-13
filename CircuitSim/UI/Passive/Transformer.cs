@@ -158,7 +158,7 @@ namespace Circuit.UI.Passive {
         }
 
         void setNamePos() {
-            _NamePos = new Point((int)mCore[0].X + 1, (int)mCore[0].Y - 8);
+            mNamePos = new Point((int)mCore[0].X + 1, (int)mCore[0].Y - 8);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -194,7 +194,7 @@ namespace Circuit.UI.Passive {
             drawCurrent(mCoilSec2, mTermSec2, ce.CurCounts[1]);
 
             if (ControlPanel.ChkShowName.Checked) {
-                drawCenteredText(ReferenceName, _NamePos);
+                drawCenteredText(ReferenceName, mNamePos);
             }
         }
 
@@ -249,9 +249,9 @@ namespace Circuit.UI.Passive {
             if (n == 4) {
                 ce.Polarity = ei.CheckBox.Checked ? -1 : 1;
                 if (ei.CheckBox.Checked) {
-                    _Flags |= FLAG_REVERSE;
+                    mFlags |= FLAG_REVERSE;
                 } else {
-                    _Flags &= ~FLAG_REVERSE;
+                    mFlags &= ~FLAG_REVERSE;
                 }
                 SetPoints();
             }

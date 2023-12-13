@@ -18,11 +18,11 @@ namespace Circuit.UI.Output {
 
         public override DUMP_ID DumpId { get { return DUMP_ID.LOGIC_O; } }
 
-        bool isTernary { get { return (_Flags & FLAG_TERNARY) != 0; } }
+        bool isTernary { get { return (mFlags & FLAG_TERNARY) != 0; } }
 
-        bool isNumeric { get { return (_Flags & (FLAG_TERNARY | FLAG_NUMERIC)) != 0; } }
+        bool isNumeric { get { return (mFlags & (FLAG_TERNARY | FLAG_NUMERIC)) != 0; } }
 
-        bool needsPullDown { get { return (_Flags & FLAG_PULLDOWN) != 0; } }
+        bool needsPullDown { get { return (mFlags & FLAG_PULLDOWN) != 0; } }
 
         public override void SetPoints() {
             base.SetPoints();
@@ -85,24 +85,24 @@ namespace Circuit.UI.Output {
             }
             if (n == 1) {
                 if (ei.CheckBox.Checked) {
-                    _Flags = FLAG_PULLDOWN;
+                    mFlags = FLAG_PULLDOWN;
                 } else {
-                    _Flags &= ~FLAG_PULLDOWN;
+                    mFlags &= ~FLAG_PULLDOWN;
                 }
                 ce.needsPullDown = needsPullDown;
             }
             if (n == 2) {
                 if (ei.CheckBox.Checked) {
-                    _Flags |= FLAG_NUMERIC;
+                    mFlags |= FLAG_NUMERIC;
                 } else {
-                    _Flags &= ~FLAG_NUMERIC;
+                    mFlags &= ~FLAG_NUMERIC;
                 }
             }
             if (n == 3) {
                 if (ei.CheckBox.Checked) {
-                    _Flags |= FLAG_TERNARY;
+                    mFlags |= FLAG_TERNARY;
                 } else {
-                    _Flags &= ~FLAG_TERNARY;
+                    mFlags &= ~FLAG_TERNARY;
                 }
             }
         }

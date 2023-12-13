@@ -25,7 +25,7 @@ namespace Circuit.UI.Active {
 
         public Mosfet(Point pos, bool pChFlag) : base(pos) {
             Elm = new ElmMosfet(pChFlag);
-            _Flags = pChFlag ? FLAG_PNP : 0;
+            mFlags = pChFlag ? FLAG_PNP : 0;
             Post.NoDiagonal = true;
             ReferenceName = "Tr";
         }
@@ -55,7 +55,7 @@ namespace Circuit.UI.Active {
             var hsm = (HS / 8 + 1) * 8;
             int hs1 = hsm * Post.Dsign;
             var hs2 = HS * Post.Dsign;
-            if ((_Flags & FLAG_FLIP) != 0) {
+            if ((mFlags & FLAG_FLIP) != 0) {
                 hs1 = -hs1;
                 hs2 = -hs2;
             }
@@ -125,18 +125,18 @@ namespace Circuit.UI.Active {
         void setTextPos() {
             if (Post.Horizontal) {
                 if (0 < Post.Dsign) {
-                    _NamePos = new Point(Post.B.X + 10, Post.B.Y);
+                    mNamePos = new Point(Post.B.X + 10, Post.B.Y);
                 } else {
-                    _NamePos = new Point(Post.B.X - 6, Post.B.Y);
+                    mNamePos = new Point(Post.B.X - 6, Post.B.Y);
                 }
             } else if (Post.Vertical) {
                 if (0 < Post.Dsign) {
-                    _NamePos = new Point(Post.B.X, Post.B.Y + 15 * 2 / 3);
+                    mNamePos = new Point(Post.B.X, Post.B.Y + 15 * 2 / 3);
                 } else {
-                    _NamePos = new Point(Post.B.X, Post.B.Y - 13 * 2 / 3);
+                    mNamePos = new Point(Post.B.X, Post.B.Y - 13 * 2 / 3);
                 }
             } else {
-                interpPost(ref _NamePos, 0.5, 10 * Post.Dsign);
+                interpPost(ref mNamePos, 0.5, 10 * Post.Dsign);
             }
         }
 
@@ -164,17 +164,17 @@ namespace Circuit.UI.Active {
             fillPolygon(mArrowPoly);
 
             /* draw current */
-            updateDotCount(-ce.Current, ref _CurCount);
+            updateDotCount(-ce.Current, ref mCurCount);
             updateDotCount(ce.DiodeCurrent1, ref mCurcountBody1);
             updateDotCount(ce.DiodeCurrent2, ref mCurcountBody2);
-            drawCurrent(mPosS[0], mPosB[0], _CurCount - mCurcountBody1);
-            drawCurrent(mPosB[0], mPosD[0], _CurCount + mCurcountBody2);
+            drawCurrent(mPosS[0], mPosB[0], mCurCount - mCurcountBody1);
+            drawCurrent(mPosB[0], mPosD[0], mCurCount + mCurcountBody2);
 
             if (ControlPanel.ChkShowName.Checked) {
                 if (Post.Vertical) {
-                    drawCenteredText(ReferenceName, _NamePos);
+                    drawCenteredText(ReferenceName, mNamePos);
                 } else {
-                    drawCenteredText(ReferenceName, _NamePos, -Math.PI / 2);
+                    drawCenteredText(ReferenceName, mNamePos, -Math.PI / 2);
                 }
             }
         }
@@ -214,7 +214,7 @@ namespace Circuit.UI.Active {
                 return new ElementInfo("β", ce.Beta);
             }
             if (r == 3) {
-                return new ElementInfo("ドレイン/ソース 入れ替え", (_Flags & FLAG_FLIP) != 0);
+                return new ElementInfo("ドレイン/ソース 入れ替え", (mFlags & FLAG_FLIP) != 0);
             }
             return null;
         }
@@ -232,7 +232,7 @@ namespace Circuit.UI.Active {
                 ce.Beta = ElmMosfet.LastBeta = ei.Value;
             }
             if (n == 3) {
-                _Flags = ei.CheckBox.Checked ? (_Flags | FLAG_FLIP) : (_Flags & ~FLAG_FLIP);
+                mFlags = ei.CheckBox.Checked ? (mFlags | FLAG_FLIP) : (mFlags & ~FLAG_FLIP);
                 SetPoints();
             }
         }

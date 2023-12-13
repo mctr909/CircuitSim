@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Deflate.cs" />
+    <Compile Include="Common\IUI.cs" />
     <Compile Include="Common\PDF.cs" />
     <Compile Include="Common\ScopePlot.cs" />
     <Compile Include="Common\ScopeWave.cs" />

@@ -55,13 +55,13 @@ namespace Circuit.UI.Custom {
             }
 
             public void setPoint(int px, int py, int dx, int dy, int dax, int day, int sx, int sy) {
-                if ((mElm._Flags & FLAG_FLIP_X) != 0) {
+                if ((mElm.mFlags & FLAG_FLIP_X) != 0) {
                     dx = -dx;
                     dax = -dax;
                     px += mElm.cspc2 * (mElm.sizeX - 1);
                     sx = -sx;
                 }
-                if ((mElm._Flags & FLAG_FLIP_Y) != 0) {
+                if ((mElm.mFlags & FLAG_FLIP_Y) != 0) {
                     dy = -dy;
                     day = -day;
                     py += mElm.cspc2 * (mElm.sizeY - 1);
@@ -154,8 +154,8 @@ namespace Circuit.UI.Custom {
             csize = s;
             cspc = 8 * s;
             cspc2 = cspc * 2;
-            _Flags &= ~FLAG_SMALL;
-            _Flags |= (s == 1) ? FLAG_SMALL : 0;
+            mFlags &= ~FLAG_SMALL;
+            mFlags |= (s == 1) ? FLAG_SMALL : 0;
         }
 
         public override void Draw(CustomGraphics g) {
@@ -325,10 +325,10 @@ namespace Circuit.UI.Custom {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("Flip X", (_Flags & FLAG_FLIP_X) != 0);
+                return new ElementInfo("Flip X", (mFlags & FLAG_FLIP_X) != 0);
             }
             if (r == 1) {
-                return new ElementInfo("Flip Y", (_Flags & FLAG_FLIP_Y) != 0);
+                return new ElementInfo("Flip Y", (mFlags & FLAG_FLIP_Y) != 0);
             }
             return null;
         }
@@ -336,17 +336,17 @@ namespace Circuit.UI.Custom {
         public override void SetElementValue(int n, int c, ElementInfo ei) {
             if (n == 0) {
                 if (ei.CheckBox.Checked) {
-                    _Flags |= FLAG_FLIP_X;
+                    mFlags |= FLAG_FLIP_X;
                 } else {
-                    _Flags &= ~FLAG_FLIP_X;
+                    mFlags &= ~FLAG_FLIP_X;
                 }
                 SetPoints();
             }
             if (n == 1) {
                 if (ei.CheckBox.Checked) {
-                    _Flags |= FLAG_FLIP_Y;
+                    mFlags |= FLAG_FLIP_Y;
                 } else {
-                    _Flags &= ~FLAG_FLIP_Y;
+                    mFlags &= ~FLAG_FLIP_Y;
                 }
                 SetPoints();
             }

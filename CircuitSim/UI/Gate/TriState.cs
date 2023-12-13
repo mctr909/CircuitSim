@@ -49,8 +49,8 @@ namespace Circuit.UI.Gate {
             draw2Leads();
             drawPolygon(mGatePoly);
             drawLine(mCtrlTerm, mCtrlLead);
-            updateDotCount(ce.Current, ref _CurCount);
-            drawCurrentB(_CurCount);
+            updateDotCount(ce.Current, ref mCurCount);
+            drawCurrentB(mCurCount);
         }
 
         public override void Drag(Point pos) {

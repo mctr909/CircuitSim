@@ -14,7 +14,7 @@ namespace Circuit.Forms {
         static int mSelectedWave = -1;
 
         ContextMenuStrip mScopePopupMenu = null;
-        BaseUI mMouseElm = null;
+        IUI mMouseElm = null;
         CustomGraphics mG;
         Bitmap mBmp;
         Graphics mContext;
@@ -76,7 +76,7 @@ namespace Circuit.Forms {
         }
 
         void SelectUI() {
-            BaseUI selectElm = null;
+            IUI selectElm = null;
             for (int i = 0; i != PlotCount; i++) {
                 var plot = mPlots[i];
                 if (plot.BoundingBox.Contains(mMouseCursorX, mMouseCursorY)) {
@@ -289,7 +289,7 @@ namespace Circuit.Forms {
             }
         }
 
-        public static void AddPlot(BaseUI ui) {
+        public static void AddPlot(IUI ui) {
             if (ui == null) {
                 return;
             }

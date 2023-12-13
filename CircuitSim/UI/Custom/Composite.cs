@@ -8,7 +8,7 @@ namespace Circuit.UI.Custom {
         /* need to use escape() instead of converting spaces to _'s so composite elements can be nested */
         protected const int FLAG_ESCAPE = 1;
 
-        protected List<BaseUI> CompList = new List<BaseUI>();
+        protected List<IUI> CompList = new List<IUI>();
 
         public Composite(Point pos) : base(pos) { }
 
@@ -52,7 +52,7 @@ namespace Circuit.UI.Custom {
             return dumpStr;
         }
 
-        bool useEscape() { return (_Flags & FLAG_ESCAPE) != 0; }
+        bool useEscape() { return (mFlags & FLAG_ESCAPE) != 0; }
 
         public override void Delete() {
             for (int i = 0; i < CompList.Count; i++) {

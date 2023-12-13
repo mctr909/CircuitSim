@@ -9,7 +9,7 @@ namespace Circuit.UI.Input {
             elm.MaxVoltage = 2.5;
             elm.Bias = 2.5;
             elm.Frequency = 100;
-            _Flags |= FLAG_CLOCK;
+            mFlags |= FLAG_CLOCK;
         }
     }
 }

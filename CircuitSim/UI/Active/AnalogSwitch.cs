@@ -64,12 +64,12 @@ namespace Circuit.UI.Active {
             var ce = (ElmAnalogSwitch)Elm;
             draw2Leads();
             drawLine(mCtrlTerm, mCtrlLead);
-            fillCircle(_Lead1, 2.5f);
-            fillCircle(_Lead2, 2.5f);
+            fillCircle(mLead1, 2.5f);
+            fillCircle(mLead2, 2.5f);
             if (ce.IsOpen || g is PDF.Page) {
-                drawLine(_Lead1, mOpen);
+                drawLine(mLead1, mOpen);
             } else {
-                drawLine(_Lead1, mClose);
+                drawLine(mLead1, mClose);
             }
             doDots();
         }
@@ -88,7 +88,7 @@ namespace Circuit.UI.Active {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("ノーマリクローズ", (_Flags & FLAG_INVERT) != 0);
+                return new ElementInfo("ノーマリクローズ", (mFlags & FLAG_INVERT) != 0);
             }
             if (r == 1) {
                 return new ElementInfo("オン抵抗(Ω)", ce.Ron);
@@ -102,8 +102,8 @@ namespace Circuit.UI.Active {
         public override void SetElementValue(int n, int c, ElementInfo ei) {
             var ce = (ElmAnalogSwitch)Elm;
             if (n == 0) {
-                _Flags = ei.CheckBox.Checked ? (_Flags | FLAG_INVERT) : (_Flags & ~FLAG_INVERT);
-                ce.Invert = 0 != (_Flags & FLAG_INVERT);
+                mFlags = ei.CheckBox.Checked ? (mFlags | FLAG_INVERT) : (mFlags & ~FLAG_INVERT);
+                ce.Invert = 0 != (mFlags & FLAG_INVERT);
             }
             if (n == 1 && 0 < ei.Value) {
                 ce.Ron = ei.Value;

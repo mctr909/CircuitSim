@@ -5,130 +5,102 @@ using System.Drawing;
 using Circuit.UI.Output;
 
 namespace Circuit.UI {
-    public abstract class BaseUI {
-        public IElement Elm;
-        public static CustomGraphics Context;
-
-        static BaseUI _MouseElm = null;
+    abstract class BaseUI : IUI {
+        static IUI mMouseElm = null;
 
         protected BaseUI(Point pos) {
             Post = new Post(pos);
-            _Flags = 0;
+            mFlags = 0;
         }
 
         protected BaseUI(Point p1, Point p2, int f) {
             Post = new Post(p1, p2);
-            _Flags = f;
+            mFlags = f;
         }
 
         #region [property]
+        public abstract DUMP_ID DumpId { get; }
+
         public string ReferenceName { get; set; }
 
-        public Post Post { get; protected set; }
+        public IElement Elm { get; set; }
+
+        public Post Post { get; set; }
 
         public bool IsSelected { get; set; }
 
         public bool IsMouseElm {
             get {
-                if (null == _MouseElm) {
+                if (null == mMouseElm) {
                     return false;
                 }
-                return _MouseElm.Equals(this);
+                return mMouseElm.Equals(this);
             }
         }
 
         public bool NeedsHighlight {
             get {
-                if (null == _MouseElm) {
+                if (null == mMouseElm) {
                     return IsSelected;
                 }
                 /* Test if the current mouseElm is a ScopeElm and, if so, does it belong to this elm */
-                var isScope = _MouseElm is Scope;
+                var isScope = mMouseElm is Scope;
                 if (isScope) {
-                    var sc = (Scope)_MouseElm;
+                    var sc = (Scope)mMouseElm;
                     var ui = sc.Plot.GetUI();
                     isScope = null != ui && ui.Equals(this);
                 }
-                return _MouseElm.Equals(this) || IsSelected || isScope;
+                return mMouseElm.Equals(this) || IsSelected || isScope;
             }
         }
 
-        public abstract DUMP_ID DumpId { get; }
-
-        /// <summary>
-        /// called when an element is done being dragged out;
-        /// </summary>
-        /// <returns>returns true if it's zero size and should be deleted</returns>
         public virtual bool IsCreationFailed { get { return Post.IsCreationFailed; } }
 
         public virtual bool CanViewInScope { get { return Elm.TermCount <= 2; } }
-
-        protected virtual BaseLink _Link { get; set; } = new BaseLink();
         #endregion
 
         #region [protected variable]
-        protected PointF _Lead1;
-        protected PointF _Lead2;
-        protected PointF _NamePos;
-        protected PointF _ValuePos;
-        protected int _Flags;
-        protected double _CurCount;
-        protected double _TextRot;
+        protected PointF mLead1;
+        protected PointF mLead2;
+        protected PointF mNamePos;
+        protected PointF mValuePos;
+        protected int mFlags;
+        protected double mCurCount;
+        protected double mTextRot;
+        protected virtual BaseLink mLink { get; set; } = new BaseLink();
         #endregion
 
         #region [public method]
         public double DistancePostA(Point p) {
             return Utils.Distance(Post.A, p);
         }
-
         public double DistancePostB(Point p) {
             return Utils.Distance(Post.B, p);
         }
-
-        /// <summary>
-        /// dump component state for export/undo
-        /// </summary>
         public string Dump() {
             var valueList = new List<object>();
             valueList.Add(DumpId);
             Post.Dump(valueList);
-            valueList.Add(_Flags);
+            valueList.Add(mFlags);
             dump(valueList);
-            _Link.Dump(valueList);
+            mLink.Dump(valueList);
             if (!string.IsNullOrWhiteSpace(ReferenceName)) {
                 valueList.Add(Utils.Escape(ReferenceName));
             }
             return string.Join(" ", valueList.ToArray());
         }
-
-        /// <summary>
-        /// this is used to set the position of an internal element so we can draw it inside the parent
-        /// </summary>
-        /// <param name="ax"></param>
-        /// <param name="ay"></param>
-        /// <param name="bx"></param>
-        /// <param name="by"></param>
         public void SetPosition(int ax, int ay, int bx, int by) {
             Post.SetPosition(ax, ay, bx, by);
             SetPoints();
         }
-
         public void Move(int dx, int dy) {
             Post.Move(dx, dy);
             SetPoints();
         }
-
         public void Move(int dx, int dy, EPOST n) {
             Post.Move(dx, dy, n);
             SetPoints();
         }
-
-        /// <summary>
-        /// determine if moving this element by (dx,dy) will put it on top of another element
-        /// </summary>
-        /// <param name="dx"></param>
-        /// <param name="dy"></param>
-        /// <returns></returns>
         public bool AllowMove(int dx, int dy) {
             int nx = Post.A.X + dx;
             int ny = Post.A.Y + dy;
@@ -147,17 +119,15 @@ namespace Circuit.UI {
             }
             return true;
         }
-
         public void FlipPosts() {
             Post.FlipPosts();
             SetPoints();
         }
-
         public void SetMouseElm(bool v) {
             if (v) {
-                _MouseElm = this;
-            } else if (_MouseElm == this) {
-                _MouseElm = null;
+                mMouseElm = this;
+            } else if (mMouseElm == this) {
+                mMouseElm = null;
             }
         }
         #endregion
@@ -166,48 +136,27 @@ namespace Circuit.UI {
         public virtual double Distance(Point p) {
             return Utils.DistanceOnLine(Post.A, Post.B, p);
         }
-
         public virtual void Delete() {
-            if (_MouseElm == this) {
-                _MouseElm = null;
+            if (mMouseElm == this) {
+                mMouseElm = null;
             }
             CirSimForm.DeleteSliders(this);
         }
-
         public virtual void Draw(CustomGraphics g) { }
-
-        /// <summary>
-        /// draw second point to xx, yy
-        /// </summary>
-        /// <param name="pos"></param>
         public virtual void Drag(Point pos) {
             Post.Drag(CirSimForm.SnapGrid(pos));
             SetPoints();
         }
-
         public virtual void SelectRect(RectangleF r) {
             IsSelected = r.IntersectsWith(Post.GetRect());
         }
-
-        /// <summary>
-        /// calculate post locations and other convenience values used for drawing.
-        /// Called when element is moved
-        /// </summary>
         public virtual void SetPoints() {
             Post.SetValue();
             Elm.SetNodePos(Post.A, Post.B);
         }
-
-        /// <summary>
-        /// get component info for display in lower right
-        /// </summary>
-        /// <param name="arr"></param>
         public virtual void GetInfo(string[] arr) { }
-
         public virtual ElementInfo GetElementInfo(int r, int c) { return null; }
-
         public virtual void SetElementValue(int r, int c, ElementInfo ei) { }
-
         public virtual EventHandler CreateSlider(ElementInfo ei, Adjustable adj) { return null; }
         #endregion
 
@@ -220,7 +169,7 @@ namespace Circuit.UI {
         protected void doDots() {
             updateDotCount();
             if (CirSimForm.ConstructElm != this) {
-                drawCurrent(Post.A, Post.B, _CurCount);
+                drawCurrent(Post.A, Post.B, mCurCount);
             }
         }
 
@@ -242,7 +191,7 @@ namespace Circuit.UI {
         /// update dot positions (curcount) for drawing current (simple case for single current)
         /// </summary>
         protected void updateDotCount() {
-            updateDotCount(Elm.Current, ref _CurCount);
+            updateDotCount(Elm.Current, ref mCurCount);
         }
 
         protected void getBasicInfo(int begin, params string[] arr) {
@@ -257,8 +206,8 @@ namespace Circuit.UI {
         /// <param name="len"></param>
         protected void setLeads(int bodyLength) {
             if (Post.Len < bodyLength || bodyLength == 0) {
-                _Lead1 = Post.A;
-                _Lead2 = Post.B;
+                mLead1 = Post.A;
+                mLead2 = Post.B;
                 return;
             }
             setLead1((Post.Len - bodyLength) / (2 * Post.Len));
@@ -266,11 +215,11 @@ namespace Circuit.UI {
         }
 
         protected void setLead1(double w) {
-            interpPost(ref _Lead1, w);
+            interpPost(ref mLead1, w);
         }
 
         protected void setLead2(double w) {
-            interpPost(ref _Lead2, w);
+            interpPost(ref mLead2, w);
         }
 
         protected void interpPost(ref PointF p, double f) {
@@ -323,52 +272,52 @@ namespace Circuit.UI {
         }
 
         protected void interpLead(ref PointF p, double f) {
-            p.X = (float)Math.Floor(_Lead1.X * (1 - f) + _Lead2.X * f);
-            p.Y = (float)Math.Floor(_Lead1.Y * (1 - f) + _Lead2.Y * f);
+            p.X = (float)Math.Floor(mLead1.X * (1 - f) + mLead2.X * f);
+            p.Y = (float)Math.Floor(mLead1.Y * (1 - f) + mLead2.Y * f);
         }
 
         protected void interpLead(ref PointF p, double f, double g) {
-            var gx = _Lead2.Y - _Lead1.Y;
-            var gy = _Lead1.X - _Lead2.X;
+            var gx = mLead2.Y - mLead1.Y;
+            var gy = mLead1.X - mLead2.X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                p.X = _Lead1.X;
-                p.Y = _Lead1.Y;
+                p.X = mLead1.X;
+                p.Y = mLead1.Y;
             } else {
                 g /= r;
-                p.X = (float)(_Lead1.X * (1 - f) + _Lead2.X * f + g * gx);
-                p.Y = (float)(_Lead1.Y * (1 - f) + _Lead2.Y * f + g * gy);
+                p.X = (float)(mLead1.X * (1 - f) + mLead2.X * f + g * gx);
+                p.Y = (float)(mLead1.Y * (1 - f) + mLead2.Y * f + g * gy);
             }
         }
 
         protected void interpLeadAB(ref PointF a, ref PointF b, double f, double g) {
-            var gx = _Lead2.Y - _Lead1.Y;
-            var gy = _Lead1.X - _Lead2.X;
+            var gx = mLead2.Y - mLead1.Y;
+            var gy = mLead1.X - mLead2.X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                a.X = _Lead1.X;
-                a.Y = _Lead1.Y;
-                b.X = _Lead2.X;
-                b.Y = _Lead2.Y;
+                a.X = mLead1.X;
+                a.Y = mLead1.Y;
+                b.X = mLead2.X;
+                b.Y = mLead2.Y;
             } else {
                 g /= r;
-                a.X = (float)(_Lead1.X * (1 - f) + _Lead2.X * f + g * gx);
-                a.Y = (float)(_Lead1.Y * (1 - f) + _Lead2.Y * f + g * gy);
-                b.X = (float)(_Lead1.X * (1 - f) + _Lead2.X * f - g * gx);
-                b.Y = (float)(_Lead1.Y * (1 - f) + _Lead2.Y * f - g * gy);
+                a.X = (float)(mLead1.X * (1 - f) + mLead2.X * f + g * gx);
+                a.Y = (float)(mLead1.Y * (1 - f) + mLead2.Y * f + g * gy);
+                b.X = (float)(mLead1.X * (1 - f) + mLead2.X * f - g * gx);
+                b.Y = (float)(mLead1.Y * (1 - f) + mLead2.Y * f - g * gy);
             }
         }
 
         protected void setLinkedValues<T>(int linkID, double value) {
-            _Link.SetValue(Elm, linkID, value);
-            if (_Link.GetGroup(linkID) == 0) {
+            mLink.SetValue(Elm, linkID, value);
+            if (mLink.GetGroup(linkID) == 0) {
                 return;
             }
             for (int i = 0; i != CirSimForm.UICount; i++) {
-                var u2 = CirSimForm.GetUI(i);
+                var u2 = (BaseUI)CirSimForm.GetUI(i);
                 if (u2 is T) {
-                    if (u2._Link.GetGroup(linkID) == _Link.GetGroup(linkID)) {
-                        u2._Link.SetValue(u2.Elm, linkID, value);
+                    if (u2.mLink.GetGroup(linkID) == mLink.GetGroup(linkID)) {
+                        u2.mLink.SetValue(u2.Elm, linkID, value);
                     }
                 }
             }
@@ -377,41 +326,42 @@ namespace Circuit.UI {
 
         #region [draw method]
         protected void drawLine(PointF a, PointF b) {
-            Context.DrawLine(a.X, a.Y, b.X, b.Y);
+            CustomGraphics.Instance.DrawLine(a.X, a.Y, b.X, b.Y);
         }
         protected void drawLine(float ax, float ay, float bx, float by) {
-            Context.DrawLine(ax, ay, bx, by);
+            CustomGraphics.Instance.DrawLine(ax, ay, bx, by);
         }
         protected void drawDashRectangle(float x, float y, float w, float h) {
-            Context.DrawDashRectangle(x, y, w, h);
+            CustomGraphics.Instance.DrawDashRectangle(x, y, w, h);
         }
         protected void drawCircle(PointF p, float radius) {
-            Context.DrawCircle(p, radius);
+            CustomGraphics.Instance.DrawCircle(p, radius);
         }
         protected void drawArc(PointF p, float diameter, float start, float sweep) {
-            Context.DrawArc(p, diameter, start, sweep);
+            CustomGraphics.Instance.DrawArc(p, diameter, start, sweep);
         }
         protected void drawPolygon(PointF[] p) {
-            Context.DrawPolygon(p);
+            CustomGraphics.Instance.DrawPolygon(p);
         }
         protected void drawPolyline(PointF[] p) {
-            Context.DrawPolyline(p);
+            CustomGraphics.Instance.DrawPolyline(p);
         }
         protected void fillCircle(PointF p, float radius) {
-            Context.FillCircle(p.X, p.Y, radius);
+            CustomGraphics.Instance.FillCircle(p.X, p.Y, radius);
         }
         protected void fillPolygon(PointF[] p) {
-            Context.FillPolygon(p);
+            CustomGraphics.Instance.FillPolygon(p);
         }
         protected void drawLeadA() {
-            Context.DrawLine(Post.A, _Lead1);
+            CustomGraphics.Instance.DrawLine(Post.A, mLead1);
         }
         protected void drawLeadB() {
-            Context.DrawLine(_Lead2, Post.B);
+            CustomGraphics.Instance.DrawLine(mLead2, Post.B);
         }
         protected void draw2Leads() {
-            Context.DrawLine(Post.A, _Lead1);
-            Context.DrawLine(_Lead2, Post.B);
+            var g = CustomGraphics.Instance;
+            g.DrawLine(Post.A, mLead1);
+            g.DrawLine(mLead2, Post.B);
         }
         protected void drawCurrent(PointF a, PointF b, double pos) {
             drawCurrent(a.X, a.Y, b.X, b.Y, pos);
@@ -432,41 +382,42 @@ namespace Circuit.UI {
             for (var di = pos; di < r; di += CirSimForm.CURRENT_DOT_SIZE) {
                 var x0 = (int)(ax + di * nx);
                 var y0 = (int)(ay + di * ny);
-                Context.DrawCurrent(x0, y0, 0.5f);
+                CustomGraphics.Instance.DrawCurrent(x0, y0, 0.5f);
             }
         }
         protected void drawCurrentA(double pos) {
-            drawCurrent(Post.A, _Lead1, pos);
+            drawCurrent(Post.A, mLead1, pos);
         }
         protected void drawCurrentB(double pos) {
-            drawCurrent(_Lead2, Post.B, pos);
+            drawCurrent(mLead2, Post.B, pos);
         }
         protected void drawLeftText(string text, float x, float y) {
-            Context.DrawLeftText(text, x, y);
+            CustomGraphics.Instance.DrawLeftText(text, x, y);
         }
         protected void drawCenteredText(string text, PointF centerPos, double rotateAngle = 0) {
-            Context.DrawCenteredText(text, centerPos, rotateAngle);
+            CustomGraphics.Instance.DrawCenteredText(text, centerPos, rotateAngle);
         }
         protected void drawCenteredLText(string s, PointF p, bool cx) {
-            Context.DrawCenteredLText(s, p);
+            CustomGraphics.Instance.DrawCenteredLText(s, p);
         }
         protected void drawValues(string s, int offsetX, int offsetY) {
             if (s == null) {
                 return;
             }
-            var textSize = Context.GetTextSize(s);
+            var g = CustomGraphics.Instance;
+            var textSize = g.GetTextSize(s);
             var xc = Post.B.X;
             var yc = Post.B.Y;
-            Context.DrawRightText(s, xc + offsetX, yc - textSize.Height + offsetY);
+            g.DrawRightText(s, xc + offsetX, yc - textSize.Height + offsetY);
         }
         protected void drawValue(string s) {
             if (ControlPanel.ChkShowValues.Checked) {
-                drawCenteredText(s, _ValuePos, _TextRot);
+                drawCenteredText(s, mValuePos, mTextRot);
             }
         }
         protected void drawName() {
             if (ControlPanel.ChkShowName.Checked) {
-                drawCenteredText(ReferenceName, _NamePos, _TextRot);
+                drawCenteredText(ReferenceName, mNamePos, mTextRot);
             }
         }
         #endregion

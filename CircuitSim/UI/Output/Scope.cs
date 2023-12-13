@@ -4,10 +4,9 @@ using System.Drawing;
 
 using Circuit.Common;
 using Circuit.Elements.Output;
-using Circuit.Forms;
 
 namespace Circuit.UI.Output {
-    public class Scope : BaseUI {
+    class Scope : BaseUI {
         public ScopePlot Plot;
 
         public Scope(Point pos) : base(pos) {

@@ -80,8 +80,8 @@ namespace Circuit.UI.Passive {
         public virtual RectangleF GetSwitchRect() {
             var p1 = new PointF();
             interpLead(ref p1, 0, 24);
-            var l1 = new RectangleF(_Lead1.X, _Lead1.Y, 0, 0);
-            var l2 = new RectangleF(_Lead2.X, _Lead2.Y, 0, 0);
+            var l1 = new RectangleF(mLead1.X, mLead1.Y, 0, 0);
+            var l2 = new RectangleF(mLead2.X, mLead2.Y, 0, 0);
             var p = new RectangleF(p1.X, p1.Y, 0, 0);
             return RectangleF.Union(l1, RectangleF.Union(l2, p));
         }
@@ -94,8 +94,8 @@ namespace Circuit.UI.Passive {
         public override void Draw(CustomGraphics g) {
             var ce = (ElmSwitch)Elm;
             draw2Leads();
-            fillCircle(_Lead1, 2.5f);
-            fillCircle(_Lead2, 2.5f);
+            fillCircle(mLead1, 2.5f);
+            fillCircle(mLead2, 2.5f);
             /* draw switch */
             var p2 = new PointF();
             if (ce.Position == 0) {
@@ -104,7 +104,7 @@ namespace Circuit.UI.Passive {
             } else {
                 interpLead(ref p2, (OPEN_HS - 2.0) / OPEN_HS, OPEN_HS);
             }
-            drawLine(_Lead1, p2);
+            drawLine(mLead1, p2);
         }
 
         public override void GetInfo(string[] arr) {
