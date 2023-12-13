@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-using Circuit.Elements;
 using Circuit.Elements.Passive;
 using Circuit.Elements.Input;
 using Circuit.Elements.Output;
@@ -11,7 +10,7 @@ namespace Circuit {
     class CircuitNode {
         public struct LINK {
             public int Num;
-            public BaseElement Elm;
+            public IElement Elm;
         }
         public List<LINK> Links = new List<LINK>();
         public bool Internal;
@@ -25,7 +24,7 @@ namespace Circuit {
 
     class WireInfo {
         public ElmWire Wire;
-        public List<BaseElement> Neighbors;
+        public List<IElement> Neighbors;
         public int Post;
         public WireInfo(ElmWire w) { Wire = w; }
     }
@@ -40,14 +39,14 @@ namespace Circuit {
 
         TYPE mType;
         int mDest;
-        BaseElement mFirstElm;
-        List<BaseElement> mElmList;
+        IElement mFirstElm;
+        List<IElement> mElmList;
         bool[] mVisited;
 
         /* State object to help find loops in circuit subject to various conditions (depending on type)
          * elm = source and destination element.
          * dest = destination node. */
-        public PathInfo(TYPE type, BaseElement elm, int dest, List<BaseElement> elmList, int nodeCount) {
+        public PathInfo(TYPE type, IElement elm, int dest, List<IElement> elmList, int nodeCount) {
             mDest = dest;
             mType = type;
             mFirstElm = elm;
@@ -125,7 +124,7 @@ namespace Circuit {
 
                 if (mType == TYPE.INDUCTOR && (cee is ElmInductor)) {
                     /* inductors can use paths with other inductors of matching current */
-                    double c = cee.Current;
+                    var c = cee.Current;
                     if (nodeA == 0) {
                         c = -c;
                     }
@@ -173,8 +172,8 @@ namespace Circuit {
 
         /* info about each wire and its neighbors, used to calculate wire currents */
         static List<WireInfo> mWireInfoList;
-        static BaseElement[] mVoltageSources;
-        static List<BaseElement> mElmList = new List<BaseElement>();
+        static IElement[] mVoltageSources;
+        static List<IElement> mElmList = new List<IElement>();
 
         static bool mCircuitNeedsMap;
 
@@ -189,7 +188,7 @@ namespace Circuit {
         public static List<Point> DrawPostList { get; private set; } = new List<Point>();
         public static List<Point> UndrawPostList { get; private set; } = new List<Point>();
         public static List<Point> BadConnectionList { get; private set; } = new List<Point>();
-        public static BaseElement StopElm { get; set; }
+        public static IElement StopElm { get; set; }
         public static double Time { get; set; }
         public static string StopMessage { get; set; }
         public static bool Converged { get; set; }
@@ -373,8 +372,8 @@ namespace Circuit {
                 var cn1 = Nodes[wire.Nodes[0]];  /* both ends of wire have same node # */
                 int j;
 
-                var neighbors0 = new List<BaseElement>();
-                var neighbors1 = new List<BaseElement>();
+                var neighbors0 = new List<IElement>();
+                var neighbors1 = new List<IElement>();
                 bool isReady0 = true;
                 bool isReady1 = true;
 
@@ -596,7 +595,7 @@ namespace Circuit {
             }
         }
 
-        static int getNodeAtPoint(Point p, BaseElement elm) {
+        static int getNodeAtPoint(Point p, IElement elm) {
             for (int i = 0; i != elm.TermCount; i++) {
                 var nodePos = elm.NodePos[i];
                 if (nodePos.X == p.X && nodePos.Y == p.Y) {
@@ -605,14 +604,14 @@ namespace Circuit {
             }
             return 0;
         }
-		#endregion
+        #endregion
 
-		#region public method
-		public static void ClearElm() {
+        #region public method
+        public static void ClearElm() {
             mElmList.Clear();
         }
 
-        public static void AddElm(BaseElement elm) {
+        public static void AddElm(IElement elm) {
             mElmList.Add(elm);
         }
 
@@ -635,7 +634,7 @@ namespace Circuit {
                 /* look for voltage or ground element */
                 var gotGround = false;
                 var gotRail = false;
-                BaseElement volt = null;
+                IElement volt = null;
                 for (int i = 0; i != mElmList.Count; i++) {
                     var ce = mElmList[i];
                     if (ce is ElmGround) {
@@ -749,7 +748,7 @@ namespace Circuit {
                     return;
                 }
 
-                mVoltageSources = new BaseElement[vs_count];
+                mVoltageSources = new IElement[vs_count];
                 vs_count = 0;
                 for (int i = 0; i < mElmList.Count; i++) {
                     var ce = mElmList[i];
@@ -1004,7 +1003,7 @@ namespace Circuit {
             return true;
         }
 
-        public static void Stop(string s, BaseElement ce) {
+        public static void Stop(string s, IElement ce) {
             StopMessage = s;
             Matrix = null;  /* causes an exception */
             StopElm = ce;

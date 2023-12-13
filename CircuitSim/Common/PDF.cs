@@ -12,7 +12,6 @@ class PDF {
         public const float Width = 841.92f;
         public const float Height = 595.32f;
         readonly float FONT_SCALE;
-        readonly float TEXT_SCALE;
         readonly float PIX_SCALE;
 
         MemoryStream mMs;
@@ -45,7 +44,6 @@ class PDF {
             mCircuitOfsX = 0.0;
             mCircuitOfsY = 0.0;
             FONT_SCALE = 1.2f;
-            TEXT_SCALE = FONT_SCALE * 1.2f;
             PIX_SCALE = FONT_SCALE * 0.65f;
         }
 

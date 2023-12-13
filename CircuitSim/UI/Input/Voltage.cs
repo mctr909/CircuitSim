@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Circuit.Elements;
+
 using Circuit.Elements.Input;
 
 namespace Circuit.UI.Input {
@@ -24,7 +24,7 @@ namespace Circuit.UI.Input {
             default: return 0;
             }
         }
-        public override void SetValue(BaseElement element, int linkID, double value) {
+        public override void SetValue(IElement element, int linkID, double value) {
             var elm = (ElmVoltage)element;
             switch (linkID) {
             case VOLTAGE:

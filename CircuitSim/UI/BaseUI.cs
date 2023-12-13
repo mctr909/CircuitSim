@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-using Circuit.Elements;
 using Circuit.UI.Output;
 
 namespace Circuit.UI {
     public abstract class BaseUI {
-        public BaseElement Elm;
+        public IElement Elm;
         public static CustomGraphics Context;
 
         static BaseUI _MouseElm = null;

@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 
 namespace Circuit.Elements {
-    public abstract class BaseElement : IAnalyze, ICircuit {
+    abstract class BaseElement : IElement {
         protected static bool ComparePair(int x1, int x2, int y1, int y2) {
             return (x1 == y1 && x2 == y2) || (x1 == y2 && x2 == y1);
         }
@@ -14,10 +14,10 @@ namespace Circuit.Elements {
 
         #region [property]
         public abstract int TermCount { get; }
-        public Point[] NodePos { get; private set; }
-        public int[] Nodes { get; protected set; }
-        public double Current { get; protected set; }
-        public double[] Volts { get; protected set; }
+        public Point[] NodePos { get; set; }
+        public int[] Nodes { get; set; }
+        public double Current { get; set; }
+        public double[] Volts { get; private set; }
         public virtual double VoltageDiff { get { return Volts[0] - Volts[1]; } }
         #endregion
 
@@ -100,7 +100,7 @@ namespace Circuit.Elements {
         public virtual void PrepareIteration() { }
         public virtual void IterationFinished() { }
         public virtual void DoIteration() { }
-        public virtual void SetCurrent(int vn, double c) { Current = c; }
+        public virtual void SetCurrent(int n, double c) { Current = c; }
         public virtual void SetVoltage(int n, double c) { Volts[n] = c; }
         #endregion
     }

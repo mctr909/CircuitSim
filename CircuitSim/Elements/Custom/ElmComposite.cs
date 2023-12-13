@@ -8,12 +8,12 @@ namespace Circuit.Elements.Custom {
     class VoltageSourceRecord {
         public int vsNumForElement;
         public int vsNode;
-        public BaseElement elm;
+        public IElement elm;
     }
 
     class ElmComposite : BaseElement {
         /* list of elements contained in this subcircuit */
-        protected List<BaseElement> CompList = new List<BaseElement>();
+        protected List<IElement> CompList = new List<IElement>();
 
         /* list of nodes, mapping each one to a list of elements that reference that node */
         List<CircuitNode> mCompNodeList;

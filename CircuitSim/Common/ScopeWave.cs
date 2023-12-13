@@ -1,5 +1,4 @@
-﻿using Circuit.Elements;
-using Circuit.UI;
+﻿using Circuit.UI;
 
 namespace Circuit.Common {
     public class ScopeWave {
@@ -9,7 +8,7 @@ namespace Circuit.Common {
         public int Speed;
         public int Pointer;
 
-        BaseElement mElm;
+        IElement mElm;
         int mCounter;
         int mScopePointCount;
 
