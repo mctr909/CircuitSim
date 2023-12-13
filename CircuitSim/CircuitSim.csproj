@@ -73,7 +73,6 @@
     <Compile Include="Common\ScopePlot.cs" />
     <Compile Include="Common\ScopeWave.cs" />
     <Compile Include="Elements\Active\ElmAnalogSwitch.cs" />
-    <Compile Include="Common\IElement.cs" />
     <Compile Include="Elements\Logic\ElmDeMultiplexer.cs" />
     <Compile Include="Elements\Logic\ElmFullAdder.cs" />
     <Compile Include="Elements\Logic\ElmHalfAdder.cs" />
@@ -109,7 +108,7 @@
     <Compile Include="Elements\Active\ElmDiodeVaractor.cs" />
     <Compile Include="UI\Active\DiodeVaractor.cs" />
     <Compile Include="UI\Active\DiodeZener.cs" />
-    <Compile Include="Elements\BaseElement.cs" />
+    <Compile Include="Common\BaseElement.cs" />
     <Compile Include="UI\BaseLink.cs" />
     <Compile Include="UI\Custom\GraphicBox.cs" />
     <Compile Include="Elements\Custom\ElmChip.cs" />

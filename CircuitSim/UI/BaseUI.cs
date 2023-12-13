@@ -23,7 +23,7 @@ namespace Circuit.UI {
 
         public string ReferenceName { get; set; }
 
-        public IElement Elm { get; set; }
+        public BaseElement Elm { get; set; }
 
         public Post Post { get; set; }
 

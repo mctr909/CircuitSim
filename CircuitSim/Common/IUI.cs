@@ -6,7 +6,7 @@ namespace Circuit {
 	public interface IUI {
 		DUMP_ID DumpId { get; }
 		string ReferenceName { get; set; }
-		IElement Elm { get; set; }
+		BaseElement Elm { get; set; }
 		Post Post { get; set; }
 		bool IsSelected { get; set; }
 		bool IsMouseElm { get; }

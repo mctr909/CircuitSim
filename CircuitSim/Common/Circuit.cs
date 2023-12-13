@@ -10,7 +10,7 @@ namespace Circuit {
     class CircuitNode {
         public struct LINK {
             public int Num;
-            public IElement Elm;
+            public BaseElement Elm;
         }
         public List<LINK> Links = new List<LINK>();
         public bool Internal;
@@ -24,7 +24,7 @@ namespace Circuit {
 
     class WireInfo {
         public ElmWire Wire;
-        public List<IElement> Neighbors;
+        public List<BaseElement> Neighbors;
         public int Post;
         public WireInfo(ElmWire w) { Wire = w; }
     }
@@ -39,14 +39,14 @@ namespace Circuit {
 
         TYPE mType;
         int mDest;
-        IElement mFirstElm;
-        List<IElement> mElmList;
+        BaseElement mFirstElm;
+        List<BaseElement> mElmList;
         bool[] mVisited;
 
         /* State object to help find loops in circuit subject to various conditions (depending on type)
          * elm = source and destination element.
          * dest = destination node. */
-        public PathInfo(TYPE type, IElement elm, int dest, List<IElement> elmList, int nodeCount) {
+        public PathInfo(TYPE type, BaseElement elm, int dest, List<BaseElement> elmList, int nodeCount) {
             mDest = dest;
             mType = type;
             mFirstElm = elm;
@@ -172,8 +172,8 @@ namespace Circuit {
 
         /* info about each wire and its neighbors, used to calculate wire currents */
         static List<WireInfo> mWireInfoList;
-        static IElement[] mVoltageSources;
-        static List<IElement> mElmList = new List<IElement>();
+        static BaseElement[] mVoltageSources;
+        static List<BaseElement> mElmList = new List<BaseElement>();
 
         static bool mCircuitNeedsMap;
 
@@ -188,7 +188,7 @@ namespace Circuit {
         public static List<Point> DrawPostList { get; private set; } = new List<Point>();
         public static List<Point> UndrawPostList { get; private set; } = new List<Point>();
         public static List<Point> BadConnectionList { get; private set; } = new List<Point>();
-        public static IElement StopElm { get; set; }
+        public static BaseElement StopElm { get; set; }
         public static double Time { get; set; }
         public static string StopMessage { get; set; }
         public static bool Converged { get; set; }
@@ -372,8 +372,8 @@ namespace Circuit {
                 var cn1 = Nodes[wire.Nodes[0]];  /* both ends of wire have same node # */
                 int j;
 
-                var neighbors0 = new List<IElement>();
-                var neighbors1 = new List<IElement>();
+                var neighbors0 = new List<BaseElement>();
+                var neighbors1 = new List<BaseElement>();
                 bool isReady0 = true;
                 bool isReady1 = true;
 
@@ -595,7 +595,7 @@ namespace Circuit {
             }
         }
 
-        static int getNodeAtPoint(Point p, IElement elm) {
+        static int getNodeAtPoint(Point p, BaseElement elm) {
             for (int i = 0; i != elm.TermCount; i++) {
                 var nodePos = elm.NodePos[i];
                 if (nodePos.X == p.X && nodePos.Y == p.Y) {
@@ -611,7 +611,7 @@ namespace Circuit {
             mElmList.Clear();
         }
 
-        public static void AddElm(IElement elm) {
+        public static void AddElm(BaseElement elm) {
             mElmList.Add(elm);
         }
 
@@ -634,7 +634,7 @@ namespace Circuit {
                 /* look for voltage or ground element */
                 var gotGround = false;
                 var gotRail = false;
-                IElement volt = null;
+                BaseElement volt = null;
                 for (int i = 0; i != mElmList.Count; i++) {
                     var ce = mElmList[i];
                     if (ce is ElmGround) {
@@ -748,7 +748,7 @@ namespace Circuit {
                     return;
                 }
 
-                mVoltageSources = new IElement[vs_count];
+                mVoltageSources = new BaseElement[vs_count];
                 vs_count = 0;
                 for (int i = 0; i < mElmList.Count; i++) {
                     var ce = mElmList[i];
@@ -1003,7 +1003,7 @@ namespace Circuit {
             return true;
         }
 
-        public static void Stop(string s, IElement ce) {
+        public static void Stop(string s, BaseElement ce) {
             StopMessage = s;
             Matrix = null;  /* causes an exception */
             StopElm = ce;

@@ -1,6 +1,4 @@
-﻿using Circuit.UI;
-
-namespace Circuit.Common {
+﻿namespace Circuit.Common {
     public class ScopeWave {
         public IUI UI;
         public double[] MinValues;
@@ -8,7 +6,7 @@ namespace Circuit.Common {
         public int Speed;
         public int Pointer;
 
-        IElement mElm;
+        BaseElement mElm;
         int mCounter;
         int mScopePointCount;
 

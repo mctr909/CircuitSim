@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 
 using Circuit.Elements.Input;
-using Circuit.UI;
 
 namespace Circuit.Elements.Custom {
     class VoltageSourceRecord {
         public int vsNumForElement;
         public int vsNode;
-        public IElement elm;
+        public BaseElement elm;
     }
 
     class ElmComposite : BaseElement {
         /* list of elements contained in this subcircuit */
-        protected List<IElement> CompList = new List<IElement>();
+        protected List<BaseElement> CompList = new List<BaseElement>();
 
         /* list of nodes, mapping each one to a list of elements that reference that node */
         List<CircuitNode> mCompNodeList;
