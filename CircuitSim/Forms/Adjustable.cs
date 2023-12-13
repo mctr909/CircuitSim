@@ -1,10 +1,10 @@
 ﻿using System.Windows.Forms;
 
-namespace Circuit.UI {
+namespace Circuit {
     public class Adjustable {
         public TrackBar Slider;
         public Label Label;
-        public IUI UI;
+        public BaseUI UI;
         public double MinValue;
         public double MaxValue;
         public string SliderText;
@@ -20,7 +20,7 @@ namespace Circuit.UI {
             }
         }
 
-        public Adjustable(IUI ce, int itemR) {
+        public Adjustable(BaseUI ce, int itemR) {
             MinValue = 1;
             MaxValue = 1000;
             UI = ce;

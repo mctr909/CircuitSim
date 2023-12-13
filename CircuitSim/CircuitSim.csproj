@@ -68,7 +68,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Deflate.cs" />
-    <Compile Include="Common\IUI.cs" />
     <Compile Include="Common\PDF.cs" />
     <Compile Include="Common\ScopePlot.cs" />
     <Compile Include="Common\ScopeWave.cs" />
@@ -109,7 +108,7 @@
     <Compile Include="UI\Active\DiodeVaractor.cs" />
     <Compile Include="UI\Active\DiodeZener.cs" />
     <Compile Include="Common\BaseElement.cs" />
-    <Compile Include="UI\BaseLink.cs" />
+    <Compile Include="Common\BaseLink.cs" />
     <Compile Include="UI\Custom\GraphicBox.cs" />
     <Compile Include="Elements\Custom\ElmChip.cs" />
     <Compile Include="UI\Custom\Chip.cs" />
@@ -118,7 +117,7 @@
     <Compile Include="UI\Custom\Graphic.cs" />
     <Compile Include="Elements\Custom\ElmGraphic.cs" />
     <Compile Include="UI\Custom\GraphicText.cs" />
-    <Compile Include="UI\Post.cs" />
+    <Compile Include="Common\Post.cs" />
     <Compile Include="Elements\Gate\ElmGateAnd.cs" />
     <Compile Include="UI\Gate\GateAnd.cs" />
     <Compile Include="Elements\Gate\ElmGate.cs" />
@@ -209,7 +208,7 @@
     <Compile Include="Forms\SliderDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\Adjustable.cs" />
+    <Compile Include="Forms\Adjustable.cs" />
     <Compile Include="Common\Circuit.cs" />
     <Compile Include="Elements\Expr.cs" />
     <Compile Include="Common\FFT.cs" />
@@ -218,11 +217,11 @@
     </Compile>
     <Compile Include="Common\StringTokenizer.cs" />
     <Compile Include="UI\Passive\Capacitor.cs" />
-    <Compile Include="UI\BaseUI.cs" />
+    <Compile Include="Common\BaseUI.cs" />
     <Compile Include="Forms\ElementInfoDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\ElementInfo.cs" />
+    <Compile Include="Forms\ElementInfo.cs" />
     <Compile Include="UI\Input\Current.cs" />
     <Compile Include="UI\Passive\Ground.cs" />
     <Compile Include="UI\Input\Voltage.cs" />

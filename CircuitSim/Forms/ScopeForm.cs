@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using Circuit.Common;
-using Circuit.UI;
 
 namespace Circuit.Forms {
     public partial class ScopeForm : Form {
@@ -14,7 +13,7 @@ namespace Circuit.Forms {
         static int mSelectedWave = -1;
 
         ContextMenuStrip mScopePopupMenu = null;
-        IUI mMouseElm = null;
+        BaseUI mMouseElm = null;
         CustomGraphics mG;
         Bitmap mBmp;
         Graphics mContext;
@@ -76,7 +75,7 @@ namespace Circuit.Forms {
         }
 
         void SelectUI() {
-            IUI selectElm = null;
+            BaseUI selectElm = null;
             for (int i = 0; i != PlotCount; i++) {
                 var plot = mPlots[i];
                 if (plot.BoundingBox.Contains(mMouseCursorX, mMouseCursorY)) {
@@ -289,7 +288,7 @@ namespace Circuit.Forms {
             }
         }
 
-        public static void AddPlot(IUI ui) {
+        public static void AddPlot(BaseUI ui) {
             if (ui == null) {
                 return;
             }

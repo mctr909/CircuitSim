@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-using Circuit.UI;
-
 namespace Circuit.Common {
     public class ScopePlot {
         const int SCALE_INFO_WIDTH = 45;
@@ -122,7 +120,7 @@ namespace Circuit.Common {
         }
 
         #region [get/set method]
-        public IUI GetUI() {
+        public BaseUI GetUI() {
             if (0 <= SelectedWave && SelectedWave < Waves.Count) {
                 return Waves[SelectedWave].UI;
             }
@@ -222,7 +220,7 @@ namespace Circuit.Common {
                 Text = "";
             }
         }
-        public void Setup(IUI ui) {
+        public void Setup(BaseUI ui) {
             setPlot(ui);
             initialize();
         }
@@ -377,7 +375,7 @@ namespace Circuit.Common {
             ShowVoltage = true;
             ShowScale = ShowFreq = ManualScale = ShowFFT = false;
         }
-        void setPlot(IUI ui) {
+        void setPlot(BaseUI ui) {
             if (null == ui) {
                 Waves.Clear();
                 return;
@@ -390,7 +388,7 @@ namespace Circuit.Common {
             if (Waves.Count == 0) {
                 return;
             }
-            var uiList = new List<IUI>();
+            var uiList = new List<BaseUI>();
             foreach (var wave in Waves) {
                 if (null == wave.UI) {
                     continue;

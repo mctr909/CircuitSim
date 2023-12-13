@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using Circuit.Common;
 using Circuit.UI.Output;
-using Circuit.UI.Passive;
 
 namespace Circuit.Forms {
     public class ScopePopupMenu {

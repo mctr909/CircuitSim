@@ -2,8 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-using Circuit.UI;
-
 namespace Circuit {
     public static class MouseInfo {
         public enum MODE {
@@ -19,7 +17,7 @@ namespace Circuit {
             DRAG_COLUMN
         }
 
-        public static IUI GrippedElm = null;
+        public static BaseUI GrippedElm = null;
 
         public static MODE Mode = MODE.NONE;
         public static MouseButtons Button = MouseButtons.None;
@@ -62,7 +60,7 @@ namespace Circuit {
             int y2 = Math.Max(pos.Y, DragBegin.Y);
             SelectedArea = new Rectangle(x1, y1, x2 - x1, y2 - y1);
         }
-        public static void GripElm(IUI ui) {
+        public static void GripElm(BaseUI ui) {
             if (ui == GrippedElm) {
                 return;
             }

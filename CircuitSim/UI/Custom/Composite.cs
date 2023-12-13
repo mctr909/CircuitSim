@@ -8,7 +8,7 @@ namespace Circuit.UI.Custom {
         /* need to use escape() instead of converting spaces to _'s so composite elements can be nested */
         protected const int FLAG_ESCAPE = 1;
 
-        protected List<IUI> CompList = new List<IUI>();
+        protected List<BaseUI> CompList = new List<BaseUI>();
 
         public Composite(Point pos) : base(pos) { }
 

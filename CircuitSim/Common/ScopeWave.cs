@@ -1,6 +1,6 @@
 ﻿namespace Circuit.Common {
     public class ScopeWave {
-        public IUI UI;
+        public BaseUI UI;
         public double[] MinValues;
         public double[] MaxValues;
         public int Speed;
@@ -12,7 +12,7 @@
 
         public ScopePlot.E_COLOR Color { get; private set; } = ScopePlot.E_COLOR.INVALID;
 
-        public ScopeWave(IUI ui) {
+        public ScopeWave(BaseUI ui) {
             UI = ui;
             mElm = ui.Elm;
         }

@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace Circuit.Elements.Input {
+﻿namespace Circuit.Elements.Input {
     class ElmRail : ElmVoltage {
         public ElmRail() : base(WAVEFORM.DC) { }
 

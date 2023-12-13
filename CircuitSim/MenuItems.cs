@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-using Circuit.UI;
 using Circuit.UI.Passive;
 using Circuit.UI.Active;
 using Circuit.UI.Input;
@@ -442,7 +441,7 @@ namespace Circuit {
             #endregion
         }
 
-        public static IUI ConstructElement(DUMP_ID n, Point pos = new Point()) {
+        public static BaseUI ConstructElement(DUMP_ID n, Point pos = new Point()) {
             switch (n) {
             #region Passive Components
             case DUMP_ID.WIRE:
@@ -646,7 +645,7 @@ namespace Circuit {
             }
         }
 
-        public static IUI CreateCe(DUMP_ID tint, Point p1, Point p2, int f, StringTokenizer st) {
+        public static BaseUI CreateCe(DUMP_ID tint, Point p1, Point p2, int f, StringTokenizer st) {
             switch (tint) {
             #region Passive Components
             case DUMP_ID.WIRE:

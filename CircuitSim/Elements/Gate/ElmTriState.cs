@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace Circuit.Elements.Gate {
+﻿namespace Circuit.Elements.Gate {
     class ElmTriState : BaseElement {
         double mResistance;
         public double Ron;

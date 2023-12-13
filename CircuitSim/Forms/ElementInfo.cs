@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Circuit.UI {
+namespace Circuit {
     public class ElementInfo {
         public string Name { get; private set; }
         public string Text { get; set; }

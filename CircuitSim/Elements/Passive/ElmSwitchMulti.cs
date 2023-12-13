@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace Circuit.Elements.Passive {
+﻿namespace Circuit.Elements.Passive {
     class ElmSwitchMulti : ElmSwitch {
         public int ThrowCount = 2;
 

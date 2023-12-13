@@ -4,17 +4,15 @@ using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
-using Circuit.UI;
-
 namespace Circuit {
     public class SliderDialog : Form {
-        IUI mElm;
+        BaseUI mElm;
         ElementInfo[] mEInfos;
         int mEInfoCount;
         Panel mPnlValues;
         Panel mPnlButtons;
 
-        public SliderDialog(IUI ce) : base() {
+        public SliderDialog(BaseUI ce) : base() {
             Text = "Add Sliders";
             mElm = ce;
 
