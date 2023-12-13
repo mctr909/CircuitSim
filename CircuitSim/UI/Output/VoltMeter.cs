@@ -92,7 +92,7 @@ namespace Circuit.UI.Output {
             var ce = (ElmVoltMeter)Elm;
             switch (ce.Meter) {
             case ElmVoltMeter.TP_VOL:
-                return Utils.UnitTextWithScale(ce.GetVoltageDiff(), "V", ce.Scale);
+                return Utils.UnitTextWithScale(ce.VoltageDiff, "V", ce.Scale);
             case ElmVoltMeter.TP_RMS:
                 return Utils.UnitTextWithScale(ce.RmsV, "Vrms", ce.Scale);
             case ElmVoltMeter.TP_MAX:

@@ -248,7 +248,7 @@ namespace Circuit.UI {
 
         protected void getBasicInfo(int begin, params string[] arr) {
             arr[begin] = "電流：" + Utils.CurrentAbsText(Elm.Current);
-            arr[begin + 1] = "電位差：" + Utils.VoltageAbsText(Elm.GetVoltageDiff());
+            arr[begin + 1] = "電位差：" + Utils.VoltageAbsText(Elm.VoltageDiff);
         }
 
         /// <summary>

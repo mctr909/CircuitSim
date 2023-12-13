@@ -490,16 +490,16 @@ namespace Circuit {
         }
 
         /* factors a matrix into upper and lower triangular matrices by
-        /* gaussian elimination.  On entry, a[0..n-1][0..n-1] is the
-        /* matrix to be factored.  ipvt[] returns an integer vector of pivot
+        /* gaussian elimination. On entry, Matrix[0..n-1][0..n-1] is the
+        /* matrix to be factored. mPermute[] returns an integer vector of pivot
         /* indices, used in the lu_solve() routine. */
-        static bool luFactor(double[,] a, int n, int[] ipvt) {
+        static bool luFactor() {
             /* check for a possible singular matrix by scanning for rows that
             /* are all zeroes */
-            for (int i = 0; i != n; i++) {
+            for (int i = 0; i != mMatrixSize; i++) {
                 bool row_all_zeros = true;
-                for (int j = 0; j != n; j++) {
-                    if (a[i, j] != 0) {
+                for (int j = 0; j != mMatrixSize; j++) {
+                    if (Matrix[i, j] != 0) {
                         row_all_zeros = false;
                         break;
                     }
@@ -509,27 +509,26 @@ namespace Circuit {
                     return false;
                 }
             }
-
             /* use Crout's method; loop through the columns */
-            for (int j = 0; j != n; j++) {
+            for (int j = 0; j != mMatrixSize; j++) {
                 /* calculate upper triangular elements for this column */
                 for (int i = 0; i != j; i++) {
-                    double q = a[i, j];
+                    var q = Matrix[i, j];
                     for (int k = 0; k != i; k++) {
-                        q -= a[i, k] * a[k, j];
+                        q -= Matrix[i, k] * Matrix[k, j];
                     }
-                    a[i, j] = q;
+                    Matrix[i, j] = q;
                 }
                 /* calculate lower triangular elements for this column */
                 double largest = 0;
                 int largestRow = -1;
-                for (int i = j; i != n; i++) {
-                    double q = a[i, j];
+                for (int i = j; i != mMatrixSize; i++) {
+                    var q = Matrix[i, j];
                     for (int k = 0; k != j; k++) {
-                        q -= a[i, k] * a[k, j];
+                        q -= Matrix[i, k] * Matrix[k, j];
                     }
-                    a[i, j] = q;
-                    double x = Math.Abs(q);
+                    Matrix[i, j] = q;
+                    var x = Math.Abs(q);
                     if (x >= largest) {
                         largest = x;
                         largestRow = i;
@@ -538,23 +537,23 @@ namespace Circuit {
                 /* pivoting */
                 if (j != largestRow) {
                     double x;
-                    for (int k = 0; k != n; k++) {
-                        x = a[largestRow, k];
-                        a[largestRow, k] = a[j, k];
-                        a[j, k] = x;
+                    for (int k = 0; k != mMatrixSize; k++) {
+                        x = Matrix[largestRow, k];
+                        Matrix[largestRow, k] = Matrix[j, k];
+                        Matrix[j, k] = x;
                     }
                 }
                 /* keep track of row interchanges */
-                ipvt[j] = largestRow;
+                mPermute[j] = largestRow;
                 /* avoid zeros */
-                if (a[j, j] == 0.0) {
+                if (Matrix[j, j] == 0.0) {
                     Console.WriteLine("avoided zero");
-                    a[j, j] = 1e-18;
+                    Matrix[j, j] = 1e-18;
                 }
-                if (j != n - 1) {
-                    double mult = 1.0 / a[j, j];
-                    for (int i = j + 1; i != n; i++) {
-                        a[i, j] *= mult;
+                if (j != mMatrixSize - 1) {
+                    var mult = 1.0 / Matrix[j, j];
+                    for (int i = j + 1; i != mMatrixSize; i++) {
+                        Matrix[i, j] *= mult;
                     }
                 }
             }
@@ -562,46 +561,54 @@ namespace Circuit {
         }
 
         /* Solves the set of n linear equations using a LU factorization
-        /* previously performed by lu_factor.  On input, b[0..n-1] is the right
+        /* previously performed by lu_factor.  On input, RightSide[0..n-1] is the right
         /* hand side of the equations, and on output, contains the solution. */
-        static void luSolve(double[,] a, int n, int[] ipvt, double[] b) {
+        static void luSolve() {
             int i;
-
             /* find first nonzero b element */
-            for (i = 0; i != n; i++) {
-                int row = ipvt[i];
-                double swap = b[row];
-                b[row] = b[i];
-                b[i] = swap;
+            for (i = 0; i != mMatrixSize; i++) {
+                var row = mPermute[i];
+                var swap = RightSide[row];
+                RightSide[row] = RightSide[i];
+                RightSide[i] = swap;
                 if (swap != 0) {
                     break;
                 }
             }
-
             int bi = i++;
-            for (; i < n; i++) {
-                int row = ipvt[i];
-                double tot = b[row];
-                b[row] = b[i];
+            for (; i < mMatrixSize; i++) {
+                var row = mPermute[i];
+                var tot = RightSide[row];
+                RightSide[row] = RightSide[i];
                 /* forward substitution using the lower triangular matrix */
                 for (int j = bi; j < i; j++) {
-                    tot -= a[i, j] * b[j];
+                    tot -= Matrix[i, j] * RightSide[j];
                 }
-                b[i] = tot;
+                RightSide[i] = tot;
             }
-            for (i = n - 1; i >= 0; i--) {
-                double tot = b[i];
+            for (i = mMatrixSize - 1; i >= 0; i--) {
+                var tot = RightSide[i];
                 /* back-substitution using the upper triangular matrix */
-                for (int j = i + 1; j != n; j++) {
-                    tot -= a[i, j] * b[j];
+                for (int j = i + 1; j != mMatrixSize; j++) {
+                    tot -= Matrix[i, j] * RightSide[j];
                 }
-                b[i] = tot / a[i, i];
+                RightSide[i] = tot / Matrix[i, i];
             }
         }
-        #endregion
 
-        #region public method
-        public static void ClearElm() {
+        static int getNodeAtPoint(Point p, BaseElement elm) {
+            for (int i = 0; i != elm.TermCount; i++) {
+                var nodePos = elm.NodePos[i];
+                if (nodePos.X == p.X && nodePos.Y == p.Y) {
+                    return i;
+                }
+            }
+            return 0;
+        }
+		#endregion
+
+		#region public method
+		public static void ClearElm() {
             mElmList.Clear();
         }
 
@@ -626,8 +633,8 @@ namespace Circuit {
 
             {
                 /* look for voltage or ground element */
-                bool gotGround = false;
-                bool gotRail = false;
+                var gotGround = false;
+                var gotRail = false;
                 BaseElement volt = null;
                 for (int i = 0; i != mElmList.Count; i++) {
                     var ce = mElmList[i];
@@ -663,7 +670,7 @@ namespace Circuit {
             }
 
             /* allocate nodes and voltage sources */
-            int vscount = 0;
+            int vs_count = 0;
             {
                 ElmLabeledNode.ResetNodeList();
                 for (int i = 0; i < mElmList.Count; i++) {
@@ -671,15 +678,15 @@ namespace Circuit {
                     if (null == ce) {
                         continue;
                     }
-                    int inodes = ce.InternalNodeCount;
-                    int ivs = ce.VoltageSourceCount;
-                    int posts = ce.TermCount;
+                    var inodes = ce.InternalNodeCount;
+                    var ivs = ce.VoltageSourceCount;
+                    var posts = ce.TermCount;
 
                     /* allocate a node for each post and match posts to nodes */
                     for (int j = 0; j < posts; j++) {
                         var pt = ce.NodePos[j];
                         if (mPostCountMap.ContainsKey(pt)) {
-                            int g = mPostCountMap[pt];
+                            var g = mPostCountMap[pt];
                             mPostCountMap[pt] = g + 1;
                         } else {
                             mPostCountMap.Add(pt, 1);
@@ -709,7 +716,7 @@ namespace Circuit {
                             }
                             Nodes.Add(cn);
                         } else {
-                            int n = cln.Node;
+                            var n = cln.Node;
                             var cnl = new CircuitNode.LINK();
                             cnl.Num = j;
                             cnl.Elm = ce;
@@ -723,16 +730,16 @@ namespace Circuit {
                         }
                     }
                     for (int j = 0; j < inodes; j++) {
-                        var cn = new CircuitNode();
-                        cn.Internal = true;
                         var cnl = new CircuitNode.LINK();
                         cnl.Num = j + posts;
                         cnl.Elm = ce;
+                        var cn = new CircuitNode();
+                        cn.Internal = true;
                         cn.Links.Add(cnl);
                         ce.SetNode(cnl.Num, Nodes.Count);
                         Nodes.Add(cn);
                     }
-                    vscount += ivs;
+                    vs_count += ivs;
                 }
 
                 makePostDrawList();
@@ -742,19 +749,19 @@ namespace Circuit {
                     return;
                 }
 
-                mVoltageSources = new BaseElement[vscount];
-                vscount = 0;
+                mVoltageSources = new BaseElement[vs_count];
+                vs_count = 0;
                 for (int i = 0; i < mElmList.Count; i++) {
                     var ce = mElmList[i];
-                    int ivs = ce.VoltageSourceCount;
+                    var ivs = ce.VoltageSourceCount;
                     for (int j = 0; j < ivs; j++) {
-                        mVoltageSources[vscount] = ce;
-                        ce.SetVoltageSource(j, vscount++);
+                        mVoltageSources[vs_count] = ce;
+                        ce.SetVoltageSource(j, vs_count++);
                     }
                 }
             }
 
-            int matrixSize = Nodes.Count - 1 + vscount;
+            var matrixSize = Nodes.Count - 1 + vs_count;
             Matrix = new double[matrixSize, matrixSize];
             RightSide = new double[matrixSize];
             RowInfo = new ROW_INFO[matrixSize];
@@ -774,7 +781,7 @@ namespace Circuit {
 
             /* determine nodes that are not connected indirectly to ground */
             var closure = new bool[Nodes.Count];
-            bool changed = true;
+            var changed = true;
             closure[0] = true;
             while (changed) {
                 changed = false;
@@ -792,8 +799,7 @@ namespace Circuit {
                             }
                             continue;
                         }
-                        int k;
-                        for (k = 0; k != ce.ConnectionNodeCount; k++) {
+                        for (int k = 0; k != ce.ConnectionNodeCount; k++) {
                             if (j == k) {
                                 continue;
                             }
@@ -925,7 +931,7 @@ namespace Circuit {
                     for (int i = 0; i < mMatrixSize; i++) {
                         var x = Matrix[i, j];
                         if (double.IsNaN(x) || double.IsInfinity(x)) {
-                            stop("Matrix[" + i + "," + j + "] is NaN/infinite");
+                            //stop("Matrix[" + i + "," + j + "] is NaN/infinite");
                             return false;
                         }
                     }
@@ -935,39 +941,39 @@ namespace Circuit {
                     break;
                 }
 
-                if (!luFactor(Matrix, mMatrixSize, mPermute)) {
-                    stop("Singular matrix!");
+                if (!luFactor()) {
+                    //stop("Singular matrix!");
                     return false;
                 }
-                luSolve(Matrix, mMatrixSize, mPermute, RightSide);
+                luSolve();
 
                 for (int j = 0; j < mMatrixFullSize; j++) {
                     var ri = RowInfo[j];
-                    double res = 0;
+                    double res;
                     if (ri.IsConst) {
                         res = ri.Value;
                     } else {
                         res = RightSide[ri.MapCol];
                     }
                     if (double.IsNaN(res) || double.IsInfinity(res)) {
-                        Console.WriteLine((ri.IsConst ? ("RowInfo[" + j + "]") : ("RightSide[" + ri.MapCol + "]")) + " is NaN/infinite");
+                        //Console.WriteLine((ri.IsConst ? ("RowInfo[" + j + "]") : ("RightSide[" + ri.MapCol + "]")) + " is NaN/infinite");
                         return false;
                     }
                     if (j < Nodes.Count - 1) {
-                        var cn = getCircuitNode(j + 1);
+                        var cn = Nodes[j + 1];
                         for (int k = 0; k < cn.Links.Count; k++) {
                             var cnl = cn.Links[k];
                             cnl.Elm.SetVoltage(cnl.Num, res);
                         }
                     } else {
-                        int ji = j - (Nodes.Count - 1);
+                        var ji = j - (Nodes.Count - 1);
                         mVoltageSources[ji].SetCurrent(ji, res);
                     }
                 }
             }
 
             if (SubIterations == SubIterMax) {
-                stop("計算が収束しませんでした");
+                //stop("計算が収束しませんでした");
                 return false;
             }
 
@@ -981,11 +987,11 @@ namespace Circuit {
             for (int i = 0; i < mWireInfoList.Count; i++) {
                 var wi = mWireInfoList[i];
                 var we = wi.Wire;
-                double cur = 0;
+                var cur = 0.0;
                 var p = we.NodePos[wi.Post];
                 for (int j = 0; j < wi.Neighbors.Count; j++) {
                     var ce = wi.Neighbors[j];
-                    var n = ce.GetNodeAtPoint(p);
+                    var n = getNodeAtPoint(p, ce);
                     cur += ce.GetCurrentIntoNode(n);
                 }
                 if (wi.Post == 0) {

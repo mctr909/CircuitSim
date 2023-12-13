@@ -1,8 +1,5 @@
-﻿using System.Drawing;
-
-namespace Circuit {
+﻿namespace Circuit {
 	internal interface ICircuit {
-		int GetNodeAtPoint(Point p);
 		double GetCurrentIntoNode(int n);
 		void PrepareIteration();
 		void IterationFinished();

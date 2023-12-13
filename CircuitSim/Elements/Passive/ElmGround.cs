@@ -4,7 +4,7 @@
 
         public override int TermCount { get { return 1; } }
 
-        public override double GetVoltageDiff() { return 0; }
+        public override double VoltageDiff { get { return 0; } }
 
         public override bool HasGroundConnection(int n1) { return true; }
 

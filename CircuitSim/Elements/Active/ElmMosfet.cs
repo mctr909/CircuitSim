@@ -52,7 +52,7 @@ namespace Circuit.Elements.Active {
 
         public override int TermCount { get { return 3; } }
 
-        public override double GetVoltageDiff() { return Volts[IdxG] - Volts[IdxS]; }
+        public override double VoltageDiff { get { return Volts[IdxG] - Volts[IdxS]; } }
 
         public override void Reset() {
             Volts[IdxG] = Volts[IdxS] = Volts[IdxD] = 0;

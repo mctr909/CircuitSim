@@ -77,7 +77,7 @@ namespace Circuit.UI.Active {
         public override void GetInfo(string[] arr) {
             var ce = (ElmAnalogSwitch)Elm;
             arr[0] = "アナログスイッチ(" + (ce.IsOpen ? "OFF)" : "ON)");
-            arr[1] = "電位差：" + Utils.VoltageAbsText(ce.GetVoltageDiff());
+            arr[1] = "電位差：" + Utils.VoltageAbsText(ce.VoltageDiff);
             arr[2] = "電流：" + Utils.CurrentAbsText(ce.Current);
             arr[3] = "制御電圧：" + Utils.VoltageText(ce.Volts[2]);
         }

@@ -42,7 +42,7 @@ namespace Circuit.Elements.Output {
 
         public override int VoltageSourceCount { get { return 1; } }
 
-        public override double GetVoltageDiff() { return Volts[0]; }
+        public override double VoltageDiff { get { return Volts[0]; } }
 
         public override double GetCurrentIntoNode(int n) { return -Current; }
 

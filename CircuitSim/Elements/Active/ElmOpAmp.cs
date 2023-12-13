@@ -14,7 +14,7 @@
 
         public override int TermCount { get { return 3; } }
 
-        public override double GetVoltageDiff() { return Volts[V_O] - Volts[V_P]; }
+        public override double VoltageDiff { get { return Volts[V_O] - Volts[V_P]; } }
 
         /* there is no current path through the op-amp inputs,
          * but there is an indirect path through the output to ground. */

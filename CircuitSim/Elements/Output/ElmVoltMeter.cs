@@ -38,7 +38,7 @@ namespace Circuit.Elements.Output {
 
         public override void IterationFinished() {
             mCount++; /*how many counts are in a cycle */
-            double v = GetVoltageDiff();
+            double v = VoltageDiff;
             mTotal += v * v;
 
             /* V going up, track maximum value with */

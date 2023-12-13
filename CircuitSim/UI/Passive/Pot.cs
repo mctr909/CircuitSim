@@ -199,7 +199,7 @@ namespace Circuit.UI.Passive {
         public override void GetInfo(string[] arr) {
             var ce = (ElmPot)Elm;
             arr[0] = "可変抵抗：" + Utils.UnitText(ce.MaxResistance, CirSimForm.OHM_TEXT);
-            arr[1] = "Vd：" + Utils.VoltageAbsText(ce.GetVoltageDiff());
+            arr[1] = "Vd：" + Utils.VoltageAbsText(ce.VoltageDiff);
             arr[2] = "R1：" + Utils.UnitText(ce.Resistance1, CirSimForm.OHM_TEXT);
             arr[3] = "R2：" + Utils.UnitText(ce.Resistance2, CirSimForm.OHM_TEXT);
             arr[4] = "I1：" + Utils.CurrentAbsText(ce.Current1);

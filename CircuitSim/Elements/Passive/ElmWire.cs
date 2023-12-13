@@ -6,6 +6,6 @@
 
         public override bool IsWire { get { return true; } }
 
-        public override double GetVoltageDiff() { return Volts[0]; }
+        public override double VoltageDiff { get { return Volts[0]; } }
     }
 }

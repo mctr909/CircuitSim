@@ -53,7 +53,7 @@ namespace Circuit.Common {
         }
 
         public void TimeStep() {
-            var v = mElm.GetVoltageDiff();
+            var v = mElm.VoltageDiff;
             if (v < MinValues[Pointer]) {
                 MinValues[Pointer] = v;
             }

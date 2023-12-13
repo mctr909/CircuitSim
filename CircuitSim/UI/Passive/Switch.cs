@@ -112,7 +112,7 @@ namespace Circuit.UI.Passive {
             arr[0] = ce.Momentary ? "プッシュスイッチ(" : "スイッチ(";
             if (ce.Position == 1) {
                 arr[0] += "OFF)";
-                arr[1] = "電位差：" + Utils.VoltageAbsText(ce.GetVoltageDiff());
+                arr[1] = "電位差：" + Utils.VoltageAbsText(ce.VoltageDiff);
             } else {
                 arr[0] += "ON)";
                 arr[1] = "電位：" + Utils.VoltageText(ce.Volts[0]);

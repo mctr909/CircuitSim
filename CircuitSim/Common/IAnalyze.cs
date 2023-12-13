@@ -72,6 +72,11 @@
 		/// <returns></returns>
 		bool HasGroundConnection(int n1);
 
+		/// <summary>
+		/// handle reset button
+		/// </summary>
+		void Reset();
+
 		void Shorted();
 	}
 }

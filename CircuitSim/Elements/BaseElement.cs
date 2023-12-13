@@ -14,14 +14,11 @@ namespace Circuit.Elements {
 
         #region [property]
         public abstract int TermCount { get; }
-
         public Point[] NodePos { get; private set; }
-
         public int[] Nodes { get; protected set; }
-
-        public double[] Volts { get; protected set; }
-
         public double Current { get; protected set; }
+        public double[] Volts { get; protected set; }
+        public virtual double VoltageDiff { get { return Volts[0] - Volts[1]; } }
         #endregion
 
         #region [property(Analyze)]
@@ -43,22 +40,12 @@ namespace Circuit.Elements {
                 Volts = new double[n];
             }
         }
-
-        public void SetNodePos(params PointF[] node) {
-            NodePos = new Point[node.Length];
-            for (int i = 0; i < node.Length; i++) {
-                NodePos[i].X = (int)node[i].X;
-                NodePos[i].Y = (int)node[i].Y;
-            }
-        }
-
         public void SetNodePos(params Point[] node) {
             NodePos = new Point[node.Length];
             for (int i = 0; i < node.Length; i++) {
                 NodePos[i] = node[i];
             }
         }
-
         public void SetNodePos(PointF pos, params PointF[] node) {
             NodePos = new Point[node.Length + 1];
             NodePos[0].X = (int)pos.X;
@@ -68,16 +55,6 @@ namespace Circuit.Elements {
                 NodePos[i + 1].Y = (int)node[i].Y;
             }
         }
-
-        public void SetNodePos(PointF pos, params Point[] node) {
-            NodePos = new Point[node.Length + 1];
-            NodePos[0].X = (int)pos.X;
-            NodePos[0].Y = (int)pos.Y;
-            for (int i = 0; i < node.Length; i++) {
-                NodePos[i + 1] = node[i];
-            }
-        }
-
         public void SetNodePos(PointF[] node, PointF pos) {
             NodePos = new Point[node.Length + 1];
             for (int i = 0; i < node.Length; i++) {
@@ -87,62 +64,32 @@ namespace Circuit.Elements {
             NodePos[node.Length].X = (int)pos.X;
             NodePos[node.Length].Y = (int)pos.Y;
         }
-
-        public void SetNodePos(Point[] node, PointF pos) {
-            NodePos = new Point[node.Length + 1];
-            for (int i = 0; i < node.Length; i++) {
-                NodePos[i] = node[i];
-            }
-            NodePos[node.Length].X = (int)pos.X;
-            NodePos[node.Length].Y = (int)pos.Y;
-        }
-
-        public virtual double GetVoltageDiff() { return Volts[0] - Volts[1]; }
-
-        /// <summary>
-        /// handle reset button
-        /// </summary>
-        public virtual void Reset() {
-            for (int i = 0; i != TermCount + InternalNodeCount; i++) {
-                Volts[i] = 0;
-            }
-        }
         #endregion
 
         #region [method(Analyze)]
         public virtual bool GetConnection(int n1, int n2) { return true; }
-
         public virtual void Stamp() { }
-
         public virtual void SetNode(int p, int n) {
             if (p < Nodes.Length) {
                 Nodes[p] = n;
             }
         }
-
         public virtual void SetVoltageSource(int n, int v) {
             /* default implementation only makes sense for subclasses with one voltage source.
              * If we have 0 this isn't used, if we have >1 this won't work */
             mVoltSource = v;
         }
-
         public virtual int GetConnectionNode(int n) { return Nodes[n]; }
-
         public virtual bool HasGroundConnection(int n1) { return false; }
-
+        public virtual void Reset() {
+            for (int i = 0; i != TermCount + InternalNodeCount; i++) {
+                Volts[i] = 0;
+            }
+        }
         public virtual void Shorted() { }
         #endregion
 
         #region [method(Circuit)]
-        public int GetNodeAtPoint(Point p) {
-            for (int i = 0; i != TermCount; i++) {
-                var nodePos = NodePos[i];
-                if (nodePos.X == p.X && nodePos.Y == p.Y) {
-                    return i;
-                }
-            }
-            return 0;
-        }
         public virtual double GetCurrentIntoNode(int n) {
             if (n == 0 && TermCount == 2) {
                 return -Current;

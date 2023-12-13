@@ -51,7 +51,7 @@ namespace Circuit.UI.Input {
             var ce = (ElmFM)Elm;
             arr[0] = "FM Source";
             arr[1] = "I = " + Utils.CurrentText(ce.Current);
-            arr[2] = "V = " + Utils.VoltageText(ce.GetVoltageDiff());
+            arr[2] = "V = " + Utils.VoltageText(ce.VoltageDiff);
             arr[3] = "cf = " + Utils.FrequencyText(ce.CarrierFreq);
             arr[4] = "sf = " + Utils.FrequencyText(ce.Signalfreq);
             arr[5] = "dev =" + Utils.FrequencyText(ce.Deviation);

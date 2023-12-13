@@ -383,7 +383,7 @@ namespace Circuit.UI.Input {
                 arr[0] = elm.WaveForm.ToString(); break;
             }
 
-            arr[1] = "電圧：" + Utils.VoltageText(elm.GetVoltageDiff());
+            arr[1] = "電圧：" + Utils.VoltageText(elm.VoltageDiff);
             int i = 2;
             if (elm.WaveForm != ElmVoltage.WAVEFORM.DC && elm.WaveForm != ElmVoltage.WAVEFORM.NOISE) {
                 arr[i++] = "振幅：" + Utils.VoltageText(elm.MaxVoltage);
