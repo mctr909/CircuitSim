@@ -186,7 +186,6 @@ namespace Circuit {
 
         #region property
         public static List<Point> DrawPostList { get; private set; } = new List<Point>();
-        public static List<Point> UndrawPostList { get; private set; } = new List<Point>();
         public static List<Point> BadConnectionList { get; private set; } = new List<Point>();
         public static BaseElement StopElm { get; set; }
         public static double Time { get; set; }
@@ -439,11 +438,9 @@ namespace Circuit {
         /* node number at both ends. */
         static void makePostDrawList() {
             DrawPostList = new List<Point>();
-            UndrawPostList = new List<Point>();
             BadConnectionList = new List<Point>();
             foreach (var entry in mPostCountMap) {
                 if (2 == entry.Value) {
-                    UndrawPostList.Add(entry.Key);
                 } else {
                     DrawPostList.Add(entry.Key);
                 }
@@ -618,7 +615,6 @@ namespace Circuit {
         public static void AnalyzeCircuit() {
             if (0 == mElmList.Count) {
                 DrawPostList = new List<Point>();
-                UndrawPostList = new List<Point>();
                 BadConnectionList = new List<Point>();
                 return;
             }

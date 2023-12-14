@@ -1726,11 +1726,6 @@ namespace Circuit {
             foreach (var p in Circuit.DrawPostList) {
                 g.DrawPost(p);
             }
-            if (MouseInfo.Mode == MouseInfo.MODE.DRAG_ITEM || MouseInfo.Mode == MouseInfo.MODE.DRAG_POST) {
-                foreach(var p in Circuit.UndrawPostList) {
-                    g.DrawPost(p);
-                }
-            }
             if (ConstructElm != null && (ConstructElm.Post.A.X != ConstructElm.Post.B.X || ConstructElm.Post.A.Y != ConstructElm.Post.B.Y)) {
                 g.DrawColor = CustomGraphics.LineColor;
                 g.FillColor = CustomGraphics.LineColor;
@@ -1773,7 +1768,7 @@ namespace Circuit {
                 }
             }
             foreach (var p in Circuit.BadConnectionList) {
-                g.DrawPost(p);
+                g.DrawHandle(p);
             }
 
             if (0 < MouseInfo.SelectedArea.Width) {

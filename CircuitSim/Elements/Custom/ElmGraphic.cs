@@ -1,7 +1,7 @@
 ﻿namespace Circuit.Elements.Custom {
-    class ElmGraphic : BaseElement {
-        public ElmGraphic() : base() { }
+	class ElmGraphic : BaseElement {
+		public ElmGraphic() : base() { }
 
-        public override int TermCount { get { return 0; } }
-    }
+		public override int TermCount { get { return 0; } }
+	}
 }
