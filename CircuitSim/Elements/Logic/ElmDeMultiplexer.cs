@@ -2,50 +2,50 @@
 using Circuit.UI.Custom;
 
 namespace Circuit.Elements.Logic {
-    class ElmDeMultiplexer : ElmChip {
-        int mSelectBitCount = 2;
-        int mOutputCount;
-        int mqPin = 6;
+	class ElmDeMultiplexer : ElmChip {
+		int mSelectBitCount = 2;
+		int mOutputCount;
+		int mqPin = 6;
 
-        public ElmDeMultiplexer() : base() { }
+		public ElmDeMultiplexer() : base() { }
 
-        public ElmDeMultiplexer(Chip chip, StringTokenizer st) : base(st) {
-            mSelectBitCount = st.nextTokenInt(mSelectBitCount);
-        }
+		public ElmDeMultiplexer(Chip chip, StringTokenizer st) : base(st) {
+			mSelectBitCount = st.nextTokenInt(mSelectBitCount);
+		}
 
-        public override int TermCount { get { return mqPin + 1; } }
+		public override int TermCount { get { return mqPin + 1; } }
 
-        public override int VoltageSourceCount { get { return mOutputCount; } }
+		public override int VoltageSourceCount { get { return mOutputCount; } }
 
-        public override void SetupPins(Chip chip) {
-            mOutputCount = 1 << mSelectBitCount;
-            mqPin = mOutputCount + mSelectBitCount;
-            chip.sizeX = 1 + mSelectBitCount;
-            chip.sizeY = 1 + mOutputCount;
-            AllocNodes();
-            Pins = new Chip.Pin[TermCount];
-            for (var i = 0; i != mOutputCount; i++) {
-                Pins[i] = new Chip.Pin(chip, i, Chip.SIDE_E, "Q" + i);
-                Pins[i].output = true;
-            }
-            for (var i = 0; i != mSelectBitCount; i++) {
-                var ii = i + mOutputCount;
-                Pins[ii] = new Chip.Pin(chip, i, Chip.SIDE_S, "S" + i);
-            }
-            Pins[mqPin] = new Chip.Pin(chip, 0, Chip.SIDE_W, "Q");
-        }
+		public override void SetupPins(Chip chip) {
+			mOutputCount = 1 << mSelectBitCount;
+			mqPin = mOutputCount + mSelectBitCount;
+			chip.sizeX = 1 + mSelectBitCount;
+			chip.sizeY = 1 + mOutputCount;
+			AllocNodes();
+			Pins = new Chip.Pin[TermCount];
+			for (var i = 0; i != mOutputCount; i++) {
+				Pins[i] = new Chip.Pin(chip, i, Chip.SIDE_E, "Q" + i);
+				Pins[i].output = true;
+			}
+			for (var i = 0; i != mSelectBitCount; i++) {
+				var ii = i + mOutputCount;
+				Pins[ii] = new Chip.Pin(chip, i, Chip.SIDE_S, "S" + i);
+			}
+			Pins[mqPin] = new Chip.Pin(chip, 0, Chip.SIDE_W, "Q");
+		}
 
-        protected override void execute() {
-            int val = 0;
-            for (var i = 0; i != mSelectBitCount; i++) {
-                if (Pins[i + mOutputCount].value) {
-                    val |= 1 << i;
-                }
-            }
-            for (var i = 0; i != mOutputCount; i++) {
-                Pins[i].value = false;
-            }
-            Pins[val].value = Pins[mqPin].value;
-        }
-    }
+		protected override void execute() {
+			int val = 0;
+			for (var i = 0; i != mSelectBitCount; i++) {
+				if (Pins[i + mOutputCount].value) {
+					val |= 1 << i;
+				}
+			}
+			for (var i = 0; i != mOutputCount; i++) {
+				Pins[i].value = false;
+			}
+			Pins[val].value = Pins[mqPin].value;
+		}
+	}
 }

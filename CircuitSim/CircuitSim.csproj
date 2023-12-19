@@ -210,7 +210,7 @@
     </Compile>
     <Compile Include="Forms\Adjustable.cs" />
     <Compile Include="Common\Circuit.cs" />
-    <Compile Include="Elements\Expr.cs" />
+    <Compile Include="Elements\Input\Expr.cs" />
     <Compile Include="Common\FFT.cs" />
     <Compile Include="Forms\ScrollValuePopup.cs">
       <SubType>Form</SubType>

@@ -1,5 +1,5 @@
 ﻿namespace Circuit.Elements.Output {
-    class ElmStopTrigger : BaseElement {
+	class ElmStopTrigger : BaseElement {
 		public double TriggerVoltage;
 		public int Type;
 		public double Delay;
@@ -14,7 +14,7 @@
 
 		public ElmStopTrigger(StringTokenizer st) : base() {
 			TriggerVoltage = st.nextTokenDouble();
-            Type = st.nextTokenInt();
+			Type = st.nextTokenInt();
 			Delay = st.nextTokenDouble();
 		}
 
