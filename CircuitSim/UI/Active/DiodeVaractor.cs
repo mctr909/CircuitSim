@@ -63,7 +63,7 @@ namespace Circuit.UI.Active {
             base.GetInfo(arr);
             var ce = (ElmDiodeVaractor)Elm;
             arr[0] = "可変容量ダイオード";
-            arr[5] = "静電容量：" + Utils.CapacitanceText(ce.mCapacitance, "F");
+            arr[5] = "静電容量：" + Utils.UnitText(ce.mCapacitance, "F");
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {

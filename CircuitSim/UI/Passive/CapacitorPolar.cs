@@ -51,7 +51,7 @@ namespace Circuit.UI.Passive {
         public override void GetInfo(string[] arr) {
             base.GetInfo(arr);
             var ce = (ElmCapacitor)Elm;
-            arr[1] = "有極性コンデンサ：" + Utils.CapacitanceText(ce.Capacitance, "F");
+            arr[1] = "有極性コンデンサ：" + Utils.UnitText(ce.Capacitance, "F");
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {

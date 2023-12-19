@@ -157,11 +157,7 @@ namespace Circuit {
 
         void setupLabels() {
             int thissel = getSelIdx();
-            if ("F" == mUnit) {
-                mLabels.Text = Utils.CapacitanceText(mValues[thissel], mUnit);
-            } else {
-                mLabels.Text = Utils.UnitText(mValues[thissel], mUnit);
-            }
+            mLabels.Text = Utils.UnitText(mValues[thissel], mUnit);
             mTrbValue.Value = thissel;
         }
 
@@ -177,11 +173,7 @@ namespace Circuit {
             mElmInfo.Value = mValues[thissel];
             mEditElm.SetElementValue(0, 0, mElmInfo);
             CirSimForm.NeedAnalyze();
-            if ("F" == mUnit) {
-                mLabels.Text = Utils.CapacitanceText(mValues[thissel], mUnit);
-            } else {
-                mLabels.Text = Utils.UnitText(mValues[thissel], mUnit);
-            }
+            mLabels.Text = Utils.UnitText(mValues[thissel], mUnit);
         }
 
         void setElmValue(int i) {
