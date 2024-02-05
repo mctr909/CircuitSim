@@ -92,9 +92,11 @@
     <Compile Include="UI\Active\Diode.cs" />
     <Compile Include="UI\Active\DiodeLED.cs" />
     <Compile Include="Elements\Active\ElmMosfet.cs" />
+    <Compile Include="UI\Active\JfetP.cs" />
     <Compile Include="UI\Active\Mosfet.cs" />
     <Compile Include="UI\Active\MosfetN.cs" />
     <Compile Include="Elements\Active\ElmOptocoupler.cs" />
+    <Compile Include="UI\Active\JfetN.cs" />
     <Compile Include="UI\Active\Optocoupler.cs" />
     <Compile Include="UI\Active\TransistorN.cs" />
     <Compile Include="Elements\Active\ElmOpAmp.cs" />

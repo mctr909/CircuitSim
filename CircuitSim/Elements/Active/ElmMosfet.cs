@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Circuit.UI.Gate;
+using Circuit.UI.Input;
+using System;
+using static Circuit.MouseInfo;
 
 namespace Circuit.Elements.Active {
 	class ElmMosfet : BaseElement {
@@ -12,8 +15,6 @@ namespace Circuit.Elements.Active {
 		const double DiodeLeakage = 1.7143528192808883E-07;
 		const double DiodeVdCoef = 19.331142470520007;
 
-		public const double DefaultThreshold = 1.5;
-
 		public static double LastBeta;
 
 		public static double DefaultBeta {
@@ -24,6 +25,7 @@ namespace Circuit.Elements.Active {
 		public double Beta;
 
 		public int Nch { get; private set; }
+		public bool EnableDiode { get; private set; }
 		public int BodyTerminal { get; private set; }
 		public int Mode { get; private set; } = 0;
 		public double Gm { get; private set; } = 0;
@@ -35,16 +37,14 @@ namespace Circuit.Elements.Active {
 		public double Vd { get { return Volts[IdxD]; } }
 
 		double mDiodeLastVoltDiff = 0.0;
+		double mLastVs = 0.0;
+		double mLastVd = 0.0;
 		int mDiodeNodeS;
 		int mDiodeNodeD;
 
-		public ElmMosfet(bool pChFlag) : base() {
-			Nch = pChFlag ? -1 : 1;
-			Beta = DefaultBeta;
-			Vth = DefaultThreshold;
-		}
-		public ElmMosfet(bool pChFlag, double vth, double beta) : base() {
-			Nch = pChFlag ? -1 : 1;
+		public ElmMosfet(bool isNch, bool diode, double vth, double beta) : base() {
+			Nch = isNch ? 1 : -1;
+			EnableDiode = diode;
 			Vth = vth;
 			Beta = beta;
 			AllocNodes();
@@ -56,17 +56,21 @@ namespace Circuit.Elements.Active {
 
 		public override void Reset() {
 			Volts[IdxG] = Volts[IdxS] = Volts[IdxD] = 0;
+			mLastVs = 0.0;
+			mLastVd = 0.0;
 			mDiodeLastVoltDiff = 0.0;
+			DiodeCurrent1 = 0.0;
+			DiodeCurrent2 = 0.0;
 		}
 
 		public override bool GetConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
 
 		public override void Stamp() {
-			BodyTerminal = (Nch < 0) ? IdxD : IdxS;
 			mDiodeNodeS = Nodes[IdxS];
 			mDiodeNodeD = Nodes[IdxD];
-			Circuit.RowInfo[Nodes[IdxS] - 1].LeftChanges = true;
-			Circuit.RowInfo[Nodes[IdxD] - 1].LeftChanges = true;
+			Circuit.StampNonLinear(mDiodeNodeS);
+			Circuit.StampNonLinear(mDiodeNodeD);
+			BodyTerminal = (Nch < 0) ? IdxD : IdxS;
 		}
 
 		public override double GetCurrentIntoNode(int n) {
@@ -83,9 +87,44 @@ namespace Circuit.Elements.Active {
 		}
 
 		public override void DoIteration() {
+			calc(false);
+		}
+
+		public override void IterationFinished() {
+			calc(true);
+			if (BodyTerminal == IdxS) {
+				DiodeCurrent1 = -DiodeCurrent2;
+			}
+			if (BodyTerminal == IdxD) {
+				DiodeCurrent2 = -DiodeCurrent1;
+			}
+		}
+
+		void calc(bool finished) {
+			var vs = Volts[IdxS];
+			var vd = Volts[IdxD];
+			if (!finished) {
+				if (vs > mLastVs + 0.5) {
+					vs = mLastVs + 0.5;
+				}
+				if (vs < mLastVs - 0.5) {
+					vs = mLastVs - 0.5;
+				}
+				if (vd > mLastVd + 0.5) {
+					vd = mLastVd + 0.5;
+				}
+				if (vd < mLastVd - 0.5) {
+					vd = mLastVd - 0.5;
+				}
+				Volts[IdxS] = vs;
+				Volts[IdxD] = vd;
+			}
+			mLastVs = vs;
+			mLastVd = vd;
+
 			/* ドレインソース間電圧が負の場合
-             * ドレインとソースを入れ替える
-             * (電流の計算を単純化するため) */
+			 * ドレインとソースを入れ替える
+			 * (電流の計算を単純化するため) */
 			int idxS, idxD;
 			if (Nch * Volts[IdxD] < Nch * Volts[IdxS]) {
 				idxS = IdxD;
@@ -94,87 +133,70 @@ namespace Circuit.Elements.Active {
 				idxS = IdxS;
 				idxD = IdxD;
 			}
-
+			var real_vgs = Volts[IdxG] - Volts[idxS];
+			var real_vds = Volts[idxD] - Volts[idxS];
 			double gds;
-			double rs;
 			{
-				var vgs = Volts[IdxG] - Volts[idxS];
-				var vds = Volts[idxD] - Volts[idxS];
-				var nvgs_vth = vgs * Nch - Vth;
-				var nvds = vds * Nch;
-				if (nvgs_vth < 0.0) {
+				var vgs = real_vgs * Nch;
+				var vds = real_vds * Nch;
+				if (vgs < Vth) {
 					/* 遮断領域 */
 					/* 電流を0にするべきだが特異な行列となるため
-                     * 100MΩとした時の電流にする */
+					 * 100MΩとした時の電流にする */
 					gds = 1e-8;
+					Current = vds * gds;
 					Gm = 0;
-					Current = nvds * gds;
 					Mode = 0;
-				} else if (nvds < nvgs_vth) {
+				} else if (vds < vgs - Vth) {
 					/* 線形領域 */
-					gds = Beta * (nvgs_vth - nvds);
-					Gm = Beta * nvds;
-					Current = Beta * (nvgs_vth * nvds - nvds * nvds * 0.5);
+					gds = Beta * (vgs - vds - Vth);
+					Current = Beta * ((vgs - Vth) * vds - vds * vds * .5);
+					Gm = Beta * vds;
 					Mode = 1;
 				} else {
 					/* 飽和領域 */
 					gds = 1e-8;
-					Gm = Beta * nvgs_vth;
-					Current = 0.5 * Beta * nvgs_vth * nvgs_vth + (nvds - nvgs_vth) * gds;
+					Current = .5 * Beta * (vgs - Vth) * (vgs - Vth) + (vds - (vgs - Vth)) * gds;
+					Gm = Beta * (vgs - Vth);
 					Mode = 2;
 				}
-				rs = gds * vds + Gm * vgs - Nch * Current;
 			}
 
+			var rs = gds * real_vds + Gm * real_vgs - Nch * Current;
+
 			/* ドレインソース間電圧が負の場合
-             * ドレインとソースを入れ替えているため電流を反転 */
+			 * ドレインとソースを入れ替えているため電流を反転 */
 			if (idxS == 2 && Nch == 1 || idxS == 1 && Nch == -1) {
 				Current = -Current;
 			}
 
-			/* 還流ダイオード */
-			if (Nch < 0) {
-				var vbs = (Volts[BodyTerminal] - Volts[IdxS]) * Nch;
-				DiodeDoStep(mDiodeNodeS, mDiodeNodeD, vbs, ref mDiodeLastVoltDiff);
-				DiodeCurrent1 = (Math.Exp(vbs * DiodeVdCoef) - 1) * DiodeLeakage * Nch;
-				DiodeCurrent2 = -DiodeCurrent1;
+			if (EnableDiode) {
+				/* 還流ダイオード */
+				if (Nch < 0) {
+					var vbs = (Volts[BodyTerminal] - Volts[IdxS]) * Nch;
+					DiodeDoStep(mDiodeNodeS, mDiodeNodeD, vbs, ref mDiodeLastVoltDiff);
+					DiodeCurrent1 = (Math.Exp(vbs * DiodeVdCoef) - 1) * DiodeLeakage * Nch;
+					DiodeCurrent2 = -DiodeCurrent1;
+				} else {
+					var vbd = (Volts[BodyTerminal] - Volts[IdxD]) * Nch;
+					DiodeDoStep(mDiodeNodeS, mDiodeNodeD, vbd, ref mDiodeLastVoltDiff);
+					DiodeCurrent2 = (Math.Exp(vbd * DiodeVdCoef) - 1) * DiodeLeakage * Nch;
+					DiodeCurrent1 = -DiodeCurrent2;
+				}
 			} else {
-				var vbd = (Volts[BodyTerminal] - Volts[IdxD]) * Nch;
-				DiodeDoStep(mDiodeNodeS, mDiodeNodeD, vbd, ref mDiodeLastVoltDiff);
-				DiodeCurrent2 = (Math.Exp(vbd * DiodeVdCoef) - 1) * DiodeLeakage * Nch;
-				DiodeCurrent1 = -DiodeCurrent2;
+				DiodeCurrent1 = DiodeCurrent2 = 0;
 			}
 
-			{
-				var riD = Circuit.RowInfo[Nodes[idxD] - 1];
-				var riS = Circuit.RowInfo[Nodes[idxS] - 1];
-				var rowD = riD.MapRow;
-				var rowS = riS.MapRow;
-				if (riD.IsConst) {
-					Circuit.RightSide[rowD] -= gds * riD.Value;
-					Circuit.RightSide[rowS] += gds * riD.Value;
-				} else {
-					Circuit.Matrix[rowD, riD.MapCol] += gds;
-					Circuit.Matrix[rowS, riD.MapCol] -= gds;
-				}
-				if (riS.IsConst) {
-					Circuit.RightSide[rowD] += (gds + Gm) * riS.Value;
-					Circuit.RightSide[rowS] -= (gds + Gm) * riS.Value;
-				} else {
-					Circuit.Matrix[rowD, riS.MapCol] -= gds + Gm;
-					Circuit.Matrix[rowS, riS.MapCol] += gds + Gm;
-				}
-				var riG = Circuit.RowInfo[Nodes[IdxG] - 1];
-				if (riG.IsConst) {
-					Circuit.RightSide[rowD] -= Gm * riG.Value;
-					Circuit.RightSide[rowS] += Gm * riG.Value;
-				} else {
-					Circuit.Matrix[rowD, riG.MapCol] += Gm;
-					Circuit.Matrix[rowS, riG.MapCol] -= Gm;
-				}
-				Circuit.RightSide[rowD] += rs;
-				Circuit.RightSide[rowS] -= rs;
-			}
+			Circuit.StampMatrix(Nodes[IdxD], Nodes[IdxD], gds);
+			Circuit.StampMatrix(Nodes[IdxD], Nodes[IdxS], -gds - Gm);
+			Circuit.StampMatrix(Nodes[IdxD], Nodes[IdxG], Gm);
+
+			Circuit.StampMatrix(Nodes[IdxS], Nodes[IdxD], -gds);
+			Circuit.StampMatrix(Nodes[IdxS], Nodes[IdxS], gds + Gm);
+			Circuit.StampMatrix(Nodes[IdxS], Nodes[IdxG], -Gm);
+
+			Circuit.StampRightSide(Nodes[IdxD], rs);
+			Circuit.StampRightSide(Nodes[IdxS], -rs);
 		}
 
 		static void DiodeDoStep(int n0, int n1, double voltdiff, ref double lastVoltDiff) {

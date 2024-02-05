@@ -2,6 +2,6 @@
 
 namespace Circuit.UI.Active {
     class MosfetP : Mosfet {
-        public MosfetP(Point pos) : base(pos, true) { }
+        public MosfetP(Point pos) : base(pos, false, true) { }
     }
 }

@@ -23,18 +23,22 @@ namespace Circuit.UI.Active {
         PointF[] mPosD = new PointF[4];
         PointF[] mPosB = new PointF[2];
 
-        public Mosfet(Point pos, bool pChFlag) : base(pos) {
-            Elm = new ElmMosfet(pChFlag);
-            mFlags = pChFlag ? FLAG_PNP : 0;
+        public Mosfet(Point pos, bool isNch, bool diode) : base(pos) {
+            if (diode) {
+                Elm = new ElmMosfet(isNch, diode, 1.5, ElmMosfet.DefaultBeta);
+            } else {
+                Elm = new ElmMosfet(isNch, diode, isNch ? -1 : 1, 1.25);
+            }
+            mFlags = isNch ? 0 : FLAG_PNP;
             Post.NoDiagonal = true;
             ReferenceName = "Tr";
         }
 
         public Mosfet(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            var vt = st.nextTokenDouble(ElmMosfet.DefaultThreshold);
+            var vt = st.nextTokenDouble(1.5);
             var beta = st.nextTokenDouble(ElmMosfet.DefaultBeta);
             Post.NoDiagonal = true;
-            Elm = new ElmMosfet((f & FLAG_PNP) != 0, vt, beta);
+            Elm = new ElmMosfet((f & FLAG_PNP) == 0, true, vt, beta);
         }
 
         public override bool CanViewInScope { get { return true; } }
