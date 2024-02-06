@@ -97,9 +97,11 @@ namespace Circuit {
         /// <param name="b"></param>
         /// <param name="ret"></param>
         /// <param name="f"></param>
-        public static void InterpPoint(PointF a, PointF b, ref PointF ret, double f) {
-            ret.X = (float)(a.X * (1 - f) + b.X * f);
-            ret.Y = (float)(a.Y * (1 - f) + b.Y * f);
+        public static void InterpPoint(PointF a, PointF b, out PointF ret, double f) {
+            ret = new PointF(
+                (float)(a.X * (1 - f) + b.X * f),
+                (float)(a.Y * (1 - f) + b.Y * f)
+            );
         }
 
         /// <summary>
@@ -110,17 +112,18 @@ namespace Circuit {
         /// <param name="ret">Returns interpolated point</param>
         /// <param name="f">Fraction along line</param>
         /// <param name="g">Fraction perpendicular to line</param>
-        public static void InterpPoint(PointF a, PointF b, ref PointF ret, double f, double g) {
+        public static void InterpPoint(PointF a, PointF b, out PointF ret, double f, double g) {
             var gx = b.Y - a.Y;
             var gy = a.X - b.X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                ret.X = a.X;
-                ret.Y = a.Y;
+                ret = new PointF(a.X, a.Y);
             } else {
                 g /= r;
-                ret.X = (float)(a.X * (1 - f) + b.X * f + g * gx);
-                ret.Y = (float)(a.Y * (1 - f) + b.Y * f + g * gy);
+                ret = new PointF(
+                    (float)(a.X * (1 - f) + b.X * f + g * gx),
+                    (float)(a.Y * (1 - f) + b.Y * f + g * gy)
+                );
             }
         }
 
@@ -133,21 +136,23 @@ namespace Circuit {
         /// <param name="ret2">2nd point (Out)</param>
         /// <param name="f">Fraction along line</param>
         /// <param name="g">Fraction perpendicular to line</param>
-        public static void InterpPoint(PointF a, PointF b, ref PointF ret1, ref PointF ret2, double f, double g) {
+        public static void InterpPoint(PointF a, PointF b, out PointF ret1, out PointF ret2, double f, double g) {
             var gx = b.Y - a.Y;
             var gy = a.X - b.X;
             var r = Math.Sqrt(gx * gx + gy * gy);
             if (0.0 == r) {
-                ret1.X = a.X;
-                ret1.Y = a.Y;
-                ret2.X = b.X;
-                ret2.Y = b.Y;
+                ret1 = new PointF(a.X, a.Y);
+                ret2 = new PointF(b.X, b.Y);
             } else {
                 g /= r;
-                ret1.X = (float)(a.X * (1 - f) + b.X * f + g * gx);
-                ret1.Y = (float)(a.Y * (1 - f) + b.Y * f + g * gy);
-                ret2.X = (float)(a.X * (1 - f) + b.X * f - g * gx);
-                ret2.Y = (float)(a.Y * (1 - f) + b.Y * f - g * gy);
+                ret1 = new PointF(
+                    (float)(a.X * (1 - f) + b.X * f + g * gx),
+                    (float)(a.Y * (1 - f) + b.Y * f + g * gy)
+                );
+                ret2 = new PointF(
+                    (float)(a.X * (1 - f) + b.X * f - g * gx),
+                    (float)(a.Y * (1 - f) + b.Y * f - g * gy)
+                );
             }
         }
 
@@ -157,7 +162,7 @@ namespace Circuit {
             var l = Math.Sqrt(adx * adx + ady * ady);
             ret = new PointF[3];
             ret[0] = new PointF(b.X, b.Y);
-            InterpPoint(a, b, ref ret[1], ref ret[2], 1.0 - al / l, aw);
+            InterpPoint(a, b, out ret[1], out ret[2], 1.0 - al / l, aw);
         }
 
         public static void CreateSchmitt(PointF a, PointF b, out PointF[] ret, double gsize, double ctr) {
@@ -166,12 +171,12 @@ namespace Circuit {
             var h1 = 3 * gsize;
             var h2 = h1 * 2;
             var len = Distance(a, b);
-            InterpPoint(a, b, ref ret[0], ctr - h2 / len, hs);
-            InterpPoint(a, b, ref ret[1], ctr + h1 / len, hs);
-            InterpPoint(a, b, ref ret[2], ctr + h1 / len, -hs);
-            InterpPoint(a, b, ref ret[3], ctr + h2 / len, -hs);
-            InterpPoint(a, b, ref ret[4], ctr - h1 / len, -hs);
-            InterpPoint(a, b, ref ret[5], ctr - h1 / len, hs);
+            InterpPoint(a, b, out ret[0], ctr - h2 / len, hs);
+            InterpPoint(a, b, out ret[1], ctr + h1 / len, hs);
+            InterpPoint(a, b, out ret[2], ctr + h1 / len, -hs);
+            InterpPoint(a, b, out ret[3], ctr + h2 / len, -hs);
+            InterpPoint(a, b, out ret[4], ctr - h1 / len, -hs);
+            InterpPoint(a, b, out ret[5], ctr - h1 / len, hs);
         }
 
         public static string Escape(string s) {

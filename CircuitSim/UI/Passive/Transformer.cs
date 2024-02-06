@@ -78,27 +78,27 @@ namespace Circuit.UI.Passive {
             mTermSec1 = Post.B;
             mTermSec1.Y = mTermPri1.Y;
 
-            Utils.InterpPoint(mTermPri1, mTermSec1, ref mTermPri2, 0, -Post.Dsign * height);
-            Utils.InterpPoint(mTermPri1, mTermSec1, ref mTermSec2, 1, -Post.Dsign * height);
+            Utils.InterpPoint(mTermPri1, mTermSec1, out mTermPri2, 0, -Post.Dsign * height);
+            Utils.InterpPoint(mTermPri1, mTermSec1, out mTermSec2, 1, -Post.Dsign * height);
 
             var pce = 0.5 - 10.0 / width;
-            Utils.InterpPoint(mTermPri1, mTermSec1, ref mCoilPri1, pce);
-            Utils.InterpPoint(mTermPri1, mTermSec1, ref mCoilSec1, 1 - pce);
-            Utils.InterpPoint(mTermPri2, mTermSec2, ref mCoilPri2, pce);
-            Utils.InterpPoint(mTermPri2, mTermSec2, ref mCoilSec2, 1 - pce);
+            Utils.InterpPoint(mTermPri1, mTermSec1, out mCoilPri1, pce);
+            Utils.InterpPoint(mTermPri1, mTermSec1, out mCoilSec1, 1 - pce);
+            Utils.InterpPoint(mTermPri2, mTermSec2, out mCoilPri2, pce);
+            Utils.InterpPoint(mTermPri2, mTermSec2, out mCoilSec2, 1 - pce);
 
             var pcd = 0.5 - 1.0 / width;
             mCore = new PointF[4];
-            Utils.InterpPoint(mTermPri1, mTermSec1, ref mCore[0], pcd);
-            Utils.InterpPoint(mTermPri1, mTermSec1, ref mCore[1], 1 - pcd);
-            Utils.InterpPoint(mTermPri2, mTermSec2, ref mCore[2], pcd);
-            Utils.InterpPoint(mTermPri2, mTermSec2, ref mCore[3], 1 - pcd);
+            Utils.InterpPoint(mTermPri1, mTermSec1, out mCore[0], pcd);
+            Utils.InterpPoint(mTermPri1, mTermSec1, out mCore[1], 1 - pcd);
+            Utils.InterpPoint(mTermPri2, mTermSec2, out mCore[2], pcd);
+            Utils.InterpPoint(mTermPri2, mTermSec2, out mCore[3], 1 - pcd);
 
             if (-1 == ce.Polarity) {
                 mDots = new PointF[2];
                 var dotp = Math.Abs(7.0 / height);
-                Utils.InterpPoint(mCoilPri1, mCoilPri2, ref mDots[0], dotp, -7 * Post.Dsign);
-                Utils.InterpPoint(mCoilSec2, mCoilSec1, ref mDots[1], dotp, -7 * Post.Dsign);
+                Utils.InterpPoint(mCoilPri1, mCoilPri2, out mDots[0], dotp, -7 * Post.Dsign);
+                Utils.InterpPoint(mCoilSec2, mCoilSec1, out mDots[1], dotp, -7 * Post.Dsign);
                 var x = mTermSec1;
                 mTermSec1 = mTermSec2;
                 mTermSec2 = x;
@@ -150,8 +150,8 @@ namespace Circuit.UI.Passive {
             }
             var arr = new List<PointF>();
             for (int loop = 0; loop != loopCt; loop++) {
-                var p = new PointF();
-                Utils.InterpPoint(a, b, ref p, (loop + 0.5) / loopCt, 0);
+                PointF p;
+                Utils.InterpPoint(a, b, out p, (loop + 0.5) / loopCt, 0);
                 arr.Add(p);
             }
             pos = arr.ToArray();

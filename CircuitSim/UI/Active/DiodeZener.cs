@@ -34,8 +34,8 @@ namespace Circuit.UI.Active {
             var pa = new PointF[2];
             interpLeadAB(ref pa[0], ref pa[1], -1.0 / BODY_LEN, HS);
             interpLeadAB(ref mCathode[0], ref mCathode[1], 1, HS);
-            Utils.InterpPoint(mCathode[0], mCathode[1], ref mWing[0], -0.2, -HS);
-            Utils.InterpPoint(mCathode[1], mCathode[0], ref mWing[1], -0.2, -HS);
+            Utils.InterpPoint(mCathode[0], mCathode[1], out mWing[0], -0.2, -HS);
+            Utils.InterpPoint(mCathode[1], mCathode[0], out mWing[1], -0.2, -HS);
             mPoly = new PointF[] { pa[0], pa[1], mLead2 };
             setTextPos();
         }

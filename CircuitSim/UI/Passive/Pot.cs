@@ -104,8 +104,8 @@ namespace Circuit.UI.Passive {
             }
             Post.Len = Utils.Distance(mTermA, mTermB);
 
-            Utils.InterpPoint(mTermA, mTermB, ref mLead1, (Post.Len - BODY_LEN) / (2 * Post.Len));
-            Utils.InterpPoint(mTermA, mTermB, ref mLead2, (Post.Len + BODY_LEN) / (2 * Post.Len));
+            Utils.InterpPoint(mTermA, mTermB, out mLead1, (Post.Len - BODY_LEN) / (2 * Post.Len));
+            Utils.InterpPoint(mTermA, mTermB, out mLead2, (Post.Len + BODY_LEN) / (2 * Post.Len));
 
             /* set slider */
             var ce = (ElmPot)Elm;
@@ -113,13 +113,13 @@ namespace Circuit.UI.Passive {
             var poff = 0.5;
             var woff = -7.0;
             int soff = (int)((ce.Position - poff) * BODY_LEN);
-            Utils.InterpPoint(mTermA, mTermB, ref mTermSlider, poff, offset);
-            Utils.InterpPoint(mTermA, mTermB, ref mCorner2, soff / Post.Len + poff, offset);
-            Utils.InterpPoint(mTermA, mTermB, ref mArrowPoint, soff / Post.Len + poff, 7 * Math.Sign(offset));
-            Utils.InterpPoint(mTermA, mTermB, ref mMidPoint, soff / Post.Len + poff);
+            Utils.InterpPoint(mTermA, mTermB, out mTermSlider, poff, offset);
+            Utils.InterpPoint(mTermA, mTermB, out mCorner2, soff / Post.Len + poff, offset);
+            Utils.InterpPoint(mTermA, mTermB, out mArrowPoint, soff / Post.Len + poff, 7 * Math.Sign(offset));
+            Utils.InterpPoint(mTermA, mTermB, out mMidPoint, soff / Post.Len + poff);
 
             var clen = Math.Abs(offset) + woff;
-            Utils.InterpPoint(mCorner2, mArrowPoint, ref mArrow1, ref mArrow2, (clen + woff) / clen, 4);
+            Utils.InterpPoint(mCorner2, mArrowPoint, out mArrow1, out mArrow2, (clen + woff) / clen, 4);
 
             setPoly();
             setTextPos();
@@ -267,12 +267,12 @@ namespace Circuit.UI.Passive {
             mRect2 = new PointF[SEGMENTS + 2];
             mRect3 = new PointF[SEGMENTS + 2];
             mRect4 = new PointF[SEGMENTS + 2];
-            Utils.InterpPoint(mTermA, mTermB, ref mRect1[0], ref mRect2[0], 0, HS);
+            Utils.InterpPoint(mTermA, mTermB, out mRect1[0], out mRect2[0], 0, HS);
             for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
-                Utils.InterpPoint(mTermA, mTermB, ref mRect1[j], ref mRect2[j], i * SEG_F, HS);
-                Utils.InterpPoint(mTermA, mTermB, ref mRect3[j], ref mRect4[j], (i + 1) * SEG_F, HS);
+                Utils.InterpPoint(mTermA, mTermB, out mRect1[j], out mRect2[j], i * SEG_F, HS);
+                Utils.InterpPoint(mTermA, mTermB, out mRect3[j], out mRect4[j], (i + 1) * SEG_F, HS);
             }
-            Utils.InterpPoint(mTermA, mTermB, ref mRect1[SEGMENTS + 1], ref mRect2[SEGMENTS + 1], 1, HS);
+            Utils.InterpPoint(mTermA, mTermB, out mRect1[SEGMENTS + 1], out mRect2[SEGMENTS + 1], 1, HS);
         }
 
         void setTextPos() {
@@ -290,18 +290,18 @@ namespace Circuit.UI.Passive {
             if (Post.Horizontal) {
                 if (0 < Post.Diff.Y) {
                     /* right slider */
-                    Utils.InterpPoint(mTermA, mTermB, ref mNamePos, 0.5, -12 * Post.Dsign);
+                    Utils.InterpPoint(mTermA, mTermB, out mNamePos, 0.5, -12 * Post.Dsign);
                 } else {
                     /* left slider */
-                    Utils.InterpPoint(mTermA, mTermB, ref mNamePos, 0.5, 12 * Post.Dsign);
+                    Utils.InterpPoint(mTermA, mTermB, out mNamePos, 0.5, 12 * Post.Dsign);
                 }
             } else {
                 if (0 < Post.Diff.X) {
                     /* upper slider */
-                    Utils.InterpPoint(mTermA, mTermB, ref mNamePos, 0.5, -9 * Post.Dsign);
+                    Utils.InterpPoint(mTermA, mTermB, out mNamePos, 0.5, -9 * Post.Dsign);
                 } else {
                     /* lower slider */
-                    Utils.InterpPoint(mTermA, mTermB, ref mNamePos, 0.5, 13 * Post.Dsign);
+                    Utils.InterpPoint(mTermA, mTermB, out mNamePos, 0.5, 13 * Post.Dsign);
                 }
             }
         }

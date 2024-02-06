@@ -45,8 +45,8 @@ namespace Circuit.UI.Passive {
             var loopCt = (int)Math.Ceiling(coilLen / 11);
             var arr = new List<PointF>();
             for (int loop = 0; loop != loopCt; loop++) {
-                var p = new PointF();
-                Utils.InterpPoint(a, b, ref p, (loop + 0.5) / loopCt, 0);
+                PointF p;
+                Utils.InterpPoint(a, b, out p, (loop + 0.5) / loopCt, 0);
                 arr.Add(p);
             }
             mCoilPos = arr.ToArray();

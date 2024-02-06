@@ -9,6 +9,7 @@ using Circuit.UI.Input;
 using Circuit.UI.Output;
 using Circuit.UI.Gate;
 using Circuit.UI.Custom;
+using System.Security.Cryptography;
 
 namespace Circuit {
 	public enum MENU_ITEM {
@@ -61,6 +62,7 @@ namespace Circuit {
 		MOSFET,
 		MOSFET_N,
 		MOSFET_P,
+		JFET,
 		JFET_N,
 		JFET_P,
 		OPAMP,
@@ -692,8 +694,10 @@ namespace Circuit {
 				return new DiodeLED(p1, p2, f, st);
 			case DUMP_ID.TRANSISTOR:
 				return new Transistor(p1, p2, f, st);
+			case DUMP_ID.JFET:
+				return new FET(p1, p2, false, f, st);
 			case DUMP_ID.MOSFET:
-				return new Mosfet(p1, p2, f, st);
+				return new FET(p1, p2, true, f, st);
 			case DUMP_ID.OPAMP:
 				return new OpAmp(p1, p2, f, st);
 			case DUMP_ID.OPTO_COUPLER:

@@ -46,9 +46,9 @@ namespace Circuit.UI.Gate {
             mGatePolyEuro = new PointF[4];
             var l2 = new PointF();
             interpPost(ref l2, 0.5 + (ww - 5) / Post.Len); /* make room for circle */
-            Utils.InterpPoint(mLead1, l2, ref mGatePolyEuro[0], ref mGatePolyEuro[1], 0, hs);
-            Utils.InterpPoint(mLead1, l2, ref mGatePolyEuro[3], ref mGatePolyEuro[2], 1, hs);
-            Utils.InterpPoint(mLead1, l2, ref mCenter, .5);
+            Utils.InterpPoint(mLead1, l2, out mGatePolyEuro[0], out mGatePolyEuro[1], 0, hs);
+            Utils.InterpPoint(mLead1, l2, out mGatePolyEuro[3], out mGatePolyEuro[2], 1, hs);
+            Utils.InterpPoint(mLead1, l2, out mCenter, .5);
         }
 
         public override void Draw(CustomGraphics g) {
