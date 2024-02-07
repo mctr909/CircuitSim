@@ -54,7 +54,7 @@ namespace Circuit {
 			set { mFontL = new Font(mFontL.Name, value); }
 		}
 
-		public bool DoPrint { get; set; } = false;
+		public bool DrawPDF { get; set; } = false;
 
 		public virtual Color DrawColor {
 			get { return mPenLine.Color; }

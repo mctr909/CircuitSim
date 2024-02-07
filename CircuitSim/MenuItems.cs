@@ -9,7 +9,6 @@ using Circuit.UI.Input;
 using Circuit.UI.Output;
 using Circuit.UI.Gate;
 using Circuit.UI.Custom;
-using System.Security.Cryptography;
 
 namespace Circuit {
 	public enum MENU_ITEM {
@@ -17,7 +16,7 @@ namespace Circuit {
 		OPEN_FILE,
 		SAVE_FILE,
 		OVERWRITE,
-		PRINT,
+		PDF,
 
 		SELECT,
 		CUT,
@@ -137,28 +136,6 @@ namespace Circuit {
 		List<ToolStripMenuItem> mMainMenuItems = new List<ToolStripMenuItem>();
 		Font menuFont = new Font("Segoe UI", 9.0f);
 
-		SHORTCUT shortcut(DUMP_ID id) {
-			switch (id) {
-			case DUMP_ID.RESISTOR:
-				return new SHORTCUT(Keys.F1, false);
-			case DUMP_ID.CAPACITOR:
-				return new SHORTCUT(Keys.F2, false);
-			case DUMP_ID.CAPACITOR_POLAR:
-				return new SHORTCUT(Keys.F3, false);
-			case DUMP_ID.INDUCTOR:
-				return new SHORTCUT(Keys.F4, false);
-			case DUMP_ID.WIRE:
-				return new SHORTCUT(Keys.F5, false);
-			case DUMP_ID.GROUND:
-				return new SHORTCUT(Keys.F6, false);
-			case DUMP_ID.INVALID:
-			default:
-				return new SHORTCUT();
-			}
-		}
-
-		public ToolStripMenuItem tsmWire = null;
-
 		public MenuItems(CirSimForm sim) {
 			mSim = sim;
 		}
@@ -181,7 +158,7 @@ namespace Circuit {
 			}
 		}
 
-		ToolStripMenuItem addElementItem(ToolStripMenuItem menu, string title, DUMP_ID item) {
+		ToolStripMenuItem addElementItem(ToolStripMenuItem menu, string title, DUMP_ID item, SHORTCUT shortcut = new SHORTCUT()) {
 			var elm = ConstructElement(item);
 			if (elm == null) {
 				return null;
@@ -189,15 +166,13 @@ namespace Circuit {
 				elm.Delete();
 			}
 			ToolStripMenuItem mi;
-			var sc = shortcut(elm.DumpId);
-			if (sc.Key == Keys.None) {
+			if (shortcut.Key == Keys.None) {
 				mi = new ToolStripMenuItem();
 			} else {
-				mi = new ToolStripMenuItem()
-				{
+				mi = new ToolStripMenuItem() {
 					ShowShortcutKeys = true,
-					ShortcutKeys = sc.Key,
-					ShortcutKeyDisplayString = sc.Name
+					ShortcutKeys = shortcut.Key,
+					ShortcutKeyDisplayString = shortcut.Name
 				};
 			}
 			mi.Font = menuFont;
@@ -223,26 +198,36 @@ namespace Circuit {
 		void addMenuItem(ToolStripMenuItem menu, string title, MENU_ITEM item, SHORTCUT shortCut) {
 			ToolStripMenuItem mi;
 			if (shortCut.Key == Keys.None) {
-				mi = new ToolStripMenuItem()
-				{
+				mi = new ToolStripMenuItem() {
 					Font = menuFont,
 					Text = title
 				};
 			} else {
-				mi = new ToolStripMenuItem()
-				{
-					Font = menuFont,
-					Text = title,
-					ShowShortcutKeys = true,
-					ShortcutKeys = shortCut.Key,
-					ShortcutKeyDisplayString = shortCut.Name,
-				};
+				switch (shortCut.Key) {
+				case Keys.Escape:
+					mi = new ToolStripMenuItem() {
+						Font = menuFont,
+						Text = title,
+						ShowShortcutKeys = true,
+						ShortcutKeyDisplayString = shortCut.Name,
+					};
+					break;
+				default:
+					mi = new ToolStripMenuItem() {
+						Font = menuFont,
+						Text = title,
+						ShowShortcutKeys = true,
+						ShortcutKeys = shortCut.Key,
+						ShortcutKeyDisplayString = shortCut.Name,
+					};
+					break;
+                }
+				mi.Click += new EventHandler((sender, e) => {
+					mSim.Performed(item);
+				});
+				mMainMenuItems.Add(mi);
+				menu.DropDownItems.Add(mi);
 			}
-			mi.Click += new EventHandler((sender, e) => {
-				mSim.Performed(item);
-			});
-			mMainMenuItems.Add(mi);
-			menu.DropDownItems.Add(mi);
 		}
 
 		public void ComposeMainMenu(MenuStrip mainMenuBar) {
@@ -250,14 +235,14 @@ namespace Circuit {
 			var fileMenuBar = new ToolStripMenuItem();
 			fileMenuBar.Text = "ファイル(F)";
 			fileMenuBar.Font = menuFont;
-			addMenuItem(fileMenuBar, "新規作成(N)", MENU_ITEM.OPEN_NEW, new SHORTCUT(Keys.None));
+			addMenuItem(fileMenuBar, "新規作成(N)", MENU_ITEM.OPEN_NEW, new SHORTCUT(Keys.N));
 			fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
 			addMenuItem(fileMenuBar, "開く(O)", MENU_ITEM.OPEN_FILE, new SHORTCUT(Keys.O));
 			fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
 			addMenuItem(fileMenuBar, "上書き保存(S)", MENU_ITEM.OVERWRITE, new SHORTCUT(Keys.S));
 			addMenuItem(fileMenuBar, "名前を付けて保存(A)", MENU_ITEM.SAVE_FILE, new SHORTCUT(Keys.None));
 			fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
-			addMenuItem(fileMenuBar, "印刷(P)", MENU_ITEM.PRINT, new SHORTCUT(Keys.None));
+			addMenuItem(fileMenuBar, "PDF出力(P)", MENU_ITEM.PDF, new SHORTCUT(Keys.P));
 			mainMenuBar.Items.Add(fileMenuBar);
 			#endregion
 
@@ -265,39 +250,41 @@ namespace Circuit {
 			var editMenuBar = new ToolStripMenuItem();
 			editMenuBar.Text = "編集(E)";
 			editMenuBar.Font = menuFont;
-			addMenuItem(editMenuBar, "全選択(A)", MENU_ITEM.SELECT_ALL, new SHORTCUT(Keys.A));
-			addMenuItem(editMenuBar, "切り取り(T)", MENU_ITEM.CUT, new SHORTCUT(Keys.X));
-			addMenuItem(editMenuBar, "コピー(C)", MENU_ITEM.COPY, new SHORTCUT(Keys.C));
-			addMenuItem(editMenuBar, "貼り付け(P)", MENU_ITEM.PASTE, new SHORTCUT(Keys.V));
-			addMenuItem(editMenuBar, "削除(L)", MENU_ITEM.DELETE, new SHORTCUT(Keys.Delete, false));
+			addMenuItem(editMenuBar, "選択", MENU_ITEM.SELECT, new SHORTCUT(Keys.Escape, false));
+			addMenuItem(editMenuBar, "全選択", MENU_ITEM.SELECT_ALL, new SHORTCUT(Keys.A));
+			addMenuItem(editMenuBar, "切り取り", MENU_ITEM.CUT, new SHORTCUT(Keys.X));
+			addMenuItem(editMenuBar, "コピー", MENU_ITEM.COPY, new SHORTCUT(Keys.C));
+			addMenuItem(editMenuBar, "貼り付け", MENU_ITEM.PASTE, new SHORTCUT(Keys.V));
+			addMenuItem(editMenuBar, "削除", MENU_ITEM.DELETE, new SHORTCUT(Keys.Delete, false));
 			editMenuBar.DropDownItems.Add(new ToolStripSeparator());
-			addMenuItem(editMenuBar, "元に戻す(U)", MENU_ITEM.UNDO, new SHORTCUT(Keys.Z));
-			addMenuItem(editMenuBar, "やり直し(R)", MENU_ITEM.REDO, new SHORTCUT(Keys.Y));
+			addMenuItem(editMenuBar, "元に戻す", MENU_ITEM.UNDO, new SHORTCUT(Keys.Z));
+			addMenuItem(editMenuBar, "やり直し", MENU_ITEM.REDO, new SHORTCUT(Keys.Y));
 			editMenuBar.DropDownItems.Add(new ToolStripSeparator());
-			addMenuItem(editMenuBar, "中心に移動(E)", MENU_ITEM.CENTER_CIRCUIT, new SHORTCUT(Keys.E));
+			addMenuItem(editMenuBar, "中心に移動", MENU_ITEM.CENTER_CIRCUIT, new SHORTCUT(Keys.E));
+			editMenuBar.DropDownItems.Add(new ToolStripSeparator());
+			addElementItem(editMenuBar, "配線", DUMP_ID.WIRE, new SHORTCUT(Keys.W));
+			addElementItem(editMenuBar, "接地", DUMP_ID.GROUND, new SHORTCUT(Keys.G));
+			editMenuBar.DropDownItems.Add(new ToolStripSeparator());
+			addElementItem(editMenuBar, "テキスト", DUMP_ID.TEXT, new SHORTCUT(Keys.T));
+			addElementItem(editMenuBar, "矩形", DUMP_ID.BOX, new SHORTCUT(Keys.B));
 			mainMenuBar.Items.Add(editMenuBar);
 			#endregion
 
 			mainMenuBar.Items.Add(new ToolStripSeparator());
 			mainMenuBar.Items.Add(new ToolStripSeparator());
 
-			#region Basic Element
-			var basicMenuBar = new ToolStripMenuItem();
-			basicMenuBar.Text = "基本(B)";
-			basicMenuBar.Font = menuFont;
-			tsmWire = addElementItem(basicMenuBar, "抵抗", DUMP_ID.RESISTOR);
-			addElementItem(basicMenuBar, "キャパシタ", DUMP_ID.CAPACITOR);
-			addElementItem(basicMenuBar, "キャパシタ(有極性)", DUMP_ID.CAPACITOR_POLAR);
-			addElementItem(basicMenuBar, "インダクタ", DUMP_ID.INDUCTOR);
-			addElementItem(basicMenuBar, "配線", DUMP_ID.WIRE);
-			addElementItem(basicMenuBar, "接地", DUMP_ID.GROUND);
-			basicMenuBar.DropDownItems.Add(new ToolStripSeparator());
-			addElementItem(basicMenuBar, "可変抵抗", DUMP_ID.POT);
-			addElementItem(basicMenuBar, "トランス", DUMP_ID.TRANSFORMER);
-			basicMenuBar.DropDownItems.Add(new ToolStripSeparator());
-			addElementItem(basicMenuBar, "矩形", DUMP_ID.BOX);
-			addElementItem(basicMenuBar, "テキスト", DUMP_ID.TEXT);
-			mainMenuBar.Items.Add(basicMenuBar);
+			#region Passive Element
+			var passiveMenuBar = new ToolStripMenuItem();
+			passiveMenuBar.Text = "受動素子(P)";
+			passiveMenuBar.Font = menuFont;
+			addElementItem(passiveMenuBar, "抵抗", DUMP_ID.RESISTOR, new SHORTCUT(Keys.F1, false));
+			addElementItem(passiveMenuBar, "キャパシタ", DUMP_ID.CAPACITOR, new SHORTCUT(Keys.F2, false));
+			addElementItem(passiveMenuBar, "インダクタ", DUMP_ID.INDUCTOR, new SHORTCUT(Keys.F3, false));
+			passiveMenuBar.DropDownItems.Add(new ToolStripSeparator());
+			addElementItem(passiveMenuBar, "可変抵抗", DUMP_ID.POT);
+			addElementItem(passiveMenuBar, "キャパシタ(有極性)", DUMP_ID.CAPACITOR_POLAR);
+			addElementItem(passiveMenuBar, "トランス", DUMP_ID.TRANSFORMER);
+			mainMenuBar.Items.Add(passiveMenuBar);
 			#endregion
 
 			#region Active Components
@@ -322,18 +309,6 @@ namespace Circuit {
 			addElementItem(activeMenuBar, "フォトカプラ", DUMP_ID.OPTO_COUPLER);
 			addElementItem(activeMenuBar, "アナログスイッチ", DUMP_ID.ANALOG_SW);
 			mainMenuBar.Items.Add(activeMenuBar);
-			#endregion
-
-			#region Switch
-			var switchMenuBar = new ToolStripMenuItem();
-			switchMenuBar.Text = "スイッチ(S)";
-			switchMenuBar.Font = menuFont;
-			addElementItem(switchMenuBar, "スイッチ", DUMP_ID.SWITCH);
-			addElementItem(switchMenuBar, "切り替えスイッチ", DUMP_ID.SWITCH_MULTI);
-			addElementItem(switchMenuBar, "プッシュスイッチ(C接点)", DUMP_ID.SWITCH_PUSH_C);
-			addElementItem(switchMenuBar, "プッシュスイッチ(NC)", DUMP_ID.SWITCH_PUSH_NC);
-			addElementItem(switchMenuBar, "プッシュスイッチ(NO)", DUMP_ID.SWITCH_PUSH_NO);
-			mainMenuBar.Items.Add(switchMenuBar);
 			#endregion
 
 			#region Inputs and Sources
@@ -374,6 +349,18 @@ namespace Circuit {
 			outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
 			addElementItem(outputMenuBar, "停止トリガー", DUMP_ID.STOP_TRIGGER);
 			mainMenuBar.Items.Add(outputMenuBar);
+			#endregion
+
+			#region Switch
+			var switchMenuBar = new ToolStripMenuItem();
+			switchMenuBar.Text = "スイッチ(S)";
+			switchMenuBar.Font = menuFont;
+			addElementItem(switchMenuBar, "スイッチ", DUMP_ID.SWITCH);
+			addElementItem(switchMenuBar, "切り替えスイッチ", DUMP_ID.SWITCH_MULTI);
+			addElementItem(switchMenuBar, "プッシュスイッチ(C接点)", DUMP_ID.SWITCH_PUSH_C);
+			addElementItem(switchMenuBar, "プッシュスイッチ(NC)", DUMP_ID.SWITCH_PUSH_NC);
+			addElementItem(switchMenuBar, "プッシュスイッチ(NO)", DUMP_ID.SWITCH_PUSH_NO);
+			mainMenuBar.Items.Add(switchMenuBar);
 			#endregion
 
 			#region Logic Gates

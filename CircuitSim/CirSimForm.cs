@@ -204,8 +204,8 @@ namespace Circuit {
             case MENU_ITEM.SAVE_FILE:
                 doSaveFile(false);
                 break;
-            case MENU_ITEM.PRINT:
-                CustomGraphics.Instance.DoPrint = true;
+            case MENU_ITEM.PDF:
+                CustomGraphics.Instance.DrawPDF = true;
                 break;
             }
 
@@ -1573,9 +1573,9 @@ namespace Circuit {
             PDF.Page pdfCircuit = null;
             PDF.Page pdfScope = null;
             var bkIsRun = IsRunning;
-            var bkPrint = ControlPanel.ChkPrintable.Checked;
-            if (g.DoPrint) {
-                g.DoPrint = false;
+            var bkPrintable = ControlPanel.ChkPrintable.Checked;
+            if (g.DrawPDF) {
+                g.DrawPDF = false;
                 if (bkIsRun) {
                     IsRunning = false;
                 }
@@ -1631,7 +1631,7 @@ namespace Circuit {
                     MessageBox.Show(ex.ToString());
                 }
                 IsRunning = bkIsRun;
-                ControlPanel.ChkPrintable.Checked = bkPrint;
+                ControlPanel.ChkPrintable.Checked = bkPrintable;
                 CustomGraphics.Instance = CustomGraphics.FromImage(g.Width, g.Height);
             } else {
                 mBmp = new Bitmap(g.Width, g.Height);

@@ -2,15 +2,16 @@
 
 namespace Circuit.Elements.Active {
 	class ElmFET : BaseElement {
-		const int IdxG = 0;
-		const int IdxS = 1;
-		const int IdxD = 2;
+		protected const int IdxG = 0;
+		protected const int IdxS = 1;
+		protected const int IdxD = 2;
 
 		const double BackwardCompatibilityBeta = 1;
 		const double DiodeVcrit = 0.6347668814648425;
 		const double DiodeVscale = 0.05173;
 		const double DiodeLeakage = 1.7143528192808883E-07;
 		const double DiodeVdCoef = 19.331142470520007;
+		const double DiodeVt = 0.025865;
 
 		public static double LastBeta;
 
@@ -33,11 +34,11 @@ namespace Circuit.Elements.Active {
 		public double Vs { get { return Volts[IdxS]; } }
 		public double Vd { get { return Volts[IdxD]; } }
 
-		double mDiodeLastVoltDiff = 0.0;
 		double mLastVs = 0.0;
 		double mLastVd = 0.0;
-		int mDiodeNodeS;
-		int mDiodeNodeD;
+		protected double mDiodeLastVoltDiff = 0.0;
+		protected int mDiodeNodeS;
+		protected int mDiodeNodeD;
 
 		public ElmFET(bool isNch, bool mos, double vth, double beta) : base() {
 			Nch = isNch ? 1 : -1;
@@ -196,7 +197,18 @@ namespace Circuit.Elements.Active {
 			Circuit.StampRightSide(Nodes[IdxS], -rs);
 		}
 
-		static void DiodeDoStep(int n0, int n1, double voltdiff, ref double lastVoltDiff) {
+		protected static double CalculateDiodeCurrent(double voltdiff) {
+			if (voltdiff >= 0) {
+				return DiodeLeakage * (Math.Exp(voltdiff * DiodeVdCoef) - 1);
+			}
+			return DiodeLeakage * (
+				Math.Exp(voltdiff * DiodeVdCoef)
+				- Math.Exp((-voltdiff) / DiodeVt)
+				- 1
+			);
+		}
+
+		protected static void DiodeDoStep(int n0, int n1, double voltdiff, ref double lastVoltDiff) {
 			if (0.001 < Math.Abs(voltdiff - lastVoltDiff)) {
 				Circuit.Converged = false;
 			}

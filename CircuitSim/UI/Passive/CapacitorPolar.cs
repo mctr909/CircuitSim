@@ -8,7 +8,11 @@ namespace Circuit.UI.Passive {
         PointF mPlusPoint;
 
         public CapacitorPolar(Point pos) : base(pos) {
-            Elm = new ElmPolarCapacitor();
+            var elm = new ElmPolarCapacitor();
+            Elm = elm;
+            elm.Capacitance = mLastValue;
+            elm.MaxNegativeVoltage = 5;
+            ReferenceName = mLastReferenceName;
         }
 
         public CapacitorPolar(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {

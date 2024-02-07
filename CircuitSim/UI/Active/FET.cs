@@ -27,7 +27,7 @@ namespace Circuit.UI.Active {
 			if (mos) {
 				Elm = new ElmFET(isNch, mos, 1.5, ElmFET.DefaultBeta);
 			} else {
-				Elm = new ElmFET(isNch, mos, isNch ? -1 : 1, 1.25);
+				Elm = new ElmJFET(isNch, isNch ? -1 : 1, 0.00125);
 			}
 			mFlags = isNch ? 0 : FLAG_PNP;
 			Post.NoDiagonal = true;
@@ -38,7 +38,11 @@ namespace Circuit.UI.Active {
 			var vt = st.nextTokenDouble(1.5);
 			var beta = st.nextTokenDouble(ElmFET.DefaultBeta);
 			Post.NoDiagonal = true;
-			Elm = new ElmFET((f & FLAG_PNP) == 0, mos, vt, beta);
+			if (mos) {
+				Elm = new ElmFET((f & FLAG_PNP) == 0, mos, vt, beta);
+			} else {
+				Elm = new ElmJFET((f & FLAG_PNP) == 0, vt, beta);
+			}
 		}
 
 		public override bool CanViewInScope { get { return true; } }

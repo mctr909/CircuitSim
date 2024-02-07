@@ -8,6 +8,7 @@ namespace Circuit.UI.Passive {
     class Capacitor : BaseUI {
         public static readonly int FLAG_BACK_EULER = 2;
         protected static string mLastReferenceName = "C";
+        protected static double mLastValue = 1e-5;
 
         const int BODY_LEN = 5;
         const int HS = 6;
@@ -15,12 +16,10 @@ namespace Circuit.UI.Passive {
         PointF[] mPlate1;
         PointF[] mPlate2;
 
-        public Capacitor(Point pos, int dummy) : base(pos) {
-            ReferenceName = mLastReferenceName;
-        }
-
         public Capacitor(Point pos) : base(pos) {
-            Elm = new ElmCapacitor();
+            var elm = new ElmCapacitor();
+            Elm = elm;
+            elm.Capacitance = mLastValue;
             ReferenceName = mLastReferenceName;
         }
 
@@ -31,7 +30,7 @@ namespace Circuit.UI.Passive {
         public Capacitor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             var elm = new ElmCapacitor();
             Elm = elm;
-            elm.Capacitance = st.nextTokenDouble(1e-5);
+            elm.Capacitance = st.nextTokenDouble(mLastValue);
             elm.VoltDiff = st.nextTokenDouble(0);
         }
         
@@ -146,6 +145,7 @@ namespace Circuit.UI.Passive {
             var ce = (ElmCapacitor)Elm;
             if (n == 0 && ei.Value > 0) {
                 ce.Capacitance = ei.Value;
+                mLastValue = ei.Value;
                 setTextPos();
             }
             if (n == 1) {

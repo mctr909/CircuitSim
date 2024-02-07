@@ -7,6 +7,7 @@ using Circuit.Elements.Passive;
 namespace Circuit.UI.Passive {
     class Inductor : BaseUI {
         protected static string mLastReferenceName = "L";
+        protected static double mLastValue = 1e-4;
 
         const int BODY_LEN = 24;
         const int COIL_WIDTH = 8;
@@ -15,12 +16,14 @@ namespace Circuit.UI.Passive {
         float mCoilAngle;
 
         public Inductor(Point pos) : base(pos) {
-            Elm = new ElmInductor();
+            var elm = new ElmInductor();
+            Elm = elm;
             ReferenceName = mLastReferenceName;
+            elm.Inductance = mLastValue;
         }
 
         public Inductor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            var ind = st.nextTokenDouble(1e-4);
+            var ind = st.nextTokenDouble(mLastValue);
             var c = st.nextTokenDouble(0);
             Elm = new ElmInductor(ind, c);
         }
@@ -120,6 +123,7 @@ namespace Circuit.UI.Passive {
             var ce = (ElmInductor)Elm;
             if (n == 0 && ei.Value > 0) {
                 ce.Inductance = ei.Value;
+                mLastValue = ei.Value;
                 setTextPos();
             }
             if (n == 1) {

@@ -5,20 +5,20 @@ namespace Circuit {
         public Keys Key { get; private set; }
         public string Name { get; private set; }
 
-        public SHORTCUT(Keys k, bool c = true, bool s = false, bool a = false) {
+        public SHORTCUT(Keys k, bool ctrl = true, bool shift = false, bool alt = false) {
             Key = k;
             Name = "";
             if (k != Keys.None) {
                 Name = name(k);
-                if (a || 0 < (k & Keys.Alt)) {
+                if (alt || 0 < (k & Keys.Alt)) {
                     Key |= Keys.Alt;
                     Name += " + Alt";
                 }
-                if (c || 0 < (k & Keys.Control)) {
+                if (ctrl || 0 < (k & Keys.Control)) {
                     Key |= Keys.Control;
                     Name += " + Ctrl";
                 }
-                if (s || 0 < (k & Keys.Shift)) {
+                if (shift || 0 < (k & Keys.Shift)) {
                     Key |= Keys.Shift;
                     Name += " + Shift";
                 }

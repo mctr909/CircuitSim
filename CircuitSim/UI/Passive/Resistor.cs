@@ -7,6 +7,7 @@ using Circuit.Elements.Passive;
 namespace Circuit.UI.Passive {
     class Resistor : BaseUI {
         protected static string mLastReferenceName = "R";
+        protected static double mLastValue = 1e3;
 
         const int BODY_LEN = 24;
         const int SEGMENTS = 12;
@@ -22,14 +23,16 @@ namespace Circuit.UI.Passive {
         PointF[] mRect4;
 
         public Resistor(Point pos) : base(pos) {
-            Elm = new ElmResistor();
+            var elm = new ElmResistor();
+            Elm = elm;
+            elm.Resistance = mLastValue;
             ReferenceName = mLastReferenceName;
         }
 
         public Resistor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
             var elm = new ElmResistor();
             Elm = elm;
-            elm.Resistance = st.nextTokenDouble(1e3);
+            elm.Resistance = st.nextTokenDouble(mLastValue);
         }
 
         public override DUMP_ID DumpId { get { return DUMP_ID.RESISTOR; } }
@@ -174,6 +177,7 @@ namespace Circuit.UI.Passive {
             var ce = (ElmResistor)Elm;
             if (n == 0 && 0 < ei.Value) {
                 ce.Resistance = ei.Value;
+                mLastValue = ei.Value;
                 setTextPos();
             }
             if (n == 1) {
