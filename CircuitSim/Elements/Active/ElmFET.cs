@@ -7,14 +7,8 @@ namespace Circuit.Elements.Active {
 		protected const int IdxD = 2;
 
 		const double BackwardCompatibilityBeta = 1;
-		const double DiodeVcrit = 0.6347668814648425;
-		const double DiodeVscale = 0.05173;
-		const double DiodeLeakage = 1.7143528192808883E-07;
-		const double DiodeVdCoef = 19.331142470520007;
-		const double DiodeVt = 0.025865;
 
 		public static double LastBeta;
-
 		public static double DefaultBeta {
 			get { return LastBeta == 0 ? BackwardCompatibilityBeta : LastBeta; }
 		}
@@ -34,17 +28,21 @@ namespace Circuit.Elements.Active {
 		public double Vs { get { return Volts[IdxS]; } }
 		public double Vd { get { return Volts[IdxD]; } }
 
+		Diode mDiodeB1;
+		Diode mDiodeB2;
 		double mLastVs = 0.0;
 		double mLastVd = 0.0;
-		protected double mDiodeLastVoltDiff = 0.0;
-		protected int mDiodeNodeS;
-		protected int mDiodeNodeD;
+		double mLastVg = 0.0;
 
 		public ElmFET(bool isNch, bool mos, double vth, double beta) : base() {
 			Nch = isNch ? 1 : -1;
 			MOS = mos;
 			Vth = vth;
 			Beta = beta;
+			mDiodeB1 = new Diode();
+			mDiodeB1.SetupForDefaultModel();
+			mDiodeB2 = new Diode();
+			mDiodeB2.SetupForDefaultModel();
 			AllocNodes();
 		}
 
@@ -56,19 +54,28 @@ namespace Circuit.Elements.Active {
 			Volts[IdxG] = Volts[IdxS] = Volts[IdxD] = 0;
 			mLastVs = 0.0;
 			mLastVd = 0.0;
-			mDiodeLastVoltDiff = 0.0;
+			mLastVg = 0.0;
 			DiodeCurrent1 = 0.0;
 			DiodeCurrent2 = 0.0;
+			mDiodeB1.Reset();
+			mDiodeB2.Reset();
 		}
 
 		public override bool GetConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
 
 		public override void Stamp() {
-			mDiodeNodeS = Nodes[IdxS];
-			mDiodeNodeD = Nodes[IdxD];
-			Circuit.StampNonLinear(mDiodeNodeS);
-			Circuit.StampNonLinear(mDiodeNodeD);
+			Circuit.StampNonLinear(Nodes[IdxS]);
+			Circuit.StampNonLinear(Nodes[IdxD]);
 			BodyTerminal = (Nch < 0) ? IdxD : IdxS;
+			if (MOS) {
+				if (Nch < 0) {
+					mDiodeB1.Stamp(Nodes[IdxS], Nodes[BodyTerminal]);
+					mDiodeB2.Stamp(Nodes[IdxD], Nodes[BodyTerminal]);
+				} else {
+					mDiodeB1.Stamp(Nodes[BodyTerminal], Nodes[IdxS]);
+					mDiodeB2.Stamp(Nodes[BodyTerminal], Nodes[IdxD]);
+				}
+			}
 		}
 
 		public override double GetCurrentIntoNode(int n) {
@@ -85,11 +92,11 @@ namespace Circuit.Elements.Active {
 		}
 
 		public override void DoIteration() {
-			calc(false);
+			Calc(false);
 		}
 
 		public override void IterationFinished() {
-			calc(true);
+			Calc(true);
 			if (BodyTerminal == IdxS) {
 				DiodeCurrent1 = -DiodeCurrent2;
 			}
@@ -98,9 +105,10 @@ namespace Circuit.Elements.Active {
 			}
 		}
 
-		void calc(bool finished) {
+		void Calc(bool finished) {
 			var vs = Volts[IdxS];
 			var vd = Volts[IdxD];
+			var vg = Volts[IdxG];
 			if (!finished) {
 				if (vs > mLastVs + 0.5) {
 					vs = mLastVs + 0.5;
@@ -117,8 +125,6 @@ namespace Circuit.Elements.Active {
 				Volts[IdxS] = vs;
 				Volts[IdxD] = vd;
 			}
-			mLastVs = vs;
-			mLastVd = vd;
 
 			/* ドレインソース間電圧が負の場合
 			 * ドレインとソースを入れ替える
@@ -131,8 +137,13 @@ namespace Circuit.Elements.Active {
 				idxS = IdxS;
 				idxD = IdxD;
 			}
+
 			var real_vgs = Volts[IdxG] - Volts[idxS];
 			var real_vds = Volts[idxD] - Volts[idxS];
+			mLastVs = vs;
+			mLastVd = vd;
+			mLastVg = vg;
+
 			double gds;
 			{
 				var vgs = real_vgs * Nch;
@@ -169,18 +180,10 @@ namespace Circuit.Elements.Active {
 			}
 
 			if (MOS) {
-				/* 還流ダイオード */
-				if (Nch < 0) {
-					var vbs = (Volts[BodyTerminal] - Volts[IdxS]) * Nch;
-					DiodeDoStep(mDiodeNodeS, mDiodeNodeD, vbs, ref mDiodeLastVoltDiff);
-					DiodeCurrent1 = (Math.Exp(vbs * DiodeVdCoef) - 1) * DiodeLeakage * Nch;
-					DiodeCurrent2 = -DiodeCurrent1;
-				} else {
-					var vbd = (Volts[BodyTerminal] - Volts[IdxD]) * Nch;
-					DiodeDoStep(mDiodeNodeS, mDiodeNodeD, vbd, ref mDiodeLastVoltDiff);
-					DiodeCurrent2 = (Math.Exp(vbd * DiodeVdCoef) - 1) * DiodeLeakage * Nch;
-					DiodeCurrent1 = -DiodeCurrent2;
-				}
+				mDiodeB1.DoIteration(Nch * (Volts[BodyTerminal] - Volts[1]));
+				DiodeCurrent1 = mDiodeB1.CalculateCurrent(Nch * (Volts[BodyTerminal] - Volts[1])) * Nch;
+				mDiodeB2.DoIteration(Nch * (Volts[BodyTerminal] - Volts[2]));
+				DiodeCurrent2 = mDiodeB2.CalculateCurrent(Nch * (Volts[BodyTerminal] - Volts[2])) * Nch;
 			} else {
 				DiodeCurrent1 = DiodeCurrent2 = 0;
 			}
@@ -195,77 +198,6 @@ namespace Circuit.Elements.Active {
 
 			Circuit.StampRightSide(Nodes[IdxD], rs);
 			Circuit.StampRightSide(Nodes[IdxS], -rs);
-		}
-
-		protected static double CalculateDiodeCurrent(double voltdiff) {
-			if (voltdiff >= 0) {
-				return DiodeLeakage * (Math.Exp(voltdiff * DiodeVdCoef) - 1);
-			}
-			return DiodeLeakage * (
-				Math.Exp(voltdiff * DiodeVdCoef)
-				- Math.Exp((-voltdiff) / DiodeVt)
-				- 1
-			);
-		}
-
-		protected static void DiodeDoStep(int n0, int n1, double voltdiff, ref double lastVoltDiff) {
-			if (0.001 < Math.Abs(voltdiff - lastVoltDiff)) {
-				Circuit.Converged = false;
-			}
-
-			var v_new = voltdiff;
-			var v_old = lastVoltDiff;
-			/* check new voltage; has current changed by factor of e^2? */
-			if (v_new > DiodeVcrit && Math.Abs(v_new - v_old) > (DiodeVscale + DiodeVscale)) {
-				if (v_old > 0) {
-					var arg = 1 + (v_new - v_old) / DiodeVscale;
-					if (arg > 0) {
-						/* adjust vnew so that the current is the same
-                         * as in linearized model from previous iteration.
-                         * current at vnew = old current * arg */
-						v_new = v_old + DiodeVscale * Math.Log(arg);
-					} else {
-						v_new = DiodeVcrit;
-					}
-				} else {
-					/* adjust vnew so that the current is the same
-                     * as in linearized model from previous iteration.
-                     * (1/vscale = slope of load line) */
-					v_new = DiodeVscale * Math.Log(v_new / DiodeVscale);
-				}
-				Circuit.Converged = false;
-			}
-			voltdiff = v_new;
-			lastVoltDiff = v_new;
-
-			/* regular diode or forward-biased zener */
-			const double gmin = DiodeLeakage * 0.01;
-			var eval = Math.Exp(voltdiff * DiodeVdCoef);
-			var geq = DiodeVdCoef * DiodeLeakage * eval + gmin;
-			var nc = (eval - 1) * DiodeLeakage - geq * voltdiff;
-
-			n0--;
-			n1--;
-			var ri0 = Circuit.RowInfo[n0];
-			var ri1 = Circuit.RowInfo[n1];
-			var row0 = ri0.MapRow;
-			var row1 = ri1.MapRow;
-			if (ri0.IsConst) {
-				Circuit.RightSide[row0] -= geq * ri0.Value;
-				Circuit.RightSide[row1] += geq * ri0.Value;
-			} else {
-				Circuit.Matrix[row0, ri0.MapCol] += geq;
-				Circuit.Matrix[row1, ri0.MapCol] -= geq;
-			}
-			if (ri1.IsConst) {
-				Circuit.RightSide[row0] += geq * ri1.Value;
-				Circuit.RightSide[row1] -= geq * ri1.Value;
-			} else {
-				Circuit.Matrix[row0, ri1.MapCol] -= geq;
-				Circuit.Matrix[row1, ri1.MapCol] += geq;
-			}
-			Circuit.RightSide[row0] -= nc;
-			Circuit.RightSide[row1] += nc;
 		}
 	}
 }

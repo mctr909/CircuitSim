@@ -71,6 +71,7 @@
     <Compile Include="Common\PDF.cs" />
     <Compile Include="Common\ScopePlot.cs" />
     <Compile Include="Common\ScopeWave.cs" />
+    <Compile Include="Elements\Active\Diode.cs" />
     <Compile Include="Elements\Active\ElmAnalogSwitch.cs" />
     <Compile Include="Elements\Active\ElmJFET.cs" />
     <Compile Include="Elements\Logic\ElmDeMultiplexer.cs" />
