@@ -1,7 +1,7 @@
 ﻿using System;
 
 using Circuit.Elements.Custom;
-using Circuit.UI.Custom;
+using Circuit.Symbol.Custom;
 
 namespace Circuit.Elements.Input {
 	class ElmVCCS : ElmChip {

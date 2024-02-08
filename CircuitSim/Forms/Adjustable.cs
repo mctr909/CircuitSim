@@ -4,7 +4,7 @@ namespace Circuit {
     public class Adjustable {
         public TrackBar Slider;
         public Label Label;
-        public BaseUI UI;
+        public BaseSymbol UI;
         public double MinValue;
         public double MaxValue;
         public string SliderText;
@@ -20,7 +20,7 @@ namespace Circuit {
             }
         }
 
-        public Adjustable(BaseUI ce, int itemR) {
+        public Adjustable(BaseSymbol ce, int itemR) {
             MinValue = 1;
             MaxValue = 1000;
             UI = ce;

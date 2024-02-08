@@ -2,10 +2,10 @@
 
 namespace Circuit.Elements.Active {
 	class ElmDiode : BaseElement {
-		public static string lastModelName = "default";
+		public static string LastModelName = "default";
 
-		public string mModelName;
-		public DiodeModel mModel;
+		public string ModelName;
+		public DiodeModel Model;
 
 		/* Electron thermal voltage at SPICE's default temperature of 27 C (300.15 K): */
 		const double VT = 0.025865;
@@ -58,12 +58,12 @@ namespace Circuit.Elements.Active {
 		double mVzCrit;
 
 		public ElmDiode() : base() {
-			mModelName = lastModelName;
+			ModelName = LastModelName;
 			Setup();
 		}
 
 		public ElmDiode(string modelName) : base() {
-			mModelName = modelName;
+			ModelName = modelName;
 			Setup();
 		}
 
@@ -72,15 +72,15 @@ namespace Circuit.Elements.Active {
 			double fwdrop = defaultdrop;
 			double zvoltage = 0;
 			if (model) {
-				if (st.nextToken(out mModelName, mModelName)) {
-					mModelName = Utils.Unescape(mModelName);
+				if (st.nextToken(out ModelName, ModelName)) {
+					ModelName = Utils.Unescape(ModelName);
 				}
 			} else {
 				if (forwardDrop) {
 					fwdrop = st.nextTokenDouble();
 				}
-				mModel = DiodeModel.GetModelWithParameters(fwdrop, zvoltage);
-				mModelName = mModel.Name;
+				Model = DiodeModel.GetModelWithParameters(fwdrop, zvoltage);
+				ModelName = Model.Name;
 			}
 			Setup();
 		}
@@ -90,12 +90,12 @@ namespace Circuit.Elements.Active {
 		public override int InternalNodeCount { get { return mHasResistance ? 1 : 0; } }
 
 		public void Setup() {
-			mModel = DiodeModel.GetModelWithNameOrCopy(mModelName, mModel);
-			mModelName = mModel.Name;
-			mLeakage = mModel.SaturationCurrent;
-			mZvoltage = mModel.BreakdownVoltage;
-			mVscale = mModel.VScale;
-			mVdCoef = mModel.VdCoef;
+			Model = DiodeModel.GetModelWithNameOrCopy(ModelName, Model);
+			ModelName = Model.Name;
+			mLeakage = Model.SaturationCurrent;
+			mZvoltage = Model.BreakdownVoltage;
+			mVscale = Model.VScale;
+			mVdCoef = Model.VdCoef;
 
 			/* critical voltage for limiting; current is vscale/sqrt(2) at this voltage */
 			mVcrit = mVscale * Math.Log(mVscale / (Math.Sqrt(2) * mLeakage));
@@ -110,7 +110,7 @@ namespace Circuit.Elements.Active {
 				mZoffset = mZvoltage - Math.Log(-(1 + i / mLeakage)) / VZ_COEF;
 			}
 
-			mHasResistance = 0 < mModel.SeriesResistance;
+			mHasResistance = 0 < Model.SeriesResistance;
 			mDiodeEndNode = mHasResistance ? 2 : 1;
 			AllocNodes();
 		}
@@ -128,7 +128,7 @@ namespace Circuit.Elements.Active {
 				/* create diode from node 0 to internal node */
 				stamp(Nodes[0], Nodes[2]);
 				/* create resistor from internal node to node 1 */
-				var r0 = 1.0 / mModel.SeriesResistance;
+				var r0 = 1.0 / Model.SeriesResistance;
 				Circuit.Matrix[Nodes[1] - 1, Nodes[1] - 1] += r0;
 				Circuit.Matrix[Nodes[2] - 1, Nodes[2] - 1] += r0;
 				Circuit.Matrix[Nodes[1] - 1, Nodes[2] - 1] -= r0;

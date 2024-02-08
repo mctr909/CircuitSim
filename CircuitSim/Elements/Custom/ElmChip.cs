@@ -1,6 +1,6 @@
 ﻿using System;
 
-using Circuit.UI.Custom;
+using Circuit.Symbol.Custom;
 
 namespace Circuit.Elements.Custom {
 	abstract class ElmChip : BaseElement {

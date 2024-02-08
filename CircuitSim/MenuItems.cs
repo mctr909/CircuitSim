@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-using Circuit.UI.Passive;
-using Circuit.UI.Active;
-using Circuit.UI.Input;
-using Circuit.UI.Output;
-using Circuit.UI.Gate;
-using Circuit.UI.Custom;
+using Circuit.Symbol.Passive;
+using Circuit.Symbol.Active;
+using Circuit.Symbol.Input;
+using Circuit.Symbol.Output;
+using Circuit.Symbol.Gate;
+using Circuit.Symbol.Custom;
 
 namespace Circuit {
 	public enum MENU_ITEM {
@@ -437,7 +437,7 @@ namespace Circuit {
 			#endregion
 		}
 
-		public static BaseUI ConstructElement(DUMP_ID n, Point pos = new Point()) {
+		public static BaseSymbol ConstructElement(DUMP_ID n, Point pos = new Point()) {
 			switch (n) {
 			#region Passive Components
 			case DUMP_ID.WIRE:
@@ -645,7 +645,7 @@ namespace Circuit {
 			}
 		}
 
-		public static BaseUI CreateCe(DUMP_ID tint, Point p1, Point p2, int f, StringTokenizer st) {
+		public static BaseSymbol CreateCe(DUMP_ID tint, Point p1, Point p2, int f, StringTokenizer st) {
 			switch (tint) {
 			#region Passive Components
 			case DUMP_ID.WIRE:

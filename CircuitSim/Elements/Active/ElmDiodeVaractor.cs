@@ -17,7 +17,7 @@ namespace Circuit.Elements.Active {
 		}
 
 		public ElmDiodeVaractor(StringTokenizer st) : base(st) {
-			st.nextToken(out mModelName, mModelName);
+			st.nextToken(out ModelName, ModelName);
 			mCapVoltDiff = st.nextTokenDouble();
 			mBaseCapacitance = st.nextTokenDouble();
 		}
@@ -66,7 +66,7 @@ namespace Circuit.Elements.Active {
 			if (0 < mCapVoltDiff) {
 				mCapacitance = c0;
 			} else {
-				mCapacitance = c0 / Math.Pow(1 - mCapVoltDiff / mModel.FwDrop, 0.5);
+				mCapacitance = c0 / Math.Pow(1 - mCapVoltDiff / Model.FwDrop, 0.5);
 			}
 			mCompResistance = ControlPanel.TimeStep / (2 * mCapacitance);
 			mVoltSourceValue = -mCapVoltDiff - mCapCurrent * mCompResistance;

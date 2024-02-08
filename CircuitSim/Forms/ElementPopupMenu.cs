@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-using Circuit.UI.Passive;
+using Circuit.Symbol.Passive;
 
 namespace Circuit.Forms {
     public partial class ElementPopupMenu : ContextMenuStrip {
@@ -39,7 +39,7 @@ namespace Circuit.Forms {
             });
         }
 
-        public ContextMenuStrip Show(Point pos, BaseUI mouseElm) {
+        public ContextMenuStrip Show(Point pos, BaseSymbol mouseElm) {
             Edit.Enabled = mouseElm.GetElementInfo(0, 0) != null;
             ScopeWindow.Enabled = mouseElm.CanViewInScope;
             ScopeFloat.Enabled = mouseElm.CanViewInScope;
@@ -51,7 +51,7 @@ namespace Circuit.Forms {
             return this;
         }
 
-        bool canSplit(BaseUI ce) {
+        bool canSplit(BaseSymbol ce) {
             if (!(ce is Wire)) {
                 return false;
             }
@@ -62,7 +62,7 @@ namespace Circuit.Forms {
             return false;
         }
 
-        bool sliderItemEnabled(BaseUI elm) {
+        bool sliderItemEnabled(BaseSymbol elm) {
             if (elm is Pot) {
                 return false;
             }

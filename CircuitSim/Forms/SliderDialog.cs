@@ -6,13 +6,13 @@ using System.Windows.Forms;
 
 namespace Circuit {
     public class SliderDialog : Form {
-        BaseUI mElm;
+        BaseSymbol mElm;
         ElementInfo[] mEInfos;
         int mEInfoCount;
         Panel mPnlValues;
         Panel mPnlButtons;
 
-        public SliderDialog(BaseUI ce) : base() {
+        public SliderDialog(BaseSymbol ce) : base() {
             Text = "Add Sliders";
             mElm = ce;
 

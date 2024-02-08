@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-using Circuit.UI.Input;
+using Circuit.Symbol.Input;
 
 namespace Circuit {
     public class ElementInfoDialog : Form {
         const double ROOT2 = 1.41421356237309504880;
 
-        BaseUI mElm;
+        BaseSymbol mElm;
         Button mBtnApply;
         Button mBtnCancel;
         ElementInfo[,] mEInfos;
@@ -18,7 +18,7 @@ namespace Circuit {
         Panel mPnlCommonButtons;
         bool mCloseOnEnter = true;
 
-        public ElementInfoDialog(BaseUI ce) : base() {
+        public ElementInfoDialog(BaseSymbol ce) : base() {
             Text = "Edit Component";
             mElm = ce;
 
@@ -139,7 +139,7 @@ namespace Circuit {
                     mElm.SetElementValue(r, c, ei);
 
                     /* update slider if any */
-                    if (mElm is BaseUI) {
+                    if (mElm is BaseSymbol) {
                         var adj = CirSimForm.FindAdjustable(mElm, r);
                         if (adj != null) {
                             adj.Value = ei.Value;

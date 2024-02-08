@@ -1,17 +1,10 @@
-﻿using System;
-
-namespace Circuit.Elements.Active {
+﻿namespace Circuit.Elements.Active {
 	class ElmFET : BaseElement {
 		protected const int IdxG = 0;
 		protected const int IdxS = 1;
 		protected const int IdxD = 2;
 
-		const double BackwardCompatibilityBeta = 1;
-
-		public static double LastBeta;
-		public static double DefaultBeta {
-			get { return LastBeta == 0 ? BackwardCompatibilityBeta : LastBeta; }
-		}
+		public const double DefaultBeta = 1;
 
 		public double Vth;
 		public double Beta;
@@ -32,7 +25,6 @@ namespace Circuit.Elements.Active {
 		Diode mDiodeB2;
 		double mLastVs = 0.0;
 		double mLastVd = 0.0;
-		double mLastVg = 0.0;
 
 		public ElmFET(bool isNch, bool mos, double vth, double beta) : base() {
 			Nch = isNch ? 1 : -1;
@@ -54,7 +46,6 @@ namespace Circuit.Elements.Active {
 			Volts[IdxG] = Volts[IdxS] = Volts[IdxD] = 0;
 			mLastVs = 0.0;
 			mLastVd = 0.0;
-			mLastVg = 0.0;
 			DiodeCurrent1 = 0.0;
 			DiodeCurrent2 = 0.0;
 			mDiodeB1.Reset();
@@ -108,7 +99,6 @@ namespace Circuit.Elements.Active {
 		void Calc(bool finished) {
 			var vs = Volts[IdxS];
 			var vd = Volts[IdxD];
-			var vg = Volts[IdxG];
 			if (!finished) {
 				if (vs > mLastVs + 0.5) {
 					vs = mLastVs + 0.5;
@@ -142,7 +132,6 @@ namespace Circuit.Elements.Active {
 			var real_vds = Volts[idxD] - Volts[idxS];
 			mLastVs = vs;
 			mLastVd = vd;
-			mLastVg = vg;
 
 			double gds;
 			{
@@ -159,13 +148,13 @@ namespace Circuit.Elements.Active {
 				} else if (vds < vgs - Vth) {
 					/* 線形領域 */
 					gds = Beta * (vgs - vds - Vth);
-					Current = Beta * ((vgs - Vth) * vds - vds * vds * .5);
+					Current = Beta * ((vgs - Vth) * vds - vds * vds * 0.5);
 					Gm = Beta * vds;
 					Mode = 1;
 				} else {
 					/* 飽和領域 */
 					gds = 1e-8;
-					Current = .5 * Beta * (vgs - Vth) * (vgs - Vth) + (vds - (vgs - Vth)) * gds;
+					Current = 0.5 * Beta * (vgs - Vth) * (vgs - Vth) + (vds - (vgs - Vth)) * gds;
 					Gm = Beta * (vgs - Vth);
 					Mode = 2;
 				}
@@ -175,7 +164,7 @@ namespace Circuit.Elements.Active {
 
 			/* ドレインソース間電圧が負の場合
 			 * ドレインとソースを入れ替えているため電流を反転 */
-			if (idxS == 2 && Nch == 1 || idxS == 1 && Nch == -1) {
+			if (idxS == IdxD && Nch == 1 || idxS == IdxS && Nch == -1) {
 				Current = -Current;
 			}
 

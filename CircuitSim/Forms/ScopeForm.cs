@@ -13,7 +13,7 @@ namespace Circuit.Forms {
         static int mSelectedWave = -1;
 
         ContextMenuStrip mScopePopupMenu = null;
-        BaseUI mMouseElm = null;
+        BaseSymbol mMouseElm = null;
         CustomGraphics mG;
         Bitmap mBmp;
         Graphics mContext;
@@ -75,7 +75,7 @@ namespace Circuit.Forms {
         }
 
         void SelectUI() {
-            BaseUI selectElm = null;
+            BaseSymbol selectElm = null;
             for (int i = 0; i != PlotCount; i++) {
                 var plot = mPlots[i];
                 if (plot.BoundingBox.Contains(mMouseCursorX, mMouseCursorY)) {
@@ -86,16 +86,16 @@ namespace Circuit.Forms {
             }
             if (null == selectElm) {
                 if (null != mMouseElm) {
-                    mMouseElm.SetMouseElm(false);
+                    mMouseElm.Select(false);
                     mMouseElm = null;
                 }
             } else {
                 if (selectElm != MouseInfo.GrippedElm) {
                     if (null != MouseInfo.GrippedElm) {
-                        MouseInfo.GrippedElm.SetMouseElm(false);
+                        MouseInfo.GrippedElm.Select(false);
                     }
                     if (null != mMouseElm) {
-                        mMouseElm.SetMouseElm(false);
+                        mMouseElm.Select(false);
                     }
                     MouseInfo.GripElm(selectElm);
                     mMouseElm = selectElm;
@@ -109,7 +109,7 @@ namespace Circuit.Forms {
             mMouseCursorX = -1;
             mMouseCursorY = -1;
             if (null != mMouseElm) {
-                mMouseElm.SetMouseElm(false);
+                mMouseElm.Select(false);
                 mMouseElm = null;
             }
         }
@@ -288,7 +288,7 @@ namespace Circuit.Forms {
             }
         }
 
-        public static void AddPlot(BaseUI ui) {
+        public static void AddPlot(BaseSymbol ui) {
             if (ui == null) {
                 return;
             }

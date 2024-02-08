@@ -10,8 +10,8 @@ using Circuit.Common;
 using Circuit.Elements.Active;
 using Circuit.Elements.Passive;
 using Circuit.Forms;
-using Circuit.UI.Output;
-using Circuit.UI.Passive;
+using Circuit.Symbol.Output;
+using Circuit.Symbol.Passive;
 
 namespace Circuit {
     public partial class CirSimForm : Form {
@@ -43,11 +43,11 @@ namespace Circuit {
         public static Random Random { get; set; } = new Random();
         public static double CurrentMult { get; set; } = 0;
         public static bool IsRunning { get; private set; }
-        public static BaseUI ConstructElm { get; private set; }
-        public static List<BaseUI> UIList { get; private set; }
+        public static BaseSymbol ConstructElm { get; private set; }
+        public static List<BaseSymbol> UIList { get; private set; }
         public static int UICount { get { return null == UIList ? 0 : UIList.Count; } }
-        public static BaseUI PlotXElm { get; private set; }
-        public static BaseUI PlotYElm { get; private set; }
+        public static BaseSymbol PlotXElm { get; private set; }
+        public static BaseSymbol PlotYElm { get; private set; }
         public static List<Adjustable> Adjustables { get; private set; } = new List<Adjustable>();
         #endregion
 
@@ -80,7 +80,7 @@ namespace Circuit {
 
         static DUMP_ID mAddElm = DUMP_ID.INVALID;
 
-        static BaseUI mMenuElm;
+        static BaseSymbol mMenuElm;
         static Switch mHeldSwitchElm;
         Point mMenuClient;
         Point mMenuPos;
@@ -114,7 +114,7 @@ namespace Circuit {
             KeyDown += onKeyDown;
             KeyUp += onKeyUp;
 
-            UIList = new List<BaseUI>();
+            UIList = new List<BaseSymbol>();
             mRedoItem = new MenuItem();
             mUndoItem = new MenuItem();
             mPasteItem = new MenuItem();
@@ -255,14 +255,14 @@ namespace Circuit {
             readCircuit(mRecovery);
         }
 
-        public static BaseUI GetUI(int n) {
+        public static BaseSymbol GetUI(int n) {
             if (n >= UIList.Count) {
                 return null;
             }
             return UIList[n];
         }
 
-        public static int GetUIIndex(BaseUI elm) {
+        public static int GetUIIndex(BaseSymbol elm) {
             for (int i = 0; i != UICount; i++) {
                 if (elm == UIList[i]) {
                     return i;
@@ -271,7 +271,7 @@ namespace Circuit {
             return -1;
         }
 
-        public static Adjustable FindAdjustable(BaseUI elm, int item) {
+        public static Adjustable FindAdjustable(BaseSymbol elm, int item) {
             for (int i = 0; i != Adjustables.Count; i++) {
                 var a = Adjustables[i];
                 if (a.UI == elm && a.EditItemR == item) {
@@ -281,7 +281,7 @@ namespace Circuit {
             return null;
         }
 
-        public static void DeleteSliders(BaseUI elm) {
+        public static void DeleteSliders(BaseSymbol elm) {
             if (Adjustables == null) {
                 return;
             }
@@ -719,7 +719,7 @@ namespace Circuit {
 
             PlotXElm = PlotYElm = null;
 
-            BaseUI mostNearUI = null;
+            BaseSymbol mostNearUI = null;
             var mostNear = double.MaxValue;
             for (int i = 0; i != UICount; i++) {
                 var ce = GetUI(i);
@@ -940,7 +940,7 @@ namespace Circuit {
             return new Rectangle(minx, miny, maxx - minx, maxy - miny);
         }
 
-        void doEdit(BaseUI eable, Point location) {
+        void doEdit(BaseSymbol eable, Point location) {
             clearSelection();
             PushUndo();
             if (EditDialog != null) {
@@ -951,7 +951,7 @@ namespace Circuit {
             EditDialog.Show(location.X, location.Y);
         }
 
-        void doSliders(BaseUI ce, Point location) {
+        void doSliders(BaseSymbol ce, Point location) {
             clearSelection();
             PushUndo();
             if (SliderDialog != null) {
@@ -1196,7 +1196,7 @@ namespace Circuit {
             NeedAnalyze();
         }
 
-        void doSplit(BaseUI ce) {
+        void doSplit(BaseSymbol ce) {
             var pos = SnapGrid(MouseInfo.ToAbsPos(mMenuPos));
             if (ce == null || !(ce is Wire)) {
                 return;
@@ -1356,7 +1356,7 @@ namespace Circuit {
             }
         }
 
-        static bool willDelete(BaseUI ce) {
+        static bool willDelete(BaseSymbol ce) {
             /* Is this element in the list to be deleted.
             /* This changes the logic from the previous version which would initially only
             /* delete selected elements (which could include the mouseElm) and then delete the

@@ -1,5 +1,5 @@
 ﻿using Circuit.Elements.Custom;
-using Circuit.UI.Custom;
+using Circuit.Symbol.Custom;
 
 namespace Circuit.Elements.Gate {
 	class ElmFullAdder : ElmChip {

@@ -17,7 +17,7 @@ namespace Circuit {
             DRAG_COLUMN
         }
 
-        public static BaseUI GrippedElm = null;
+        public static BaseSymbol GrippedElm = null;
 
         public static MODE Mode = MODE.NONE;
         public static MouseButtons Button = MouseButtons.None;
@@ -60,15 +60,15 @@ namespace Circuit {
             int y2 = Math.Max(pos.Y, DragBegin.Y);
             SelectedArea = new Rectangle(x1, y1, x2 - x1, y2 - y1);
         }
-        public static void GripElm(BaseUI ui) {
+        public static void GripElm(BaseSymbol ui) {
             if (ui == GrippedElm) {
                 return;
             }
             if (GrippedElm != null) {
-                GrippedElm.SetMouseElm(false);
+                GrippedElm.Select(false);
             }
             if (ui != null) {
-                ui.SetMouseElm(true);
+                ui.Select(true);
             }
             GrippedElm = ui;
         }

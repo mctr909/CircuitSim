@@ -1,16 +1,15 @@
 ﻿namespace Circuit.Elements.Output {
 	class ElmLogicOutput : BaseElement {
-		public double mThreshold;
-		public string mValue;
-
-		public bool needsPullDown;
+		public double Threshold;
+		public string Value;
+		public bool NeedsPullDown;
 
 		public ElmLogicOutput() : base() {
-			mThreshold = 2.5;
+			Threshold = 2.5;
 		}
 
 		public ElmLogicOutput(StringTokenizer st) : base() {
-			mThreshold = st.nextTokenDouble(2.5);
+			Threshold = st.nextTokenDouble(2.5);
 		}
 
 		public override int TermCount { get { return 1; } }
@@ -18,7 +17,7 @@
 		public override double VoltageDiff { get { return Volts[0]; } }
 
 		public override void Stamp() {
-			if (needsPullDown) {
+			if (NeedsPullDown) {
 				Circuit.StampResistor(Nodes[0], 0, 1e6);
 			}
 		}

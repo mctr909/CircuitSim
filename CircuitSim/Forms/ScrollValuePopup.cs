@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using Circuit.UI.Passive;
+using Circuit.Symbol.Passive;
 
 namespace Circuit {
     class ScrollValuePopup : Form {
@@ -29,10 +29,10 @@ namespace Circuit {
         string mName;
         string mUnit;
 
-        BaseUI mEditElm;
+        BaseSymbol mEditElm;
         ElementInfo mElmInfo;
 
-        public ScrollValuePopup(BaseUI e) : base() {
+        public ScrollValuePopup(BaseSymbol e) : base() {
             mEditElm = e;
             CirSimForm.PushUndo();
             setupValues();
