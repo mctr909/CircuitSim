@@ -14,12 +14,10 @@ namespace Circuit.Symbol.Input {
 
 		public LogicInput(Point pos) : base(pos, 0) {
 			mElm = new ElmLogicInput();
-			Elm = mElm;
 		}
 
 		public LogicInput(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmLogicInput(st);
-			Elm = mElm;
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.LOGIC_I; } }

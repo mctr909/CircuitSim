@@ -6,30 +6,33 @@ using Circuit.Elements.Output;
 
 namespace Circuit.Symbol.Output {
     class StopTrigger : BaseSymbol {
+		ElmStopTrigger mElm;
+
+		public override BaseElement Element { get { return mElm; } }
+
 		public StopTrigger(Point pos) : base(pos) {
-			Elm = new ElmStopTrigger();
+			mElm = new ElmStopTrigger();
 		}
 
 		public StopTrigger(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-			Elm = new ElmStopTrigger(st);
+			mElm = new ElmStopTrigger(st);
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.STOP_TRIGGER; } }
 
 		protected override void dump(List<object> optionList) {
-			var ce = (ElmStopTrigger)Elm;
-			optionList.Add(ce.TriggerVoltage.ToString("g3"));
-			optionList.Add(ce.Type);
-			optionList.Add(ce.Delay.ToString("g3"));
+			optionList.Add(mElm.TriggerVoltage.ToString("g3"));
+			optionList.Add(mElm.Type);
+			optionList.Add(mElm.Delay.ToString("g3"));
 		}
 
 	 	public override void SetPoints() {
 			base.SetPoints();
 			mLead1 = new Point();
-			setTextPos();
+			SetTextPos();
 		}
 
-		void setTextPos() {
+		void SetTextPos() {
 			ReferenceName = "stop trigger";
 			var txtSize = CustomGraphics.Instance.GetTextSize(ReferenceName);
 			var txtW = txtSize.Width;
@@ -57,43 +60,40 @@ namespace Circuit.Symbol.Output {
 		}
 
 		public override void GetInfo(string[] arr) {
-			var ce = (ElmStopTrigger)Elm;
 			arr[0] = "stop trigger";
-			arr[1] = "V = " + Utils.VoltageText(ce.Volts[0]);
-			arr[2] = "Vtrigger = " + Utils.VoltageText(ce.TriggerVoltage);
-			arr[3] = ce.Triggered ? ("stopping in "
-				+ Utils.TimeText(ce.TriggerTime + ce.Delay - Circuit.Time)) : ce.Stopped ? "stopped" : "waiting";
+			arr[1] = "V = " + Utils.VoltageText(mElm.Volts[0]);
+			arr[2] = "Vtrigger = " + Utils.VoltageText(mElm.TriggerVoltage);
+			arr[3] = mElm.Triggered ? ("stopping in "
+				+ Utils.TimeText(mElm.TriggerTime + mElm.Delay - Circuit.Time)) : mElm.Stopped ? "stopped" : "waiting";
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
-			var ce = (ElmStopTrigger)Elm;
 			if (c != 0) {
 				return null;
 			}
 			if (r == 0) {
-				var ei = new ElementInfo("閾値電圧", ce.TriggerVoltage);
+				var ei = new ElementInfo("閾値電圧", mElm.TriggerVoltage);
 				return ei;
 			}
 			if (r == 1) {
-				return new ElementInfo("トリガータイプ", ce.Type, new string[] { ">=", "<=" });
+				return new ElementInfo("トリガータイプ", mElm.Type, new string[] { ">=", "<=" });
 			}
 			if (r == 2) {
-				var ei = new ElementInfo("遅延(s)", ce.Delay);
+				var ei = new ElementInfo("遅延(s)", mElm.Delay);
 				return ei;
 			}
 			return null;
 		}
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
-			var ce = (ElmStopTrigger)Elm;
 			if (n == 0) {
-				ce.TriggerVoltage = ei.Value;
+				mElm.TriggerVoltage = ei.Value;
 			}
 			if (n == 1) {
-				ce.Type = ei.Choice.SelectedIndex;
+				mElm.Type = ei.Choice.SelectedIndex;
 			}
 			if (n == 2) {
-				ce.Delay = ei.Value;
+				mElm.Delay = ei.Value;
 			}
 		}
 	}

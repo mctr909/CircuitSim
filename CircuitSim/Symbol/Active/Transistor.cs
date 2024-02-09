@@ -25,9 +25,10 @@ namespace Circuit.Symbol.Active {
 		PointF[] mPosC = new PointF[3];
 		PointF[] mPosE = new PointF[3];
 
+		public override BaseElement Element { get { return mElm; } }
+
 		public Transistor(Point pos, bool pnpFlag) : base(pos) {
 			mElm = new ElmTransistor(pnpFlag);
-			Elm = mElm;
 			ReferenceName = "Tr";
 			Setup();
 		}
@@ -38,7 +39,6 @@ namespace Circuit.Symbol.Active {
 			var vbc = st.nextTokenDouble();
 			var hfe = st.nextTokenDouble(100);
 			mElm = new ElmTransistor(npn, hfe, vbe, vbc);
-			Elm = mElm;
 			Setup();
 		}
 

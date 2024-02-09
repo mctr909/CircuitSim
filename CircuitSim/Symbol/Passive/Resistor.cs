@@ -23,16 +23,16 @@ namespace Circuit.Symbol.Passive {
 		PointF[] mRect3;
 		PointF[] mRect4;
 
+		public override BaseElement Element { get { return mElm; } }
+
 		public Resistor(Point pos) : base(pos) {
 			mElm = new ElmResistor();
-			Elm = mElm;
 			mElm.Resistance = mLastValue;
 			ReferenceName = mLastReferenceName;
 		}
 
 		public Resistor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmResistor();
-			Elm = mElm;
 			mElm.Resistance = st.nextTokenDouble(mLastValue);
 		}
 

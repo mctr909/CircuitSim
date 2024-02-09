@@ -166,8 +166,8 @@ namespace Circuit {
             /* 値を表示 */
             ChkShowValues = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "値を表示" };
             ChkShowValues.CheckedChanged += new EventHandler((s, e) => {
-                for (int i = 0; i != CirSimForm.UICount; i++) {
-                    var ce = CirSimForm.GetUI(i);
+                for (int i = 0; i != CirSimForm.SymbolCount; i++) {
+                    var ce = CirSimForm.GetSymbol(i);
                     ce.SetPoints();
                 }
             });
@@ -177,8 +177,8 @@ namespace Circuit {
             /* 名前を表示 */
             ChkShowName = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "名前を表示" };
             ChkShowName.CheckedChanged += new EventHandler((s, e) => {
-                for (int i = 0; i != CirSimForm.UICount; i++) {
-                    var ce = CirSimForm.GetUI(i);
+                for (int i = 0; i != CirSimForm.SymbolCount; i++) {
+                    var ce = CirSimForm.GetSymbol(i);
                     ce.SetPoints();
                 }
             });

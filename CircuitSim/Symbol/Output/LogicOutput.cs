@@ -10,14 +10,14 @@ namespace Circuit.Symbol.Output {
 
 		ElmLogicOutput mElm;
 
+		public override BaseElement Element { get { return mElm; } }
+
 		public LogicOutput(Point pos) : base(pos) {
 			mElm = new ElmLogicOutput();
-			Elm = mElm;
 		}
 
 		public LogicOutput(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmLogicOutput(st);
-			Elm = mElm;
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.LOGIC_O; } }

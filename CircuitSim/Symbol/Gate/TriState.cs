@@ -13,14 +13,14 @@ namespace Circuit.Symbol.Gate {
 		PointF mCtrlTerm;
 		PointF[] mGatePoly;
 
+		public override BaseElement Element { get { return mElm; } }
+
 		public TriState(Point pos) : base(pos) {
 			mElm = new ElmTriState();
-			Elm = mElm;
 		}
 
 		public TriState(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmTriState(st);
-			Elm = mElm;
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.TRISTATE; } }
@@ -43,7 +43,7 @@ namespace Circuit.Symbol.Gate {
 			interpPost(ref mGatePoly[2], 0.5 + ww / Post.Len);
 			interpPost(ref mCtrlTerm, 0.5, -hs);
 			interpPost(ref mCtrlLead, 0.5, -hs / 2);
-			Elm.SetNodePos(Post.A, Post.B, mCtrlTerm);
+			mElm.SetNodePos(Post.A, Post.B, mCtrlTerm);
 		}
 
 		public override void Draw(CustomGraphics g) {

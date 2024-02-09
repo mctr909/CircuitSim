@@ -139,7 +139,7 @@ namespace Circuit.Symbol.Custom {
         public override DUMP_ID DumpId { get { return DUMP_ID.INVALID; } }
 
         protected override void dump(List<object> optionList) {
-            var ce = (ElmChip)Elm;
+            var ce = (ElmChip)Element;
             if (ce.NeedsBits()) {
                 optionList.Add(ce.Bits);
             }
@@ -163,7 +163,7 @@ namespace Circuit.Symbol.Custom {
         }
 
         public void drawChip(CustomGraphics g) {
-            var ce = (ElmChip)Elm;
+            var ce = (ElmChip)Element;
             for (int i = 0; i != ce.TermCount; i++) {
                 var p = ce.Pins[i];
                 var a = p.post;
@@ -214,7 +214,7 @@ namespace Circuit.Symbol.Custom {
         }
 
         public override void SetPoints() {
-            var ce = (ElmChip)Elm;
+            var ce = (ElmChip)Element;
             clockPoints = null;
             int hs = cspc;
             int x0 = Post.A.X + cspc2;
@@ -249,7 +249,7 @@ namespace Circuit.Symbol.Custom {
 
         /* see if we can move pin to position xp, yp, and return the new position */
         public bool getPinPos(int xp, int yp, int pin, int[] pos) {
-            var ce = (ElmChip)Elm;
+            var ce = (ElmChip)Element;
             int x0 = Post.A.X + cspc2;
             int y0 = Post.A.Y;
             int xr = x0 - cspc;
@@ -294,7 +294,7 @@ namespace Circuit.Symbol.Custom {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (ElmChip)Elm;
+            var ce = (ElmChip)Element;
             arr[0] = getChipName();
             int a = 1;
             for (int i = 0; i != ce.TermCount; i++) {

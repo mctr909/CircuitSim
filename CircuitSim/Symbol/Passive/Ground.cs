@@ -7,15 +7,18 @@ namespace Circuit.Symbol.Passive {
         const int BODY_LEN = 8;
 
         PointF[][] mLine;
+        ElmGround mElm;
+
+        public override BaseElement Element { get { return mElm; } }
 
         public Ground(Point pos) : base(pos) {
-            Elm = new ElmGround();
+            mElm = new ElmGround();
             Post.B.Y = pos.Y + CirSimForm.GRID_SIZE;
             SetPoints();
         }
 
         public Ground(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            Elm = new ElmGround();
+            mElm = new ElmGround();
         }
 
         public override DUMP_ID DumpId { get { return DUMP_ID.GROUND; } }
@@ -44,7 +47,7 @@ namespace Circuit.Symbol.Passive {
 
         public override void GetInfo(string[] arr) {
             arr[0] = "接地";
-            arr[1] = "電流：" + Utils.CurrentText(Elm.Current);
+            arr[1] = "電流：" + Utils.CurrentText(mElm.Current);
         }
     }
 }

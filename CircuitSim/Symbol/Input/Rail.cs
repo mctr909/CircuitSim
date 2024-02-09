@@ -12,12 +12,10 @@ namespace Circuit.Symbol.Input {
 
 		public Rail(Point pos, ElmVoltage.WAVEFORM wf) : base(pos, wf) {
 			mElm = new ElmRail(wf);
-			Elm = mElm;
 		}
 
 		public Rail(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmRail(st);
-			Elm = mElm;
 			Link.Load(st);
 		}
 

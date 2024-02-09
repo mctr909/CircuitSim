@@ -91,7 +91,7 @@ namespace Circuit.Symbol.Custom {
                     var nodeOfThisPost = stModel.nextTokenInt();
                     var cnLink = new CircuitNode.LINK();
                     cnLink.Num = thisPost;
-                    cnLink.Elm = newce.Elm;
+                    cnLink.Elm = newce.Element;
                     if (!compNodeHash.ContainsKey(nodeOfThisPost)) {
                         var cn = new CircuitNode();
                         cn.Links.Add(cnLink);
@@ -103,8 +103,7 @@ namespace Circuit.Symbol.Custom {
                     thisPost++;
                 }
             }
-            ((ElmComposite)Elm).SetComposite(compNodeHash, CompList, externalNodes, expr);
+            ((ElmComposite)Element).SetComposite(compNodeHash, CompList, externalNodes, expr);
         }
-
     }
 }

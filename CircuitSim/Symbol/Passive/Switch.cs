@@ -10,11 +10,12 @@ namespace Circuit.Symbol.Passive {
 
 		ElmSwitch mElm;
 
+		public override BaseElement Element { get { return mElm; } }
+
 		public Switch(Point pos, int dummy) : base(pos) { }
 
 		public Switch(Point pos, bool momentary = false, bool isNo = false) : base(pos) {
 			mElm = new ElmSwitch();
-			Elm = mElm;
 			mElm.Momentary = momentary;
 			mElm.Position = isNo ? 1 : 0;
 		}
@@ -23,7 +24,6 @@ namespace Circuit.Symbol.Passive {
 
 		public Switch(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmSwitch();
-			Elm = mElm;
 			mElm.Position = st.nextTokenInt();
 			mElm.Momentary = st.nextTokenBool(false);
 			mElm.Link = st.nextTokenInt();
@@ -50,14 +50,14 @@ namespace Circuit.Symbol.Passive {
 			}
 			if (mElm.Link != 0) {
 				int i;
-				for (i = 0; i != CirSimForm.UICount; i++) {
-					var ui2 = CirSimForm.GetUI(i);
-					if (ui2 == this) {
+				for (i = 0; i != CirSimForm.SymbolCount; i++) {
+					var symbol2 = CirSimForm.GetSymbol(i);
+					if (symbol2 == this) {
 						continue;
 					}
 					if (this is SwitchMulti) {
-						if (ui2 is SwitchMulti) {
-							var s2 = (ElmSwitchMulti)ui2.Elm;
+						if (symbol2 is SwitchMulti sw2) {
+							var s2 = (ElmSwitchMulti)sw2.mElm;
 							if (s2.Link == mElm.Link) {
 								if (mElm.Position < s2.ThrowCount) {
 									s2.Position = mElm.Position;
@@ -65,10 +65,9 @@ namespace Circuit.Symbol.Passive {
 							}
 						}
 					} else {
-						if (ui2.Elm is ElmSwitch) {
-							var s2 = (ElmSwitch)ui2.Elm;
-							if (s2.Link == mElm.Link) {
-								s2.Position = s2.Position == 0 ? 1 : 0;
+						if (symbol2 is Switch sw2) {
+							if (sw2.mElm.Link == mElm.Link) {
+								sw2.mElm.Position = sw2.mElm.Position == 0 ? 1 : 0;
 							}
 						}
 					}

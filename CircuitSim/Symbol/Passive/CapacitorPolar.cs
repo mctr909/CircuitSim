@@ -11,7 +11,6 @@ namespace Circuit.Symbol.Passive {
 
 		public CapacitorPolar(Point pos) : base(pos) {
 			mElm = new ElmPolarCapacitor();
-			Elm = mElm;
 			mElm.Capacitance = mLastValue;
 			mElm.MaxNegativeVoltage = 5;
 			ReferenceName = mLastReferenceName;
@@ -19,7 +18,6 @@ namespace Circuit.Symbol.Passive {
 
 		public CapacitorPolar(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmPolarCapacitor();
-			Elm = mElm;
 			mElm.Capacitance = st.nextTokenDouble();
 			mElm.VoltDiff = st.nextTokenDouble();
 			mElm.MaxNegativeVoltage = st.nextTokenDouble();

@@ -12,20 +12,18 @@ namespace Circuit.Symbol.Input {
         public override DUMP_ID DumpId { get { return DUMP_ID.RAIL_DC; } }
 
         public override void GetInfo(string[] arr) {
-            var elm = (ElmVoltage)Elm;
             arr[0] = "直流電源";
-            arr[1] = "電圧：" + Utils.VoltageText(elm.VoltageDiff + elm.Bias);
-            arr[2] = "電流：" + Utils.CurrentText(elm.Current);
+            arr[1] = "電圧：" + Utils.VoltageText(mElm.VoltageDiff + mElm.Bias);
+            arr[2] = "電流：" + Utils.CurrentText(mElm.Current);
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
-            var elm = (ElmVoltage)Elm;
             if (c == 0) {
                 if (r == 0) {
-                    return new ElementInfo(VALUE_NAME_V, elm.MaxVoltage);
+                    return new ElementInfo(VALUE_NAME_V, mElm.MaxVoltage);
                 }
                 if (r == 1) {
-                    return new ElementInfo(VALUE_NAME_BIAS, elm.Bias);
+                    return new ElementInfo(VALUE_NAME_BIAS, mElm.Bias);
                 }
             }
             if (c == 1) {
@@ -43,13 +41,12 @@ namespace Circuit.Symbol.Input {
         }
 
         public override void SetElementValue(int r, int c, ElementInfo ei) {
-            var elm = (ElmVoltage)Elm;
             if (c == 0) {
                 if (r == 0) {
-                    elm.MaxVoltage = ei.Value;
+                    mElm.MaxVoltage = ei.Value;
                 }
                 if (r == 1) {
-                    elm.Bias = ei.Value;
+                    mElm.Bias = ei.Value;
                 }
             }
             if (c == 1) {
@@ -64,7 +61,6 @@ namespace Circuit.Symbol.Input {
 
         public override EventHandler CreateSlider(ElementInfo ei, Adjustable adj) {
             var trb = adj.Slider;
-            var ce = (ElmVoltage)Elm;
             switch (ei.Name) {
             case VALUE_NAME_V:
                 adj.MinValue = 0;

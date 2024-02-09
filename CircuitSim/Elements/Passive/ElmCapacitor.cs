@@ -4,7 +4,6 @@
 		double mCurSourceValue;
 
 		public double Capacitance = 1e-5;
-
 		public double VoltDiff = 0.0;
 
 		public override int TermCount { get { return 2; } }

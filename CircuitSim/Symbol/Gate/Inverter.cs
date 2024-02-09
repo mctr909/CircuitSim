@@ -11,15 +11,15 @@ namespace Circuit.Symbol.Gate {
 		PointF mCenter;
 		PointF mPcircle;
 
+		public override BaseElement Element { get { return mElm; } }
+
 		public Inverter(Point pos) : base(pos) {
 			mElm = new ElmInverter();
-			Elm = mElm;
 			Post.NoDiagonal = true;
 		}
 
 		public Inverter(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmInverter(st);
-			Elm = mElm;
 			Post.NoDiagonal = true;
 		}
 

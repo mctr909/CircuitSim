@@ -39,13 +39,13 @@ namespace Circuit.Forms {
             });
         }
 
-        public ContextMenuStrip Show(Point pos, BaseSymbol mouseElm) {
-            Edit.Enabled = mouseElm.GetElementInfo(0, 0) != null;
-            ScopeWindow.Enabled = mouseElm.CanViewInScope;
-            ScopeFloat.Enabled = mouseElm.CanViewInScope;
-            FlipPosts.Enabled = 2 == mouseElm.Elm.TermCount;
-            SplitWire.Enabled = canSplit(mouseElm);
-            Slider.Enabled = sliderItemEnabled(mouseElm);
+        public ContextMenuStrip Show(Point pos, BaseSymbol mouse) {
+            Edit.Enabled = mouse.GetElementInfo(0, 0) != null;
+            ScopeWindow.Enabled = mouse.CanViewInScope;
+            ScopeFloat.Enabled = mouse.CanViewInScope;
+            FlipPosts.Enabled = 2 == mouse.Element.TermCount;
+            SplitWire.Enabled = canSplit(mouse);
+            Slider.Enabled = sliderItemEnabled(mouse);
             Show();
             Location = pos;
             return this;

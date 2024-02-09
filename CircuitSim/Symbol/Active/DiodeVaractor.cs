@@ -10,23 +10,21 @@ namespace Circuit.Symbol.Active {
 
 		public DiodeVaractor(Point pos) : base(pos, "Vc") {
 			mElm = new ElmDiodeVaractor();
-			Elm = mElm;
 			mElm.Setup();
 		}
 
 		public DiodeVaractor(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
 			mElm = new ElmDiodeVaractor(st);
-			Elm = mElm;
 			mElm.Setup();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.VARACTOR; } }
 
 		protected override void dump(List<object> optionList) {
-			var ce = (ElmDiodeVaractor)Elm;
+			var ce = (ElmDiodeVaractor)mElm;
 			base.dump(optionList);
 			optionList.Add(ce.mCapVoltDiff.ToString("g3"));
-			optionList.Add(ce.mBaseCapacitance.ToString("g3"));
+			optionList.Add(ce.BaseCapacitance.ToString("g3"));
 		}
 
 		public override void SetPoints() {
@@ -63,26 +61,26 @@ namespace Circuit.Symbol.Active {
 
 		public override void GetInfo(string[] arr) {
 			base.GetInfo(arr);
-			var ce = (ElmDiodeVaractor)Elm;
+			var ce = (ElmDiodeVaractor)mElm;
 			arr[0] = "可変容量ダイオード";
-			arr[5] = "静電容量：" + Utils.UnitText(ce.mCapacitance, "F");
+			arr[5] = "静電容量：" + Utils.UnitText(ce.Capacitance, "F");
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
-			var ce = (ElmDiodeVaractor)Elm;
+			var ce = (ElmDiodeVaractor)mElm;
 			if (c != 0) {
 				return null;
 			}
 			if (r == 2) {
-				return new ElementInfo("静電容量 @ 0V", ce.mBaseCapacitance);
+				return new ElementInfo("静電容量 @ 0V", ce.BaseCapacitance);
 			}
 			return base.GetElementInfo(r, c);
 		}
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
-			var ce = (ElmDiodeVaractor)Elm;
+			var ce = (ElmDiodeVaractor)mElm;
 			if (n == 2) {
-				ce.mBaseCapacitance = ei.Value;
+				ce.BaseCapacitance = ei.Value;
 				return;
 			}
 			base.SetElementValue(n, c, ei);

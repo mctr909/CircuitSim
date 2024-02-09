@@ -22,8 +22,8 @@ namespace Circuit.Symbol.Output {
 
         public override void Draw(CustomGraphics g) {
             drawLeadA();
-            if (mustShowVoltage()) {
-                drawCenteredText(drawValues(), mTextPos);
+            if (MustShowVoltage()) {
+                drawCenteredText(DrawValues(), mTextPos);
             }
         }
     }

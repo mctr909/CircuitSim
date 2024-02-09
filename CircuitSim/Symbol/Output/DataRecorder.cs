@@ -11,29 +11,31 @@ namespace Circuit.Symbol.Output {
         SaveFileDialog saveFileDialog = new SaveFileDialog();
         string mColName = "";
         PointF[] mTextPoly;
+        ElmDataRecorder mElm;
+
+        public override BaseElement Element { get { return mElm; } }
 
         public DataRecorder(Point pos) : base(pos) {
-            Elm = new ElmDataRecorder();
+            mElm = new ElmDataRecorder();
         }
 
         public DataRecorder(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-            Elm = new ElmDataRecorder(st);
+            mElm = new ElmDataRecorder(st);
         }
 
         public override DUMP_ID DumpId { get { return DUMP_ID.DATA_RECORDER; } }
 
         protected override void dump(List<object> optionList) {
-            var ce = (ElmDataRecorder)Elm;
-            optionList.Add(ce.DataCount);
+            optionList.Add(mElm.DataCount);
         }
 
         public override void SetPoints() {
             base.SetPoints();
             mLead1 = new Point();
-            setTextPos();
+            SetTextPos();
         }
 
-        void setTextPos() {
+        void SetTextPos() {
             if (string.IsNullOrWhiteSpace(mColName)) {
                 ReferenceName = "CSV";
             } else {
@@ -80,37 +82,35 @@ namespace Circuit.Symbol.Output {
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (ElmDataRecorder)Elm;
             arr[0] = ReferenceName;
-            arr[1] = "電位：" + Utils.VoltageText(ce.Volts[0]);
-            arr[2] = (ce.DataFull ? ce.DataCount : ce.DataPtr) + "/" + ce.DataCount;
+            arr[1] = "電位：" + Utils.VoltageText(mElm.Volts[0]);
+            arr[2] = (mElm.DataFull ? mElm.DataCount : mElm.DataPtr) + "/" + mElm.DataCount;
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
-            var ce = (ElmDataRecorder)Elm;
             if (c != 0) {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("サンプル数", ce.DataCount);
+                return new ElementInfo("サンプル数", mElm.DataCount);
             }
             if (r == 1) {
                 return new ElementInfo("列名", mColName);
             }
             if (r == 2) {
-                return new ElementInfo("ファイルに保存", new System.EventHandler((s, e) => {
+                return new ElementInfo("ファイルに保存", new EventHandler((s, e) => {
                     saveFileDialog.Filter = "CSVファイル(*.csv)|*.csv";
                     saveFileDialog.ShowDialog();
                     var filePath = saveFileDialog.FileName;
                     var fs = new StreamWriter(filePath);
                     fs.WriteLine(mColName + "," + ControlPanel.TimeStep);
-                    if (ce.DataFull) {
-                        for (int i = 0; i != ce.DataCount; i++) {
-                            fs.WriteLine(ce.Data[(i + ce.DataPtr) % ce.DataCount]);
+                    if (mElm.DataFull) {
+                        for (int i = 0; i != mElm.DataCount; i++) {
+                            fs.WriteLine(mElm.Data[(i + mElm.DataPtr) % mElm.DataCount]);
                         }
                     } else {
-                        for (int i = 0; i != ce.DataPtr; i++) {
-                            fs.WriteLine(ce.Data[i]);
+                        for (int i = 0; i != mElm.DataPtr; i++) {
+                            fs.WriteLine(mElm.Data[i]);
                         }
                     }
                     fs.Close();
@@ -121,13 +121,12 @@ namespace Circuit.Symbol.Output {
         }
 
         public override void SetElementValue(int n, int c, ElementInfo ei) {
-            var ce = (ElmDataRecorder)Elm;
             if (n == 0 && 0 < ei.Value) {
-                ce.setDataCount((int)ei.Value);
+                mElm.SetDataCount((int)ei.Value);
             }
             if (n == 1) {
                 mColName = ei.Text;
-                setTextPos();
+                SetTextPos();
             }
             if (n == 2) {
                 return;

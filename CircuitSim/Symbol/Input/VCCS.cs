@@ -6,26 +6,29 @@ using Circuit.Symbol.Custom;
 
 namespace Circuit.Symbol.Input {
     class VCCS : Chip {
+        protected ElmVCCS mElm;
+
+        public override BaseElement Element { get { return mElm; } }
+
         public VCCS(Point pos, int dummy) : base(pos) { }
 
         public VCCS(Point p1, Point p2, int f) : base(p1, p2, f) { }
 
         public VCCS(Point pos) : base(pos) {
-            Elm = new ElmVCCS(this);
+            mElm = new ElmVCCS(this);
             ReferenceName = "VCCS";
         }
 
         public VCCS(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            Elm = new ElmVCCS(this, st);
+            mElm = new ElmVCCS(this, st);
         }
 
         public override DUMP_ID DumpId { get { return DUMP_ID.VCCS; } }
 
         protected override void dump(List<object> optionList) {
-            var ce = (ElmVCCS)Elm;
-            /// TODO: baseList + " " + ce.InputCount + " " + Utils.Escape(ce.ExprString);
+            /// TODO: baseList + " " + mElm.InputCount + " " + Utils.Escape(mElm.ExprString);
             base.dump(optionList);
-            optionList.Add(ce.InputCount);
+            optionList.Add(mElm.InputCount);
         }
 
         public override void Draw(CustomGraphics g) {
@@ -34,43 +37,39 @@ namespace Circuit.Symbol.Input {
 
         public override void GetInfo(string[] arr) {
             base.GetInfo(arr);
-            var ce = (ElmVCCS)Elm;
             int i;
-            for (i = 0; arr[i] != null; i++)
-                ;
-            arr[i] = "I = " + Utils.CurrentText(ce.Pins[ce.InputCount].current);
+            for (i = 0; arr[i] != null; i++);
+            arr[i] = "I = " + Utils.CurrentText(mElm.Pins[mElm.InputCount].current);
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
-            var ce = (ElmVCCS)Elm;
             if (c != 0) {
                 return null;
             }
             if (r == 0) {
                 var ei = new ElementInfo("Output Function");
-                ei.Text = ce.ExprString;
+                ei.Text = mElm.ExprString;
                 return ei;
             }
             if (r == 1) {
-                return new ElementInfo("入力数", ce.InputCount);
+                return new ElementInfo("入力数", mElm.InputCount);
             }
             return null;
         }
 
         public override void SetElementValue(int n, int c, ElementInfo ei) {
-            var ce = (ElmVCCS)Elm;
             if (n == 0) {
-                ce.ExprString = ei.Text.Replace(" ", "").Replace("\r", "").Replace("\n", "");
-                ce.ParseExpr();
+                mElm.ExprString = ei.Text.Replace(" ", "").Replace("\r", "").Replace("\n", "");
+                mElm.ParseExpr();
                 return;
             }
             if (n == 1) {
                 if (ei.Value < 0 || ei.Value > 8) {
                     return;
                 }
-                ce.InputCount = (int)ei.Value;
-                ce.SetupPins(this);
-                ce.AllocNodes();
+                mElm.InputCount = (int)ei.Value;
+                mElm.SetupPins(this);
+                mElm.AllocNodes();
                 SetPoints();
             }
         }

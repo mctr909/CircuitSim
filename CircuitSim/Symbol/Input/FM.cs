@@ -10,14 +10,14 @@ namespace Circuit.Symbol.Input {
 
 		ElmFM mElm;
 
+		public override BaseElement Element { get { return mElm; } }
+
 		public FM(Point pos) : base(pos) {
 			mElm = new ElmFM();
-			Elm = mElm;
 		}
 
 		public FM(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmFM(st);
-			Elm = mElm;
 			if ((mFlags & FLAG_COS) != 0) {
 				mFlags &= ~FLAG_COS;
 			}

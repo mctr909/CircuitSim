@@ -7,13 +7,17 @@ using Circuit.Elements.Output;
 
 namespace Circuit.Symbol.Output {
     class Scope : BaseSymbol {
+        ElmScope mElm;
+
         public ScopePlot Plot;
+
+        public override BaseElement Element { get { return mElm; } }
 
         public Scope(Point pos) : base(pos) {
             Post.B.X = Post.A.X + 128;
             Post.B.Y = Post.A.Y + 64;
             Plot = new ScopePlot();
-            Elm = new ElmScope(Plot);
+            mElm = new ElmScope(Plot);
             SetPoints();
         }
 
@@ -22,7 +26,7 @@ namespace Circuit.Symbol.Output {
             st.nextToken(out sStr);
             var sst = new StringTokenizer(sStr, "\t");
             Plot = new ScopePlot();
-            Elm = new ElmScope(Plot);
+            mElm = new ElmScope(Plot);
             Plot.Undump(sst);
             SetPoints();
             Plot.ResetGraph();

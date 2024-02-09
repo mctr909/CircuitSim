@@ -5,13 +5,15 @@ using Circuit.Elements.Gate;
 
 namespace Circuit.Symbol.Gate {
 	class InvertingSchmitt : BaseSymbol {
+		protected ElmInvertingSchmitt mElm;
 		protected PointF[] gatePoly;
 		protected PointF[] symbolPoly;
-		PointF pcircle;
 
+		PointF pcircle;
 		double dlt;
 		double dut;
-		ElmInvertingSchmitt mElm;
+
+		public override BaseElement Element { get { return mElm; } }
 
 		public InvertingSchmitt(Point pos, int dummy) : base(pos) {
 			Post.NoDiagonal = true;
@@ -19,7 +21,6 @@ namespace Circuit.Symbol.Gate {
 
 		public InvertingSchmitt(Point pos) : base(pos) {
 			mElm = new ElmInvertingSchmitt();
-			Elm = mElm;
 			Post.NoDiagonal = true;
 		}
 
@@ -29,7 +30,6 @@ namespace Circuit.Symbol.Gate {
 
 		public InvertingSchmitt(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmInvertingSchmitt(st);
-			Elm = mElm;
 			Post.NoDiagonal = true;
 		}
 

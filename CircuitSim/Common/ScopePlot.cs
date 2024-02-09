@@ -85,13 +85,13 @@ namespace Circuit.Common {
         public int Index { get; set; } = 0;
         public int StackCount { get; set; } = 0;
         public int SelectedWave { get; private set; } = -1;
-        public bool CanMenu { get { return Waves[0].UI != null; } }
+        public bool CanMenu { get { return Waves[0].Symbol != null; } }
         public bool NeedToRemove {
             get {
                 bool ret = true;
                 for (int i = 0; i != Waves.Count; i++) {
                     var plot = Waves[i];
-                    if (CirSimForm.GetUIIndex(plot.UI) < 0) {
+                    if (CirSimForm.GetUIIndex(plot.Symbol) < 0) {
                         Waves.RemoveAt(i--);
                     } else {
                         ret = false;
@@ -122,9 +122,9 @@ namespace Circuit.Common {
         #region [get/set method]
         public BaseSymbol GetUI() {
             if (0 <= SelectedWave && SelectedWave < Waves.Count) {
-                return Waves[SelectedWave].UI;
+                return Waves[SelectedWave].Symbol;
             }
-            return 0 < Waves.Count ? Waves[0].UI : null;
+            return 0 < Waves.Count ? Waves[0].Symbol : null;
         }
         public void SetRect(Rectangle rect) {
             int w = BoundingBox.Width;
@@ -162,7 +162,7 @@ namespace Circuit.Common {
         #region [public method]
         public string Dump() {
             var vPlot = Waves[0];
-            if (vPlot.UI == null) {
+            if (vPlot.Symbol == null) {
                 return null;
             }
             var dumpList = new List<object>() {
@@ -174,7 +174,7 @@ namespace Circuit.Common {
                 Waves.Count
             };
             foreach (var p in Waves) {
-                dumpList.Add(CirSimForm.GetUIIndex(p.UI) + "_" + p.Color);
+                dumpList.Add(CirSimForm.GetUIIndex(p.Symbol) + "_" + p.Color);
             }
             if (!string.IsNullOrWhiteSpace(Text)) {
                 dumpList.Add(Utils.Escape(Text));
@@ -199,7 +199,7 @@ namespace Circuit.Common {
                     st.nextToken(out temp);
                     var subElmCol = temp.Split('_');
                     var subElmIdx = int.Parse(subElmCol[0]);
-                    var subElm = CirSimForm.UIList[subElmIdx];
+                    var subElm = CirSimForm.SymbolList[subElmIdx];
                     var color = (int)Enum.Parse(typeof(E_COLOR), subElmCol[1]);
                     var p = new ScopeWave(subElm);
                     p.Speed = Speed;
@@ -310,7 +310,7 @@ namespace Circuit.Common {
             mSomethingSelected = false;
             foreach (var p in Waves) {
                 calcScale(p);
-                if (p.UI != null && p.UI.IsMouseElm) {
+                if (p.Symbol != null && p.Symbol.IsMouseElm) {
                     mSomethingSelected = true;
                 }
             }
@@ -390,10 +390,10 @@ namespace Circuit.Common {
             }
             var uiList = new List<BaseSymbol>();
             foreach (var wave in Waves) {
-                if (null == wave.UI) {
+                if (null == wave.Symbol) {
                     continue;
                 }
-                uiList.Add(wave.UI);
+                uiList.Add(wave.Symbol);
             }
             Waves.Clear();
             foreach (var ui in uiList) {
@@ -665,7 +665,7 @@ namespace Circuit.Common {
         }
         void drawWave(CustomGraphics g, int waveIndex) {
             var wave = Waves[waveIndex];
-            if (wave.UI == null) {
+            if (wave.Symbol == null) {
                 return;
             }
 
@@ -809,7 +809,7 @@ namespace Circuit.Common {
             if (ControlPanel.ChkPrintable.Checked) {
                 g.FillColor = COLORS[(int)wave.Color];
             } else {
-                if (waveIndex == SelectedWave || wave.UI.IsMouseElm) {
+                if (waveIndex == SelectedWave || wave.Symbol.IsMouseElm) {
                     g.FillColor = CustomGraphics.SelectColor;
                 } else {
                     g.FillColor = mSomethingSelected ? COLORS[(int)E_COLOR.GRAY] : COLORS[(int)wave.Color];

@@ -27,9 +27,10 @@ namespace Circuit.Symbol.Active {
 		PointF[] mArrow1;
 		PointF[] mArrow2;
 
+		public override BaseElement Element { get { return mElm; } }
+
 		public Optocoupler(Point pos) : base(pos) {
 			mElm = new ElmOptocoupler();
-			Elm = mElm;
 			loadComposite(null, MODEL_STRING, EXTERNAL_NODES, EXPR);
 			mDiode = (Diode)CompList[0];
 			mTransistor = (Transistor)CompList[2];
@@ -38,7 +39,6 @@ namespace Circuit.Symbol.Active {
 
 		public Optocoupler(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmOptocoupler();
-			Elm = mElm;
 			loadComposite(st, MODEL_STRING, EXTERNAL_NODES, EXPR);
 			mDiode = (Diode)CompList[0];
 			mTransistor = (Transistor)CompList[2];

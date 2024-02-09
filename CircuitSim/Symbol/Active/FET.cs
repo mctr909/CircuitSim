@@ -24,13 +24,14 @@ namespace Circuit.Symbol.Active {
 		PointF[] mPosD = new PointF[4];
 		PointF[] mPosB = new PointF[2];
 
+		public override BaseElement Element { get { return mElm; } }
+
 		public FET(Point pos, bool isNch, bool mos) : base(pos) {
 			if (mos) {
 				mElm = new ElmFET(isNch, mos, 1.5, ElmFET.DefaultBeta);
 			} else {
 				mElm = new ElmJFET(isNch, isNch ? -1 : 1, 0.00125);
 			}
-			Elm = mElm;
 			mFlags = isNch ? 0 : FLAG_PNP;
 			Post.NoDiagonal = true;
 			ReferenceName = "Tr";
@@ -45,7 +46,6 @@ namespace Circuit.Symbol.Active {
 			} else {
 				mElm = new ElmJFET((f & FLAG_PNP) == 0, vt, beta);
 			}
-			Elm = mElm;
 		}
 
 		public override bool CanViewInScope { get { return true; } }

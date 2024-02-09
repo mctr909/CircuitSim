@@ -13,13 +13,16 @@ namespace Circuit.Symbol.Input {
         PointF mCenter;
         PointF mTextPos;
         double mCurrentValue;
+        ElmCurrent mElm;
+
+        public override BaseElement Element { get { return mElm; } }
 
         public Current(Point pos) : base(pos) {
-            Elm = new ElmCurrent();
+            mElm = new ElmCurrent();
         }
 
         public Current(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            Elm = new ElmCurrent(st.nextTokenDouble());
+            mElm = new ElmCurrent(st.nextTokenDouble());
         }
 
         public override DUMP_ID DumpId { get { return DUMP_ID.CURRENT; } }

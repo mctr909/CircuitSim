@@ -20,16 +20,16 @@ namespace Circuit.Symbol.Active {
 		PointF[] mPosIn1 = new PointF[2];
 		PointF[] mPosIn2 = new PointF[2];
 
+		public override BaseElement Element { get { return mElm; } }
+
 		public OpAmp(Point pos) : base(pos) {
 			Post.NoDiagonal = true;
 			mFlags = FLAG_GAIN; /* need to do this before setSize() */
 			mElm = new ElmOpAmp();
-			Elm = mElm;
 		}
 
 		public OpAmp(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmOpAmp();
-			Elm = mElm;
 			mElm.MaxOut = st.nextTokenDouble();
 			mElm.MinOut = st.nextTokenDouble();
 			mElm.Gain = st.nextTokenDouble();

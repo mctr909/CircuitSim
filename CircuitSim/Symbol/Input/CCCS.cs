@@ -5,12 +5,12 @@ using Circuit.Elements.Input;
 namespace Circuit.Symbol.Input {
     class CCCS : VCCS {
         public CCCS(Point pos) : base(pos, 0) {
-            Elm = new ElmCCCS(this);
+            mElm = new ElmCCCS(this);
             ReferenceName = "CCCS";
         }
 
         public CCCS(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            Elm = new ElmCCCS(this, st);
+            mElm = new ElmCCCS(this, st);
         }
 
         public override DUMP_ID DumpId { get { return DUMP_ID.CCCS; } }

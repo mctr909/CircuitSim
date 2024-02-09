@@ -156,7 +156,7 @@ namespace Circuit.Elements.Custom {
 			}
 			/* allocate more nodes for sub-elements' internal nodes */
 			for (int i = 0; i != uiList.Count; i++) {
-				var ce = uiList[i].Elm;
+				var ce = uiList[i].Element;
 				CompList.Add(ce);
 				int inodes = ce.InternalNodeCount;
 				for (int j = 0; j != inodes; j++) {

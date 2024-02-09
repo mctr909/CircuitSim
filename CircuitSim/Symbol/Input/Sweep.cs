@@ -12,16 +12,16 @@ namespace Circuit.Symbol.Input {
 
 		ElmSweep mElm;
 
+		public override BaseElement Element { get { return mElm; } }
+
 		public Sweep(Point pos) : base(pos) {
 			mElm = new ElmSweep();
-			Elm = mElm;
 			mFlags = FLAG_BIDIR;
 			mElm.BothSides = 0 != (mFlags & FLAG_BIDIR);
 		}
 
 		public Sweep(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmSweep(st);
-			Elm = mElm;
 			mElm.IsLog = 0 != (mFlags & FLAG_LOG);
 			mElm.BothSides = 0 != (mFlags & FLAG_BIDIR);
 		}

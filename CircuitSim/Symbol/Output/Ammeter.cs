@@ -13,15 +13,15 @@ namespace Circuit.Symbol.Output {
 		PointF[] mArrowPoly;
 		PointF mTextPos;
 
+		public override BaseElement Element { get { return mElm; } }
+
 		public Ammeter(Point pos) : base(pos) {
 			mElm = new ElmAmmeter();
-			Elm = mElm;
 			mFlags = FLAG_SHOWCURRENT;
 		}
 
 		public Ammeter(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmAmmeter(st);
-			Elm = mElm;
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.AMMETER; } }

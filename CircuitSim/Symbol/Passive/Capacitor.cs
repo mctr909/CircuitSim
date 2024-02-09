@@ -17,9 +17,10 @@ namespace Circuit.Symbol.Passive {
 		PointF[] mPlate1;
 		PointF[] mPlate2;
 
+		public override BaseElement Element { get { return mElm; } }
+
 		public Capacitor(Point pos) : base(pos) {
 			mElm = new ElmCapacitor();
-			Elm = mElm;
 			mElm.Capacitance = mLastValue;
 			ReferenceName = mLastReferenceName;
 		}
@@ -30,7 +31,6 @@ namespace Circuit.Symbol.Passive {
 
 		public Capacitor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmCapacitor();
-			Elm = mElm;
 			mElm.Capacitance = st.nextTokenDouble(mLastValue);
 			mElm.VoltDiff = st.nextTokenDouble(0);
 		}

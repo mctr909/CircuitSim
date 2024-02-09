@@ -83,6 +83,8 @@ namespace Circuit.Symbol.Input {
 
 		protected ElmVoltage mElm;
 
+		public override BaseElement Element { get { return mElm; } }
+
 		PointF mPs1;
 		PointF mPs2;
 		PointF mPs3;
@@ -94,7 +96,6 @@ namespace Circuit.Symbol.Input {
 
 		public Voltage(Point pos, ElmVoltage.WAVEFORM wf) : base(pos) {
 			mElm = new ElmVoltage(wf);
-			Elm = mElm;
 			ReferenceName = "";
 		}
 
@@ -102,7 +103,6 @@ namespace Circuit.Symbol.Input {
 
 		public Voltage(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmVoltage(st);
-			Elm = mElm;
 			Link.Load(st);
 		}
 

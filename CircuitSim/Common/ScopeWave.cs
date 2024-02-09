@@ -1,20 +1,18 @@
 ﻿namespace Circuit.Common {
     public class ScopeWave {
-        public BaseSymbol UI;
+        public BaseSymbol Symbol;
         public double[] MinValues;
         public double[] MaxValues;
         public int Speed;
         public int Pointer;
 
-        BaseElement mElm;
         int mCounter;
         int mScopePointCount;
 
         public ScopePlot.E_COLOR Color { get; private set; } = ScopePlot.E_COLOR.INVALID;
 
-        public ScopeWave(BaseSymbol ui) {
-            UI = ui;
-            mElm = ui.Elm;
+        public ScopeWave(BaseSymbol symbol) {
+            Symbol = symbol;
         }
 
         public void SetColor(int index) {
@@ -50,7 +48,7 @@
         }
 
         public void TimeStep() {
-            var v = mElm.VoltageDiff;
+            var v = Symbol.Element.VoltageDiff;
             if (v < MinValues[Pointer]) {
                 MinValues[Pointer] = v;
             }

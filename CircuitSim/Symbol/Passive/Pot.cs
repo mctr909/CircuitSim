@@ -35,9 +35,10 @@ namespace Circuit.Symbol.Passive {
 		Label mLabel;
 		string mName;
 
+		public override BaseElement Element { get { return mElm; } }
+
 		public Pot(Point pos) : base(pos) {
 			mElm = new ElmPot();
-			Elm = mElm;
 			mElm.AllocNodes();
 			mFlags = FLAG_SHOW_VALUES;
 			ReferenceName = "VR";
@@ -46,7 +47,6 @@ namespace Circuit.Symbol.Passive {
 
 		public Pot(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmPot();
-			Elm = mElm;
 			mElm.MaxResistance = st.nextTokenDouble(1e3);
 			mElm.Position = st.nextTokenDouble(0.5);
 			mElm.AllocNodes();

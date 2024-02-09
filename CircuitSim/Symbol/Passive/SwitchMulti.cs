@@ -8,20 +8,18 @@ namespace Circuit.Symbol.Passive {
 		const int OPEN_HS = 8;
 		const int BODY_LEN = 24;
 
-		ElmSwitchMulti mElm;
+		protected ElmSwitchMulti mElm;
 		PointF[] mSwPoles;
 		PointF[] mSwPosts;
 
 		public SwitchMulti(Point pos) : base(pos, 0) {
 			mElm = new ElmSwitchMulti();
-			Elm = mElm;
 			mElm.AllocNodes();
 			Post.NoDiagonal = true;
 		}
 
 		public SwitchMulti(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmSwitchMulti();
-			Elm = mElm;
 			mElm.Position = st.nextTokenInt();
 			mElm.Momentary = st.nextTokenBool(false);
 			mElm.Link = st.nextTokenInt();

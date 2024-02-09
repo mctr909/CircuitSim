@@ -9,23 +9,25 @@ namespace Circuit.Symbol.Output {
 
         protected PointF mCenter;
         PointF mPlusPoint;
+        ElmVoltMeter mElm;
+
+        public override BaseElement Element { get { return mElm; } }
 
         public VoltMeter(Point pos) : base(pos) {
-            Elm = new ElmVoltMeter();
+            mElm = new ElmVoltMeter();
             /* default for new elements */
             mFlags = FLAG_SHOWVOLTAGE;
         }
 
         public VoltMeter(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-            Elm = new ElmVoltMeter(st);
+            mElm = new ElmVoltMeter(st);
         }
 
         public override DUMP_ID DumpId { get { return DUMP_ID.VOLTMETER; } }
 
         protected override void dump(List<object> optionList) {
-            var ce = (ElmVoltMeter)Elm;
-            optionList.Add(ce.Meter);
-            optionList.Add(ce.Scale);
+            optionList.Add(mElm.Meter);
+            optionList.Add(mElm.Scale);
         }
 
         public override void SetPoints() {
@@ -45,67 +47,63 @@ namespace Circuit.Symbol.Output {
                 drawCenteredLText("Y", mCenter, true);
             }
 
-            if (mustShowVoltage()) {
-                drawCenteredText(drawValues(), mCenter);
+            if (MustShowVoltage()) {
+                drawCenteredText(DrawValues(), mCenter);
             }
 
             drawCenteredLText("+", mPlusPoint, true);
         }
 
         public override void GetInfo(string[] arr) {
-            var ce = (ElmVoltMeter)Elm;
             arr[0] = "電圧計";
             if (this is VoltMeter1Term) {
-                arr[1] = "電位：" + drawValues();
+                arr[1] = "電位：" + DrawValues();
             } else {
-                arr[1] = "電位差：" + drawValues();
+                arr[1] = "電位差：" + DrawValues();
             }
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
-            var ce = (ElmVoltMeter)Elm;
             if (c != 0) {
                 return null;
             }
             if (r == 0) {
-                return new ElementInfo("表示", ce.Meter,
+                return new ElementInfo("表示", mElm.Meter,
                     new string[] { "瞬時値", "実効値", "最大値", "最小値", "P-P" }
                 );
             }
             if (r == 1) {
-                return new ElementInfo("スケール", (int)ce.Scale, new string[] { "自動", "V", "mV", "uV" });
+                return new ElementInfo("スケール", (int)mElm.Scale, new string[] { "自動", "V", "mV", "uV" });
             }
             return null;
         }
 
         public override void SetElementValue(int n, int c, ElementInfo ei) {
-            var ce = (ElmVoltMeter)Elm;
             if (n == 0) {
-                ce.Meter = ei.Choice.SelectedIndex;
+                mElm.Meter = ei.Choice.SelectedIndex;
             }
             if (n == 1) {
-                ce.Scale = (E_SCALE)ei.Choice.SelectedIndex;
+                mElm.Scale = (E_SCALE)ei.Choice.SelectedIndex;
             }
         }
 
-        protected string drawValues() {
-            var ce = (ElmVoltMeter)Elm;
-            switch (ce.Meter) {
+        protected string DrawValues() {
+            switch (mElm.Meter) {
             case ElmVoltMeter.TP_VOL:
-                return Utils.UnitTextWithScale(ce.VoltageDiff, "V", ce.Scale);
+                return Utils.UnitTextWithScale(mElm.VoltageDiff, "V", mElm.Scale);
             case ElmVoltMeter.TP_RMS:
-                return Utils.UnitTextWithScale(ce.RmsV, "Vrms", ce.Scale);
+                return Utils.UnitTextWithScale(mElm.RmsV, "Vrms", mElm.Scale);
             case ElmVoltMeter.TP_MAX:
-                return Utils.UnitTextWithScale(ce.LastMaxV, "Vpk", ce.Scale);
+                return Utils.UnitTextWithScale(mElm.LastMaxV, "Vpk", mElm.Scale);
             case ElmVoltMeter.TP_MIN:
-                return Utils.UnitTextWithScale(ce.LastMinV, "Vmin", ce.Scale);
+                return Utils.UnitTextWithScale(mElm.LastMinV, "Vmin", mElm.Scale);
             case ElmVoltMeter.TP_P2P:
-                return Utils.UnitTextWithScale(ce.LastMaxV - ce.LastMinV, "Vp-p", ce.Scale);
+                return Utils.UnitTextWithScale(mElm.LastMaxV - mElm.LastMinV, "Vp-p", mElm.Scale);
             }
             return "";
         }
 
-        protected bool mustShowVoltage() {
+        protected bool MustShowVoltage() {
             return (mFlags & FLAG_SHOWVOLTAGE) != 0;
         }
     }

@@ -5,14 +5,14 @@ using Circuit.Elements.Gate;
 
 namespace Circuit.Symbol.Gate {
 	class GateAnd : Gate {
+		public override BaseElement Element { get { return mElm; } }
+
 		public GateAnd(Point pos) : base(pos) {
 			mElm = new ElmGateAnd();
-			Elm = mElm;
 		}
 
 		public GateAnd(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
 			mElm = new ElmGateAnd(st);
-			Elm = mElm;
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.AND_GATE; } }

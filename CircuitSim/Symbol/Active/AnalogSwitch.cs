@@ -17,14 +17,14 @@ namespace Circuit.Symbol.Active {
 		PointF mOpen;
 		PointF mClose;
 
-		public AnalogSwitch(Point pos) : base(pos) {
+        public override BaseElement Element { get { return mElm; } }
+
+        public AnalogSwitch(Point pos) : base(pos) {
 			mElm = new ElmAnalogSwitch();
-			Elm = mElm;
 		}
 
 		public AnalogSwitch(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
 			mElm = new ElmAnalogSwitch();
-			Elm = mElm;
 			mElm.Ron = st.nextTokenDouble(1e-3);
 			mElm.Roff = st.nextTokenDouble(1e9);
 		}

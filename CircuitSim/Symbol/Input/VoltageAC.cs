@@ -12,36 +12,34 @@ namespace Circuit.Symbol.Input {
         public override DUMP_ID DumpId { get { return DUMP_ID.AC; } }
 
         public override void GetInfo(string[] arr) {
-            var elm = (ElmVoltage)Elm;
             arr[0] = "交流電源";
-            arr[1] = "電流：" + Utils.CurrentText(elm.Current);
-            arr[2] = "振幅：" + Utils.VoltageText(elm.MaxVoltage);
-            arr[3] = "周波数：" + Utils.FrequencyText(elm.Frequency);
-            var phase = elm.Phase + elm.PhaseOffset;
+            arr[1] = "電流：" + Utils.CurrentText(mElm.Current);
+            arr[2] = "振幅：" + Utils.VoltageText(mElm.MaxVoltage);
+            arr[3] = "周波数：" + Utils.FrequencyText(mElm.Frequency);
+            var phase = mElm.Phase + mElm.PhaseOffset;
             phase %= 2 * Math.PI;
             arr[4] = "位相：" + Utils.UnitText3digit(phase * 180 / Math.PI, "deg");
-            if (elm.Bias != 0) {
-                arr[5] = "バイアス：" + Utils.VoltageText(elm.Bias);
+            if (mElm.Bias != 0) {
+                arr[5] = "バイアス：" + Utils.VoltageText(mElm.Bias);
             }
         }
 
         public override ElementInfo GetElementInfo(int r, int c) {
-            var elm = (ElmVoltage)Elm;
             if (c == 0) {
                 if (r == 0) {
-                    return new ElementInfo(VALUE_NAME_AMP, elm.MaxVoltage);
+                    return new ElementInfo(VALUE_NAME_AMP, mElm.MaxVoltage);
                 }
                 if (r == 1) {
-                    return new ElementInfo(VALUE_NAME_BIAS, elm.Bias);
+                    return new ElementInfo(VALUE_NAME_BIAS, mElm.Bias);
                 }
                 if (r == 2) {
-                    return new ElementInfo(VALUE_NAME_HZ, elm.Frequency);
+                    return new ElementInfo(VALUE_NAME_HZ, mElm.Frequency);
                 }
                 if (r == 3) {
-                    return new ElementInfo(VALUE_NAME_PHASE, double.Parse((elm.Phase * 180 / Math.PI).ToString("0.00")));
+                    return new ElementInfo(VALUE_NAME_PHASE, double.Parse((mElm.Phase * 180 / Math.PI).ToString("0.00")));
                 }
                 if (r == 4) {
-                    return new ElementInfo(VALUE_NAME_PHASE_OFS, double.Parse((elm.PhaseOffset * 180 / Math.PI).ToString("0.00")));
+                    return new ElementInfo(VALUE_NAME_PHASE_OFS, double.Parse((mElm.PhaseOffset * 180 / Math.PI).ToString("0.00")));
                 }
             }
             if (c == 1) {
@@ -65,26 +63,25 @@ namespace Circuit.Symbol.Input {
         }
 
         public override void SetElementValue(int r, int c, ElementInfo ei) {
-            var elm = (ElmVoltage)Elm;
             if (c == 0) {
                 if (r == 0) {
-                    elm.MaxVoltage = ei.Value;
+                    mElm.MaxVoltage = ei.Value;
                 }
                 if (r == 1) {
-                    elm.Bias = ei.Value;
+                    mElm.Bias = ei.Value;
                 }
                 if (r == 2) {
-                    elm.Frequency = ei.Value;
+                    mElm.Frequency = ei.Value;
                     var maxfreq = 1 / (8 * ControlPanel.TimeStep);
-                    if (maxfreq < elm.Frequency) {
-                        elm.Frequency = maxfreq;
+                    if (maxfreq < mElm.Frequency) {
+                        mElm.Frequency = maxfreq;
                     }
                 }
                 if (r == 3) {
-                    elm.Phase = ei.Value * Math.PI / 180;
+                    mElm.Phase = ei.Value * Math.PI / 180;
                 }
                 if (r == 4) {
-                    elm.PhaseOffset = ei.Value * Math.PI / 180;
+                    mElm.PhaseOffset = ei.Value * Math.PI / 180;
                 }
             }
             if (c == 1) {
@@ -106,7 +103,6 @@ namespace Circuit.Symbol.Input {
 
         public override EventHandler CreateSlider(ElementInfo ei, Adjustable adj) {
             var trb = adj.Slider;
-            var ce = (ElmVoltage)Elm;
             switch (ei.Name) {
             case VALUE_NAME_AMP:
                 adj.MinValue = 0;
@@ -146,7 +142,7 @@ namespace Circuit.Symbol.Input {
                     setLinkedValues<Voltage>(VoltageLink.FREQUENCY, val);
                     break;
                 case VALUE_NAME_PHASE:
-                    ce.Phase = val * Math.PI / 180;
+                    mElm.Phase = val * Math.PI / 180;
                     break;
                 case VALUE_NAME_PHASE_OFS:
                     setLinkedValues<Voltage>(VoltageLink.PHASE_OFFSET, val);

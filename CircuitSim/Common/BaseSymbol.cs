@@ -19,9 +19,9 @@ namespace Circuit {
 		#region [property]
 		public abstract DUMP_ID DumpId { get; }
 
-		public string ReferenceName { get; set; }
+		public abstract BaseElement Element { get; }
 
-		public BaseElement Elm { get; set; }
+		public string ReferenceName { get; set; }
 
 		public Post Post { get; set; }
 
@@ -47,7 +47,7 @@ namespace Circuit {
 
 		public virtual bool IsCreationFailed { get { return Post.IsCreationFailed; } }
 
-		public virtual bool CanViewInScope { get { return Elm.TermCount <= 2; } }
+		public virtual bool CanViewInScope { get { return Element.TermCount <= 2; } }
 		#endregion
 
 		#region [protected variable]
@@ -97,8 +97,8 @@ namespace Circuit {
 			int ny = Post.A.Y + dy;
 			int nx2 = Post.B.X + dx;
 			int ny2 = Post.B.Y + dy;
-			for (int i = 0; i != CirSimForm.UICount; i++) {
-				var ce = CirSimForm.GetUI(i);
+			for (int i = 0; i != CirSimForm.SymbolCount; i++) {
+				var ce = CirSimForm.GetSymbol(i);
 				var ceP1 = ce.Post.A;
 				var ceP2 = ce.Post.B;
 				if (ceP1.X == nx && ceP1.Y == ny && ceP2.X == nx2 && ceP2.Y == ny2) {
@@ -143,7 +143,7 @@ namespace Circuit {
 		}
 		public virtual void SetPoints() {
 			Post.SetValue();
-			Elm.SetNodePos(Post.A, Post.B);
+			Element.SetNodePos(Post.A, Post.B);
 		}
 		public virtual void GetInfo(string[] arr) { }
 		public virtual ElementInfo GetElementInfo(int r, int c) { return null; }
@@ -182,12 +182,12 @@ namespace Circuit {
 		/// update dot positions (curcount) for drawing current (simple case for single current)
 		/// </summary>
 		protected void updateDotCount() {
-			updateDotCount(Elm.Current, ref mCurCount);
+			updateDotCount(Element.Current, ref mCurCount);
 		}
 
 		protected void getBasicInfo(int begin, params string[] arr) {
-			arr[begin] = "電流：" + Utils.CurrentAbsText(Elm.Current);
-			arr[begin + 1] = "電位差：" + Utils.VoltageAbsText(Elm.VoltageDiff);
+			arr[begin] = "電流：" + Utils.CurrentAbsText(Element.Current);
+			arr[begin + 1] = "電位差：" + Utils.VoltageAbsText(Element.VoltageDiff);
 		}
 
 		/// <summary>
@@ -300,15 +300,15 @@ namespace Circuit {
 		}
 
 		protected void setLinkedValues<T>(int linkID, double value) {
-			mLink.SetValue(Elm, linkID, value);
+			mLink.SetValue(Element, linkID, value);
 			if (mLink.GetGroup(linkID) == 0) {
 				return;
 			}
-			for (int i = 0; i != CirSimForm.UICount; i++) {
-				var u2 = CirSimForm.GetUI(i);
+			for (int i = 0; i != CirSimForm.SymbolCount; i++) {
+				var u2 = CirSimForm.GetSymbol(i);
 				if (u2 is T) {
 					if (u2.mLink.GetGroup(linkID) == mLink.GetGroup(linkID)) {
-						u2.mLink.SetValue(u2.Elm, linkID, value);
+						u2.mLink.SetValue(u2.Element, linkID, value);
 					}
 				}
 			}

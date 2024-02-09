@@ -27,9 +27,10 @@ namespace Circuit.Symbol.Passive {
 		float mCoilAngle;
 		ElmTransformer mElm;
 
+		public override BaseElement Element { get { return mElm; } }
+
 		public Transformer(Point pos) : base(pos) {
 			mElm = new ElmTransformer();
-			Elm = mElm;
 			mElm.AllocNodes();
 			Post.NoDiagonal = true;
 			ReferenceName = "T";
@@ -37,7 +38,6 @@ namespace Circuit.Symbol.Passive {
 
 		public Transformer(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmTransformer();
-			Elm = mElm;
 			mElm.PInductance = st.nextTokenDouble(1e3);
 			mElm.Ratio = st.nextTokenDouble(1);
 			mElm.Currents[0] = st.nextTokenDouble(0);

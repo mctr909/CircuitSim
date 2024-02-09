@@ -2,8 +2,8 @@
 
 namespace Circuit.Elements.Active {
 	class ElmDiodeVaractor : ElmDiode {
-		public double mBaseCapacitance;
-		public double mCapacitance;
+		public double BaseCapacitance;
+		public double Capacitance;
 		double mCapCurrent;
 		double mVoltSourceValue;
 
@@ -13,13 +13,13 @@ namespace Circuit.Elements.Active {
 		public double mCapVoltDiff;
 
 		public ElmDiodeVaractor() : base() {
-			mBaseCapacitance = 4e-12;
+			BaseCapacitance = 4e-12;
 		}
 
 		public ElmDiodeVaractor(StringTokenizer st) : base(st) {
 			st.nextToken(out ModelName, ModelName);
 			mCapVoltDiff = st.nextTokenDouble();
-			mBaseCapacitance = st.nextTokenDouble();
+			BaseCapacitance = st.nextTokenDouble();
 		}
 
 		public override int VoltageSourceCount { get { return 1; } }
@@ -62,13 +62,13 @@ namespace Circuit.Elements.Active {
 			// capacitor companion model using trapezoidal approximation
 			// (Thevenin equivalent) consists of a voltage source in
 			// series with a resistor
-			double c0 = mBaseCapacitance;
+			double c0 = BaseCapacitance;
 			if (0 < mCapVoltDiff) {
-				mCapacitance = c0;
+				Capacitance = c0;
 			} else {
-				mCapacitance = c0 / Math.Pow(1 - mCapVoltDiff / Model.FwDrop, 0.5);
+				Capacitance = c0 / Math.Pow(1 - mCapVoltDiff / Model.FwDrop, 0.5);
 			}
-			mCompResistance = ControlPanel.TimeStep / (2 * mCapacitance);
+			mCompResistance = ControlPanel.TimeStep / (2 * Capacitance);
 			mVoltSourceValue = -mCapVoltDiff - mCapCurrent * mCompResistance;
 		}
 

@@ -4,18 +4,18 @@ using Circuit.Elements.Gate;
 
 namespace Circuit.Symbol.Gate {
 	class GateOr : Gate {
+		public override BaseElement Element { get { return mElm; } }
+
 		public GateOr(Point pos, int dummy) : base(pos) { }
 
 		public GateOr(Point pos) : base(pos) {
 			mElm = new ElmGateOr();
-			Elm = mElm;
 		}
 
 		public GateOr(Point p1, Point p2, int f, StringTokenizer st, int dummy) : base(p1, p2, f, st) { }
 
 		public GateOr(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
 			mElm = new ElmGateOr(st);
-			Elm = mElm;
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.OR_GATE; } }

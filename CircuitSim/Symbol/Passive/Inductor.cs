@@ -16,9 +16,10 @@ namespace Circuit.Symbol.Passive {
 		PointF[] mCoilPos;
 		float mCoilAngle;
 
+		public override BaseElement Element { get { return mElm; } }
+
 		public Inductor(Point pos) : base(pos) {
 			mElm = new ElmInductor();
-			Elm = mElm;
 			ReferenceName = mLastReferenceName;
 			mElm.Inductance = mLastValue;
 		}
@@ -27,7 +28,6 @@ namespace Circuit.Symbol.Passive {
 			var ind = st.nextTokenDouble(mLastValue);
 			var c = st.nextTokenDouble(0);
 			mElm = new ElmInductor(ind, c);
-			Elm = mElm;
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.INDUCTOR; } }

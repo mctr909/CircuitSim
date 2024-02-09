@@ -33,7 +33,7 @@ namespace Circuit {
             if (e == -1) {
                 return;
             }
-            UI = CirSimForm.UIList[e];
+            UI = CirSimForm.SymbolList[e];
             EditItemR = st.nextTokenInt();
             EditItemC = 0;
             MinValue = st.nextTokenDouble();

@@ -6,12 +6,12 @@
 		public bool DataFull { get; private set; }
 
 		public ElmDataRecorder() : base() {
-			setDataCount(10000);
+			SetDataCount(10000);
 		}
 
 		public ElmDataRecorder(StringTokenizer st) : base() {
 			var v = st.nextTokenInt();
-			setDataCount(v);
+			SetDataCount(v);
 		}
 
 		public override int TermCount { get { return 1; } }
@@ -31,7 +31,7 @@
 			DataFull = false;
 		}
 
-		public void setDataCount(int ct) {
+		public void SetDataCount(int ct) {
 			DataCount = ct;
 			DataPtr = 0;
 			DataFull = false;
