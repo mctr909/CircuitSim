@@ -79,7 +79,7 @@
     <Compile Include="Circuit\Elements\Logic\ElmHalfAdder.cs" />
     <Compile Include="Circuit\Elements\Logic\ElmLatch.cs" />
     <Compile Include="Circuit\Elements\Logic\ElmMultiplexer.cs" />
-    <Compile Include="MouseInfo.cs" />
+    <Compile Include="Circuit\MouseInfo.cs" />
     <Compile Include="Circuit\Forms\ElementPopupMenu.Designer.cs">
       <DependentUpon>ElementPopupMenu.cs</DependentUpon>
     </Compile>
@@ -208,7 +208,7 @@
     <Compile Include="Circuit\Forms\ScopeProperties.Designer.cs">
       <DependentUpon>ScopeProperties.cs</DependentUpon>
     </Compile>
-    <Compile Include="MenuItems.cs" />
+    <Compile Include="Circuit\MenuItems.cs" />
     <Compile Include="Circuit\Forms\SliderDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -242,7 +242,7 @@
     <Compile Include="Circuit\Symbol\Output\Scope.cs" />
     <Compile Include="Circuit\Symbol\Passive\Resistor.cs" />
     <Compile Include="Circuit\Storage.cs" />
-    <Compile Include="Shortcut.cs" />
+    <Compile Include="Circuit\Shortcut.cs" />
     <EmbeddedResource Include="CirSimForm.resx">
       <DependentUpon>CirSimForm.cs</DependentUpon>
     </EmbeddedResource>
