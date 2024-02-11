@@ -1,0 +1,41 @@
+﻿namespace Circuit.Elements.Output {
+	class ElmDataRecorder : BaseElement {
+		public double[] Data { get; private set; }
+		public int DataCount { get; private set; }
+		public int DataPtr { get; private set; }
+		public bool DataFull { get; private set; }
+
+		public ElmDataRecorder() : base() {
+			SetDataCount(10000);
+		}
+
+		public ElmDataRecorder(StringTokenizer st) : base() {
+			var v = st.nextTokenInt();
+			SetDataCount(v);
+		}
+
+		public override int TermCount { get { return 1; } }
+
+		public override double VoltageDiff { get { return Volts[0]; } }
+
+		public override void IterationFinished() {
+			Data[DataPtr++] = Volts[0];
+			if (DataPtr >= DataCount) {
+				DataPtr = 0;
+				DataFull = true;
+			}
+		}
+
+		public override void Reset() {
+			DataPtr = 0;
+			DataFull = false;
+		}
+
+		public void SetDataCount(int ct) {
+			DataCount = ct;
+			DataPtr = 0;
+			DataFull = false;
+			Data = new double[DataCount];
+		}
+	}
+}
