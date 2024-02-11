@@ -196,7 +196,7 @@
     <Compile Include="Elements\Passive\ElmWire.cs" />
     <Compile Include="Circuit\CustomGraphics.cs" />
     <Compile Include="Circuit\Utils.cs" />
-    <Compile Include="Forms\ControlPanel.cs" />
+    <Compile Include="Circuit\ControlPanel.cs" />
     <Compile Include="Circuit\DiodeModel.cs" />
     <Compile Include="Forms\ElementPopupMenu.cs">
       <SubType>Component</SubType>
@@ -212,7 +212,7 @@
     <Compile Include="Forms\SliderDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Adjustable.cs" />
+    <Compile Include="Circuit\Adjustable.cs" />
     <Compile Include="Circuit\Circuit.cs" />
     <Compile Include="Elements\Input\Expr.cs" />
     <Compile Include="FFT.cs" />
@@ -225,7 +225,7 @@
     <Compile Include="Forms\ElementInfoDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ElementInfo.cs" />
+    <Compile Include="Circuit\ElementInfo.cs" />
     <Compile Include="Symbol\Input\Current.cs" />
     <Compile Include="Symbol\Passive\Ground.cs" />
     <Compile Include="Symbol\Input\Voltage.cs" />

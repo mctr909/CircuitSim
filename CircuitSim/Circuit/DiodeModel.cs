@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Circuit.Forms;
+
 namespace Circuit {
 	class DiodeModel {
 		/* Electron thermal voltage at SPICE's default temperature of 27 C (300.15 K): */
