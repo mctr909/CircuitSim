@@ -5,28 +5,28 @@ using Circuit.Symbol.Custom;
 
 namespace Circuit.Elements.Input {
 	class ElmVCCS : ElmChip {
-		public bool mBroken;
+		public delegate double DFunction(params double[] inputs);
+		protected DFunction mFunction = (inputs) => 0;
 
+		public bool Broken;
 		public int InputCount;
-		public string ExprString;
 
-		protected Expr mExpr;
-		protected Expr.State mExprState;
+		double[] mValues;
 		double[] mLastVolts;
 
 		public ElmVCCS(Chip ui) : base() {
 			InputCount = 2;
-			ExprString = ".1*(a-b)";
-			ParseExpr();
+			mFunction = (inputs) => {
+				return 0.1 * (inputs[0] - inputs[1]);
+			};
 			SetupPins(ui);
 		}
 
 		public ElmVCCS(Chip ui, StringTokenizer st) : base(st) {
 			InputCount = st.nextTokenInt(InputCount);
-			if (st.nextToken(out ExprString, ExprString)) {
-				ExprString = Utils.Unescape(ExprString);
-				ParseExpr();
-			}
+			mFunction = (inputs) => {
+				return 0.1 * (inputs[0] - inputs[1]);
+			};
 			SetupPins(ui);
 		}
 
@@ -44,7 +44,7 @@ namespace Circuit.Elements.Input {
 			Pins[InputCount] = new Chip.Pin(ui, 0, Chip.SIDE_E, "C+");
 			Pins[InputCount + 1] = new Chip.Pin(ui, 1, Chip.SIDE_E, "C-");
 			mLastVolts = new double[InputCount];
-			mExprState = new Expr.State(InputCount);
+			mValues = new double[InputCount];
 		}
 
 		public override bool GetConnection(int n1, int n2) {
@@ -64,7 +64,7 @@ namespace Circuit.Elements.Input {
 			int i;
 
 			/* no current path?  give up */
-			if (mBroken) {
+			if (Broken) {
 				Pins[InputCount].current = 0;
 				Pins[InputCount + 1].current = 0;
 				/* avoid singular matrix errors */
@@ -87,40 +87,41 @@ namespace Circuit.Elements.Input {
 				}
 			}
 
-			if (mExpr != null) {
-				/* calculate output */
-				for (i = 0; i != InputCount; i++) {
-					mExprState.Values[i] = Volts[i];
-				}
-				mExprState.Time = Circuit.Time;
-				double v0 = -mExpr.Eval(mExprState);
-				/*if (Math.Abs(volts[inputCount] - v0) > Math.Abs(v0) * .01 && cir.SubIterations < 100) {
-                    cir.Converged = false;
-                }*/
-				double rs = v0;
-
-				/* calculate and stamp output derivatives */
-				for (i = 0; i != InputCount; i++) {
-					double dv = 1e-6;
-					mExprState.Values[i] = Volts[i] + dv;
-					double v = -mExpr.Eval(mExprState);
-					mExprState.Values[i] = Volts[i] - dv;
-					double v2 = -mExpr.Eval(mExprState);
-					double dx = (v - v2) / (dv * 2);
-					if (Math.Abs(dx) < 1e-6) {
-						dx = sign(dx, 1e-6);
-					}
-					Circuit.StampVCCurrentSource(Nodes[InputCount], Nodes[InputCount + 1], Nodes[i], 0, dx);
-					/*Console.WriteLine("ccedx " + i + " " + dx); */
-					/* adjust right side */
-					rs -= dx * Volts[i];
-					mExprState.Values[i] = Volts[i];
-				}
-				/*Console.WriteLine("ccers " + rs);*/
-				Circuit.StampCurrentSource(Nodes[InputCount], Nodes[InputCount + 1], rs);
-				Pins[InputCount].current = -v0;
-				Pins[InputCount + 1].current = v0;
+			/* calculate output */
+			for (i = 0; i != InputCount; i++) {
+				mValues[i] = Volts[i];
 			}
+			//mValues.Time = Circuit.Time;
+			//var v0 = -mExpr.Eval(mExprState);
+			var v0 = -mFunction(mValues);
+			/*if (Math.Abs(volts[inputCount] - v0) > Math.Abs(v0) * .01 && cir.SubIterations < 100) {
+				cir.Converged = false;
+			}*/
+			var rs = v0;
+
+			/* calculate and stamp output derivatives */
+			for (i = 0; i != InputCount; i++) {
+				var dv = 1e-6;
+				mValues[i] = Volts[i] + dv;
+				//var v1 = -mExpr.Eval(mExprState);
+				var v1 = -mFunction(mValues);
+				mValues[i] = Volts[i] - dv;
+				//var v2 = -mExpr.Eval(mExprState);
+				var v2 = -mFunction(mValues);
+				var dx = (v1 - v2) / (dv * 2);
+				if (Math.Abs(dx) < 1e-6) {
+					dx = sign(dx, 1e-6);
+				}
+				Circuit.StampVCCurrentSource(Nodes[InputCount], Nodes[InputCount + 1], Nodes[i], 0, dx);
+				/*Console.WriteLine("ccedx " + i + " " + dx); */
+				/* adjust right side */
+				rs -= dx * Volts[i];
+				mValues[i] = Volts[i];
+			}
+			/*Console.WriteLine("ccers " + rs);*/
+			Circuit.StampCurrentSource(Nodes[InputCount], Nodes[InputCount + 1], rs);
+			Pins[InputCount].current = -v0;
+			Pins[InputCount + 1].current = v0;
 
 			for (i = 0; i != InputCount; i++) {
 				mLastVolts[i] = Volts[i];
@@ -145,6 +146,8 @@ namespace Circuit.Elements.Input {
 
 		public virtual bool hasCurrentOutput() { return true; }
 
+		public void SetFunction(DFunction function) { mFunction = function; }
+
 		double getLimitStep() {
 			/* get limit on changes in voltage per step.
              * be more lenient the more iterations we do */
@@ -161,16 +164,6 @@ namespace Circuit.Elements.Input {
 				return 0.01;
 			}
 			return 0.001;
-		}
-
-		public void ParseExpr() {
-			var parser = new Expr.Parser(ExprString);
-			mExpr = parser.ParseExpression();
-		}
-
-		public void SetExpr(string expr) {
-			ExprString = expr.Replace(" ", "").Replace("\r", "").Replace("\n", "");
-			ParseExpr();
 		}
 
 		public int getOutputNode(int n) {

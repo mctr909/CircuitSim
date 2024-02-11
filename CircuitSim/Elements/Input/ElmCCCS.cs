@@ -7,10 +7,7 @@ namespace Circuit.Elements.Input {
 	class ElmCCCS : ElmVCCS {
 		double mLastCurrent;
 
-		public ElmCCCS(VCCS ui) : base(ui) {
-			ExprString = "2*i";
-			ParseExpr();
-		}
+		public ElmCCCS(VCCS ui) : base(ui) { }
 
 		public ElmCCCS(VCCS ui, StringTokenizer st) : base(ui, st) {
 			InputCount = 2;
@@ -31,7 +28,6 @@ namespace Circuit.Elements.Input {
 			Pins[2] = new Chip.Pin(ui, 0, Chip.SIDE_E, "O+");
 			Pins[2].output = true;
 			Pins[3] = new Chip.Pin(ui, 1, Chip.SIDE_E, "O-");
-			mExprState = new Expr.State(1);
 		}
 
 		public override bool hasCurrentOutput() { return true; }
@@ -57,7 +53,7 @@ namespace Circuit.Elements.Input {
 
 		public override void DoIteration() {
 			/* no current path?  give up */
-			if (mBroken) {
+			if (Broken) {
 				Pins[InputCount].current = 0;
 				Pins[InputCount + 1].current = 0;
 				/* avoid singular matrix errors */
@@ -67,38 +63,29 @@ namespace Circuit.Elements.Input {
 
 			/* converged yet?
              * double limitStep = getLimitStep()*.1; */
-			double convergeLimit = getConvergeLimit() * .1;
+			var convergeLimit = getConvergeLimit() * .1;
 
-			double cur = Pins[1].current;
+			var cur = Pins[1].current;
 			if (Math.Abs(cur - mLastCurrent) > convergeLimit) {
 				Circuit.Converged = false;
 			}
 			int vn1 = Pins[1].voltSource + Circuit.Nodes.Count;
-			if (mExpr != null) {
-				/* calculate output */
-				mExprState.Values[8] = cur;  /* I = current */
-				mExprState.Time = Circuit.Time;
-				double v0 = mExpr.Eval(mExprState);
-				double rs = v0;
-				Pins[2].current = v0;
-				Pins[3].current = -v0;
-
-				double dv = 1e-6;
-				mExprState.Values[8] = cur + dv;
-				double v = mExpr.Eval(mExprState);
-				mExprState.Values[8] = cur - dv;
-				double v2 = mExpr.Eval(mExprState);
-				double dx = (v - v2) / (dv * 2);
-				if (Math.Abs(dx) < 1e-6) {
-					dx = sign(dx, 1e-6);
-				}
-				Circuit.StampCCCS(Nodes[3], Nodes[2], Pins[1].voltSource, dx);
-				/* adjust right side */
-				rs -= dx * cur;
-				/*Console.WriteLine("ccedx " + cur + " " + dx + " " + rs); */
-				Circuit.StampCurrentSource(Nodes[3], Nodes[2], rs);
+			/* calculate output */
+			var v0 = mFunction(cur);
+			Pins[2].current = v0;
+			Pins[3].current = -v0;
+			var dv = 1e-6;
+			var v1 = mFunction(cur + dv);
+			var v2 = mFunction(cur - dv);
+			var dx = (v1 - v2) / (dv * 2);
+			if (Math.Abs(dx) < 1e-6) {
+				dx = sign(dx, 1e-6);
 			}
-
+			Circuit.StampCCCS(Nodes[3], Nodes[2], Pins[1].voltSource, dx);
+			/* adjust right side */
+			v0 -= dx * cur;
+			/*Console.WriteLine("ccedx " + cur + " " + dx + " " + rs); */
+			Circuit.StampCurrentSource(Nodes[3], Nodes[2], v0);
 			mLastCurrent = cur;
 		}
 

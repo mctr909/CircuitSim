@@ -137,7 +137,9 @@ namespace Circuit.Elements.Custom {
 			return c;
 		}
 
-		public void SetComposite(Dictionary<int, CircuitNode> nodeHash, List<BaseSymbol> uiList, int[] externalNodes, string expr) {
+		protected virtual void Init() { }
+
+		void SetComposite(Dictionary<int, CircuitNode> nodeHash, List<BaseSymbol> symbolList, int[] externalNodes) {
 			/* Flatten nodeHash in to compNodeList */
 			mCompNodeList = new List<CircuitNode>();
 			mNumTerms = externalNodes.Length;
@@ -155,8 +157,8 @@ namespace Circuit.Elements.Custom {
 				mCompNodeList.Add(nodeHash[key]);
 			}
 			/* allocate more nodes for sub-elements' internal nodes */
-			for (int i = 0; i != uiList.Count; i++) {
-				var ce = uiList[i].Element;
+			for (int i = 0; i != symbolList.Count; i++) {
+				var ce = symbolList[i].Element;
 				CompList.Add(ce);
 				int inodes = ce.InternalNodeCount;
 				for (int j = 0; j != inodes; j++) {
@@ -188,9 +190,38 @@ namespace Circuit.Elements.Custom {
 			}
 
 			AllocNodes();
-			Init(expr);
+			Init();
 		}
 
-		protected virtual void Init(string expr) { }
+		protected void LoadComposite(List<BaseSymbol> symbolList, string model, int[] externalNodes) {
+			var compNodeHash = new Dictionary<int, CircuitNode>();
+			var strModels = new StringTokenizer(model, "\r");
+			while (strModels.HasMoreTokens) {
+				string modelLine;
+				strModels.nextToken(out modelLine);
+				var strModel = new StringTokenizer(modelLine, " +\t\n\r\f");
+				var ceType = strModel.nextTokenEnum(DUMP_ID.INVALID);
+				var newce = MenuItems.ConstructElement(ceType);
+				newce.ReferenceName = "";
+				symbolList.Add(newce);
+				int thisPost = 0;
+				while (strModel.HasMoreTokens) {
+					var nodeOfThisPost = strModel.nextTokenInt();
+					var cnLink = new CircuitNode.LINK();
+					cnLink.Num = thisPost;
+					cnLink.Elm = newce.Element;
+					if (!compNodeHash.ContainsKey(nodeOfThisPost)) {
+						var cn = new CircuitNode();
+						cn.Links.Add(cnLink);
+						compNodeHash.Add(nodeOfThisPost, cn);
+					} else {
+						var cn = compNodeHash[nodeOfThisPost];
+						cn.Links.Add(cnLink);
+					}
+					thisPost++;
+				}
+			}
+			SetComposite(compNodeHash, symbolList, externalNodes);
+		}
 	}
 }

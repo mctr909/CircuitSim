@@ -27,6 +27,14 @@ namespace Circuit.Symbol.Active {
 
 		public override BaseElement Element { get { return mElm; } }
 
+		public Point[] Terminal { get {
+			return new Point[] {
+				Post.A,
+				new Point((int)mPosC[2].X, (int)mPosC[2].Y),
+				new Point((int)mPosE[2].X, (int)mPosE[2].Y)
+			};
+		} }
+
 		public Transistor(Point pos, bool pnpFlag) : base(pos) {
 			mElm = new ElmTransistor(pnpFlag);
 			ReferenceName = "Tr";

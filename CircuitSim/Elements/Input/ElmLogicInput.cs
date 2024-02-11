@@ -2,17 +2,17 @@
 
 namespace Circuit.Elements.Input {
 	class ElmLogicInput : ElmSwitch {
-		public double mHiV;
-		public double mLoV;
+		public double VHigh;
+		public double VLow;
 
 		public ElmLogicInput() {
-			mHiV = 5;
-			mLoV = 0;
+			VHigh = 5;
+			VLow = 0;
 		}
 
 		public ElmLogicInput(StringTokenizer st) {
-			mHiV = st.nextTokenDouble(5);
-			mLoV = st.nextTokenDouble(0);
+			VHigh = st.nextTokenDouble(5);
+			VLow = st.nextTokenDouble(0);
 		}
 
 		public override int VoltageSourceCount { get { return 1; } }
@@ -30,7 +30,7 @@ namespace Circuit.Elements.Input {
 		public override void SetCurrent(int vs, double c) { Current = -c; }
 
 		public override void Stamp() {
-			double v = 0 != Position ? mHiV : mLoV;
+			double v = 0 != Position ? VHigh : VLow;
 			Circuit.StampVoltageSource(0, Nodes[0], mVoltSource, v);
 		}
 	}

@@ -48,7 +48,7 @@ namespace Circuit.Symbol.Input {
             }
             if (r == 0) {
                 var ei = new ElementInfo("Output Function");
-                ei.Text = mElm.ExprString;
+                ei.Text = "";
                 return ei;
             }
             if (r == 1) {
@@ -59,8 +59,8 @@ namespace Circuit.Symbol.Input {
 
         public override void SetElementValue(int n, int c, ElementInfo ei) {
             if (n == 0) {
-                mElm.ExprString = ei.Text.Replace(" ", "").Replace("\r", "").Replace("\n", "");
-                mElm.ParseExpr();
+                //mElm.ExprString = ei.Text.Replace(" ", "").Replace("\r", "").Replace("\n", "");
+                //mElm.ParseExpr();
                 return;
             }
             if (n == 1) {

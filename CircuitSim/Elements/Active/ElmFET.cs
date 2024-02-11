@@ -73,9 +73,6 @@
 			if (n == 0) {
 				return 0;
 			}
-			if (n == 3) {
-				return -DiodeCurrent1 - DiodeCurrent2;
-			}
 			if (n == 1) {
 				return Current + DiodeCurrent1;
 			}
@@ -169,10 +166,10 @@
 			}
 
 			if (MOS) {
-				mDiodeB1.DoIteration(Nch * (Volts[BodyTerminal] - Volts[1]));
-				DiodeCurrent1 = mDiodeB1.CalculateCurrent(Nch * (Volts[BodyTerminal] - Volts[1])) * Nch;
-				mDiodeB2.DoIteration(Nch * (Volts[BodyTerminal] - Volts[2]));
-				DiodeCurrent2 = mDiodeB2.CalculateCurrent(Nch * (Volts[BodyTerminal] - Volts[2])) * Nch;
+				mDiodeB1.DoIteration(Nch * (Volts[BodyTerminal] - Volts[IdxS]));
+				DiodeCurrent1 = mDiodeB1.CalculateCurrent(Nch * (Volts[BodyTerminal] - Volts[IdxS])) * Nch;
+				mDiodeB2.DoIteration(Nch * (Volts[BodyTerminal] - Volts[IdxD]));
+				DiodeCurrent2 = mDiodeB2.CalculateCurrent(Nch * (Volts[BodyTerminal] - Volts[IdxD])) * Nch;
 			} else {
 				DiodeCurrent1 = DiodeCurrent2 = 0;
 			}

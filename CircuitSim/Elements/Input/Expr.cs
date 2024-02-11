@@ -33,14 +33,14 @@ namespace Circuit.Elements.Input {
 			E_VARIABLE = 28, /* should be at end */
 		}
 
-		TYPE type;
-		double value;
-		List<Expr> Children;
+		TYPE mType;
+		double mValue;
+		List<Expr> mChildren;
 
 		public string VariableName {
 			get {
-				if (TYPE.E_VARIABLE <= type) {
-					var ch = (char)('a' + type - TYPE.E_VARIABLE);
+				if (TYPE.E_VARIABLE <= mType) {
+					var ch = (char)('a' + mType - TYPE.E_VARIABLE);
 					return "" + ch;
 				} else {
 					return "Not Variable";
@@ -49,32 +49,32 @@ namespace Circuit.Elements.Input {
 		}
 
 		Expr(Expr e1, Expr e2, TYPE v) {
-			Children = new List<Expr>() { e1 };
+			mChildren = new List<Expr>() { e1 };
 			if (e2 != null) {
-				Children.Add(e2);
+				mChildren.Add(e2);
 			}
-			type = v;
+			mType = v;
 		}
 
 		Expr(TYPE v, double vv) {
-			type = v;
-			value = vv;
+			mType = v;
+			mValue = vv;
 		}
 
 		Expr(TYPE v) {
-			type = v;
+			mType = v;
 		}
 
 		public double Eval(State es) {
 			Expr left = null;
 			Expr right = null;
-			if (Children != null && Children.Count > 0) {
-				left = Children[0];
-				if (Children.Count == 2) {
-					right = Children[Children.Count - 1];
+			if (mChildren != null && mChildren.Count > 0) {
+				left = mChildren[0];
+				if (mChildren.Count == 2) {
+					right = mChildren[mChildren.Count - 1];
 				}
 			}
-			switch (type) {
+			switch (mType) {
 			case TYPE.E_ADD:
 				return left.Eval(es) + right.Eval(es);
 			case TYPE.E_SUB:
@@ -88,7 +88,7 @@ namespace Circuit.Elements.Input {
 			case TYPE.E_UMINUS:
 				return -left.Eval(es);
 			case TYPE.E_VALUE:
-				return value;
+				return mValue;
 			case TYPE.E_TIME:
 				return es.Time;
 			case TYPE.E_SIN:
@@ -108,21 +108,21 @@ namespace Circuit.Elements.Input {
 			case TYPE.E_MIN: {
 				int i;
 				double x = left.Eval(es);
-				for (i = 1; i < Children.Count; i++) {
-					x = Math.Min(x, Children[i].Eval(es));
+				for (i = 1; i < mChildren.Count; i++) {
+					x = Math.Min(x, mChildren[i].Eval(es));
 				}
 				return x;
 			}
 			case TYPE.E_MAX: {
 				int i;
 				double x = left.Eval(es);
-				for (i = 1; i < Children.Count; i++) {
-					x = Math.Max(x, Children[i].Eval(es));
+				for (i = 1; i < mChildren.Count; i++) {
+					x = Math.Max(x, mChildren[i].Eval(es));
 				}
 				return x;
 			}
 			case TYPE.E_CLAMP:
-				return Math.Min(Math.Max(left.Eval(es), Children[1].Eval(es)), Children[2].Eval(es));
+				return Math.Min(Math.Max(left.Eval(es), mChildren[1].Eval(es)), mChildren[2].Eval(es));
 			case TYPE.E_STEP: {
 				double x = left.Eval(es);
 				if (right == null) {
@@ -132,7 +132,7 @@ namespace Circuit.Elements.Input {
 			}
 			case TYPE.E_SELECT: {
 				double x = left.Eval(es);
-				return Children[x > 0 ? 2 : 1].Eval(es);
+				return mChildren[x > 0 ? 2 : 1].Eval(es);
 			}
 			case TYPE.E_TRIANGLE: {
 				double x = posmod(left.Eval(es), Math.PI * 2) / Math.PI;
@@ -145,10 +145,10 @@ namespace Circuit.Elements.Input {
 			case TYPE.E_MOD:
 				return left.Eval(es) % right.Eval(es);
 			case TYPE.E_PWL:
-				return pwl(es, Children);
+				return pwl(es, mChildren);
 			default:
-				if (type >= TYPE.E_VARIABLE) {
-					return es.Values[type - TYPE.E_VARIABLE];
+				if (mType >= TYPE.E_VARIABLE) {
+					return es.Values[mType - TYPE.E_VARIABLE];
 				}
 				Console.WriteLine("unknown\n");
 				break;
@@ -337,7 +337,7 @@ namespace Circuit.Elements.Input {
 				var e = new Expr(e1, null, t);
 				while (skip(",")) {
 					var enext = parse();
-					e.Children.Add(enext);
+					e.mChildren.Add(enext);
 					args++;
 				}
 				skipOrError(")");

@@ -6,18 +6,6 @@ namespace Circuit.Symbol.Active {
 	class Optocoupler : Composite {
 		const int CSPC = 8 * 2;
 		const int CSPC2 = CSPC * 2;
-		static readonly int[] EXTERNAL_NODES = { 6, 2, 4, 5 };
-		static readonly string MODEL_STRING
-			= DUMP_ID.DIODE + " 6 1\r"
-			+ DUMP_ID.CCCS + " 1 2 3 4\r"
-			+ DUMP_ID.TRANSISTOR_N + " 3 4 5";
-		static readonly string EXPR = @"max(0, min(0.0001,
-    select {i-0.003,
-        ( -80000000000*i^5 +800000000*i^4 -3000000*i^3 +5177.20*i^2 +0.2453*i -0.00005 )*1.040/700,
-        (      9000000*i^5    -998113*i^4   +42174*i^3  -861.32*i^2 +9.0836*i -0.00780 )*0.945/700
-    }
-))";
-
 		ElmOptocoupler mElm;
 		Diode mDiode;
 		Transistor mTransistor;
@@ -30,16 +18,14 @@ namespace Circuit.Symbol.Active {
 		public override BaseElement Element { get { return mElm; } }
 
 		public Optocoupler(Point pos) : base(pos) {
-			mElm = new ElmOptocoupler();
-			loadComposite(null, MODEL_STRING, EXTERNAL_NODES, EXPR);
+			mElm = new ElmOptocoupler(CompList);
 			mDiode = (Diode)CompList[0];
 			mTransistor = (Transistor)CompList[2];
 			Post.NoDiagonal = true;
 		}
 
 		public Optocoupler(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmOptocoupler();
-			loadComposite(st, MODEL_STRING, EXTERNAL_NODES, EXPR);
+			mElm = new ElmOptocoupler(CompList);
 			mDiode = (Diode)CompList[0];
 			mTransistor = (Transistor)CompList[2];
 			Post.NoDiagonal = true;
@@ -84,14 +70,14 @@ namespace Circuit.Symbol.Active {
 			/* diode */
 			mDiode.SetPosition(mPosts[0].X + 10, mPosts[0].Y, mPosts[1].X + 10, mPosts[1].Y);
 			mStubs = new Point[4];
-			mStubs[0] = mElm.Diode.NodePos[0];
-			mStubs[1] = mElm.Diode.NodePos[1];
+			mStubs[0] = mDiode.Post.A;
+			mStubs[1] = mDiode.Post.B;
 
 			/* transistor */
 			int midp = (mPosts[2].Y + mPosts[3].Y) / 2;
 			mTransistor.SetPosition(mPosts[2].X - 18, midp, mPosts[2].X - 6, midp);
-			mStubs[2] = mElm.Transistor.NodePos[1];
-			mStubs[3] = mElm.Transistor.NodePos[2];
+			mStubs[2] = mTransistor.Terminal[1];
+			mStubs[3] = mTransistor.Terminal[2];
 
 			/* create little arrows */
 			int sx1 = mStubs[0].X;

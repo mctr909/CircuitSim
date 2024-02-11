@@ -8,23 +8,25 @@ namespace Circuit.Symbol.Input {
 	class LogicInput : Switch {
 		const int FLAG_NUMERIC = 2;
 
-		ElmLogicInput mElm;
+		ElmLogicInput mElmLogic;
 
 		bool isNumeric { get { return (mFlags & (FLAG_NUMERIC)) != 0; } }
 
 		public LogicInput(Point pos) : base(pos, 0) {
-			mElm = new ElmLogicInput();
+			mElmLogic = new ElmLogicInput();
+			mElm = mElmLogic;
 		}
 
 		public LogicInput(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmLogicInput(st);
+			mElmLogic = new ElmLogicInput(st);
+			mElm = mElmLogic;
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.LOGIC_I; } }
 
 		protected override void dump(List<object> optionList) {
-			optionList.Add(mElm.mHiV);
-			optionList.Add(mElm.mLoV);
+			optionList.Add(mElmLogic.VHigh);
+			optionList.Add(mElmLogic.VLow);
 		}
 
 		public override RectangleF GetSwitchRect() {
@@ -37,9 +39,9 @@ namespace Circuit.Symbol.Input {
 		}
 
 		public override void Draw(CustomGraphics g) {
-			var s = 0 != mElm.Position ? "H" : "L";
+			var s = 0 != mElmLogic.Position ? "H" : "L";
 			if (isNumeric) {
-				s = "" + mElm.Position;
+				s = "" + mElmLogic.Position;
 			}
 			drawCenteredLText(s, Post.B, true);
 			drawLeadA();
@@ -49,12 +51,12 @@ namespace Circuit.Symbol.Input {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "ロジック入力";
-			arr[1] = 0 != mElm.Position ? "High" : "Low";
+			arr[1] = 0 != mElmLogic.Position ? "High" : "Low";
 			if (isNumeric) {
-				arr[1] = 0 != mElm.Position ? "1" : "0";
+				arr[1] = 0 != mElmLogic.Position ? "1" : "0";
 			}
-			arr[1] += " (" + Utils.VoltageText(mElm.Volts[0]) + ")";
-			arr[2] = "電流：" + Utils.CurrentText(mElm.Current);
+			arr[1] += " (" + Utils.VoltageText(mElmLogic.Volts[0]) + ")";
+			arr[2] = "電流：" + Utils.CurrentText(mElmLogic.Current);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
@@ -62,13 +64,13 @@ namespace Circuit.Symbol.Input {
 				return null;
 			}
 			if (r == 0) {
-				return new ElementInfo("モーメンタリ", mElm.Momentary);
+				return new ElementInfo("モーメンタリ", mElmLogic.Momentary);
 			}
 			if (r == 1) {
-				return new ElementInfo("High電圧", mElm.mHiV);
+				return new ElementInfo("High電圧", mElmLogic.VHigh);
 			}
 			if (r == 2) {
-				return new ElementInfo("Low電圧", mElm.mLoV);
+				return new ElementInfo("Low電圧", mElmLogic.VLow);
 			}
 			if (r == 3) {
 				return new ElementInfo("数値表示", isNumeric);
@@ -78,13 +80,13 @@ namespace Circuit.Symbol.Input {
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
 			if (n == 0) {
-				mElm.Momentary = ei.CheckBox.Checked;
+				mElmLogic.Momentary = ei.CheckBox.Checked;
 			}
 			if (n == 1) {
-				mElm.mHiV = ei.Value;
+				mElmLogic.VHigh = ei.Value;
 			}
 			if (n == 2) {
-				mElm.mLoV = ei.Value;
+				mElmLogic.VLow = ei.Value;
 			}
 			if (n == 3) {
 				if (ei.CheckBox.Checked) {

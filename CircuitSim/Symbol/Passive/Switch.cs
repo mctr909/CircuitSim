@@ -8,7 +8,7 @@ namespace Circuit.Symbol.Passive {
 		const int OPEN_HS = 12;
 		const int BODY_LEN = 24;
 
-		ElmSwitch mElm;
+		protected ElmSwitch mElm;
 
 		public override BaseElement Element { get { return mElm; } }
 
