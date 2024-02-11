@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Circuit.Common;
+
 using Circuit.Symbol.Output;
 
 namespace Circuit.Forms {
@@ -160,7 +160,7 @@ namespace Circuit.Forms {
             case SCOPE_MENU_ITEM.PROPERTIES: {
                 var fm = new ScopeProperties(mPlot);
                 fm.Show(0, 0);
-                CirSimForm.DialogShowing = fm;
+                CirSimForm.ScopeDialog = fm;
                 break;
             }
             }

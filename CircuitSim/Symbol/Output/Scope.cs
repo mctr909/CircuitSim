@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-using Circuit.Common;
 using Circuit.Elements.Output;
 
 namespace Circuit.Symbol.Output {

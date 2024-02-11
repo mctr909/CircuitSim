@@ -67,10 +67,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\Deflate.cs" />
-    <Compile Include="Common\PDF.cs" />
-    <Compile Include="Common\ScopePlot.cs" />
-    <Compile Include="Common\ScopeWave.cs" />
+    <Compile Include="Deflate.cs" />
+    <Compile Include="PDF.cs" />
+    <Compile Include="Circuit\ScopePlot.cs" />
+    <Compile Include="Circuit\ScopeWave.cs" />
     <Compile Include="Elements\Active\Diode.cs" />
     <Compile Include="Elements\Active\ElmAnalogSwitch.cs" />
     <Compile Include="Elements\Active\ElmJFET.cs" />
@@ -111,8 +111,8 @@
     <Compile Include="Elements\Active\ElmDiodeVaractor.cs" />
     <Compile Include="Symbol\Active\DiodeVaractor.cs" />
     <Compile Include="Symbol\Active\DiodeZener.cs" />
-    <Compile Include="Common\BaseElement.cs" />
-    <Compile Include="Common\BaseLink.cs" />
+    <Compile Include="Circuit\BaseElement.cs" />
+    <Compile Include="Circuit\BaseLink.cs" />
     <Compile Include="Symbol\Custom\GraphicBox.cs" />
     <Compile Include="Elements\Custom\ElmChip.cs" />
     <Compile Include="Symbol\Custom\Chip.cs" />
@@ -121,7 +121,7 @@
     <Compile Include="Symbol\Custom\Graphic.cs" />
     <Compile Include="Elements\Custom\ElmGraphic.cs" />
     <Compile Include="Symbol\Custom\GraphicText.cs" />
-    <Compile Include="Common\Post.cs" />
+    <Compile Include="Circuit\Post.cs" />
     <Compile Include="Elements\Gate\ElmGateAnd.cs" />
     <Compile Include="Symbol\Gate\GateAnd.cs" />
     <Compile Include="Elements\Gate\ElmGate.cs" />
@@ -194,10 +194,10 @@
     <Compile Include="Elements\Passive\ElmTransformer.cs" />
     <Compile Include="Symbol\Passive\Transformer.cs" />
     <Compile Include="Elements\Passive\ElmWire.cs" />
-    <Compile Include="Common\CustomGraphics.cs" />
-    <Compile Include="Common\Utils.cs" />
+    <Compile Include="Circuit\CustomGraphics.cs" />
+    <Compile Include="Circuit\Utils.cs" />
     <Compile Include="Forms\ControlPanel.cs" />
-    <Compile Include="Common\DiodeModel.cs" />
+    <Compile Include="Circuit\DiodeModel.cs" />
     <Compile Include="Forms\ElementPopupMenu.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -213,15 +213,15 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\Adjustable.cs" />
-    <Compile Include="Common\Circuit.cs" />
+    <Compile Include="Circuit\Circuit.cs" />
     <Compile Include="Elements\Input\Expr.cs" />
-    <Compile Include="Common\FFT.cs" />
+    <Compile Include="FFT.cs" />
     <Compile Include="Forms\ScrollValuePopup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Common\StringTokenizer.cs" />
+    <Compile Include="Circuit\StringTokenizer.cs" />
     <Compile Include="Symbol\Passive\Capacitor.cs" />
-    <Compile Include="Common\BaseSymbol.cs" />
+    <Compile Include="Circuit\BaseSymbol.cs" />
     <Compile Include="Forms\ElementInfoDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -241,7 +241,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Symbol\Output\Scope.cs" />
     <Compile Include="Symbol\Passive\Resistor.cs" />
-    <Compile Include="Common\Storage.cs" />
+    <Compile Include="Circuit\Storage.cs" />
     <Compile Include="Shortcut.cs" />
     <EmbeddedResource Include="CirSimForm.resx">
       <DependentUpon>CirSimForm.cs</DependentUpon>

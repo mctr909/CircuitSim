@@ -1,6 +1,4 @@
-﻿using Circuit.Common;
-
-namespace Circuit.Elements.Output {
+﻿namespace Circuit.Elements.Output {
 	class ElmScope : BaseElement {
 		private ScopePlot mScope;
 

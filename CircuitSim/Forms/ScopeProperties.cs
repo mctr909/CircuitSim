@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using Circuit.Common;
 
 namespace Circuit.Forms {
     public partial class ScopeProperties : Form {

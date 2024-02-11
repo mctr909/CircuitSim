@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-using Circuit.Common;
 using Circuit.Elements.Active;
 using Circuit.Elements.Passive;
 using Circuit.Forms;
@@ -36,10 +35,8 @@ namespace Circuit {
 
         #region Property
         public static ElementInfoDialog EditDialog { get; set; }
-        public static ElementInfoDialog CustomLogicEditDialog { get; set; }
-        public static ElementInfoDialog DiodeModelEditDialog { get; set; }
         public static SliderDialog SliderDialog { get; set; }
-        public static Form DialogShowing { get; set; } = null;
+        public static ScopeProperties ScopeDialog { get; set; } = null;
         public static Random Random { get; set; } = new Random();
         public static double CurrentMult { get; set; } = 0;
         public static bool IsRunning { get; private set; }
@@ -301,13 +298,7 @@ namespace Circuit {
             if (SliderDialog != null && SliderDialog.Visible) {
                 return true;
             }
-            if (CustomLogicEditDialog != null && CustomLogicEditDialog.Visible) {
-                return true;
-            }
-            if (DiodeModelEditDialog != null && DiodeModelEditDialog.Visible) {
-                return true;
-            }
-            if (DialogShowing != null && DialogShowing.Visible) {
+            if (ScopeDialog != null && ScopeDialog.Visible) {
                 return true;
             }
             if (mContextMenu != null && mContextMenu.Visible) {
@@ -1133,7 +1124,7 @@ namespace Circuit {
                         if (st.HasMoreTokens) {
                             string v;
                             st.nextToken(out v);
-                            newce.ReferenceName = Utils.Unescape(v);
+                            newce.ReferenceName = Utils.UnEscape(v);
                         } else {
                             newce.ReferenceName = "";
                         }

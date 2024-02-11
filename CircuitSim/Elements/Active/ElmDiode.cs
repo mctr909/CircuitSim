@@ -73,7 +73,7 @@ namespace Circuit.Elements.Active {
 			double zvoltage = 0;
 			if (model) {
 				if (st.nextToken(out ModelName, ModelName)) {
-					ModelName = Utils.Unescape(ModelName);
+					ModelName = Utils.UnEscape(ModelName);
 				}
 			} else {
 				if (forwardDrop) {

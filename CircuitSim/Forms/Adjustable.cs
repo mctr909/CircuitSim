@@ -39,7 +39,7 @@ namespace Circuit {
             MinValue = st.nextTokenDouble();
             MaxValue = st.nextTokenDouble();
             st.nextToken(out SliderText);
-            SliderText = Utils.Unescape(SliderText);
+            SliderText = Utils.UnEscape(SliderText);
         }
 
         public void CreateSlider() {
