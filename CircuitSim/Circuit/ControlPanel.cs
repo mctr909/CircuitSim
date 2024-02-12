@@ -40,13 +40,13 @@ namespace Circuit {
 		static TextBox mTxtTimeStep;
 		static Panel mSliderPanel;
 
-		public static void Init() {
+		public static void Init(EventHandler reset, EventHandler reload) {
 			int ofsY = 0;
 			VerticalPanel = new Panel();
 
 			/* 実行 */
 			BtnRunStop = new Button() { AutoSize = true, Text = "実行" };
-			BtnRunStop.Click += new EventHandler((s, e) => { CirSimForm.SetSimRunning(!CirSimForm.IsRunning); });
+			BtnRunStop.Click += new EventHandler((s, e) => { Circuit.SetSimRunning(!CircuitSymbol.IsRunning); });
 			BtnRunStop.Width = 50;
 			BtnRunStop.Left = 4;
 			BtnRunStop.Top = ofsY;
@@ -54,7 +54,7 @@ namespace Circuit {
 
 			/* リセット */
 			BtnReset = new Button() { AutoSize = true, Text = "リセット" };
-			BtnReset.Click += new EventHandler((s, e) => { CirSimForm.ResetButton_onClick(); });
+			BtnReset.Click += reset;
 			BtnReset.Width = 50;
 			BtnReset.Left = BtnRunStop.Right + 4;
 			BtnReset.Top = ofsY;
@@ -62,7 +62,7 @@ namespace Circuit {
 
 			/* 再読み込み */
 			BtnReload = new Button() { AutoSize = true, Text = "再読み込み" };
-			BtnReload.Click += new EventHandler((s, e) => { CirSimForm.Instance.Reload(); });
+			BtnReload.Click += reload;
 			BtnReload.Left = BtnReset.Right + 4;
 			BtnReload.Top = ofsY;
 			VerticalPanel.Controls.Add(BtnReload);
@@ -171,8 +171,8 @@ namespace Circuit {
 			/* 値を表示 */
 			ChkShowValues = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "値を表示" };
 			ChkShowValues.CheckedChanged += new EventHandler((s, e) => {
-				for (int i = 0; i != Circuit.SymbolCount; i++) {
-					var ce = Circuit.SymbolList[i];
+				for (int i = 0; i != CircuitSymbol.Count; i++) {
+					var ce = CircuitSymbol.List[i];
 					ce.SetPoints();
 				}
 			});
@@ -182,8 +182,8 @@ namespace Circuit {
 			/* 名前を表示 */
 			ChkShowName = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "名前を表示" };
 			ChkShowName.CheckedChanged += new EventHandler((s, e) => {
-				for (int i = 0; i != Circuit.SymbolCount; i++) {
-					var ce = Circuit.SymbolList[i];
+				for (int i = 0; i != CircuitSymbol.Count; i++) {
+					var ce = CircuitSymbol.List[i];
 					ce.SetPoints();
 				}
 			});

@@ -33,7 +33,7 @@ namespace Circuit {
 			if (e == -1) {
 				return;
 			}
-			UI = Circuit.SymbolList[e];
+			UI = CircuitSymbol.List[e];
 			EditItemR = st.nextTokenInt();
 			EditItemC = 0;
 			MinValue = st.nextTokenDouble();
@@ -79,7 +79,7 @@ namespace Circuit {
 		public string Dump() {
 			return string.Join(" ",
 				'&',
-				Circuit.SymbolList.IndexOf(UI),
+				CircuitSymbol.List.IndexOf(UI),
 				EditItemR,
 				MinValue,
 				MaxValue,

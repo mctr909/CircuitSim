@@ -58,7 +58,7 @@ namespace Circuit.Symbol.Custom {
 				strModels.nextToken(out string modelLine);
 				var strModel = new StringTokenizer(modelLine, " +\t\n\r\f");
 				var ceType = strModel.nextTokenEnum(DUMP_ID.INVALID);
-				var newce = MenuItems.ConstructElement(ceType);
+				var newce = SymbolMenu.Construct(ceType);
 				newce.ReferenceName = "";
 				CompList.Add(newce);
 				int thisPost = 0;

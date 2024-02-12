@@ -167,10 +167,10 @@ namespace Circuit.Elements.Active {
 
 		public override void IterationFinished() {
 			if (Math.Abs(Ic) > 1e12) {
-				Circuit.Stop("Icが最大電流を超えました", this);
+				Circuit.Stop("Icが最大電流を超えました");
 			}
 			if (Math.Abs(Ib) > 1e12) {
-				Circuit.Stop("Ibが最大電流を超えました", this);
+				Circuit.Stop("Ibが最大電流を超えました");
 			}
 		}
 

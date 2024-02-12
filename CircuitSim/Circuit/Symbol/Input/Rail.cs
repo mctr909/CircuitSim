@@ -51,7 +51,7 @@ namespace Circuit.Symbol.Input {
 			DrawLeadA();
 			drawRail();
 			UpdateDotCount(-mElm.Current, ref mCurCount);
-			if (CirSimForm.ConstructElm != this) {
+			if (ConstructItem != this) {
 				DrawCurrentA(mCurCount);
 			}
 		}

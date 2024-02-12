@@ -159,13 +159,10 @@ namespace Circuit.Forms {
 				mPlot.ResetGraph(true);
 				break;
 			case SCOPE_MENU_ITEM.PROPERTIES: {
-				var fm = new ScopeProperties(mPlot);
-				fm.Show(0, 0);
-				CirSimForm.ScopeDialog = fm;
+				ScopeProperties.Show(mPlot, 0, 0);
 				break;
 			}
 			}
-			CirSimForm.DeleteUnusedScopeElms();
 		}
 	}
 }

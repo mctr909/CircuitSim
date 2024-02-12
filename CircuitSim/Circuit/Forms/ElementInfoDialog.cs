@@ -89,11 +89,6 @@ namespace Circuit.Forms {
 			}
 		}
 
-		public new void Close() {
-			base.Close();
-			CirSimForm.EditDialog = null;
-		}
-
 		public void EnterPressed() {
 			if (mCloseOnEnter) {
 				Apply();
@@ -142,14 +137,14 @@ namespace Circuit.Forms {
 
 					/* update slider if any */
 					if (mElm is BaseSymbol) {
-						var adj = CirSimForm.FindAdjustable(mElm, r);
+						var adj = BaseSymbol.FindAdjustable(mElm, r);
 						if (adj != null) {
 							adj.Value = ei.Value;
 						}
 					}
 				}
 			}
-			CirSimForm.NeedAnalyze();
+			CircuitSymbol.NeedAnalyze = true;
 		}
 
 		void ItemStateChanged(object sender) {
@@ -171,7 +166,7 @@ namespace Circuit.Forms {
 						if (ei.NewDialog) {
 							changed = true;
 						}
-						CirSimForm.NeedAnalyze();
+						CircuitSymbol.NeedAnalyze = true;
 					}
 				}
 			}

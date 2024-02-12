@@ -50,8 +50,8 @@ namespace Circuit.Symbol.Passive {
 			}
 			if (mElm.Link != 0) {
 				int i;
-				for (i = 0; i != Circuit.SymbolCount; i++) {
-					var symbol2 = Circuit.SymbolList[i];
+				for (i = 0; i != CircuitSymbol.Count; i++) {
+					var symbol2 = CircuitSymbol.List[i];
 					if (symbol2 == this) {
 						continue;
 					}

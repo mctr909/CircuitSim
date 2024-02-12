@@ -39,18 +39,9 @@ namespace Circuit.Symbol.Output {
 
         public override void Draw(CustomGraphics g) {
             Draw2Leads();
-
-            if (this == CirSimForm.PlotXElm) {
-                DrawCenteredLText("X", mCenter);
-            }
-            if (this == CirSimForm.PlotYElm) {
-                DrawCenteredLText("Y", mCenter);
-            }
-
             if (MustShowVoltage()) {
                 DrawCenteredText(DrawValues(), mCenter);
             }
-
             DrawCenteredLText("+", mPlusPoint);
         }
 

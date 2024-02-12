@@ -57,7 +57,7 @@ namespace Circuit.Symbol.Active {
 		}
 
 		public override void Draw(CustomGraphics g) {
-			if (g is PDF.Page || NeedsHighlight || this == CirSimForm.ConstructElm) {
+			if (g is PDF.Page || NeedsHighlight || this == ConstructItem) {
 				base.Draw(g);
 			} else {
 				var lum = mElm.Current / mMaxBrightnessCurrent;

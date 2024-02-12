@@ -355,7 +355,7 @@ namespace Circuit.Symbol.Input {
 
 			UpdateDotCount();
 
-			if (CirSimForm.ConstructElm != this) {
+			if (ConstructItem != this) {
 				if (mElm.WaveForm == ElmVoltage.WAVEFORM.DC) {
 					DrawCurrent(Post.A, Post.B, mCurCount);
 				} else {

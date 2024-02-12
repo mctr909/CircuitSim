@@ -79,7 +79,7 @@ namespace Circuit.Elements.Input {
 
 		public override void IterationFinished() {
 			if (WaveForm == WAVEFORM.NOISE) {
-				NoiseValue = (CirSimForm.Random.NextDouble() * 2 - 1) * MaxVoltage + Bias;
+				NoiseValue = (Circuit.Random.NextDouble() * 2 - 1) * MaxVoltage + Bias;
 			}
 		}
 

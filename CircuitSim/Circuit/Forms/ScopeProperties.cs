@@ -3,14 +3,23 @@ using System.Windows.Forms;
 
 namespace Circuit.Forms {
 	public partial class ScopeProperties : Form {
+		static ScopeProperties mInstance = null;
 		ScopePlot mPlot;
 
-		public ScopeProperties(ScopePlot plot) {
+		public static void Show(ScopePlot plot, int x, int y) {
+			if (null != mInstance) {
+				mInstance.Close();
+			}
+			mInstance = new ScopeProperties(plot);
+			mInstance.Show(x, y);
+		}
+
+		private ScopeProperties(ScopePlot plot) {
 			InitializeComponent();
 			mPlot = plot;
 		}
 
-		public void Show(int x, int y) {
+		private void Show(int x, int y) {
 			rbVoltage.Checked = mPlot.ShowVoltage;
 			rbSpectrum.Checked = mPlot.ShowFFT;
 			cmbColor.Items.Clear();

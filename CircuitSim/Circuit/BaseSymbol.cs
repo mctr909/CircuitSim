@@ -4,7 +4,16 @@ using System.Drawing;
 
 namespace Circuit {
 	public abstract class BaseSymbol {
+		public const int GRID_SIZE = 8;
+		public const int GRID_MASK = ~(GRID_SIZE - 1);
+		public const int GRID_ROUND = GRID_SIZE / 2 - 1;
+		public const int CURRENT_DOT_SIZE = GRID_SIZE;
+
 		static BaseSymbol mSelected = null;
+
+		public static double CurrentMult { get; set; } = 0;
+		public static List<Adjustable> Adjustables { get; private set; } = new List<Adjustable>();
+		public static BaseSymbol ConstructItem { get; set; }
 
 		protected BaseSymbol(Point pos) {
 			Post = new Post(pos);
@@ -97,8 +106,8 @@ namespace Circuit {
 			int ny = Post.A.Y + dy;
 			int nx2 = Post.B.X + dx;
 			int ny2 = Post.B.Y + dy;
-			for (int i = 0; i != Circuit.SymbolCount; i++) {
-				var ce = Circuit.SymbolList[i];
+			for (int i = 0; i != CircuitSymbol.Count; i++) {
+				var ce = CircuitSymbol.List[i];
 				var ceP1 = ce.Post.A;
 				var ceP2 = ce.Post.B;
 				if (ceP1.X == nx && ceP1.Y == ny && ceP2.X == nx2 && ceP2.Y == ny2) {
@@ -131,11 +140,20 @@ namespace Circuit {
 			if (mSelected == this) {
 				mSelected = null;
 			}
-			CirSimForm.DeleteSliders(this);
+			if (Adjustables == null) {
+				return;
+			}
+			for (int i = Adjustables.Count - 1; i >= 0; i--) {
+				var adj = Adjustables[i];
+				if (adj.UI == this) {
+					adj.DeleteSlider();
+					Adjustables.RemoveAt(i);
+				}
+			}
 		}
 		public virtual void Draw(CustomGraphics g) { }
 		public virtual void Drag(Point pos) {
-			Post.Drag(CirSimForm.SnapGrid(pos));
+			Post.Drag(SnapGrid(pos));
 			SetPoints();
 		}
 		public virtual void SelectRect(RectangleF r) {
@@ -159,7 +177,7 @@ namespace Circuit {
 		/// </summary>
 		protected void DoDots() {
 			UpdateDotCount();
-			if (CirSimForm.ConstructElm != this) {
+			if (ConstructItem != this) {
 				DrawCurrent(Post.A, Post.B, mCurCount);
 			}
 		}
@@ -170,11 +188,11 @@ namespace Circuit {
 		/// <param name="current"></param>
 		/// <param name="count"></param>
 		protected void UpdateDotCount(double current, ref double count) {
-			if (!CirSimForm.IsRunning) {
+			if (!CircuitSymbol.IsRunning) {
 				return;
 			}
-			var speed = current * CirSimForm.CurrentMult;
-			speed %= CirSimForm.CURRENT_DOT_SIZE;
+			var speed = current * CurrentMult;
+			speed %= CURRENT_DOT_SIZE;
 			count += speed;
 		}
 
@@ -290,8 +308,8 @@ namespace Circuit {
 			if (mLink.GetGroup(linkID) == 0) {
 				return;
 			}
-			for (int i = 0; i != Circuit.SymbolCount; i++) {
-				var u2 = Circuit.SymbolList[i];
+			for (int i = 0; i != CircuitSymbol.Count; i++) {
+				var u2 = CircuitSymbol.List[i];
 				if (u2 is T) {
 					if (u2.mLink.GetGroup(linkID) == mLink.GetGroup(linkID)) {
 						u2.mLink.SetValue(u2.Element, linkID, value);
@@ -344,19 +362,19 @@ namespace Circuit {
 			DrawCurrent(a.X, a.Y, b.X, b.Y, pos);
 		}
 		protected void DrawCurrent(float ax, float ay, float bx, float by, double pos) {
-			if ((!CirSimForm.IsRunning) || ControlPanel.ChkPrintable.Checked || !ControlPanel.ChkShowCurrent.Checked) {
+			if ((!CircuitSymbol.IsRunning) || ControlPanel.ChkPrintable.Checked || !ControlPanel.ChkShowCurrent.Checked) {
 				return;
 			}
-			pos %= CirSimForm.CURRENT_DOT_SIZE;
+			pos %= CURRENT_DOT_SIZE;
 			if (pos < 0) {
-				pos += CirSimForm.CURRENT_DOT_SIZE;
+				pos += CURRENT_DOT_SIZE;
 			}
 			var nx = bx - ax;
 			var ny = by - ay;
 			var r = (float)Math.Sqrt(nx * nx + ny * ny);
 			nx /= r;
 			ny /= r;
-			for (var di = pos; di < r; di += CirSimForm.CURRENT_DOT_SIZE) {
+			for (var di = pos; di < r; di += CURRENT_DOT_SIZE) {
 				var x0 = (int)(ax + di * nx);
 				var y0 = (int)(ay + di * ny);
 				CustomGraphics.Instance.DrawCurrent(x0, y0, 0.5f);
@@ -499,6 +517,29 @@ namespace Circuit {
 			var x = b.X - a.X;
 			var y = b.Y - a.Y;
 			return Math.Sqrt(x * x + y * y);
+		}
+
+		public static int SnapGrid(int x) {
+			return (x + GRID_ROUND) & GRID_MASK;
+		}
+		public static Point SnapGrid(int x, int y) {
+			return new Point(
+				(x + GRID_ROUND) & GRID_MASK,
+				(y + GRID_ROUND) & GRID_MASK);
+		}
+		public static Point SnapGrid(Point pos) {
+			return new Point(
+				(pos.X + GRID_ROUND) & GRID_MASK,
+				(pos.Y + GRID_ROUND) & GRID_MASK);
+		}
+		public static Adjustable FindAdjustable(BaseSymbol elm, int item) {
+			for (int i = 0; i != Adjustables.Count; i++) {
+				var a = Adjustables[i];
+				if (a.UI == elm && a.EditItemR == item) {
+					return a;
+				}
+			}
+			return null;
 		}
 		#endregion
 	}

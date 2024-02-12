@@ -34,7 +34,6 @@ namespace Circuit.Forms {
 
 		public ScrollValuePopup(BaseSymbol e) : base() {
 			mEditElm = e;
-			CirSimForm.PushUndo();
 			setupValues();
 
 			Text = mName;
@@ -107,12 +106,12 @@ namespace Circuit.Forms {
 			if (mEditElm is Resistor) {
 				mMinPow = -2;
 				mMaxPow = 7;
-				mUnit = CirSimForm.OHM_TEXT;
+				mUnit = "Ω";
 			}
 			if (mEditElm is Pot) {
 				mMinPow = 1;
 				mMaxPow = 7;
-				mUnit = CirSimForm.OHM_TEXT;
+				mUnit = "Ω";
 			}
 			if (mEditElm is Capacitor) {
 				mMinPow = -11;
@@ -174,8 +173,8 @@ namespace Circuit.Forms {
 			int thissel = getSelIdx();
 			mElmInfo.Value = mValues[thissel];
 			mEditElm.SetElementValue(0, 0, mElmInfo);
-			CirSimForm.NeedAnalyze();
 			mLabels.Text = Utils.UnitText(mValues[thissel], mUnit);
+			CircuitSymbol.NeedAnalyze = true;
 		}
 
 		void setElmValue(int i) {
@@ -184,7 +183,7 @@ namespace Circuit.Forms {
 				mLastIdx = i;
 				mElmInfo.Value = mValues[i];
 				mEditElm.SetElementValue(0, 0, mElmInfo);
-				CirSimForm.NeedAnalyze();
+				CircuitSymbol.NeedAnalyze = true;
 			}
 		}
 

@@ -58,7 +58,7 @@ namespace Circuit.Symbol.Passive {
 		}
 
 		public override void Drag(Point pos) {
-			pos = CirSimForm.SnapGrid(pos);
+			pos = SnapGrid(pos);
 			Post.B = pos;
 			SetPoints();
 		}

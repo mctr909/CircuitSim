@@ -35,7 +35,7 @@
 			if (Triggered && Circuit.Time >= TriggerTime + Delay) {
 				Triggered = false;
 				Stopped = true;
-				CirSimForm.SetSimRunning(false);
+				Circuit.SetSimRunning(false);
 			}
 		}
 	}

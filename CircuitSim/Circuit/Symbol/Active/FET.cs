@@ -228,7 +228,7 @@ namespace Circuit.Symbol.Active {
 			var vds = mElm.Vd - mElm.Vs;
 			arr[3] = ((mElm.Nch == 1) ? "Vds：" : "Vsd：") + Utils.VoltageText(vds);
 			arr[4] = ((mElm.Nch == 1) ? "Ids：" : "Isd：") + Utils.CurrentText(mElm.Current);
-			arr[5] = "R：" + Utils.UnitText(vds / mElm.Current, CirSimForm.OHM_TEXT);
+			arr[5] = "R：" + Utils.UnitText(vds / mElm.Current, "Ω");
 			arr[6] = "gm：" + Utils.UnitText(mElm.Gm, "A/V");
 			arr[7] = "Ib：" + Utils.UnitText(
 				mElm.BodyTerminal == 1 ? -mElm.DiodeCurrent1 :

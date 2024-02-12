@@ -134,7 +134,7 @@ namespace Circuit.Symbol.Passive {
 			return new EventHandler((s, e) => {
 				var trb = adj.Slider;
 				mElm.Inductance = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
-				CirSimForm.NeedAnalyze();
+				CircuitSymbol.NeedAnalyze = true;
 			});
 		}
 	}

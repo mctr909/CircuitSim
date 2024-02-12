@@ -66,8 +66,7 @@ namespace Circuit.Forms {
 					var ev = (MouseEventArgs)e;
 					var plot = mPlots[mSelectedPlot];
 					mSelectedWave = plot.SelectedWave;
-					var fm = new ScopeProperties(plot);
-					fm.Show(ev.X + Left, ev.Y + Top);
+					ScopeProperties.Show(plot, ev.X + Left, ev.Y + Top);
 				}
 			}
 		}
@@ -171,7 +170,7 @@ namespace Circuit.Forms {
 			}
 
 			if (Circuit.StopMessage != null) {
-				g.DrawLeftText(Circuit.StopMessage, 10, -10);
+				g.DrawLeftText(Circuit.StopMessage, 10, 10);
 			}
 			Flush();
 		}

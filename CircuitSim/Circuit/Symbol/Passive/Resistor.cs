@@ -150,11 +150,11 @@ namespace Circuit.Symbol.Passive {
 
 		public override void GetInfo(string[] arr) {
 			if (string.IsNullOrEmpty(ReferenceName)) {
-				arr[0] = "抵抗：" + Utils.UnitText(mElm.Resistance, CirSimForm.OHM_TEXT);
+				arr[0] = "抵抗：" + Utils.UnitText(mElm.Resistance, "Ω");
 				GetBasicInfo(1, arr);
 			} else {
 				arr[0] = ReferenceName;
-				arr[1] = "抵抗：" + Utils.UnitText(mElm.Resistance, CirSimForm.OHM_TEXT);
+				arr[1] = "抵抗：" + Utils.UnitText(mElm.Resistance, "Ω");
 				GetBasicInfo(2, arr);
 			}
 		}
@@ -189,7 +189,7 @@ namespace Circuit.Symbol.Passive {
 			return new EventHandler((s, e) => {
 				var trb = adj.Slider;
 				mElm.Resistance = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
-				CirSimForm.NeedAnalyze();
+				CircuitSymbol.NeedAnalyze = true;
 			});
 		}
 	}

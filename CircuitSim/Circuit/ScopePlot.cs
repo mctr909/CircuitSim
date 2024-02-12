@@ -91,7 +91,7 @@ namespace Circuit {
 				bool ret = true;
 				for (int i = 0; i != Waves.Count; i++) {
 					var plot = Waves[i];
-					if (Circuit.SymbolList.Contains(plot.Symbol)) {
+					if (CircuitSymbol.List.Contains(plot.Symbol)) {
 						ret = false;
 					} else {
 						Waves.RemoveAt(i--);
@@ -174,7 +174,7 @@ namespace Circuit {
 				Waves.Count
 			};
 			foreach (var p in Waves) {
-				dumpList.Add(Circuit.SymbolList.IndexOf(p.Symbol) + "_" + p.Color);
+				dumpList.Add(CircuitSymbol.List.IndexOf(p.Symbol) + "_" + p.Color);
 			}
 			if (!string.IsNullOrWhiteSpace(Text)) {
 				dumpList.Add(Utils.Escape(Text));
@@ -199,7 +199,7 @@ namespace Circuit {
 					st.nextToken(out temp);
 					var subElmCol = temp.Split('_');
 					var subElmIdx = int.Parse(subElmCol[0]);
-					var subElm = Circuit.SymbolList[subElmIdx];
+					var subElm = CircuitSymbol.List[subElmIdx];
 					var color = (int)Enum.Parse(typeof(E_COLOR), subElmCol[1]);
 					var p = new ScopeWave(subElm);
 					p.Speed = Speed;

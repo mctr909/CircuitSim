@@ -55,7 +55,7 @@ namespace Circuit.Symbol.Input {
 				tm = 2000 - tm;
 			}
 			double w = 1 + tm * 0.002;
-			if (CirSimForm.IsRunning) {
+			if (CircuitSymbol.IsRunning) {
 				w = 1.01 + (mElm.Frequency - mElm.MinF) / (mElm.MaxF - mElm.MinF);
 			}
 
@@ -80,7 +80,7 @@ namespace Circuit.Symbol.Input {
 			}
 
 			UpdateDotCount(-mElm.Current, ref mCurCount);
-			if (CirSimForm.ConstructElm != this) {
+			if (ConstructItem != this) {
 				DrawCurrentA(mCurCount);
 			}
 		}

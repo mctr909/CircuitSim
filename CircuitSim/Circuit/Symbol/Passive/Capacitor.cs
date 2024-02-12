@@ -107,7 +107,7 @@ namespace Circuit.Symbol.Passive {
 			DrawValue(Utils.UnitText(mElm.Capacitance));
 
 			UpdateDotCount();
-			if (CirSimForm.ConstructElm != this) {
+			if (ConstructItem != this) {
 				DrawCurrentA(mCurCount);
 				DrawCurrentB(mCurCount);
 			}
@@ -154,7 +154,7 @@ namespace Circuit.Symbol.Passive {
 			return new EventHandler((s, e) => {
 				var trb = adj.Slider;
 				mElm.Capacitance = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
-				CirSimForm.NeedAnalyze();
+				CircuitSymbol.NeedAnalyze = true;
 			});
 		}
 	}

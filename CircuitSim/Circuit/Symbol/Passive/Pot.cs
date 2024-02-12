@@ -86,8 +86,8 @@ namespace Circuit.Symbol.Passive {
 			int offset = 0;
 			if (Post.Vertical) {
 				/* vertical */
-				var myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(Post.Diff.Y)
-					* ((Math.Abs(Post.Diff.Y) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
+				var myLen = 2 * GRID_SIZE * Math.Sign(Post.Diff.Y)
+					* ((Math.Abs(Post.Diff.Y) + 2 * GRID_SIZE - 1) / (2 * GRID_SIZE));
 				if (Post.Diff.Y != 0) {
 					mTermB.X = mTermA.X;
 					mTermB.Y = mTermA.Y + myLen;
@@ -95,14 +95,14 @@ namespace Circuit.Symbol.Passive {
 				}
 			} else {
 				/* horizontal */
-				var myLen = 2 * CirSimForm.GRID_SIZE * Math.Sign(Post.Diff.X)
-					* ((Math.Abs(Post.Diff.X) + 2 * CirSimForm.GRID_SIZE - 1) / (2 * CirSimForm.GRID_SIZE));
+				var myLen = 2 * GRID_SIZE * Math.Sign(Post.Diff.X)
+					* ((Math.Abs(Post.Diff.X) + 2 * GRID_SIZE - 1) / (2 * GRID_SIZE));
 				mTermB.X = mTermA.X + myLen;
 				mTermB.Y = mTermA.Y;
 				offset = (Post.Diff.X < 0) ? Post.Diff.Y : -Post.Diff.Y;
 			}
-			if (offset < CirSimForm.GRID_SIZE) {
-				offset = CirSimForm.GRID_SIZE;
+			if (offset < GRID_SIZE) {
+				offset = GRID_SIZE;
 			}
 			Post.Len = Distance(mTermA, mTermB);
 
@@ -157,7 +157,7 @@ namespace Circuit.Symbol.Passive {
 			UpdateDotCount(mElm.Current1, ref mElm.CurCount1);
 			UpdateDotCount(mElm.Current2, ref mElm.CurCount2);
 			UpdateDotCount(mElm.Current3, ref mElm.CurCount3);
-			if (CirSimForm.ConstructElm != this) {
+			if (ConstructItem != this) {
 				DrawCurrent(mTermA, mMidPoint, mElm.CurCount1);
 				DrawCurrent(mTermB, mMidPoint, mElm.CurCount2);
 				DrawCurrent(mTermSlider, mCorner2, mElm.CurCount3);
@@ -196,10 +196,10 @@ namespace Circuit.Symbol.Passive {
 		}
 
 		public override void GetInfo(string[] arr) {
-			arr[0] = "可変抵抗：" + Utils.UnitText(mElm.MaxResistance, CirSimForm.OHM_TEXT);
+			arr[0] = "可変抵抗：" + Utils.UnitText(mElm.MaxResistance, "Ω");
 			arr[1] = "Vd：" + Utils.VoltageAbsText(mElm.VoltageDiff);
-			arr[2] = "R1：" + Utils.UnitText(mElm.Resistance1, CirSimForm.OHM_TEXT);
-			arr[3] = "R2：" + Utils.UnitText(mElm.Resistance2, CirSimForm.OHM_TEXT);
+			arr[2] = "R1：" + Utils.UnitText(mElm.Resistance1, "Ω");
+			arr[3] = "R2：" + Utils.UnitText(mElm.Resistance2, "Ω");
 			arr[4] = "I1：" + Utils.CurrentAbsText(mElm.Current1);
 			arr[5] = "I2：" + Utils.CurrentAbsText(mElm.Current2);
 		}
@@ -320,7 +320,7 @@ namespace Circuit.Symbol.Passive {
 			});
 			mSlider.ValueChanged += new EventHandler((s, e) => {
 				SetPoints();
-				CirSimForm.NeedAnalyze();
+				CircuitSymbol.NeedAnalyze = true;
 			});
 		}
 	}

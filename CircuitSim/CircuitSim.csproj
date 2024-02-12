@@ -67,6 +67,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Circuit\CircuitSymbol.cs" />
+    <Compile Include="Circuit\SymbolMenu.cs" />
     <Compile Include="Deflate.cs" />
     <Compile Include="PDF.cs" />
     <Compile Include="Circuit\ScopePlot.cs" />
@@ -208,7 +210,7 @@
     <Compile Include="Circuit\Forms\ScopeProperties.Designer.cs">
       <DependentUpon>ScopeProperties.cs</DependentUpon>
     </Compile>
-    <Compile Include="Circuit\MenuItems.cs" />
+    <Compile Include="MenuItems.cs" />
     <Compile Include="Circuit\Forms\SliderDialog.cs">
       <SubType>Form</SubType>
     </Compile>

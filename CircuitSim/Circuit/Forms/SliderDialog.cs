@@ -43,7 +43,7 @@ namespace Circuit.Forms {
 					Text = "閉じる"
 				};
 				cancelButton.Click += new EventHandler((sender, e) => {
-					closeDialog();
+					Close();
 				});
 				mPnlButtons.Controls.Add(cancelButton);
 
@@ -86,7 +86,7 @@ namespace Circuit.Forms {
 				if (!ei.CanCreateAdjustable()) {
 					continue;
 				}
-				var adj = findAdjustable(i);
+				var adj = BaseSymbol.FindAdjustable(mElm, i);
 				string name = ei.Name;
 				idx = mPnlValues.Controls.IndexOf(mPnlButtons);
 
@@ -173,14 +173,10 @@ namespace Circuit.Forms {
 			mEInfoCount = i;
 		}
 
-		Adjustable findAdjustable(int item) {
-			return CirSimForm.FindAdjustable(mElm, item);
-		}
-
 		void apply() {
 			int i;
 			for (i = 0; i != mEInfoCount; i++) {
-				var adj = findAdjustable(i);
+				var adj = BaseSymbol.FindAdjustable(mElm, i);
 				if (adj == null) {
 					continue;
 				}
@@ -210,11 +206,11 @@ namespace Circuit.Forms {
 						var rg = new Regex(" \\(.*\\)$");
 						adj.SliderText = rg.Replace(ei.Name, "");
 						adj.CreateSlider(ei);
-						CirSimForm.Adjustables.Add(adj);
+						BaseSymbol.Adjustables.Add(adj);
 					} else {
-						var adj = findAdjustable(i);
+						var adj = BaseSymbol.FindAdjustable(mElm, i);
 						adj.DeleteSlider();
-						CirSimForm.Adjustables.Remove(adj);
+						BaseSymbol.Adjustables.Remove(adj);
 					}
 					changed = true;
 				}
@@ -235,11 +231,6 @@ namespace Circuit.Forms {
 			while (mPnlValues.Controls[0] != mPnlButtons) {
 				mPnlValues.Controls.RemoveAt(0);
 			}
-		}
-
-		public void closeDialog() {
-			Close();
-			CirSimForm.SliderDialog = null;
 		}
 
 		void ctrlInsert(Panel p, Control ctrl, int idx) {

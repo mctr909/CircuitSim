@@ -46,7 +46,7 @@ namespace Circuit.Symbol.Input {
 			DrawCircle(Post.B, SIZE / 2);
 			DrawCenteredText(ReferenceName, mNamePos);
 			UpdateDotCount(-mElm.Current, ref mCurCount);
-			if (CirSimForm.ConstructElm != this) {
+			if (ConstructItem != this) {
 				DrawCurrentA(mCurCount);
 			}
 		}

@@ -287,7 +287,7 @@ namespace Circuit.Elements.Active {
 
 		public override void IterationFinished() {
 			if (Math.Abs(Current) > 1e12) {
-				Circuit.Stop("最大電流を超えました", this);
+				Circuit.Stop("最大電流を超えました");
 			}
 		}
 	}

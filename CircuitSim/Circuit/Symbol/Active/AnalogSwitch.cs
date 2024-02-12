@@ -37,14 +37,14 @@ namespace Circuit.Symbol.Active {
 		public override DUMP_ID DumpId { get { return DUMP_ID.ANALOG_SW; } }
 
 		public override void Drag(Point pos) {
-			pos = CirSimForm.SnapGrid(pos);
+			pos = SnapGrid(pos);
 			if (Math.Abs(Post.A.X - pos.X) < Math.Abs(Post.A.Y - pos.Y)) {
 				pos.X = Post.A.X;
 			} else {
 				pos.Y = Post.A.Y;
 			}
 			int q1 = Math.Abs(Post.A.X - pos.X) + Math.Abs(Post.A.Y - pos.Y);
-			int q2 = (q1 / 2) % CirSimForm.GRID_SIZE;
+			int q2 = (q1 / 2) % GRID_SIZE;
 			if (q2 != 0) {
 				return;
 			}

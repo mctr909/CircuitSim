@@ -59,7 +59,7 @@
 				if (mOscillationCount++ > 50) {
 					/* output is oscillating too much, randomly leave output the same */
 					mOscillationCount = 0;
-					if (CirSimForm.Random.Next(10) > 5) {
+					if (Circuit.Random.Next(10) > 5) {
 						f = LastOutput;
 					}
 				}
