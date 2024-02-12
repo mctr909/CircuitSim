@@ -72,7 +72,7 @@ namespace Circuit.Symbol.Input {
                 }
                 if (r == 2) {
                     mElm.Frequency = ei.Value;
-                    var maxfreq = 1 / (8 * ControlPanel.TimeStep);
+                    var maxfreq = 1 / (8 * Circuit.TimeStep);
                     if (maxfreq < mElm.Frequency) {
                         mElm.Frequency = maxfreq;
                     }
@@ -132,19 +132,19 @@ namespace Circuit.Symbol.Input {
                 var val = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
                 switch (ei.Name) {
                 case VALUE_NAME_AMP:
-                    setLinkedValues<Voltage>(VoltageLink.VOLTAGE, val);
+                    SetLinkedValues<Voltage>(VoltageLink.VOLTAGE, val);
                     break;
                 case VALUE_NAME_BIAS:
-                    setLinkedValues<Voltage>(VoltageLink.BIAS, val);
+                    SetLinkedValues<Voltage>(VoltageLink.BIAS, val);
                     break;
                 case VALUE_NAME_HZ:
-                    setLinkedValues<Voltage>(VoltageLink.FREQUENCY, val);
+                    SetLinkedValues<Voltage>(VoltageLink.FREQUENCY, val);
                     break;
                 case VALUE_NAME_PHASE:
                     mElm.Phase = val * Math.PI / 180;
                     break;
                 case VALUE_NAME_PHASE_OFS:
-                    setLinkedValues<Voltage>(VoltageLink.PHASE_OFFSET, val);
+                    SetLinkedValues<Voltage>(VoltageLink.PHASE_OFFSET, val);
                     break;
                 }
             });

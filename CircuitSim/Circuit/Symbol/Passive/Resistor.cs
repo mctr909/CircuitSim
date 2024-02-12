@@ -26,14 +26,16 @@ namespace Circuit.Symbol.Passive {
 		public override BaseElement Element { get { return mElm; } }
 
 		public Resistor(Point pos) : base(pos) {
-			mElm = new ElmResistor();
-			mElm.Resistance = mLastValue;
+			mElm = new ElmResistor() {
+				Resistance = mLastValue
+			};
 			ReferenceName = mLastReferenceName;
 		}
 
 		public Resistor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmResistor();
-			mElm.Resistance = st.nextTokenDouble(mLastValue);
+			mElm = new ElmResistor() {
+				Resistance = st.nextTokenDouble(mLastValue)
+			};
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.RESISTOR; } }
@@ -44,7 +46,7 @@ namespace Circuit.Symbol.Passive {
 
 		public override void SetPoints() {
 			base.SetPoints();
-			setLeads(BODY_LEN);
+			SetLeads(BODY_LEN);
 			SetTextPos();
 			SetPoly();
 		}
@@ -77,8 +79,8 @@ namespace Circuit.Symbol.Passive {
 				on = 11;
 				ov = -12;
 			}
-			interpPost(ref mNamePos, 0.5, on);
-			interpPost(ref mValuePos, 0.5, ov);
+			InterpolationPost(ref mNamePos, 0.5, on);
+			InterpolationPost(ref mValuePos, 0.5, ov);
 		}
 
 		void SetPoly() {
@@ -99,8 +101,8 @@ namespace Circuit.Symbol.Passive {
 					ny = 0;
 					break;
 				}
-				interpLead(ref mP1[i], i * SEG_F, oy);
-				interpLead(ref mP2[i], (i + 1) * SEG_F, ny);
+				InterpolationLead(ref mP1[i], i * SEG_F, oy);
+				InterpolationLead(ref mP2[i], (i + 1) * SEG_F, ny);
 				oy = ny;
 			}
 
@@ -109,51 +111,51 @@ namespace Circuit.Symbol.Passive {
 			mRect2 = new PointF[SEGMENTS + 2];
 			mRect3 = new PointF[SEGMENTS + 2];
 			mRect4 = new PointF[SEGMENTS + 2];
-			interpLeadAB(ref mRect1[0], ref mRect2[0], 0, EU_HEIGHT);
+			InterpolationLeadAB(ref mRect1[0], ref mRect2[0], 0, EU_HEIGHT);
 			for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
-				interpLeadAB(ref mRect1[j], ref mRect2[j], i * SEG_F, EU_HEIGHT);
-				interpLeadAB(ref mRect3[j], ref mRect4[j], (i + 1) * SEG_F, EU_HEIGHT);
+				InterpolationLeadAB(ref mRect1[j], ref mRect2[j], i * SEG_F, EU_HEIGHT);
+				InterpolationLeadAB(ref mRect3[j], ref mRect4[j], (i + 1) * SEG_F, EU_HEIGHT);
 			}
-			interpLeadAB(ref mRect1[SEGMENTS + 1], ref mRect2[SEGMENTS + 1], 1, EU_HEIGHT);
+			InterpolationLeadAB(ref mRect1[SEGMENTS + 1], ref mRect2[SEGMENTS + 1], 1, EU_HEIGHT);
 		}
 
 		public override void Draw(CustomGraphics g) {
-			var len = (float)Utils.Distance(mLead1, mLead2);
+			var len = (float)Distance(mLead1, mLead2);
 			if (0 == len) {
 				return;
 			}
 
-			draw2Leads();
+			Draw2Leads();
 
 			if (ControlPanel.ChkUseAnsiSymbols.Checked) {
 				/* draw zigzag */
 				for (int i = 0; i < SEGMENTS; i++) {
-					drawLine(mP1[i], mP2[i]);
+					DrawLine(mP1[i], mP2[i]);
 				}
 			} else {
 				/* draw rectangle */
-				drawLine(mRect1[0], mRect2[0]);
+				DrawLine(mRect1[0], mRect2[0]);
 				for (int i = 0, j = 1; i < SEGMENTS; i++, j++) {
-					drawLine(mRect1[j], mRect3[j]);
-					drawLine(mRect2[j], mRect4[j]);
+					DrawLine(mRect1[j], mRect3[j]);
+					DrawLine(mRect2[j], mRect4[j]);
 				}
-				drawLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
+				DrawLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
 			}
 
-			drawName();
-			drawValue(Utils.UnitText(mElm.Resistance));
+			DrawName();
+			DrawValue(Utils.UnitText(mElm.Resistance));
 
-			doDots();
+			DoDots();
 		}
 
 		public override void GetInfo(string[] arr) {
 			if (string.IsNullOrEmpty(ReferenceName)) {
 				arr[0] = "抵抗：" + Utils.UnitText(mElm.Resistance, CirSimForm.OHM_TEXT);
-				getBasicInfo(1, arr);
+				GetBasicInfo(1, arr);
 			} else {
 				arr[0] = ReferenceName;
 				arr[1] = "抵抗：" + Utils.UnitText(mElm.Resistance, CirSimForm.OHM_TEXT);
-				getBasicInfo(2, arr);
+				GetBasicInfo(2, arr);
 			}
 		}
 

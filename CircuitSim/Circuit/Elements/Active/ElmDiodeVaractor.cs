@@ -68,7 +68,7 @@ namespace Circuit.Elements.Active {
 			} else {
 				Capacitance = c0 / Math.Pow(1 - mCapVoltDiff / Model.FwDrop, 0.5);
 			}
-			mCompResistance = ControlPanel.TimeStep / (2 * Capacitance);
+			mCompResistance = Circuit.TimeStep / (2 * Capacitance);
 			mVoltSourceValue = -mCapVoltDiff - mCapCurrent * mCompResistance;
 		}
 

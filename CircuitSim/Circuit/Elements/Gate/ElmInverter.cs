@@ -46,7 +46,7 @@ namespace Circuit.Elements.Gate {
 
 		public override void DoIteration() {
 			double v = Volts[0] > HighVoltage * .5 ? 0 : HighVoltage;
-			double maxStep = SlewRate * ControlPanel.TimeStep * 1e9;
+			double maxStep = SlewRate * Circuit.TimeStep * 1e9;
 			v = Math.Max(Math.Min(mLastOutputVoltage + maxStep, v), mLastOutputVoltage - maxStep);
 			Circuit.UpdateVoltageSource(mVoltSource, v);
 		}

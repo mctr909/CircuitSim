@@ -31,18 +31,18 @@ namespace Circuit.Symbol.Passive {
             for (int i = 0; i != 3; i++) {
                 var a = i * 3 + 2;
                 var b = i * BODY_LEN * 0.5;
-                interpPostAB(ref pa, ref pb, 1 - b / Post.Len, a);
+                InterpolationPostAB(ref pa, ref pb, 1 - b / Post.Len, a);
                 mLine[i] = new PointF[] { pa, pb };
             }
-            interpPost(ref pb, 1 - BODY_LEN / Post.Len);
+            InterpolationPost(ref pb, 1 - BODY_LEN / Post.Len);
             mLine[3] = new PointF[] { pb, Post.A };
         }
 
         public override void Draw(CustomGraphics g) {
             foreach (var p in mLine) {
-                drawLine(p[0], p[1]);
+                DrawLine(p[0], p[1]);
             }
-            doDots();
+            DoDots();
         }
 
         public override void GetInfo(string[] arr) {

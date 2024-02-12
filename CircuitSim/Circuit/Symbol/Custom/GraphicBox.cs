@@ -52,13 +52,13 @@ namespace Circuit.Symbol.Custom {
             var x2 = Post.B.X;
             var y2 = Post.B.Y;
             if (x1 < x2 && y1 < y2) {
-                drawDashRectangle(x1, y1, x2 - x1, y2 - y1);
+                DrawDashRectangle(x1, y1, x2 - x1, y2 - y1);
             } else if (x1 > x2 && y1 < y2) {
-                drawDashRectangle(x2, y1, x1 - x2, y2 - y1);
+                DrawDashRectangle(x2, y1, x1 - x2, y2 - y1);
             } else if (x1 < x2 && y1 > y2) {
-                drawDashRectangle(x1, y2, x2 - x1, y1 - y2);
+                DrawDashRectangle(x1, y2, x2 - x1, y1 - y2);
             } else {
-                drawDashRectangle(x2, y2, x1 - x2, y1 - y2);
+                DrawDashRectangle(x2, y2, x1 - x2, y1 - y2);
             }
         }
 

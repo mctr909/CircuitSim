@@ -35,9 +35,9 @@ namespace Circuit.Symbol.Passive {
 			base.SetPoints();
 			var f = (Post.Len / 2 - 4) / Post.Len;
 			if (Post.A.Y == Post.B.Y) {
-				interpPost(ref mPlusPoint, f - 5 / Post.Len, 5 * Post.Dsign);
+				InterpolationPost(ref mPlusPoint, f - 5 / Post.Len, 5 * Post.Dsign);
 			} else {
-				interpPost(ref mPlusPoint, f - 5 / Post.Len, -5 * Post.Dsign);
+				InterpolationPost(ref mPlusPoint, f - 5 / Post.Len, -5 * Post.Dsign);
 			}
 			if (Post.B.Y > Post.A.Y) {
 				mPlusPoint.Y += 1;
@@ -49,7 +49,7 @@ namespace Circuit.Symbol.Passive {
 
 		public override void Draw(CustomGraphics g) {
 			base.Draw(g);
-			drawCenteredText("+", mPlusPoint);
+			DrawCenteredText("+", mPlusPoint);
 		}
 
 		public override void GetInfo(string[] arr) {

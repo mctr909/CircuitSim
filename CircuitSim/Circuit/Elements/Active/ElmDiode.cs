@@ -126,7 +126,10 @@ namespace Circuit.Elements.Active {
 		public override void Stamp() {
 			if (mHasResistance) {
 				/* create diode from node 0 to internal node */
-				stamp(Nodes[0], Nodes[2]);
+				mNodes0 = Nodes[0];
+				mNodes1 = Nodes[2];
+				Circuit.RowInfo[mNodes0 - 1].LeftChanges = true;
+				Circuit.RowInfo[mNodes1 - 1].LeftChanges = true;
 				/* create resistor from internal node to node 1 */
 				var r0 = 1.0 / Model.SeriesResistance;
 				Circuit.Matrix[Nodes[1] - 1, Nodes[1] - 1] += r0;
@@ -135,7 +138,10 @@ namespace Circuit.Elements.Active {
 				Circuit.Matrix[Nodes[2] - 1, Nodes[1] - 1] -= r0;
 			} else {
 				/* don't need any internal nodes if no series resistance */
-				stamp(Nodes[0], Nodes[1]);
+				mNodes0 = Nodes[0];
+				mNodes1 = Nodes[1];
+				Circuit.RowInfo[mNodes0 - 1].LeftChanges = true;
+				Circuit.RowInfo[mNodes1 - 1].LeftChanges = true;
 			}
 		}
 
@@ -283,13 +289,6 @@ namespace Circuit.Elements.Active {
 			if (Math.Abs(Current) > 1e12) {
 				Circuit.Stop("最大電流を超えました", this);
 			}
-		}
-
-		void stamp(int n0, int n1) {
-			mNodes0 = n0;
-			mNodes1 = n1;
-			Circuit.RowInfo[mNodes0 - 1].LeftChanges = true;
-			Circuit.RowInfo[mNodes1 - 1].LeftChanges = true;
 		}
 	}
 }

@@ -34,17 +34,17 @@ namespace Circuit.Symbol.Active {
 			var plate12 = 1.0 - 5.0 / BODY_LEN;
 			var plate2 = 1.0 - 1.0 / BODY_LEN;
 			var pa = new PointF[2];
-			interpLeadAB(ref pa[0], ref pa[1], -1.0 / BODY_LEN, HS);
+			InterpolationLeadAB(ref pa[0], ref pa[1], -1.0 / BODY_LEN, HS);
 			var arrowPoint = new PointF();
-			interpLead(ref arrowPoint, plate11);
+			InterpolationLead(ref arrowPoint, plate11);
 			mPoly = new PointF[] { pa[0], pa[1], arrowPoint };
 			// calc plates
 			mPlate1 = new PointF[4];
 			mPlate2 = new PointF[4];
-			interpLeadAB(ref mPlate1[0], ref mPlate1[1], plate11, HS);
-			interpLeadAB(ref mPlate1[3], ref mPlate1[2], plate12, HS);
-			interpLeadAB(ref mPlate2[0], ref mPlate2[1], plate2, HS);
-			interpLeadAB(ref mPlate2[3], ref mPlate2[2], 1, HS);
+			InterpolationLeadAB(ref mPlate1[0], ref mPlate1[1], plate11, HS);
+			InterpolationLeadAB(ref mPlate1[3], ref mPlate1[2], plate12, HS);
+			InterpolationLeadAB(ref mPlate2[0], ref mPlate2[1], plate2, HS);
+			InterpolationLeadAB(ref mPlate2[3], ref mPlate2[2], 1, HS);
 			SetTextPos();
 		}
 
@@ -52,11 +52,11 @@ namespace Circuit.Symbol.Active {
 			// draw leads and diode arrow
 			DrawDiode();
 			// draw first plate
-			fillPolygon(mPlate1);
+			FillPolygon(mPlate1);
 			// draw second plate
-			fillPolygon(mPlate2);
-			doDots();
-			drawName();
+			FillPolygon(mPlate2);
+			DoDots();
+			DrawName();
 		}
 
 		public override void GetInfo(string[] arr) {

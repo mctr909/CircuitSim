@@ -127,7 +127,7 @@ namespace Circuit.Symbol.Input {
 
 		public override void SetPoints() {
 			base.SetPoints();
-			setLeads((mElm.WaveForm == ElmVoltage.WAVEFORM.DC) ? BODY_LEN_DC : BODY_LEN);
+			SetLeads((mElm.WaveForm == ElmVoltage.WAVEFORM.DC) ? BODY_LEN_DC : BODY_LEN);
 			SetTextPos();
 			SetWaveform();
 		}
@@ -139,17 +139,17 @@ namespace Circuit.Symbol.Input {
 			} else {
 				sign = Post.Dsign;
 			}
-			interpPost(ref mSignPos, (Post.Len / 2 + 0.6 * BODY_LEN) / Post.Len, 7 * sign);
+			InterpolationPost(ref mSignPos, (Post.Len / 2 + 0.6 * BODY_LEN) / Post.Len, 7 * sign);
 			if (mElm.WaveForm == ElmVoltage.WAVEFORM.DC) {
 				int hs = 10;
-				interpLeadAB(ref mPs1, ref mPs2, 0, hs * 0.5);
-				interpLeadAB(ref mPs3, ref mPs4, 1, hs);
+				InterpolationLeadAB(ref mPs1, ref mPs2, 0, hs * 0.5);
+				InterpolationLeadAB(ref mPs3, ref mPs4, 1, hs);
 				var s = Utils.UnitText(mElm.MaxVoltage, "V");
 				var w = CustomGraphics.Instance.GetTextSize(s).Width;
-				interpPost(ref mTextPos, 0.5, w * 0.5 + 10);
-				mTextRot = Utils.Angle(Post.A, Post.B) + Math.PI / 2;
+				InterpolationPost(ref mTextPos, 0.5, w * 0.5 + 10);
+				mTextRot = Angle(Post.A, Post.B) + Math.PI / 2;
 			} else {
-				interpLead(ref mPs1, 0.5);
+				InterpolationLead(ref mPs1, 0.5);
 			}
 		}
 
@@ -329,12 +329,12 @@ namespace Circuit.Symbol.Input {
 		}
 
 		public override void Draw(CustomGraphics g) {
-			draw2Leads();
+			Draw2Leads();
 			if (mElm.WaveForm == ElmVoltage.WAVEFORM.DC) {
-				drawLine(mPs1, mPs2);
-				drawLine(mPs3, mPs4);
+				DrawLine(mPs1, mPs2);
+				DrawLine(mPs3, mPs4);
 				var s = Utils.UnitText(mElm.MaxVoltage, "V");
-				drawCenteredText(s, mTextPos, mTextRot);
+				DrawCenteredText(s, mTextPos, mTextRot);
 			} else {
 				DrawWaveform(mPs1);
 				if (ControlPanel.ChkShowValues.Checked) {
@@ -342,32 +342,32 @@ namespace Circuit.Symbol.Input {
 					s += Utils.FrequencyText(mElm.Frequency, true) + "\r\n";
 					s += Utils.PhaseText(mElm.Phase + mElm.PhaseOffset);
 					var w = g.GetTextSize(s).Width;
-					interpPost(ref mTextPos, 0.5, w - 4);
-					drawCenteredText(s, mTextPos);
+					InterpolationPost(ref mTextPos, 0.5, w - 4);
+					DrawCenteredText(s, mTextPos);
 				}
 				if (0 < mElm.Bias || (0 == mElm.Bias &&
 					(ElmVoltage.WAVEFORM.PULSE_MONOPOLE == mElm.WaveForm || ElmVoltage.WAVEFORM.PULSE_DIPOLE == mElm.WaveForm))) {
-					drawCenteredLText("+", mSignPos, true);
+					DrawCenteredLText("+", mSignPos);
 				} else {
-					drawCenteredLText("*", mSignPos, true);
+					DrawCenteredLText("*", mSignPos);
 				}
 			}
 
-			updateDotCount();
+			UpdateDotCount();
 
 			if (CirSimForm.ConstructElm != this) {
 				if (mElm.WaveForm == ElmVoltage.WAVEFORM.DC) {
-					drawCurrent(Post.A, Post.B, mCurCount);
+					DrawCurrent(Post.A, Post.B, mCurCount);
 				} else {
-					drawCurrentA(mCurCount);
-					drawCurrentB(mCurCount);
+					DrawCurrentA(mCurCount);
+					DrawCurrentB(mCurCount);
 				}
 			}
 		}
 
 		protected void DrawWaveform(PointF p) {
-			drawCircle(p, BODY_LEN / 2);
-			drawPolyline(mWaveFormPos);
+			DrawCircle(p, BODY_LEN / 2);
+			DrawPolyline(mWaveFormPos);
 		}
 
 		public override void GetInfo(string[] arr) {
@@ -587,19 +587,19 @@ namespace Circuit.Symbol.Input {
 				switch (ei.Name) {
 				case VALUE_NAME_V:
 				case VALUE_NAME_AMP:
-					setLinkedValues<Voltage>(VoltageLink.VOLTAGE, val);
+					SetLinkedValues<Voltage>(VoltageLink.VOLTAGE, val);
 					break;
 				case VALUE_NAME_BIAS:
-					setLinkedValues<Voltage>(VoltageLink.BIAS, val);
+					SetLinkedValues<Voltage>(VoltageLink.BIAS, val);
 					break;
 				case VALUE_NAME_HZ:
-					setLinkedValues<Voltage>(VoltageLink.FREQUENCY, val);
+					SetLinkedValues<Voltage>(VoltageLink.FREQUENCY, val);
 					break;
 				case VALUE_NAME_PHASE:
 					mElm.Phase = val * Math.PI / 180;
 					break;
 				case VALUE_NAME_PHASE_OFS:
-					setLinkedValues<Voltage>(VoltageLink.PHASE_OFFSET, val);
+					SetLinkedValues<Voltage>(VoltageLink.PHASE_OFFSET, val);
 					break;
 				case VALUE_NAME_DUTY:
 					mElm.DutyCycle = val * 0.01;

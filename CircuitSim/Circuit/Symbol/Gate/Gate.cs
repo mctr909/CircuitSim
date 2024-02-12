@@ -67,7 +67,7 @@ namespace Circuit.Symbol.Gate {
 			if (mElm.IsInverting && mWw + 8 > Post.Len / 2) {
 				mWw = (int)(Post.Len / 2 - 8);
 			}
-			setLeads(mWw * 2);
+			SetLeads(mWw * 2);
 			mInPosts = new PointF[mElm.InputCount];
 			mInGates = new PointF[mElm.InputCount];
 			mElm.AllocNodes();
@@ -76,43 +76,43 @@ namespace Circuit.Symbol.Gate {
 				if (i0 == 0 && (mElm.InputCount & 1) == 0) {
 					i0++;
 				}
-				interpPost(ref mInPosts[i], 0, hs * i0);
-				interpLead(ref mInGates[i], 0, hs * i0);
+				InterpolationPost(ref mInPosts[i], 0, hs * i0);
+				InterpolationLead(ref mInGates[i], 0, hs * i0);
 				mElm.Volts[i] = (mElm.LastOutput ^ mElm.IsInverting) ? 5 : 0;
 			}
 			mHs2 = G_WIDTH * (mElm.InputCount / 2 + 1);
 			if (mElm.HasSchmittInputs) {
-				Utils.CreateSchmitt(mLead1, mLead2, out mSchmittPoly, 1, .47f);
+				CreateSchmitt(mLead1, mLead2, out mSchmittPoly, 1, .47f);
 			}
 			mElm.SetNodePos(mInPosts, Post.B);
 		}
 
 		public override void Draw(CustomGraphics g) {
 			for (int i = 0; i != mElm.InputCount; i++) {
-				drawLine(mInPosts[i], mInGates[i]);
+				DrawLine(mInPosts[i], mInGates[i]);
 			}
-			drawLeadB();
+			DrawLeadB();
 			if (UseAnsiGates()) {
-				drawPolygon(mGatePolyAnsi);
+				DrawPolygon(mGatePolyAnsi);
 			} else {
-				drawPolygon(mGatePolyEuro);
+				DrawPolygon(mGatePolyEuro);
 				var center = new PointF();
-				interpPost(ref center, 0.5);
-				drawCenteredLText(gateText, center, true);
+				InterpolationPost(ref center, 0.5);
+				DrawCenteredLText(gateText, center);
 			}
 			if (mElm.HasSchmittInputs) {
-				drawPolygon(mSchmittPoly);
+				DrawPolygon(mSchmittPoly);
 			}
 			if (mLinePoints != null && UseAnsiGates()) {
 				for (int i = 0; i != mLinePoints.Length - 1; i++) {
-					drawLine(mLinePoints[i], mLinePoints[i + 1]);
+					DrawLine(mLinePoints[i], mLinePoints[i + 1]);
 				}
 			}
 			if (mElm.IsInverting) {
-				drawCircle(mCirclePos, CIRCLE_SIZE);
+				DrawCircle(mCirclePos, CIRCLE_SIZE);
 			}
-			updateDotCount(mElm.Current, ref mCurCount);
-			drawCurrentB(mCurCount);
+			UpdateDotCount(mElm.Current, ref mCurCount);
+			DrawCurrentB(mCurCount);
 		}
 
 		public override void GetInfo(string[] arr) {
@@ -158,8 +158,8 @@ namespace Circuit.Symbol.Gate {
 
 		protected void CreateEuroGatePolygon() {
 			mGatePolyEuro = new PointF[4];
-			interpLeadAB(ref mGatePolyEuro[0], ref mGatePolyEuro[1], 0, mHs2);
-			interpLeadAB(ref mGatePolyEuro[3], ref mGatePolyEuro[2], 1, mHs2);
+			InterpolationLeadAB(ref mGatePolyEuro[0], ref mGatePolyEuro[1], 0, mHs2);
+			InterpolationLeadAB(ref mGatePolyEuro[3], ref mGatePolyEuro[2], 1, mHs2);
 		}
 	}
 }

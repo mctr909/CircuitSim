@@ -37,7 +37,7 @@ namespace Circuit.Forms {
 					Text = "反映"
 				});
 				mBtnApply.Click += new EventHandler((s, e) => {
-					apply();
+					Apply();
 					Close();
 				});
 				/* 閉じる */
@@ -57,11 +57,12 @@ namespace Circuit.Forms {
 				Controls.Add(mPnlCommonButtons);
 			}
 
-			mPnlCustomCtrl = new Panel();
-			mPnlCustomCtrl.Width = 0;
-			mPnlCustomCtrl.Height = 0;
+			mPnlCustomCtrl = new Panel(){
+				Width = 0,
+				Height = 0
+			};
 			Controls.Add(mPnlCustomCtrl);
-			buildDialog();
+			BuildDialog();
 			ControlBox = false;
 			ResumeLayout(false);
 		}
@@ -95,7 +96,7 @@ namespace Circuit.Forms {
 
 		public void EnterPressed() {
 			if (mCloseOnEnter) {
-				apply();
+				Apply();
 				Close();
 			}
 		}
@@ -104,7 +105,7 @@ namespace Circuit.Forms {
 			return Utils.UnitText(v);
 		}
 
-		void apply() {
+		void Apply() {
 			for (int c = 0; c < 16; c++) {
 				for (int r = 0; r != 16; r++) {
 					var ei = mEInfos[r, c];
@@ -127,8 +128,7 @@ namespace Circuit.Forms {
 						}
 					} else if (ei.TextDouble != null) {
 						try {
-							double tmp;
-							Utils.ParseUnits(ei.TextDouble.Text, out tmp);
+							Utils.ParseUnits(ei.TextDouble.Text, out double tmp);
 							ei.Value = tmp;
 						} catch (FormatException ex) {
 							MessageBox.Show(ex.Message);
@@ -152,7 +152,7 @@ namespace Circuit.Forms {
 			CirSimForm.NeedAnalyze();
 		}
 
-		void itemStateChanged(object sender) {
+		void ItemStateChanged(object sender) {
 			bool changed = false;
 			bool applied = false;
 			for (int c = 0; c < 16; c++) {
@@ -164,7 +164,7 @@ namespace Circuit.Forms {
 					if (ei.Choice == sender || ei.CheckBox == sender || ei.Button == sender) {
 						/* if we're pressing a button, make sure to apply changes first */
 						if (ei.Button == sender && !ei.NewDialog) {
-							apply();
+							Apply();
 							applied = true;
 						}
 						mElm.SetElementValue(r, c, ei);
@@ -179,24 +179,24 @@ namespace Circuit.Forms {
 				/* apply changes before we reset everything
                  * (need to check if we already applied changes; otherwise Diode create simple model button doesn't work) */
 				if (!applied) {
-					apply();
+					Apply();
 				}
 				SuspendLayout();
-				clear();
+				Clear();
 				Visible = false;
-				buildDialog();
+				BuildDialog();
 				Visible = true;
 				ResumeLayout(false);
 			}
 		}
 
-		void clear() {
+		void Clear() {
 			while (0 < mPnlCustomCtrl.Controls.Count && mPnlCustomCtrl.Controls[0] != mPnlCommonButtons) {
 				mPnlCustomCtrl.Controls.RemoveAt(0);
 			}
 		}
 
-		void buildDialog() {
+		void BuildDialog() {
 			int iRow = 0;
 			int iCol = 0;
 			int maxX = 0;
@@ -240,21 +240,21 @@ namespace Circuit.Forms {
 				if (ei.Choice != null) {
 					ei.Choice.AutoSize = true;
 					ei.Choice.SelectedValueChanged += new EventHandler((s, e) => {
-						itemStateChanged(s);
+						ItemStateChanged(s);
 					});
-					insertCtrl(mPnlCustomCtrl, ei.Name, ei.Choice, ofsX, ref ofsY, ref maxX);
+					InsertCtrl(mPnlCustomCtrl, ei.Name, ei.Choice, ofsX, ref ofsY, ref maxX);
 				} else if (ei.CheckBox != null) {
 					ei.CheckBox.CheckedChanged += new EventHandler((s, e) => {
-						itemStateChanged(s);
+						ItemStateChanged(s);
 					});
-					insertCtrl(mPnlCustomCtrl, ei.Name, ei.CheckBox, ofsX, ref ofsY, ref maxX);
+					InsertCtrl(mPnlCustomCtrl, ei.Name, ei.CheckBox, ofsX, ref ofsY, ref maxX);
 				} else if (ei.Button != null) {
 					ei.Button.Click += new EventHandler((s, e) => {
-						itemStateChanged(s);
+						ItemStateChanged(s);
 					});
-					insertCtrl(mPnlCustomCtrl, ei.Name, ei.Button, ofsX, ref ofsY, ref maxX);
+					InsertCtrl(mPnlCustomCtrl, ei.Name, ei.Button, ofsX, ref ofsY, ref maxX);
 				} else if (ei.TextString != null) {
-					insertCtrl(mPnlCustomCtrl, ei.Name, ei.TextString, ofsX, ref ofsY, ref maxX);
+					InsertCtrl(mPnlCustomCtrl, ei.Name, ei.TextString, ofsX, ref ofsY, ref maxX);
 					if (null == ei.Text) {
 						ei.TextString.Text = "";
 					} else {
@@ -262,12 +262,12 @@ namespace Circuit.Forms {
 					}
 					mCloseOnEnter = false;
 				} else if (ei.TextInt != null) {
-					insertCtrl(mPnlCustomCtrl, ei.Name, ei.TextInt, ofsX, ref ofsY, ref maxX);
+					InsertCtrl(mPnlCustomCtrl, ei.Name, ei.TextInt, ofsX, ref ofsY, ref maxX);
 					ei.TextInt.Text = ((int)ei.Value).ToString();
 					mCloseOnEnter = false;
 				} else if (ei.TextDouble != null) {
-					insertCtrl(mPnlCustomCtrl, ei.Name, ei.TextDouble, ofsX, ref ofsY, ref maxX);
-					ei.TextDouble.Text = unitString(ei);
+					InsertCtrl(mPnlCustomCtrl, ei.Name, ei.TextDouble, ofsX, ref ofsY, ref maxX);
+					ei.TextDouble.Text = UnitString(ei);
 					mCloseOnEnter = false;
 				} else {
 					continue;
@@ -281,7 +281,7 @@ namespace Circuit.Forms {
 			Height = mPnlCommonButtons.Bottom + 42;
 		}
 
-		void insertCtrl(Control parent, string name, Control ctrl, int ofsX, ref int ofsY, ref int maxX) {
+		void InsertCtrl(Control parent, string name, Control ctrl, int ofsX, ref int ofsY, ref int maxX) {
 			if (ctrl is CheckBox) {
 				ctrl.Top = ofsY + 9;
 			} else {
@@ -311,15 +311,15 @@ namespace Circuit.Forms {
 			}
 		}
 
-		double diffFromInteger(double x) {
+		double DiffFromInteger(double x) {
 			return Math.Abs(x - Math.Round(x));
 		}
 
-		string unitString(ElementInfo ei) {
+		string UnitString(ElementInfo ei) {
 			/* for voltage elements, express values in rms if that would be shorter */
 			if (mElm != null && (mElm is Voltage)
 				&& Math.Abs(ei.Value) > 1e-4
-				&& diffFromInteger(ei.Value * 1e4) > diffFromInteger(ei.Value * 1e4 / ROOT2)) {
+				&& DiffFromInteger(ei.Value * 1e4) > DiffFromInteger(ei.Value * 1e4 / ROOT2)) {
 				return UnitString(ei, ei.Value / ROOT2) + "rms";
 			}
 			return UnitString(ei, ei.Value);

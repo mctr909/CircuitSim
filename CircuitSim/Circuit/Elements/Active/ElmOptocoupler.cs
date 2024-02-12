@@ -1,22 +1,11 @@
 ﻿using Circuit.Elements.Custom;
 using Circuit.Elements.Input;
 using System;
-using System.Collections.Generic;
 
 namespace Circuit.Elements.Active {
 	class ElmOptocoupler : ElmComposite {
-		static readonly int[] EXTERNAL_NODES = { 6, 2, 4, 5 };
-		static readonly string MODEL_STRING
-			= DUMP_ID.DIODE + " 6 1\r"
-			+ DUMP_ID.CCCS + " 1 2 3 4\r"
-			+ DUMP_ID.TRANSISTOR_N + " 3 4 5";
-
 		public ElmDiode Diode;
 		public ElmTransistor Transistor;
-
-		public ElmOptocoupler(List<BaseSymbol> symbolList) {
-			LoadComposite(symbolList, MODEL_STRING, EXTERNAL_NODES);
-		}
 
 		protected override void Init() {
 			Diode = (ElmDiode)CompList[0];

@@ -45,21 +45,21 @@ namespace Circuit.Symbol.Passive {
 		public override void SetPoints() {
 			base.SetPoints();
 			/* calc leads */
-			setLeads(BODY_LEN);
+			SetLeads(BODY_LEN);
 			/* calc plates */
 			var dw = 0.8 / Post.Len;
 			var f1 = 0.5 - BODY_LEN * 0.5 / Post.Len;
 			var f2 = 0.5 + BODY_LEN * 0.5 / Post.Len;
 			mPlate1 = new PointF[4];
-			interpPost(ref mPlate1[0], f1 - dw, -HS);
-			interpPost(ref mPlate1[1], f1 - dw, HS);
-			interpPost(ref mPlate1[2], f1 + dw, HS);
-			interpPost(ref mPlate1[3], f1 + dw, -HS);
+			InterpolationPost(ref mPlate1[0], f1 - dw, -HS);
+			InterpolationPost(ref mPlate1[1], f1 - dw, HS);
+			InterpolationPost(ref mPlate1[2], f1 + dw, HS);
+			InterpolationPost(ref mPlate1[3], f1 + dw, -HS);
 			mPlate2 = new PointF[4];
-			interpPost(ref mPlate2[0], f2 - dw, -HS);
-			interpPost(ref mPlate2[1], f2 - dw, HS);
-			interpPost(ref mPlate2[2], f2 + dw, HS);
-			interpPost(ref mPlate2[3], f2 + dw, -HS);
+			InterpolationPost(ref mPlate2[0], f2 - dw, -HS);
+			InterpolationPost(ref mPlate2[1], f2 - dw, HS);
+			InterpolationPost(ref mPlate2[2], f2 + dw, HS);
+			InterpolationPost(ref mPlate2[3], f2 + dw, -HS);
 			SetTextPos();
 		}
 
@@ -91,36 +91,36 @@ namespace Circuit.Symbol.Passive {
 				on = 11;
 				ov = -12;
 			}
-			interpPost(ref mNamePos, 0.5, on);
-			interpPost(ref mValuePos, 0.5, ov);
+			InterpolationPost(ref mNamePos, 0.5, on);
+			InterpolationPost(ref mValuePos, 0.5, ov);
 		}
 
 		public override void Draw(CustomGraphics g) {
-			draw2Leads();
+			Draw2Leads();
 
 			/* draw first lead and plate */
-			fillPolygon(mPlate1);
+			FillPolygon(mPlate1);
 			/* draw second lead and plate */
-			fillPolygon(mPlate2);
+			FillPolygon(mPlate2);
 
-			drawName();
-			drawValue(Utils.UnitText(mElm.Capacitance));
+			DrawName();
+			DrawValue(Utils.UnitText(mElm.Capacitance));
 
-			updateDotCount();
+			UpdateDotCount();
 			if (CirSimForm.ConstructElm != this) {
-				drawCurrentA(mCurCount);
-				drawCurrentB(mCurCount);
+				DrawCurrentA(mCurCount);
+				DrawCurrentB(mCurCount);
 			}
 		}
 
 		public override void GetInfo(string[] arr) {
 			if (string.IsNullOrEmpty(ReferenceName)) {
 				arr[0] = "コンデンサ：" + Utils.UnitText(mElm.Capacitance, "F");
-				getBasicInfo(1, arr);
+				GetBasicInfo(1, arr);
 			} else {
 				arr[0] = ReferenceName;
 				arr[1] = "コンデンサ：" + Utils.UnitText(mElm.Capacitance, "F");
-				getBasicInfo(2, arr);
+				GetBasicInfo(2, arr);
 			}
 		}
 

@@ -165,6 +165,9 @@ namespace Circuit {
 		public static double[] RightSide;
 		public static ROW_INFO[] RowInfo;
 		public static List<CircuitNode> Nodes;
+		public static double TimeStep;
+		public static List<BaseSymbol> SymbolList { get; private set; } = new List<BaseSymbol>();
+		public static int SymbolCount { get { return null == SymbolList ? 0 : SymbolList.Count; } }
 
 		#region private varidate
 		static Dictionary<Point, NodeMapEntry> mNodeMap;

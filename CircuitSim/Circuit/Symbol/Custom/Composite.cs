@@ -51,6 +51,37 @@ namespace Circuit.Symbol.Custom {
 			return dumpStr;
 		}
 
+		protected Dictionary<int, CircuitNode> getCompNode(string models) {
+			var compNodeHash = new Dictionary<int, CircuitNode>();
+			var strModels = new StringTokenizer(models, "\r");
+			while (strModels.HasMoreTokens) {
+				strModels.nextToken(out string modelLine);
+				var strModel = new StringTokenizer(modelLine, " +\t\n\r\f");
+				var ceType = strModel.nextTokenEnum(DUMP_ID.INVALID);
+				var newce = MenuItems.ConstructElement(ceType);
+				newce.ReferenceName = "";
+				CompList.Add(newce);
+				int thisPost = 0;
+				while (strModel.HasMoreTokens) {
+					var nodeOfThisPost = strModel.nextTokenInt();
+					var cnLink = new CircuitNode.LINK() {
+						Num = thisPost,
+						Elm = newce.Element
+					};
+					if (!compNodeHash.ContainsKey(nodeOfThisPost)) {
+						var cn = new CircuitNode();
+						cn.Links.Add(cnLink);
+						compNodeHash.Add(nodeOfThisPost, cn);
+					} else {
+						var cn = compNodeHash[nodeOfThisPost];
+						cn.Links.Add(cnLink);
+					}
+					thisPost++;
+				}
+			}
+			return compNodeHash;
+		}
+
 		bool useEscape() { return (mFlags & FLAG_ESCAPE) != 0; }
 
 		public override void Delete() {

@@ -32,26 +32,26 @@ namespace Circuit.Symbol.Gate {
 
 		public override void SetPoints() {
 			base.SetPoints();
-			setLeads(BODY_LEN);
+			SetLeads(BODY_LEN);
 			int hs = BODY_LEN / 2;
 			int ww = BODY_LEN / 2;
 			if (ww > Post.Len / 2) {
 				ww = (int)(Post.Len / 2);
 			}
 			mGatePoly = new PointF[3];
-			interpLeadAB(ref mGatePoly[0], ref mGatePoly[1], 0, hs);
-			interpPost(ref mGatePoly[2], 0.5 + ww / Post.Len);
-			interpPost(ref mCtrlTerm, 0.5, -hs);
-			interpPost(ref mCtrlLead, 0.5, -hs / 2);
+			InterpolationLeadAB(ref mGatePoly[0], ref mGatePoly[1], 0, hs);
+			InterpolationPost(ref mGatePoly[2], 0.5 + ww / Post.Len);
+			InterpolationPost(ref mCtrlTerm, 0.5, -hs);
+			InterpolationPost(ref mCtrlLead, 0.5, -hs / 2);
 			mElm.SetNodePos(Post.A, Post.B, mCtrlTerm);
 		}
 
 		public override void Draw(CustomGraphics g) {
-			draw2Leads();
-			drawPolygon(mGatePoly);
-			drawLine(mCtrlTerm, mCtrlLead);
-			updateDotCount(mElm.Current, ref mCurCount);
-			drawCurrentB(mCurCount);
+			Draw2Leads();
+			DrawPolygon(mGatePoly);
+			DrawLine(mCtrlTerm, mCtrlLead);
+			UpdateDotCount(mElm.Current, ref mCurCount);
+			DrawCurrentB(mCurCount);
 		}
 
 		public override void Drag(Point pos) {

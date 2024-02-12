@@ -78,27 +78,27 @@ namespace Circuit.Symbol.Passive {
 			mTermSec1 = Post.B;
 			mTermSec1.Y = mTermPri1.Y;
 
-			Utils.InterpPoint(mTermPri1, mTermSec1, out mTermPri2, 0, -Post.Dsign * height);
-			Utils.InterpPoint(mTermPri1, mTermSec1, out mTermSec2, 1, -Post.Dsign * height);
+			InterpolationPoint(mTermPri1, mTermSec1, out mTermPri2, 0, -Post.Dsign * height);
+			InterpolationPoint(mTermPri1, mTermSec1, out mTermSec2, 1, -Post.Dsign * height);
 
 			var pce = 0.5 - 10.0 / width;
-			Utils.InterpPoint(mTermPri1, mTermSec1, out mCoilPri1, pce);
-			Utils.InterpPoint(mTermPri1, mTermSec1, out mCoilSec1, 1 - pce);
-			Utils.InterpPoint(mTermPri2, mTermSec2, out mCoilPri2, pce);
-			Utils.InterpPoint(mTermPri2, mTermSec2, out mCoilSec2, 1 - pce);
+			InterpolationPoint(mTermPri1, mTermSec1, out mCoilPri1, pce);
+			InterpolationPoint(mTermPri1, mTermSec1, out mCoilSec1, 1 - pce);
+			InterpolationPoint(mTermPri2, mTermSec2, out mCoilPri2, pce);
+			InterpolationPoint(mTermPri2, mTermSec2, out mCoilSec2, 1 - pce);
 
 			var pcd = 0.5 - 1.0 / width;
 			mCore = new PointF[4];
-			Utils.InterpPoint(mTermPri1, mTermSec1, out mCore[0], pcd);
-			Utils.InterpPoint(mTermPri1, mTermSec1, out mCore[1], 1 - pcd);
-			Utils.InterpPoint(mTermPri2, mTermSec2, out mCore[2], pcd);
-			Utils.InterpPoint(mTermPri2, mTermSec2, out mCore[3], 1 - pcd);
+			InterpolationPoint(mTermPri1, mTermSec1, out mCore[0], pcd);
+			InterpolationPoint(mTermPri1, mTermSec1, out mCore[1], 1 - pcd);
+			InterpolationPoint(mTermPri2, mTermSec2, out mCore[2], pcd);
+			InterpolationPoint(mTermPri2, mTermSec2, out mCore[3], 1 - pcd);
 
 			if (-1 == mElm.Polarity) {
 				mDots = new PointF[2];
 				var dotp = Math.Abs(7.0 / height);
-				Utils.InterpPoint(mCoilPri1, mCoilPri2, out mDots[0], dotp, -7 * Post.Dsign);
-				Utils.InterpPoint(mCoilSec2, mCoilSec1, out mDots[1], dotp, -7 * Post.Dsign);
+				InterpolationPoint(mCoilPri1, mCoilPri2, out mDots[0], dotp, -7 * Post.Dsign);
+				InterpolationPoint(mCoilSec2, mCoilSec1, out mDots[1], dotp, -7 * Post.Dsign);
 				var x = mTermSec1;
 				mTermSec1 = mTermSec2;
 				mTermSec2 = x;
@@ -139,18 +139,17 @@ namespace Circuit.Symbol.Passive {
 		}
 
 		void SetCoilPos(PointF a, PointF b, float dir, out PointF[] pos) {
-			var coilLen = (float)Utils.Distance(a, b);
+			var coilLen = (float)Distance(a, b);
 			var loopCt = (int)Math.Ceiling(coilLen / 9);
 			mCoilWidth = coilLen / loopCt;
-			if (Utils.Angle(a, b) < 0) {
+			if (Angle(a, b) < 0) {
 				mCoilAngle = -dir;
 			} else {
 				mCoilAngle = dir;
 			}
 			var arr = new List<PointF>();
 			for (int loop = 0; loop != loopCt; loop++) {
-				PointF p;
-				Utils.InterpPoint(a, b, out p, (loop + 0.5) / loopCt, 0);
+				InterpolationPoint(a, b, out PointF p, (loop + 0.5) / loopCt, 0);
 				arr.Add(p);
 			}
 			pos = arr.ToArray();
@@ -161,37 +160,37 @@ namespace Circuit.Symbol.Passive {
 		}
 
 		public override void Draw(CustomGraphics g) {
-			drawLine(mTermPri1, mCoilPri1);
-			drawLine(mTermSec1, mCoilSec1);
-			drawLine(mTermPri2, mCoilPri2);
-			drawLine(mTermSec2, mCoilSec2);
+			DrawLine(mTermPri1, mCoilPri1);
+			DrawLine(mTermSec1, mCoilSec1);
+			DrawLine(mTermPri2, mCoilPri2);
+			DrawLine(mTermSec2, mCoilSec2);
 
 			foreach (var p in mCoilPri) {
-				drawArc(p, mCoilWidth, mCoilAngle, 180);
+				DrawArc(p, mCoilWidth, mCoilAngle, 180);
 			}
 			foreach (var p in mCoilSec) {
-				drawArc(p, mCoilWidth, mCoilAngle, -180);
+				DrawArc(p, mCoilWidth, mCoilAngle, -180);
 			}
 
-			drawLine(mCore[0], mCore[2]);
-			drawLine(mCore[1], mCore[3]);
+			DrawLine(mCore[0], mCore[2]);
+			DrawLine(mCore[1], mCore[3]);
 
 			if (mDots != null) {
-				drawCircle(mDots[0], 2.5f);
-				drawCircle(mDots[1], 2.5f);
+				DrawCircle(mDots[0], 2.5f);
+				DrawCircle(mDots[1], 2.5f);
 			}
 
-			updateDotCount(mElm.Currents[0], ref mElm.CurCounts[0]);
-			updateDotCount(mElm.Currents[1], ref mElm.CurCounts[1]);
-			drawCurrent(mTermPri1, mCoilPri1, mElm.CurCounts[0]);
-			drawCurrent(mCoilPri1, mCoilPri2, mElm.CurCounts[0]);
-			drawCurrent(mCoilPri2, mTermPri2, mElm.CurCounts[0]);
-			drawCurrent(mTermSec1, mCoilSec1, mElm.CurCounts[1]);
-			drawCurrent(mCoilSec1, mCoilSec2, mElm.CurCounts[1]);
-			drawCurrent(mCoilSec2, mTermSec2, mElm.CurCounts[1]);
+			UpdateDotCount(mElm.Currents[0], ref mElm.CurCounts[0]);
+			UpdateDotCount(mElm.Currents[1], ref mElm.CurCounts[1]);
+			DrawCurrent(mTermPri1, mCoilPri1, mElm.CurCounts[0]);
+			DrawCurrent(mCoilPri1, mCoilPri2, mElm.CurCounts[0]);
+			DrawCurrent(mCoilPri2, mTermPri2, mElm.CurCounts[0]);
+			DrawCurrent(mTermSec1, mCoilSec1, mElm.CurCounts[1]);
+			DrawCurrent(mCoilSec1, mCoilSec2, mElm.CurCounts[1]);
+			DrawCurrent(mCoilSec2, mTermSec2, mElm.CurCounts[1]);
 
 			if (ControlPanel.ChkShowName.Checked) {
-				drawCenteredText(ReferenceName, mNamePos);
+				DrawCenteredText(ReferenceName, mNamePos);
 			}
 		}
 

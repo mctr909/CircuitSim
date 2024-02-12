@@ -81,7 +81,7 @@ namespace Circuit.Symbol.Active {
 					mNamePos = new Point(Post.B.X, Post.B.Y - 13 * swap * 2 / 3);
 				}
 			} else {
-				interpPost(ref mNamePos, 0.5, 10 * Post.Dsign);
+				InterpolationPost(ref mNamePos, 0.5, 10 * Post.Dsign);
 			}
 		}
 
@@ -96,25 +96,25 @@ namespace Circuit.Symbol.Active {
 			var hsm = (HS / 8 + 1) * 8;
 			var hs1 = (HS - 2) * Post.Dsign * mElm.NPN;
 			var hs2 = hsm * Post.Dsign * mElm.NPN;
-			interpPostAB(ref mPosC[1], ref mPosE[1], 1, hs1);
-			interpPostAB(ref mPosC[2], ref mPosE[2], 1, hs2);
+			InterpolationPostAB(ref mPosC[1], ref mPosE[1], 1, hs1);
+			InterpolationPostAB(ref mPosC[2], ref mPosE[2], 1, hs2);
 
 			/* calc rectangle edges */
 			var rect = new PointF[4];
-			interpPostAB(ref rect[0], ref rect[1], 1 - BODY_LEN / Post.Len, HS);
-			interpPostAB(ref rect[2], ref rect[3], 1 - (BODY_LEN - BASE_THICK) / Post.Len, HS);
+			InterpolationPostAB(ref rect[0], ref rect[1], 1 - BODY_LEN / Post.Len, HS);
+			InterpolationPostAB(ref rect[2], ref rect[3], 1 - (BODY_LEN - BASE_THICK) / Post.Len, HS);
 
 			/* calc points where collector/emitter leads contact rectangle */
-			interpPostAB(ref mPosC[0], ref mPosE[0],
+			InterpolationPostAB(ref mPosC[0], ref mPosE[0],
 				1 - (BODY_LEN - BASE_THICK * 0.5) / Post.Len,
 				5 * Post.Dsign * mElm.NPN
 			);
 
 			/* calc point where base lead contacts rectangle */
 			if (Post.Dsign < 0) {
-				interpPost(ref mTbase, 1 - (BODY_LEN - BASE_THICK) / Post.Len);
+				InterpolationPost(ref mTbase, 1 - (BODY_LEN - BASE_THICK) / Post.Len);
 			} else {
-				interpPost(ref mTbase, 1 - BODY_LEN / Post.Len);
+				InterpolationPost(ref mTbase, 1 - BODY_LEN / Post.Len);
 			}
 
 			/* rectangle */
@@ -122,11 +122,11 @@ namespace Circuit.Symbol.Active {
 
 			/* arrow */
 			if (mElm.NPN == 1) {
-				Utils.CreateArrow(mPosE[0], mPosE[1], out mArrowPoly, 8, 3);
+				CreateArrow(mPosE[0], mPosE[1], out mArrowPoly, 8, 3);
 			} else {
 				var b = new PointF();
-				interpPost(ref b, 1 - (BODY_LEN - 1) / Post.Len, -5 * Post.Dsign * mElm.NPN);
-				Utils.CreateArrow(mPosE[1], b, out mArrowPoly, 8, 3);
+				InterpolationPost(ref b, 1 - (BODY_LEN - 1) / Post.Len, -5 * Post.Dsign * mElm.NPN);
+				CreateArrow(mPosE[1], b, out mArrowPoly, 8, 3);
 			}
 			SetTextPos();
 
@@ -135,35 +135,35 @@ namespace Circuit.Symbol.Active {
 
 		public override void Draw(CustomGraphics g) {
 			/* draw collector */
-			drawLine(mPosC[2], mPosC[1]);
-			drawLine(mPosC[1], mPosC[0]);
+			DrawLine(mPosC[2], mPosC[1]);
+			DrawLine(mPosC[1], mPosC[0]);
 			/* draw emitter */
-			drawLine(mPosE[2], mPosE[1]);
-			drawLine(mPosE[1], mPosE[0]);
+			DrawLine(mPosE[2], mPosE[1]);
+			DrawLine(mPosE[1], mPosE[0]);
 			/* draw arrow */
-			fillPolygon(mArrowPoly);
+			FillPolygon(mArrowPoly);
 			/* draw base */
-			drawLine(Post.A, mTbase);
+			DrawLine(Post.A, mTbase);
 			/* draw base rectangle */
-			fillPolygon(mRectPoly);
+			FillPolygon(mRectPoly);
 
 			/* draw dots */
-			updateDotCount(-mElm.Ib, ref mCurCountB);
-			updateDotCount(-mElm.Ic, ref mCurCountC);
-			updateDotCount(-mElm.Ie, ref mCurCountE);
-			drawCurrent(mTbase, Post.A, mCurCountB);
+			UpdateDotCount(-mElm.Ib, ref mCurCountB);
+			UpdateDotCount(-mElm.Ic, ref mCurCountC);
+			UpdateDotCount(-mElm.Ie, ref mCurCountE);
+			DrawCurrent(mTbase, Post.A, mCurCountB);
 			if (0 <= mElm.NPN * mElm.Ic) {
-				drawCurrent(mPosE[1], mTbase, mCurCountB);
+				DrawCurrent(mPosE[1], mTbase, mCurCountB);
 			} else {
-				drawCurrent(mPosC[1], mTbase, mCurCountB);
+				DrawCurrent(mPosC[1], mTbase, mCurCountB);
 			}
-			drawCurrent(mPosE[1], mPosC[1], mCurCountC);
+			DrawCurrent(mPosE[1], mPosC[1], mCurCountC);
 
 			if (ControlPanel.ChkShowName.Checked) {
 				if (Post.Vertical) {
-					drawCenteredText(ReferenceName, mNamePos);
+					DrawCenteredText(ReferenceName, mNamePos);
 				} else {
-					drawCenteredText(ReferenceName, mNamePos, -Math.PI / 2);
+					DrawCenteredText(ReferenceName, mNamePos, -Math.PI / 2);
 				}
 			}
 		}

@@ -32,26 +32,26 @@ namespace Circuit.Symbol.Output {
 
         public override void SetPoints() {
             base.SetPoints();
-            setLeads(16);
-            interpPost(ref mCenter, 0.5);
-            interpPost(ref mPlusPoint, 8.0 / Post.Len, 6 * Post.Dsign);
+            SetLeads(16);
+            InterpolationPost(ref mCenter, 0.5);
+            InterpolationPost(ref mPlusPoint, 8.0 / Post.Len, 6 * Post.Dsign);
         }
 
         public override void Draw(CustomGraphics g) {
-            draw2Leads();
+            Draw2Leads();
 
             if (this == CirSimForm.PlotXElm) {
-                drawCenteredLText("X", mCenter, true);
+                DrawCenteredLText("X", mCenter);
             }
             if (this == CirSimForm.PlotYElm) {
-                drawCenteredLText("Y", mCenter, true);
+                DrawCenteredLText("Y", mCenter);
             }
 
             if (MustShowVoltage()) {
-                drawCenteredText(DrawValues(), mCenter);
+                DrawCenteredText(DrawValues(), mCenter);
             }
 
-            drawCenteredLText("+", mPlusPoint, true);
+            DrawCenteredLText("+", mPlusPoint);
         }
 
         public override void GetInfo(string[] arr) {

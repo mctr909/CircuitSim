@@ -38,7 +38,7 @@ namespace Circuit.Symbol.Output {
 			var txtW = txtSize.Width;
 			var txtH = txtSize.Height;
 			var pw = txtW / Post.Len;
-			setLead1(1);
+			SetLead1(1);
 			var abX = Post.B.X - Post.A.X;
 			var abY = Post.B.Y - Post.A.Y;
 			mTextRot = Math.Atan2(abY, abX);
@@ -48,15 +48,15 @@ namespace Circuit.Symbol.Output {
 			}
 			if (45 * 3 <= deg && deg < 45 * 7) {
 				mTextRot += Math.PI;
-				interpPost(ref mNamePos, 1 + 0.5 * pw, txtH / Post.Len);
+				InterpolationPost(ref mNamePos, 1 + 0.5 * pw, txtH / Post.Len);
 			} else {
-				interpPost(ref mNamePos, 1 + 0.5 * pw, -txtH / Post.Len);
+				InterpolationPost(ref mNamePos, 1 + 0.5 * pw, -txtH / Post.Len);
 			}
 		}
 
 		public override void Draw(CustomGraphics g) {
-			drawCenteredText(ReferenceName, mNamePos, mTextRot);
-			drawLeadA();
+			DrawCenteredText(ReferenceName, mNamePos, mTextRot);
+			DrawLeadA();
 		}
 
 		public override void GetInfo(string[] arr) {

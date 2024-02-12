@@ -26,7 +26,7 @@ namespace Circuit.Elements.Gate {
 					_out = LogicOnLevel;
 				}
 			}
-			double maxStep = SlewRate * ControlPanel.TimeStep * 1e9;
+			double maxStep = SlewRate * Circuit.TimeStep * 1e9;
 			_out = Math.Max(Math.Min(v0 + maxStep, _out), v0 - maxStep);
 			Circuit.UpdateVoltageSource(mVoltSource, _out);
 		}

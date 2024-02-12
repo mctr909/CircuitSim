@@ -39,22 +39,22 @@ namespace Circuit.Symbol.Gate {
 			for (int i = 0; i != 16; i++) {
 				var a = i / 16.0;
 				var b = 1 - a * a;
-				interpLeadAB(ref mGatePolyAnsi[i], ref mGatePolyAnsi[32 - i], 0.5 + a / 2, b * mHs2);
+				InterpolationLeadAB(ref mGatePolyAnsi[i], ref mGatePolyAnsi[32 - i], 0.5 + a / 2, b * mHs2);
 			}
 			var ww2 = (mWw == 0) ? Post.Len * 2 : mWw * 2;
 			for (int i = 0; i != 7; i++) {
 				var a = (i - 3) / 3.0;
 				var b = 6 * (1 - a * a) - 3;
-				interpLead(ref mGatePolyAnsi[33 + i], b / ww2, a * mHs2);
+				InterpolationLead(ref mGatePolyAnsi[33 + i], b / ww2, a * mHs2);
 				if (this is GateXor) {
-					interpLead(ref mLinePoints[i], (b - 5) / ww2, a * mHs2);
+					InterpolationLead(ref mLinePoints[i], (b - 5) / ww2, a * mHs2);
 				}
 			}
 			mGatePolyAnsi[16] = mLead2;
 
 			if (mElm.IsInverting) {
-				interpPost(ref mCirclePos, 0.5 + (mWw + 3) / Post.Len);
-				setLead2(0.5 + (mWw + 6) / Post.Len);
+				InterpolationPost(ref mCirclePos, 0.5 + (mWw + 3) / Post.Len);
+				SetLead2(0.5 + (mWw + 6) / Post.Len);
 			}
 		}
 	}

@@ -70,19 +70,19 @@ namespace Circuit.Symbol.Active {
 			}
 
 			if (mElm.MOS) {
-				interpPostAB(ref mPosS[0], ref mPosD[0], 1, -hs1);
-				interpPostAB(ref mPosS[3], ref mPosD[3], 1, -hs2);
-				interpPostAB(ref mPosS[1], ref mPosD[1], 1 - 12 / Post.Len, -hs2);
-				interpPostAB(ref mPosS[2], ref mPosD[2], 1 - 12 / Post.Len, -hs2 * 4 / 3);
+				InterpolationPostAB(ref mPosS[0], ref mPosD[0], 1, -hs1);
+				InterpolationPostAB(ref mPosS[3], ref mPosD[3], 1, -hs2);
+				InterpolationPostAB(ref mPosS[1], ref mPosD[1], 1 - 12 / Post.Len, -hs2);
+				InterpolationPostAB(ref mPosS[2], ref mPosD[2], 1 - 12 / Post.Len, -hs2 * 4 / 3);
 			} else {
-				interpPostAB(ref mPosS[0], ref mPosD[0], 1, -hs1);
-				interpPostAB(ref mPosS[3], ref mPosD[3], 1, -hs2 * 3 / 4);
-				interpPostAB(ref mPosS[1], ref mPosD[1], 1 - 16 / Post.Len, -hs2 * 3 / 4);
+				InterpolationPostAB(ref mPosS[0], ref mPosD[0], 1, -hs1);
+				InterpolationPostAB(ref mPosS[3], ref mPosD[3], 1, -hs2 * 3 / 4);
+				InterpolationPostAB(ref mPosS[1], ref mPosD[1], 1 - 16 / Post.Len, -hs2 * 3 / 4);
 			}
 
 			var gate = new PointF[2];
-			interpPostAB(ref gate[0], ref gate[1], 1 - 16 / Post.Len, hs2 * 0.8);
-			Utils.InterpPoint(gate[0], gate[1], out mGate, .5);
+			InterpolationPostAB(ref gate[0], ref gate[1], 1 - 16 / Post.Len, hs2 * 0.8);
+			InterpolationPoint(gate[0], gate[1], out mGate, .5);
 
 			const double ConnThick = 1.0;
 			if (mElm.MOS) {
@@ -91,37 +91,37 @@ namespace Circuit.Symbol.Active {
 				var posD = mPosD[2];
 				if (enhancement) {
 					var pD = new PointF[4];
-					Utils.InterpPoint(posS, posD, out pD[0], 0.75, -ConnThick);
-					Utils.InterpPoint(posS, posD, out pD[1], 0.75, ConnThick);
-					Utils.InterpPoint(posS, posD, out pD[2], 1.0, ConnThick);
-					Utils.InterpPoint(posS, posD, out pD[3], 1.0, -ConnThick);
+					InterpolationPoint(posS, posD, out pD[0], 0.75, -ConnThick);
+					InterpolationPoint(posS, posD, out pD[1], 0.75, ConnThick);
+					InterpolationPoint(posS, posD, out pD[2], 1.0, ConnThick);
+					InterpolationPoint(posS, posD, out pD[3], 1.0, -ConnThick);
 					var pG = new PointF[4];
-					Utils.InterpPoint(posS, posD, out pG[0], 3 / 8.0, -ConnThick);
-					Utils.InterpPoint(posS, posD, out pG[1], 3 / 8.0, ConnThick);
-					Utils.InterpPoint(posS, posD, out pG[2], 5 / 8.0, ConnThick);
-					Utils.InterpPoint(posS, posD, out pG[3], 5 / 8.0, -ConnThick);
+					InterpolationPoint(posS, posD, out pG[0], 3 / 8.0, -ConnThick);
+					InterpolationPoint(posS, posD, out pG[1], 3 / 8.0, ConnThick);
+					InterpolationPoint(posS, posD, out pG[2], 5 / 8.0, ConnThick);
+					InterpolationPoint(posS, posD, out pG[3], 5 / 8.0, -ConnThick);
 					var pS = new PointF[4];
-					Utils.InterpPoint(posS, posD, out pS[0], 0.0, -ConnThick);
-					Utils.InterpPoint(posS, posD, out pS[1], 0.0, ConnThick);
-					Utils.InterpPoint(posS, posD, out pS[2], 0.25, ConnThick);
-					Utils.InterpPoint(posS, posD, out pS[3], 0.25, -ConnThick);
+					InterpolationPoint(posS, posD, out pS[0], 0.0, -ConnThick);
+					InterpolationPoint(posS, posD, out pS[1], 0.0, ConnThick);
+					InterpolationPoint(posS, posD, out pS[2], 0.25, ConnThick);
+					InterpolationPoint(posS, posD, out pS[3], 0.25, -ConnThick);
 					mPolyConn = new PointF[][] { pD, pG, pS };
 				} else {
 					mPolyConn = new PointF[1][] {
 						new PointF[4]
 					};
-					Utils.InterpPoint(posS, posD, out mPolyConn[0][0], 0.0, -ConnThick);
-					Utils.InterpPoint(posS, posD, out mPolyConn[0][1], 0.0, ConnThick);
-					Utils.InterpPoint(posS, posD, out mPolyConn[0][2], 1.0, ConnThick);
-					Utils.InterpPoint(posS, posD, out mPolyConn[0][3], 1.0, -ConnThick);
+					InterpolationPoint(posS, posD, out mPolyConn[0][0], 0.0, -ConnThick);
+					InterpolationPoint(posS, posD, out mPolyConn[0][1], 0.0, ConnThick);
+					InterpolationPoint(posS, posD, out mPolyConn[0][2], 1.0, ConnThick);
+					InterpolationPoint(posS, posD, out mPolyConn[0][3], 1.0, -ConnThick);
 				}
 				mPolyGate = new PointF[4];
-				Utils.InterpPoint(gate[0], gate[1], out mPolyGate[0], 0.0, -ConnThick);
-				Utils.InterpPoint(gate[0], gate[1], out mPolyGate[1], 0.0, ConnThick);
-				Utils.InterpPoint(gate[0], gate[1], out mPolyGate[2], 1.0, ConnThick);
-				Utils.InterpPoint(gate[0], gate[1], out mPolyGate[3], 1.0, -ConnThick);
-				Utils.InterpPoint(mPosS[0], mPosD[0], out mPosB[0], 0.5);
-				Utils.InterpPoint(mPosS[1], mPosD[1], out mPosB[1], 0.5);
+				InterpolationPoint(gate[0], gate[1], out mPolyGate[0], 0.0, -ConnThick);
+				InterpolationPoint(gate[0], gate[1], out mPolyGate[1], 0.0, ConnThick);
+				InterpolationPoint(gate[0], gate[1], out mPolyGate[2], 1.0, ConnThick);
+				InterpolationPoint(gate[0], gate[1], out mPolyGate[3], 1.0, -ConnThick);
+				InterpolationPoint(mPosS[0], mPosD[0], out mPosB[0], 0.5);
+				InterpolationPoint(mPosS[1], mPosD[1], out mPosB[1], 0.5);
 				PointF a0, a1;
 				if (mElm.Nch == 1) {
 					a0 = mPosB[0];
@@ -130,17 +130,17 @@ namespace Circuit.Symbol.Active {
 					a0 = mPosB[1];
 					a1 = mPosB[0];
 				}
-				Utils.CreateArrow(a0, a1, out mArrowPoly, 8, 3);
+				CreateArrow(a0, a1, out mArrowPoly, 8, 3);
 			} else {
 				const double GateLength = 0.25;
 				mPolyConn = new PointF[0][];
 				mPolyGate = new PointF[4];
-				Utils.InterpPoint(gate[0], gate[1], out mPolyGate[0], -GateLength, -ConnThick);
-				Utils.InterpPoint(gate[0], gate[1], out mPolyGate[1], -GateLength, ConnThick);
-				Utils.InterpPoint(gate[0], gate[1], out mPolyGate[2], 1 + GateLength, ConnThick);
-				Utils.InterpPoint(gate[0], gate[1], out mPolyGate[3], 1 + GateLength, -ConnThick);
-				Utils.InterpPoint(mPosS[0], mPosD[0], out mPosB[0], 0.5);
-				Utils.InterpPoint(mPosS[1], mPosD[1], out mPosB[1], 0.5);
+				InterpolationPoint(gate[0], gate[1], out mPolyGate[0], -GateLength, -ConnThick);
+				InterpolationPoint(gate[0], gate[1], out mPolyGate[1], -GateLength, ConnThick);
+				InterpolationPoint(gate[0], gate[1], out mPolyGate[2], 1 + GateLength, ConnThick);
+				InterpolationPoint(gate[0], gate[1], out mPolyGate[3], 1 + GateLength, -ConnThick);
+				InterpolationPoint(mPosS[0], mPosD[0], out mPosB[0], 0.5);
+				InterpolationPoint(mPosS[1], mPosD[1], out mPosB[1], 0.5);
 				PointF a0, a1;
 				double aLen;
 				if (mElm.Nch == 1) {
@@ -152,9 +152,8 @@ namespace Circuit.Symbol.Active {
 					a1 = Post.A;
 					aLen = 28 / Post.Len;
 				}
-				PointF p;
-				Utils.InterpPoint(a0, a1, out p, aLen);
-				Utils.CreateArrow(a0, p, out mArrowPoly, 9, 3);
+				InterpolationPoint(a0, a1, out PointF p, aLen);
+				CreateArrow(a0, p, out mArrowPoly, 9, 3);
 			}
 
 			setTextPos();
@@ -176,45 +175,45 @@ namespace Circuit.Symbol.Active {
 					mNamePos = new Point(Post.B.X, Post.B.Y - 13 * 2 / 3);
 				}
 			} else {
-				interpPost(ref mNamePos, 0.5, 10 * Post.Dsign);
+				InterpolationPost(ref mNamePos, 0.5, 10 * Post.Dsign);
 			}
 		}
 
 		public override void Draw(CustomGraphics g) {
 			/* draw line connecting terminals to source/gate/drain */
-			drawLine(Post.A, mGate);
-			drawLine(mPosD[0], mPosD[3]);
-			drawLine(mPosD[1], mPosD[3]);
-			drawLine(mPosS[0], mPosS[3]);
-			drawLine(mPosS[1], mPosS[3]);
+			DrawLine(Post.A, mGate);
+			DrawLine(mPosD[0], mPosD[3]);
+			DrawLine(mPosD[1], mPosD[3]);
+			DrawLine(mPosS[0], mPosS[3]);
+			DrawLine(mPosS[1], mPosS[3]);
 
 			if (mElm.MOS) {
 				/* draw bulk connection */
-				drawLine(mElm.Nch == -1 ? mPosD[0] : mPosS[0], mPosB[0]);
-				drawLine(mPosB[0], mPosB[1]);
+				DrawLine(mElm.Nch == -1 ? mPosD[0] : mPosS[0], mPosB[0]);
+				DrawLine(mPosB[0], mPosB[1]);
 			}
 
 			/* draw source/drain */
 			for (int i = 0; i != mPolyConn.Length; i++) {
-				fillPolygon(mPolyConn[i]);
+				FillPolygon(mPolyConn[i]);
 			}
 			/* draw gate */
-			fillPolygon(mPolyGate);
+			FillPolygon(mPolyGate);
 			/* draw arrow */
-			fillPolygon(mArrowPoly);
+			FillPolygon(mArrowPoly);
 
 			/* draw current */
-			updateDotCount(-mElm.Current, ref mCurCount);
-			updateDotCount(mElm.DiodeCurrent1, ref mCurcountBody1);
-			updateDotCount(mElm.DiodeCurrent2, ref mCurcountBody2);
-			drawCurrent(mPosS[0], mPosB[0], mCurCount - mCurcountBody1);
-			drawCurrent(mPosB[0], mPosD[0], mCurCount + mCurcountBody2);
+			UpdateDotCount(-mElm.Current, ref mCurCount);
+			UpdateDotCount(mElm.DiodeCurrent1, ref mCurcountBody1);
+			UpdateDotCount(mElm.DiodeCurrent2, ref mCurcountBody2);
+			DrawCurrent(mPosS[0], mPosB[0], mCurCount - mCurcountBody1);
+			DrawCurrent(mPosB[0], mPosD[0], mCurCount + mCurcountBody2);
 
 			if (ControlPanel.ChkShowName.Checked) {
 				if (Post.Vertical) {
-					drawCenteredText(ReferenceName, mNamePos);
+					DrawCenteredText(ReferenceName, mNamePos);
 				} else {
-					drawCenteredText(ReferenceName, mNamePos, -Math.PI / 2);
+					DrawCenteredText(ReferenceName, mNamePos, -Math.PI / 2);
 				}
 			}
 		}

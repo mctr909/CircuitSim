@@ -219,7 +219,7 @@
     <Compile Include="Circuit\Forms\ScrollValuePopup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Circuit\StringTokenizer.cs" />
+    <Compile Include="StringTokenizer.cs" />
     <Compile Include="Circuit\Symbol\Passive\Capacitor.cs" />
     <Compile Include="Circuit\BaseSymbol.cs" />
     <Compile Include="Circuit\Forms\ElementInfoDialog.cs">

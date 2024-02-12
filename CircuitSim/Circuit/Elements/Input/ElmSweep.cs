@@ -55,12 +55,12 @@ namespace Circuit.Elements.Input {
 			}
 			if (IsLog) {
 				mFadd = 0;
-				mFmul = Math.Pow(MaxF / MinF, mFdir * ControlPanel.TimeStep / SweepTime);
+				mFmul = Math.Pow(MaxF / MinF, mFdir * Circuit.TimeStep / SweepTime);
 			} else {
-				mFadd = mFdir * ControlPanel.TimeStep * (MaxF - MinF) / SweepTime;
+				mFadd = mFdir * Circuit.TimeStep * (MaxF - MinF) / SweepTime;
 				mFmul = 1;
 			}
-			mSavedTimeStep = ControlPanel.TimeStep;
+			mSavedTimeStep = Circuit.TimeStep;
 		}
 
 		public override bool HasGroundConnection(int n1) { return true; }
@@ -71,11 +71,11 @@ namespace Circuit.Elements.Input {
 
 		public override void PrepareIteration() {
 			/* has timestep been changed? */
-			if (ControlPanel.TimeStep != mSavedTimeStep) {
+			if (Circuit.TimeStep != mSavedTimeStep) {
 				setParams();
 			}
 			mVolt = Math.Sin(mFreqTime) * MaxV;
-			mFreqTime += Frequency * 2 * Math.PI * ControlPanel.TimeStep;
+			mFreqTime += Frequency * 2 * Math.PI * Circuit.TimeStep;
 			Frequency = Frequency * mFmul + mFadd;
 			if (Frequency >= MaxF && mFdir == 1) {
 				if (BothSides) {

@@ -50,8 +50,8 @@ namespace Circuit.Symbol.Passive {
 			}
 			if (mElm.Link != 0) {
 				int i;
-				for (i = 0; i != CirSimForm.SymbolCount; i++) {
-					var symbol2 = CirSimForm.GetSymbol(i);
+				for (i = 0; i != Circuit.SymbolCount; i++) {
+					var symbol2 = Circuit.SymbolList[i];
 					if (symbol2 == this) {
 						continue;
 					}
@@ -77,7 +77,7 @@ namespace Circuit.Symbol.Passive {
 
 		public virtual RectangleF GetSwitchRect() {
 			var p1 = new PointF();
-			interpLead(ref p1, 0, 24);
+			InterpolationLead(ref p1, 0, 24);
 			var l1 = new RectangleF(mLead1.X, mLead1.Y, 0, 0);
 			var l2 = new RectangleF(mLead2.X, mLead2.Y, 0, 0);
 			var p = new RectangleF(p1.X, p1.Y, 0, 0);
@@ -86,22 +86,22 @@ namespace Circuit.Symbol.Passive {
 
 		public override void SetPoints() {
 			base.SetPoints();
-			setLeads(BODY_LEN);
+			SetLeads(BODY_LEN);
 		}
 
 		public override void Draw(CustomGraphics g) {
-			draw2Leads();
-			fillCircle(mLead1, 2.5f);
-			fillCircle(mLead2, 2.5f);
+			Draw2Leads();
+			FillCircle(mLead1, 2.5f);
+			FillCircle(mLead2, 2.5f);
 			/* draw switch */
 			var p2 = new PointF();
 			if (mElm.Position == 0) {
-				interpLead(ref p2, 1, 2);
-				doDots();
+				InterpolationLead(ref p2, 1, 2);
+				DoDots();
 			} else {
-				interpLead(ref p2, (OPEN_HS - 2.0) / OPEN_HS, OPEN_HS);
+				InterpolationLead(ref p2, (OPEN_HS - 2.0) / OPEN_HS, OPEN_HS);
 			}
-			drawLine(mLead1, p2);
+			DrawLine(mLead1, p2);
 		}
 
 		public override void GetInfo(string[] arr) {

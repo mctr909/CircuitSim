@@ -37,33 +37,33 @@ namespace Circuit.Symbol.Gate {
 			if (ww > Post.Len / 2) {
 				ww = (int)(Post.Len / 2);
 			}
-			setLead1(0.5 - ww / Post.Len);
-			setLead2(0.5 + (ww + 2) / Post.Len);
-			interpPost(ref mPcircle, 0.5 + (ww - 2) / Post.Len);
+			SetLead1(0.5 - ww / Post.Len);
+			SetLead2(0.5 + (ww + 2) / Post.Len);
+			InterpolationPost(ref mPcircle, 0.5 + (ww - 2) / Post.Len);
 
 			mGatePolyAnsi = new PointF[3];
-			interpLeadAB(ref mGatePolyAnsi[0], ref mGatePolyAnsi[1], 0, hs);
-			interpPost(ref mGatePolyAnsi[2], 0.5 + (ww - 5) / Post.Len);
+			InterpolationLeadAB(ref mGatePolyAnsi[0], ref mGatePolyAnsi[1], 0, hs);
+			InterpolationPost(ref mGatePolyAnsi[2], 0.5 + (ww - 5) / Post.Len);
 
 			mGatePolyEuro = new PointF[4];
 			var l2 = new PointF();
-			interpPost(ref l2, 0.5 + (ww - 5) / Post.Len); /* make room for circle */
-			Utils.InterpPoint(mLead1, l2, out mGatePolyEuro[0], out mGatePolyEuro[1], 0, hs);
-			Utils.InterpPoint(mLead1, l2, out mGatePolyEuro[3], out mGatePolyEuro[2], 1, hs);
-			Utils.InterpPoint(mLead1, l2, out mCenter, .5);
+			InterpolationPost(ref l2, 0.5 + (ww - 5) / Post.Len); /* make room for circle */
+			InterpolationPoint(mLead1, l2, out mGatePolyEuro[0], out mGatePolyEuro[1], 0, hs);
+			InterpolationPoint(mLead1, l2, out mGatePolyEuro[3], out mGatePolyEuro[2], 1, hs);
+			InterpolationPoint(mLead1, l2, out mCenter, .5);
 		}
 
 		public override void Draw(CustomGraphics g) {
-			draw2Leads();
+			Draw2Leads();
 			if (Gate.UseAnsiGates()) {
-				drawPolygon(mGatePolyAnsi);
+				DrawPolygon(mGatePolyAnsi);
 			} else {
-				drawPolygon(mGatePolyEuro);
-				drawCenteredLText("1", mCenter, true);
+				DrawPolygon(mGatePolyEuro);
+				DrawCenteredLText("1", mCenter);
 			}
-			drawCircle(mPcircle, 3);
-			updateDotCount(mElm.Current, ref mCurCount);
-			drawCurrentB(mCurCount);
+			DrawCircle(mPcircle, 3);
+			UpdateDotCount(mElm.Current, ref mCurCount);
+			DrawCurrentB(mCurCount);
 		}
 
 		public override void GetInfo(string[] arr) {

@@ -23,8 +23,8 @@ namespace Circuit.Symbol.Passive {
 		}
 
 		public override void Draw(CustomGraphics g) {
-			drawLine(Post.A, Post.B);
-			doDots();
+			DrawLine(Post.A, Post.B);
+			DoDots();
 		}
 
 		public override void GetInfo(string[] arr) {

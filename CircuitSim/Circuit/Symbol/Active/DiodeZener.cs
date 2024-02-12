@@ -27,27 +27,27 @@ namespace Circuit.Symbol.Active {
 			mCathode = new PointF[2];
 			mWing = new PointF[2];
 			var pa = new PointF[2];
-			interpLeadAB(ref pa[0], ref pa[1], -1.0 / BODY_LEN, HS);
-			interpLeadAB(ref mCathode[0], ref mCathode[1], 1, HS);
-			Utils.InterpPoint(mCathode[0], mCathode[1], out mWing[0], -0.2, -HS);
-			Utils.InterpPoint(mCathode[1], mCathode[0], out mWing[1], -0.2, -HS);
+			InterpolationLeadAB(ref pa[0], ref pa[1], -1.0 / BODY_LEN, HS);
+			InterpolationLeadAB(ref mCathode[0], ref mCathode[1], 1, HS);
+			InterpolationPoint(mCathode[0], mCathode[1], out mWing[0], -0.2, -HS);
+			InterpolationPoint(mCathode[1], mCathode[0], out mWing[1], -0.2, -HS);
 			mPoly = new PointF[] { pa[0], pa[1], mLead2 };
 			SetTextPos();
 		}
 
 		public override void Draw(CustomGraphics g) {
-			draw2Leads();
+			Draw2Leads();
 
 			/* draw arrow thingy */
-			fillPolygon(mPoly);
+			FillPolygon(mPoly);
 			/* draw thing arrow is pointing to */
-			drawLine(mCathode[0], mCathode[1]);
+			DrawLine(mCathode[0], mCathode[1]);
 			/* draw wings on cathode */
-			drawLine(mWing[0], mCathode[0]);
-			drawLine(mWing[1], mCathode[1]);
+			DrawLine(mWing[0], mCathode[0]);
+			DrawLine(mWing[1], mCathode[1]);
 
-			doDots();
-			drawName();
+			DoDots();
+			DrawName();
 		}
 
 		public override void GetInfo(string[] arr) {

@@ -39,22 +39,21 @@ namespace Circuit.Symbol.Passive {
 
 		public override void SetPoints() {
 			base.SetPoints();
-			setLeads(BODY_LEN);
+			SetLeads(BODY_LEN);
 			SetCoilPos(mLead1, mLead2);
 			SetTextPos();
 		}
 
 		void SetCoilPos(PointF a, PointF b) {
-			var coilLen = (float)Utils.Distance(a, b);
+			var coilLen = (float)Distance(a, b);
 			var loopCt = (int)Math.Ceiling(coilLen / 11);
 			var arr = new List<PointF>();
 			for (int loop = 0; loop != loopCt; loop++) {
-				PointF p;
-				Utils.InterpPoint(a, b, out p, (loop + 0.5) / loopCt, 0);
+				InterpolationPoint(a, b, out PointF p, (loop + 0.5) / loopCt, 0);
 				arr.Add(p);
 			}
 			mCoilPos = arr.ToArray();
-			mCoilAngle = (float)(Utils.Angle(a, b) * 180 / Math.PI);
+			mCoilAngle = (float)(Angle(a, b) * 180 / Math.PI);
 		}
 
 		void SetTextPos() {
@@ -69,38 +68,38 @@ namespace Circuit.Symbol.Passive {
 				mTextRot += Math.PI;
 			}
 			if (0 < deg && deg < 45 * 3) {
-				interpPost(ref mValuePos, 0.5, 9 * Post.Dsign);
-				interpPost(ref mNamePos, 0.5, -9 * Post.Dsign);
+				InterpolationPost(ref mValuePos, 0.5, 9 * Post.Dsign);
+				InterpolationPost(ref mNamePos, 0.5, -9 * Post.Dsign);
 			} else if (45 * 3 <= deg && deg <= 180) {
-				interpPost(ref mNamePos, 0.5, 7 * Post.Dsign);
-				interpPost(ref mValuePos, 0.5, -13 * Post.Dsign);
+				InterpolationPost(ref mNamePos, 0.5, 7 * Post.Dsign);
+				InterpolationPost(ref mValuePos, 0.5, -13 * Post.Dsign);
 			} else if (180 < deg && deg < 45 * 7) {
-				interpPost(ref mNamePos, 0.5, -7 * Post.Dsign);
-				interpPost(ref mValuePos, 0.5, 13 * Post.Dsign);
+				InterpolationPost(ref mNamePos, 0.5, -7 * Post.Dsign);
+				InterpolationPost(ref mValuePos, 0.5, 13 * Post.Dsign);
 			} else {
-				interpPost(ref mNamePos, 0.5, 11 * Post.Dsign);
-				interpPost(ref mValuePos, 0.5, -9 * Post.Dsign);
+				InterpolationPost(ref mNamePos, 0.5, 11 * Post.Dsign);
+				InterpolationPost(ref mValuePos, 0.5, -9 * Post.Dsign);
 			}
 		}
 
 		public override void Draw(CustomGraphics g) {
-			draw2Leads();
+			Draw2Leads();
 			foreach (var p in mCoilPos) {
-				drawArc(p, COIL_WIDTH, mCoilAngle, -180);
+				DrawArc(p, COIL_WIDTH, mCoilAngle, -180);
 			}
-			drawName();
-			drawValue(Utils.UnitText(mElm.Inductance));
-			doDots();
+			DrawName();
+			DrawValue(Utils.UnitText(mElm.Inductance));
+			DoDots();
 		}
 
 		public override void GetInfo(string[] arr) {
 			if (string.IsNullOrEmpty(ReferenceName)) {
 				arr[0] = "コイル：" + Utils.UnitText(mElm.Inductance, "H");
-				getBasicInfo(1, arr);
+				GetBasicInfo(1, arr);
 			} else {
 				arr[0] = ReferenceName;
 				arr[1] = "コイル：" + Utils.UnitText(mElm.Inductance, "H");
-				getBasicInfo(2, arr);
+				GetBasicInfo(2, arr);
 			}
 		}
 

@@ -46,9 +46,10 @@ namespace Circuit.Symbol.Passive {
 		}
 
 		public Pot(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmPot();
-			mElm.MaxResistance = st.nextTokenDouble(1e3);
-			mElm.Position = st.nextTokenDouble(0.5);
+			mElm = new ElmPot() {
+				MaxResistance = st.nextTokenDouble(1e3),
+				Position = st.nextTokenDouble(0.5)
+			};
 			mElm.AllocNodes();
 			CreateSlider();
 		}
@@ -103,23 +104,23 @@ namespace Circuit.Symbol.Passive {
 			if (offset < CirSimForm.GRID_SIZE) {
 				offset = CirSimForm.GRID_SIZE;
 			}
-			Post.Len = Utils.Distance(mTermA, mTermB);
+			Post.Len = Distance(mTermA, mTermB);
 
-			Utils.InterpPoint(mTermA, mTermB, out mLead1, (Post.Len - BODY_LEN) / (2 * Post.Len));
-			Utils.InterpPoint(mTermA, mTermB, out mLead2, (Post.Len + BODY_LEN) / (2 * Post.Len));
+			InterpolationPoint(mTermA, mTermB, out mLead1, (Post.Len - BODY_LEN) / (2 * Post.Len));
+			InterpolationPoint(mTermA, mTermB, out mLead2, (Post.Len + BODY_LEN) / (2 * Post.Len));
 
 			/* set slider */
 			mElm.Position = mSlider.Value * 0.0099 + 0.0001;
 			var poff = 0.5;
 			var woff = -7.0;
 			int soff = (int)((mElm.Position - poff) * BODY_LEN);
-			Utils.InterpPoint(mTermA, mTermB, out mTermSlider, poff, offset);
-			Utils.InterpPoint(mTermA, mTermB, out mCorner2, soff / Post.Len + poff, offset);
-			Utils.InterpPoint(mTermA, mTermB, out mArrowPoint, soff / Post.Len + poff, 7 * Math.Sign(offset));
-			Utils.InterpPoint(mTermA, mTermB, out mMidPoint, soff / Post.Len + poff);
+			InterpolationPoint(mTermA, mTermB, out mTermSlider, poff, offset);
+			InterpolationPoint(mTermA, mTermB, out mCorner2, soff / Post.Len + poff, offset);
+			InterpolationPoint(mTermA, mTermB, out mArrowPoint, soff / Post.Len + poff, 7 * Math.Sign(offset));
+			InterpolationPoint(mTermA, mTermB, out mMidPoint, soff / Post.Len + poff);
 
 			var clen = Math.Abs(offset) + woff;
-			Utils.InterpPoint(mCorner2, mArrowPoint, out mArrow1, out mArrow2, (clen + woff) / clen, 4);
+			InterpolationPoint(mCorner2, mArrowPoint, out mArrow1, out mArrow2, (clen + woff) / clen, 4);
 
 			SetPoly();
 			SetTextPos();
@@ -128,39 +129,39 @@ namespace Circuit.Symbol.Passive {
 		}
 
 		public override void Draw(CustomGraphics g) {
-			drawLine(mTermA, mLead1);
-			drawLine(mLead2, mTermB);
+			DrawLine(mTermA, mLead1);
+			DrawLine(mLead2, mTermB);
 
 			if (ControlPanel.ChkUseAnsiSymbols.Checked) {
 				/* draw zigzag */
 				for (int i = 0; i != SEGMENTS; i++) {
-					drawLine(mPs1[i], mPs2[i]);
+					DrawLine(mPs1[i], mPs2[i]);
 				}
 			} else {
 				/* draw rectangle */
-				drawLine(mRect1[0], mRect2[0]);
+				DrawLine(mRect1[0], mRect2[0]);
 				for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
-					drawLine(mRect1[j], mRect3[j]);
-					drawLine(mRect2[j], mRect4[j]);
+					DrawLine(mRect1[j], mRect3[j]);
+					DrawLine(mRect2[j], mRect4[j]);
 				}
-				drawLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
+				DrawLine(mRect1[SEGMENTS + 1], mRect2[SEGMENTS + 1]);
 			}
 
 			/* draw slider */
-			drawLine(mTermSlider, mCorner2);
-			drawLine(mCorner2, mArrowPoint);
-			drawLine(mArrow1, mArrowPoint);
-			drawLine(mArrow2, mArrowPoint);
+			DrawLine(mTermSlider, mCorner2);
+			DrawLine(mCorner2, mArrowPoint);
+			DrawLine(mArrow1, mArrowPoint);
+			DrawLine(mArrow2, mArrowPoint);
 
 			/* draw dot */
-			updateDotCount(mElm.Current1, ref mElm.CurCount1);
-			updateDotCount(mElm.Current2, ref mElm.CurCount2);
-			updateDotCount(mElm.Current3, ref mElm.CurCount3);
+			UpdateDotCount(mElm.Current1, ref mElm.CurCount1);
+			UpdateDotCount(mElm.Current2, ref mElm.CurCount2);
+			UpdateDotCount(mElm.Current3, ref mElm.CurCount3);
 			if (CirSimForm.ConstructElm != this) {
-				drawCurrent(mTermA, mMidPoint, mElm.CurCount1);
-				drawCurrent(mTermB, mMidPoint, mElm.CurCount2);
-				drawCurrent(mTermSlider, mCorner2, mElm.CurCount3);
-				drawCurrent(mCorner2, mMidPoint, mElm.CurCount3 + Utils.Distance(mTermSlider, mCorner2));
+				DrawCurrent(mTermA, mMidPoint, mElm.CurCount1);
+				DrawCurrent(mTermB, mMidPoint, mElm.CurCount2);
+				DrawCurrent(mTermSlider, mCorner2, mElm.CurCount3);
+				DrawCurrent(mCorner2, mMidPoint, mElm.CurCount3 + Distance(mTermSlider, mCorner2));
 			}
 
 			if (ControlPanel.ChkShowValues.Checked && mElm.Resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
@@ -180,17 +181,17 @@ namespace Circuit.Symbol.Passive {
 
 				if (Post.Horizontal) {
 					var y = (int)(mArrowPoint.Y + (reverseX ? -txtHeightHalf : txtHeightHalf));
-					drawLeftText(s1, Math.Min(mArrow1.X, mArrow2.X) - txtWidth1, y);
-					drawLeftText(s2, Math.Max(mArrow1.X, mArrow2.X), y);
+					DrawLeftText(s1, Math.Min(mArrow1.X, mArrow2.X) - txtWidth1, y);
+					DrawLeftText(s2, Math.Max(mArrow1.X, mArrow2.X), y);
 				} else {
-					drawLeftText(s1, reverseY ? (mArrowPoint.X - txtWidth1) : mArrowPoint.X, (int)(Math.Min(mArrow1.Y, mArrow2.Y) + txtHeightHalf * 3));
-					drawLeftText(s2, reverseY ? (mArrowPoint.X - txtWidth2) : mArrowPoint.X, (int)(Math.Max(mArrow1.Y, mArrow2.Y) - txtHeightHalf * 3));
+					DrawLeftText(s1, reverseY ? (mArrowPoint.X - txtWidth1) : mArrowPoint.X, (int)(Math.Min(mArrow1.Y, mArrow2.Y) + txtHeightHalf * 3));
+					DrawLeftText(s2, reverseY ? (mArrowPoint.X - txtWidth2) : mArrowPoint.X, (int)(Math.Max(mArrow1.Y, mArrow2.Y) - txtHeightHalf * 3));
 				}
 			}
 			if (Post.Vertical) {
-				drawCenteredText(mName, mNamePos, -Math.PI / 2);
+				DrawCenteredText(mName, mNamePos, -Math.PI / 2);
 			} else {
-				drawCenteredText(mName, mNamePos);
+				DrawCenteredText(mName, mNamePos);
 			}
 		}
 
@@ -252,8 +253,8 @@ namespace Circuit.Symbol.Passive {
 					ny = 0;
 					break;
 				}
-				interpLead(ref mPs1[i], i * SEG_F, oy);
-				interpLead(ref mPs2[i], (i + 1) * SEG_F, ny);
+				InterpolationLead(ref mPs1[i], i * SEG_F, oy);
+				InterpolationLead(ref mPs2[i], (i + 1) * SEG_F, ny);
 				oy = ny;
 			}
 
@@ -262,12 +263,12 @@ namespace Circuit.Symbol.Passive {
 			mRect2 = new PointF[SEGMENTS + 2];
 			mRect3 = new PointF[SEGMENTS + 2];
 			mRect4 = new PointF[SEGMENTS + 2];
-			Utils.InterpPoint(mTermA, mTermB, out mRect1[0], out mRect2[0], 0, HS);
+			InterpolationPoint(mTermA, mTermB, out mRect1[0], out mRect2[0], 0, HS);
 			for (int i = 0, j = 1; i != SEGMENTS; i++, j++) {
-				Utils.InterpPoint(mTermA, mTermB, out mRect1[j], out mRect2[j], i * SEG_F, HS);
-				Utils.InterpPoint(mTermA, mTermB, out mRect3[j], out mRect4[j], (i + 1) * SEG_F, HS);
+				InterpolationPoint(mTermA, mTermB, out mRect1[j], out mRect2[j], i * SEG_F, HS);
+				InterpolationPoint(mTermA, mTermB, out mRect3[j], out mRect4[j], (i + 1) * SEG_F, HS);
 			}
-			Utils.InterpPoint(mTermA, mTermB, out mRect1[SEGMENTS + 1], out mRect2[SEGMENTS + 1], 1, HS);
+			InterpolationPoint(mTermA, mTermB, out mRect1[SEGMENTS + 1], out mRect2[SEGMENTS + 1], 1, HS);
 		}
 
 		void SetTextPos() {
@@ -284,18 +285,18 @@ namespace Circuit.Symbol.Passive {
 			if (Post.Horizontal) {
 				if (0 < Post.Diff.Y) {
 					/* right slider */
-					Utils.InterpPoint(mTermA, mTermB, out mNamePos, 0.5, -12 * Post.Dsign);
+					InterpolationPoint(mTermA, mTermB, out mNamePos, 0.5, -12 * Post.Dsign);
 				} else {
 					/* left slider */
-					Utils.InterpPoint(mTermA, mTermB, out mNamePos, 0.5, 12 * Post.Dsign);
+					InterpolationPoint(mTermA, mTermB, out mNamePos, 0.5, 12 * Post.Dsign);
 				}
 			} else {
 				if (0 < Post.Diff.X) {
 					/* upper slider */
-					Utils.InterpPoint(mTermA, mTermB, out mNamePos, 0.5, -9 * Post.Dsign);
+					InterpolationPoint(mTermA, mTermB, out mNamePos, 0.5, -9 * Post.Dsign);
 				} else {
 					/* lower slider */
-					Utils.InterpPoint(mTermA, mTermB, out mNamePos, 0.5, 13 * Post.Dsign);
+					InterpolationPoint(mTermA, mTermB, out mNamePos, 0.5, 13 * Post.Dsign);
 				}
 			}
 		}

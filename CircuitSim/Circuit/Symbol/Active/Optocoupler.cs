@@ -4,6 +4,12 @@ using Circuit.Symbol.Custom;
 
 namespace Circuit.Symbol.Active {
 	class Optocoupler : Composite {
+		static readonly int[] EXTERNAL_NODES = { 6, 2, 4, 5 };
+		static readonly string MODEL_STRING
+			= DUMP_ID.DIODE + " 6 1\r"
+			+ DUMP_ID.CCCS + " 1 2 3 4\r"
+			+ DUMP_ID.TRANSISTOR_N + " 3 4 5";
+
 		const int CSPC = 8 * 2;
 		const int CSPC2 = CSPC * 2;
 		ElmOptocoupler mElm;
@@ -18,14 +24,16 @@ namespace Circuit.Symbol.Active {
 		public override BaseElement Element { get { return mElm; } }
 
 		public Optocoupler(Point pos) : base(pos) {
-			mElm = new ElmOptocoupler(CompList);
+			mElm = new ElmOptocoupler();
+			mElm.LoadComposite(getCompNode(MODEL_STRING), CompList, EXTERNAL_NODES);
 			mDiode = (Diode)CompList[0];
 			mTransistor = (Transistor)CompList[2];
 			Post.NoDiagonal = true;
 		}
 
 		public Optocoupler(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmOptocoupler(CompList);
+			mElm = new ElmOptocoupler();
+			mElm.LoadComposite(getCompNode(MODEL_STRING), CompList, EXTERNAL_NODES);
 			mDiode = (Diode)CompList[0];
 			mTransistor = (Transistor)CompList[2];
 			Post.NoDiagonal = true;
@@ -86,21 +94,21 @@ namespace Circuit.Symbol.Active {
 			int y = sy - 5;
 			var p1 = new Point(sx1, y);
 			var p2 = new Point(sx2, y);
-			Utils.CreateArrow(p1, p2, out mArrow1, 5, 3);
+			CreateArrow(p1, p2, out mArrow1, 5, 3);
 			y = sy + 5;
 			p1 = new Point(sx1, y);
 			p2 = new Point(sx2, y);
-			Utils.CreateArrow(p1, p2, out mArrow2, 5, 3);
+			CreateArrow(p1, p2, out mArrow2, 5, 3);
 		}
 
 		public override void Draw(CustomGraphics g) {
-			drawPolygon(mRectPoints);
+			DrawPolygon(mRectPoints);
 
 			/* draw stubs */
 			for (int i = 0; i != 4; i++) {
 				var a = mPosts[i];
 				var b = mStubs[i];
-				drawLine(a, b);
+				DrawLine(a, b);
 			}
 
 			mDiode.Draw(g);
@@ -109,10 +117,10 @@ namespace Circuit.Symbol.Active {
 			/* draw little arrows */
 			var sx1 = mArrow1[0].X - 10;
 			var sx2 = sx1 + 5;
-			drawLine(sx1, mArrow1[0].Y, sx2, mArrow1[0].Y);
-			drawLine(sx1, mArrow2[0].Y, sx2, mArrow2[0].Y);
-			fillPolygon(mArrow1);
-			fillPolygon(mArrow2);
+			DrawLine(sx1, mArrow1[0].Y, sx2, mArrow1[0].Y);
+			DrawLine(sx1, mArrow2[0].Y, sx2, mArrow2[0].Y);
+			FillPolygon(mArrow1);
+			FillPolygon(mArrow2);
 		}
 
 		public override void GetInfo(string[] arr) {

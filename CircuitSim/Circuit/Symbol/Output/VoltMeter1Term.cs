@@ -13,17 +13,17 @@ namespace Circuit.Symbol.Output {
         public override void SetPoints() {
             base.SetPoints();
             if (Post.Vertical) {
-                interpLead(ref mTextPos, 1 - 0.5 * CustomGraphics.Instance.GetTextSize("-9.99mV").Height / Post.Len);
+                InterpolationLead(ref mTextPos, 1 - 0.5 * CustomGraphics.Instance.GetTextSize("-9.99mV").Height / Post.Len);
             } else {
-                interpLead(ref mTextPos, 1 - 0.5 * CustomGraphics.Instance.GetTextSize("-9.99mV").Width / Post.Len);
+                InterpolationLead(ref mTextPos, 1 - 0.5 * CustomGraphics.Instance.GetTextSize("-9.99mV").Width / Post.Len);
             }
-            interpPost(ref mCenter, 1 + 11.0 / Post.Len);
+            InterpolationPost(ref mCenter, 1 + 11.0 / Post.Len);
         }
 
         public override void Draw(CustomGraphics g) {
-            drawLeadA();
+            DrawLeadA();
             if (MustShowVoltage()) {
-                drawCenteredText(DrawValues(), mTextPos);
+                DrawCenteredText(DrawValues(), mTextPos);
             }
         }
     }

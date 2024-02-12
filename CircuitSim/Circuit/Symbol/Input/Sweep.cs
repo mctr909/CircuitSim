@@ -37,15 +37,15 @@ namespace Circuit.Symbol.Input {
 
 		public override void SetPoints() {
 			base.SetPoints();
-			setLead1(1 - 0.5 * SIZE / Post.Len);
+			SetLead1(1 - 0.5 * SIZE / Post.Len);
 		}
 
 		public override void Draw(CustomGraphics g) {
-			drawLeadA();
+			DrawLeadA();
 
 			int xc = Post.B.X;
 			int yc = Post.B.Y;
-			drawCircle(Post.B, SIZE / 2);
+			DrawCircle(Post.B, SIZE / 2);
 
 			int wl = 11;
 			int xl = 10;
@@ -67,7 +67,7 @@ namespace Circuit.Symbol.Input {
 					x0 = xc + i;
 					y0 = yy;
 				} else {
-					drawLine(x0, y0, xc + i, yy);
+					DrawLine(x0, y0, xc + i, yy);
 					x0 = xc + i;
 					y0 = yy;
 				}
@@ -76,12 +76,12 @@ namespace Circuit.Symbol.Input {
 			if (ControlPanel.ChkShowValues.Checked) {
 				string s = Utils.UnitText(mElm.MaxV, "V\r\n")
 					+ Utils.FrequencyText(mElm.Frequency);
-				drawValues(s, 25, 0);
+				DrawValues(s, 25, 0);
 			}
 
-			updateDotCount(-mElm.Current, ref mCurCount);
+			UpdateDotCount(-mElm.Current, ref mCurCount);
 			if (CirSimForm.ConstructElm != this) {
-				drawCurrentA(mCurCount);
+				DrawCurrentA(mCurCount);
 			}
 		}
 

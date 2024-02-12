@@ -43,7 +43,7 @@ namespace Circuit.Symbol.Custom {
         public override void Draw(CustomGraphics g) {
             var sizeBk = g.FontSize;
             g.FontSize = mFontSize;
-            drawLeftText(mText, Post.A.X, (int)(Post.A.Y + mTextSize.Height / 2));
+            DrawLeftText(mText, Post.A.X, (int)(Post.A.Y + mTextSize.Height / 2));
             g.FontSize = sizeBk;
         }
 

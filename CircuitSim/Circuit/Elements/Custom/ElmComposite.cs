@@ -76,8 +76,8 @@ namespace Circuit.Elements.Custom {
 			for (int i = 0; i < CompList.Count; i++) {
 				var ce = CompList[i];
 				/* current sources need special stamp method */
-				if (ce is ElmCurrent) {
-					((ElmCurrent)ce).stampCurrentSource(false);
+				if (ce is ElmCurrent elm) {
+					elm.stampCurrentSource(false);
 				} else {
 					ce.Stamp();
 				}
@@ -137,9 +137,7 @@ namespace Circuit.Elements.Custom {
 			return c;
 		}
 
-		protected virtual void Init() { }
-
-		void SetComposite(Dictionary<int, CircuitNode> nodeHash, List<BaseSymbol> symbolList, int[] externalNodes) {
+		public void LoadComposite(Dictionary<int, CircuitNode> nodeHash, List<BaseSymbol> symbolList, int[] externalNodes) {
 			/* Flatten nodeHash in to compNodeList */
 			mCompNodeList = new List<CircuitNode>();
 			mNumTerms = externalNodes.Length;
@@ -162,9 +160,10 @@ namespace Circuit.Elements.Custom {
 				CompList.Add(ce);
 				int inodes = ce.InternalNodeCount;
 				for (int j = 0; j != inodes; j++) {
-					var cnLink = new CircuitNode.LINK();
-					cnLink.Num = j + ce.TermCount;
-					cnLink.Elm = ce;
+					var cnLink = new CircuitNode.LINK() {
+						Num = j + ce.TermCount,
+						Elm = ce
+					};
 					var cn = new CircuitNode();
 					cn.Links.Add(cnLink);
 					mCompNodeList.Add(cn);
@@ -182,9 +181,10 @@ namespace Circuit.Elements.Custom {
 			for (int i = 0; i < CompList.Count; i++) {
 				int cnt = CompList[i].VoltageSourceCount;
 				for (int j = 0; j < cnt; j++) {
-					var vsRecord = new VoltageSourceRecord();
-					vsRecord.elm = CompList[i];
-					vsRecord.vsNumForElement = j;
+					var vsRecord = new VoltageSourceRecord() {
+						elm = CompList[i],
+						vsNumForElement = j
+					};
 					mVoltageSources.Add(vsRecord);
 				}
 			}
@@ -193,35 +193,6 @@ namespace Circuit.Elements.Custom {
 			Init();
 		}
 
-		protected void LoadComposite(List<BaseSymbol> symbolList, string model, int[] externalNodes) {
-			var compNodeHash = new Dictionary<int, CircuitNode>();
-			var strModels = new StringTokenizer(model, "\r");
-			while (strModels.HasMoreTokens) {
-				string modelLine;
-				strModels.nextToken(out modelLine);
-				var strModel = new StringTokenizer(modelLine, " +\t\n\r\f");
-				var ceType = strModel.nextTokenEnum(DUMP_ID.INVALID);
-				var newce = MenuItems.ConstructElement(ceType);
-				newce.ReferenceName = "";
-				symbolList.Add(newce);
-				int thisPost = 0;
-				while (strModel.HasMoreTokens) {
-					var nodeOfThisPost = strModel.nextTokenInt();
-					var cnLink = new CircuitNode.LINK();
-					cnLink.Num = thisPost;
-					cnLink.Elm = newce.Element;
-					if (!compNodeHash.ContainsKey(nodeOfThisPost)) {
-						var cn = new CircuitNode();
-						cn.Links.Add(cnLink);
-						compNodeHash.Add(nodeOfThisPost, cn);
-					} else {
-						var cn = compNodeHash[nodeOfThisPost];
-						cn.Links.Add(cnLink);
-					}
-					thisPost++;
-				}
-			}
-			SetComposite(compNodeHash, symbolList, externalNodes);
-		}
+		protected virtual void Init() { }
 	}
 }

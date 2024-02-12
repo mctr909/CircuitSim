@@ -26,7 +26,7 @@
 			if (n0 < 0 || n1 < 0) {
 				return;
 			}
-			var g = 2 * Capacitance / ControlPanel.TimeStep;
+			var g = 2 * Capacitance / Circuit.TimeStep;
 			mCompResistance = 1.0 / g;
 			Circuit.Matrix[n0, n0] += g;
 			Circuit.Matrix[n1, n1] += g;

@@ -91,10 +91,10 @@ namespace Circuit {
 				bool ret = true;
 				for (int i = 0; i != Waves.Count; i++) {
 					var plot = Waves[i];
-					if (CirSimForm.GetUIIndex(plot.Symbol) < 0) {
-						Waves.RemoveAt(i--);
-					} else {
+					if (Circuit.SymbolList.Contains(plot.Symbol)) {
 						ret = false;
+					} else {
+						Waves.RemoveAt(i--);
 					}
 				}
 				return ret;
@@ -174,7 +174,7 @@ namespace Circuit {
 				Waves.Count
 			};
 			foreach (var p in Waves) {
-				dumpList.Add(CirSimForm.GetUIIndex(p.Symbol) + "_" + p.Color);
+				dumpList.Add(Circuit.SymbolList.IndexOf(p.Symbol) + "_" + p.Color);
 			}
 			if (!string.IsNullOrWhiteSpace(Text)) {
 				dumpList.Add(Utils.Escape(Text));
@@ -199,7 +199,7 @@ namespace Circuit {
 					st.nextToken(out temp);
 					var subElmCol = temp.Split('_');
 					var subElmIdx = int.Parse(subElmCol[0]);
-					var subElm = CirSimForm.SymbolList[subElmIdx];
+					var subElm = Circuit.SymbolList[subElmIdx];
 					var color = (int)Enum.Parse(typeof(E_COLOR), subElmCol[1]);
 					var p = new ScopeWave(subElm);
 					p.Speed = Speed;
@@ -225,7 +225,7 @@ namespace Circuit {
 			initialize();
 		}
 		public double CalcGridTime() {
-			var baseT = 10 * ControlPanel.TimeStep * Speed;
+			var baseT = 10 * Circuit.TimeStep * Speed;
 			mGridStepX = 1e-9;
 			mGridDivX = 10;
 			for (int i = 0; mGridStepX < baseT; i++) {
@@ -284,7 +284,7 @@ namespace Circuit {
 					p.SetColor(i);
 				}
 			}
-			mScopeTimeStep = ControlPanel.TimeStep;
+			mScopeTimeStep = Circuit.TimeStep;
 			allocImage();
 		}
 		public void TimeStep() {
@@ -298,8 +298,8 @@ namespace Circuit {
 			}
 
 			/* reset if timestep changed */
-			if (mScopeTimeStep != ControlPanel.TimeStep) {
-				mScopeTimeStep = ControlPanel.TimeStep;
+			if (mScopeTimeStep != Circuit.TimeStep) {
+				mScopeTimeStep = Circuit.TimeStep;
 				ResetGraph();
 			}
 
@@ -587,7 +587,7 @@ namespace Circuit {
 			avperiod /= periodct;
 			avperiod2 /= periodct;
 			var periodstd = Math.Sqrt(avperiod2 - avperiod * avperiod);
-			var freq = 1 / (avperiod * ControlPanel.TimeStep * Speed);
+			var freq = 1 / (avperiod * Circuit.TimeStep * Speed);
 			/* don't show freq if standard deviation is too great */
 			if (periodct < 1 || periodstd > 2) {
 				freq = 0;
@@ -627,13 +627,13 @@ namespace Circuit {
 					g.FillCircle(MouseCursorX, BoundingBox.Y + maxy - maxvy, 3);
 				}
 				if (Waves.Count > 0) {
-					var t = Circuit.Time - ControlPanel.TimeStep * Speed * (BoundingBox.X + BoundingBox.Width - MouseCursorX);
+					var t = Circuit.Time - Circuit.TimeStep * Speed * (BoundingBox.X + BoundingBox.Width - MouseCursorX);
 					info[ct++] = Utils.TimeText(t);
 				}
 			}
 
 			if (ShowFFT) {
-				double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * 2);
+				double maxFrequency = 1 / (Circuit.TimeStep * Speed * 2);
 				var posX = MouseCursorX - mFFTBoundingBox.X;
 				if (posX < 0) {
 					posX = 0;
@@ -736,7 +736,7 @@ namespace Circuit {
 				}
 
 				/* vertical gridlines */
-				var baseT = ControlPanel.TimeStep * Speed;
+				var baseT = Circuit.TimeStep * Speed;
 				var beginT = Circuit.Time - BoundingBox.Width * baseT;
 				var endT = Circuit.Time - (Circuit.Time % mGridStepX);
 				g.DrawColor = minorDiv;
@@ -821,7 +821,7 @@ namespace Circuit {
 			const int xDivs = 20;
 			const int yDivs = 10;
 			int prevEnd = 0;
-			double maxFrequency = 1 / (ControlPanel.TimeStep * Speed * xDivs * 2);
+			double maxFrequency = 1 / (Circuit.TimeStep * Speed * xDivs * 2);
 			var gridBottom = mFFTBoundingBox.Height - 1;
 			g.DrawColor = CustomGraphics.LineColor;
 			g.DrawLine(0, 0, BoundingBox.Width, 0);

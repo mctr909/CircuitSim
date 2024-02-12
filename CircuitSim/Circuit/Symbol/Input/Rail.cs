@@ -23,24 +23,24 @@ namespace Circuit.Symbol.Input {
 
 		public override void SetPoints() {
 			base.SetPoints();
-			interpPost(ref mNamePos, 1 + 12 / Post.Len);
-			interpPost(ref mC, 1);
-			interpPost(ref mLa, 1, -6);
-			interpPost(ref mLb, 1, 6);
+			InterpolationPost(ref mNamePos, 1 + 12 / Post.Len);
+			InterpolationPost(ref mC, 1);
+			InterpolationPost(ref mLa, 1, -6);
+			InterpolationPost(ref mLb, 1, 6);
 
 			switch (mElm.WaveForm) {
 			case ElmVoltage.WAVEFORM.DC:
 			case ElmVoltage.WAVEFORM.NOISE:
-				setLead1(1);
+				SetLead1(1);
 				break;
 			default:
 				if ((mFlags & FLAG_CLOCK) != 0) {
-					setLead1(1);
+					SetLead1(1);
 				} else {
 					if (Post.Len * 0.6 < BODY_LEN * 0.5) {
-						setLead1(0);
+						SetLead1(0);
 					} else {
-						setLead1(1 - BODY_LEN * 0.5 / Post.Len);
+						SetLead1(1 - BODY_LEN * 0.5 / Post.Len);
 					}
 				}
 				break;
@@ -48,32 +48,32 @@ namespace Circuit.Symbol.Input {
 		}
 
 		public override void Draw(CustomGraphics g) {
-			drawLeadA();
+			DrawLeadA();
 			drawRail();
-			updateDotCount(-mElm.Current, ref mCurCount);
+			UpdateDotCount(-mElm.Current, ref mCurCount);
 			if (CirSimForm.ConstructElm != this) {
-				drawCurrentA(mCurCount);
+				DrawCurrentA(mCurCount);
 			}
 		}
 
 		void drawRail() {
 			if (mElm.WaveForm == ElmVoltage.WAVEFORM.DC) {
-				drawLine(mLa, mLb);
-				drawCircle(mC, 4);
+				DrawLine(mLa, mLb);
+				DrawCircle(mC, 4);
 				var v = mElm.GetVoltage();
 				var s = Utils.UnitText(v, "V");
-				drawCenteredText(s, mNamePos);
+				DrawCenteredText(s, mNamePos);
 			} else if (mElm.WaveForm == ElmVoltage.WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
-				drawCenteredText("Clock", mNamePos);
+				DrawCenteredText("Clock", mNamePos);
 			} else if (mElm.WaveForm == ElmVoltage.WAVEFORM.NOISE) {
-				drawCenteredText("Noise", mNamePos);
+				DrawCenteredText("Noise", mNamePos);
 			} else {
 				DrawWaveform(Post.B);
 				if (ControlPanel.ChkShowValues.Checked) {
 					var s = Utils.UnitText(mElm.MaxVoltage, "V\r\n");
 					s += Utils.FrequencyText(mElm.Frequency, true) + "\r\n";
 					s += Utils.PhaseText(mElm.Phase + mElm.PhaseOffset);
-					drawValues(s, 23, 5);
+					DrawValues(s, 23, 5);
 				}
 			}
 		}

@@ -28,17 +28,16 @@ namespace Circuit {
 		}
 
 		public static double TimeStep {
-			get { return mTimeStep; }
+			get { return Circuit.TimeStep; }
 			set {
-				mTimeStep = value;
+				Circuit.TimeStep = value;
 				if (null != mTxtTimeStep) {
-					mTxtTimeStep.Text = Utils.UnitText(mTimeStep, "");
+					mTxtTimeStep.Text = Utils.UnitText(Circuit.TimeStep, "");
 				}
 			}
 		}
 
 		static TextBox mTxtTimeStep;
-		static double mTimeStep;
 		static Panel mSliderPanel;
 
 		public static void Init() {
@@ -85,9 +84,9 @@ namespace Circuit {
 			mTxtTimeStep.TextChanged += new EventHandler((s, e) => {
 				var tmp = 0.0;
 				if (Utils.ParseUnits(mTxtTimeStep.Text, out tmp)) {
-					mTimeStep = tmp;
+					Circuit.TimeStep = tmp;
 				}
-				mTxtTimeStep.Text = Utils.UnitText(mTimeStep, "");
+				mTxtTimeStep.Text = Utils.UnitText(Circuit.TimeStep, "");
 			});
 			VerticalPanel.Controls.Add(mTxtTimeStep);
 			ofsY += mTxtTimeStep.Height + 4;
@@ -172,8 +171,8 @@ namespace Circuit {
 			/* 値を表示 */
 			ChkShowValues = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "値を表示" };
 			ChkShowValues.CheckedChanged += new EventHandler((s, e) => {
-				for (int i = 0; i != CirSimForm.SymbolCount; i++) {
-					var ce = CirSimForm.GetSymbol(i);
+				for (int i = 0; i != Circuit.SymbolCount; i++) {
+					var ce = Circuit.SymbolList[i];
 					ce.SetPoints();
 				}
 			});
@@ -183,8 +182,8 @@ namespace Circuit {
 			/* 名前を表示 */
 			ChkShowName = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "名前を表示" };
 			ChkShowName.CheckedChanged += new EventHandler((s, e) => {
-				for (int i = 0; i != CirSimForm.SymbolCount; i++) {
-					var ce = CirSimForm.GetSymbol(i);
+				for (int i = 0; i != Circuit.SymbolCount; i++) {
+					var ce = Circuit.SymbolList[i];
 					ce.SetPoints();
 				}
 			});

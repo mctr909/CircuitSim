@@ -56,17 +56,17 @@ namespace Circuit.Symbol.Active {
 			if (ww > Post.Len / 2) {
 				ww = (int)(Post.Len / 2);
 			}
-			setLeads(ww * 2);
+			SetLeads(ww * 2);
 			int hs = HEIGHT * Post.Dsign;
 			if ((mFlags & FLAG_SWAP) != 0) {
 				hs = -hs;
 			}
-			interpPostAB(ref mPosIn1[0], ref mPosIn2[0], 0, hs);
-			interpLeadAB(ref mPosIn1[1], ref mPosIn2[1], 0, hs);
+			InterpolationPostAB(ref mPosIn1[0], ref mPosIn2[0], 0, hs);
+			InterpolationLeadAB(ref mPosIn1[1], ref mPosIn2[1], 0, hs);
 			mPosOut = Post.B;
 
 			var signp = new PointF[2];
-			interpLeadAB(ref signp[0], ref signp[1], 0.2, hs);
+			InterpolationLeadAB(ref signp[0], ref signp[1], 0.2, hs);
 
 			mTextp = new PointF[] {
 				new PointF(signp[0].X - 3, signp[0].Y),
@@ -78,25 +78,25 @@ namespace Circuit.Symbol.Active {
 			};
 
 			var tris = new PointF[2];
-			interpLeadAB(ref tris[0], ref tris[1], 0, hs * 2);
+			InterpolationLeadAB(ref tris[0], ref tris[1], 0, hs * 2);
 			mTriangle = new PointF[] { tris[0], tris[1], mLead2 };
 
 			mElm.SetNodePos(mPosIn1[0], mPosIn2[0], mPosOut);
 		}
 
 		public override void Draw(CustomGraphics g) {
-			drawLine(mPosIn1[0], mPosIn1[1]);
-			drawLine(mPosIn2[0], mPosIn2[1]);
-			drawLine(mLead2, mPosOut);
+			DrawLine(mPosIn1[0], mPosIn1[1]);
+			DrawLine(mPosIn2[0], mPosIn2[1]);
+			DrawLine(mLead2, mPosOut);
 
-			drawPolygon(mTriangle);
+			DrawPolygon(mTriangle);
 
-			drawLine(mTextp[0], mTextp[1]);
-			drawLine(mTextp[2], mTextp[3]);
-			drawLine(mTextp[4], mTextp[5]);
+			DrawLine(mTextp[0], mTextp[1]);
+			DrawLine(mTextp[2], mTextp[3]);
+			DrawLine(mTextp[4], mTextp[5]);
 
-			updateDotCount(mElm.Current, ref mCurCount);
-			drawCurrent(mLead2, mPosOut, -mCurCount);
+			UpdateDotCount(mElm.Current, ref mCurCount);
+			DrawCurrent(mLead2, mPosOut, -mCurCount);
 		}
 
 		public override void GetInfo(string[] arr) {

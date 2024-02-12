@@ -44,12 +44,12 @@ namespace Circuit.Symbol.Active {
 
 		public override void SetPoints() {
 			base.SetPoints();
-			setLeads(BODY_LEN);
+			SetLeads(BODY_LEN);
 			mCathode = new PointF[4];
-			interpLeadAB(ref mCathode[0], ref mCathode[1], (BODY_LEN - 1.0) / BODY_LEN, HS);
-			interpLeadAB(ref mCathode[3], ref mCathode[2], (BODY_LEN + 1.0) / BODY_LEN, HS);
+			InterpolationLeadAB(ref mCathode[0], ref mCathode[1], (BODY_LEN - 1.0) / BODY_LEN, HS);
+			InterpolationLeadAB(ref mCathode[3], ref mCathode[2], (BODY_LEN + 1.0) / BODY_LEN, HS);
 			var pa = new PointF[2];
-			interpLeadAB(ref pa[0], ref pa[1], -1.0 / BODY_LEN, HS);
+			InterpolationLeadAB(ref pa[0], ref pa[1], -1.0 / BODY_LEN, HS);
 			mPoly = new PointF[] { pa[0], pa[1], mLead2 };
 			SetTextPos();
 		}
@@ -66,41 +66,41 @@ namespace Circuit.Symbol.Active {
 				mTextRot += Math.PI;
 			}
 			if (0 < deg && deg < 45 * 3) {
-				interpPost(ref mValuePos, 0.5, 12 * Post.Dsign);
-				interpPost(ref mNamePos, 0.5, -10 * Post.Dsign);
+				InterpolationPost(ref mValuePos, 0.5, 12 * Post.Dsign);
+				InterpolationPost(ref mNamePos, 0.5, -10 * Post.Dsign);
 			} else if (45 * 3 <= deg && deg <= 180) {
-				interpPost(ref mNamePos, 0.5, 10 * Post.Dsign);
-				interpPost(ref mValuePos, 0.5, -14 * Post.Dsign);
+				InterpolationPost(ref mNamePos, 0.5, 10 * Post.Dsign);
+				InterpolationPost(ref mValuePos, 0.5, -14 * Post.Dsign);
 			} else if (180 < deg && deg < 45 * 7) {
-				interpPost(ref mNamePos, 0.5, -10 * Post.Dsign);
-				interpPost(ref mValuePos, 0.5, 12 * Post.Dsign);
+				InterpolationPost(ref mNamePos, 0.5, -10 * Post.Dsign);
+				InterpolationPost(ref mValuePos, 0.5, 12 * Post.Dsign);
 			} else {
-				interpPost(ref mNamePos, 0.5, 12 * Post.Dsign);
-				interpPost(ref mValuePos, 0.5, -12 * Post.Dsign);
+				InterpolationPost(ref mNamePos, 0.5, 12 * Post.Dsign);
+				InterpolationPost(ref mValuePos, 0.5, -12 * Post.Dsign);
 			}
 		}
 
 		public override void Draw(CustomGraphics g) {
 			DrawDiode();
-			doDots();
-			drawName();
+			DoDots();
+			DrawName();
 		}
 
 		protected void DrawDiode() {
-			draw2Leads();
+			Draw2Leads();
 			/* draw arrow thingy */
-			fillPolygon(mPoly);
+			FillPolygon(mPoly);
 			/* draw thing arrow is pointing to */
 			if (mCathode.Length < 4) {
-				drawLine(mCathode[0], mCathode[1]);
+				DrawLine(mCathode[0], mCathode[1]);
 			} else {
-				fillPolygon(mCathode);
+				FillPolygon(mCathode);
 			}
 		}
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "ダイオード";
-			getBasicInfo(1, arr);
+			GetBasicInfo(1, arr);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

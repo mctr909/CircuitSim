@@ -36,18 +36,18 @@ namespace Circuit.Symbol.Input {
 
 		public override void SetPoints() {
 			base.SetPoints();
-			setLead1(1 - 0.5 * SIZE / Post.Len);
-			interpPost(ref mNamePos, 1);
+			SetLead1(1 - 0.5 * SIZE / Post.Len);
+			InterpolationPost(ref mNamePos, 1);
 			ReferenceName = "AM";
 		}
 
 		public override void Draw(CustomGraphics g) {
-			drawLeadA();
-			drawCircle(Post.B, SIZE / 2);
-			drawCenteredText(ReferenceName, mNamePos);
-			updateDotCount(-mElm.Current, ref mCurCount);
+			DrawLeadA();
+			DrawCircle(Post.B, SIZE / 2);
+			DrawCenteredText(ReferenceName, mNamePos);
+			UpdateDotCount(-mElm.Current, ref mCurCount);
 			if (CirSimForm.ConstructElm != this) {
-				drawCurrentA(mCurCount);
+				DrawCurrentA(mCurCount);
 			}
 		}
 

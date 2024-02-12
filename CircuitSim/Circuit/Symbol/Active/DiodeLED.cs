@@ -51,9 +51,9 @@ namespace Circuit.Symbol.Active {
 
 		public override void SetPoints() {
 			base.SetPoints();
-			interpPost(ref mLedLead1, 0.5 - CR / Post.Len);
-			interpPost(ref mLedLead2, 0.5 + CR / Post.Len);
-			interpPost(ref mLedCenter, 0.5);
+			InterpolationPost(ref mLedLead1, 0.5 - CR / Post.Len);
+			InterpolationPost(ref mLedLead2, 0.5 + CR / Post.Len);
+			InterpolationPost(ref mLedCenter, 0.5);
 		}
 
 		public override void Draw(CustomGraphics g) {
@@ -70,16 +70,16 @@ namespace Circuit.Symbol.Active {
 				if (lum < 0) {
 					lum = 0;
 				}
-				drawLine(Post.A, mLedLead1);
-				drawLine(mLedLead2, Post.B);
-				drawCircle(mLedCenter, CR);
+				DrawLine(Post.A, mLedLead1);
+				DrawLine(mLedLead2, Post.B);
+				DrawCircle(mLedCenter, CR);
 				var bk = g.FillColor;
 				g.FillColor = Color.FromArgb((int)(mColorR * lum), (int)(mColorG * lum), (int)(mColorB * lum));
-				fillCircle(mLedCenter, CR_INNER);
+				FillCircle(mLedCenter, CR_INNER);
 				g.FillColor = bk;
-				updateDotCount();
-				drawCurrent(Post.A, mLedLead1, mCurCount);
-				drawCurrent(Post.B, mLedLead2, -mCurCount);
+				UpdateDotCount();
+				DrawCurrent(Post.A, mLedLead1, mCurCount);
+				DrawCurrent(Post.B, mLedLead2, -mCurCount);
 			}
 		}
 

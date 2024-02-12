@@ -78,7 +78,7 @@ namespace Circuit.Elements.Passive {
 			double m = CouplingCoef * Math.Sqrt(l1 * l2);
 			/* build inverted matrix */
 			double deti = 1 / (l1 * l2 - m * m);
-			double ts = ControlPanel.TimeStep / 2;
+			double ts = Circuit.TimeStep / 2;
 			mA1 = l2 * deti * ts; /* we multiply dt/2 into a1..a4 here */
 			mA2 = -m * deti * ts;
 			mA3 = -m * deti * ts;

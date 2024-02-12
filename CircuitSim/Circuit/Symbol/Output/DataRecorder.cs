@@ -46,17 +46,17 @@ namespace Circuit.Symbol.Output {
             var txtH = txtSize.Height;
             var pw = txtW / Post.Len;
             var ph = 0.5 * (txtH - 1);
-            setLead1(1);
+            SetLead1(1);
             var p1 = new PointF();
             var p2 = new PointF();
             var p3 = new PointF();
             var p4 = new PointF();
             var p5 = new PointF();
-            interpPost(ref p1, 1, -ph);
-            interpPost(ref p2, 1, ph);
-            interpPost(ref p3, 1 + pw, ph);
-            interpPost(ref p4, 1 + pw + ph / Post.Len, 0);
-            interpPost(ref p5, 1 + pw, -ph);
+            InterpolationPost(ref p1, 1, -ph);
+            InterpolationPost(ref p2, 1, ph);
+            InterpolationPost(ref p3, 1 + pw, ph);
+            InterpolationPost(ref p4, 1 + pw + ph / Post.Len, 0);
+            InterpolationPost(ref p5, 1 + pw, -ph);
             mTextPoly = new PointF[] {
                 p1, p2, p3, p4, p5, p1
             };
@@ -69,16 +69,16 @@ namespace Circuit.Symbol.Output {
             }
             if (45 * 3 <= deg && deg < 45 * 7) {
                 mTextRot += Math.PI;
-                interpPost(ref mNamePos, 1 + 0.5 * pw, txtH / Post.Len);
+                InterpolationPost(ref mNamePos, 1 + 0.5 * pw, txtH / Post.Len);
             } else {
-                interpPost(ref mNamePos, 1 + 0.5 * pw, -txtH / Post.Len);
+                InterpolationPost(ref mNamePos, 1 + 0.5 * pw, -txtH / Post.Len);
             }
         }
 
         public override void Draw(CustomGraphics g) {
-            drawLeadA();
-            drawCenteredText(ReferenceName, mNamePos, mTextRot);
-            drawPolyline(mTextPoly);
+            DrawLeadA();
+            DrawCenteredText(ReferenceName, mNamePos, mTextRot);
+            DrawPolyline(mTextPoly);
         }
 
         public override void GetInfo(string[] arr) {

@@ -44,12 +44,12 @@ namespace Circuit.Symbol.Gate {
 		}
 
 		public override void Draw(CustomGraphics g) {
-			draw2Leads();
-			drawPolygon(gatePoly);
-			drawPolygon(symbolPoly);
-			drawCircle(pcircle, 3);
-			updateDotCount(mElm.Current, ref mCurCount);
-			drawCurrentB(mCurCount);
+			Draw2Leads();
+			DrawPolygon(gatePoly);
+			DrawPolygon(symbolPoly);
+			DrawCircle(pcircle, 3);
+			UpdateDotCount(mElm.Current, ref mCurCount);
+			DrawCurrentB(mCurCount);
 		}
 
 		public override void SetPoints() {
@@ -59,15 +59,15 @@ namespace Circuit.Symbol.Gate {
 			if (ww > Post.Len / 2) {
 				ww = (int)(Post.Len / 2);
 			}
-			setLead1(0.5 - ww / Post.Len);
-			setLead2(0.5 + (ww + 2) / Post.Len);
-			interpPost(ref pcircle, 0.5 + (ww - 2) / Post.Len);
+			SetLead1(0.5 - ww / Post.Len);
+			SetLead2(0.5 + (ww + 2) / Post.Len);
+			InterpolationPost(ref pcircle, 0.5 + (ww - 2) / Post.Len);
 
 			gatePoly = new PointF[3];
-			interpLeadAB(ref gatePoly[0], ref gatePoly[1], 0, hs);
-			interpPost(ref gatePoly[2], 0.5 + (ww - 5) / Post.Len);
+			InterpolationLeadAB(ref gatePoly[0], ref gatePoly[1], 0, hs);
+			InterpolationPost(ref gatePoly[2], 0.5 + (ww - 5) / Post.Len);
 
-			Utils.CreateSchmitt(Post.A, Post.B, out symbolPoly, 0.8, .5 - (ww - 7) / Post.Len);
+			CreateSchmitt(Post.A, Post.B, out symbolPoly, 0.8, .5 - (ww - 7) / Post.Len);
 		}
 
 		public override void GetInfo(string[] arr) {

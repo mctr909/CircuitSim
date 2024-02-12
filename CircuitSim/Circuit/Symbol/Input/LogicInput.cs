@@ -35,7 +35,7 @@ namespace Circuit.Symbol.Input {
 
 		public override void SetPoints() {
 			base.SetPoints();
-			setLead1(1 - 12 / Post.Len);
+			SetLead1(1 - 12 / Post.Len);
 		}
 
 		public override void Draw(CustomGraphics g) {
@@ -43,10 +43,10 @@ namespace Circuit.Symbol.Input {
 			if (isNumeric) {
 				s = "" + mElmLogic.Position;
 			}
-			drawCenteredLText(s, Post.B, true);
-			drawLeadA();
-			updateDotCount();
-			drawCurrentA(mCurCount);
+			DrawCenteredLText(s, Post.B);
+			DrawLeadA();
+			UpdateDotCount();
+			DrawCurrentA(mCurCount);
 		}
 
 		public override void GetInfo(string[] arr) {

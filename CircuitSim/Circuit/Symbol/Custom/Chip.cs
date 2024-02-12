@@ -168,12 +168,12 @@ namespace Circuit.Symbol.Custom {
                 var p = ce.Pins[i];
                 var a = p.post;
                 var b = p.stub;
-                drawLine(a, b);
-                updateDotCount(p.current, ref p.curcount);
-                drawCurrent(b, a, p.curcount);
+                DrawLine(a, b);
+                UpdateDotCount(p.current, ref p.curcount);
+                DrawCurrent(b, a, p.curcount);
                 if (p.bubble) {
-                    drawCircle(p.bubblePos, 1);
-                    drawCircle(p.bubblePos, 3);
+                    DrawCircle(p.bubblePos, 1);
+                    DrawCircle(p.bubblePos, 3);
                 }
                 var bkSize = g.FontSize;
                 g.FontSize = 12 * csize;
@@ -184,18 +184,18 @@ namespace Circuit.Symbol.Custom {
                         g.FontSize -= 0.5f;
                         continue;
                     }
-                    drawCenteredText(p.text, p.textloc);
+                    DrawCenteredText(p.text, p.textloc);
                     if (p.lineOver) {
                         int ya = p.textloc.Y;
-                        drawLine(p.textloc.X - txtW / 2, ya, p.textloc.X + txtW / 2, ya);
+                        DrawLine(p.textloc.X - txtW / 2, ya, p.textloc.X + txtW / 2, ya);
                     }
                     break;
                 }
                 g.FontSize = bkSize;
             }
-            drawPolygon(rectPoints);
+            DrawPolygon(rectPoints);
             if (clockPoints != null) {
-                drawPolygon(clockPoints);
+                DrawPolygon(clockPoints);
             }
         }
 

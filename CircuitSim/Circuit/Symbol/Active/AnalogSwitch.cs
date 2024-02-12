@@ -54,25 +54,25 @@ namespace Circuit.Symbol.Active {
 
 		public override void SetPoints() {
 			base.SetPoints();
-			setLeads(BODY_LEN);
-			interpPost(ref mCtrlTerm, 0.5, -OPEN_HS);
-			interpPost(ref mCtrlLead, 0.5, -OPEN_HS / 3);
-			interpLead(ref mOpen, 1 - 2.0 / BODY_LEN, OPEN_HS - 6);
-			interpLead(ref mClose, 1 - 2.0 / BODY_LEN, 2.5f);
+			SetLeads(BODY_LEN);
+			InterpolationPost(ref mCtrlTerm, 0.5, -OPEN_HS);
+			InterpolationPost(ref mCtrlLead, 0.5, -OPEN_HS / 3);
+			InterpolationLead(ref mOpen, 1 - 2.0 / BODY_LEN, OPEN_HS - 6);
+			InterpolationLead(ref mClose, 1 - 2.0 / BODY_LEN, 2.5f);
 			mElm.SetNodePos(Post.A, Post.B, mCtrlTerm);
 		}
 
 		public override void Draw(CustomGraphics g) {
-			draw2Leads();
-			drawLine(mCtrlTerm, mCtrlLead);
-			fillCircle(mLead1, 2.5f);
-			fillCircle(mLead2, 2.5f);
+			Draw2Leads();
+			DrawLine(mCtrlTerm, mCtrlLead);
+			FillCircle(mLead1, 2.5f);
+			FillCircle(mLead2, 2.5f);
 			if (mElm.IsOpen || g is PDF.Page) {
-				drawLine(mLead1, mOpen);
+				DrawLine(mLead1, mOpen);
 			} else {
-				drawLine(mLead1, mClose);
+				DrawLine(mLead1, mClose);
 			}
-			doDots();
+			DoDots();
 		}
 
 		public override void GetInfo(string[] arr) {

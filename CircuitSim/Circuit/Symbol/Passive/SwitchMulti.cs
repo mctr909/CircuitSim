@@ -46,7 +46,7 @@ namespace Circuit.Symbol.Passive {
 
 		public override void SetPoints() {
 			base.SetPoints();
-			setLeads(BODY_LEN);
+			SetLeads(BODY_LEN);
 			mSwPosts = new PointF[mElmMulti.ThrowCount];
 			mSwPoles = new PointF[2 + mElmMulti.ThrowCount];
 			int i;
@@ -55,8 +55,8 @@ namespace Circuit.Symbol.Passive {
 				if (mElmMulti.ThrowCount == 2 && i == 0) {
 					hs = OPEN_HS;
 				}
-				interpLead(ref mSwPoles[i], 1, hs);
-				interpPost(ref mSwPosts[i], 1, hs);
+				InterpolationLead(ref mSwPoles[i], 1, hs);
+				InterpolationPost(ref mSwPosts[i], 1, hs);
 			}
 			mSwPoles[i] = mLead2; /* for center off */
 			mElmMulti.PosCount = mElmMulti.ThrowCount;
@@ -65,22 +65,22 @@ namespace Circuit.Symbol.Passive {
 
 		public override void Draw(CustomGraphics g) {
 			/* draw first lead */
-			drawLeadA();
-			fillCircle(mLead1, 2.5f);
+			DrawLeadA();
+			FillCircle(mLead1, 2.5f);
 
 			/* draw other leads */
 			for (int i = 0; i < mElmMulti.ThrowCount; i++) {
 				var pole = mSwPoles[i];
-				drawLine(pole, mSwPosts[i]);
-				fillCircle(pole, 2.5f);
+				DrawLine(pole, mSwPosts[i]);
+				FillCircle(pole, 2.5f);
 			}
 			/* draw switch */
-			drawLine(mLead1, mSwPoles[mElmMulti.Position]);
+			DrawLine(mLead1, mSwPoles[mElmMulti.Position]);
 
-			updateDotCount();
-			drawCurrentA(mCurCount);
+			UpdateDotCount();
+			DrawCurrentA(mCurCount);
 			if (mElmMulti.Position != 2) {
-				drawCurrent(mSwPoles[mElmMulti.Position], mSwPosts[mElmMulti.Position], mCurCount);
+				DrawCurrent(mSwPoles[mElmMulti.Position], mSwPosts[mElmMulti.Position], mCurCount);
 			}
 		}
 

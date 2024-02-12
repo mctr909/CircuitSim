@@ -30,7 +30,7 @@ namespace Circuit.Symbol.Output {
 
 		public override void SetPoints() {
 			base.SetPoints();
-			setLead1(1 - 12 / Post.Len);
+			SetLead1(1 - 12 / Post.Len);
 		}
 
 		public override void Draw(CustomGraphics g) {
@@ -47,8 +47,8 @@ namespace Circuit.Symbol.Output {
 				s = (mElm.Volts[0] < mElm.Threshold) ? "0" : "1";
 			}
 			mElm.Value = s;
-			drawCenteredLText(s, Post.B, true);
-			drawLeadA();
+			DrawCenteredLText(s, Post.B);
+			DrawLeadA();
 		}
 
 		public override void GetInfo(string[] arr) {

@@ -33,21 +33,21 @@ namespace Circuit.Symbol.Output {
 
 		public override void SetPoints() {
 			base.SetPoints();
-			interpPost(ref mMid, 0.5 + 4 / Post.Len);
-			Utils.CreateArrow(Post.A, mMid, out mArrowPoly, 9, 5);
+			InterpolationPost(ref mMid, 0.5 + 4 / Post.Len);
+			CreateArrow(Post.A, mMid, out mArrowPoly, 9, 5);
 			if (Post.Vertical) {
-				interpPost(ref mTextPos, 0.5, -21 * Post.Dsign);
+				InterpolationPost(ref mTextPos, 0.5, -21 * Post.Dsign);
 			} else {
-				interpPost(ref mTextPos, 0.5, 12 * Post.Dsign);
+				InterpolationPost(ref mTextPos, 0.5, 12 * Post.Dsign);
 			}
 		}
 
 		public override void Draw(CustomGraphics g) {
 			base.Draw(g); /* BC required for highlighting */
 
-			drawLine(Post.A, Post.B);
-			fillPolygon(mArrowPoly);
-			doDots();
+			DrawLine(Post.A, Post.B);
+			FillPolygon(mArrowPoly);
+			DoDots();
 
 			string s = "A";
 			switch (mElm.Meter) {
@@ -59,9 +59,9 @@ namespace Circuit.Symbol.Output {
 				break;
 			}
 			if (Post.Vertical) {
-				drawCenteredText(s, mTextPos, -Math.PI / 2);
+				DrawCenteredText(s, mTextPos, -Math.PI / 2);
 			} else {
-				drawCenteredText(s, mTextPos);
+				DrawCenteredText(s, mTextPos);
 			}
 		}
 

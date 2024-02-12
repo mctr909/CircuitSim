@@ -75,10 +75,10 @@ namespace Circuit.Symbol.Input {
                 var val = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
                 switch (ei.Name) {
                 case VALUE_NAME_V:
-                    setLinkedValues<Voltage>(VoltageLink.VOLTAGE, val);
+                    SetLinkedValues<Voltage>(VoltageLink.VOLTAGE, val);
                     break;
                 case VALUE_NAME_BIAS:
-                    setLinkedValues<Voltage>(VoltageLink.BIAS, val);
+                    SetLinkedValues<Voltage>(VoltageLink.BIAS, val);
                     break;
                 }
             });

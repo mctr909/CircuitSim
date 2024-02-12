@@ -32,17 +32,17 @@ namespace Circuit.Symbol.Gate {
              * 12-21= bottom curve,
              * 22   = bottom left */
 			mGatePolyAnsi = new PointF[23];
-			interpLeadAB(ref mGatePolyAnsi[0], ref mGatePolyAnsi[22], 0, mHs2);
+			InterpolationLeadAB(ref mGatePolyAnsi[0], ref mGatePolyAnsi[22], 0, mHs2);
 			for (int i = 0; i != 10; i++) {
 				double a = i * .1;
 				double b = Math.Sqrt(1 - a * a);
-				interpLeadAB(ref mGatePolyAnsi[i + 1], ref mGatePolyAnsi[21 - i], 0.5 + a / 2, b * mHs2);
+				InterpolationLeadAB(ref mGatePolyAnsi[i + 1], ref mGatePolyAnsi[21 - i], 0.5 + a / 2, b * mHs2);
 			}
 			mGatePolyAnsi[11] = mLead2;
 
 			if (mElm.IsInverting) {
-				interpPost(ref mCirclePos, 0.5 + (mWw + 3) / Post.Len);
-				setLead2(0.5 + (mWw + 6) / Post.Len);
+				InterpolationPost(ref mCirclePos, 0.5 + (mWw + 3) / Post.Len);
+				SetLead2(0.5 + (mWw + 6) / Post.Len);
 			}
 		}
 	}

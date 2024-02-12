@@ -24,7 +24,7 @@
 		}
 
 		public override void Stamp() {
-			var g = ControlPanel.TimeStep / (2 * Inductance);
+			var g = Circuit.TimeStep / (2 * Inductance);
 			var n0 = Nodes[0] - 1;
 			var n1 = Nodes[1] - 1;
 			if (n0 < 0 || n1 < 0) {

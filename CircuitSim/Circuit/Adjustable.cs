@@ -33,7 +33,7 @@ namespace Circuit {
 			if (e == -1) {
 				return;
 			}
-			UI = CirSimForm.SymbolList[e];
+			UI = Circuit.SymbolList[e];
 			EditItemR = st.nextTokenInt();
 			EditItemC = 0;
 			MinValue = st.nextTokenDouble();
@@ -79,7 +79,7 @@ namespace Circuit {
 		public string Dump() {
 			return string.Join(" ",
 				'&',
-				CirSimForm.GetUIIndex(UI),
+				Circuit.SymbolList.IndexOf(UI),
 				EditItemR,
 				MinValue,
 				MaxValue,
