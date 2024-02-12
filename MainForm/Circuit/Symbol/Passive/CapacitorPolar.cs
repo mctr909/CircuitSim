@@ -7,17 +7,19 @@ namespace Circuit.Symbol.Passive {
 		ElmPolarCapacitor mElm;
 
 		public CapacitorPolar(Point pos) : base(pos) {
-			mElm = new ElmPolarCapacitor();
-			mElm.Capacitance = mLastValue;
-			mElm.MaxNegativeVoltage = 5;
+			mElm = new ElmPolarCapacitor {
+				Capacitance = mLastValue,
+				MaxNegativeVoltage = 5
+			};
 			ReferenceName = mLastReferenceName;
 		}
 
 		public CapacitorPolar(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmPolarCapacitor();
-			mElm.Capacitance = st.nextTokenDouble();
-			mElm.VoltDiff = st.nextTokenDouble();
-			mElm.MaxNegativeVoltage = st.nextTokenDouble();
+			mElm = new ElmPolarCapacitor {
+				Capacitance = st.nextTokenDouble(),
+				VoltDiff = st.nextTokenDouble(),
+				MaxNegativeVoltage = st.nextTokenDouble()
+			};
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.CAPACITOR_POLAR; } }

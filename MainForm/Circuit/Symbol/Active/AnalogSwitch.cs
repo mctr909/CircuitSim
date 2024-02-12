@@ -20,9 +20,10 @@ namespace Circuit.Symbol.Active {
 		}
 
 		public AnalogSwitch(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-			mElm = new ElmAnalogSwitch();
-			mElm.Ron = st.nextTokenDouble(1e-3);
-			mElm.Roff = st.nextTokenDouble(1e9);
+			mElm = new ElmAnalogSwitch {
+				Ron = st.nextTokenDouble(1e-3),
+				Roff = st.nextTokenDouble(1e9)
+			};
 		}
 
 		protected override void dump(List<object> optionList) {

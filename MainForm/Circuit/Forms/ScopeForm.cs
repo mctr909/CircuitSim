@@ -84,12 +84,8 @@
 				}
 			} else {
 				if (selectElm != MouseInfo.GrippedElm) {
-					if (null != MouseInfo.GrippedElm) {
-						MouseInfo.GrippedElm.Select(false);
-					}
-					if (null != mMouseElm) {
-						mMouseElm.Select(false);
-					}
+					MouseInfo.GrippedElm?.Select(false);
+					mMouseElm?.Select(false);
 					MouseInfo.GripElm(selectElm);
 					mMouseElm = selectElm;
 				}
@@ -263,8 +259,9 @@
 		}
 
 		public static void Undump(StringTokenizer st) {
-			var plot = new ScopePlot();
-			plot.Index = PlotCount;
+			var plot = new ScopePlot {
+				Index = PlotCount
+			};
 			plot.Undump(st);
 			mPlots[PlotCount++] = plot;
 		}
@@ -296,8 +293,9 @@
 					return;
 				}
 				PlotCount++;
-				mPlots[i] = new ScopePlot();
-				mPlots[i].Index = i;
+				mPlots[i] = new ScopePlot {
+					Index = i
+				};
 			}
 			mPlots[i].Setup(ui);
 			if (i > 0) {

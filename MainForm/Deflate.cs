@@ -363,9 +363,10 @@
 
 			var tmpPackageIndex = 0;
 			while (tmpPackageIndex + 2 <= tmpPackages.Count) {
-				var pack = new Pack();
-				pack.Count = tmpPackages[tmpPackageIndex].Count + tmpPackages[tmpPackageIndex + 1].Count;
-				pack.Simbles = new List<int>();
+				var pack = new Pack {
+					Count = tmpPackages[tmpPackageIndex].Count + tmpPackages[tmpPackageIndex + 1].Count,
+					Simbles = new List<int>()
+				};
 				pack.Simbles.AddRange(tmpPackages[tmpPackageIndex].Simbles.ToArray());
 				pack.Simbles.AddRange(tmpPackages[tmpPackageIndex + 1].Simbles.ToArray());
 				packages.Add(pack);

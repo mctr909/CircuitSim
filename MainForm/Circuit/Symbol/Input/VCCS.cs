@@ -45,8 +45,9 @@ namespace Circuit.Symbol.Input {
 				return null;
 			}
 			if (r == 0) {
-				var ei = new ElementInfo("Output Function");
-				ei.Text = "";
+				var ei = new ElementInfo("Output Function") {
+					Text = ""
+				};
 				return ei;
 			}
 			if (r == 1) {

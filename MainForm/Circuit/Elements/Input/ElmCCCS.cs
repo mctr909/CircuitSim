@@ -21,10 +21,12 @@ namespace Circuit.Elements.Input {
 			ui.sizeY = 2;
 			Pins = new Chip.Pin[4];
 			Pins[0] = new Chip.Pin(ui, 0, Chip.SIDE_W, "C+");
-			Pins[1] = new Chip.Pin(ui, 1, Chip.SIDE_W, "C-");
-			Pins[1].output = true;
-			Pins[2] = new Chip.Pin(ui, 0, Chip.SIDE_E, "O+");
-			Pins[2].output = true;
+			Pins[1] = new Chip.Pin(ui, 1, Chip.SIDE_W, "C-") {
+				output = true
+			};
+			Pins[2] = new Chip.Pin(ui, 0, Chip.SIDE_E, "O+") {
+				output = true
+			};
 			Pins[3] = new Chip.Pin(ui, 1, Chip.SIDE_E, "O-");
 		}
 

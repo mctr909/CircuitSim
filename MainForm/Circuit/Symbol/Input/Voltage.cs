@@ -177,53 +177,53 @@ namespace Circuit.Symbol.Input {
 				break;
 			}
 			case ElmVoltage.WAVEFORM.SQUARE:
-				mWaveFormPos = new PointF[] {
+				mWaveFormPos = [
 					new PointF(x - DX, y),
 					new PointF(x - DX, y - WAVE_HEIGHT * pp),
 					new PointF(x - DX + w, y - WAVE_HEIGHT * pp),
 					new PointF(x - DX + w, y + WAVE_HEIGHT * pm),
 					new PointF(x + DX, y + WAVE_HEIGHT * pm),
 					new PointF(x + DX, y)
-				};
+				];
 				break;
 			case ElmVoltage.WAVEFORM.TRIANGLE:
-				mWaveFormPos = new PointF[] {
+				mWaveFormPos = [
 					new PointF(x - DX, y),
 					new PointF(x - DX_H, y - WAVE_HEIGHT),
 					new PointF(x, y),
 					new PointF(x + DX_H, y + WAVE_HEIGHT),
 					new PointF(x + DX, y)
-				};
+				];
 				break;
 			case ElmVoltage.WAVEFORM.SAWTOOTH:
-				mWaveFormPos = new PointF[] {
+				mWaveFormPos = [
 					new PointF(x - DX, y),
 					new PointF(x, y - WAVE_HEIGHT),
 					new PointF(x, y + WAVE_HEIGHT),
 					new PointF(x + DX, y)
-				};
+				];
 				break;
 			case ElmVoltage.WAVEFORM.PULSE_MONOPOLE:
 				if (mElm.MaxVoltage < 0) {
-					mWaveFormPos = new PointF[] {
+					mWaveFormPos = [
 						new PointF(x - DX, y),
 						new PointF(x - DX, y + wh),
 						new PointF(x - DX + w, y + wh),
 						new PointF(x - DX + w, y),
 						new PointF(x + DX, y)
-					};
+					];
 				} else {
-					mWaveFormPos = new PointF[] {
+					mWaveFormPos = [
 						new PointF(x - DX, y),
 						new PointF(x - DX, y - wh),
 						new PointF(x - DX + w, y - wh),
 						new PointF(x - DX + w, y),
 						new PointF(x + DX, y)
-					};
+					];
 				}
 				break;
 			case ElmVoltage.WAVEFORM.PULSE_DIPOLE:
-				mWaveFormPos = new PointF[] {
+				mWaveFormPos = [
 					new PointF(x - DX, y),
 					new PointF(x - DX, y - wh),
 					new PointF(x - DX + w2, y - wh),
@@ -233,10 +233,10 @@ namespace Circuit.Symbol.Input {
 					new PointF(x + w2, y + wh),
 					new PointF(x + w2, y),
 					new PointF(x + DX, y)
-				};
+				];
 				break;
 			case ElmVoltage.WAVEFORM.PWM_MONOPOLE:
-				mWaveFormPos = new PointF[] {
+				mWaveFormPos = [
 					new PointF(x - DX, y),
 					new PointF(x - DX, y - WAVE_HEIGHT),
 					new PointF(x - DX, y),
@@ -254,10 +254,10 @@ namespace Circuit.Symbol.Input {
 					new PointF(x + DX, y),
 					new PointF(x + DX, y - WAVE_HEIGHT),
 					new PointF(x + DX, y)
-				};
+				];
 				break;
 			case ElmVoltage.WAVEFORM.PWM_DIPOLE:
-				mWaveFormPos = new PointF[] {
+				mWaveFormPos = [
 					new PointF(x - DX, y),
 					new PointF(x - DX + 1, y),
 					new PointF(x - DX + 1, y - wh),
@@ -280,10 +280,10 @@ namespace Circuit.Symbol.Input {
 					new PointF(x + DX - 1, y + wh),
 					new PointF(x + DX - 1, y),
 					new PointF(x + DX, y)
-				};
+				];
 				break;
 			case ElmVoltage.WAVEFORM.PWM_POSITIVE:
-				mWaveFormPos = new PointF[] {
+				mWaveFormPos = [
 					new PointF(x - DX, y),
 					new PointF(x - DX + 1, y),
 					new PointF(x - DX + 1, y - wh),
@@ -296,10 +296,10 @@ namespace Circuit.Symbol.Input {
 					new PointF(x - 1, y - wh),
 					new PointF(x - 1, y),
 					new PointF(x + DX, y)
-				};
+				];
 				break;
 			case ElmVoltage.WAVEFORM.PWM_NEGATIVE:
-				mWaveFormPos = new PointF[] {
+				mWaveFormPos = [
 					new PointF(x - DX, y),
 					new PointF(x + 1, y),
 					new PointF(x + 1, y - wh),
@@ -312,13 +312,13 @@ namespace Circuit.Symbol.Input {
 					new PointF(x + DX - 1, y - wh),
 					new PointF(x + DX - 1, y),
 					new PointF(x + DX, y)
-				};
+				];
 				break;
 			default:
-				mWaveFormPos = new PointF[] {
+				mWaveFormPos = [
 					new PointF(x - DX, y),
 					new PointF(x + DX, y)
-				};
+				];
 				break;
 			}
 		}
@@ -395,8 +395,9 @@ namespace Circuit.Symbol.Input {
 		public override ElementInfo GetElementInfo(int r, int c) {
 			if (c == 0) {
 				if (r == 0) {
-					var ei = new ElementInfo("波形");
-					ei.Choice = new ComboBox();
+					var ei = new ElementInfo("波形") {
+						Choice = new ComboBox()
+					};
 					ei.Choice.Items.Add(ElmVoltage.WAVEFORM.DC);
 					ei.Choice.Items.Add(ElmVoltage.WAVEFORM.SIN);
 					ei.Choice.Items.Add(ElmVoltage.WAVEFORM.SQUARE);

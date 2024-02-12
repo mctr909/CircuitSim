@@ -1,15 +1,10 @@
-﻿using System;
-using System.Windows.Forms;
-
-namespace Circuit.Forms {
+﻿namespace Circuit.Forms {
 	public partial class ScopeProperties : Form {
 		static ScopeProperties mInstance = null;
 		ScopePlot mPlot;
 
 		public static void Show(ScopePlot plot, int x, int y) {
-			if (null != mInstance) {
-				mInstance.Close();
-			}
+			mInstance?.Close();
 			mInstance = new ScopeProperties(plot);
 			mInstance.Show(x, y);
 		}

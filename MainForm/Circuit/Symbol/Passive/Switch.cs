@@ -12,18 +12,20 @@ namespace Circuit.Symbol.Passive {
 		public Switch(Point pos, int dummy) : base(pos) { }
 
 		public Switch(Point pos, bool momentary = false, bool isNo = false) : base(pos) {
-			mElm = new ElmSwitch();
-			mElm.Momentary = momentary;
-			mElm.Position = isNo ? 1 : 0;
+			mElm = new ElmSwitch {
+				Momentary = momentary,
+				Position = isNo ? 1 : 0
+			};
 		}
 
 		public Switch(Point p1, Point p2, int f) : base(p1, p2, f) { }
 
 		public Switch(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmSwitch();
-			mElm.Position = st.nextTokenInt();
-			mElm.Momentary = st.nextTokenBool(false);
-			mElm.Link = st.nextTokenInt();
+			mElm = new ElmSwitch {
+				Position = st.nextTokenInt(),
+				Momentary = st.nextTokenBool(false),
+				Link = st.nextTokenInt()
+			};
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.SWITCH; } }

@@ -21,8 +21,8 @@ namespace MainForm {
 		}
 
 		MainForm mSim;
-		List<ToolStripMenuItem> mMainMenuItems = new List<ToolStripMenuItem>();
-		Font menuFont = new Font("Segoe UI", 9.0f);
+		List<ToolStripMenuItem> mMainMenuItems = [];
+		Font menuFont = new("Segoe UI", 9.0f);
 
 		public MenuItems(MainForm sim) {
 			mSim = sim;

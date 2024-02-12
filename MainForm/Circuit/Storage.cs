@@ -2,7 +2,7 @@
 	class Storage {
 		static Storage mIns = null;
 
-		Dictionary<string, string> mData = new Dictionary<string, string>();
+		Dictionary<string, string> mData = [];
 
 		private Storage() { }
 

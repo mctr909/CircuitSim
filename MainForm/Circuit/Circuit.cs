@@ -6,7 +6,7 @@ namespace Circuit {
 			public int Num;
 			public BaseElement Elm;
 		}
-		public List<LINK> Links = new List<LINK>();
+		public List<LINK> Links = [];
 		public bool Internal;
 	}
 
@@ -31,8 +31,8 @@ namespace Circuit {
 		const int SubIterMax = 1000;
 
 		#region variable
-		public static Random Random = new Random();
-		public static List<BaseElement> ElmList = new List<BaseElement>();
+		public static Random Random = new();
+		public static List<BaseElement> ElmList = [];
 		public static double Time;
 		public static string StopMessage;
 		public static bool Converged;

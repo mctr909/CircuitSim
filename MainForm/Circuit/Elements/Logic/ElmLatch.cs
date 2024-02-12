@@ -24,9 +24,10 @@ namespace Circuit.Elements.Logic {
 				Pins[i] = new Chip.Pin(chip, Bits - 1 - i, Chip.SIDE_W, "I" + i);
 			}
 			for (var i = 0; i != Bits; i++) {
-				Pins[i + Bits] = new Chip.Pin(chip, Bits - 1 - i, Chip.SIDE_E, "O");
-				Pins[i + Bits].output = true;
-				Pins[i + Bits].state = true;
+				Pins[i + Bits] = new Chip.Pin(chip, Bits - 1 - i, Chip.SIDE_E, "O") {
+					output = true,
+					state = true
+				};
 			}
 			Pins[mLoadPin = Bits * 2] = new Chip.Pin(chip, Bits, Chip.SIDE_W, "Ld");
 			AllocNodes();

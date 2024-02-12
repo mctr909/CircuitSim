@@ -45,8 +45,9 @@
 				Console.WriteLine("model not found: " + name);
 				return GetDefaultModel();
 			}
-			lm = new DiodeModel(oldmodel);
-			lm.Name = name;
+			lm = new DiodeModel(oldmodel) {
+				Name = name
+			};
 			modelMap.Add(name, lm);
 			return lm;
 		}
@@ -171,8 +172,9 @@
 			if (lm != null) {
 				return lm;
 			}
-			lm = new DiodeModel();
-			lm.Name = name;
+			lm = new DiodeModel {
+				Name = name
+			};
 			modelMap.Add(name, lm);
 			return lm;
 		}

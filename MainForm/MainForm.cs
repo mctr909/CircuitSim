@@ -10,7 +10,7 @@ using System.Text;
 namespace MainForm {
 	public partial class MainForm : Form {
 		#region CONST
-		public static readonly Font FONT_TEXT = new Font("Meiryo UI", 9.0f);
+		public static readonly Font FONT_TEXT = new("Meiryo UI", 9.0f);
 		public static readonly Brush BRUSH_TEXT = Brushes.Red;
 
 		public const int POSTGRABSQ = 25;
@@ -22,20 +22,20 @@ namespace MainForm {
 		#endregion
 
 		#region Property
-		public static ElementInfoDialog EditDialog { get; set; }
-		public static SliderDialog SliderDialog { get; set; }
-		public static BaseSymbol PlotXElm { get; private set; }
-		public static BaseSymbol PlotYElm { get; private set; }
+		public static ElementInfoDialog? EditDialog { get; set; } = null;
+		public static SliderDialog? SliderDialog { get; set; } = null;
+		public static BaseSymbol? PlotXElm { get; private set; } = null;
+		public static BaseSymbol? PlotYElm { get; private set; } = null;
 		#endregion
 
 		#region Variable
-		public static MainForm Instance = null;
+		public static MainForm? Instance = null;
 
-		static ScopeForm mScopeForm = new ScopeForm();
+		static ScopeForm mScopeForm = new();
 
 		static string mFileName = "";
-		static ScrollValuePopup mScrollValuePopup;
 		static bool mNeedsRepaint;
+		static ScrollValuePopup? mScrollValuePopup = null;
 
 		System.Windows.Forms.Timer mTimer;
 
@@ -43,25 +43,25 @@ namespace MainForm {
 		MenuItems mMenuItems;
 		SplitContainer mSplitContainer;
 
-		static ContextMenuStrip mContextMenu = null;
+		ToolStripMenuItem mUndoItem = new();
+		ToolStripMenuItem mRedoItem = new();
+		ToolStripMenuItem mPasteItem = new();
 
-		static PictureBox mPixCir;
-		static Bitmap mBmp = null;
-		static Graphics mContext;
+		static ContextMenuStrip? mContextMenu = null;
 
-		static ToolStripMenuItem mUndoItem;
-		static ToolStripMenuItem mRedoItem;
-		ToolStripMenuItem mPasteItem;
+		static PictureBox? mPixCir = null;
+		static Bitmap? mBmp = null;
+		static Graphics? mContext = null;
 
 		static DUMP_ID mAddElm = DUMP_ID.INVALID;
 
-		static BaseSymbol mMenuElm;
-		static Switch mHeldSwitchElm;
+		static BaseSymbol? mMenuElm = null;
+		static Switch? mHeldSwitchElm = null;
 		Point mMenuClient;
 		Point mMenuPos;
 
-		static List<string> mUndoStack = new List<string>();
-		static List<string> mRedoStack = new List<string>();
+		static List<string> mUndoStack = new();
+		static List<string> mRedoStack = new();
 
 		string mRecovery;
 		string mClipboard = "";
@@ -89,14 +89,10 @@ namespace MainForm {
 			CustomGraphics.SetColor(ControlPanel.ChkPrintable.Checked);
 
 			KeyPreview = true;
-			KeyDown += onKeyDown;
-			KeyUp += onKeyUp;
+			KeyDown += OnKeyDown;
+			KeyUp += OnKeyUp;
 
-			mRedoItem = new ToolStripMenuItem();
-			mUndoItem = new ToolStripMenuItem();
-			mPasteItem = new ToolStripMenuItem();
-
-			setTimer();
+			SetTimer();
 
 			mMenuBar = new MenuStrip();
 			{
@@ -109,8 +105,8 @@ namespace MainForm {
 				mPixCir.MouseDown += new MouseEventHandler((s, e) => { onMouseDown(e); });
 				mPixCir.MouseMove += new MouseEventHandler((s, e) => { onMouseMove(e); });
 				mPixCir.MouseUp += new MouseEventHandler((s, e) => { onMouseUp(e); });
-				mPixCir.MouseWheel += new MouseEventHandler((s, e) => { showScrollValues(); });
-				mPixCir.MouseClick += new MouseEventHandler((s, e) => { onClick(e); });
+				mPixCir.MouseWheel += new MouseEventHandler((s, e) => { ShowScrollValues(); });
+				mPixCir.MouseClick += new MouseEventHandler((s, e) => { OnClick(e); });
 				mPixCir.MouseLeave += new EventHandler((s, e) => { MouseInfo.SetCursor(new Point(-1, -1)); });
 				mPixCir.DoubleClick += new EventHandler((s, e) => { onDoubleClick(e); });
 			}
@@ -127,17 +123,17 @@ namespace MainForm {
 				mSplitContainer.SizeChanged += new EventHandler((s, e) => {
 					if (0 <= mSplitContainer.Width - width) {
 						mSplitContainer.SplitterDistance = mSplitContainer.Width - width;
-						setCanvasSize();
+						SetCanvasSize();
 					}
 				});
 				Controls.Add(mSplitContainer);
 			}
 
-			readCircuit("");
-			readRecovery();
+			ReadCircuit("");
+			ReadRecovery();
 
-			enableUndoRedo();
-			enablePaste();
+			EnableUndoRedo();
+			EnablePaste();
 
 			ControlPanel.SetSliderPanelHeight();
 
@@ -152,9 +148,7 @@ namespace MainForm {
 
 		#region Public method
 		public void AddElement(DUMP_ID item) {
-			if (mContextMenu != null) {
-				mContextMenu.Close();
-			}
+			mContextMenu?.Close();
 			MouseInfo.Mode = MouseInfo.MODE.ADD_ELM;
 			Cursor = Cursors.Arrow;
 			mAddElm = item;
@@ -166,20 +160,20 @@ namespace MainForm {
 			case MenuItems.ID.OPEN_NEW:
 				mFileName = "";
 				Text = mFileName;
-				readCircuit("");
-				writeRecoveryToStorage();
-				readRecovery();
+				ReadCircuit("");
+				WriteRecoveryToStorage();
+				ReadRecovery();
 				break;
 			case MenuItems.ID.OPEN_FILE:
-				doOpenFile();
-				writeRecoveryToStorage();
-				readRecovery();
+				DoOpenFile();
+				WriteRecoveryToStorage();
+				ReadRecovery();
 				break;
 			case MenuItems.ID.OVERWRITE:
-				doSaveFile(true);
+				DoSaveFile(true);
 				break;
 			case MenuItems.ID.SAVE_FILE:
-				doSaveFile(false);
+				DoSaveFile(false);
 				break;
 			case MenuItems.ID.PDF:
 				CustomGraphics.Instance.DrawPDF = true;
@@ -193,34 +187,34 @@ namespace MainForm {
 
 			switch (item) {
 			case MenuItems.ID.UNDO:
-				doUndo();
+				DoUndo();
 				break;
 			case MenuItems.ID.REDO:
-				doRedo();
+				DoRedo();
 				break;
 			case MenuItems.ID.CUT:
 				mMenuElm = null;
-				doCut();
+				DoCut();
 				break;
 			case MenuItems.ID.COPY:
 				mMenuElm = null;
-				doCopy();
+				DoCopy();
 				break;
 			case MenuItems.ID.PASTE:
-				doPaste(null);
+				DoPaste(null);
 				break;
 			case MenuItems.ID.DELETE:
 				mMenuElm = null;
 				PushUndo();
-				doDelete(true);
+				DoDelete(true);
 				break;
 			case MenuItems.ID.SELECT_ALL:
-				doSelectAll();
+				DoSelectAll();
 				MouseInfo.Mode = MouseInfo.MODE.DRAG_ITEM;
 				break;
 			case MenuItems.ID.CENTER_CIRCUIT:
 				PushUndo();
-				MouseInfo.Centering(mCircuitArea.Width, mCircuitArea.Height, getCircuitBounds());
+				MouseInfo.Centering(mCircuitArea.Width, mCircuitArea.Height, GetCircuitBounds());
 				break;
 			}
 
@@ -229,10 +223,10 @@ namespace MainForm {
 
 		public void Reload() {
 			PushUndo();
-			readCircuit(mRecovery);
+			ReadCircuit(mRecovery);
 		}
 
-		static BaseSymbol GetSymbol(int n) {
+		static BaseSymbol? GetSymbol(int n) {
 			if (n >= CircuitSymbol.List.Count) {
 				return null;
 			}
@@ -258,7 +252,7 @@ namespace MainForm {
 		public static void Repaint() {
 			if (!mNeedsRepaint) {
 				mNeedsRepaint = true;
-				updateCircuit();
+				UpdateCircuit();
 				mNeedsRepaint = false;
 			}
 		}
@@ -276,33 +270,33 @@ namespace MainForm {
 			}
 		}
 
-		public static void PushUndo() {
+		public void PushUndo() {
 			mRedoStack.Clear();
-			string s = dumpCircuit();
+			string s = DumpCircuit();
 			if (mUndoStack.Count > 0 && s == mUndoStack[mUndoStack.Count - 1]) {
 				return;
 			}
 			mUndoStack.Add(s);
-			enableUndoRedo();
+			EnableUndoRedo();
 		}
 		#endregion
 
 		#region Key event method
-		void onKeyDown(object sender, KeyEventArgs e) {
+		void OnKeyDown(object sender, KeyEventArgs e) {
 			mIsPressShift = e.Shift;
 			mIsPressCtrl = e.Control;
 			mIsPressAlt = e.Alt;
 		}
 
-		void onKeyUp(object sender, KeyEventArgs e) {
+		void OnKeyUp(object sender, KeyEventArgs e) {
 			mIsPressShift = false;
 			mIsPressCtrl = false;
 			mIsPressAlt = false;
 			Cursor = Cursors.Arrow;
-			keyUpPerformed(e);
+			KeyUpPerformed(e);
 		}
 
-		void keyUpPerformed(KeyEventArgs e) {
+		void KeyUpPerformed(KeyEventArgs e) {
 			var code = e.KeyCode;
 
 			if (DialogIsShowing()) {
@@ -328,7 +322,7 @@ namespace MainForm {
 			if (code == Keys.Back || code == Keys.Delete) {
 				mMenuElm = null;
 				PushUndo();
-				doDelete(true);
+				DoDelete(true);
 			}
 
 			if (code == Keys.Escape || e.KeyValue == 32) {
@@ -340,9 +334,9 @@ namespace MainForm {
 		#endregion
 
 		#region Mouse event method
-		void onClick(MouseEventArgs e) {
+		void OnClick(MouseEventArgs e) {
 			if (e.Button == MouseButtons.Right) {
-				onContextMenu(e);
+				OnContextMenu(e);
 			}
 		}
 
@@ -350,7 +344,7 @@ namespace MainForm {
 			if (MouseInfo.GrippedElm == null) {
 				return;
 			}
-			doEdit(MouseInfo.GrippedElm, new Point(
+			DoEdit(MouseInfo.GrippedElm, new Point(
 				Location.X + mMenuClient.X,
 				Location.Y + mMenuClient.Y));
 		}
@@ -362,14 +356,14 @@ namespace MainForm {
 
 			/* maybe someone did copy in another window?  should really do this when */
 			/* window receives focus */
-			enablePaste();
+			EnablePaste();
 
 			if (MouseInfo.Button != MouseButtons.Left && MouseInfo.Button != MouseButtons.Middle) {
 				return;
 			}
 
 			// set mouseElm in case we are on mobile
-			mouseSelect();
+			MouseSelect();
 
 			MouseInfo.IsDragging = true;
 
@@ -394,14 +388,14 @@ namespace MainForm {
 			}
 
 			var gpos = MouseInfo.ToAbsPos(e.Location);
-			if (doSwitch(gpos)) {
+			if (DoSwitch(gpos)) {
 				/* do this BEFORE we change the mouse mode to MODE_DRAG_POST!  Or else logic inputs */
 				/* will add dots to the whole circuit when we click on them! */
 				return;
 			}
 
 			if (MouseInfo.Mode != MouseInfo.MODE.NONE && MouseInfo.Mode != MouseInfo.MODE.DRAG_ITEM) {
-				clearSelection();
+				ClearSelection();
 			}
 
 			PushUndo();
@@ -431,20 +425,20 @@ namespace MainForm {
 				break;
 			case MouseInfo.MODE.SELECT_AREA:
 				if (MouseInfo.SelectedArea.Width == 0 || MouseInfo.SelectedArea.Height == 0) {
-					clearSelection();
+					ClearSelection();
 				}
-				if (hasSelection()) {
+				if (HasSelection()) {
 					MouseInfo.Mode = MouseInfo.MODE.DRAG_ITEM;
 				} else {
 					MouseInfo.Mode = MouseInfo.MODE.NONE;
 				}
 				break;
 			case MouseInfo.MODE.DRAG_ITEM:
-				clearSelection();
+				ClearSelection();
 				MouseInfo.Mode = MouseInfo.MODE.NONE;
 				break;
 			case MouseInfo.MODE.SPLIT:
-				doSplit(MouseInfo.GrippedElm);
+				DoSplit(MouseInfo.GrippedElm);
 				MouseInfo.Mode = MouseInfo.MODE.NONE;
 				break;
 			default:
@@ -465,21 +459,19 @@ namespace MainForm {
 				if (BaseSymbol.ConstructItem.IsCreationFailed) {
 					BaseSymbol.ConstructItem.Delete();
 					if (MouseInfo.Mode == MouseInfo.MODE.SELECT || MouseInfo.Mode == MouseInfo.MODE.DRAG_ITEM) {
-						clearSelection();
+						ClearSelection();
 					}
 				} else {
 					CircuitSymbol.List.Add(BaseSymbol.ConstructItem);
 					circuitChanged = true;
-					writeRecoveryToStorage();
+					WriteRecoveryToStorage();
 				}
 				BaseSymbol.ConstructItem = null;
 			}
 			if (circuitChanged) {
 				CircuitSymbol.NeedAnalyze = true;
 			}
-			if (BaseSymbol.ConstructItem != null) {
-				BaseSymbol.ConstructItem.Delete();
-			}
+			BaseSymbol.ConstructItem?.Delete();
 			BaseSymbol.ConstructItem = null;
 			Cursor = Cursors.Default;
 			Repaint();
@@ -491,13 +483,13 @@ namespace MainForm {
 			}
 			MouseInfo.SetCursor(e.Location);
 			if (MouseInfo.IsDragging) {
-				mouseDrag();
+				MouseDrag();
 			} else {
-				mouseSelect();
+				MouseSelect();
 			}
 		}
 
-		void onContextMenu(MouseEventArgs e) {
+		void OnContextMenu(MouseEventArgs e) {
 			if (MouseInfo.GrippedElm == null) {
 				return;
 			}
@@ -512,21 +504,19 @@ namespace MainForm {
 				}
 			} else {
 				var menu = new ElementPopupMenu(new ElementPopupMenu.Callback((item) => {
-					if (mContextMenu != null) {
-						mContextMenu.Close();
-					}
+					mContextMenu?.Close();
 					switch (item) {
 					case ElementPopupMenu.Item.EDIT:
-						doEdit(mMenuElm, mMenuClient);
+						DoEdit(mMenuElm, mMenuClient);
 						break;
 					case ElementPopupMenu.Item.SPLIT_WIRE:
-						doSplit(mMenuElm);
+						DoSplit(mMenuElm);
 						break;
 					case ElementPopupMenu.Item.FLIP_POST:
-						doFlip();
+						DoFlip();
 						break;
 					case ElementPopupMenu.Item.SLIDERS:
-						doSliders(mMenuElm, mMenuClient);
+						DoSliders(mMenuElm, mMenuClient);
 						break;
 					case ElementPopupMenu.Item.SCOPE_WINDOW:
 						ScopeForm.AddPlot(mMenuElm);
@@ -545,7 +535,7 @@ namespace MainForm {
 			}
 		}
 
-		void mouseDrag() {
+		void MouseDrag() {
 			/* ignore right mouse button with no modifiers (needed on PC) */
 			if (MouseInfo.Button == MouseButtons.Right) {
 				return;
@@ -555,9 +545,7 @@ namespace MainForm {
 				return;
 			}
 			bool changed = false;
-			if (BaseSymbol.ConstructItem != null) {
-				BaseSymbol.ConstructItem.Drag(gpos);
-			}
+			BaseSymbol.ConstructItem?.Drag(gpos);
 			bool success = true;
 			switch (MouseInfo.Mode) {
 			case MouseInfo.MODE.SCROLL: {
@@ -565,11 +553,11 @@ namespace MainForm {
 				break;
 			}
 			case MouseInfo.MODE.DRAG_ROW:
-				dragRow(gpos);
+				DragRow(gpos);
 				changed = true;
 				break;
 			case MouseInfo.MODE.DRAG_COLUMN:
-				dragColumn(gpos);
+				DragColumn(gpos);
 				changed = true;
 				break;
 			case MouseInfo.MODE.SELECT:
@@ -586,10 +574,10 @@ namespace MainForm {
 				}
 				break;
 			case MouseInfo.MODE.SELECT_AREA:
-				selectArea(gpos);
+				SelectArea(gpos);
 				break;
 			case MouseInfo.MODE.DRAG_ITEM:
-				changed = success = dragSelected(gpos);
+				changed = success = DragSelected(gpos);
 				break;
 			case MouseInfo.MODE.DRAG_POST:
 				MouseInfo.MoveGrippedElm(gpos);
@@ -600,17 +588,17 @@ namespace MainForm {
 			if (success) {
 				/* Console.WriteLine("setting dragGridx in mousedragged");*/
 				MouseInfo.DragEnd = MouseInfo.ToAbsPos(MouseInfo.CommitCursor());
-				if (!(MouseInfo.Mode == MouseInfo.MODE.DRAG_ITEM && onlyGraphicsElmsSelected())) {
+				if (!(MouseInfo.Mode == MouseInfo.MODE.DRAG_ITEM && OnlyGraphicsElmsSelected())) {
 					MouseInfo.DragEnd = BaseSymbol.SnapGrid(MouseInfo.DragEnd);
 				}
 			}
 			if (changed) {
-				writeRecoveryToStorage();
+				WriteRecoveryToStorage();
 			}
 			Repaint();
 		}
 
-		void mouseSelect() {
+		void MouseSelect() {
 			MouseInfo.CommitCursor();
 			var gpos = MouseInfo.GetAbsPos();
 			MouseInfo.DragEnd = BaseSymbol.SnapGrid(gpos);
@@ -648,7 +636,7 @@ namespace MainForm {
 				}
 			}
 			if (mostNearUI == null) {
-				clearMouseElm();
+				ClearMouseElm();
 			} else {
 				var postDa = mostNearUI.DistancePostA(gpos);
 				var postDb = mostNearUI.DistancePostB(gpos);
@@ -663,7 +651,7 @@ namespace MainForm {
 			Repaint();
 		}
 
-		void selectArea(Point pos) {
+		void SelectArea(Point pos) {
 			MouseInfo.SelectArea(pos);
 			for (int i = 0; i != CircuitSymbol.Count; i++) {
 				var ce = GetSymbol(i);
@@ -671,7 +659,7 @@ namespace MainForm {
 			}
 		}
 
-		void dragRow(Point pos) {
+		void DragRow(Point pos) {
 			int dy = (pos.Y - MouseInfo.DragEnd.Y) / BaseSymbol.GRID_SIZE;
 			dy *= BaseSymbol.GRID_SIZE;
 			if (0 == dy) {
@@ -691,10 +679,10 @@ namespace MainForm {
 				}
 				ce.Move(0, dy, p);
 			}
-			removeZeroLengthElements();
+			RemoveZeroLengthElements();
 		}
 
-		void dragColumn(Point pos) {
+		void DragColumn(Point pos) {
 			int dx = (pos.X - MouseInfo.DragEnd.X) / BaseSymbol.GRID_SIZE;
 			dx *= BaseSymbol.GRID_SIZE;
 			if (0 == dx) {
@@ -714,16 +702,16 @@ namespace MainForm {
 				}
 				ce.Move(dx, 0, p);
 			}
-			removeZeroLengthElements();
+			RemoveZeroLengthElements();
 		}
 
-		bool dragSelected(Point pos) {
+		bool DragSelected(Point pos) {
 			bool me = false;
 			int i;
 			if (MouseInfo.GrippedElm != null && !MouseInfo.GrippedElm.IsSelected) {
 				MouseInfo.GrippedElm.IsSelected = me = true;
 			}
-			if (!onlyGraphicsElmsSelected()) {
+			if (!OnlyGraphicsElmsSelected()) {
 				pos = BaseSymbol.SnapGrid(pos);
 			}
 			int dx = pos.X - MouseInfo.DragEnd.X;
@@ -760,7 +748,7 @@ namespace MainForm {
 			return allowed;
 		}
 
-		bool hasSelection() {
+		bool HasSelection() {
 			for (int i = 0; i != CircuitSymbol.Count; i++) {
 				if (GetSymbol(i).IsSelected) {
 					return true;
@@ -769,7 +757,7 @@ namespace MainForm {
 			return false;
 		}
 
-		bool doSwitch(Point pos) {
+		bool DoSwitch(Point pos) {
 			if (MouseInfo.GrippedElm == null || !(MouseInfo.GrippedElm is Switch)) {
 				return false;
 			}
@@ -787,11 +775,11 @@ namespace MainForm {
 		#endregion
 
 		#region Private methond
-		void setTimer() {
+		void SetTimer() {
 			mTimer = new System.Windows.Forms.Timer();
 			mTimer.Tick += new EventHandler((s, e) => {
 				if (CircuitSymbol.IsRunning) {
-					updateCircuit();
+					UpdateCircuit();
 					mNeedsRepaint = false;
 				}
 			});
@@ -800,7 +788,7 @@ namespace MainForm {
 			mTimer.Start();
 		}
 
-		void setCanvasSize() {
+		void SetCanvasSize() {
 			int width = mSplitContainer.Panel1.Width;
 			int height = mSplitContainer.Panel1.Height - mMenuBar.Height;
 			if (width < 1) {
@@ -816,15 +804,13 @@ namespace MainForm {
 
 			mPixCir.Width = width;
 			mPixCir.Height = height;
-			if (CustomGraphics.Instance != null) {
-				CustomGraphics.Instance.Dispose();
-			}
+			CustomGraphics.Instance?.Dispose();
 			CustomGraphics.Instance = CustomGraphics.FromImage(width, height);
 			mCircuitArea = new Rectangle(0, 0, width, height);
 			Circuit.Circuit.SetSimRunning(isRunning);
 		}
 
-		Rectangle getCircuitBounds() {
+		Rectangle GetCircuitBounds() {
 			if (0 == CircuitSymbol.Count) {
 				return new Rectangle();
 			}
@@ -840,8 +826,8 @@ namespace MainForm {
 			return new Rectangle(minx, miny, maxx - minx, maxy - miny);
 		}
 
-		void doEdit(BaseSymbol eable, Point location) {
-			clearSelection();
+		void DoEdit(BaseSymbol eable, Point location) {
+			ClearSelection();
 			PushUndo();
 			if (EditDialog != null) {
 				EditDialog.Close();
@@ -851,8 +837,8 @@ namespace MainForm {
 			EditDialog.Show(location.X, location.Y);
 		}
 
-		void doSliders(BaseSymbol ce, Point location) {
-			clearSelection();
+		void DoSliders(BaseSymbol ce, Point location) {
+			ClearSelection();
 			PushUndo();
 			if (SliderDialog != null) {
 				SliderDialog.Close();
@@ -862,9 +848,10 @@ namespace MainForm {
 			SliderDialog.Show(location.X, location.Y);
 		}
 
-		void doOpenFile() {
-			var open = new OpenFileDialog();
-			open.Filter = "テキストファイル(*.txt)|*.txt";
+		void DoOpenFile() {
+			var open = new OpenFileDialog {
+				Filter = "テキストファイル(*.txt)|*.txt"
+			};
 			open.ShowDialog();
 			if (string.IsNullOrEmpty(open.FileName) || !Directory.Exists(Path.GetDirectoryName(open.FileName))) {
 				return;
@@ -881,18 +868,19 @@ namespace MainForm {
 				MessageBox.Show(ex.ToString());
 			}
 			Text = mFileName;
-			readCircuit(data);
+			ReadCircuit(data);
 		}
 
-		void doSaveFile(bool overWrite) {
+		void DoSaveFile(bool overWrite) {
 			var filePath = "";
 			if (overWrite) {
 				filePath = mFileName;
 			}
 
 			if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) {
-				var save = new SaveFileDialog();
-				save.Filter = "テキストファイル(*.txt)|*.txt";
+				var save = new SaveFileDialog {
+					Filter = "テキストファイル(*.txt)|*.txt"
+				};
 				save.ShowDialog();
 				if (string.IsNullOrEmpty(save.FileName) || !Directory.Exists(Path.GetDirectoryName(save.FileName))) {
 					return;
@@ -902,7 +890,7 @@ namespace MainForm {
 				Text = mFileName;
 			}
 
-			string dump = dumpCircuit();
+			string dump = DumpCircuit();
 			try {
 				var fs = new FileStream(filePath, FileMode.Create);
 				var sw = new StreamWriter(fs);
@@ -914,7 +902,7 @@ namespace MainForm {
 			}
 		}
 
-		static string dumpCircuit() {
+		static string DumpCircuit() {
 			// Todo: CustomLogicModel
 			//CustomLogicModel.clearDumpedFlags();
 			DiodeModel.ClearDumpedFlags();
@@ -941,19 +929,19 @@ namespace MainForm {
 			return dump;
 		}
 
-		void readCircuit(string text, int flags) {
-			readCircuit(Encoding.UTF8.GetBytes(text), flags);
+		void ReadCircuit(string text, int flags) {
+			ReadCircuit(Encoding.UTF8.GetBytes(text), flags);
 		}
 
-		void readCircuit(string text) {
-			readCircuit(Encoding.UTF8.GetBytes(text), 0);
+		void ReadCircuit(string text) {
+			ReadCircuit(Encoding.UTF8.GetBytes(text), 0);
 		}
 
-		void readCircuit(byte[] b, int flags) {
+		void ReadCircuit(byte[] b, int flags) {
 			int i;
 			int len = b.Length;
 			if ((flags & RC_RETAIN) == 0) {
-				clearMouseElm();
+				ClearMouseElm();
 				for (i = 0; i != CircuitSymbol.Count; i++) {
 					var ce = GetSymbol(i);
 					ce.Delete();
@@ -994,7 +982,7 @@ namespace MainForm {
 							break;
 						}
 						if (tint == '$') {
-							readOptions(st);
+							ReadOptions(st);
 							break;
 						}
 						if (tint == '!') {
@@ -1061,11 +1049,11 @@ namespace MainForm {
 			}
 			CircuitSymbol.NeedAnalyze = true;
 			if ((flags & RC_NO_CENTER) == 0) {
-				MouseInfo.Centering(mCircuitArea.Width, mCircuitArea.Height, getCircuitBounds());
+				MouseInfo.Centering(mCircuitArea.Width, mCircuitArea.Height, GetCircuitBounds());
 			}
 		}
 
-		void readOptions(StringTokenizer st) {
+		void ReadOptions(StringTokenizer st) {
 			var flags = st.nextTokenInt();
 			ControlPanel.ChkShowCurrent.Checked = (flags & 1) != 0;
 			ControlPanel.ChkShowValues.Checked = (flags & 16) == 0;
@@ -1078,7 +1066,7 @@ namespace MainForm {
 			ControlPanel.TrbCurrent.Value = v * ControlPanel.TrbCurrent.Maximum / 50;
 		}
 
-		bool onlyGraphicsElmsSelected() {
+		bool OnlyGraphicsElmsSelected() {
 			if (MouseInfo.GrippedElm != null) {
 				return false;
 			}
@@ -1091,12 +1079,12 @@ namespace MainForm {
 			return true;
 		}
 
-		void doFlip() {
+		void DoFlip() {
 			mMenuElm.FlipPosts();
 			CircuitSymbol.NeedAnalyze = true;
 		}
 
-		void doSplit(BaseSymbol ce) {
+		void DoSplit(BaseSymbol ce) {
 			var pos = BaseSymbol.SnapGrid(MouseInfo.ToAbsPos(mMenuPos));
 			if (ce == null || !(ce is Wire)) {
 				return;
@@ -1117,7 +1105,7 @@ namespace MainForm {
 			CircuitSymbol.NeedAnalyze = true;
 		}
 
-		void removeZeroLengthElements() {
+		void RemoveZeroLengthElements() {
 			for (int i = CircuitSymbol.Count - 1; i >= 0; i--) {
 				var ce = GetSymbol(i);
 				if (ce.Post.A.X == ce.Post.B.X && ce.Post.A.Y == ce.Post.B.Y) {
@@ -1129,12 +1117,12 @@ namespace MainForm {
 			CircuitSymbol.NeedAnalyze = true;
 		}
 
-		void clearMouseElm() {
+		void ClearMouseElm() {
 			MouseInfo.GripElm(null);
 			PlotXElm = PlotYElm = null;
 		}
 
-		void showScrollValues() {
+		void ShowScrollValues() {
 			if (MouseInfo.GrippedElm == null || DialogIsShowing()) {
 				return;
 			}
@@ -1147,76 +1135,76 @@ namespace MainForm {
 			}
 		}
 
-		void doUndo() {
+		void DoUndo() {
 			if (mUndoStack.Count == 0) {
 				return;
 			}
-			mRedoStack.Add(dumpCircuit());
+			mRedoStack.Add(DumpCircuit());
 			string tmp = mUndoStack[mUndoStack.Count - 1];
 			mUndoStack.RemoveAt(mUndoStack.Count - 1);
-			readCircuit(tmp, RC_NO_CENTER);
-			enableUndoRedo();
+			ReadCircuit(tmp, RC_NO_CENTER);
+			EnableUndoRedo();
 		}
 
-		void doRedo() {
+		void DoRedo() {
 			if (mRedoStack.Count == 0) {
 				return;
 			}
-			mUndoStack.Add(dumpCircuit());
+			mUndoStack.Add(DumpCircuit());
 			string tmp = mRedoStack[mRedoStack.Count - 1];
 			mRedoStack.RemoveAt(mRedoStack.Count - 1);
-			readCircuit(tmp, RC_NO_CENTER);
-			enableUndoRedo();
+			ReadCircuit(tmp, RC_NO_CENTER);
+			EnableUndoRedo();
 		}
 
-		static void enableUndoRedo() {
+		void EnableUndoRedo() {
 			mRedoItem.Enabled = mRedoStack.Count > 0;
 			mUndoItem.Enabled = mUndoStack.Count > 0;
 		}
 
-		void setMenuSelection() {
+		void SetMenuSelection() {
 			if (mMenuElm != null) {
 				if (mMenuElm.IsSelected) {
 					return;
 				}
-				clearSelection();
+				ClearSelection();
 				mMenuElm.IsSelected = true;
 			}
 		}
 
-		void doCut() {
+		void DoCut() {
 			int i;
 			PushUndo();
-			setMenuSelection();
+			SetMenuSelection();
 			mClipboard = "";
 			for (i = CircuitSymbol.Count - 1; i >= 0; i--) {
 				var ce = GetSymbol(i);
 				/* ScopeElms don't cut-paste well because their reference to a parent
                 /* elm by number get's messed up in the dump. For now we will just ignore them
                 /* until I can be bothered to come up with something better */
-				if (willDelete(ce) && !(ce is Scope)) {
+				if (WillDelete(ce) && !(ce is Scope)) {
 					mClipboard += ce.Dump() + "\n";
 				}
 			}
-			writeClipboardToStorage();
-			doDelete(true);
-			enablePaste();
+			WriteClipboardToStorage();
+			DoDelete(true);
+			EnablePaste();
 		}
 
-		void writeClipboardToStorage() {
+		void WriteClipboardToStorage() {
 			Storage.GetInstance().SetItem("circuitClipboard", mClipboard);
 		}
 
-		void readClipboardFromStorage() {
+		void ReadClipboardFromStorage() {
 			mClipboard = Storage.GetInstance().GetItem("circuitClipboard");
 		}
 
-		static void writeRecoveryToStorage() {
-			var s = dumpCircuit();
+		static void WriteRecoveryToStorage() {
+			var s = DumpCircuit();
 			Storage.GetInstance().SetItem("circuitRecovery", s);
 		}
 
-		void readRecovery() {
+		void ReadRecovery() {
 			mRecovery = Storage.GetInstance().GetItem("circuitRecovery");
 		}
 
@@ -1231,7 +1219,7 @@ namespace MainForm {
 			}
 		}
 
-		static void doDelete(bool pushUndoFlag) {
+		void DoDelete(bool pushUndoFlag) {
 			int i;
 			if (pushUndoFlag) {
 				PushUndo();
@@ -1240,7 +1228,7 @@ namespace MainForm {
 
 			for (i = CircuitSymbol.Count - 1; i >= 0; i--) {
 				var ce = GetSymbol(i);
-				if (willDelete(ce)) {
+				if (WillDelete(ce)) {
 					if (ce.IsMouseElm) {
 						MouseInfo.GripElm(null);
 					}
@@ -1252,11 +1240,11 @@ namespace MainForm {
 			if (hasDeleted) {
 				DeleteUnusedScopeElms();
 				CircuitSymbol.NeedAnalyze = true;
-				writeRecoveryToStorage();
+				WriteRecoveryToStorage();
 			}
 		}
 
-		static bool willDelete(BaseSymbol ce) {
+		static bool WillDelete(BaseSymbol ce) {
 			/* Is this element in the list to be deleted.
             /* This changes the logic from the previous version which would initially only
             /* delete selected elements (which could include the mouseElm) and then delete the
@@ -1267,7 +1255,7 @@ namespace MainForm {
 			return ce.IsSelected || ce.IsMouseElm;
 		}
 
-		string copyOfSelectedElms() {
+		string CopyOfSelectedElms() {
 			string r = "";
 			// Todo: CustomLogicModel
 			//CustomLogicModel.clearDumpedFlags();
@@ -1282,30 +1270,30 @@ namespace MainForm {
 			return r;
 		}
 
-		void doCopy() {
+		void DoCopy() {
 			/* clear selection when we're done if we're copying a single element using the context menu */
 			bool clearSel = (mMenuElm != null && !mMenuElm.IsSelected);
 
-			setMenuSelection();
-			mClipboard = copyOfSelectedElms();
+			SetMenuSelection();
+			mClipboard = CopyOfSelectedElms();
 
 			if (clearSel) {
-				clearSelection();
+				ClearSelection();
 			}
-			writeClipboardToStorage();
-			enablePaste();
+			WriteClipboardToStorage();
+			EnablePaste();
 		}
 
-		void enablePaste() {
+		void EnablePaste() {
 			if (string.IsNullOrEmpty(mClipboard)) {
-				readClipboardFromStorage();
+				ReadClipboardFromStorage();
 			}
 			mPasteItem.Enabled = !string.IsNullOrEmpty(mClipboard);
 		}
 
-		void doPaste(string dump) {
+		void DoPaste(string? dump) {
 			PushUndo();
-			clearSelection();
+			ClearSelection();
 			int i;
 
 			/* get old bounding box */
@@ -1323,10 +1311,10 @@ namespace MainForm {
 			/* add new items */
 			int oldsz = CircuitSymbol.Count;
 			if (dump != null) {
-				readCircuit(dump, RC_RETAIN);
+				ReadCircuit(dump, RC_RETAIN);
 			} else {
-				readClipboardFromStorage();
-				readCircuit(mClipboard, RC_RETAIN);
+				ReadClipboardFromStorage();
+				ReadCircuit(mClipboard, RC_RETAIN);
 			}
 
 			/* select new items and get their bounding box */
@@ -1377,17 +1365,17 @@ namespace MainForm {
 				}
 			}
 			CircuitSymbol.NeedAnalyze = true;
-			writeRecoveryToStorage();
+			WriteRecoveryToStorage();
 		}
 
-		void clearSelection() {
+		void ClearSelection() {
 			for (int i = 0; i != CircuitSymbol.Count; i++) {
 				var ce = GetSymbol(i);
 				ce.IsSelected = false;
 			}
 		}
 
-		void doSelectAll() {
+		void DoSelectAll() {
 			for (int i = 0; i != CircuitSymbol.Count; i++) {
 				var ce = GetSymbol(i);
 				ce.IsSelected = true;
@@ -1432,7 +1420,7 @@ namespace MainForm {
 			}
 		}
 
-		static void updateCircuit() {
+		static void UpdateCircuit() {
 			bool didAnalyze = CircuitSymbol.NeedAnalyze;
 			if (CircuitSymbol.NeedAnalyze) {
 				CircuitSymbol.Clear();
@@ -1446,7 +1434,7 @@ namespace MainForm {
 
 			if (CircuitSymbol.IsRunning) {
 				try {
-					runCircuit(didAnalyze);
+					RunCircuit(didAnalyze);
 				} catch (Exception e) {
 					Console.WriteLine("exception in runCircuit " + e + "\r\n" + e.StackTrace);
 					return;
@@ -1487,7 +1475,7 @@ namespace MainForm {
 				CustomGraphics.Instance = pdfCircuit;
 			}
 
-			drawCircuit(g);
+			DrawCircuit(g);
 			mScopeForm.Draw(pdfScope);
 
 			var info = new string[10];
@@ -1522,9 +1510,10 @@ namespace MainForm {
 				var pdf = new PDF();
 				pdf.AddPage(pdfCircuit);
 				pdf.AddPage(pdfScope);
-				var saveFileDialog = new SaveFileDialog();
-				saveFileDialog.Filter = "PDFファイル(*.pdf)|*.pdf";
-				saveFileDialog.FileName = Path.GetFileNameWithoutExtension(mFileName);
+				var saveFileDialog = new SaveFileDialog {
+					Filter = "PDFファイル(*.pdf)|*.pdf",
+					FileName = Path.GetFileNameWithoutExtension(mFileName)
+				};
 				saveFileDialog.ShowDialog();
 				try {
 					pdf.Save(saveFileDialog.FileName);
@@ -1543,7 +1532,7 @@ namespace MainForm {
 			mLastFrameTime = mLastTime;
 		}
 
-		static void runCircuit(bool didAnalyze) {
+		static void RunCircuit(bool didAnalyze) {
 			if (CircuitSymbol.Count == 0) {
 				return;
 			}
@@ -1589,7 +1578,7 @@ namespace MainForm {
 			mLastIterTime = lit;
 		}
 
-		static void drawCircuit(CustomGraphics g) {
+		static void DrawCircuit(CustomGraphics g) {
 			g.Clear(ControlPanel.ChkPrintable.Checked ? Color.White : Color.Black);
 			g.ScrollCircuit(MouseInfo.Offset);
 

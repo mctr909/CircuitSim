@@ -12,7 +12,7 @@ namespace Circuit.Symbol.Active {
 
 		PointF[] mTextp;
 		PointF[] mTriangle;
-		Point mPosOut = new Point();
+		Point mPosOut = new();
 		PointF[] mPosIn1 = new PointF[2];
 		PointF[] mPosIn2 = new PointF[2];
 
@@ -25,10 +25,11 @@ namespace Circuit.Symbol.Active {
 		}
 
 		public OpAmp(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmOpAmp();
-			mElm.MaxOut = st.nextTokenDouble();
-			mElm.MinOut = st.nextTokenDouble();
-			mElm.Gain = st.nextTokenDouble();
+			mElm = new ElmOpAmp {
+				MaxOut = st.nextTokenDouble(),
+				MinOut = st.nextTokenDouble(),
+				Gain = st.nextTokenDouble()
+			};
 			mElm.Volts[ElmOpAmp.V_N] = st.nextTokenDouble();
 			mElm.Volts[ElmOpAmp.V_P] = st.nextTokenDouble();
 			Post.NoDiagonal = true;
@@ -64,14 +65,14 @@ namespace Circuit.Symbol.Active {
 			var signp = new PointF[2];
 			InterpolationLeadAB(ref signp[0], ref signp[1], 0.2, hs);
 
-			mTextp = new PointF[] {
+			mTextp = [
 				new PointF(signp[0].X - 3, signp[0].Y),
 				new PointF(signp[0].X + 3, signp[0].Y),
 				new PointF(signp[1].X - 3, signp[1].Y),
 				new PointF(signp[1].X + 3, signp[1].Y),
 				new PointF(signp[1].X, signp[1].Y - 3),
 				new PointF(signp[1].X, signp[1].Y + 3)
-			};
+			];
 
 			var tris = new PointF[2];
 			InterpolationLeadAB(ref tris[0], ref tris[1], 0, hs * 2);

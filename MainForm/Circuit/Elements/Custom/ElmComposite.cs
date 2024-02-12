@@ -9,7 +9,7 @@ namespace Circuit.Elements.Custom {
 
 	class ElmComposite : BaseElement {
 		/* list of elements contained in this subcircuit */
-		protected List<BaseElement> CompList = new List<BaseElement>();
+		protected List<BaseElement> CompList = [];
 
 		/* list of nodes, mapping each one to a list of elements that reference that node */
 		List<CircuitNode> mCompNodeList;

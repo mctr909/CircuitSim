@@ -2,7 +2,7 @@
 
 namespace Circuit.Symbol.Output {
 	class DataRecorder : BaseSymbol {
-		SaveFileDialog saveFileDialog = new SaveFileDialog();
+		SaveFileDialog saveFileDialog = new();
 		string mColName = "";
 		PointF[] mTextPoly;
 		ElmDataRecorder mElm;

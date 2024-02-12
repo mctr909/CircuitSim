@@ -60,12 +60,8 @@
 			if (ui == GrippedElm) {
 				return;
 			}
-			if (GrippedElm != null) {
-				GrippedElm.Select(false);
-			}
-			if (ui != null) {
-				ui.Select(true);
-			}
+			GrippedElm?.Select(false);
+			ui?.Select(true);
 			GrippedElm = ui;
 		}
 		public static Point ToScreenPos(Point pos) {

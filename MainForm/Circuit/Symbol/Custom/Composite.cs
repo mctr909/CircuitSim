@@ -5,7 +5,7 @@ namespace Circuit.Symbol.Custom {
 		/* need to use escape() instead of converting spaces to _'s so composite elements can be nested */
 		protected const int FLAG_ESCAPE = 1;
 
-		protected List<BaseSymbol> CompList = new List<BaseSymbol>();
+		protected List<BaseSymbol> CompList = [];
 
 		public Composite(Point pos) : base(pos) { }
 

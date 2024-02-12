@@ -16,8 +16,9 @@ namespace Circuit.Symbol.Passive {
 		public override BaseElement Element { get { return mElm; } }
 
 		public Capacitor(Point pos) : base(pos) {
-			mElm = new ElmCapacitor();
-			mElm.Capacitance = mLastValue;
+			mElm = new ElmCapacitor {
+				Capacitance = mLastValue
+			};
 			ReferenceName = mLastReferenceName;
 		}
 
@@ -26,9 +27,10 @@ namespace Circuit.Symbol.Passive {
 		}
 
 		public Capacitor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmCapacitor();
-			mElm.Capacitance = st.nextTokenDouble(mLastValue);
-			mElm.VoltDiff = st.nextTokenDouble(0);
+			mElm = new ElmCapacitor {
+				Capacitance = st.nextTokenDouble(mLastValue),
+				VoltDiff = st.nextTokenDouble(0)
+			};
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.CAPACITOR; } }

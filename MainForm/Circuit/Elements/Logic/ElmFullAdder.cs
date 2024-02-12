@@ -13,10 +13,12 @@ namespace Circuit.Elements.Gate {
 			chip.sizeX = 2;
 			chip.sizeY = 3;
 			Pins = new Chip.Pin[TermCount];
-			Pins[0] = new Chip.Pin(chip, 2, Chip.SIDE_E, "S");
-			Pins[0].output = true;
-			Pins[1] = new Chip.Pin(chip, 0, Chip.SIDE_E, "C");
-			Pins[1].output = true;
+			Pins[0] = new Chip.Pin(chip, 2, Chip.SIDE_E, "S") {
+				output = true
+			};
+			Pins[1] = new Chip.Pin(chip, 0, Chip.SIDE_E, "C") {
+				output = true
+			};
 			Pins[2] = new Chip.Pin(chip, 0, Chip.SIDE_W, "A");
 			Pins[3] = new Chip.Pin(chip, 1, Chip.SIDE_W, "B");
 			Pins[4] = new Chip.Pin(chip, 2, Chip.SIDE_W, "Cin");

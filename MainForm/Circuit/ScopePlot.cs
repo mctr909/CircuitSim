@@ -27,7 +27,7 @@
 			INVALID
 		}
 
-		public List<ScopeWave> Waves = new List<ScopeWave>();
+		public List<ScopeWave> Waves = [];
 
 		int mFlags {
 			set {
@@ -54,7 +54,7 @@
 
 		#region [private variable]
 		CustomGraphics mContext;
-		FFT mFft = new FFT(16);
+		FFT mFft = new(16);
 		double[] mReal = new double[16];
 		double[] mImag = new double[16];
 		double mFftMax = 0.0;
@@ -197,8 +197,9 @@
 					var subElmIdx = int.Parse(subElmCol[0]);
 					var subElm = CircuitSymbol.List[subElmIdx];
 					var color = (int)Enum.Parse(typeof(E_COLOR), subElmCol[1]);
-					var p = new ScopeWave(subElm);
-					p.Speed = Speed;
+					var p = new ScopeWave(subElm) {
+						Speed = Speed
+					};
 					p.SetColor(color);
 					Waves.Add(p);
 				}
@@ -376,7 +377,7 @@
 				Waves.Clear();
 				return;
 			}
-			Waves = new List<ScopeWave>() { new ScopeWave(ui) };
+			Waves = new List<ScopeWave>() { new(ui) };
 			ShowVoltage = true;
 			ResetGraph();
 		}

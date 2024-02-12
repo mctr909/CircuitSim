@@ -18,7 +18,7 @@
 		internal TextBox MaxBox;
 		internal TextBox LabelBox;
 
-		readonly Font mTextFont = new Font("Arial", 11);
+		readonly Font mTextFont = new("Arial", 11);
 		bool mEnableSliders = false;
 
 		public ElementInfo(string name = "") {
@@ -47,30 +47,27 @@
 		public ElementInfo(string valueName, double val, bool enableSliders = true) {
 			Name = valueName;
 			Value = val;
-			TextDouble = new TextBox()
-			{
+			TextDouble = new TextBox {
 				Text = val.ToString(),
 				Width = 50,
-				TextAlign = HorizontalAlignment.Right
+				TextAlign = HorizontalAlignment.Right,
+				Font = mTextFont
 			};
-			TextDouble.Font = mTextFont;
 			mEnableSliders = enableSliders;
 		}
 
 		public ElementInfo(string valueName, int val) {
 			Name = valueName;
 			Value = val;
-			TextInt = new TextBox()
-			{
+			TextInt = new TextBox {
 				Text = val.ToString(),
-				Width = 60
+				Width = 60,
+				Font = mTextFont
 			};
-			TextInt.Font = mTextFont;
 		}
 
 		public ElementInfo(string buttonName, EventHandler e) {
-			Button = new Button()
-			{
+			Button = new Button {
 				AutoSize = true,
 				Text = buttonName
 			};
@@ -80,8 +77,7 @@
 		public ElementInfo(string checkboxName, bool val) {
 			Name = checkboxName;
 			Value = 0;
-			CheckBox = new CheckBox()
-			{
+			CheckBox = new CheckBox {
 				AutoSize = true,
 				Text = checkboxName,
 				Checked = val
@@ -91,8 +87,9 @@
 		public ElementInfo(string listName, int defaultIndex, string[] val) {
 			Name = listName;
 			Value = 0;
-			Choice = new ComboBox();
-			Choice.AutoSize = true;
+			Choice = new ComboBox {
+				AutoSize = true
+			};
 			foreach (var s in val) {
 				Choice.Items.Add(s);
 			}

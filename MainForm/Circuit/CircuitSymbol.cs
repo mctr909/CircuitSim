@@ -135,8 +135,8 @@ namespace Circuit {
 		public static List<Point> DrawPostList { get; set; } = new List<Point>();
 		public static List<Point> BadConnectionList { get; set; } = new List<Point>();
 
-		static Dictionary<Point, int> mPostCountMap = new Dictionary<Point, int>();
-		static Dictionary<Point, NodeMapEntry> mNodeMap = new Dictionary<Point, NodeMapEntry>();
+		static Dictionary<Point, int> mPostCountMap = [];
+		static Dictionary<Point, NodeMapEntry> mNodeMap = [];
 
 		#region public method
 		public static void Clear() {
@@ -231,9 +231,10 @@ namespace Circuit {
                         /* the code below to connect unconnected nodes may connect a different node to ground) */
 						if (!ccln || cln.Node == -1) {
 							var cn = new CircuitNode();
-							var cnl = new CircuitNode.LINK();
-							cnl.Num = j;
-							cnl.Elm = ce;
+							var cnl = new CircuitNode.LINK {
+								Num = j,
+								Elm = ce
+							};
 							cn.Links.Add(cnl);
 							ce.SetNode(j, Circuit.Nodes.Count);
 							if (ccln) {
@@ -244,9 +245,10 @@ namespace Circuit {
 							Circuit.Nodes.Add(cn);
 						} else {
 							var n = cln.Node;
-							var cnl = new CircuitNode.LINK();
-							cnl.Num = j;
-							cnl.Elm = ce;
+							var cnl = new CircuitNode.LINK {
+								Num = j,
+								Elm = ce
+							};
 							getCircuitNode(n).Links.Add(cnl);
 							ce.SetNode(j, n);
 							/* if it's the ground node, make sure the node voltage is 0,
@@ -257,11 +259,13 @@ namespace Circuit {
 						}
 					}
 					for (int j = 0; j < inodes; j++) {
-						var cnl = new CircuitNode.LINK();
-						cnl.Num = j + posts;
-						cnl.Elm = ce;
-						var cn = new CircuitNode();
-						cn.Internal = true;
+						var cnl = new CircuitNode.LINK {
+							Num = j + posts,
+							Elm = ce
+						};
+						var cn = new CircuitNode {
+							Internal = true
+						};
 						cn.Links.Add(cnl);
 						ce.SetNode(cnl.Num, Circuit.Nodes.Count);
 						Circuit.Nodes.Add(cn);

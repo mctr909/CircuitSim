@@ -17,9 +17,10 @@ namespace Circuit.Symbol.Input {
 		}
 
 		public Sweep(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmSweep(st);
-			mElm.IsLog = 0 != (mFlags & FLAG_LOG);
-			mElm.BothSides = 0 != (mFlags & FLAG_BIDIR);
+			mElm = new ElmSweep(st) {
+				IsLog = 0 != (mFlags & FLAG_LOG),
+				BothSides = 0 != (mFlags & FLAG_BIDIR)
+			};
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.SWEEP; } }

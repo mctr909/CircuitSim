@@ -32,8 +32,9 @@ namespace Circuit.Elements.Logic {
 			for (var i = 0; i != mSelectBitCount; i++, n++) {
 				Pins[n] = new Chip.Pin(chip, i + 1, Chip.SIDE_S, "S" + i);
 			}
-			Pins[n] = new Chip.Pin(chip, 0, Chip.SIDE_E, "Q");
-			Pins[n].output = true;
+			Pins[n] = new Chip.Pin(chip, 0, Chip.SIDE_E, "Q") {
+				output = true
+			};
 
 			AllocNodes();
 		}

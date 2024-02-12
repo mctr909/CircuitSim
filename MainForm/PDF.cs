@@ -1,7 +1,5 @@
 ﻿using System.IO.Compression;
 
-using Circuit;
-
 class PDF {
 	const string FontName = "Arial";
 
@@ -342,7 +340,7 @@ class PDF {
 		}
 	}
 
-	List<Page> mPageList = new List<Page>();
+	List<Page> mPageList = [];
 
 	public void AddPage(Page page) {
 		mPageList.Add(page);
