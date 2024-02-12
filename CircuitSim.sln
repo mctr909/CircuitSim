@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitSim", "CircuitSim\CircuitSim.csproj", "{3C52C80D-650B-4666-A893-0B40DA325868}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainForm", "MainForm\MainForm.csproj", "{7348E31F-26A4-4D18-8BD2-E09150622CF3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +21,14 @@ Global
 		{3C52C80D-650B-4666-A893-0B40DA325868}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3C52C80D-650B-4666-A893-0B40DA325868}.Release|x64.ActiveCfg = Release|x64
 		{3C52C80D-650B-4666-A893-0B40DA325868}.Release|x64.Build.0 = Release|x64
+		{7348E31F-26A4-4D18-8BD2-E09150622CF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7348E31F-26A4-4D18-8BD2-E09150622CF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7348E31F-26A4-4D18-8BD2-E09150622CF3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7348E31F-26A4-4D18-8BD2-E09150622CF3}.Debug|x64.Build.0 = Debug|Any CPU
+		{7348E31F-26A4-4D18-8BD2-E09150622CF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7348E31F-26A4-4D18-8BD2-E09150622CF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7348E31F-26A4-4D18-8BD2-E09150622CF3}.Release|x64.ActiveCfg = Release|Any CPU
+		{7348E31F-26A4-4D18-8BD2-E09150622CF3}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
