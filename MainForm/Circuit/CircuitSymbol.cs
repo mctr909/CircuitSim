@@ -152,7 +152,7 @@ namespace Circuit {
 				return;
 			}
 
-			Circuit.StopMessage = null;
+			Circuit.Stopped = false;
 			Circuit.Nodes = new List<CircuitNode>();
 			mPostCountMap = new Dictionary<Point, int>();
 
@@ -386,7 +386,7 @@ namespace Circuit {
 					if (ce is ElmVoltage) {
 						var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Nodes[1], Circuit.ElmList, Circuit.Nodes.Count);
 						if (fpi.FindPath(ce.Nodes[0])) {
-							Circuit.Stop("Voltage source/wire loop with no resistance!");
+							stop("Voltage source/wire loop with no resistance!");
 							return;
 						}
 					}
@@ -395,7 +395,7 @@ namespace Circuit {
 					if (ce is ElmRail || ce is ElmLogicInput) {
 						var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Nodes[0], Circuit.ElmList, Circuit.Nodes.Count);
 						if (fpi.FindPath(0)) {
-							Circuit.Stop("Voltage source/wire loop with no resistance!");
+							stop("Voltage source/wire loop with no resistance!");
 							return;
 						}
 					}
@@ -415,7 +415,7 @@ namespace Circuit {
                         /* give an error. */
 						fpi = new PathInfo(PathInfo.TYPE.CAPACITOR, ce, ce.Nodes[1], Circuit.ElmList, Circuit.Nodes.Count);
 						if (fpi.FindPath(ce.Nodes[0])) {
-							Circuit.Stop("Capacitor loop with no resistance!");
+							stop("Capacitor loop with no resistance!");
 							return;
 						}
 					}
@@ -675,7 +675,7 @@ namespace Circuit {
 					Circuit.WireInfoList.Add(tmp);
 					moved++;
 					if (moved > Circuit.WireInfoList.Count * 2) {
-						Circuit.Stop("wire loop detected");
+						stop("wire loop detected");
 						return false;
 					}
 				}
@@ -723,7 +723,6 @@ namespace Circuit {
 		}
 
 		static void stop(string s) {
-			Circuit.StopMessage = s;
 			Circuit.Matrix = null;  /* causes an exception */
 			Circuit.SetSimRunning(false);
 		}

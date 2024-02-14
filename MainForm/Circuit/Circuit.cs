@@ -34,7 +34,7 @@ namespace Circuit {
 		public static Random Random = new();
 		public static List<BaseElement> ElmList = [];
 		public static double Time;
-		public static string StopMessage;
+		public static bool Stopped;
 		public static bool Converged;
 		public static int SubIterations;
 
@@ -55,15 +55,14 @@ namespace Circuit {
 		public static double[,] OrigMatrix;
 		#endregion
 
-		public static void Stop(string s) {
-			StopMessage = s;
+		public static void Stop(BaseElement elm) {
+			Stopped = true;
 			Matrix = null;  /* causes an exception */
 			SetSimRunning(false);
 		}
 		public static void SetSimRunning(bool s) {
-			Console.WriteLine(StopMessage);
 			if (s) {
-				if (StopMessage != null) {
+				if (Stopped) {
 					return;
 				}
 				CircuitSymbol.IsRunning = true;
@@ -92,7 +91,7 @@ namespace Circuit {
 				for (int i = 0; i < ElmList.Count; i++) {
 					ElmList[i].DoIteration();
 				}
-				if (StopMessage != null) {
+				if (Stopped) {
 					return false;
 				}
 

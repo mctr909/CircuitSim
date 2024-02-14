@@ -151,18 +151,11 @@
 			Setup(g.Width, g.Height);
 
 			var ct = PlotCount;
-			if (Circuit.StopMessage != null) {
-				ct = 0;
-			}
 			for (int i = 0; i != ct; i++) {
 				var plot = mPlots[i];
 				plot.MouseCursorX = mMouseCursorX;
 				plot.MouseCursorY = mMouseCursorY;
 				plot.Draw(g);
-			}
-
-			if (Circuit.StopMessage != null) {
-				g.DrawLeftText(Circuit.StopMessage, 10, 10);
 			}
 			Flush();
 		}
