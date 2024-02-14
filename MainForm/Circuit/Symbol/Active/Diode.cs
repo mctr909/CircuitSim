@@ -34,7 +34,7 @@ namespace Circuit.Symbol.Active {
 
 		protected override void dump(List<object> optionList) {
 			mFlags |= FLAG_MODEL;
-			optionList.Add(Utils.Escape(mElm.ModelName));
+			optionList.Add(TextUtils.Escape(mElm.ModelName));
 		}
 
 		public override void SetPoints() {

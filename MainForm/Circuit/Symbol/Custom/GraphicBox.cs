@@ -32,10 +32,10 @@
 			var x2 = Post.B.X;
 			var y2 = Post.B.Y;
 			return Math.Min(
-				Utils.DistanceOnLine(x1, y1, x2, y1, p.X, p.Y), Math.Min(
-				Utils.DistanceOnLine(x1, y1, x1, y2, p.X, p.Y), Math.Min(
-				Utils.DistanceOnLine(x2, y2, x2, y1, p.X, p.Y),
-				Utils.DistanceOnLine(x2, y2, x1, y2, p.X, p.Y)
+				Post.DistanceOnLine(x1, y1, x2, y1, p.X, p.Y), Math.Min(
+				Post.DistanceOnLine(x1, y1, x1, y2, p.X, p.Y), Math.Min(
+				Post.DistanceOnLine(x2, y2, x2, y1, p.X, p.Y),
+				Post.DistanceOnLine(x2, y2, x1, y2, p.X, p.Y)
 			)));
 		}
 

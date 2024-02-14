@@ -182,7 +182,7 @@
 		public static void UndumpModel(StringTokenizer st) {
 			string name;
 			if (st.nextToken(out name)) {
-				name = Utils.UnEscape(name);
+				name = TextUtils.UnEscape(name);
 				var dm = getModelWithName(name);
 				dm.undump(st);
 			}
@@ -264,7 +264,7 @@
 
 		public string Dump() {
 			Dumped = true;
-			return "34 " + Utils.Escape(Name)
+			return "34 " + TextUtils.Escape(Name)
 				+ " " + flags
 				+ " " + SaturationCurrent
 				+ " " + SeriesResistance

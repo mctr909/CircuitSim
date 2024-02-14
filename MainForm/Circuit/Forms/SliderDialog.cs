@@ -187,8 +187,8 @@ namespace Circuit.Forms {
 				{
 					adj.SliderText = ei.LabelBox.Text;
 					adj.Label.Text = adj.SliderText;
-					Utils.ParseUnits(ei.MinBox.Text, out adj.MinValue);
-					Utils.ParseUnits(ei.MaxBox.Text, out adj.MaxValue);
+					TextUtils.ParseUnits(ei.MinBox.Text, out adj.MinValue);
+					TextUtils.ParseUnits(ei.MaxBox.Text, out adj.MaxValue);
 					adj.Value = ei.Value;
 				}
 			}

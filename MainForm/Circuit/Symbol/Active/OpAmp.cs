@@ -98,13 +98,13 @@ namespace Circuit.Symbol.Active {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "オペアンプ";
-			arr[1] = "+電源：" + Utils.VoltageText(mElm.MaxOut);
-			arr[2] = "-電源：" + Utils.VoltageText(mElm.MinOut);
-			arr[3] = "Vin(+)：" + Utils.VoltageText(mElm.Volts[ElmOpAmp.V_P]);
-			arr[4] = "Vin(-)：" + Utils.VoltageText(mElm.Volts[ElmOpAmp.V_N]);
+			arr[1] = "+電源：" + TextUtils.Voltage(mElm.MaxOut);
+			arr[2] = "-電源：" + TextUtils.Voltage(mElm.MinOut);
+			arr[3] = "Vin(+)：" + TextUtils.Voltage(mElm.Volts[ElmOpAmp.V_P]);
+			arr[4] = "Vin(-)：" + TextUtils.Voltage(mElm.Volts[ElmOpAmp.V_N]);
 			var vo = Math.Max(Math.Min(mElm.Volts[ElmOpAmp.V_O], mElm.MaxOut), mElm.MinOut);
-			arr[5] = "Vout：" + Utils.VoltageText(vo);
-			arr[6] = "Iout：" + Utils.CurrentText(-mElm.Current);
+			arr[5] = "Vout：" + TextUtils.Voltage(vo);
+			arr[6] = "Iout：" + TextUtils.Current(-mElm.Current);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

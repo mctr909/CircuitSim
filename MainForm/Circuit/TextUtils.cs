@@ -1,40 +1,14 @@
 ﻿using System.Text.RegularExpressions;
 
 namespace Circuit {
-	enum E_SCALE {
+	enum EScale {
 		AUTO,
-		X1,
-		M,
-		MU,
+		FIXED,
+		FIXED_MILLI,
+		FIXED_MICRO,
 	}
 
-	static class Utils {
-		public static double DistanceOnLine(PointF a, PointF b, PointF p) {
-			return DistanceOnLine(a.X, a.Y, b.X, b.Y, p.X, p.Y);
-		}
-
-		public static double DistanceOnLine(double ax, double ay, double bx, double by, double px, double py) {
-			var abx = bx - ax;
-			var aby = by - ay;
-			if (0 == abx * abx + aby * aby) {
-				px -= ax;
-				py -= ay;
-				return Math.Sqrt(px * px + py * py);
-			}
-			var apx = px - ax;
-			var apy = py - ay;
-			var r = (apx * abx + apy * aby) / (abx * abx + aby * aby);
-			if (1.0 < r) {
-				r = 1.0;
-			}
-			if (r < 0.0) {
-				r = 0.0;
-			}
-			var sx = px - (ax + abx * r);
-			var sy = py - (ay + aby * r);
-			return Math.Sqrt(sx * sx + sy * sy);
-		}
-
+	static class TextUtils {
 		public static string Escape(string s) {
 			if (s.Length == 0) {
 				return "\\0";
@@ -78,45 +52,37 @@ namespace Circuit {
 			return s;
 		}
 
-		public static string VoltageText(double v) {
-			return unitText(v, "V", false);
+		public static string Voltage(double v) {
+			return FormatWithUnit(v, "V", false);
 		}
 
-		public static string VoltageAbsText(double v) {
-			return unitText(Math.Abs(v), "V", false, false);
+		public static string VoltageAbs(double v) {
+			return FormatWithUnit(Math.Abs(v), "V", false, false);
 		}
 
-		public static string CurrentText(double i) {
-			return unitText(i, "A", false);
+		public static string Current(double i) {
+			return FormatWithUnit(i, "A", false);
 		}
 
-		public static string CurrentAbsText(double i) {
-			return unitText(Math.Abs(i), "A", false, false);
+		public static string CurrentAbs(double i) {
+			return FormatWithUnit(Math.Abs(i), "A", false, false);
 		}
 
-		public static string FrequencyText(double v, bool isShort = false) {
-			return unitText(v, "Hz", isShort, false);
+		public static string Frequency(double v, bool isShort = false) {
+			return FormatWithUnit(v, "Hz", isShort, false);
 		}
 
-		public static string PhaseText(double rad) {
+		public static string Phase(double rad) {
 			if (rad < -Math.PI) {
 				rad += Math.PI * 2;
 			}
 			if (Math.PI < rad) {
 				rad -= Math.PI * 2;
 			}
-			return unitText(rad * 180 / Math.PI, "deg");
+			return FormatWithUnit(rad * 180 / Math.PI, "deg");
 		}
 
-		public static string UnitText(double v, string u = "") {
-			return unitText(v, u);
-		}
-
-		public static string UnitText3digit(double v, string u = "", bool sign = true) {
-			return unitText(v, u, false, sign);
-		}
-
-		public static string TimeText(double v) {
+		public static string Time(double v) {
 			if (v >= 60) {
 				var h = Math.Floor(v / 3600);
 				v -= 3600 * h;
@@ -127,20 +93,28 @@ namespace Circuit {
 				}
 				return h + ":" + ((m >= 10) ? "" : "0") + m + ":" + ((v >= 10) ? "" : "0") + v.ToString("0.00");
 			}
-			return unitText(v, "s", false, false);
+			return FormatWithUnit(v, "s", false, false);
 		}
 
-		public static string UnitTextWithScale(double val, string utext, E_SCALE scale) {
-			if (scale == E_SCALE.X1) {
-				return val.ToString("0.00") + " " + utext;
+		public static string Unit(double v, string u = "") {
+			return FormatWithUnit(v, u);
+		}
+
+		public static string Unit3digit(double v, string u = "", bool sign = true) {
+			return FormatWithUnit(v, u, false, sign);
+		}
+
+		public static string UnitWithScale(double val, string utext, EScale scale) {
+			if (scale == EScale.FIXED) {
+				return val.ToString("+0.00;-0.00; 0.00") + utext;
 			}
-			if (scale == E_SCALE.M) {
-				return (1e3 * val).ToString("0") + " m" + utext;
+			if (scale == EScale.FIXED_MILLI) {
+				return (1e3 * val).ToString("+0.00;-0.00; 0.00") + "m" + utext;
 			}
-			if (scale == E_SCALE.MU) {
-				return (1e6 * val).ToString("0") + " u" + utext;
+			if (scale == EScale.FIXED_MICRO) {
+				return (1e6 * val).ToString("+0.00;-0.00; 0.00") + "u" + utext;
 			}
-			return unitText(val, utext, false);
+			return FormatWithUnit(val, utext, false);
 		}
 
 		public static bool ParseUnits(string s, out double ret) {
@@ -189,7 +163,7 @@ namespace Circuit {
 			}
 		}
 
-		static string unitText(double v, string u, bool isShort = true, bool sign = true) {
+		static string FormatWithUnit(double v, string u, bool isShort = true, bool sign = true) {
 			var va = Math.Abs(v);
 			if (va < 1e-14) {
 				return (isShort ? "0" : (sign ? " 0.00" : "0.00")) + u;

@@ -215,18 +215,18 @@ namespace Circuit.Symbol.Active {
 		}
 
 		public override void GetInfo(string[] arr) {
-			arr[0] = ((mElm.Nch == -1) ? "Pch MOSFET" : "Nch MOSFET") + "(閾値電圧：" + Utils.VoltageText(mElm.Nch * mElm.Vth) + ")";
+			arr[0] = ((mElm.Nch == -1) ? "Pch MOSFET" : "Nch MOSFET") + "(閾値電圧：" + TextUtils.Voltage(mElm.Nch * mElm.Vth) + ")";
 			arr[1] = "動作領域：" + (
 				(mElm.Mode == 0) ? "遮断" :
 				(mElm.Mode == 1) ? "線形" : "飽和"
 			);
-			arr[2] = "Vgs：" + Utils.VoltageText(mElm.Vg - (mElm.Nch == -1 ? mElm.Vd : mElm.Vs));
+			arr[2] = "Vgs：" + TextUtils.Voltage(mElm.Vg - (mElm.Nch == -1 ? mElm.Vd : mElm.Vs));
 			var vds = mElm.Vd - mElm.Vs;
-			arr[3] = ((mElm.Nch == 1) ? "Vds：" : "Vsd：") + Utils.VoltageText(vds);
-			arr[4] = ((mElm.Nch == 1) ? "Ids：" : "Isd：") + Utils.CurrentText(mElm.Current);
-			arr[5] = "R：" + Utils.UnitText(vds / mElm.Current, "Ω");
-			arr[6] = "gm：" + Utils.UnitText(mElm.Gm, "A/V");
-			arr[7] = "Ib：" + Utils.UnitText(
+			arr[3] = ((mElm.Nch == 1) ? "Vds：" : "Vsd：") + TextUtils.Voltage(vds);
+			arr[4] = ((mElm.Nch == 1) ? "Ids：" : "Isd：") + TextUtils.Current(mElm.Current);
+			arr[5] = "R：" + TextUtils.Unit(vds / mElm.Current, "Ω");
+			arr[6] = "gm：" + TextUtils.Unit(mElm.Gm, "A/V");
+			arr[7] = "Ib：" + TextUtils.Unit(
 				mElm.BodyTerminal == 1 ? -mElm.DiodeCurrent1 :
 				mElm.BodyTerminal == 2 ? mElm.DiodeCurrent2 :
 				-mElm.Nch * (mElm.DiodeCurrent1 + mElm.DiodeCurrent2), "A");

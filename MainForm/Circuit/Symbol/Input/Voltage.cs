@@ -139,7 +139,7 @@ namespace Circuit.Symbol.Input {
 				int hs = 10;
 				InterpolationLeadAB(ref mPs1, ref mPs2, 0, hs * 0.5);
 				InterpolationLeadAB(ref mPs3, ref mPs4, 1, hs);
-				var s = Utils.UnitText(mElm.MaxVoltage, "V");
+				var s = TextUtils.Unit(mElm.MaxVoltage, "V");
 				var w = CustomGraphics.Instance.GetTextSize(s).Width;
 				InterpolationPost(ref mTextPos, 0.5, w * 0.5 + 10);
 				mTextRot = Angle(Post.A, Post.B) + Math.PI / 2;
@@ -328,14 +328,14 @@ namespace Circuit.Symbol.Input {
 			if (mElm.WaveForm == ElmVoltage.WAVEFORM.DC) {
 				DrawLine(mPs1, mPs2);
 				DrawLine(mPs3, mPs4);
-				var s = Utils.UnitText(mElm.MaxVoltage, "V");
+				var s = TextUtils.Unit(mElm.MaxVoltage, "V");
 				DrawCenteredText(s, mTextPos, mTextRot);
 			} else {
 				DrawWaveform(mPs1);
 				if (ControlPanel.ChkShowValues.Checked) {
-					var s = Utils.UnitText(mElm.MaxVoltage, "V\r\n");
-					s += Utils.FrequencyText(mElm.Frequency, true) + "\r\n";
-					s += Utils.PhaseText(mElm.Phase + mElm.PhaseOffset);
+					var s = TextUtils.Unit(mElm.MaxVoltage, "V\r\n");
+					s += TextUtils.Frequency(mElm.Frequency, true) + "\r\n";
+					s += TextUtils.Phase(mElm.Phase + mElm.PhaseOffset);
 					var w = g.GetTextSize(s).Width;
 					InterpolationPost(ref mTextPos, 0.5, w - 4);
 					DrawCenteredText(s, mTextPos);
@@ -381,14 +381,14 @@ namespace Circuit.Symbol.Input {
 				arr[0] = mElm.WaveForm.ToString();
 				break;
 			}
-			arr[1] = "電圧：" + Utils.VoltageText(mElm.VoltageDiff);
+			arr[1] = "電圧：" + TextUtils.Voltage(mElm.VoltageDiff);
 			int i = 2;
 			if (mElm.WaveForm != ElmVoltage.WAVEFORM.DC && mElm.WaveForm != ElmVoltage.WAVEFORM.NOISE) {
-				arr[i++] = "振幅：" + Utils.VoltageText(mElm.MaxVoltage);
-				arr[i++] = "周波数：" + Utils.FrequencyText(mElm.Frequency);
+				arr[i++] = "振幅：" + TextUtils.Voltage(mElm.MaxVoltage);
+				arr[i++] = "周波数：" + TextUtils.Frequency(mElm.Frequency);
 				var phase = mElm.Phase + mElm.PhaseOffset;
 				phase %= 2 * Math.PI;
-				arr[i++] = "位相：" + Utils.UnitText3digit(phase * 180 / Math.PI, "deg");
+				arr[i++] = "位相：" + TextUtils.Unit3digit(phase * 180 / Math.PI, "deg");
 			}
 		}
 

@@ -84,17 +84,17 @@ namespace Circuit.Symbol.Passive {
 				DrawArc(p, COIL_WIDTH, mCoilAngle, -180);
 			}
 			DrawName();
-			DrawValue(Utils.UnitText(mElm.Inductance));
+			DrawValue(TextUtils.Unit(mElm.Inductance));
 			DoDots();
 		}
 
 		public override void GetInfo(string[] arr) {
 			if (string.IsNullOrEmpty(ReferenceName)) {
-				arr[0] = "コイル：" + Utils.UnitText(mElm.Inductance, "H");
+				arr[0] = "コイル：" + TextUtils.Unit(mElm.Inductance, "H");
 				GetBasicInfo(1, arr);
 			} else {
 				arr[0] = ReferenceName;
-				arr[1] = "コイル：" + Utils.UnitText(mElm.Inductance, "H");
+				arr[1] = "コイル：" + TextUtils.Unit(mElm.Inductance, "H");
 				GetBasicInfo(2, arr);
 			}
 		}

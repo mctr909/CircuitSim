@@ -53,7 +53,7 @@ namespace Circuit.Symbol.Input {
 			FillPolygon(mArrow);
 			DoDots();
 			if (ControlPanel.ChkShowValues.Checked) {
-				var s = Utils.CurrentText(mCurrentValue);
+				var s = TextUtils.Current(mCurrentValue);
 				DrawCenteredText(s, mTextPos);
 			}
 		}

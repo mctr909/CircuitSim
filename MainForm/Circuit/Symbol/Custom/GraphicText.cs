@@ -12,14 +12,14 @@
 		public GraphicText(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
 			mFontSize = st.nextTokenInt(11);
 			st.nextToken(out mText);
-			mText = Utils.UnEscape(mText);
+			mText = TextUtils.UnEscape(mText);
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.TEXT; } }
 
 		protected override void dump(List<object> optionList) {
 			optionList.Add(mFontSize);
-			optionList.Add(Utils.Escape(mText));
+			optionList.Add(TextUtils.Escape(mText));
 		}
 
 		public override double Distance(Point p) {

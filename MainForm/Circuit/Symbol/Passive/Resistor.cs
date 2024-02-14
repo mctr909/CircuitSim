@@ -139,18 +139,18 @@ namespace Circuit.Symbol.Passive {
 			}
 
 			DrawName();
-			DrawValue(Utils.UnitText(mElm.Resistance));
+			DrawValue(TextUtils.Unit(mElm.Resistance));
 
 			DoDots();
 		}
 
 		public override void GetInfo(string[] arr) {
 			if (string.IsNullOrEmpty(ReferenceName)) {
-				arr[0] = "抵抗：" + Utils.UnitText(mElm.Resistance, "Ω");
+				arr[0] = "抵抗：" + TextUtils.Unit(mElm.Resistance, "Ω");
 				GetBasicInfo(1, arr);
 			} else {
 				arr[0] = ReferenceName;
-				arr[1] = "抵抗：" + Utils.UnitText(mElm.Resistance, "Ω");
+				arr[1] = "抵抗：" + TextUtils.Unit(mElm.Resistance, "Ω");
 				GetBasicInfo(2, arr);
 			}
 		}

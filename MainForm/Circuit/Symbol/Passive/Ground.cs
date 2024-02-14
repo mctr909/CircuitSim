@@ -45,7 +45,7 @@ namespace Circuit.Symbol.Passive {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "接地";
-			arr[1] = "電流：" + Utils.CurrentText(mElm.Current);
+			arr[1] = "電流：" + TextUtils.Current(mElm.Current);
 		}
 	}
 }

@@ -64,9 +64,9 @@ namespace Circuit.Symbol.Passive {
 
 		public override double Distance(Point p) {
 			return Math.Min(
-				Utils.DistanceOnLine(mTermA, mTermB, p), Math.Min(
-				Utils.DistanceOnLine(mArrowPoint, mCorner2, p),
-				Utils.DistanceOnLine(mCorner2, mTermSlider, p)
+				Post.DistanceOnLine(mTermA, mTermB, p), Math.Min(
+				Post.DistanceOnLine(mArrowPoint, mCorner2, p),
+				Post.DistanceOnLine(mCorner2, mTermSlider, p)
 			));
 		}
 
@@ -168,8 +168,8 @@ namespace Circuit.Symbol.Passive {
 				bool rev = (mLead1.X == mLead2.X && mLead1.Y < mLead2.Y) || (mLead1.Y == mLead2.Y && mLead1.X > mLead2.X);
 
 				/* draw units */
-				var s1 = Utils.UnitText(rev ? mElm.Resistance2 : mElm.Resistance1, "");
-				var s2 = Utils.UnitText(rev ? mElm.Resistance1 : mElm.Resistance2, "");
+				var s1 = TextUtils.Unit(rev ? mElm.Resistance2 : mElm.Resistance1, "");
+				var s2 = TextUtils.Unit(rev ? mElm.Resistance1 : mElm.Resistance2, "");
 				var txtHeightHalf = g.FontSize * 0.5f;
 				var txtWidth1 = (int)g.GetTextSize(s1).Width;
 				var txtWidth2 = (int)g.GetTextSize(s2).Width;
@@ -191,12 +191,12 @@ namespace Circuit.Symbol.Passive {
 		}
 
 		public override void GetInfo(string[] arr) {
-			arr[0] = "可変抵抗：" + Utils.UnitText(mElm.MaxResistance, "Ω");
-			arr[1] = "Vd：" + Utils.VoltageAbsText(mElm.VoltageDiff);
-			arr[2] = "R1：" + Utils.UnitText(mElm.Resistance1, "Ω");
-			arr[3] = "R2：" + Utils.UnitText(mElm.Resistance2, "Ω");
-			arr[4] = "I1：" + Utils.CurrentAbsText(mElm.Current1);
-			arr[5] = "I2：" + Utils.CurrentAbsText(mElm.Current2);
+			arr[0] = "可変抵抗：" + TextUtils.Unit(mElm.MaxResistance, "Ω");
+			arr[1] = "Vd：" + TextUtils.VoltageAbs(mElm.VoltageDiff);
+			arr[2] = "R1：" + TextUtils.Unit(mElm.Resistance1, "Ω");
+			arr[3] = "R2：" + TextUtils.Unit(mElm.Resistance2, "Ω");
+			arr[4] = "I1：" + TextUtils.CurrentAbs(mElm.Current1);
+			arr[5] = "I2：" + TextUtils.CurrentAbs(mElm.Current2);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
@@ -275,7 +275,7 @@ namespace Circuit.Symbol.Passive {
 				if (!string.IsNullOrEmpty(mName)) {
 					mName += " ";
 				}
-				mName += Utils.UnitText(mElm.MaxResistance);
+				mName += TextUtils.Unit(mElm.MaxResistance);
 			}
 			if (Post.Horizontal) {
 				if (0 < Post.Diff.Y) {

@@ -77,7 +77,7 @@ namespace Circuit.Symbol.Output {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = ReferenceName;
-			arr[1] = "電位：" + Utils.VoltageText(mElm.Volts[0]);
+			arr[1] = "電位：" + TextUtils.Voltage(mElm.Volts[0]);
 			arr[2] = (mElm.DataFull ? mElm.DataCount : mElm.DataPtr) + "/" + mElm.DataCount;
 		}
 

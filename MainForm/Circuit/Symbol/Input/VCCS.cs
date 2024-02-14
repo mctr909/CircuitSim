@@ -37,7 +37,7 @@ namespace Circuit.Symbol.Input {
 			int i;
 			for (i = 0; arr[i] != null; i++)
 				;
-			arr[i] = "I = " + Utils.CurrentText(mElm.Pins[mElm.InputCount].current);
+			arr[i] = "I = " + TextUtils.Current(mElm.Pins[mElm.InputCount].current);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

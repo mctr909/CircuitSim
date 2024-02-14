@@ -97,7 +97,7 @@ namespace Circuit.Forms {
 		}
 
 		public static string UnitString(ElementInfo ei, double v) {
-			return Utils.UnitText(v);
+			return TextUtils.Unit(v);
 		}
 
 		void Apply() {
@@ -123,7 +123,7 @@ namespace Circuit.Forms {
 						}
 					} else if (ei.TextDouble != null) {
 						try {
-							Utils.ParseUnits(ei.TextDouble.Text, out double tmp);
+							TextUtils.ParseUnits(ei.TextDouble.Text, out double tmp);
 							ei.Value = tmp;
 						} catch (FormatException ex) {
 							MessageBox.Show(ex.Message);

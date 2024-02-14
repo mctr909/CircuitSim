@@ -55,7 +55,7 @@ namespace Circuit.Symbol.Output {
 			if (isNumeric) {
 				arr[1] = mElm.Value;
 			}
-			arr[2] = "電位：" + Utils.VoltageText(mElm.Volts[0]);
+			arr[2] = "電位：" + TextUtils.Voltage(mElm.Volts[0]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

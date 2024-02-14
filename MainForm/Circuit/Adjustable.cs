@@ -37,7 +37,7 @@
 			MinValue = st.nextTokenDouble();
 			MaxValue = st.nextTokenDouble();
 			st.nextToken(out SliderText);
-			SliderText = Utils.UnEscape(SliderText);
+			SliderText = TextUtils.UnEscape(SliderText);
 		}
 
 		public void CreateSlider() {
@@ -81,7 +81,7 @@
 				EditItemR,
 				MinValue,
 				MaxValue,
-				Utils.Escape(SliderText)
+				TextUtils.Escape(SliderText)
 			);
 		}
 	}

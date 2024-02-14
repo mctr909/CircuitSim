@@ -165,7 +165,7 @@ namespace Circuit.Symbol.Active {
 		}
 
 		public override void GetInfo(string[] arr) {
-			arr[0] = ((mElm.NPN == -1) ? "PNP" : "NPN") + "トランジスタ(" + "hfe：" + Utils.UnitText(mElm.Hfe) + ")";
+			arr[0] = ((mElm.NPN == -1) ? "PNP" : "NPN") + "トランジスタ(" + "hfe：" + TextUtils.Unit(mElm.Hfe) + ")";
 			var vbc = mElm.Vb - mElm.Vc;
 			var vbe = mElm.Vb - mElm.Ve;
 			var vce = mElm.Vc - mElm.Ve;
@@ -174,11 +174,11 @@ namespace Circuit.Symbol.Active {
 			} else {
 				arr[1] = "動作領域：" + (vbe * mElm.NPN > 0.2 ? "活性" : "遮断");
 			}
-			arr[2] = "Vce：" + Utils.VoltageText(vce);
-			arr[3] = "Vbe：" + Utils.VoltageText(vbe);
-			arr[4] = "Vbc：" + Utils.VoltageText(vbc);
-			arr[5] = "Ic：" + Utils.CurrentText(mElm.Ic);
-			arr[6] = "Ib：" + Utils.CurrentText(mElm.Ib);
+			arr[2] = "Vce：" + TextUtils.Voltage(vce);
+			arr[3] = "Vbe：" + TextUtils.Voltage(vbe);
+			arr[4] = "Vbc：" + TextUtils.Voltage(vbc);
+			arr[5] = "Ic：" + TextUtils.Current(mElm.Ic);
+			arr[6] = "Ib：" + TextUtils.Current(mElm.Ib);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

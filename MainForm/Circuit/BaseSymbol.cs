@@ -81,7 +81,7 @@
 			dump(valueList);
 			mLink.Dump(valueList);
 			if (!string.IsNullOrWhiteSpace(ReferenceName)) {
-				valueList.Add(Utils.Escape(ReferenceName));
+				valueList.Add(TextUtils.Escape(ReferenceName));
 			}
 			return string.Join(" ", valueList.ToArray());
 		}
@@ -93,7 +93,7 @@
 			Post.Move(dx, dy);
 			SetPoints();
 		}
-		public void Move(int dx, int dy, EPOST n) {
+		public void Move(int dx, int dy, Post.Selection n) {
 			Post.Move(dx, dy, n);
 			SetPoints();
 		}
@@ -130,7 +130,7 @@
 
 		#region [public virtual method]
 		public virtual double Distance(Point p) {
-			return Utils.DistanceOnLine(Post.A, Post.B, p);
+			return Post.DistanceOnLine(Post.A, Post.B, p);
 		}
 		public virtual void Delete() {
 			if (mSelected == this) {
@@ -200,8 +200,8 @@
 		}
 
 		protected void GetBasicInfo(int begin, params string[] arr) {
-			arr[begin] = "電流：" + Utils.CurrentAbsText(Element.Current);
-			arr[begin + 1] = "電位差：" + Utils.VoltageAbsText(Element.VoltageDiff);
+			arr[begin] = "電流：" + TextUtils.CurrentAbs(Element.Current);
+			arr[begin + 1] = "電位差：" + TextUtils.VoltageAbs(Element.VoltageDiff);
 		}
 
 		/// <summary>

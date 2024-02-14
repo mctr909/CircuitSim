@@ -114,8 +114,8 @@ namespace Circuit.Symbol.Gate {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = gateName;
-			arr[1] = "Vout：" + Utils.VoltageText(mElm.Volts[mElm.InputCount]);
-			arr[2] = "Iout：" + Utils.CurrentText(mElm.Current);
+			arr[1] = "Vout：" + TextUtils.Voltage(mElm.Volts[mElm.InputCount]);
+			arr[2] = "Iout：" + TextUtils.Current(mElm.Current);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

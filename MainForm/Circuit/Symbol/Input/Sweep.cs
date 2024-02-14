@@ -71,8 +71,8 @@ namespace Circuit.Symbol.Input {
 			}
 
 			if (ControlPanel.ChkShowValues.Checked) {
-				string s = Utils.UnitText(mElm.MaxV, "V\r\n")
-					+ Utils.FrequencyText(mElm.Frequency);
+				string s = TextUtils.Unit(mElm.MaxV, "V\r\n")
+					+ TextUtils.Frequency(mElm.Frequency);
 				DrawValues(s, 25, 0);
 			}
 
@@ -84,11 +84,11 @@ namespace Circuit.Symbol.Input {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "sweep " + (((mFlags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
-			arr[1] = "I = " + Utils.CurrentAbsText(mElm.Current);
-			arr[2] = "V = " + Utils.VoltageText(mElm.Volts[0]);
-			arr[3] = "f = " + Utils.FrequencyText(mElm.Frequency);
-			arr[4] = "range = " + Utils.FrequencyText(mElm.MinF) + " .. " + Utils.FrequencyText(mElm.MaxF);
-			arr[5] = "time = " + Utils.UnitText(mElm.SweepTime, "s");
+			arr[1] = "I = " + TextUtils.CurrentAbs(mElm.Current);
+			arr[2] = "V = " + TextUtils.Voltage(mElm.Volts[0]);
+			arr[3] = "f = " + TextUtils.Frequency(mElm.Frequency);
+			arr[4] = "range = " + TextUtils.Frequency(mElm.MinF) + " .. " + TextUtils.Frequency(mElm.MaxF);
+			arr[5] = "time = " + TextUtils.Unit(mElm.SweepTime, "s");
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

@@ -46,7 +46,7 @@ namespace MainForm {
 			}
 		}
 
-		ToolStripMenuItem addElementItem(ToolStripMenuItem menu, string title, DUMP_ID item, SHORTCUT shortcut = new SHORTCUT()) {
+		ToolStripMenuItem addElementItem(ToolStripMenuItem menu, string title, DUMP_ID item, Shortcut shortcut = new Shortcut()) {
 			var elm = SymbolMenu.Construct(item);
 			if (elm == null) {
 				return null;
@@ -83,7 +83,7 @@ namespace MainForm {
 			return mi;
 		}
 
-		void addMenuItem(ToolStripMenuItem menu, string title, ID item, SHORTCUT shortCut) {
+		void addMenuItem(ToolStripMenuItem menu, string title, ID item, Shortcut shortCut) {
 			ToolStripMenuItem mi;
 			if (shortCut.Key == Keys.None) {
 				mi = new ToolStripMenuItem() {
@@ -121,14 +121,14 @@ namespace MainForm {
 			var fileMenuBar = new ToolStripMenuItem();
 			fileMenuBar.Text = "ファイル(F)";
 			fileMenuBar.Font = menuFont;
-			addMenuItem(fileMenuBar, "新規作成(N)", ID.OPEN_NEW, new SHORTCUT(Keys.N));
+            addMenuItem(fileMenuBar, "新規作成(N)", ID.OPEN_NEW, new Shortcut(Keys.N));
 			fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
-			addMenuItem(fileMenuBar, "開く(O)", ID.OPEN_FILE, new SHORTCUT(Keys.O));
+            addMenuItem(fileMenuBar, "開く(O)", ID.OPEN_FILE, new Shortcut(Keys.O));
 			fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
-			addMenuItem(fileMenuBar, "上書き保存(S)", ID.OVERWRITE, new SHORTCUT(Keys.S));
-			addMenuItem(fileMenuBar, "名前を付けて保存(A)", ID.SAVE_FILE, new SHORTCUT(Keys.None));
+            addMenuItem(fileMenuBar, "上書き保存(S)", ID.OVERWRITE, new Shortcut(Keys.S));
+            addMenuItem(fileMenuBar, "名前を付けて保存(A)", ID.SAVE_FILE, new Shortcut(Keys.None));
 			fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
-			addMenuItem(fileMenuBar, "PDF出力(P)", ID.PDF, new SHORTCUT(Keys.P));
+            addMenuItem(fileMenuBar, "PDF出力(P)", ID.PDF, new Shortcut(Keys.P));
 			mainMenuBar.Items.Add(fileMenuBar);
 			#endregion
 
@@ -136,23 +136,23 @@ namespace MainForm {
 			var editMenuBar = new ToolStripMenuItem();
 			editMenuBar.Text = "編集(E)";
 			editMenuBar.Font = menuFont;
-			addMenuItem(editMenuBar, "選択", ID.SELECT, new SHORTCUT(Keys.Escape, false));
-			addMenuItem(editMenuBar, "全選択", ID.SELECT_ALL, new SHORTCUT(Keys.A));
-			addMenuItem(editMenuBar, "切り取り", ID.CUT, new SHORTCUT(Keys.X));
-			addMenuItem(editMenuBar, "コピー", ID.COPY, new SHORTCUT(Keys.C));
-			addMenuItem(editMenuBar, "貼り付け", ID.PASTE, new SHORTCUT(Keys.V));
-			addMenuItem(editMenuBar, "削除", ID.DELETE, new SHORTCUT(Keys.Delete, false));
+            addMenuItem(editMenuBar, "選択", ID.SELECT, new Shortcut(Keys.Escape, false));
+            addMenuItem(editMenuBar, "全選択", ID.SELECT_ALL, new Shortcut(Keys.A));
+            addMenuItem(editMenuBar, "切り取り", ID.CUT, new Shortcut(Keys.X));
+            addMenuItem(editMenuBar, "コピー", ID.COPY, new Shortcut(Keys.C));
+            addMenuItem(editMenuBar, "貼り付け", ID.PASTE, new Shortcut(Keys.V));
+            addMenuItem(editMenuBar, "削除", ID.DELETE, new Shortcut(Keys.Delete, false));
 			editMenuBar.DropDownItems.Add(new ToolStripSeparator());
-			addMenuItem(editMenuBar, "元に戻す", ID.UNDO, new SHORTCUT(Keys.Z));
-			addMenuItem(editMenuBar, "やり直し", ID.REDO, new SHORTCUT(Keys.Y));
+            addMenuItem(editMenuBar, "元に戻す", ID.UNDO, new Shortcut(Keys.Z));
+            addMenuItem(editMenuBar, "やり直し", ID.REDO, new Shortcut(Keys.Y));
 			editMenuBar.DropDownItems.Add(new ToolStripSeparator());
-			addMenuItem(editMenuBar, "中心に移動", ID.CENTER_CIRCUIT, new SHORTCUT(Keys.E));
+            addMenuItem(editMenuBar, "中心に移動", ID.CENTER_CIRCUIT, new Shortcut(Keys.E));
 			editMenuBar.DropDownItems.Add(new ToolStripSeparator());
-			addElementItem(editMenuBar, "配線", DUMP_ID.WIRE, new SHORTCUT(Keys.W));
-			addElementItem(editMenuBar, "接地", DUMP_ID.GROUND, new SHORTCUT(Keys.G));
+            addElementItem(editMenuBar, "配線", DUMP_ID.WIRE, new Shortcut(Keys.W));
+            addElementItem(editMenuBar, "接地", DUMP_ID.GROUND, new Shortcut(Keys.G));
 			editMenuBar.DropDownItems.Add(new ToolStripSeparator());
-			addElementItem(editMenuBar, "テキスト", DUMP_ID.TEXT, new SHORTCUT(Keys.T));
-			addElementItem(editMenuBar, "矩形", DUMP_ID.BOX, new SHORTCUT(Keys.B));
+            addElementItem(editMenuBar, "テキスト", DUMP_ID.TEXT, new Shortcut(Keys.T));
+            addElementItem(editMenuBar, "矩形", DUMP_ID.BOX, new Shortcut(Keys.B));
 			mainMenuBar.Items.Add(editMenuBar);
 			#endregion
 
@@ -163,9 +163,9 @@ namespace MainForm {
 			var passiveMenuBar = new ToolStripMenuItem();
 			passiveMenuBar.Text = "受動素子(P)";
 			passiveMenuBar.Font = menuFont;
-			addElementItem(passiveMenuBar, "抵抗", DUMP_ID.RESISTOR, new SHORTCUT(Keys.F1, false));
-			addElementItem(passiveMenuBar, "キャパシタ", DUMP_ID.CAPACITOR, new SHORTCUT(Keys.F2, false));
-			addElementItem(passiveMenuBar, "インダクタ", DUMP_ID.INDUCTOR, new SHORTCUT(Keys.F3, false));
+            addElementItem(passiveMenuBar, "抵抗", DUMP_ID.RESISTOR, new Shortcut(Keys.F1, false));
+            addElementItem(passiveMenuBar, "キャパシタ", DUMP_ID.CAPACITOR, new Shortcut(Keys.F2, false));
+            addElementItem(passiveMenuBar, "インダクタ", DUMP_ID.INDUCTOR, new Shortcut(Keys.F3, false));
 			passiveMenuBar.DropDownItems.Add(new ToolStripSeparator());
 			addElementItem(passiveMenuBar, "可変抵抗", DUMP_ID.POT);
 			addElementItem(passiveMenuBar, "キャパシタ(有極性)", DUMP_ID.CAPACITOR_POLAR);

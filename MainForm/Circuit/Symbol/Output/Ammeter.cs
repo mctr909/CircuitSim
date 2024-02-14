@@ -8,23 +8,26 @@ namespace Circuit.Symbol.Output {
 		PointF mMid;
 		PointF[] mArrowPoly;
 		PointF mTextPos;
+		EScale mScale;
 
 		public override BaseElement Element { get { return mElm; } }
 
 		public Ammeter(Point pos) : base(pos) {
 			mElm = new ElmAmmeter();
 			mFlags = FLAG_SHOWCURRENT;
+			mScale = EScale.AUTO;
 		}
 
 		public Ammeter(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmAmmeter(st);
+			mScale = st.nextTokenEnum(EScale.AUTO);
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.AMMETER; } }
 
 		protected override void dump(List<object> optionList) {
 			optionList.Add(mElm.Meter);
-			optionList.Add(mElm.Scale);
+			optionList.Add(mScale);
 		}
 
 		public override void SetPoints() {
@@ -48,10 +51,10 @@ namespace Circuit.Symbol.Output {
 			string s = "A";
 			switch (mElm.Meter) {
 			case ElmAmmeter.AM_VOL:
-				s = Utils.UnitTextWithScale(mElm.Current, "A", mElm.Scale);
+				s = TextUtils.UnitWithScale(mElm.Current, "A", mScale);
 				break;
 			case ElmAmmeter.AM_RMS:
-				s = Utils.UnitTextWithScale(mElm.RmsI, "A(rms)", mElm.Scale);
+				s = TextUtils.UnitWithScale(mElm.RmsI, "A(rms)", mScale);
 				break;
 			}
 			if (Post.Vertical) {
@@ -65,10 +68,10 @@ namespace Circuit.Symbol.Output {
 			arr[0] = "電流計";
 			switch (mElm.Meter) {
 			case ElmAmmeter.AM_VOL:
-				arr[1] = "電流：" + Utils.CurrentText(mElm.Current);
+				arr[1] = "電流：" + TextUtils.Current(mElm.Current);
 				break;
 			case ElmAmmeter.AM_RMS:
-				arr[1] = "電流(rms)：" + Utils.CurrentText(mElm.RmsI);
+				arr[1] = "電流(rms)：" + TextUtils.Current(mElm.RmsI);
 				break;
 			}
 		}
@@ -81,7 +84,7 @@ namespace Circuit.Symbol.Output {
 				return new ElementInfo("表示", mElm.Meter, new string[] { "瞬時値", "実効値" });
 			}
 			if (r == 1) {
-				return new ElementInfo("スケール", (int)mElm.Scale, new string[] { "自動", "A", "mA", "uA" });
+				return new ElementInfo("スケール", (int)mScale, new string[] { "自動", "A", "mA", "uA" });
 			}
 			return null;
 		}
@@ -91,7 +94,7 @@ namespace Circuit.Symbol.Output {
 				mElm.Meter = ei.Choice.SelectedIndex;
 			}
 			if (n == 1) {
-				mElm.Scale = (E_SCALE)ei.Choice.SelectedIndex;
+				mScale = (EScale)ei.Choice.SelectedIndex;
 			}
 		}
 	}

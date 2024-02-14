@@ -29,7 +29,7 @@
 			set {
 				Circuit.TimeStep = value;
 				if (null != mTxtTimeStep) {
-					mTxtTimeStep.Text = Utils.UnitText(Circuit.TimeStep, "");
+					mTxtTimeStep.Text = TextUtils.Unit(Circuit.TimeStep, "");
 				}
 			}
 		}
@@ -80,10 +80,10 @@
 			};
 			mTxtTimeStep.TextChanged += new EventHandler((s, e) => {
 				var tmp = 0.0;
-				if (Utils.ParseUnits(mTxtTimeStep.Text, out tmp)) {
+				if (TextUtils.ParseUnits(mTxtTimeStep.Text, out tmp)) {
 					Circuit.TimeStep = tmp;
 				}
-				mTxtTimeStep.Text = Utils.UnitText(Circuit.TimeStep, "");
+				mTxtTimeStep.Text = TextUtils.Unit(Circuit.TimeStep, "");
 			});
 			VerticalPanel.Controls.Add(mTxtTimeStep);
 			ofsY += mTxtTimeStep.Height + 4;

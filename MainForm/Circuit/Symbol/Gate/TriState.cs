@@ -69,9 +69,9 @@ namespace Circuit.Symbol.Gate {
 		public override void GetInfo(string[] arr) {
 			arr[0] = "tri-state buffer";
 			arr[1] = mElm.Open ? "open" : "closed";
-			arr[2] = "Vd = " + Utils.VoltageAbsText(mElm.VoltageDiff);
-			arr[3] = "I = " + Utils.CurrentAbsText(mElm.Current);
-			arr[4] = "Vc = " + Utils.VoltageText(mElm.Volts[2]);
+			arr[2] = "Vd = " + TextUtils.VoltageAbs(mElm.VoltageDiff);
+			arr[3] = "I = " + TextUtils.CurrentAbs(mElm.Current);
+			arr[4] = "Vc = " + TextUtils.Voltage(mElm.Volts[2]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

@@ -59,7 +59,7 @@ namespace Circuit.Symbol.Input {
 				DrawLine(mLa, mLb);
 				DrawCircle(mC, 4);
 				var v = mElm.GetVoltage();
-				var s = Utils.UnitText(v, "V");
+				var s = TextUtils.Unit(v, "V");
 				DrawCenteredText(s, mNamePos);
 			} else if (mElm.WaveForm == ElmVoltage.WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
 				DrawCenteredText("Clock", mNamePos);
@@ -68,9 +68,9 @@ namespace Circuit.Symbol.Input {
 			} else {
 				DrawWaveform(Post.B);
 				if (ControlPanel.ChkShowValues.Checked) {
-					var s = Utils.UnitText(mElm.MaxVoltage, "V\r\n");
-					s += Utils.FrequencyText(mElm.Frequency, true) + "\r\n";
-					s += Utils.PhaseText(mElm.Phase + mElm.PhaseOffset);
+					var s = TextUtils.Unit(mElm.MaxVoltage, "V\r\n");
+					s += TextUtils.Frequency(mElm.Frequency, true) + "\r\n";
+					s += TextUtils.Phase(mElm.Phase + mElm.PhaseOffset);
 					DrawValues(s, 23, 5);
 				}
 			}

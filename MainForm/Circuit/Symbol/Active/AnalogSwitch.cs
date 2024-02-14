@@ -74,9 +74,9 @@ namespace Circuit.Symbol.Active {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "アナログスイッチ(" + (mElm.IsOpen ? "OFF)" : "ON)");
-			arr[1] = "電位差：" + Utils.VoltageAbsText(mElm.VoltageDiff);
-			arr[2] = "電流：" + Utils.CurrentAbsText(mElm.Current);
-			arr[3] = "制御電圧：" + Utils.VoltageText(mElm.Volts[2]);
+			arr[1] = "電位差：" + TextUtils.VoltageAbs(mElm.VoltageDiff);
+			arr[2] = "電流：" + TextUtils.CurrentAbs(mElm.Current);
+			arr[3] = "制御電圧：" + TextUtils.Voltage(mElm.Volts[2]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

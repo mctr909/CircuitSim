@@ -17,8 +17,8 @@
 
 		public static MODE Mode = MODE.NONE;
 		public static MouseButtons Button = MouseButtons.None;
-		public static EPOST HoveringPost = EPOST.INVALID;
-		public static EPOST DraggingPost = EPOST.INVALID;
+		public static Post.Selection HoveringPost = Post.Selection.NONE;
+		public static Post.Selection DraggingPost = Post.Selection.NONE;
 		public static bool IsDragging = false;
 
 		public static Point Cursor;

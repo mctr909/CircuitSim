@@ -102,7 +102,7 @@ namespace Circuit.Symbol.Passive {
 			FillPolygon(mPlate2);
 
 			DrawName();
-			DrawValue(Utils.UnitText(mElm.Capacitance));
+			DrawValue(TextUtils.Unit(mElm.Capacitance));
 
 			UpdateDotCount();
 			if (ConstructItem != this) {
@@ -113,11 +113,11 @@ namespace Circuit.Symbol.Passive {
 
 		public override void GetInfo(string[] arr) {
 			if (string.IsNullOrEmpty(ReferenceName)) {
-				arr[0] = "コンデンサ：" + Utils.UnitText(mElm.Capacitance, "F");
+				arr[0] = "コンデンサ：" + TextUtils.Unit(mElm.Capacitance, "F");
 				GetBasicInfo(1, arr);
 			} else {
 				arr[0] = ReferenceName;
-				arr[1] = "コンデンサ：" + Utils.UnitText(mElm.Capacitance, "F");
+				arr[1] = "コンデンサ：" + TextUtils.Unit(mElm.Capacitance, "F");
 				GetBasicInfo(2, arr);
 			}
 		}

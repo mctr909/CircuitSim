@@ -48,12 +48,12 @@ namespace Circuit.Symbol.Input {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "FM Source";
-			arr[1] = "I = " + Utils.CurrentText(mElm.Current);
-			arr[2] = "V = " + Utils.VoltageText(mElm.VoltageDiff);
-			arr[3] = "cf = " + Utils.FrequencyText(mElm.CarrierFreq);
-			arr[4] = "sf = " + Utils.FrequencyText(mElm.Signalfreq);
-			arr[5] = "dev =" + Utils.FrequencyText(mElm.Deviation);
-			arr[6] = "Vmax = " + Utils.VoltageText(mElm.MaxVoltage);
+			arr[1] = "I = " + TextUtils.Current(mElm.Current);
+			arr[2] = "V = " + TextUtils.Voltage(mElm.VoltageDiff);
+			arr[3] = "cf = " + TextUtils.Frequency(mElm.CarrierFreq);
+			arr[4] = "sf = " + TextUtils.Frequency(mElm.Signalfreq);
+			arr[5] = "dev =" + TextUtils.Frequency(mElm.Deviation);
+			arr[6] = "Vmax = " + TextUtils.Voltage(mElm.MaxVoltage);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

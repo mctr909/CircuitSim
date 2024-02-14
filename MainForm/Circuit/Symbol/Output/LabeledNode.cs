@@ -29,7 +29,7 @@ namespace Circuit.Symbol.Output {
 
 		public override double Distance(Point p) {
 			return Math.Min(
-				Utils.DistanceOnLine(Post.A, Post.B, p),
+				Post.DistanceOnLine(Post.A, Post.B, p),
 				mTextRect.Contains(p) ? 0 : double.MaxValue
 			);
 		}
@@ -99,8 +99,8 @@ namespace Circuit.Symbol.Output {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = mElm.Text;
-			arr[1] = "電流：" + Utils.CurrentText(mElm.Current);
-			arr[2] = "電位：" + Utils.VoltageText(mElm.Volts[0]);
+			arr[1] = "電流：" + TextUtils.Current(mElm.Current);
+			arr[2] = "電位：" + TextUtils.Voltage(mElm.Volts[0]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

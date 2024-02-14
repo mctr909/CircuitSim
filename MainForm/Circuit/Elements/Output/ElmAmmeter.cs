@@ -4,7 +4,6 @@
 		public const int AM_RMS = 1;
 
 		public int Meter;
-		public E_SCALE Scale;
 
 		public double SelectedValue { get; private set; } = 0;
 		public double RmsI { get; private set; } = 0;
@@ -19,13 +18,10 @@
 		bool mIncreasingI = true;
 		bool mDecreasingI = true;
 
-		public ElmAmmeter() : base() {
-			Scale = E_SCALE.AUTO;
-		}
+		public ElmAmmeter() : base() { }
 
 		public ElmAmmeter(StringTokenizer st) : base() {
 			Meter = st.nextTokenInt();
-			Scale = st.nextTokenEnum(E_SCALE.AUTO);
 		}
 
 		public override int TermCount { get { return 2; } }

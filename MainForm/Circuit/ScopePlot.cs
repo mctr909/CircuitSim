@@ -173,7 +173,7 @@
 				dumpList.Add(CircuitSymbol.List.IndexOf(p.Symbol) + "_" + p.Color);
 			}
 			if (!string.IsNullOrWhiteSpace(Text)) {
-				dumpList.Add(Utils.Escape(Text));
+				dumpList.Add(TextUtils.Escape(Text));
 			}
 			return string.Join(" ", dumpList.ToArray());
 		}
@@ -212,7 +212,7 @@
 			if (st.HasMoreTokens) {
 				string temp;
 				st.nextToken(out temp);
-				Text = Utils.UnEscape(temp);
+				Text = TextUtils.UnEscape(temp);
 			} else {
 				Text = "";
 			}
@@ -531,7 +531,7 @@
 			}
 			if (1 < waveCount) {
 				var rms = Math.Sqrt(endAvg / (end - start));
-				return Utils.VoltageText(rms) + "rms";
+				return TextUtils.Voltage(rms) + "rms";
 			} else {
 				return "";
 			}
@@ -593,7 +593,7 @@
 			if (0 == freq) {
 				return "";
 			} else {
-				return Utils.FrequencyText(freq);
+				return TextUtils.Frequency(freq);
 			}
 		}
 		#endregion
@@ -616,7 +616,7 @@
 				int pointer = (MouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
 				if (SelectedWave >= 0) {
 					var wave = Waves[SelectedWave];
-					info[ct++] = Utils.VoltageText(wave.MaxValues[pointer]);
+					info[ct++] = TextUtils.Voltage(wave.MaxValues[pointer]);
 					var maxvy = (int)(mMainGridMult * (wave.MaxValues[pointer] - mMainGridMid));
 					maxvy = Math.Max(-maxy, maxvy);
 					maxvy = Math.Min(maxy, maxvy);
@@ -625,7 +625,7 @@
 				}
 				if (Waves.Count > 0) {
 					var t = Circuit.Time - Circuit.TimeStep * Speed * (BoundingBox.X + BoundingBox.Width - MouseCursorX);
-					info[ct++] = Utils.TimeText(t);
+					info[ct++] = TextUtils.Time(t);
 				}
 			}
 
@@ -635,7 +635,7 @@
 				if (posX < 0) {
 					posX = 0;
 				}
-				info[ct++] = Utils.UnitText(maxFrequency * posX / mFFTBoundingBox.Width, "Hz");
+				info[ct++] = TextUtils.Unit(maxFrequency * posX / mFFTBoundingBox.Width, "Hz");
 			}
 
 			int szw = 0, szh = 15 * ct;
@@ -829,7 +829,7 @@
 				if (x < prevEnd) {
 					continue;
 				}
-				string s = Utils.UnitText((int)Math.Round(i * maxFrequency), "Hz");
+				string s = TextUtils.Unit((int)Math.Round(i * maxFrequency), "Hz");
 				int sWidth = (int)Math.Ceiling(g.GetTextSize(s).Width);
 				prevEnd = x + sWidth + 4;
 				if (i > 0) {
@@ -935,17 +935,17 @@
 				if (ShowScale) {
 					string vScaleText = "";
 					if (mGridStepY != 0) {
-						vScaleText = ", V=" + Utils.VoltageAbsText(mGridStepY) + "/div";
+						vScaleText = ", V=" + TextUtils.VoltageAbs(mGridStepY) + "/div";
 					}
-					g.DrawLeftText("H=" + Utils.TimeText(mGridStepX) + "/div" + vScaleText, 0, textY);
+					g.DrawLeftText("H=" + TextUtils.Time(mGridStepX) + "/div" + vScaleText, 0, textY);
 					textY += 12;
 				}
-				g.DrawLeftText(Utils.VoltageText(mMaxValue), BoundingBox.Width, 6);
+				g.DrawLeftText(TextUtils.Voltage(mMaxValue), BoundingBox.Width, 6);
 				int ym = BoundingBox.Height - 6;
-				g.DrawLeftText(Utils.VoltageText(mMinValue), BoundingBox.Width, ym);
+				g.DrawLeftText(TextUtils.Voltage(mMinValue), BoundingBox.Width, ym);
 				if (Normarize) {
 					var centerY = (BoundingBox.Height - 1) / 2.0f;
-					g.DrawLeftText(Utils.VoltageText(mMainGridMid), BoundingBox.Width, centerY);
+					g.DrawLeftText(TextUtils.Voltage(mMainGridMid), BoundingBox.Width, centerY);
 				}
 			}
 

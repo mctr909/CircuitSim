@@ -137,7 +137,7 @@ namespace Circuit.Forms {
 			mElmInfo = mEditElm.GetElementInfo(0, 0);
 			double currentvalue = mElmInfo.Value;
 			for (int i = 0; i < mNValues + 1; i++) {
-				if (Utils.UnitText(currentvalue, "") == Utils.UnitText(mValues[i], "")) { /* match to an existing value */
+				if (TextUtils.Unit(currentvalue, "") == TextUtils.Unit(mValues[i], "")) { /* match to an existing value */
 					mValues[i] = currentvalue; /* Just in case it isn't 100% identical */
 					mCurrentIdx = i;
 					break;
@@ -158,7 +158,7 @@ namespace Circuit.Forms {
 
 		void setupLabels() {
 			int thissel = getSelIdx();
-			mLabels.Text = Utils.UnitText(mValues[thissel], mUnit);
+			mLabels.Text = TextUtils.Unit(mValues[thissel], mUnit);
 			mTrbValue.Value = thissel;
 		}
 
@@ -173,7 +173,7 @@ namespace Circuit.Forms {
 			int thissel = getSelIdx();
 			mElmInfo.Value = mValues[thissel];
 			mEditElm.SetElementValue(0, 0, mElmInfo);
-			mLabels.Text = Utils.UnitText(mValues[thissel], mUnit);
+			mLabels.Text = TextUtils.Unit(mValues[thissel], mUnit);
 			CircuitSymbol.NeedAnalyze = true;
 		}
 

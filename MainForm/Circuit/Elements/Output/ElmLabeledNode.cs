@@ -11,7 +11,7 @@
 
 		public ElmLabeledNode(StringTokenizer st) : base() {
 			st.nextToken(out Text);
-			Text = Utils.UnEscape(Text);
+			Text = TextUtils.UnEscape(Text);
 		}
 
 		public override int TermCount { get { return 1; } }

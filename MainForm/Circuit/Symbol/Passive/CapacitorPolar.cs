@@ -53,7 +53,7 @@ namespace Circuit.Symbol.Passive {
 
 		public override void GetInfo(string[] arr) {
 			base.GetInfo(arr);
-			arr[1] = "有極性コンデンサ：" + Utils.UnitText(mElm.Capacitance, "F");
+			arr[1] = "有極性コンデンサ：" + TextUtils.Unit(mElm.Capacitance, "F");
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

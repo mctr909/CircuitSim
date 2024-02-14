@@ -7,6 +7,7 @@ namespace Circuit.Symbol.Output {
 		protected PointF mCenter;
 		PointF mPlusPoint;
 		ElmVoltMeter mElm;
+		EScale mScale;
 
 		public override BaseElement Element { get { return mElm; } }
 
@@ -14,17 +15,19 @@ namespace Circuit.Symbol.Output {
 			mElm = new ElmVoltMeter();
 			/* default for new elements */
 			mFlags = FLAG_SHOWVOLTAGE;
+			mScale = EScale.AUTO;
 		}
 
 		public VoltMeter(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmVoltMeter(st);
+			mScale = st.nextTokenEnum(EScale.AUTO);
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.VOLTMETER; } }
 
 		protected override void dump(List<object> optionList) {
 			optionList.Add(mElm.Meter);
-			optionList.Add(mElm.Scale);
+			optionList.Add(mScale);
 		}
 
 		public override void SetPoints() {
@@ -61,7 +64,7 @@ namespace Circuit.Symbol.Output {
 				);
 			}
 			if (r == 1) {
-				return new ElementInfo("スケール", (int)mElm.Scale, new string[] { "自動", "V", "mV", "uV" });
+				return new ElementInfo("スケール", (int)mScale, new string[] { "自動", "V", "mV", "uV" });
 			}
 			return null;
 		}
@@ -71,22 +74,22 @@ namespace Circuit.Symbol.Output {
 				mElm.Meter = ei.Choice.SelectedIndex;
 			}
 			if (n == 1) {
-				mElm.Scale = (E_SCALE)ei.Choice.SelectedIndex;
+				mScale = (EScale)ei.Choice.SelectedIndex;
 			}
 		}
 
 		protected string DrawValues() {
 			switch (mElm.Meter) {
 			case ElmVoltMeter.TP_VOL:
-				return Utils.UnitTextWithScale(mElm.VoltageDiff, "V", mElm.Scale);
+				return TextUtils.UnitWithScale(mElm.VoltageDiff, "V", mScale);
 			case ElmVoltMeter.TP_RMS:
-				return Utils.UnitTextWithScale(mElm.RmsV, "Vrms", mElm.Scale);
+				return TextUtils.UnitWithScale(mElm.RmsV, "Vrms", mScale);
 			case ElmVoltMeter.TP_MAX:
-				return Utils.UnitTextWithScale(mElm.LastMaxV, "Vpk", mElm.Scale);
+				return TextUtils.UnitWithScale(mElm.LastMaxV, "Vpk", mScale);
 			case ElmVoltMeter.TP_MIN:
-				return Utils.UnitTextWithScale(mElm.LastMinV, "Vmin", mElm.Scale);
+				return TextUtils.UnitWithScale(mElm.LastMinV, "Vmin", mScale);
 			case ElmVoltMeter.TP_P2P:
-				return Utils.UnitTextWithScale(mElm.LastMaxV - mElm.LastMinV, "Vp-p", mElm.Scale);
+				return TextUtils.UnitWithScale(mElm.LastMaxV - mElm.LastMinV, "Vp-p", mScale);
 			}
 			return "";
 		}

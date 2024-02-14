@@ -84,8 +84,8 @@ namespace Circuit.Symbol.Passive {
 		public override void GetInfo(string[] arr) {
 			arr[0] = "スイッチ(" + (mElmMulti.Link == 0 ? "S" : "D")
 				+ "P" + ((mElmMulti.ThrowCount > 2) ? mElmMulti.ThrowCount + "T)" : "DT)");
-			arr[1] = "電位：" + Utils.VoltageText(mElmMulti.Volts[0]);
-			arr[2] = "電流：" + Utils.CurrentAbsText(mElmMulti.Current);
+			arr[1] = "電位：" + TextUtils.Voltage(mElmMulti.Volts[0]);
+			arr[2] = "電流：" + TextUtils.CurrentAbs(mElmMulti.Current);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

@@ -565,8 +565,8 @@ namespace MainForm {
 					MouseInfo.Mode = MouseInfo.MODE.SELECT_AREA;
 				} else {
 					MouseInfo.DraggingPost = MouseInfo.HoveringPost;
-					MouseInfo.HoveringPost = EPOST.INVALID;
-					if (MouseInfo.DraggingPost == EPOST.BOTH) {
+					MouseInfo.HoveringPost = Post.Selection.NONE;
+					if (MouseInfo.DraggingPost == Post.Selection.BOTH) {
 						MouseInfo.Mode = MouseInfo.MODE.DRAG_ITEM;
 					} else {
 						MouseInfo.Mode = MouseInfo.MODE.DRAG_POST;
@@ -602,8 +602,8 @@ namespace MainForm {
 			MouseInfo.CommitCursor();
 			var gpos = MouseInfo.GetAbsPos();
 			MouseInfo.DragEnd = BaseSymbol.SnapGrid(gpos);
-			MouseInfo.DraggingPost = EPOST.INVALID;
-			MouseInfo.HoveringPost = EPOST.INVALID;
+			MouseInfo.DraggingPost = Post.Selection.NONE;
+			MouseInfo.HoveringPost = Post.Selection.NONE;
 
 			PlotXElm = PlotYElm = null;
 
@@ -613,7 +613,7 @@ namespace MainForm {
 				var ce = GetSymbol(i);
 				var lineD = ce.Distance(gpos);
 				if (lineD <= CustomGraphics.HANDLE_RADIUS && lineD < mostNear) {
-					MouseInfo.HoveringPost = EPOST.BOTH;
+					MouseInfo.HoveringPost = Post.Selection.BOTH;
 					mostNearUI = ce;
 					mostNear = lineD;
 				}
@@ -624,12 +624,12 @@ namespace MainForm {
 					var postDa = ce.DistancePostA(gpos);
 					var postDb = ce.DistancePostB(gpos);
 					if (postDa <= CustomGraphics.HANDLE_RADIUS && postDa < mostNear) {
-						MouseInfo.HoveringPost = EPOST.A;
+						MouseInfo.HoveringPost = Post.Selection.A;
 						mostNearUI = ce;
 						mostNear = postDa;
 					}
 					if (postDb <= CustomGraphics.HANDLE_RADIUS && postDb < mostNear) {
-						MouseInfo.HoveringPost = EPOST.B;
+						MouseInfo.HoveringPost = Post.Selection.B;
 						mostNearUI = ce;
 						mostNear = postDb;
 					}
@@ -641,10 +641,10 @@ namespace MainForm {
 				var postDa = mostNearUI.DistancePostA(gpos);
 				var postDb = mostNearUI.DistancePostB(gpos);
 				if (postDa <= CustomGraphics.HANDLE_RADIUS) {
-					MouseInfo.HoveringPost = EPOST.A;
+					MouseInfo.HoveringPost = Post.Selection.A;
 				}
 				if (postDb <= CustomGraphics.HANDLE_RADIUS) {
-					MouseInfo.HoveringPost = EPOST.B;
+					MouseInfo.HoveringPost = Post.Selection.B;
 				}
 				MouseInfo.GripElm(mostNearUI);
 			}
@@ -667,15 +667,15 @@ namespace MainForm {
 			}
 			for (int i = 0; i != CircuitSymbol.Count; i++) {
 				var ce = GetSymbol(i);
-				var p = EPOST.INVALID;
+				var p = Post.Selection.NONE;
 				if (pos.Y <= ce.Post.A.Y) {
-					p = EPOST.A;
+					p = Post.Selection.A;
 				}
 				if (pos.Y <= ce.Post.B.Y) {
-					p = EPOST.B;
+					p = Post.Selection.B;
 				}
 				if (pos.Y <= ce.Post.A.Y && pos.Y <= ce.Post.B.Y) {
-					p = EPOST.BOTH;
+					p = Post.Selection.BOTH;
 				}
 				ce.Move(0, dy, p);
 			}
@@ -690,15 +690,15 @@ namespace MainForm {
 			}
 			for (int i = 0; i != CircuitSymbol.Count; i++) {
 				var ce = GetSymbol(i);
-				var p = EPOST.INVALID;
+				var p = Post.Selection.NONE;
 				if (pos.X <= ce.Post.A.X) {
-					p = EPOST.A;
+					p = Post.Selection.A;
 				}
 				if (pos.X <= ce.Post.B.X) {
-					p = EPOST.B;
+					p = Post.Selection.B;
 				}
 				if (pos.X <= ce.Post.A.X && pos.X <= ce.Post.B.X) {
-					p = EPOST.BOTH;
+					p = Post.Selection.BOTH;
 				}
 				ce.Move(dx, 0, p);
 			}
@@ -850,7 +850,7 @@ namespace MainForm {
 
 		void DoOpenFile() {
 			var open = new OpenFileDialog {
-				Filter = "ƒeƒLƒXƒgƒtƒ@ƒCƒ‹(*.txt)|*.txt"
+				Filter = "ï¿½eï¿½Lï¿½Xï¿½gï¿½tï¿½@ï¿½Cï¿½ï¿½(*.txt)|*.txt"
 			};
 			open.ShowDialog();
 			if (string.IsNullOrEmpty(open.FileName) || !Directory.Exists(Path.GetDirectoryName(open.FileName))) {
@@ -879,7 +879,7 @@ namespace MainForm {
 
 			if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) {
 				var save = new SaveFileDialog {
-					Filter = "ƒeƒLƒXƒgƒtƒ@ƒCƒ‹(*.txt)|*.txt"
+					Filter = "ï¿½eï¿½Lï¿½Xï¿½gï¿½tï¿½@ï¿½Cï¿½ï¿½(*.txt)|*.txt"
 				};
 				save.ShowDialog();
 				if (string.IsNullOrEmpty(save.FileName) || !Directory.Exists(Path.GetDirectoryName(save.FileName))) {
@@ -1021,7 +1021,7 @@ namespace MainForm {
 						if (st.HasMoreTokens) {
 							string v;
 							st.nextToken(out v);
-							newce.ReferenceName = Utils.UnEscape(v);
+							newce.ReferenceName = TextUtils.UnEscape(v);
 						} else {
 							newce.ReferenceName = "";
 						}
@@ -1511,7 +1511,7 @@ namespace MainForm {
 				pdf.AddPage(pdfCircuit);
 				pdf.AddPage(pdfScope);
 				var saveFileDialog = new SaveFileDialog {
-					Filter = "PDFƒtƒ@ƒCƒ‹(*.pdf)|*.pdf",
+					Filter = "PDFï¿½tï¿½@ï¿½Cï¿½ï¿½(*.pdf)|*.pdf",
 					FileName = Path.GetFileNameWithoutExtension(mFileName)
 				};
 				saveFileDialog.ShowDialog();
@@ -1633,21 +1633,21 @@ namespace MainForm {
 			if (MouseInfo.GrippedElm != null) {
 				var ce = MouseInfo.GrippedElm;
 				switch (MouseInfo.HoveringPost) {
-				case EPOST.A:
+				case Post.Selection.A:
 					g.DrawHandle(ce.Post.A);
 					g.DrawPost(ce.Post.B);
 					break;
-				case EPOST.B:
+				case Post.Selection.B:
 					g.DrawPost(ce.Post.A);
 					g.DrawHandle(ce.Post.B);
 					break;
 				default:
 					switch (MouseInfo.DraggingPost) {
-					case EPOST.A:
+					case Post.Selection.A:
 						g.DrawHandle(ce.Post.A);
 						g.DrawPost(ce.Post.B);
 						break;
-					case EPOST.B:
+					case Post.Selection.B:
 						g.DrawPost(ce.Post.A);
 						g.DrawHandle(ce.Post.B);
 						break;

@@ -116,21 +116,21 @@ namespace Circuit.Symbol.Passive {
 		public override double Distance(Point p) {
 			if (mElm.Polarity < 0) {
 				return Math.Min(
-					Utils.DistanceOnLine(mTermPri1, mCoilPri1, p), Math.Min(
-					Utils.DistanceOnLine(mTermSec2, mCoilSec2, p), Math.Min(
-					Utils.DistanceOnLine(mTermPri2, mCoilPri2, p), Math.Min(
-					Utils.DistanceOnLine(mTermSec1, mCoilSec1, p), Math.Min(
-					Utils.DistanceOnLine(mCoilPri1, mCoilSec1, p),
-					Utils.DistanceOnLine(mCoilSec2, mCoilPri2, p)
+					Post.DistanceOnLine(mTermPri1, mCoilPri1, p), Math.Min(
+					Post.DistanceOnLine(mTermSec2, mCoilSec2, p), Math.Min(
+					Post.DistanceOnLine(mTermPri2, mCoilPri2, p), Math.Min(
+					Post.DistanceOnLine(mTermSec1, mCoilSec1, p), Math.Min(
+					Post.DistanceOnLine(mCoilPri1, mCoilSec1, p),
+					Post.DistanceOnLine(mCoilSec2, mCoilPri2, p)
 				)))));
 			} else {
 				return Math.Min(
-					Utils.DistanceOnLine(mTermPri1, mCoilPri1, p), Math.Min(
-					Utils.DistanceOnLine(mTermSec1, mCoilSec1, p), Math.Min(
-					Utils.DistanceOnLine(mTermPri2, mCoilPri2, p), Math.Min(
-					Utils.DistanceOnLine(mTermSec2, mCoilSec2, p), Math.Min(
-					Utils.DistanceOnLine(mCoilPri1, mCoilSec2, p),
-					Utils.DistanceOnLine(mCoilSec1, mCoilPri2, p)
+					Post.DistanceOnLine(mTermPri1, mCoilPri1, p), Math.Min(
+					Post.DistanceOnLine(mTermSec1, mCoilSec1, p), Math.Min(
+					Post.DistanceOnLine(mTermPri2, mCoilPri2, p), Math.Min(
+					Post.DistanceOnLine(mTermSec2, mCoilSec2, p), Math.Min(
+					Post.DistanceOnLine(mCoilPri1, mCoilSec2, p),
+					Post.DistanceOnLine(mCoilSec1, mCoilPri2, p)
 				)))));
 			}
 		}
@@ -192,12 +192,12 @@ namespace Circuit.Symbol.Passive {
 		}
 
 		public override void GetInfo(string[] arr) {
-			arr[0] = "トランス：" + Utils.UnitText(mElm.PInductance, "H");
+			arr[0] = "トランス：" + TextUtils.Unit(mElm.PInductance, "H");
 			arr[1] = "2次側巻数比：" + mElm.Ratio;
-			arr[2] = "電位差(1次)：" + Utils.VoltageText(mElm.Volts[ElmTransformer.PRI_T] - mElm.Volts[ElmTransformer.PRI_B]);
-			arr[3] = "電位差(2次)：" + Utils.VoltageText(mElm.Volts[ElmTransformer.SEC_T] - mElm.Volts[ElmTransformer.SEC_B]);
-			arr[4] = "電流(1次)：" + Utils.CurrentText(mElm.Currents[0]);
-			arr[5] = "電流(2次)：" + Utils.CurrentText(mElm.Currents[1]);
+			arr[2] = "電位差(1次)：" + TextUtils.Voltage(mElm.Volts[ElmTransformer.PRI_T] - mElm.Volts[ElmTransformer.PRI_B]);
+			arr[3] = "電位差(2次)：" + TextUtils.Voltage(mElm.Volts[ElmTransformer.SEC_T] - mElm.Volts[ElmTransformer.SEC_B]);
+			arr[4] = "電流(1次)：" + TextUtils.Current(mElm.Currents[0]);
+			arr[5] = "電流(2次)：" + TextUtils.Current(mElm.Currents[1]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

@@ -60,7 +60,7 @@ namespace Circuit.Symbol.Active {
 			base.GetInfo(arr);
 			var ce = (ElmDiodeVaractor)mElm;
 			arr[0] = "可変容量ダイオード";
-			arr[5] = "静電容量：" + Utils.UnitText(ce.Capacitance, "F");
+			arr[5] = "静電容量：" + TextUtils.Unit(ce.Capacitance, "F");
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

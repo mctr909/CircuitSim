@@ -69,8 +69,8 @@ namespace Circuit.Symbol.Gate {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "inverting Schmitt trigger";
-			arr[1] = "Vin：" + Utils.VoltageText(mElm.Volts[0]);
-			arr[2] = "Vout：" + Utils.VoltageText(mElm.Volts[1]);
+			arr[1] = "Vin：" + TextUtils.Voltage(mElm.Volts[0]);
+			arr[2] = "Vout：" + TextUtils.Voltage(mElm.Volts[1]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

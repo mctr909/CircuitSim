@@ -57,10 +57,10 @@ namespace Circuit.Symbol.Output {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "stop trigger";
-			arr[1] = "V = " + Utils.VoltageText(mElm.Volts[0]);
-			arr[2] = "Vtrigger = " + Utils.VoltageText(mElm.TriggerVoltage);
+			arr[1] = "V = " + TextUtils.Voltage(mElm.Volts[0]);
+			arr[2] = "Vtrigger = " + TextUtils.Voltage(mElm.TriggerVoltage);
 			arr[3] = mElm.Triggered ? ("stopping in "
-				+ Utils.TimeText(mElm.TriggerTime + mElm.Delay - Circuit.Time)) : mElm.Stopped ? "stopped" : "waiting";
+				+ TextUtils.Time(mElm.TriggerTime + mElm.Delay - Circuit.Time)) : mElm.Stopped ? "stopped" : "waiting";
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

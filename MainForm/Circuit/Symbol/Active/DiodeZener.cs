@@ -51,7 +51,7 @@
 		public override void GetInfo(string[] arr) {
 			base.GetInfo(arr);
 			arr[0] = "ツェナーダイオード";
-			arr[3] = "降伏電圧：" + Utils.VoltageText(mElm.Model.BreakdownVoltage);
+			arr[3] = "降伏電圧：" + TextUtils.Voltage(mElm.Model.BreakdownVoltage);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

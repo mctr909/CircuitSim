@@ -307,7 +307,7 @@ namespace Circuit.Symbol.Custom {
 				if (p.clock) {
 					t = "Clk";
 				}
-				arr[a] += t + " = " + Utils.VoltageText(ce.Volts[i]);
+				arr[a] += t + " = " + TextUtils.Voltage(ce.Volts[i]);
 				if (i % 2 == 1) {
 					a++;
 				}

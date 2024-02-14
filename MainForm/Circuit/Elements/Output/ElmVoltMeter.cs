@@ -7,7 +7,6 @@
 		public const int TP_P2P = 4;
 
 		public int Meter;
-		public E_SCALE Scale;
 
 		public override int TermCount { get { return 2; } }
 
@@ -26,17 +25,15 @@
 
 		public ElmVoltMeter() : base() {
 			Meter = TP_VOL;
-			Scale = E_SCALE.AUTO;
 		}
 
 		public ElmVoltMeter(StringTokenizer st) : base() {
 			Meter = st.nextTokenInt(TP_VOL);
-			Scale = st.nextTokenEnum(E_SCALE.AUTO);
 		}
 
 		public override void IterationFinished() {
 			mCount++; /*how many counts are in a cycle */
-			double v = VoltageDiff;
+			var v = VoltageDiff;
 			mTotal += v * v;
 
 			/* V going up, track maximum value with */

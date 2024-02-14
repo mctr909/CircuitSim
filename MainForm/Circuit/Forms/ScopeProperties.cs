@@ -71,12 +71,12 @@
 
 		private void txtManualScale_TextChanged(object sender, EventArgs e) {
 			double d;
-			if (Utils.ParseUnits(txtManualScale.Text, out d)) {
+			if (TextUtils.ParseUnits(txtManualScale.Text, out d)) {
 				mPlot.SetScale(d);
 			} else {
 				d = mPlot.Scale;
 			}
-			txtManualScale.Text = Utils.UnitText(d);
+			txtManualScale.Text = TextUtils.Unit(d);
 		}
 
 		private void txtLabel_TextChanged(object sender, EventArgs e) {
@@ -129,7 +129,7 @@
 		}
 
 		private void setScopeSpeedLabel() {
-			lblScopeSpeed.Text = Utils.UnitText(mPlot.CalcGridTime(), "s") + "/div";
+			lblScopeSpeed.Text = TextUtils.Unit(mPlot.CalcGridTime(), "s") + "/div";
 		}
 	}
 }

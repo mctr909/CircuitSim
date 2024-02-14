@@ -10,14 +10,14 @@ namespace Circuit.Symbol.Input {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "交流電源";
-			arr[1] = "電流：" + Utils.CurrentText(mElm.Current);
-			arr[2] = "振幅：" + Utils.VoltageText(mElm.MaxVoltage);
-			arr[3] = "周波数：" + Utils.FrequencyText(mElm.Frequency);
+			arr[1] = "電流：" + TextUtils.Current(mElm.Current);
+			arr[2] = "振幅：" + TextUtils.Voltage(mElm.MaxVoltage);
+			arr[3] = "周波数：" + TextUtils.Frequency(mElm.Frequency);
 			var phase = mElm.Phase + mElm.PhaseOffset;
 			phase %= 2 * Math.PI;
-			arr[4] = "位相：" + Utils.UnitText3digit(phase * 180 / Math.PI, "deg");
+			arr[4] = "位相：" + TextUtils.Unit3digit(phase * 180 / Math.PI, "deg");
 			if (mElm.Bias != 0) {
-				arr[5] = "バイアス：" + Utils.VoltageText(mElm.Bias);
+				arr[5] = "バイアス：" + TextUtils.Voltage(mElm.Bias);
 			}
 		}
 
