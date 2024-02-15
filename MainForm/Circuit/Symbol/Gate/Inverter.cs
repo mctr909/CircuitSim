@@ -17,7 +17,9 @@ namespace Circuit.Symbol.Gate {
 		}
 
 		public Inverter(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmInverter(st);
+			mElm = new ElmInverter();
+			mElm.SlewRate = st.nextTokenDouble(0.5);
+			mElm.HighVoltage = st.nextTokenDouble(5);
 			Post.NoDiagonal = true;
 		}
 

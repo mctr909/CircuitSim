@@ -20,10 +20,6 @@
 
 		public ElmAmmeter() : base() { }
 
-		public ElmAmmeter(StringTokenizer st) : base() {
-			Meter = st.nextTokenInt();
-		}
-
 		public override int TermCount { get { return 2; } }
 
 		public override bool IsWire { get { return true; } }

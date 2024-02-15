@@ -9,11 +9,6 @@
 			Text = "output";
 		}
 
-		public ElmLabeledNode(StringTokenizer st) : base() {
-			st.nextToken(out Text);
-			Text = TextUtils.UnEscape(Text);
-		}
-
 		public override int TermCount { get { return 1; } }
 
 		public override int ConnectionNodeCount { get { return 2; } }

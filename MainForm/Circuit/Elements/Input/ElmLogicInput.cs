@@ -10,11 +10,6 @@ namespace Circuit.Elements.Input {
 			VLow = 0;
 		}
 
-		public ElmLogicInput(StringTokenizer st) {
-			VHigh = st.nextTokenDouble(5);
-			VLow = st.nextTokenDouble(0);
-		}
-
 		public override int VoltageSourceCount { get { return 1; } }
 
 		public override int TermCount { get { return 1; } }

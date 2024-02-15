@@ -17,14 +17,6 @@
 			LogicOffLevel = 0;
 		}
 
-		public ElmInvertingSchmitt(StringTokenizer st) : base() {
-			SlewRate = st.nextTokenDouble(0.5);
-			LowerTrigger = st.nextTokenDouble(1.66);
-			UpperTrigger = st.nextTokenDouble(3.33);
-			LogicOnLevel = st.nextTokenDouble(5);
-			LogicOffLevel = st.nextTokenDouble(0);
-		}
-
 		public override int TermCount { get { return 2; } }
 
 		public override double VoltageDiff { get { return Volts[0]; } }

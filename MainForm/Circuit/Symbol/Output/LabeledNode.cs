@@ -17,7 +17,9 @@ namespace Circuit.Symbol.Output {
 		}
 
 		public LabeledNode(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmLabeledNode(st);
+			mElm = new ElmLabeledNode();
+			st.nextToken(out mElm.Text);
+			mElm.Text = TextUtils.UnEscape(mElm.Text);
 		}
 
 		public bool IsInternal { get { return (mFlags & FLAG_INTERNAL) != 0; } }

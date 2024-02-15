@@ -1,4 +1,5 @@
 ﻿using Circuit.Elements.Input;
+using static Circuit.Elements.Input.ElmVoltage;
 
 namespace Circuit.Symbol.Input {
 	class Rail : Voltage {
@@ -8,12 +9,19 @@ namespace Circuit.Symbol.Input {
 		PointF mLa;
 		PointF mLb;
 
-		public Rail(Point pos, ElmVoltage.WAVEFORM wf) : base(pos, wf) {
+		public Rail(Point pos, WAVEFORM wf) : base(pos, wf) {
 			mElm = new ElmRail(wf);
 		}
 
 		public Rail(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmRail(st);
+			mElm = new ElmRail(WAVEFORM.SIN);
+			mElm.WaveForm = st.nextTokenEnum(mElm.WaveForm);
+			mElm.Frequency = st.nextTokenDouble(100);
+			mElm.MaxVoltage = st.nextTokenDouble(5);
+			mElm.Bias = st.nextTokenDouble();
+			mElm.Phase = st.nextTokenDouble() * Math.PI / 180;
+			mElm.PhaseOffset = st.nextTokenDouble() * Math.PI / 180;
+			mElm.DutyCycle = st.nextTokenDouble(0.5);
 			Link.Load(st);
 		}
 
@@ -27,8 +35,8 @@ namespace Circuit.Symbol.Input {
 			InterpolationPost(ref mLb, 1, 6);
 
 			switch (mElm.WaveForm) {
-			case ElmVoltage.WAVEFORM.DC:
-			case ElmVoltage.WAVEFORM.NOISE:
+			case WAVEFORM.DC:
+			case WAVEFORM.NOISE:
 				SetLead1(1);
 				break;
 			default:
@@ -55,15 +63,15 @@ namespace Circuit.Symbol.Input {
 		}
 
 		void drawRail() {
-			if (mElm.WaveForm == ElmVoltage.WAVEFORM.DC) {
+			if (mElm.WaveForm == WAVEFORM.DC) {
 				DrawLine(mLa, mLb);
 				DrawCircle(mC, 4);
 				var v = mElm.GetVoltage();
 				var s = TextUtils.Unit(v, "V");
 				DrawCenteredText(s, mNamePos);
-			} else if (mElm.WaveForm == ElmVoltage.WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
+			} else if (mElm.WaveForm == WAVEFORM.SQUARE && (mFlags & FLAG_CLOCK) != 0) {
 				DrawCenteredText("Clock", mNamePos);
-			} else if (mElm.WaveForm == ElmVoltage.WAVEFORM.NOISE) {
+			} else if (mElm.WaveForm == WAVEFORM.NOISE) {
 				DrawCenteredText("Noise", mNamePos);
 			} else {
 				DrawWaveform(Post.B);

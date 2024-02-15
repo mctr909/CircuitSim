@@ -17,14 +17,6 @@
 			Reset();
 		}
 
-		public ElmFM(StringTokenizer st) : base() {
-			CarrierFreq = st.nextTokenDouble();
-			Signalfreq = st.nextTokenDouble();
-			MaxVoltage = st.nextTokenDouble();
-			Deviation = st.nextTokenDouble();
-			Reset();
-		}
-
 		public override void Reset() {
 			mFreqTimeZero = 0;
 		}

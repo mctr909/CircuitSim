@@ -7,7 +7,12 @@ namespace Circuit.Symbol.Gate {
 		}
 
 		public Schmitt(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmSchmitt(st);
+			mElm = new ElmSchmitt();
+			mElm.SlewRate = st.nextTokenDouble(0.5);
+			mElm.LowerTrigger = st.nextTokenDouble(1.66);
+			mElm.UpperTrigger = st.nextTokenDouble(3.33);
+			mElm.LogicOnLevel = st.nextTokenDouble(5);
+			mElm.LogicOffLevel = st.nextTokenDouble(0);
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.SCHMITT; } }

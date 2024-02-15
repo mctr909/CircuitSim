@@ -17,15 +17,6 @@
 			Reset();
 		}
 
-		public ElmAM(StringTokenizer st) : base() {
-			CarrierFreq = st.nextTokenDouble(1000);
-			SignalFreq = st.nextTokenDouble(50);
-			MaxVoltage = st.nextTokenDouble(5);
-			Phase = st.nextTokenDouble();
-			Depth = st.nextTokenDouble(0.1);
-			Reset();
-		}
-
 		public override int TermCount { get { return 1; } }
 
 		public override int VoltageSourceCount { get { return 1; } }

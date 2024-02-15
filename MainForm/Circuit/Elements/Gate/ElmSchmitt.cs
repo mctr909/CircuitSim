@@ -2,8 +2,6 @@
 	class ElmSchmitt : ElmInvertingSchmitt {
 		public ElmSchmitt() : base() { }
 
-		public ElmSchmitt(StringTokenizer st) : base(st) { }
-
 		public override void DoIteration() {
 			double v0 = Volts[1];
 			double _out;

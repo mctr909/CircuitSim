@@ -12,7 +12,10 @@ namespace Circuit.Symbol.Output {
 		}
 
 		public StopTrigger(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-			mElm = new ElmStopTrigger(st);
+			mElm = new ElmStopTrigger();
+			mElm.TriggerVoltage = st.nextTokenDouble();
+			mElm.Type = st.nextTokenInt();
+			mElm.Delay = st.nextTokenDouble();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.STOP_TRIGGER; } }

@@ -32,7 +32,7 @@ namespace Circuit.Symbol.Gate {
 
 		protected virtual string gateName { get { return ""; } }
 
-		public Gate(Point pos) : base(pos) {
+		protected Gate(Point pos) : base(pos) {
 			Post.NoDiagonal = true;
 			if (mLastSchmitt) {
 				mFlags |= FLAG_SCHMITT;
@@ -40,7 +40,7 @@ namespace Circuit.Symbol.Gate {
 			mFlags |= FLAG_SMALL;
 		}
 
-		public Gate(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
+		protected Gate(Point p1, Point p2, int f) : base(p1, p2, f) {
 			Post.NoDiagonal = true;
 			mFlags |= FLAG_SMALL;
 		}

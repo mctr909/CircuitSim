@@ -8,10 +8,6 @@
 			Threshold = 2.5;
 		}
 
-		public ElmLogicOutput(StringTokenizer st) : base() {
-			Threshold = st.nextTokenDouble(2.5);
-		}
-
 		public override int TermCount { get { return 1; } }
 
 		public override double VoltageDiff { get { return Volts[0]; } }

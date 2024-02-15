@@ -1,5 +1,6 @@
 ﻿using Circuit.Forms;
 using Circuit.Elements.Output;
+using System.Diagnostics.Metrics;
 
 namespace Circuit.Symbol.Output {
 	class Ammeter : BaseSymbol {
@@ -20,7 +21,8 @@ namespace Circuit.Symbol.Output {
 		}
 
 		public Ammeter(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmAmmeter(st);
+			mElm = new ElmAmmeter();
+			mElm.Meter = st.nextTokenInt();
 			mScale = st.nextTokenEnum(EScale.AUTO);
 		}
 

@@ -10,11 +10,6 @@
 			HighVoltage = ElmGate.LastHighVoltage;
 		}
 
-		public ElmInverter(StringTokenizer st) : base() {
-			SlewRate = st.nextTokenDouble(0.5);
-			HighVoltage = st.nextTokenDouble(5);
-		}
-
 		public override int TermCount { get { return 2; } }
 
 		public override int VoltageSourceCount { get { return 1; } }

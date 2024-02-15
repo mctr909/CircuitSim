@@ -11,11 +11,6 @@
 			Roff = 1e10;
 		}
 
-		public ElmTriState(StringTokenizer st) : base() {
-			Ron = st.nextTokenDouble(0.1);
-			Roff = st.nextTokenDouble(1e10);
-		}
-
 		public override int TermCount { get { return 3; } }
 
 		public override int InternalNodeCount { get { return 1; } }

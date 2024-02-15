@@ -17,7 +17,9 @@ namespace Circuit.Symbol.Gate {
 		}
 
 		public TriState(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmTriState(st);
+			mElm = new ElmTriState();
+			mElm.Ron = st.nextTokenDouble(0.1);
+			mElm.Roff = st.nextTokenDouble(1e10);
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.TRISTATE; } }

@@ -15,10 +15,16 @@ namespace Circuit.Symbol.Input {
 		}
 
 		public AM(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmAM(st);
+			mElm = new ElmAM();
+			mElm.CarrierFreq = st.nextTokenDouble(1000);
+			mElm.SignalFreq = st.nextTokenDouble(50);
+			mElm.MaxVoltage = st.nextTokenDouble(5);
+			mElm.Phase = st.nextTokenDouble();
+			mElm.Depth = st.nextTokenDouble(0.1);
 			if ((mFlags & FLAG_COS) != 0) {
 				mFlags &= ~FLAG_COS;
 			}
+			mElm.Reset();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.AM; } }

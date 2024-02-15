@@ -24,14 +24,6 @@
 			Reset();
 		}
 
-		public ElmSweep(StringTokenizer st) : base() {
-			MinF = st.nextTokenDouble();
-			MaxF = st.nextTokenDouble();
-			MaxV = st.nextTokenDouble();
-			SweepTime = st.nextTokenDouble();
-			Reset();
-		}
-
 		public override int VoltageSourceCount { get { return 1; } }
 
 		public override int TermCount { get { return 1; } }

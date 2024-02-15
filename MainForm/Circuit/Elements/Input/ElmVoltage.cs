@@ -31,16 +31,6 @@
 			DutyCycle = 0.5;
 		}
 
-		public ElmVoltage(StringTokenizer st) {
-			WaveForm = st.nextTokenEnum(WAVEFORM.DC);
-			Frequency = st.nextTokenDouble(100);
-			MaxVoltage = st.nextTokenDouble(5);
-			Bias = st.nextTokenDouble();
-			Phase = st.nextTokenDouble() * Math.PI / 180;
-			PhaseOffset = st.nextTokenDouble() * Math.PI / 180;
-			DutyCycle = st.nextTokenDouble(0.5);
-		}
-
 		public override int TermCount { get { return 2; } }
 
 		public override int VoltageSourceCount { get { return 1; } }

@@ -15,10 +15,15 @@ namespace Circuit.Symbol.Input {
 		}
 
 		public FM(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmFM(st);
+			mElm = new ElmFM();
+			mElm.CarrierFreq = st.nextTokenDouble();
+			mElm.Signalfreq = st.nextTokenDouble();
+			mElm.MaxVoltage = st.nextTokenDouble();
+			mElm.Deviation = st.nextTokenDouble();
 			if ((mFlags & FLAG_COS) != 0) {
 				mFlags &= ~FLAG_COS;
 			}
+			mElm.Reset();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.FM; } }

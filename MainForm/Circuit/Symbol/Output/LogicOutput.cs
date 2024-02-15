@@ -16,7 +16,8 @@ namespace Circuit.Symbol.Output {
 		}
 
 		public LogicOutput(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmLogicOutput(st);
+			mElm = new ElmLogicOutput();
+			mElm.Threshold = st.nextTokenDouble(2.5);
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.LOGIC_O; } }

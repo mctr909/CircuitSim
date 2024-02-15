@@ -12,12 +12,6 @@
 			TriggerVoltage = 1;
 		}
 
-		public ElmStopTrigger(StringTokenizer st) : base() {
-			TriggerVoltage = st.nextTokenDouble();
-			Type = st.nextTokenInt();
-			Delay = st.nextTokenDouble();
-		}
-
 		public override int TermCount { get { return 1; } }
 
 		public override double VoltageDiff { get { return Volts[0]; } }

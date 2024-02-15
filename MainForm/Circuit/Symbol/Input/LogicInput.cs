@@ -16,7 +16,9 @@ namespace Circuit.Symbol.Input {
 		}
 
 		public LogicInput(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElmLogic = new ElmLogicInput(st);
+			mElmLogic = new ElmLogicInput();
+			mElmLogic.VHigh = st.nextTokenDouble(5);
+			mElmLogic.VLow = st.nextTokenDouble(0);
 			mElm = mElmLogic;
 		}
 

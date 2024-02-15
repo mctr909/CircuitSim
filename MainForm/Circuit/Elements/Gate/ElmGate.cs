@@ -4,25 +4,17 @@
 
 		public int InputCount = 2;
 		public bool[] InputStates;
+		public bool LastOutput;
 		public double HighVoltage;
 		public bool HasSchmittInputs;
 		public bool IsInverting;
 
 		int mOscillationCount;
 
-		public bool LastOutput { get; private set; }
-
 		public ElmGate() : base() {
 			InputCount = 2;
 			/* copy defaults from last gate edited */
 			HighVoltage = LastHighVoltage;
-		}
-
-		public ElmGate(StringTokenizer st) : base() {
-			InputCount = st.nextTokenInt(InputCount);
-			var lastOutputVoltage = st.nextTokenDouble();
-			HighVoltage = st.nextTokenDouble(5);
-			LastOutput = HighVoltage * 0.5 < lastOutputVoltage;
 		}
 
 		public override int VoltageSourceCount { get { return 1; } }

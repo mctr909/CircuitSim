@@ -1,10 +1,6 @@
 ﻿namespace Circuit.Elements.Input {
 	class ElmRail : ElmVoltage {
-		public ElmRail() : base(WAVEFORM.DC) { }
-
 		public ElmRail(WAVEFORM wf) : base(wf) { }
-
-		public ElmRail(StringTokenizer st) : base(st) { }
 
 		public override int TermCount { get { return 1; } }
 

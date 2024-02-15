@@ -1,5 +1,6 @@
 ﻿using Circuit.Forms;
 using Circuit.Elements.Input;
+using static Circuit.Elements.Input.ElmVoltage;
 
 namespace Circuit.Symbol.Input {
 	class VoltageLink : BaseLink {
@@ -90,15 +91,21 @@ namespace Circuit.Symbol.Input {
 		double mTextRot;
 		PointF mSignPos;
 
-		public Voltage(Point pos, ElmVoltage.WAVEFORM wf) : base(pos) {
+		protected Voltage(Point p1, Point p2, int f) : base(p1, p2, f) { }
+
+		public Voltage(Point pos, WAVEFORM wf) : base(pos) {
 			mElm = new ElmVoltage(wf);
 			ReferenceName = "";
 		}
-
-		public Voltage(Point p1, Point p2, int f) : base(p1, p2, f) { }
-
 		public Voltage(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmVoltage(st);
+			mElm = new ElmVoltage(WAVEFORM.SIN);
+			mElm.WaveForm = st.nextTokenEnum(mElm.WaveForm);
+			mElm.Frequency = st.nextTokenDouble(100);
+			mElm.MaxVoltage = st.nextTokenDouble(5);
+			mElm.Bias = st.nextTokenDouble();
+			mElm.Phase = st.nextTokenDouble() * Math.PI / 180;
+			mElm.PhaseOffset = st.nextTokenDouble() * Math.PI / 180;
+			mElm.DutyCycle = st.nextTokenDouble(0.5);
 			Link.Load(st);
 		}
 
@@ -106,8 +113,8 @@ namespace Circuit.Symbol.Input {
 
 		protected override void dump(List<object> optionList) {
 			/* set flag so we know if duty cycle is correct for pulse waveforms */
-			if (mElm.WaveForm == ElmVoltage.WAVEFORM.PULSE_MONOPOLE ||
-				mElm.WaveForm == ElmVoltage.WAVEFORM.PULSE_DIPOLE) {
+			if (mElm.WaveForm == WAVEFORM.PULSE_MONOPOLE ||
+				mElm.WaveForm == WAVEFORM.PULSE_DIPOLE) {
 				mFlags |= FLAG_PULSE_DUTY;
 			} else {
 				mFlags &= ~FLAG_PULSE_DUTY;

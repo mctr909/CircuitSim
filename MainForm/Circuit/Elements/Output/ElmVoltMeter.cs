@@ -27,10 +27,6 @@
 			Meter = TP_VOL;
 		}
 
-		public ElmVoltMeter(StringTokenizer st) : base() {
-			Meter = st.nextTokenInt(TP_VOL);
-		}
-
 		public override void IterationFinished() {
 			mCount++; /*how many counts are in a cycle */
 			var v = VoltageDiff;

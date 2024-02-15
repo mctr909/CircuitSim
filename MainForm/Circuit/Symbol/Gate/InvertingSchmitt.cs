@@ -13,7 +13,7 @@ namespace Circuit.Symbol.Gate {
 
 		public override BaseElement Element { get { return mElm; } }
 
-		public InvertingSchmitt(Point pos, int dummy) : base(pos) {
+		protected InvertingSchmitt(Point p1, Point p2, int f) : base(p1, p2, f) {
 			Post.NoDiagonal = true;
 		}
 
@@ -21,13 +21,13 @@ namespace Circuit.Symbol.Gate {
 			mElm = new ElmInvertingSchmitt();
 			Post.NoDiagonal = true;
 		}
-
-		public InvertingSchmitt(Point p1, Point p2, int f) : base(p1, p2, f) {
-			Post.NoDiagonal = true;
-		}
-
 		public InvertingSchmitt(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmInvertingSchmitt(st);
+			mElm = new ElmInvertingSchmitt();
+			mElm.SlewRate = st.nextTokenDouble(0.5);
+			mElm.LowerTrigger = st.nextTokenDouble(1.66);
+			mElm.UpperTrigger = st.nextTokenDouble(3.33);
+			mElm.LogicOnLevel = st.nextTokenDouble(5);
+			mElm.LogicOffLevel = st.nextTokenDouble(0);
 			Post.NoDiagonal = true;
 		}
 
