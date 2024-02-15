@@ -25,18 +25,18 @@
 		public void Stamp(int n0, int n1) {
 			mNodes[0] = n0;
 			mNodes[1] = n1;
-			Circuit.StampNonLinear(mNodes[0]);
-			Circuit.StampNonLinear(mNodes[1]);
+			CircuitElement.StampNonLinear(mNodes[0]);
+			CircuitElement.StampNonLinear(mNodes[1]);
 		}
 
 		public void DoIteration(double voltDiff) {
 			if (Math.Abs(voltDiff - mLastVdiff) > 0.01) {
-				Circuit.Converged = false;
+				CircuitElement.Converged = false;
 			}
 			LimitStep(ref voltDiff);
 			var gmin = mLeakage * 0.01;
-			if (Circuit.SubIterations > 100) {
-				gmin = Math.Exp(-9 * Math.Log(10) * (1 - Circuit.SubIterations / 3000.0));
+			if (CircuitElement.SubIterations > 100) {
+				gmin = Math.Exp(-9 * Math.Log(10) * (1 - CircuitElement.SubIterations / 3000.0));
 				if (gmin > 0.1) {
 					gmin = 0.1;
 				}
@@ -44,8 +44,8 @@
 			var eval = Math.Exp(voltDiff * mVdCoef);
 			var geq = mVdCoef * mLeakage * eval + gmin;
 			var nc = (eval - 1) * mLeakage - geq * voltDiff;
-			Circuit.StampConductance(mNodes[0], mNodes[1], geq);
-			Circuit.StampCurrentSource(mNodes[0], mNodes[1], nc);
+			CircuitElement.StampConductance(mNodes[0], mNodes[1], geq);
+			CircuitElement.StampCurrentSource(mNodes[0], mNodes[1], nc);
 		}
 
 		public double CalculateCurrent(double voltdiff) {
@@ -64,7 +64,7 @@
 				} else {
 					vnew = mVScale * Math.Log(vnew / mVScale);
 				}
-				Circuit.Converged = false;
+				CircuitElement.Converged = false;
 			}
 			mLastVdiff = vnew;
 		}

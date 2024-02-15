@@ -54,8 +54,8 @@ namespace Circuit.Elements.Input {
 		}
 
 		public override void Stamp() {
-			Circuit.StampNonLinear(Nodes[InputCount]);
-			Circuit.StampNonLinear(Nodes[InputCount + 1]);
+			CircuitElement.StampNonLinear(Nodes[InputCount]);
+			CircuitElement.StampNonLinear(Nodes[InputCount + 1]);
 		}
 
 		public override void DoIteration() {
@@ -66,7 +66,7 @@ namespace Circuit.Elements.Input {
 				Pins[InputCount].current = 0;
 				Pins[InputCount + 1].current = 0;
 				/* avoid singular matrix errors */
-				Circuit.StampResistor(Nodes[InputCount], Nodes[InputCount + 1], 1e8);
+				CircuitElement.StampResistor(Nodes[InputCount], Nodes[InputCount + 1], 1e8);
 				return;
 			}
 
@@ -75,7 +75,7 @@ namespace Circuit.Elements.Input {
 			double convergeLimit = getConvergeLimit();
 			for (i = 0; i != InputCount; i++) {
 				if (Math.Abs(Volts[i] - mLastVolts[i]) > convergeLimit) {
-					Circuit.Converged = false;
+					CircuitElement.Converged = false;
 				}
 				if (double.IsNaN(Volts[i])) {
 					Volts[i] = 0;
@@ -110,14 +110,14 @@ namespace Circuit.Elements.Input {
 				if (Math.Abs(dx) < 1e-6) {
 					dx = sign(dx, 1e-6);
 				}
-				Circuit.StampVCCurrentSource(Nodes[InputCount], Nodes[InputCount + 1], Nodes[i], 0, dx);
+				CircuitElement.StampVCCurrentSource(Nodes[InputCount], Nodes[InputCount + 1], Nodes[i], 0, dx);
 				/*Console.WriteLine("ccedx " + i + " " + dx); */
 				/* adjust right side */
 				rs -= dx * Volts[i];
 				mValues[i] = Volts[i];
 			}
 			/*Console.WriteLine("ccers " + rs);*/
-			Circuit.StampCurrentSource(Nodes[InputCount], Nodes[InputCount + 1], rs);
+			CircuitElement.StampCurrentSource(Nodes[InputCount], Nodes[InputCount + 1], rs);
 			Pins[InputCount].current = -v0;
 			Pins[InputCount + 1].current = v0;
 
@@ -133,10 +133,10 @@ namespace Circuit.Elements.Input {
 		protected double getConvergeLimit() {
 			/* get maximum change in voltage per step when testing for convergence.
              * be more lenient over time */
-			if (Circuit.SubIterations < 10) {
+			if (CircuitElement.SubIterations < 10) {
 				return 0.001;
 			}
-			if (Circuit.SubIterations < 200) {
+			if (CircuitElement.SubIterations < 200) {
 				return 0.01;
 			}
 			return 0.1;
@@ -149,16 +149,16 @@ namespace Circuit.Elements.Input {
 		double getLimitStep() {
 			/* get limit on changes in voltage per step.
              * be more lenient the more iterations we do */
-			if (Circuit.SubIterations < 4) {
+			if (CircuitElement.SubIterations < 4) {
 				return 10;
 			}
-			if (Circuit.SubIterations < 10) {
+			if (CircuitElement.SubIterations < 10) {
 				return 1;
 			}
-			if (Circuit.SubIterations < 20) {
+			if (CircuitElement.SubIterations < 20) {
 				return 0.1;
 			}
-			if (Circuit.SubIterations < 40) {
+			if (CircuitElement.SubIterations < 40) {
 				return 0.01;
 			}
 			return 0.001;

@@ -33,13 +33,13 @@
 			base.Stamp();
 			var n0 = Nodes[0] - 1;
 			var n1 = Nodes[2] - 1;
-			int vn = Circuit.Nodes.Count + mVoltSource - 1;
-			Circuit.Matrix[vn, n0] -= 1;
-			Circuit.Matrix[vn, n1] += 1;
-			Circuit.Matrix[n0, vn] += 1;
-			Circuit.Matrix[n1, vn] -= 1;
-			Circuit.RowInfo[vn].RightChanges = true;
-			Circuit.RowInfo[n1].LeftChanges = true;
+			int vn = CircuitElement.Nodes.Count + mVoltSource - 1;
+			CircuitElement.Matrix[vn, n0] -= 1;
+			CircuitElement.Matrix[vn, n1] += 1;
+			CircuitElement.Matrix[n0, vn] += 1;
+			CircuitElement.Matrix[n1, vn] -= 1;
+			CircuitElement.RowInfo[vn].RightChanges = true;
+			CircuitElement.RowInfo[n1].LeftChanges = true;
 		}
 
 		public override void DoIteration() {
@@ -47,12 +47,12 @@
 			var g = 1.0 / mCompResistance;
 			var n0 = Nodes[2] - 1;
 			var n1 = Nodes[1] - 1;
-			var vn = Circuit.Nodes.Count + mVoltSource - 1;
-			Circuit.Matrix[n0, n0] += g;
-			Circuit.Matrix[n1, n1] += g;
-			Circuit.Matrix[n0, n1] -= g;
-			Circuit.Matrix[n1, n0] -= g;
-			Circuit.RightSide[vn] += mVoltSourceValue;
+			var vn = CircuitElement.Nodes.Count + mVoltSource - 1;
+			CircuitElement.Matrix[n0, n0] += g;
+			CircuitElement.Matrix[n1, n1] += g;
+			CircuitElement.Matrix[n0, n1] -= g;
+			CircuitElement.Matrix[n1, n0] -= g;
+			CircuitElement.RightSide[vn] += mVoltSourceValue;
 		}
 
 		public override void PrepareIteration() {
@@ -66,7 +66,7 @@
 			} else {
 				Capacitance = c0 / Math.Pow(1 - mCapVoltDiff / Model.FwDrop, 0.5);
 			}
-			mCompResistance = Circuit.TimeStep / (2 * Capacitance);
+			mCompResistance = CircuitElement.TimeStep / (2 * Capacitance);
 			mVoltSourceValue = -mCapVoltDiff - mCapCurrent * mCompResistance;
 		}
 

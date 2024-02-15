@@ -1,4 +1,5 @@
-﻿using Circuit.Elements.Passive;
+﻿using Circuit.Forms;
+using Circuit.Elements.Passive;
 
 namespace Circuit.Symbol.Passive {
 	class Transformer : BaseSymbol {

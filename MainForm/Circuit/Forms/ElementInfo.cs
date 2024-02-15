@@ -1,4 +1,4 @@
-﻿namespace Circuit {
+﻿namespace Circuit.Forms {
 	public class ElementInfo {
 		public string Name { get; private set; }
 		public string Text { get; set; }

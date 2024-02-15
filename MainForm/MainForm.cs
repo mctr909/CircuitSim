@@ -2,9 +2,9 @@ using Circuit;
 using Circuit.Elements.Active;
 using Circuit.Elements.Passive;
 using Circuit.Forms;
-
 using Circuit.Symbol.Passive;
 using Circuit.Symbol.Output;
+
 using System.Text;
 
 namespace MainForm {
@@ -137,7 +137,7 @@ namespace MainForm {
 
 			ControlPanel.SetSliderPanelHeight();
 
-			Circuit.Circuit.SetSimRunning(true);
+			CircuitSymbol.SetSimRunning(true);
 		}
 
 		private void Form1_Load(object sender, EventArgs e) {
@@ -258,16 +258,8 @@ namespace MainForm {
 		}
 
 		public static void ResetButton_onClick() {
-			for (int i = 0; i != CircuitSymbol.List.Count; i++) {
-				CircuitSymbol.List[i].Element.Reset();
-			}
+			CircuitSymbol.Reset();
 			ScopeForm.ResetGraph();
-			CircuitSymbol.NeedAnalyze = true;
-			if (Circuit.Circuit.Time == 0) {
-				Circuit.Circuit.SetSimRunning(true);
-			} else {
-				Circuit.Circuit.Time = 0;
-			}
 		}
 
 		public void PushUndo() {
@@ -799,7 +791,7 @@ namespace MainForm {
 			}
 			var isRunning = CircuitSymbol.IsRunning;
 			if (isRunning) {
-				Circuit.Circuit.SetSimRunning(false);
+				CircuitSymbol.SetSimRunning(false);
 			}
 
 			mPixCir.Width = width;
@@ -807,7 +799,7 @@ namespace MainForm {
 			CustomGraphics.Instance?.Dispose();
 			CustomGraphics.Instance = CustomGraphics.FromImage(width, height);
 			mCircuitArea = new Rectangle(0, 0, width, height);
-			Circuit.Circuit.SetSimRunning(isRunning);
+			CircuitSymbol.SetSimRunning(isRunning);
 		}
 
 		Rectangle GetCircuitBounds() {
@@ -1005,7 +997,7 @@ namespace MainForm {
 							break;
 						}
 						if (tint == '&') {
-							var adj = new Adjustable(st);
+							var adj = new Slider(st);
 							BaseSymbol.Adjustables.Add(adj);
 							break;
 						}
@@ -1423,10 +1415,6 @@ namespace MainForm {
 		static void UpdateCircuit() {
 			bool didAnalyze = CircuitSymbol.NeedAnalyze;
 			if (CircuitSymbol.NeedAnalyze) {
-				CircuitSymbol.Clear();
-				foreach (var ui in CircuitSymbol.List) {
-					CircuitSymbol.Add(ui.Element);
-				}
 				CircuitSymbol.AnalyzeCircuit();
 				Repaint();
 				CircuitSymbol.NeedAnalyze = false;
@@ -1553,10 +1541,9 @@ namespace MainForm {
 
 			int iter;
 			for (iter = 1; ; iter++) {
-				if (!Circuit.Circuit.DoIteration()) {
+				if (!CircuitElement.DoIteration()) {
 					break;
 				}
-				Circuit.Circuit.Time += ControlPanel.TimeStep;
 				ScopeForm.TimeStep();
 				for (int i = 0; i < CircuitSymbol.Count; i++) {
 					if (CircuitSymbol.List[i] is Scope) {

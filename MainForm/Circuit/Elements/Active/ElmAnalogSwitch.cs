@@ -13,8 +13,8 @@
 		public override bool GetConnection(int n1, int n2) { return !(n1 == 2 || n2 == 2); }
 
 		public override void Stamp() {
-			Circuit.RowInfo[Nodes[0] - 1].LeftChanges = true;
-			Circuit.RowInfo[Nodes[1] - 1].LeftChanges = true;
+			CircuitElement.RowInfo[Nodes[0] - 1].LeftChanges = true;
+			CircuitElement.RowInfo[Nodes[1] - 1].LeftChanges = true;
 		}
 
 		public override double GetCurrentIntoNode(int n) {
@@ -34,23 +34,23 @@
 			}
 			mResistance = IsOpen ? Roff : Ron;
 			var conductance = 1.0 / mResistance;
-			var rowA = Circuit.RowInfo[Nodes[0] - 1].MapRow;
-			var rowB = Circuit.RowInfo[Nodes[1] - 1].MapRow;
-			var colri = Circuit.RowInfo[Nodes[0] - 1];
+			var rowA = CircuitElement.RowInfo[Nodes[0] - 1].MapRow;
+			var rowB = CircuitElement.RowInfo[Nodes[1] - 1].MapRow;
+			var colri = CircuitElement.RowInfo[Nodes[0] - 1];
 			if (colri.IsConst) {
-				Circuit.RightSide[rowA] -= conductance * colri.Value;
-				Circuit.RightSide[rowB] += conductance * colri.Value;
+				CircuitElement.RightSide[rowA] -= conductance * colri.Value;
+				CircuitElement.RightSide[rowB] += conductance * colri.Value;
 			} else {
-				Circuit.Matrix[rowA, colri.MapCol] += conductance;
-				Circuit.Matrix[rowB, colri.MapCol] -= conductance;
+				CircuitElement.Matrix[rowA, colri.MapCol] += conductance;
+				CircuitElement.Matrix[rowB, colri.MapCol] -= conductance;
 			}
-			colri = Circuit.RowInfo[Nodes[1] - 1];
+			colri = CircuitElement.RowInfo[Nodes[1] - 1];
 			if (colri.IsConst) {
-				Circuit.RightSide[rowA] += conductance * colri.Value;
-				Circuit.RightSide[rowB] -= conductance * colri.Value;
+				CircuitElement.RightSide[rowA] += conductance * colri.Value;
+				CircuitElement.RightSide[rowB] -= conductance * colri.Value;
 			} else {
-				Circuit.Matrix[rowA, colri.MapCol] -= conductance;
-				Circuit.Matrix[rowB, colri.MapCol] += conductance;
+				CircuitElement.Matrix[rowA, colri.MapCol] -= conductance;
+				CircuitElement.Matrix[rowB, colri.MapCol] += conductance;
 			}
 		}
 

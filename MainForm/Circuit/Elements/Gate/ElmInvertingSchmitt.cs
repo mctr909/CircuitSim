@@ -36,7 +36,7 @@
 		public override bool GetConnection(int n1, int n2) { return false; }
 
 		public override void Stamp() {
-			Circuit.StampVoltageSource(0, Nodes[1], mVoltSource);
+			CircuitElement.StampVoltageSource(0, Nodes[1], mVoltSource);
 		}
 
 		public override bool HasGroundConnection(int n1) { return n1 == 1; }
@@ -61,9 +61,9 @@
 					_out = LogicOffLevel;
 				}
 			}
-			double maxStep = SlewRate * Circuit.TimeStep * 1e9;
+			double maxStep = SlewRate * CircuitElement.TimeStep * 1e9;
 			_out = Math.Max(Math.Min(v0 + maxStep, _out), v0 - maxStep);
-			Circuit.UpdateVoltageSource(mVoltSource, _out);
+			CircuitElement.UpdateVoltageSource(mVoltSource, _out);
 		}
 
 		public override double GetCurrentIntoNode(int n) {

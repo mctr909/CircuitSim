@@ -1,4 +1,5 @@
-﻿using Circuit.Elements.Input;
+﻿using Circuit.Forms;
+using Circuit.Elements.Input;
 using Circuit.Symbol.Custom;
 
 namespace Circuit.Symbol.Input {

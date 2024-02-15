@@ -11,10 +11,10 @@
 				return;
 			}
 			var g = 1.0 / Resistance;
-			Circuit.Matrix[n0, n0] += g;
-			Circuit.Matrix[n1, n1] += g;
-			Circuit.Matrix[n0, n1] -= g;
-			Circuit.Matrix[n1, n0] -= g;
+			CircuitElement.Matrix[n0, n0] += g;
+			CircuitElement.Matrix[n1, n1] += g;
+			CircuitElement.Matrix[n0, n1] -= g;
+			CircuitElement.Matrix[n1, n0] -= g;
 		}
 
 		public override void SetVoltage(int n, double c) {

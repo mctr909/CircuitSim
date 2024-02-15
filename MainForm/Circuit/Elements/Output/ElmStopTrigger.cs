@@ -30,12 +30,12 @@
 			Stopped = false;
 			if (!Triggered && ((Type == 0 && Volts[0] >= TriggerVoltage) || (Type == 1 && Volts[0] <= TriggerVoltage))) {
 				Triggered = true;
-				TriggerTime = Circuit.Time;
+				TriggerTime = CircuitElement.Time;
 			}
-			if (Triggered && Circuit.Time >= TriggerTime + Delay) {
+			if (Triggered && CircuitElement.Time >= TriggerTime + Delay) {
 				Triggered = false;
 				Stopped = true;
-				Circuit.SetSimRunning(false);
+				CircuitElement.Stopped = true;
 			}
 		}
 	}

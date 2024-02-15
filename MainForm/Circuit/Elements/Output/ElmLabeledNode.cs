@@ -58,7 +58,7 @@
 		}
 
 		public override void Stamp() {
-			Circuit.StampVoltageSource(mNodeNumber, Nodes[0], mVoltSource, 0);
+			CircuitElement.StampVoltageSource(mNodeNumber, Nodes[0], mVoltSource, 0);
 		}
 
 		public override void SetNode(int p, int n) {

@@ -21,9 +21,9 @@
 		public override bool GetConnection(int n1, int n2) { return false; }
 
 		public override void Stamp() {
-			int vn = Circuit.Nodes.Count + mVoltSource;
-			Circuit.StampNonLinear(vn);
-			Circuit.StampMatrix(Nodes[2], vn, 1);
+			int vn = CircuitElement.Nodes.Count + mVoltSource;
+			CircuitElement.StampNonLinear(vn);
+			CircuitElement.StampMatrix(Nodes[2], vn, 1);
 		}
 
 		public override bool HasGroundConnection(int n1) { return n1 == 2; }
@@ -39,10 +39,10 @@
 			var vd = Volts[V_P] - Volts[V_N];
 			double dx;
 			double x;
-			if (vd >= MaxOut / Gain && (mLastVd >= 0 || Circuit.Random.Next(4) == 1)) {
+			if (vd >= MaxOut / Gain && (mLastVd >= 0 || mRandom.Next(4) == 1)) {
 				dx = 1e-4;
 				x = MaxOut - dx * MaxOut / Gain;
-			} else if (vd <= MinOut / Gain && (mLastVd <= 0 || Circuit.Random.Next(4) == 1)) {
+			} else if (vd <= MinOut / Gain && (mLastVd <= 0 || mRandom.Next(4) == 1)) {
 				dx = 1e-4;
 				x = MinOut - dx * MinOut / Gain;
 			} else {
@@ -51,27 +51,27 @@
 			}
 
 			/* newton-raphson */
-			var vnode = Circuit.Nodes.Count + mVoltSource;
-			var rowV = Circuit.RowInfo[vnode - 1].MapRow;
-			var colri = Circuit.RowInfo[Nodes[0] - 1];
+			var vnode = CircuitElement.Nodes.Count + mVoltSource;
+			var rowV = CircuitElement.RowInfo[vnode - 1].MapRow;
+			var colri = CircuitElement.RowInfo[Nodes[0] - 1];
 			if (colri.IsConst) {
-				Circuit.RightSide[rowV] -= dx * colri.Value;
+				CircuitElement.RightSide[rowV] -= dx * colri.Value;
 			} else {
-				Circuit.Matrix[rowV, colri.MapCol] += dx;
+				CircuitElement.Matrix[rowV, colri.MapCol] += dx;
 			}
-			colri = Circuit.RowInfo[Nodes[1] - 1];
+			colri = CircuitElement.RowInfo[Nodes[1] - 1];
 			if (colri.IsConst) {
-				Circuit.RightSide[rowV] += dx * colri.Value;
+				CircuitElement.RightSide[rowV] += dx * colri.Value;
 			} else {
-				Circuit.Matrix[rowV, colri.MapCol] -= dx;
+				CircuitElement.Matrix[rowV, colri.MapCol] -= dx;
 			}
-			colri = Circuit.RowInfo[Nodes[2] - 1];
+			colri = CircuitElement.RowInfo[Nodes[2] - 1];
 			if (colri.IsConst) {
-				Circuit.RightSide[rowV] -= colri.Value;
+				CircuitElement.RightSide[rowV] -= colri.Value;
 			} else {
-				Circuit.Matrix[rowV, colri.MapCol] += 1;
+				CircuitElement.Matrix[rowV, colri.MapCol] += 1;
 			}
-			Circuit.RightSide[rowV] += x;
+			CircuitElement.RightSide[rowV] += x;
 
 			mLastVd = vd;
 		}

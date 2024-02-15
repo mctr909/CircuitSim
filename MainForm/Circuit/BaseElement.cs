@@ -8,6 +8,8 @@
 			AllocNodes();
 		}
 
+		protected static Random mRandom = new();
+
 		protected int mVoltSource;
 
 		#region [property]

@@ -139,21 +139,38 @@ namespace Circuit {
 		static Dictionary<Point, NodeMapEntry> mNodeMap = [];
 
 		#region public method
-		public static void Clear() {
-			Circuit.ElmList.Clear();
+		public static void Reset() {
+			for (int i = 0; i != List.Count; i++) {
+				List[i].Element.Reset();
+			}
+			CircuitElement.Time = 0;
+			NeedAnalyze = true;
 		}
-		public static void Add(BaseElement elm) {
-			Circuit.ElmList.Add(elm);
+		public static void SetSimRunning(bool s) {
+			if (s) {
+				IsRunning = true;
+				CircuitElement.Stopped = false;
+				ControlPanel.BtnRunStop.Text = "停止";
+			} else {
+				IsRunning = false;
+				NeedAnalyze = false;
+				ControlPanel.BtnRunStop.Text = "実行";
+			}
 		}
 		public static void AnalyzeCircuit() {
-			if (0 == Circuit.ElmList.Count) {
+			CircuitElement.List.Clear();
+			foreach (var symbol in List) {
+				CircuitElement.List.Add(symbol.Element);
+			}
+
+			if (0 == CircuitElement.List.Count) {
 				DrawPostList = new List<Point>();
 				BadConnectionList = new List<Point>();
 				return;
 			}
 
-			Circuit.Stopped = false;
-			Circuit.Nodes = new List<CircuitNode>();
+			CircuitElement.Stopped = false;
+			CircuitElement.Nodes.Clear();
 			mPostCountMap = new Dictionary<Point, int>();
 
 			calculateWireClosure();
@@ -163,8 +180,8 @@ namespace Circuit {
 				var gotGround = false;
 				var gotRail = false;
 				BaseElement volt = null;
-				for (int i = 0; i != Circuit.ElmList.Count; i++) {
-					var ce = Circuit.ElmList[i];
+				for (int i = 0; i != CircuitElement.List.Count; i++) {
+					var ce = CircuitElement.List[i];
 					if (ce is ElmGround) {
 						gotGround = true;
 						break;
@@ -182,7 +199,7 @@ namespace Circuit {
 				if (!gotGround && volt != null && !gotRail) {
 					var cn = new CircuitNode();
 					var pt = volt.NodePos[0];
-					Circuit.Nodes.Add(cn);
+					CircuitElement.Nodes.Add(cn);
 					/* update node map */
 					if (mNodeMap.ContainsKey(pt)) {
 						mNodeMap[pt].Node = 0;
@@ -192,7 +209,7 @@ namespace Circuit {
 				} else {
 					/* otherwise allocate extra node for ground */
 					var cn = new CircuitNode();
-					Circuit.Nodes.Add(cn);
+					CircuitElement.Nodes.Add(cn);
 				}
 			}
 
@@ -200,8 +217,8 @@ namespace Circuit {
 			int vs_count = 0;
 			{
 				ElmLabeledNode.ResetNodeList();
-				for (int i = 0; i < Circuit.ElmList.Count; i++) {
-					var ce = Circuit.ElmList[i];
+				for (int i = 0; i < CircuitElement.List.Count; i++) {
+					var ce = CircuitElement.List[i];
 					if (null == ce) {
 						continue;
 					}
@@ -236,13 +253,13 @@ namespace Circuit {
 								Elm = ce
 							};
 							cn.Links.Add(cnl);
-							ce.SetNode(j, Circuit.Nodes.Count);
+							ce.SetNode(j, CircuitElement.Nodes.Count);
 							if (ccln) {
-								cln.Node = Circuit.Nodes.Count;
+								cln.Node = CircuitElement.Nodes.Count;
 							} else {
-								mNodeMap.Add(pt, new NodeMapEntry(Circuit.Nodes.Count));
+								mNodeMap.Add(pt, new NodeMapEntry(CircuitElement.Nodes.Count));
 							}
-							Circuit.Nodes.Add(cn);
+							CircuitElement.Nodes.Add(cn);
 						} else {
 							var n = cln.Node;
 							var cnl = new CircuitNode.LINK {
@@ -267,8 +284,8 @@ namespace Circuit {
 							Internal = true
 						};
 						cn.Links.Add(cnl);
-						ce.SetNode(cnl.Num, Circuit.Nodes.Count);
-						Circuit.Nodes.Add(cn);
+						ce.SetNode(cnl.Num, CircuitElement.Nodes.Count);
+						CircuitElement.Nodes.Add(cn);
 					}
 					vs_count += ivs;
 				}
@@ -280,45 +297,45 @@ namespace Circuit {
 					return;
 				}
 
-				Circuit.VoltageSources = new BaseElement[vs_count];
+				CircuitElement.VoltageSources = new BaseElement[vs_count];
 				vs_count = 0;
-				for (int i = 0; i < Circuit.ElmList.Count; i++) {
-					var ce = Circuit.ElmList[i];
+				for (int i = 0; i < CircuitElement.List.Count; i++) {
+					var ce = CircuitElement.List[i];
 					var ivs = ce.VoltageSourceCount;
 					for (int j = 0; j < ivs; j++) {
-						Circuit.VoltageSources[vs_count] = ce;
+						CircuitElement.VoltageSources[vs_count] = ce;
 						ce.SetVoltageSource(j, vs_count++);
 					}
 				}
 			}
 
-			var matrixSize = Circuit.Nodes.Count - 1 + vs_count;
-			Circuit.Matrix = new double[matrixSize, matrixSize];
-			Circuit.RightSide = new double[matrixSize];
-			Circuit.RowInfo = new Circuit.ROW_INFO[matrixSize];
+			var matrixSize = CircuitElement.Nodes.Count - 1 + vs_count;
+			CircuitElement.Matrix = new double[matrixSize, matrixSize];
+			CircuitElement.RightSide = new double[matrixSize];
+			CircuitElement.RowInfo = new CircuitElement.ROW_INFO[matrixSize];
 			for (int i = 0; i < matrixSize; i++) {
-				Circuit.RowInfo[i] = new Circuit.ROW_INFO();
+				CircuitElement.RowInfo[i] = new CircuitElement.ROW_INFO();
 			}
 
-			Circuit.MatrixSize = Circuit.MatrixFullSize = matrixSize;
-			Circuit.OrigMatrix = new double[matrixSize, matrixSize];
-			Circuit.OrigRightSide = new double[matrixSize];
-			Circuit.Permute = new int[matrixSize];
-			Circuit.CircuitNeedsMap = false;
+			CircuitElement.MatrixSize = CircuitElement.MatrixFullSize = matrixSize;
+			CircuitElement.OrigMatrix = new double[matrixSize, matrixSize];
+			CircuitElement.OrigRightSide = new double[matrixSize];
+			CircuitElement.Permute = new int[matrixSize];
+			CircuitElement.CircuitNeedsMap = false;
 
 			/* stamp linear circuit elements */
-			for (int i = 0; i < Circuit.ElmList.Count; i++) {
-				Circuit.ElmList[i].Stamp();
+			for (int i = 0; i < CircuitElement.List.Count; i++) {
+				CircuitElement.List[i].Stamp();
 			}
 
 			/* determine nodes that are not connected indirectly to ground */
-			var closure = new bool[Circuit.Nodes.Count];
+			var closure = new bool[CircuitElement.Nodes.Count];
 			var changed = true;
 			closure[0] = true;
 			while (changed) {
 				changed = false;
-				for (int i = 0; i < Circuit.ElmList.Count; i++) {
-					var ce = Circuit.ElmList[i];
+				for (int i = 0; i < CircuitElement.List.Count; i++) {
+					var ce = CircuitElement.List[i];
 					if (ce is ElmWire) {
 						continue;
 					}
@@ -348,9 +365,9 @@ namespace Circuit {
 				}
 
 				/* connect one of the unconnected nodes to ground with a big resistor, then try again */
-				for (int i = 0; i != Circuit.Nodes.Count; i++) {
+				for (int i = 0; i != CircuitElement.Nodes.Count; i++) {
 					if (!closure[i] && !getCircuitNode(i).Internal) {
-						Circuit.StampResistor(0, i, 1e8);
+						CircuitElement.StampResistor(0, i, 1e8);
 						closure[i] = true;
 						changed = true;
 						break;
@@ -358,12 +375,12 @@ namespace Circuit {
 				}
 			}
 
-			for (int i = 0; i < Circuit.ElmList.Count; i++) {
-				var ce = Circuit.ElmList[i];
+			for (int i = 0; i < CircuitElement.List.Count; i++) {
+				var ce = CircuitElement.List[i];
 
 				/* look for inductors with no current path */
 				if (ce is ElmInductor) {
-					var fpi = new PathInfo(PathInfo.TYPE.INDUCTOR, ce, ce.Nodes[1], Circuit.ElmList, Circuit.Nodes.Count);
+					var fpi = new PathInfo(PathInfo.TYPE.INDUCTOR, ce, ce.Nodes[1], CircuitElement.List, CircuitElement.Nodes.Count);
 					if (!fpi.FindPath(ce.Nodes[0])) {
 						ce.Reset();
 					}
@@ -372,7 +389,7 @@ namespace Circuit {
 				/* look for current sources with no current path */
 				if (ce is ElmCurrent) {
 					var cur = (ElmCurrent)ce;
-					var fpi = new PathInfo(PathInfo.TYPE.INDUCTOR, ce, ce.Nodes[1], Circuit.ElmList, Circuit.Nodes.Count);
+					var fpi = new PathInfo(PathInfo.TYPE.INDUCTOR, ce, ce.Nodes[1], CircuitElement.List, CircuitElement.Nodes.Count);
 					if (!fpi.FindPath(ce.Nodes[0])) {
 						cur.stampCurrentSource(true);
 					} else {
@@ -384,7 +401,7 @@ namespace Circuit {
                 /* because those are optimized out, so the findPath won't work) */
 				if (2 == ce.TermCount) {
 					if (ce is ElmVoltage) {
-						var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Nodes[1], Circuit.ElmList, Circuit.Nodes.Count);
+						var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Nodes[1], CircuitElement.List, CircuitElement.Nodes.Count);
 						if (fpi.FindPath(ce.Nodes[0])) {
 							stop("Voltage source/wire loop with no resistance!");
 							return;
@@ -393,7 +410,7 @@ namespace Circuit {
 				} else {
 					/* look for path from rail to ground */
 					if (ce is ElmRail || ce is ElmLogicInput) {
-						var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Nodes[0], Circuit.ElmList, Circuit.Nodes.Count);
+						var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Nodes[0], CircuitElement.List, CircuitElement.Nodes.Count);
 						if (fpi.FindPath(0)) {
 							stop("Voltage source/wire loop with no resistance!");
 							return;
@@ -403,7 +420,7 @@ namespace Circuit {
 
 				/* look for shorted caps, or caps w/ voltage but no R */
 				if (ce is ElmCapacitor) {
-					var fpi = new PathInfo(PathInfo.TYPE.SHORT, ce, ce.Nodes[1], Circuit.ElmList, Circuit.Nodes.Count);
+					var fpi = new PathInfo(PathInfo.TYPE.SHORT, ce, ce.Nodes[1], CircuitElement.List, CircuitElement.Nodes.Count);
 					if (fpi.FindPath(ce.Nodes[0])) {
 						Console.WriteLine(ce + " shorted");
 						ce.Shorted();
@@ -413,7 +430,7 @@ namespace Circuit {
                         /* another capacitor with a nonzero voltage; in that case we will get oscillation unless
                         /* we reset both capacitors to have the same voltage. Rather than check for that, we just
                         /* give an error. */
-						fpi = new PathInfo(PathInfo.TYPE.CAPACITOR, ce, ce.Nodes[1], Circuit.ElmList, Circuit.Nodes.Count);
+						fpi = new PathInfo(PathInfo.TYPE.CAPACITOR, ce, ce.Nodes[1], CircuitElement.List, CircuitElement.Nodes.Count);
 						if (fpi.FindPath(ce.Nodes[0])) {
 							stop("Capacitor loop with no resistance!");
 							return;
@@ -440,10 +457,10 @@ namespace Circuit {
 
 		#region private method
 		static CircuitNode getCircuitNode(int n) {
-			if (n >= Circuit.Nodes.Count) {
+			if (n >= CircuitElement.Nodes.Count) {
 				return null;
 			}
-			return Circuit.Nodes[n];
+			return CircuitElement.Nodes[n];
 		}
 
 		/* simplify the matrix; this speeds things up quite a bit, especially for digital circuits */
@@ -453,7 +470,7 @@ namespace Circuit {
 			for (matRow = 0; matRow != matrixSize; matRow++) {
 				int qp = -1;
 				double qv = 0;
-				var re = Circuit.RowInfo[matRow];
+				var re = CircuitElement.RowInfo[matRow];
 				/*Console.WriteLine("row " + i + " " + re.lsChanges + " " + re.rsChanges + " " + re.dropRow);*/
 				if (re.LeftChanges || re.DropRow || re.RightChanges) {
 					continue;
@@ -462,11 +479,11 @@ namespace Circuit {
 
 				/* look for rows that can be removed */
 				for (matCol = 0; matCol != matrixSize; matCol++) {
-					var q = Circuit.Matrix[matRow, matCol];
-					if (Circuit.RowInfo[matCol].IsConst) {
+					var q = CircuitElement.Matrix[matRow, matCol];
+					if (CircuitElement.RowInfo[matCol].IsConst) {
 						/* keep a running total of const values that have been
                         /* removed already */
-						rsadd -= Circuit.RowInfo[matCol].Value * q;
+						rsadd -= CircuitElement.RowInfo[matCol].Value * q;
 						continue;
 					}
 					/* ignore zeroes */
@@ -488,15 +505,15 @@ namespace Circuit {
 						stop("Matrix error");
 						return false;
 					}
-					var elt = Circuit.RowInfo[qp];
+					var elt = CircuitElement.RowInfo[qp];
 					/* we found a row with only one nonzero nonconst entry; that value is a constant */
 					if (elt.IsConst) {
 						Console.WriteLine("type already CONST for " + qp + "!");
 						continue;
 					}
 					elt.IsConst = true;
-					elt.Value = (Circuit.RightSide[matRow] + rsadd) / qv;
-					Circuit.RowInfo[matRow].DropRow = true;
+					elt.Value = (CircuitElement.RightSide[matRow] + rsadd) / qv;
+					CircuitElement.RowInfo[matRow].DropRow = true;
 					matRow = -1; /* start over from scratch */
 				}
 			}
@@ -504,7 +521,7 @@ namespace Circuit {
 			/* find size of new matrix */
 			int nn = 0;
 			for (matRow = 0; matRow != matrixSize; matRow++) {
-				var elt = Circuit.RowInfo[matRow];
+				var elt = CircuitElement.RowInfo[matRow];
 				if (elt.IsConst) {
 					elt.MapCol = -1;
 				} else {
@@ -519,37 +536,37 @@ namespace Circuit {
 			var newRS = new double[newSize];
 			int ii = 0;
 			for (matRow = 0; matRow != matrixSize; matRow++) {
-				var rri = Circuit.RowInfo[matRow];
+				var rri = CircuitElement.RowInfo[matRow];
 				if (rri.DropRow) {
 					rri.MapRow = -1;
 					continue;
 				}
-				newRS[ii] = Circuit.RightSide[matRow];
+				newRS[ii] = CircuitElement.RightSide[matRow];
 				rri.MapRow = ii;
 				for (matCol = 0; matCol != matrixSize; matCol++) {
-					var ri = Circuit.RowInfo[matCol];
+					var ri = CircuitElement.RowInfo[matCol];
 					if (ri.IsConst) {
-						newRS[ii] -= ri.Value * Circuit.Matrix[matRow, matCol];
+						newRS[ii] -= ri.Value * CircuitElement.Matrix[matRow, matCol];
 					} else {
-						newMat[ii, ri.MapCol] += Circuit.Matrix[matRow, matCol];
+						newMat[ii, ri.MapCol] += CircuitElement.Matrix[matRow, matCol];
 					}
 				}
 				ii++;
 			}
 			/*Console.WriteLine("old size = " + matrixSize + " new size = " + newSize);*/
 
-			Circuit.Matrix = newMat;
-			Circuit.RightSide = newRS;
-			matrixSize = Circuit.MatrixSize = newSize;
+			CircuitElement.Matrix = newMat;
+			CircuitElement.RightSide = newRS;
+			matrixSize = CircuitElement.MatrixSize = newSize;
 			for (matRow = 0; matRow != matrixSize; matRow++) {
-				Circuit.OrigRightSide[matRow] = Circuit.RightSide[matRow];
+				CircuitElement.OrigRightSide[matRow] = CircuitElement.RightSide[matRow];
 			}
 			for (matRow = 0; matRow != matrixSize; matRow++) {
 				for (matCol = 0; matCol != matrixSize; matCol++) {
-					Circuit.OrigMatrix[matRow, matCol] = Circuit.Matrix[matRow, matCol];
+					CircuitElement.OrigMatrix[matRow, matCol] = CircuitElement.Matrix[matRow, matCol];
 				}
 			}
-			Circuit.CircuitNeedsMap = true;
+			CircuitElement.CircuitNeedsMap = true;
 			return true;
 		}
 
@@ -558,15 +575,15 @@ namespace Circuit {
 		static void calculateWireClosure() {
 			int mergeCount = 0;
 			mNodeMap = new Dictionary<Point, NodeMapEntry>();
-			Circuit.WireInfoList = new List<Circuit.WireInfo>();
-			for (int i = 0; i < Circuit.ElmList.Count; i++) {
-				var ce = Circuit.ElmList[i];
-				if (!(ce is ElmWire)) {
+			CircuitElement.WireList.Clear();
+			for (int i = 0; i < CircuitElement.List.Count; i++) {
+				var ce = CircuitElement.List[i];
+				if (ce is not ElmWire) {
 					continue;
 				}
 				var elm = (ElmWire)ce;
 				elm.HasWireInfo = false;
-				Circuit.WireInfoList.Add(new Circuit.WireInfo(elm));
+				CircuitElement.WireList.Add(new CircuitElement.Wire(elm));
 				var p1 = elm.NodePos[0];
 				var p2 = elm.NodePos[1];
 				var cp1 = mNodeMap.ContainsKey(p1);
@@ -616,10 +633,10 @@ namespace Circuit {
 		static bool calcWireInfo() {
 			int wireIdx;
 			int moved = 0;
-			for (wireIdx = 0; wireIdx != Circuit.WireInfoList.Count; wireIdx++) {
-				var wi = Circuit.WireInfoList[wireIdx];
-				var wire = wi.Wire;
-				var cn1 = Circuit.Nodes[wire.Nodes[0]];  /* both ends of wire have same node # */
+			for (wireIdx = 0; wireIdx != CircuitElement.WireList.Count; wireIdx++) {
+				var wi = CircuitElement.WireList[wireIdx];
+				var wire = wi.Element;
+				var cn1 = CircuitElement.Nodes[wire.Nodes[0]];  /* both ends of wire have same node # */
 				int j;
 
 				var neighbors0 = new List<BaseElement>();
@@ -670,11 +687,11 @@ namespace Circuit {
 					moved = 0;
 				} else {
 					/* move to the end of the list and try again later */
-					var tmp = Circuit.WireInfoList[wireIdx];
-					Circuit.WireInfoList.RemoveAt(wireIdx--);
-					Circuit.WireInfoList.Add(tmp);
+					var tmp = CircuitElement.WireList[wireIdx];
+					CircuitElement.WireList.RemoveAt(wireIdx--);
+					CircuitElement.WireList.Add(tmp);
 					moved++;
-					if (moved > Circuit.WireInfoList.Count * 2) {
+					if (moved > CircuitElement.WireList.Count * 2) {
 						stop("wire loop detected");
 						return false;
 					}
@@ -700,8 +717,8 @@ namespace Circuit {
 				if (entry.Value == 1) {
 					bool bad = false;
 					var cn = entry.Key;
-					for (int j = 0; j != Circuit.ElmList.Count && !bad; j++) {
-						var ce = Circuit.ElmList[j];
+					for (int j = 0; j != CircuitElement.List.Count && !bad; j++) {
+						var ce = CircuitElement.List[j];
 						/* does this post belong to the elm? */
 						int k;
 						int pc = ce.TermCount;
@@ -723,8 +740,8 @@ namespace Circuit {
 		}
 
 		static void stop(string s) {
-			Circuit.Matrix = null;  /* causes an exception */
-			Circuit.SetSimRunning(false);
+			CircuitElement.Matrix = null;  /* causes an exception */
+			SetSimRunning(false);
 		}
 		#endregion
 	}

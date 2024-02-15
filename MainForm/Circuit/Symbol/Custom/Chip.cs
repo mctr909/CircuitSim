@@ -1,4 +1,5 @@
-﻿using Circuit.Elements.Custom;
+﻿using Circuit.Forms;
+using Circuit.Elements.Custom;
 
 namespace Circuit.Symbol.Custom {
 	abstract class Chip : BaseSymbol {

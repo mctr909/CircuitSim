@@ -1,4 +1,6 @@
-﻿namespace Circuit.Symbol.Passive {
+﻿using Circuit.Forms;
+
+namespace Circuit.Symbol.Passive {
 	class SwitchPushC : SwitchMulti {
 		public SwitchPushC(Point pos) : base(pos) {
 			mElm.Position = 1;

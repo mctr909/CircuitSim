@@ -1,4 +1,5 @@
-﻿using Circuit.Elements.Input;
+﻿using Circuit.Forms;
+using Circuit.Elements.Input;
 
 namespace Circuit.Symbol.Input {
 	class Current : BaseSymbol {

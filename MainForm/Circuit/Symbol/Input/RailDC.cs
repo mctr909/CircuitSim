@@ -1,4 +1,5 @@
-﻿using Circuit.Elements.Input;
+﻿using Circuit.Forms;
+using Circuit.Elements.Input;
 
 namespace Circuit.Symbol.Input {
 	class RailDC : Rail {
@@ -56,8 +57,8 @@ namespace Circuit.Symbol.Input {
 			}
 		}
 
-		public override EventHandler CreateSlider(ElementInfo ei, Adjustable adj) {
-			var trb = adj.Slider;
+		public override EventHandler CreateSlider(ElementInfo ei, Slider adj) {
+			var trb = adj.Trackbar;
 			switch (ei.Name) {
 			case VALUE_NAME_V:
 				adj.MinValue = 0;

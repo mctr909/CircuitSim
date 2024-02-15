@@ -1,4 +1,5 @@
-﻿using Circuit.Elements.Input;
+﻿using Circuit.Forms;
+using Circuit.Elements.Input;
 
 namespace Circuit.Symbol.Input {
 	class RailAC : Rail {
@@ -69,7 +70,7 @@ namespace Circuit.Symbol.Input {
 				}
 				if (r == 2) {
 					mElm.Frequency = ei.Value;
-					var maxfreq = 1 / (8 * Circuit.TimeStep);
+					var maxfreq = 1 / (8 * CircuitElement.TimeStep);
 					if (maxfreq < mElm.Frequency) {
 						mElm.Frequency = maxfreq;
 					}
@@ -97,8 +98,8 @@ namespace Circuit.Symbol.Input {
 			}
 		}
 
-		public override EventHandler CreateSlider(ElementInfo ei, Adjustable adj) {
-			var trb = adj.Slider;
+		public override EventHandler CreateSlider(ElementInfo ei, Slider adj) {
+			var trb = adj.Trackbar;
 			switch (ei.Name) {
 			case VALUE_NAME_AMP:
 				adj.MinValue = 0;

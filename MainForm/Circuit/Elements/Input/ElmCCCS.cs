@@ -45,10 +45,10 @@ namespace Circuit.Elements.Input {
 		public override void Stamp() {
 			/* voltage source (0V) between C+ and C- so we can measure current */
 			int vn1 = Pins[1].voltSource;
-			Circuit.StampVoltageSource(Nodes[0], Nodes[1], vn1, 0);
+			CircuitElement.StampVoltageSource(Nodes[0], Nodes[1], vn1, 0);
 
-			Circuit.StampNonLinear(Nodes[2]);
-			Circuit.StampNonLinear(Nodes[3]);
+			CircuitElement.StampNonLinear(Nodes[2]);
+			CircuitElement.StampNonLinear(Nodes[3]);
 		}
 
 		public override void DoIteration() {
@@ -57,7 +57,7 @@ namespace Circuit.Elements.Input {
 				Pins[InputCount].current = 0;
 				Pins[InputCount + 1].current = 0;
 				/* avoid singular matrix errors */
-				Circuit.StampResistor(Nodes[InputCount], Nodes[InputCount + 1], 1e8);
+				CircuitElement.StampResistor(Nodes[InputCount], Nodes[InputCount + 1], 1e8);
 				return;
 			}
 
@@ -67,9 +67,9 @@ namespace Circuit.Elements.Input {
 
 			var cur = Pins[1].current;
 			if (Math.Abs(cur - mLastCurrent) > convergeLimit) {
-				Circuit.Converged = false;
+				CircuitElement.Converged = false;
 			}
-			int vn1 = Pins[1].voltSource + Circuit.Nodes.Count;
+			int vn1 = Pins[1].voltSource + CircuitElement.Nodes.Count;
 			/* calculate output */
 			var v0 = mFunction(cur);
 			Pins[2].current = v0;
@@ -81,11 +81,11 @@ namespace Circuit.Elements.Input {
 			if (Math.Abs(dx) < 1e-6) {
 				dx = sign(dx, 1e-6);
 			}
-			Circuit.StampCCCS(Nodes[3], Nodes[2], Pins[1].voltSource, dx);
+			CircuitElement.StampCCCS(Nodes[3], Nodes[2], Pins[1].voltSource, dx);
 			/* adjust right side */
 			v0 -= dx * cur;
 			/*Console.WriteLine("ccedx " + cur + " " + dx + " " + rs); */
-			Circuit.StampCurrentSource(Nodes[3], Nodes[2], v0);
+			CircuitElement.StampCurrentSource(Nodes[3], Nodes[2], v0);
 			mLastCurrent = cur;
 		}
 

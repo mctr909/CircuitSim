@@ -126,27 +126,27 @@
 				/* create diode from node 0 to internal node */
 				mNodes0 = Nodes[0];
 				mNodes1 = Nodes[2];
-				Circuit.RowInfo[mNodes0 - 1].LeftChanges = true;
-				Circuit.RowInfo[mNodes1 - 1].LeftChanges = true;
+				CircuitElement.RowInfo[mNodes0 - 1].LeftChanges = true;
+				CircuitElement.RowInfo[mNodes1 - 1].LeftChanges = true;
 				/* create resistor from internal node to node 1 */
 				var r0 = 1.0 / Model.SeriesResistance;
-				Circuit.Matrix[Nodes[1] - 1, Nodes[1] - 1] += r0;
-				Circuit.Matrix[Nodes[2] - 1, Nodes[2] - 1] += r0;
-				Circuit.Matrix[Nodes[1] - 1, Nodes[2] - 1] -= r0;
-				Circuit.Matrix[Nodes[2] - 1, Nodes[1] - 1] -= r0;
+				CircuitElement.Matrix[Nodes[1] - 1, Nodes[1] - 1] += r0;
+				CircuitElement.Matrix[Nodes[2] - 1, Nodes[2] - 1] += r0;
+				CircuitElement.Matrix[Nodes[1] - 1, Nodes[2] - 1] -= r0;
+				CircuitElement.Matrix[Nodes[2] - 1, Nodes[1] - 1] -= r0;
 			} else {
 				/* don't need any internal nodes if no series resistance */
 				mNodes0 = Nodes[0];
 				mNodes1 = Nodes[1];
-				Circuit.RowInfo[mNodes0 - 1].LeftChanges = true;
-				Circuit.RowInfo[mNodes1 - 1].LeftChanges = true;
+				CircuitElement.RowInfo[mNodes0 - 1].LeftChanges = true;
+				CircuitElement.RowInfo[mNodes1 - 1].LeftChanges = true;
 			}
 		}
 
 		public override void DoIteration() {
 			var voltdiff = Volts[0] - Volts[mDiodeEndNode];
 			if (0.001 < Math.Abs(voltdiff - mLastVoltDiff)) {
-				Circuit.Converged = false;
+				CircuitElement.Converged = false;
 			}
 
 			{
@@ -170,7 +170,7 @@
                          * (1/vscale = slope of load line) */
 						v_new = mVscale * Math.Log(v_new / mVscale);
 					}
-					Circuit.Converged = false;
+					CircuitElement.Converged = false;
 				} else if (v_new < 0 && mZoffset != 0) {
 					/* for Zener breakdown, use the same logic but translate the values,
                      * and replace the normal values with the Zener-specific ones to
@@ -188,7 +188,7 @@
 						} else {
 							v_new = VT * Math.Log(v_new / VT);
 						}
-						Circuit.Converged = false;
+						CircuitElement.Converged = false;
 					}
 					v_new = -(v_new + mZoffset);
 				}
@@ -200,10 +200,10 @@
 				/* To prevent a possible singular matrix or other numeric issues, put a tiny conductance
                  * in parallel with each P-N junction. */
 				var gmin = mLeakage * 0.01;
-				if (Circuit.SubIterations > 100) {
+				if (CircuitElement.SubIterations > 100) {
 					/* if we have trouble converging, put a conductance in parallel with the diode.
                      * Gradually increase the conductance value for each iteration. */
-					gmin = Math.Exp(-9 * Math.Log(10) * (1 - Circuit.SubIterations / 3000.0));
+					gmin = Math.Exp(-9 * Math.Log(10) * (1 - CircuitElement.SubIterations / 3000.0));
 					if (0.1 < gmin) {
 						gmin = 0.1;
 					}
@@ -236,36 +236,36 @@
 						- 1
 					) + geq * (-voltdiff);
 				}
-				var row = Circuit.RowInfo[mNodes0 - 1].MapRow;
-				var ri = Circuit.RowInfo[mNodes0 - 1];
+				var row = CircuitElement.RowInfo[mNodes0 - 1].MapRow;
+				var ri = CircuitElement.RowInfo[mNodes0 - 1];
 				if (ri.IsConst) {
-					Circuit.RightSide[row] -= geq * ri.Value;
+					CircuitElement.RightSide[row] -= geq * ri.Value;
 				} else {
-					Circuit.Matrix[row, ri.MapCol] += geq;
+					CircuitElement.Matrix[row, ri.MapCol] += geq;
 				}
-				row = Circuit.RowInfo[mNodes1 - 1].MapRow;
-				ri = Circuit.RowInfo[mNodes1 - 1];
+				row = CircuitElement.RowInfo[mNodes1 - 1].MapRow;
+				ri = CircuitElement.RowInfo[mNodes1 - 1];
 				if (ri.IsConst) {
-					Circuit.RightSide[row] -= geq * ri.Value;
+					CircuitElement.RightSide[row] -= geq * ri.Value;
 				} else {
-					Circuit.Matrix[row, ri.MapCol] += geq;
+					CircuitElement.Matrix[row, ri.MapCol] += geq;
 				}
-				row = Circuit.RowInfo[mNodes0 - 1].MapRow;
-				ri = Circuit.RowInfo[mNodes1 - 1];
+				row = CircuitElement.RowInfo[mNodes0 - 1].MapRow;
+				ri = CircuitElement.RowInfo[mNodes1 - 1];
 				if (ri.IsConst) {
-					Circuit.RightSide[row] += geq * ri.Value;
+					CircuitElement.RightSide[row] += geq * ri.Value;
 				} else {
-					Circuit.Matrix[row, ri.MapCol] -= geq;
+					CircuitElement.Matrix[row, ri.MapCol] -= geq;
 				}
-				row = Circuit.RowInfo[mNodes1 - 1].MapRow;
-				ri = Circuit.RowInfo[mNodes0 - 1];
+				row = CircuitElement.RowInfo[mNodes1 - 1].MapRow;
+				ri = CircuitElement.RowInfo[mNodes0 - 1];
 				if (ri.IsConst) {
-					Circuit.RightSide[row] += geq * ri.Value;
+					CircuitElement.RightSide[row] += geq * ri.Value;
 				} else {
-					Circuit.Matrix[row, ri.MapCol] -= geq;
+					CircuitElement.Matrix[row, ri.MapCol] -= geq;
 				}
-				Circuit.RightSide[Circuit.RowInfo[mNodes0 - 1].MapRow] -= nc;
-				Circuit.RightSide[Circuit.RowInfo[mNodes1 - 1].MapRow] += nc;
+				CircuitElement.RightSide[CircuitElement.RowInfo[mNodes0 - 1].MapRow] -= nc;
+				CircuitElement.RightSide[CircuitElement.RowInfo[mNodes1 - 1].MapRow] += nc;
 			}
 		}
 
@@ -285,7 +285,7 @@
 
 		public override void IterationFinished() {
 			if (Math.Abs(Current) > 1e12) {
-				Circuit.Stop(this);
+				CircuitElement.Stop(this);
 			}
 		}
 	}

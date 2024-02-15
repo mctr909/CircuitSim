@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
-
-using Circuit.Symbol.Input;
+﻿using Circuit.Symbol.Input;
 
 namespace Circuit.Forms {
 	public class ElementInfoDialog : Form {

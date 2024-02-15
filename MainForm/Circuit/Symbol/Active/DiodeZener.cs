@@ -1,4 +1,6 @@
-﻿namespace Circuit.Symbol.Active {
+﻿using Circuit.Forms;
+
+namespace Circuit.Symbol.Active {
 	class DiodeZener : Diode {
 		static string mLastZenerModelName = "default-zener";
 

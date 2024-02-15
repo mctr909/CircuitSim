@@ -38,16 +38,16 @@
 		}
 
 		public override void Stamp() {
-			Circuit.StampVoltageSource(0, Nodes[3], mVoltSource);
-			Circuit.StampNonLinear(Nodes[3]);
-			Circuit.StampNonLinear(Nodes[1]);
+			CircuitElement.StampVoltageSource(0, Nodes[3], mVoltSource);
+			CircuitElement.StampNonLinear(Nodes[3]);
+			CircuitElement.StampNonLinear(Nodes[1]);
 		}
 
 		public override void DoIteration() {
 			Open = Volts[2] < 2.5;
 			mResistance = Open ? Roff : Ron;
-			Circuit.StampResistor(Nodes[3], Nodes[1], mResistance);
-			Circuit.UpdateVoltageSource(mVoltSource, Volts[0] > 2.5 ? 5 : 0);
+			CircuitElement.StampResistor(Nodes[3], Nodes[1], mResistance);
+			CircuitElement.UpdateVoltageSource(mVoltSource, Volts[0] > 2.5 ? 5 : 0);
 		}
 
 		public override void SetVoltage(int n, double c) {

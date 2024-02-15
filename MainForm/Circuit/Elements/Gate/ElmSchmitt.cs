@@ -24,9 +24,9 @@
 					_out = LogicOnLevel;
 				}
 			}
-			double maxStep = SlewRate * Circuit.TimeStep * 1e9;
+			double maxStep = SlewRate * CircuitElement.TimeStep * 1e9;
 			_out = Math.Max(Math.Min(v0 + maxStep, _out), v0 - maxStep);
-			Circuit.UpdateVoltageSource(mVoltSource, _out);
+			CircuitElement.UpdateVoltageSource(mVoltSource, _out);
 		}
 
 		public override double GetCurrentIntoNode(int n) {

@@ -26,14 +26,14 @@
 			if (n0 < 0 || n1 < 0) {
 				return;
 			}
-			var g = 2 * Capacitance / Circuit.TimeStep;
+			var g = 2 * Capacitance / CircuitElement.TimeStep;
 			mCompResistance = 1.0 / g;
-			Circuit.Matrix[n0, n0] += g;
-			Circuit.Matrix[n1, n1] += g;
-			Circuit.Matrix[n0, n1] -= g;
-			Circuit.Matrix[n1, n0] -= g;
-			Circuit.RowInfo[n0].RightChanges = true;
-			Circuit.RowInfo[n1].RightChanges = true;
+			CircuitElement.Matrix[n0, n0] += g;
+			CircuitElement.Matrix[n1, n1] += g;
+			CircuitElement.Matrix[n0, n1] -= g;
+			CircuitElement.Matrix[n1, n0] -= g;
+			CircuitElement.RowInfo[n0].RightChanges = true;
+			CircuitElement.RowInfo[n1].RightChanges = true;
 		}
 
 		public override void PrepareIteration() {
@@ -41,10 +41,10 @@
 		}
 
 		public override void DoIteration() {
-			var r = Circuit.RowInfo[Nodes[0] - 1].MapRow;
-			Circuit.RightSide[r] -= mCurSourceValue;
-			r = Circuit.RowInfo[Nodes[1] - 1].MapRow;
-			Circuit.RightSide[r] += mCurSourceValue;
+			var r = CircuitElement.RowInfo[Nodes[0] - 1].MapRow;
+			CircuitElement.RightSide[r] -= mCurSourceValue;
+			r = CircuitElement.RowInfo[Nodes[1] - 1].MapRow;
+			CircuitElement.RightSide[r] += mCurSourceValue;
 		}
 
 		public override void SetVoltage(int n, double c) {

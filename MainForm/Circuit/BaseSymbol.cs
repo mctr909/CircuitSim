@@ -1,4 +1,6 @@
-﻿namespace Circuit {
+﻿using Circuit.Forms;
+
+namespace Circuit {
 	public abstract class BaseSymbol {
 		public const int GRID_SIZE = 8;
 		public const int GRID_MASK = ~(GRID_SIZE - 1);
@@ -8,7 +10,7 @@
 		static BaseSymbol mSelected = null;
 
 		public static double CurrentMult { get; set; } = 0;
-		public static List<Adjustable> Adjustables { get; private set; } = new List<Adjustable>();
+		public static List<Slider> Adjustables { get; private set; } = new List<Slider>();
 		public static BaseSymbol ConstructItem { get; set; }
 
 		protected BaseSymbol(Point pos) {
@@ -141,7 +143,7 @@
 			}
 			for (int i = Adjustables.Count - 1; i >= 0; i--) {
 				var adj = Adjustables[i];
-				if (adj.UI == this) {
+				if (adj.Symbol == this) {
 					adj.DeleteSlider();
 					Adjustables.RemoveAt(i);
 				}
@@ -162,7 +164,7 @@
 		public virtual void GetInfo(string[] arr) { }
 		public virtual ElementInfo GetElementInfo(int r, int c) { return null; }
 		public virtual void SetElementValue(int r, int c, ElementInfo ei) { }
-		public virtual EventHandler CreateSlider(ElementInfo ei, Adjustable adj) { return null; }
+		public virtual EventHandler CreateSlider(ElementInfo ei, Slider adj) { return null; }
 		#endregion
 
 		#region [protected method]
@@ -528,10 +530,10 @@
 				(pos.X + GRID_ROUND) & GRID_MASK,
 				(pos.Y + GRID_ROUND) & GRID_MASK);
 		}
-		public static Adjustable FindAdjustable(BaseSymbol elm, int item) {
+		public static Slider FindAdjustable(BaseSymbol elm, int item) {
 			for (int i = 0; i != Adjustables.Count; i++) {
 				var a = Adjustables[i];
-				if (a.UI == elm && a.EditItemR == item) {
+				if (a.Symbol == elm && a.EditItemR == item) {
 					return a;
 				}
 			}

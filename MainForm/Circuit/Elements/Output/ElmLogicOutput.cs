@@ -18,7 +18,7 @@
 
 		public override void Stamp() {
 			if (NeedsPullDown) {
-				Circuit.StampResistor(Nodes[0], 0, 1e6);
+				CircuitElement.StampResistor(Nodes[0], 0, 1e6);
 			}
 		}
 	}

@@ -31,14 +31,14 @@
 			var n0 = Nodes[0] - 1;
 			var n1 = Nodes[1] - 1;
 			var n2 = Nodes[2] - 1;
-			Circuit.Matrix[n0, n0] += g1;
-			Circuit.Matrix[n2, n2] += g1;
-			Circuit.Matrix[n0, n2] -= g1;
-			Circuit.Matrix[n2, n0] -= g1;
-			Circuit.Matrix[n2, n2] += g2;
-			Circuit.Matrix[n1, n1] += g2;
-			Circuit.Matrix[n2, n1] -= g2;
-			Circuit.Matrix[n1, n2] -= g2;
+			CircuitElement.Matrix[n0, n0] += g1;
+			CircuitElement.Matrix[n2, n2] += g1;
+			CircuitElement.Matrix[n0, n2] -= g1;
+			CircuitElement.Matrix[n2, n0] -= g1;
+			CircuitElement.Matrix[n2, n2] += g2;
+			CircuitElement.Matrix[n1, n1] += g2;
+			CircuitElement.Matrix[n2, n1] -= g2;
+			CircuitElement.Matrix[n1, n2] -= g2;
 		}
 
 		public override double GetCurrentIntoNode(int n) {

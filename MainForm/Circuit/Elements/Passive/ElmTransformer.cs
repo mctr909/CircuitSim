@@ -76,7 +76,7 @@
 			double m = CouplingCoef * Math.Sqrt(l1 * l2);
 			/* build inverted matrix */
 			double deti = 1 / (l1 * l2 - m * m);
-			double ts = Circuit.TimeStep / 2;
+			double ts = CircuitElement.TimeStep / 2;
 			mA1 = l2 * deti * ts; /* we multiply dt/2 into a1..a4 here */
 			mA2 = -m * deti * ts;
 			mA3 = -m * deti * ts;
@@ -86,30 +86,30 @@
 			var sec_t = Nodes[SEC_T] - 1;
 			var sec_b = Nodes[SEC_B] - 1;
 
-			Circuit.Matrix[pre_t, pre_t] += mA1;
-			Circuit.Matrix[pre_b, pre_b] += mA1;
-			Circuit.Matrix[pre_t, pre_b] -= mA1;
-			Circuit.Matrix[pre_b, pre_t] -= mA1;
+			CircuitElement.Matrix[pre_t, pre_t] += mA1;
+			CircuitElement.Matrix[pre_b, pre_b] += mA1;
+			CircuitElement.Matrix[pre_t, pre_b] -= mA1;
+			CircuitElement.Matrix[pre_b, pre_t] -= mA1;
 
-			Circuit.Matrix[pre_t, sec_t] += mA2;
-			Circuit.Matrix[pre_b, sec_b] += mA2;
-			Circuit.Matrix[pre_t, sec_b] -= mA2;
-			Circuit.Matrix[pre_b, sec_t] -= mA2;
+			CircuitElement.Matrix[pre_t, sec_t] += mA2;
+			CircuitElement.Matrix[pre_b, sec_b] += mA2;
+			CircuitElement.Matrix[pre_t, sec_b] -= mA2;
+			CircuitElement.Matrix[pre_b, sec_t] -= mA2;
 
-			Circuit.Matrix[sec_t, pre_t] += mA3;
-			Circuit.Matrix[sec_b, pre_b] += mA3;
-			Circuit.Matrix[sec_t, pre_b] -= mA3;
-			Circuit.Matrix[sec_b, pre_t] -= mA3;
+			CircuitElement.Matrix[sec_t, pre_t] += mA3;
+			CircuitElement.Matrix[sec_b, pre_b] += mA3;
+			CircuitElement.Matrix[sec_t, pre_b] -= mA3;
+			CircuitElement.Matrix[sec_b, pre_t] -= mA3;
 
-			Circuit.Matrix[sec_t, sec_t] += mA4;
-			Circuit.Matrix[sec_b, sec_b] += mA4;
-			Circuit.Matrix[sec_t, sec_b] -= mA4;
-			Circuit.Matrix[sec_b, sec_t] -= mA4;
+			CircuitElement.Matrix[sec_t, sec_t] += mA4;
+			CircuitElement.Matrix[sec_b, sec_b] += mA4;
+			CircuitElement.Matrix[sec_t, sec_b] -= mA4;
+			CircuitElement.Matrix[sec_b, sec_t] -= mA4;
 
-			Circuit.RowInfo[pre_t].RightChanges = true;
-			Circuit.RowInfo[sec_t].RightChanges = true;
-			Circuit.RowInfo[pre_b].RightChanges = true;
-			Circuit.RowInfo[sec_b].RightChanges = true;
+			CircuitElement.RowInfo[pre_t].RightChanges = true;
+			CircuitElement.RowInfo[sec_t].RightChanges = true;
+			CircuitElement.RowInfo[pre_b].RightChanges = true;
+			CircuitElement.RowInfo[sec_b].RightChanges = true;
 		}
 
 		public override double GetCurrentIntoNode(int n) {
@@ -127,14 +127,14 @@
 		}
 
 		public override void DoIteration() {
-			var r = Circuit.RowInfo[Nodes[PRI_T] - 1].MapRow;
-			Circuit.RightSide[r] -= mCurSourceValue1;
-			r = Circuit.RowInfo[Nodes[PRI_B] - 1].MapRow;
-			Circuit.RightSide[r] += mCurSourceValue1;
-			r = Circuit.RowInfo[Nodes[SEC_T] - 1].MapRow;
-			Circuit.RightSide[r] -= mCurSourceValue2;
-			r = Circuit.RowInfo[Nodes[SEC_B] - 1].MapRow;
-			Circuit.RightSide[r] += mCurSourceValue2;
+			var r = CircuitElement.RowInfo[Nodes[PRI_T] - 1].MapRow;
+			CircuitElement.RightSide[r] -= mCurSourceValue1;
+			r = CircuitElement.RowInfo[Nodes[PRI_B] - 1].MapRow;
+			CircuitElement.RightSide[r] += mCurSourceValue1;
+			r = CircuitElement.RowInfo[Nodes[SEC_T] - 1].MapRow;
+			CircuitElement.RightSide[r] -= mCurSourceValue2;
+			r = CircuitElement.RowInfo[Nodes[SEC_B] - 1].MapRow;
+			CircuitElement.RightSide[r] += mCurSourceValue2;
 		}
 
 		public override void SetVoltage(int n, double c) {

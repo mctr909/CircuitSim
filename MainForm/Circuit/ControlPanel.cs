@@ -25,11 +25,11 @@
 		}
 
 		public static double TimeStep {
-			get { return Circuit.TimeStep; }
+			get { return CircuitElement.TimeStep; }
 			set {
-				Circuit.TimeStep = value;
+				CircuitElement.TimeStep = value;
 				if (null != mTxtTimeStep) {
-					mTxtTimeStep.Text = TextUtils.Unit(Circuit.TimeStep, "");
+					mTxtTimeStep.Text = TextUtils.Unit(CircuitElement.TimeStep, "");
 				}
 			}
 		}
@@ -43,7 +43,7 @@
 
 			/* 実行 */
 			BtnRunStop = new Button() { AutoSize = true, Text = "実行" };
-			BtnRunStop.Click += new EventHandler((s, e) => { Circuit.SetSimRunning(!CircuitSymbol.IsRunning); });
+			BtnRunStop.Click += new EventHandler((s, e) => { CircuitSymbol.SetSimRunning(!CircuitSymbol.IsRunning); });
 			BtnRunStop.Width = 50;
 			BtnRunStop.Left = 4;
 			BtnRunStop.Top = ofsY;
@@ -81,9 +81,9 @@
 			mTxtTimeStep.TextChanged += new EventHandler((s, e) => {
 				var tmp = 0.0;
 				if (TextUtils.ParseUnits(mTxtTimeStep.Text, out tmp)) {
-					Circuit.TimeStep = tmp;
+					CircuitElement.TimeStep = tmp;
 				}
-				mTxtTimeStep.Text = TextUtils.Unit(Circuit.TimeStep, "");
+				mTxtTimeStep.Text = TextUtils.Unit(CircuitElement.TimeStep, "");
 			});
 			VerticalPanel.Controls.Add(mTxtTimeStep);
 			ofsY += mTxtTimeStep.Height + 4;

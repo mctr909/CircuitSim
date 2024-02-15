@@ -35,7 +35,7 @@
 		public override bool HasGroundConnection(int n1) { return n1 == 1; }
 
 		public override void Stamp() {
-			Circuit.StampVoltageSource(0, Nodes[1], mVoltSource);
+			CircuitElement.StampVoltageSource(0, Nodes[1], mVoltSource);
 		}
 
 		public override void PrepareIteration() {
@@ -44,9 +44,9 @@
 
 		public override void DoIteration() {
 			double v = Volts[0] > HighVoltage * .5 ? 0 : HighVoltage;
-			double maxStep = SlewRate * Circuit.TimeStep * 1e9;
+			double maxStep = SlewRate * CircuitElement.TimeStep * 1e9;
 			v = Math.Max(Math.Min(mLastOutputVoltage + maxStep, v), mLastOutputVoltage - maxStep);
-			Circuit.UpdateVoltageSource(mVoltSource, v);
+			CircuitElement.UpdateVoltageSource(mVoltSource, v);
 		}
 	}
 }

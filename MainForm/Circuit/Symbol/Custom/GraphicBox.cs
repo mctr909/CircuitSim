@@ -1,4 +1,6 @@
-﻿namespace Circuit.Symbol.Custom {
+﻿using Circuit.Forms;
+
+namespace Circuit.Symbol.Custom {
 	class GraphicBox : Graphic {
 		public GraphicBox(Point pos) : base(pos) {
 			Post.B = pos;

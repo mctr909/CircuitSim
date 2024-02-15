@@ -1,4 +1,5 @@
-﻿using Circuit.Elements.Output;
+﻿using Circuit.Forms;
+using Circuit.Elements.Output;
 
 namespace Circuit.Symbol.Output {
 	class StopTrigger : BaseSymbol {
@@ -60,7 +61,7 @@ namespace Circuit.Symbol.Output {
 			arr[1] = "V = " + TextUtils.Voltage(mElm.Volts[0]);
 			arr[2] = "Vtrigger = " + TextUtils.Voltage(mElm.TriggerVoltage);
 			arr[3] = mElm.Triggered ? ("stopping in "
-				+ TextUtils.Time(mElm.TriggerTime + mElm.Delay - Circuit.Time)) : mElm.Stopped ? "stopped" : "waiting";
+				+ TextUtils.Time(mElm.TriggerTime + mElm.Delay - CircuitElement.Time)) : mElm.Stopped ? "stopped" : "waiting";
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

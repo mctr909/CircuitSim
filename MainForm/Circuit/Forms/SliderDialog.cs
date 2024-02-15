@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
+﻿using System.Text.RegularExpressions;
 
 namespace Circuit.Forms {
 	public class SliderDialog : Form {
@@ -202,7 +198,7 @@ namespace Circuit.Forms {
 				if (ei.CheckBox == sender) {
 					apply();
 					if (ei.CheckBox.Checked) {
-						var adj = new Adjustable(mElm, i);
+						var adj = new Slider(mElm, i);
 						var rg = new Regex(" \\(.*\\)$");
 						adj.SliderText = rg.Replace(ei.Name, "");
 						adj.CreateSlider(ei);

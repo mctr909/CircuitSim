@@ -1,4 +1,5 @@
-﻿using Circuit.Elements.Gate;
+﻿using Circuit.Forms;
+using Circuit.Elements.Gate;
 
 namespace Circuit.Symbol.Gate {
 	class Inverter : BaseSymbol {

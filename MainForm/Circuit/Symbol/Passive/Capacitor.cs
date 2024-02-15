@@ -1,4 +1,5 @@
-﻿using Circuit.Elements.Passive;
+﻿using Circuit.Forms;
+using Circuit.Elements.Passive;
 
 namespace Circuit.Symbol.Passive {
 	class Capacitor : BaseSymbol {
@@ -148,9 +149,9 @@ namespace Circuit.Symbol.Passive {
 			}
 		}
 
-		public override EventHandler CreateSlider(ElementInfo ei, Adjustable adj) {
+		public override EventHandler CreateSlider(ElementInfo ei, Slider adj) {
 			return new EventHandler((s, e) => {
-				var trb = adj.Slider;
+				var trb = adj.Trackbar;
 				mElm.Capacitance = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
 				CircuitSymbol.NeedAnalyze = true;
 			});

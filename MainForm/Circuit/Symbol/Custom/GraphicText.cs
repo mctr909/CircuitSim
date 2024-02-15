@@ -1,4 +1,6 @@
-﻿namespace Circuit.Symbol.Custom {
+﻿using Circuit.Forms;
+
+namespace Circuit.Symbol.Custom {
 	class GraphicText : Graphic {
 		string mText;
 		int mFontSize;

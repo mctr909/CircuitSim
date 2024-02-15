@@ -18,11 +18,11 @@
 		public void stampCurrentSource(bool broken) {
 			if (broken) {
 				/* no current path; stamping a current source would cause a matrix error. */
-				Circuit.StampResistor(Nodes[0], Nodes[1], 1e8);
+				CircuitElement.StampResistor(Nodes[0], Nodes[1], 1e8);
 				Current = 0;
 			} else {
 				/* ok to stamp a current source */
-				Circuit.StampCurrentSource(Nodes[0], Nodes[1], mCurrentValue);
+				CircuitElement.StampCurrentSource(Nodes[0], Nodes[1], mCurrentValue);
 				Current = mCurrentValue;
 			}
 		}

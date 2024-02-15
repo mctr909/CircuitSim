@@ -106,7 +106,7 @@
 		}
 
 		public override void Stamp() {
-			Circuit.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
+			CircuitElement.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
 		}
 
 		public string getMeter() {

@@ -55,8 +55,8 @@
 		public override bool GetConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
 
 		public override void Stamp() {
-			Circuit.StampNonLinear(Nodes[IdxS]);
-			Circuit.StampNonLinear(Nodes[IdxD]);
+			CircuitElement.StampNonLinear(Nodes[IdxS]);
+			CircuitElement.StampNonLinear(Nodes[IdxD]);
 			BodyTerminal = (Nch < 0) ? IdxD : IdxS;
 			if (MOS) {
 				if (Nch < 0) {
@@ -174,16 +174,16 @@
 				DiodeCurrent1 = DiodeCurrent2 = 0;
 			}
 
-			Circuit.StampMatrix(Nodes[IdxD], Nodes[IdxD], gds);
-			Circuit.StampMatrix(Nodes[IdxD], Nodes[IdxS], -gds - Gm);
-			Circuit.StampMatrix(Nodes[IdxD], Nodes[IdxG], Gm);
+			CircuitElement.StampMatrix(Nodes[IdxD], Nodes[IdxD], gds);
+			CircuitElement.StampMatrix(Nodes[IdxD], Nodes[IdxS], -gds - Gm);
+			CircuitElement.StampMatrix(Nodes[IdxD], Nodes[IdxG], Gm);
 
-			Circuit.StampMatrix(Nodes[IdxS], Nodes[IdxD], -gds);
-			Circuit.StampMatrix(Nodes[IdxS], Nodes[IdxS], gds + Gm);
-			Circuit.StampMatrix(Nodes[IdxS], Nodes[IdxG], -Gm);
+			CircuitElement.StampMatrix(Nodes[IdxS], Nodes[IdxD], -gds);
+			CircuitElement.StampMatrix(Nodes[IdxS], Nodes[IdxS], gds + Gm);
+			CircuitElement.StampMatrix(Nodes[IdxS], Nodes[IdxG], -Gm);
 
-			Circuit.StampRightSide(Nodes[IdxD], rs);
-			Circuit.StampRightSide(Nodes[IdxS], -rs);
+			CircuitElement.StampRightSide(Nodes[IdxD], rs);
+			CircuitElement.StampRightSide(Nodes[IdxS], -rs);
 		}
 	}
 }

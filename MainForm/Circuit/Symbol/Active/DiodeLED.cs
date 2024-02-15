@@ -1,4 +1,6 @@
-﻿namespace Circuit.Symbol.Active {
+﻿using Circuit.Forms;
+
+namespace Circuit.Symbol.Active {
 	class DiodeLED : Diode {
 		const int CR = 10;
 		const int CR_INNER = 7;

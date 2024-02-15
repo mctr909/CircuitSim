@@ -52,37 +52,37 @@
 		public override void Stamp() {
 			int n0 = Nodes[0] - 1;
 			int n1 = Nodes[1] - 1;
-			int vn = Circuit.Nodes.Count + mVoltSource - 1;
+			int vn = CircuitElement.Nodes.Count + mVoltSource - 1;
 			if (n0 < 0 || n1 < 0 || vn < 0) {
 				return;
 			}
-			Circuit.Matrix[vn, n0] -= 1;
-			Circuit.Matrix[vn, n1] += 1;
-			Circuit.Matrix[n0, vn] += 1;
-			Circuit.Matrix[n1, vn] -= 1;
+			CircuitElement.Matrix[vn, n0] -= 1;
+			CircuitElement.Matrix[vn, n1] += 1;
+			CircuitElement.Matrix[n0, vn] += 1;
+			CircuitElement.Matrix[n1, vn] -= 1;
 			if (WaveForm == WAVEFORM.DC) {
-				Circuit.RightSide[vn] += GetVoltage();
+				CircuitElement.RightSide[vn] += GetVoltage();
 			} else {
-				Circuit.RowInfo[vn].RightChanges = true;
+				CircuitElement.RowInfo[vn].RightChanges = true;
 			}
 		}
 
 		public override void DoIteration() {
 			if (WaveForm != WAVEFORM.DC) {
-				var vn = Circuit.Nodes.Count + mVoltSource;
-				var row = Circuit.RowInfo[vn - 1].MapRow;
-				Circuit.RightSide[row] += GetVoltage();
+				var vn = CircuitElement.Nodes.Count + mVoltSource;
+				var row = CircuitElement.RowInfo[vn - 1].MapRow;
+				CircuitElement.RightSide[row] += GetVoltage();
 			}
 		}
 
 		public override void IterationFinished() {
 			if (WaveForm == WAVEFORM.NOISE) {
-				NoiseValue = (Circuit.Random.NextDouble() * 2 - 1) * MaxVoltage + Bias;
+				NoiseValue = (mRandom.NextDouble() * 2 - 1) * MaxVoltage + Bias;
 			}
 		}
 
 		public double GetVoltage() {
-			double t = Circuit.Time;
+			double t = CircuitElement.Time;
 			double wt = 2 * Math.PI * Frequency * t;
 			double ph = Phase + PhaseOffset;
 			double duty = 2 * Math.PI * DutyCycle;
@@ -108,13 +108,13 @@
 					return 2 * (cycle - Math.PI) < duty ? (Bias - MaxVoltage) : Bias;
 				}
 			case WAVEFORM.PWM_MONOPOLE: {
-				var maxwt = 2 * Math.PI * t / (64 * Circuit.TimeStep);
+				var maxwt = 2 * Math.PI * t / (64 * CircuitElement.TimeStep);
 				var cr = triangleFunc(maxwt % (2 * Math.PI)) * 0.5 + 0.5;
 				var sg = DutyCycle * Math.Sin(wt + ph) * 0.5 + 0.5;
 				return Bias + (cr < sg ? MaxVoltage : 0);
 			}
 			case WAVEFORM.PWM_DIPOLE: {
-				var maxwt = 2 * Math.PI * t / (64 * Circuit.TimeStep);
+				var maxwt = 2 * Math.PI * t / (64 * CircuitElement.TimeStep);
 				var cr = triangleFunc(maxwt % (2 * Math.PI)) * 0.5 + 0.5;
 				var sg = DutyCycle * Math.Sin(wt + ph);
 				if (0.0 <= sg) {
@@ -124,7 +124,7 @@
 				}
 			}
 			case WAVEFORM.PWM_POSITIVE: {
-				var maxwt = 2 * Math.PI * t / (64 * Circuit.TimeStep);
+				var maxwt = 2 * Math.PI * t / (64 * CircuitElement.TimeStep);
 				var cr = triangleFunc(maxwt % (2 * Math.PI)) * 0.5 + 0.5;
 				var sg = DutyCycle * Math.Sin(wt + ph);
 				if (0.0 < sg) {
@@ -134,7 +134,7 @@
 				}
 			}
 			case WAVEFORM.PWM_NEGATIVE: {
-				var maxwt = 2 * Math.PI * t / (64 * Circuit.TimeStep);
+				var maxwt = 2 * Math.PI * t / (64 * CircuitElement.TimeStep);
 				var cr = triangleFunc(maxwt % (2 * Math.PI)) * 0.5 + 0.5;
 				var sg = DutyCycle * Math.Sin(wt + ph);
 				if (0.0 > sg) {

@@ -58,7 +58,7 @@ namespace Circuit.Elements.Custom {
 			for (int i = 0; i != TermCount; i++) {
 				var p = Pins[i];
 				if (p.output) {
-					Circuit.StampVoltageSource(0, Nodes[i], p.voltSource);
+					CircuitElement.StampVoltageSource(0, Nodes[i], p.voltSource);
 				}
 			}
 		}
@@ -75,7 +75,7 @@ namespace Circuit.Elements.Custom {
 			for (i = 0; i != TermCount; i++) {
 				var p = Pins[i];
 				if (p.output) {
-					Circuit.UpdateVoltageSource(p.voltSource, p.value ? 5 : 0);
+					CircuitElement.UpdateVoltageSource(p.voltSource, p.value ? 5 : 0);
 				}
 			}
 		}

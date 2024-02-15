@@ -39,14 +39,14 @@
 		public override bool HasGroundConnection(int n1) { return true; }
 
 		public override void Stamp() {
-			Circuit.StampVoltageSource(0, Nodes[0], mVoltSource);
+			CircuitElement.StampVoltageSource(0, Nodes[0], mVoltSource);
 		}
 
 		public override void DoIteration() {
-			var vn = Circuit.Nodes.Count + mVoltSource;
-			var row = Circuit.RowInfo[vn - 1].MapRow;
-			var th = 2 * Math.PI * (Circuit.Time - mFreqTimeZero);
-			Circuit.RightSide[row] += (Math.Sin(th * SignalFreq + Phase) * Depth + 2 - Depth) / 2 * Math.Sin(th * CarrierFreq) * MaxVoltage;
+			var vn = CircuitElement.Nodes.Count + mVoltSource;
+			var row = CircuitElement.RowInfo[vn - 1].MapRow;
+			var th = 2 * Math.PI * (CircuitElement.Time - mFreqTimeZero);
+			CircuitElement.RightSide[row] += (Math.Sin(th * SignalFreq + Phase) * Depth + 2 - Depth) / 2 * Math.Sin(th * CarrierFreq) * MaxVoltage;
 		}
 	}
 }

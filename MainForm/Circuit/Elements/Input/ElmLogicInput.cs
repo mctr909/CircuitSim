@@ -31,7 +31,7 @@ namespace Circuit.Elements.Input {
 
 		public override void Stamp() {
 			double v = 0 != Position ? VHigh : VLow;
-			Circuit.StampVoltageSource(0, Nodes[0], mVoltSource, v);
+			CircuitElement.StampVoltageSource(0, Nodes[0], mVoltSource, v);
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using Circuit.Elements.Output;
+﻿using Circuit.Forms;
+using Circuit.Elements.Output;
 
 namespace Circuit.Symbol.Output {
 	class VoltMeter : BaseSymbol {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
-
-using Circuit.Symbol.Passive;
+﻿using Circuit.Symbol.Passive;
 
 namespace Circuit.Forms {
 	public partial class ElementPopupMenu : ContextMenuStrip {

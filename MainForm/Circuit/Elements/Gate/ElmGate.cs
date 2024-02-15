@@ -45,7 +45,7 @@
 		}
 
 		public override void Stamp() {
-			Circuit.StampVoltageSource(0, Nodes[InputCount], mVoltSource);
+			CircuitElement.StampVoltageSource(0, Nodes[InputCount], mVoltSource);
 		}
 
 		public override void DoIteration() {
@@ -59,7 +59,7 @@
 				if (mOscillationCount++ > 50) {
 					/* output is oscillating too much, randomly leave output the same */
 					mOscillationCount = 0;
-					if (Circuit.Random.Next(10) > 5) {
+					if (mRandom.Next(10) > 5) {
 						f = LastOutput;
 					}
 				}
@@ -68,7 +68,7 @@
 			}
 			LastOutput = f;
 			double res = f ? HighVoltage : 0;
-			Circuit.UpdateVoltageSource(mVoltSource, res);
+			CircuitElement.UpdateVoltageSource(mVoltSource, res);
 		}
 
 		protected bool getInput(int x) {

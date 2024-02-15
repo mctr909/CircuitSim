@@ -1,4 +1,5 @@
-﻿using Circuit.Elements.Active;
+﻿using Circuit.Forms;
+using Circuit.Elements.Active;
 
 namespace Circuit.Symbol.Active {
 	class OpAmp : BaseSymbol {
