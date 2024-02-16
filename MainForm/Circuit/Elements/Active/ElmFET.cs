@@ -22,6 +22,7 @@
 		Diode mDiodeB2;
 		double mLastVs = 0.0;
 		double mLastVd = 0.0;
+		double mLastVg = 0.0;
 
 		public ElmFET() : base() {
 			mDiodeB1 = new Diode();
@@ -39,6 +40,7 @@
 			Volts[IdxG] = Volts[IdxS] = Volts[IdxD] = 0;
 			mLastVs = 0.0;
 			mLastVd = 0.0;
+			mLastVg = 0.0;
 			DiodeCurrent1 = 0.0;
 			DiodeCurrent2 = 0.0;
 			mDiodeB1.Reset();
@@ -87,73 +89,78 @@
 		}
 
 		void Calc(bool finished) {
-			var vs = Volts[IdxS];
-			var vd = Volts[IdxD];
+			var v = new double[] { Volts[0], Volts[1], Volts[2] };
 			if (!finished) {
-				if (vs > mLastVs + 0.5) {
-					vs = mLastVs + 0.5;
+				if (v[IdxG] > mLastVg + 0.5) {
+					v[IdxG] = mLastVg + 0.5;
 				}
-				if (vs < mLastVs - 0.5) {
-					vs = mLastVs - 0.5;
+				if (v[IdxG] < mLastVg - 0.5) {
+					v[IdxG] = mLastVg - 0.5;
 				}
-				if (vd > mLastVd + 0.5) {
-					vd = mLastVd + 0.5;
+				if (v[IdxS] > mLastVs + 0.5) {
+					v[IdxS] = mLastVs + 0.5;
 				}
-				if (vd < mLastVd - 0.5) {
-					vd = mLastVd - 0.5;
+				if (v[IdxS] < mLastVs - 0.5) {
+					v[IdxS] = mLastVs - 0.5;
 				}
-				Volts[IdxS] = vs;
-				Volts[IdxD] = vd;
+				if (v[IdxD] > mLastVd + 0.5) {
+					v[IdxD] = mLastVd + 0.5;
+				}
+				if (v[IdxD] < mLastVd - 0.5) {
+					v[IdxD] = mLastVd - 0.5;
+				}
+				if (CircuitElement.Converged && (nonConvergence(mLastVs, v[IdxS]) || nonConvergence(mLastVd, v[IdxD]) || nonConvergence(mLastVg, v[IdxG]))) {
+					CircuitElement.Converged = false;
+				}
 			}
+			mLastVg = v[IdxG];
+			mLastVs = v[IdxS];
+			mLastVd = v[IdxD];
 
 			/* ドレインソース間電圧が負の場合
 			 * ドレインとソースを入れ替える
 			 * (電流の計算を単純化するため) */
 			int idxS, idxD;
-			if (Nch * Volts[IdxD] < Nch * Volts[IdxS]) {
+			if (Nch * v[IdxD] < Nch * v[IdxS]) {
 				idxS = IdxD;
 				idxD = IdxS;
 			} else {
 				idxS = IdxS;
 				idxD = IdxD;
 			}
-
-			var real_vgs = Volts[IdxG] - Volts[idxS];
-			var real_vds = Volts[idxD] - Volts[idxS];
-			mLastVs = vs;
-			mLastVd = vd;
+			var vgs = v[IdxG] - v[idxS];
+			var vds = v[idxD] - v[idxS];
 
 			double gds;
 			{
-				var vgs = real_vgs * Nch;
-				var vds = real_vds * Nch;
-				if (vgs < Vth) {
+				var vgs_n = vgs * Nch;
+				var vds_n = vds * Nch;
+				if (vgs_n < Vth) {
 					/* 遮断領域 */
+					Mode = 0;
+					Gm = 0;
 					/* 電流を0にするべきだが特異な行列となるため
 					 * 100MΩとした時の電流にする */
 					gds = 1e-8;
-					Current = vds * gds;
-					Gm = 0;
-					Mode = 0;
-				} else if (vds < vgs - Vth) {
+					Current = vds_n * gds;
+				} else if (vds_n < vgs_n - Vth) {
 					/* 線形領域 */
-					gds = Beta * (vgs - vds - Vth);
-					Current = Beta * ((vgs - Vth) * vds - vds * vds * 0.5);
-					Gm = Beta * vds;
 					Mode = 1;
+					Gm = Beta * vds_n;
+					gds = Beta * (vgs_n - vds_n - Vth);
+					Current = Beta * ((vgs_n - Vth) * vds_n - vds_n * vds_n * 0.5);
 				} else {
 					/* 飽和領域 */
-					gds = 1e-8;
-					Current = 0.5 * Beta * (vgs - Vth) * (vgs - Vth) + (vds - (vgs - Vth)) * gds;
-					Gm = Beta * (vgs - Vth);
 					Mode = 2;
+					Gm = Beta * (vgs_n - Vth);
+					gds = 1e-8;
+					Current = 0.5 * Beta * (vgs_n - Vth) * (vgs_n - Vth) + (vds_n - (vgs_n - Vth)) * gds;
 				}
 			}
 
-			var rs = gds * real_vds + Gm * real_vgs - Nch * Current;
+			var rs = gds * vds + Gm * vgs - Current * Nch;
 
-			/* ドレインソース間電圧が負の場合
-			 * ドレインとソースを入れ替えているため電流を反転 */
+			/* ドレインとソースを入れ替えている場合、電流を反転 */
 			if (idxS == IdxD && Nch == 1 || idxS == IdxS && Nch == -1) {
 				Current = -Current;
 			}
@@ -177,6 +184,27 @@
 
 			CircuitElement.StampRightSide(Nodes[IdxD], rs);
 			CircuitElement.StampRightSide(Nodes[IdxS], -rs);
+		}
+
+		bool nonConvergence(double last, double now) {
+			var diff = Math.Abs(last - now);
+			if (Beta > 1) {
+				// high beta MOSFETs are more sensitive to small differences, so we are more strict about convergence testing
+				diff *= 100;
+			}
+			if (diff < 0.01) {
+				// difference of less than 10mV is fine
+				return false;
+			}
+			if (CircuitElement.SubIterations > 10 && diff < Math.Abs(now)*0.001) {
+				// larger differences are fine if value is large
+				return false;
+			}
+			if (CircuitElement.SubIterations > 100 && diff < 0.01+(CircuitElement.SubIterations-100)*0.0001) {
+				// if we're having trouble converging, get more lenient
+				return false;
+			}
+			return true;
 		}
 	}
 }
