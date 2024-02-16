@@ -1,21 +1,12 @@
 ﻿namespace Circuit.Elements.Gate {
 	class ElmInvertingSchmitt : BaseElement {
-		public double SlewRate; // V/ns
-		public double LowerTrigger;
-		public double UpperTrigger;
-		public double LogicOnLevel;
-		public double LogicOffLevel;
+		public double SlewRate = 0.5; // V/ns
+		public double LowerTrigger = 1.66;
+		public double UpperTrigger = 3.33;
+		public double LogicOnLevel = 5;
+		public double LogicOffLevel = 0;
 
 		protected bool mState;
-
-		public ElmInvertingSchmitt() : base() {
-			SlewRate = 0.5;
-			mState = false;
-			LowerTrigger = 1.66;
-			UpperTrigger = 3.33;
-			LogicOnLevel = 5;
-			LogicOffLevel = 0;
-		}
 
 		public override int TermCount { get { return 2; } }
 

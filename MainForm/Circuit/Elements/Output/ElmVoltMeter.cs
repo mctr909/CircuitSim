@@ -6,7 +6,7 @@
 		public const int TP_MIN = 3;
 		public const int TP_P2P = 4;
 
-		public int Meter;
+		public int Meter = TP_VOL;
 
 		public override int TermCount { get { return 2; } }
 
@@ -23,9 +23,7 @@
 		bool mIncreasingV = true;
 		bool mDecreasingV = true;
 
-		public ElmVoltMeter() : base() {
-			Meter = TP_VOL;
-		}
+		public override bool GetConnection(int n1, int n2) { return false; }
 
 		public override void IterationFinished() {
 			mCount++; /*how many counts are in a cycle */
@@ -91,7 +89,5 @@
 				mZeroCount = 0;
 			}
 		}
-
-		public override bool GetConnection(int n1, int n2) { return false; }
 	}
 }

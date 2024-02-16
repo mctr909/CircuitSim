@@ -22,9 +22,9 @@ namespace Circuit.Symbol.Passive {
 		}
 
 		public Inductor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			var ind = st.nextTokenDouble(mLastValue);
-			var c = st.nextTokenDouble(0);
-			mElm = new ElmInductor(ind, c);
+			mElm = new ElmInductor();
+			mElm.Inductance = st.nextTokenDouble(mLastValue);
+			mElm.Current = st.nextTokenDouble(0);
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.INDUCTOR; } }
@@ -124,7 +124,6 @@ namespace Circuit.Symbol.Passive {
 				mLastReferenceName = ReferenceName;
 				SetTextPos();
 			}
-			mElm.Setup(mElm.Inductance, mElm.Current);
 		}
 
 		public override EventHandler CreateSlider(ElementInfo ei, Slider adj) {

@@ -1,13 +1,9 @@
 ﻿namespace Circuit.Elements.Output {
 	class ElmLabeledNode : BaseElement {
-		public string Text;
+		public string Text = "output";
 
 		static Dictionary<string, int> mNodeList;
 		int mNodeNumber;
-
-		public ElmLabeledNode() : base() {
-			Text = "output";
-		}
 
 		public override int TermCount { get { return 1; } }
 

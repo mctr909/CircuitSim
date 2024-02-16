@@ -73,7 +73,6 @@ namespace MainForm {
 
 		static long mLastTime = 0;
 		static long mLastFrameTime;
-		static long mLastIterTime;
 		static long mLastSysTime = 0;
 		#endregion
 
@@ -941,7 +940,6 @@ namespace MainForm {
 				CircuitSymbol.List.Clear();
 				ControlPanel.Reset();
 				ScopeForm.PlotCount = 0;
-				mLastIterTime = 0;
 			}
 
 			bool subs = (flags & RC_SUBCIRCUITS) != 0;
@@ -1527,15 +1525,15 @@ namespace MainForm {
 
 			double steprate = ControlPanel.StepRate;
 			long tm = DateTime.Now.ToFileTimeUtc();
-			long lit = mLastIterTime;
+			long lit = CircuitSymbol.LastIterTime;
 			if (lit == 0) {
-				mLastIterTime = tm;
+				CircuitSymbol.LastIterTime = tm;
 				return;
 			}
 
 			/* Check if we don't need to run simulation (for very slow simulation speeds).
             /* If the circuit changed, do at least one iteration to make sure everything is consistent. */
-			if (1000 >= steprate * (tm - mLastIterTime) && !didAnalyze) {
+			if (1000 >= steprate * (tm - CircuitSymbol.LastIterTime) && !didAnalyze) {
 				return;
 			}
 
@@ -1555,14 +1553,14 @@ namespace MainForm {
                 /* those we have already completed. */
 				tm = DateTime.Now.ToFileTimeUtc();
 				lit = tm;
-				if ((iter + 1) * 1000 >= steprate * (tm - mLastIterTime) || (tm - mLastFrameTime > 250000)) {
+				if ((iter + 1) * 1000 >= steprate * (tm - CircuitSymbol.LastIterTime) || (tm - mLastFrameTime > 250000)) {
 					break;
 				}
 				if (!CircuitSymbol.IsRunning) {
 					break;
 				}
 			}
-			mLastIterTime = lit;
+			CircuitSymbol.LastIterTime = lit;
 		}
 
 		static void DrawCircuit(CustomGraphics g) {

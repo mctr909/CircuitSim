@@ -3,7 +3,7 @@
 		Diode mDiode;
 		double mGateCurrent;
 
-		public ElmJFET(bool isNch, double vth, double beta) : base(isNch, false, vth, beta) {
+		public ElmJFET() : base() {
 			mDiode = new Diode();
 			mDiode.SetupForDefaultModel();
 		}

@@ -7,7 +7,7 @@ namespace Circuit.Elements.Custom {
 		public BaseElement elm;
 	}
 
-	class ElmComposite : BaseElement {
+	abstract class ElmComposite : BaseElement {
 		/* list of elements contained in this subcircuit */
 		protected List<BaseElement> CompList = [];
 
@@ -16,8 +16,6 @@ namespace Circuit.Elements.Custom {
 		List<VoltageSourceRecord> mVoltageSources;
 		int mNumTerms = 0;
 		int mNumNodes = 0;
-
-		public ElmComposite() : base() { }
 
 		public override int TermCount { get { return mNumTerms; } }
 

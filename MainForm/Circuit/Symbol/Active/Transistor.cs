@@ -33,7 +33,10 @@ namespace Circuit.Symbol.Active {
 		} }
 
 		public Transistor(Point pos, bool pnpFlag) : base(pos) {
-			mElm = new ElmTransistor(pnpFlag);
+			mElm = new ElmTransistor() {
+				NPN = pnpFlag ? -1 : 1,
+				Hfe = 100
+			};
 			ReferenceName = "Tr";
 			Setup();
 		}
@@ -43,7 +46,10 @@ namespace Circuit.Symbol.Active {
 			var vbe = st.nextTokenDouble();
 			var vbc = st.nextTokenDouble();
 			var hfe = st.nextTokenDouble(100);
-			mElm = new ElmTransistor(npn, hfe, vbe, vbc);
+			mElm = new ElmTransistor(vbe, vbc) {
+				NPN = npn,
+				Hfe = hfe
+			};
 			Setup();
 		}
 

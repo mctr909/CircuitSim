@@ -25,9 +25,19 @@ namespace Circuit.Symbol.Active {
 
 		public FET(Point pos, bool isNch, bool mos) : base(pos) {
 			if (mos) {
-				mElm = new ElmFET(isNch, mos, 1.5, ElmFET.DefaultBeta);
+				mElm = new ElmFET() {
+					Nch = isNch ? 1 : -1,
+					MOS = mos,
+					Vth = 1.5,
+					Beta = 1
+				};
 			} else {
-				mElm = new ElmJFET(isNch, isNch ? -1 : 1, 0.00125);
+				mElm = new ElmJFET() {
+					Nch = isNch ? 1 : -1,
+					MOS = false,
+					Vth = isNch ? -1 : 1,
+					Beta = 0.00125
+				};
 			}
 			mFlags = isNch ? 0 : FLAG_PNP;
 			Post.NoDiagonal = true;
@@ -35,13 +45,25 @@ namespace Circuit.Symbol.Active {
 		}
 
 		public FET(Point p1, Point p2, bool mos, int f, StringTokenizer st) : base(p1, p2, f) {
-			var vt = st.nextTokenDouble(1.5);
-			var beta = st.nextTokenDouble(ElmFET.DefaultBeta);
 			Post.NoDiagonal = true;
 			if (mos) {
-				mElm = new ElmFET((f & FLAG_PNP) == 0, mos, vt, beta);
+				var vt = st.nextTokenDouble(1.5);
+				var beta = st.nextTokenDouble(1);
+				mElm = new ElmFET() {
+					Nch = (f & FLAG_PNP) == 0 ? 1 : -1,
+					MOS = mos,
+					Vth = vt,
+					Beta = beta
+				};
 			} else {
-				mElm = new ElmJFET((f & FLAG_PNP) == 0, vt, beta);
+				var vt = st.nextTokenDouble((f & FLAG_PNP) == 0 ? -1 : 1);
+				var beta = st.nextTokenDouble(0.00125);
+				mElm = new ElmJFET() {
+					Nch = (f & FLAG_PNP) == 0 ? 1 : -1,
+					MOS = false,
+					Vth = vt,
+					Beta = beta
+				};
 			}
 		}
 

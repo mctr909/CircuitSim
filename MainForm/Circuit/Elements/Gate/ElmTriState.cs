@@ -1,15 +1,10 @@
 ﻿namespace Circuit.Elements.Gate {
 	class ElmTriState : BaseElement {
 		double mResistance;
-		public double Ron;
-		public double Roff;
+		public double Ron = 0.1;
+		public double Roff = 1e10;
 
 		public bool Open { get; private set; }
-
-		public ElmTriState() : base() {
-			Ron = 0.1;
-			Roff = 1e10;
-		}
 
 		public override int TermCount { get { return 3; } }
 

@@ -1,7 +1,5 @@
 ﻿namespace Circuit.Elements.Input {
 	class ElmRail : ElmVoltage {
-		public ElmRail(WAVEFORM wf) : base(wf) { }
-
 		public override int TermCount { get { return 1; } }
 
 		public override double VoltageDiff { get { return Volts[0]; } }

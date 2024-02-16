@@ -8,15 +8,15 @@ namespace Circuit.Elements.Custom {
 
 		public virtual int Bits { get; protected set; } = 4;
 
-		public ElmChip() : base() { }
+		public virtual bool NeedsBits { get { return false; } }
 
-		public ElmChip(StringTokenizer st) : base() {
-			if (NeedsBits()) {
-				var v = st.nextTokenInt(Bits);
-				Bits = v;
+		protected ElmChip() : base() { }
+
+		protected ElmChip(StringTokenizer st) : base() {
+			if (NeedsBits) {
+				Bits = st.nextTokenInt(Bits);
 			}
-			int i;
-			for (i = 0; i != TermCount; i++) {
+			for (int i = 0; i != TermCount; i++) {
 				if (Pins == null) {
 					Volts[i] = st.nextTokenDouble();
 				} else if (Pins[i].state) {
@@ -25,8 +25,6 @@ namespace Circuit.Elements.Custom {
 				}
 			}
 		}
-
-		public virtual bool NeedsBits() { return false; }
 
 		public virtual void SetupPins(Chip ui) { }
 

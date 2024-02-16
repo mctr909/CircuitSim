@@ -15,21 +15,14 @@
 			NOISE
 		}
 
-		public double Frequency;
-		public double MaxVoltage;
+		public double Frequency = 100;
+		public double MaxVoltage = 5;
 		public double Bias;
 		public double Phase;
 		public double PhaseOffset;
-		public double DutyCycle;
+		public double DutyCycle = 0.5;
 		public double NoiseValue;
 		public WAVEFORM WaveForm;
-
-		public ElmVoltage(WAVEFORM wf) {
-			WaveForm = wf;
-			MaxVoltage = 5;
-			Frequency = 100;
-			DutyCycle = 0.5;
-		}
 
 		public override int TermCount { get { return 2; } }
 

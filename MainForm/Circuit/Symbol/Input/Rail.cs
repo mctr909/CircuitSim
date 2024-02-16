@@ -10,12 +10,13 @@ namespace Circuit.Symbol.Input {
 		PointF mLb;
 
 		public Rail(Point pos, WAVEFORM wf) : base(pos, wf) {
-			mElm = new ElmRail(wf);
+			mElm = new ElmRail();
+			mElm.WaveForm = wf;
 		}
 
 		public Rail(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmRail(WAVEFORM.SIN);
-			mElm.WaveForm = st.nextTokenEnum(mElm.WaveForm);
+			mElm = new ElmRail();
+			mElm.WaveForm = st.nextTokenEnum(WAVEFORM.SIN);
 			mElm.Frequency = st.nextTokenDouble(100);
 			mElm.MaxVoltage = st.nextTokenDouble(5);
 			mElm.Bias = st.nextTokenDouble();

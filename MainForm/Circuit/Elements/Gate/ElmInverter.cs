@@ -1,14 +1,9 @@
 ﻿namespace Circuit.Elements.Gate {
 	class ElmInverter : BaseElement {
-		public double SlewRate; /* V/ns */
-		public double HighVoltage;
-		double mLastOutputVoltage;
+		public double SlewRate = 0.5; /* V/ns */
+		public double HighVoltage = ElmGate.LastHighVoltage;
 
-		public ElmInverter() : base() {
-			SlewRate = 0.5;
-			/* copy defaults from last gate edited */
-			HighVoltage = ElmGate.LastHighVoltage;
-		}
+		double mLastOutputVoltage;
 
 		public override int TermCount { get { return 2; } }
 

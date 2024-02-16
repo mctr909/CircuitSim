@@ -5,17 +5,11 @@
 		public int InputCount = 2;
 		public bool[] InputStates;
 		public bool LastOutput;
-		public double HighVoltage;
+		public double HighVoltage = LastHighVoltage;
 		public bool HasSchmittInputs;
 		public bool IsInverting;
 
 		int mOscillationCount;
-
-		public ElmGate() : base() {
-			InputCount = 2;
-			/* copy defaults from last gate edited */
-			HighVoltage = LastHighVoltage;
-		}
 
 		public override int VoltageSourceCount { get { return 1; } }
 

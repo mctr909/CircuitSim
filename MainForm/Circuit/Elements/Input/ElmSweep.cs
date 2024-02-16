@@ -1,11 +1,11 @@
 ﻿namespace Circuit.Elements.Input {
 	class ElmSweep : BaseElement {
-		public double MaxV;
-		public double MaxF;
-		public double MinF;
-		public double SweepTime;
-		public bool IsLog;
-		public bool BothSides;
+		public double MaxV = 5;
+		public double MaxF = 4000;
+		public double MinF = 20;
+		public double SweepTime = 0.1;
+		public bool IsLog = true;
+		public bool BothSides = true;
 
 		public double Frequency { get; private set; }
 
@@ -17,10 +17,6 @@
 		int mFdir = 1;
 
 		public ElmSweep() : base() {
-			MinF = 20;
-			MaxF = 4000;
-			MaxV = 5;
-			SweepTime = 0.1;
 			Reset();
 		}
 

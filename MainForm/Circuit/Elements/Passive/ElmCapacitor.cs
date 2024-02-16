@@ -4,14 +4,13 @@
 		double mCurSourceValue;
 
 		public double Capacitance = 1e-5;
-		public double VoltDiff = 0.0;
+		public double VoltDiff = 1e-3;
 
 		public override int TermCount { get { return 2; } }
 
 		public override void Reset() {
 			base.Reset();
 			Current = mCurSourceValue = 0;
-			/* put small charge on caps when reset to start oscillators */
 			VoltDiff = 1e-3;
 		}
 

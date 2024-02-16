@@ -18,8 +18,6 @@
 		bool mIncreasingI = true;
 		bool mDecreasingI = true;
 
-		public ElmAmmeter() : base() { }
-
 		public override int TermCount { get { return 2; } }
 
 		public override bool IsWire { get { return true; } }
@@ -27,6 +25,10 @@
 		public override int VoltageSourceCount { get { return 1; } }
 
 		public override double VoltageDiff { get { return Volts[0]; } }
+
+		public override void Stamp() {
+			CircuitElement.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
+		}
 
 		public override void IterationFinished() {
 			mCount++; /*how many counts are in a cycle */
@@ -99,10 +101,6 @@
 				SelectedValue = RmsI;
 				break;
 			}
-		}
-
-		public override void Stamp() {
-			CircuitElement.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
 		}
 
 		public string getMeter() {

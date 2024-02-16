@@ -1,19 +1,14 @@
 ﻿namespace Circuit.Elements.Output {
 	class ElmStopTrigger : BaseElement {
-		public double TriggerVoltage;
+		public double TriggerVoltage = 1;
 		public int Type;
 		public double Delay;
 
-		public bool Triggered { get; private set; }
-		public bool Stopped { get; private set; }
-		public double TriggerTime { get; private set; }
-
-		public ElmStopTrigger() : base() {
-			TriggerVoltage = 1;
-		}
+		public bool Triggered;
+		public bool Stopped;
+		public double TriggerTime;
 
 		public override int TermCount { get { return 1; } }
-
 		public override double VoltageDiff { get { return Volts[0]; } }
 
 		public override void Reset() {

@@ -137,7 +137,7 @@ namespace Circuit.Symbol.Custom {
 
 		protected override void dump(List<object> optionList) {
 			var ce = (ElmChip)Element;
-			if (ce.NeedsBits()) {
+			if (ce.NeedsBits) {
 				optionList.Add(ce.Bits);
 			}
 			for (int i = 0; i != ce.TermCount; i++) {

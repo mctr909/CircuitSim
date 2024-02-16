@@ -3,21 +3,9 @@
 		double mCompResistance;
 		double mCurSourceValue;
 
-		public double Inductance = 0.001;
-
-		public ElmInductor() : base() { }
-
-		public ElmInductor(double inductance, double c) : base() {
-			Inductance = inductance;
-			Current = c;
-		}
+		public double Inductance = 1e-4;
 
 		public override int TermCount { get { return 2; } }
-
-		public void Setup(double ic, double cr) {
-			Inductance = ic;
-			Current = cr;
-		}
 
 		public override void Reset() {
 			Current = Volts[0] = Volts[1] = mCurSourceValue = 0;

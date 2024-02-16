@@ -14,7 +14,7 @@ namespace Circuit.Elements.Logic {
 
 		public override int VoltageSourceCount { get { return Bits; } }
 
-		public override bool NeedsBits() { return true; }
+		public override bool NeedsBits { get { return true; } }
 
 		public override void SetupPins(Chip chip) {
 			chip.sizeX = 2;

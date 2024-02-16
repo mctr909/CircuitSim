@@ -128,6 +128,7 @@ namespace Circuit {
 			}
 		}
 
+		public static long LastIterTime = 0;
 		public static bool IsRunning { get; set; }
 		public static bool NeedAnalyze { get; set; }
 		public static int Count { get { return null == List ? 0 : List.Count; } }

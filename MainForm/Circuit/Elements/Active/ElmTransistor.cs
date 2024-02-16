@@ -10,10 +10,10 @@
 		const double R_GAIN = .5;
 		const double INV_R_GAIN = 1 / R_GAIN;
 
+		///<summary>NPN=1, PNP=-1</summary>  
+		public int NPN;
 		public double Hfe;
 
-		///<summary>NPN=1, PNP=-1</summary>  
-		public int NPN { get; private set; }
 		public double Ic { get; private set; }
 		public double Ie { get; private set; }
 		public double Ib { get; private set; }
@@ -28,14 +28,9 @@
 		double mLastVbc;
 		double mLastVbe;
 
-		public ElmTransistor(bool pnpFlag) {
-			NPN = pnpFlag ? -1 : 1;
-			Hfe = 100;
-		}
+		public ElmTransistor() { }
 
-		public ElmTransistor(int npn, double hfe, double vbe, double vbc) {
-			NPN = npn;
-			Hfe = hfe;
+		public ElmTransistor(double vbe, double vbc) {
 			mLastVbe = vbe;
 			mLastVbc = vbc;
 			Volts[IdxB] = 0;

@@ -1,31 +1,23 @@
 ﻿namespace Circuit.Elements.Input {
 	class ElmFM : BaseElement {
-		public double CarrierFreq;
-		public double Signalfreq;
-		public double MaxVoltage;
-		public double Deviation;
+		public double CarrierFreq = 1000;
+		public double Signalfreq = 40;
+		public double MaxVoltage = 5;
+		public double Deviation = 200;
 
-		double mFreqTimeZero;
+		double mFreqTimeZero = 0;
 		double mLastTime = 0;
 		double mCounter = 0;
-
-		public ElmFM() : base() {
-			Deviation = 200;
-			MaxVoltage = 5;
-			CarrierFreq = 800;
-			Signalfreq = 40;
-			Reset();
-		}
-
-		public override void Reset() {
-			mFreqTimeZero = 0;
-		}
 
 		public override int TermCount { get { return 1; } }
 
 		public override int VoltageSourceCount { get { return 1; } }
 
 		public override double VoltageDiff { get { return Volts[0]; } }
+
+		public override void Reset() {
+			mFreqTimeZero = 0;
+		}
 
 		public override bool HasGroundConnection(int n1) { return true; }
 

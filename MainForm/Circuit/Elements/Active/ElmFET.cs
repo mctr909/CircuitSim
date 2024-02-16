@@ -4,16 +4,13 @@
 		protected const int IdxS = 1;
 		protected const int IdxD = 2;
 
-		public const double DefaultBeta = 1;
-
+		public int Nch;
+		public bool MOS;
 		public double Vth;
 		public double Beta;
-
-		public int Nch { get; private set; }
-		public bool MOS { get; private set; }
-		public int BodyTerminal { get; private set; }
-		public int Mode { get; private set; } = 0;
-		public double Gm { get; private set; } = 0;
+		public int BodyTerminal;
+		public int Mode;
+		public double Gm;
 
 		public double DiodeCurrent1 { get; private set; }
 		public double DiodeCurrent2 { get; private set; }
@@ -26,11 +23,7 @@
 		double mLastVs = 0.0;
 		double mLastVd = 0.0;
 
-		public ElmFET(bool isNch, bool mos, double vth, double beta) : base() {
-			Nch = isNch ? 1 : -1;
-			MOS = mos;
-			Vth = vth;
-			Beta = beta;
+		public ElmFET() : base() {
 			mDiodeB1 = new Diode();
 			mDiodeB1.SetupForDefaultModel();
 			mDiodeB2 = new Diode();

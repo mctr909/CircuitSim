@@ -2,13 +2,8 @@
 
 namespace Circuit.Elements.Input {
 	class ElmLogicInput : ElmSwitch {
-		public double VHigh;
-		public double VLow;
-
-		public ElmLogicInput() {
-			VHigh = 5;
-			VLow = 0;
-		}
+		public double VHigh = 5;
+		public double VLow = 0;
 
 		public override int VoltageSourceCount { get { return 1; } }
 

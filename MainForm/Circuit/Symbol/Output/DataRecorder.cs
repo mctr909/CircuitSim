@@ -12,10 +12,12 @@ namespace Circuit.Symbol.Output {
 
 		public DataRecorder(Point pos) : base(pos) {
 			mElm = new ElmDataRecorder();
+			mElm.DataCount = 10000;
 		}
 
 		public DataRecorder(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-			mElm = new ElmDataRecorder(st);
+			mElm = new ElmDataRecorder();
+			mElm.DataCount = st.nextTokenInt();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.DATA_RECORDER; } }
@@ -117,7 +119,7 @@ namespace Circuit.Symbol.Output {
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
 			if (n == 0 && 0 < ei.Value) {
-				mElm.SetDataCount((int)ei.Value);
+				mElm.DataCount = (int)ei.Value;
 			}
 			if (n == 1) {
 				mColName = ei.Text;

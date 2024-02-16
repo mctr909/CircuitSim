@@ -94,12 +94,13 @@ namespace Circuit.Symbol.Input {
 		protected Voltage(Point p1, Point p2, int f) : base(p1, p2, f) { }
 
 		public Voltage(Point pos, WAVEFORM wf) : base(pos) {
-			mElm = new ElmVoltage(wf);
+			mElm = new ElmVoltage();
+			mElm.WaveForm = wf;
 			ReferenceName = "";
 		}
 		public Voltage(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmVoltage(WAVEFORM.SIN);
-			mElm.WaveForm = st.nextTokenEnum(mElm.WaveForm);
+			mElm = new ElmVoltage();
+			mElm.WaveForm = st.nextTokenEnum(WAVEFORM.SIN);
 			mElm.Frequency = st.nextTokenDouble(100);
 			mElm.MaxVoltage = st.nextTokenDouble(5);
 			mElm.Bias = st.nextTokenDouble();

@@ -1,21 +1,12 @@
 ﻿namespace Circuit.Elements.Input {
 	class ElmAM : BaseElement {
-		public double CarrierFreq;
-		public double SignalFreq;
-		public double Depth;
-		public double MaxVoltage;
-		public double Phase;
+		public double CarrierFreq = 1000;
+		public double SignalFreq = 50;
+		public double Depth = 0.1;
+		public double MaxVoltage = 5;
+		public double Phase = 0.0;
 
-		double mFreqTimeZero;
-
-		public ElmAM() : base() {
-			MaxVoltage = 5;
-			CarrierFreq = 1000;
-			SignalFreq = 50;
-			Depth = 0.1;
-			Phase = 0.0;
-			Reset();
-		}
+		double mFreqTimeZero = 0.0;
 
 		public override int TermCount { get { return 1; } }
 

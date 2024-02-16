@@ -1,12 +1,8 @@
 ﻿namespace Circuit.Elements.Output {
 	class ElmLogicOutput : BaseElement {
-		public double Threshold;
+		public double Threshold = 2.5;
 		public string Value;
 		public bool NeedsPullDown;
-
-		public ElmLogicOutput() : base() {
-			Threshold = 2.5;
-		}
 
 		public override int TermCount { get { return 1; } }
 
