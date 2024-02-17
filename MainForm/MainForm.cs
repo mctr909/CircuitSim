@@ -896,7 +896,6 @@ namespace MainForm {
 		static string DumpCircuit() {
 			// Todo: CustomLogicModel
 			//CustomLogicModel.clearDumpedFlags();
-			DiodeModel.ClearDumpedFlags();
 
 			int f = ControlPanel.ChkShowCurrent.Checked ? 1 : 0;
 			f |= ControlPanel.ChkShowValues.Checked ? 0 : 16;
@@ -989,10 +988,6 @@ namespace MainForm {
 						/* if first character is a digit then parse the type as a number */
 						if (tint >= '0' && tint <= '9') {
 							tint = int.Parse(type);
-						}
-						if (tint == 34) {
-							DiodeModel.UndumpModel(st);
-							break;
 						}
 						if (tint == '&') {
 							var adj = new Slider(st);
@@ -1249,7 +1244,6 @@ namespace MainForm {
 			string r = "";
 			// Todo: CustomLogicModel
 			//CustomLogicModel.clearDumpedFlags();
-			DiodeModel.ClearDumpedFlags();
 			for (int i = CircuitSymbol.Count - 1; i >= 0; i--) {
 				var ce = GetSymbol(i);
 				/* See notes on do cut why we don't copy ScopeElms. */

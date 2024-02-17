@@ -1,17 +1,13 @@
-﻿using Circuit.Forms;
-
-namespace Circuit {
+﻿namespace Circuit {
 	class DiodeModel {
 		/* Electron thermal voltage at SPICE's default temperature of 27 C (300.15 K): */
 		const double VT = 0.025865;
 
-		static Dictionary<string, DiodeModel> modelMap;
-
-		int flags;
-		string description;
+		static Dictionary<string, DiodeModel> mModelMap;
+		string mDescription;
 
 		public string Name { get; private set; }
-		public double SaturationCurrent;
+		public double SaturationCurrent { get; private set; }
 		public double SeriesResistance { get; private set; }
 		public double EmissionCoefficient { get; private set; }
 		public double BreakdownVoltage { get; private set; }
@@ -23,23 +19,18 @@ namespace Circuit {
 		/* voltage drop @ 1A */
 		public double FwDrop { get; private set; }
 
-		public bool Dumped { get; private set; }
-		public bool ReadOnly { get; private set; }
-		public bool BuiltIn { get; private set; }
-		public bool OldStyle { get; private set; }
-
 		protected DiodeModel(double sc, double sr, double ec, double bv, string d) {
 			SaturationCurrent = sc;
 			SeriesResistance = sr;
 			EmissionCoefficient = ec;
 			BreakdownVoltage = bv;
-			description = d;
+			mDescription = d;
 			updateModel();
 		}
 
 		public static DiodeModel GetModelWithNameOrCopy(string name, DiodeModel oldmodel) {
 			createModelMap();
-			var lm = modelMap[name];
+			var lm = mModelMap[name];
 			if (lm != null) {
 				return lm;
 			}
@@ -50,7 +41,7 @@ namespace Circuit {
 			lm = new DiodeModel(oldmodel) {
 				Name = name
 			};
-			modelMap.Add(name, lm);
+			mModelMap.Add(name, lm);
 			return lm;
 		}
 
@@ -63,7 +54,7 @@ namespace Circuit {
 			const double emcoef = 2;
 
 			/* look for existing model with same parameters */
-			foreach (var it in modelMap) {
+			foreach (var it in mModelMap) {
 				var val = it.Value;
 				if (Math.Abs(val.FwDrop - fwdrop) < 1e-8
 					&& val.SeriesResistance == 0
@@ -75,8 +66,8 @@ namespace Circuit {
 			/* create a new one, converting to new parameter values */
 			const double vscale = emcoef * VT;
 			const double vdcoef = 1 / vscale;
-			double leakage = 1 / (Math.Exp(fwdrop * vdcoef) - 1);
-			string name = "fwdrop=" + fwdrop;
+			var leakage = 1 / (Math.Exp(fwdrop * vdcoef) - 1);
+			var name = "fwdrop=" + fwdrop;
 			if (zvoltage != 0) {
 				name = name + " zvoltage=" + zvoltage;
 			}
@@ -85,7 +76,6 @@ namespace Circuit {
 			dm.SaturationCurrent = leakage;
 			dm.EmissionCoefficient = emcoef;
 			dm.BreakdownVoltage = zvoltage;
-			dm.ReadOnly = dm.OldStyle = true;
 			/*Console.WriteLine("at drop current is " + (leakage*(Math.Exp(fwdrop*vdcoef)-1)));
             Console.WriteLine("sat " + leakage + " em " + emcoef); */
 			dm.updateModel();
@@ -97,7 +87,7 @@ namespace Circuit {
 			createModelMap();
 
 			/* look for existing model with same parameters */
-			foreach (var it in modelMap) {
+			foreach (var it in mModelMap) {
 				var val = it.Value;
 				if (Math.Abs(val.BreakdownVoltage - zvoltage) < 1e-8) {
 					return val;
@@ -120,18 +110,9 @@ namespace Circuit {
 			return getModelWithName("default");
 		}
 
-		public static void ClearDumpedFlags() {
-			if (modelMap == null) {
-				return;
-			}
-			foreach (var k in modelMap.Keys) {
-				modelMap[k].Dumped = false;
-			}
-		}
-
 		public static List<DiodeModel> GetModelList(bool zener) {
 			var vector = new List<DiodeModel>();
-			foreach (var it in modelMap) {
+			foreach (var it in mModelMap) {
 				var dm = it.Value;
 				if (zener && dm.BreakdownVoltage == 0) {
 					continue;
@@ -142,11 +123,11 @@ namespace Circuit {
 		}
 
 		static void createModelMap() {
-			if (modelMap != null) {
+			if (mModelMap != null) {
 				return;
 			}
 
-			modelMap = new Dictionary<string, DiodeModel>();
+			mModelMap = new Dictionary<string, DiodeModel>();
 			addDefaultModel("spice-default", new DiodeModel(1e-14, 0, 1, 0, null));
 			addDefaultModel("default", new DiodeModel(1.7143528192808883e-7, 0, 2, 0, null));
 			addDefaultModel("default-zener", new DiodeModel(1.7143528192808883e-7, 0, 2, 5.6, null));
@@ -163,40 +144,21 @@ namespace Circuit {
 		}
 
 		static void addDefaultModel(string name, DiodeModel dm) {
-			modelMap.Add(name, dm);
-			dm.ReadOnly = dm.BuiltIn = true;
+			mModelMap.Add(name, dm);
 			dm.Name = name;
 		}
 
 		static DiodeModel getModelWithName(string name) {
 			createModelMap();
-			var lm = modelMap[name];
+			var lm = mModelMap[name];
 			if (lm != null) {
 				return lm;
 			}
 			lm = new DiodeModel {
 				Name = name
 			};
-			modelMap.Add(name, lm);
+			mModelMap.Add(name, lm);
 			return lm;
-		}
-
-		public static void UndumpModel(StringTokenizer st) {
-			string name;
-			if (st.nextToken(out name)) {
-				name = TextUtils.UnEscape(name);
-				var dm = getModelWithName(name);
-				dm.undump(st);
-			}
-		}
-
-		void undump(StringTokenizer st) {
-			flags = st.nextTokenInt();
-			SaturationCurrent = st.nextTokenDouble();
-			SeriesResistance = st.nextTokenDouble();
-			EmissionCoefficient = st.nextTokenDouble();
-			BreakdownVoltage = st.nextTokenDouble();
-			updateModel();
 		}
 
 		void updateModel() {
@@ -214,7 +176,6 @@ namespace Circuit {
 		}
 
 		DiodeModel(DiodeModel copy) {
-			flags = copy.flags;
 			SaturationCurrent = copy.SaturationCurrent;
 			SeriesResistance = copy.SeriesResistance;
 			EmissionCoefficient = copy.EmissionCoefficient;
@@ -223,55 +184,10 @@ namespace Circuit {
 		}
 
 		public string GetDescription() {
-			if (description == null) {
+			if (mDescription == null) {
 				return Name;
 			}
-			return Name + " (" + description + ")";
-		}
-
-		public ElementInfo GetElementInfo(int r, int c) {
-			if (c != 0) {
-				return null;
-			}
-			if (r == 0) {
-				return new ElementInfo("Saturation Current", SaturationCurrent);
-			}
-			if (r == 1) {
-				return new ElementInfo("Series Resistance", SeriesResistance);
-			}
-			if (r == 2) {
-				return new ElementInfo("Emission Coefficient", EmissionCoefficient);
-			}
-			if (r == 3) {
-				return new ElementInfo("Breakdown Voltage", BreakdownVoltage);
-			}
-			return null;
-		}
-
-		public void SetElementValue(int n, int c, ElementInfo ei) {
-			if (n == 0) {
-				SaturationCurrent = ei.Value;
-			}
-			if (n == 1) {
-				SeriesResistance = ei.Value;
-			}
-			if (n == 2) {
-				EmissionCoefficient = ei.Value;
-			}
-			if (n == 3) {
-				BreakdownVoltage = Math.Abs(ei.Value);
-			}
-			updateModel();
-		}
-
-		public string Dump() {
-			Dumped = true;
-			return "34 " + TextUtils.Escape(Name)
-				+ " " + flags
-				+ " " + SaturationCurrent
-				+ " " + SeriesResistance
-				+ " " + EmissionCoefficient
-				+ " " + BreakdownVoltage;
+			return Name + " (" + mDescription + ")";
 		}
 	}
 }
