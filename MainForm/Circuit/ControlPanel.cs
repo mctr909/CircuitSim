@@ -20,7 +20,7 @@
 				if (TrbSpeed.Value == 0) {
 					return 0;
 				}
-				return 1.0 * TrbSpeed.Value / TrbSpeed.Maximum;
+				return 2.0 * TrbSpeed.Value / TrbSpeed.Maximum;
 			}
 		}
 
@@ -99,7 +99,7 @@
 				Minimum = 0,
 				Maximum = 1000,
 				SmallChange = 1,
-				LargeChange = 10,
+				LargeChange = 1,
 				TickFrequency = 100,
 				TickStyle = TickStyle.TopLeft,
 				Value = 10,

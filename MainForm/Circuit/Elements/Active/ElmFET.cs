@@ -4,6 +4,10 @@
 		protected const int IdxS = 1;
 		protected const int IdxD = 2;
 
+		const double DiodeVScale = 0.05173;
+		const double DiodeVdCoef = 19.331142470520007;
+		const double DiodeLeakage = 1.7143528192808883E-07;
+
 		public int Nch;
 		public bool MOS;
 		public double Vth;
@@ -18,19 +22,15 @@
 		public double Vs { get { return Volts[IdxS]; } }
 		public double Vd { get { return Volts[IdxD]; } }
 
-		Diode mDiodeB1;
-		Diode mDiodeB2;
+		int[] mDiodeNodes1 = new int[2];
+		int[] mDiodeNodes2 = new int[2];
+		double mVCrit = DiodeVScale * Math.Log(DiodeVScale / (Math.Sqrt(2) * DiodeLeakage));
+		double mDiodeLastVdiff1 = 0.0;
+		double mDiodeLastVdiff2 = 0.0;
+
 		double mLastVs = 0.0;
 		double mLastVd = 0.0;
 		double mLastVg = 0.0;
-
-		public ElmFET() : base() {
-			mDiodeB1 = new Diode();
-			mDiodeB1.SetupForDefaultModel();
-			mDiodeB2 = new Diode();
-			mDiodeB2.SetupForDefaultModel();
-			AllocNodes();
-		}
 
 		public override int TermCount { get { return 3; } }
 
@@ -41,10 +41,10 @@
 			mLastVs = 0.0;
 			mLastVd = 0.0;
 			mLastVg = 0.0;
+			mDiodeLastVdiff1 = 0;
+			mDiodeLastVdiff2 = 0;
 			DiodeCurrent1 = 0.0;
 			DiodeCurrent2 = 0.0;
-			mDiodeB1.Reset();
-			mDiodeB2.Reset();
 		}
 
 		public override bool GetConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
@@ -55,12 +55,20 @@
 			BodyTerminal = (Nch < 0) ? IdxD : IdxS;
 			if (MOS) {
 				if (Nch < 0) {
-					mDiodeB1.Stamp(Nodes[IdxS], Nodes[BodyTerminal]);
-					mDiodeB2.Stamp(Nodes[IdxD], Nodes[BodyTerminal]);
+					mDiodeNodes1[0] = Nodes[IdxS];
+					mDiodeNodes1[1] = Nodes[BodyTerminal];
+					mDiodeNodes2[0] = Nodes[IdxD];
+					mDiodeNodes2[1] = Nodes[BodyTerminal];
 				} else {
-					mDiodeB1.Stamp(Nodes[BodyTerminal], Nodes[IdxS]);
-					mDiodeB2.Stamp(Nodes[BodyTerminal], Nodes[IdxD]);
+					mDiodeNodes1[0] = Nodes[BodyTerminal];
+					mDiodeNodes1[1] = Nodes[IdxS];
+					mDiodeNodes2[0] = Nodes[BodyTerminal];
+					mDiodeNodes2[1] = Nodes[IdxD];
 				}
+				CircuitElement.StampNonLinear(mDiodeNodes1[0]);
+				CircuitElement.StampNonLinear(mDiodeNodes1[1]);
+				CircuitElement.StampNonLinear(mDiodeNodes2[0]);
+				CircuitElement.StampNonLinear(mDiodeNodes2[1]);
 			}
 		}
 
@@ -88,6 +96,42 @@
 			}
 		}
 
+		protected void DiodeDoIteration(double vnew, ref double vold, int nodeA, int nodeB) {
+			if (Math.Abs(vnew - vold) > 0.01) {
+				CircuitElement.Converged = false;
+			}
+			if (vnew > mVCrit && Math.Abs(vnew - vold) > (DiodeVScale + DiodeVScale)) {
+				if (vold > 0) {
+					var arg = 1 + (vnew - vold) / DiodeVScale;
+					if (arg > 0) {
+						vnew = vold + DiodeVScale * Math.Log(arg);
+					} else {
+						vnew = mVCrit;
+					}
+				} else {
+					vnew = DiodeVScale * Math.Log(vnew / DiodeVScale);
+				}
+				CircuitElement.Converged = false;
+			}
+			vold = vnew;
+			var gmin = DiodeLeakage * 0.01;
+			if (CircuitElement.SubIterations > 100) {
+				gmin = Math.Exp(-9 * Math.Log(10) * (1 - CircuitElement.SubIterations / 3000.0));
+				if (gmin > 0.1) {
+					gmin = 0.1;
+				}
+			}
+			var eval = Math.Exp(vnew * DiodeVdCoef);
+			var geq = DiodeVdCoef * DiodeLeakage * eval + gmin;
+			var nc = (eval - 1) * DiodeLeakage - geq * vnew;
+			CircuitElement.StampConductance(nodeA, nodeB, geq);
+			CircuitElement.StampCurrentSource(nodeA, nodeB, nc);
+		}
+
+		protected static double DiodeCalculateCurrent(double voltdiff) {
+			return DiodeLeakage * (Math.Exp(voltdiff * DiodeVdCoef) - 1);
+		}
+
 		void Calc(bool finished) {
 			var v = new double[] { Volts[0], Volts[1], Volts[2] };
 			if (!finished) {
@@ -109,7 +153,7 @@
 				if (v[IdxD] < mLastVd - 0.5) {
 					v[IdxD] = mLastVd - 0.5;
 				}
-				if (CircuitElement.Converged && (nonConvergence(mLastVs, v[IdxS]) || nonConvergence(mLastVd, v[IdxD]) || nonConvergence(mLastVg, v[IdxG]))) {
+				if (CircuitElement.Converged && (NonConvergence(mLastVs, v[IdxS]) || NonConvergence(mLastVd, v[IdxD]) || NonConvergence(mLastVg, v[IdxG]))) {
 					CircuitElement.Converged = false;
 				}
 			}
@@ -166,10 +210,10 @@
 			}
 
 			if (MOS) {
-				mDiodeB1.DoIteration(Nch * (Volts[BodyTerminal] - Volts[IdxS]));
-				DiodeCurrent1 = mDiodeB1.CalculateCurrent(Nch * (Volts[BodyTerminal] - Volts[IdxS])) * Nch;
-				mDiodeB2.DoIteration(Nch * (Volts[BodyTerminal] - Volts[IdxD]));
-				DiodeCurrent2 = mDiodeB2.CalculateCurrent(Nch * (Volts[BodyTerminal] - Volts[IdxD])) * Nch;
+				DiodeDoIteration(Nch * (Volts[BodyTerminal] - Volts[IdxS]), ref mDiodeLastVdiff1, mDiodeNodes1[0], mDiodeNodes1[1]);
+				DiodeCurrent1 = DiodeCalculateCurrent(Nch * (Volts[BodyTerminal] - Volts[IdxS])) * Nch;
+				DiodeDoIteration(Nch * (Volts[BodyTerminal] - Volts[IdxD]), ref mDiodeLastVdiff2, mDiodeNodes2[0], mDiodeNodes2[1]);
+				DiodeCurrent2 = DiodeCalculateCurrent(Nch * (Volts[BodyTerminal] - Volts[IdxD])) * Nch;
 			} else {
 				DiodeCurrent1 = DiodeCurrent2 = 0;
 			}
@@ -186,7 +230,7 @@
 			CircuitElement.StampRightSide(Nodes[IdxS], -rs);
 		}
 
-		bool nonConvergence(double last, double now) {
+		bool NonConvergence(double last, double now) {
 			var diff = Math.Abs(last - now);
 			if (Beta > 1) {
 				// high beta MOSFETs are more sensitive to small differences, so we are more strict about convergence testing

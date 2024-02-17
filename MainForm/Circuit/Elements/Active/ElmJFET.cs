@@ -1,25 +1,26 @@
 ﻿namespace Circuit.Elements.Active {
 	class ElmJFET : ElmFET {
-		Diode mDiode;
+		int[] mDiodeNodes = new int[2];
+		double mDiodeLastVdiff = 0.0;
 		double mGateCurrent;
-
-		public ElmJFET() : base() {
-			mDiode = new Diode();
-			mDiode.SetupForDefaultModel();
-		}
 
 		public override void Reset() {
 			base.Reset();
-			mDiode.Reset();
+			mDiodeLastVdiff = 0.0;
+			mGateCurrent = 0.0;
 		}
 
 		public override void Stamp() {
 			base.Stamp();
 			if (Nch < 0) {
-				mDiode.Stamp(Nodes[IdxS], Nodes[IdxG]);
+				mDiodeNodes[0] = Nodes[IdxS];
+				mDiodeNodes[1] = Nodes[IdxG];
 			} else {
-				mDiode.Stamp(Nodes[IdxG], Nodes[IdxS]);
+				mDiodeNodes[0] = Nodes[IdxG];
+				mDiodeNodes[1] = Nodes[IdxS];
 			}
+			CircuitElement.StampNonLinear(mDiodeNodes[0]);
+			CircuitElement.StampNonLinear(mDiodeNodes[1]);
 		}
 
 		public override double GetCurrentIntoNode(int n) {
@@ -34,11 +35,11 @@
 
 		public override void DoIteration() {
 			base.DoIteration();
-			mDiode.DoIteration(Nch * (Volts[IdxG] - Volts[IdxS]));
+			DiodeDoIteration(Nch * (Volts[IdxG] - Volts[IdxS]), ref mDiodeLastVdiff, mDiodeNodes[0], mDiodeNodes[1]);
 		}
 
 		public override void SetCurrent(int n, double c) {
-			mGateCurrent = Nch * mDiode.CalculateCurrent(Nch * (Volts[IdxG] - Volts[IdxS]));
+			mGateCurrent = Nch * DiodeCalculateCurrent(Nch * (Volts[IdxG] - Volts[IdxS]));
 		}
 	}
 }
