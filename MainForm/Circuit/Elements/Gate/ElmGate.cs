@@ -1,5 +1,5 @@
 ﻿namespace Circuit.Elements.Gate {
-	class ElmGate : BaseElement {
+	abstract class ElmGate : BaseElement {
 		public static double LastHighVoltage = 5;
 
 		public int InputCount = 2;
@@ -35,7 +35,7 @@
 		}
 
 		public override void DoIteration() {
-			bool f = calcFunction();
+			bool f = CalcFunction();
 			if (IsInverting) {
 				f = !f;
 			}
@@ -57,7 +57,7 @@
 			CircuitElement.UpdateVoltageSource(mVoltSource, res);
 		}
 
-		protected bool getInput(int x) {
+		protected bool GetInput(int x) {
 			if (!HasSchmittInputs) {
 				return Volts[x] > HighVoltage * 0.5;
 			}
@@ -66,6 +66,6 @@
 			return res;
 		}
 
-		protected virtual bool calcFunction() { return false; }
+		protected virtual bool CalcFunction() { return false; }
 	}
 }

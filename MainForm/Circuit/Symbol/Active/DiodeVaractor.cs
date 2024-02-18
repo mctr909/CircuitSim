@@ -8,12 +8,17 @@ namespace Circuit.Symbol.Active {
 
 		public DiodeVaractor(Point pos) : base(pos, "Vc") {
 			mElm = new ElmDiodeVaractor();
-			mElm.Setup();
+			ModelName = LastModelName;
+			mElm.Setup(ModelName);
 		}
 
 		public DiodeVaractor(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-			mElm = new ElmDiodeVaractor(st);
-			mElm.Setup();
+			var elm = new ElmDiodeVaractor();
+			st.nextToken(out ModelName, ModelName);
+			elm.CapVoltDiff = st.nextTokenDouble();
+			elm.BaseCapacitance = st.nextTokenDouble();
+			elm.Setup(LastModelName);
+			mElm = elm;
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.VARACTOR; } }
@@ -21,7 +26,7 @@ namespace Circuit.Symbol.Active {
 		protected override void dump(List<object> optionList) {
 			var ce = (ElmDiodeVaractor)mElm;
 			base.dump(optionList);
-			optionList.Add(ce.mCapVoltDiff.ToString("g3"));
+			optionList.Add(ce.CapVoltDiff.ToString("g3"));
 			optionList.Add(ce.BaseCapacitance.ToString("g3"));
 		}
 

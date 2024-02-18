@@ -2,22 +2,16 @@
 	class ElmDiodeVaractor : ElmDiode {
 		public double BaseCapacitance;
 		public double Capacitance;
+		public double CapVoltDiff;
+
 		double mCapCurrent;
 		double mVoltSourceValue;
-
 		// DiodeElm.lastvoltdiff = volt diff from last iteration
 		// capvoltdiff = volt diff from last timestep
 		double mCompResistance;
-		public double mCapVoltDiff;
 
 		public ElmDiodeVaractor() : base() {
 			BaseCapacitance = 4e-12;
-		}
-
-		public ElmDiodeVaractor(StringTokenizer st) : base(st) {
-			st.nextToken(out ModelName, ModelName);
-			mCapVoltDiff = st.nextTokenDouble();
-			BaseCapacitance = st.nextTokenDouble();
 		}
 
 		public override int VoltageSourceCount { get { return 1; } }
@@ -26,7 +20,7 @@
 
 		public override void Reset() {
 			base.Reset();
-			mCapVoltDiff = 0;
+			CapVoltDiff = 0;
 		}
 
 		public override void Stamp() {
@@ -61,18 +55,18 @@
 			// (Thevenin equivalent) consists of a voltage source in
 			// series with a resistor
 			double c0 = BaseCapacitance;
-			if (0 < mCapVoltDiff) {
+			if (0 < CapVoltDiff) {
 				Capacitance = c0;
 			} else {
-				Capacitance = c0 / Math.Pow(1 - mCapVoltDiff / Model.FwDrop, 0.5);
+				Capacitance = c0 / Math.Pow(1 - CapVoltDiff / FwDrop, 0.5);
 			}
 			mCompResistance = CircuitElement.TimeStep / (2 * Capacitance);
-			mVoltSourceValue = -mCapVoltDiff - mCapCurrent * mCompResistance;
+			mVoltSourceValue = -CapVoltDiff - mCapCurrent * mCompResistance;
 		}
 
 		public override void SetVoltage(int n, double c) {
 			base.SetVoltage(n, c);
-			mCapVoltDiff = Volts[0] - Volts[1];
+			CapVoltDiff = Volts[0] - Volts[1];
 			Current += mCapCurrent;
 		}
 

@@ -14,28 +14,47 @@ namespace Circuit.Symbol.Active {
 		protected List<DiodeModel> mModels;
 		protected bool mCustomModelUI;
 
+		public static string LastModelName = "default";
+		public string ModelName = "default";
+
 		protected ElmDiode mElm;
 
 		public override BaseElement Element { get { return mElm; } }
 
 		public Diode(Point pos, string referenceName = "D") : base(pos) {
 			mElm = new ElmDiode();
+			ModelName = LastModelName;
 			ReferenceName = referenceName;
-			mElm.Setup();
+			mElm.Setup(ModelName);
 		}
 
 		public Diode(Point p1, Point p2, int f) : base(p1, p2, f) { }
 
 		public Diode(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmDiode(st, 0 != (f & FLAG_FWDROP), 0 != (f & FLAG_MODEL));
-			mElm.Setup();
+			const double defaultdrop = 0.805904783;
+			double fwdrop = defaultdrop;
+			double zvoltage = 0;
+			string modelName;
+			if (0 != (f & FLAG_MODEL)) {
+				if (st.nextToken(out modelName, LastModelName)) {
+					modelName = TextUtils.UnEscape(modelName);
+				}
+			} else {
+				if (0 != (f & FLAG_FWDROP)) {
+					fwdrop = st.nextTokenDouble();
+				}
+				var model = DiodeModel.GetModelWithParameters(fwdrop, zvoltage);
+				modelName = model.Name;
+			}
+			mElm = new ElmDiode();
+			mElm.Setup(modelName);
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.DIODE; } }
 
 		protected override void dump(List<object> optionList) {
 			mFlags |= FLAG_MODEL;
-			optionList.Add(TextUtils.Escape(mElm.ModelName));
+			optionList.Add(TextUtils.Escape(ModelName));
 		}
 
 		public override void SetPoints() {
@@ -131,9 +150,9 @@ namespace Circuit.Symbol.Active {
 					ei.NewDialog = true;
 					return;
 				}
-				mElm.Model = mModels[ei.Choice.SelectedIndex];
-				mElm.ModelName = mElm.Model.Name;
-				mElm.Setup();
+				var model = mModels[ei.Choice.SelectedIndex];
+				ModelName = model.Name;
+				mElm.Setup(ModelName);
 				return;
 			}
 			base.SetElementValue(n, c, ei);

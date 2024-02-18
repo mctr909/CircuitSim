@@ -1,10 +1,5 @@
 ﻿namespace Circuit.Elements.Active {
 	class ElmDiode : BaseElement {
-		public static string LastModelName = "default";
-
-		public string ModelName;
-		public DiodeModel Model;
-
 		/* Electron thermal voltage at SPICE's default temperature of 27 C (300.15 K): */
 		const double VT = 0.025865;
 
@@ -14,11 +9,20 @@
          * vzcoef is the multiplicative equivalent of dividing by vt (for speed). */
 		const double VZ_COEF = 1 / VT;
 
+		public DiodeModel Model;
+
+		/// <summary>
+		/// User-specified diode parameters for Zener voltage.
+		/// </summary>
+		public double Zvoltage;
+		public double FwDrop;
+
 		bool mHasResistance;
 		int mNodes0;
 		int mNodes1;
 		int mDiodeEndNode;
 		double mLastVoltDiff;
+		double mSeriesResistance;
 
 		/// <summary>
 		/// The diode's "scale voltage", the voltage increase which will raise current by a factor of e.
@@ -41,11 +45,6 @@
 		double mZoffset;
 
 		/// <summary>
-		/// User-specified diode parameters for Zener voltage.
-		/// </summary>
-		double mZvoltage;
-
-		/// <summary>
 		/// Critical voltages for limiting the normal diode.
 		/// </summary>
 		double mVcrit;
@@ -55,60 +54,33 @@
 		/// </summary>
 		double mVzCrit;
 
-		public ElmDiode() : base() {
-			ModelName = LastModelName;
-			Setup();
-		}
-
-		public ElmDiode(string modelName) : base() {
-			ModelName = modelName;
-			Setup();
-		}
-
-		public ElmDiode(StringTokenizer st, bool forwardDrop = false, bool model = false) : base() {
-			const double defaultdrop = 0.805904783;
-			double fwdrop = defaultdrop;
-			double zvoltage = 0;
-			if (model) {
-				if (st.nextToken(out ModelName, ModelName)) {
-					ModelName = TextUtils.UnEscape(ModelName);
-				}
-			} else {
-				if (forwardDrop) {
-					fwdrop = st.nextTokenDouble();
-				}
-				Model = DiodeModel.GetModelWithParameters(fwdrop, zvoltage);
-				ModelName = Model.Name;
-			}
-			Setup();
-		}
+		public ElmDiode() { }
 
 		public override int TermCount { get { return 2; } }
 
 		public override int InternalNodeCount { get { return mHasResistance ? 1 : 0; } }
 
-		public void Setup() {
-			Model = DiodeModel.GetModelWithNameOrCopy(ModelName, Model);
-			ModelName = Model.Name;
+		public void Setup(string modelName) {
+			Model = DiodeModel.GetModelWithNameOrCopy(modelName, Model);
+			Zvoltage = Model.BreakdownVoltage;
+			FwDrop = Model.FwDrop;
 			mLeakage = Model.SaturationCurrent;
-			mZvoltage = Model.BreakdownVoltage;
 			mVscale = Model.VScale;
 			mVdCoef = Model.VdCoef;
-
+			mSeriesResistance = Model.SeriesResistance;
 			/* critical voltage for limiting; current is vscale/sqrt(2) at this voltage */
 			mVcrit = mVscale * Math.Log(mVscale / (Math.Sqrt(2) * mLeakage));
 			/* translated, *positive* critical voltage for limiting in Zener breakdown region;
              * limitstep() uses this with translated voltages in an analogous fashion to vcrit. */
 			mVzCrit = VT * Math.Log(VT / (Math.Sqrt(2) * mLeakage));
-			if (mZvoltage == 0) {
+			if (Zvoltage == 0) {
 				mZoffset = 0;
 			} else {
 				/* calculate offset which will give us 5mA at zvoltage */
 				double i = -0.005;
-				mZoffset = mZvoltage - Math.Log(-(1 + i / mLeakage)) / VZ_COEF;
+				mZoffset = Zvoltage - Math.Log(-(1 + i / mLeakage)) / VZ_COEF;
 			}
-
-			mHasResistance = 0 < Model.SeriesResistance;
+			mHasResistance = 0 < mSeriesResistance;
 			mDiodeEndNode = mHasResistance ? 2 : 1;
 			AllocNodes();
 		}
@@ -129,7 +101,7 @@
 				CircuitElement.RowInfo[mNodes0 - 1].LeftChanges = true;
 				CircuitElement.RowInfo[mNodes1 - 1].LeftChanges = true;
 				/* create resistor from internal node to node 1 */
-				var r0 = 1.0 / Model.SeriesResistance;
+				var r0 = 1.0 / mSeriesResistance;
 				CircuitElement.Matrix[Nodes[1] - 1, Nodes[1] - 1] += r0;
 				CircuitElement.Matrix[Nodes[2] - 1, Nodes[2] - 1] += r0;
 				CircuitElement.Matrix[Nodes[1] - 1, Nodes[2] - 1] -= r0;
@@ -210,7 +182,7 @@
 				}
 				double geq;
 				double nc;
-				if (voltdiff >= 0 || mZvoltage == 0) {
+				if (voltdiff >= 0 || Zvoltage == 0) {
 					/* regular diode or forward-biased zener */
 					var eval = Math.Exp(voltdiff * mVdCoef);
 					geq = mVdCoef * mLeakage * eval + gmin;
@@ -272,7 +244,7 @@
 		public override void SetVoltage(int n, double c) {
 			Volts[n] = c;
 			var voltdiff = Volts[0] - Volts[mDiodeEndNode];
-			if (voltdiff >= 0 || mZvoltage == 0) {
+			if (voltdiff >= 0 || Zvoltage == 0) {
 				Current = mLeakage * (Math.Exp(voltdiff * mVdCoef) - 1);
 			} else {
 				Current = mLeakage * (

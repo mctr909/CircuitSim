@@ -17,8 +17,8 @@ namespace Circuit.Symbol.Active {
 		PointF mLedCenter;
 
 		public DiodeLED(Point pos) : base(pos, "D") {
-			mElm.ModelName = mLastLEDModelName;
-			mElm.Setup();
+			ModelName = mLastLEDModelName;
+			mElm.Setup(ModelName);
 			mMaxBrightnessCurrent = .01;
 			mColorR = 1;
 			mColorG = mColorB = 0;
@@ -27,9 +27,9 @@ namespace Circuit.Symbol.Active {
 		public DiodeLED(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
 			if ((f & (FLAG_MODEL | FLAG_FWDROP)) == 0) {
 				const double fwdrop = 2.1024259;
-				mElm.Model = DiodeModel.GetModelWithParameters(fwdrop, 0);
-				mElm.ModelName = mElm.Model.Name;
-				mElm.Setup();
+				var model = DiodeModel.GetModelWithParameters(fwdrop, 0);
+				ModelName = model.Name;
+				mElm.Setup(ModelName);
 			}
 			mColorR = st.nextTokenDouble(1.0);
 			mColorG = st.nextTokenDouble();
