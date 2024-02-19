@@ -20,7 +20,7 @@
 			}
         }
 
-        public override void IterationFinished() {
+        public override void FinishIteration() {
 			if (DataPtr < DataCount) {
 				Data[DataPtr++] = Volts[0];
 			} else {

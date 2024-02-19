@@ -15,7 +15,7 @@
 			Triggered = false;
 		}
 
-		public override void IterationFinished() {
+		public override void FinishIteration() {
 			Stopped = false;
 			if (!Triggered && ((Type == 0 && Volts[0] >= TriggerVoltage) || (Type == 1 && Volts[0] <= TriggerVoltage))) {
 				Triggered = true;

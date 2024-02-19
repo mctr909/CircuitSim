@@ -22,15 +22,18 @@
 		public double Vs { get { return Volts[IdxS]; } }
 		public double Vd { get { return Volts[IdxD]; } }
 
+		double mTempVg = 0.0;
+		double mTempVs = 0.0;
+		double mTempVd = 0.0;
+		double mLastVg = 0.0;
+		double mLastVs = 0.0;
+		double mLastVd = 0.0;
+
 		int[] mDiodeNodes1 = new int[2];
 		int[] mDiodeNodes2 = new int[2];
 		double mVCrit = DiodeVScale * Math.Log(DiodeVScale / (Math.Sqrt(2) * DiodeLeakage));
 		double mDiodeLastVdiff1 = 0.0;
 		double mDiodeLastVdiff2 = 0.0;
-
-		double mLastVs = 0.0;
-		double mLastVd = 0.0;
-		double mLastVg = 0.0;
 
 		public override int TermCount { get { return 3; } }
 
@@ -86,7 +89,7 @@
 			Calc(false);
 		}
 
-		public override void IterationFinished() {
+		public override void FinishIteration() {
 			Calc(true);
 			if (BodyTerminal == IdxS) {
 				DiodeCurrent1 = -DiodeCurrent2;
@@ -133,50 +136,50 @@
 		}
 
 		void Calc(bool finished) {
-			var v = new double[] { Volts[0], Volts[1], Volts[2] };
+			mTempVg = Volts[IdxG];
+			mTempVs = Volts[IdxS];
+			mTempVd = Volts[IdxD];
 			if (!finished) {
-				if (v[IdxG] > mLastVg + 0.5) {
-					v[IdxG] = mLastVg + 0.5;
+				if (mTempVg > mLastVg + 0.5) {
+					mTempVg = mLastVg + 0.5;
 				}
-				if (v[IdxG] < mLastVg - 0.5) {
-					v[IdxG] = mLastVg - 0.5;
+				if (mTempVg < mLastVg - 0.5) {
+					mTempVg = mLastVg - 0.5;
 				}
-				if (v[IdxS] > mLastVs + 0.5) {
-					v[IdxS] = mLastVs + 0.5;
+				if (mTempVs > mLastVs + 0.5) {
+					mTempVs = mLastVs + 0.5;
 				}
-				if (v[IdxS] < mLastVs - 0.5) {
-					v[IdxS] = mLastVs - 0.5;
+				if (mTempVs < mLastVs - 0.5) {
+					mTempVs = mLastVs - 0.5;
 				}
-				if (v[IdxD] > mLastVd + 0.5) {
-					v[IdxD] = mLastVd + 0.5;
+				if (mTempVd > mLastVd + 0.5) {
+					mTempVd = mLastVd + 0.5;
 				}
-				if (v[IdxD] < mLastVd - 0.5) {
-					v[IdxD] = mLastVd - 0.5;
+				if (mTempVd < mLastVd - 0.5) {
+					mTempVd = mLastVd - 0.5;
 				}
-				if (CircuitElement.Converged && (NonConvergence(mLastVs, v[IdxS]) || NonConvergence(mLastVd, v[IdxD]) || NonConvergence(mLastVg, v[IdxG]))) {
+				if (CircuitElement.Converged && (NonConvergence(mLastVs, mTempVs) || NonConvergence(mLastVd, mTempVd) || NonConvergence(mLastVg, mTempVg))) {
 					CircuitElement.Converged = false;
 				}
 			}
-			mLastVg = v[IdxG];
-			mLastVs = v[IdxS];
-			mLastVd = v[IdxD];
-
-			/* ドレインソース間電圧が負の場合
-			 * ドレインとソースを入れ替える
-			 * (電流の計算を単純化するため) */
-			int idxS, idxD;
-			if (Nch * v[IdxD] < Nch * v[IdxS]) {
-				idxS = IdxD;
-				idxD = IdxS;
-			} else {
-				idxS = IdxS;
-				idxD = IdxD;
-			}
-			var vgs = v[IdxG] - v[idxS];
-			var vds = v[idxD] - v[idxS];
+			mLastVg = mTempVg;
+			mLastVs = mTempVs;
+			mLastVd = mTempVd;
 
 			double gds;
+			double rs;
 			{
+				/* ドレインソース間電圧が負の場合
+				 * ドレインとソースを入れ替える
+				 * (電流の計算を単純化するため) */
+				double vgs, vds;
+				if (Nch * mTempVd < Nch * mTempVs) {
+					vgs = mTempVg - mTempVd;
+					vds = mTempVs - mTempVd;
+				} else {
+					vgs = mTempVg - mTempVs;
+					vds = mTempVd - mTempVs;
+				}
 				var vgs_n = vgs * Nch;
 				var vds_n = vds * Nch;
 				if (vgs_n < Vth) {
@@ -200,12 +203,11 @@
 					gds = 1e-8;
 					Current = 0.5 * Beta * (vgs_n - Vth) * (vgs_n - Vth) + (vds_n - (vgs_n - Vth)) * gds;
 				}
+				rs = gds * vds + Gm * vgs - Current * Nch;
 			}
 
-			var rs = gds * vds + Gm * vgs - Current * Nch;
-
 			/* ドレインとソースを入れ替えている場合、電流を反転 */
-			if (idxS == IdxD && Nch == 1 || idxS == IdxS && Nch == -1) {
+			if (Nch * mTempVd < Nch * mTempVs) {
 				Current = -Current;
 			}
 

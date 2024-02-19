@@ -130,7 +130,7 @@ namespace Circuit {
 			}
 
 			for (int i = 0; i < List.Count; i++) {
-				List[i].IterationFinished();
+				List[i].FinishIteration();
 			}
 
 			/* calc wire currents */

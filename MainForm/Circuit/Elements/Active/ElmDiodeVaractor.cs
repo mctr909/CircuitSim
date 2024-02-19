@@ -1,8 +1,8 @@
 ﻿namespace Circuit.Elements.Active {
 	class ElmDiodeVaractor : ElmDiode {
 		public double BaseCapacitance;
-		public double Capacitance;
 		public double CapVoltDiff;
+		public double Capacitance;
 
 		double mCapCurrent;
 		double mVoltSourceValue;
@@ -54,11 +54,10 @@
 			// capacitor companion model using trapezoidal approximation
 			// (Thevenin equivalent) consists of a voltage source in
 			// series with a resistor
-			double c0 = BaseCapacitance;
 			if (0 < CapVoltDiff) {
-				Capacitance = c0;
+				Capacitance = BaseCapacitance;
 			} else {
-				Capacitance = c0 / Math.Pow(1 - CapVoltDiff / FwDrop, 0.5);
+				Capacitance = BaseCapacitance / Math.Pow(1 - CapVoltDiff / FwDrop, 0.5);
 			}
 			mCompResistance = CircuitElement.TimeStep / (2 * Capacitance);
 			mVoltSourceValue = -CapVoltDiff - mCapCurrent * mCompResistance;

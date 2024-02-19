@@ -158,7 +158,7 @@
 			CircuitElement.RightSide[rowE] += -Ie + gee * vbe + gec * vbc;
 		}
 
-		public override void IterationFinished() {
+		public override void FinishIteration() {
 			if (Math.Abs(Ic) > 1e12 || Math.Abs(Ib) > 1e12) {
 				CircuitElement.Stop(this);
 			}

@@ -9,16 +9,32 @@ namespace Circuit.Symbol.Active {
 		public DiodeVaractor(Point pos) : base(pos, "Vc") {
 			mElm = new ElmDiodeVaractor();
 			ModelName = LastModelName;
-			mElm.Setup(ModelName);
+			var model = DiodeModel.GetModelWithName(ModelName);
+			mElm.VZener = model.BreakdownVoltage;
+			mElm.FwDrop = model.FwDrop;
+			mElm.Leakage = model.SaturationCurrent;
+			mElm.VScale = model.VScale;
+			mElm.VdCoef = model.VdCoef;
+			mElm.SeriesResistance = model.SeriesResistance;
+			mElm.Model = model;
+			mElm.Setup();
 		}
 
 		public DiodeVaractor(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
 			var elm = new ElmDiodeVaractor();
 			st.nextToken(out ModelName, ModelName);
+			var model = DiodeModel.GetModelWithName(ModelName);
 			elm.CapVoltDiff = st.nextTokenDouble();
 			elm.BaseCapacitance = st.nextTokenDouble();
-			elm.Setup(LastModelName);
 			mElm = elm;
+			mElm.VZener = model.BreakdownVoltage;
+			mElm.FwDrop = model.FwDrop;
+			mElm.Leakage = model.SaturationCurrent;
+			mElm.VScale = model.VScale;
+			mElm.VdCoef = model.VdCoef;
+			mElm.SeriesResistance = model.SeriesResistance;
+			mElm.Model = model;
+			mElm.Setup();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.VARACTOR; } }

@@ -12,32 +12,20 @@
 		public DiodeModel Model;
 
 		/// <summary>
-		/// User-specified diode parameters for Zener voltage.
-		/// </summary>
-		public double Zvoltage;
-		public double FwDrop;
-
-		bool mHasResistance;
-		int mNodes0;
-		int mNodes1;
-		int mDiodeEndNode;
-		double mLastVoltDiff;
-		double mSeriesResistance;
-
-		/// <summary>
 		/// The diode's "scale voltage", the voltage increase which will raise current by a factor of e.
 		/// </summary>
-		double mVscale;
-
+		public double VScale;
 		/// <summary>
 		/// The multiplicative equivalent of dividing by vscale (for speed).
 		/// </summary>
-		double mVdCoef;
-
+		public double VdCoef;
 		/// <summary>
 		/// The diode current's scale factor, calculated from the user-specified forward voltage drop.
 		/// </summary>
-		double mLeakage;
+		public double Leakage;
+		public double VZener;
+		public double FwDrop;
+		public double SeriesResistance;
 
 		/// <summary>
 		/// Voltage offset for Zener breakdown exponential, calculated from user-specified Zener voltage.
@@ -54,33 +42,32 @@
 		/// </summary>
 		double mVzCrit;
 
+		bool mHasResistance;
+		int mNodes0;
+		int mNodes1;
+		int mDiodeEndNode;
+		double mLastVoltDiff;
+
 		public ElmDiode() { }
 
 		public override int TermCount { get { return 2; } }
 
 		public override int InternalNodeCount { get { return mHasResistance ? 1 : 0; } }
 
-		public void Setup(string modelName) {
-			Model = DiodeModel.GetModelWithNameOrCopy(modelName, Model);
-			Zvoltage = Model.BreakdownVoltage;
-			FwDrop = Model.FwDrop;
-			mLeakage = Model.SaturationCurrent;
-			mVscale = Model.VScale;
-			mVdCoef = Model.VdCoef;
-			mSeriesResistance = Model.SeriesResistance;
+		public void Setup() {
 			/* critical voltage for limiting; current is vscale/sqrt(2) at this voltage */
-			mVcrit = mVscale * Math.Log(mVscale / (Math.Sqrt(2) * mLeakage));
+			mVcrit = VScale * Math.Log(VScale / (Math.Sqrt(2) * Leakage));
 			/* translated, *positive* critical voltage for limiting in Zener breakdown region;
              * limitstep() uses this with translated voltages in an analogous fashion to vcrit. */
-			mVzCrit = VT * Math.Log(VT / (Math.Sqrt(2) * mLeakage));
-			if (Zvoltage == 0) {
+			mVzCrit = VT * Math.Log(VT / (Math.Sqrt(2) * Leakage));
+			if (VZener == 0) {
 				mZoffset = 0;
 			} else {
 				/* calculate offset which will give us 5mA at zvoltage */
 				double i = -0.005;
-				mZoffset = Zvoltage - Math.Log(-(1 + i / mLeakage)) / VZ_COEF;
+				mZoffset = VZener - Math.Log(-(1 + i / Leakage)) / VZ_COEF;
 			}
-			mHasResistance = 0 < mSeriesResistance;
+			mHasResistance = 0 < SeriesResistance;
 			mDiodeEndNode = mHasResistance ? 2 : 1;
 			AllocNodes();
 		}
@@ -101,7 +88,7 @@
 				CircuitElement.RowInfo[mNodes0 - 1].LeftChanges = true;
 				CircuitElement.RowInfo[mNodes1 - 1].LeftChanges = true;
 				/* create resistor from internal node to node 1 */
-				var r0 = 1.0 / mSeriesResistance;
+				var r0 = 1.0 / SeriesResistance;
 				CircuitElement.Matrix[Nodes[1] - 1, Nodes[1] - 1] += r0;
 				CircuitElement.Matrix[Nodes[2] - 1, Nodes[2] - 1] += r0;
 				CircuitElement.Matrix[Nodes[1] - 1, Nodes[2] - 1] -= r0;
@@ -125,14 +112,14 @@
 				var v_new = voltdiff;
 				var v_old = mLastVoltDiff;
 				/* check new voltage; has current changed by factor of e^2? */
-				if (v_new > mVcrit && Math.Abs(v_new - v_old) > (mVscale + mVscale)) {
+				if (v_new > mVcrit && Math.Abs(v_new - v_old) > (VScale + VScale)) {
 					if (v_old > 0) {
-						var arg = 1 + (v_new - v_old) / mVscale;
+						var arg = 1 + (v_new - v_old) / VScale;
 						if (arg > 0) {
 							/* adjust vnew so that the current is the same
                              * as in linearized model from previous iteration.
                              * current at vnew = old current * arg */
-							v_new = v_old + mVscale * Math.Log(arg);
+							v_new = v_old + VScale * Math.Log(arg);
 						} else {
 							v_new = mVcrit;
 						}
@@ -140,7 +127,7 @@
 						/* adjust vnew so that the current is the same
                          * as in linearized model from previous iteration.
                          * (1/vscale = slope of load line) */
-						v_new = mVscale * Math.Log(v_new / mVscale);
+						v_new = VScale * Math.Log(v_new / VScale);
 					}
 					CircuitElement.Converged = false;
 				} else if (v_new < 0 && mZoffset != 0) {
@@ -171,7 +158,7 @@
 			{
 				/* To prevent a possible singular matrix or other numeric issues, put a tiny conductance
                  * in parallel with each P-N junction. */
-				var gmin = mLeakage * 0.01;
+				var gmin = Leakage * 0.01;
 				if (CircuitElement.SubIterations > 100) {
 					/* if we have trouble converging, put a conductance in parallel with the diode.
                      * Gradually increase the conductance value for each iteration. */
@@ -182,11 +169,11 @@
 				}
 				double geq;
 				double nc;
-				if (voltdiff >= 0 || Zvoltage == 0) {
+				if (voltdiff >= 0 || VZener == 0) {
 					/* regular diode or forward-biased zener */
-					var eval = Math.Exp(voltdiff * mVdCoef);
-					geq = mVdCoef * mLeakage * eval + gmin;
-					nc = (eval - 1) * mLeakage - geq * voltdiff;
+					var eval = Math.Exp(voltdiff * VdCoef);
+					geq = VdCoef * Leakage * eval + gmin;
+					nc = (eval - 1) * Leakage - geq * voltdiff;
 				} else {
 					/* Zener diode */
 					/* For reverse-biased Zener diodes, mimic the Zener breakdown curve with an
@@ -198,12 +185,12 @@
                      * geq is I'(Vd)
                      * nc is I(Vd) + I'(Vd)*(-Vd)
                      */
-					geq = mLeakage * (
-						mVdCoef * Math.Exp(voltdiff * mVdCoef)
+					geq = Leakage * (
+						VdCoef * Math.Exp(voltdiff * VdCoef)
 						+ VZ_COEF * Math.Exp((-voltdiff - mZoffset) * VZ_COEF)
 					) + gmin;
-					nc = mLeakage * (
-						Math.Exp(voltdiff * mVdCoef)
+					nc = Leakage * (
+						Math.Exp(voltdiff * VdCoef)
 						- Math.Exp((-voltdiff - mZoffset) * VZ_COEF)
 						- 1
 					) + geq * (-voltdiff);
@@ -241,23 +228,23 @@
 			}
 		}
 
-		public override void SetVoltage(int n, double c) {
-			Volts[n] = c;
-			var voltdiff = Volts[0] - Volts[mDiodeEndNode];
-			if (voltdiff >= 0 || Zvoltage == 0) {
-				Current = mLeakage * (Math.Exp(voltdiff * mVdCoef) - 1);
-			} else {
-				Current = mLeakage * (
-					Math.Exp(voltdiff * mVdCoef)
-					- Math.Exp((-voltdiff - mZoffset) * VZ_COEF)
-					- 1
-				);
+		public override void FinishIteration() {
+			if (Math.Abs(Current) > 1e12) {
+				CircuitElement.Stop(this);
 			}
 		}
 
-		public override void IterationFinished() {
-			if (Math.Abs(Current) > 1e12) {
-				CircuitElement.Stop(this);
+		public override void SetVoltage(int n, double c) {
+			Volts[n] = c;
+			var voltdiff = Volts[0] - Volts[mDiodeEndNode];
+			if (voltdiff >= 0 || VZener == 0) {
+				Current = Leakage * (Math.Exp(voltdiff * VdCoef) - 1);
+			} else {
+				Current = Leakage * (
+					Math.Exp(voltdiff * VdCoef)
+					- Math.Exp((-voltdiff - mZoffset) * VZ_COEF)
+					- 1
+				);
 			}
 		}
 	}

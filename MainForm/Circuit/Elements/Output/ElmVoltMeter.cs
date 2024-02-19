@@ -25,7 +25,7 @@
 
 		public override bool GetConnection(int n1, int n2) { return false; }
 
-		public override void IterationFinished() {
+		public override void FinishIteration() {
 			mCount++; /*how many counts are in a cycle */
 			var v = VoltageDiff;
 			mTotal += v * v;

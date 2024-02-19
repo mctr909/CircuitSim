@@ -8,18 +8,35 @@ namespace Circuit.Symbol.Active {
 
 		public DiodeZener(Point pos) : base(pos, "Z") {
 			ModelName = mLastZenerModelName;
-			mElm.Setup(ModelName);
+			var model = DiodeModel.GetModelWithName(ModelName);
+			mElm.VZener = model.BreakdownVoltage;
+			mElm.FwDrop = model.FwDrop;
+			mElm.Leakage = model.SaturationCurrent;
+			mElm.VScale = model.VScale;
+			mElm.VdCoef = model.VdCoef;
+			mElm.SeriesResistance = model.SeriesResistance;
+			mElm.Model = model;
+			mElm.Setup();
 		}
 
 		public DiodeZener(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
+			DiodeModel model;
 			if ((f & FLAG_MODEL) == 0) {
 				var vz = st.nextTokenDouble(5.6);
-				var model = DiodeModel.GetModelWithParameters(mElm.FwDrop, vz);
-				ModelName = model.Name;
+				ModelName = DiodeModel.GetModelWithParameters(mElm.FwDrop, vz).Name;
+				model = DiodeModel.GetModelWithName(ModelName);
 			} else {
 				ModelName = mLastZenerModelName;
+				model = DiodeModel.GetModelWithName(ModelName);
 			}
-			mElm.Setup(ModelName);
+			mElm.VZener = model.BreakdownVoltage;
+			mElm.FwDrop = model.FwDrop;
+			mElm.Leakage = model.SaturationCurrent;
+			mElm.VScale = model.VScale;
+			mElm.VdCoef = model.VdCoef;
+			mElm.SeriesResistance = model.SeriesResistance;
+			mElm.Model = model;
+			mElm.Setup();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.ZENER; } }
@@ -55,7 +72,7 @@ namespace Circuit.Symbol.Active {
 		public override void GetInfo(string[] arr) {
 			base.GetInfo(arr);
 			arr[0] = "ツェナーダイオード";
-			arr[3] = "降伏電圧：" + TextUtils.Voltage(mElm.Zvoltage);
+			arr[3] = "降伏電圧：" + TextUtils.Voltage(mElm.VZener);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
@@ -63,7 +80,7 @@ namespace Circuit.Symbol.Active {
 				return null;
 			}
 			if (r == 2) {
-				return new ElementInfo("降伏電圧", mElm.Zvoltage);
+				return new ElementInfo("降伏電圧", mElm.VZener);
 			}
 			return base.GetElementInfo(r, c);
 		}

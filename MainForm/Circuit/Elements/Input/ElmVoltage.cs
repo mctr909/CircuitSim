@@ -58,7 +58,7 @@
 			}
 		}
 
-		public override void IterationFinished() {
+		public override void FinishIteration() {
 			if (WaveForm == WAVEFORM.NOISE) {
 				NoiseValue = (mRandom.NextDouble() * 2 - 1) * MaxVoltage + Bias;
 			}

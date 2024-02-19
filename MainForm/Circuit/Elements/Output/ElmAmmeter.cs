@@ -30,7 +30,7 @@
 			CircuitElement.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
 		}
 
-		public override void IterationFinished() {
+		public override void FinishIteration() {
 			mCount++; /*how many counts are in a cycle */
 			mTotal += Current * Current; /* sum of squares */
 			if (Current > mMaxI && mIncreasingI) {

@@ -22,10 +22,18 @@ namespace Circuit.Symbol.Active {
 		public override BaseElement Element { get { return mElm; } }
 
 		public Diode(Point pos, string referenceName = "D") : base(pos) {
-			mElm = new ElmDiode();
 			ModelName = LastModelName;
 			ReferenceName = referenceName;
-			mElm.Setup(ModelName);
+			var model = DiodeModel.GetModelWithName(ModelName);
+			mElm = new ElmDiode();
+			mElm.VZener = model.BreakdownVoltage;
+			mElm.FwDrop = model.FwDrop;
+			mElm.Leakage = model.SaturationCurrent;
+			mElm.VScale = model.VScale;
+			mElm.VdCoef = model.VdCoef;
+			mElm.SeriesResistance = model.SeriesResistance;
+			mElm.Model = model;
+			mElm.Setup();
 		}
 
 		public Diode(Point p1, Point p2, int f) : base(p1, p2, f) { }
@@ -34,20 +42,26 @@ namespace Circuit.Symbol.Active {
 			const double defaultdrop = 0.805904783;
 			double fwdrop = defaultdrop;
 			double zvoltage = 0;
-			string modelName;
 			if (0 != (f & FLAG_MODEL)) {
-				if (st.nextToken(out modelName, LastModelName)) {
-					modelName = TextUtils.UnEscape(modelName);
+				if (st.nextToken(out ModelName, LastModelName)) {
+					ModelName = TextUtils.UnEscape(ModelName);
 				}
 			} else {
 				if (0 != (f & FLAG_FWDROP)) {
 					fwdrop = st.nextTokenDouble();
 				}
-				var model = DiodeModel.GetModelWithParameters(fwdrop, zvoltage);
-				modelName = model.Name;
+				ModelName = DiodeModel.GetModelWithParameters(fwdrop, zvoltage).Name;
 			}
+			var model = DiodeModel.GetModelWithName(ModelName);
 			mElm = new ElmDiode();
-			mElm.Setup(modelName);
+			mElm.VZener = model.BreakdownVoltage;
+			mElm.FwDrop = model.FwDrop;
+			mElm.Leakage = model.SaturationCurrent;
+			mElm.VScale = model.VScale;
+			mElm.VdCoef = model.VdCoef;
+			mElm.SeriesResistance = model.SeriesResistance;
+			mElm.Model = model;
+			mElm.Setup();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.DIODE; } }
@@ -150,9 +164,16 @@ namespace Circuit.Symbol.Active {
 					ei.NewDialog = true;
 					return;
 				}
-				var model = mModels[ei.Choice.SelectedIndex];
-				ModelName = model.Name;
-				mElm.Setup(ModelName);
+				ModelName = mModels[ei.Choice.SelectedIndex].Name;
+				var model = DiodeModel.GetModelWithName(ModelName);
+				mElm.VZener = model.BreakdownVoltage;
+				mElm.FwDrop = model.FwDrop;
+				mElm.Leakage = model.SaturationCurrent;
+				mElm.VScale = model.VScale;
+				mElm.VdCoef = model.VdCoef;
+				mElm.SeriesResistance = model.SeriesResistance;
+				mElm.Model = model;
+				mElm.Setup();
 				return;
 			}
 			base.SetElementValue(n, c, ei);

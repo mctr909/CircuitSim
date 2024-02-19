@@ -100,9 +100,9 @@ namespace Circuit.Elements.Custom {
 			}
 		}
 
-		public override void IterationFinished() {
+		public override void FinishIteration() {
 			for (int i = 0; i < CompList.Count; i++) {
-				CompList[i].IterationFinished();
+				CompList[i].FinishIteration();
 			}
 		}
 

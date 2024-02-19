@@ -98,7 +98,7 @@
 			}
 		}
 		public virtual void PrepareIteration() { }
-		public virtual void IterationFinished() { }
+		public virtual void FinishIteration() { }
 		public virtual void DoIteration() { }
 		public virtual void SetCurrent(int n, double c) { Current = c; }
 		public virtual void SetVoltage(int n, double c) { Volts[n] = c; }

@@ -28,21 +28,14 @@
 			updateModel();
 		}
 
-		public static DiodeModel GetModelWithNameOrCopy(string name, DiodeModel oldmodel) {
+		public static DiodeModel GetModelWithName(string name) {
 			createModelMap();
 			var lm = mModelMap[name];
 			if (lm != null) {
 				return lm;
 			}
-			if (oldmodel == null) {
-				Console.WriteLine("model not found: " + name);
-				return GetDefaultModel();
-			}
-			lm = new DiodeModel(oldmodel) {
-				Name = name
-			};
-			mModelMap.Add(name, lm);
-			return lm;
+			Console.WriteLine("model not found: " + name);
+			return GetDefaultModel();
 		}
 
 		/* create a new model using given parameters, keeping backward compatibility.
