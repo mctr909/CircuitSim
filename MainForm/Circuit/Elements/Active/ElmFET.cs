@@ -7,17 +7,18 @@
 		const double DiodeVScale = 0.05173;
 		const double DiodeVdCoef = 19.331142470520007;
 		const double DiodeLeakage = 1.7143528192808883E-07;
+		const double DiodeVCrit = 6.34767e-01; //DiodeVScale * Math.Log(DiodeVScale / (Math.Sqrt(2) * DiodeLeakage));
 
 		public int Nch;
 		public bool MOS;
 		public double Vth;
 		public double Beta;
-		public int BodyTerminal;
+
 		public int Mode;
 		public double Gm;
+		public double DiodeCurrent1;
+		public double DiodeCurrent2;
 
-		public double DiodeCurrent1 { get; private set; }
-		public double DiodeCurrent2 { get; private set; }
 		public double Vg { get { return Volts[IdxG]; } }
 		public double Vs { get { return Volts[IdxS]; } }
 		public double Vd { get { return Volts[IdxD]; } }
@@ -29,9 +30,11 @@
 		double mLastVs = 0.0;
 		double mLastVd = 0.0;
 
-		int[] mDiodeNodes1 = new int[2];
-		int[] mDiodeNodes2 = new int[2];
-		double mVCrit = DiodeVScale * Math.Log(DiodeVScale / (Math.Sqrt(2) * DiodeLeakage));
+		int mBodyTerminal;
+		int mDiodeNodes1A;
+		int mDiodeNodes1B;
+		int mDiodeNodes2A;
+		int mDiodeNodes2B;
 		double mDiodeLastVdiff1 = 0.0;
 		double mDiodeLastVdiff2 = 0.0;
 
@@ -55,23 +58,23 @@
 		public override void Stamp() {
 			CircuitElement.StampNonLinear(Nodes[IdxS]);
 			CircuitElement.StampNonLinear(Nodes[IdxD]);
-			BodyTerminal = (Nch < 0) ? IdxD : IdxS;
+			mBodyTerminal = (Nch < 0) ? IdxD : IdxS;
 			if (MOS) {
 				if (Nch < 0) {
-					mDiodeNodes1[0] = Nodes[IdxS];
-					mDiodeNodes1[1] = Nodes[BodyTerminal];
-					mDiodeNodes2[0] = Nodes[IdxD];
-					mDiodeNodes2[1] = Nodes[BodyTerminal];
+					mDiodeNodes1A = Nodes[IdxS];
+					mDiodeNodes1B = Nodes[mBodyTerminal];
+					mDiodeNodes2A = Nodes[IdxD];
+					mDiodeNodes2B = Nodes[mBodyTerminal];
 				} else {
-					mDiodeNodes1[0] = Nodes[BodyTerminal];
-					mDiodeNodes1[1] = Nodes[IdxS];
-					mDiodeNodes2[0] = Nodes[BodyTerminal];
-					mDiodeNodes2[1] = Nodes[IdxD];
+					mDiodeNodes1A = Nodes[mBodyTerminal];
+					mDiodeNodes1B = Nodes[IdxS];
+					mDiodeNodes2A = Nodes[mBodyTerminal];
+					mDiodeNodes2B = Nodes[IdxD];
 				}
-				CircuitElement.StampNonLinear(mDiodeNodes1[0]);
-				CircuitElement.StampNonLinear(mDiodeNodes1[1]);
-				CircuitElement.StampNonLinear(mDiodeNodes2[0]);
-				CircuitElement.StampNonLinear(mDiodeNodes2[1]);
+				CircuitElement.StampNonLinear(mDiodeNodes1A);
+				CircuitElement.StampNonLinear(mDiodeNodes1B);
+				CircuitElement.StampNonLinear(mDiodeNodes2A);
+				CircuitElement.StampNonLinear(mDiodeNodes2B);
 			}
 		}
 
@@ -91,25 +94,25 @@
 
 		public override void FinishIteration() {
 			Calc(true);
-			if (BodyTerminal == IdxS) {
+			if (mBodyTerminal == IdxS) {
 				DiodeCurrent1 = -DiodeCurrent2;
 			}
-			if (BodyTerminal == IdxD) {
+			if (mBodyTerminal == IdxD) {
 				DiodeCurrent2 = -DiodeCurrent1;
 			}
 		}
 
-		protected void DiodeDoIteration(double vnew, ref double vold, int nodeA, int nodeB) {
+		protected static void DiodeDoIteration(double vnew, ref double vold, int nodeA, int nodeB) {
 			if (Math.Abs(vnew - vold) > 0.01) {
 				CircuitElement.Converged = false;
 			}
-			if (vnew > mVCrit && Math.Abs(vnew - vold) > (DiodeVScale + DiodeVScale)) {
+			if (vnew > DiodeVCrit && Math.Abs(vnew - vold) > (DiodeVScale + DiodeVScale)) {
 				if (vold > 0) {
 					var arg = 1 + (vnew - vold) / DiodeVScale;
 					if (arg > 0) {
 						vnew = vold + DiodeVScale * Math.Log(arg);
 					} else {
-						vnew = mVCrit;
+						vnew = DiodeVCrit;
 					}
 				} else {
 					vnew = DiodeVScale * Math.Log(vnew / DiodeVScale);
@@ -212,10 +215,10 @@
 			}
 
 			if (MOS) {
-				DiodeDoIteration(Nch * (Volts[BodyTerminal] - Volts[IdxS]), ref mDiodeLastVdiff1, mDiodeNodes1[0], mDiodeNodes1[1]);
-				DiodeCurrent1 = DiodeCalculateCurrent(Nch * (Volts[BodyTerminal] - Volts[IdxS])) * Nch;
-				DiodeDoIteration(Nch * (Volts[BodyTerminal] - Volts[IdxD]), ref mDiodeLastVdiff2, mDiodeNodes2[0], mDiodeNodes2[1]);
-				DiodeCurrent2 = DiodeCalculateCurrent(Nch * (Volts[BodyTerminal] - Volts[IdxD])) * Nch;
+				DiodeDoIteration(Nch * (Volts[mBodyTerminal] - Volts[IdxS]), ref mDiodeLastVdiff1, mDiodeNodes1A, mDiodeNodes1B);
+				DiodeCurrent1 = DiodeCalculateCurrent(Nch * (Volts[mBodyTerminal] - Volts[IdxS])) * Nch;
+				DiodeDoIteration(Nch * (Volts[mBodyTerminal] - Volts[IdxD]), ref mDiodeLastVdiff2, mDiodeNodes2A, mDiodeNodes2B);
+				DiodeCurrent2 = DiodeCalculateCurrent(Nch * (Volts[mBodyTerminal] - Volts[IdxD])) * Nch;
 			} else {
 				DiodeCurrent1 = DiodeCurrent2 = 0;
 			}

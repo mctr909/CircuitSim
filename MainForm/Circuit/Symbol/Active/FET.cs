@@ -247,12 +247,8 @@ namespace Circuit.Symbol.Active {
 			var vds = mElm.Vd - mElm.Vs;
 			arr[3] = ((mElm.Nch == 1) ? "Vds：" : "Vsd：") + TextUtils.Voltage(vds);
 			arr[4] = ((mElm.Nch == 1) ? "Ids：" : "Isd：") + TextUtils.Current(mElm.Current);
-			arr[5] = "R：" + TextUtils.Unit(vds / mElm.Current, "Ω");
+			arr[5] = "Rds：" + TextUtils.Unit(vds / mElm.Current, "Ω");
 			arr[6] = "gm：" + TextUtils.Unit(mElm.Gm, "A/V");
-			arr[7] = "Ib：" + TextUtils.Unit(
-				mElm.BodyTerminal == 1 ? -mElm.DiodeCurrent1 :
-				mElm.BodyTerminal == 2 ? mElm.DiodeCurrent2 :
-				-mElm.Nch * (mElm.DiodeCurrent1 + mElm.DiodeCurrent2), "A");
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
