@@ -1,6 +1,6 @@
 ﻿using Circuit.Elements.Logic;
 
-namespace Circuit.Symbol.Gate {
+namespace Circuit.Symbol.Logic {
 	class GateAnd : Gate {
 		public override BaseElement Element { get { return mElm; } }
 

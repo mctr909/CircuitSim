@@ -1,7 +1,7 @@
 ﻿using Circuit.Forms;
 using Circuit.Elements.Logic;
 
-namespace Circuit.Symbol.Gate {
+namespace Circuit.Symbol.Logic {
 	class InvertingSchmitt : BaseSymbol {
 		protected ElmInvertingSchmitt mElm;
 		protected PointF[] gatePoly;

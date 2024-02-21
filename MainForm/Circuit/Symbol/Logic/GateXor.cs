@@ -1,6 +1,6 @@
 ﻿using Circuit.Elements.Logic;
 
-namespace Circuit.Symbol.Gate {
+namespace Circuit.Symbol.Logic {
 	class GateXor : GateOr {
 		public GateXor(Point pos) : base(pos, true) {
 			mElm = new ElmGateXor();

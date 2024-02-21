@@ -1,4 +1,4 @@
-﻿namespace Circuit.Symbol.Gate {
+﻿namespace Circuit.Symbol.Logic {
 	class GateNand : GateAnd {
 		public GateNand(Point pos) : base(pos) {
 			mElm.IsInverting = true;

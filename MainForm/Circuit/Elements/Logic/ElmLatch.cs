@@ -6,9 +6,10 @@ namespace Circuit.Elements.Logic {
 		int mLoadPin;
 		bool mLastLoad = false;
 
-		public ElmLatch() : base() { }
-
-		public ElmLatch(StringTokenizer st) : base(st) { }
+		public ElmLatch() : base() {
+			//Bits = st.nextTokenInt(Bits);
+			//Setup(mElm, st);
+		}
 
 		public override int TermCount { get { return Bits * 2 + 1; } }
 

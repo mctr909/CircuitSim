@@ -17,7 +17,8 @@ namespace Circuit.Symbol.Input {
 			mElm.SetupPins(this);
 		}
 		public VCCS(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmVCCS(st);
+			mElm = new ElmVCCS();
+			Setup(mElm, st);
 			mElm.InputCount = st.nextTokenInt(2);
 			mElm.SetupPins(this);
 		}

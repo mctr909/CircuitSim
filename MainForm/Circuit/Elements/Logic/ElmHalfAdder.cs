@@ -3,7 +3,9 @@ using Circuit.Symbol.Custom;
 
 namespace Circuit.Elements.Logic {
 	class ElmHalfAdder : ElmChip {
-		public ElmHalfAdder() : base() { }
+		public ElmHalfAdder() : base() {
+			//Setup(mElm, st);
+		}
 
 		public override int TermCount { get { return 4; } }
 

@@ -12,20 +12,6 @@ namespace Circuit.Elements.Custom {
 
 		protected ElmChip() : base() { }
 
-		protected ElmChip(StringTokenizer st) : base() {
-			if (NeedsBits) {
-				Bits = st.nextTokenInt(Bits);
-			}
-			for (int i = 0; i != TermCount; i++) {
-				if (Pins == null) {
-					Volts[i] = st.nextTokenDouble();
-				} else if (Pins[i].state) {
-					Volts[i] = st.nextTokenDouble();
-					Pins[i].value = Volts[i] > 2.5;
-				}
-			}
-		}
-
 		public virtual void SetupPins(Chip ui) { }
 
 		public override void Reset() {

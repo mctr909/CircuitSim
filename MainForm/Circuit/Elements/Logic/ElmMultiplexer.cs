@@ -3,23 +3,23 @@ using Circuit.Symbol.Custom;
 
 namespace Circuit.Elements.Logic {
 	class ElmMultiplexer : ElmChip {
-		int mSelectBitCount = 2;
+		public int SelectBitCount = 2;
+
 		int mOutputCount;
 
-		public ElmMultiplexer() : base() { }
-
-		public ElmMultiplexer(StringTokenizer st) : base(st) {
-			mSelectBitCount = st.nextTokenInt(mSelectBitCount);
+		public ElmMultiplexer() : base() {
+			//Setup(mElm, st);
+			//SelectBitCount = st.nextTokenInt(2);
 		}
 
-		public override int TermCount { get { return mOutputCount + mSelectBitCount + 1; } }
+		public override int TermCount { get { return mOutputCount + SelectBitCount + 1; } }
 
 		public override int VoltageSourceCount { get { return 1; } }
 
 		public override void SetupPins(Chip chip) {
-			chip.sizeX = mSelectBitCount + 1;
+			chip.sizeX = SelectBitCount + 1;
 			mOutputCount = 1;
-			for (var i = 0; i != mSelectBitCount; i++) {
+			for (var i = 0; i != SelectBitCount; i++) {
 				mOutputCount <<= 1;
 			}
 			chip.sizeY = mOutputCount + 1;
@@ -29,7 +29,7 @@ namespace Circuit.Elements.Logic {
 				Pins[i] = new Chip.Pin(chip, i, Chip.SIDE_W, "I" + i);
 			}
 			int n = mOutputCount;
-			for (var i = 0; i != mSelectBitCount; i++, n++) {
+			for (var i = 0; i != SelectBitCount; i++, n++) {
 				Pins[n] = new Chip.Pin(chip, i + 1, Chip.SIDE_S, "S" + i);
 			}
 			Pins[n] = new Chip.Pin(chip, 0, Chip.SIDE_E, "Q") {
@@ -41,12 +41,12 @@ namespace Circuit.Elements.Logic {
 
 		protected override void execute() {
 			int selectedValue = 0;
-			for (var i = 0; i != mSelectBitCount; i++) {
+			for (var i = 0; i != SelectBitCount; i++) {
 				if (Pins[mOutputCount + i].value) {
 					selectedValue |= 1 << i;
 				}
 			}
-			Pins[mOutputCount + mSelectBitCount].value = Pins[selectedValue].value;
+			Pins[mOutputCount + SelectBitCount].value = Pins[selectedValue].value;
 		}
 	}
 }

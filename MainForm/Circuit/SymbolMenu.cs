@@ -1,6 +1,6 @@
 ﻿using Circuit.Symbol.Active;
 using Circuit.Symbol.Custom;
-using Circuit.Symbol.Gate;
+using Circuit.Symbol.Logic;
 using Circuit.Symbol.Input;
 using Circuit.Symbol.Output;
 using Circuit.Symbol.Passive;

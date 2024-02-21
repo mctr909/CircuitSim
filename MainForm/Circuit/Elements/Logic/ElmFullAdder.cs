@@ -3,7 +3,9 @@ using Circuit.Symbol.Custom;
 
 namespace Circuit.Elements.Logic {
 	class ElmFullAdder : ElmChip {
-		public ElmFullAdder() : base() { }
+		public ElmFullAdder() : base() {
+			//Setup(mElm, st);
+		}
 
 		public override int TermCount { get { return 5; } }
 

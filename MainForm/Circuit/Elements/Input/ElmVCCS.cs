@@ -18,25 +18,19 @@ namespace Circuit.Elements.Input {
 			};
 		}
 
-		public ElmVCCS(StringTokenizer st) : base(st) {
-			mFunction = (inputs) => {
-				return 0.1 * (inputs[0] - inputs[1]);
-			};
-		}
-
 		public override int VoltageSourceCount { get { return 0; } }
 
 		public override int TermCount { get { return InputCount + 2; } }
 
-		public override void SetupPins(Chip ui) {
-			ui.sizeX = 2;
-			ui.sizeY = InputCount > 2 ? InputCount : 2;
+		public override void SetupPins(Chip chip) {
+			chip.sizeX = 2;
+			chip.sizeY = InputCount > 2 ? InputCount : 2;
 			Pins = new Chip.Pin[InputCount + 2];
 			for (int i = 0; i != InputCount; i++) {
-				Pins[i] = new Chip.Pin(ui, i, Chip.SIDE_W, char.ToString((char)('A' + i)));
+				Pins[i] = new Chip.Pin(chip, i, Chip.SIDE_W, char.ToString((char)('A' + i)));
 			}
-			Pins[InputCount] = new Chip.Pin(ui, 0, Chip.SIDE_E, "C+");
-			Pins[InputCount + 1] = new Chip.Pin(ui, 1, Chip.SIDE_E, "C-");
+			Pins[InputCount] = new Chip.Pin(chip, 0, Chip.SIDE_E, "C+");
+			Pins[InputCount + 1] = new Chip.Pin(chip, 1, Chip.SIDE_E, "C-");
 			mLastVolts = new double[InputCount];
 			mValues = new double[InputCount];
 		}

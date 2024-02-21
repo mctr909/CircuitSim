@@ -1,7 +1,7 @@
 ﻿using Circuit.Forms;
 using Circuit.Elements.Logic;
 
-namespace Circuit.Symbol.Gate {
+namespace Circuit.Symbol.Logic {
 	abstract class Gate : BaseSymbol {
 		const int FLAG_SMALL = 1;
 		const int FLAG_SCHMITT = 2;

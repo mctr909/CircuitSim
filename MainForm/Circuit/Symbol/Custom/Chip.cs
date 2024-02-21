@@ -1,5 +1,6 @@
 ﻿using Circuit.Forms;
 using Circuit.Elements.Custom;
+using Circuit.Elements.Input;
 
 namespace Circuit.Symbol.Custom {
 	abstract class Chip : BaseSymbol {
@@ -22,7 +23,7 @@ namespace Circuit.Symbol.Custom {
 		public int sizeY;
 
 		public class Pin {
-			Chip mElm;
+			Chip mSymbol;
 			public int pos;
 			public int side;
 			public string text;
@@ -44,44 +45,44 @@ namespace Circuit.Symbol.Custom {
 			public double curcount;
 			public double current;
 
-			public Pin(Chip elm, int p, int s, string t) {
-				mElm = elm;
+			public Pin(Chip chip, int p, int s, string t) {
+				mSymbol = chip;
 				pos = p;
 				side = s;
 				text = t;
 			}
 
 			public void setPoint(int px, int py, int dx, int dy, int dax, int day, int sx, int sy) {
-				if ((mElm.mFlags & FLAG_FLIP_X) != 0) {
+				if ((mSymbol.mFlags & FLAG_FLIP_X) != 0) {
 					dx = -dx;
 					dax = -dax;
-					px += mElm.cspc2 * (mElm.sizeX - 1);
+					px += mSymbol.cspc2 * (mSymbol.sizeX - 1);
 					sx = -sx;
 				}
-				if ((mElm.mFlags & FLAG_FLIP_Y) != 0) {
+				if ((mSymbol.mFlags & FLAG_FLIP_Y) != 0) {
 					dy = -dy;
 					day = -day;
-					py += mElm.cspc2 * (mElm.sizeY - 1);
+					py += mSymbol.cspc2 * (mSymbol.sizeY - 1);
 					sy = -sy;
 				}
-				int xa = px + mElm.cspc2 * dx * pos + sx;
-				int ya = py + mElm.cspc2 * dy * pos + sy;
-				post = new Point(xa + dax * mElm.cspc2, ya + day * mElm.cspc2);
-				stub = new Point(xa + dax * mElm.cspc, ya + day * mElm.cspc);
+				int xa = px + mSymbol.cspc2 * dx * pos + sx;
+				int ya = py + mSymbol.cspc2 * dy * pos + sy;
+				post = new Point(xa + dax * mSymbol.cspc2, ya + day * mSymbol.cspc2);
+				stub = new Point(xa + dax * mSymbol.cspc, ya + day * mSymbol.cspc);
 				textloc = new Point(xa, ya);
 				if (bubble) {
-					bubblePos = new Point(xa + dax * 10 * mElm.csize, ya + day * 10 * mElm.csize);
+					bubblePos = new Point(xa + dax * 10 * mSymbol.csize, ya + day * 10 * mSymbol.csize);
 				}
 				if (clock) {
-					mElm.clockPoints = new PointF[3];
-					mElm.clockPoints[0] = new Point(
-						xa + dax * mElm.cspc - dx * mElm.cspc / 2,
-						ya + day * mElm.cspc - dy * mElm.cspc / 2
+					mSymbol.clockPoints = new PointF[3];
+					mSymbol.clockPoints[0] = new Point(
+						xa + dax * mSymbol.cspc - dx * mSymbol.cspc / 2,
+						ya + day * mSymbol.cspc - dy * mSymbol.cspc / 2
 					);
-					mElm.clockPoints[1] = new Point(xa, ya);
-					mElm.clockPoints[2] = new Point(
-						xa + dax * mElm.cspc + dx * mElm.cspc / 2,
-						ya + day * mElm.cspc + dy * mElm.cspc / 2
+					mSymbol.clockPoints[1] = new Point(xa, ya);
+					mSymbol.clockPoints[2] = new Point(
+						xa + dax * mSymbol.cspc + dx * mSymbol.cspc / 2,
+						ya + day * mSymbol.cspc + dy * mSymbol.cspc / 2
 					);
 				}
 			}
@@ -92,13 +93,13 @@ namespace Circuit.Symbol.Custom {
 					return p;
 				}
 				if (s == SIDE_S) {
-					return p + mElm.sizeX * (mElm.sizeY - 1);
+					return p + mSymbol.sizeX * (mSymbol.sizeY - 1);
 				}
 				if (s == SIDE_W) {
-					return p * mElm.sizeX;
+					return p * mSymbol.sizeX;
 				}
 				if (s == SIDE_E) {
-					return p * mElm.sizeX + mElm.sizeX - 1;
+					return p * mSymbol.sizeX + mSymbol.sizeX - 1;
 				}
 				return -1;
 			}
@@ -153,6 +154,17 @@ namespace Circuit.Symbol.Custom {
 			cspc2 = cspc * 2;
 			mFlags &= ~FLAG_SMALL;
 			mFlags |= (s == 1) ? FLAG_SMALL : 0;
+		}
+
+		protected void Setup(ElmChip elm, StringTokenizer st) {
+			for (int i = 0; i != elm.TermCount; i++) {
+				if (elm.Pins == null) {
+					elm.Volts[i] = st.nextTokenDouble();
+				} else if (elm.Pins[i].state) {
+					elm.Volts[i] = st.nextTokenDouble();
+					elm.Pins[i].value = elm.Volts[i] > 2.5;
+				}
+			}
 		}
 
 		public override void Draw(CustomGraphics g) {

@@ -6,8 +6,6 @@ namespace Circuit.Elements.Input {
 
 		public ElmCCCS() : base() { }
 
-		public ElmCCCS(StringTokenizer st) : base(st) { }
-
 		public override int VoltageSourceCount { get { return 1; } }
 
 		public override int TermCount { get { return 4; } }

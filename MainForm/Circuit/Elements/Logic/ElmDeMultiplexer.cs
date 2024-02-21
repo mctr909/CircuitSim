@@ -3,14 +3,14 @@ using Circuit.Symbol.Custom;
 
 namespace Circuit.Elements.Logic {
 	class ElmDeMultiplexer : ElmChip {
-		int mSelectBitCount = 2;
+		public int SelectBitCount = 2;
+
 		int mOutputCount;
 		int mqPin = 6;
 
-		public ElmDeMultiplexer() : base() { }
-
-		public ElmDeMultiplexer(Chip chip, StringTokenizer st) : base(st) {
-			mSelectBitCount = st.nextTokenInt(mSelectBitCount);
+		public ElmDeMultiplexer() : base() {
+			//Setup(mElm, st);
+			//SelectBitCount = st.nextTokenInt(2);
 		}
 
 		public override int TermCount { get { return mqPin + 1; } }
@@ -18,9 +18,9 @@ namespace Circuit.Elements.Logic {
 		public override int VoltageSourceCount { get { return mOutputCount; } }
 
 		public override void SetupPins(Chip chip) {
-			mOutputCount = 1 << mSelectBitCount;
-			mqPin = mOutputCount + mSelectBitCount;
-			chip.sizeX = 1 + mSelectBitCount;
+			mOutputCount = 1 << SelectBitCount;
+			mqPin = mOutputCount + SelectBitCount;
+			chip.sizeX = 1 + SelectBitCount;
 			chip.sizeY = 1 + mOutputCount;
 			AllocNodes();
 			Pins = new Chip.Pin[TermCount];
@@ -29,7 +29,7 @@ namespace Circuit.Elements.Logic {
 					output = true
 				};
 			}
-			for (var i = 0; i != mSelectBitCount; i++) {
+			for (var i = 0; i != SelectBitCount; i++) {
 				var ii = i + mOutputCount;
 				Pins[ii] = new Chip.Pin(chip, i, Chip.SIDE_S, "S" + i);
 			}
@@ -38,7 +38,7 @@ namespace Circuit.Elements.Logic {
 
 		protected override void execute() {
 			int val = 0;
-			for (var i = 0; i != mSelectBitCount; i++) {
+			for (var i = 0; i != SelectBitCount; i++) {
 				if (Pins[i + mOutputCount].value) {
 					val |= 1 << i;
 				}
