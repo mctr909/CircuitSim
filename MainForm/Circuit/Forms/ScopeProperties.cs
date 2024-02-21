@@ -3,10 +3,11 @@
 		static ScopeProperties mInstance = null;
 		ScopePlot mPlot;
 
-		public static void Show(ScopePlot plot, int x, int y) {
+		public static ScopeProperties Show(ScopePlot plot, int x, int y) {
 			mInstance?.Close();
 			mInstance = new ScopeProperties(plot);
 			mInstance.Show(x, y);
+			return mInstance;
 		}
 
 		private ScopeProperties(ScopePlot plot) {

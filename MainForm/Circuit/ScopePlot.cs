@@ -80,7 +80,7 @@
 		public int Right { get { return BoundingBox.X + BoundingBox.Width; } }
 		public int Index { get; set; } = 0;
 		public int StackCount { get; set; } = 0;
-		public int SelectedWave { get; private set; } = -1;
+		public int SelectedWave { get; set; } = -1;
 		public bool CanMenu { get { return Waves[0].Symbol != null; } }
 		public bool NeedToRemove {
 			get {
@@ -116,7 +116,7 @@
 		}
 
 		#region [get/set method]
-		public BaseSymbol GetUI() {
+		public BaseSymbol GetSymbol() {
 			if (0 <= SelectedWave && SelectedWave < Waves.Count) {
 				return Waves[SelectedWave].Symbol;
 			}

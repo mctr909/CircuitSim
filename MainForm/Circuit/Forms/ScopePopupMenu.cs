@@ -14,6 +14,7 @@ namespace Circuit.Forms {
 			RESET,
 			PROPERTIES
 		}
+		ScopeProperties mPropertiesForm;
 		ScopePlot mPlot;
 		ContextMenuStrip mPopupMenu;
 		ToolStripMenuItem mCombine;
@@ -98,6 +99,16 @@ namespace Circuit.Forms {
 			return mPopupMenu;
 		}
 
+		public delegate void DFormOpened(Form form);
+		DFormOpened mFormOpened = null;
+		public ContextMenuStrip Show(int px, int py, ScopePlot[] scopes, int selectedScopeIndex, DFormOpened formOpened) {
+			doScopePopupChecks(scopes, selectedScopeIndex, false);
+			mPopupMenu.Show();
+			mPopupMenu.Location = new Point(px, py - 8);
+			mFormOpened = formOpened;
+			return mPopupMenu;
+		}
+
 		void doScopePopupChecks(ScopePlot[] plots, int selectedPlotIndex, bool floating) {
 			var hasStacks = false;
 			var hasLeft = false;
@@ -155,7 +166,11 @@ namespace Circuit.Forms {
 				mPlot.ResetGraph(true);
 				break;
 			case SCOPE_MENU_ITEM.PROPERTIES: {
-				ScopeProperties.Show(mPlot, 0, 0);
+				if (null == mFormOpened) {
+					ScopeProperties.Show(mPlot, 0, 0);
+				} else {
+					mFormOpened(ScopeProperties.Show(mPlot, 0, 0));
+				}
 				break;
 			}
 			}

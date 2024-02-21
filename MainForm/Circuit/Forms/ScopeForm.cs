@@ -7,6 +7,7 @@
 		static int mSelectedWave = -1;
 
 		ContextMenuStrip mScopePopupMenu = null;
+		Form mScopeProperties = null;
 		BaseSymbol mMouseElm = null;
 		CustomGraphics mG;
 		Bitmap mBmp;
@@ -34,8 +35,9 @@
 		}
 
 		private void picScope_MouseLeave(object sender, EventArgs e) {
-			if (null == mScopePopupMenu || !mScopePopupMenu.Visible) {
-				ClearUI();
+			if ((null == mScopePopupMenu || !mScopePopupMenu.Visible)
+			&& (null == mScopeProperties || !mScopeProperties.Visible)) {
+				ClearSelect();
 			}
 		}
 
@@ -48,7 +50,9 @@
 					if (mPlots[mSelectedPlot].CanMenu) {
 						mSelectedWave = mPlots[mSelectedPlot].SelectedWave;
 						var fm = new ScopePopupMenu();
-						mScopePopupMenu = fm.Show(Left + mMouseCursorX, Top + mMouseCursorY, mPlots, mSelectedPlot, false);
+						mScopePopupMenu = fm.Show(Left + mMouseCursorX, Top + mMouseCursorY, mPlots, mSelectedPlot, (fm) => {
+							mScopeProperties = fm;
+						});
 					}
 				}
 				break;
@@ -57,22 +61,22 @@
 
 		private void picScope_DoubleClick(object sender, EventArgs e) {
 			mSelectedWave = -1;
-			if (mSelectedPlot != -1) {
+			if (0 <= mSelectedPlot) {
 				if (mPlots[mSelectedPlot].CanMenu) {
 					var ev = (MouseEventArgs)e;
 					var plot = mPlots[mSelectedPlot];
 					mSelectedWave = plot.SelectedWave;
-					ScopeProperties.Show(plot, ev.X + Left, ev.Y + Top);
+					mScopeProperties = ScopeProperties.Show(plot, ev.X + Left, ev.Y + Top);
 				}
 			}
 		}
 
-		void SelectUI() {
+		void SelectSymbol() {
 			BaseSymbol selectElm = null;
 			for (int i = 0; i != PlotCount; i++) {
 				var plot = mPlots[i];
 				if (plot.BoundingBox.Contains(mMouseCursorX, mMouseCursorY)) {
-					selectElm = plot.GetUI();
+					selectElm = plot.GetSymbol();
 					mSelectedPlot = i;
 					break;
 				}
@@ -92,9 +96,12 @@
 			}
 		}
 
-		void ClearUI() {
-			mSelectedPlot = -1;
-			mSelectedWave = -1;
+		void ClearSelect() {
+			if (0 <= mSelectedPlot) {
+				mPlots[mSelectedPlot].SelectedWave = -1;
+				mSelectedPlot = -1;
+				mSelectedWave = -1;
+			}
 			mMouseCursorX = -1;
 			mMouseCursorY = -1;
 			if (null != mMouseElm) {
@@ -137,7 +144,7 @@
 		}
 
 		public void Draw(CustomGraphics pdf) {
-			SelectUI();
+			SelectSymbol();
 			SetGraphics();
 			CustomGraphics g;
 			if (null == pdf) {
@@ -180,7 +187,7 @@
 				index = mPlots[i].Index;
 			}
 
-			while (PlotCount > 0 && mPlots[PlotCount - 1].GetUI() == null) {
+			while (PlotCount > 0 && mPlots[PlotCount - 1].GetSymbol() == null) {
 				PlotCount--;
 			}
 
@@ -277,7 +284,7 @@
 			}
 			int i;
 			for (i = 0; i != PlotCount; i++) {
-				if (mPlots[i].GetUI() == null) {
+				if (mPlots[i].GetSymbol() == null) {
 					break;
 				}
 			}
