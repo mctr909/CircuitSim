@@ -1,16 +1,12 @@
-﻿using Circuit.Symbol.Input;
-using Circuit.Symbol.Custom;
+﻿using Circuit.Symbol.Custom;
 
 namespace Circuit.Elements.Input {
 	class ElmCCCS : ElmVCCS {
 		double mLastCurrent;
 
-		public ElmCCCS(VCCS ui) : base(ui) { }
+		public ElmCCCS() : base() { }
 
-		public ElmCCCS(VCCS ui, StringTokenizer st) : base(ui, st) {
-			InputCount = 2;
-			SetupPins(ui);
-		}
+		public ElmCCCS(StringTokenizer st) : base(st) { }
 
 		public override int VoltageSourceCount { get { return 1; } }
 

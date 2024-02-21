@@ -12,20 +12,16 @@ namespace Circuit.Elements.Input {
 		double[] mValues;
 		double[] mLastVolts;
 
-		public ElmVCCS(Chip ui) : base() {
-			InputCount = 2;
+		public ElmVCCS() : base() {
 			mFunction = (inputs) => {
 				return 0.1 * (inputs[0] - inputs[1]);
 			};
-			SetupPins(ui);
 		}
 
-		public ElmVCCS(Chip ui, StringTokenizer st) : base(st) {
-			InputCount = st.nextTokenInt(InputCount);
+		public ElmVCCS(StringTokenizer st) : base(st) {
 			mFunction = (inputs) => {
 				return 0.1 * (inputs[0] - inputs[1]);
 			};
-			SetupPins(ui);
 		}
 
 		public override int VoltageSourceCount { get { return 0; } }

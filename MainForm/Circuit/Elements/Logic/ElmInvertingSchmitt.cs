@@ -1,4 +1,4 @@
-﻿namespace Circuit.Elements.Gate {
+﻿namespace Circuit.Elements.Logic {
 	class ElmInvertingSchmitt : BaseElement {
 		public double SlewRate = 0.5; // V/ns
 		public double LowerTrigger = 1.66;

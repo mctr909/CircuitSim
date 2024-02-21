@@ -1,4 +1,4 @@
-﻿namespace Circuit.Elements.Gate {
+﻿namespace Circuit.Elements.Logic {
 	class ElmTriState : BaseElement {
 		double mResistance;
 		public double Ron = 0.1;

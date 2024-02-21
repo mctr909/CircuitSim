@@ -8,17 +8,18 @@ namespace Circuit.Symbol.Input {
 
 		public override BaseElement Element { get { return mElm; } }
 
-		public VCCS(Point pos, int dummy) : base(pos) { }
-
-		public VCCS(Point p1, Point p2, int f) : base(p1, p2, f) { }
-
+		protected VCCS(Point pos, bool dummy) : base(pos) { }
+		protected VCCS(Point p1, Point p2, int f) : base(p1, p2, f) { }
 		public VCCS(Point pos) : base(pos) {
-			mElm = new ElmVCCS(this);
 			ReferenceName = "VCCS";
+			mElm = new ElmVCCS();
+			mElm.InputCount = 2;
+			mElm.SetupPins(this);
 		}
-
 		public VCCS(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmVCCS(this, st);
+			mElm = new ElmVCCS(st);
+			mElm.InputCount = st.nextTokenInt(2);
+			mElm.SetupPins(this);
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.VCCS; } }

@@ -1,4 +1,4 @@
-﻿using Circuit.Elements.Gate;
+﻿using Circuit.Elements.Logic;
 
 namespace Circuit.Symbol.Gate {
 	class GateXor : GateOr {

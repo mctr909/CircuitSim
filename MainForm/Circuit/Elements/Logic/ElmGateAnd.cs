@@ -1,4 +1,4 @@
-﻿namespace Circuit.Elements.Gate {
+﻿namespace Circuit.Elements.Logic {
 	class ElmGateAnd : ElmGate {
 		public ElmGateAnd() : base() { }
 

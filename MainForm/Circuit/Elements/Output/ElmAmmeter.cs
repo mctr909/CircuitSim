@@ -1,19 +1,13 @@
 ﻿namespace Circuit.Elements.Output {
 	class ElmAmmeter : BaseElement {
-		public const int AM_VOL = 0;
-		public const int AM_RMS = 1;
-
-		public int Meter;
-
-		public double SelectedValue { get; private set; } = 0;
-		public double RmsI { get; private set; } = 0;
+		public double Rms = 0;
+		public double LastMax;
+		public double LastMin;
 
 		double mTotal;
 		double mCount;
 		double mMaxI = 0;
-		double mLastMaxI;
 		double mMinI = 0;
-		double mLastMinI;
 		int mZeroCount = 0;
 		bool mIncreasingI = true;
 		bool mDecreasingI = true;
@@ -40,7 +34,7 @@
 			}
 
 			if (Current < mMaxI && mIncreasingI) { /* change of direction I now going down - at start of waveform */
-				mLastMaxI = mMaxI; /* capture last maximum */
+				LastMax = mMaxI; /* capture last maximum */
 				/* capture time between */
 				mMinI = Current; /* track minimum value */
 				mIncreasingI = false;
@@ -48,9 +42,9 @@
 
 				/* rms data */
 				mTotal = mTotal / mCount;
-				RmsI = Math.Sqrt(mTotal);
-				if (double.IsNaN(RmsI)) {
-					RmsI = 0;
+				Rms = Math.Sqrt(mTotal);
+				if (double.IsNaN(Rms)) {
+					Rms = 0;
 				}
 				mCount = 0;
 				mTotal = 0;
@@ -64,7 +58,7 @@
 			}
 
 			if (Current > mMinI && mDecreasingI) { /* change of direction I now going up */
-				mLastMinI = mMinI; /* capture last minimum */
+				LastMin = mMinI; /* capture last minimum */
 
 				mMaxI = Current;
 				mIncreasingI = true;
@@ -72,9 +66,9 @@
 
 				/* rms data */
 				mTotal = mTotal / mCount;
-				RmsI = Math.Sqrt(mTotal);
-				if (double.IsNaN(RmsI)) {
-					RmsI = 0;
+				Rms = Math.Sqrt(mTotal);
+				if (double.IsNaN(Rms)) {
+					Rms = 0;
 				}
 				mCount = 0;
 				mTotal = 0;
@@ -85,32 +79,13 @@
 				mZeroCount++;
 				if (mZeroCount > 5) {
 					mTotal = 0;
-					RmsI = 0;
+					Rms = 0;
 					mMaxI = 0;
 					mMinI = 0;
 				}
 			} else {
 				mZeroCount = 0;
 			}
-
-			switch (Meter) {
-			case AM_VOL:
-				SelectedValue = Current;
-				break;
-			case AM_RMS:
-				SelectedValue = RmsI;
-				break;
-			}
-		}
-
-		public string getMeter() {
-			switch (Meter) {
-			case AM_VOL:
-				return "I";
-			case AM_RMS:
-				return "Irms";
-			}
-			return "";
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿namespace Circuit.Elements.Gate {
+﻿namespace Circuit.Elements.Logic {
 	abstract class ElmGate : BaseElement {
 		public static double LastHighVoltage = 5;
 

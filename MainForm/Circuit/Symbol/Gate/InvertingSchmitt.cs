@@ -1,5 +1,5 @@
 ﻿using Circuit.Forms;
-using Circuit.Elements.Gate;
+using Circuit.Elements.Logic;
 
 namespace Circuit.Symbol.Gate {
 	class InvertingSchmitt : BaseSymbol {

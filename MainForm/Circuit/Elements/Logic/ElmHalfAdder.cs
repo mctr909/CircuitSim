@@ -1,7 +1,7 @@
 ﻿using Circuit.Elements.Custom;
 using Circuit.Symbol.Custom;
 
-namespace Circuit.Elements.Gate {
+namespace Circuit.Elements.Logic {
 	class ElmHalfAdder : ElmChip {
 		public ElmHalfAdder() : base() { }
 

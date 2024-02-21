@@ -3,12 +3,20 @@ using Circuit.Elements.Output;
 
 namespace Circuit.Symbol.Output {
 	class VoltMeter : BaseSymbol {
+		protected const int TP_VOL = 0;
+		protected const int TP_RMS = 1;
+		protected const int TP_MAX = 2;
+		protected const int TP_MIN = 3;
+		protected const int TP_P2P = 4;
+
 		protected const int FLAG_SHOWVOLTAGE = 1;
 
 		protected PointF mCenter;
+
 		PointF mPlusPoint;
 		ElmVoltMeter mElm;
 		EScale mScale;
+		int mMeter = TP_VOL;
 
 		public override BaseElement Element { get { return mElm; } }
 
@@ -21,14 +29,14 @@ namespace Circuit.Symbol.Output {
 
 		public VoltMeter(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmVoltMeter();
-			mElm.Meter = st.nextTokenInt(mElm.Meter);
+			mMeter = st.nextTokenInt(mMeter);
 			mScale = st.nextTokenEnum(EScale.AUTO);
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.VOLTMETER; } }
 
 		protected override void dump(List<object> optionList) {
-			optionList.Add(mElm.Meter);
+			optionList.Add(mMeter);
 			optionList.Add(mScale);
 		}
 
@@ -50,10 +58,11 @@ namespace Circuit.Symbol.Output {
 		public override void GetInfo(string[] arr) {
 			arr[0] = "電圧計";
 			if (this is VoltMeter1Term) {
-				arr[1] = "電位：" + DrawValues();
+				arr[1] = "電位：";
 			} else {
-				arr[1] = "電位差：" + DrawValues();
+				arr[1] = "電位差：";
 			}
+			arr[1] += DrawValues();
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
@@ -61,7 +70,7 @@ namespace Circuit.Symbol.Output {
 				return null;
 			}
 			if (r == 0) {
-				return new ElementInfo("表示", mElm.Meter,
+				return new ElementInfo("表示", mMeter,
 					new string[] { "瞬時値", "実効値", "最大値", "最小値", "P-P" }
 				);
 			}
@@ -73,7 +82,7 @@ namespace Circuit.Symbol.Output {
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
 			if (n == 0) {
-				mElm.Meter = ei.Choice.SelectedIndex;
+				mMeter = ei.Choice.SelectedIndex;
 			}
 			if (n == 1) {
 				mScale = (EScale)ei.Choice.SelectedIndex;
@@ -81,17 +90,17 @@ namespace Circuit.Symbol.Output {
 		}
 
 		protected string DrawValues() {
-			switch (mElm.Meter) {
-			case ElmVoltMeter.TP_VOL:
+			switch (mMeter) {
+			case TP_VOL:
 				return TextUtils.UnitWithScale(mElm.VoltageDiff, "V", mScale);
-			case ElmVoltMeter.TP_RMS:
-				return TextUtils.UnitWithScale(mElm.RmsV, "Vrms", mScale);
-			case ElmVoltMeter.TP_MAX:
-				return TextUtils.UnitWithScale(mElm.LastMaxV, "Vpk", mScale);
-			case ElmVoltMeter.TP_MIN:
-				return TextUtils.UnitWithScale(mElm.LastMinV, "Vmin", mScale);
-			case ElmVoltMeter.TP_P2P:
-				return TextUtils.UnitWithScale(mElm.LastMaxV - mElm.LastMinV, "Vp-p", mScale);
+			case TP_RMS:
+				return TextUtils.UnitWithScale(mElm.Rms, "V rms", mScale);
+			case TP_MAX:
+				return TextUtils.UnitWithScale(mElm.LastMax, "V pk", mScale);
+			case TP_MIN:
+				return TextUtils.UnitWithScale(mElm.LastMin, "V min", mScale);
+			case TP_P2P:
+				return TextUtils.UnitWithScale(mElm.LastMax - mElm.LastMin, "V p-p", mScale);
 			}
 			return "";
 		}

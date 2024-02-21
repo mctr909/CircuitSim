@@ -1,4 +1,4 @@
-﻿namespace Circuit.Elements.Gate {
+﻿namespace Circuit.Elements.Logic {
 	class ElmInverter : BaseElement {
 		public double SlewRate = 0.5; /* V/ns */
 		public double HighVoltage = ElmGate.LastHighVoltage;
