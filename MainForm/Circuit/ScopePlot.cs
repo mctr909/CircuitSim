@@ -6,14 +6,15 @@
 		const double FFT_RANGE = 60.0;
 		static readonly Color[] COLORS = {
 			Color.FromArgb(0xCF, 0x00, 0x00), //RED,
-            Color.FromArgb(0x00, 0xCF, 0x00), //GREEN,
-            Color.FromArgb(0x1F, 0x1F, 0xEF), //BLUE,
-            Color.FromArgb(0xBF, 0x00, 0xBF), //PURPLE,
-            Color.FromArgb(0xFF, 0x00, 0x8F), //MAGENTA,
-            Color.FromArgb(0x00, 0xBF, 0xBF), //CYAN,
-            Color.FromArgb(0xBF, 0xBF, 0x00), //YELLOW,
-            Color.FromArgb(0xA0, 0xA0, 0xA0)  //GRAY
-        };
+			Color.FromArgb(0x00, 0xCF, 0x00), //GREEN,
+			Color.FromArgb(0x1F, 0x1F, 0xEF), //BLUE,
+			Color.FromArgb(0xBF, 0x00, 0xBF), //PURPLE,
+			Color.FromArgb(0xFF, 0x00, 0x8F), //MAGENTA,
+			Color.FromArgb(0x00, 0xBF, 0xBF), //CYAN,
+			Color.FromArgb(0xBF, 0xBF, 0x00), //YELLOW,
+			Color.FromArgb(0xA0, 0xA0, 0xA0), //GRAY
+			Color.FromArgb(0x5F, 0x5F, 0x5F)  //not select
+		};
 
 		public enum E_COLOR : int {
 			RED,
@@ -809,7 +810,7 @@
 				if (waveIndex == SelectedWave || wave.Symbol.IsMouseElm) {
 					g.FillColor = CustomGraphics.SelectColor;
 				} else {
-					g.FillColor = mSomethingSelected ? COLORS[(int)E_COLOR.GRAY] : COLORS[(int)wave.Color];
+					g.FillColor = mSomethingSelected ? COLORS[COLORS.Length - 1] : COLORS[(int)wave.Color];
 				}
 			}
 			g.FillPolygon(rect);
