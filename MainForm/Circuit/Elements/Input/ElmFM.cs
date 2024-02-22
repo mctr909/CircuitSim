@@ -15,11 +15,11 @@
 
 		public override double VoltageDiff { get { return Volts[0]; } }
 
+		public override bool HasGroundConnection(int n1) { return true; }
+
 		public override void Reset() {
 			mFreqTimeZero = 0;
 		}
-
-		public override bool HasGroundConnection(int n1) { return true; }
 
 		public override void Stamp() {
 			CircuitElement.StampVoltageSource(0, Nodes[0], mVoltSource);

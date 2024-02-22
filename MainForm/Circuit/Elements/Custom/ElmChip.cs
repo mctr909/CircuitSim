@@ -14,6 +14,10 @@ namespace Circuit.Elements.Custom {
 
 		public virtual void SetupPins(Chip ui) { }
 
+		public override bool HasGroundConnection(int n1) {
+			return Pins[n1].output;
+		}
+
 		public override void Reset() {
 			for (int i = 0; i != TermCount; i++) {
 				Pins[i].value = false;
@@ -21,10 +25,6 @@ namespace Circuit.Elements.Custom {
 				Volts[i] = 0;
 			}
 			lastClock = false;
-		}
-
-		public override bool HasGroundConnection(int n1) {
-			return Pins[n1].output;
 		}
 
 		public override void SetVoltageSource(int j, int vs) {

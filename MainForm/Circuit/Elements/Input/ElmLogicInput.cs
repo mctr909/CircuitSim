@@ -13,15 +13,15 @@ namespace Circuit.Elements.Input {
 
 		public override bool HasGroundConnection(int n1) { return true; }
 
+		public override void Stamp() {
+			double v = 0 != Position ? VHigh : VLow;
+			CircuitElement.StampVoltageSource(0, Nodes[0], mVoltSource, v);
+		}
+
 		public override double GetCurrentIntoNode(int n) {
 			return -Current;
 		}
 
 		public override void SetCurrent(int vs, double c) { Current = -c; }
-
-		public override void Stamp() {
-			double v = 0 != Position ? VHigh : VLow;
-			CircuitElement.StampVoltageSource(0, Nodes[0], mVoltSource, v);
-		}
 	}
 }

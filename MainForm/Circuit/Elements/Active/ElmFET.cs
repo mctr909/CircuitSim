@@ -42,6 +42,8 @@
 
 		public override double VoltageDiff { get { return Volts[IdxG] - Volts[IdxS]; } }
 
+		public override bool GetConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
+
 		public override void Reset() {
 			Volts[IdxG] = Volts[IdxS] = Volts[IdxD] = 0;
 			mLastVs = 0.0;
@@ -52,8 +54,6 @@
 			DiodeCurrent1 = 0.0;
 			DiodeCurrent2 = 0.0;
 		}
-
-		public override bool GetConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
 
 		public override void Stamp() {
 			CircuitElement.StampNonLinear(Nodes[IdxS]);

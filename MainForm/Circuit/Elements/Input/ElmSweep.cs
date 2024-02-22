@@ -4,10 +4,9 @@
 		public double MaxF = 4000;
 		public double MinF = 20;
 		public double SweepTime = 0.1;
+		public double Frequency;
 		public bool IsLog = true;
 		public bool BothSides = true;
-
-		public double Frequency { get; private set; }
 
 		double mFadd;
 		double mFmul;
@@ -16,24 +15,26 @@
 		double mVolt;
 		int mFdir = 1;
 
-		public ElmSweep() : base() {
-			Reset();
-		}
-
 		public override int VoltageSourceCount { get { return 1; } }
 
 		public override int TermCount { get { return 1; } }
 
 		public override double VoltageDiff { get { return Volts[0]; } }
 
+		public ElmSweep() : base() {
+			Reset();
+		}
+
+		public override bool HasGroundConnection(int n1) { return true; }
+
 		public override void Reset() {
 			Frequency = MinF;
 			mFreqTime = 0;
 			mFdir = 1;
-			setParams();
+			SetParams();
 		}
 
-		public void setParams() {
+		public void SetParams() {
 			if (Frequency < MinF || Frequency > MaxF) {
 				Frequency = MinF;
 				mFreqTime = 0;
@@ -49,8 +50,6 @@
 			mSavedTimeStep = CircuitElement.TimeStep;
 		}
 
-		public override bool HasGroundConnection(int n1) { return true; }
-
 		public override void Stamp() {
 			CircuitElement.StampVoltageSource(0, Nodes[0], mVoltSource);
 		}
@@ -58,7 +57,7 @@
 		public override void PrepareIteration() {
 			/* has timestep been changed? */
 			if (CircuitElement.TimeStep != mSavedTimeStep) {
-				setParams();
+				SetParams();
 			}
 			mVolt = Math.Sin(mFreqTime) * MaxV;
 			mFreqTime += Frequency * 2 * Math.PI * CircuitElement.TimeStep;

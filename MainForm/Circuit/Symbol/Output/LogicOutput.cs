@@ -8,6 +8,8 @@ namespace Circuit.Symbol.Output {
 		const int FLAG_PULLDOWN = 4;
 
 		ElmLogicOutput mElm;
+		string mValue;
+		double mThreshold = 2.5;
 
 		public override BaseElement Element { get { return mElm; } }
 
@@ -17,7 +19,7 @@ namespace Circuit.Symbol.Output {
 
 		public LogicOutput(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmLogicOutput();
-			mElm.Threshold = st.nextTokenDouble(2.5);
+			mThreshold = st.nextTokenDouble(2.5);
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.LOGIC_O; } }
@@ -34,7 +36,7 @@ namespace Circuit.Symbol.Output {
 		}
 
 		public override void Draw(CustomGraphics g) {
-			var s = (mElm.Volts[0] < mElm.Threshold) ? "L" : "H";
+			var s = (mElm.Volts[0] < mThreshold) ? "L" : "H";
 			if (isTernary) {
 				if (mElm.Volts[0] > 3.75) {
 					s = "2";
@@ -44,18 +46,18 @@ namespace Circuit.Symbol.Output {
 					s = "0";
 				}
 			} else if (isNumeric) {
-				s = (mElm.Volts[0] < mElm.Threshold) ? "0" : "1";
+				s = (mElm.Volts[0] < mThreshold) ? "0" : "1";
 			}
-			mElm.Value = s;
+			mValue = s;
 			DrawCenteredLText(s, Post.B);
 			DrawLeadA();
 		}
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "ロジック出力";
-			arr[1] = (mElm.Volts[0] < mElm.Threshold) ? "Low" : "High";
+			arr[1] = (mElm.Volts[0] < mThreshold) ? "Low" : "High";
 			if (isNumeric) {
-				arr[1] = mElm.Value;
+				arr[1] = mValue;
 			}
 			arr[2] = "電位：" + TextUtils.Voltage(mElm.Volts[0]);
 		}
@@ -65,7 +67,7 @@ namespace Circuit.Symbol.Output {
 				return null;
 			}
 			if (r == 0) {
-				return new ElementInfo("閾値(V)", mElm.Threshold);
+				return new ElementInfo("閾値(V)", mThreshold);
 			}
 			if (r == 1) {
 				return new ElementInfo("プルダウン", needsPullDown);
@@ -81,7 +83,7 @@ namespace Circuit.Symbol.Output {
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
 			if (n == 0) {
-				mElm.Threshold = ei.Value;
+				mThreshold = ei.Value;
 			}
 			if (n == 1) {
 				if (ei.CheckBox.Checked) {

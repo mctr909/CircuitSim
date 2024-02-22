@@ -1,22 +1,18 @@
 ﻿namespace Circuit.Elements.Active {
 	class ElmDiodeVaractor : ElmDiode {
-		public double BaseCapacitance;
+		public double BaseCapacitance = 4e-12;
 		public double CapVoltDiff;
 		public double Capacitance;
 
 		double mCapCurrent;
 		double mVoltSourceValue;
-		// DiodeElm.lastvoltdiff = volt diff from last iteration
-		// capvoltdiff = volt diff from last timestep
 		double mCompResistance;
-
-		public ElmDiodeVaractor() : base() {
-			BaseCapacitance = 4e-12;
-		}
 
 		public override int VoltageSourceCount { get { return 1; } }
 
 		public override int InternalNodeCount { get { return 1; } }
+
+		public ElmDiodeVaractor() : base() { }
 
 		public override void Reset() {
 			base.Reset();

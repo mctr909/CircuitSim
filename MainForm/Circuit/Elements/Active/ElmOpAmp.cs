@@ -20,13 +20,13 @@
          * but there is an indirect path through the output to ground. */
 		public override bool GetConnection(int n1, int n2) { return false; }
 
+		public override bool HasGroundConnection(int n1) { return n1 == 2; }
+
 		public override void Stamp() {
 			int vn = CircuitElement.Nodes.Count + mVoltSource;
 			CircuitElement.StampNonLinear(vn);
 			CircuitElement.StampMatrix(Nodes[2], vn, 1);
 		}
-
-		public override bool HasGroundConnection(int n1) { return n1 == 2; }
 
 		public override double GetCurrentIntoNode(int n) {
 			if (n == 2) {

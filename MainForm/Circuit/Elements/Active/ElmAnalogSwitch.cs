@@ -3,10 +3,9 @@
 		public double Ron = 100;
 		public double Roff = 1e8;
 		public bool Invert;
+		public bool IsOpen;
 
 		double mResistance;
-
-		public bool IsOpen { get; private set; }
 
 		public override int TermCount { get { return 3; } }
 

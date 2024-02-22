@@ -3,13 +3,13 @@ using Circuit.Symbol.Custom;
 
 namespace Circuit.Elements.Logic {
 	class ElmFullAdder : ElmChip {
-		public ElmFullAdder() : base() {
-			//Setup(mElm, st);
-		}
-
 		public override int TermCount { get { return 5; } }
 
 		public override int VoltageSourceCount { get { return 2; } }
+
+		public ElmFullAdder() : base() {
+			//Setup(mElm, st);
+		}
 
 		public override void SetupPins(Chip chip) {
 			chip.sizeX = 2;

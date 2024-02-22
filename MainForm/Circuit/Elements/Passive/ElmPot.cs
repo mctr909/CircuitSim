@@ -10,11 +10,11 @@
 		public double CurCount2 = 0;
 		public double CurCount3 = 0;
 
-		public double Resistance1 { get; private set; }
-		public double Resistance2 { get; private set; }
-		public double Current1 { get; private set; }
-		public double Current2 { get; private set; }
-		public double Current3 { get; private set; }
+		public double Resistance1;
+		public double Resistance2;
+		public double Current1;
+		public double Current2;
+		public double Current3;
 
 		public override int TermCount { get { return 3; } }
 

@@ -1,10 +1,10 @@
 ﻿namespace Circuit.Elements.Logic {
 	class ElmTriState : BaseElement {
-		double mResistance;
 		public double Ron = 0.1;
 		public double Roff = 1e10;
+		public bool Open;
 
-		public bool Open { get; private set; }
+		double mResistance;
 
 		public override int TermCount { get { return 3; } }
 

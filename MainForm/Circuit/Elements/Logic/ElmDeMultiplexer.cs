@@ -8,14 +8,14 @@ namespace Circuit.Elements.Logic {
 		int mOutputCount;
 		int mqPin = 6;
 
+		public override int TermCount { get { return mqPin + 1; } }
+
+		public override int VoltageSourceCount { get { return mOutputCount; } }
+
 		public ElmDeMultiplexer() : base() {
 			//Setup(mElm, st);
 			//SelectBitCount = st.nextTokenInt(2);
 		}
-
-		public override int TermCount { get { return mqPin + 1; } }
-
-		public override int VoltageSourceCount { get { return mOutputCount; } }
 
 		public override void SetupPins(Chip chip) {
 			mOutputCount = 1 << SelectBitCount;

@@ -28,6 +28,10 @@
 		double mLastVbc;
 		double mLastVbe;
 
+		public override int TermCount { get { return 3; } }
+
+		public override double VoltageDiff { get { return Volts[IdxC] - Volts[IdxE]; } }
+
 		public ElmTransistor() { }
 
 		public ElmTransistor(double vbe, double vbc) {
@@ -37,10 +41,6 @@
 			Volts[IdxC] = -vbe;
 			Volts[IdxE] = -vbc;
 		}
-
-		public override int TermCount { get { return 3; } }
-
-		public override double VoltageDiff { get { return Volts[IdxC] - Volts[IdxE]; } }
 
 		public void SetHfe(double hfe) {
 			Hfe = hfe;

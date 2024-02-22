@@ -156,7 +156,7 @@ namespace Circuit.Symbol.Input {
 				}
 				mElm.BothSides = 0 != (mFlags & FLAG_BIDIR);
 			}
-			mElm.setParams();
+			mElm.SetParams();
 		}
 	}
 }

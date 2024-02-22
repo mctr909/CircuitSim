@@ -4,11 +4,11 @@ namespace Circuit.Elements.Input {
 	class ElmCCCS : ElmVCCS {
 		double mLastCurrent;
 
-		public ElmCCCS() : base() { }
-
 		public override int VoltageSourceCount { get { return 1; } }
 
 		public override int TermCount { get { return 4; } }
+
+		public ElmCCCS() : base() { }
 
 		public override void SetupPins(Chip ui) {
 			ui.sizeX = 2;
@@ -23,8 +23,6 @@ namespace Circuit.Elements.Input {
 			};
 			Pins[3] = new Chip.Pin(ui, 1, Chip.SIDE_E, "O-");
 		}
-
-		public override bool hasCurrentOutput() { return true; }
 
 		public override bool GetConnection(int n1, int n2) {
 			if (ComparePair(0, 1, n1, n2)) {
@@ -57,7 +55,7 @@ namespace Circuit.Elements.Input {
 
 			/* converged yet?
              * double limitStep = getLimitStep()*.1; */
-			var convergeLimit = getConvergeLimit() * .1;
+			var convergeLimit = GetConvergeLimit() * .1;
 
 			var cur = Pins[1].current;
 			if (Math.Abs(cur - mLastCurrent) > convergeLimit) {
@@ -73,7 +71,7 @@ namespace Circuit.Elements.Input {
 			var v2 = mFunction(cur - dv);
 			var dx = (v1 - v2) / (dv * 2);
 			if (Math.Abs(dx) < 1e-6) {
-				dx = sign(dx, 1e-6);
+				dx = Sign(dx, 1e-6);
 			}
 			CircuitElement.StampCCCS(Nodes[3], Nodes[2], Pins[1].voltSource, dx);
 			/* adjust right side */

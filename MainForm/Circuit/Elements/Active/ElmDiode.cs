@@ -1,71 +1,45 @@
 ﻿namespace Circuit.Elements.Active {
 	class ElmDiode : BaseElement {
-		/* Electron thermal voltage at SPICE's default temperature of 27 C (300.15 K): */
-		const double VT = 0.025865;
-
-		/* The Zener breakdown curve is represented by a steeper exponential, one like the ideal
-         * Shockley curve, but flipped and translated. This curve removes the moderating influence
-         * of emcoef, replacing vscale and vdcoef with vt and vzcoef.
-         * vzcoef is the multiplicative equivalent of dividing by vt (for speed). */
-		const double VZ_COEF = 1 / VT;
+		const double VTH = 0.025865;
+		const double VZ_COEF = 1 / VTH;
 
 		public DiodeModel Model;
 
-		/// <summary>
-		/// The diode's "scale voltage", the voltage increase which will raise current by a factor of e.
-		/// </summary>
-		public double VScale;
-		/// <summary>
-		/// The multiplicative equivalent of dividing by vscale (for speed).
-		/// </summary>
-		public double VdCoef;
-		/// <summary>
-		/// The diode current's scale factor, calculated from the user-specified forward voltage drop.
-		/// </summary>
-		public double Leakage;
-		public double VZener;
 		public double FwDrop;
+		public double VZener;
+		public double Leakage;
+		public double VScale;
+		public double VdCoef;
 		public double SeriesResistance;
 
-		/// <summary>
-		/// Voltage offset for Zener breakdown exponential, calculated from user-specified Zener voltage.
-		/// </summary>
-		double mZoffset;
-
-		/// <summary>
-		/// Critical voltages for limiting the normal diode.
-		/// </summary>
-		double mVcrit;
-
-		/// <summary>
-		/// Critical voltages for limiting Zener breakdown exponentials.
-		/// </summary>
+		double mVCrit;
 		double mVzCrit;
+		double mVzOffset;
+		double mLastVoltDiff;
 
 		bool mHasResistance;
 		int mNodes0;
 		int mNodes1;
 		int mDiodeEndNode;
-		double mLastVoltDiff;
-
-		public ElmDiode() { }
 
 		public override int TermCount { get { return 2; } }
 
 		public override int InternalNodeCount { get { return mHasResistance ? 1 : 0; } }
 
+		public ElmDiode() { }
+
 		public void Setup() {
 			/* critical voltage for limiting; current is vscale/sqrt(2) at this voltage */
-			mVcrit = VScale * Math.Log(VScale / (Math.Sqrt(2) * Leakage));
+			mVCrit = VScale * Math.Log(VScale / (Math.Sqrt(2) * Leakage));
 			/* translated, *positive* critical voltage for limiting in Zener breakdown region;
              * limitstep() uses this with translated voltages in an analogous fashion to vcrit. */
-			mVzCrit = VT * Math.Log(VT / (Math.Sqrt(2) * Leakage));
+			mVzCrit = VTH * Math.Log(VTH / (Math.Sqrt(2) * Leakage));
 			if (VZener == 0) {
-				mZoffset = 0;
+				mVzOffset = 0;
 			} else {
 				/* calculate offset which will give us 5mA at zvoltage */
 				double i = -0.005;
-				mZoffset = VZener - Math.Log(-(1 + i / Leakage)) / VZ_COEF;
+				mVzOffset = VZener - Math.Log(-(1 + i / Leakage)) / VZ_COEF;
 			}
 			mHasResistance = 0 < SeriesResistance;
 			mDiodeEndNode = mHasResistance ? 2 : 1;
@@ -112,7 +86,7 @@
 				var v_new = voltdiff;
 				var v_old = mLastVoltDiff;
 				/* check new voltage; has current changed by factor of e^2? */
-				if (v_new > mVcrit && Math.Abs(v_new - v_old) > (VScale + VScale)) {
+				if (v_new > mVCrit && Math.Abs(v_new - v_old) > (VScale + VScale)) {
 					if (v_old > 0) {
 						var arg = 1 + (v_new - v_old) / VScale;
 						if (arg > 0) {
@@ -121,7 +95,7 @@
                              * current at vnew = old current * arg */
 							v_new = v_old + VScale * Math.Log(arg);
 						} else {
-							v_new = mVcrit;
+							v_new = mVCrit;
 						}
 					} else {
 						/* adjust vnew so that the current is the same
@@ -130,26 +104,26 @@
 						v_new = VScale * Math.Log(v_new / VScale);
 					}
 					CircuitElement.Converged = false;
-				} else if (v_new < 0 && mZoffset != 0) {
+				} else if (v_new < 0 && mVzOffset != 0) {
 					/* for Zener breakdown, use the same logic but translate the values,
                      * and replace the normal values with the Zener-specific ones to
                      * account for the steeper exponential of our Zener breakdown curve. */
-					v_new = -v_new - mZoffset;
-					v_old = -v_old - mZoffset;
-					if (v_new > mVzCrit && Math.Abs(v_new - v_old) > (VT + VT)) {
+					v_new = -v_new - mVzOffset;
+					v_old = -v_old - mVzOffset;
+					if (v_new > mVzCrit && Math.Abs(v_new - v_old) > (VTH + VTH)) {
 						if (v_old > 0) {
-							var arg = 1 + (v_new - v_old) / VT;
+							var arg = 1 + (v_new - v_old) / VTH;
 							if (arg > 0) {
-								v_new = v_old + VT * Math.Log(arg);
+								v_new = v_old + VTH * Math.Log(arg);
 							} else {
 								v_new = mVzCrit;
 							}
 						} else {
-							v_new = VT * Math.Log(v_new / VT);
+							v_new = VTH * Math.Log(v_new / VTH);
 						}
 						CircuitElement.Converged = false;
 					}
-					v_new = -(v_new + mZoffset);
+					v_new = -(v_new + mVzOffset);
 				}
 				voltdiff = v_new;
 				mLastVoltDiff = voltdiff;
@@ -187,11 +161,11 @@
                      */
 					geq = Leakage * (
 						VdCoef * Math.Exp(voltdiff * VdCoef)
-						+ VZ_COEF * Math.Exp((-voltdiff - mZoffset) * VZ_COEF)
+						+ VZ_COEF * Math.Exp((-voltdiff - mVzOffset) * VZ_COEF)
 					) + gmin;
 					nc = Leakage * (
 						Math.Exp(voltdiff * VdCoef)
-						- Math.Exp((-voltdiff - mZoffset) * VZ_COEF)
+						- Math.Exp((-voltdiff - mVzOffset) * VZ_COEF)
 						- 1
 					) + geq * (-voltdiff);
 				}
@@ -242,7 +216,7 @@
 			} else {
 				Current = Leakage * (
 					Math.Exp(voltdiff * VdCoef)
-					- Math.Exp((-voltdiff - mZoffset) * VZ_COEF)
+					- Math.Exp((-voltdiff - mVzOffset) * VZ_COEF)
 					- 1
 				);
 			}

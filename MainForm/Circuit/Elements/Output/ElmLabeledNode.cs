@@ -48,10 +48,6 @@
 			return mNodeNumber;
 		}
 
-		public override void Stamp() {
-			CircuitElement.StampVoltageSource(mNodeNumber, Nodes[0], mVoltSource, 0);
-		}
-
 		public override void SetNode(int p, int n) {
 			base.SetNode(p, n);
 			if (p == 1) {
@@ -59,6 +55,10 @@
 				mNodeList.Add(Text, n);
 				mNodeNumber = n;
 			}
+		}
+
+		public override void Stamp() {
+			CircuitElement.StampVoltageSource(mNodeNumber, Nodes[0], mVoltSource, 0);
 		}
 
 		public override void SetCurrent(int x, double c) { Current = -c; }

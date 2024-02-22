@@ -6,16 +6,16 @@ namespace Circuit.Elements.Logic {
 		int mLoadPin;
 		bool mLastLoad = false;
 
-		public ElmLatch() : base() {
-			//Bits = st.nextTokenInt(Bits);
-			//Setup(mElm, st);
-		}
-
 		public override int TermCount { get { return Bits * 2 + 1; } }
 
 		public override int VoltageSourceCount { get { return Bits; } }
 
 		public override bool NeedsBits { get { return true; } }
+
+		public ElmLatch() : base() {
+			//Bits = st.nextTokenInt(Bits);
+			//Setup(mElm, st);
+		}
 
 		public override void SetupPins(Chip chip) {
 			chip.sizeX = 2;

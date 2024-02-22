@@ -72,7 +72,7 @@ namespace Circuit.Elements.Custom {
 				var ce = CompList[i];
 				/* current sources need special stamp method */
 				if (ce is ElmCurrent elm) {
-					elm.stampCurrentSource(false);
+					elm.StampCurrentSource(false);
 				} else {
 					ce.Stamp();
 				}

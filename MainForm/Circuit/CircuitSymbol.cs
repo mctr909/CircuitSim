@@ -392,9 +392,9 @@ namespace Circuit {
 					var cur = (ElmCurrent)ce;
 					var fpi = new PathInfo(PathInfo.TYPE.INDUCTOR, ce, ce.Nodes[1], CircuitElement.List, CircuitElement.Nodes.Count);
 					if (!fpi.FindPath(ce.Nodes[0])) {
-						cur.stampCurrentSource(true);
+						cur.StampCurrentSource(true);
 					} else {
-						cur.stampCurrentSource(false);
+						cur.StampCurrentSource(false);
 					}
 				}
 

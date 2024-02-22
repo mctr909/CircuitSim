@@ -7,14 +7,14 @@ namespace Circuit.Elements.Logic {
 
 		int mOutputCount;
 
+		public override int TermCount { get { return mOutputCount + SelectBitCount + 1; } }
+
+		public override int VoltageSourceCount { get { return 1; } }
+
 		public ElmMultiplexer() : base() {
 			//Setup(mElm, st);
 			//SelectBitCount = st.nextTokenInt(2);
 		}
-
-		public override int TermCount { get { return mOutputCount + SelectBitCount + 1; } }
-
-		public override int VoltageSourceCount { get { return 1; } }
 
 		public override void SetupPins(Chip chip) {
 			chip.sizeX = SelectBitCount + 1;

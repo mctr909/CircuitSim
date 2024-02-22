@@ -10,7 +10,6 @@ namespace Circuit.Symbol.Input {
 		PointF mAshaft2;
 		PointF mCenter;
 		PointF mTextPos;
-		double mCurrentValue;
 		ElmCurrent mElm;
 
 		public override BaseElement Element { get { return mElm; } }
@@ -20,13 +19,14 @@ namespace Circuit.Symbol.Input {
 		}
 
 		public Current(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmCurrent(st.nextTokenDouble());
+			mElm = new ElmCurrent();
+			mElm.CurrentValue = st.nextTokenDouble();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.CURRENT; } }
 
 		protected override void dump(List<object> optionList) {
-			optionList.Add(mCurrentValue);
+			optionList.Add(mElm.CurrentValue);
 		}
 
 		public override void SetPoints() {
@@ -54,7 +54,7 @@ namespace Circuit.Symbol.Input {
 			FillPolygon(mArrow);
 			DoDots();
 			if (ControlPanel.ChkShowValues.Checked) {
-				var s = TextUtils.Current(mCurrentValue);
+				var s = TextUtils.Current(mElm.CurrentValue);
 				DrawCenteredText(s, mTextPos);
 			}
 		}
@@ -69,13 +69,13 @@ namespace Circuit.Symbol.Input {
 				return null;
 			}
 			if (r == 0) {
-				return new ElementInfo("電流(A)", mCurrentValue);
+				return new ElementInfo("電流(A)", mElm.CurrentValue);
 			}
 			return null;
 		}
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
-			mCurrentValue = ei.Value;
+			mElm.CurrentValue = ei.Value;
 		}
 	}
 }

@@ -18,11 +18,11 @@
 		// is an indirect path through the output to ground.
 		public override bool GetConnection(int n1, int n2) { return false; }
 
+		public override bool HasGroundConnection(int n1) { return n1 == 1; }
+
 		public override void Stamp() {
 			CircuitElement.StampVoltageSource(0, Nodes[1], mVoltSource);
 		}
-
-		public override bool HasGroundConnection(int n1) { return n1 == 1; }
 
 		public override void DoIteration() {
 			double v0 = Volts[1];

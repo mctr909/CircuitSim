@@ -12,15 +12,15 @@ namespace Circuit.Elements.Input {
 		double[] mValues;
 		double[] mLastVolts;
 
+		public override int VoltageSourceCount { get { return 0; } }
+
+		public override int TermCount { get { return InputCount + 2; } }
+
 		public ElmVCCS() : base() {
 			mFunction = (inputs) => {
 				return 0.1 * (inputs[0] - inputs[1]);
 			};
 		}
-
-		public override int VoltageSourceCount { get { return 0; } }
-
-		public override int TermCount { get { return InputCount + 2; } }
 
 		public override void SetupPins(Chip chip) {
 			chip.sizeX = 2;
@@ -62,7 +62,7 @@ namespace Circuit.Elements.Input {
 
 			/* converged yet? */
 			double limitStep = getLimitStep();
-			double convergeLimit = getConvergeLimit();
+			double convergeLimit = GetConvergeLimit();
 			for (i = 0; i != InputCount; i++) {
 				if (Math.Abs(Volts[i] - mLastVolts[i]) > convergeLimit) {
 					CircuitElement.Converged = false;
@@ -71,7 +71,7 @@ namespace Circuit.Elements.Input {
 					Volts[i] = 0;
 				}
 				if (Math.Abs(Volts[i] - mLastVolts[i]) > limitStep) {
-					Volts[i] = mLastVolts[i] + sign(Volts[i] - mLastVolts[i], limitStep);
+					Volts[i] = mLastVolts[i] + Sign(Volts[i] - mLastVolts[i], limitStep);
 				}
 			}
 
@@ -98,7 +98,7 @@ namespace Circuit.Elements.Input {
 				var v2 = -mFunction(mValues);
 				var dx = (v1 - v2) / (dv * 2);
 				if (Math.Abs(dx) < 1e-6) {
-					dx = sign(dx, 1e-6);
+					dx = Sign(dx, 1e-6);
 				}
 				CircuitElement.StampVCCurrentSource(Nodes[InputCount], Nodes[InputCount + 1], Nodes[i], 0, dx);
 				/*Console.WriteLine("ccedx " + i + " " + dx); */
@@ -116,11 +116,17 @@ namespace Circuit.Elements.Input {
 			}
 		}
 
-		protected double sign(double a, double b) {
+		public int GetOutputNode(int n) {
+			return Nodes[n + InputCount];
+		}
+
+		public void SetFunction(DFunction function) { mFunction = function; }
+
+		protected double Sign(double a, double b) {
 			return a > 0 ? b : -b;
 		}
 
-		protected double getConvergeLimit() {
+		protected double GetConvergeLimit() {
 			/* get maximum change in voltage per step when testing for convergence.
              * be more lenient over time */
 			if (CircuitElement.SubIterations < 10) {
@@ -131,10 +137,6 @@ namespace Circuit.Elements.Input {
 			}
 			return 0.1;
 		}
-
-		public virtual bool hasCurrentOutput() { return true; }
-
-		public void SetFunction(DFunction function) { mFunction = function; }
 
 		double getLimitStep() {
 			/* get limit on changes in voltage per step.
@@ -152,10 +154,6 @@ namespace Circuit.Elements.Input {
 				return 0.01;
 			}
 			return 0.001;
-		}
-
-		public int getOutputNode(int n) {
-			return Nodes[n + InputCount];
 		}
 	}
 }
