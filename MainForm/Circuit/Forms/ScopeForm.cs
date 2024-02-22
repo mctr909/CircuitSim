@@ -29,18 +29,6 @@
 			mHeight = Height - 39;
 		}
 
-		private void picScope_MouseMove(object sender, MouseEventArgs e) {
-			mMouseCursorX = e.X;
-			mMouseCursorY = e.Y;
-		}
-
-		private void picScope_MouseLeave(object sender, EventArgs e) {
-			if ((null == mScopePopupMenu || !mScopePopupMenu.Visible)
-			&& (null == mScopeProperties || !mScopeProperties.Visible)) {
-				ClearSelect();
-			}
-		}
-
 		private void picScope_Click(object sender, EventArgs e) {
 			var ev = (MouseEventArgs)e;
 			switch (ev.Button) {
@@ -71,7 +59,22 @@
 			}
 		}
 
-		void SelectSymbol() {
+		private void picScope_MouseMove(object sender, MouseEventArgs e) {
+			if ((null == mScopePopupMenu || !mScopePopupMenu.Visible)
+			&& (null == mScopeProperties || !mScopeProperties.Visible)) {
+				mMouseCursorX = e.X;
+				mMouseCursorY = e.Y;
+			}
+		}
+
+		private void picScope_MouseLeave(object sender, EventArgs e) {
+			if ((null == mScopePopupMenu || !mScopePopupMenu.Visible)
+			&& (null == mScopeProperties || !mScopeProperties.Visible)) {
+				ClearSelect();
+			}
+		}
+
+		void Select() {
 			BaseSymbol selectElm = null;
 			for (int i = 0; i != PlotCount; i++) {
 				var plot = mPlots[i];
@@ -144,7 +147,7 @@
 		}
 
 		public void Draw(CustomGraphics pdf) {
-			SelectSymbol();
+			Select();
 			SetGraphics();
 			CustomGraphics g;
 			if (null == pdf) {
