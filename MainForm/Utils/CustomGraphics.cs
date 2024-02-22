@@ -192,8 +192,12 @@ public class CustomGraphics {
 		mPenLine.DashStyle = DashStyle.Solid;
 	}
 
-	public virtual void DrawCircle(PointF p, float radius) {
-		mG.DrawArc(mPenLine, p.X - radius, p.Y - radius, radius * 2, radius * 2, 0, 360);
+	public void DrawCircle(PointF p, float radius) {
+		DrawCircle(p.X, p.Y, radius);
+	}
+
+	public virtual void DrawCircle(float x, float y, float radius) {
+		mG.DrawArc(mPenLine, x - radius, y - radius, radius * 2, radius * 2, 0, 360);
 	}
 
 	public virtual void DrawArc(PointF p, float diameter, float start, float sweep) {

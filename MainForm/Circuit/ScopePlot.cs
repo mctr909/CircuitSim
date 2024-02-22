@@ -117,7 +117,7 @@
 		}
 
 		#region [get/set method]
-		public BaseSymbol GetSymbol() {
+		public BaseSymbol GetSelectedSymbol() {
 			if (0 <= SelectedWave && SelectedWave < Waves.Count) {
 				return Waves[SelectedWave].Symbol;
 			}
@@ -409,21 +409,23 @@
 				SelectedWave = 0;
 				return;
 			}
-			var ipa = Waves[0].StartIndex(BoundingBox.Width);
-			var pointer = (MouseCursorX - BoundingBox.X + ipa) & (mScopePointCount - 1);
-			var maxy = (BoundingBox.Height - 1) / 2;
-			int bestdist = int.MaxValue;
-			int best = -1;
+			var height = (BoundingBox.Height - 1) / 2;
+			var ofsY = BoundingBox.Y + height;
+			var startIndex = Waves[0].StartIndex(BoundingBox.Width);
+			var index = (MouseCursorX - BoundingBox.X + startIndex) & (mScopePointCount - 1);
+			var bestDist = double.MaxValue;
+			int bestWave = -1;
 			for (int i = 0; i != Waves.Count; i++) {
-				var wave = Waves[i];
-				var maxvy = (int)Math.Min(BoundingBox.Y, maxy / Scale * wave.MaxValues[pointer]);
-				var dist = Math.Abs(MouseCursorY - (BoundingBox.Y + maxy - maxvy));
-				if (dist < bestdist) {
-					bestdist = dist;
-					best = i;
+				var limitVy = mMainGridMult * (mMainGridMid - Waves[i].MaxValues[index]);
+				limitVy = Math.Max(-height, limitVy);
+				limitVy = Math.Min(height, limitVy);
+				var dist = Math.Abs(MouseCursorY - (ofsY + limitVy));
+				if (dist < bestDist) {
+					bestDist = dist;
+					bestWave = i;
 				}
 			}
-			SelectedWave = best;
+			SelectedWave = bestWave;
 		}
 		void calcMaxAndMin() {
 			mMaxValue = double.MinValue;
@@ -622,7 +624,9 @@
 					maxvy = Math.Max(-maxy, maxvy);
 					maxvy = Math.Min(maxy, maxvy);
 					g.FillColor = COLORS[(int)wave.Color];
-					g.FillCircle(MouseCursorX, BoundingBox.Y + maxy - maxvy, 3);
+					g.FillCircle(MouseCursorX, BoundingBox.Y + maxy - maxvy, 5);
+					g.DrawColor = CustomGraphics.SelectColor;
+					g.DrawCircle(MouseCursorX, BoundingBox.Y + maxy - maxvy, 5);
 				}
 				if (Waves.Count > 0) {
 					var t = CircuitElement.Time - CircuitElement.TimeStep * Speed * (BoundingBox.X + BoundingBox.Width - MouseCursorX);

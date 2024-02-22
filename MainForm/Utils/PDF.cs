@@ -148,8 +148,8 @@ class PDF {
 			writeLS(p.X, p.Y);
 		}
 
-		public override void DrawCircle(PointF c, float radius) {
-			var poly = polyCircle(c.X, c.Y, radius);
+		public override void DrawCircle(float x, float y, float radius) {
+			var poly = polyCircle(x, y, radius);
 			var p = poly[0];
 			writeM(p.X, p.Y);
 			for (int i = 1; i < poly.Length; i++) {

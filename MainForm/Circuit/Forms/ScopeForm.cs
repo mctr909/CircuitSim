@@ -74,16 +74,18 @@
 			}
 		}
 
-		void Select() {
-			BaseSymbol selectElm = null;
+		void SelectPlot() {
+			mSelectedPlot = -1;
 			for (int i = 0; i != PlotCount; i++) {
-				var plot = mPlots[i];
-				if (plot.BoundingBox.Contains(mMouseCursorX, mMouseCursorY)) {
-					selectElm = plot.GetSymbol();
+				if (mPlots[i].BoundingBox.Contains(mMouseCursorX, mMouseCursorY)) {
 					mSelectedPlot = i;
 					break;
 				}
 			}
+			if (mSelectedPlot < 0) {
+				return;
+			}
+			var selectElm = mPlots[mSelectedPlot].GetSelectedSymbol();
 			if (null == selectElm) {
 				if (null != mMouseElm) {
 					mMouseElm.Select(false);
@@ -147,7 +149,7 @@
 		}
 
 		public void Draw(CustomGraphics pdf) {
-			Select();
+			SelectPlot();
 			SetGraphics();
 			CustomGraphics g;
 			if (null == pdf) {
@@ -190,7 +192,7 @@
 				index = mPlots[i].Index;
 			}
 
-			while (PlotCount > 0 && mPlots[PlotCount - 1].GetSymbol() == null) {
+			while (PlotCount > 0 && mPlots[PlotCount - 1].GetSelectedSymbol() == null) {
 				PlotCount--;
 			}
 
@@ -287,7 +289,7 @@
 			}
 			int i;
 			for (i = 0; i != PlotCount; i++) {
-				if (mPlots[i].GetSymbol() == null) {
+				if (mPlots[i].GetSelectedSymbol() == null) {
 					break;
 				}
 			}
