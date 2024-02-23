@@ -20,13 +20,13 @@
 			rbSpectrum.Checked = mPlot.ShowFFT;
 			cmbColor.Items.Clear();
 			foreach (var c in Enum.GetValues(typeof(ScopePlot.E_COLOR))) {
-				if ((ScopePlot.E_COLOR)c == ScopePlot.E_COLOR.INVALID) {
+				if ((ScopePlot.E_COLOR)c == ScopePlot.E_COLOR.COUNT) {
 					continue;
 				}
 				cmbColor.Items.Add(c);
 			}
 			if (0 <= mPlot.SelectedWave) {
-				cmbColor.SelectedIndex = (int)mPlot.Waves[mPlot.SelectedWave].Color;
+				cmbColor.SelectedIndex = mPlot.GetSelectedWaveColor();
 			}
 			setScopeSpeedLabel();
 			ScopeProperties_Load(null, null);
@@ -41,7 +41,7 @@
 			if (mPlot.SelectedWave < 0 || cmbColor.Items.Count <= mPlot.SelectedWave) {
 				return;
 			}
-			cmbColor.SelectedIndex = (int)mPlot.Waves[mPlot.SelectedWave].Color;
+			cmbColor.SelectedIndex = mPlot.GetSelectedWaveColor();
 			chkScale.Checked = mPlot.ShowScale;
 			chkRms.Checked = mPlot.ShowRMS;
 			chkFreq.Checked = mPlot.ShowFreq;
@@ -122,7 +122,7 @@
 			if (mPlot.SelectedWave < 0) {
 				return;
 			}
-			mPlot.Waves[mPlot.SelectedWave].SetColor(cmbColor.SelectedIndex);
+			mPlot.SetColor(mPlot.SelectedWave, cmbColor.SelectedIndex);
 		}
 
 		private void chkLogSpectrum_CheckedChanged(object sender, EventArgs e) {

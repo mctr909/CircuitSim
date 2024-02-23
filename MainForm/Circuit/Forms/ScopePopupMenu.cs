@@ -129,7 +129,7 @@ namespace Circuit.Forms {
 			mStack.Visible = !floating && hasLeft;
 			mUnstack.Visible = !floating && hasStacks;
 			mStackSeparator.Visible = !floating && (hasLeft || hasStacks);
-			mRemoveWave.Visible = 1 < selectedPlot.Waves.Count;
+			mRemoveWave.Visible = 1 < selectedPlot.WaveCount;
 		}
 
 		void performed(SCOPE_MENU_ITEM item) {

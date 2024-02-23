@@ -1,64 +1,59 @@
 ﻿namespace Circuit {
 	public class ScopeWave {
 		public BaseSymbol Symbol;
+		public int Color;
+		public int Length;
+		public int Speed;
+		public int Index;
 		public double[] MinValues;
 		public double[] MaxValues;
-		public int Speed;
-		public int Pointer;
 
 		int mCounter;
-		int mScopePointCount;
-
-		public ScopePlot.E_COLOR Color { get; private set; } = ScopePlot.E_COLOR.INVALID;
 
 		public ScopeWave(BaseSymbol symbol) {
 			Symbol = symbol;
+			Length = 1;
+			Index = 0;
+			MinValues = [Length];
+			MaxValues = [Length];
 		}
 
-		public void SetColor(int index) {
-			Color = (ScopePlot.E_COLOR)(index % (int)ScopePlot.E_COLOR.INVALID);
-		}
-
-		public int StartIndex(int w) {
-			return Pointer + mScopePointCount - w;
-		}
-
-		public void Reset(int scopePoints, int speed, bool full) {
-			var oldSpc = mScopePointCount;
-			mScopePointCount = scopePoints;
+		public void Reset(int length, int speed, bool full) {
+			var oldSpc = Length;
+			Length = length;
 			if (Speed != speed) {
 				oldSpc = 0;
 			}
 			Speed = speed;
 			var oldMin = MinValues;
 			var oldMax = MaxValues;
-			MinValues = new double[mScopePointCount];
-			MaxValues = new double[mScopePointCount];
+			MinValues = new double[Length];
+			MaxValues = new double[Length];
 			if (oldMin != null && !full) {
-				for (int i = 0; i != mScopePointCount && i != oldSpc; i++) {
-					int i1 = (-i) & (mScopePointCount - 1);
-					int i2 = (Pointer - i) & (oldSpc - 1);
+				for (int i = 0; i != Length && i != oldSpc; i++) {
+					var i1 = (-i) & (Length - 1);
+					var i2 = (Index - i) & (oldSpc - 1);
 					MinValues[i1] = oldMin[i2];
 					MaxValues[i1] = oldMax[i2];
 				}
 			} else {
 				mCounter = 0;
 			}
-			Pointer = 0;
+			Index = 0;
 		}
 
 		public void TimeStep() {
 			var v = Symbol.Element.VoltageDiff;
-			if (v < MinValues[Pointer]) {
-				MinValues[Pointer] = v;
+			if (v < MinValues[Index]) {
+				MinValues[Index] = v;
 			}
-			if (v > MaxValues[Pointer]) {
-				MaxValues[Pointer] = v;
+			if (v > MaxValues[Index]) {
+				MaxValues[Index] = v;
 			}
 			mCounter++;
 			if (mCounter >= Speed) {
-				Pointer = (Pointer + 1) & (mScopePointCount - 1);
-				MinValues[Pointer] = MaxValues[Pointer] = v;
+				Index = (Index + 1) & (Length - 1);
+				MinValues[Index] = MaxValues[Index] = v;
 				mCounter = 0;
 			}
 		}

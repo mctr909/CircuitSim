@@ -208,7 +208,7 @@
 			}
 			int colct = index + 1;
 			int w = width / colct;
-			int marg = 10;
+			int marg = 20;
 			if (w < marg * 2) {
 				w = marg * 2;
 			}
@@ -312,12 +312,7 @@
 			if (mSelectedPlot < 0 || mPlots.Length <= mSelectedPlot) {
 				return;
 			}
-			var plot = mPlots[mSelectedPlot];
-			if (mSelectedWave < 0 || plot.Waves.Count <= mSelectedWave) {
-				return;
-			}
-			var p = plot.Waves[mSelectedWave];
-			plot.Waves.Remove(p);
+			mPlots[mSelectedPlot].Remove(mSelectedWave);
 		}
 
 		public static void Stack() {
