@@ -133,10 +133,11 @@
 		}
 
 		double triangleFunc(double x) {
-			if (x < Math.PI) {
-				return x * (2 / Math.PI) - 1;
-			}
-			return 1 - (x - Math.PI) * (2 / Math.PI);
+			//if (x < Math.PI) {
+			//	return x * (2 / Math.PI) - 1;
+			//}
+			//return 1 - (x - Math.PI) * (2 / Math.PI);
+			return x / Math.PI - 1.0;
 		}
 	}
 }
