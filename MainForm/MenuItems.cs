@@ -121,14 +121,14 @@ namespace MainForm {
 			var fileMenuBar = new ToolStripMenuItem();
 			fileMenuBar.Text = "ファイル(F)";
 			fileMenuBar.Font = menuFont;
-            addMenuItem(fileMenuBar, "新規作成(N)", ID.OPEN_NEW, new Shortcut(Keys.N));
+			addMenuItem(fileMenuBar, "新規作成(N)", ID.OPEN_NEW, new Shortcut(Keys.N));
 			fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addMenuItem(fileMenuBar, "開く(O)", ID.OPEN_FILE, new Shortcut(Keys.O));
+			addMenuItem(fileMenuBar, "開く(O)", ID.OPEN_FILE, new Shortcut(Keys.O));
 			fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addMenuItem(fileMenuBar, "上書き保存(S)", ID.OVERWRITE, new Shortcut(Keys.S));
-            addMenuItem(fileMenuBar, "名前を付けて保存(A)", ID.SAVE_FILE, new Shortcut(Keys.None));
+			addMenuItem(fileMenuBar, "上書き保存(S)", ID.OVERWRITE, new Shortcut(Keys.S));
+			addMenuItem(fileMenuBar, "名前を付けて保存(A)", ID.SAVE_FILE, new Shortcut(Keys.None));
 			fileMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addMenuItem(fileMenuBar, "PDF出力(P)", ID.PDF, new Shortcut(Keys.P));
+			addMenuItem(fileMenuBar, "PDF出力(P)", ID.PDF, new Shortcut(Keys.P));
 			mainMenuBar.Items.Add(fileMenuBar);
 			#endregion
 
@@ -136,23 +136,23 @@ namespace MainForm {
 			var editMenuBar = new ToolStripMenuItem();
 			editMenuBar.Text = "編集(E)";
 			editMenuBar.Font = menuFont;
-            addMenuItem(editMenuBar, "選択", ID.SELECT, new Shortcut(Keys.Escape, false));
-            addMenuItem(editMenuBar, "全選択", ID.SELECT_ALL, new Shortcut(Keys.A));
-            addMenuItem(editMenuBar, "切り取り", ID.CUT, new Shortcut(Keys.X));
-            addMenuItem(editMenuBar, "コピー", ID.COPY, new Shortcut(Keys.C));
-            addMenuItem(editMenuBar, "貼り付け", ID.PASTE, new Shortcut(Keys.V));
-            addMenuItem(editMenuBar, "削除", ID.DELETE, new Shortcut(Keys.Delete, false));
+			addMenuItem(editMenuBar, "選択", ID.SELECT, new Shortcut(Keys.Escape, false));
+			addMenuItem(editMenuBar, "全選択", ID.SELECT_ALL, new Shortcut(Keys.A));
+			addMenuItem(editMenuBar, "切り取り", ID.CUT, new Shortcut(Keys.X));
+			addMenuItem(editMenuBar, "コピー", ID.COPY, new Shortcut(Keys.C));
+			addMenuItem(editMenuBar, "貼り付け", ID.PASTE, new Shortcut(Keys.V));
+			addMenuItem(editMenuBar, "削除", ID.DELETE, new Shortcut(Keys.Delete, false));
 			editMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addMenuItem(editMenuBar, "元に戻す", ID.UNDO, new Shortcut(Keys.Z));
-            addMenuItem(editMenuBar, "やり直し", ID.REDO, new Shortcut(Keys.Y));
+			addMenuItem(editMenuBar, "元に戻す", ID.UNDO, new Shortcut(Keys.Z));
+			addMenuItem(editMenuBar, "やり直し", ID.REDO, new Shortcut(Keys.Y));
 			editMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addMenuItem(editMenuBar, "中心に移動", ID.CENTER_CIRCUIT, new Shortcut(Keys.E));
+			addMenuItem(editMenuBar, "中心に移動", ID.CENTER_CIRCUIT, new Shortcut(Keys.E));
 			editMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(editMenuBar, "配線", DUMP_ID.WIRE, new Shortcut(Keys.W));
-            addElementItem(editMenuBar, "接地", DUMP_ID.GROUND, new Shortcut(Keys.G));
+			addElementItem(editMenuBar, "配線", DUMP_ID.WIRE, new Shortcut(Keys.W));
+			addElementItem(editMenuBar, "接地", DUMP_ID.GROUND, new Shortcut(Keys.G));
 			editMenuBar.DropDownItems.Add(new ToolStripSeparator());
-            addElementItem(editMenuBar, "テキスト", DUMP_ID.TEXT, new Shortcut(Keys.T));
-            addElementItem(editMenuBar, "矩形", DUMP_ID.BOX, new Shortcut(Keys.B));
+			addElementItem(editMenuBar, "テキスト", DUMP_ID.TEXT, new Shortcut(Keys.T));
+			addElementItem(editMenuBar, "矩形", DUMP_ID.BOX, new Shortcut(Keys.B));
 			mainMenuBar.Items.Add(editMenuBar);
 			#endregion
 
@@ -163,13 +163,16 @@ namespace MainForm {
 			var passiveMenuBar = new ToolStripMenuItem();
 			passiveMenuBar.Text = "受動素子(P)";
 			passiveMenuBar.Font = menuFont;
-            addElementItem(passiveMenuBar, "抵抗", DUMP_ID.RESISTOR, new Shortcut(Keys.F1, false));
-            addElementItem(passiveMenuBar, "キャパシタ", DUMP_ID.CAPACITOR, new Shortcut(Keys.F2, false));
-            addElementItem(passiveMenuBar, "インダクタ", DUMP_ID.INDUCTOR, new Shortcut(Keys.F3, false));
+			addElementItem(passiveMenuBar, "抵抗", DUMP_ID.RESISTOR, new Shortcut(Keys.F1, false));
+			addElementItem(passiveMenuBar, "キャパシタ", DUMP_ID.CAPACITOR, new Shortcut(Keys.F2, false));
+			addElementItem(passiveMenuBar, "インダクタ", DUMP_ID.INDUCTOR, new Shortcut(Keys.F3, false));
 			passiveMenuBar.DropDownItems.Add(new ToolStripSeparator());
 			addElementItem(passiveMenuBar, "可変抵抗", DUMP_ID.POT);
 			addElementItem(passiveMenuBar, "キャパシタ(有極性)", DUMP_ID.CAPACITOR_POLAR);
 			addElementItem(passiveMenuBar, "トランス", DUMP_ID.TRANSFORMER);
+			passiveMenuBar.DropDownItems.Add(new ToolStripSeparator());
+			addElementItem(passiveMenuBar, "入力ピン", DUMP_ID.INPUT_TERMINAL);
+			addElementItem(passiveMenuBar, "出力ピン", DUMP_ID.OUTPUT_TERMINAL);
 			mainMenuBar.Items.Add(passiveMenuBar);
 			#endregion
 
@@ -197,6 +200,39 @@ namespace MainForm {
 			mainMenuBar.Items.Add(activeMenuBar);
 			#endregion
 
+			#region Logic Gates
+			var gateMenuBar = new ToolStripMenuItem();
+			gateMenuBar.Text = "論理ゲート(G)";
+			gateMenuBar.Font = menuFont;
+			addElementItem(gateMenuBar, "入力", DUMP_ID.LOGIC_I);
+			addElementItem(gateMenuBar, "出力", DUMP_ID.LOGIC_O);
+			addElementItem(gateMenuBar, "クロック", DUMP_ID.CLOCK);
+			gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
+			addElementItem(gateMenuBar, "AND", DUMP_ID.AND_GATE);
+			addElementItem(gateMenuBar, "OR", DUMP_ID.OR_GATE);
+			addElementItem(gateMenuBar, "XOR", DUMP_ID.XOR_GATE);
+			addElementItem(gateMenuBar, "NOT", DUMP_ID.INVERT);
+			addElementItem(gateMenuBar, "NAND", DUMP_ID.NAND_GATE);
+			addElementItem(gateMenuBar, "NOR", DUMP_ID.NOR_GATE);
+			gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
+			addElementItem(gateMenuBar, "3ステートバッファ", DUMP_ID.TRISTATE);
+			addElementItem(gateMenuBar, "シュミットトリガ", DUMP_ID.SCHMITT);
+			addElementItem(gateMenuBar, "シュミットトリガ(NOT)", DUMP_ID.INVERT_SCHMITT);
+			mainMenuBar.Items.Add(gateMenuBar);
+			#endregion
+
+			#region Switch
+			var switchMenuBar = new ToolStripMenuItem();
+			switchMenuBar.Text = "スイッチ(S)";
+			switchMenuBar.Font = menuFont;
+			addElementItem(switchMenuBar, "スイッチ", DUMP_ID.SWITCH);
+			addElementItem(switchMenuBar, "ロータリースイッチ", DUMP_ID.SWITCH_MULTI);
+			addElementItem(switchMenuBar, "プッシュスイッチ(a接点)", DUMP_ID.SWITCH_PUSH_NO);
+			addElementItem(switchMenuBar, "プッシュスイッチ(b接点)", DUMP_ID.SWITCH_PUSH_NC);
+			addElementItem(switchMenuBar, "プッシュスイッチ(c接点)", DUMP_ID.SWITCH_PUSH_C);
+			mainMenuBar.Items.Add(switchMenuBar);
+			#endregion
+
 			#region Inputs and Sources
 			var inputMenuBar = new ToolStripMenuItem();
 			inputMenuBar.Text = "入力(I)";
@@ -209,7 +245,6 @@ namespace MainForm {
 			addElementItem(inputMenuBar, "1端子電圧源(正弦波)", DUMP_ID.RAIL_AC);
 			addElementItem(inputMenuBar, "1端子電圧源(パルス)", DUMP_ID.RAIL);
 			inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
-			addElementItem(inputMenuBar, "クロック", DUMP_ID.CLOCK);
 			addElementItem(inputMenuBar, "スイープ", DUMP_ID.SWEEP);
 			addElementItem(inputMenuBar, "ノイズ", DUMP_ID.NOISE);
 			inputMenuBar.DropDownItems.Add(new ToolStripSeparator());
@@ -220,12 +255,10 @@ namespace MainForm {
 			mainMenuBar.Items.Add(inputMenuBar);
 			#endregion
 
-			#region Outputs and Labels
+			#region Measure
 			var outputMenuBar = new ToolStripMenuItem();
-			outputMenuBar.Text = "計測器/出力(O)";
+			outputMenuBar.Text = "測定(M)";
 			outputMenuBar.Font = menuFont;
-			addElementItem(outputMenuBar, "出力ピン", DUMP_ID.LABELED_NODE);
-			outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
 			addElementItem(outputMenuBar, "電圧計(2端子)", DUMP_ID.VOLTMETER);
 			addElementItem(outputMenuBar, "電圧計(1端子)", DUMP_ID.VOLTMETER1);
 			addElementItem(outputMenuBar, "電流計", DUMP_ID.AMMETER);
@@ -235,38 +268,6 @@ namespace MainForm {
 			outputMenuBar.DropDownItems.Add(new ToolStripSeparator());
 			addElementItem(outputMenuBar, "停止トリガー", DUMP_ID.STOP_TRIGGER);
 			mainMenuBar.Items.Add(outputMenuBar);
-			#endregion
-
-			#region Switch
-			var switchMenuBar = new ToolStripMenuItem();
-			switchMenuBar.Text = "スイッチ(S)";
-			switchMenuBar.Font = menuFont;
-			addElementItem(switchMenuBar, "スイッチ", DUMP_ID.SWITCH);
-			addElementItem(switchMenuBar, "切り替えスイッチ", DUMP_ID.SWITCH_MULTI);
-			addElementItem(switchMenuBar, "プッシュスイッチ(C接点)", DUMP_ID.SWITCH_PUSH_C);
-			addElementItem(switchMenuBar, "プッシュスイッチ(NC)", DUMP_ID.SWITCH_PUSH_NC);
-			addElementItem(switchMenuBar, "プッシュスイッチ(NO)", DUMP_ID.SWITCH_PUSH_NO);
-			mainMenuBar.Items.Add(switchMenuBar);
-			#endregion
-
-			#region Logic Gates
-			var gateMenuBar = new ToolStripMenuItem();
-			gateMenuBar.Text = "論理ゲート(G)";
-			gateMenuBar.Font = menuFont;
-			addElementItem(gateMenuBar, "入力", DUMP_ID.LOGIC_I);
-			addElementItem(gateMenuBar, "出力", DUMP_ID.LOGIC_O);
-			gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
-			addElementItem(gateMenuBar, "3ステートバッファ", DUMP_ID.TRISTATE);
-			addElementItem(gateMenuBar, "シュミットトリガ", DUMP_ID.SCHMITT);
-			addElementItem(gateMenuBar, "シュミットトリガ(NOT)", DUMP_ID.INVERT_SCHMITT);
-			gateMenuBar.DropDownItems.Add(new ToolStripSeparator());
-			addElementItem(gateMenuBar, "AND", DUMP_ID.AND_GATE);
-			addElementItem(gateMenuBar, "OR", DUMP_ID.OR_GATE);
-			addElementItem(gateMenuBar, "NOT", DUMP_ID.INVERT);
-			addElementItem(gateMenuBar, "NAND", DUMP_ID.NAND_GATE);
-			addElementItem(gateMenuBar, "NOR", DUMP_ID.NOR_GATE);
-			addElementItem(gateMenuBar, "XOR", DUMP_ID.XOR_GATE);
-			mainMenuBar.Items.Add(gateMenuBar);
 			#endregion
 
 			#region Logic ICs

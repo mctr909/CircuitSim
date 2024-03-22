@@ -2,7 +2,7 @@
 using Circuit.Symbol.Custom;
 using Circuit.Symbol.Logic;
 using Circuit.Symbol.Input;
-using Circuit.Symbol.Output;
+using Circuit.Symbol.Measure;
 using Circuit.Symbol.Passive;
 
 namespace Circuit {
@@ -25,6 +25,8 @@ namespace Circuit {
 		CAPACITOR_POLAR,
 		INDUCTOR,
 		TRANSFORMER,
+		INPUT_TERMINAL,
+		OUTPUT_TERMINAL,
 		#endregion
 
 		#region Active Components
@@ -138,6 +140,10 @@ namespace Circuit {
 				return new Inductor(pos);
 			case DUMP_ID.TRANSFORMER:
 				return new Transformer(pos);
+			case DUMP_ID.INPUT_TERMINAL:
+				return new InputTerminal(pos);
+			case DUMP_ID.OUTPUT_TERMINAL:
+				return new OutputTerminal(pos);
 			#endregion
 
 			#region Active Components
@@ -205,8 +211,6 @@ namespace Circuit {
 				return new VoltMeter1Term(pos);
 			case DUMP_ID.AMMETER:
 				return new Ammeter(pos);
-			case DUMP_ID.LABELED_NODE:
-				return new OutputTerminal(pos);
 			case DUMP_ID.DATA_RECORDER:
 				return new DataRecorder(pos);
 			case DUMP_ID.STOP_TRIGGER:
@@ -340,6 +344,10 @@ namespace Circuit {
 				return new Inductor(p1, p2, f, st);
 			case DUMP_ID.TRANSFORMER:
 				return new Transformer(p1, p2, f, st);
+			case DUMP_ID.INPUT_TERMINAL:
+				return new InputTerminal(p1, p2, f, st);
+			case DUMP_ID.OUTPUT_TERMINAL:
+				return new OutputTerminal(p1, p2, f, st);
 			#endregion
 
 			#region Active Components

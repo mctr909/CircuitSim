@@ -1,4 +1,4 @@
-﻿namespace Circuit.Elements.Output {
+﻿namespace Circuit.Elements.Measure {
 	class ElmScope : BaseElement {
 		private ScopePlot mScope;
 

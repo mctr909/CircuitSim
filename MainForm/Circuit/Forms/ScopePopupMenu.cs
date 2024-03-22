@@ -1,4 +1,4 @@
-﻿using Circuit.Symbol.Output;
+﻿using Circuit.Symbol.Measure;
 
 namespace Circuit.Forms {
 	public class ScopePopupMenu {

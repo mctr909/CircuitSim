@@ -1,19 +1,20 @@
 ﻿using Circuit.Forms;
 using Circuit.Elements.Passive;
 
-namespace Circuit.Symbol.Output {
+namespace Circuit.Symbol.Passive {
 	class OutputTerminal : BaseSymbol {
 		const int FLAG_INTERNAL = 1;
 
-		ElmNamedNode mElm;
-		PointF[] mTextPoly;
-		RectangleF mTextRect;
+		protected ElmNamedNode mElm;
+		protected PointF[] mTextPoly;
+		protected RectangleF mTextRect;
 
 		public override BaseElement Element { get { return mElm; } }
 
 		public OutputTerminal(Point pos) : base(pos) {
-			mElm = new ElmNamedNode();
-			mElm.IsOutput = true;
+			mElm = new ElmNamedNode() {
+				IsOutput = true
+			};
 		}
 
 		public OutputTerminal(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
@@ -25,7 +26,7 @@ namespace Circuit.Symbol.Output {
 
 		public bool IsInternal { get { return (mFlags & FLAG_INTERNAL) != 0; } }
 
-		public override DUMP_ID DumpId { get { return DUMP_ID.LABELED_NODE; } }
+		public override DUMP_ID DumpId { get { return DUMP_ID.OUTPUT_TERMINAL; } }
 
 		protected override void dump(List<object> optionList) {
 			optionList.Add(mElm.Name);
@@ -40,10 +41,10 @@ namespace Circuit.Symbol.Output {
 
 		public override void SetPoints() {
 			base.SetPoints();
-			SetTextPos();
+			SetPolygon();
 		}
 
-		void SetTextPos() {
+		protected virtual void SetPolygon() {
 			var txtSize = CustomGraphics.Instance.GetTextSize(mElm.Name);
 			var txtW = txtSize.Width;
 			var txtH = txtSize.Height;
@@ -60,9 +61,9 @@ namespace Circuit.Symbol.Output {
 			InterpolationPost(ref p3, 1 + pw, ph);
 			InterpolationPost(ref p4, 1 + pw + ph / Post.Len, 0);
 			InterpolationPost(ref p5, 1 + pw, -ph);
-			mTextPoly = new PointF[] {
+			mTextPoly = [
 				p1, p2, p3, p4, p5, p1
-			};
+			];
 			var ax = p1.X;
 			var ay = p1.Y;
 			var bx = p4.X;
@@ -127,7 +128,7 @@ namespace Circuit.Symbol.Output {
 			if (n == 1) {
 				mFlags = ei.ChangeFlag(mFlags, FLAG_INTERNAL);
 			}
-			SetTextPos();
+			SetPolygon();
 		}
 	}
 }

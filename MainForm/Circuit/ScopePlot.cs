@@ -960,10 +960,11 @@
 			}
 		}
 		void DrawInfoTexts(CustomGraphics g) {
-			string t = Text;
+			g.FillColor = CustomGraphics.TextColor;
+
 			var textY = 8;
-			if (!string.IsNullOrEmpty(t)) {
-				g.DrawLeftText(t, 0, textY);
+			if (!string.IsNullOrEmpty(Text)) {
+				g.DrawLeftText(Text, 0, textY);
 				textY += 12;
 			}
 

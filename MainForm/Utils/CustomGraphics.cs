@@ -37,7 +37,6 @@ public class CustomGraphics {
 	Pen mPenFill = new(Color.White, 1.0f);
 	Font mFont = new("Arial", 9.0f);
 	Brush mFontBrush = Brushes.Black;
-	Color mFontColor;
 
 	public const float POST_RADIUS = 2.5f;
 	public const float HANDLE_RADIUS = 6.5f;
@@ -59,19 +58,14 @@ public class CustomGraphics {
 
 	public virtual Color DrawColor {
 		get { return mPenLine.Color; }
-		set { mPenLine.Color = value; }
+		set {
+			mPenLine.Color = value;
+			mFontBrush = new Pen(value, 1.0f).Brush;
+		}
 	}
 	public virtual Color FillColor {
 		get { return mPenFill.Color; }
 		set { mPenFill.Color = value; }
-	}
-	public Color FontColor {
-		get { return mFontColor; }
-		set {
-			var p = new Pen(value, 1.0f);
-			mFontBrush = p.Brush;
-			mFontColor = value;
-		}
 	}
 	public float FontSize {
 		get { return mFont.Size; }

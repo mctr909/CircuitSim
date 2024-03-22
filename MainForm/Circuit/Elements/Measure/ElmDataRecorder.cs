@@ -1,4 +1,4 @@
-﻿namespace Circuit.Elements.Output {
+﻿namespace Circuit.Elements.Measure {
 	class ElmDataRecorder : BaseElement {
 		public int DataCount = 0;
 		public int DataPtr = 0;

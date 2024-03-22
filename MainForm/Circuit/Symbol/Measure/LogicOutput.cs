@@ -1,7 +1,7 @@
 ﻿using Circuit.Forms;
-using Circuit.Elements.Output;
+using Circuit.Elements.Measure;
 
-namespace Circuit.Symbol.Output {
+namespace Circuit.Symbol.Measure {
 	class LogicOutput : BaseSymbol {
 		const int FLAG_TERNARY = 1;
 		const int FLAG_NUMERIC = 2;

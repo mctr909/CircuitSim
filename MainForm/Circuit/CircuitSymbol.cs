@@ -1,5 +1,5 @@
 ﻿using Circuit.Elements.Input;
-using Circuit.Elements.Output;
+using Circuit.Elements.Measure;
 using Circuit.Elements.Passive;
 
 namespace Circuit {

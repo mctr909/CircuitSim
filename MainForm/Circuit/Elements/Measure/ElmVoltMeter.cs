@@ -1,4 +1,4 @@
-﻿namespace Circuit.Elements.Output {
+﻿namespace Circuit.Elements.Measure {
 	class ElmVoltMeter : BaseElement {
 		public double Rms = 0;
 		public double LastMax;

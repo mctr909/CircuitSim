@@ -1,4 +1,4 @@
-﻿namespace Circuit.Elements.Output {
+﻿namespace Circuit.Elements.Measure {
 	class ElmLogicOutput : BaseElement {
 		public bool NeedsPullDown;
 

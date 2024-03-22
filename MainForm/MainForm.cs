@@ -3,7 +3,7 @@ using Circuit.Elements.Active;
 using Circuit.Elements.Passive;
 using Circuit.Forms;
 using Circuit.Symbol.Passive;
-using Circuit.Symbol.Output;
+using Circuit.Symbol.Measure;
 
 using System.Text;
 
@@ -1578,11 +1578,9 @@ namespace MainForm {
 				if (ui.NeedsHighlight) {
 					g.DrawColor = CustomGraphics.SelectColor;
 					g.FillColor = CustomGraphics.SelectColor;
-					g.FontColor = CustomGraphics.SelectColor;
 				} else {
 					g.DrawColor = CustomGraphics.LineColor;
 					g.FillColor = CustomGraphics.LineColor;
-					g.FontColor = CustomGraphics.TextColor;
 				}
 				ui.Draw(g);
 				if (ui is Scope) {
@@ -1600,7 +1598,6 @@ namespace MainForm {
 			)) {
 				g.DrawColor = CustomGraphics.LineColor;
 				g.FillColor = CustomGraphics.LineColor;
-				g.FontColor = CustomGraphics.TextColor;
 				BaseSymbol.ConstructItem.Draw(g);
 				var ce = BaseSymbol.ConstructItem.Element;
 				for (int i = ce.TermCount - 1; 0 <= i; i--) {

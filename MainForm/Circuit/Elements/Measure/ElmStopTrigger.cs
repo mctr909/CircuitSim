@@ -1,4 +1,4 @@
-﻿namespace Circuit.Elements.Output {
+﻿namespace Circuit.Elements.Measure {
 	class ElmStopTrigger : BaseElement {
 		public double TriggerVoltage = 1;
 		public int Type;

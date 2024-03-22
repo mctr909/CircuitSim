@@ -159,7 +159,7 @@
 			}
 
 			g.Clear(ControlPanel.ChkPrintable.Checked ? Color.White : Color.Black);
-			g.FontColor = CustomGraphics.TextColor;
+			g.DrawColor = CustomGraphics.TextColor;
 			Setup(g.Width, g.Height);
 
 			var ct = PlotCount;

@@ -1,7 +1,7 @@
 ﻿using Circuit.Forms;
-using Circuit.Elements.Output;
+using Circuit.Elements.Measure;
 
-namespace Circuit.Symbol.Output {
+namespace Circuit.Symbol.Measure {
 	class Ammeter : BaseSymbol {
 		const int FLAG_SHOWCURRENT = 1;
 		const int TP_AMP = 0;
