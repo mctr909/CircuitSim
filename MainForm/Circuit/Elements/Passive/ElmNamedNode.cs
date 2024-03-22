@@ -1,6 +1,7 @@
-﻿namespace Circuit.Elements.Output {
-	class ElmLabeledNode : BaseElement {
-		public string Text = "output";
+﻿namespace Circuit.Elements.Passive {
+	class ElmNamedNode : BaseElement {
+		public string Name = "Node";
+		public bool IsOutput = true;
 
 		static Dictionary<string, int> mNodeList;
 		int mNodeNumber;
@@ -19,8 +20,8 @@
 					return 0;
 				}
 				// node assigned already?
-				if (null != Text && mNodeList.ContainsKey(Text)) {
-					var nn = mNodeList[Text];
+				if (null != Name && mNodeList.ContainsKey(Name)) {
+					var nn = mNodeList[Name];
 					mNodeNumber = nn;
 					return 0;
 				}
@@ -52,7 +53,7 @@
 			base.SetNode(p, n);
 			if (p == 1) {
 				// assign new node
-				mNodeList.Add(Text, n);
+				mNodeList.Add(Name, n);
 				mNodeNumber = n;
 			}
 		}

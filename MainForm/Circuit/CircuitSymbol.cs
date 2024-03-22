@@ -217,7 +217,7 @@ namespace Circuit {
 			/* allocate nodes and voltage sources */
 			int vs_count = 0;
 			{
-				ElmLabeledNode.ResetNodeList();
+				ElmNamedNode.ResetNodeList();
 				for (int i = 0; i < CircuitElement.List.Count; i++) {
 					var ce = CircuitElement.List[i];
 					if (null == ce) {

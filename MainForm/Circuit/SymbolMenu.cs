@@ -206,7 +206,7 @@ namespace Circuit {
 			case DUMP_ID.AMMETER:
 				return new Ammeter(pos);
 			case DUMP_ID.LABELED_NODE:
-				return new LabeledNode(pos);
+				return new OutputTerminal(pos);
 			case DUMP_ID.DATA_RECORDER:
 				return new DataRecorder(pos);
 			case DUMP_ID.STOP_TRIGGER:
@@ -400,7 +400,7 @@ namespace Circuit {
 			case DUMP_ID.AMMETER:
 				return new Ammeter(p1, p2, f, st);
 			case DUMP_ID.LABELED_NODE:
-				return new LabeledNode(p1, p2, f, st);
+				return new OutputTerminal(p1, p2, f, st);
 			//case DUMP_ID.WAVE_OUT:
 			//    return new AudioOutputElm(p1, p2, f, st);
 			case DUMP_ID.DATA_RECORDER:

@@ -1,25 +1,26 @@
 ﻿using Circuit.Forms;
-using Circuit.Elements.Output;
+using Circuit.Elements.Passive;
 
 namespace Circuit.Symbol.Output {
-	class LabeledNode : BaseSymbol {
+	class OutputTerminal : BaseSymbol {
 		const int FLAG_INTERNAL = 1;
-		const int LabelSize = 17;
 
-		ElmLabeledNode mElm;
+		ElmNamedNode mElm;
 		PointF[] mTextPoly;
 		RectangleF mTextRect;
 
 		public override BaseElement Element { get { return mElm; } }
 
-		public LabeledNode(Point pos) : base(pos) {
-			mElm = new ElmLabeledNode();
+		public OutputTerminal(Point pos) : base(pos) {
+			mElm = new ElmNamedNode();
+			mElm.IsOutput = true;
 		}
 
-		public LabeledNode(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmLabeledNode();
-			st.nextToken(out mElm.Text);
-			mElm.Text = TextUtils.UnEscape(mElm.Text);
+		public OutputTerminal(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
+			mElm = new ElmNamedNode();
+			st.nextToken(out mElm.Name);
+			mElm.Name = TextUtils.UnEscape(mElm.Name);
+			mElm.IsOutput = true;
 		}
 
 		public bool IsInternal { get { return (mFlags & FLAG_INTERNAL) != 0; } }
@@ -27,7 +28,7 @@ namespace Circuit.Symbol.Output {
 		public override DUMP_ID DumpId { get { return DUMP_ID.LABELED_NODE; } }
 
 		protected override void dump(List<object> optionList) {
-			optionList.Add(mElm.Text);
+			optionList.Add(mElm.Name);
 		}
 
 		public override double Distance(Point p) {
@@ -43,7 +44,7 @@ namespace Circuit.Symbol.Output {
 		}
 
 		void SetTextPos() {
-			var txtSize = CustomGraphics.Instance.GetTextSize(mElm.Text);
+			var txtSize = CustomGraphics.Instance.GetTextSize(mElm.Name);
 			var txtW = txtSize.Width;
 			var txtH = txtSize.Height;
 			var pw = txtW / Post.Len;
@@ -94,14 +95,14 @@ namespace Circuit.Symbol.Output {
 
 		public override void Draw(CustomGraphics g) {
 			DrawLeadA();
-			DrawCenteredText(mElm.Text, mNamePos, mTextRot);
+			DrawCenteredText(mElm.Name, mNamePos, mTextRot);
 			DrawPolyline(mTextPoly);
 			UpdateDotCount(mElm.Current, ref mCurCount);
 			DrawCurrentA(mCurCount);
 		}
 
 		public override void GetInfo(string[] arr) {
-			arr[0] = mElm.Text;
+			arr[0] = mElm.Name;
 			arr[1] = "電流：" + TextUtils.Current(mElm.Current);
 			arr[2] = "電位：" + TextUtils.Voltage(mElm.Volts[0]);
 		}
@@ -111,7 +112,7 @@ namespace Circuit.Symbol.Output {
 				return null;
 			}
 			if (r == 0) {
-				return new ElementInfo("名前", mElm.Text);
+				return new ElementInfo("名前", mElm.Name);
 			}
 			if (r == 1) {
 				return new ElementInfo("内部端子", IsInternal);
@@ -121,7 +122,7 @@ namespace Circuit.Symbol.Output {
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
 			if (n == 0) {
-				mElm.Text = ei.Text;
+				mElm.Name = ei.Text;
 			}
 			if (n == 1) {
 				mFlags = ei.ChangeFlag(mFlags, FLAG_INTERNAL);
