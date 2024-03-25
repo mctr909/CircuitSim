@@ -12,13 +12,8 @@
 		public double[] Currents = new double[2];
 		public double[] CurCounts = new double[2];
 
-		double mCurSourceValue1;
-		double mCurSourceValue2;
-
-		double mA1;
-		double mA2;
-		double mA3;
-		double mA4;
+		double[] mA = new double[4];
+		double[] mCurSourceValue = new double[2];
 
 		public override int TermCount { get { return 4; } }
 
@@ -30,7 +25,7 @@
 			Volts[PRI_T] = Volts[PRI_B] = 0;
 			Volts[SEC_T] = Volts[SEC_B] = 0;
 			CurCounts[0] = CurCounts[1] = 0;
-			mCurSourceValue1 = mCurSourceValue2 = 0;
+			mCurSourceValue[0] = mCurSourceValue[1] = 0;
 		}
 
 		public override bool GetConnection(int n1, int n2) {
@@ -71,45 +66,24 @@
              * dt instead of dt/2 for the resistor and VCCS.
              *
              * first winding goes from node 0 to 2, second is from 1 to 3 */
-			double l1 = PInductance;
-			double l2 = PInductance * Ratio * Ratio;
-			double m = CouplingCoef * Math.Sqrt(l1 * l2);
-			/* build inverted matrix */
-			double deti = 1 / (l1 * l2 - m * m);
-			double ts = CircuitElement.TimeStep / 2;
-			mA1 = l2 * deti * ts; /* we multiply dt/2 into a1..a4 here */
-			mA2 = -m * deti * ts;
-			mA3 = -m * deti * ts;
-			mA4 = l1 * deti * ts;
-			var pre_t = Nodes[PRI_T] - 1;
-			var pre_b = Nodes[PRI_B] - 1;
-			var sec_t = Nodes[SEC_T] - 1;
-			var sec_b = Nodes[SEC_B] - 1;
-
-			CircuitElement.Matrix[pre_t, pre_t] += mA1;
-			CircuitElement.Matrix[pre_b, pre_b] += mA1;
-			CircuitElement.Matrix[pre_t, pre_b] -= mA1;
-			CircuitElement.Matrix[pre_b, pre_t] -= mA1;
-
-			CircuitElement.Matrix[pre_t, sec_t] += mA2;
-			CircuitElement.Matrix[pre_b, sec_b] += mA2;
-			CircuitElement.Matrix[pre_t, sec_b] -= mA2;
-			CircuitElement.Matrix[pre_b, sec_t] -= mA2;
-
-			CircuitElement.Matrix[sec_t, pre_t] += mA3;
-			CircuitElement.Matrix[sec_b, pre_b] += mA3;
-			CircuitElement.Matrix[sec_t, pre_b] -= mA3;
-			CircuitElement.Matrix[sec_b, pre_t] -= mA3;
-
-			CircuitElement.Matrix[sec_t, sec_t] += mA4;
-			CircuitElement.Matrix[sec_b, sec_b] += mA4;
-			CircuitElement.Matrix[sec_t, sec_b] -= mA4;
-			CircuitElement.Matrix[sec_b, sec_t] -= mA4;
-
-			CircuitElement.RowInfo[pre_t].RightChanges = true;
-			CircuitElement.RowInfo[sec_t].RightChanges = true;
-			CircuitElement.RowInfo[pre_b].RightChanges = true;
-			CircuitElement.RowInfo[sec_b].RightChanges = true;
+			var l1 = PInductance;
+			var l2 = PInductance * Ratio * Ratio;
+			var m = CouplingCoef * Math.Sqrt(l1 * l2);
+			// build inverted matrix
+			var deti = 1 / (l1 * l2 - m * m);
+			var ts = CircuitElement.TimeStep / 2;
+			mA[0] = l2 * deti * ts; // we multiply dt/2 into a1..a4 here
+			mA[1] = -m * deti * ts;
+			mA[2] = -m * deti * ts;
+			mA[3] = l1 * deti * ts;
+			CircuitElement.StampConductance(Nodes[PRI_T], Nodes[PRI_B], mA[0]);
+			CircuitElement.StampVCCurrentSource(Nodes[PRI_T], Nodes[PRI_B], Nodes[SEC_T], Nodes[SEC_B], mA[1]);
+			CircuitElement.StampVCCurrentSource(Nodes[SEC_T], Nodes[SEC_B], Nodes[PRI_T], Nodes[PRI_B], mA[2]);
+			CircuitElement.StampConductance(Nodes[SEC_T], Nodes[SEC_B], mA[3]);
+			CircuitElement.StampRightSide(Nodes[PRI_T]);
+			CircuitElement.StampRightSide(Nodes[SEC_T]);
+			CircuitElement.StampRightSide(Nodes[PRI_B]);
+			CircuitElement.StampRightSide(Nodes[SEC_B]);
 		}
 
 		public override double GetCurrentIntoNode(int n) {
@@ -122,27 +96,27 @@
 		public override void PrepareIteration() {
 			var voltDiffP = Volts[PRI_T] - Volts[PRI_B];
 			var voltDiffS = Volts[SEC_T] - Volts[SEC_B];
-			mCurSourceValue1 = voltDiffP * mA1 + voltDiffS * mA2 + Currents[0];
-			mCurSourceValue2 = voltDiffP * mA3 + voltDiffS * mA4 + Currents[1];
+			mCurSourceValue[0] = voltDiffP * mA[0] + voltDiffS * mA[1] + Currents[0];
+			mCurSourceValue[1] = voltDiffP * mA[2] + voltDiffS * mA[3] + Currents[1];
 		}
 
 		public override void DoIteration() {
 			var r = CircuitElement.RowInfo[Nodes[PRI_T] - 1].MapRow;
-			CircuitElement.RightSide[r] -= mCurSourceValue1;
+			CircuitElement.RightSide[r] -= mCurSourceValue[0];
 			r = CircuitElement.RowInfo[Nodes[PRI_B] - 1].MapRow;
-			CircuitElement.RightSide[r] += mCurSourceValue1;
+			CircuitElement.RightSide[r] += mCurSourceValue[0];
 			r = CircuitElement.RowInfo[Nodes[SEC_T] - 1].MapRow;
-			CircuitElement.RightSide[r] -= mCurSourceValue2;
+			CircuitElement.RightSide[r] -= mCurSourceValue[1];
 			r = CircuitElement.RowInfo[Nodes[SEC_B] - 1].MapRow;
-			CircuitElement.RightSide[r] += mCurSourceValue2;
+			CircuitElement.RightSide[r] += mCurSourceValue[1];
 		}
 
 		public override void SetVoltage(int n, double c) {
 			Volts[n] = c;
 			var voltDiffP = Volts[PRI_T] - Volts[PRI_B];
 			var voltDiffS = Volts[SEC_T] - Volts[SEC_B];
-			Currents[0] = voltDiffP * mA1 + voltDiffS * mA2 + mCurSourceValue1;
-			Currents[1] = voltDiffP * mA3 + voltDiffS * mA4 + mCurSourceValue2;
+			Currents[0] = voltDiffP * mA[0] + voltDiffS * mA[1] + mCurSourceValue[0];
+			Currents[1] = voltDiffP * mA[2] + voltDiffS * mA[3] + mCurSourceValue[1];
 		}
 	}
 }

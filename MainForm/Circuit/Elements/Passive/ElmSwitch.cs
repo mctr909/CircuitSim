@@ -13,13 +13,7 @@
 
 		public override void Stamp() {
 			if (Position == 0) {
-				var n0 = Nodes[0] - 1;
-				var n1 = Nodes[1] - 1;
-				int vn = CircuitElement.Nodes.Count + mVoltSource - 1;
-				CircuitElement.Matrix[vn, n0] -= 1;
-				CircuitElement.Matrix[vn, n1] += 1;
-				CircuitElement.Matrix[n0, vn] += 1;
-				CircuitElement.Matrix[n1, vn] -= 1;
+				CircuitElement.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
 			}
 		}
 

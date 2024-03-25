@@ -75,8 +75,8 @@ namespace Circuit.Symbol.Active {
 			base.SetPoints();
 			SetLeads(BODY_LEN);
 			mCathode = new PointF[4];
-			InterpolationLeadAB(ref mCathode[0], ref mCathode[1], (BODY_LEN - 1.0) / BODY_LEN, HS);
-			InterpolationLeadAB(ref mCathode[3], ref mCathode[2], (BODY_LEN + 1.0) / BODY_LEN, HS);
+			InterpolationLeadAB(ref mCathode[0], ref mCathode[1], (BODY_LEN - 0.75) / BODY_LEN, HS);
+			InterpolationLeadAB(ref mCathode[3], ref mCathode[2], (BODY_LEN + 0.75) / BODY_LEN, HS);
 			var pa = new PointF[2];
 			InterpolationLeadAB(ref pa[0], ref pa[1], -1.0 / BODY_LEN, HS);
 			mPoly = new PointF[] { pa[0], pa[1], mLead2 };

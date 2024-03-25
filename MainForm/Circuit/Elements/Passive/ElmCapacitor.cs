@@ -25,14 +25,10 @@
 			if (n0 < 0 || n1 < 0) {
 				return;
 			}
-			var g = 2 * Capacitance / CircuitElement.TimeStep;
-			mCompResistance = 1.0 / g;
-			CircuitElement.Matrix[n0, n0] += g;
-			CircuitElement.Matrix[n1, n1] += g;
-			CircuitElement.Matrix[n0, n1] -= g;
-			CircuitElement.Matrix[n1, n0] -= g;
-			CircuitElement.RowInfo[n0].RightChanges = true;
-			CircuitElement.RowInfo[n1].RightChanges = true;
+			mCompResistance = 0.5 * CircuitElement.TimeStep / Capacitance;
+			CircuitElement.StampResistor(Nodes[0], Nodes[1], mCompResistance);
+			CircuitElement.StampRightSide(Nodes[0]);
+			CircuitElement.StampRightSide(Nodes[1]);
 		}
 
 		public override void PrepareIteration() {

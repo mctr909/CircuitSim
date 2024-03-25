@@ -841,7 +841,7 @@ namespace MainForm {
 
 		void DoOpenFile() {
 			var open = new OpenFileDialog {
-				Filter = "�e�L�X�g�t�@�C��(*.txt)|*.txt"
+				Filter = "回路データ(*.txt)|*.txt"
 			};
 			open.ShowDialog();
 			if (string.IsNullOrEmpty(open.FileName) || !Directory.Exists(Path.GetDirectoryName(open.FileName))) {
@@ -870,7 +870,7 @@ namespace MainForm {
 
 			if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) {
 				var save = new SaveFileDialog {
-					Filter = "�e�L�X�g�t�@�C��(*.txt)|*.txt"
+					Filter = "回路データ(*.txt)|*.txt"
 				};
 				save.ShowDialog();
 				if (string.IsNullOrEmpty(save.FileName) || !Directory.Exists(Path.GetDirectoryName(save.FileName))) {
@@ -1491,7 +1491,7 @@ namespace MainForm {
 				pdf.AddPage(pdfCircuit);
 				pdf.AddPage(pdfScope);
 				var saveFileDialog = new SaveFileDialog {
-					Filter = "PDF�t�@�C��(*.pdf)|*.pdf",
+					Filter = "PDFファイル(*.pdf)|*.pdf",
 					FileName = Path.GetFileNameWithoutExtension(mFileName)
 				};
 				saveFileDialog.ShowDialog();

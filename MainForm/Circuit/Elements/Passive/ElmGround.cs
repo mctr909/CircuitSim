@@ -9,10 +9,7 @@
 		public override bool HasGroundConnection(int n1) { return true; }
 
 		public override void Stamp() {
-			var nv = CircuitElement.Nodes.Count + mVoltSource - 1;
-			var n0 = Nodes[0] - 1;
-			CircuitElement.Matrix[nv, n0] += 1;
-			CircuitElement.Matrix[n0, nv] -= 1;
+			CircuitElement.StampVoltageSource(0, Nodes[0], mVoltSource, 0);
 		}
 
 		public override double GetCurrentIntoNode(int n) { return -Current; }
