@@ -64,7 +64,7 @@ namespace Circuit.Symbol.Measure {
 			arr[1] = "V = " + TextUtils.Voltage(mElm.Volts[0]);
 			arr[2] = "Vtrigger = " + TextUtils.Voltage(mElm.TriggerVoltage);
 			arr[3] = mElm.Triggered ? ("stopping in "
-				+ TextUtils.Time(mElm.TriggerTime + mElm.Delay - CircuitElement.Time)) : mElm.Stopped ? "stopped" : "waiting";
+				+ TextUtils.Time(mElm.TriggerTime + mElm.Delay - CircuitElement.time)) : mElm.Stopped ? "stopped" : "waiting";
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

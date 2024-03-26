@@ -70,7 +70,7 @@ namespace Circuit.Symbol.Input {
 				}
 				if (r == 2) {
 					mElm.Frequency = ei.Value;
-					var maxfreq = 1 / (8 * CircuitElement.TimeStep);
+					var maxfreq = 1 / (8 * CircuitElement.delta_time);
 					if (maxfreq < mElm.Frequency) {
 						mElm.Frequency = maxfreq;
 					}

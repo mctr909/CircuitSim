@@ -49,8 +49,8 @@ namespace Circuit.Symbol.Custom {
 			return dumpStr;
 		}
 
-		protected Dictionary<int, CircuitNode> getCompNode(string models) {
-			var compNodeHash = new Dictionary<int, CircuitNode>();
+		protected Dictionary<int, CIRCUIT_NODE> getCompNode(string models) {
+			var compNodeHash = new Dictionary<int, CIRCUIT_NODE>();
 			var strModels = new StringTokenizer(models, "\r");
 			while (strModels.HasMoreTokens) {
 				strModels.nextToken(out string modelLine);
@@ -62,17 +62,17 @@ namespace Circuit.Symbol.Custom {
 				int thisPost = 0;
 				while (strModel.HasMoreTokens) {
 					var nodeOfThisPost = strModel.nextTokenInt();
-					var cnLink = new CircuitNode.LINK() {
-						Num = thisPost,
-						Elm = newce.Element
+					var cl = new CIRCUIT_LINK() {
+						node_index = thisPost,
+						p_elm = newce.Element
 					};
 					if (!compNodeHash.ContainsKey(nodeOfThisPost)) {
-						var cn = new CircuitNode();
-						cn.Links.Add(cnLink);
+						var cn = new CIRCUIT_NODE();
+						cn.links.Add(cl);
 						compNodeHash.Add(nodeOfThisPost, cn);
 					} else {
 						var cn = compNodeHash[nodeOfThisPost];
-						cn.Links.Add(cnLink);
+						cn.links.Add(cl);
 					}
 					thisPost++;
 				}

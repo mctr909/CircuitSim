@@ -42,12 +42,12 @@
 			}
 			if (IsLog) {
 				mFadd = 0;
-				mFmul = Math.Pow(MaxF / MinF, mFdir * CircuitElement.TimeStep / SweepTime);
+				mFmul = Math.Pow(MaxF / MinF, mFdir * CircuitElement.delta_time / SweepTime);
 			} else {
-				mFadd = mFdir * CircuitElement.TimeStep * (MaxF - MinF) / SweepTime;
+				mFadd = mFdir * CircuitElement.delta_time * (MaxF - MinF) / SweepTime;
 				mFmul = 1;
 			}
-			mSavedTimeStep = CircuitElement.TimeStep;
+			mSavedTimeStep = CircuitElement.delta_time;
 		}
 
 		public override void Stamp() {
@@ -56,11 +56,11 @@
 
 		public override void PrepareIteration() {
 			/* has timestep been changed? */
-			if (CircuitElement.TimeStep != mSavedTimeStep) {
+			if (CircuitElement.delta_time != mSavedTimeStep) {
 				SetParams();
 			}
 			mVolt = Math.Sin(mFreqTime) * MaxV;
-			mFreqTime += Frequency * 2 * Math.PI * CircuitElement.TimeStep;
+			mFreqTime += Frequency * 2 * Math.PI * CircuitElement.delta_time;
 			Frequency = Frequency * mFmul + mFadd;
 			if (Frequency >= MaxF && mFdir == 1) {
 				if (BothSides) {
@@ -79,9 +79,9 @@
 		}
 
 		public override void DoIteration() {
-			var vn = CircuitElement.Nodes.Count + mVoltSource;
-			var row = CircuitElement.RowInfo[vn - 1].MapRow;
-			CircuitElement.RightSide[row] += mVolt;
+			var vn = CircuitElement.nodes.Length + mVoltSource;
+			var row = CircuitElement.row_info[vn - 1].row;
+			CircuitElement.right_side[row] += mVolt;
 		}
 	}
 }

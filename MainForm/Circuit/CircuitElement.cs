@@ -1,148 +1,131 @@
 ﻿using Circuit.Elements.Passive;
 
 namespace Circuit {
-	class CircuitNode {
-		public struct LINK {
-			public int Num;
-			public BaseElement Elm;
-		}
-		public List<LINK> Links = [];
-		public bool Internal;
+	struct CIRCUIT_LINK {
+		public int node_index;
+		public BaseElement p_elm;
+	}
+
+	class CIRCUIT_NODE {
+		public bool is_internal;
+		public List<CIRCUIT_LINK> links = [];
+	}
+
+	class CIRCUIT_WIRE {
+		public int post;
+		public ElmWire p_elm;
+		public List<BaseElement> neighbors = [];
+	}
+
+	class CIRCUIT_ROW {
+		public bool is_const;
+		public bool right_changes;
+		public bool left_changes;
+		public bool drop;
+		public int col;
+		public int row;
+		public double value;
 	}
 
 	static class CircuitElement {
-		public class ROW_INFO {
-			public bool IsConst;
-			public bool RightChanges; /* row's right side changes */
-			public bool LeftChanges;  /* row's left side changes */
-			public bool DropRow;      /* row is not needed in matrix */
-			public int MapCol;
-			public int MapRow;
-			public double Value;
-		}
-
-		public class Wire {
-			public ElmWire Element;
-			public List<BaseElement> Neighbors;
-			public int Post;
-			public Wire(ElmWire w) { Element = w; }
-		}
-
-		const int SubIterMax = 1000;
+		const int SUB_ITER_MAX = 1000;
 
 		#region variable
-		public static double Time;
-		public static double TimeStep;
-	
-		public static List<CircuitNode> Nodes = [];
-		public static double[,] Matrix;
-		public static double[] RightSide;
-		public static ROW_INFO[] RowInfo;
-		public static bool Stopped;
-		public static bool Converged;
-		public static int SubIterations;
+		public static double time;
+		public static double delta_time;
 
-		public static List<BaseElement> List = [];
-		public static List<Wire> WireList = [];
-		public static BaseElement[] VoltageSources;
-		public static double[,] OrigMatrix;
-		public static double[] OrigRightSide;
-		public static int[] Permute;
-		public static bool CircuitNeedsMap;
-		public static int MatrixSize;
-		public static int MatrixFullSize;
+		public static CIRCUIT_NODE[] nodes = [];
+		public static double[,] matrix = new double[0, 0];
+		public static double[] right_side = [];
+		public static CIRCUIT_ROW[] row_info = [];
+		public static int sub_iterations;
+		public static bool stopped;
+		public static bool converged;
+
+		public static BaseElement[] elements = [];
+		public static CIRCUIT_WIRE[] wires = [];
+		public static BaseElement[] voltage_sources = [];
+		public static double[,] orig_matrix = new double[0, 0];
+		public static double[] orig_right_side = [];
+		public static int[] permute = [];
+		public static bool needs_map;
+		public static int matrix_size;
+		public static int matrix_full_size;
 		#endregion
 
-		public static void Stop(BaseElement elm) {
-			Stopped = true;
-			Matrix = null;  /* causes an exception */
-		}
-
 		public static bool DoIteration() {
-			for (int i = 0; i < List.Count; i++) {
-				List[i].PrepareIteration();
+			for (int i = 0; i < elements.Length; i++) {
+				elements[i].PrepareIteration();
 			}
 
-			for (SubIterations = 0; SubIterations < SubIterMax; SubIterations++) {
-				Array.Copy(OrigRightSide, RightSide, MatrixSize);
-				for (int i = 0; i < MatrixSize; i++) {
-					for (int j = 0; j < MatrixSize; j++) {
-						Matrix[i, j] = OrigMatrix[i, j];
+			for (sub_iterations = 0; sub_iterations < SUB_ITER_MAX; sub_iterations++) {
+				Array.Copy(orig_right_side, right_side, matrix_size);
+				for (int i = 0; i < matrix_size; i++) {
+					for (int j = 0; j < matrix_size; j++) {
+						matrix[i, j] = orig_matrix[i, j];
 					}
 				}
 
-				Converged = true;
-				for (int i = 0; i < List.Count; i++) {
-					List[i].DoIteration();
+				converged = true;
+				for (int i = 0; i < elements.Length; i++) {
+					elements[i].DoIteration();
 				}
-				if (Stopped) {
+
+				if (stopped) {
 					return false;
 				}
 
-				for (int j = 0; j < MatrixSize; j++) {
-					for (int i = 0; i < MatrixSize; i++) {
-						var x = Matrix[i, j];
-						if (double.IsNaN(x) || double.IsInfinity(x)) {
-							//Console.WriteLine("Matrix[" + i + "," + j + "] is NaN/infinite");
-							return false;
-						}
-					}
-				}
-
-				if (Converged && SubIterations > 0) {
+				if (converged && sub_iterations > 0) {
 					break;
 				}
 
-				if (!luFactor()) {
-					//Console.WriteLine("Singular matrix!");
-					return false;
-				}
+				luFactor();
 				luSolve();
 
-				for (int j = 0; j < MatrixFullSize; j++) {
-					var ri = RowInfo[j];
+				for (int j = 0; j < matrix_full_size; j++) {
+					var ri = row_info[j];
 					double res;
-					if (ri.IsConst) {
-						res = ri.Value;
+					if (ri.is_const) {
+						res = ri.value;
 					} else {
-						res = RightSide[ri.MapCol];
+						res = right_side[ri.col];
 					}
 					if (double.IsNaN(res) || double.IsInfinity(res)) {
-						//Console.WriteLine((ri.IsConst ? ("RowInfo[" + j + "]") : ("RightSide[" + ri.MapCol + "]")) + " is NaN/infinite");
+						Console.WriteLine((ri.is_const ? ("RowInfo[" + j + "]") : ("RightSide[" + ri.col + "]")) + " is NaN/infinite");
 						return false;
 					}
-					if (j < Nodes.Count - 1) {
-						var cn = Nodes[j + 1];
-						for (int k = 0; k < cn.Links.Count; k++) {
-							var cnl = cn.Links[k];
-							cnl.Elm.SetVoltage(cnl.Num, res);
+					if (j < nodes.Length - 1) {
+						var cn = nodes[j + 1];
+						for (int k = 0; k < cn.links.Count; k++) {
+							var cl = cn.links[k];
+							cl.p_elm.SetVoltage(cl.node_index, res);
 						}
 					} else {
-						var ji = j - (Nodes.Count - 1);
-						VoltageSources[ji].SetCurrent(ji, res);
+						var ji = j - (nodes.Length - 1);
+						voltage_sources[ji].SetCurrent(ji, res);
 					}
 				}
 			}
 
-			if (SubIterations == SubIterMax) {
-				//Console.WriteLine("計算が収束しませんでした");
+			if (sub_iterations == SUB_ITER_MAX) {
+				Console.WriteLine("計算が収束しませんでした");
 				return false;
 			}
 
-			for (int i = 0; i < List.Count; i++) {
-				List[i].FinishIteration();
+			for (int i = 0; i < elements.Length; i++) {
+				elements[i].FinishIteration();
 			}
 
 			/* calc wire currents */
 			/* we removed wires from the matrix to speed things up.  in order to display wire currents,
-            /* we need to calculate them now. */
-			for (int i = 0; i < WireList.Count; i++) {
-				var wi = WireList[i];
-				var we = wi.Element;
+			/* we need to calculate them now. */
+			for (int i = 0; i < wires.Length; i++) {
+				var wi = wires[i];
+				var we = wi.p_elm;
 				var cur = 0.0;
-				var p = we.NodePos[wi.Post];
-				for (int j = 0; j < wi.Neighbors.Count; j++) {
-					var ce = wi.Neighbors[j];
+				var p = we.NodePos[wi.post];
+				for (int j = 0; j < wi.neighbors.Count; j++) {
+					var ce = wi.neighbors[j];
 					var n = 0;
 					for (int k = 0; k != ce.TermCount; k++) {
 						var nodePos = ce.NodePos[k];
@@ -153,56 +136,42 @@ namespace Circuit {
 					}
 					cur += ce.GetCurrentIntoNode(n);
 				}
-				if (wi.Post == 0) {
+				if (wi.post == 0) {
 					we.SetCurrent(-1, cur);
 				} else {
 					we.SetCurrent(-1, -cur);
 				}
 			}
-			Time += TimeStep;
+			time += delta_time;
 			return true;
 		}
 
 		#region private method
-		/* factors a matrix into upper and lower triangular matrices by
-        /* gaussian elimination. On entry, Matrix[0..n-1][0..n-1] is the
-        /* matrix to be factored. mPermute[] returns an integer vector of pivot
-        /* indices, used in the lu_solve() routine. */
-		static bool luFactor() {
-			/* check for a possible singular matrix by scanning for rows that
-            /* are all zeroes */
-			for (int i = 0; i != MatrixSize; i++) {
-				bool row_all_zeros = true;
-				for (int j = 0; j != MatrixSize; j++) {
-					if (Matrix[i, j] != 0) {
-						row_all_zeros = false;
-						break;
-					}
-				}
-				/* if all zeros, it's a singular matrix */
-				if (row_all_zeros) {
-					return false;
-				}
-			}
+		/**
+		 * factors a matrix into upper and lower triangular matrices by gaussian elimination.
+		 * On entry, Matrix[0..n-1][0..n-1] is the matrix to be factored.
+		 * Permute[] returns an integer vector of pivot indices, used in the luSolve() routine.
+		 */
+		static void luFactor() {
 			/* use Crout's method; loop through the columns */
-			for (int j = 0; j != MatrixSize; j++) {
+			for (int j = 0; j != matrix_size; j++) {
 				/* calculate upper triangular elements for this column */
 				for (int i = 0; i != j; i++) {
-					var q = Matrix[i, j];
+					var q = matrix[i, j];
 					for (int k = 0; k != i; k++) {
-						q -= Matrix[i, k] * Matrix[k, j];
+						q -= matrix[i, k] * matrix[k, j];
 					}
-					Matrix[i, j] = q;
+					matrix[i, j] = q;
 				}
 				/* calculate lower triangular elements for this column */
 				double largest = 0;
 				int largestRow = -1;
-				for (int i = j; i != MatrixSize; i++) {
-					var q = Matrix[i, j];
+				for (int i = j; i != matrix_size; i++) {
+					var q = matrix[i, j];
 					for (int k = 0; k != j; k++) {
-						q -= Matrix[i, k] * Matrix[k, j];
+						q -= matrix[i, k] * matrix[k, j];
 					}
-					Matrix[i, j] = q;
+					matrix[i, j] = q;
 					var x = Math.Abs(q);
 					if (x >= largest) {
 						largest = x;
@@ -212,62 +181,61 @@ namespace Circuit {
 				/* pivoting */
 				if (j != largestRow) {
 					double x;
-					for (int k = 0; k != MatrixSize; k++) {
-						x = Matrix[largestRow, k];
-						Matrix[largestRow, k] = Matrix[j, k];
-						Matrix[j, k] = x;
+					for (int k = 0; k != matrix_size; k++) {
+						x = matrix[largestRow, k];
+						matrix[largestRow, k] = matrix[j, k];
+						matrix[j, k] = x;
 					}
 				}
 				/* keep track of row interchanges */
-				Permute[j] = largestRow;
-				/* avoid zeros */
-				if (Matrix[j, j] == 0.0) {
-					//Console.WriteLine("avoided zero");
-					Matrix[j, j] = 1e-18;
+				permute[j] = largestRow;
+				if (0.0 == matrix[j, j]) {
+					/* avoid zeros */
+					matrix[j, j] = 1e-18;
 				}
-				if (j != MatrixSize - 1) {
-					var mult = 1.0 / Matrix[j, j];
-					for (int i = j + 1; i != MatrixSize; i++) {
-						Matrix[i, j] *= mult;
+				if (j != matrix_size - 1) {
+					var mult = 1.0 / matrix[j, j];
+					for (int i = j + 1; i != matrix_size; i++) {
+						matrix[i, j] *= mult;
 					}
 				}
 			}
-			return true;
 		}
 
-		/* Solves the set of n linear equations using a LU factorization
-        /* previously performed by lu_factor.  On input, RightSide[0..n-1] is the right
-        /* hand side of the equations, and on output, contains the solution. */
+		/**
+		 * Solves the set of n linear equations using a LU factorization previously performed by lu_factor.
+		 * On input, RightSide[0..n-1] is the right hand side of the equations, and on output, contains the solution.
+		 */
 		static void luSolve() {
 			int i;
 			/* find first nonzero b element */
-			for (i = 0; i != MatrixSize; i++) {
-				var row = Permute[i];
-				var swap = RightSide[row];
-				RightSide[row] = RightSide[i];
-				RightSide[i] = swap;
+			for (i = 0; i != matrix_size; i++) {
+				var row = permute[i];
+				var swap = right_side[row];
+				right_side[row] = right_side[i];
+				right_side[i] = swap;
 				if (swap != 0) {
 					break;
 				}
 			}
 			int bi = i++;
-			for (; i < MatrixSize; i++) {
-				var row = Permute[i];
-				var tot = RightSide[row];
-				RightSide[row] = RightSide[i];
+			for (; i < matrix_size; i++) {
+				var row = permute[i];
+				var tot = right_side[row];
+				right_side[row] = right_side[i];
 				/* forward substitution using the lower triangular matrix */
 				for (int j = bi; j < i; j++) {
-					tot -= Matrix[i, j] * RightSide[j];
+					tot -= matrix[i, j] * right_side[j];
 				}
-				RightSide[i] = tot;
+				right_side[i] = tot;
 			}
-			for (i = MatrixSize - 1; i >= 0; i--) {
-				var tot = RightSide[i];
+			for (i = matrix_size - 1; i >= 0; i--) {
+				var tot = right_side[i];
 				/* back-substitution using the upper triangular matrix */
-				for (int j = i + 1; j != MatrixSize; j++) {
-					tot -= Matrix[i, j] * RightSide[j];
+				for (int j = i + 1; j != matrix_size; j++) {
+					tot -= matrix[i, j] * right_side[j];
 				}
-				RightSide[i] = tot / Matrix[i, i];
+				right_side[i] = tot / matrix[i, i];
 			}
 		}
 		#endregion
@@ -275,7 +243,7 @@ namespace Circuit {
 		#region stamp method
 		/* stamp independent voltage source #vs, from n1 to n2, amount v */
 		public static void StampVoltageSource(int n1, int n2, int vs, double v) {
-			int vn = Nodes.Count + vs;
+			int vn = nodes.Length + vs;
 			StampMatrix(vn, n1, -1);
 			StampMatrix(vn, n2, 1);
 			StampRightSide(vn, v);
@@ -285,7 +253,7 @@ namespace Circuit {
 
 		/* use this if the amount of voltage is going to be updated in doStep(), by updateVoltageSource() */
 		public static void StampVoltageSource(int n1, int n2, int vs) {
-			int vn = Nodes.Count + vs;
+			int vn = nodes.Length + vs;
 			StampMatrix(vn, n1, -1);
 			StampMatrix(vn, n2, 1);
 			StampRightSide(vn);
@@ -295,7 +263,7 @@ namespace Circuit {
 
 		/* update voltage source in doStep() */
 		public static void UpdateVoltageSource(int vs, double v) {
-			int vn = Nodes.Count + vs;
+			int vn = nodes.Length + vs;
 			StampRightSide(vn, v);
 		}
 
@@ -333,7 +301,7 @@ namespace Circuit {
 
 		/* stamp a current source from n1 to n2 depending on current through vs */
 		public static void StampCCCS(int n1, int n2, int vs, double gain) {
-			int vn = Nodes.Count + vs;
+			int vn = nodes.Length + vs;
 			StampMatrix(n1, vn, gain);
 			StampMatrix(n2, vn, -gain);
 		}
@@ -347,19 +315,19 @@ namespace Circuit {
 		/// <param name="x">stamp value in row, column</param>
 		public static void StampMatrix(int r, int c, double x) {
 			if (r > 0 && c > 0) {
-				if (CircuitNeedsMap) {
-					r = RowInfo[r - 1].MapRow;
-					var ri = RowInfo[c - 1];
-					if (ri.IsConst) {
-						RightSide[r] -= x * ri.Value;
+				if (needs_map) {
+					r = row_info[r - 1].row;
+					var ri = row_info[c - 1];
+					if (ri.is_const) {
+						right_side[r] -= x * ri.value;
 						return;
 					}
-					c = ri.MapCol;
+					c = ri.col;
 				} else {
 					r--;
 					c--;
 				}
-				Matrix[r, c] += x;
+				matrix[r, c] += x;
 			}
 		}
 
@@ -367,26 +335,26 @@ namespace Circuit {
         /* independent current source flowing into node i */
 		public static void StampRightSide(int i, double x) {
 			if (i > 0) {
-				if (CircuitNeedsMap) {
-					i = RowInfo[i - 1].MapRow;
+				if (needs_map) {
+					i = row_info[i - 1].row;
 				} else {
 					i--;
 				}
-				RightSide[i] += x;
+				right_side[i] += x;
 			}
 		}
 
 		/* indicate that the value on the right side of row i changes in doStep() */
 		public static void StampRightSide(int i) {
 			if (i > 0) {
-				RowInfo[i - 1].RightChanges = true;
+				row_info[i - 1].right_changes = true;
 			}
 		}
 
 		/* indicate that the values on the left side of row i change in doStep() */
 		public static void StampNonLinear(int i) {
 			if (i > 0) {
-				RowInfo[i - 1].LeftChanges = true;
+				row_info[i - 1].left_changes = true;
 			}
 		}
 		#endregion

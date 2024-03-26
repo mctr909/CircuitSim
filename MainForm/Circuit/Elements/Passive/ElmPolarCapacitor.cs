@@ -4,7 +4,7 @@
 
 		public override void FinishIteration() {
 			if (VoltageDiff < 0 && VoltageDiff < -MaxNegativeVoltage) {
-				CircuitElement.Stop(this);
+				CircuitElement.stopped = true;
 			}
 		}
 	}

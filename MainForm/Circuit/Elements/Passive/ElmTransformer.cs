@@ -71,7 +71,7 @@
 			var m = CouplingCoef * Math.Sqrt(l1 * l2);
 			// build inverted matrix
 			var deti = 1 / (l1 * l2 - m * m);
-			var ts = CircuitElement.TimeStep / 2;
+			var ts = CircuitElement.delta_time / 2;
 			mA[0] = l2 * deti * ts; // we multiply dt/2 into a1..a4 here
 			mA[1] = -m * deti * ts;
 			mA[2] = -m * deti * ts;
@@ -101,14 +101,14 @@
 		}
 
 		public override void DoIteration() {
-			var r = CircuitElement.RowInfo[Nodes[PRI_T] - 1].MapRow;
-			CircuitElement.RightSide[r] -= mCurSourceValue[0];
-			r = CircuitElement.RowInfo[Nodes[PRI_B] - 1].MapRow;
-			CircuitElement.RightSide[r] += mCurSourceValue[0];
-			r = CircuitElement.RowInfo[Nodes[SEC_T] - 1].MapRow;
-			CircuitElement.RightSide[r] -= mCurSourceValue[1];
-			r = CircuitElement.RowInfo[Nodes[SEC_B] - 1].MapRow;
-			CircuitElement.RightSide[r] += mCurSourceValue[1];
+			var r = CircuitElement.row_info[Nodes[PRI_T] - 1].row;
+			CircuitElement.right_side[r] -= mCurSourceValue[0];
+			r = CircuitElement.row_info[Nodes[PRI_B] - 1].row;
+			CircuitElement.right_side[r] += mCurSourceValue[0];
+			r = CircuitElement.row_info[Nodes[SEC_T] - 1].row;
+			CircuitElement.right_side[r] -= mCurSourceValue[1];
+			r = CircuitElement.row_info[Nodes[SEC_B] - 1].row;
+			CircuitElement.right_side[r] += mCurSourceValue[1];
 		}
 
 		public override void SetVoltage(int n, double c) {

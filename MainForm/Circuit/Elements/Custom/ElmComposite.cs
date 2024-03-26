@@ -12,7 +12,7 @@ namespace Circuit.Elements.Custom {
 		protected List<BaseElement> CompList = [];
 
 		/* list of nodes, mapping each one to a list of elements that reference that node */
-		List<CircuitNode> mCompNodeList;
+		List<CIRCUIT_NODE> mCompNodeList;
 		List<VoltageSourceRecord> mVoltageSources;
 		int mNumTerms = 0;
 		int mNumNodes = 0;
@@ -31,15 +31,14 @@ namespace Circuit.Elements.Custom {
 
 		/* are n1 and n2 connected internally somehow? */
 		public override bool GetConnection(int n1, int n2) {
-			var cnLinks1 = mCompNodeList[n1].Links;
-			var cnLinks2 = mCompNodeList[n2].Links;
-
+			var cl1 = mCompNodeList[n1].links;
+			var cl2 = mCompNodeList[n2].links;
 			/* see if any elements are connected to both n1 and n2, then call getConnection() on those */
-			for (int i = 0; i < cnLinks1.Count; i++) {
-				var link1 = cnLinks1[i];
-				for (int j = 0; j < cnLinks2.Count; j++) {
-					var link2 = cnLinks2[j];
-					if (link1.Elm == link2.Elm && link1.Elm.GetConnection(link1.Num, link2.Num)) {
+			for (int i = 0; i < cl1.Count; i++) {
+				var link1 = cl1[i];
+				for (int j = 0; j < cl2.Count; j++) {
+					var link2 = cl2[j];
+					if (link1.p_elm == link2.p_elm && link1.p_elm.GetConnection(link1.node_index, link2.node_index)) {
 						return true;
 					}
 				}
@@ -49,10 +48,9 @@ namespace Circuit.Elements.Custom {
 
 		/* is n1 connected to ground somehow? */
 		public override bool HasGroundConnection(int n1) {
-			List<CircuitNode.LINK> cnLinks;
-			cnLinks = mCompNodeList[n1].Links;
-			for (int i = 0; i < cnLinks.Count; i++) {
-				if (cnLinks[i].Elm.HasGroundConnection(cnLinks[i].Num)) {
+			var links = mCompNodeList[n1].links;
+			for (int i = 0; i < links.Count; i++) {
+				if (links[i].p_elm.HasGroundConnection(links[i].node_index)) {
 					return true;
 				}
 			}
@@ -61,9 +59,9 @@ namespace Circuit.Elements.Custom {
 
 		public override void SetNode(int p, int n) {
 			base.SetNode(p, n);
-			var cnLinks = mCompNodeList[p].Links;
-			for (int i = 0; i < cnLinks.Count; i++) {
-				cnLinks[i].Elm.SetNode(cnLinks[i].Num, n);
+			var links = mCompNodeList[p].links;
+			for (int i = 0; i < links.Count; i++) {
+				links[i].p_elm.SetNode(links[i].node_index, n);
 			}
 		}
 
@@ -108,9 +106,9 @@ namespace Circuit.Elements.Custom {
 
 		public override void SetVoltage(int n, double c) {
 			base.SetVoltage(n, c);
-			var cnLinks = mCompNodeList[n].Links;
-			for (int i = 0; i < cnLinks.Count; i++) {
-				cnLinks[i].Elm.SetVoltage(cnLinks[i].Num, c);
+			var links = mCompNodeList[n].links;
+			for (int i = 0; i < links.Count; i++) {
+				links[i].p_elm.SetVoltage(links[i].node_index, c);
 			}
 			Volts[n] = c;
 		}
@@ -125,16 +123,16 @@ namespace Circuit.Elements.Custom {
 
 		public override double GetCurrentIntoNode(int n) {
 			double c = 0;
-			var cnLinks = mCompNodeList[n].Links;
-			for (int i = 0; i < cnLinks.Count; i++) {
-				c += cnLinks[i].Elm.GetCurrentIntoNode(cnLinks[i].Num);
+			var links = mCompNodeList[n].links;
+			for (int i = 0; i < links.Count; i++) {
+				c += links[i].p_elm.GetCurrentIntoNode(links[i].node_index);
 			}
 			return c;
 		}
 
-		public void LoadComposite(Dictionary<int, CircuitNode> nodeHash, List<BaseSymbol> symbolList, int[] externalNodes) {
+		public void LoadComposite(Dictionary<int, CIRCUIT_NODE> nodeHash, List<BaseSymbol> symbolList, int[] externalNodes) {
 			/* Flatten nodeHash in to compNodeList */
-			mCompNodeList = new List<CircuitNode>();
+			mCompNodeList = new List<CIRCUIT_NODE>();
 			mNumTerms = externalNodes.Length;
 			for (int i = 0; i < externalNodes.Length; i++) {
 				/* External Nodes First */
@@ -155,12 +153,12 @@ namespace Circuit.Elements.Custom {
 				CompList.Add(ce);
 				int inodes = ce.InternalNodeCount;
 				for (int j = 0; j != inodes; j++) {
-					var cnLink = new CircuitNode.LINK() {
-						Num = j + ce.TermCount,
-						Elm = ce
+					var cl = new CIRCUIT_LINK() {
+						node_index = j + ce.TermCount,
+						p_elm = ce
 					};
-					var cn = new CircuitNode();
-					cn.Links.Add(cnLink);
+					var cn = new CIRCUIT_NODE();
+					cn.links.Add(cl);
 					mCompNodeList.Add(cn);
 				}
 			}

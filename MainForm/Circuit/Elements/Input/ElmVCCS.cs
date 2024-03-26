@@ -65,7 +65,7 @@ namespace Circuit.Elements.Input {
 			double convergeLimit = GetConvergeLimit();
 			for (i = 0; i != InputCount; i++) {
 				if (Math.Abs(Volts[i] - mLastVolts[i]) > convergeLimit) {
-					CircuitElement.Converged = false;
+					CircuitElement.converged = false;
 				}
 				if (double.IsNaN(Volts[i])) {
 					Volts[i] = 0;
@@ -129,10 +129,10 @@ namespace Circuit.Elements.Input {
 		protected double GetConvergeLimit() {
 			/* get maximum change in voltage per step when testing for convergence.
              * be more lenient over time */
-			if (CircuitElement.SubIterations < 10) {
+			if (CircuitElement.sub_iterations < 10) {
 				return 0.001;
 			}
-			if (CircuitElement.SubIterations < 200) {
+			if (CircuitElement.sub_iterations < 200) {
 				return 0.01;
 			}
 			return 0.1;
@@ -141,16 +141,16 @@ namespace Circuit.Elements.Input {
 		double getLimitStep() {
 			/* get limit on changes in voltage per step.
              * be more lenient the more iterations we do */
-			if (CircuitElement.SubIterations < 4) {
+			if (CircuitElement.sub_iterations < 4) {
 				return 10;
 			}
-			if (CircuitElement.SubIterations < 10) {
+			if (CircuitElement.sub_iterations < 10) {
 				return 1;
 			}
-			if (CircuitElement.SubIterations < 20) {
+			if (CircuitElement.sub_iterations < 20) {
 				return 0.1;
 			}
-			if (CircuitElement.SubIterations < 40) {
+			if (CircuitElement.sub_iterations < 40) {
 				return 0.01;
 			}
 			return 0.001;

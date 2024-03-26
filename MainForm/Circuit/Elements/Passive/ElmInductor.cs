@@ -12,7 +12,7 @@
 		}
 
 		public override void Stamp() {
-			mCompResistance = 2 * Inductance / CircuitElement.TimeStep;
+			mCompResistance = 2 * Inductance / CircuitElement.delta_time;
 			CircuitElement.StampResistor(Nodes[0], Nodes[1], mCompResistance);
 			CircuitElement.StampRightSide(Nodes[0]);
 			CircuitElement.StampRightSide(Nodes[1]);
@@ -23,10 +23,10 @@
 		}
 
 		public override void DoIteration() {
-			var r = CircuitElement.RowInfo[Nodes[0] - 1].MapRow;
-			CircuitElement.RightSide[r] -= mCurSourceValue;
-			r = CircuitElement.RowInfo[Nodes[1] - 1].MapRow;
-			CircuitElement.RightSide[r] += mCurSourceValue;
+			var r = CircuitElement.row_info[Nodes[0] - 1].row;
+			CircuitElement.right_side[r] -= mCurSourceValue;
+			r = CircuitElement.row_info[Nodes[1] - 1].row;
+			CircuitElement.right_side[r] += mCurSourceValue;
 		}
 
 		public override void SetVoltage(int n, double c) {

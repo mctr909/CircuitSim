@@ -223,7 +223,7 @@
 			Initialize();
 		}
 		public double CalcGridTime() {
-			var baseT = 10 * CircuitElement.TimeStep * Speed;
+			var baseT = 10 * CircuitElement.delta_time * Speed;
 			mGridStepX = 1e-9;
 			mGridDivX = 10;
 			for (int i = 0; mGridStepX < baseT; i++) {
@@ -288,7 +288,7 @@
 					SetColor(p, E_COLOR.GREEN);
 				}
 			}
-			mScopeTimeStep = CircuitElement.TimeStep;
+			mScopeTimeStep = CircuitElement.delta_time;
 			AllocImage();
 		}
 		public void SetColor(int waveIndex, int colorIndex) {
@@ -311,8 +311,8 @@
 			}
 
 			/* reset if timestep changed */
-			if (mScopeTimeStep != CircuitElement.TimeStep) {
-				mScopeTimeStep = CircuitElement.TimeStep;
+			if (mScopeTimeStep != CircuitElement.delta_time) {
+				mScopeTimeStep = CircuitElement.delta_time;
 				ResetGraph();
 			}
 
@@ -627,7 +627,7 @@
 			if (periodct < 1 || 2 < periodstd) {
 				return "";
 			}
-			var freq = 1.0 / (avperiod * CircuitElement.TimeStep * Speed);
+			var freq = 1.0 / (avperiod * CircuitElement.delta_time * Speed);
 			return TextUtils.Frequency(freq);
 		}
 		#endregion
@@ -660,13 +660,13 @@
 					g.DrawCircle(MouseCursorX, BoundingBox.Y + maxy - maxvy, 5);
 				}
 				if (mWaves.Count > 0) {
-					var t = CircuitElement.Time - CircuitElement.TimeStep * Speed * (BoundingBox.X + BoundingBox.Width - MouseCursorX);
+					var t = CircuitElement.time - CircuitElement.delta_time * Speed * (BoundingBox.X + BoundingBox.Width - MouseCursorX);
 					info[ct++] = TextUtils.Time(t);
 				}
 			}
 
 			if (ShowFFT) {
-				double maxFrequency = 1 / (CircuitElement.TimeStep * Speed * 2);
+				double maxFrequency = 1 / (CircuitElement.delta_time * Speed * 2);
 				var posX = MouseCursorX - mFFTBoundingBox.X;
 				if (posX < 0) {
 					posX = 0;
@@ -769,9 +769,9 @@
 				}
 
 				/* vertical gridlines */
-				var baseT = CircuitElement.TimeStep * Speed;
-				var beginT = CircuitElement.Time - BoundingBox.Width * baseT;
-				var endT = CircuitElement.Time - (CircuitElement.Time % mGridStepX);
+				var baseT = CircuitElement.delta_time * Speed;
+				var beginT = CircuitElement.time - BoundingBox.Width * baseT;
+				var endT = CircuitElement.time - (CircuitElement.time % mGridStepX);
 				g.DrawColor = minorDiv;
 				for (int ll = 0; ; ll++) {
 					var t = endT - mGridStepX * ll;
@@ -854,7 +854,7 @@
 			const int xDivs = 20;
 			const int yDivs = 10;
 			int prevEnd = 0;
-			double maxFrequency = 1 / (CircuitElement.TimeStep * Speed * xDivs * 2);
+			double maxFrequency = 1 / (CircuitElement.delta_time * Speed * xDivs * 2);
 			var gridBottom = mFFTBoundingBox.Height - 1;
 			g.DrawColor = CustomGraphics.LineColor;
 			g.DrawLine(0, 0, BoundingBox.Width, 0);

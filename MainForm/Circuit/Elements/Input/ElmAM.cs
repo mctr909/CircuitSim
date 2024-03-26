@@ -25,10 +25,10 @@
 		}
 
 		public override void DoIteration() {
-			var vn = CircuitElement.Nodes.Count + mVoltSource;
-			var row = CircuitElement.RowInfo[vn - 1].MapRow;
-			var th = 2 * Math.PI * (CircuitElement.Time - mFreqTimeZero);
-			CircuitElement.RightSide[row] += (Math.Sin(th * SignalFreq + Phase) * Depth + 2 - Depth) / 2 * Math.Sin(th * CarrierFreq) * MaxVoltage;
+			var vn = CircuitElement.nodes.Length + mVoltSource;
+			var row = CircuitElement.row_info[vn - 1].row;
+			var th = 2 * Math.PI * (CircuitElement.time - mFreqTimeZero);
+			CircuitElement.right_side[row] += (Math.Sin(th * SignalFreq + Phase) * Depth + 2 - Depth) / 2 * Math.Sin(th * CarrierFreq) * MaxVoltage;
 		}
 	}
 }

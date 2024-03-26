@@ -26,13 +26,13 @@
 		}
 
 		public override void DoIteration() {
-			var deltaT = CircuitElement.Time - mLastTime;
-			var signalAmplitude = Math.Sin(2 * Math.PI * (CircuitElement.Time - mFreqTimeZero) * Signalfreq);
+			var deltaT = CircuitElement.time - mLastTime;
+			var signalAmplitude = Math.Sin(2 * Math.PI * (CircuitElement.time - mFreqTimeZero) * Signalfreq);
 			mCounter += (CarrierFreq + (signalAmplitude * Deviation)) * deltaT;
-			var vn = CircuitElement.Nodes.Count + mVoltSource;
-			var row = CircuitElement.RowInfo[vn - 1].MapRow;
-			CircuitElement.RightSide[row] += Math.Sin(2 * Math.PI * mCounter) * MaxVoltage;
-			mLastTime = CircuitElement.Time;
+			var vn = CircuitElement.nodes.Length + mVoltSource;
+			var row = CircuitElement.row_info[vn - 1].row;
+			CircuitElement.right_side[row] += Math.Sin(2 * Math.PI * mCounter) * MaxVoltage;
+			mLastTime = CircuitElement.time;
 		}
 	}
 }

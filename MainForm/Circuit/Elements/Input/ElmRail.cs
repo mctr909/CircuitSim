@@ -8,16 +8,16 @@
 
 		public override void Stamp() {
 			int n0 = Nodes[0] - 1;
-			int vn = CircuitElement.Nodes.Count + mVoltSource - 1;
+			int vn = CircuitElement.nodes.Length + mVoltSource - 1;
 			if (n0 < 0 || vn < 0) {
 				return;
 			}
-			CircuitElement.Matrix[vn, n0] += 1;
-			CircuitElement.Matrix[n0, vn] -= 1;
+			CircuitElement.matrix[vn, n0] += 1;
+			CircuitElement.matrix[n0, vn] -= 1;
 			if (WaveForm == WAVEFORM.DC) {
-				CircuitElement.RightSide[vn] += GetVoltage();
+				CircuitElement.right_side[vn] += GetVoltage();
 			} else {
-				CircuitElement.RowInfo[vn].RightChanges = true;
+				CircuitElement.row_info[vn].right_changes = true;
 			}
 		}
 	}
