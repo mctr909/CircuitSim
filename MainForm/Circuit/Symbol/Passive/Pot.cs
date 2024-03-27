@@ -31,6 +31,10 @@ namespace Circuit.Symbol.Passive {
 		Label mLabel;
 		string mName;
 
+		double mCurCount1 = 0;
+		double mCurCount2 = 0;
+		double mCurCount3 = 0;
+
 		public override BaseElement Element { get { return mElm; } }
 
 		public Pot(Point pos) : base(pos) {
@@ -150,14 +154,14 @@ namespace Circuit.Symbol.Passive {
 			DrawLine(mArrow2, mArrowPoint);
 
 			/* draw dot */
-			UpdateDotCount(mElm.Current1, ref mElm.CurCount1);
-			UpdateDotCount(mElm.Current2, ref mElm.CurCount2);
-			UpdateDotCount(mElm.Current3, ref mElm.CurCount3);
+			UpdateDotCount(mElm.Current1, ref mCurCount1);
+			UpdateDotCount(mElm.Current2, ref mCurCount2);
+			UpdateDotCount(mElm.Current3, ref mCurCount3);
 			if (ConstructItem != this) {
-				DrawCurrent(mTermA, mMidPoint, mElm.CurCount1);
-				DrawCurrent(mTermB, mMidPoint, mElm.CurCount2);
-				DrawCurrent(mTermSlider, mCorner2, mElm.CurCount3);
-				DrawCurrent(mCorner2, mMidPoint, mElm.CurCount3 + Distance(mTermSlider, mCorner2));
+				DrawCurrent(mTermA, mMidPoint, mCurCount1);
+				DrawCurrent(mTermB, mMidPoint, mCurCount2);
+				DrawCurrent(mTermSlider, mCorner2, mCurCount3);
+				DrawCurrent(mCorner2, mMidPoint, mCurCount3 + Distance(mTermSlider, mCorner2));
 			}
 
 			if (ControlPanel.ChkShowValues.Checked && mElm.Resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
@@ -193,7 +197,7 @@ namespace Circuit.Symbol.Passive {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "可変抵抗：" + TextUtils.Unit(mElm.MaxResistance, "Ω");
-			arr[1] = "Vd：" + TextUtils.VoltageAbs(mElm.VoltageDiff);
+			arr[1] = "Vd：" + TextUtils.VoltageAbs(mElm.VoltageDiff());
 			arr[2] = "R1：" + TextUtils.Unit(mElm.Resistance1, "Ω");
 			arr[3] = "R2：" + TextUtils.Unit(mElm.Resistance2, "Ω");
 			arr[4] = "I1：" + TextUtils.CurrentAbs(mElm.Current1);

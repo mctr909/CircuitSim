@@ -28,40 +28,8 @@
 
 		public override int VoltageSourceCount { get { return 1; } }
 
-		public override double VoltageDiff { get { return Volts[1] - Volts[0]; } }
-
-		public override void Reset() { }
-
-		public override void Stamp() {
-			int n0 = Nodes[0] - 1;
-			int n1 = Nodes[1] - 1;
-			int vn = CircuitElement.nodes.Length + mVoltSource - 1;
-			if (n0 < 0 || n1 < 0 || vn < 0) {
-				return;
-			}
-			CircuitElement.matrix[vn, n0] -= 1;
-			CircuitElement.matrix[vn, n1] += 1;
-			CircuitElement.matrix[n0, vn] += 1;
-			CircuitElement.matrix[n1, vn] -= 1;
-			if (WaveForm == WAVEFORM.DC) {
-				CircuitElement.right_side[vn] += GetVoltage();
-			} else {
-				CircuitElement.row_info[vn].right_changes = true;
-			}
-		}
-
-		public override void DoIteration() {
-			if (WaveForm != WAVEFORM.DC) {
-				var vn = CircuitElement.nodes.Length + mVoltSource;
-				var row = CircuitElement.row_info[vn - 1].row;
-				CircuitElement.right_side[row] += GetVoltage();
-			}
-		}
-
-		public override void FinishIteration() {
-			if (WaveForm == WAVEFORM.NOISE) {
-				NoiseValue = (mRandom.NextDouble() * 2 - 1) * MaxVoltage + Bias;
-			}
+		public override double VoltageDiff() {
+			return Volts[1] - Volts[0];
 		}
 
 		public double GetVoltage() {
@@ -139,5 +107,43 @@
 			//return 1 - (x - Math.PI) * (2 / Math.PI);
 			return x / Math.PI - 1.0;
 		}
+
+		#region [method(Analyze)]
+		public override void Reset() { }
+
+		public override void Stamp() {
+			int n0 = NodeIndex[0] - 1;
+			int n1 = NodeIndex[1] - 1;
+			int vn = CircuitElement.nodes.Length + mVoltSource - 1;
+			if (n0 < 0 || n1 < 0 || vn < 0) {
+				return;
+			}
+			CircuitElement.matrix[vn, n0] -= 1;
+			CircuitElement.matrix[vn, n1] += 1;
+			CircuitElement.matrix[n0, vn] += 1;
+			CircuitElement.matrix[n1, vn] -= 1;
+			if (WaveForm == WAVEFORM.DC) {
+				CircuitElement.right_side[vn] += GetVoltage();
+			} else {
+				CircuitElement.row_info[vn].right_changes = true;
+			}
+		}
+		#endregion
+
+		#region [method(Circuit)]
+		public override void DoIteration() {
+			if (WaveForm != WAVEFORM.DC) {
+				var vn = CircuitElement.nodes.Length + mVoltSource;
+				var row = CircuitElement.row_info[vn - 1].row;
+				CircuitElement.right_side[row] += GetVoltage();
+			}
+		}
+
+		public override void FinishIteration() {
+			if (WaveForm == WAVEFORM.NOISE) {
+				NoiseValue = (mRandom.NextDouble() * 2 - 1) * MaxVoltage + Bias;
+			}
+		}
+		#endregion
 	}
 }

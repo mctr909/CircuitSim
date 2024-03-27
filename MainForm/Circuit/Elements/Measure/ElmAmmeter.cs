@@ -18,10 +18,12 @@
 
 		public override int VoltageSourceCount { get { return 1; } }
 
-		public override double VoltageDiff { get { return Volts[0]; } }
+		public override double VoltageDiff() {
+			return Volts[0];
+		}
 
 		public override void Stamp() {
-			CircuitElement.StampVoltageSource(Nodes[0], Nodes[1], mVoltSource, 0);
+			CircuitElement.StampVoltageSource(NodeIndex[0], NodeIndex[1], mVoltSource, 0);
 		}
 
 		public override void FinishIteration() {

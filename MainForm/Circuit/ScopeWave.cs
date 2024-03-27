@@ -1,6 +1,7 @@
 ﻿namespace Circuit {
 	public class ScopeWave {
 		public BaseSymbol Symbol;
+
 		public int Color;
 		public int Length;
 		public int Speed;
@@ -8,10 +9,12 @@
 		public double[] MinValues;
 		public double[] MaxValues;
 
+		BaseElement mElm;
 		int mCounter;
 
-		public ScopeWave(BaseSymbol symbol) {
+		public ScopeWave(BaseSymbol symbol, BaseElement element) {
 			Symbol = symbol;
+			mElm = element;
 			Length = 1;
 			Index = 0;
 			MinValues = [Length];
@@ -43,7 +46,7 @@
 		}
 
 		public void TimeStep() {
-			var v = Symbol.Element.VoltageDiff;
+			var v = mElm.VoltageDiff();
 			if (v < MinValues[Index]) {
 				MinValues[Index] = v;
 			}

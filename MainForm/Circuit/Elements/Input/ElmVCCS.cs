@@ -35,7 +35,48 @@ namespace Circuit.Elements.Input {
 			mValues = new double[InputCount];
 		}
 
-		public override bool GetConnection(int n1, int n2) {
+		public int GetOutputNode(int n) {
+			return NodeIndex[n + InputCount];
+		}
+
+		public void SetFunction(DFunction function) { mFunction = function; }
+
+		protected double Sign(double a, double b) {
+			return a > 0 ? b : -b;
+		}
+
+		protected double GetConvergeLimit() {
+			/* get maximum change in voltage per step when testing for convergence.
+             * be more lenient over time */
+			if (CircuitElement.sub_iterations < 10) {
+				return 0.001;
+			}
+			if (CircuitElement.sub_iterations < 200) {
+				return 0.01;
+			}
+			return 0.1;
+		}
+
+		double getLimitStep() {
+			/* get limit on changes in voltage per step.
+             * be more lenient the more iterations we do */
+			if (CircuitElement.sub_iterations < 4) {
+				return 10;
+			}
+			if (CircuitElement.sub_iterations < 10) {
+				return 1;
+			}
+			if (CircuitElement.sub_iterations < 20) {
+				return 0.1;
+			}
+			if (CircuitElement.sub_iterations < 40) {
+				return 0.01;
+			}
+			return 0.001;
+		}
+
+		#region [method(Analyze)]
+		public override bool HasConnection(int n1, int n2) {
 			return ComparePair(InputCount, InputCount + 1, n1, n2);
 		}
 
@@ -44,10 +85,12 @@ namespace Circuit.Elements.Input {
 		}
 
 		public override void Stamp() {
-			CircuitElement.StampNonLinear(Nodes[InputCount]);
-			CircuitElement.StampNonLinear(Nodes[InputCount + 1]);
+			CircuitElement.StampNonLinear(NodeIndex[InputCount]);
+			CircuitElement.StampNonLinear(NodeIndex[InputCount + 1]);
 		}
+		#endregion
 
+		#region [method(Circuit)]
 		public override void DoIteration() {
 			int i;
 
@@ -56,7 +99,7 @@ namespace Circuit.Elements.Input {
 				Pins[InputCount].current = 0;
 				Pins[InputCount + 1].current = 0;
 				/* avoid singular matrix errors */
-				CircuitElement.StampResistor(Nodes[InputCount], Nodes[InputCount + 1], 1e8);
+				CircuitElement.StampResistor(NodeIndex[InputCount], NodeIndex[InputCount + 1], 1e8);
 				return;
 			}
 
@@ -100,14 +143,14 @@ namespace Circuit.Elements.Input {
 				if (Math.Abs(dx) < 1e-6) {
 					dx = Sign(dx, 1e-6);
 				}
-				CircuitElement.StampVCCurrentSource(Nodes[InputCount], Nodes[InputCount + 1], Nodes[i], 0, dx);
+				CircuitElement.StampVCCurrentSource(NodeIndex[InputCount], NodeIndex[InputCount + 1], NodeIndex[i], 0, dx);
 				/*Console.WriteLine("ccedx " + i + " " + dx); */
 				/* adjust right side */
 				rs -= dx * Volts[i];
 				mValues[i] = Volts[i];
 			}
 			/*Console.WriteLine("ccers " + rs);*/
-			CircuitElement.StampCurrentSource(Nodes[InputCount], Nodes[InputCount + 1], rs);
+			CircuitElement.StampCurrentSource(NodeIndex[InputCount], NodeIndex[InputCount + 1], rs);
 			Pins[InputCount].current = -v0;
 			Pins[InputCount + 1].current = v0;
 
@@ -115,45 +158,6 @@ namespace Circuit.Elements.Input {
 				mLastVolts[i] = Volts[i];
 			}
 		}
-
-		public int GetOutputNode(int n) {
-			return Nodes[n + InputCount];
-		}
-
-		public void SetFunction(DFunction function) { mFunction = function; }
-
-		protected double Sign(double a, double b) {
-			return a > 0 ? b : -b;
-		}
-
-		protected double GetConvergeLimit() {
-			/* get maximum change in voltage per step when testing for convergence.
-             * be more lenient over time */
-			if (CircuitElement.sub_iterations < 10) {
-				return 0.001;
-			}
-			if (CircuitElement.sub_iterations < 200) {
-				return 0.01;
-			}
-			return 0.1;
-		}
-
-		double getLimitStep() {
-			/* get limit on changes in voltage per step.
-             * be more lenient the more iterations we do */
-			if (CircuitElement.sub_iterations < 4) {
-				return 10;
-			}
-			if (CircuitElement.sub_iterations < 10) {
-				return 1;
-			}
-			if (CircuitElement.sub_iterations < 20) {
-				return 0.1;
-			}
-			if (CircuitElement.sub_iterations < 40) {
-				return 0.01;
-			}
-			return 0.001;
-		}
+		#endregion
 	}
 }

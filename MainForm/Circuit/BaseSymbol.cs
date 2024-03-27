@@ -203,7 +203,7 @@ namespace Circuit {
 
 		protected void GetBasicInfo(int begin, params string[] arr) {
 			arr[begin] = "電流：" + TextUtils.CurrentAbs(Element.Current);
-			arr[begin + 1] = "電位差：" + TextUtils.VoltageAbs(Element.VoltageDiff);
+			arr[begin + 1] = "電位差：" + TextUtils.VoltageAbs(Element.VoltageDiff());
 		}
 
 		/// <summary>

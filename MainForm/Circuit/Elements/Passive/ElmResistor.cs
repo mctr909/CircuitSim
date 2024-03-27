@@ -5,7 +5,7 @@
 		public override int TermCount { get { return 2; } }
 
 		public override void Stamp() {
-			CircuitElement.StampResistor(Nodes[0], Nodes[1], Resistance);
+			CircuitElement.StampResistor(NodeIndex[0], NodeIndex[1], Resistance);
 		}
 
 		public override void SetVoltage(int n, double c) {

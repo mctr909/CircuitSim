@@ -9,19 +9,15 @@
 		}
 
 		protected static Random mRandom = new();
-
 		protected int mVoltSource;
 
-		#region [property]
-		public abstract int TermCount { get; }
-		public Point[] NodePos { get; set; }
-		public int[] Nodes { get; set; }
-		public double Current { get; set; }
-		public double[] Volts { get; private set; }
-		public virtual double VoltageDiff { get { return Volts[0] - Volts[1]; } }
-		#endregion
+		public int[] NodeIndex;
+		public Point[] NodePos;
+		public double[] Volts;
+		public double Current;
 
 		#region [property(Analyze)]
+		public abstract int TermCount { get; }
 		public virtual bool IsWire { get { return false; } }
 		public virtual int VoltageSourceCount { get { return 0; } }
 		public virtual int InternalNodeCount { get { return 0; } }
@@ -30,13 +26,12 @@
 
 		#region [method]
 		/// <summary>
-		/// allocate nodes/volts arrays we need
+		/// allocate NodeIndex/Volts arrays we need
 		/// </summary>
 		public void AllocNodes() {
 			int n = TermCount + InternalNodeCount;
-			/* preserve voltages if possible */
-			if (Nodes == null || Nodes.Length != n) {
-				Nodes = new int[n];
+			if (NodeIndex == null || NodeIndex.Length != n) {
+				NodeIndex = new int[n];
 				Volts = new double[n];
 			}
 		}
@@ -64,14 +59,19 @@
 			NodePos[node.Length].X = (int)pos.X;
 			NodePos[node.Length].Y = (int)pos.Y;
 		}
+		public virtual double VoltageDiff() {
+			return Volts[0] - Volts[1];
+		}
 		#endregion
 
 		#region [method(Analyze)]
-		public virtual bool GetConnection(int n1, int n2) { return true; }
+		public virtual int GetConnectionNode(int n) { return NodeIndex[n]; }
+		public virtual bool HasConnection(int n1, int n2) { return true; }
+		public virtual bool HasGroundConnection(int n1) { return false; }
 		public virtual void Stamp() { }
 		public virtual void SetNode(int p, int n) {
-			if (p < Nodes.Length) {
-				Nodes[p] = n;
+			if (p < NodeIndex.Length) {
+				NodeIndex[p] = n;
 			}
 		}
 		public virtual void SetVoltageSource(int n, int v) {
@@ -79,8 +79,6 @@
              * If we have 0 this isn't used, if we have >1 this won't work */
 			mVoltSource = v;
 		}
-		public virtual int GetConnectionNode(int n) { return Nodes[n]; }
-		public virtual bool HasGroundConnection(int n1) { return false; }
 		public virtual void Reset() {
 			for (int i = 0; i != TermCount + InternalNodeCount; i++) {
 				Volts[i] = 0;
@@ -90,6 +88,9 @@
 		#endregion
 
 		#region [method(Circuit)]
+		public virtual void PrepareIteration() { }
+		public virtual void DoIteration() { }
+		public virtual void FinishIteration() { }
 		public virtual double GetCurrentIntoNode(int n) {
 			if (n == 0 && TermCount == 2) {
 				return -Current;
@@ -97,9 +98,6 @@
 				return Current;
 			}
 		}
-		public virtual void PrepareIteration() { }
-		public virtual void FinishIteration() { }
-		public virtual void DoIteration() { }
 		public virtual void SetCurrent(int n, double c) { Current = c; }
 		public virtual void SetVoltage(int n, double c) { Volts[n] = c; }
 		#endregion

@@ -46,6 +46,7 @@
 			AllocNodes();
 		}
 
+		#region [method(Analyze)]
 		public override void Reset() {
 			mLastVoltDiff = 0;
 			Volts[0] = Volts[1] = 0;
@@ -57,25 +58,27 @@
 		public override void Stamp() {
 			if (mHasResistance) {
 				/* create diode from node 0 to internal node */
-				mNodes0 = Nodes[0];
-				mNodes1 = Nodes[2];
+				mNodes0 = NodeIndex[0];
+				mNodes1 = NodeIndex[2];
 				CircuitElement.row_info[mNodes0 - 1].left_changes = true;
 				CircuitElement.row_info[mNodes1 - 1].left_changes = true;
 				/* create resistor from internal node to node 1 */
 				var r0 = 1.0 / SeriesResistance;
-				CircuitElement.matrix[Nodes[1] - 1, Nodes[1] - 1] += r0;
-				CircuitElement.matrix[Nodes[2] - 1, Nodes[2] - 1] += r0;
-				CircuitElement.matrix[Nodes[1] - 1, Nodes[2] - 1] -= r0;
-				CircuitElement.matrix[Nodes[2] - 1, Nodes[1] - 1] -= r0;
+				CircuitElement.matrix[NodeIndex[1] - 1, NodeIndex[1] - 1] += r0;
+				CircuitElement.matrix[NodeIndex[2] - 1, NodeIndex[2] - 1] += r0;
+				CircuitElement.matrix[NodeIndex[1] - 1, NodeIndex[2] - 1] -= r0;
+				CircuitElement.matrix[NodeIndex[2] - 1, NodeIndex[1] - 1] -= r0;
 			} else {
 				/* don't need any internal nodes if no series resistance */
-				mNodes0 = Nodes[0];
-				mNodes1 = Nodes[1];
+				mNodes0 = NodeIndex[0];
+				mNodes1 = NodeIndex[1];
 				CircuitElement.row_info[mNodes0 - 1].left_changes = true;
 				CircuitElement.row_info[mNodes1 - 1].left_changes = true;
 			}
 		}
+		#endregion
 
+		#region [method(Circuit)]
 		public override void DoIteration() {
 			var voltdiff = Volts[0] - Volts[mDiodeEndNode];
 			if (0.001 < Math.Abs(voltdiff - mLastVoltDiff)) {
@@ -221,5 +224,6 @@
 				);
 			}
 		}
+		#endregion
 	}
 }

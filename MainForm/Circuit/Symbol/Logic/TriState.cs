@@ -72,7 +72,7 @@ namespace Circuit.Symbol.Logic {
 		public override void GetInfo(string[] arr) {
 			arr[0] = "tri-state buffer";
 			arr[1] = mElm.Open ? "open" : "closed";
-			arr[2] = "Vd = " + TextUtils.VoltageAbs(mElm.VoltageDiff);
+			arr[2] = "Vd = " + TextUtils.VoltageAbs(mElm.VoltageDiff());
 			arr[3] = "I = " + TextUtils.CurrentAbs(mElm.Current);
 			arr[4] = "Vc = " + TextUtils.Voltage(mElm.Volts[2]);
 		}

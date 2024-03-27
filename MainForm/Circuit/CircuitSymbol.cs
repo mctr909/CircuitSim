@@ -1,5 +1,7 @@
 ﻿using Circuit.Elements.Input;
 using Circuit.Elements.Passive;
+using Circuit.Forms;
+using Circuit.Symbol.Measure;
 
 namespace Circuit {
 	static class CircuitSymbol {
@@ -117,7 +119,7 @@ namespace Circuit {
 						if (nodeA == nodeB) {
 							continue;
 						}
-						if (cee.GetConnection(nodeA, nodeB) && FindPath(cee.GetConnectionNode(nodeB))) {
+						if (cee.HasConnection(nodeA, nodeB) && FindPath(cee.GetConnectionNode(nodeB))) {
 							/*Console.WriteLine("got findpath " + n1); */
 							return true;
 						}
@@ -127,9 +129,8 @@ namespace Circuit {
 			}
 		}
 
-		public static long LastIterTime = 0;
-		public static bool IsRunning { get; set; }
-		public static bool NeedAnalyze { get; set; }
+		public static bool IsRunning;
+		public static bool NeedAnalyze;
 		public static int Count { get { return null == List ? 0 : List.Count; } }
 		public static List<BaseSymbol> List { get; private set; } = new List<BaseSymbol>();
 		public static List<Point> DrawPostList { get; set; } = new List<Point>();
@@ -152,8 +153,8 @@ namespace Circuit {
 				CircuitElement.stopped = false;
 				ControlPanel.BtnRunStop.Text = "停止";
 			} else {
-				IsRunning = false;
 				NeedAnalyze = false;
+				IsRunning = false;
 				ControlPanel.BtnRunStop.Text = "実行";
 			}
 		}
@@ -356,7 +357,7 @@ namespace Circuit {
 								continue;
 							}
 							int kn = ce.GetConnectionNode(k);
-							if (ce.GetConnection(j, k) && !closure[kn]) {
+							if (ce.HasConnection(j, k) && !closure[kn]) {
 								closure[kn] = true;
 								changed = true;
 							}
@@ -383,8 +384,8 @@ namespace Circuit {
 
 				/* look for inductors with no current path */
 				if (ce is ElmInductor) {
-					var fpi = new PathInfo(PathInfo.TYPE.INDUCTOR, ce, ce.Nodes[1], elements, nodes.Count);
-					if (!fpi.FindPath(ce.Nodes[0])) {
+					var fpi = new PathInfo(PathInfo.TYPE.INDUCTOR, ce, ce.NodeIndex[1], elements, nodes.Count);
+					if (!fpi.FindPath(ce.NodeIndex[0])) {
 						ce.Reset();
 					}
 				}
@@ -392,8 +393,8 @@ namespace Circuit {
 				/* look for current sources with no current path */
 				if (ce is ElmCurrent) {
 					var cur = (ElmCurrent)ce;
-					var fpi = new PathInfo(PathInfo.TYPE.INDUCTOR, ce, ce.Nodes[1], elements, nodes.Count);
-					if (!fpi.FindPath(ce.Nodes[0])) {
+					var fpi = new PathInfo(PathInfo.TYPE.INDUCTOR, ce, ce.NodeIndex[1], elements, nodes.Count);
+					if (!fpi.FindPath(ce.NodeIndex[0])) {
 						cur.StampCurrentSource(true);
 					} else {
 						cur.StampCurrentSource(false);
@@ -404,8 +405,8 @@ namespace Circuit {
                 /* because those are optimized out, so the findPath won't work) */
 				if (2 == ce.TermCount) {
 					if (ce is ElmVoltage) {
-						var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Nodes[1], elements, nodes.Count);
-						if (fpi.FindPath(ce.Nodes[0])) {
+						var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.NodeIndex[1], elements, nodes.Count);
+						if (fpi.FindPath(ce.NodeIndex[0])) {
 							stop("Voltage source/wire loop with no resistance!");
 							return;
 						}
@@ -413,7 +414,7 @@ namespace Circuit {
 				} else {
 					/* look for path from rail to ground */
 					if (ce is ElmRail || ce is ElmLogicInput) {
-						var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Nodes[0], elements, nodes.Count);
+						var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.NodeIndex[0], elements, nodes.Count);
 						if (fpi.FindPath(0)) {
 							stop("Voltage source/wire loop with no resistance!");
 							return;
@@ -423,8 +424,8 @@ namespace Circuit {
 
 				/* look for shorted caps, or caps w/ voltage but no R */
 				if (ce is ElmCapacitor) {
-					var fpi = new PathInfo(PathInfo.TYPE.SHORT, ce, ce.Nodes[1], elements, nodes.Count);
-					if (fpi.FindPath(ce.Nodes[0])) {
+					var fpi = new PathInfo(PathInfo.TYPE.SHORT, ce, ce.NodeIndex[1], elements, nodes.Count);
+					if (fpi.FindPath(ce.NodeIndex[0])) {
 						Console.WriteLine(ce + " shorted");
 						ce.Shorted();
 					} else {
@@ -433,8 +434,8 @@ namespace Circuit {
                         /* another capacitor with a nonzero voltage; in that case we will get oscillation unless
                         /* we reset both capacitors to have the same voltage. Rather than check for that, we just
                         /* give an error. */
-						fpi = new PathInfo(PathInfo.TYPE.CAPACITOR, ce, ce.Nodes[1], elements, nodes.Count);
-						if (fpi.FindPath(ce.Nodes[0])) {
+						fpi = new PathInfo(PathInfo.TYPE.CAPACITOR, ce, ce.NodeIndex[1], elements, nodes.Count);
+						if (fpi.FindPath(ce.NodeIndex[0])) {
 							stop("Capacitor loop with no resistance!");
 							return;
 						}
@@ -445,6 +446,24 @@ namespace Circuit {
 			CircuitElement.elements = elements.ToArray();
 			CircuitElement.nodes = nodes.ToArray();
 			CircuitElement.wires = wires.ToArray();
+
+			var scopeCount = 0;
+			foreach(var item in List) {
+				if (item is Scope) {
+					scopeCount++;
+				}
+			}
+			CircuitElement.plots = new ScopePlot[scopeCount + ScopeForm.PlotCount];
+			scopeCount = 0;
+			foreach(var item in List) {
+				if (item is not Scope) {
+					continue;
+				}
+				CircuitElement.plots[scopeCount++] = ((Scope)item).Plot;
+			}
+			for(var i = 0; i< ScopeForm.PlotCount; i++) {
+				CircuitElement.plots[scopeCount++] = ScopeForm.Plots[i];
+			}
 
 			if (!simplifyMatrix(matrixSize)) {
 				return;
@@ -637,7 +656,7 @@ namespace Circuit {
 			for (wireIdx = 0; wireIdx != wires.Count; wireIdx++) {
 				var wi = wires[wireIdx];
 				var wire = wi.p_elm;
-				var cn1 = nodes[wire.Nodes[0]];  /* both ends of wire have same node # */
+				var cn1 = nodes[wire.NodeIndex[0]];  /* both ends of wire have same node # */
 				int j;
 
 				var neighbors0 = new List<BaseElement>();

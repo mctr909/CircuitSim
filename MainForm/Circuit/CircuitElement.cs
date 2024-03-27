@@ -35,6 +35,7 @@ namespace Circuit {
 		public static double delta_time;
 
 		public static CIRCUIT_NODE[] nodes = [];
+		public static ScopePlot[] plots = [];
 		public static double[,] matrix = new double[0, 0];
 		public static double[] right_side = [];
 		public static CIRCUIT_ROW[] row_info = [];
@@ -51,9 +52,145 @@ namespace Circuit {
 		public static bool needs_map;
 		public static int matrix_size;
 		public static int matrix_full_size;
+
+		static long last_iter_time = 0;
+		static long last_frame_time = 0;
 		#endregion
 
-		public static bool DoIteration() {
+		public static void exec(ref bool is_running, ref bool did_analyze, double step_rate) {
+			var time = DateTime.Now.ToFileTimeUtc();
+
+			if (0 == last_iter_time) {
+				last_iter_time = time;
+				last_frame_time = time;
+				return;
+			}
+
+			/* Check if we don't need to run simulation (for very slow simulation speeds).
+			/* If the circuit changed, do at least one iteration to make sure everything is consistent. */
+			if (1000 >= step_rate * (time - last_iter_time) && !did_analyze) {
+				last_frame_time = time;
+				return;
+			}
+
+			for (int step = 1; ; step++) {
+				if (!do_iteration()) {
+					break;
+				}
+
+				for (int i = 0; i < plots.Length; i++) {
+					plots[i].TimeStep();
+				}
+
+				/* Check whether enough time has elapsed to perform an *additional* iteration after
+				/* those we have already completed. */
+				time = DateTime.Now.ToFileTimeUtc();
+				if ((step + 1) * 1000 >= step_rate * (time - last_iter_time) || (time - last_frame_time > 250000)) {
+					break;
+				}
+				if (!is_running) {
+					break;
+				}
+			}
+
+			last_iter_time = time;
+			last_frame_time = DateTime.Now.ToFileTimeUtc();
+		}
+
+		#region private method
+		/**
+		 * factors a matrix into upper and lower triangular matrices by gaussian elimination.
+		 * On entry, Matrix[0..n-1][0..n-1] is the matrix to be factored.
+		 * Permute[] returns an integer vector of pivot indices, used in the luSolve() routine.
+		 */
+		static void lu_factor() {
+			/* use Crout's method; loop through the columns */
+			for (int j = 0; j != matrix_size; j++) {
+				/* calculate upper triangular elements for this column */
+				for (int i = 0; i != j; i++) {
+					var q = matrix[i, j];
+					for (int k = 0; k != i; k++) {
+						q -= matrix[i, k] * matrix[k, j];
+					}
+					matrix[i, j] = q;
+				}
+				/* calculate lower triangular elements for this column */
+				double largest = 0;
+				int largestRow = -1;
+				for (int i = j; i != matrix_size; i++) {
+					var q = matrix[i, j];
+					for (int k = 0; k != j; k++) {
+						q -= matrix[i, k] * matrix[k, j];
+					}
+					matrix[i, j] = q;
+					var x = Math.Abs(q);
+					if (x >= largest) {
+						largest = x;
+						largestRow = i;
+					}
+				}
+				/* pivoting */
+				if (j != largestRow) {
+					double x;
+					for (int k = 0; k != matrix_size; k++) {
+						x = matrix[largestRow, k];
+						matrix[largestRow, k] = matrix[j, k];
+						matrix[j, k] = x;
+					}
+				}
+				/* keep track of row interchanges */
+				permute[j] = largestRow;
+				if (0.0 == matrix[j, j]) {
+					/* avoid zeros */
+					matrix[j, j] = 1e-18;
+				}
+				if (j != matrix_size - 1) {
+					var mult = 1.0 / matrix[j, j];
+					for (int i = j + 1; i != matrix_size; i++) {
+						matrix[i, j] *= mult;
+					}
+				}
+			}
+		}
+
+		/**
+		 * Solves the set of n linear equations using a LU factorization previously performed by lu_factor.
+		 * On input, RightSide[0..n-1] is the right hand side of the equations, and on output, contains the solution.
+		 */
+		static void lu_solve() {
+			int i;
+			/* find first nonzero b element */
+			for (i = 0; i != matrix_size; i++) {
+				var row = permute[i];
+				var swap = right_side[row];
+				right_side[row] = right_side[i];
+				right_side[i] = swap;
+				if (swap != 0) {
+					break;
+				}
+			}
+			int bi = i++;
+			for (; i < matrix_size; i++) {
+				var row = permute[i];
+				var tot = right_side[row];
+				right_side[row] = right_side[i];
+				/* forward substitution using the lower triangular matrix */
+				for (int j = bi; j < i; j++) {
+					tot -= matrix[i, j] * right_side[j];
+				}
+				right_side[i] = tot;
+			}
+			for (i = matrix_size - 1; i >= 0; i--) {
+				var tot = right_side[i];
+				/* back-substitution using the upper triangular matrix */
+				for (int j = i + 1; j != matrix_size; j++) {
+					tot -= matrix[i, j] * right_side[j];
+				}
+				right_side[i] = tot / matrix[i, i];
+			}
+		}
+
+		static bool do_iteration() {
 			for (int i = 0; i < elements.Length; i++) {
 				elements[i].PrepareIteration();
 			}
@@ -79,8 +216,8 @@ namespace Circuit {
 					break;
 				}
 
-				luFactor();
-				luSolve();
+				lu_factor();
+				lu_solve();
 
 				for (int j = 0; j < matrix_full_size; j++) {
 					var ri = row_info[j];
@@ -144,99 +281,6 @@ namespace Circuit {
 			}
 			time += delta_time;
 			return true;
-		}
-
-		#region private method
-		/**
-		 * factors a matrix into upper and lower triangular matrices by gaussian elimination.
-		 * On entry, Matrix[0..n-1][0..n-1] is the matrix to be factored.
-		 * Permute[] returns an integer vector of pivot indices, used in the luSolve() routine.
-		 */
-		static void luFactor() {
-			/* use Crout's method; loop through the columns */
-			for (int j = 0; j != matrix_size; j++) {
-				/* calculate upper triangular elements for this column */
-				for (int i = 0; i != j; i++) {
-					var q = matrix[i, j];
-					for (int k = 0; k != i; k++) {
-						q -= matrix[i, k] * matrix[k, j];
-					}
-					matrix[i, j] = q;
-				}
-				/* calculate lower triangular elements for this column */
-				double largest = 0;
-				int largestRow = -1;
-				for (int i = j; i != matrix_size; i++) {
-					var q = matrix[i, j];
-					for (int k = 0; k != j; k++) {
-						q -= matrix[i, k] * matrix[k, j];
-					}
-					matrix[i, j] = q;
-					var x = Math.Abs(q);
-					if (x >= largest) {
-						largest = x;
-						largestRow = i;
-					}
-				}
-				/* pivoting */
-				if (j != largestRow) {
-					double x;
-					for (int k = 0; k != matrix_size; k++) {
-						x = matrix[largestRow, k];
-						matrix[largestRow, k] = matrix[j, k];
-						matrix[j, k] = x;
-					}
-				}
-				/* keep track of row interchanges */
-				permute[j] = largestRow;
-				if (0.0 == matrix[j, j]) {
-					/* avoid zeros */
-					matrix[j, j] = 1e-18;
-				}
-				if (j != matrix_size - 1) {
-					var mult = 1.0 / matrix[j, j];
-					for (int i = j + 1; i != matrix_size; i++) {
-						matrix[i, j] *= mult;
-					}
-				}
-			}
-		}
-
-		/**
-		 * Solves the set of n linear equations using a LU factorization previously performed by lu_factor.
-		 * On input, RightSide[0..n-1] is the right hand side of the equations, and on output, contains the solution.
-		 */
-		static void luSolve() {
-			int i;
-			/* find first nonzero b element */
-			for (i = 0; i != matrix_size; i++) {
-				var row = permute[i];
-				var swap = right_side[row];
-				right_side[row] = right_side[i];
-				right_side[i] = swap;
-				if (swap != 0) {
-					break;
-				}
-			}
-			int bi = i++;
-			for (; i < matrix_size; i++) {
-				var row = permute[i];
-				var tot = right_side[row];
-				right_side[row] = right_side[i];
-				/* forward substitution using the lower triangular matrix */
-				for (int j = bi; j < i; j++) {
-					tot -= matrix[i, j] * right_side[j];
-				}
-				right_side[i] = tot;
-			}
-			for (i = matrix_size - 1; i >= 0; i--) {
-				var tot = right_side[i];
-				/* back-substitution using the upper triangular matrix */
-				for (int j = i + 1; j != matrix_size; j++) {
-					tot -= matrix[i, j] * right_side[j];
-				}
-				right_side[i] = tot / matrix[i, i];
-			}
 		}
 		#endregion
 

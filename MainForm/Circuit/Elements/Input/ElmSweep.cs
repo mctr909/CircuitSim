@@ -19,19 +19,8 @@
 
 		public override int TermCount { get { return 1; } }
 
-		public override double VoltageDiff { get { return Volts[0]; } }
-
 		public ElmSweep() : base() {
 			Reset();
-		}
-
-		public override bool HasGroundConnection(int n1) { return true; }
-
-		public override void Reset() {
-			Frequency = MinF;
-			mFreqTime = 0;
-			mFdir = 1;
-			SetParams();
 		}
 
 		public void SetParams() {
@@ -50,10 +39,26 @@
 			mSavedTimeStep = CircuitElement.delta_time;
 		}
 
-		public override void Stamp() {
-			CircuitElement.StampVoltageSource(0, Nodes[0], mVoltSource);
+		public override double VoltageDiff() {
+			return Volts[0];
 		}
 
+		#region [method(Analyze)]
+		public override bool HasGroundConnection(int n1) { return true; }
+
+		public override void Reset() {
+			Frequency = MinF;
+			mFreqTime = 0;
+			mFdir = 1;
+			SetParams();
+		}
+
+		public override void Stamp() {
+			CircuitElement.StampVoltageSource(0, NodeIndex[0], mVoltSource);
+		}
+		#endregion
+
+		#region [method(Circuit)]
 		public override void PrepareIteration() {
 			/* has timestep been changed? */
 			if (CircuitElement.delta_time != mSavedTimeStep) {
@@ -83,5 +88,6 @@
 			var row = CircuitElement.row_info[vn - 1].row;
 			CircuitElement.right_side[row] += mVolt;
 		}
+		#endregion
 	}
 }

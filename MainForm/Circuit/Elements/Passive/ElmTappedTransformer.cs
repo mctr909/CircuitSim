@@ -4,8 +4,8 @@
 		public double Ratio = 1.0;
 		public double CouplingCoef = 0.999;
 		public int Polarity = 1;
+
 		public double[] Currents = new double[4];
-		public double[] CurCounts = new double[3];
 
 		double[] mA = new double[9];
 		double[] mVoltageDiff = new double[3];
@@ -13,14 +13,8 @@
 
 		public override int TermCount { get { return 5; } }
 
-		public override void Reset() {
-			Volts[0] = Volts[1] = Volts[2] = Volts[3] = Volts[4] = 0;
-			Currents[0] = Currents[1] = Currents[2] = Currents[3] = 0;
-			CurCounts[0] = CurCounts[1] = CurCounts[2] = 0;
-			mCurSourceValue[0] = mCurSourceValue[1] = mCurSourceValue[2] = 0;
-		}
-
-		public override bool GetConnection(int n1, int n2) {
+		#region [method(Analyze)]
+		public override bool HasConnection(int n1, int n2) {
 			if (ComparePair(n1, n2, 0, 2)) {
 				return true;
 			}
@@ -28,6 +22,12 @@
 				return true;
 			}
 			return false;
+		}
+
+		public override void Reset() {
+			Volts[0] = Volts[1] = Volts[2] = Volts[3] = Volts[4] = 0;
+			Currents[0] = Currents[1] = Currents[2] = Currents[3] = 0;
+			mCurSourceValue[0] = mCurSourceValue[1] = mCurSourceValue[2] = 0;
 		}
 
 		public override void Stamp() {
@@ -70,35 +70,25 @@
 			for (int i = 0; i != 9; i++) {
 				mA[i] *= CircuitElement.delta_time / 2 / det;
 			}
-			CircuitElement.StampConductance(Nodes[0], Nodes[1], mA[0]);
-			CircuitElement.StampVCCurrentSource(Nodes[0], Nodes[1], Nodes[2], Nodes[3], mA[1]);
-			CircuitElement.StampVCCurrentSource(Nodes[0], Nodes[1], Nodes[3], Nodes[4], mA[2]);
+			CircuitElement.StampConductance(NodeIndex[0], NodeIndex[1], mA[0]);
+			CircuitElement.StampVCCurrentSource(NodeIndex[0], NodeIndex[1], NodeIndex[2], NodeIndex[3], mA[1]);
+			CircuitElement.StampVCCurrentSource(NodeIndex[0], NodeIndex[1], NodeIndex[3], NodeIndex[4], mA[2]);
 
-			CircuitElement.StampVCCurrentSource(Nodes[2], Nodes[3], Nodes[0], Nodes[1], mA[3]);
-			CircuitElement.StampConductance(Nodes[2], Nodes[3], mA[4]);
-			CircuitElement.StampVCCurrentSource(Nodes[2], Nodes[3], Nodes[3], Nodes[4], mA[5]);
+			CircuitElement.StampVCCurrentSource(NodeIndex[2], NodeIndex[3], NodeIndex[0], NodeIndex[1], mA[3]);
+			CircuitElement.StampConductance(NodeIndex[2], NodeIndex[3], mA[4]);
+			CircuitElement.StampVCCurrentSource(NodeIndex[2], NodeIndex[3], NodeIndex[3], NodeIndex[4], mA[5]);
 
-			CircuitElement.StampVCCurrentSource(Nodes[3], Nodes[4], Nodes[0], Nodes[1], mA[6]);
-			CircuitElement.StampVCCurrentSource(Nodes[3], Nodes[4], Nodes[2], Nodes[3], mA[7]);
-			CircuitElement.StampConductance(Nodes[3], Nodes[4], mA[8]);
+			CircuitElement.StampVCCurrentSource(NodeIndex[3], NodeIndex[4], NodeIndex[0], NodeIndex[1], mA[6]);
+			CircuitElement.StampVCCurrentSource(NodeIndex[3], NodeIndex[4], NodeIndex[2], NodeIndex[3], mA[7]);
+			CircuitElement.StampConductance(NodeIndex[3], NodeIndex[4], mA[8]);
 
 			for (int i = 0; i != 5; i++) {
-				CircuitElement.StampRightSide(Nodes[i]);
+				CircuitElement.StampRightSide(NodeIndex[i]);
 			}
 		}
+		#endregion
 
-		public override double GetCurrentIntoNode(int n) {
-			if (n == 0)
-				return -Currents[0];
-			if (n == 1)
-				return Currents[0];
-			if (n == 2)
-				return -Currents[1];
-			if (n == 3)
-				return Currents[3];
-			return Currents[2];
-		}
-
+		#region [method(Circuit)]
 		public override void PrepareIteration() {
 			mVoltageDiff[0] = Volts[0] - Volts[1];
 			mVoltageDiff[1] = Volts[2] - Volts[3];
@@ -118,9 +108,21 @@
 		}
 
 		public override void DoIteration() {
-			CircuitElement.StampCurrentSource(Nodes[0], Nodes[1], mCurSourceValue[0]);
-			CircuitElement.StampCurrentSource(Nodes[2], Nodes[3], mCurSourceValue[1]);
-			CircuitElement.StampCurrentSource(Nodes[3], Nodes[4], mCurSourceValue[2]);
+			CircuitElement.StampCurrentSource(NodeIndex[0], NodeIndex[1], mCurSourceValue[0]);
+			CircuitElement.StampCurrentSource(NodeIndex[2], NodeIndex[3], mCurSourceValue[1]);
+			CircuitElement.StampCurrentSource(NodeIndex[3], NodeIndex[4], mCurSourceValue[2]);
+		}
+
+		public override double GetCurrentIntoNode(int n) {
+			if (n == 0)
+				return -Currents[0];
+			if (n == 1)
+				return Currents[0];
+			if (n == 2)
+				return -Currents[1];
+			if (n == 3)
+				return Currents[3];
+			return Currents[2];
 		}
 
 		public override void SetVoltage(int n, double c) {
@@ -143,5 +145,6 @@
 			// calc current of tap wire
 			Currents[3] = Currents[1] - Currents[2];
 		}
+		#endregion
 	}
 }

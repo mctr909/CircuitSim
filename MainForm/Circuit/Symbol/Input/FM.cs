@@ -55,7 +55,7 @@ namespace Circuit.Symbol.Input {
 		public override void GetInfo(string[] arr) {
 			arr[0] = "FM Source";
 			arr[1] = "I = " + TextUtils.Current(mElm.Current);
-			arr[2] = "V = " + TextUtils.Voltage(mElm.VoltageDiff);
+			arr[2] = "V = " + TextUtils.Voltage(mElm.VoltageDiff());
 			arr[3] = "cf = " + TextUtils.Frequency(mElm.CarrierFreq);
 			arr[4] = "sf = " + TextUtils.Frequency(mElm.Signalfreq);
 			arr[5] = "dev =" + TextUtils.Frequency(mElm.Deviation);

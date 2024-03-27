@@ -32,19 +32,20 @@
 
 		public override int VoltageSourceCount { get { return 1; } }
 
-		public override double VoltageDiff { get { return Volts[0]; } }
-
-		public override double GetCurrentIntoNode(int n) { return -Current; }
-
 		public static void ResetNodeList() {
 			mNodeList = new Dictionary<string, int>();
 		}
 
+		public override double VoltageDiff() {
+			return Volts[0];
+		}
+
+		#region [method(Analyze)]
 		// get connection node (which is the same as regular nodes for all elements but this one).
 		// node 0 is the terminal, node 1 is the internal node shared by all nodes with same name
 		public override int GetConnectionNode(int n) {
 			if (n == 0) {
-				return Nodes[0];
+				return NodeIndex[0];
 			}
 			return mNodeNumber;
 		}
@@ -59,8 +60,12 @@
 		}
 
 		public override void Stamp() {
-			CircuitElement.StampVoltageSource(mNodeNumber, Nodes[0], mVoltSource, 0);
+			CircuitElement.StampVoltageSource(mNodeNumber, NodeIndex[0], mVoltSource, 0);
 		}
+		#endregion
+
+		#region [method(Circuit)]
+		public override double GetCurrentIntoNode(int n) { return -Current; }
 
 		public override void SetCurrent(int x, double c) { Current = -c; }
 
@@ -69,5 +74,6 @@
 				Volts[0] = c;
 			}
 		}
+		#endregion
 	}
 }

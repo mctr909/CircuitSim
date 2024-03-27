@@ -24,6 +24,9 @@ namespace Circuit.Symbol.Passive {
 		float mCoilAngle;
 		ElmTransformer mElm;
 
+		double mCurCounts1 = 0;
+		double mCurCounts2 = 0;
+
 		public override BaseElement Element { get { return mElm; } }
 
 		public Transformer(Point pos) : base(pos) {
@@ -178,14 +181,14 @@ namespace Circuit.Symbol.Passive {
 				DrawCircle(mDots[1], 2.5f);
 			}
 
-			UpdateDotCount(mElm.Currents[0], ref mElm.CurCounts[0]);
-			UpdateDotCount(mElm.Currents[1], ref mElm.CurCounts[1]);
-			DrawCurrent(mTermPri1, mCoilPri1, mElm.CurCounts[0]);
-			DrawCurrent(mCoilPri1, mCoilPri2, mElm.CurCounts[0]);
-			DrawCurrent(mCoilPri2, mTermPri2, mElm.CurCounts[0]);
-			DrawCurrent(mTermSec1, mCoilSec1, mElm.CurCounts[1]);
-			DrawCurrent(mCoilSec1, mCoilSec2, mElm.CurCounts[1]);
-			DrawCurrent(mCoilSec2, mTermSec2, mElm.CurCounts[1]);
+			UpdateDotCount(mElm.Currents[0], ref mCurCounts1);
+			UpdateDotCount(mElm.Currents[1], ref mCurCounts2);
+			DrawCurrent(mTermPri1, mCoilPri1, mCurCounts1);
+			DrawCurrent(mCoilPri1, mCoilPri2, mCurCounts1);
+			DrawCurrent(mCoilPri2, mTermPri2, mCurCounts1);
+			DrawCurrent(mTermSec1, mCoilSec1, mCurCounts2);
+			DrawCurrent(mCoilSec1, mCoilSec2, mCurCounts2);
+			DrawCurrent(mCoilSec2, mTermSec2, mCurCounts2);
 
 			if (ControlPanel.ChkShowName.Checked) {
 				DrawCenteredText(ReferenceName, mNamePos);

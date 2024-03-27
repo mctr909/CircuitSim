@@ -40,66 +40,8 @@
 
 		public override int TermCount { get { return 3; } }
 
-		public override double VoltageDiff { get { return Volts[IdxG] - Volts[IdxS]; } }
-
-		public override bool GetConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
-
-		public override void Reset() {
-			Volts[IdxG] = Volts[IdxS] = Volts[IdxD] = 0;
-			mLastVs = 0.0;
-			mLastVd = 0.0;
-			mLastVg = 0.0;
-			mDiodeLastVdiff1 = 0;
-			mDiodeLastVdiff2 = 0;
-			DiodeCurrent1 = 0.0;
-			DiodeCurrent2 = 0.0;
-		}
-
-		public override void Stamp() {
-			CircuitElement.StampNonLinear(Nodes[IdxS]);
-			CircuitElement.StampNonLinear(Nodes[IdxD]);
-			mBodyTerminal = (Nch < 0) ? IdxD : IdxS;
-			if (MOS) {
-				if (Nch < 0) {
-					mDiodeNodes1A = Nodes[IdxS];
-					mDiodeNodes1B = Nodes[mBodyTerminal];
-					mDiodeNodes2A = Nodes[IdxD];
-					mDiodeNodes2B = Nodes[mBodyTerminal];
-				} else {
-					mDiodeNodes1A = Nodes[mBodyTerminal];
-					mDiodeNodes1B = Nodes[IdxS];
-					mDiodeNodes2A = Nodes[mBodyTerminal];
-					mDiodeNodes2B = Nodes[IdxD];
-				}
-				CircuitElement.StampNonLinear(mDiodeNodes1A);
-				CircuitElement.StampNonLinear(mDiodeNodes1B);
-				CircuitElement.StampNonLinear(mDiodeNodes2A);
-				CircuitElement.StampNonLinear(mDiodeNodes2B);
-			}
-		}
-
-		public override double GetCurrentIntoNode(int n) {
-			if (n == 0) {
-				return 0;
-			}
-			if (n == 1) {
-				return Current + DiodeCurrent1;
-			}
-			return -Current + DiodeCurrent2;
-		}
-
-		public override void DoIteration() {
-			Calc(false);
-		}
-
-		public override void FinishIteration() {
-			Calc(true);
-			if (mBodyTerminal == IdxS) {
-				DiodeCurrent1 = -DiodeCurrent2;
-			}
-			if (mBodyTerminal == IdxD) {
-				DiodeCurrent2 = -DiodeCurrent1;
-			}
+		public override double VoltageDiff() {
+			return Volts[IdxG] - Volts[IdxS];
 		}
 
 		protected static void DiodeDoIteration(double vnew, ref double vold, int nodeA, int nodeB) {
@@ -223,16 +165,16 @@
 				DiodeCurrent1 = DiodeCurrent2 = 0;
 			}
 
-			CircuitElement.StampMatrix(Nodes[IdxD], Nodes[IdxD], gds);
-			CircuitElement.StampMatrix(Nodes[IdxD], Nodes[IdxS], -gds - Gm);
-			CircuitElement.StampMatrix(Nodes[IdxD], Nodes[IdxG], Gm);
+			CircuitElement.StampMatrix(NodeIndex[IdxD], NodeIndex[IdxD], gds);
+			CircuitElement.StampMatrix(NodeIndex[IdxD], NodeIndex[IdxS], -gds - Gm);
+			CircuitElement.StampMatrix(NodeIndex[IdxD], NodeIndex[IdxG], Gm);
 
-			CircuitElement.StampMatrix(Nodes[IdxS], Nodes[IdxD], -gds);
-			CircuitElement.StampMatrix(Nodes[IdxS], Nodes[IdxS], gds + Gm);
-			CircuitElement.StampMatrix(Nodes[IdxS], Nodes[IdxG], -Gm);
+			CircuitElement.StampMatrix(NodeIndex[IdxS], NodeIndex[IdxD], -gds);
+			CircuitElement.StampMatrix(NodeIndex[IdxS], NodeIndex[IdxS], gds + Gm);
+			CircuitElement.StampMatrix(NodeIndex[IdxS], NodeIndex[IdxG], -Gm);
 
-			CircuitElement.StampRightSide(Nodes[IdxD], rs);
-			CircuitElement.StampRightSide(Nodes[IdxS], -rs);
+			CircuitElement.StampRightSide(NodeIndex[IdxD], rs);
+			CircuitElement.StampRightSide(NodeIndex[IdxS], -rs);
 		}
 
 		bool NonConvergence(double last, double now) {
@@ -255,5 +197,69 @@
 			}
 			return true;
 		}
+
+		#region [method(Analyze)]
+		public override bool HasConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
+
+		public override void Reset() {
+			Volts[IdxG] = Volts[IdxS] = Volts[IdxD] = 0;
+			mLastVs = 0.0;
+			mLastVd = 0.0;
+			mLastVg = 0.0;
+			mDiodeLastVdiff1 = 0;
+			mDiodeLastVdiff2 = 0;
+			DiodeCurrent1 = 0.0;
+			DiodeCurrent2 = 0.0;
+		}
+
+		public override void Stamp() {
+			CircuitElement.StampNonLinear(NodeIndex[IdxS]);
+			CircuitElement.StampNonLinear(NodeIndex[IdxD]);
+			mBodyTerminal = (Nch < 0) ? IdxD : IdxS;
+			if (MOS) {
+				if (Nch < 0) {
+					mDiodeNodes1A = NodeIndex[IdxS];
+					mDiodeNodes1B = NodeIndex[mBodyTerminal];
+					mDiodeNodes2A = NodeIndex[IdxD];
+					mDiodeNodes2B = NodeIndex[mBodyTerminal];
+				} else {
+					mDiodeNodes1A = NodeIndex[mBodyTerminal];
+					mDiodeNodes1B = NodeIndex[IdxS];
+					mDiodeNodes2A = NodeIndex[mBodyTerminal];
+					mDiodeNodes2B = NodeIndex[IdxD];
+				}
+				CircuitElement.StampNonLinear(mDiodeNodes1A);
+				CircuitElement.StampNonLinear(mDiodeNodes1B);
+				CircuitElement.StampNonLinear(mDiodeNodes2A);
+				CircuitElement.StampNonLinear(mDiodeNodes2B);
+			}
+		}
+		#endregion
+
+		#region [method(Circuit)]
+		public override void DoIteration() {
+			Calc(false);
+		}
+
+		public override void FinishIteration() {
+			Calc(true);
+			if (mBodyTerminal == IdxS) {
+				DiodeCurrent1 = -DiodeCurrent2;
+			}
+			if (mBodyTerminal == IdxD) {
+				DiodeCurrent2 = -DiodeCurrent1;
+			}
+		}
+
+		public override double GetCurrentIntoNode(int n) {
+			if (n == 0) {
+				return 0;
+			}
+			if (n == 1) {
+				return Current + DiodeCurrent1;
+			}
+			return -Current + DiodeCurrent2;
+		}
+		#endregion
 	}
 }

@@ -72,8 +72,6 @@ namespace MainForm {
 		bool mIsPressAlt;
 
 		static long mLastTime = 0;
-		static long mLastFrameTime;
-		static long mLastSysTime = 0;
 		#endregion
 
 		public MainForm() {
@@ -251,7 +249,7 @@ namespace MainForm {
 		public static void Repaint() {
 			if (!mNeedsRepaint) {
 				mNeedsRepaint = true;
-				UpdateCircuit();
+				UpdateDisplay();
 				mNeedsRepaint = false;
 			}
 		}
@@ -770,7 +768,7 @@ namespace MainForm {
 			mTimer = new System.Windows.Forms.Timer();
 			mTimer.Tick += new EventHandler((s, e) => {
 				if (CircuitSymbol.IsRunning) {
-					UpdateCircuit();
+					UpdateDisplay();
 					mNeedsRepaint = false;
 				}
 			});
@@ -1398,14 +1396,13 @@ namespace MainForm {
 				}
 				s = cs;
 				for (int j = 0; j < e.TermCount; j++) {
-					s = s + " " + e.Nodes[j];
+					s = s + " " + e.NodeIndex[j];
 				}
 				Console.WriteLine(s);
 			}
 		}
 
-		static void UpdateCircuit() {
-			bool didAnalyze = CircuitSymbol.NeedAnalyze;
+		static void UpdateDisplay() {
 			if (CircuitSymbol.NeedAnalyze) {
 				CircuitSymbol.AnalyzeCircuit();
 				Repaint();
@@ -1413,12 +1410,7 @@ namespace MainForm {
 			}
 
 			if (CircuitSymbol.IsRunning) {
-				try {
-					RunCircuit(didAnalyze);
-				} catch (Exception e) {
-					Console.WriteLine("exception in runCircuit " + e + "\r\n" + e.StackTrace);
-					return;
-				}
+				CircuitElement.exec(ref CircuitSymbol.IsRunning, ref CircuitSymbol.NeedAnalyze, ControlPanel.StepRate);
 			}
 
 			long sysTime = DateTime.Now.ToFileTimeUtc();
@@ -1432,10 +1424,6 @@ namespace MainForm {
 				mLastTime = sysTime;
 			} else {
 				mLastTime = 0;
-			}
-
-			if (sysTime - mLastSysTime >= 1000) {
-				mLastSysTime = sysTime;
 			}
 
 			var g = CustomGraphics.Instance;
@@ -1509,52 +1497,6 @@ namespace MainForm {
 				CustomGraphics.Instance.CopyTo(mContext);
 				mPixCir.Image = mBmp;
 			}
-			mLastFrameTime = mLastTime;
-		}
-
-		static void RunCircuit(bool didAnalyze) {
-			if (CircuitSymbol.Count == 0) {
-				return;
-			}
-
-			double steprate = ControlPanel.StepRate;
-			long tm = DateTime.Now.ToFileTimeUtc();
-			long lit = CircuitSymbol.LastIterTime;
-			if (lit == 0) {
-				CircuitSymbol.LastIterTime = tm;
-				return;
-			}
-
-			/* Check if we don't need to run simulation (for very slow simulation speeds).
-            /* If the circuit changed, do at least one iteration to make sure everything is consistent. */
-			if (1000 >= steprate * (tm - CircuitSymbol.LastIterTime) && !didAnalyze) {
-				return;
-			}
-
-			int iter;
-			for (iter = 1; ; iter++) {
-				if (!CircuitElement.DoIteration()) {
-					break;
-				}
-				ScopeForm.TimeStep();
-				for (int i = 0; i < CircuitSymbol.Count; i++) {
-					if (CircuitSymbol.List[i] is Scope) {
-						((Scope)CircuitSymbol.List[i]).Plot.TimeStep();
-					}
-				}
-
-				/* Check whether enough time has elapsed to perform an *additional* iteration after
-                /* those we have already completed. */
-				tm = DateTime.Now.ToFileTimeUtc();
-				lit = tm;
-				if ((iter + 1) * 1000 >= steprate * (tm - CircuitSymbol.LastIterTime) || (tm - mLastFrameTime > 250000)) {
-					break;
-				}
-				if (!CircuitSymbol.IsRunning) {
-					break;
-				}
-			}
-			CircuitSymbol.LastIterTime = lit;
 		}
 
 		static void DrawCircuit(CustomGraphics g) {

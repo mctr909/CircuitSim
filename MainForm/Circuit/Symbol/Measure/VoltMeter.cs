@@ -92,7 +92,7 @@ namespace Circuit.Symbol.Measure {
 		protected string DrawValues() {
 			switch (mMeter) {
 			case TP_VOL:
-				return TextUtils.UnitWithScale(mElm.VoltageDiff, "V", mScale);
+				return TextUtils.UnitWithScale(mElm.VoltageDiff(), "V", mScale);
 			case TP_RMS:
 				return TextUtils.UnitWithScale(mElm.Rms, "V rms", mScale);
 			case TP_MAX:

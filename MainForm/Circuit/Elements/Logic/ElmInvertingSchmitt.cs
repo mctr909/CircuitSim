@@ -10,20 +10,25 @@
 
 		public override int TermCount { get { return 2; } }
 
-		public override double VoltageDiff { get { return Volts[0]; } }
-
 		public override int VoltageSourceCount { get { return 1; } }
 
+		public override double VoltageDiff() {
+			return Volts[0];
+		}
+
+		#region [method(Analyze)]
 		// there is no current path through the InvertingSchmitt input, but there
 		// is an indirect path through the output to ground.
-		public override bool GetConnection(int n1, int n2) { return false; }
+		public override bool HasConnection(int n1, int n2) { return false; }
 
 		public override bool HasGroundConnection(int n1) { return n1 == 1; }
 
 		public override void Stamp() {
-			CircuitElement.StampVoltageSource(0, Nodes[1], mVoltSource);
+			CircuitElement.StampVoltageSource(0, NodeIndex[1], mVoltSource);
 		}
+		#endregion
 
+		#region [method(Circuit)]
 		public override void DoIteration() {
 			double v0 = Volts[1];
 			double _out;
@@ -55,5 +60,6 @@
 			}
 			return 0;
 		}
+		#endregion
 	}
 }

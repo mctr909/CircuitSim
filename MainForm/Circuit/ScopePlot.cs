@@ -195,13 +195,13 @@
 				for (int i = 0; i != plotCount; i++) {
 					string temp;
 					st.nextToken(out temp);
-					var subElmCol = temp.Split('_');
-					var subElmIdx = int.Parse(subElmCol[0]);
-					var subElm = CircuitSymbol.List[subElmIdx];
-					var p = new ScopeWave(subElm) {
+					var subCol = temp.Split('_');
+					var subIdx = int.Parse(subCol[0]);
+					var subSymbol = CircuitSymbol.List[subIdx];
+					var p = new ScopeWave(subSymbol, subSymbol.Element) {
 						Speed = Speed
 					};
-					SetColor(p, Enum.Parse<E_COLOR>(subElmCol[1]));
+					SetColor(p, Enum.Parse<E_COLOR>(subCol[1]));
 					mWaves.Add(p);
 				}
 			} catch (Exception ex) {
@@ -393,7 +393,9 @@
 				mWaves.Clear();
 				return;
 			}
-			mWaves = new List<ScopeWave>() { new(symbol) };
+			mWaves = new List<ScopeWave>() {
+				new(symbol, symbol.Element)
+			};
 			ShowVoltage = true;
 			ResetGraph();
 		}
@@ -410,7 +412,7 @@
 			}
 			mWaves.Clear();
 			foreach (var symbol in symbolList) {
-				mWaves.Add(new ScopeWave(symbol));
+				mWaves.Add(new ScopeWave(symbol, symbol.Element));
 			}
 			ShowVoltage = true;
 			ResetGraph();

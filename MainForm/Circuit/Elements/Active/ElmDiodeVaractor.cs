@@ -21,8 +21,8 @@
 
 		public override void Stamp() {
 			base.Stamp();
-			var n0 = Nodes[0] - 1;
-			var n1 = Nodes[2] - 1;
+			var n0 = NodeIndex[0] - 1;
+			var n1 = NodeIndex[2] - 1;
 			int vn = CircuitElement.nodes.Length + mVoltSource - 1;
 			CircuitElement.matrix[vn, n0] -= 1;
 			CircuitElement.matrix[vn, n1] += 1;
@@ -32,19 +32,7 @@
 			CircuitElement.row_info[n1].left_changes = true;
 		}
 
-		public override void DoIteration() {
-			base.DoIteration();
-			var g = 1.0 / mCompResistance;
-			var n0 = Nodes[2] - 1;
-			var n1 = Nodes[1] - 1;
-			var vn = CircuitElement.nodes.Length + mVoltSource - 1;
-			CircuitElement.matrix[n0, n0] += g;
-			CircuitElement.matrix[n1, n1] += g;
-			CircuitElement.matrix[n0, n1] -= g;
-			CircuitElement.matrix[n1, n0] -= g;
-			CircuitElement.right_side[vn] += mVoltSourceValue;
-		}
-
+		#region [method(Circuit)]
 		public override void PrepareIteration() {
 			base.PrepareIteration();
 			// capacitor companion model using trapezoidal approximation
@@ -59,6 +47,19 @@
 			mVoltSourceValue = -CapVoltDiff - mCapCurrent * mCompResistance;
 		}
 
+		public override void DoIteration() {
+			base.DoIteration();
+			var g = 1.0 / mCompResistance;
+			var n0 = NodeIndex[2] - 1;
+			var n1 = NodeIndex[1] - 1;
+			var vn = CircuitElement.nodes.Length + mVoltSource - 1;
+			CircuitElement.matrix[n0, n0] += g;
+			CircuitElement.matrix[n1, n1] += g;
+			CircuitElement.matrix[n0, n1] -= g;
+			CircuitElement.matrix[n1, n0] -= g;
+			CircuitElement.right_side[vn] += mVoltSourceValue;
+		}
+
 		public override void SetVoltage(int n, double c) {
 			base.SetVoltage(n, c);
 			CapVoltDiff = Volts[0] - Volts[1];
@@ -66,5 +67,6 @@
 		}
 
 		public override void SetCurrent(int x, double c) { mCapCurrent = c; }
+		#endregion
 	}
 }

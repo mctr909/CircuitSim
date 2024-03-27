@@ -38,15 +38,18 @@ namespace Circuit.Elements.Custom {
 			Console.WriteLine("setVoltageSource failed for " + this);
 		}
 
+		public override bool HasConnection(int n1, int n2) { return false; }
+
 		public override void Stamp() {
 			for (int i = 0; i != TermCount; i++) {
 				var p = Pins[i];
 				if (p.output) {
-					CircuitElement.StampVoltageSource(0, Nodes[i], p.voltSource);
+					CircuitElement.StampVoltageSource(0, NodeIndex[i], p.voltSource);
 				}
 			}
 		}
 
+		#region [method(Circuit)]
 		public override void DoIteration() {
 			int i;
 			for (i = 0; i != TermCount; i++) {
@@ -64,7 +67,9 @@ namespace Circuit.Elements.Custom {
 			}
 		}
 
-		protected virtual void execute() { }
+		public override double GetCurrentIntoNode(int n) {
+			return Pins[n].current;
+		}
 
 		public override void SetCurrent(int x, double c) {
 			for (int i = 0; i != TermCount; i++) {
@@ -73,11 +78,8 @@ namespace Circuit.Elements.Custom {
 				}
 			}
 		}
+		#endregion
 
-		public override bool GetConnection(int n1, int n2) { return false; }
-
-		public override double GetCurrentIntoNode(int n) {
-			return Pins[n].current;
-		}
+		protected virtual void execute() { }
 	}
 }

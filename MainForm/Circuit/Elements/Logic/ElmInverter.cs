@@ -9,25 +9,23 @@
 
 		public override int VoltageSourceCount { get { return 1; } }
 
-		public override double VoltageDiff { get { return Volts[0]; } }
-
-		public override double GetCurrentIntoNode(int n) {
-			if (n == 1) {
-				return Current;
-			}
-			return 0;
+		public override double VoltageDiff() {
+			return Volts[0];
 		}
 
+		#region [method(Analyze)]
 		/* there is no current path through the inverter input,
          * but there is an indirect path through the output to ground. */
-		public override bool GetConnection(int n1, int n2) { return false; }
+		public override bool HasConnection(int n1, int n2) { return false; }
 
 		public override bool HasGroundConnection(int n1) { return n1 == 1; }
 
 		public override void Stamp() {
-			CircuitElement.StampVoltageSource(0, Nodes[1], mVoltSource);
+			CircuitElement.StampVoltageSource(0, NodeIndex[1], mVoltSource);
 		}
+		#endregion
 
+		#region [method(Circuit)]
 		public override void PrepareIteration() {
 			mLastOutputVoltage = Volts[1];
 		}
@@ -38,5 +36,13 @@
 			v = Math.Max(Math.Min(mLastOutputVoltage + maxStep, v), mLastOutputVoltage - maxStep);
 			CircuitElement.UpdateVoltageSource(mVoltSource, v);
 		}
+
+		public override double GetCurrentIntoNode(int n) {
+			if (n == 1) {
+				return Current;
+			}
+			return 0;
+		}
+		#endregion
 	}
 }

@@ -30,7 +30,7 @@ namespace Circuit.Elements.Custom {
 		}
 
 		/* are n1 and n2 connected internally somehow? */
-		public override bool GetConnection(int n1, int n2) {
+		public override bool HasConnection(int n1, int n2) {
 			var cl1 = mCompNodeList[n1].links;
 			var cl2 = mCompNodeList[n2].links;
 			/* see if any elements are connected to both n1 and n2, then call getConnection() on those */
@@ -38,7 +38,7 @@ namespace Circuit.Elements.Custom {
 				var link1 = cl1[i];
 				for (int j = 0; j < cl2.Count; j++) {
 					var link2 = cl2[j];
-					if (link1.p_elm == link2.p_elm && link1.p_elm.GetConnection(link1.node_index, link2.node_index)) {
+					if (link1.p_elm == link2.p_elm && link1.p_elm.HasConnection(link1.node_index, link2.node_index)) {
 						return true;
 					}
 				}
@@ -65,6 +65,15 @@ namespace Circuit.Elements.Custom {
 			}
 		}
 
+		/* Find the component with the nth voltage
+         * and set the
+         * appropriate source in that component */
+		public override void SetVoltageSource(int n, int v) {
+			var vsr = mVoltageSources[n];
+			vsr.elm.SetVoltageSource(vsr.vsNumForElement, v);
+			vsr.vsNode = v;
+		}
+
 		public override void Stamp() {
 			for (int i = 0; i < CompList.Count; i++) {
 				var ce = CompList[i];
@@ -77,15 +86,7 @@ namespace Circuit.Elements.Custom {
 			}
 		}
 
-		/* Find the component with the nth voltage
-         * and set the
-         * appropriate source in that component */
-		public override void SetVoltageSource(int n, int v) {
-			var vsr = mVoltageSources[n];
-			vsr.elm.SetVoltageSource(vsr.vsNumForElement, v);
-			vsr.vsNode = v;
-		}
-
+		#region [method(Circuit)]
 		public override void PrepareIteration() {
 			for (int i = 0; i < CompList.Count; i++) {
 				CompList[i].PrepareIteration();
@@ -104,6 +105,15 @@ namespace Circuit.Elements.Custom {
 			}
 		}
 
+		public override double GetCurrentIntoNode(int n) {
+			double c = 0;
+			var links = mCompNodeList[n].links;
+			for (int i = 0; i < links.Count; i++) {
+				c += links[i].p_elm.GetCurrentIntoNode(links[i].node_index);
+			}
+			return c;
+		}
+
 		public override void SetVoltage(int n, double c) {
 			base.SetVoltage(n, c);
 			var links = mCompNodeList[n].links;
@@ -120,15 +130,7 @@ namespace Circuit.Elements.Custom {
 				}
 			}
 		}
-
-		public override double GetCurrentIntoNode(int n) {
-			double c = 0;
-			var links = mCompNodeList[n].links;
-			for (int i = 0; i < links.Count; i++) {
-				c += links[i].p_elm.GetCurrentIntoNode(links[i].node_index);
-			}
-			return c;
-		}
+		#endregion
 
 		public void LoadComposite(Dictionary<int, CIRCUIT_NODE> nodeHash, List<BaseSymbol> symbolList, int[] externalNodes) {
 			/* Flatten nodeHash in to compNodeList */

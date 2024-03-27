@@ -108,7 +108,7 @@ namespace Circuit.Symbol.Passive {
 			arr[0] = mElm.Momentary ? "プッシュスイッチ(" : "スイッチ(";
 			if (mElm.Position == 1) {
 				arr[0] += "OFF)";
-				arr[1] = "電位差：" + TextUtils.VoltageAbs(mElm.VoltageDiff);
+				arr[1] = "電位差：" + TextUtils.VoltageAbs(mElm.VoltageDiff());
 			} else {
 				arr[0] += "ON)";
 				arr[1] = "電位：" + TextUtils.Voltage(mElm.Volts[0]);

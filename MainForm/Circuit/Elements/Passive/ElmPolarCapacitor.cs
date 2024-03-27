@@ -3,7 +3,8 @@
 		public double MaxNegativeVoltage = 1.0;
 
 		public override void FinishIteration() {
-			if (VoltageDiff < 0 && VoltageDiff < -MaxNegativeVoltage) {
+			var v = VoltageDiff();
+			if (v < 0 && v < -MaxNegativeVoltage) {
 				CircuitElement.stopped = true;
 			}
 		}

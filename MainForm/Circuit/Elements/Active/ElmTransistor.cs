@@ -30,8 +30,6 @@
 
 		public override int TermCount { get { return 3; } }
 
-		public override double VoltageDiff { get { return Volts[IdxC] - Volts[IdxE]; } }
-
 		public ElmTransistor() { }
 
 		public ElmTransistor(double vbe, double vbc) {
@@ -42,38 +40,35 @@
 			Volts[IdxE] = -vbc;
 		}
 
-		public void SetHfe(double hfe) {
-			Hfe = hfe;
-			Setup();
-		}
-
-		public override void Reset() {
-			Volts[IdxB] = Volts[IdxC] = Volts[IdxE] = 0;
-			mLastVbc = mLastVbe = 0;
-		}
-
 		public void Setup() {
 			mVcrit = VT * Math.Log(VT / (Math.Sqrt(2) * LEAKAGE));
 			mFgain = Hfe / (Hfe + 1);
 			mInv_fgain = 1 / mFgain;
 		}
 
+		public void SetHfe(double hfe) {
+			Hfe = hfe;
+			Setup();
+		}
+
+		public override double VoltageDiff() {
+			return Volts[IdxC] - Volts[IdxE];
+		}
+
+		#region [method(Analyze)]
+		public override void Reset() {
+			Volts[IdxB] = Volts[IdxC] = Volts[IdxE] = 0;
+			mLastVbc = mLastVbe = 0;
+		}
+
 		public override void Stamp() {
-			CircuitElement.row_info[Nodes[IdxB] - 1].left_changes = true;
-			CircuitElement.row_info[Nodes[IdxC] - 1].left_changes = true;
-			CircuitElement.row_info[Nodes[IdxE] - 1].left_changes = true;
+			CircuitElement.row_info[NodeIndex[IdxB] - 1].left_changes = true;
+			CircuitElement.row_info[NodeIndex[IdxC] - 1].left_changes = true;
+			CircuitElement.row_info[NodeIndex[IdxE] - 1].left_changes = true;
 		}
+		#endregion
 
-		public override double GetCurrentIntoNode(int n) {
-			if (n == 0) {
-				return -Ib;
-			}
-			if (n == 1) {
-				return -Ic;
-			}
-			return -Ie;
-		}
-
+		#region [method(Circuit)]
 		public override void DoIteration() {
 			var vbc = Volts[IdxB] - Volts[IdxC]; /* typically negative */
 			var vbe = Volts[IdxB] - Volts[IdxE]; /* typically positive */
@@ -114,10 +109,10 @@
 			gcc -= mGmin;
 			gee -= mGmin;
 
-			var rowB = CircuitElement.row_info[Nodes[IdxB] - 1].row;
-			var rowC = CircuitElement.row_info[Nodes[IdxC] - 1].row;
-			var rowE = CircuitElement.row_info[Nodes[IdxE] - 1].row;
-			var colri = CircuitElement.row_info[Nodes[IdxB] - 1];
+			var rowB = CircuitElement.row_info[NodeIndex[IdxB] - 1].row;
+			var rowC = CircuitElement.row_info[NodeIndex[IdxC] - 1].row;
+			var rowE = CircuitElement.row_info[NodeIndex[IdxE] - 1].row;
+			var colri = CircuitElement.row_info[NodeIndex[IdxB] - 1];
 			if (colri.is_const) {
 				CircuitElement.right_side[rowB] += (gee + gec + gce + gcc) * colri.value;
 				CircuitElement.right_side[rowC] -= (gce + gcc) * colri.value;
@@ -127,7 +122,7 @@
 				CircuitElement.matrix[rowC, colri.col] += gce + gcc;
 				CircuitElement.matrix[rowE, colri.col] += gee + gec;
 			}
-			colri = CircuitElement.row_info[Nodes[IdxC] - 1];
+			colri = CircuitElement.row_info[NodeIndex[IdxC] - 1];
 			if (colri.is_const) {
 				CircuitElement.right_side[rowB] -= (gec + gcc) * colri.value;
 				CircuitElement.right_side[rowC] += gcc * colri.value;
@@ -137,7 +132,7 @@
 				CircuitElement.matrix[rowC, colri.col] -= gcc;
 				CircuitElement.matrix[rowE, colri.col] -= gec;
 			}
-			colri = CircuitElement.row_info[Nodes[IdxE] - 1];
+			colri = CircuitElement.row_info[NodeIndex[IdxE] - 1];
 			if (colri.is_const) {
 				CircuitElement.right_side[rowB] -= (gee + gce) * colri.value;
 				CircuitElement.right_side[rowC] += gce * colri.value;
@@ -150,9 +145,9 @@
 
 			/* we are solving for v(k+1), not delta v, so we use formula
              * multiplying J by v(k) */
-			rowB = CircuitElement.row_info[Nodes[IdxB] - 1].row;
-			rowC = CircuitElement.row_info[Nodes[IdxC] - 1].row;
-			rowE = CircuitElement.row_info[Nodes[IdxE] - 1].row;
+			rowB = CircuitElement.row_info[NodeIndex[IdxB] - 1].row;
+			rowC = CircuitElement.row_info[NodeIndex[IdxC] - 1].row;
+			rowE = CircuitElement.row_info[NodeIndex[IdxE] - 1].row;
 			CircuitElement.right_side[rowB] += -Ib - (gec + gcc) * vbc - (gee + gce) * vbe;
 			CircuitElement.right_side[rowC] += -Ic + gce * vbe + gcc * vbc;
 			CircuitElement.right_side[rowE] += -Ie + gee * vbe + gec * vbc;
@@ -163,6 +158,17 @@
 				CircuitElement.stopped = true;
 			}
 		}
+
+		public override double GetCurrentIntoNode(int n) {
+			if (n == 0) {
+				return -Ib;
+			}
+			if (n == 1) {
+				return -Ic;
+			}
+			return -Ie;
+		}
+		#endregion
 
 		double limitStep(double vnew, double vold) {
 			double arg;

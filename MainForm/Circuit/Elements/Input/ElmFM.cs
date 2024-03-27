@@ -13,7 +13,9 @@
 
 		public override int VoltageSourceCount { get { return 1; } }
 
-		public override double VoltageDiff { get { return Volts[0]; } }
+		public override double VoltageDiff() {
+			return Volts[0];
+		}
 
 		public override bool HasGroundConnection(int n1) { return true; }
 
@@ -22,7 +24,7 @@
 		}
 
 		public override void Stamp() {
-			CircuitElement.StampVoltageSource(0, Nodes[0], mVoltSource);
+			CircuitElement.StampVoltageSource(0, NodeIndex[0], mVoltSource);
 		}
 
 		public override void DoIteration() {

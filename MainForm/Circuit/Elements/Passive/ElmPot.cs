@@ -6,9 +6,6 @@
 
 		public double Position = 0.5;
 		public double MaxResistance = 1000;
-		public double CurCount1 = 0;
-		public double CurCount2 = 0;
-		public double CurCount3 = 0;
 
 		public double Resistance1;
 		public double Resistance2;
@@ -18,16 +15,11 @@
 
 		public override int TermCount { get { return 3; } }
 
-		public override void Reset() {
-			CurCount1 = CurCount2 = CurCount3 = 0;
-			base.Reset();
-		}
-
 		public override void Stamp() {
 			Resistance1 = MaxResistance * Position;
 			Resistance2 = MaxResistance * (1 - Position);
-			CircuitElement.StampResistor(Nodes[0], Nodes[2], Resistance1);
-			CircuitElement.StampResistor(Nodes[2], Nodes[1], Resistance2);
+			CircuitElement.StampResistor(NodeIndex[0], NodeIndex[2], Resistance1);
+			CircuitElement.StampResistor(NodeIndex[2], NodeIndex[1], Resistance2);
 		}
 
 		public override double GetCurrentIntoNode(int n) {
