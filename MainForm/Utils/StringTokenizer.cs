@@ -1,8 +1,8 @@
 ﻿public class StringTokenizer {
 	int mIndex;
-	string mValue;
-	string[] mList;
-	char[] mDelimiter;
+	readonly string mValue;
+	readonly char[] mDelimiter;
+	readonly string[] mList;
 
 	public bool HasMoreTokens { get { return mIndex < mList.Length; } }
 
@@ -16,8 +16,15 @@
 				break;
 			}
 		}
-		if (mList == null) {
-			mList = mValue.Split(' ');
+		mList ??= mValue.Split(' ');
+	}
+
+	public string nextToken(string defaultValue = "") {
+		try {
+			return mList[mIndex++];
+		} catch (Exception e) {
+			Console.WriteLine(e);
+			return defaultValue;
 		}
 	}
 

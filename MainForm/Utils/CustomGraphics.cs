@@ -1,245 +1,171 @@
 ﻿using System.Drawing.Drawing2D;
 
 public class CustomGraphics {
-	public static CustomGraphics Instance;
+	protected readonly GraphicsState mState = new();
+	protected readonly SizeF SInvalid = new(float.MinValue, float.MinValue);
+	private readonly Stack<GraphicsState> mStateStack = new();
+	private readonly Graphics? mG = null;
+	private Pen mDrawP = Pens.Black;
+	private Brush mFillB = Brushes.Black;
 
-	static readonly StringFormat mAlignLeft = new()
-	{
-		Alignment = StringAlignment.Near,
-		LineAlignment = StringAlignment.Center
-	};
-	static readonly StringFormat mAlignRight = new()
-	{
-		Alignment = StringAlignment.Far,
-		LineAlignment = StringAlignment.Center
-	};
-	static readonly StringFormat mAlignCenter = new()
-	{
-		Alignment = StringAlignment.Center,
-		LineAlignment = StringAlignment.Center
-	};
+	protected CustomGraphics() { }
 
-	static Pen mPenPost = new(Color.Green, 5.0f);
-	static Pen mPenHandle = new(Color.FromArgb(95, 0, 255, 255), 1.0f);
+	public float currentFontSize => mState.font.Size;
 
-	protected static Font mFontL = new("Arial", 11.0f);
-
-	protected Bitmap mImage;
-
-	Graphics mG;
-
-	Pen mPenLine = new(Color.White, 1.0f)
-	{
-		StartCap = LineCap.Triangle,
-		EndCap = LineCap.Triangle,
-		Width = 0.1f
-	};
-	Pen mPenFill = new(Color.White, 1.0f);
-	Font mFont = new("Arial", 9.0f);
-	Brush mFontBrush = Brushes.Black;
-
-	public const float POST_RADIUS = 2.5f;
-	public const float HANDLE_RADIUS = 6.5f;
-
-	public static Color SelectColor { get; private set; }
-	public static Color WhiteColor { get; private set; }
-	public static Color LineColor { get; private set; }
-	public static Color PostColor {
-		get { return mPenPost.Color; }
-		private set { mPenPost.Color = value; }
-	}
-	public static Color TextColor { get; private set; }
-	public static float LTextSize {
-		get { return mFontL.Size; }
-		set { mFontL = new Font(mFontL.Name, value); }
+	public CustomGraphics(Bitmap bmp) {
+		mG = Graphics.FromImage(bmp);
 	}
 
-	public bool DrawPDF { get; set; } = false;
-
-	public virtual Color DrawColor {
-		get { return mPenLine.Color; }
-		set {
-			mPenLine.Color = value;
-			mFontBrush = new Pen(value, 1.0f).Brush;
-		}
-	}
-	public virtual Color FillColor {
-		get { return mPenFill.Color; }
-		set { mPenFill.Color = value; }
-	}
-	public float FontSize {
-		get { return mFont.Size; }
-		set { mFont = new Font(mFont.Name, value); }
+	#region public virtual
+	public virtual void save() {
+		mStateStack.Push(mState);
 	}
 
-	public int Width { get; private set; }
-	public int Height { get; private set; }
-
-	CustomGraphics() { }
-
-	public CustomGraphics(int width, int height) {
-		Width = width;
-		Height = height;
-		mImage = new Bitmap(Width, Height);
-		mG = Graphics.FromImage(mImage);
-	}
-
-	public CustomGraphics(Bitmap image) {
-		Width = image.Width;
-		Height = image.Height;
-		mImage = image;
-		mG = Graphics.FromImage(mImage);
-	}
-
-	public void CopyTo(Graphics g) {
-		g.DrawImage(mImage, 0, 0);
-	}
-
-	public void Dispose() {
-		mG.Dispose();
-		mG = null;
-		if (null != mImage) {
-			mImage.Dispose();
-			mImage = null;
+	public virtual void restore() {
+		if (mStateStack.Count > 0) {
+			var state = mStateStack.Pop();
+			state.CopyTo(mState);
+			mDrawP.Color = mState.strokeColor;
+			mDrawP.Width = mState.lineWidth;
+			mDrawP.StartCap = mState.lineCap;
+			mDrawP.EndCap = mState.lineCap;
+			mFillB = new SolidBrush(mState.fillColor);
 		}
 	}
 
-	public static void SetColor(bool isPrintable) {
-		if (isPrintable) {
-			WhiteColor = Color.Gray;
-			LineColor = Color.Black;
-			SelectColor = Color.Black;
-			PostColor = Color.Black;
-			TextColor = Color.Black;
-			mPenHandle.Color = Color.Black;
-		} else {
-			WhiteColor = Color.FromArgb(191, 191, 191);
-			LineColor = Color.FromArgb(95, 95, 95);
-			SelectColor = Color.FromArgb(0, 255, 255);
-			PostColor = Color.FromArgb(0, 127, 0);
-			TextColor = Color.FromArgb(147, 147, 147);
-			mPenHandle.Color = Color.FromArgb(95, 0, 255, 255);
-		}
+	public virtual void scale(float scaleX, float scaleY) {
+		mState.scaleX = scaleX;
+		mState.scaleY = scaleY;
+		mState.SetMatrix(mG);
 	}
 
-	public static CustomGraphics FromImage(int width, int height) {
-		return new CustomGraphics(width, height);
+	public virtual void rotate(float angle) {
+		var c = (float)Math.Cos(angle) * mState.scaleX;
+		var s = (float)Math.Sin(angle) * mState.scaleY;
+		mState.matrix[0] = c;
+		mState.matrix[1] = -s;
+		mState.matrix[2] = s;
+		mState.matrix[3] = c;
+		mState.SetMatrix(mG);
 	}
 
-	public virtual void DrawLeftText(string s, float x, float y) {
-		mG.DrawString(s, mFont, mFontBrush, x, y, mAlignLeft);
+	public virtual void translate(float x, float y) {
+		mState.matrix[4] = x;
+		mState.matrix[5] = y;
+		mState.SetMatrix(mG);
 	}
 
-	public virtual void DrawRightText(string s, float x, float y) {
-		mG.DrawString(s, mFont, mFontBrush, x, y, mAlignRight);
+	public virtual void transform(params float[] m) {
+		mState.matrix[0] = m[0];
+		mState.matrix[1] = m[1];
+		mState.matrix[2] = m[2];
+		mState.matrix[3] = m[3];
+		mState.matrix[4] = m[4];
+		mState.matrix[5] = m[5];
+		mState.SetMatrix(mG);
 	}
 
-	public virtual void DrawCenteredText(string s, PointF p, double rotateAngle) {
-		var rot = (float)(rotateAngle * 180 / Math.PI);
-		var mat = mG.Transform;
-		mG.TranslateTransform(p.X, p.Y);
-		mG.RotateTransform(rot);
-		mG.DrawString(s, mFont, mFontBrush, 0, 0, mAlignCenter);
-		mG.Transform = mat;
+	public virtual void setLineWidth(float width) {
+		mState.lineWidth = width;
+		mDrawP.Width = width;
 	}
 
-	public virtual void DrawCenteredLText(string s, PointF p) {
-		mG.DrawString(s, mFontL, mFontBrush, p.X, p.Y + 1, mAlignCenter);
+	public virtual void setLineCap(LineCap cap) {
+		mState.lineCap = cap;
+		mDrawP.StartCap = cap;
+		mDrawP.EndCap = cap;
 	}
 
-	public virtual void DrawPost(PointF p) {
-		mG.FillPie(mPenPost.Brush,
-			p.X - POST_RADIUS, p.Y - POST_RADIUS,
-			POST_RADIUS * 2, POST_RADIUS * 2,
-			0, 360
+	public virtual void setStrokeStyle(Color color) {
+		mState.strokeColor = color;
+		mDrawP.Color = color;
+	}
+
+	public virtual void setStrokeStyle(LinearGradientBrush brush) {
+		mState.strokeColor = brush.LinearColors[0];
+		mDrawP.Brush = brush;
+	}
+
+	public virtual void setFillStyle(Color color) {
+		mState.fillColor = color;
+		mFillB = new SolidBrush(color);
+	}
+
+	public virtual void setFillStyle(LinearGradientBrush brush) {
+		mState.fillColor = brush.LinearColors[0];
+		mFillB = brush;
+	}
+
+	public virtual void setFont(Font font) {
+		mState.font = font;
+	}
+
+	public virtual SizeF measureText(string text) {
+		return mG?.MeasureString(text, mState.font) ?? SInvalid;
+	}
+
+	public virtual void drawLine(float x1, float y1, float x2, float y2) {
+		mG?.DrawLine(mDrawP, x1, y1, x2, y2);
+	}
+
+	public virtual void drawRect(float x, float y, float width, float height) {
+		mG?.DrawRectangle(mDrawP, x, y, width, height);
+	}
+
+	public virtual void drawArc(float cx, float cy, float width, float height, float startAngle, float sweepAngle) {
+		mG?.DrawArc(mDrawP,
+			cx - width * 0.5f, cy - height * 0.5f,
+			width, height,
+			startAngle * 180 / (float)Math.PI,
+			sweepAngle * 180 / (float)Math.PI
 		);
 	}
 
-	public virtual void DrawHandle(PointF p) {
-		mG.FillPie(mPenHandle.Brush,
-			p.X - HANDLE_RADIUS, p.Y - HANDLE_RADIUS,
-			HANDLE_RADIUS * 2, HANDLE_RADIUS * 2,
-			0, 360
+	public virtual void drawPolygon(params PointF[] points) {
+		mG?.DrawPolygon(mDrawP, points);
+	}
+
+	public virtual void fillRect(float x, float y, float width, float height) {
+		mG?.FillRectangle(mFillB, x, y, width, height);
+	}
+
+	public virtual void fillCircle(float cx, float cy, float width, float height) {
+		mG?.FillPie(mFillB,
+			cx - width * 0.5f, cy - height * 0.5f,
+			width, height,
+			0,
+			360
 		);
 	}
 
-	public virtual void DrawCurrent(float cx, float cy, float radius) {
-		mG.FillPie(Brushes.Snow, cx - radius, cy - radius, radius * 2, radius * 2, 0, 360);
+	public virtual void fillPolygon(params PointF[] points) {
+		mG?.FillPolygon(mFillB, points);
 	}
 
-	public virtual void DrawLine(float ax, float ay, float bx, float by) {
-		mG.DrawLine(mPenLine, ax, ay, bx, by);
+	public virtual void fillText(string text, float x, float y) {
+		mG?.DrawString(text, mState.font, mFillB, x, y);
+	}
+	#endregion
+
+	public static PointF[] CreateArc(float cx, float cy, float width, float height, float start = 0, float sweep = 360) {
+		width *= 0.5f;
+		height *= 0.5f;
+		var poly = new PointF[Math.Max(width, height) < 4 ? 8 : 16];
+		var sRad = Math.PI * start / 180;
+		var ssweep = sweep / 360.0;
+		for (int i = 0; i < poly.Length; i++) {
+			var th = 2 * Math.PI * (i + 0.5) * ssweep / poly.Length + sRad;
+			poly[i] = new PointF(
+				(float)(cx + width * Math.Cos(th)),
+				(float)(cy + height * Math.Sin(th))
+			);
+		}
+		return poly;
 	}
 
-	public virtual void DrawLine(PointF a, PointF b) {
-		mG.DrawLine(mPenLine, a, b);
-	}
-
-	public virtual void DrawRectangle(Rectangle rect) {
-		mG.DrawRectangle(mPenLine, rect);
-	}
-
-	public virtual void DrawDashRectangle(float x, float y, float w, float h) {
-		mPenLine.DashStyle = DashStyle.Dash;
-		mPenLine.DashPattern = new float[] { 2, 3 };
-		mG.DrawRectangle(mPenLine, x, y, w, h);
-		mPenLine.DashStyle = DashStyle.Solid;
-	}
-
-	public void DrawCircle(PointF p, float radius) {
-		DrawCircle(p.X, p.Y, radius);
-	}
-
-	public virtual void DrawCircle(float x, float y, float radius) {
-		mG.DrawArc(mPenLine, x - radius, y - radius, radius * 2, radius * 2, 0, 360);
-	}
-
-	public virtual void DrawArc(PointF p, float diameter, float start, float sweep) {
-		var md = diameter * .98f;
-		mG.DrawArc(mPenLine, p.X - md / 2, p.Y - md / 2, md, md, start, sweep);
-	}
-
-	public virtual void DrawPolyline(PointF[] p) {
-		mG.DrawLines(mPenLine, p);
-	}
-
-	public virtual void DrawPolygon(PointF[] p) {
-		mG.DrawPolygon(mPenLine, p);
-	}
-
-	public virtual void FillRectangle(int x, int y, int width, int height) {
-		mG.FillRectangle(mPenFill.Brush, x, y, width, height);
-	}
-
-	public virtual void FillCircle(float cx, float cy, float radius) {
-		mG.FillPie(mPenFill.Brush, cx - radius, cy - radius, radius * 2, radius * 2, 0, 360);
-	}
-
-	public virtual void FillPolygon(PointF[] p) {
-		mG.FillPolygon(mPenFill.Brush, p);
-	}
-
-	public virtual void ScrollCircuit(Point p) {
-		mG.Transform = new Matrix(1, 0, 0, 1, p.X, p.Y);
-	}
-
-	public virtual void SetPlotPos(Point p) {
-		mG.Transform = new Matrix(1, 0, 0, 1, p.X, p.Y);
-	}
-
-	public virtual void ClearTransform() {
-		mG.Transform = new Matrix(1, 0, 0, 1, 0, 0);
-	}
-
-	public SizeF GetTextSize(string s) {
-		return mG.MeasureString(s, mFont);
-	}
-
-	public SizeF GetTextSizeL(string s) {
-		return mG.MeasureString(s, mFontL);
-	}
-
-	public void Clear(Color color) {
-		mG.Clear(color);
+	public static int distanceSq(int x1, int y1, int x2, int y2) {
+		x2 -= x1;
+		y2 -= y1;
+		return x2 * x2 + y2 * y2;
 	}
 }
