@@ -1,64 +1,48 @@
 ﻿namespace Circuit {
-	public class ScopeWave {
-		public BaseSymbol Symbol;
+	public struct WAVE_VALUE {
+		public float min;
+		public float max;
+	}
 
-		public int Color;
-		public int Length;
-		public int Speed;
-		public int Index;
-		public double[] MinValues;
-		public double[] MaxValues;
+	public class SCOPE_WAVE {
+		public int length;
+		public int speed;
+		public int index;
+		public int counter;
+		public int color;
+		public BaseSymbol p_symbol;
+		public BaseElement p_elm;
+		public WAVE_VALUE[] p_values;
 
-		BaseElement mElm;
-		int mCounter;
-
-		public ScopeWave(BaseSymbol symbol, BaseElement element) {
-			Symbol = symbol;
-			mElm = element;
-			Length = 1;
-			Index = 0;
-			MinValues = [Length];
-			MaxValues = [Length];
+		public SCOPE_WAVE(BaseSymbol symbol, BaseElement element) {
+			length = 1;
+			p_symbol = symbol;
+			p_elm = element;
+			p_values = new WAVE_VALUE[length];
 		}
 
-		public void Reset(int length, int speed, bool full) {
-			var oldSpc = Length;
-			Length = length;
-			if (Speed != speed) {
+		public void reset(int length, int speed, bool full) {
+			var oldSpc = this.length;
+			this.length = length;
+			if (this.speed != speed) {
 				oldSpc = 0;
 			}
-			Speed = speed;
-			var oldMin = MinValues;
-			var oldMax = MaxValues;
-			MinValues = new double[Length];
-			MaxValues = new double[Length];
-			if (oldMin != null && !full) {
-				for (int i = 0; i != Length && i != oldSpc; i++) {
-					var i1 = (-i) & (Length - 1);
-					var i2 = (Index - i) & (oldSpc - 1);
-					MinValues[i1] = oldMin[i2];
-					MaxValues[i1] = oldMax[i2];
-				}
+			this.speed = speed;
+			if (full) {
+				p_values = new WAVE_VALUE[this.length];
+				counter = 0;
 			} else {
-				mCounter = 0;
+				var old = new WAVE_VALUE[p_values.Length];
+				Array.Copy(p_values, old, p_values.Length);
+				p_values = new WAVE_VALUE[this.length];
+				for (int i = 0; i != this.length && i != oldSpc; i++) {
+					var i1 = (-i) & (this.length - 1);
+					var i2 = (index - i) & (oldSpc - 1);
+					p_values[i1].min = old[i2].min;
+					p_values[i1].max = old[i2].max;
+				}
 			}
-			Index = 0;
-		}
-
-		public void TimeStep() {
-			var v = mElm.VoltageDiff();
-			if (v < MinValues[Index]) {
-				MinValues[Index] = v;
-			}
-			if (v > MaxValues[Index]) {
-				MaxValues[Index] = v;
-			}
-			mCounter++;
-			if (mCounter >= Speed) {
-				Index = (Index + 1) & (Length - 1);
-				MinValues[Index] = MaxValues[Index] = v;
-				mCounter = 0;
-			}
+			index = 0;
 		}
 	}
 }

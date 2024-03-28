@@ -35,7 +35,7 @@ namespace Circuit {
 		public static double delta_time;
 
 		public static CIRCUIT_NODE[] nodes = [];
-		public static ScopePlot[] plots = [];
+		public static SCOPE_WAVE[] waves = [];
 		public static double[,] matrix = new double[0, 0];
 		public static double[] right_side = [];
 		public static CIRCUIT_ROW[] row_info = [];
@@ -78,8 +78,24 @@ namespace Circuit {
 					break;
 				}
 
-				for (int i = 0; i < plots.Length; i++) {
-					plots[i].TimeStep();
+				for (int i = 0; i < waves.Length; i++) {
+					var p_wave = waves[i];
+					var v = (float)p_wave.p_elm.VoltageDiff();
+					var index = p_wave.index;
+					var p_value = p_wave.p_values[index];
+					if (v < p_value.min) {
+						p_wave.p_values[index].min = v;
+					}
+					if (v > p_value.max) {
+						p_wave.p_values[index].max = v;
+					}
+					p_wave.counter++;
+					if (p_wave.counter >= p_wave.speed) {
+						index = (index + 1) & (p_wave.length - 1);
+						p_wave.index = index;
+						p_wave.counter = 0;
+						p_wave.p_values[index].min = p_wave.p_values[index].max = v;
+					}
 				}
 
 				/* Check whether enough time has elapsed to perform an *additional* iteration after

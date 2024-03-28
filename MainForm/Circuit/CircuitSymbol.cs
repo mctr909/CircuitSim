@@ -447,22 +447,30 @@ namespace Circuit {
 			CircuitElement.nodes = nodes.ToArray();
 			CircuitElement.wires = wires.ToArray();
 
-			var scopeCount = 0;
+			var waveCount = 0;
+			for(var i = 0; i < ScopeForm.PlotCount; i++) {
+				waveCount += ScopeForm.Plots[i].WaveCount;
+			}
 			foreach(var item in List) {
-				if (item is Scope) {
-					scopeCount++;
+				if (item is Scope scope) {
+					waveCount += scope.Plot.WaveCount;
 				}
 			}
-			CircuitElement.plots = new ScopePlot[scopeCount + ScopeForm.PlotCount];
-			scopeCount = 0;
-			foreach(var item in List) {
-				if (item is not Scope) {
-					continue;
+			CircuitElement.waves = new SCOPE_WAVE[waveCount];
+			waveCount = 0;
+			for(var i = 0; i < ScopeForm.PlotCount; i++) {
+				var plot = ScopeForm.Plots[i];
+				for(var j = 0; j < plot.WaveCount; j++) {
+					CircuitElement.waves[waveCount++] = plot.Waves[j];
 				}
-				CircuitElement.plots[scopeCount++] = ((Scope)item).Plot;
 			}
-			for(var i = 0; i< ScopeForm.PlotCount; i++) {
-				CircuitElement.plots[scopeCount++] = ScopeForm.Plots[i];
+			foreach(var item in List) {
+				if (item is Scope scope) {
+					var plot = scope.Plot;
+					for (var i = 0; i < plot.WaveCount; i++) {
+						CircuitElement.waves[waveCount++] = plot.Waves[i];
+					}
+				}
 			}
 
 			if (!simplifyMatrix(matrixSize)) {
