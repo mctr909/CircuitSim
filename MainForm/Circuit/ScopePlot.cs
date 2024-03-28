@@ -53,7 +53,6 @@
 
 		#region [private variable]
 		CustomGraphics mContext;
-		List<ScopeWave> mWaves = [];
 		FFT mFft = new(16);
 		double[] mReal = new double[16];
 		double[] mImag = new double[16];
@@ -73,25 +72,26 @@
 		int mWaveLength;
 		#endregion
 
-		#region [public property]
+		#region [public variable]
+		public List<SCOPE_WAVE> Waves = [];
 		public int MouseCursorX { get; set; } = -1;
 		public int MouseCursorY { get; set; } = -1;
 		public Rectangle BoundingBox { get; private set; } = new Rectangle(0, 0, 1, 1);
 		public int Right { get { return BoundingBox.X + BoundingBox.Width; } }
 		public int Index { get; set; } = 0;
 		public int StackCount { get; set; } = 0;
-		public int WaveCount { get { return mWaves.Count; } }
+		public int WaveCount { get { return Waves.Count; } }
 		public int SelectedWave { get; set; } = -1;
-		public bool CanMenu { get { return mWaves[0].Symbol != null; } }
+		public bool CanMenu { get { return Waves[0].p_symbol != null; } }
 		public bool NeedToRemove {
 			get {
 				bool ret = true;
-				for (int i = 0; i != mWaves.Count; i++) {
-					var plot = mWaves[i];
-					if (CircuitSymbol.List.Contains(plot.Symbol)) {
+				for (int i = 0; i != Waves.Count; i++) {
+					var plot = Waves[i];
+					if (CircuitSymbol.List.Contains(plot.p_symbol)) {
 						ret = false;
 					} else {
-						mWaves.RemoveAt(i);
+						Waves.RemoveAt(i);
 						i--;
 					}
 				}
@@ -119,10 +119,10 @@
 
 		#region [get/set method]
 		public BaseSymbol GetSelectedSymbol() {
-			if (0 <= SelectedWave && SelectedWave < mWaves.Count) {
-				return mWaves[SelectedWave].Symbol;
+			if (0 <= SelectedWave && SelectedWave < Waves.Count) {
+				return Waves[SelectedWave].p_symbol;
 			}
-			return 0 < mWaves.Count ? mWaves[0].Symbol : null;
+			return 0 < Waves.Count ? Waves[0].p_symbol : null;
 		}
 		public void SetRect(Rectangle rect) {
 			int w = BoundingBox.Width;
@@ -144,7 +144,7 @@
 			ResetGraph();
 		}
 		public void SetScale(double scale) {
-			if (mWaves.Count == 0) {
+			if (Waves.Count == 0) {
 				return;
 			}
 			Scale = Math.Max(SCALE_MIN, scale);
@@ -159,20 +159,20 @@
 
 		#region [public method]
 		public string Dump() {
-			var vPlot = mWaves[0];
-			if (vPlot.Symbol == null) {
+			var vPlot = Waves[0];
+			if (vPlot.p_symbol == null) {
 				return null;
 			}
 			var dumpList = new List<object>() {
 				"o",
-				vPlot.Speed,
+				vPlot.speed,
 				mFlags,
 				Scale.ToString("g3"),
 				Index,
-				mWaves.Count
+				Waves.Count
 			};
-			foreach (var p in mWaves) {
-				dumpList.Add(CircuitSymbol.List.IndexOf(p.Symbol) + "_" + (E_COLOR)p.Color);
+			foreach (var p in Waves) {
+				dumpList.Add(CircuitSymbol.List.IndexOf(p.p_symbol) + "_" + (E_COLOR)p.color);
 			}
 			if (!string.IsNullOrWhiteSpace(Text)) {
 				dumpList.Add(TextUtils.Escape(Text));
@@ -181,7 +181,7 @@
 		}
 		public void Undump(StringTokenizer st) {
 			Initialize();
-			mWaves = new List<ScopeWave>();
+			Waves = new List<SCOPE_WAVE>();
 
 			Speed = st.nextTokenInt(1);
 			ResetGraph();
@@ -198,11 +198,11 @@
 					var subCol = temp.Split('_');
 					var subIdx = int.Parse(subCol[0]);
 					var subSymbol = CircuitSymbol.List[subIdx];
-					var p = new ScopeWave(subSymbol, subSymbol.Element) {
-						Speed = Speed
+					var p = new SCOPE_WAVE(subSymbol, subSymbol.Element) {
+						speed = Speed
 					};
 					SetColor(p, Enum.Parse<E_COLOR>(subCol[1]));
-					mWaves.Add(p);
+					Waves.Add(p);
 				}
 			} catch (Exception ex) {
 				Console.WriteLine(ex.Message);
@@ -243,11 +243,11 @@
 			return mGridStepX;
 		}
 		public void Combine(ScopePlot plot) {
-			foreach (var wave in plot.mWaves) {
+			foreach (var wave in plot.Waves) {
 				SetColor(wave, E_COLOR.GREEN);
-				mWaves.Add(wave);
+				Waves.Add(wave);
 			}
-			plot.mWaves.Clear();
+			plot.Waves.Clear();
 		}
 		public void SpeedUp() {
 			if (1 < Speed) {
@@ -266,25 +266,25 @@
 			mShowNegative = false;
 		}
 		public void Remove(int waveIndex) {
-			if (waveIndex < 0 || mWaves.Count <= waveIndex) {
+			if (waveIndex < 0 || Waves.Count <= waveIndex) {
 				return;
 			}
-			var p = mWaves[waveIndex];
-			mWaves.Remove(p);
+			var p = Waves[waveIndex];
+			Waves.Remove(p);
 		}
 		public void ResetGraph(bool full = false) {
 			mWaveLength = 1;
 			while (mWaveLength <= BoundingBox.Width) {
 				mWaveLength <<= 1;
 			}
-			if (mWaves == null) {
-				mWaves = new List<ScopeWave>();
+			if (Waves == null) {
+				Waves = new List<SCOPE_WAVE>();
 			}
 			mShowNegative = false;
-			for (int i = 0; i != mWaves.Count; i++) {
-				var p = mWaves[i];
-				p.Reset(mWaveLength, Speed, full);
-				if (p.Color >= (int)E_COLOR.COUNT) {
+			for (int i = 0; i != Waves.Count; i++) {
+				var p = Waves[i];
+				p.reset(mWaveLength, Speed, full);
+				if (p.color >= (int)E_COLOR.COUNT) {
 					SetColor(p, E_COLOR.GREEN);
 				}
 			}
@@ -292,21 +292,16 @@
 			AllocImage();
 		}
 		public void SetColor(int waveIndex, int colorIndex) {
-			mWaves[waveIndex].Color = colorIndex % (int)E_COLOR.COUNT;
+			Waves[waveIndex].color = colorIndex % (int)E_COLOR.COUNT;
 		}
-		public void SetColor(ScopeWave wave, E_COLOR color) {
-			wave.Color = (int)color;
+		public void SetColor(SCOPE_WAVE wave, E_COLOR color) {
+			wave.color = (int)color;
 		}
 		public int GetSelectedWaveColor() {
-			return mWaves[SelectedWave].Color;
-		}
-		public void TimeStep() {
-			foreach (var wave in mWaves) {
-				wave.TimeStep();
-			}
+			return Waves[SelectedWave].color;
 		}
 		public void Draw(CustomGraphics g, bool isFloat = false) {
-			if (mWaves.Count == 0) {
+			if (Waves.Count == 0) {
 				return;
 			}
 
@@ -321,9 +316,9 @@
 			}
 
 			mSomethingSelected = false;
-			foreach (var p in mWaves) {
+			foreach (var p in Waves) {
 				CalcScale(p);
-				if (p.Symbol != null && p.Symbol.IsMouseElm) {
+				if (p.p_symbol != null && p.p_symbol.IsMouseElm) {
 					mSomethingSelected = true;
 				}
 			}
@@ -333,7 +328,7 @@
 				mSomethingSelected = true;
 			}
 
-			if (mWaves.Count > 0) {
+			if (Waves.Count > 0) {
 				CalcMinMax();
 			}
 
@@ -347,7 +342,7 @@
 			{
 				if (ShowFFT) {
 					DrawFFTGridLines(g);
-					for (int i = 0; i != mWaves.Count; i++) {
+					for (int i = 0; i != Waves.Count; i++) {
 						DrawFFT(g, i);
 					}
 				}
@@ -355,11 +350,11 @@
 					/* Vertical (T) gridlines */
 					CalcGridTime();
 					/* draw volts on top (last), then current underneath, then everything else */
-					for (int i = 0; i != mWaves.Count; i++) {
+					for (int i = 0; i != Waves.Count; i++) {
 						DrawWave(g, i);
 					}
 				}
-				if (mWaves.Count > 0) {
+				if (Waves.Count > 0) {
 					DrawInfoTexts(g);
 				}
 			}
@@ -367,7 +362,7 @@
 
 			DrawCrosshairs(g);
 
-			if (5 < mWaves[0].Index && (!ManualScale || Normarize)) {
+			if (5 < Waves[0].index && (!ManualScale || Normarize)) {
 				if (SCALE_MIN < Scale) {
 					Scale /= 2;
 				}
@@ -390,29 +385,29 @@
 		}
 		void SetPlot(BaseSymbol symbol) {
 			if (null == symbol) {
-				mWaves.Clear();
+				Waves.Clear();
 				return;
 			}
-			mWaves = new List<ScopeWave>() {
+			Waves = new List<SCOPE_WAVE>() {
 				new(symbol, symbol.Element)
 			};
 			ShowVoltage = true;
 			ResetGraph();
 		}
 		void SetPlot() {
-			if (mWaves.Count == 0) {
+			if (Waves.Count == 0) {
 				return;
 			}
 			var symbolList = new List<BaseSymbol>();
-			foreach (var wave in mWaves) {
-				if (null == wave.Symbol) {
+			foreach (var wave in Waves) {
+				if (null == wave.p_symbol) {
 					continue;
 				}
-				symbolList.Add(wave.Symbol);
+				symbolList.Add(wave.p_symbol);
 			}
-			mWaves.Clear();
+			Waves.Clear();
 			foreach (var symbol in symbolList) {
-				mWaves.Add(new ScopeWave(symbol, symbol.Element));
+				Waves.Add(new SCOPE_WAVE(symbol, symbol.Element));
 			}
 			ShowVoltage = true;
 			ResetGraph();
@@ -428,12 +423,13 @@
 			}
 			var height = (BoundingBox.Height - 1) / 2;
 			var ofsY = BoundingBox.Y + height;
-			var startIndex = GetStartIndex(mWaves[0]);
+			var startIndex = GetStartIndex(Waves[0]);
 			var index = (MouseCursorX - BoundingBox.X + startIndex) & (mWaveLength - 1);
 			var bestDist = double.MaxValue;
 			int bestWave = -1;
-			for (int i = 0; i != mWaves.Count; i++) {
-				var limitVy = mMainGridMult * (mMainGridMid - mWaves[i].MaxValues[index]);
+			for (int i = 0; i != Waves.Count; i++) {
+				var min = Waves[i].p_values[index].min;
+				var limitVy = mMainGridMult * (mMainGridMid - min);
 				limitVy = Math.Max(-height, limitVy);
 				limitVy = Math.Min(height, limitVy);
 				var dist = Math.Abs(MouseCursorY - (ofsY + limitVy));
@@ -444,11 +440,11 @@
 			}
 			SelectedWave = bestWave;
 		}
-		Color GetColor(ScopeWave wave) {
-			return COLORS[wave.Color];
+		Color GetColor(SCOPE_WAVE wave) {
+			return COLORS[wave.color];
 		}
-		int GetStartIndex(ScopeWave wave) {
-			return wave.Index + wave.Length - BoundingBox.Width;
+		int GetStartIndex(SCOPE_WAVE wave) {
+			return wave.index + wave.length - BoundingBox.Width;
 		}
 		#endregion
 
@@ -456,38 +452,36 @@
 		void CalcMinMax() {
 			mMinValue = double.MaxValue;
 			mMaxValue = double.MinValue;
-			for (int si = 0; si != mWaves.Count; si++) {
-				var wave = mWaves[si];
+			for (int si = 0; si != Waves.Count; si++) {
+				var wave = Waves[si];
 				var startIndex = GetStartIndex(wave);
-				var minV = wave.MinValues;
-				var maxV = wave.MaxValues;
 				for (int i = 0; i != BoundingBox.Width; i++) {
 					var index = (i + startIndex) & (mWaveLength - 1);
-					if (minV[index] < mMinValue) {
-						mMinValue = minV[index];
+					var value = wave.p_values[index];
+					if (value.min < mMinValue) {
+						mMinValue = value.min;
 					}
-					if (mMaxValue < maxV[index]) {
-						mMaxValue = maxV[index];
+					if (mMaxValue < value.max) {
+						mMaxValue = value.max;
 					}
 				}
 			}
 		}
-		void CalcScale(ScopeWave wave) {
+		void CalcScale(SCOPE_WAVE wave) {
 			if (ManualScale && !Normarize) {
 				return;
 			}
 			var startIndex = GetStartIndex(wave);
-			var minV = wave.MinValues;
-			var maxV = wave.MaxValues;
 			var max = 0.0;
 			var gridMax = Scale;
 			for (int i = 0; i != BoundingBox.Width; i++) {
 				var index = (i + startIndex) & (mWaveLength - 1);
-				if (minV[index] < -max) {
-					max = -minV[index];
+				var value = wave.p_values[index];
+				if (value.min < -max) {
+					max = -value.min;
 				}
-				if (max < maxV[index]) {
-					max = maxV[index];
+				if (max < value.max) {
+					max = value.max;
 				}
 			}
 			if (Normarize) {
@@ -518,18 +512,17 @@
 			Scale = gridMax;
 		}
 		string CalcRMS() {
-			var wave = mWaves[0];
-			var beginIndex = wave.Index + mWaveLength - BoundingBox.Width;
-			var maxV = wave.MaxValues;
-			var minV = wave.MinValues;
+			var wave = Waves[0];
+			var beginIndex = wave.index + mWaveLength - BoundingBox.Width;
 			var mid = (mMaxValue + mMinValue) / 2;
 
 			var state = -1;
 			int skipZeroIndex;
 			for (skipZeroIndex = 0; skipZeroIndex != BoundingBox.Width; skipZeroIndex++) {
 				var index = (skipZeroIndex + beginIndex) & (mWaveLength - 1);
-				if (maxV[index] != 0) {
-					if (mid < maxV[index]) {
+				var max = wave.p_values[index].max;
+				if (max != 0) {
+					if (mid < max) {
 						state = 1;
 					}
 					break;
@@ -544,12 +537,13 @@
 			var endSum = 0.0;
 			for (; skipZeroIndex != BoundingBox.Width; skipZeroIndex++) {
 				var index = (skipZeroIndex + beginIndex) & (mWaveLength - 1);
+				var value = wave.p_values[index];
 				var sw = false;
 				if (state == 1) {
-					if (maxV[index] < mid) {
+					if (value.max < mid) {
 						sw = true;
 					}
-				} else if (minV[index] > mid) {
+				} else if (value.min > mid) {
 					sw = true;
 				}
 				if (sw) {
@@ -566,7 +560,7 @@
 					}
 				}
 				if (0 < cycleCount) {
-					var m = (maxV[index] + minV[index]) * 0.5;
+					var m = (value.max + value.min) * 0.5;
 					sum += m * m;
 				}
 			}
@@ -580,14 +574,13 @@
 		string CalcFrequency() {
 			/* try to get frequency get average */
 			int posX;
-			var wave = mWaves[0];
-			var startIndex = wave.Index + mWaveLength - BoundingBox.Width;
-			var minV = wave.MinValues;
-			var maxV = wave.MaxValues;
+			var wave = Waves[0];
+			var startIndex = wave.index + mWaveLength - BoundingBox.Width;
 			var avg = 0.0;
 			for (posX = 0; posX != BoundingBox.Width; posX++) {
-				int index = (posX + startIndex) & (mWaveLength - 1);
-				avg += minV[index] + maxV[index];
+				var index = (posX + startIndex) & (mWaveLength - 1);
+				var value = wave.p_values[index];
+				avg += value.min + value.max;
 			}
 			avg /= posX * 2;
 
@@ -600,7 +593,8 @@
 			var avperiod2 = 0.0;
 			for (posX = 0; posX != BoundingBox.Width; posX++) {
 				var index = (posX + startIndex) & (mWaveLength - 1);
-				var dcCut = maxV[index] - avg;
+				var max = wave.p_values[index].max;
+				var dcCut = max - avg;
 				var lastState = state;
 				if (dcCut < thresh) {
 					state = 1;
@@ -648,12 +642,13 @@
 
 			if (ShowVoltage) {
 				int maxy = (BoundingBox.Height - 1) / 2;
-				int ipa = GetStartIndex(mWaves[0]);
+				int ipa = GetStartIndex(Waves[0]);
 				int pointer = (MouseCursorX - BoundingBox.X + ipa) & (mWaveLength - 1);
 				if (SelectedWave >= 0) {
-					var wave = mWaves[SelectedWave];
-					info[ct++] = TextUtils.Voltage(wave.MaxValues[pointer]);
-					var maxvy = (int)(mMainGridMult * (wave.MaxValues[pointer] - mMainGridMid));
+					var wave = Waves[SelectedWave];
+					var value = wave.p_values[pointer];
+					info[ct++] = TextUtils.Voltage(value.max);
+					var maxvy = (int)(mMainGridMult * (value.max - mMainGridMid));
 					maxvy = Math.Max(-maxy, maxvy);
 					maxvy = Math.Min(maxy, maxvy);
 					g.FillColor = GetColor(wave);
@@ -661,7 +656,7 @@
 					g.DrawColor = CustomGraphics.SelectColor;
 					g.DrawCircle(MouseCursorX, BoundingBox.Y + maxy - maxvy, 5);
 				}
-				if (mWaves.Count > 0) {
+				if (Waves.Count > 0) {
 					var t = CircuitElement.time - CircuitElement.delta_time * Speed * (BoundingBox.X + BoundingBox.Width - MouseCursorX);
 					info[ct++] = TextUtils.Time(t);
 				}
@@ -699,8 +694,8 @@
 			}
 		}
 		void DrawWave(CustomGraphics g, int waveIndex) {
-			var wave = mWaves[waveIndex];
-			if (wave.Symbol == null) {
+			var wave = Waves[waveIndex];
+			if (wave.p_symbol == null) {
 				return;
 			}
 
@@ -817,14 +812,13 @@
 			}
 
 			var idxBegin = GetStartIndex(wave);
-			var vMax = wave.MaxValues;
-			var vMin = wave.MinValues;
 			var yMax = BoundingBox.Height - 1;
 			var yMin = 1;
 			var rect = new PointF[BoundingBox.Width * 2 + 1];
 			for (int x = 0; x != BoundingBox.Width; x++) {
 				var idx = (x + idxBegin) & (mWaveLength - 1);
-				var v = (float)(graphMult * (vMax[idx] - graphMid));
+				var max = wave.p_values[idx].max;
+				var v = (float)(graphMult * (max - graphMid));
 				var y = centerY - v - 0.5f;
 				y = Math.Max(yMin, y);
 				y = Math.Min(yMax, y);
@@ -833,7 +827,8 @@
 			}
 			for (int x = BoundingBox.Width - 1, i = BoundingBox.Width; 0 <= x; x--, i++) {
 				var idx = (x + idxBegin) & (mWaveLength - 1);
-				var v = (float)(graphMult * (vMin[idx] - graphMid));
+				var min = wave.p_values[idx].min;
+				var v = (float)(graphMult * (min - graphMid));
 				var y = centerY - v + 0.5f;
 				y = Math.Max(yMin, y);
 				y = Math.Min(yMax, y);
@@ -844,7 +839,7 @@
 			if (ControlPanel.ChkPrintable.Checked) {
 				g.FillColor = GetColor(wave);
 			} else {
-				if (waveIndex == SelectedWave || wave.Symbol.IsMouseElm) {
+				if (waveIndex == SelectedWave || wave.p_symbol.IsMouseElm) {
 					g.FillColor = CustomGraphics.SelectColor;
 				} else {
 					g.FillColor = mSomethingSelected ? COLORS[COLORS.Length - 1] : GetColor(wave);
@@ -875,7 +870,7 @@
 				}
 				g.DrawLeftText(s, x, BoundingBox.Height - 10);
 			}
-			if (mWaves.Count == 1) {
+			if (Waves.Count == 1) {
 				mFftMax = 0;
 			} else {
 				mFftMax = 20;
@@ -900,13 +895,12 @@
 				mReal = new double[mWaveLength];
 				mImag = new double[mWaveLength];
 			}
-			var wave = mWaves[waveIndex];
-			var maxV = wave.MaxValues;
-			var minV = wave.MinValues;
-			int ptr = wave.Index;
+			var wave = Waves[waveIndex];
+			int ptr = wave.index;
 			for (int i = 0; i < mWaveLength; i++) {
 				var ii = (ptr - i + mWaveLength) % mWaveLength;
-				mReal[i] = 0.5 * (maxV[ii] + minV[ii]) * (0.5 - 0.5 * Math.Cos(2.0 * Math.PI * i / mWaveLength));
+				var value = wave.p_values[ii];
+				mReal[i] = 0.5 * (value.max + value.min) * (0.5 - 0.5 * Math.Cos(2.0 * Math.PI * i / mWaveLength));
 				mImag[i] = 0;
 			}
 			mFft.Exec(mReal, mImag);

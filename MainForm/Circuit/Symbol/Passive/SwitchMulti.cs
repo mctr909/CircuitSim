@@ -13,7 +13,7 @@ namespace Circuit.Symbol.Passive {
 		public SwitchMulti(Point pos) : base(pos, 0) {
 			mElmMulti = new ElmSwitchMulti();
 			mElm = mElmMulti;
-			mElmMulti.AllocNodes();
+			mElmMulti.alloc_nodes();
 			Post.NoDiagonal = true;
 		}
 
@@ -24,7 +24,7 @@ namespace Circuit.Symbol.Passive {
 			mElmMulti.Momentary = st.nextTokenBool(false);
 			mElmMulti.Link = st.nextTokenInt();
 			mElmMulti.ThrowCount = st.nextTokenInt();
-			mElmMulti.AllocNodes();
+			mElmMulti.alloc_nodes();
 			Post.NoDiagonal = true;
 		}
 
@@ -58,7 +58,7 @@ namespace Circuit.Symbol.Passive {
 			}
 			mSwPoles[i] = mLead2; /* for center off */
 			mElmMulti.PosCount = mElmMulti.ThrowCount;
-			mElmMulti.SetNodePos(Post.A, mSwPosts);
+			mElmMulti.set_node_pos(Post.A, mSwPosts);
 		}
 
 		public override void Draw(CustomGraphics g) {
@@ -85,8 +85,8 @@ namespace Circuit.Symbol.Passive {
 		public override void GetInfo(string[] arr) {
 			arr[0] = "スイッチ(" + (mElmMulti.Link == 0 ? "S" : "D")
 				+ "P" + ((mElmMulti.ThrowCount > 2) ? mElmMulti.ThrowCount + "T)" : "DT)");
-			arr[1] = "電位：" + TextUtils.Voltage(mElmMulti.Volts[0]);
-			arr[2] = "電流：" + TextUtils.CurrentAbs(mElmMulti.Current);
+			arr[1] = "電位：" + TextUtils.Voltage(mElmMulti.volts[0]);
+			arr[2] = "電流：" + TextUtils.CurrentAbs(mElmMulti.current);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
@@ -105,7 +105,7 @@ namespace Circuit.Symbol.Passive {
 					ei.Value = 2;
 				}
 				mElmMulti.ThrowCount = (int)ei.Value;
-				mElmMulti.AllocNodes();
+				mElmMulti.alloc_nodes();
 				SetPoints();
 			} else {
 				base.SetElementValue(n, c, ei);

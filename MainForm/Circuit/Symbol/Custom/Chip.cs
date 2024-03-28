@@ -143,7 +143,7 @@ namespace Circuit.Symbol.Custom {
 			}
 			for (int i = 0; i != ce.TermCount; i++) {
 				if (ce.Pins[i].state) {
-					optionList.Add(ce.Volts[i].ToString("0.000000"));
+					optionList.Add(ce.volts[i].ToString("0.000000"));
 				}
 			}
 		}
@@ -159,10 +159,10 @@ namespace Circuit.Symbol.Custom {
 		protected void Setup(ElmChip elm, StringTokenizer st) {
 			for (int i = 0; i != elm.TermCount; i++) {
 				if (elm.Pins == null) {
-					elm.Volts[i] = st.nextTokenDouble();
+					elm.volts[i] = st.nextTokenDouble();
 				} else if (elm.Pins[i].state) {
-					elm.Volts[i] = st.nextTokenDouble();
-					elm.Pins[i].value = elm.Volts[i] > 2.5;
+					elm.volts[i] = st.nextTokenDouble();
+					elm.Pins[i].value = elm.volts[i] > 2.5;
 				}
 			}
 		}
@@ -320,7 +320,7 @@ namespace Circuit.Symbol.Custom {
 				if (p.clock) {
 					t = "Clk";
 				}
-				arr[a] += t + " = " + TextUtils.Voltage(ce.Volts[i]);
+				arr[a] += t + " = " + TextUtils.Voltage(ce.volts[i]);
 				if (i % 2 == 1) {
 					a++;
 				}

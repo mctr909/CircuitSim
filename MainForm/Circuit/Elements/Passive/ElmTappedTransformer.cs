@@ -14,7 +14,7 @@
 		public override int TermCount { get { return 5; } }
 
 		#region [method(Analyze)]
-		public override bool HasConnection(int n1, int n2) {
+		public override bool has_connection(int n1, int n2) {
 			if (ComparePair(n1, n2, 0, 2)) {
 				return true;
 			}
@@ -24,13 +24,13 @@
 			return false;
 		}
 
-		public override void Reset() {
-			Volts[0] = Volts[1] = Volts[2] = Volts[3] = Volts[4] = 0;
+		public override void reset() {
+			volts[0] = volts[1] = volts[2] = volts[3] = volts[4] = 0;
 			Currents[0] = Currents[1] = Currents[2] = Currents[3] = 0;
 			mCurSourceValue[0] = mCurSourceValue[1] = mCurSourceValue[2] = 0;
 		}
 
-		public override void Stamp() {
+		public override void stamp() {
 			// equations for transformer:
 			// v1 = L1 di1/dt + M1 di2/dt + M1 di3/dt
 			// v2 = M1 di1/dt + L2 di2/dt + M2 di3/dt
@@ -70,29 +70,29 @@
 			for (int i = 0; i != 9; i++) {
 				mA[i] *= CircuitElement.delta_time / 2 / det;
 			}
-			CircuitElement.StampConductance(NodeIndex[0], NodeIndex[1], mA[0]);
-			CircuitElement.StampVCCurrentSource(NodeIndex[0], NodeIndex[1], NodeIndex[2], NodeIndex[3], mA[1]);
-			CircuitElement.StampVCCurrentSource(NodeIndex[0], NodeIndex[1], NodeIndex[3], NodeIndex[4], mA[2]);
+			CircuitElement.StampConductance(node_index[0], node_index[1], mA[0]);
+			CircuitElement.StampVCCurrentSource(node_index[0], node_index[1], node_index[2], node_index[3], mA[1]);
+			CircuitElement.StampVCCurrentSource(node_index[0], node_index[1], node_index[3], node_index[4], mA[2]);
 
-			CircuitElement.StampVCCurrentSource(NodeIndex[2], NodeIndex[3], NodeIndex[0], NodeIndex[1], mA[3]);
-			CircuitElement.StampConductance(NodeIndex[2], NodeIndex[3], mA[4]);
-			CircuitElement.StampVCCurrentSource(NodeIndex[2], NodeIndex[3], NodeIndex[3], NodeIndex[4], mA[5]);
+			CircuitElement.StampVCCurrentSource(node_index[2], node_index[3], node_index[0], node_index[1], mA[3]);
+			CircuitElement.StampConductance(node_index[2], node_index[3], mA[4]);
+			CircuitElement.StampVCCurrentSource(node_index[2], node_index[3], node_index[3], node_index[4], mA[5]);
 
-			CircuitElement.StampVCCurrentSource(NodeIndex[3], NodeIndex[4], NodeIndex[0], NodeIndex[1], mA[6]);
-			CircuitElement.StampVCCurrentSource(NodeIndex[3], NodeIndex[4], NodeIndex[2], NodeIndex[3], mA[7]);
-			CircuitElement.StampConductance(NodeIndex[3], NodeIndex[4], mA[8]);
+			CircuitElement.StampVCCurrentSource(node_index[3], node_index[4], node_index[0], node_index[1], mA[6]);
+			CircuitElement.StampVCCurrentSource(node_index[3], node_index[4], node_index[2], node_index[3], mA[7]);
+			CircuitElement.StampConductance(node_index[3], node_index[4], mA[8]);
 
 			for (int i = 0; i != 5; i++) {
-				CircuitElement.StampRightSide(NodeIndex[i]);
+				CircuitElement.StampRightSide(node_index[i]);
 			}
 		}
 		#endregion
 
 		#region [method(Circuit)]
-		public override void PrepareIteration() {
-			mVoltageDiff[0] = Volts[0] - Volts[1];
-			mVoltageDiff[1] = Volts[2] - Volts[3];
-			mVoltageDiff[2] = Volts[3] - Volts[4];
+		public override void prepare_iteration() {
+			mVoltageDiff[0] = volts[0] - volts[1];
+			mVoltageDiff[1] = volts[2] - volts[3];
+			mVoltageDiff[2] = volts[3] - volts[4];
 			mCurSourceValue[0] = Currents[0];
 			mCurSourceValue[0] += mA[0] * mVoltageDiff[0];
 			mCurSourceValue[0] += mA[1] * mVoltageDiff[1];
@@ -107,13 +107,13 @@
 			mCurSourceValue[2] += mA[8] * mVoltageDiff[2];
 		}
 
-		public override void DoIteration() {
-			CircuitElement.StampCurrentSource(NodeIndex[0], NodeIndex[1], mCurSourceValue[0]);
-			CircuitElement.StampCurrentSource(NodeIndex[2], NodeIndex[3], mCurSourceValue[1]);
-			CircuitElement.StampCurrentSource(NodeIndex[3], NodeIndex[4], mCurSourceValue[2]);
+		public override void do_iteration() {
+			CircuitElement.StampCurrentSource(node_index[0], node_index[1], mCurSourceValue[0]);
+			CircuitElement.StampCurrentSource(node_index[2], node_index[3], mCurSourceValue[1]);
+			CircuitElement.StampCurrentSource(node_index[3], node_index[4], mCurSourceValue[2]);
 		}
 
-		public override double GetCurrentIntoNode(int n) {
+		public override double get_current_into_node(int n) {
 			if (n == 0)
 				return -Currents[0];
 			if (n == 1)
@@ -125,11 +125,11 @@
 			return Currents[2];
 		}
 
-		public override void SetVoltage(int n, double c) {
-			Volts[n] = c;
-			mVoltageDiff[0] = Volts[0] - Volts[1];
-			mVoltageDiff[1] = Volts[2] - Volts[3];
-			mVoltageDiff[2] = Volts[3] - Volts[4];
+		public override void set_voltage(int n, double c) {
+			volts[n] = c;
+			mVoltageDiff[0] = volts[0] - volts[1];
+			mVoltageDiff[1] = volts[2] - volts[3];
+			mVoltageDiff[2] = volts[3] - volts[4];
 			Currents[0] = mCurSourceValue[0];
 			Currents[0] += mA[0] * mVoltageDiff[0];
 			Currents[0] += mA[1] * mVoltageDiff[1];

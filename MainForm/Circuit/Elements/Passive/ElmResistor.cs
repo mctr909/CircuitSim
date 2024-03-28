@@ -4,13 +4,13 @@
 
 		public override int TermCount { get { return 2; } }
 
-		public override void Stamp() {
-			CircuitElement.StampResistor(NodeIndex[0], NodeIndex[1], Resistance);
+		public override void stamp() {
+			CircuitElement.StampResistor(node_index[0], node_index[1], Resistance);
 		}
 
-		public override void SetVoltage(int n, double c) {
-			Volts[n] = c;
-			Current = (Volts[0] - Volts[1]) / Resistance;
+		public override void set_voltage(int n, double c) {
+			volts[n] = c;
+			current = (volts[0] - volts[1]) / Resistance;
 		}
 	}
 }

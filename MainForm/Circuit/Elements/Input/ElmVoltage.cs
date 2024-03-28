@@ -28,8 +28,8 @@
 
 		public override int VoltageSourceCount { get { return 1; } }
 
-		public override double VoltageDiff() {
-			return Volts[1] - Volts[0];
+		public override double voltage_diff() {
+			return volts[1] - volts[0];
 		}
 
 		public double GetVoltage() {
@@ -109,12 +109,12 @@
 		}
 
 		#region [method(Analyze)]
-		public override void Reset() { }
+		public override void reset() { }
 
-		public override void Stamp() {
-			int n0 = NodeIndex[0] - 1;
-			int n1 = NodeIndex[1] - 1;
-			int vn = CircuitElement.nodes.Length + mVoltSource - 1;
+		public override void stamp() {
+			int n0 = node_index[0] - 1;
+			int n1 = node_index[1] - 1;
+			int vn = CircuitElement.nodes.Length + m_volt_source - 1;
 			if (n0 < 0 || n1 < 0 || vn < 0) {
 				return;
 			}
@@ -131,15 +131,15 @@
 		#endregion
 
 		#region [method(Circuit)]
-		public override void DoIteration() {
+		public override void do_iteration() {
 			if (WaveForm != WAVEFORM.DC) {
-				var vn = CircuitElement.nodes.Length + mVoltSource;
+				var vn = CircuitElement.nodes.Length + m_volt_source;
 				var row = CircuitElement.row_info[vn - 1].row;
 				CircuitElement.right_side[row] += GetVoltage();
 			}
 		}
 
-		public override void FinishIteration() {
+		public override void finish_iteration() {
 			if (WaveForm == WAVEFORM.NOISE) {
 				NoiseValue = (mRandom.NextDouble() * 2 - 1) * MaxVoltage + Bias;
 			}

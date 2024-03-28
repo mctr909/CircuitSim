@@ -39,7 +39,7 @@ namespace Circuit.Symbol.Passive {
 
 		public Pot(Point pos) : base(pos) {
 			mElm = new ElmPot();
-			mElm.AllocNodes();
+			mElm.alloc_nodes();
 			mFlags = FLAG_SHOW_VALUES;
 			ReferenceName = "VR";
 			CreateSlider();
@@ -50,7 +50,7 @@ namespace Circuit.Symbol.Passive {
 				MaxResistance = st.nextTokenDouble(1e3),
 				Position = st.nextTokenDouble(0.5)
 			};
-			mElm.AllocNodes();
+			mElm.alloc_nodes();
 			CreateSlider();
 		}
 
@@ -125,7 +125,7 @@ namespace Circuit.Symbol.Passive {
 			SetPoly();
 			SetTextPos();
 
-			mElm.SetNodePos(mTermA, mTermB, mTermSlider);
+			mElm.set_node_pos(mTermA, mTermB, mTermSlider);
 		}
 
 		public override void Draw(CustomGraphics g) {
@@ -197,7 +197,7 @@ namespace Circuit.Symbol.Passive {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "可変抵抗：" + TextUtils.Unit(mElm.MaxResistance, "Ω");
-			arr[1] = "Vd：" + TextUtils.VoltageAbs(mElm.VoltageDiff());
+			arr[1] = "Vd：" + TextUtils.VoltageAbs(mElm.voltage_diff());
 			arr[2] = "R1：" + TextUtils.Unit(mElm.Resistance1, "Ω");
 			arr[3] = "R2：" + TextUtils.Unit(mElm.Resistance2, "Ω");
 			arr[4] = "I1：" + TextUtils.CurrentAbs(mElm.Current1);

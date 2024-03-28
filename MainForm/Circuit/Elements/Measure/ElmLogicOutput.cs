@@ -4,13 +4,13 @@
 
 		public override int TermCount { get { return 1; } }
 
-		public override double VoltageDiff() {
-			return Volts[0];
+		public override double voltage_diff() {
+			return volts[0];
 		}
 
-		public override void Stamp() {
+		public override void stamp() {
 			if (NeedsPullDown) {
-				CircuitElement.StampResistor(NodeIndex[0], 0, 1e6);
+				CircuitElement.StampResistor(node_index[0], 0, 1e6);
 			}
 		}
 	}

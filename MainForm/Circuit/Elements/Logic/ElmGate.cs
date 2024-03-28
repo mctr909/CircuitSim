@@ -17,9 +17,9 @@
 
 		protected bool GetInput(int x) {
 			if (!HasSchmittInputs) {
-				return Volts[x] > HighVoltage * 0.5;
+				return volts[x] > HighVoltage * 0.5;
 			}
-			bool res = Volts[x] > HighVoltage * (InputStates[x] ? 0.35 : 0.55);
+			bool res = volts[x] > HighVoltage * (InputStates[x] ? 0.35 : 0.55);
 			InputStates[x] = res;
 			return res;
 		}
@@ -29,19 +29,19 @@
 		#region [method(Analyze)]
 		/* there is no current path through the gate inputs,
         * but there is an indirect path through the output to ground. */
-		public override bool HasConnection(int n1, int n2) { return false; }
+		public override bool has_connection(int n1, int n2) { return false; }
 
-		public override bool HasGroundConnection(int n1) {
+		public override bool has_ground_connection(int n1) {
 			return (n1 == InputCount);
 		}
 
-		public override void Stamp() {
-			CircuitElement.StampVoltageSource(0, NodeIndex[InputCount], mVoltSource);
+		public override void stamp() {
+			CircuitElement.StampVoltageSource(0, node_index[InputCount], m_volt_source);
 		}
 		#endregion
 
 		#region [method(Circuit)]
-		public override void DoIteration() {
+		public override void do_iteration() {
 			bool f = CalcFunction();
 			if (IsInverting) {
 				f = !f;
@@ -61,12 +61,12 @@
 			}
 			LastOutput = f;
 			double res = f ? HighVoltage : 0;
-			CircuitElement.UpdateVoltageSource(mVoltSource, res);
+			CircuitElement.UpdateVoltageSource(m_volt_source, res);
 		}
 
-		public override double GetCurrentIntoNode(int n) {
+		public override double get_current_into_node(int n) {
 			if (n == InputCount) {
-				return Current;
+				return current;
 			}
 			return 0;
 		}

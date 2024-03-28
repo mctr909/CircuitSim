@@ -8,33 +8,33 @@
 		public override int TermCount { get { return 2; } }
 
 		#region [method(Analyze)]
-		public override void Reset() {
-			Current = Volts[0] = Volts[1] = mCurSourceValue = 0;
+		public override void reset() {
+			current = volts[0] = volts[1] = mCurSourceValue = 0;
 		}
 
-		public override void Stamp() {
+		public override void stamp() {
 			mCompResistance = 2 * Inductance / CircuitElement.delta_time;
-			CircuitElement.StampResistor(NodeIndex[0], NodeIndex[1], mCompResistance);
-			CircuitElement.StampRightSide(NodeIndex[0]);
-			CircuitElement.StampRightSide(NodeIndex[1]);
+			CircuitElement.StampResistor(node_index[0], node_index[1], mCompResistance);
+			CircuitElement.StampRightSide(node_index[0]);
+			CircuitElement.StampRightSide(node_index[1]);
 		}
 		#endregion
 
 		#region [method(Circuit)]
-		public override void PrepareIteration() {
-			mCurSourceValue = (Volts[0] - Volts[1]) / mCompResistance + Current;
+		public override void prepare_iteration() {
+			mCurSourceValue = (volts[0] - volts[1]) / mCompResistance + current;
 		}
 
-		public override void DoIteration() {
-			var r = CircuitElement.row_info[NodeIndex[0] - 1].row;
+		public override void do_iteration() {
+			var r = CircuitElement.row_info[node_index[0] - 1].row;
 			CircuitElement.right_side[r] -= mCurSourceValue;
-			r = CircuitElement.row_info[NodeIndex[1] - 1].row;
+			r = CircuitElement.row_info[node_index[1] - 1].row;
 			CircuitElement.right_side[r] += mCurSourceValue;
 		}
 
-		public override void SetVoltage(int n, double c) {
-			Volts[n] = c;
-			Current = (Volts[0] - Volts[1]) / mCompResistance + mCurSourceValue;
+		public override void set_voltage(int n, double c) {
+			volts[n] = c;
+			current = (volts[0] - volts[1]) / mCompResistance + mCurSourceValue;
 		}
 		#endregion
 	}

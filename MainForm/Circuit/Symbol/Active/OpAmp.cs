@@ -31,8 +31,8 @@ namespace Circuit.Symbol.Active {
 				MinOut = st.nextTokenDouble(),
 				Gain = st.nextTokenDouble()
 			};
-			mElm.Volts[ElmOpAmp.V_N] = st.nextTokenDouble();
-			mElm.Volts[ElmOpAmp.V_P] = st.nextTokenDouble();
+			mElm.volts[ElmOpAmp.V_N] = st.nextTokenDouble();
+			mElm.volts[ElmOpAmp.V_P] = st.nextTokenDouble();
 			Post.NoDiagonal = true;
 			SetGain();
 		}
@@ -44,8 +44,8 @@ namespace Circuit.Symbol.Active {
 			optionList.Add(mElm.MaxOut);
 			optionList.Add(mElm.MinOut);
 			optionList.Add(mElm.Gain);
-			optionList.Add(mElm.Volts[ElmOpAmp.V_N].ToString("g3"));
-			optionList.Add(mElm.Volts[ElmOpAmp.V_P].ToString("g3"));
+			optionList.Add(mElm.volts[ElmOpAmp.V_N].ToString("g3"));
+			optionList.Add(mElm.volts[ElmOpAmp.V_P].ToString("g3"));
 		}
 
 		public override void SetPoints() {
@@ -79,7 +79,7 @@ namespace Circuit.Symbol.Active {
 			InterpolationLeadAB(ref tris[0], ref tris[1], 0, hs * 2);
 			mTriangle = new PointF[] { tris[0], tris[1], mLead2 };
 
-			mElm.SetNodePos(mPosIn1[0], mPosIn2[0], mPosOut);
+			mElm.set_node_pos(mPosIn1[0], mPosIn2[0], mPosOut);
 		}
 
 		public override void Draw(CustomGraphics g) {
@@ -93,7 +93,7 @@ namespace Circuit.Symbol.Active {
 			DrawLine(mTextp[2], mTextp[3]);
 			DrawLine(mTextp[4], mTextp[5]);
 
-			UpdateDotCount(mElm.Current, ref mCurCount);
+			UpdateDotCount(mElm.current, ref mCurCount);
 			DrawCurrent(mLead2, mPosOut, -mCurCount);
 		}
 
@@ -101,11 +101,11 @@ namespace Circuit.Symbol.Active {
 			arr[0] = "オペアンプ";
 			arr[1] = "+電源：" + TextUtils.Voltage(mElm.MaxOut);
 			arr[2] = "-電源：" + TextUtils.Voltage(mElm.MinOut);
-			arr[3] = "Vin(+)：" + TextUtils.Voltage(mElm.Volts[ElmOpAmp.V_P]);
-			arr[4] = "Vin(-)：" + TextUtils.Voltage(mElm.Volts[ElmOpAmp.V_N]);
-			var vo = Math.Max(Math.Min(mElm.Volts[ElmOpAmp.V_O], mElm.MaxOut), mElm.MinOut);
+			arr[3] = "Vin(+)：" + TextUtils.Voltage(mElm.volts[ElmOpAmp.V_P]);
+			arr[4] = "Vin(-)：" + TextUtils.Voltage(mElm.volts[ElmOpAmp.V_N]);
+			var vo = Math.Max(Math.Min(mElm.volts[ElmOpAmp.V_O], mElm.MaxOut), mElm.MinOut);
 			arr[5] = "Vout：" + TextUtils.Voltage(vo);
-			arr[6] = "Iout：" + TextUtils.Current(-mElm.Current);
+			arr[6] = "Iout：" + TextUtils.Current(-mElm.current);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

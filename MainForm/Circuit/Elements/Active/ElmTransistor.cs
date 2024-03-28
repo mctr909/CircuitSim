@@ -17,9 +17,9 @@
 		public double Ic { get; private set; }
 		public double Ie { get; private set; }
 		public double Ib { get; private set; }
-		public double Vb { get { return Volts[IdxB]; } }
-		public double Vc { get { return Volts[IdxC]; } }
-		public double Ve { get { return Volts[IdxE]; } }
+		public double Vb { get { return volts[IdxB]; } }
+		public double Vc { get { return volts[IdxC]; } }
+		public double Ve { get { return volts[IdxE]; } }
 
 		double mFgain;
 		double mInv_fgain;
@@ -35,9 +35,9 @@
 		public ElmTransistor(double vbe, double vbc) {
 			mLastVbe = vbe;
 			mLastVbc = vbc;
-			Volts[IdxB] = 0;
-			Volts[IdxC] = -vbe;
-			Volts[IdxE] = -vbc;
+			volts[IdxB] = 0;
+			volts[IdxC] = -vbe;
+			volts[IdxE] = -vbc;
 		}
 
 		public void Setup() {
@@ -51,27 +51,27 @@
 			Setup();
 		}
 
-		public override double VoltageDiff() {
-			return Volts[IdxC] - Volts[IdxE];
+		public override double voltage_diff() {
+			return volts[IdxC] - volts[IdxE];
 		}
 
 		#region [method(Analyze)]
-		public override void Reset() {
-			Volts[IdxB] = Volts[IdxC] = Volts[IdxE] = 0;
+		public override void reset() {
+			volts[IdxB] = volts[IdxC] = volts[IdxE] = 0;
 			mLastVbc = mLastVbe = 0;
 		}
 
-		public override void Stamp() {
-			CircuitElement.row_info[NodeIndex[IdxB] - 1].left_changes = true;
-			CircuitElement.row_info[NodeIndex[IdxC] - 1].left_changes = true;
-			CircuitElement.row_info[NodeIndex[IdxE] - 1].left_changes = true;
+		public override void stamp() {
+			CircuitElement.row_info[node_index[IdxB] - 1].left_changes = true;
+			CircuitElement.row_info[node_index[IdxC] - 1].left_changes = true;
+			CircuitElement.row_info[node_index[IdxE] - 1].left_changes = true;
 		}
 		#endregion
 
 		#region [method(Circuit)]
-		public override void DoIteration() {
-			var vbc = Volts[IdxB] - Volts[IdxC]; /* typically negative */
-			var vbe = Volts[IdxB] - Volts[IdxE]; /* typically positive */
+		public override void do_iteration() {
+			var vbc = volts[IdxB] - volts[IdxC]; /* typically negative */
+			var vbe = volts[IdxB] - volts[IdxE]; /* typically positive */
 			if (0.001 < Math.Abs(vbc - mLastVbc) || 0.001 < Math.Abs(vbe - mLastVbe)) {
 				/* not converge 0.01 */
 				CircuitElement.converged = false;
@@ -109,10 +109,10 @@
 			gcc -= mGmin;
 			gee -= mGmin;
 
-			var rowB = CircuitElement.row_info[NodeIndex[IdxB] - 1].row;
-			var rowC = CircuitElement.row_info[NodeIndex[IdxC] - 1].row;
-			var rowE = CircuitElement.row_info[NodeIndex[IdxE] - 1].row;
-			var colri = CircuitElement.row_info[NodeIndex[IdxB] - 1];
+			var rowB = CircuitElement.row_info[node_index[IdxB] - 1].row;
+			var rowC = CircuitElement.row_info[node_index[IdxC] - 1].row;
+			var rowE = CircuitElement.row_info[node_index[IdxE] - 1].row;
+			var colri = CircuitElement.row_info[node_index[IdxB] - 1];
 			if (colri.is_const) {
 				CircuitElement.right_side[rowB] += (gee + gec + gce + gcc) * colri.value;
 				CircuitElement.right_side[rowC] -= (gce + gcc) * colri.value;
@@ -122,7 +122,7 @@
 				CircuitElement.matrix[rowC, colri.col] += gce + gcc;
 				CircuitElement.matrix[rowE, colri.col] += gee + gec;
 			}
-			colri = CircuitElement.row_info[NodeIndex[IdxC] - 1];
+			colri = CircuitElement.row_info[node_index[IdxC] - 1];
 			if (colri.is_const) {
 				CircuitElement.right_side[rowB] -= (gec + gcc) * colri.value;
 				CircuitElement.right_side[rowC] += gcc * colri.value;
@@ -132,7 +132,7 @@
 				CircuitElement.matrix[rowC, colri.col] -= gcc;
 				CircuitElement.matrix[rowE, colri.col] -= gec;
 			}
-			colri = CircuitElement.row_info[NodeIndex[IdxE] - 1];
+			colri = CircuitElement.row_info[node_index[IdxE] - 1];
 			if (colri.is_const) {
 				CircuitElement.right_side[rowB] -= (gee + gce) * colri.value;
 				CircuitElement.right_side[rowC] += gce * colri.value;
@@ -145,21 +145,21 @@
 
 			/* we are solving for v(k+1), not delta v, so we use formula
              * multiplying J by v(k) */
-			rowB = CircuitElement.row_info[NodeIndex[IdxB] - 1].row;
-			rowC = CircuitElement.row_info[NodeIndex[IdxC] - 1].row;
-			rowE = CircuitElement.row_info[NodeIndex[IdxE] - 1].row;
+			rowB = CircuitElement.row_info[node_index[IdxB] - 1].row;
+			rowC = CircuitElement.row_info[node_index[IdxC] - 1].row;
+			rowE = CircuitElement.row_info[node_index[IdxE] - 1].row;
 			CircuitElement.right_side[rowB] += -Ib - (gec + gcc) * vbc - (gee + gce) * vbe;
 			CircuitElement.right_side[rowC] += -Ic + gce * vbe + gcc * vbc;
 			CircuitElement.right_side[rowE] += -Ie + gee * vbe + gec * vbc;
 		}
 
-		public override void FinishIteration() {
+		public override void finish_iteration() {
 			if (Math.Abs(Ic) > 1e12 || Math.Abs(Ib) > 1e12) {
 				CircuitElement.stopped = true;
 			}
 		}
 
-		public override double GetCurrentIntoNode(int n) {
+		public override double get_current_into_node(int n) {
 			if (n == 0) {
 				return -Ib;
 			}

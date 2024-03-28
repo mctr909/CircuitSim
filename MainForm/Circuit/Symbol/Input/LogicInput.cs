@@ -55,8 +55,8 @@ namespace Circuit.Symbol.Input {
 			if (isNumeric) {
 				arr[1] = 0 != mElmLogic.Position ? "1" : "0";
 			}
-			arr[1] += " (" + TextUtils.Voltage(mElmLogic.Volts[0]) + ")";
-			arr[2] = "電流：" + TextUtils.Current(mElmLogic.Current);
+			arr[1] += " (" + TextUtils.Voltage(mElmLogic.volts[0]) + ")";
+			arr[2] = "電流：" + TextUtils.Current(mElmLogic.current);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

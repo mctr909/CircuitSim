@@ -24,14 +24,14 @@ namespace Circuit.Symbol.Passive {
 		public Inductor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			mElm = new ElmInductor();
 			mElm.Inductance = st.nextTokenDouble(mLastValue);
-			mElm.SetCurrent(0, st.nextTokenDouble(0));
+			mElm.set_current(0, st.nextTokenDouble(0));
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.INDUCTOR; } }
 
 		protected override void dump(List<object> optionList) {
 			optionList.Add(mElm.Inductance.ToString("g3"));
-			optionList.Add(mElm.Current.ToString("g3"));
+			optionList.Add(mElm.current.ToString("g3"));
 		}
 
 		public override void SetPoints() {

@@ -36,17 +36,17 @@ namespace Circuit.Symbol.Measure {
 		}
 
 		public override void Draw(CustomGraphics g) {
-			var s = (mElm.Volts[0] < mThreshold) ? "L" : "H";
+			var s = (mElm.volts[0] < mThreshold) ? "L" : "H";
 			if (isTernary) {
-				if (mElm.Volts[0] > 3.75) {
+				if (mElm.volts[0] > 3.75) {
 					s = "2";
-				} else if (mElm.Volts[0] > 1.25) {
+				} else if (mElm.volts[0] > 1.25) {
 					s = "1";
 				} else {
 					s = "0";
 				}
 			} else if (isNumeric) {
-				s = (mElm.Volts[0] < mThreshold) ? "0" : "1";
+				s = (mElm.volts[0] < mThreshold) ? "0" : "1";
 			}
 			mValue = s;
 			DrawCenteredLText(s, Post.B);
@@ -55,11 +55,11 @@ namespace Circuit.Symbol.Measure {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "ロジック出力";
-			arr[1] = (mElm.Volts[0] < mThreshold) ? "Low" : "High";
+			arr[1] = (mElm.volts[0] < mThreshold) ? "Low" : "High";
 			if (isNumeric) {
 				arr[1] = mValue;
 			}
-			arr[2] = "電位：" + TextUtils.Voltage(mElm.Volts[0]);
+			arr[2] = "電位：" + TextUtils.Voltage(mElm.volts[0]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

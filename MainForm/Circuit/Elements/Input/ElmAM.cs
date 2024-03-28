@@ -12,22 +12,22 @@
 
 		public override int VoltageSourceCount { get { return 1; } }
 
-		public override double VoltageDiff() {
-			return Volts[0];
+		public override double voltage_diff() {
+			return volts[0];
 		}
 
-		public override bool HasGroundConnection(int n1) { return true; }
+		public override bool has_ground_connection(int n1) { return true; }
 
-		public override void Reset() {
+		public override void reset() {
 			mFreqTimeZero = 0;
 		}
 
-		public override void Stamp() {
-			CircuitElement.StampVoltageSource(0, NodeIndex[0], mVoltSource);
+		public override void stamp() {
+			CircuitElement.StampVoltageSource(0, node_index[0], m_volt_source);
 		}
 
-		public override void DoIteration() {
-			var vn = CircuitElement.nodes.Length + mVoltSource;
+		public override void do_iteration() {
+			var vn = CircuitElement.nodes.Length + m_volt_source;
 			var row = CircuitElement.row_info[vn - 1].row;
 			var th = 2 * Math.PI * (CircuitElement.time - mFreqTimeZero);
 			CircuitElement.right_side[row] += (Math.Sin(th * SignalFreq + Phase) * Depth + 2 - Depth) / 2 * Math.Sin(th * CarrierFreq) * MaxVoltage;

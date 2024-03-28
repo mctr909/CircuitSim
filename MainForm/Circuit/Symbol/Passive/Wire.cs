@@ -27,8 +27,8 @@ namespace Circuit.Symbol.Passive {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "ワイヤ";
-			arr[1] = "電流：" + TextUtils.CurrentAbs(mElm.Current);
-			arr[2] = "電位：" + TextUtils.Voltage(mElm.VoltageDiff());
+			arr[1] = "電流：" + TextUtils.CurrentAbs(mElm.current);
+			arr[2] = "電位：" + TextUtils.Voltage(mElm.voltage_diff());
 		}
 	}
 }

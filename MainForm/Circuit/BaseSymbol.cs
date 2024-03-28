@@ -159,7 +159,7 @@ namespace Circuit {
 		}
 		public virtual void SetPoints() {
 			Post.SetValue();
-			Element.SetNodePos(Post.A, Post.B);
+			Element.set_node_pos(Post.A, Post.B);
 		}
 		public virtual void GetInfo(string[] arr) { }
 		public virtual ElementInfo GetElementInfo(int r, int c) { return null; }
@@ -198,12 +198,12 @@ namespace Circuit {
 		/// update dot positions (curcount) for drawing current (simple case for single current)
 		/// </summary>
 		protected void UpdateDotCount() {
-			UpdateDotCount(Element.Current, ref mCurCount);
+			UpdateDotCount(Element.current, ref mCurCount);
 		}
 
 		protected void GetBasicInfo(int begin, params string[] arr) {
-			arr[begin] = "電流：" + TextUtils.CurrentAbs(Element.Current);
-			arr[begin + 1] = "電位差：" + TextUtils.VoltageAbs(Element.VoltageDiff());
+			arr[begin] = "電流：" + TextUtils.CurrentAbs(Element.current);
+			arr[begin + 1] = "電位差：" + TextUtils.VoltageAbs(Element.voltage_diff());
 		}
 
 		/// <summary>

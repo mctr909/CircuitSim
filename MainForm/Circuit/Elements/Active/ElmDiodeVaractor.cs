@@ -14,16 +14,16 @@
 
 		public ElmDiodeVaractor() : base() { }
 
-		public override void Reset() {
-			base.Reset();
+		public override void reset() {
+			base.reset();
 			CapVoltDiff = 0;
 		}
 
-		public override void Stamp() {
-			base.Stamp();
-			var n0 = NodeIndex[0] - 1;
-			var n1 = NodeIndex[2] - 1;
-			int vn = CircuitElement.nodes.Length + mVoltSource - 1;
+		public override void stamp() {
+			base.stamp();
+			var n0 = node_index[0] - 1;
+			var n1 = node_index[2] - 1;
+			int vn = CircuitElement.nodes.Length + m_volt_source - 1;
 			CircuitElement.matrix[vn, n0] -= 1;
 			CircuitElement.matrix[vn, n1] += 1;
 			CircuitElement.matrix[n0, vn] += 1;
@@ -33,8 +33,8 @@
 		}
 
 		#region [method(Circuit)]
-		public override void PrepareIteration() {
-			base.PrepareIteration();
+		public override void prepare_iteration() {
+			base.prepare_iteration();
 			// capacitor companion model using trapezoidal approximation
 			// (Thevenin equivalent) consists of a voltage source in
 			// series with a resistor
@@ -47,12 +47,12 @@
 			mVoltSourceValue = -CapVoltDiff - mCapCurrent * mCompResistance;
 		}
 
-		public override void DoIteration() {
-			base.DoIteration();
+		public override void do_iteration() {
+			base.do_iteration();
 			var g = 1.0 / mCompResistance;
-			var n0 = NodeIndex[2] - 1;
-			var n1 = NodeIndex[1] - 1;
-			var vn = CircuitElement.nodes.Length + mVoltSource - 1;
+			var n0 = node_index[2] - 1;
+			var n1 = node_index[1] - 1;
+			var vn = CircuitElement.nodes.Length + m_volt_source - 1;
 			CircuitElement.matrix[n0, n0] += g;
 			CircuitElement.matrix[n1, n1] += g;
 			CircuitElement.matrix[n0, n1] -= g;
@@ -60,13 +60,13 @@
 			CircuitElement.right_side[vn] += mVoltSourceValue;
 		}
 
-		public override void SetVoltage(int n, double c) {
-			base.SetVoltage(n, c);
-			CapVoltDiff = Volts[0] - Volts[1];
-			Current += mCapCurrent;
+		public override void set_voltage(int n, double c) {
+			base.set_voltage(n, c);
+			CapVoltDiff = volts[0] - volts[1];
+			current += mCapCurrent;
 		}
 
-		public override void SetCurrent(int x, double c) { mCapCurrent = c; }
+		public override void set_current(int x, double c) { mCapCurrent = c; }
 		#endregion
 	}
 }

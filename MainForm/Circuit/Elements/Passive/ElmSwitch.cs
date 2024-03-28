@@ -9,18 +9,18 @@
 		public override bool IsWire { get { return Position == 0; } }
 		public override int VoltageSourceCount { get { return (1 == Position) ? 0 : 1; } }
 
-		public override bool HasConnection(int n1, int n2) { return 0 == Position; }
+		public override bool has_connection(int n1, int n2) { return 0 == Position; }
 
-		public override void Stamp() {
+		public override void stamp() {
 			if (Position == 0) {
-				CircuitElement.StampVoltageSource(NodeIndex[0], NodeIndex[1], mVoltSource, 0);
+				CircuitElement.StampVoltageSource(node_index[0], node_index[1], m_volt_source, 0);
 			}
 		}
 
-		public override void SetVoltage(int n, double c) {
-			Volts[n] = c;
+		public override void set_voltage(int n, double c) {
+			volts[n] = c;
 			if (Position == 1) {
-				Current = 0;
+				current = 0;
 			}
 		}
 	}

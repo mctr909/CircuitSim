@@ -35,7 +35,7 @@ namespace Circuit {
 		public static double delta_time;
 
 		public static CIRCUIT_NODE[] nodes = [];
-		public static ScopePlot[] plots = [];
+		public static SCOPE_WAVE[] waves = [];
 		public static double[,] matrix = new double[0, 0];
 		public static double[] right_side = [];
 		public static CIRCUIT_ROW[] row_info = [];
@@ -78,8 +78,24 @@ namespace Circuit {
 					break;
 				}
 
-				for (int i = 0; i < plots.Length; i++) {
-					plots[i].TimeStep();
+				for (int i = 0; i < waves.Length; i++) {
+					var p_wave = waves[i];
+					var v = (float)p_wave.p_elm.voltage_diff();
+					var index = p_wave.index;
+					var p_value = p_wave.p_values[index];
+					if (v < p_value.min) {
+						p_wave.p_values[index].min = v;
+					}
+					if (v > p_value.max) {
+						p_wave.p_values[index].max = v;
+					}
+					p_wave.counter++;
+					if (p_wave.counter >= p_wave.speed) {
+						index = (index + 1) & (p_wave.length - 1);
+						p_wave.index = index;
+						p_wave.counter = 0;
+						p_wave.p_values[index].min = p_wave.p_values[index].max = v;
+					}
 				}
 
 				/* Check whether enough time has elapsed to perform an *additional* iteration after
@@ -192,7 +208,7 @@ namespace Circuit {
 
 		static bool do_iteration() {
 			for (int i = 0; i < elements.Length; i++) {
-				elements[i].PrepareIteration();
+				elements[i].prepare_iteration();
 			}
 
 			for (sub_iterations = 0; sub_iterations < SUB_ITER_MAX; sub_iterations++) {
@@ -205,7 +221,7 @@ namespace Circuit {
 
 				converged = true;
 				for (int i = 0; i < elements.Length; i++) {
-					elements[i].DoIteration();
+					elements[i].do_iteration();
 				}
 
 				if (stopped) {
@@ -227,19 +243,15 @@ namespace Circuit {
 					} else {
 						res = right_side[ri.col];
 					}
-					if (double.IsNaN(res) || double.IsInfinity(res)) {
-						Console.WriteLine((ri.is_const ? ("RowInfo[" + j + "]") : ("RightSide[" + ri.col + "]")) + " is NaN/infinite");
-						return false;
-					}
 					if (j < nodes.Length - 1) {
 						var cn = nodes[j + 1];
 						for (int k = 0; k < cn.links.Count; k++) {
 							var cl = cn.links[k];
-							cl.p_elm.SetVoltage(cl.node_index, res);
+							cl.p_elm.set_voltage(cl.node_index, res);
 						}
 					} else {
 						var ji = j - (nodes.Length - 1);
-						voltage_sources[ji].SetCurrent(ji, res);
+						voltage_sources[ji].set_current(ji, res);
 					}
 				}
 			}
@@ -250,7 +262,7 @@ namespace Circuit {
 			}
 
 			for (int i = 0; i < elements.Length; i++) {
-				elements[i].FinishIteration();
+				elements[i].finish_iteration();
 			}
 
 			/* calc wire currents */
@@ -260,23 +272,23 @@ namespace Circuit {
 				var wi = wires[i];
 				var we = wi.p_elm;
 				var cur = 0.0;
-				var p = we.NodePos[wi.post];
+				var p = we.node_pos[wi.post];
 				for (int j = 0; j < wi.neighbors.Count; j++) {
 					var ce = wi.neighbors[j];
 					var n = 0;
 					for (int k = 0; k != ce.TermCount; k++) {
-						var nodePos = ce.NodePos[k];
+						var nodePos = ce.node_pos[k];
 						if (nodePos.X == p.X && nodePos.Y == p.Y) {
 							n = k;
 							break;
 						}
 					}
-					cur += ce.GetCurrentIntoNode(n);
+					cur += ce.get_current_into_node(n);
 				}
 				if (wi.post == 0) {
-					we.SetCurrent(-1, cur);
+					we.set_current(-1, cur);
 				} else {
-					we.SetCurrent(-1, -cur);
+					we.set_current(-1, -cur);
 				}
 			}
 			time += delta_time;
@@ -285,9 +297,8 @@ namespace Circuit {
 		#endregion
 
 		#region stamp method
-		/* stamp independent voltage source #vs, from n1 to n2, amount v */
-		public static void StampVoltageSource(int n1, int n2, int vs, double v) {
-			int vn = nodes.Length + vs;
+		public static void StampVoltageSource(int n1, int n2, int voltage_source, double v) {
+			int vn = nodes.Length + voltage_source;
 			StampMatrix(vn, n1, -1);
 			StampMatrix(vn, n2, 1);
 			StampRightSide(vn, v);
@@ -295,9 +306,9 @@ namespace Circuit {
 			StampMatrix(n2, vn, -1);
 		}
 
-		/* use this if the amount of voltage is going to be updated in doStep(), by updateVoltageSource() */
-		public static void StampVoltageSource(int n1, int n2, int vs) {
-			int vn = nodes.Length + vs;
+		/* use this if the amount of voltage is going to be updated in doStep(), by UpdateVoltageSource() */
+		public static void StampVoltageSource(int n1, int n2, int voltage_source) {
+			int vn = nodes.Length + voltage_source;
 			StampMatrix(vn, n1, -1);
 			StampMatrix(vn, n2, 1);
 			StampRightSide(vn);
@@ -305,29 +316,24 @@ namespace Circuit {
 			StampMatrix(n2, vn, -1);
 		}
 
-		/* update voltage source in doStep() */
-		public static void UpdateVoltageSource(int vs, double v) {
-			int vn = nodes.Length + vs;
+		public static void UpdateVoltageSource(int voltage_source, double v) {
+			int vn = nodes.Length + voltage_source;
 			StampRightSide(vn, v);
 		}
 
 		public static void StampResistor(int n1, int n2, double r) {
-			double r0 = 1 / r;
-			if (double.IsNaN(r0) || double.IsInfinity(r0)) {
-				Console.WriteLine("bad resistance " + r + " " + r0 + "\n");
-				throw new Exception("bad resistance " + r + " " + r0);
-			}
-			StampMatrix(n1, n1, r0);
-			StampMatrix(n2, n2, r0);
-			StampMatrix(n1, n2, -r0);
-			StampMatrix(n2, n1, -r0);
+			var g = 1.0 / r;
+			StampMatrix(n1, n1, g);
+			StampMatrix(n2, n2, g);
+			StampMatrix(n1, n2, -g);
+			StampMatrix(n2, n1, -g);
 		}
 
-		public static void StampConductance(int n1, int n2, double r0) {
-			StampMatrix(n1, n1, r0);
-			StampMatrix(n2, n2, r0);
-			StampMatrix(n1, n2, -r0);
-			StampMatrix(n2, n1, -r0);
+		public static void StampConductance(int n1, int n2, double g) {
+			StampMatrix(n1, n1, g);
+			StampMatrix(n2, n2, g);
+			StampMatrix(n1, n2, -g);
+			StampMatrix(n2, n1, -g);
 		}
 
 		/* current from cn1 to cn2 is equal to voltage from vn1 to 2, divided by g */
@@ -343,20 +349,13 @@ namespace Circuit {
 			StampRightSide(n2, i);
 		}
 
-		/* stamp a current source from n1 to n2 depending on current through vs */
-		public static void StampCCCS(int n1, int n2, int vs, double gain) {
-			int vn = nodes.Length + vs;
+		/* stamp a current source from n1 to n2 depending on current through voltage_source */
+		public static void StampCCCS(int n1, int n2, int voltage_source, double gain) {
+			int vn = nodes.Length + voltage_source;
 			StampMatrix(n1, vn, gain);
 			StampMatrix(n2, vn, -gain);
 		}
 
-		/// <summary>
-		/// <para>meaning that a voltage change of dv in node j will increase the current into node i by x dv.</para>
-		/// <para>(Unless i or j is a voltage source node.)</para>
-		/// </summary>
-		/// <param name="r">row</param>
-		/// <param name="c">column</param>
-		/// <param name="x">stamp value in row, column</param>
 		public static void StampMatrix(int r, int c, double x) {
 			if (r > 0 && c > 0) {
 				if (needs_map) {
@@ -376,7 +375,7 @@ namespace Circuit {
 		}
 
 		/* stamp value x on the right side of row i, representing an
-        /* independent current source flowing into node i */
+		/* independent current source flowing into node i */
 		public static void StampRightSide(int i, double x) {
 			if (i > 0) {
 				if (needs_map) {

@@ -23,14 +23,14 @@ namespace Circuit.Elements.Custom {
 
 		public override int InternalNodeCount { get { return mNumNodes - mNumTerms; } }
 
-		public override void Reset() {
+		public override void reset() {
 			for (int i = 0; i < CompList.Count; i++) {
-				CompList[i].Reset();
+				CompList[i].reset();
 			}
 		}
 
 		/* are n1 and n2 connected internally somehow? */
-		public override bool HasConnection(int n1, int n2) {
+		public override bool has_connection(int n1, int n2) {
 			var cl1 = mCompNodeList[n1].links;
 			var cl2 = mCompNodeList[n2].links;
 			/* see if any elements are connected to both n1 and n2, then call getConnection() on those */
@@ -38,7 +38,7 @@ namespace Circuit.Elements.Custom {
 				var link1 = cl1[i];
 				for (int j = 0; j < cl2.Count; j++) {
 					var link2 = cl2[j];
-					if (link1.p_elm == link2.p_elm && link1.p_elm.HasConnection(link1.node_index, link2.node_index)) {
+					if (link1.p_elm == link2.p_elm && link1.p_elm.has_connection(link1.node_index, link2.node_index)) {
 						return true;
 					}
 				}
@@ -47,86 +47,86 @@ namespace Circuit.Elements.Custom {
 		}
 
 		/* is n1 connected to ground somehow? */
-		public override bool HasGroundConnection(int n1) {
+		public override bool has_ground_connection(int n1) {
 			var links = mCompNodeList[n1].links;
 			for (int i = 0; i < links.Count; i++) {
-				if (links[i].p_elm.HasGroundConnection(links[i].node_index)) {
+				if (links[i].p_elm.has_ground_connection(links[i].node_index)) {
 					return true;
 				}
 			}
 			return false;
 		}
 
-		public override void SetNode(int p, int n) {
-			base.SetNode(p, n);
+		public override void set_node(int p, int n) {
+			base.set_node(p, n);
 			var links = mCompNodeList[p].links;
 			for (int i = 0; i < links.Count; i++) {
-				links[i].p_elm.SetNode(links[i].node_index, n);
+				links[i].p_elm.set_node(links[i].node_index, n);
 			}
 		}
 
 		/* Find the component with the nth voltage
          * and set the
          * appropriate source in that component */
-		public override void SetVoltageSource(int n, int v) {
+		public override void set_voltage_source(int n, int v) {
 			var vsr = mVoltageSources[n];
-			vsr.elm.SetVoltageSource(vsr.vsNumForElement, v);
+			vsr.elm.set_voltage_source(vsr.vsNumForElement, v);
 			vsr.vsNode = v;
 		}
 
-		public override void Stamp() {
+		public override void stamp() {
 			for (int i = 0; i < CompList.Count; i++) {
 				var ce = CompList[i];
 				/* current sources need special stamp method */
 				if (ce is ElmCurrent elm) {
 					elm.StampCurrentSource(false);
 				} else {
-					ce.Stamp();
+					ce.stamp();
 				}
 			}
 		}
 
 		#region [method(Circuit)]
-		public override void PrepareIteration() {
+		public override void prepare_iteration() {
 			for (int i = 0; i < CompList.Count; i++) {
-				CompList[i].PrepareIteration();
+				CompList[i].prepare_iteration();
 			}
 		}
 
-		public override void DoIteration() {
+		public override void do_iteration() {
 			for (int i = 0; i < CompList.Count; i++) {
-				CompList[i].DoIteration();
+				CompList[i].do_iteration();
 			}
 		}
 
-		public override void FinishIteration() {
+		public override void finish_iteration() {
 			for (int i = 0; i < CompList.Count; i++) {
-				CompList[i].FinishIteration();
+				CompList[i].finish_iteration();
 			}
 		}
 
-		public override double GetCurrentIntoNode(int n) {
+		public override double get_current_into_node(int n) {
 			double c = 0;
 			var links = mCompNodeList[n].links;
 			for (int i = 0; i < links.Count; i++) {
-				c += links[i].p_elm.GetCurrentIntoNode(links[i].node_index);
+				c += links[i].p_elm.get_current_into_node(links[i].node_index);
 			}
 			return c;
 		}
 
-		public override void SetVoltage(int n, double c) {
-			base.SetVoltage(n, c);
+		public override void set_voltage(int n, double c) {
+			base.set_voltage(n, c);
 			var links = mCompNodeList[n].links;
 			for (int i = 0; i < links.Count; i++) {
-				links[i].p_elm.SetVoltage(links[i].node_index, c);
+				links[i].p_elm.set_voltage(links[i].node_index, c);
 			}
-			Volts[n] = c;
+			volts[n] = c;
 		}
 
-		public override void SetCurrent(int vsn, double c) {
+		public override void set_current(int vsn, double c) {
 			for (int i = 0; i < mVoltageSources.Count; i++) {
 				if (mVoltageSources[i].vsNode == vsn) {
-					mVoltageSources[i].elm.SetCurrent(vsn, c);
+					mVoltageSources[i].elm.set_current(vsn, c);
 				}
 			}
 		}
@@ -184,7 +184,7 @@ namespace Circuit.Elements.Custom {
 				}
 			}
 
-			AllocNodes();
+			alloc_nodes();
 			Init();
 		}
 

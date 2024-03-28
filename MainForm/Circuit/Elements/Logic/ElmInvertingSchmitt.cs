@@ -12,28 +12,28 @@
 
 		public override int VoltageSourceCount { get { return 1; } }
 
-		public override double VoltageDiff() {
-			return Volts[0];
+		public override double voltage_diff() {
+			return volts[0];
 		}
 
 		#region [method(Analyze)]
 		// there is no current path through the InvertingSchmitt input, but there
 		// is an indirect path through the output to ground.
-		public override bool HasConnection(int n1, int n2) { return false; }
+		public override bool has_connection(int n1, int n2) { return false; }
 
-		public override bool HasGroundConnection(int n1) { return n1 == 1; }
+		public override bool has_ground_connection(int n1) { return n1 == 1; }
 
-		public override void Stamp() {
-			CircuitElement.StampVoltageSource(0, NodeIndex[1], mVoltSource);
+		public override void stamp() {
+			CircuitElement.StampVoltageSource(0, node_index[1], m_volt_source);
 		}
 		#endregion
 
 		#region [method(Circuit)]
-		public override void DoIteration() {
-			double v0 = Volts[1];
+		public override void do_iteration() {
+			double v0 = volts[1];
 			double _out;
 			if (mState) {//Output is high
-				if (Volts[0] > UpperTrigger)//Input voltage high enough to set output low
+				if (volts[0] > UpperTrigger)//Input voltage high enough to set output low
 				{
 					mState = false;
 					_out = LogicOffLevel;
@@ -41,7 +41,7 @@
 					_out = LogicOnLevel;
 				}
 			} else {//Output is low
-				if (Volts[0] < LowerTrigger)//Input voltage low enough to set output high
+				if (volts[0] < LowerTrigger)//Input voltage low enough to set output high
 				{
 					mState = true;
 					_out = LogicOnLevel;
@@ -51,12 +51,12 @@
 			}
 			double maxStep = SlewRate * CircuitElement.delta_time * 1e9;
 			_out = Math.Max(Math.Min(v0 + maxStep, _out), v0 - maxStep);
-			CircuitElement.UpdateVoltageSource(mVoltSource, _out);
+			CircuitElement.UpdateVoltageSource(m_volt_source, _out);
 		}
 
-		public override double GetCurrentIntoNode(int n) {
+		public override double get_current_into_node(int n) {
 			if (n == 1) {
-				return Current;
+				return current;
 			}
 			return 0;
 		}

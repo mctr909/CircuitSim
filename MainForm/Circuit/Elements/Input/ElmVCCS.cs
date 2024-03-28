@@ -36,7 +36,7 @@ namespace Circuit.Elements.Input {
 		}
 
 		public int GetOutputNode(int n) {
-			return NodeIndex[n + InputCount];
+			return node_index[n + InputCount];
 		}
 
 		public void SetFunction(DFunction function) { mFunction = function; }
@@ -76,22 +76,22 @@ namespace Circuit.Elements.Input {
 		}
 
 		#region [method(Analyze)]
-		public override bool HasConnection(int n1, int n2) {
+		public override bool has_connection(int n1, int n2) {
 			return ComparePair(InputCount, InputCount + 1, n1, n2);
 		}
 
-		public override bool HasGroundConnection(int n1) {
+		public override bool has_ground_connection(int n1) {
 			return false;
 		}
 
-		public override void Stamp() {
-			CircuitElement.StampNonLinear(NodeIndex[InputCount]);
-			CircuitElement.StampNonLinear(NodeIndex[InputCount + 1]);
+		public override void stamp() {
+			CircuitElement.StampNonLinear(node_index[InputCount]);
+			CircuitElement.StampNonLinear(node_index[InputCount + 1]);
 		}
 		#endregion
 
 		#region [method(Circuit)]
-		public override void DoIteration() {
+		public override void do_iteration() {
 			int i;
 
 			/* no current path?  give up */
@@ -99,7 +99,7 @@ namespace Circuit.Elements.Input {
 				Pins[InputCount].current = 0;
 				Pins[InputCount + 1].current = 0;
 				/* avoid singular matrix errors */
-				CircuitElement.StampResistor(NodeIndex[InputCount], NodeIndex[InputCount + 1], 1e8);
+				CircuitElement.StampResistor(node_index[InputCount], node_index[InputCount + 1], 1e8);
 				return;
 			}
 
@@ -107,20 +107,20 @@ namespace Circuit.Elements.Input {
 			double limitStep = getLimitStep();
 			double convergeLimit = GetConvergeLimit();
 			for (i = 0; i != InputCount; i++) {
-				if (Math.Abs(Volts[i] - mLastVolts[i]) > convergeLimit) {
+				if (Math.Abs(volts[i] - mLastVolts[i]) > convergeLimit) {
 					CircuitElement.converged = false;
 				}
-				if (double.IsNaN(Volts[i])) {
-					Volts[i] = 0;
+				if (double.IsNaN(volts[i])) {
+					volts[i] = 0;
 				}
-				if (Math.Abs(Volts[i] - mLastVolts[i]) > limitStep) {
-					Volts[i] = mLastVolts[i] + Sign(Volts[i] - mLastVolts[i], limitStep);
+				if (Math.Abs(volts[i] - mLastVolts[i]) > limitStep) {
+					volts[i] = mLastVolts[i] + Sign(volts[i] - mLastVolts[i], limitStep);
 				}
 			}
 
 			/* calculate output */
 			for (i = 0; i != InputCount; i++) {
-				mValues[i] = Volts[i];
+				mValues[i] = volts[i];
 			}
 			//mValues.Time = Circuit.Time;
 			//var v0 = -mExpr.Eval(mExprState);
@@ -133,29 +133,29 @@ namespace Circuit.Elements.Input {
 			/* calculate and stamp output derivatives */
 			for (i = 0; i != InputCount; i++) {
 				var dv = 1e-6;
-				mValues[i] = Volts[i] + dv;
+				mValues[i] = volts[i] + dv;
 				//var v1 = -mExpr.Eval(mExprState);
 				var v1 = -mFunction(mValues);
-				mValues[i] = Volts[i] - dv;
+				mValues[i] = volts[i] - dv;
 				//var v2 = -mExpr.Eval(mExprState);
 				var v2 = -mFunction(mValues);
 				var dx = (v1 - v2) / (dv * 2);
 				if (Math.Abs(dx) < 1e-6) {
 					dx = Sign(dx, 1e-6);
 				}
-				CircuitElement.StampVCCurrentSource(NodeIndex[InputCount], NodeIndex[InputCount + 1], NodeIndex[i], 0, dx);
+				CircuitElement.StampVCCurrentSource(node_index[InputCount], node_index[InputCount + 1], node_index[i], 0, dx);
 				/*Console.WriteLine("ccedx " + i + " " + dx); */
 				/* adjust right side */
-				rs -= dx * Volts[i];
-				mValues[i] = Volts[i];
+				rs -= dx * volts[i];
+				mValues[i] = volts[i];
 			}
 			/*Console.WriteLine("ccers " + rs);*/
-			CircuitElement.StampCurrentSource(NodeIndex[InputCount], NodeIndex[InputCount + 1], rs);
+			CircuitElement.StampCurrentSource(node_index[InputCount], node_index[InputCount + 1], rs);
 			Pins[InputCount].current = -v0;
 			Pins[InputCount + 1].current = v0;
 
 			for (i = 0; i != InputCount; i++) {
-				mLastVolts[i] = Volts[i];
+				mLastVolts[i] = volts[i];
 			}
 		}
 		#endregion

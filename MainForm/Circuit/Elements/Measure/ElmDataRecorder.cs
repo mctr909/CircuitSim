@@ -9,16 +9,16 @@
 
 		public override int TermCount { get { return 1; } }
 
-		public override double VoltageDiff() {
-			return Volts[0];
+		public override double voltage_diff() {
+			return volts[0];
 		}
 
-		public override void Reset() {
+		public override void reset() {
 			DataPtr = 0;
 			DataFull = false;
 		}
 
-		public override void PrepareIteration() {
+		public override void prepare_iteration() {
 			if (mLastDataCount != DataCount) {
 				Data = new double[DataCount];
 				DataPtr = 0;
@@ -27,9 +27,9 @@
 			}
 		}
 
-		public override void FinishIteration() {
+		public override void finish_iteration() {
 			if (DataPtr < DataCount) {
-				Data[DataPtr++] = Volts[0];
+				Data[DataPtr++] = volts[0];
 			} else {
 				DataPtr = 0;
 				DataFull = true;

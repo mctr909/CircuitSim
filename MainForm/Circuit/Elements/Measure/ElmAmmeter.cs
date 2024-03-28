@@ -18,27 +18,27 @@
 
 		public override int VoltageSourceCount { get { return 1; } }
 
-		public override double VoltageDiff() {
-			return Volts[0];
+		public override double voltage_diff() {
+			return volts[0];
 		}
 
-		public override void Stamp() {
-			CircuitElement.StampVoltageSource(NodeIndex[0], NodeIndex[1], mVoltSource, 0);
+		public override void stamp() {
+			CircuitElement.StampVoltageSource(node_index[0], node_index[1], m_volt_source, 0);
 		}
 
-		public override void FinishIteration() {
+		public override void finish_iteration() {
 			mCount++; /*how many counts are in a cycle */
-			mTotal += Current * Current; /* sum of squares */
-			if (Current > mMaxI && mIncreasingI) {
-				mMaxI = Current;
+			mTotal += current * current; /* sum of squares */
+			if (current > mMaxI && mIncreasingI) {
+				mMaxI = current;
 				mIncreasingI = true;
 				mDecreasingI = false;
 			}
 
-			if (Current < mMaxI && mIncreasingI) { /* change of direction I now going down - at start of waveform */
+			if (current < mMaxI && mIncreasingI) { /* change of direction I now going down - at start of waveform */
 				LastMax = mMaxI; /* capture last maximum */
 				/* capture time between */
-				mMinI = Current; /* track minimum value */
+				mMinI = current; /* track minimum value */
 				mIncreasingI = false;
 				mDecreasingI = true;
 
@@ -53,16 +53,16 @@
 
 			}
 
-			if (Current < mMinI && mDecreasingI) { /* I going down, track minimum value */
-				mMinI = Current;
+			if (current < mMinI && mDecreasingI) { /* I going down, track minimum value */
+				mMinI = current;
 				mIncreasingI = false;
 				mDecreasingI = true;
 			}
 
-			if (Current > mMinI && mDecreasingI) { /* change of direction I now going up */
+			if (current > mMinI && mDecreasingI) { /* change of direction I now going up */
 				LastMin = mMinI; /* capture last minimum */
 
-				mMaxI = Current;
+				mMaxI = current;
 				mIncreasingI = true;
 				mDecreasingI = false;
 
@@ -77,7 +77,7 @@
 			}
 
 			/* need to zero the rms value if it stays at 0 for a while */
-			if (Current == 0) {
+			if (current == 0) {
 				mZeroCount++;
 				if (mZeroCount > 5) {
 					mTotal = 0;

@@ -43,35 +43,35 @@
 			}
 			mHasResistance = 0 < SeriesResistance;
 			mDiodeEndNode = mHasResistance ? 2 : 1;
-			AllocNodes();
+			alloc_nodes();
 		}
 
 		#region [method(Analyze)]
-		public override void Reset() {
+		public override void reset() {
 			mLastVoltDiff = 0;
-			Volts[0] = Volts[1] = 0;
+			volts[0] = volts[1] = 0;
 			if (mHasResistance) {
-				Volts[2] = 0;
+				volts[2] = 0;
 			}
 		}
 
-		public override void Stamp() {
+		public override void stamp() {
 			if (mHasResistance) {
 				/* create diode from node 0 to internal node */
-				mNodes0 = NodeIndex[0];
-				mNodes1 = NodeIndex[2];
+				mNodes0 = node_index[0];
+				mNodes1 = node_index[2];
 				CircuitElement.row_info[mNodes0 - 1].left_changes = true;
 				CircuitElement.row_info[mNodes1 - 1].left_changes = true;
 				/* create resistor from internal node to node 1 */
 				var r0 = 1.0 / SeriesResistance;
-				CircuitElement.matrix[NodeIndex[1] - 1, NodeIndex[1] - 1] += r0;
-				CircuitElement.matrix[NodeIndex[2] - 1, NodeIndex[2] - 1] += r0;
-				CircuitElement.matrix[NodeIndex[1] - 1, NodeIndex[2] - 1] -= r0;
-				CircuitElement.matrix[NodeIndex[2] - 1, NodeIndex[1] - 1] -= r0;
+				CircuitElement.matrix[node_index[1] - 1, node_index[1] - 1] += r0;
+				CircuitElement.matrix[node_index[2] - 1, node_index[2] - 1] += r0;
+				CircuitElement.matrix[node_index[1] - 1, node_index[2] - 1] -= r0;
+				CircuitElement.matrix[node_index[2] - 1, node_index[1] - 1] -= r0;
 			} else {
 				/* don't need any internal nodes if no series resistance */
-				mNodes0 = NodeIndex[0];
-				mNodes1 = NodeIndex[1];
+				mNodes0 = node_index[0];
+				mNodes1 = node_index[1];
 				CircuitElement.row_info[mNodes0 - 1].left_changes = true;
 				CircuitElement.row_info[mNodes1 - 1].left_changes = true;
 			}
@@ -79,8 +79,8 @@
 		#endregion
 
 		#region [method(Circuit)]
-		public override void DoIteration() {
-			var voltdiff = Volts[0] - Volts[mDiodeEndNode];
+		public override void do_iteration() {
+			var voltdiff = volts[0] - volts[mDiodeEndNode];
 			if (0.001 < Math.Abs(voltdiff - mLastVoltDiff)) {
 				CircuitElement.converged = false;
 			}
@@ -205,19 +205,19 @@
 			}
 		}
 
-		public override void FinishIteration() {
-			if (Math.Abs(Current) > 1e12) {
+		public override void finish_iteration() {
+			if (Math.Abs(current) > 1e12) {
 				CircuitElement.stopped = true;
 			}
 		}
 
-		public override void SetVoltage(int n, double c) {
-			Volts[n] = c;
-			var voltdiff = Volts[0] - Volts[mDiodeEndNode];
+		public override void set_voltage(int n, double c) {
+			volts[n] = c;
+			var voltdiff = volts[0] - volts[mDiodeEndNode];
 			if (voltdiff >= 0 || VZener == 0) {
-				Current = Leakage * (Math.Exp(voltdiff * VdCoef) - 1);
+				current = Leakage * (Math.Exp(voltdiff * VdCoef) - 1);
 			} else {
-				Current = Leakage * (
+				current = Leakage * (
 					Math.Exp(voltdiff * VdCoef)
 					- Math.Exp((-voltdiff - mVzOffset) * VZ_COEF)
 					- 1

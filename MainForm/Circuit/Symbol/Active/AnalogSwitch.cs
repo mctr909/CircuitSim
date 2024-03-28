@@ -57,7 +57,7 @@ namespace Circuit.Symbol.Active {
 			InterpolationPost(ref mCtrlLead, 0.5, -OPEN_HS / 3);
 			InterpolationLead(ref mOpen, 1 - 2.0 / BODY_LEN, OPEN_HS - 6);
 			InterpolationLead(ref mClose, 1 - 2.0 / BODY_LEN, 2.5f);
-			mElm.SetNodePos(Post.A, Post.B, mCtrlTerm);
+			mElm.set_node_pos(Post.A, Post.B, mCtrlTerm);
 		}
 
 		public override void Draw(CustomGraphics g) {
@@ -75,9 +75,9 @@ namespace Circuit.Symbol.Active {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "アナログスイッチ(" + (mElm.IsOpen ? "OFF)" : "ON)");
-			arr[1] = "電位差：" + TextUtils.VoltageAbs(mElm.VoltageDiff());
-			arr[2] = "電流：" + TextUtils.CurrentAbs(mElm.Current);
-			arr[3] = "制御電圧：" + TextUtils.Voltage(mElm.Volts[2]);
+			arr[1] = "電位差：" + TextUtils.VoltageAbs(mElm.voltage_diff());
+			arr[2] = "電流：" + TextUtils.CurrentAbs(mElm.current);
+			arr[3] = "制御電圧：" + TextUtils.Voltage(mElm.volts[2]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

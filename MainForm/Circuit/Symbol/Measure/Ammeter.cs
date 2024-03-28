@@ -93,7 +93,7 @@ namespace Circuit.Symbol.Measure {
 		string DrawValues() {
 			switch (mMeter) {
 			case TP_AMP:
-				return TextUtils.UnitWithScale(mElm.Current, "A", mScale);
+				return TextUtils.UnitWithScale(mElm.current, "A", mScale);
 			case TP_RMS:
 				return TextUtils.UnitWithScale(mElm.Rms, "A rms", mScale);
 			case TP_MAX:

@@ -10,17 +10,17 @@
 
 		public override int TermCount { get { return 1; } }
 
-		public override double VoltageDiff() {
-			return Volts[0];
+		public override double voltage_diff() {
+			return volts[0];
 		}
 
-		public override void Reset() {
+		public override void reset() {
 			Triggered = false;
 		}
 
-		public override void FinishIteration() {
+		public override void finish_iteration() {
 			Stopped = false;
-			if (!Triggered && ((Type == 0 && Volts[0] >= TriggerVoltage) || (Type == 1 && Volts[0] <= TriggerVoltage))) {
+			if (!Triggered && ((Type == 0 && volts[0] >= TriggerVoltage) || (Type == 1 && volts[0] <= TriggerVoltage))) {
 				Triggered = true;
 				TriggerTime = CircuitElement.time;
 			}

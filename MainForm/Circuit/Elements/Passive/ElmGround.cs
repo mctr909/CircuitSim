@@ -4,22 +4,22 @@
 
 		public override int TermCount { get { return 1; } }
 
-		public override double VoltageDiff() {
+		public override double voltage_diff() {
 			return 0;
 		}
 
 		#region [method(Analyze)]
-		public override bool HasGroundConnection(int n1) { return true; }
+		public override bool has_ground_connection(int n1) { return true; }
 
-		public override void Stamp() {
-			CircuitElement.StampVoltageSource(0, NodeIndex[0], mVoltSource, 0);
+		public override void stamp() {
+			CircuitElement.StampVoltageSource(0, node_index[0], m_volt_source, 0);
 		}
 		#endregion
 
 		#region [method(Circuit)]
-		public override double GetCurrentIntoNode(int n) { return -Current; }
+		public override double get_current_into_node(int n) { return -current; }
 
-		public override void SetCurrent(int x, double c) { Current = -c; }
+		public override void set_current(int x, double c) { current = -c; }
 		#endregion
 	}
 }

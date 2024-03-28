@@ -6,20 +6,20 @@
 		double mGateCurrent;
 
 		#region [method(Analyze)]
-		public override void Reset() {
-			base.Reset();
+		public override void reset() {
+			base.reset();
 			mDiodeLastVdiff = 0.0;
 			mGateCurrent = 0.0;
 		}
 
-		public override void Stamp() {
-			base.Stamp();
+		public override void stamp() {
+			base.stamp();
 			if (Nch < 0) {
-				mDiodeNodesA = NodeIndex[IdxS];
-				mDiodeNodesB = NodeIndex[IdxG];
+				mDiodeNodesA = node_index[IdxS];
+				mDiodeNodesB = node_index[IdxG];
 			} else {
-				mDiodeNodesA = NodeIndex[IdxG];
-				mDiodeNodesB = NodeIndex[IdxS];
+				mDiodeNodesA = node_index[IdxG];
+				mDiodeNodesB = node_index[IdxS];
 			}
 			CircuitElement.StampNonLinear(mDiodeNodesA);
 			CircuitElement.StampNonLinear(mDiodeNodesB);
@@ -27,23 +27,23 @@
 		#endregion
 
 		#region [method(Circuit)]
-		public override void DoIteration() {
-			base.DoIteration();
-			DiodeDoIteration(Nch * (Volts[IdxG] - Volts[IdxS]), ref mDiodeLastVdiff, mDiodeNodesA, mDiodeNodesB);
+		public override void do_iteration() {
+			base.do_iteration();
+			DiodeDoIteration(Nch * (volts[IdxG] - volts[IdxS]), ref mDiodeLastVdiff, mDiodeNodesA, mDiodeNodesB);
 		}
 
-		public override double GetCurrentIntoNode(int n) {
+		public override double get_current_into_node(int n) {
 			if (n == 0) {
 				return -mGateCurrent;
 			}
 			if (n == 1) {
-				return mGateCurrent + Current;
+				return mGateCurrent + current;
 			}
-			return -Current;
+			return -current;
 		}
 
-		public override void SetCurrent(int n, double c) {
-			mGateCurrent = Nch * DiodeCalculateCurrent(Nch * (Volts[IdxG] - Volts[IdxS]));
+		public override void set_current(int n, double c) {
+			mGateCurrent = Nch * DiodeCalculateCurrent(Nch * (volts[IdxG] - volts[IdxS]));
 		}
 		#endregion
 	}

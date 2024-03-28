@@ -1396,7 +1396,7 @@ namespace MainForm {
 				}
 				s = cs;
 				for (int j = 0; j < e.TermCount; j++) {
-					s = s + " " + e.NodeIndex[j];
+					s = s + " " + e.node_index[j];
 				}
 				Console.WriteLine(s);
 			}
@@ -1543,7 +1543,7 @@ namespace MainForm {
 				BaseSymbol.ConstructItem.Draw(g);
 				var ce = BaseSymbol.ConstructItem.Element;
 				for (int i = ce.TermCount - 1; 0 <= i; i--) {
-					var p = ce.NodePos[i];
+					var p = ce.node_pos[i];
 					g.DrawPost(p);
 				}
 				g.DrawHandle(BaseSymbol.ConstructItem.Post.B);

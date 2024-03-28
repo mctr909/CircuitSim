@@ -11,8 +11,8 @@ namespace Circuit.Symbol.Input {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "直流電源";
-			arr[1] = "電圧：" + TextUtils.Voltage(mElm.VoltageDiff() + mElm.Bias);
-			arr[2] = "電流：" + TextUtils.Current(mElm.Current);
+			arr[1] = "電圧：" + TextUtils.Voltage(mElm.voltage_diff() + mElm.Bias);
+			arr[2] = "電流：" + TextUtils.Current(mElm.current);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
