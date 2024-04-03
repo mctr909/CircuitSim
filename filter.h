@@ -1,115 +1,109 @@
 #define DELTA_TIME 0.01f
-#define BETA 0.01f
+
+// https://www.sports-sensing.com/brands/labss/motionmeasurement/motion_biomechanics/quaternion01.html
+// https://www.sports-sensing.com/brands/labss/motionmeasurement/motion_biomechanics/rodrigues_formula.html
+// https://www.sports-sensing.com/brands/labss/motionmeasurement/motion_biomechanics/quaternion02.html
+// https://www.sports-sensing.com/brands/labss/motionmeasurement/motion_biomechanics/quaternion03.html
 
 // 姿勢(q)
 float qx = 0.0f, qy = 0.0f, qz = 0.0f, qw = 1.0f;
-
-inline float
-inv_sqrt(float x) {
-	long i = 0x5f3759df - (*(long*)&x >> 1);
-	float half_x = 0.5f * x;
-	float ret = *(float*)&i;
-	ret = ret * (1.5f - (half_x * ret * ret));
-	return ret * (1.5f - (half_x * ret * ret));
-}
+// 補正勾配の反映量
+float beta = 0.01f;
 
 void update() {
-	// 磁界の向き(m)
-	float mx, my, mz;
-	// 加速度(a)
-	float ax, ay, az;
 	// 角速度(ω)
 	float wx, wy, wz;
-	// 角速度(-32768～32768)を(-π～π)に変換
-	wx = 9.5873799e-5f;
-	wy = 9.5873799e-5f;
-	wz = 9.5873799e-5f;
+	// 角速度(-32768～32768)を(-1～1)に変換
+	wx = 3.0517578125e-5f;
+	wy = 3.0517578125e-5f;
+	wz = 3.0517578125e-5f;
 	// 回転量(Δq)
 	float dqx, dqy, dqz, dqw;
-	// 回転量＝姿勢(q)が角速度(w)で回転するときの時間変化
+	// 回転量(Δq)＝姿勢(q)が角速度(w)で回転するときの時間変化
 	// |  0 -wx -wy -wz || qx |
 	// | wx   0  wz -wy || qy |
 	// | wy -wz   0  wx || qz |
 	// | wz  wy -wx   0 || qw |
-	dqx = 0.499f*(      -wx*qy -wy*qz -wz*qw);
-	dqy = 0.499f*(wx*qx        +wz*qz -wy*qw);
-	dqz = 0.499f*(wy*qx -wz*qy        +wx*qw);
-	dqw = 0.499f*(wz*qx +wy*qy -wx*qz       );
-	if(!(0.0f == ax && 0.0f == ay && 0.0f == az)) {
-		// 方位角の変化量(Δc)
-		float dcx, dcy, dcz;
-		// 方位角(c) - 磁界の向き(m)
-		float c_mx, c_my, c_mz;
+	dqx = 0.5f*(      -wx*qy -wy*qz -wz*qw);
+	dqy = 0.5f*(wx*qx        +wz*qz -wy*qw);
+	dqz = 0.5f*(wy*qx -wz*qy        +wx*qw);
+	dqw = 0.5f*(wz*qx +wy*qy -wx*qz       );
+	if(!(0 == ax && 0 == ay && 0 == az)) {
 		// 重力の向き(g)
 		float gx, gy, gz;
+		// 方位角(b)
+		float bx, by, bz;
+		// 磁界の向きの変化量(Δm)
+		float dmx, dmy, dmz;
 		{
-			float qxx = qx*qx;
-			float qxy = qx*qy;
-			float qxz = qx*qz;
-			float qxw = qx*qw;
-			float qyy = qy*qy;
-			float qyz = qy*qz;
-			float qyw = qy*qw;
-			float qzz = qz*qz;
-			float qzw = qz*qw;
-			float qww = qw*qw;
+			float qxqx = qx*qx;
+			float qxqy = qx*qy;
+			float qxqz = qx*qz;
+			float qxqw = qx*qw;
+			float qyqy = qy*qy;
+			float qyqz = qy*qz;
+			float qyqw = qy*qw;
+			float qzqz = qz*qz;
+			float qzqw = qz*qw;
+			float qwqw = qw*qw;
+			float k;
+			// 加速度(a)
+			float ax, ay, az;
+			// 加速度を正規化
+			k = 1.0f / sqrtf(ax*ax + ay*ay + az*az);
+			ax *= k, ay *= k, az *= k;
+			// 重力の向き(g)
+			gx =        2.0f*(qyqw-qxqz) - ax;
+			gy =        2.0f*(qzqw+qxqy) - ay;
+			gz = 1.0f - 2.0f*(qyqy-qzqz) - az;
+			// 磁界の向き(m)
+			float mx, my, mz;
 			// 磁界の向きを正規化
-			float k = inv_sqrt(mx*mx + my*my + mz*mz);
-			mx *= k;
-			my *= k;
-			mz *= k;
+			k = 1.0f / sqrtf(mx*mx + my*my + mz*mz);
+			mx *= k, my *= k, mz *= k;
 			float _2mx = 2.0f*mx;
 			float _2my = 2.0f*my;
 			float _2mz = 2.0f*mz;
-			// 方位角の変化量(Δc)
-			dcx = qxx*mx + qyy*mx - qzz*mx - qww*mx + qxz*_2mz - qxw*_2my + qyz*_2my + qyw*_2mz;
-			dcy = qxx*my - qyy*my + qzz*my - qww*my - qxy*_2mz + qxw*_2mx + qyz*_2mx + qzw*_2mz;
-			dcz = qxx*mz - qyy*mz - qzz*mz + qww*mz + qxy*_2my - qxz*_2mx + qyw*_2mx + qzw*_2my;
-			dcx = dcx*dcx + dcy*dcy;
-			dcx = dcx / inv_sqrt(dcx);
-			// 方位角(c) - 磁界の向き(m)
-			c_mx = dcx*(0.5f - qzz - qww) + dcz*(       qyw - qxz) - mx;
-			c_my = dcx*(       qyz - qxw) + dcz*(       qxy + qzw) - my;
-			c_mz = dcx*(       qxz + qyw) + dcz*(0.5f - qyy - qzz) - mz;
-			// 加速度を正規化
-			k = inv_sqrt(ax*ax + ay*ay + az*az);
-			ax *= k;
-			ay *= k;
-			az *= k;
-			// 重力の向き(g)
-			gx =     2.0f*(qyw - qxz) - ax;
-			gy =     2.0f*(qxy + qzw) - ay;
-			gz = 1 - 2.0f*(qyy - qzz) - az;
+			// 方位角(b)＝磁界の向き(m)を姿勢(q)で回転させた向き
+			// | 2(qxqx+qyqy)-1 2(qyqz-qxqw)   2(qyqw+qxqz)   || mx |
+			// | 2(qyqz+qxqw)   2(qxqx+qzqz)-1 2(qzqw-qxqy)   || my |
+			// | 2(qyqw-qxqz)   2(qzqw+qxqy)   2(qxqx+qwqw)-1 || mz |
+			bx = (qxqx+qyqy)*_2mx-mx + (qyqz-qxqw)*_2my    + (qyqw+qxqz)*_2mz;
+			by = (qyqz+qxqw)*_2mx    + (qxqx+qzqz)*_2my-my + (qzqw-qxqy)*_2mz;
+			bz = (qyqw-qxqz)*_2mx    + (qzqw+qxqy)*_2my    + (qxqx+qwqw)*_2mz-mz;
+			bx = sqrtf(bx*bx + by*by);
+			// 磁界の向きの変化量(Δm)
+			dmx = (0.5f-qzqz-qwqw)*bx + (     qyqw-qxqz)*bz - mx;
+			dmy = (     qyqz-qxqw)*bx + (     qzqw+qxqy)*bz - my;
+			dmz = (     qyqw+qxqz)*bx + (0.5f-qyqy-qzqz)*bz - mz;
 		}
-		// 加速度と磁界の向きを使用して勾配降下法による回転量の矯正を行う
+		// 補正勾配＝重力の向き(g)の勾配＋方位角(b)の勾配 ⊗ 磁界の向きの変化量(Δm)
+		// 勾配降下法による回転量の補正を行う
 		float gradx, grady, gradz, gradw;
-		gradx =
-			- 2.0f*qz*gx - (                    dcz*qz)*c_mx
-			+ 2.0f*qy*gy + (-     dcx*qw +      dcz*qy)*c_my
-			             + (      dcx*qz              )*c_mz;
-		grady =
-			  2.0f*qw*gx + (                    dcz*qw)*c_mx
-			+ 2.0f*qx*gy + (      dcx*qz +      dcz*qx)*c_my
-			- 4.0f*qy*gz + (      dcx*qw - 2.0f*dcz*qy)*c_mz;
-		gradz =
-			- 2.0f*qx*gx + (-2.0f*dcx*qz -      dcz*qx)*c_mx
-			+ 2.0f*qw*gy + (      dcx*qy +      dcz*qw)*c_my
-			- 4.0f*qz*gz + (      dcx*qx - 2.0f*dcz*qz)*c_mz;
-		gradw =
-			  2.0f*qy*gx + (-2.0f*dcx*qw +      dcz*qy)*c_mx
-			+ 2.0f*qz*gy + (-     dcx*qx +      dcz*qz)*c_my
-			             + (      dcx*qy              )*c_mz;
-		// 勾配を正規化
-		k = inv_sqrt(gradx*gradx + grady*grady + gradz*gradz + gradw*gradw);
-		gradx *= k;
-		grady *= k;
-		gradz *= k;
-		gradw *= k;
-		// 勾配を回転量に反映
-		dqx -= BETA * gradx;
-		dqy -= BETA * grady;
-		dqz -= BETA * gradz;
-		dqw -= BETA * gradw;
+		// 重力の向き(g)の勾配
+		gradx = 2.0f*(qy*gy -qz*gx);
+		grady = 2.0f*(qx*gy +qw*gx -2.0f*qy*gz);
+		gradz = 2.0f*(qw*gy -qx*gx -2.0f*qz*gz);
+		gradw = 2.0f*(qz*gy +qy*gx);
+		// 方位角(b)の勾配 ⊗ 磁界の向きの変化量(Δm)
+		{
+			float bzdmx = bz*dmx;
+			float bxdmy = bx*dmy;
+			float bzdmy = bz*dmy;
+			float bxdmz = bx*dmz;
+			gradx += qz*bxdmz                -               qz*bzdmx -qw*bxdmy+qy*bzdmy;
+			grady += qw*bxdmz-2.0f*qy*bz*dmz +               qw*bzdmx +qz*bxdmy+qx*bzdmy;
+			gradz += qx*bxdmz-2.0f*qz*bz*dmz -2.0f*qz*bx*dmx-qx*bzdmx +qy*bxdmy+qw*bzdmy;
+			gradw += qy*bxdmz                -2.0f*qw*bx*dmx+qy*bzdmx -qx*bxdmy+qz*bzdmy;
+		}
+		// 補正勾配を正規化
+		float k = 1.0f / sqrtf(gradx*gradx + grady*grady + gradz*gradz + gradw*gradw);
+		gradx *= k, grady *= k, gradz *= k, gradw *= k;
+		// 回転量に補正勾配を反映
+		dqx -= beta * gradx;
+		dqy -= beta * grady;
+		dqz -= beta * gradz;
+		dqw -= beta * gradw;
 	}
 	// 回転量を積算して姿勢を更新
 	qx += DELTA_TIME * dqx;
@@ -117,9 +111,6 @@ void update() {
 	qz += DELTA_TIME * dqz;
 	qw += DELTA_TIME * dqw;
 	// 姿勢を正規化
-	float k = inv_sqrt(qx*qx + qy*qy + qz*qz + qw*qw);
-	qx *= k;
-	qy *= k;
-	qz *= k;
-	qw *= k;
+	float k = 1.0f / sqrtf(qx*qx + qy*qy + qz*qz + qw*qw);
+	qx *= k, qy *= k, qz *= k, qw *= k;
 }
