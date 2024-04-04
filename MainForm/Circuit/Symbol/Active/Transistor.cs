@@ -133,7 +133,7 @@ namespace Circuit.Symbol.Active {
 			}
 			SetTextPos();
 
-			mElm.set_node_pos(Post.A, mPosC[2], mPosE[2]);
+			mElm.SetNodePos(Post.A, mPosC[2], mPosE[2]);
 		}
 
 		public override void Draw(CustomGraphics g) {

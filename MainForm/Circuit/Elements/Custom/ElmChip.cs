@@ -14,20 +14,20 @@ namespace Circuit.Elements.Custom {
 
 		public virtual void SetupPins(Chip ui) { }
 
-		public override bool has_ground_connection(int n1) {
+		public override bool HasGroundConnection(int n1) {
 			return Pins[n1].output;
 		}
 
-		public override void reset() {
+		public override void Reset() {
 			for (int i = 0; i != TermCount; i++) {
 				Pins[i].value = false;
 				Pins[i].curcount = 0;
-				volts[i] = 0;
+				Volts[i] = 0;
 			}
 			lastClock = false;
 		}
 
-		public override void set_voltage_source(int j, int vs) {
+		public override void SetVoltageSource(int j, int vs) {
 			for (int i = 0; i != TermCount; i++) {
 				var p = Pins[i];
 				if (p.output && j-- == 0) {
@@ -38,40 +38,40 @@ namespace Circuit.Elements.Custom {
 			Console.WriteLine("setVoltageSource failed for " + this);
 		}
 
-		public override bool has_connection(int n1, int n2) { return false; }
+		public override bool HasConnection(int n1, int n2) { return false; }
 
-		public override void stamp() {
+		public override void Stamp() {
 			for (int i = 0; i != TermCount; i++) {
 				var p = Pins[i];
 				if (p.output) {
-					CircuitElement.StampVoltageSource(0, node_index[i], p.voltSource);
+					StampVoltageSource(0, NodeId[i], p.voltSource);
 				}
 			}
 		}
 
 		#region [method(Circuit)]
-		public override void do_iteration() {
+		public override void DoIteration() {
 			int i;
 			for (i = 0; i != TermCount; i++) {
 				var p = Pins[i];
 				if (!p.output) {
-					p.value = volts[i] > 2.5;
+					p.value = Volts[i] > 2.5;
 				}
 			}
 			execute();
 			for (i = 0; i != TermCount; i++) {
 				var p = Pins[i];
 				if (p.output) {
-					CircuitElement.UpdateVoltageSource(p.voltSource, p.value ? 5 : 0);
+					UpdateVoltage(p.voltSource, p.value ? 5 : 0);
 				}
 			}
 		}
 
-		public override double get_current_into_node(int n) {
+		public override double GetCurrent(int n) {
 			return Pins[n].current;
 		}
 
-		public override void set_current(int x, double c) {
+		public override void SetCurrent(int x, double c) {
 			for (int i = 0; i != TermCount; i++) {
 				if (Pins[i].output && Pins[i].voltSource == x) {
 					Pins[i].current = c;

@@ -186,7 +186,7 @@ namespace Circuit.Symbol.Passive {
 			return new EventHandler((s, e) => {
 				var trb = adj.Trackbar;
 				mElm.Resistance = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
-				CircuitSymbol.NeedAnalyze = true;
+				MainForm.MainForm.NeedAnalyze = true;
 			});
 		}
 	}

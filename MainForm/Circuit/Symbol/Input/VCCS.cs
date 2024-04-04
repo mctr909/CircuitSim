@@ -71,7 +71,7 @@ namespace Circuit.Symbol.Input {
 				}
 				mElm.InputCount = (int)ei.Value;
 				mElm.SetupPins(this);
-				mElm.alloc_nodes();
+				mElm.AllocateNodes();
 				SetPoints();
 			}
 		}

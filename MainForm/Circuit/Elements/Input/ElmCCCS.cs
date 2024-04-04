@@ -24,7 +24,7 @@ namespace Circuit.Elements.Input {
 			Pins[3] = new Chip.Pin(ui, 1, Chip.SIDE_E, "O-");
 		}
 
-		public override bool has_connection(int n1, int n2) {
+		public override bool HasConnection(int n1, int n2) {
 			if (ComparePair(0, 1, n1, n2)) {
 				return true;
 			}
@@ -34,22 +34,22 @@ namespace Circuit.Elements.Input {
 			return false;
 		}
 
-		public override void stamp() {
+		public override void Stamp() {
 			/* voltage source (0V) between C+ and C- so we can measure current */
 			int vn1 = Pins[1].voltSource;
-			CircuitElement.StampVoltageSource(node_index[0], node_index[1], vn1, 0);
+			StampVoltageSource(NodeId[0], NodeId[1], vn1, 0);
 
-			CircuitElement.StampNonLinear(node_index[2]);
-			CircuitElement.StampNonLinear(node_index[3]);
+			StampNonLinear(NodeId[2]);
+			StampNonLinear(NodeId[3]);
 		}
 
-		public override void do_iteration() {
+		public override void DoIteration() {
 			/* no current path?  give up */
 			if (Broken) {
 				Pins[InputCount].current = 0;
 				Pins[InputCount + 1].current = 0;
 				/* avoid singular matrix errors */
-				CircuitElement.StampResistor(node_index[InputCount], node_index[InputCount + 1], 1e8);
+				UpdateConductance(NodeId[InputCount], NodeId[InputCount + 1], 1e-8);
 				return;
 			}
 
@@ -59,9 +59,8 @@ namespace Circuit.Elements.Input {
 
 			var cur = Pins[1].current;
 			if (Math.Abs(cur - mLastCurrent) > convergeLimit) {
-				CircuitElement.converged = false;
+				CircuitState.Converged = false;
 			}
-			int vn1 = CircuitElement.nodes.Length + Pins[1].voltSource;
 			/* calculate output */
 			var v0 = mFunction(cur);
 			Pins[2].current = v0;
@@ -73,19 +72,26 @@ namespace Circuit.Elements.Input {
 			if (Math.Abs(dx) < 1e-6) {
 				dx = Sign(dx, 1e-6);
 			}
-			CircuitElement.StampCCCS(node_index[3], node_index[2], Pins[1].voltSource, dx);
+			StampCCCS(NodeId[3], NodeId[2], Pins[1].voltSource, dx);
 			/* adjust right side */
 			v0 -= dx * cur;
 			/*Console.WriteLine("ccedx " + cur + " " + dx + " " + rs); */
-			CircuitElement.StampCurrentSource(node_index[3], node_index[2], v0);
+			UpdateCurrent(NodeId[3], NodeId[2], v0);
 			mLastCurrent = cur;
 		}
 
-		public override void set_current(int vn, double c) {
+		public override void SetCurrent(int vn, double c) {
 			if (Pins[1].voltSource == vn) {
 				Pins[0].current = -c;
 				Pins[1].current = c;
 			}
+		}
+
+		/* stamp a current source from n1 to n2 depending on current through voltage_source */
+		private static void StampCCCS(int n1, int n2, int voltage_source, double gain) {
+			var vn = CircuitAnalizer.NodeCount + voltage_source;
+			StampMatrix(n1, vn, gain);
+			StampMatrix(n2, vn, -gain);
 		}
 	}
 }

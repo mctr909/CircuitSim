@@ -26,10 +26,14 @@ namespace MainForm {
 		public static SliderDialog? SliderDialog { get; set; } = null;
 		public static BaseSymbol? PlotXElm { get; private set; } = null;
 		public static BaseSymbol? PlotYElm { get; private set; } = null;
+		public static List<BaseSymbol> SymbolList { get; private set; } = [];
+		public static int SymbolCount { get { return SymbolList.Count; } }
 		#endregion
 
 		#region Variable
 		public static MainForm? Instance = null;
+		public static bool IsRunning;
+		public static bool NeedAnalyze;
 
 		static ScopeForm mScopeForm = new();
 
@@ -134,7 +138,7 @@ namespace MainForm {
 
 			ControlPanel.SetSliderPanelHeight();
 
-			CircuitSymbol.SetSimRunning(true);
+			SetSimRunning(true);
 		}
 
 		private void Form1_Load(object sender, EventArgs e) {
@@ -224,10 +228,21 @@ namespace MainForm {
 		}
 
 		static BaseSymbol? GetSymbol(int n) {
-			if (n >= CircuitSymbol.List.Count) {
+			if (n >= SymbolCount) {
 				return null;
 			}
-			return CircuitSymbol.List[n];
+			return SymbolList[n];
+		}
+
+		public static void SetSimRunning(bool s) {
+			IsRunning = s;
+			if (s) {
+				CircuitState.Stopped = false;
+				ControlPanel.BtnRunStop.Text = "停止";
+			} else {
+				NeedAnalyze = false;
+				ControlPanel.BtnRunStop.Text = "実行";
+			}
 		}
 
 		public static bool DialogIsShowing() {
@@ -255,7 +270,11 @@ namespace MainForm {
 		}
 
 		public static void ResetButton_onClick() {
-			CircuitSymbol.Reset();
+			for (int i = 0; i != SymbolCount; i++) {
+				SymbolList[i].Element.Reset();
+			}
+			NeedAnalyze = true;
+			CircuitState.Time = 0;
 			ScopeForm.ResetGraph();
 		}
 
@@ -451,14 +470,14 @@ namespace MainForm {
 						ClearSelection();
 					}
 				} else {
-					CircuitSymbol.List.Add(BaseSymbol.ConstructItem);
+					SymbolList.Add(BaseSymbol.ConstructItem);
 					circuitChanged = true;
 					WriteRecoveryToStorage();
 				}
 				BaseSymbol.ConstructItem = null;
 			}
 			if (circuitChanged) {
-				CircuitSymbol.NeedAnalyze = true;
+				NeedAnalyze = true;
 			}
 			BaseSymbol.ConstructItem?.Delete();
 			BaseSymbol.ConstructItem = null;
@@ -513,7 +532,7 @@ namespace MainForm {
 					case ElementPopupMenu.Item.SCOPE_FLOAT:
 						if (mMenuElm != null) {
 							var newScope = new Scope(BaseSymbol.SnapGrid(mMenuElm.Post.A.X + 50, mMenuElm.Post.A.Y + 50));
-							CircuitSymbol.List.Add(newScope);
+							SymbolList.Add(newScope);
 							newScope.Plot.Setup(mMenuElm);
 						}
 						break;
@@ -570,7 +589,7 @@ namespace MainForm {
 				break;
 			case MouseInfo.MODE.DRAG_POST:
 				MouseInfo.MoveGrippedElm(gpos);
-				CircuitSymbol.NeedAnalyze = true;
+				NeedAnalyze = true;
 				changed = true;
 				break;
 			}
@@ -598,7 +617,7 @@ namespace MainForm {
 
 			BaseSymbol mostNearUI = null;
 			var mostNear = double.MaxValue;
-			for (int i = 0; i != CircuitSymbol.Count; i++) {
+			for (int i = 0; i != SymbolCount; i++) {
 				var ce = GetSymbol(i);
 				var lineD = ce.Distance(gpos);
 				if (lineD <= CustomGraphics.HANDLE_RADIUS && lineD < mostNear) {
@@ -608,7 +627,7 @@ namespace MainForm {
 				}
 			}
 			if (mostNearUI == null) {
-				for (int i = 0; i != CircuitSymbol.Count; i++) {
+				for (int i = 0; i != SymbolCount; i++) {
 					var ce = GetSymbol(i);
 					var postDa = ce.DistancePostA(gpos);
 					var postDb = ce.DistancePostB(gpos);
@@ -642,7 +661,7 @@ namespace MainForm {
 
 		void SelectArea(Point pos) {
 			MouseInfo.SelectArea(pos);
-			for (int i = 0; i != CircuitSymbol.Count; i++) {
+			for (int i = 0; i != SymbolCount; i++) {
 				var ce = GetSymbol(i);
 				ce.SelectRect(MouseInfo.SelectedArea);
 			}
@@ -654,7 +673,7 @@ namespace MainForm {
 			if (0 == dy) {
 				return;
 			}
-			for (int i = 0; i != CircuitSymbol.Count; i++) {
+			for (int i = 0; i != SymbolCount; i++) {
 				var ce = GetSymbol(i);
 				var p = Post.Selection.NONE;
 				if (pos.Y <= ce.Post.A.Y) {
@@ -677,7 +696,7 @@ namespace MainForm {
 			if (0 == dx) {
 				return;
 			}
-			for (int i = 0; i != CircuitSymbol.Count; i++) {
+			for (int i = 0; i != SymbolCount; i++) {
 				var ce = GetSymbol(i);
 				var p = Post.Selection.NONE;
 				if (pos.X <= ce.Post.A.X) {
@@ -714,20 +733,20 @@ namespace MainForm {
 			}
 			/* check if moves are allowed */
 			bool allowed = true;
-			for (i = 0; allowed && i != CircuitSymbol.Count; i++) {
+			for (i = 0; allowed && i != SymbolCount; i++) {
 				var ce = GetSymbol(i);
 				if (ce.IsSelected && !ce.AllowMove(dx, dy)) {
 					allowed = false;
 				}
 			}
 			if (allowed) {
-				for (i = 0; i != CircuitSymbol.Count; i++) {
+				for (i = 0; i != SymbolCount; i++) {
 					var ce = GetSymbol(i);
 					if (ce.IsSelected) {
 						ce.Move(dx, dy);
 					}
 				}
-				CircuitSymbol.NeedAnalyze = true;
+				NeedAnalyze = true;
 			}
 			/* don't leave mouseElm selected if we selected it above */
 			if (me) {
@@ -738,7 +757,7 @@ namespace MainForm {
 		}
 
 		bool HasSelection() {
-			for (int i = 0; i != CircuitSymbol.Count; i++) {
+			for (int i = 0; i != SymbolCount; i++) {
 				if (GetSymbol(i).IsSelected) {
 					return true;
 				}
@@ -758,7 +777,7 @@ namespace MainForm {
 			if (((ElmSwitch)se.Element).Momentary) {
 				mHeldSwitchElm = se;
 			}
-			CircuitSymbol.NeedAnalyze = true;
+			NeedAnalyze = true;
 			return true;
 		}
 		#endregion
@@ -767,7 +786,7 @@ namespace MainForm {
 		void SetTimer() {
 			mTimer = new System.Windows.Forms.Timer();
 			mTimer.Tick += new EventHandler((s, e) => {
-				if (CircuitSymbol.IsRunning) {
+				if (IsRunning) {
 					UpdateDisplay();
 					mNeedsRepaint = false;
 				}
@@ -786,9 +805,9 @@ namespace MainForm {
 			if (height < 1) {
 				height = 1;
 			}
-			var isRunning = CircuitSymbol.IsRunning;
+			var isRunning = IsRunning;
 			if (isRunning) {
-				CircuitSymbol.SetSimRunning(false);
+				SetSimRunning(false);
 			}
 
 			mPixCir.Width = width;
@@ -796,16 +815,16 @@ namespace MainForm {
 			CustomGraphics.Instance?.Dispose();
 			CustomGraphics.Instance = CustomGraphics.FromImage(width, height);
 			mCircuitArea = new Rectangle(0, 0, width, height);
-			CircuitSymbol.SetSimRunning(isRunning);
+			SetSimRunning(isRunning);
 		}
 
 		Rectangle GetCircuitBounds() {
-			if (0 == CircuitSymbol.Count) {
+			if (0 == SymbolCount) {
 				return new Rectangle();
 			}
 			int minx = int.MaxValue, miny = int.MaxValue;
 			int maxx = 0, maxy = 0;
-			for (int i = 0; i < CircuitSymbol.Count; i++) {
+			for (int i = 0; i < SymbolCount; i++) {
 				var ce = GetSymbol(i);
 				minx = Math.Min(ce.Post.A.X, Math.Min(ce.Post.B.X, minx));
 				miny = Math.Min(ce.Post.A.Y, Math.Min(ce.Post.B.Y, miny));
@@ -904,7 +923,7 @@ namespace MainForm {
 				+ " " + ControlPanel.TrbCurrent.Value + "\n";
 
 			int i;
-			for (i = 0; i != CircuitSymbol.Count; i++) {
+			for (i = 0; i != SymbolCount; i++) {
 				var ce = GetSymbol(i);
 				dump += ce.Dump() + "\n";
 			}
@@ -930,11 +949,11 @@ namespace MainForm {
 			int len = b.Length;
 			if ((flags & RC_RETAIN) == 0) {
 				ClearMouseElm();
-				for (i = 0; i != CircuitSymbol.Count; i++) {
+				for (i = 0; i != SymbolCount; i++) {
 					var ce = GetSymbol(i);
 					ce.Delete();
 				}
-				CircuitSymbol.List.Clear();
+				SymbolList.Clear();
 				ControlPanel.Reset();
 				ScopeForm.PlotCount = 0;
 			}
@@ -1013,7 +1032,7 @@ namespace MainForm {
 							break;
 						}
 						newce.SetPoints();
-						CircuitSymbol.List.Add(newce);
+						SymbolList.Add(newce);
 					} catch (Exception ee) {
 						Console.WriteLine("exception while undumping " + ee);
 						Console.WriteLine(ee.StackTrace);
@@ -1030,7 +1049,7 @@ namespace MainForm {
 					BaseSymbol.Adjustables[i].CreateSlider();
 				}
 			}
-			CircuitSymbol.NeedAnalyze = true;
+			NeedAnalyze = true;
 			if ((flags & RC_NO_CENTER) == 0) {
 				MouseInfo.Centering(mCircuitArea.Width, mCircuitArea.Height, GetCircuitBounds());
 			}
@@ -1053,7 +1072,7 @@ namespace MainForm {
 			if (MouseInfo.GrippedElm != null) {
 				return false;
 			}
-			for (int i = 0; i != CircuitSymbol.Count; i++) {
+			for (int i = 0; i != SymbolCount; i++) {
 				var ce = GetSymbol(i);
 				if (ce.IsSelected) {
 					return false;
@@ -1064,7 +1083,7 @@ namespace MainForm {
 
 		void DoFlip() {
 			mMenuElm.FlipPosts();
-			CircuitSymbol.NeedAnalyze = true;
+			NeedAnalyze = true;
 		}
 
 		void DoSplit(BaseSymbol ce) {
@@ -1084,20 +1103,20 @@ namespace MainForm {
 			var newWire = new Wire(pos);
 			newWire.Drag(ce.Post.B);
 			ce.Drag(pos);
-			CircuitSymbol.List.Add(newWire);
-			CircuitSymbol.NeedAnalyze = true;
+			SymbolList.Add(newWire);
+			NeedAnalyze = true;
 		}
 
 		void RemoveZeroLengthElements() {
-			for (int i = CircuitSymbol.Count - 1; i >= 0; i--) {
+			for (int i = SymbolCount - 1; i >= 0; i--) {
 				var ce = GetSymbol(i);
 				if (ce.Post.A.X == ce.Post.B.X && ce.Post.A.Y == ce.Post.B.Y) {
-					CircuitSymbol.List.RemoveAt(i);
+					SymbolList.RemoveAt(i);
 					/*Console.WriteLine("delete element: {0} {1}\t{2} {3}\t{4}", ce.GetType(), ce.x1, ce.y1, ce.x2, ce.y2); */
 					ce.Delete();
 				}
 			}
-			CircuitSymbol.NeedAnalyze = true;
+			NeedAnalyze = true;
 		}
 
 		void ClearMouseElm() {
@@ -1160,7 +1179,7 @@ namespace MainForm {
 			PushUndo();
 			SetMenuSelection();
 			mClipboard = "";
-			for (i = CircuitSymbol.Count - 1; i >= 0; i--) {
+			for (i = SymbolCount - 1; i >= 0; i--) {
 				var ce = GetSymbol(i);
 				/* ScopeElms don't cut-paste well because their reference to a parent
                 /* elm by number get's messed up in the dump. For now we will just ignore them
@@ -1193,11 +1212,11 @@ namespace MainForm {
 
 		public static void DeleteUnusedScopeElms() {
 			/* Remove any scopeElms for elements that no longer exist */
-			for (int i = CircuitSymbol.Count - 1; 0 <= i; i--) {
+			for (int i = SymbolCount - 1; 0 <= i; i--) {
 				var ce = GetSymbol(i);
 				if ((ce is Scope) && ((Scope)ce).Plot.NeedToRemove) {
 					ce.Delete();
-					CircuitSymbol.List.RemoveAt(i);
+					SymbolList.RemoveAt(i);
 				}
 			}
 		}
@@ -1209,20 +1228,20 @@ namespace MainForm {
 			}
 			bool hasDeleted = false;
 
-			for (i = CircuitSymbol.Count - 1; i >= 0; i--) {
+			for (i = SymbolCount - 1; i >= 0; i--) {
 				var ce = GetSymbol(i);
 				if (WillDelete(ce)) {
 					if (ce.IsMouseElm) {
 						MouseInfo.GripElm(null);
 					}
 					ce.Delete();
-					CircuitSymbol.List.RemoveAt(i);
+					SymbolList.RemoveAt(i);
 					hasDeleted = true;
 				}
 			}
 			if (hasDeleted) {
 				DeleteUnusedScopeElms();
-				CircuitSymbol.NeedAnalyze = true;
+				NeedAnalyze = true;
 				WriteRecoveryToStorage();
 			}
 		}
@@ -1242,7 +1261,7 @@ namespace MainForm {
 			string r = "";
 			// Todo: CustomLogicModel
 			//CustomLogicModel.clearDumpedFlags();
-			for (int i = CircuitSymbol.Count - 1; i >= 0; i--) {
+			for (int i = SymbolCount - 1; i >= 0; i--) {
 				var ce = GetSymbol(i);
 				/* See notes on do cut why we don't copy ScopeElms. */
 				if (ce.IsSelected && !(ce is Scope)) {
@@ -1280,7 +1299,7 @@ namespace MainForm {
 
 			/* get old bounding box */
 			var oldbb = new RectangleF();
-			for (i = 0; i != CircuitSymbol.Count; i++) {
+			for (i = 0; i != SymbolCount; i++) {
 				var ce = GetSymbol(i);
 				var bb = ce.Post.GetRect();
 				if (0 == i) {
@@ -1291,7 +1310,7 @@ namespace MainForm {
 			}
 
 			/* add new items */
-			int oldsz = CircuitSymbol.Count;
+			int oldsz = SymbolCount;
 			if (dump != null) {
 				ReadCircuit(dump, RC_RETAIN);
 			} else {
@@ -1301,7 +1320,7 @@ namespace MainForm {
 
 			/* select new items and get their bounding box */
 			var newbb = new RectangleF();
-			for (i = oldsz; i != CircuitSymbol.Count; i++) {
+			for (i = oldsz; i != SymbolCount; i++) {
 				var ce = GetSymbol(i);
 				ce.IsSelected = true;
 				var bb = ce.Post.GetRect();
@@ -1329,43 +1348,43 @@ namespace MainForm {
 					var g = MouseInfo.GetAbsPos();
 					int mdx = BaseSymbol.SnapGrid((int)(g.X - (newbb.X + newbb.Width / 2)));
 					int mdy = BaseSymbol.SnapGrid((int)(g.Y - (newbb.Y + newbb.Height / 2)));
-					for (i = oldsz; i != CircuitSymbol.Count; i++) {
+					for (i = oldsz; i != SymbolCount; i++) {
 						if (!GetSymbol(i).AllowMove(mdx, mdy)) {
 							break;
 						}
 					}
-					if (i == CircuitSymbol.Count) {
+					if (i == SymbolCount) {
 						dx = mdx;
 						dy = mdy;
 					}
 				}
 
 				/* move the new items */
-				for (i = oldsz; i != CircuitSymbol.Count; i++) {
+				for (i = oldsz; i != SymbolCount; i++) {
 					var ce = GetSymbol(i);
 					ce.Move(dx, dy);
 				}
 			}
-			CircuitSymbol.NeedAnalyze = true;
+			NeedAnalyze = true;
 			WriteRecoveryToStorage();
 		}
 
 		void ClearSelection() {
-			for (int i = 0; i != CircuitSymbol.Count; i++) {
+			for (int i = 0; i != SymbolCount; i++) {
 				var ce = GetSymbol(i);
 				ce.IsSelected = false;
 			}
 		}
 
 		void DoSelectAll() {
-			for (int i = 0; i != CircuitSymbol.Count; i++) {
+			for (int i = 0; i != SymbolCount; i++) {
 				var ce = GetSymbol(i);
 				ce.IsSelected = true;
 			}
 		}
 
 		bool anySelectedButMouse() {
-			for (int i = 0; i != CircuitSymbol.Count; i++) {
+			for (int i = 0; i != SymbolCount; i++) {
 				var ce = GetSymbol(i);
 				if (ce != MouseInfo.GrippedElm && ce.IsSelected) {
 					return true;
@@ -1379,8 +1398,8 @@ namespace MainForm {
 			string s;
 			string cs;
 			Console.WriteLine("Elm list Dump");
-			for (int i = 0; i < CircuitSymbol.List.Count; i++) {
-				var e = CircuitSymbol.List[i].Element;
+			for (int i = 0; i < SymbolCount; i++) {
+				var e = SymbolList[i].Element;
 				cs = e.ToString();
 				int p = cs.LastIndexOf('.');
 				cs = cs.Substring(p + 1);
@@ -1396,25 +1415,25 @@ namespace MainForm {
 				}
 				s = cs;
 				for (int j = 0; j < e.TermCount; j++) {
-					s = s + " " + e.node_index[j];
+					s = s + " " + e.NodeId[j];
 				}
 				Console.WriteLine(s);
 			}
 		}
 
 		static void UpdateDisplay() {
-			if (CircuitSymbol.NeedAnalyze) {
-				CircuitSymbol.AnalyzeCircuit();
+			if (NeedAnalyze) {
+				CircuitAnalizer.Analyze(SymbolList);
 				Repaint();
-				CircuitSymbol.NeedAnalyze = false;
+				NeedAnalyze = false;
 			}
 
-			if (CircuitSymbol.IsRunning) {
-				CircuitElement.exec(ref CircuitSymbol.IsRunning, ref CircuitSymbol.NeedAnalyze, ControlPanel.StepRate);
+			if (IsRunning) {
+				CircuitElement.Exec(ref IsRunning, ref NeedAnalyze, ControlPanel.StepRate);
 			}
 
 			long sysTime = DateTime.Now.ToFileTimeUtc();
-			if (CircuitSymbol.IsRunning) {
+			if (IsRunning) {
 				if (mLastTime != 0) {
 					int inc = (int)(sysTime - mLastTime);
 					var c = ControlPanel.TrbCurrent.Value * 50.0 / ControlPanel.TrbCurrent.Maximum;
@@ -1429,12 +1448,12 @@ namespace MainForm {
 			var g = CustomGraphics.Instance;
 			PDF.Page pdfCircuit = null;
 			PDF.Page pdfScope = null;
-			var bkIsRun = CircuitSymbol.IsRunning;
+			var bkIsRun = IsRunning;
 			var bkPrintable = ControlPanel.ChkPrintable.Checked;
 			if (g.DrawPDF) {
 				g.DrawPDF = false;
 				if (bkIsRun) {
-					CircuitSymbol.IsRunning = false;
+					IsRunning = false;
 				}
 				ControlPanel.ChkPrintable.Checked = true;
 				pdfCircuit = new PDF.Page(g.Width, g.Height);
@@ -1448,7 +1467,7 @@ namespace MainForm {
 
 			var info = new string[10];
 			if (MouseInfo.GrippedElm == null) {
-				ControlPanel.LblSelectInfo.Text = "";
+				ControlPanel.LblSelectInfo.Text = $"反復回数:{CircuitState.IterationCount:f0}";
 			} else {
 				MouseInfo.GrippedElm.GetInfo(info);
 				ControlPanel.LblSelectInfo.Text = "";
@@ -1488,7 +1507,7 @@ namespace MainForm {
 				} catch (Exception ex) {
 					MessageBox.Show(ex.ToString());
 				}
-				CircuitSymbol.IsRunning = bkIsRun;
+				IsRunning = bkIsRun;
 				ControlPanel.ChkPrintable.Checked = bkPrintable;
 				CustomGraphics.Instance = CustomGraphics.FromImage(g.Width, g.Height);
 			} else {
@@ -1516,7 +1535,7 @@ namespace MainForm {
 			}
 
 			/* draw elements */
-			foreach (var ui in CircuitSymbol.List) {
+			foreach (var ui in SymbolList) {
 				if (ui.NeedsHighlight) {
 					g.DrawColor = CustomGraphics.SelectColor;
 					g.FillColor = CustomGraphics.SelectColor;
@@ -1531,7 +1550,7 @@ namespace MainForm {
 			}
 
 			/* draw posts */
-			foreach (var p in CircuitSymbol.DrawPostList) {
+			foreach (var p in CircuitAnalizer.DrawPostList) {
 				g.DrawPost(p);
 			}
 			if (BaseSymbol.ConstructItem != null && (
@@ -1543,7 +1562,7 @@ namespace MainForm {
 				BaseSymbol.ConstructItem.Draw(g);
 				var ce = BaseSymbol.ConstructItem.Element;
 				for (int i = ce.TermCount - 1; 0 <= i; i--) {
-					var p = ce.node_pos[i];
+					var p = ce.NodePos[i];
 					g.DrawPost(p);
 				}
 				g.DrawHandle(BaseSymbol.ConstructItem.Post.B);
@@ -1577,7 +1596,7 @@ namespace MainForm {
 					break;
 				}
 			}
-			foreach (var p in CircuitSymbol.BadConnectionList) {
+			foreach (var p in CircuitAnalizer.BadConnectionList) {
 				g.DrawHandle(p);
 			}
 

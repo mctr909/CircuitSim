@@ -73,7 +73,7 @@ namespace Circuit.Symbol.Active {
 			if (g is PDF.Page || NeedsHighlight || this == ConstructItem) {
 				base.Draw(g);
 			} else {
-				var lum = mElm.current / mMaxBrightnessCurrent;
+				var lum = mElm.Current / mMaxBrightnessCurrent;
 				if (0 < lum) {
 					lum = 255 * (1 + .2 * Math.Log(lum));
 				}
