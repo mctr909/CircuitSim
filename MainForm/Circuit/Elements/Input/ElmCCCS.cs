@@ -59,9 +59,9 @@ namespace Circuit.Elements.Input {
 
 			var cur = Pins[1].current;
 			if (Math.Abs(cur - mLastCurrent) > convergeLimit) {
-				CircuitElement.converged = false;
+				CircuitElement.Converged = false;
 			}
-			int vn1 = CircuitElement.nodes.Length + Pins[1].voltSource;
+			int vn1 = CircuitElement.NodeCount + Pins[1].voltSource;
 			/* calculate output */
 			var v0 = mFunction(cur);
 			Pins[2].current = v0;

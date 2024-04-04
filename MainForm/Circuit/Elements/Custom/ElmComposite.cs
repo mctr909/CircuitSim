@@ -38,7 +38,7 @@ namespace Circuit.Elements.Custom {
 				var link1 = cl1[i];
 				for (int j = 0; j < cl2.Count; j++) {
 					var link2 = cl2[j];
-					if (link1.p_elm == link2.p_elm && link1.p_elm.has_connection(link1.node_index, link2.node_index)) {
+					if (link1.elm == link2.elm && link1.elm.has_connection(link1.node_index, link2.node_index)) {
 						return true;
 					}
 				}
@@ -50,7 +50,7 @@ namespace Circuit.Elements.Custom {
 		public override bool has_ground_connection(int n1) {
 			var links = mCompNodeList[n1].links;
 			for (int i = 0; i < links.Count; i++) {
-				if (links[i].p_elm.has_ground_connection(links[i].node_index)) {
+				if (links[i].elm.has_ground_connection(links[i].node_index)) {
 					return true;
 				}
 			}
@@ -61,7 +61,7 @@ namespace Circuit.Elements.Custom {
 			base.set_node(p, n);
 			var links = mCompNodeList[p].links;
 			for (int i = 0; i < links.Count; i++) {
-				links[i].p_elm.set_node(links[i].node_index, n);
+				links[i].elm.set_node(links[i].node_index, n);
 			}
 		}
 
@@ -109,7 +109,7 @@ namespace Circuit.Elements.Custom {
 			double c = 0;
 			var links = mCompNodeList[n].links;
 			for (int i = 0; i < links.Count; i++) {
-				c += links[i].p_elm.get_current_into_node(links[i].node_index);
+				c += links[i].elm.get_current_into_node(links[i].node_index);
 			}
 			return c;
 		}
@@ -118,7 +118,7 @@ namespace Circuit.Elements.Custom {
 			base.set_voltage(n, c);
 			var links = mCompNodeList[n].links;
 			for (int i = 0; i < links.Count; i++) {
-				links[i].p_elm.set_voltage(links[i].node_index, c);
+				links[i].elm.set_voltage(links[i].node_index, c);
 			}
 			volts[n] = c;
 		}
@@ -157,7 +157,7 @@ namespace Circuit.Elements.Custom {
 				for (int j = 0; j != inodes; j++) {
 					var cl = new CIRCUIT_LINK() {
 						node_index = j + ce.TermCount,
-						p_elm = ce
+						elm = ce
 					};
 					var cn = new CIRCUIT_NODE();
 					cn.links.Add(cl);

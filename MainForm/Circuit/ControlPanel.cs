@@ -25,11 +25,11 @@
 		}
 
 		public static double TimeStep {
-			get { return CircuitElement.delta_time; }
+			get { return CircuitElement.DeltaTime; }
 			set {
-				CircuitElement.delta_time = value;
+				CircuitElement.DeltaTime = value;
 				if (null != mTxtTimeStep) {
-					mTxtTimeStep.Text = TextUtils.Unit(CircuitElement.delta_time, "");
+					mTxtTimeStep.Text = TextUtils.Unit(CircuitElement.DeltaTime, "");
 				}
 			}
 		}
@@ -81,9 +81,9 @@
 			mTxtTimeStep.TextChanged += new EventHandler((s, e) => {
 				var tmp = 0.0;
 				if (TextUtils.ParseUnits(mTxtTimeStep.Text, out tmp)) {
-					CircuitElement.delta_time = tmp;
+					CircuitElement.DeltaTime = tmp;
 				}
-				mTxtTimeStep.Text = TextUtils.Unit(CircuitElement.delta_time, "");
+				mTxtTimeStep.Text = TextUtils.Unit(CircuitElement.DeltaTime, "");
 			});
 			VerticalPanel.Controls.Add(mTxtTimeStep);
 			ofsY += mTxtTimeStep.Height + 4;

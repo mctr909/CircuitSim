@@ -32,7 +32,7 @@
 
 		public override void do_iteration() {
 			double v = volts[0] > HighVoltage * .5 ? 0 : HighVoltage;
-			double maxStep = SlewRate * CircuitElement.delta_time * 1e9;
+			double maxStep = SlewRate * CircuitElement.DeltaTime * 1e9;
 			v = Math.Max(Math.Min(mLastOutputVoltage + maxStep, v), mLastOutputVoltage - maxStep);
 			CircuitElement.UpdateVoltageSource(m_volt_source, v);
 		}

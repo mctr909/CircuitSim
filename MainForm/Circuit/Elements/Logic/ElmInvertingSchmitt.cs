@@ -49,7 +49,7 @@
 					_out = LogicOffLevel;
 				}
 			}
-			double maxStep = SlewRate * CircuitElement.delta_time * 1e9;
+			double maxStep = SlewRate * CircuitElement.DeltaTime * 1e9;
 			_out = Math.Max(Math.Min(v0 + maxStep, _out), v0 - maxStep);
 			CircuitElement.UpdateVoltageSource(m_volt_source, _out);
 		}

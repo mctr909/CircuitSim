@@ -68,7 +68,7 @@
 			mA[5] = mA[7] = (m1 * m1 - l1 * m2) / (l2 - m2);
 			var det = l1 * (l2 + m2) - 2 * m1 * m1;
 			for (int i = 0; i != 9; i++) {
-				mA[i] *= CircuitElement.delta_time / 2 / det;
+				mA[i] *= CircuitElement.DeltaTime / 2 / det;
 			}
 			CircuitElement.StampConductance(node_index[0], node_index[1], mA[0]);
 			CircuitElement.StampVCCurrentSource(node_index[0], node_index[1], node_index[2], node_index[3], mA[1]);

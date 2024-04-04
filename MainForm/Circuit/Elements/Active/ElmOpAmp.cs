@@ -26,7 +26,7 @@
 		public override bool has_ground_connection(int n1) { return n1 == 2; }
 
 		public override void stamp() {
-			int vn = CircuitElement.nodes.Length + m_volt_source;
+			int vn = CircuitElement.NodeCount + m_volt_source;
 			CircuitElement.StampNonLinear(vn);
 			CircuitElement.StampMatrix(node_index[2], vn, 1);
 		}
@@ -49,27 +49,27 @@
 			}
 
 			/* newton-raphson */
-			var vnode = CircuitElement.nodes.Length + m_volt_source;
-			var rowV = CircuitElement.row_info[vnode - 1].row;
-			var colri = CircuitElement.row_info[node_index[0] - 1];
+			var vnode = CircuitElement.NodeCount + m_volt_source;
+			var rowV = CircuitElement.NodeInfo[vnode - 1].ROW;
+			var colri = CircuitElement.NodeInfo[node_index[0] - 1];
 			if (colri.is_const) {
-				CircuitElement.right_side[rowV] -= dx * colri.value;
+				CircuitElement.RightSide[rowV] -= dx * colri.value;
 			} else {
-				CircuitElement.matrix[rowV, colri.col] += dx;
+				CircuitElement.Matrix[rowV, colri.COL] += dx;
 			}
-			colri = CircuitElement.row_info[node_index[1] - 1];
+			colri = CircuitElement.NodeInfo[node_index[1] - 1];
 			if (colri.is_const) {
-				CircuitElement.right_side[rowV] += dx * colri.value;
+				CircuitElement.RightSide[rowV] += dx * colri.value;
 			} else {
-				CircuitElement.matrix[rowV, colri.col] -= dx;
+				CircuitElement.Matrix[rowV, colri.COL] -= dx;
 			}
-			colri = CircuitElement.row_info[node_index[2] - 1];
+			colri = CircuitElement.NodeInfo[node_index[2] - 1];
 			if (colri.is_const) {
-				CircuitElement.right_side[rowV] -= colri.value;
+				CircuitElement.RightSide[rowV] -= colri.value;
 			} else {
-				CircuitElement.matrix[rowV, colri.col] += 1;
+				CircuitElement.Matrix[rowV, colri.COL] += 1;
 			}
-			CircuitElement.right_side[rowV] += x;
+			CircuitElement.RightSide[rowV] += x;
 
 			mLastVd = vd;
 		}

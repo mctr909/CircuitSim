@@ -64,7 +64,7 @@ namespace Circuit.Symbol.Custom {
 					var nodeOfThisPost = strModel.nextTokenInt();
 					var cl = new CIRCUIT_LINK() {
 						node_index = thisPost,
-						p_elm = newce.Element
+						elm = newce.Element
 					};
 					if (!compNodeHash.ContainsKey(nodeOfThisPost)) {
 						var cn = new CIRCUIT_NODE();

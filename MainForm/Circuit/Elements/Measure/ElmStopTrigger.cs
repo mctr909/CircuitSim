@@ -22,12 +22,12 @@
 			Stopped = false;
 			if (!Triggered && ((Type == 0 && volts[0] >= TriggerVoltage) || (Type == 1 && volts[0] <= TriggerVoltage))) {
 				Triggered = true;
-				TriggerTime = CircuitElement.time;
+				TriggerTime = CircuitElement.Time;
 			}
-			if (Triggered && CircuitElement.time >= TriggerTime + Delay) {
+			if (Triggered && CircuitElement.Time >= TriggerTime + Delay) {
 				Triggered = false;
 				Stopped = true;
-				CircuitElement.stopped = true;
+				CircuitElement.Stopped = true;
 			}
 		}
 	}

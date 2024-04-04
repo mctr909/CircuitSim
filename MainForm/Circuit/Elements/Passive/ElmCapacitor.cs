@@ -26,7 +26,7 @@
 			if (n0 < 0 || n1 < 0) {
 				return;
 			}
-			mCompResistance = 0.5 * CircuitElement.delta_time / Capacitance;
+			mCompResistance = 0.5 * CircuitElement.DeltaTime / Capacitance;
 			CircuitElement.StampResistor(node_index[0], node_index[1], mCompResistance);
 			CircuitElement.StampRightSide(node_index[0]);
 			CircuitElement.StampRightSide(node_index[1]);
@@ -39,10 +39,10 @@
 		}
 
 		public override void do_iteration() {
-			var r = CircuitElement.row_info[node_index[0] - 1].row;
-			CircuitElement.right_side[r] -= mCurSourceValue;
-			r = CircuitElement.row_info[node_index[1] - 1].row;
-			CircuitElement.right_side[r] += mCurSourceValue;
+			var r = CircuitElement.NodeInfo[node_index[0] - 1].ROW;
+			CircuitElement.RightSide[r] -= mCurSourceValue;
+			r = CircuitElement.NodeInfo[node_index[1] - 1].ROW;
+			CircuitElement.RightSide[r] += mCurSourceValue;
 		}
 
 		public override void set_voltage(int n, double c) {

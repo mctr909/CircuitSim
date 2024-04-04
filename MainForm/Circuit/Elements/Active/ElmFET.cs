@@ -46,7 +46,7 @@
 
 		protected static void DiodeDoIteration(double vnew, ref double vold, int nodeA, int nodeB) {
 			if (Math.Abs(vnew - vold) > 0.01) {
-				CircuitElement.converged = false;
+				CircuitElement.Converged = false;
 			}
 			if (vnew > DiodeVCrit && Math.Abs(vnew - vold) > (DiodeVScale + DiodeVScale)) {
 				if (vold > 0) {
@@ -59,12 +59,12 @@
 				} else {
 					vnew = DiodeVScale * Math.Log(vnew / DiodeVScale);
 				}
-				CircuitElement.converged = false;
+				CircuitElement.Converged = false;
 			}
 			vold = vnew;
 			var gmin = DiodeLeakage * 0.01;
-			if (CircuitElement.sub_iterations > 100) {
-				gmin = Math.Exp(-9 * Math.Log(10) * (1 - CircuitElement.sub_iterations / 3000.0));
+			if (CircuitElement.SubIterations > 100) {
+				gmin = Math.Exp(-9 * Math.Log(10) * (1 - CircuitElement.SubIterations / 3000.0));
 				if (gmin > 0.1) {
 					gmin = 0.1;
 				}
@@ -103,8 +103,8 @@
 				if (mTempVd < mLastVd - 0.5) {
 					mTempVd = mLastVd - 0.5;
 				}
-				if (CircuitElement.converged && (NonConvergence(mLastVs, mTempVs) || NonConvergence(mLastVd, mTempVd) || NonConvergence(mLastVg, mTempVg))) {
-					CircuitElement.converged = false;
+				if (CircuitElement.Converged && (NonConvergence(mLastVs, mTempVs) || NonConvergence(mLastVd, mTempVd) || NonConvergence(mLastVg, mTempVg))) {
+					CircuitElement.Converged = false;
 				}
 			}
 			mLastVg = mTempVg;
@@ -187,11 +187,11 @@
 				// difference of less than 10mV is fine
 				return false;
 			}
-			if (CircuitElement.sub_iterations > 10 && diff < Math.Abs(now)*0.001) {
+			if (CircuitElement.SubIterations > 10 && diff < Math.Abs(now)*0.001) {
 				// larger differences are fine if value is large
 				return false;
 			}
-			if (CircuitElement.sub_iterations > 100 && diff < 0.01+(CircuitElement.sub_iterations-100)*0.0001) {
+			if (CircuitElement.SubIterations > 100 && diff < 0.01+(CircuitElement.SubIterations-100)*0.0001) {
 				// if we're having trouble converging, get more lenient
 				return false;
 			}

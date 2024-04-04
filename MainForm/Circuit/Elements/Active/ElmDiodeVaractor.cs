@@ -23,13 +23,13 @@
 			base.stamp();
 			var n0 = node_index[0] - 1;
 			var n1 = node_index[2] - 1;
-			int vn = CircuitElement.nodes.Length + m_volt_source - 1;
-			CircuitElement.matrix[vn, n0] -= 1;
-			CircuitElement.matrix[vn, n1] += 1;
-			CircuitElement.matrix[n0, vn] += 1;
-			CircuitElement.matrix[n1, vn] -= 1;
-			CircuitElement.row_info[vn].right_changes = true;
-			CircuitElement.row_info[n1].left_changes = true;
+			int vn = CircuitElement.NodeCount + m_volt_source - 1;
+			CircuitElement.Matrix[vn, n0] -= 1;
+			CircuitElement.Matrix[vn, n1] += 1;
+			CircuitElement.Matrix[n0, vn] += 1;
+			CircuitElement.Matrix[n1, vn] -= 1;
+			CircuitElement.NodeInfo[vn].right_changes = true;
+			CircuitElement.NodeInfo[n1].left_changes = true;
 		}
 
 		#region [method(Circuit)]
@@ -43,7 +43,7 @@
 			} else {
 				Capacitance = BaseCapacitance / Math.Pow(1 - CapVoltDiff / FwDrop, 0.5);
 			}
-			mCompResistance = CircuitElement.delta_time / (2 * Capacitance);
+			mCompResistance = CircuitElement.DeltaTime / (2 * Capacitance);
 			mVoltSourceValue = -CapVoltDiff - mCapCurrent * mCompResistance;
 		}
 
@@ -52,12 +52,12 @@
 			var g = 1.0 / mCompResistance;
 			var n0 = node_index[2] - 1;
 			var n1 = node_index[1] - 1;
-			var vn = CircuitElement.nodes.Length + m_volt_source - 1;
-			CircuitElement.matrix[n0, n0] += g;
-			CircuitElement.matrix[n1, n1] += g;
-			CircuitElement.matrix[n0, n1] -= g;
-			CircuitElement.matrix[n1, n0] -= g;
-			CircuitElement.right_side[vn] += mVoltSourceValue;
+			var vn = CircuitElement.NodeCount + m_volt_source - 1;
+			CircuitElement.Matrix[n0, n0] += g;
+			CircuitElement.Matrix[n1, n1] += g;
+			CircuitElement.Matrix[n0, n1] -= g;
+			CircuitElement.Matrix[n1, n0] -= g;
+			CircuitElement.RightSide[vn] += mVoltSourceValue;
 		}
 
 		public override void set_voltage(int n, double c) {

@@ -31,12 +31,12 @@
 			}
 			if (IsLog) {
 				mFadd = 0;
-				mFmul = Math.Pow(MaxF / MinF, mFdir * CircuitElement.delta_time / SweepTime);
+				mFmul = Math.Pow(MaxF / MinF, mFdir * CircuitElement.DeltaTime / SweepTime);
 			} else {
-				mFadd = mFdir * CircuitElement.delta_time * (MaxF - MinF) / SweepTime;
+				mFadd = mFdir * CircuitElement.DeltaTime * (MaxF - MinF) / SweepTime;
 				mFmul = 1;
 			}
-			mSavedTimeStep = CircuitElement.delta_time;
+			mSavedTimeStep = CircuitElement.DeltaTime;
 		}
 
 		public override double voltage_diff() {
@@ -61,11 +61,11 @@
 		#region [method(Circuit)]
 		public override void prepare_iteration() {
 			/* has timestep been changed? */
-			if (CircuitElement.delta_time != mSavedTimeStep) {
+			if (CircuitElement.DeltaTime != mSavedTimeStep) {
 				SetParams();
 			}
 			mVolt = Math.Sin(mFreqTime) * MaxV;
-			mFreqTime += Frequency * 2 * Math.PI * CircuitElement.delta_time;
+			mFreqTime += Frequency * 2 * Math.PI * CircuitElement.DeltaTime;
 			Frequency = Frequency * mFmul + mFadd;
 			if (Frequency >= MaxF && mFdir == 1) {
 				if (BothSides) {
@@ -84,9 +84,9 @@
 		}
 
 		public override void do_iteration() {
-			var vn = CircuitElement.nodes.Length + m_volt_source;
-			var row = CircuitElement.row_info[vn - 1].row;
-			CircuitElement.right_side[row] += mVolt;
+			var vn = CircuitElement.NodeCount + m_volt_source;
+			var row = CircuitElement.NodeInfo[vn - 1].ROW;
+			CircuitElement.RightSide[row] += mVolt;
 		}
 		#endregion
 	}

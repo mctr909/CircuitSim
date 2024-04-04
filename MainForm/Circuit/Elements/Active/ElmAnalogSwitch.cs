@@ -12,8 +12,8 @@
 		public override bool has_connection(int n1, int n2) { return !(n1 == 2 || n2 == 2); }
 
 		public override void stamp() {
-			CircuitElement.row_info[node_index[0] - 1].left_changes = true;
-			CircuitElement.row_info[node_index[1] - 1].left_changes = true;
+			CircuitElement.NodeInfo[node_index[0] - 1].left_changes = true;
+			CircuitElement.NodeInfo[node_index[1] - 1].left_changes = true;
 		}
 
 		#region [method(Circuit)]
@@ -24,23 +24,23 @@
 			}
 			mResistance = IsOpen ? Roff : Ron;
 			var conductance = 1.0 / mResistance;
-			var rowA = CircuitElement.row_info[node_index[0] - 1].row;
-			var rowB = CircuitElement.row_info[node_index[1] - 1].row;
-			var colri = CircuitElement.row_info[node_index[0] - 1];
+			var rowA = CircuitElement.NodeInfo[node_index[0] - 1].ROW;
+			var rowB = CircuitElement.NodeInfo[node_index[1] - 1].ROW;
+			var colri = CircuitElement.NodeInfo[node_index[0] - 1];
 			if (colri.is_const) {
-				CircuitElement.right_side[rowA] -= conductance * colri.value;
-				CircuitElement.right_side[rowB] += conductance * colri.value;
+				CircuitElement.RightSide[rowA] -= conductance * colri.value;
+				CircuitElement.RightSide[rowB] += conductance * colri.value;
 			} else {
-				CircuitElement.matrix[rowA, colri.col] += conductance;
-				CircuitElement.matrix[rowB, colri.col] -= conductance;
+				CircuitElement.Matrix[rowA, colri.COL] += conductance;
+				CircuitElement.Matrix[rowB, colri.COL] -= conductance;
 			}
-			colri = CircuitElement.row_info[node_index[1] - 1];
+			colri = CircuitElement.NodeInfo[node_index[1] - 1];
 			if (colri.is_const) {
-				CircuitElement.right_side[rowA] += conductance * colri.value;
-				CircuitElement.right_side[rowB] -= conductance * colri.value;
+				CircuitElement.RightSide[rowA] += conductance * colri.value;
+				CircuitElement.RightSide[rowB] -= conductance * colri.value;
 			} else {
-				CircuitElement.matrix[rowA, colri.col] -= conductance;
-				CircuitElement.matrix[rowB, colri.col] += conductance;
+				CircuitElement.Matrix[rowA, colri.COL] -= conductance;
+				CircuitElement.Matrix[rowB, colri.COL] += conductance;
 			}
 		}
 

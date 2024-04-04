@@ -1,4 +1,5 @@
-﻿using Circuit.Elements.Input;
+﻿using System.Reflection.Metadata;
+using Circuit.Elements.Input;
 using Circuit.Elements.Passive;
 using Circuit.Forms;
 using Circuit.Symbol.Measure;
@@ -6,9 +7,9 @@ using Circuit.Symbol.Measure;
 namespace Circuit {
 	static class CircuitSymbol {
 		class NodeMapEntry {
-			public int Node;
-			public NodeMapEntry() { Node = -1; }
-			public NodeMapEntry(int n) { Node = n; }
+			public const int Unallocated = -1;
+			public const int GroundNode = 0;
+			public int Id = Unallocated;
 		}
 
 		class PathInfo {
@@ -144,13 +145,13 @@ namespace Circuit {
 			for (int i = 0; i != List.Count; i++) {
 				List[i].Element.reset();
 			}
-			CircuitElement.time = 0;
+			CircuitElement.Time = 0;
 			NeedAnalyze = true;
 		}
 		public static void SetSimRunning(bool s) {
 			if (s) {
 				IsRunning = true;
-				CircuitElement.stopped = false;
+				CircuitElement.Stopped = false;
 				ControlPanel.BtnRunStop.Text = "停止";
 			} else {
 				NeedAnalyze = false;
@@ -159,9 +160,8 @@ namespace Circuit {
 			}
 		}
 		public static void AnalyzeCircuit() {
-			CircuitElement.elements = [];
+			CircuitElement.setElements([]);
 			var elements = new List<BaseElement>();
-
 			foreach (var symbol in List) {
 				elements.Add(symbol.Element);
 			}
@@ -171,11 +171,14 @@ namespace Circuit {
 				BadConnectionList = new List<Point>();
 				return;
 			}
-
-			CircuitElement.stopped = false;
+			CircuitElement.Stopped = false;
+			CircuitElement.setElements(elements);
 
 			var nodes = new List<CIRCUIT_NODE>();
 			var wires = new List<CIRCUIT_WIRE>();
+			CircuitElement.setNodes(nodes);
+			CircuitElement.setWires(wires);
+
 			mPostCountMap = new Dictionary<Point, int>();
 
 			calculateWireClosure(wires, elements);
@@ -203,13 +206,13 @@ namespace Circuit {
                 /* is ground */
 				if (!gotGround && volt != null && !gotRail) {
 					var cn = new CIRCUIT_NODE();
-					var pt = volt.node_pos[0];
+					var np = volt.node_pos[0];
 					nodes.Add(cn);
 					/* update node map */
-					if (mNodeMap.ContainsKey(pt)) {
-						mNodeMap[pt].Node = 0;
+					if (mNodeMap.ContainsKey(np)) {
+						mNodeMap[np].Id = NodeMapEntry.GroundNode;
 					} else {
-						mNodeMap.Add(pt, new NodeMapEntry(0));
+						mNodeMap.Add(np, new NodeMapEntry() { Id = NodeMapEntry.GroundNode });
 					}
 				} else {
 					/* otherwise allocate extra node for ground */
@@ -217,81 +220,80 @@ namespace Circuit {
 				}
 			}
 
-			/* allocate nodes and voltage sources */
-			int vs_count = 0;
+			/* allocate nodes */
+			int vsCount = 0;
 			{
 				ElmNamedNode.ResetNodeList();
 				for (int i = 0; i < elements.Count; i++) {
-					var ce = elements[i];
-					if (null == ce) {
+					var elm = elements[i];
+					if (null == elm) {
 						continue;
 					}
-					var inodes = ce.InternalNodeCount;
-					var ivs = ce.VoltageSourceCount;
-					var posts = ce.TermCount;
+					var inodes = elm.InternalNodeCount;
+					var ivs = elm.VoltageSourceCount;
+					var posts = elm.TermCount;
 
 					/* allocate a node for each post and match posts to nodes */
-					for (int j = 0; j < posts; j++) {
-						var pt = ce.node_pos[j];
-						if (mPostCountMap.ContainsKey(pt)) {
-							var g = mPostCountMap[pt];
-							mPostCountMap[pt] = g + 1;
+					for (int idxN = 0; idxN < posts; idxN++) {
+						var np = elm.node_pos[idxN];
+						if (mPostCountMap.ContainsKey(np)) {
+							var g = mPostCountMap[np];
+							mPostCountMap[np] = g + 1;
 						} else {
-							mPostCountMap.Add(pt, 1);
+							mPostCountMap.Add(np, 1);
 						}
 
-						NodeMapEntry cln = null;
-						var ccln = mNodeMap.ContainsKey(pt);
-						if (ccln) {
-							cln = mNodeMap[pt];
+						NodeMapEntry entryNode = null;
+						var isKnownNode = mNodeMap.ContainsKey(np);
+						if (isKnownNode) {
+							entryNode = mNodeMap[np];
 						}
 
 						/* is this node not in map yet?  or is the node number unallocated?
                         /* (we don't allocate nodes before this because changing the allocation order
                         /* of nodes changes circuit behavior and breaks backward compatibility;
                         /* the code below to connect unconnected nodes may connect a different node to ground) */
-						if (!ccln || cln.Node == -1) {
+						if (!isKnownNode || entryNode.Id == NodeMapEntry.Unallocated) {
 							var cn = new CIRCUIT_NODE();
 							var cl = new CIRCUIT_LINK {
-								node_index = j,
-								p_elm = ce
+								node_index = idxN,
+								elm = elm
 							};
 							cn.links.Add(cl);
-							ce.set_node(j, nodes.Count);
-							if (ccln) {
-								cln.Node = nodes.Count;
+							elm.set_node(idxN, nodes.Count);
+							if (isKnownNode) {
+								entryNode.Id = nodes.Count;
 							} else {
-								mNodeMap.Add(pt, new NodeMapEntry(nodes.Count));
+								mNodeMap.Add(np, new NodeMapEntry() { Id = nodes.Count });
 							}
 							nodes.Add(cn);
 						} else {
-							var n = cln.Node;
 							var cl = new CIRCUIT_LINK {
-								node_index = j,
-								p_elm = ce
+								node_index = idxN,
+								elm = elm
 							};
-							nodes[n].links.Add(cl);
-							ce.set_node(j, n);
+							nodes[entryNode.Id].links.Add(cl);
+							elm.set_node(idxN, entryNode.Id);
 							/* if it's the ground node, make sure the node voltage is 0,
                             /* cause it may not get set later */
-							if (n == 0) {
-								ce.set_voltage(j, 0);
+							if (entryNode.Id == NodeMapEntry.GroundNode) {
+								elm.set_voltage(idxN, 0);
 							}
 						}
 					}
 					for (int j = 0; j < inodes; j++) {
 						var cl = new CIRCUIT_LINK {
 							node_index = j + posts,
-							p_elm = ce
+							elm = elm
 						};
 						var cn = new CIRCUIT_NODE {
 							is_internal = true
 						};
 						cn.links.Add(cl);
-						ce.set_node(cl.node_index, nodes.Count);
+						elm.set_node(cl.node_index, nodes.Count);
 						nodes.Add(cn);
 					}
-					vs_count += ivs;
+					vsCount += ivs;
 				}
 
 				makePostDrawList(elements);
@@ -300,32 +302,12 @@ namespace Circuit {
 				} else {
 					return;
 				}
-
-				CircuitElement.voltage_sources = new BaseElement[vs_count];
-				vs_count = 0;
-				for (int i = 0; i < elements.Count; i++) {
-					var ce = elements[i];
-					var ivs = ce.VoltageSourceCount;
-					for (int j = 0; j < ivs; j++) {
-						CircuitElement.voltage_sources[vs_count] = ce;
-						ce.set_voltage_source(j, vs_count++);
-					}
-				}
 			}
 
-			var matrixSize = nodes.Count - 1 + vs_count;
-			CircuitElement.matrix = new double[matrixSize, matrixSize];
-			CircuitElement.right_side = new double[matrixSize];
-			CircuitElement.row_info = new CIRCUIT_ROW[matrixSize];
-			for (int i = 0; i < matrixSize; i++) {
-				CircuitElement.row_info[i] = new CIRCUIT_ROW();
-			}
+			CircuitElement.setVoltageSource(elements);
 
-			CircuitElement.matrix_size = CircuitElement.matrix_full_size = matrixSize;
-			CircuitElement.orig_matrix = new double[matrixSize, matrixSize];
-			CircuitElement.orig_right_side = new double[matrixSize];
-			CircuitElement.permute = new int[matrixSize];
-			CircuitElement.needs_map = false;
+			var matrixSize = nodes.Count - 1 + vsCount;
+			CircuitElement.clearMatrix(matrixSize);
 
 			/* stamp linear circuit elements */
 			for (int i = 0; i < elements.Count; i++) {
@@ -443,10 +425,6 @@ namespace Circuit {
 				}
 			}
 
-			CircuitElement.elements = elements.ToArray();
-			CircuitElement.nodes = nodes.ToArray();
-			CircuitElement.wires = wires.ToArray();
-
 			var waveCount = 0;
 			for(var i = 0; i < ScopeForm.PlotCount; i++) {
 				waveCount += ScopeForm.Plots[i].WaveCount;
@@ -456,147 +434,32 @@ namespace Circuit {
 					waveCount += scope.Plot.WaveCount;
 				}
 			}
-			CircuitElement.waves = new SCOPE_WAVE[waveCount];
+
+			var waves = new SCOPE_WAVE[waveCount];
 			waveCount = 0;
 			for(var i = 0; i < ScopeForm.PlotCount; i++) {
 				var plot = ScopeForm.Plots[i];
 				for(var j = 0; j < plot.WaveCount; j++) {
-					CircuitElement.waves[waveCount++] = plot.Waves[j];
+					waves[waveCount++] = plot.Waves[j];
 				}
 			}
 			foreach(var item in List) {
 				if (item is Scope scope) {
 					var plot = scope.Plot;
 					for (var i = 0; i < plot.WaveCount; i++) {
-						CircuitElement.waves[waveCount++] = plot.Waves[i];
+						waves[waveCount++] = plot.Waves[i];
 					}
 				}
 			}
+			CircuitElement.setWaves(waves);
 
-			if (!simplifyMatrix(matrixSize)) {
+			if (!CircuitElement.simplifyMatrix(matrixSize)) {
 				return;
 			}
-
-			//if () {
-			//	Console.WriteLine("Matrix size:" + matrixSize);
-			//	for (int j = 0; j != mMatrixSize; j++) {
-			//		Console.WriteLine("RightSide[{0}]:{1}", j, RightSide[j]);
-			//		for (int i = 0; i != mMatrixSize; i++) {
-			//			Console.WriteLine("  Matrix[{0},{1}]:{2}", j, i, Matrix[j, i]);
-			//		}
-			//	}
-			//}
 		}
 		#endregion
 
 		#region private method
-		/* simplify the matrix; this speeds things up quite a bit, especially for digital circuits */
-		static bool simplifyMatrix(int matrixSize) {
-			int matRow;
-			int matCol;
-			for (matRow = 0; matRow != matrixSize; matRow++) {
-				int qp = -1;
-				double qv = 0;
-				var re = CircuitElement.row_info[matRow];
-				/*Console.WriteLine("row " + i + " " + re.lsChanges + " " + re.rsChanges + " " + re.dropRow);*/
-				if (re.left_changes || re.drop || re.right_changes) {
-					continue;
-				}
-				double rsadd = 0;
-
-				/* look for rows that can be removed */
-				for (matCol = 0; matCol != matrixSize; matCol++) {
-					var q = CircuitElement.matrix[matRow, matCol];
-					if (CircuitElement.row_info[matCol].is_const) {
-						/* keep a running total of const values that have been
-                        /* removed already */
-						rsadd -= CircuitElement.row_info[matCol].value * q;
-						continue;
-					}
-					/* ignore zeroes */
-					if (q == 0) {
-						continue;
-					}
-					/* keep track of first nonzero element that is not ROW_CONST */
-					if (qp == -1) {
-						qp = matCol;
-						qv = q;
-						continue;
-					}
-					/* more than one nonzero element?  give up */
-					break;
-				}
-				if (matCol == matrixSize) {
-					if (qp == -1) {
-						/* probably a singular matrix, try disabling matrix simplification above to check this */
-						stop("Matrix error");
-						return false;
-					}
-					var elt = CircuitElement.row_info[qp];
-					/* we found a row with only one nonzero nonconst entry; that value is a constant */
-					if (elt.is_const) {
-						Console.WriteLine("type already CONST for " + qp + "!");
-						continue;
-					}
-					elt.is_const = true;
-					elt.value = (CircuitElement.right_side[matRow] + rsadd) / qv;
-					CircuitElement.row_info[matRow].drop = true;
-					matRow = -1; /* start over from scratch */
-				}
-			}
-
-			/* find size of new matrix */
-			int nn = 0;
-			for (matRow = 0; matRow != matrixSize; matRow++) {
-				var elt = CircuitElement.row_info[matRow];
-				if (elt.is_const) {
-					elt.col = -1;
-				} else {
-					elt.col = nn++;
-					continue;
-				}
-			}
-
-			/* make the new, simplified matrix */
-			int newSize = nn;
-			var newMat = new double[newSize, newSize];
-			var newRS = new double[newSize];
-			int ii = 0;
-			for (matRow = 0; matRow != matrixSize; matRow++) {
-				var rri = CircuitElement.row_info[matRow];
-				if (rri.drop) {
-					rri.row = -1;
-					continue;
-				}
-				newRS[ii] = CircuitElement.right_side[matRow];
-				rri.row = ii;
-				for (matCol = 0; matCol != matrixSize; matCol++) {
-					var ri = CircuitElement.row_info[matCol];
-					if (ri.is_const) {
-						newRS[ii] -= ri.value * CircuitElement.matrix[matRow, matCol];
-					} else {
-						newMat[ii, ri.col] += CircuitElement.matrix[matRow, matCol];
-					}
-				}
-				ii++;
-			}
-			/*Console.WriteLine("old size = " + matrixSize + " new size = " + newSize);*/
-
-			CircuitElement.matrix = newMat;
-			CircuitElement.right_side = newRS;
-			matrixSize = CircuitElement.matrix_size = newSize;
-			for (matRow = 0; matRow != matrixSize; matRow++) {
-				CircuitElement.orig_right_side[matRow] = CircuitElement.right_side[matRow];
-			}
-			for (matRow = 0; matRow != matrixSize; matRow++) {
-				for (matCol = 0; matCol != matrixSize; matCol++) {
-					CircuitElement.orig_matrix[matRow, matCol] = CircuitElement.matrix[matRow, matCol];
-				}
-			}
-			CircuitElement.needs_map = true;
-			return true;
-		}
-
 		/* find groups of nodes connected by wires and map them to the same node.  this speeds things
         /* up considerably by reducing the size of the matrix */
 		static void calculateWireClosure(List<CIRCUIT_WIRE> wires, List<BaseElement> elements) {
@@ -610,7 +473,7 @@ namespace Circuit {
 				var elm = (ElmWire)ce;
 				elm.HasWireInfo = false;
 				wires.Add(new CIRCUIT_WIRE() {
-					p_elm = elm
+					elm = elm
 				});
 				var p1 = elm.node_pos[0];
 				var p2 = elm.node_pos[1];
@@ -663,12 +526,12 @@ namespace Circuit {
 			int moved = 0;
 			for (wireIdx = 0; wireIdx != wires.Count; wireIdx++) {
 				var wi = wires[wireIdx];
-				var wire = wi.p_elm;
+				var wire = wi.elm;
 				var cn1 = nodes[wire.node_index[0]];  /* both ends of wire have same node # */
 				int j;
 
-				var neighbors0 = new List<BaseElement>();
-				var neighbors1 = new List<BaseElement>();
+				var connectedElmsA = new List<BaseElement>();
+				var connectedElmsB = new List<BaseElement>();
 				bool isReady0 = true;
 				bool isReady1 = true;
 
@@ -676,27 +539,27 @@ namespace Circuit {
                 /* by other wires, but at least it's faster than going through all elements) */
 				for (j = 0; j != cn1.links.Count; j++) {
 					var cl = cn1.links[j];
-					var ce = cl.p_elm;
-					if (ce == wire) {
+					var elm = cl.elm;
+					if (elm == wire) {
 						continue;
 					}
 
 					/* is this a wire that doesn't have wire info yet?  If so we can't use it.
                     /* That would create a circular dependency */
-					bool notReady = (ce is ElmWire) && !((ElmWire)ce).HasWireInfo;
+					bool isReady = (elm is ElmWire ew) && !ew.HasWireInfo;
 
 					/* which post does this element connect to, if any? */
-					var elmPos = ce.node_pos[cl.node_index];
+					var elmPos = elm.node_pos[cl.node_index];
 					var wirePosA = wire.node_pos[0];
 					var wirePosB = wire.node_pos[1];
 					if (elmPos.X == wirePosA.X && elmPos.Y == wirePosA.Y) {
-						neighbors0.Add(ce);
-						if (notReady) {
+						connectedElmsA.Add(elm);
+						if (isReady) {
 							isReady0 = false;
 						}
 					} else if (elmPos.X == wirePosB.X && elmPos.Y == wirePosB.Y) {
-						neighbors1.Add(ce);
-						if (notReady) {
+						connectedElmsB.Add(elm);
+						if (isReady) {
 							isReady1 = false;
 						}
 					}
@@ -704,13 +567,13 @@ namespace Circuit {
 
 				/* does one of the posts have all information necessary to calculate current */
 				if (isReady0) {
-					wi.neighbors = neighbors0;
-					wi.post = 0;
+					wi.connected_elms = connectedElmsA;
+					wi.node_index = 0;
 					wire.HasWireInfo = true;
 					moved = 0;
 				} else if (isReady1) {
-					wi.neighbors = neighbors1;
-					wi.post = 1;
+					wi.connected_elms = connectedElmsB;
+					wi.node_index = 1;
 					wire.HasWireInfo = true;
 					moved = 0;
 				} else {
