@@ -139,7 +139,7 @@ namespace Circuit.Forms {
 					}
 				}
 			}
-			CircuitSymbol.NeedAnalyze = true;
+			MainForm.MainForm.NeedAnalyze = true;
 		}
 
 		void ItemStateChanged(object sender) {
@@ -161,7 +161,7 @@ namespace Circuit.Forms {
 						if (ei.NewDialog) {
 							changed = true;
 						}
-						CircuitSymbol.NeedAnalyze = true;
+						MainForm.MainForm.NeedAnalyze = true;
 					}
 				}
 			}

@@ -24,7 +24,7 @@ namespace Circuit.Symbol.Input {
 			if ((mFlags & FLAG_COS) != 0) {
 				mFlags &= ~FLAG_COS;
 			}
-			mElm.reset();
+			mElm.Reset();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.AM; } }
@@ -48,7 +48,7 @@ namespace Circuit.Symbol.Input {
 			DrawLeadA();
 			DrawCircle(Post.B, SIZE / 2);
 			DrawCenteredText(ReferenceName, mNamePos);
-			UpdateDotCount(-mElm.current, ref mCurCount);
+			UpdateDotCount(-mElm.Current, ref mCurCount);
 			if (ConstructItem != this) {
 				DrawCurrentA(mCurCount);
 			}
@@ -56,10 +56,8 @@ namespace Circuit.Symbol.Input {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "AM Source";
-			arr[1] = "I = " + TextUtils.Current(mElm.current);
-			arr[2] = "V = " + TextUtils.Voltage(mElm.voltage_diff());
-			arr[3] = "cf = " + TextUtils.Frequency(mElm.CarrierFreq);
-			arr[4] = "sf = " + TextUtils.Frequency(mElm.SignalFreq);
+			arr[3] = "Carrier freq. = " + TextUtils.Frequency(mElm.CarrierFreq);
+			arr[4] = "Signal freq. = " + TextUtils.Frequency(mElm.SignalFreq);
 			arr[5] = "Vmax = " + TextUtils.Voltage(mElm.MaxVoltage);
 		}
 

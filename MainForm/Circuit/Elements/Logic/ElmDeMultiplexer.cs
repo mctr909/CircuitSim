@@ -22,7 +22,7 @@ namespace Circuit.Elements.Logic {
 			mqPin = mOutputCount + SelectBitCount;
 			chip.sizeX = 1 + SelectBitCount;
 			chip.sizeY = 1 + mOutputCount;
-			alloc_nodes();
+			AllocateNodes();
 			Pins = new Chip.Pin[TermCount];
 			for (var i = 0; i != mOutputCount; i++) {
 				Pins[i] = new Chip.Pin(chip, i, Chip.SIDE_E, "Q" + i) {

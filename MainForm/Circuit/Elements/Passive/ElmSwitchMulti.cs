@@ -8,20 +8,20 @@
 
 		public override int TermCount { get { return 1 + ThrowCount; } }
 
-		public override bool has_connection(int n1, int n2) {
+		public override bool HasConnection(int n1, int n2) {
 			return ComparePair(n1, n2, 0, 1 + Position);
 		}
 
-		public override void stamp() {
-			CircuitElement.StampVoltageSource(node_index[0], node_index[Position + 1], m_volt_source, 0);
+		public override void Stamp() {
+			StampVoltageSource(NodeId[0], NodeId[Position + 1], mVoltSource, 0);
 		}
 
-		public override double get_current_into_node(int n) {
+		public override double GetCurrent(int n) {
 			if (n == 0) {
-				return -current;
+				return -Current;
 			}
 			if (n == Position + 1) {
-				return current;
+				return Current;
 			}
 			return 0;
 		}

@@ -390,7 +390,7 @@ namespace Circuit.Symbol.Input {
 				arr[0] = mElm.WaveForm.ToString();
 				break;
 			}
-			arr[1] = "電圧：" + TextUtils.Voltage(mElm.voltage_diff());
+			arr[1] = "電圧：" + TextUtils.Voltage(mElm.GetVoltageDiff());
 			int i = 2;
 			if (mElm.WaveForm != ElmVoltage.WAVEFORM.DC && mElm.WaveForm != ElmVoltage.WAVEFORM.NOISE) {
 				arr[i++] = "振幅：" + TextUtils.Voltage(mElm.MaxVoltage);

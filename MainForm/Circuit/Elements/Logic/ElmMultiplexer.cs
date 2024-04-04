@@ -36,7 +36,7 @@ namespace Circuit.Elements.Logic {
 				output = true
 			};
 
-			alloc_nodes();
+			AllocateNodes();
 		}
 
 		protected override void execute() {

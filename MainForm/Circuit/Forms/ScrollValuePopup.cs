@@ -171,7 +171,7 @@ namespace Circuit.Forms {
 			mElmInfo.Value = mValues[thissel];
 			mEditElm.SetElementValue(0, 0, mElmInfo);
 			mLabels.Text = TextUtils.Unit(mValues[thissel], mUnit);
-			CircuitSymbol.NeedAnalyze = true;
+			MainForm.MainForm.NeedAnalyze = true;
 		}
 
 		void setElmValue(int i) {
@@ -180,7 +180,7 @@ namespace Circuit.Forms {
 				mLastIdx = i;
 				mElmInfo.Value = mValues[i];
 				mEditElm.SetElementValue(0, 0, mElmInfo);
-				CircuitSymbol.NeedAnalyze = true;
+				MainForm.MainForm.NeedAnalyze = true;
 			}
 		}
 
