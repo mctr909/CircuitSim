@@ -25,11 +25,11 @@
 		}
 
 		public static double TimeStep {
-			get { return CircuitElement.delta_time; }
+			get { return CircuitState.DeltaTime; }
 			set {
-				CircuitElement.delta_time = value;
+				CircuitState.DeltaTime = value;
 				if (null != mTxtTimeStep) {
-					mTxtTimeStep.Text = TextUtils.Unit(CircuitElement.delta_time, "");
+					mTxtTimeStep.Text = TextUtils.Unit(CircuitState.DeltaTime, "");
 				}
 			}
 		}
@@ -43,7 +43,7 @@
 
 			/* 実行 */
 			BtnRunStop = new Button() { AutoSize = true, Text = "実行" };
-			BtnRunStop.Click += new EventHandler((s, e) => { CircuitSymbol.SetSimRunning(!CircuitSymbol.IsRunning); });
+			BtnRunStop.Click += new EventHandler((s, e) => { MainForm.MainForm.SetSimRunning(!MainForm.MainForm.IsRunning); });
 			BtnRunStop.Width = 50;
 			BtnRunStop.Left = 4;
 			BtnRunStop.Top = ofsY;
@@ -81,9 +81,9 @@
 			mTxtTimeStep.TextChanged += new EventHandler((s, e) => {
 				var tmp = 0.0;
 				if (TextUtils.ParseUnits(mTxtTimeStep.Text, out tmp)) {
-					CircuitElement.delta_time = tmp;
+					CircuitState.DeltaTime = tmp;
 				}
-				mTxtTimeStep.Text = TextUtils.Unit(CircuitElement.delta_time, "");
+				mTxtTimeStep.Text = TextUtils.Unit(CircuitState.DeltaTime, "");
 			});
 			VerticalPanel.Controls.Add(mTxtTimeStep);
 			ofsY += mTxtTimeStep.Height + 4;
@@ -168,8 +168,8 @@
 			/* 値を表示 */
 			ChkShowValues = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "値を表示" };
 			ChkShowValues.CheckedChanged += new EventHandler((s, e) => {
-				for (int i = 0; i != CircuitSymbol.Count; i++) {
-					var ce = CircuitSymbol.List[i];
+				for (int i = 0; i != MainForm.MainForm.SymbolCount; i++) {
+					var ce = MainForm.MainForm.SymbolList[i];
 					ce.SetPoints();
 				}
 			});
@@ -179,8 +179,8 @@
 			/* 名前を表示 */
 			ChkShowName = new CheckBox() { Left = 4, Top = ofsY, AutoSize = true, Text = "名前を表示" };
 			ChkShowName.CheckedChanged += new EventHandler((s, e) => {
-				for (int i = 0; i != CircuitSymbol.Count; i++) {
-					var ce = CircuitSymbol.List[i];
+				for (int i = 0; i != MainForm.MainForm.SymbolCount; i++) {
+					var ce = MainForm.MainForm.SymbolList[i];
 					ce.SetPoints();
 				}
 			});

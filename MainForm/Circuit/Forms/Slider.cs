@@ -31,7 +31,7 @@
 			if (e == -1) {
 				return;
 			}
-			Symbol = CircuitSymbol.List[e];
+			Symbol = MainForm.MainForm.SymbolList[e];
 			EditItemR = st.nextTokenInt();
 			EditItemC = 0;
 			MinValue = st.nextTokenDouble();
@@ -77,7 +77,7 @@
 		public string Dump() {
 			return string.Join(" ",
 				'&',
-				CircuitSymbol.List.IndexOf(Symbol),
+				MainForm.MainForm.SymbolList.IndexOf(Symbol),
 				EditItemR,
 				MinValue,
 				MaxValue,

@@ -15,37 +15,37 @@
 		#region [method(Analyze)]
 		/* there is no current path through the input, but there
          * is an indirect path through the output to ground. */
-		public override bool has_connection(int n1, int n2) { return false; }
+		public override bool HasConnection(int n1, int n2) { return false; }
 
-		public override bool has_ground_connection(int n1) {
+		public override bool HasGroundConnection(int n1) {
 			return n1 == 1;
 		}
 
-		public override void stamp() {
-			CircuitElement.StampVoltageSource(0, node_index[3], m_volt_source);
-			CircuitElement.StampNonLinear(node_index[3]);
-			CircuitElement.StampNonLinear(node_index[1]);
+		public override void Stamp() {
+			StampVoltageSource(0, NodeId[3], mVoltSource);
+			StampNonLinear(NodeId[3]);
+			StampNonLinear(NodeId[1]);
 		}
 		#endregion
 
 		#region [method(Circuit)]
-		public override void do_iteration() {
-			Open = volts[2] < 2.5;
+		public override void DoIteration() {
+			Open = Volts[2] < 2.5;
 			mResistance = Open ? Roff : Ron;
-			CircuitElement.StampResistor(node_index[3], node_index[1], mResistance);
-			CircuitElement.UpdateVoltageSource(m_volt_source, volts[0] > 2.5 ? 5 : 0);
+			UpdateConductance(NodeId[3], NodeId[1], 1.0 / mResistance);
+			UpdateVoltage(mVoltSource, Volts[0] > 2.5 ? 5 : 0);
 		}
 
-		public override double get_current_into_node(int n) {
+		public override double GetCurrent(int n) {
 			if (n == 1) {
-				return current;
+				return Current;
 			}
 			return 0;
 		}
 
-		public override void set_voltage(int n, double c) {
-			volts[n] = c;
-			current = (volts[0] - volts[1]) / mResistance;
+		public override void SetVoltage(int n, double c) {
+			Volts[n] = c;
+			Current = (Volts[0] - Volts[1]) / mResistance;
 		}
 		#endregion
 	}

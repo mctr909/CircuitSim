@@ -177,7 +177,7 @@ namespace Circuit.Symbol.Active {
 
 			setTextPos();
 
-			mElm.set_node_pos(Post.A, mPosS[0], mPosD[0]);
+			mElm.SetNodePos(Post.A, mPosS[0], mPosD[0]);
 		}
 
 		void setTextPos() {
@@ -222,7 +222,7 @@ namespace Circuit.Symbol.Active {
 			FillPolygon(mArrowPoly);
 
 			/* draw current */
-			UpdateDotCount(-mElm.current, ref mCurCount);
+			UpdateDotCount(-mElm.Current, ref mCurCount);
 			UpdateDotCount(mElm.DiodeCurrent1, ref mCurcountBody1);
 			UpdateDotCount(mElm.DiodeCurrent2, ref mCurcountBody2);
 			DrawCurrent(mPosS[0], mPosB[0], mCurCount - mCurcountBody1);
@@ -246,8 +246,8 @@ namespace Circuit.Symbol.Active {
 			arr[2] = "Vgs：" + TextUtils.Voltage(mElm.Vg - (mElm.Nch == -1 ? mElm.Vd : mElm.Vs));
 			var vds = mElm.Vd - mElm.Vs;
 			arr[3] = ((mElm.Nch == 1) ? "Vds：" : "Vsd：") + TextUtils.Voltage(vds);
-			arr[4] = ((mElm.Nch == 1) ? "Ids：" : "Isd：") + TextUtils.Current(mElm.current);
-			arr[5] = "Rds：" + TextUtils.Unit(vds / mElm.current, "Ω");
+			arr[4] = ((mElm.Nch == 1) ? "Ids：" : "Isd：") + TextUtils.Current(mElm.Current);
+			arr[5] = "Rds：" + TextUtils.Unit(vds / mElm.Current, "Ω");
 			arr[6] = "gm：" + TextUtils.Unit(mElm.Gm, "A/V");
 		}
 
