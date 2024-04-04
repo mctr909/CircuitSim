@@ -26,7 +26,7 @@ namespace Circuit.Symbol.Input {
 				MaxV = st.nextTokenDouble(),
 				SweepTime = st.nextTokenDouble(),
 			};
-			mElm.reset();
+			mElm.Reset();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.SWEEP; } }
@@ -58,7 +58,7 @@ namespace Circuit.Symbol.Input {
 				tm = 2000 - tm;
 			}
 			double w = 1 + tm * 0.002;
-			if (CircuitSymbol.IsRunning) {
+			if (MainForm.MainForm.IsRunning) {
 				w = 1.01 + (mElm.Frequency - mElm.MinF) / (mElm.MaxF - mElm.MinF);
 			}
 
@@ -82,7 +82,7 @@ namespace Circuit.Symbol.Input {
 				DrawValues(s, 25, 0);
 			}
 
-			UpdateDotCount(-mElm.current, ref mCurCount);
+			UpdateDotCount(-mElm.Current, ref mCurCount);
 			if (ConstructItem != this) {
 				DrawCurrentA(mCurCount);
 			}
@@ -90,8 +90,8 @@ namespace Circuit.Symbol.Input {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "sweep " + (((mFlags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
-			arr[1] = "I = " + TextUtils.CurrentAbs(mElm.current);
-			arr[2] = "V = " + TextUtils.Voltage(mElm.volts[0]);
+			arr[1] = "I = " + TextUtils.CurrentAbs(mElm.Current);
+			arr[2] = "V = " + TextUtils.Voltage(mElm.NodeVolts[0]);
 			arr[3] = "f = " + TextUtils.Frequency(mElm.Frequency);
 			arr[4] = "range = " + TextUtils.Frequency(mElm.MinF) + " .. " + TextUtils.Frequency(mElm.MaxF);
 			arr[5] = "time = " + TextUtils.Unit(mElm.SweepTime, "s");

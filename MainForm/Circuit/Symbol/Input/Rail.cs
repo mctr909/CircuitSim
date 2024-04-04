@@ -57,7 +57,7 @@ namespace Circuit.Symbol.Input {
 		public override void Draw(CustomGraphics g) {
 			DrawLeadA();
 			drawRail();
-			UpdateDotCount(-mElm.current, ref mCurCount);
+			UpdateDotCount(-mElm.Current, ref mCurCount);
 			if (ConstructItem != this) {
 				DrawCurrentA(mCurCount);
 			}

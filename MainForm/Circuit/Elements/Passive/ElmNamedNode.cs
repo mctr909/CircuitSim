@@ -4,7 +4,7 @@
 		public bool IsOutput = true;
 
 		static Dictionary<string, int> mNodeList;
-		int mNodeNumber;
+		int mNodeId;
 
 		public override int TermCount { get { return 1; } }
 
@@ -22,7 +22,7 @@
 				// node assigned already?
 				if (null != Name && mNodeList.ContainsKey(Name)) {
 					var nn = mNodeList[Name];
-					mNodeNumber = nn;
+					mNodeId = nn;
 					return 0;
 				}
 				// allocate a new one
@@ -36,42 +36,42 @@
 			mNodeList = new Dictionary<string, int>();
 		}
 
-		public override double voltage_diff() {
-			return volts[0];
+		public override double GetVoltageDiff() {
+			return NodeVolts[0];
 		}
 
 		#region [method(Analyze)]
 		// get connection node (which is the same as regular nodes for all elements but this one).
-		// node 0 is the terminal, node 1 is the internal node shared by all nodes with same name
-		public override int get_connection(int n) {
-			if (n == 0) {
-				return node_index[0];
+		// nodeIndex 0 is the terminal, nodeIndex 1 is the internal node shared by all nodes with same name
+		public override int GetConnection(int nodeIndex) {
+			if (nodeIndex == 0) {
+				return NodeId[0];
 			}
-			return mNodeNumber;
+			return mNodeId;
 		}
 
-		public override void set_node(int p, int n) {
-			base.set_node(p, n);
-			if (p == 1) {
+		public override void SetNode(int index, int id) {
+			base.SetNode(index, id);
+			if (index == 1) {
 				// assign new node
-				mNodeList.Add(Name, n);
-				mNodeNumber = n;
+				mNodeList.Add(Name, id);
+				mNodeId = id;
 			}
 		}
 
-		public override void stamp() {
-			CircuitElement.StampVoltageSource(mNodeNumber, node_index[0], m_volt_source, 0);
+		public override void Stamp() {
+			StampVoltageSource(mNodeId, NodeId[0], mVoltSource, 0);
 		}
 		#endregion
 
 		#region [method(Circuit)]
-		public override double get_current_into_node(int n) { return -current; }
+		public override double GetCurrent(int n) { return -Current; }
 
-		public override void set_current(int x, double c) { current = -c; }
+		public override void SetCurrent(int x, double c) { Current = -c; }
 
-		public override void set_voltage(int n, double c) {
-			if (n == 0) {
-				volts[0] = c;
+		public override void SetVoltage(int nodeIndex, double v) {
+			if (nodeIndex == 0) {
+				NodeVolts[0] = v;
 			}
 		}
 		#endregion

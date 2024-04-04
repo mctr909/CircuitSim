@@ -13,28 +13,27 @@
 
 		public override int VoltageSourceCount { get { return 1; } }
 
-		public override double voltage_diff() {
-			return volts[0];
+		public override double GetVoltageDiff() {
+			return NodeVolts[0];
 		}
 
-		public override bool has_ground_connection(int n1) { return true; }
+		public override bool HasGroundConnection(int nodeIndex) { return true; }
 
-		public override void reset() {
+		public override void Reset() {
 			mFreqTimeZero = 0;
 		}
 
-		public override void stamp() {
-			CircuitElement.StampVoltageSource(0, node_index[0], m_volt_source);
+		public override void Stamp() {
+			StampVoltageSource(0, NodeId[0], mVoltSource);
 		}
 
-		public override void do_iteration() {
-			var deltaT = CircuitElement.time - mLastTime;
-			var signalAmplitude = Math.Sin(2 * Math.PI * (CircuitElement.time - mFreqTimeZero) * Signalfreq);
+		public override void DoIteration() {
+			var deltaT = CircuitState.Time - mLastTime;
+			var signalAmplitude = Math.Sin(2 * Math.PI * (CircuitState.Time - mFreqTimeZero) * Signalfreq);
 			mCounter += (CarrierFreq + (signalAmplitude * Deviation)) * deltaT;
-			var vn = CircuitElement.nodes.Length + m_volt_source;
-			var row = CircuitElement.row_info[vn - 1].row;
-			CircuitElement.right_side[row] += Math.Sin(2 * Math.PI * mCounter) * MaxVoltage;
-			mLastTime = CircuitElement.time;
+			var v = Math.Sin(2 * Math.PI * mCounter) * MaxVoltage;
+			UpdateVoltage(mVoltSource, v);
+			mLastTime = CircuitState.Time;
 		}
 	}
 }

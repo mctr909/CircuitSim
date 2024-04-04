@@ -31,7 +31,7 @@ namespace Circuit.Symbol.Passive {
 
 		public Transformer(Point pos) : base(pos) {
 			mElm = new ElmTransformer();
-			mElm.alloc_nodes();
+			mElm.AllocateNodes();
 			Post.NoDiagonal = true;
 			ReferenceName = "T";
 		}
@@ -44,7 +44,7 @@ namespace Circuit.Symbol.Passive {
 			mElm.Currents[0] = st.nextTokenDouble(0);
 			mElm.Currents[1] = st.nextTokenDouble(0);
 			mElm.CouplingCoef = st.nextTokenDouble(0.999);
-			mElm.alloc_nodes();
+			mElm.AllocateNodes();
 			Post.NoDiagonal = true;
 		}
 
@@ -114,7 +114,7 @@ namespace Circuit.Symbol.Passive {
 			SetCoilPos(mCoilSec1, mCoilSec2, -90 * Post.Dsign * mElm.Polarity, out mCoilSec);
 			SetNamePos();
 
-			mElm.set_node_pos(mTermPri1, mTermSec1, mTermPri2, mTermSec2);
+			mElm.SetNodePos(mTermPri1, mTermSec1, mTermPri2, mTermSec2);
 		}
 
 		public override double Distance(Point p) {
@@ -198,8 +198,8 @@ namespace Circuit.Symbol.Passive {
 		public override void GetInfo(string[] arr) {
 			arr[0] = "トランス：" + TextUtils.Unit(mElm.PInductance, "H");
 			arr[1] = "2次側巻数比：" + mElm.Ratio;
-			arr[2] = "電位差(1次)：" + TextUtils.Voltage(mElm.volts[ElmTransformer.PRI_T] - mElm.volts[ElmTransformer.PRI_B]);
-			arr[3] = "電位差(2次)：" + TextUtils.Voltage(mElm.volts[ElmTransformer.SEC_T] - mElm.volts[ElmTransformer.SEC_B]);
+			arr[2] = "電位差(1次)：" + TextUtils.Voltage(mElm.NodeVolts[ElmTransformer.PRI_T] - mElm.NodeVolts[ElmTransformer.PRI_B]);
+			arr[3] = "電位差(2次)：" + TextUtils.Voltage(mElm.NodeVolts[ElmTransformer.SEC_T] - mElm.NodeVolts[ElmTransformer.SEC_B]);
 			arr[4] = "電流(1次)：" + TextUtils.Current(mElm.Currents[0]);
 			arr[5] = "電流(2次)：" + TextUtils.Current(mElm.Currents[1]);
 		}

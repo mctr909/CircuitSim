@@ -6,8 +6,8 @@
 
 		public ElmScope(ScopePlot scope) { mScope = scope; }
 
-		public override void reset() {
-			base.reset();
+		public override void Reset() {
+			base.Reset();
 			mScope.ResetGraph(true);
 		}
 	}

@@ -43,114 +43,107 @@
 			}
 			mHasResistance = 0 < SeriesResistance;
 			mDiodeEndNode = mHasResistance ? 2 : 1;
-			alloc_nodes();
+			AllocateNodes();
 		}
 
 		#region [method(Analyze)]
-		public override void reset() {
+		public override void Reset() {
 			mLastVoltDiff = 0;
-			volts[0] = volts[1] = 0;
+			NodeVolts[0] = NodeVolts[1] = 0;
 			if (mHasResistance) {
-				volts[2] = 0;
+				NodeVolts[2] = 0;
 			}
 		}
 
-		public override void stamp() {
+		public override void Stamp() {
 			if (mHasResistance) {
 				/* create diode from node 0 to internal node */
-				mNodes0 = node_index[0];
-				mNodes1 = node_index[2];
-				CircuitElement.row_info[mNodes0 - 1].left_changes = true;
-				CircuitElement.row_info[mNodes1 - 1].left_changes = true;
+				mNodes0 = NodeId[0];
+				mNodes1 = NodeId[2];
 				/* create resistor from internal node to node 1 */
-				var r0 = 1.0 / SeriesResistance;
-				CircuitElement.matrix[node_index[1] - 1, node_index[1] - 1] += r0;
-				CircuitElement.matrix[node_index[2] - 1, node_index[2] - 1] += r0;
-				CircuitElement.matrix[node_index[1] - 1, node_index[2] - 1] -= r0;
-				CircuitElement.matrix[node_index[2] - 1, node_index[1] - 1] -= r0;
+				StampResistor(NodeId[1], NodeId[2], SeriesResistance);
 			} else {
 				/* don't need any internal nodes if no series resistance */
-				mNodes0 = node_index[0];
-				mNodes1 = node_index[1];
-				CircuitElement.row_info[mNodes0 - 1].left_changes = true;
-				CircuitElement.row_info[mNodes1 - 1].left_changes = true;
+				mNodes0 = NodeId[0];
+				mNodes1 = NodeId[1];
 			}
+			StampNonLinear(mNodes0);
+			StampNonLinear(mNodes1);
 		}
 		#endregion
 
 		#region [method(Circuit)]
-		public override void do_iteration() {
-			var voltdiff = volts[0] - volts[mDiodeEndNode];
-			if (0.001 < Math.Abs(voltdiff - mLastVoltDiff)) {
-				CircuitElement.converged = false;
+		public override void DoIteration() {
+			var v_diff = NodeVolts[0] - NodeVolts[mDiodeEndNode];
+			if (0.001 < Math.Abs(v_diff - mLastVoltDiff)) {
+				CircuitState.Converged = false;
 			}
 
+			/* limit Vdiff */
+			var v_old = mLastVoltDiff;
+			mLastVoltDiff = v_diff;
 			{
-				var v_new = voltdiff;
-				var v_old = mLastVoltDiff;
-				/* check new voltage; has current changed by factor of e^2? */
-				if (v_new > mVCrit && Math.Abs(v_new - v_old) > (VScale + VScale)) {
+				/* check new Vdiff; has current changed by factor of e^2? */
+				if (v_diff > mVCrit && Math.Abs(v_diff - v_old) > (VScale + VScale)) {
 					if (v_old > 0) {
-						var arg = 1 + (v_new - v_old) / VScale;
+						var arg = 1 + (v_diff - v_old) / VScale;
 						if (arg > 0) {
-							/* adjust vnew so that the current is the same
+							/* adjust Vdiff so that the current is the same
                              * as in linearized model from previous iteration.
-                             * current at vnew = old current * arg */
-							v_new = v_old + VScale * Math.Log(arg);
+                             * current at Vdiff = old current * arg */
+							v_diff = v_old + VScale * Math.Log(arg);
 						} else {
-							v_new = mVCrit;
+							v_diff = mVCrit;
 						}
 					} else {
-						/* adjust vnew so that the current is the same
+						/* adjust Vdiff so that the current is the same
                          * as in linearized model from previous iteration.
                          * (1/vscale = slope of load line) */
-						v_new = VScale * Math.Log(v_new / VScale);
+						v_diff = VScale * Math.Log(v_diff / VScale);
 					}
-					CircuitElement.converged = false;
-				} else if (v_new < 0 && mVzOffset != 0) {
+					CircuitState.Converged = false;
+				} else if (v_diff < 0 && mVzOffset != 0) {
 					/* for Zener breakdown, use the same logic but translate the values,
                      * and replace the normal values with the Zener-specific ones to
                      * account for the steeper exponential of our Zener breakdown curve. */
-					v_new = -v_new - mVzOffset;
+					v_diff = -v_diff - mVzOffset;
 					v_old = -v_old - mVzOffset;
-					if (v_new > mVzCrit && Math.Abs(v_new - v_old) > (VTH + VTH)) {
+					if (v_diff > mVzCrit && Math.Abs(v_diff - v_old) > (VTH + VTH)) {
 						if (v_old > 0) {
-							var arg = 1 + (v_new - v_old) / VTH;
+							var arg = 1 + (v_diff - v_old) / VTH;
 							if (arg > 0) {
-								v_new = v_old + VTH * Math.Log(arg);
+								v_diff = v_old + VTH * Math.Log(arg);
 							} else {
-								v_new = mVzCrit;
+								v_diff = mVzCrit;
 							}
 						} else {
-							v_new = VTH * Math.Log(v_new / VTH);
+							v_diff = VTH * Math.Log(v_diff / VTH);
 						}
-						CircuitElement.converged = false;
+						CircuitState.Converged = false;
 					}
-					v_new = -(v_new + mVzOffset);
+					v_diff = -(v_diff + mVzOffset);
 				}
-				voltdiff = v_new;
-				mLastVoltDiff = voltdiff;
 			}
 
 			{
 				/* To prevent a possible singular matrix or other numeric issues, put a tiny conductance
                  * in parallel with each P-N junction. */
-				var gmin = Leakage * 0.01;
-				if (CircuitElement.sub_iterations > 100) {
+				var g_min = Leakage * 0.01;
+				if (CircuitElement.ITER_COUNT > 100) {
 					/* if we have trouble converging, put a conductance in parallel with the diode.
                      * Gradually increase the conductance value for each iteration. */
-					gmin = Math.Exp(-9 * Math.Log(10) * (1 - CircuitElement.sub_iterations / 3000.0));
-					if (0.1 < gmin) {
-						gmin = 0.1;
+					g_min = Math.Exp(-9 * Math.Log(10) * (1 - CircuitElement.ITER_COUNT / 3000.0));
+					if (g_min > 0.1) {
+						g_min = 0.1;
 					}
 				}
 				double geq;
 				double nc;
-				if (voltdiff >= 0 || VZener == 0) {
+				if (v_diff >= 0 || VZener == 0) {
 					/* regular diode or forward-biased zener */
-					var eval = Math.Exp(voltdiff * VdCoef);
-					geq = VdCoef * Leakage * eval + gmin;
-					nc = (eval - 1) * Leakage - geq * voltdiff;
+					var eval = Math.Exp(v_diff * VdCoef);
+					geq = VdCoef * Leakage * eval + g_min;
+					nc = (eval - 1) * Leakage - geq * v_diff;
 				} else {
 					/* Zener diode */
 					/* For reverse-biased Zener diodes, mimic the Zener breakdown curve with an
@@ -163,61 +156,33 @@
                      * nc is I(Vd) + I'(Vd)*(-Vd)
                      */
 					geq = Leakage * (
-						VdCoef * Math.Exp(voltdiff * VdCoef)
-						+ VZ_COEF * Math.Exp((-voltdiff - mVzOffset) * VZ_COEF)
-					) + gmin;
+						VdCoef * Math.Exp(v_diff * VdCoef)
+						+ VZ_COEF * Math.Exp((-v_diff - mVzOffset) * VZ_COEF)
+					) + g_min;
 					nc = Leakage * (
-						Math.Exp(voltdiff * VdCoef)
-						- Math.Exp((-voltdiff - mVzOffset) * VZ_COEF)
+						Math.Exp(v_diff * VdCoef)
+						- Math.Exp((-v_diff - mVzOffset) * VZ_COEF)
 						- 1
-					) + geq * (-voltdiff);
+					) + geq * (-v_diff);
 				}
-				var row = CircuitElement.row_info[mNodes0 - 1].row;
-				var ri = CircuitElement.row_info[mNodes0 - 1];
-				if (ri.is_const) {
-					CircuitElement.right_side[row] -= geq * ri.value;
-				} else {
-					CircuitElement.matrix[row, ri.col] += geq;
-				}
-				row = CircuitElement.row_info[mNodes1 - 1].row;
-				ri = CircuitElement.row_info[mNodes1 - 1];
-				if (ri.is_const) {
-					CircuitElement.right_side[row] -= geq * ri.value;
-				} else {
-					CircuitElement.matrix[row, ri.col] += geq;
-				}
-				row = CircuitElement.row_info[mNodes0 - 1].row;
-				ri = CircuitElement.row_info[mNodes1 - 1];
-				if (ri.is_const) {
-					CircuitElement.right_side[row] += geq * ri.value;
-				} else {
-					CircuitElement.matrix[row, ri.col] -= geq;
-				}
-				row = CircuitElement.row_info[mNodes1 - 1].row;
-				ri = CircuitElement.row_info[mNodes0 - 1];
-				if (ri.is_const) {
-					CircuitElement.right_side[row] += geq * ri.value;
-				} else {
-					CircuitElement.matrix[row, ri.col] -= geq;
-				}
-				CircuitElement.right_side[CircuitElement.row_info[mNodes0 - 1].row] -= nc;
-				CircuitElement.right_side[CircuitElement.row_info[mNodes1 - 1].row] += nc;
+				UpdateConductance(mNodes0, mNodes1, geq);
+				UpdateCurrent(mNodes0, mNodes1, nc);
 			}
 		}
 
-		public override void finish_iteration() {
-			if (Math.Abs(current) > 1e12) {
-				CircuitElement.stopped = true;
+		public override void FinishIteration() {
+			if (Math.Abs(Current) > 1e12) {
+				CircuitState.Stopped = true;
 			}
 		}
 
-		public override void set_voltage(int n, double c) {
-			volts[n] = c;
-			var voltdiff = volts[0] - volts[mDiodeEndNode];
+		public override void SetVoltage(int nodeIndex, double v) {
+			NodeVolts[nodeIndex] = v;
+			var voltdiff = NodeVolts[0] - NodeVolts[mDiodeEndNode];
 			if (voltdiff >= 0 || VZener == 0) {
-				current = Leakage * (Math.Exp(voltdiff * VdCoef) - 1);
+				Current = Leakage * (Math.Exp(voltdiff * VdCoef) - 1);
 			} else {
-				current = Leakage * (
+				Current = Leakage * (
 					Math.Exp(voltdiff * VdCoef)
 					- Math.Exp((-voltdiff - mVzOffset) * VZ_COEF)
 					- 1

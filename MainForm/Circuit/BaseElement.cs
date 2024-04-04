@@ -5,16 +5,16 @@
 		}
 
 		public BaseElement() {
-			alloc_nodes();
+			AllocateNodes();
 		}
 
 		protected static Random mRandom = new();
-		protected int m_volt_source;
+		protected int mVoltSource;
 
-		public int[] node_index;
-		public Point[] node_pos;
-		public double[] volts;
-		public double current;
+		public int[] NodeId;
+		public Point[] NodePos;
+		public double[] NodeVolts;
+		public double Current;
 
 		#region [property(Analyze)]
 		public abstract int TermCount { get; }
@@ -25,81 +25,189 @@
 		#endregion
 
 		#region [method]
-		/// <summary>
-		/// allocate NodeIndex/Volts arrays we need
-		/// </summary>
-		public void alloc_nodes() {
+		public void AllocateNodes() {
 			int n = TermCount + InternalNodeCount;
-			if (node_index == null || node_index.Length != n) {
-				node_index = new int[n];
-				volts = new double[n];
+			if (NodeId == null || NodeId.Length != n) {
+				NodeId = new int[n];
+				NodeVolts = new double[n];
 			}
 		}
-		public void set_node_pos(params Point[] node) {
-			node_pos = new Point[node.Length];
+		public void SetNodePos(params Point[] node) {
+			NodePos = new Point[node.Length];
 			for (int i = 0; i < node.Length; i++) {
-				node_pos[i] = node[i];
+				NodePos[i] = node[i];
 			}
 		}
-		public void set_node_pos(PointF pos, params PointF[] node) {
-			node_pos = new Point[node.Length + 1];
-			node_pos[0].X = (int)pos.X;
-			node_pos[0].Y = (int)pos.Y;
+		public void SetNodePos(PointF pos, params PointF[] node) {
+			NodePos = new Point[node.Length + 1];
+			NodePos[0].X = (int)pos.X;
+			NodePos[0].Y = (int)pos.Y;
 			for (int i = 0; i < node.Length; i++) {
-				node_pos[i + 1].X = (int)node[i].X;
-				node_pos[i + 1].Y = (int)node[i].Y;
+				NodePos[i + 1].X = (int)node[i].X;
+				NodePos[i + 1].Y = (int)node[i].Y;
 			}
 		}
-		public void set_node_pos(PointF[] node, PointF pos) {
-			node_pos = new Point[node.Length + 1];
+		public void SetNodePos(PointF[] node, PointF pos) {
+			NodePos = new Point[node.Length + 1];
 			for (int i = 0; i < node.Length; i++) {
-				node_pos[i].X = (int)node[i].X;
-				node_pos[i].Y = (int)node[i].Y;
+				NodePos[i].X = (int)node[i].X;
+				NodePos[i].Y = (int)node[i].Y;
 			}
-			node_pos[node.Length].X = (int)pos.X;
-			node_pos[node.Length].Y = (int)pos.Y;
+			NodePos[node.Length].X = (int)pos.X;
+			NodePos[node.Length].Y = (int)pos.Y;
 		}
-		public virtual double voltage_diff() {
-			return volts[0] - volts[1];
+		public virtual double GetVoltageDiff() {
+			return NodeVolts[0] - NodeVolts[1];
+		}
+		#endregion
+
+		#region [method(Stamp)]
+		protected static void StampMatrix(int r, int c, double val) {
+			if (r > 0 && c > 0) {
+				CircuitAnalizer.Matrix[r - 1, c - 1] += val;
+			}
+		}
+		/* indicate that the values on the left side of row i */
+		protected static void StampNonLinear(int i) {
+			CircuitAnalizer.NodeInfos[i - 1].NonLinear = true;
+		}
+		/* indicate that the value on the right side of row i */
+		protected static void StampRightSide(int i) {
+			CircuitAnalizer.NodeInfos[i - 1].RightChanges = true;
+		}
+		/* stamp value val on the right side of row i, representing an
+		/* independent current source flowing into node i */
+		protected static void StampRightSide(int i, double val) {
+			CircuitAnalizer.RightSide[i - 1] += val;
+		}
+		protected static void StampConductance(int n1, int n2, double g) {
+			StampMatrix(n1, n1, g);
+			StampMatrix(n1, n2, -g);
+			StampMatrix(n2, n1, -g);
+			StampMatrix(n2, n2, g);
+		}
+		protected static void StampResistor(int n1, int n2, double r) {
+			var g = 1.0 / r;
+			StampMatrix(n1, n1, g);
+			StampMatrix(n1, n2, -g);
+			StampMatrix(n2, n1, -g);
+			StampMatrix(n2, n2, g);
+		}
+		protected static void StampVoltageSource(int n, int vsIndex, double v) {
+			var vn = CircuitAnalizer.NodeCount + vsIndex;
+			StampMatrix(vn, n, 1);
+			StampMatrix(n, vn, -1);
+			StampRightSide(vn, v);
+		}
+		protected static void StampVoltageSource(int n1, int n2, int vsIndex, double v) {
+			var vn = CircuitAnalizer.NodeCount + vsIndex;
+			StampMatrix(vn, n1, -1);
+			StampMatrix(vn, n2, 1);
+			StampMatrix(n1, vn, 1);
+			StampMatrix(n2, vn, -1);
+			StampRightSide(vn, v);
+		}
+		/* use this if the amount of voltage is going to be updated in DoIteration(), by UpdateVoltage() */
+		protected static void StampVoltageSource(int n, int vsIndex) {
+			var vn = CircuitAnalizer.NodeCount + vsIndex;
+			StampMatrix(vn, n, 1);
+			StampMatrix(n, vn, -1);
+			StampRightSide(vn);
+		}
+		/* use this if the amount of voltage is going to be updated in DoIteration(), by UpdateVoltage() */
+		protected static void StampVoltageSource(int n1, int n2, int vsIndex) {
+			var vn = CircuitAnalizer.NodeCount + vsIndex;
+			StampMatrix(vn, n1, -1);
+			StampMatrix(vn, n2, 1);
+			StampMatrix(n1, vn, 1);
+			StampMatrix(n2, vn, -1);
+			StampRightSide(vn);
+		}
+		/* current from cn1 to cn2 is equal to voltage from vn1 to 2, divided by g */
+		protected static void StampVCCurrentSource(int cn1, int cn2, int vn1, int vn2, double g) {
+			StampMatrix(cn1, vn1, g);
+			StampMatrix(cn1, vn2, -g);
+			StampMatrix(cn2, vn1, -g);
+			StampMatrix(cn2, vn2, g);
 		}
 		#endregion
 
 		#region [method(Analyze)]
-		public virtual int get_connection(int n) { return node_index[n]; }
-		public virtual bool has_connection(int n1, int n2) { return true; }
-		public virtual bool has_ground_connection(int n1) { return false; }
-		public virtual void stamp() { }
-		public virtual void set_node(int p, int n) {
-			if (p < node_index.Length) {
-				node_index[p] = n;
+		public virtual int GetConnection(int nodeIndex) { return NodeId[nodeIndex]; }
+		public virtual bool HasConnection(int n1, int n2) { return true; }
+		public virtual bool HasGroundConnection(int nodeIndex) { return false; }
+		public virtual void Stamp() { }
+		public virtual void SetNode(int index, int id) {
+			if (index < NodeId.Length) {
+				NodeId[index] = id;
 			}
 		}
-		public virtual void set_voltage_source(int n, int v) {
+		public virtual void SetVoltageSource(int n, int v) {
 			/* default implementation only makes sense for subclasses with one voltage source.
              * If we have 0 this isn't used, if we have >1 this won't work */
-			m_volt_source = v;
+			mVoltSource = v;
 		}
-		public virtual void reset() {
+		public virtual void Reset() {
 			for (int i = 0; i != TermCount + InternalNodeCount; i++) {
-				volts[i] = 0;
+				NodeVolts[i] = 0;
 			}
 		}
-		public virtual void shorted() { }
+		public virtual void Shorted() { }
 		#endregion
 
 		#region [method(Circuit)]
-		public virtual void prepare_iteration() { }
-		public virtual void do_iteration() { }
-		public virtual void finish_iteration() { }
-		public virtual double get_current_into_node(int n) {
+		public virtual void PrepareIteration() { }
+		public virtual void DoIteration() { }
+		public virtual void FinishIteration() { }
+		public virtual double GetCurrent(int n) {
 			if (n == 0 && TermCount == 2) {
-				return -current;
+				return -Current;
 			} else {
-				return current;
+				return Current;
 			}
 		}
-		public virtual void set_current(int n, double c) { current = c; }
-		public virtual void set_voltage(int n, double c) { volts[n] = c; }
+		public virtual void SetCurrent(int n, double c) { Current = c; }
+		public virtual void SetVoltage(int nodeIndex, double v) { NodeVolts[nodeIndex] = v; }
+		protected static void UpdateCurrent(int n1, int n2, double i) {
+			n1 = CircuitElement.NODE_INFOS[n1 - 1].row;
+			n2 = CircuitElement.NODE_INFOS[n2 - 1].row;
+			CircuitElement.RIGHT_SIDE[n1] -= i;
+			CircuitElement.RIGHT_SIDE[n2] += i;
+		}
+		protected static void UpdateVoltage(int vsIndex, double v) {
+			vsIndex += CircuitElement.VOLTAGE_SOURCE_BEGIN;
+			vsIndex = CircuitElement.NODE_INFOS[vsIndex].row;
+			CircuitElement.RIGHT_SIDE[vsIndex] += v;
+		}
+		protected static void UpdateConductance(int n1, int n2, double g) {
+			var ni1 = CircuitElement.NODE_INFOS[n1 - 1];
+			var ni2 = CircuitElement.NODE_INFOS[n2 - 1];
+			n1 = ni1.row;
+			n2 = ni2.row;
+			if (ni1.is_const) {
+				CircuitElement.RIGHT_SIDE[n1] -= g * ni1.value;
+				CircuitElement.RIGHT_SIDE[n2] += g * ni1.value;
+			} else {
+				CircuitElement.MATRIX[n1, ni1.col] += g;
+				CircuitElement.MATRIX[n2, ni1.col] -= g;
+			}
+			if (ni2.is_const) {
+				CircuitElement.RIGHT_SIDE[n1] += g * ni2.value;
+				CircuitElement.RIGHT_SIDE[n2] -= g * ni2.value;
+			} else {
+				CircuitElement.MATRIX[n1, ni2.col] -= g;
+				CircuitElement.MATRIX[n2, ni2.col] += g;
+			}
+		}
+		protected static void UpdateMatrix(int r, int c, double val) {
+			r = CircuitElement.NODE_INFOS[r - 1].row;
+			var nc = CircuitElement.NODE_INFOS[c - 1];
+			if (nc.is_const) {
+				CircuitElement.RIGHT_SIDE[r] -= val * nc.value;
+			} else {
+				CircuitElement.MATRIX[r, nc.col] += val;
+			}
+		}
 		#endregion
 	}
 }

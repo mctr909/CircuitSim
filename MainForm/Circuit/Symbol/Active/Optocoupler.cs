@@ -71,7 +71,7 @@ namespace Circuit.Symbol.Active {
 				GetPinPos(2, x0, y0, 0, 1, 0.5, 0, xs - CSPC2, 0),
 				GetPinPos(3, x0, y0, 0, 1, 0.5, 0, xs - CSPC2, 0)
 			};
-			mElm.set_node_pos(mPosts);
+			mElm.SetNodePos(mPosts);
 			Post.B = mPosts[2];
 
 			/* diode */

@@ -46,7 +46,7 @@ namespace Circuit.Symbol.Logic {
 			DrawPolygon(gatePoly);
 			DrawPolygon(symbolPoly);
 			DrawCircle(pcircle, 3);
-			UpdateDotCount(mElm.current, ref mCurCount);
+			UpdateDotCount(mElm.Current, ref mCurCount);
 			DrawCurrentB(mCurCount);
 		}
 
@@ -70,8 +70,8 @@ namespace Circuit.Symbol.Logic {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "inverting Schmitt trigger";
-			arr[1] = "Vin：" + TextUtils.Voltage(mElm.volts[0]);
-			arr[2] = "Vout：" + TextUtils.Voltage(mElm.volts[1]);
+			arr[1] = "Vin：" + TextUtils.Voltage(mElm.NodeVolts[0]);
+			arr[2] = "Vout：" + TextUtils.Voltage(mElm.NodeVolts[1]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

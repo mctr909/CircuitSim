@@ -14,27 +14,27 @@
 
 		public override int TermCount { get { return 3; } }
 
-		public override double voltage_diff() {
-			return volts[V_O] - volts[V_P];
+		public override double GetVoltageDiff() {
+			return NodeVolts[V_O] - NodeVolts[V_P];
 		}
 
 		#region [method(Analyze)]
 		/* there is no current path through the op-amp inputs,
          * but there is an indirect path through the output to ground. */
-		public override bool has_connection(int n1, int n2) { return false; }
+		public override bool HasConnection(int n1, int n2) { return false; }
 
-		public override bool has_ground_connection(int n1) { return n1 == 2; }
+		public override bool HasGroundConnection(int nodeIndex) { return nodeIndex == 2; }
 
-		public override void stamp() {
-			int vn = CircuitElement.nodes.Length + m_volt_source;
-			CircuitElement.StampNonLinear(vn);
-			CircuitElement.StampMatrix(node_index[2], vn, 1);
+		public override void Stamp() {
+			var vn = CircuitAnalizer.NodeCount + mVoltSource;
+			StampMatrix(NodeId[2], vn, 1);
+			StampNonLinear(vn);
 		}
 		#endregion
 
 		#region [method(Circuit)]
-		public override void do_iteration() {
-			var vd = volts[V_P] - volts[V_N];
+		public override void DoIteration() {
+			var vd = NodeVolts[V_P] - NodeVolts[V_N];
 			double dx;
 			double x;
 			if (vd >= MaxOut / Gain && (mLastVd >= 0 || mRandom.Next(4) == 1)) {
@@ -49,34 +49,34 @@
 			}
 
 			/* newton-raphson */
-			var vnode = CircuitElement.nodes.Length + m_volt_source;
-			var rowV = CircuitElement.row_info[vnode - 1].row;
-			var colri = CircuitElement.row_info[node_index[0] - 1];
+			var vnode = CircuitElement.VOLTAGE_SOURCE_BEGIN + mVoltSource;
+			var rowV = CircuitElement.NODE_INFOS[vnode].row;
+			var colri = CircuitElement.NODE_INFOS[NodeId[0] - 1];
 			if (colri.is_const) {
-				CircuitElement.right_side[rowV] -= dx * colri.value;
+				CircuitElement.RIGHT_SIDE[rowV] -= dx * colri.value;
 			} else {
-				CircuitElement.matrix[rowV, colri.col] += dx;
+				CircuitElement.MATRIX[rowV, colri.col] += dx;
 			}
-			colri = CircuitElement.row_info[node_index[1] - 1];
+			colri = CircuitElement.NODE_INFOS[NodeId[1] - 1];
 			if (colri.is_const) {
-				CircuitElement.right_side[rowV] += dx * colri.value;
+				CircuitElement.RIGHT_SIDE[rowV] += dx * colri.value;
 			} else {
-				CircuitElement.matrix[rowV, colri.col] -= dx;
+				CircuitElement.MATRIX[rowV, colri.col] -= dx;
 			}
-			colri = CircuitElement.row_info[node_index[2] - 1];
+			colri = CircuitElement.NODE_INFOS[NodeId[2] - 1];
 			if (colri.is_const) {
-				CircuitElement.right_side[rowV] -= colri.value;
+				CircuitElement.RIGHT_SIDE[rowV] -= colri.value;
 			} else {
-				CircuitElement.matrix[rowV, colri.col] += 1;
+				CircuitElement.MATRIX[rowV, colri.col] += 1;
 			}
-			CircuitElement.right_side[rowV] += x;
+			CircuitElement.RIGHT_SIDE[rowV] += x;
 
 			mLastVd = vd;
 		}
 
-		public override double get_current_into_node(int n) {
+		public override double GetCurrent(int n) {
 			if (n == 2) {
-				return -current;
+				return -Current;
 			}
 			return 0;
 		}

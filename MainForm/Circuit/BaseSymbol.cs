@@ -104,8 +104,8 @@ namespace Circuit {
 			int ny = Post.A.Y + dy;
 			int nx2 = Post.B.X + dx;
 			int ny2 = Post.B.Y + dy;
-			for (int i = 0; i != CircuitSymbol.Count; i++) {
-				var ce = CircuitSymbol.List[i];
+			for (int i = 0; i != MainForm.MainForm.SymbolCount; i++) {
+				var ce = MainForm.MainForm.SymbolList[i];
 				var ceP1 = ce.Post.A;
 				var ceP2 = ce.Post.B;
 				if (ceP1.X == nx && ceP1.Y == ny && ceP2.X == nx2 && ceP2.Y == ny2) {
@@ -159,7 +159,7 @@ namespace Circuit {
 		}
 		public virtual void SetPoints() {
 			Post.SetValue();
-			Element.set_node_pos(Post.A, Post.B);
+			Element.SetNodePos(Post.A, Post.B);
 		}
 		public virtual void GetInfo(string[] arr) { }
 		public virtual ElementInfo GetElementInfo(int r, int c) { return null; }
@@ -186,7 +186,7 @@ namespace Circuit {
 		/// <param name="current"></param>
 		/// <param name="count"></param>
 		protected void UpdateDotCount(double current, ref double count) {
-			if (!CircuitSymbol.IsRunning) {
+			if (!MainForm.MainForm.IsRunning) {
 				return;
 			}
 			var speed = current * CurrentMult;
@@ -198,12 +198,12 @@ namespace Circuit {
 		/// update dot positions (curcount) for drawing current (simple case for single current)
 		/// </summary>
 		protected void UpdateDotCount() {
-			UpdateDotCount(Element.current, ref mCurCount);
+			UpdateDotCount(Element.Current, ref mCurCount);
 		}
 
 		protected void GetBasicInfo(int begin, params string[] arr) {
-			arr[begin] = "電流：" + TextUtils.CurrentAbs(Element.current);
-			arr[begin + 1] = "電位差：" + TextUtils.VoltageAbs(Element.voltage_diff());
+			arr[begin] = "電流：" + TextUtils.CurrentAbs(Element.Current);
+			arr[begin + 1] = "電位差：" + TextUtils.VoltageAbs(Element.GetVoltageDiff());
 		}
 
 		/// <summary>
@@ -306,8 +306,8 @@ namespace Circuit {
 			if (mLink.GetGroup(linkID) == 0) {
 				return;
 			}
-			for (int i = 0; i != CircuitSymbol.Count; i++) {
-				var u2 = CircuitSymbol.List[i];
+			for (int i = 0; i != MainForm.MainForm.SymbolCount; i++) {
+				var u2 = MainForm.MainForm.SymbolList[i];
 				if (u2 is T) {
 					if (u2.mLink.GetGroup(linkID) == mLink.GetGroup(linkID)) {
 						u2.mLink.SetValue(u2.Element, linkID, value);
@@ -360,7 +360,7 @@ namespace Circuit {
 			DrawCurrent(a.X, a.Y, b.X, b.Y, pos);
 		}
 		protected void DrawCurrent(float ax, float ay, float bx, float by, double pos) {
-			if ((!CircuitSymbol.IsRunning) || ControlPanel.ChkPrintable.Checked || !ControlPanel.ChkShowCurrent.Checked) {
+			if ((!MainForm.MainForm.IsRunning) || ControlPanel.ChkPrintable.Checked || !ControlPanel.ChkShowCurrent.Checked) {
 				return;
 			}
 			pos %= CURRENT_DOT_SIZE;

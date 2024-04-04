@@ -9,37 +9,37 @@
 
 		public override int VoltageSourceCount { get { return 1; } }
 
-		public override double voltage_diff() {
-			return volts[0];
+		public override double GetVoltageDiff() {
+			return NodeVolts[0];
 		}
 
 		#region [method(Analyze)]
 		/* there is no current path through the inverter input,
          * but there is an indirect path through the output to ground. */
-		public override bool has_connection(int n1, int n2) { return false; }
+		public override bool HasConnection(int n1, int n2) { return false; }
 
-		public override bool has_ground_connection(int n1) { return n1 == 1; }
+		public override bool HasGroundConnection(int nodeIndex) { return nodeIndex == 1; }
 
-		public override void stamp() {
-			CircuitElement.StampVoltageSource(0, node_index[1], m_volt_source);
+		public override void Stamp() {
+			StampVoltageSource(0, NodeId[1], mVoltSource);
 		}
 		#endregion
 
 		#region [method(Circuit)]
-		public override void prepare_iteration() {
-			mLastOutputVoltage = volts[1];
+		public override void PrepareIteration() {
+			mLastOutputVoltage = NodeVolts[1];
 		}
 
-		public override void do_iteration() {
-			double v = volts[0] > HighVoltage * .5 ? 0 : HighVoltage;
-			double maxStep = SlewRate * CircuitElement.delta_time * 1e9;
+		public override void DoIteration() {
+			double v = NodeVolts[0] > HighVoltage * .5 ? 0 : HighVoltage;
+			double maxStep = SlewRate * CircuitState.DeltaTime * 1e9;
 			v = Math.Max(Math.Min(mLastOutputVoltage + maxStep, v), mLastOutputVoltage - maxStep);
-			CircuitElement.UpdateVoltageSource(m_volt_source, v);
+			UpdateVoltage(mVoltSource, v);
 		}
 
-		public override double get_current_into_node(int n) {
+		public override double GetCurrent(int n) {
 			if (n == 1) {
-				return current;
+				return Current;
 			}
 			return 0;
 		}

@@ -18,7 +18,7 @@
 		public override int TermCount { get { return 4; } }
 
 		#region [method(Analyze)]
-		public override bool has_connection(int n1, int n2) {
+		public override bool HasConnection(int n1, int n2) {
 			if (ComparePair(n1, n2, 0, 2)) {
 				return true;
 			}
@@ -28,17 +28,17 @@
 			return false;
 		}
 
-		public override void reset() {
+		public override void Reset() {
 			/* need to set current-source values here in case one of the nodes is node 0.  In that case
              * calculateCurrent() may get called (from setNodeVoltage()) when analyzing circuit, before
              * startIteration() gets called */
 			Currents[0] = Currents[1] = 0;
-			volts[PRI_T] = volts[PRI_B] = 0;
-			volts[SEC_T] = volts[SEC_B] = 0;
+			NodeVolts[PRI_T] = NodeVolts[PRI_B] = 0;
+			NodeVolts[SEC_T] = NodeVolts[SEC_B] = 0;
 			mCurSourceValue[0] = mCurSourceValue[1] = 0;
 		}
 
-		public override void stamp() {
+		public override void Stamp() {
 			/* equations for transformer:
              *   v1 = L1 di1/dt + M  di2/dt
              *   v2 = M  di1/dt + L2 di2/dt
@@ -71,52 +71,46 @@
 			var m = CouplingCoef * Math.Sqrt(l1 * l2);
 			// build inverted matrix
 			var deti = 1 / (l1 * l2 - m * m);
-			var ts = CircuitElement.delta_time / 2;
+			var ts = CircuitState.DeltaTime / 2;
 			mA[0] = l2 * deti * ts; // we multiply dt/2 into a1..a4 here
 			mA[1] = -m * deti * ts;
 			mA[2] = -m * deti * ts;
 			mA[3] = l1 * deti * ts;
-			CircuitElement.StampConductance(node_index[PRI_T], node_index[PRI_B], mA[0]);
-			CircuitElement.StampVCCurrentSource(node_index[PRI_T], node_index[PRI_B], node_index[SEC_T], node_index[SEC_B], mA[1]);
-			CircuitElement.StampVCCurrentSource(node_index[SEC_T], node_index[SEC_B], node_index[PRI_T], node_index[PRI_B], mA[2]);
-			CircuitElement.StampConductance(node_index[SEC_T], node_index[SEC_B], mA[3]);
-			CircuitElement.StampRightSide(node_index[PRI_T]);
-			CircuitElement.StampRightSide(node_index[SEC_T]);
-			CircuitElement.StampRightSide(node_index[PRI_B]);
-			CircuitElement.StampRightSide(node_index[SEC_B]);
+			StampConductance(NodeId[PRI_T], NodeId[PRI_B], mA[0]);
+			StampVCCurrentSource(NodeId[PRI_T], NodeId[PRI_B], NodeId[SEC_T], NodeId[SEC_B], mA[1]);
+			StampVCCurrentSource(NodeId[SEC_T], NodeId[SEC_B], NodeId[PRI_T], NodeId[PRI_B], mA[2]);
+			StampConductance(NodeId[SEC_T], NodeId[SEC_B], mA[3]);
+			StampRightSide(NodeId[PRI_T]);
+			StampRightSide(NodeId[SEC_T]);
+			StampRightSide(NodeId[PRI_B]);
+			StampRightSide(NodeId[SEC_B]);
 		}
 		#endregion
 
 		#region [method(Circuit)]
-		public override void prepare_iteration() {
-			var voltDiffP = volts[PRI_T] - volts[PRI_B];
-			var voltDiffS = volts[SEC_T] - volts[SEC_B];
+		public override void PrepareIteration() {
+			var voltDiffP = NodeVolts[PRI_T] - NodeVolts[PRI_B];
+			var voltDiffS = NodeVolts[SEC_T] - NodeVolts[SEC_B];
 			mCurSourceValue[0] = voltDiffP * mA[0] + voltDiffS * mA[1] + Currents[0];
 			mCurSourceValue[1] = voltDiffP * mA[2] + voltDiffS * mA[3] + Currents[1];
 		}
 
-		public override void do_iteration() {
-			var r = CircuitElement.row_info[node_index[PRI_T] - 1].row;
-			CircuitElement.right_side[r] -= mCurSourceValue[0];
-			r = CircuitElement.row_info[node_index[PRI_B] - 1].row;
-			CircuitElement.right_side[r] += mCurSourceValue[0];
-			r = CircuitElement.row_info[node_index[SEC_T] - 1].row;
-			CircuitElement.right_side[r] -= mCurSourceValue[1];
-			r = CircuitElement.row_info[node_index[SEC_B] - 1].row;
-			CircuitElement.right_side[r] += mCurSourceValue[1];
+		public override void DoIteration() {
+			UpdateCurrent(NodeId[PRI_T], NodeId[PRI_B], mCurSourceValue[0]);
+			UpdateCurrent(NodeId[SEC_T], NodeId[SEC_B], mCurSourceValue[1]);
 		}
 
-		public override double get_current_into_node(int n) {
+		public override double GetCurrent(int n) {
 			if (n < 2) {
 				return -Currents[n];
 			}
 			return Currents[n - 2];
 		}
 
-		public override void set_voltage(int n, double c) {
-			volts[n] = c;
-			var voltDiffP = volts[PRI_T] - volts[PRI_B];
-			var voltDiffS = volts[SEC_T] - volts[SEC_B];
+		public override void SetVoltage(int nodeIndex, double v) {
+			NodeVolts[nodeIndex] = v;
+			var voltDiffP = NodeVolts[PRI_T] - NodeVolts[PRI_B];
+			var voltDiffS = NodeVolts[SEC_T] - NodeVolts[SEC_B];
 			Currents[0] = voltDiffP * mA[0] + voltDiffS * mA[1] + mCurSourceValue[0];
 			Currents[1] = voltDiffP * mA[2] + voltDiffS * mA[3] + mCurSourceValue[1];
 		}

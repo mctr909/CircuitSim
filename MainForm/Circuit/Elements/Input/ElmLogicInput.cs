@@ -9,21 +9,21 @@ namespace Circuit.Elements.Input {
 
 		public override int TermCount { get { return 1; } }
 
-		public override double voltage_diff() {
-			return volts[0];
+		public override double GetVoltageDiff() {
+			return NodeVolts[0];
 		}
 
-		public override bool has_ground_connection(int n1) { return true; }
+		public override bool HasGroundConnection(int nodeIndex) { return true; }
 
-		public override void stamp() {
+		public override void Stamp() {
 			double v = 0 != Position ? VHigh : VLow;
-			CircuitElement.StampVoltageSource(0, node_index[0], m_volt_source, v);
+			StampVoltageSource(0, NodeId[0], mVoltSource, v);
 		}
 
-		public override double get_current_into_node(int n) {
-			return -current;
+		public override double GetCurrent(int n) {
+			return -Current;
 		}
 
-		public override void set_current(int vs, double c) { current = -c; }
+		public override void SetCurrent(int vs, double c) { Current = -c; }
 	}
 }

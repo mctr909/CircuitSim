@@ -15,14 +15,14 @@
 
 		public override int TermCount { get { return 3; } }
 
-		public override void stamp() {
+		public override void Stamp() {
 			Resistance1 = MaxResistance * Position;
 			Resistance2 = MaxResistance * (1 - Position);
-			CircuitElement.StampResistor(node_index[0], node_index[2], Resistance1);
-			CircuitElement.StampResistor(node_index[2], node_index[1], Resistance2);
+			StampResistor(NodeId[0], NodeId[2], Resistance1);
+			StampResistor(NodeId[2], NodeId[1], Resistance2);
 		}
 
-		public override double get_current_into_node(int n) {
+		public override double GetCurrent(int n) {
 			if (n == 0) {
 				return -Current1;
 			}
@@ -32,11 +32,11 @@
 			return -Current3;
 		}
 
-		public override void set_voltage(int n, double c) {
-			volts[n] = c;
+		public override void SetVoltage(int nodeIndex, double v) {
+			NodeVolts[nodeIndex] = v;
 			if (0.0 < Resistance1) { // avoid NaN
-				Current1 = (volts[V_L] - volts[V_S]) / Resistance1;
-				Current2 = (volts[V_R] - volts[V_S]) / Resistance2;
+				Current1 = (NodeVolts[V_L] - NodeVolts[V_S]) / Resistance1;
+				Current2 = (NodeVolts[V_R] - NodeVolts[V_S]) / Resistance2;
 				Current3 = -Current1 - Current2;
 			}
 		}

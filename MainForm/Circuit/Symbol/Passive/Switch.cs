@@ -50,8 +50,8 @@ namespace Circuit.Symbol.Passive {
 			}
 			if (mElm.Link != 0) {
 				int i;
-				for (i = 0; i != CircuitSymbol.Count; i++) {
-					var symbol2 = CircuitSymbol.List[i];
+				for (i = 0; i != MainForm.MainForm.SymbolCount; i++) {
+					var symbol2 = MainForm.MainForm.SymbolList[i];
 					if (symbol2 == this) {
 						continue;
 					}
@@ -108,11 +108,11 @@ namespace Circuit.Symbol.Passive {
 			arr[0] = mElm.Momentary ? "プッシュスイッチ(" : "スイッチ(";
 			if (mElm.Position == 1) {
 				arr[0] += "OFF)";
-				arr[1] = "電位差：" + TextUtils.VoltageAbs(mElm.voltage_diff());
+				arr[1] = "電位差：" + TextUtils.VoltageAbs(mElm.GetVoltageDiff());
 			} else {
 				arr[0] += "ON)";
-				arr[1] = "電位：" + TextUtils.Voltage(mElm.volts[0]);
-				arr[2] = "電流：" + TextUtils.CurrentAbs(mElm.current);
+				arr[1] = "電位：" + TextUtils.Voltage(mElm.NodeVolts[0]);
+				arr[2] = "電流：" + TextUtils.CurrentAbs(mElm.Current);
 			}
 		}
 

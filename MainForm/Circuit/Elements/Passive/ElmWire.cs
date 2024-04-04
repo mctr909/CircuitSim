@@ -6,8 +6,8 @@
 
 		public override bool IsWire { get { return true; } }
 
-		public override double voltage_diff() {
-			return volts[0];
+		public override double GetVoltageDiff() {
+			return NodeVolts[0];
 		}
 	}
 }

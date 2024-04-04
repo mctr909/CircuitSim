@@ -10,24 +10,24 @@
 
 		public override int TermCount { get { return 1; } }
 
-		public override double voltage_diff() {
-			return volts[0];
+		public override double GetVoltageDiff() {
+			return NodeVolts[0];
 		}
 
-		public override void reset() {
+		public override void Reset() {
 			Triggered = false;
 		}
 
-		public override void finish_iteration() {
+		public override void FinishIteration() {
 			Stopped = false;
-			if (!Triggered && ((Type == 0 && volts[0] >= TriggerVoltage) || (Type == 1 && volts[0] <= TriggerVoltage))) {
+			if (!Triggered && ((Type == 0 && NodeVolts[0] >= TriggerVoltage) || (Type == 1 && NodeVolts[0] <= TriggerVoltage))) {
 				Triggered = true;
-				TriggerTime = CircuitElement.time;
+				TriggerTime = CircuitState.Time;
 			}
-			if (Triggered && CircuitElement.time >= TriggerTime + Delay) {
+			if (Triggered && CircuitState.Time >= TriggerTime + Delay) {
 				Triggered = false;
 				Stopped = true;
-				CircuitElement.stopped = true;
+				CircuitState.Stopped = true;
 			}
 		}
 	}

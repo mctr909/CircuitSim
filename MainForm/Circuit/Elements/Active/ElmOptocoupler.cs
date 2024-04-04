@@ -29,8 +29,6 @@ namespace Circuit.Elements.Active {
 			((ElmTransistor)CompList[2]).SetHfe(700);
 		}
 
-		public override bool has_connection(int n1, int n2) {
-			return n1 / 2 == n2 / 2;
-		}
+		public override bool HasConnection(int n1, int n2) { return n1 / 2 == n2 / 2; }
 	}
 }

@@ -42,14 +42,14 @@ namespace Circuit.Symbol.Logic {
 			InterpolationPost(ref mGatePoly[2], 0.5 + ww / Post.Len);
 			InterpolationPost(ref mCtrlTerm, 0.5, -hs);
 			InterpolationPost(ref mCtrlLead, 0.5, -hs / 2);
-			mElm.set_node_pos(Post.A, Post.B, mCtrlTerm);
+			mElm.SetNodePos(Post.A, Post.B, mCtrlTerm);
 		}
 
 		public override void Draw(CustomGraphics g) {
 			Draw2Leads();
 			DrawPolygon(mGatePoly);
 			DrawLine(mCtrlTerm, mCtrlLead);
-			UpdateDotCount(mElm.current, ref mCurCount);
+			UpdateDotCount(mElm.Current, ref mCurCount);
 			DrawCurrentB(mCurCount);
 		}
 
@@ -72,9 +72,9 @@ namespace Circuit.Symbol.Logic {
 		public override void GetInfo(string[] arr) {
 			arr[0] = "tri-state buffer";
 			arr[1] = mElm.Open ? "open" : "closed";
-			arr[2] = "Vd = " + TextUtils.VoltageAbs(mElm.voltage_diff());
-			arr[3] = "I = " + TextUtils.CurrentAbs(mElm.current);
-			arr[4] = "Vc = " + TextUtils.Voltage(mElm.volts[2]);
+			arr[2] = "Vd = " + TextUtils.VoltageAbs(mElm.GetVoltageDiff());
+			arr[3] = "I = " + TextUtils.CurrentAbs(mElm.Current);
+			arr[4] = "Vc = " + TextUtils.Voltage(mElm.NodeVolts[2]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

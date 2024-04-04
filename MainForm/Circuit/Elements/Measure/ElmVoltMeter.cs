@@ -14,11 +14,11 @@
 
 		public override int TermCount { get { return 2; } }
 
-		public override bool has_connection(int n1, int n2) { return false; }
+		public override bool HasConnection(int n1, int n2) { return false; }
 
-		public override void finish_iteration() {
+		public override void FinishIteration() {
 			mCount++; /*how many counts are in a cycle */
-			var v = voltage_diff();
+			var v = GetVoltageDiff();
 			mTotal += v * v;
 
 			/* V going up, track maximum value with */

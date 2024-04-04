@@ -9,54 +9,36 @@
 
 		public override int TermCount { get { return 3; } }
 
-		public override bool has_connection(int n1, int n2) { return !(n1 == 2 || n2 == 2); }
+		public override bool HasConnection(int n1, int n2) { return !(n1 == 2 || n2 == 2); }
 
-		public override void stamp() {
-			CircuitElement.row_info[node_index[0] - 1].left_changes = true;
-			CircuitElement.row_info[node_index[1] - 1].left_changes = true;
+		public override void Stamp() {
+			StampNonLinear(NodeId[0]);
+			StampNonLinear(NodeId[1]);
 		}
 
 		#region [method(Circuit)]
-		public override void do_iteration() {
-			IsOpen = volts[2] < 2.5;
+		public override void DoIteration() {
+			IsOpen = NodeVolts[2] < 2.5;
 			if (Invert) {
 				IsOpen = !IsOpen;
 			}
 			mResistance = IsOpen ? Roff : Ron;
-			var conductance = 1.0 / mResistance;
-			var rowA = CircuitElement.row_info[node_index[0] - 1].row;
-			var rowB = CircuitElement.row_info[node_index[1] - 1].row;
-			var colri = CircuitElement.row_info[node_index[0] - 1];
-			if (colri.is_const) {
-				CircuitElement.right_side[rowA] -= conductance * colri.value;
-				CircuitElement.right_side[rowB] += conductance * colri.value;
-			} else {
-				CircuitElement.matrix[rowA, colri.col] += conductance;
-				CircuitElement.matrix[rowB, colri.col] -= conductance;
-			}
-			colri = CircuitElement.row_info[node_index[1] - 1];
-			if (colri.is_const) {
-				CircuitElement.right_side[rowA] += conductance * colri.value;
-				CircuitElement.right_side[rowB] -= conductance * colri.value;
-			} else {
-				CircuitElement.matrix[rowA, colri.col] -= conductance;
-				CircuitElement.matrix[rowB, colri.col] += conductance;
-			}
+			UpdateConductance(NodeId[0], NodeId[1], 1.0 / mResistance);
 		}
 
-		public override double get_current_into_node(int n) {
+		public override double GetCurrent(int n) {
 			if (n == 0) {
-				return -current;
+				return -Current;
 			}
 			if (n == 2) {
 				return 0;
 			}
-			return current;
+			return Current;
 		}
 
-		public override void set_voltage(int n, double c) {
-			volts[n] = c;
-			current = (volts[0] - volts[1]) / mResistance;
+		public override void SetVoltage(int nodeIndex, double v) {
+			NodeVolts[nodeIndex] = v;
+			Current = (NodeVolts[0] - NodeVolts[1]) / mResistance;
 		}
 		#endregion
 	}

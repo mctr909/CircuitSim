@@ -98,14 +98,14 @@ namespace Circuit.Symbol.Passive {
 			DrawLeadA();
 			DrawCenteredText(mElm.Name, mNamePos, mTextRot);
 			DrawPolyline(mTextPoly);
-			UpdateDotCount(mElm.current, ref mCurCount);
+			UpdateDotCount(mElm.Current, ref mCurCount);
 			DrawCurrentA(mCurCount);
 		}
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = mElm.Name;
-			arr[1] = "電流：" + TextUtils.Current(mElm.current);
-			arr[2] = "電位：" + TextUtils.Voltage(mElm.volts[0]);
+			arr[1] = "電流：" + TextUtils.Current(mElm.Current);
+			arr[2] = "電位：" + TextUtils.Voltage(mElm.NodeVolts[0]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

@@ -28,12 +28,12 @@
 
 		public override int VoltageSourceCount { get { return 1; } }
 
-		public override double voltage_diff() {
-			return volts[1] - volts[0];
+		public override double GetVoltageDiff() {
+			return NodeVolts[1] - NodeVolts[0];
 		}
 
 		public double GetVoltage() {
-			double t = CircuitElement.time;
+			double t = CircuitState.Time;
 			double wt = 2 * Math.PI * Frequency * t;
 			double ph = Phase + PhaseOffset;
 			double duty = 2 * Math.PI * DutyCycle;
@@ -59,13 +59,13 @@
 					return 2 * (cycle - Math.PI) < duty ? (Bias - MaxVoltage) : Bias;
 				}
 			case WAVEFORM.PWM_MONOPOLE: {
-				var maxwt = 2 * Math.PI * t / (64 * CircuitElement.delta_time);
+				var maxwt = 2 * Math.PI * t / (64 * CircuitState.DeltaTime);
 				var cr = triangleFunc(maxwt % (2 * Math.PI)) * 0.5 + 0.5;
 				var sg = DutyCycle * Math.Sin(wt + ph) * 0.5 + 0.5;
 				return Bias + (cr < sg ? MaxVoltage : 0);
 			}
 			case WAVEFORM.PWM_DIPOLE: {
-				var maxwt = 2 * Math.PI * t / (64 * CircuitElement.delta_time);
+				var maxwt = 2 * Math.PI * t / (64 * CircuitState.DeltaTime);
 				var cr = triangleFunc(maxwt % (2 * Math.PI)) * 0.5 + 0.5;
 				var sg = DutyCycle * Math.Sin(wt + ph);
 				if (0.0 <= sg) {
@@ -75,7 +75,7 @@
 				}
 			}
 			case WAVEFORM.PWM_POSITIVE: {
-				var maxwt = 2 * Math.PI * t / (64 * CircuitElement.delta_time);
+				var maxwt = 2 * Math.PI * t / (64 * CircuitState.DeltaTime);
 				var cr = triangleFunc(maxwt % (2 * Math.PI)) * 0.5 + 0.5;
 				var sg = DutyCycle * Math.Sin(wt + ph);
 				if (0.0 < sg) {
@@ -85,7 +85,7 @@
 				}
 			}
 			case WAVEFORM.PWM_NEGATIVE: {
-				var maxwt = 2 * Math.PI * t / (64 * CircuitElement.delta_time);
+				var maxwt = 2 * Math.PI * t / (64 * CircuitState.DeltaTime);
 				var cr = triangleFunc(maxwt % (2 * Math.PI)) * 0.5 + 0.5;
 				var sg = DutyCycle * Math.Sin(wt + ph);
 				if (0.0 > sg) {
@@ -109,37 +109,25 @@
 		}
 
 		#region [method(Analyze)]
-		public override void reset() { }
+		public override void Reset() { }
 
-		public override void stamp() {
-			int n0 = node_index[0] - 1;
-			int n1 = node_index[1] - 1;
-			int vn = CircuitElement.nodes.Length + m_volt_source - 1;
-			if (n0 < 0 || n1 < 0 || vn < 0) {
-				return;
-			}
-			CircuitElement.matrix[vn, n0] -= 1;
-			CircuitElement.matrix[vn, n1] += 1;
-			CircuitElement.matrix[n0, vn] += 1;
-			CircuitElement.matrix[n1, vn] -= 1;
+		public override void Stamp() {
 			if (WaveForm == WAVEFORM.DC) {
-				CircuitElement.right_side[vn] += GetVoltage();
+				StampVoltageSource(NodeId[0], NodeId[1], mVoltSource, GetVoltage());
 			} else {
-				CircuitElement.row_info[vn].right_changes = true;
+				StampVoltageSource(NodeId[0], NodeId[1], mVoltSource);
 			}
 		}
 		#endregion
 
 		#region [method(Circuit)]
-		public override void do_iteration() {
+		public override void DoIteration() {
 			if (WaveForm != WAVEFORM.DC) {
-				var vn = CircuitElement.nodes.Length + m_volt_source;
-				var row = CircuitElement.row_info[vn - 1].row;
-				CircuitElement.right_side[row] += GetVoltage();
+				UpdateVoltage(mVoltSource, GetVoltage());
 			}
 		}
 
-		public override void finish_iteration() {
+		public override void FinishIteration() {
 			if (WaveForm == WAVEFORM.NOISE) {
 				NoiseValue = (mRandom.NextDouble() * 2 - 1) * MaxVoltage + Bias;
 			}

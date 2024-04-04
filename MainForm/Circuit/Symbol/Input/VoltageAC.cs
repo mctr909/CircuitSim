@@ -11,7 +11,7 @@ namespace Circuit.Symbol.Input {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "交流電源";
-			arr[1] = "電流：" + TextUtils.Current(mElm.current);
+			arr[1] = "電流：" + TextUtils.Current(mElm.Current);
 			arr[2] = "振幅：" + TextUtils.Voltage(mElm.MaxVoltage);
 			arr[3] = "周波数：" + TextUtils.Frequency(mElm.Frequency);
 			var phase = mElm.Phase + mElm.PhaseOffset;

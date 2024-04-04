@@ -31,7 +31,7 @@ namespace Circuit.Elements.Logic {
 				};
 			}
 			Pins[mLoadPin = Bits * 2] = new Chip.Pin(chip, Bits, Chip.SIDE_W, "Ld");
-			alloc_nodes();
+			AllocateNodes();
 		}
 
 		protected override void execute() {
