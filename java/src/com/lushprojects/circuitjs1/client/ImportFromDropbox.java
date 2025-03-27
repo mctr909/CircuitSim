@@ -2,16 +2,17 @@ package com.lushprojects.circuitjs1.client;
 
 public class ImportFromDropbox {
 
+	
 	static CirSim sim;
-
-	ImportFromDropbox(CirSim asim) {
-		sim = asim;
-		// CirSim.console("importing");
+	
+	ImportFromDropbox( CirSim asim ){
+		sim=asim;
+//		CirSim.console("importing");
 		doDropboxImport();
-		// CirSim.console("returned");
+//		CirSim.console("returned");
 	}
-
-	static public final native boolean isSupported()
+	
+	static public final native boolean isSupported() 
 	/*-{
 		try {
 			// Bug in firefox prevents Dropbox dialog working properly in this application
@@ -24,17 +25,18 @@ public class ImportFromDropbox {
 		catch(err) {
 			return false;
 		}
-	}-*/;
-
+ 	}-*/;
+	
 	static public void doLoadCallback(String s) {
 		sim.pushUndo();
 		sim.readCircuit(s);
 	}
-
-	public final native void doDropboxImport()
+	
+	
+	public final native void doDropboxImport() 
 	/*-{
 		var options = {
-	
+
 		    // Required. Called when a user selects an item in the Chooser.
 		    success: function(files) {
 		    	try {

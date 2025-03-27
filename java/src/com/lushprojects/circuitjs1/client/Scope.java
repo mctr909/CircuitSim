@@ -106,7 +106,7 @@ class ScopePlot {
 				maxValues[i1] = oldMax[i2];
 			}
 		} else
-			lastUpdateTime = CirSim.CIRSIM.t;
+			lastUpdateTime = CirSim.theSim.t;
 		ptr = 0;
 	}
 
@@ -127,10 +127,10 @@ class ScopePlot {
 			minValues[ptr] = v;
 		if (v > maxValues[ptr])
 			maxValues[ptr] = v;
-		if (CirSim.CIRSIM.t - lastUpdateTime >= CirSim.CIRSIM.maxTimeStep * scopePlotSpeed) {
+		if (CirSim.theSim.t - lastUpdateTime >= CirSim.theSim.maxTimeStep * scopePlotSpeed) {
 			ptr = (ptr + 1) & (scopePointCount - 1);
 			minValues[ptr] = maxValues[ptr] = v;
-			lastUpdateTime += CirSim.CIRSIM.maxTimeStep * scopePlotSpeed;
+			lastUpdateTime += CirSim.theSim.maxTimeStep * scopePlotSpeed;
 		}
 	}
 
@@ -163,10 +163,10 @@ class ScopePlot {
 				color = CircuitElm.positiveColor.getHexValue();
 				break;
 			case Scope.UNITS_A:
-				color = (CirSim.CIRSIM.printableCheckItem.getState()) ? "#A0A000" : "#FFFF00";
+				color = (CirSim.theSim.printableCheckItem.getState()) ? "#A0A000" : "#FFFF00";
 				break;
 			default:
-				color = (CirSim.CIRSIM.printableCheckItem.getState()) ? "#000000" : "#FFFFFF";
+				color = (CirSim.theSim.printableCheckItem.getState()) ? "#000000" : "#FFFFFF";
 				break;
 		}
 	}

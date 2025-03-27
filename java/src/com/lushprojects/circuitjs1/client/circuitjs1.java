@@ -78,6 +78,7 @@ public class circuitjs1 implements EntryPoint {
 	// as the circuit simulator
 	public static final boolean shortRelaySupported = true;
 
+	static CirSim mysim;
 	HashMap<String, String> localizationMap;
 
 	public void onModuleLoad() {
@@ -167,14 +168,16 @@ public class circuitjs1 implements EntryPoint {
 	}
 
 	public void loadSimulator() {
-		CirSim sim = CirSim.GetInstance();
-		sim.localizationMap = localizationMap;
-		sim.init();
+		mysim = new CirSim();
+		mysim.localizationMap = localizationMap;
+		mysim.init();
 
 		Window.addResizeHandler(new ResizeHandler() {
+
 			public void onResize(ResizeEvent event) {
-				sim.setCanvasSize();
-				sim.setiFrameHeight();
+				mysim.setCanvasSize();
+				mysim.setiFrameHeight();
+
 			}
 		});
 
@@ -187,7 +190,8 @@ public class circuitjs1 implements EntryPoint {
 		 * });
 		 */
 
-		sim.updateCircuit();
+		mysim.updateCircuit();
+
 	}
 
 }

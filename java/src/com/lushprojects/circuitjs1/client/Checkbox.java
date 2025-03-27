@@ -22,21 +22,21 @@ package com.lushprojects.circuitjs1.client;
 import com.google.gwt.user.client.ui.CheckBox;
 
 class Checkbox extends CheckBox {
-	public Checkbox(String s) {
+	public Checkbox(String s){
 		super(CirSim.LS(s));
 	}
-
-	public Checkbox(String s, boolean b) {
+	
+	public Checkbox(String s, boolean b){
 		super(CirSim.LS(s));
 		this.setValue(b);
 	}
-
-	public boolean getState() {
+	
+	public boolean getState(){
 		return this.getValue();
 	}
-
-	public void setState(boolean s) {
+	
+	public void setState(boolean s){
 		this.setValue(s);
 	}
-
+	
 }

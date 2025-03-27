@@ -30,22 +30,22 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.i18n.client.DateTimeFormat;
 
 public class ExportAsImageDialog extends DialogBox {
-
+	
 	VerticalPanel vp;
-
+	
 	public ExportAsImageDialog() {
 		super();
 		Button okButton;
 		Anchor a;
-		vp = new VerticalPanel();
+		vp=new VerticalPanel();
 		setWidget(vp);
 		setText(CirSim.LS("Export as Image"));
 		vp.add(new Label(CirSim.LS("Click on the link below to save your image")));
 		Date date = new Date();
 		DateTimeFormat dtf = DateTimeFormat.getFormat("yyyyMMdd-HHmm");
-		String dataURL = CirSim.CIRSIM.getCircuitAsCanvas(false).toDataUrl();
-		a = new Anchor("image.png", dataURL);
-		String fname = "circuit-" + dtf.format(date) + ".png";
+		String dataURL = CirSim.theSim.getCircuitAsCanvas(false).toDataUrl();
+		a=new Anchor("image.png", dataURL);
+		String fname = "circuit-"+ dtf.format(date) + ".png";
 		a.getElement().setAttribute("Download", fname);
 		vp.add(a);
 		vp.add(okButton = new Button(CirSim.LS("OK")));
@@ -56,8 +56,9 @@ public class ExportAsImageDialog extends DialogBox {
 		});
 		this.center();
 	}
-
-	protected void closeDialog() {
+	
+	protected void closeDialog()
+	{
 		this.hide();
 	}
 

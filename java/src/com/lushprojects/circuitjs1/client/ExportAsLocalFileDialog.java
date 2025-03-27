@@ -30,15 +30,15 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.i18n.client.DateTimeFormat;
 
 public class ExportAsLocalFileDialog extends DialogBox {
-
+	
 	VerticalPanel vp;
-
-	static public final native boolean downloadIsSupported()
+	
+	static public final native boolean downloadIsSupported() 
 	/*-{
 		return !!(("download" in $doc.createElement("a")));
 	 }-*/;
-
-	static public final native String getBlobUrl(String data)
+	
+	static public final native String getBlobUrl(String data) 
 	/*-{
 		var datain=[""];
 		datain[0]=data;
@@ -50,21 +50,21 @@ public class ExportAsLocalFileDialog extends DialogBox {
 		$doc.exportBlob = url;
 		return url;
 	}-*/;
-
+	
 	public ExportAsLocalFileDialog(String data) {
 		super();
 		Button okButton;
 		Anchor a;
 		String url;
-		vp = new VerticalPanel();
+		vp=new VerticalPanel();
 		setWidget(vp);
 		setText(CirSim.LS("Export as Local File"));
 		vp.add(new Label(CirSim.LS("Click on the link below to save your circuit")));
-		url = getBlobUrl(data);
+		url=getBlobUrl(data);
 		Date date = new Date();
 		DateTimeFormat dtf = DateTimeFormat.getFormat("yyyyMMdd-HHmm");
-		String fname = "circuit-" + dtf.format(date) + ".circuitjs.txt";
-		a = new Anchor(fname, url);
+		String fname = "circuit-"+ dtf.format(date) + ".circuitjs.txt";
+		a=new Anchor(fname, url);
 		a.getElement().setAttribute("Download", fname);
 		vp.add(a);
 		vp.add(okButton = new Button(CirSim.LS("OK")));
@@ -75,8 +75,9 @@ public class ExportAsLocalFileDialog extends DialogBox {
 		});
 		this.center();
 	}
-
-	protected void closeDialog() {
+	
+	protected void closeDialog()
+	{
 		this.hide();
 	}
 

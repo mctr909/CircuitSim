@@ -328,17 +328,11 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 	// Circuit applet;
 
-	private CirSim() {
+	CirSim() {
 		// super("Circuit Simulator v1.6d");
 		// applet = a;
 		// useFrame = false;
-	}
-
-	public static CirSim GetInstance() {
-		if (null == CIRSIM) {
-			CIRSIM = new CirSim();
-		}
-		return CIRSIM;
+		theSim = this;
 	}
 
 	String startCircuit = null;
@@ -1218,7 +1212,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 	int frames = 0;
 	int steps = 0;
 	int framerate = 0, steprate = 0;
-	static CirSim CIRSIM;
+	static CirSim theSim;
 
 	public void setSimRunning(boolean s) {
 		if (s) {
@@ -2901,8 +2895,8 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 	static void electronSaveAsCallback(String s) {
 		s = s.substring(s.lastIndexOf('/') + 1);
 		s = s.substring(s.lastIndexOf('\\') + 1);
-		CIRSIM.setCircuitTitle(s);
-		CIRSIM.allowSave(true);
+		theSim.setCircuitTitle(s);
+		theSim.allowSave(true);
 	}
 
 	static native void electronSaveAs(String dump) /*-{
@@ -2920,7 +2914,7 @@ public class CirSim implements MouseDownHandler, MouseMoveHandler, MouseUpHandle
 
 	static void electronOpenFileCallback(String text, String name) {
 		LoadFile.doLoadCallback(text, name);
-		CIRSIM.allowSave(true);
+		theSim.allowSave(true);
 	}
 
 	static native void electronOpenFile() /*-{

@@ -18,7 +18,6 @@
 */
 
 package com.lushprojects.circuitjs1.client;
-
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.Anchor;
@@ -26,42 +25,33 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextArea;
 
 class EditInfo {
-	// mn/mx were used in the java version to create sliders in the edit dialog but
-	// we don't do that in the javascript version, so this
-	// constructor is deprecated
+    	// mn/mx were used in the java version to create sliders in the edit dialog but we don't do that in the javascript version, so this
+    	// constructor is deprecated
 	EditInfo(String n, double val, double mn, double mx) {
 		name = n;
 		value = val;
 		dimensionless = false;
 	}
-
+	
 	EditInfo(String n, double val) {
 		name = n;
 		value = val;
 		dimensionless = false;
 	}
-
+	
 	EditInfo(String n, String txt) {
-		name = n;
-		text = txt;
+	    name = n;
+	    text = txt;
 	}
-
-	EditInfo setDimensionless() {
-		dimensionless = true;
-		return this;
-	}
-
-	EditInfo disallowSliders() {
-		noSliders = true;
-		return this;
-	}
-
+		
+	EditInfo setDimensionless() { dimensionless = true; return this; }
+	EditInfo disallowSliders() { noSliders = true; return this; }
 	int changeFlag(int flags, int bit) {
-		if (checkbox.getState())
-			return flags | bit;
-		return flags & ~bit;
+	    if (checkbox.getState())
+		return flags | bit;
+	    return flags & ~bit;
 	}
-
+	
 	String name, text;
 	double value;
 	TextBox textf;
@@ -73,16 +63,16 @@ class EditInfo {
 	boolean newDialog;
 	boolean dimensionless;
 	boolean noSliders;
-
+	
 	// for slider dialog
 	TextBox minBox, maxBox, labelBox;
-
+	
 	boolean canCreateAdjustable() {
-		return choice == null && checkbox == null && button == null && textArea == null &&
-				widget == null && !noSliders;
+	    return choice == null && checkbox == null && button == null && textArea == null &&
+			widget == null && !noSliders;
 	}
 
 	static String makeLink(String file, String text) {
-		return "<a href=\"" + file + "\" target=\"_blank\">" + CirSim.LS(text) + "</a>";
+            return "<a href=\"" + file + "\" target=\"_blank\">" + CirSim.LS(text) + "</a>";
 	}
 }

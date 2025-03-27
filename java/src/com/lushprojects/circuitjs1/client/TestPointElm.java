@@ -33,114 +33,102 @@ class TestPointElm extends CircuitElm {
     final int TP_FRQ = 6;
     final int TP_PER = 7;
     final int TP_PWI = 8;
-    final int TP_DUT = 9; // mark to space ratio
-    int zerocount = 0;
-    double rmsV = 0, total, count;
-    double maxV = 0, lastMaxV;
-    double minV = 0, lastMinV;
-    double frequency = 0;
-    double period = 0;
-    double binaryLevel = 0;// 0 or 1 - double because we only pass doubles back to the web page
-    double pulseWidth = 0;
-    double dutyCycle = 0;
-    double selectedValue = 0;
+    final int TP_DUT = 9; //mark to space ratio
+    int zerocount=0;
+    double rmsV=0, total, count;
+    double maxV=0, lastMaxV;
+    double minV=0, lastMinV;
+    double frequency=0;
+    double period=0;
+    double binaryLevel=0;//0 or 1 - double because we only pass doubles back to the web page
+    double pulseWidth=0;
+    double dutyCycle=0;
+    double selectedValue=0;
     int lastStepCount;
-
+    
     double voltages[];
-    boolean increasingV = true, decreasingV = true;
-    long periodStart, periodLength, pulseStart;// time between consecutive max values
-
-    public TestPointElm(int xx, int yy) {
-        super(xx, yy);
+    boolean increasingV=true, decreasingV=true;
+    long periodStart, periodLength, pulseStart;//time between consecutive max values
+    
+    public TestPointElm(int xx, int yy) { 
+        super(xx, yy); 
         meter = TP_VOL;
-    }
-
+        }
     public TestPointElm(int xa, int ya, int xb, int yb, int f,
-            StringTokenizer st) {
+             StringTokenizer st) {
         super(xa, ya, xb, yb, f);
-        meter = new Integer(st.nextToken()).intValue(); // get meter type from saved dump
+        meter = new Integer(st.nextToken()).intValue(); //get meter type from saved dump
     }
-
-    int getDumpType() {
-        return 368;
-    }
-
-    int getPostCount() {
-        return 1;
-    }
-
+    int getDumpType() { return 368; }
+    int getPostCount() { return 1; }
     void setPoints() {
         super.setPoints();
         lead1 = new Point();
     }
-
     String dump() {
-        return super.dump() + " " + meter;
+        return super.dump() + " " + meter ;
     }
-
-    String getMeter() {
+    String getMeter(){
         switch (meter) {
-            case TP_VOL:
-                return "V";
-            case TP_RMS:
-                return "V(rms)";
-            case TP_MAX:
-                return "Vmax";
-            case TP_MIN:
-                return "Vmin";
-            case TP_P2P:
-                return "Peak to peak";
-            case TP_BIN:
-                return "Binary";
-            case TP_FRQ:
-                return "Frequency";
-            case TP_PER:
-                return "Period";
-            case TP_PWI:
-                return "Pulse width";
-            case TP_DUT:
-                return "Duty cycle";
+        case TP_VOL:
+            return "V";
+        case TP_RMS:
+            return "V(rms)";
+        case TP_MAX:
+            return "Vmax";
+        case TP_MIN:
+            return "Vmin";
+        case TP_P2P:
+            return "Peak to peak";
+        case TP_BIN:
+            return "Binary";
+        case TP_FRQ:
+            return "Frequency";
+        case TP_PER:
+            return "Period";
+        case TP_PWI:
+            return "Pulse width";
+        case TP_DUT:
+            return "Duty cycle";
         }
         return "";
     }
-
     void draw(Graphics g) {
         boolean selected = needsHighlight();
         Font f = new Font("SansSerif", selected ? Font.BOLD : 0, 14);
         g.setFont(f);
         g.setColor(selected ? selectColor : whiteColor);
-        // depending upon flags show voltage or TP
-
+        //depending upon flags show voltage or TP
+        
         String s = "TP";
-        interpPoint(point1, point2, lead1, 1 - ((int) g.context.measureText(s).getWidth() / 2 + 8) / dn);
+        interpPoint(point1, point2, lead1, 1-((int)g.context.measureText(s).getWidth()/2+8)/dn);
         setBbox(point1, lead1, 0);
-        drawCenteredText(g, s, x2, y2, true); // draw label TPx
-        // draw selected value
+                    drawCenteredText(g, s, x2, y2, true); //draw label TPx
+        //draw selected value
         switch (meter) {
             case TP_VOL:
-                s = getUnitText(volts[0], "V");
+                s = getUnitText(volts[0],"V");
                 break;
             case TP_RMS:
-                s = getUnitText(rmsV, "V(rms)");
+                s = getUnitText(rmsV,"V(rms)");
                 break;
             case TP_MAX:
-                s = getUnitText(lastMaxV, "Vpk");
+                s = getUnitText(lastMaxV,"Vpk");
                 break;
             case TP_MIN:
-                s = getUnitText(lastMinV, "Vmin");
+                s = getUnitText(lastMinV,"Vmin");
                 break;
             case TP_P2P:
-                s = getUnitText(lastMaxV - lastMinV, "Vp2p");
+                s = getUnitText(lastMaxV-lastMinV,"Vp2p");
                 break;
             case TP_BIN:
-                s = binaryLevel + "";
+                s= binaryLevel + "";
                 break;
             case TP_FRQ:
                 s = getUnitText(frequency, "Hz");
                 break;
             case TP_PER:
-                // s = "percent:"+period + " " + sim.timeStep + " " + sim.simTime + " " +
-                // sim.getIterCount();
+//                s = "percent:"+period + " " + sim.timeStep + " " + sim.simTime + " " + sim.getIterCount();
                 break;
             case TP_PWI:
                 s = getUnitText(pulseWidth, "S");
@@ -149,136 +137,137 @@ class TestPointElm extends CircuitElm {
                 s = showFormat.format(dutyCycle);
                 break;
         }
-        drawCenteredText(g, s, x2, y2 + 12, true); // draw selected value TPx
-
+            drawCenteredText(g, s, x2, y2+12, true); //draw selected value TPx
+        
         setVoltageColor(g, volts[0]);
         if (selected)
             g.setColor(selectColor);
         drawThickLine(g, point1, lead1);
         drawPosts(g);
     }
+    
+    
+    void stepFinished(){
+	if (sim.timeStepCount == lastStepCount)
+	    return;
+	lastStepCount = sim.timeStepCount;
+        count++;//how many counts are in a cycle    
+        total += volts[0]*volts[0]; //sum of squares
 
-    void stepFinished() {
-        if (sim.timeStepCount == lastStepCount)
-            return;
-        lastStepCount = sim.timeStepCount;
-        count++;// how many counts are in a cycle
-        total += volts[0] * volts[0]; // sum of squares
-
-        if (volts[0] < 2.5)
+        if (volts[0]<2.5)
             binaryLevel = 0;
         else
             binaryLevel = 1;
-
-        // V going up, track maximum value with
-        if (volts[0] > maxV && increasingV) {
+        
+        
+        //V going up, track maximum value with 
+        if (volts[0]>maxV && increasingV){
             maxV = volts[0];
             increasingV = true;
             decreasingV = false;
         }
-        if (volts[0] < maxV && increasingV) {// change of direction V now going down - at start of waveform
-            lastMaxV = maxV; // capture last maximum
-            // capture time between
+        if (volts[0]<maxV && increasingV){//change of direction V now going down - at start of waveform
+            lastMaxV=maxV; //capture last maximum 
+            //capture time between
             periodLength = System.currentTimeMillis() - periodStart;
             periodStart = System.currentTimeMillis();
             period = periodLength;
             pulseWidth = System.currentTimeMillis() - pulseStart;
             dutyCycle = pulseWidth / periodLength;
-            minV = volts[0]; // track minimum value with V
-            increasingV = false;
-            decreasingV = true;
-
-            // rms data
-            total = total / count;
+            minV=volts[0]; //track minimum value with V
+            increasingV=false;
+            decreasingV=true;
+            
+            //rms data
+            total = total/count;
             rmsV = Math.sqrt(total);
             if (Double.isNaN(rmsV))
-                rmsV = 0;
-            count = 0;
-            total = 0;
-
+                rmsV=0;
+            count=0;
+            total=0;
+            
         }
-        if (volts[0] < minV && decreasingV) { // V going down, track minimum value with V
-            minV = volts[0];
-            increasingV = false;
-            decreasingV = true;
+        if (volts[0]<minV && decreasingV){ //V going down, track minimum value with V
+            minV=volts[0];
+            increasingV=false;
+            decreasingV=true;
         }
 
-        if (volts[0] > minV && decreasingV) { // change of direction V now going up
-            lastMinV = minV; // capture last minimum
-            pulseStart = System.currentTimeMillis();
+        if (volts[0]>minV && decreasingV){ //change of direction V now going up
+            lastMinV=minV; //capture last minimum
+            pulseStart =  System.currentTimeMillis();
             maxV = volts[0];
             increasingV = true;
             decreasingV = false;
-
-            // rms data
-            total = total / count;
+            
+            //rms data
+            total = total/count;
             rmsV = Math.sqrt(total);
             if (Double.isNaN(rmsV))
-                rmsV = 0;
-            count = 0;
-            total = 0;
+                rmsV=0;
+            count=0;
+            total=0;
 
+            
         }
-        // need to zero the rms value if it stays at 0 for a while
-        if (volts[0] == 0) {
+        //need to zero the rms value if it stays at 0 for a while
+        if (volts[0]==0){
             zerocount++;
-            if (zerocount > 5) {
-                total = 0;
-                rmsV = 0;
-                maxV = 0;
-                minV = 0;
+            if (zerocount > 5){
+                total=0;
+                rmsV=0;
+                maxV=0;
+                minV=0;
             }
-        } else {
-            zerocount = 0;
+        }else{
+            zerocount=0;
         }
         switch (meter) {
-            case TP_VOL:
-                selectedValue = volts[0];
-                break;
-            case TP_RMS:
-                selectedValue = rmsV;
-                break;
-            case TP_MAX:
-                selectedValue = lastMaxV;
-                break;
-            case TP_MIN:
-                selectedValue = lastMinV;
-                break;
-            case TP_P2P:
-                selectedValue = lastMaxV - lastMinV;
-                break;
-            case TP_BIN:
-                selectedValue = binaryLevel;
-                break;
-            case TP_FRQ:
-                selectedValue = frequency;
-                break;
-            case TP_PER:
-                selectedValue = period;
-                break;
-            case TP_PWI:
-                selectedValue = pulseWidth;
-                break;
-            case TP_DUT:
-                selectedValue = dutyCycle;
-                break;
+        case TP_VOL:
+            selectedValue = volts[0];
+            break;
+        case TP_RMS:
+            selectedValue = rmsV;
+            break;
+        case TP_MAX:
+            selectedValue = lastMaxV;
+            break;
+        case TP_MIN:
+            selectedValue = lastMinV;
+            break;
+        case TP_P2P:
+            selectedValue = lastMaxV-lastMinV;
+            break;
+        case TP_BIN:
+            selectedValue = binaryLevel;
+            break;
+        case TP_FRQ:
+            selectedValue = frequency;
+            break;
+        case TP_PER:
+            selectedValue = period ;
+            break;
+        case TP_PWI:
+            selectedValue = pulseWidth;
+            break;
+        case TP_DUT:
+            selectedValue = dutyCycle;
+            break;
         }
 
     }
-
-    // alert the user
+    
+    //alert the user
     public static native void alert(String msg) /*-{
       $wnd.alert(msg);
     }-*/;
-
-    double getScopeValue(int x) {
+    
+    double getScopeValue(int x){
         return selectedValue;
     }
-
-    double getVoltageDiff() {
-        return volts[0];
-    }
-
+    
+    double getVoltageDiff() { return volts[0]; }
+    
     void getInfo(String arr[]) {
         arr[0] = "Test Point";
         switch (meter) {
@@ -295,7 +284,7 @@ class TestPointElm extends CircuitElm {
                 arr[1] = "Vmin = " + getUnitText(lastMinV, "Vmin");
                 break;
             case TP_P2P:
-                arr[1] = "Vp2p = " + getUnitText(lastMaxV - lastMinV, "Vp2p");
+                arr[1] = "Vp2p = " + getUnitText(lastMaxV-lastMinV, "Vp2p");
                 break;
             case TP_BIN:
                 arr[1] = "Binary:" + binaryLevel + "";
@@ -304,47 +293,48 @@ class TestPointElm extends CircuitElm {
                 arr[1] = "Freq = " + getUnitText(frequency, "Hz");
                 break;
             case TP_PER:
-                arr[1] = "Period = " + getUnitText(period * sim.maxTimeStep / sim.getIterCount(), "S");
+                arr[1] = "Period = " + getUnitText(period*sim.maxTimeStep/sim.getIterCount(), "S");
                 break;
             case TP_PWI:
-                arr[1] = "Pulse width = " + getUnitText(pulseWidth * sim.maxTimeStep * sim.getIterCount(), "S");
+                arr[1] = "Pulse width = " + getUnitText(pulseWidth*sim.maxTimeStep*sim.getIterCount(), "S");
                 break;
             case TP_DUT:
                 arr[1] = "Duty cycle = " + showFormat.format(dutyCycle);
                 break;
-        }
+        }    
     }
-
-    // void drawHandles(Graphics g, Color c) {
-    // g.setColor(c);
-    // g.fillRect(x-3, y-3, 7, 7);
-    // }
-
+        
+//    void drawHandles(Graphics g, Color c) {
+//        g.setColor(c);
+//        g.fillRect(x-3, y-3, 7, 7);
+//    }
+    
     public EditInfo getEditInfo(int n) {
-        if (n == 0) {
-            EditInfo ei = new EditInfo("Value", selectedValue, -1, -1);
+        if (n==0){
+            EditInfo ei =  new EditInfo("Value", selectedValue, -1, -1);
             ei.choice = new Choice();
             ei.choice.add("Voltage");
             ei.choice.add("RMS Voltage");
             ei.choice.add("Max Voltage");
             ei.choice.add("Min Voltage");
             ei.choice.add("P2P Voltage");
-            ei.choice.add("Binary Value");
-            // ei.choice.add("Frequency");
-            // ei.choice.add("Period");
-            // ei.choice.add("Pulse Width");
-            // ei.choice.add("Duty Cycle");
+            ei.choice.add("Binary Value");        
+            //ei.choice.add("Frequency");
+            //ei.choice.add("Period");
+            //ei.choice.add("Pulse Width");
+            //ei.choice.add("Duty Cycle");
             ei.choice.select(meter);
             return ei;
         }
 
-        return null;
+return null;
     }
 
     public void setEditValue(int n, EditInfo ei) {
-        if (n == 0) {
+        if (n==0){
             meter = ei.choice.getSelectedIndex();
         }
     }
-
+    
 }
+

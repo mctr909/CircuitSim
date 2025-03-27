@@ -19,48 +19,48 @@ package com.lushprojects.circuitjs1.client;
 // Via http://grepcode.com/file_/repository.grepcode.com/java/root/jdk/openjdk/6-b14/java/awt/Rectangle.java/?v=source
 
 public class Rectangle {
-    int x;
-    int y;
-    int width;
-    int height;
-
-    public Rectangle() {
-        x = 0;
-        y = 0;
-        width = 0;
-        height = 0;
-    }
-
+	int x;
+	int y;
+	int width;
+	int height;
+	
+	public Rectangle(){
+		x=0;
+		y=0;
+		width=0;
+		height=0;
+	}
+	
     public Rectangle(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
     }
-
+    
     public Rectangle(Point pt) {
-        this.x = pt.x;
-        this.y = pt.y;
-        this.width = 0;
-        this.height = 0;
+	this.x = pt.x;
+	this.y = pt.y;
+	this.width = 0;
+	this.height = 0;
     }
-
+    
     public Rectangle(Rectangle r) {
         this(r.x, r.y, r.width, r.height);
     }
-
+    
     public void setBounds(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
     }
-
+    
     public void translate(int dx, int dy) {
         x += dx;
         y += dy;
     }
-
+    
     public boolean contains(int X, int Y) {
         int w = this.width;
         int h = this.height;
@@ -76,18 +76,18 @@ public class Rectangle {
         }
         w += x;
         h += y;
-        // overflow || intersect
+        //    overflow || intersect
         return ((w < x || w > X) &&
                 (h < y || h > Y));
     }
-
+    
     /*
-     * public void move(int x, int y) {
-     * this.x = x;
-     * this.y = y;
-     * }
-     */
-
+    public void move(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+    */
+    
     public boolean intersects(Rectangle r) {
         int tw = this.width;
         int th = this.height;
@@ -104,13 +104,13 @@ public class Rectangle {
         rh += ry;
         tw += tx;
         th += ty;
-        // overflow || intersect
+        //      overflow || intersect
         return ((rw < rx || rw > tx) &&
                 (rh < ry || rh > ty) &&
                 (tw < tx || tw > rx) &&
                 (th < ty || th > ry));
     }
-
+    
     public Rectangle union(Rectangle r) {
         long tx2 = this.width;
         long ty2 = this.height;
@@ -119,7 +119,7 @@ public class Rectangle {
             // If r has non-negative dimensions then it is the answer.
             // If r is non-existant (has a negative dimension), then both
             // are non-existant and we can return any non-existant rectangle
-            // as an answer. Thus, returning r meets that criterion.
+            // as an answer.  Thus, returning r meets that criterion.
             // Either way, r is our answer.
             return new Rectangle(r);
         }
@@ -136,33 +136,26 @@ public class Rectangle {
         int ry1 = r.y;
         rx2 += rx1;
         ry2 += ry1;
-        if (tx1 > rx1)
-            tx1 = rx1;
-        if (ty1 > ry1)
-            ty1 = ry1;
-        if (tx2 < rx2)
-            tx2 = rx2;
-        if (ty2 < ry2)
-            ty2 = ry2;
+        if (tx1 > rx1) tx1 = rx1;
+        if (ty1 > ry1) ty1 = ry1;
+        if (tx2 < rx2) tx2 = rx2;
+        if (ty2 < ry2) ty2 = ry2;
         tx2 -= tx1;
         ty2 -= ty1;
         // tx2,ty2 will never underflow since both original rectangles
         // were already proven to be non-empty
         // they might overflow, though...
-        if (tx2 > Integer.MAX_VALUE)
-            tx2 = Integer.MAX_VALUE;
-        if (ty2 > Integer.MAX_VALUE)
-            ty2 = Integer.MAX_VALUE;
+        if (tx2 > Integer.MAX_VALUE) tx2 = Integer.MAX_VALUE;
+        if (ty2 > Integer.MAX_VALUE) ty2 = Integer.MAX_VALUE;
         return new Rectangle(tx1, ty1, (int) tx2, (int) ty2);
     }
+    
+    public String toString() { return "Rect(" + x + "," + y + "," + width + "," + height + ")"; }
 
-    public String toString() {
-        return "Rect(" + x + "," + y + "," + width + "," + height + ")";
-    }
-
+    
     public boolean equals(Object obj) {
         if (obj instanceof Rectangle) {
-            Rectangle r = (Rectangle) obj;
+            Rectangle r = (Rectangle)obj;
             return ((x == r.x) &&
                     (y == r.y) &&
                     (width == r.width) &&
