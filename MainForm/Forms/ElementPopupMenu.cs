@@ -1,4 +1,5 @@
 ﻿using Circuit.Symbol.Passive;
+using Circuit.Symbol;
 
 namespace Circuit.Forms {
 	public partial class ElementPopupMenu : ContextMenuStrip {

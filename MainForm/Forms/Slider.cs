@@ -1,4 +1,7 @@
-﻿namespace Circuit.Forms {
+﻿using Circuit;
+using Circuit.Symbol;
+
+namespace MainForm.Forms {
 	public class Slider {
 		public TrackBar Trackbar;
 		public Label Label;
@@ -13,8 +16,8 @@
 			get { return MinValue + (MaxValue - MinValue) * Trackbar.Value / 100; }
 			set {
 				int intValue = (int)((value - MinValue) * 100 / (MaxValue - MinValue));
-				Trackbar.Value = (intValue < Trackbar.Minimum) ? Trackbar.Minimum :
-					(Trackbar.Maximum < intValue) ? Trackbar.Maximum : intValue;
+				Trackbar.Value = intValue < Trackbar.Minimum ? Trackbar.Minimum :
+					Trackbar.Maximum < intValue ? Trackbar.Maximum : intValue;
 			}
 		}
 
@@ -31,7 +34,7 @@
 			if (e == -1) {
 				return;
 			}
-			Symbol = MainForm.MainForm.SymbolList[e];
+			Symbol = MainForm.SymbolList[e];
 			EditItemR = st.nextTokenInt();
 			EditItemC = 0;
 			MinValue = st.nextTokenDouble();
@@ -62,7 +65,7 @@
 				TickStyle = TickStyle.TopLeft,
 				Minimum = 0,
 				Maximum = 100,
-				Value = (intValue < 0) ? 0 : (100 < intValue) ? 100 : intValue,
+				Value = intValue < 0 ? 0 : 100 < intValue ? 100 : intValue,
 				Width = 175,
 				Height = 23
 			});
@@ -77,7 +80,7 @@
 		public string Dump() {
 			return string.Join(" ",
 				'&',
-				MainForm.MainForm.SymbolList.IndexOf(Symbol),
+				MainForm.SymbolList.IndexOf(Symbol),
 				EditItemR,
 				MinValue,
 				MaxValue,

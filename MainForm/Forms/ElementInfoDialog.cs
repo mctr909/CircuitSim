@@ -1,6 +1,8 @@
 ﻿using Circuit.Symbol.Input;
+using Circuit.Symbol;
+using Circuit;
 
-namespace Circuit.Forms {
+namespace MainForm.Forms {
 	public class ElementInfoDialog : Form {
 		const double ROOT2 = 1.41421356237309504880;
 
@@ -139,7 +141,7 @@ namespace Circuit.Forms {
 					}
 				}
 			}
-			MainForm.MainForm.NeedAnalyze = true;
+			MainForm.NeedAnalyze = true;
 		}
 
 		void ItemStateChanged(object sender) {
@@ -161,7 +163,7 @@ namespace Circuit.Forms {
 						if (ei.NewDialog) {
 							changed = true;
 						}
-						MainForm.MainForm.NeedAnalyze = true;
+						MainForm.NeedAnalyze = true;
 					}
 				}
 			}
@@ -307,7 +309,7 @@ namespace Circuit.Forms {
 
 		string UnitString(ElementInfo ei) {
 			/* for voltage elements, express values in rms if that would be shorter */
-			if (mElm != null && (mElm is Voltage)
+			if (mElm != null && mElm is Voltage
 				&& Math.Abs(ei.Value) > 1e-4
 				&& DiffFromInteger(ei.Value * 1e4) > DiffFromInteger(ei.Value * 1e4 / ROOT2)) {
 				return UnitString(ei, ei.Value / ROOT2) + "rms";
@@ -316,13 +318,13 @@ namespace Circuit.Forms {
 		}
 
 		private void InitializeComponent() {
-			this.SuspendLayout();
+			SuspendLayout();
 			// 
 			// ElementInfoDialog
 			// 
-			this.ClientSize = new System.Drawing.Size(284, 261);
-			this.Name = "ElementInfoDialog";
-			this.ResumeLayout(false);
+			ClientSize = new Size(284, 261);
+			Name = "ElementInfoDialog";
+			ResumeLayout(false);
 
 		}
 	}

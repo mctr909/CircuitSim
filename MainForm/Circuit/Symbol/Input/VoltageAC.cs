@@ -1,5 +1,5 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Input;
+﻿using Circuit.Elements.Input;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Input {
 	class VoltageAC : Voltage {
@@ -11,7 +11,7 @@ namespace Circuit.Symbol.Input {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "交流電源";
-			arr[1] = "電流：" + TextUtils.Current(mElm.Current);
+			arr[1] = "電流：" + TextUtils.Current(mElm.I[0]);
 			arr[2] = "振幅：" + TextUtils.Voltage(mElm.MaxVoltage);
 			arr[3] = "周波数：" + TextUtils.Frequency(mElm.Frequency);
 			var phase = mElm.Phase + mElm.PhaseOffset;
@@ -40,23 +40,6 @@ namespace Circuit.Symbol.Input {
 					return new ElementInfo(VALUE_NAME_PHASE_OFS, double.Parse((mElm.PhaseOffset * 180 / Math.PI).ToString("0.00")));
 				}
 			}
-			if (c == 1) {
-				if (r == 0) {
-					return new ElementInfo("連動グループ", Link.Voltage);
-				}
-				if (r == 1) {
-					return new ElementInfo("連動グループ", Link.Bias);
-				}
-				if (r == 2) {
-					return new ElementInfo("連動グループ", Link.Frequency);
-				}
-				if (r == 4) {
-					return new ElementInfo("連動グループ", Link.PhaseOffset);
-				}
-				if (r < 4) {
-					return new ElementInfo();
-				}
-			}
 			return null;
 		}
 
@@ -80,20 +63,6 @@ namespace Circuit.Symbol.Input {
 				}
 				if (r == 4) {
 					mElm.PhaseOffset = ei.Value * Math.PI / 180;
-				}
-			}
-			if (c == 1) {
-				if (r == 0) {
-					Link.Voltage = (int)ei.Value;
-				}
-				if (r == 1) {
-					Link.Bias = (int)ei.Value;
-				}
-				if (r == 2) {
-					Link.Frequency = (int)ei.Value;
-				}
-				if (r == 4) {
-					Link.PhaseOffset = (int)ei.Value;
 				}
 			}
 			SetTextPos();
@@ -131,19 +100,19 @@ namespace Circuit.Symbol.Input {
 				var val = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
 				switch (ei.Name) {
 				case VALUE_NAME_AMP:
-					SetLinkedValues<Voltage>(VoltageLink.VOLTAGE, val);
+					mElm.MaxVoltage = val;
 					break;
 				case VALUE_NAME_BIAS:
-					SetLinkedValues<Voltage>(VoltageLink.BIAS, val);
+					mElm.Bias = val;
 					break;
 				case VALUE_NAME_HZ:
-					SetLinkedValues<Voltage>(VoltageLink.FREQUENCY, val);
+					mElm.Frequency = val;
 					break;
 				case VALUE_NAME_PHASE:
 					mElm.Phase = val * Math.PI / 180;
 					break;
 				case VALUE_NAME_PHASE_OFS:
-					SetLinkedValues<Voltage>(VoltageLink.PHASE_OFFSET, val);
+					mElm.PhaseOffset = val * Math.PI / 180;
 					break;
 				}
 			});

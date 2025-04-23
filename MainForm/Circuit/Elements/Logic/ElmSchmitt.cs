@@ -2,11 +2,11 @@
 	class ElmSchmitt : ElmInvertingSchmitt {
 		public ElmSchmitt() : base() { }
 
-		public override void DoIteration() {
-			double v0 = NodeVolts[1];
+		protected override void DoIteration() {
+			double v0 = V[1];
 			double _out;
 			if (mState) {//Output is high
-				if (NodeVolts[0] > UpperTrigger)//Input voltage high enough to set output high
+				if (V[0] > UpperTrigger)//Input voltage high enough to set output high
 				{
 					mState = false;
 					_out = LogicOnLevel;
@@ -14,7 +14,7 @@
 					_out = LogicOffLevel;
 				}
 			} else {//Output is low
-				if (NodeVolts[0] < LowerTrigger)//Input voltage low enough to set output low
+				if (V[0] < LowerTrigger)//Input voltage low enough to set output low
 				{
 					mState = true;
 					_out = LogicOffLevel;
@@ -24,14 +24,9 @@
 			}
 			double maxStep = SlewRate * CircuitState.DeltaTime * 1e9;
 			_out = Math.Max(Math.Min(v0 + maxStep, _out), v0 - maxStep);
-			UpdateVoltage(mVoltSource, _out);
+			UpdateVoltageSource(VoltSource, _out);
 		}
 
-		public override double GetCurrent(int n) {
-			if (n == 1) {
-				return Current;
-			}
-			return 0;
-		}
+		protected override double GetCurrent(int n) { return (n == 1) ? I[0] : 0; }
 	}
 }

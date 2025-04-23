@@ -21,7 +21,7 @@ namespace Circuit.Symbol.Logic {
 			Draw2Leads();
 			DrawPolygon(gatePoly);
 			DrawPolygon(symbolPoly);
-			UpdateDotCount(mElm.Current, ref mCurCount);
+			UpdateDotCount(mElm.I[0], ref mCurCount);
 			DrawCurrentB(mCurCount);
 		}
 

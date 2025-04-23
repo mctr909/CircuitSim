@@ -1,21 +1,25 @@
 ﻿using Circuit.Elements.Logic;
+using Circuit.Elements;
 
 namespace Circuit.Symbol.Logic {
 	class GateOr : Gate {
-		public override BaseElement Element { get { return mElm; } }
-
 		protected GateOr(Point pos, bool dummy) : base(pos) { }
 		protected GateOr(Point p1, Point p2, int f, bool dummy) : base(p1, p2, f) { }
 
 		public GateOr(Point pos) : base(pos) {
-			mElm = new ElmGateOr();
+			mElm = (ElmGateOr)Element;
 		}
+
 		public GateOr(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmGateOr();
+			mElm = (ElmGateOr)Element;
 			mElm.InputCount = st.nextTokenInt(mElm.InputCount);
 			var lastOutputVoltage = st.nextTokenDouble();
 			mElm.HighVoltage = st.nextTokenDouble(5);
 			mElm.LastOutput = mElm.HighVoltage * 0.5 < lastOutputVoltage;
+		}
+
+		protected override BaseElement Create() {
+			return new ElmGateOr();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.OR_GATE; } }

@@ -1,17 +1,18 @@
 ﻿using Circuit.Elements.Passive;
+using Circuit.Elements;
 
 namespace Circuit.Symbol.Passive {
-	class Wire : BaseSymbol {
-		ElmWire mElm;
+	public class Wire : BaseSymbol {
+		public override bool IsWire { get { return true; } }
 
-		public override BaseElement Element { get { return mElm; } }
+		public bool HasWireInfo; /* used in CirSim to calculate wire currents */
 
-		public Wire(Point pos) : base(pos) {
-			mElm = new ElmWire();
-		}
+		public Wire(Point pos) : base(pos) { }
 
-		public Wire(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmWire();
+		public Wire(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) { }
+
+		protected override BaseElement Create() {
+			return new ElmWire();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.WIRE; } }
@@ -27,8 +28,8 @@ namespace Circuit.Symbol.Passive {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "ワイヤ";
-			arr[1] = "電流：" + TextUtils.CurrentAbs(mElm.Current);
-			arr[2] = "電位：" + TextUtils.Voltage(mElm.GetVoltageDiff());
+			arr[1] = "電流：" + TextUtils.CurrentAbs(Element.I[0]);
+			arr[2] = "電位：" + TextUtils.Voltage(Element.VoltageDiff);
 		}
 	}
 }

@@ -24,12 +24,8 @@
 		public double NoiseValue;
 		public WAVEFORM WaveForm;
 
-		public override int TermCount { get { return 2; } }
-
-		public override int VoltageSourceCount { get { return 1; } }
-
-		public override double GetVoltageDiff() {
-			return NodeVolts[1] - NodeVolts[0];
+		public override double VoltageDiff {
+			get { return V[1] - V[0]; }
 		}
 
 		public double GetVoltage() {
@@ -108,28 +104,16 @@
 			return x / Math.PI - 1.0;
 		}
 
-		#region [method(Analyze)]
-		public override void Reset() { }
-
-		public override void Stamp() {
-			if (WaveForm == WAVEFORM.DC) {
-				StampVoltageSource(NodeId[0], NodeId[1], mVoltSource, GetVoltage());
-			} else {
-				StampVoltageSource(NodeId[0], NodeId[1], mVoltSource);
-			}
-		}
-		#endregion
-
 		#region [method(Circuit)]
-		public override void DoIteration() {
+		protected override void DoIteration() {
 			if (WaveForm != WAVEFORM.DC) {
-				UpdateVoltage(mVoltSource, GetVoltage());
+				UpdateVoltageSource(VoltSource, GetVoltage());
 			}
 		}
 
-		public override void FinishIteration() {
+		protected override void FinishIteration() {
 			if (WaveForm == WAVEFORM.NOISE) {
-				NoiseValue = (mRandom.NextDouble() * 2 - 1) * MaxVoltage + Bias;
+				NoiseValue = (Random.NextDouble() * 2 - 1) * MaxVoltage + Bias;
 			}
 		}
 		#endregion

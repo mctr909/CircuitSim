@@ -4,6 +4,7 @@ using Circuit.Symbol.Logic;
 using Circuit.Symbol.Input;
 using Circuit.Symbol.Measure;
 using Circuit.Symbol.Passive;
+using Circuit.Symbol;
 
 namespace Circuit {
 	public enum DUMP_ID {
@@ -156,9 +157,9 @@ namespace Circuit {
 			case DUMP_ID.LED:
 				return new DiodeLED(pos);
 			case DUMP_ID.TRANSISTOR_N:
-				return new TransistorN(pos);
+				return new BJTN(pos);
 			case DUMP_ID.TRANSISTOR_P:
-				return new TransistorP(pos);
+				return new BJTP(pos);
 			case DUMP_ID.MOSFET_N:
 				return new MosfetN(pos);
 			case DUMP_ID.MOSFET_P:
@@ -173,8 +174,6 @@ namespace Circuit {
 				return new OpAmpSwap(pos);
 			case DUMP_ID.ANALOG_SW:
 				return new AnalogSwitch(pos);
-			case DUMP_ID.OPTO_COUPLER:
-				return new Optocoupler(pos);
 			#endregion
 
 			#region Inputs and Sources
@@ -236,10 +235,10 @@ namespace Circuit {
 			//    return null; //(CircuitElm)new OTAElm(x1, y1);
 			//case ELEMENTS.VCVSElm:
 			//    return null; //(CircuitElm)new VCVSElm(x1, y1);
-			case DUMP_ID.VCCS:
-				return new VCCS(pos);
-			case DUMP_ID.CCCS:
-				return new CCCS(pos);
+			//case DUMP_ID.VCCS:
+			//    return null; //(CircuitElm)new VCCS(x1, y1);
+			//case DUMP_ID.CCCS:
+			//    return null; //(CircuitElm)new CCCS(x1, y1);
 			//case ELEMENTS.CCVSElm:
 			//    return null; //(CircuitElm)new CCVSElm(x1, y1);
 			#endregion
@@ -360,15 +359,13 @@ namespace Circuit {
 			case DUMP_ID.LED:
 				return new DiodeLED(p1, p2, f, st);
 			case DUMP_ID.TRANSISTOR:
-				return new Transistor(p1, p2, f, st);
+				return new BJT(p1, p2, f, st);
 			case DUMP_ID.JFET:
 				return new FET(p1, p2, false, f, st);
 			case DUMP_ID.MOSFET:
 				return new FET(p1, p2, true, f, st);
 			case DUMP_ID.OPAMP:
 				return new OpAmp(p1, p2, f, st);
-			case DUMP_ID.OPTO_COUPLER:
-				return new Optocoupler(p1, p2, f, st);
 			case DUMP_ID.ANALOG_SW:
 				return new AnalogSwitch(p1, p2, f, st);
 			#endregion
@@ -388,10 +385,10 @@ namespace Circuit {
 				return new RailDC(p1, p2, f, st);
 			case DUMP_ID.RAIL_AC:
 				return new RailAC(p1, p2, f, st);
-			case DUMP_ID.VCCS:
-				return new VCCS(p1, p2, f, st);
-			case DUMP_ID.CCCS:
-				return new CCCS(p1, p2, f, st);
+			//case DUMP_ID.VCCS:
+			//	return new VCCS(p1, p2, f, st);
+			//case DUMP_ID.CCCS:
+			//	return new CCCS(p1, p2, f, st);
 			case DUMP_ID.SWEEP:
 				return new Sweep(p1, p2, f, st);
 			case DUMP_ID.AM:

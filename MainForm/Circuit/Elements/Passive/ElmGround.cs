@@ -1,25 +1,11 @@
 ﻿namespace Circuit.Elements.Passive {
 	class ElmGround : BaseElement {
-		public override int VoltageSourceCount { get { return 1; } }
-
 		public override int TermCount { get { return 1; } }
 
-		public override double GetVoltageDiff() {
-			return 0;
-		}
+		public override double VoltageDiff { get { return 0; } }
 
-		#region [method(Analyze)]
-		public override bool HasGroundConnection(int nodeIndex) { return true; }
+		protected override double GetCurrent(int n) { return -I[0]; }
 
-		public override void Stamp() {
-			StampVoltageSource(0, NodeId[0], mVoltSource, 0);
-		}
-		#endregion
-
-		#region [method(Circuit)]
-		public override double GetCurrent(int n) { return -Current; }
-
-		public override void SetCurrent(int x, double c) { Current = -c; }
-		#endregion
+		protected override void SetCurrent(int n, double i) { I[0] = -i; }
 	}
 }

@@ -1,6 +1,5 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Custom;
-using Circuit.Elements.Input;
+﻿using Circuit.Elements.Custom;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Custom {
 	abstract class Chip : BaseSymbol {
@@ -124,6 +123,9 @@ namespace Circuit.Symbol.Custom {
 			}
 		}
 
+		public override bool HasGroundConnection(int nodeIndex) { return ((ElmChip)Element).Pins[nodeIndex].output; }
+		public override bool HasConnection(int n1, int n2) { return false; }
+
 		public Chip(Point pos) : base(pos) {
 			Post.NoDiagonal = true;
 			setSize(1);
@@ -143,7 +145,27 @@ namespace Circuit.Symbol.Custom {
 			}
 			for (int i = 0; i != ce.TermCount; i++) {
 				if (ce.Pins[i].state) {
-					optionList.Add(ce.NodeVolts[i].ToString("0.000000"));
+					optionList.Add(ce.V[i].ToString("0.000000"));
+				}
+			}
+		}
+
+		public override void Reset() {
+			var ce = (ElmChip)Element;
+			for (int i = 0; i != ce.TermCount; i++) {
+				ce.Pins[i].value = false;
+				ce.Pins[i].curcount = 0;
+				ce.V[i] = 0;
+			}
+			ce.lastClock = false;
+		}
+
+		public override void Stamp() {
+			var ce = (ElmChip)Element;
+			for (int i = 0; i != ce.TermCount; i++) {
+				var p = ce.Pins[i];
+				if (p.output) {
+					StampVoltageSource(0, ce.Nodes[i], p.voltSource);
 				}
 			}
 		}
@@ -159,10 +181,10 @@ namespace Circuit.Symbol.Custom {
 		protected void Setup(ElmChip elm, StringTokenizer st) {
 			for (int i = 0; i != elm.TermCount; i++) {
 				if (elm.Pins == null) {
-					elm.NodeVolts[i] = st.nextTokenDouble();
+					elm.V[i] = st.nextTokenDouble();
 				} else if (elm.Pins[i].state) {
-					elm.NodeVolts[i] = st.nextTokenDouble();
-					elm.Pins[i].value = elm.NodeVolts[i] > 2.5;
+					elm.V[i] = st.nextTokenDouble();
+					elm.Pins[i].value = elm.V[i] > 2.5;
 				}
 			}
 		}
@@ -320,7 +342,7 @@ namespace Circuit.Symbol.Custom {
 				if (p.clock) {
 					t = "Clk";
 				}
-				arr[a] += t + " = " + TextUtils.Voltage(ce.NodeVolts[i]);
+				arr[a] += t + " = " + TextUtils.Voltage(ce.V[i]);
 				if (i % 2 == 1) {
 					a++;
 				}

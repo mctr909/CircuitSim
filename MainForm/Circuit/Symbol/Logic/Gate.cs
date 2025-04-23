@@ -1,5 +1,5 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Logic;
+﻿using Circuit.Elements.Logic;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Logic {
 	abstract class Gate : BaseSymbol {
@@ -32,6 +32,12 @@ namespace Circuit.Symbol.Logic {
 
 		protected virtual string gateName { get { return ""; } }
 
+		public override int VoltageSourceCount { get { return 1; } }
+		/* there is no current path through the gate inputs,
+        * but there is an indirect path through the output to ground. */
+		public override bool HasConnection(int n1, int n2) { return false; }
+		public override bool HasGroundConnection(int nodeIndex) { return nodeIndex == mElm.InputCount; }
+
 		protected Gate(Point pos) : base(pos) {
 			Post.NoDiagonal = true;
 			if (mLastSchmitt) {
@@ -49,8 +55,12 @@ namespace Circuit.Symbol.Logic {
 
 		protected override void dump(List<object> optionList) {
 			optionList.Add(mElm.InputCount);
-			optionList.Add(mElm.NodeVolts[mElm.InputCount]);
+			optionList.Add(mElm.V[mElm.InputCount]);
 			optionList.Add(mElm.HighVoltage);
+		}
+
+		public override void Stamp() {
+			StampVoltageSource(0, mElm.Nodes[mElm.InputCount], mElm.VoltSource);
 		}
 
 		public override void SetPoints() {
@@ -68,7 +78,7 @@ namespace Circuit.Symbol.Logic {
 			SetLeads(mWw * 2);
 			mInPosts = new PointF[mElm.InputCount];
 			mInGates = new PointF[mElm.InputCount];
-			mElm.AllocateNodes();
+			AllocateNodes();
 			int i0 = -mElm.InputCount / 2;
 			for (i = 0; i != mElm.InputCount; i++, i0++) {
 				if (i0 == 0 && (mElm.InputCount & 1) == 0) {
@@ -76,13 +86,13 @@ namespace Circuit.Symbol.Logic {
 				}
 				InterpolationPost(ref mInPosts[i], 0, hs * i0);
 				InterpolationLead(ref mInGates[i], 0, hs * i0);
-				mElm.NodeVolts[i] = (mElm.LastOutput ^ mElm.IsInverting) ? 5 : 0;
+				mElm.V[i] = (mElm.LastOutput ^ mElm.IsInverting) ? 5 : 0;
 			}
 			mHs2 = G_WIDTH * (mElm.InputCount / 2 + 1);
 			if (mElm.HasSchmittInputs) {
 				CreateSchmitt(mLead1, mLead2, out mSchmittPoly, 1, .47f);
 			}
-			mElm.SetNodePos(mInPosts, Post.B);
+			SetNodePos(mInPosts, Post.B);
 		}
 
 		public override void Draw(CustomGraphics g) {
@@ -109,14 +119,14 @@ namespace Circuit.Symbol.Logic {
 			if (mElm.IsInverting) {
 				DrawCircle(mCirclePos, CIRCLE_SIZE);
 			}
-			UpdateDotCount(mElm.Current, ref mCurCount);
+			UpdateDotCount(mElm.I[0], ref mCurCount);
 			DrawCurrentB(mCurCount);
 		}
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = gateName;
-			arr[1] = "Vout：" + TextUtils.Voltage(mElm.NodeVolts[mElm.InputCount]);
-			arr[2] = "Iout：" + TextUtils.Current(mElm.Current);
+			arr[1] = "Vout：" + TextUtils.Voltage(mElm.V[mElm.InputCount]);
+			arr[2] = "Iout：" + TextUtils.Current(mElm.I[0]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

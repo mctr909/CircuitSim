@@ -1,5 +1,6 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Active;
+﻿using Circuit.Elements.Active;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Active {
 	class FET : BaseSymbol {
@@ -8,7 +9,7 @@ namespace Circuit.Symbol.Active {
 
 		const int HS = 10;
 
-		ElmFET mElm;
+		private ElmFET mElm;
 		double mCurcountBody1;
 		double mCurcountBody2;
 
@@ -21,23 +22,20 @@ namespace Circuit.Symbol.Active {
 		PointF[] mPosD = new PointF[4];
 		PointF[] mPosB = new PointF[2];
 
-		public override BaseElement Element { get { return mElm; } }
+		public override bool HasConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
 
 		public FET(Point pos, bool isNch, bool mos) : base(pos) {
+			mElm = (ElmFET)Element;
 			if (mos) {
-				mElm = new ElmFET() {
-					Nch = isNch ? 1 : -1,
-					MOS = mos,
-					Vth = 1.5,
-					Beta = 1
-				};
+				mElm.Nch = isNch ? 1 : -1;
+				mElm.MOS = mos;
+				mElm.Vth = 1.5;
+				mElm.Beta = 1;
 			} else {
-				mElm = new ElmJFET() {
-					Nch = isNch ? 1 : -1,
-					MOS = false,
-					Vth = isNch ? -1 : 1,
-					Beta = 0.00125
-				};
+				mElm.Nch = isNch ? 1 : -1;
+				mElm.MOS = false;
+				mElm.Vth = isNch ? -1 : 1;
+				mElm.Beta = 0.00125;
 			}
 			mFlags = isNch ? 0 : FLAG_PNP;
 			Post.NoDiagonal = true;
@@ -46,25 +44,26 @@ namespace Circuit.Symbol.Active {
 
 		public FET(Point p1, Point p2, bool mos, int f, StringTokenizer st) : base(p1, p2, f) {
 			Post.NoDiagonal = true;
+			mElm = (ElmFET)Element;
 			if (mos) {
 				var vt = st.nextTokenDouble(1.5);
 				var beta = st.nextTokenDouble(1);
-				mElm = new ElmFET() {
-					Nch = (f & FLAG_PNP) == 0 ? 1 : -1,
-					MOS = mos,
-					Vth = vt,
-					Beta = beta
-				};
+				mElm.Nch = (f & FLAG_PNP) == 0 ? 1 : -1;
+				mElm.MOS = mos;
+				mElm.Vth = vt;
+				mElm.Beta = beta;
 			} else {
 				var vt = st.nextTokenDouble((f & FLAG_PNP) == 0 ? -1 : 1);
 				var beta = st.nextTokenDouble(0.00125);
-				mElm = new ElmJFET() {
-					Nch = (f & FLAG_PNP) == 0 ? 1 : -1,
-					MOS = false,
-					Vth = vt,
-					Beta = beta
-				};
+				mElm.Nch = (f & FLAG_PNP) == 0 ? 1 : -1;
+				mElm.MOS = false;
+				mElm.Vth = vt;
+				mElm.Beta = beta;
 			}
+		}
+
+		protected override BaseElement Create() {
+			return new ElmFET();
 		}
 
 		public override bool CanViewInScope { get { return true; } }
@@ -74,6 +73,40 @@ namespace Circuit.Symbol.Active {
 		protected override void dump(List<object> optionList) {
 			optionList.Add(mElm.Vth);
 			optionList.Add(mElm.Beta);
+		}
+
+		public override void Reset() {
+			mElm.V[ElmFET.IdxG] = mElm.V[ElmFET.IdxS] = mElm.V[ElmFET.IdxD] = 0;
+			mElm.mLastVs = 0.0;
+			mElm.mLastVd = 0.0;
+			mElm.mLastVg = 0.0;
+			mElm.mDiodeLastVdiff1 = 0;
+			mElm.mDiodeLastVdiff2 = 0;
+			mElm.DiodeCurrent1 = 0.0;
+			mElm.DiodeCurrent2 = 0.0;
+		}
+
+		public override void Stamp() {
+			StampNonLinear(mElm.Nodes[ElmFET.IdxS]);
+			StampNonLinear(mElm.Nodes[ElmFET.IdxD]);
+			mElm.mBodyTerminal = (mElm.Nch < 0) ? ElmFET.IdxD : ElmFET.IdxS;
+			if (mElm.MOS) {
+				if (mElm.Nch < 0) {
+					mElm.mDiodeNodes1A = mElm.Nodes[ElmFET.IdxS];
+					mElm.mDiodeNodes1B = mElm.Nodes[mElm.mBodyTerminal];
+					mElm.mDiodeNodes2A = mElm.Nodes[ElmFET.IdxD];
+					mElm.mDiodeNodes2B = mElm.Nodes[mElm.mBodyTerminal];
+				} else {
+					mElm.mDiodeNodes1A = mElm.Nodes[mElm.mBodyTerminal];
+					mElm.mDiodeNodes1B = mElm.Nodes[ElmFET.IdxS];
+					mElm.mDiodeNodes2A = mElm.Nodes[mElm.mBodyTerminal];
+					mElm.mDiodeNodes2B = mElm.Nodes[ElmFET.IdxD];
+				}
+				StampNonLinear(mElm.mDiodeNodes1A);
+				StampNonLinear(mElm.mDiodeNodes1B);
+				StampNonLinear(mElm.mDiodeNodes2A);
+				StampNonLinear(mElm.mDiodeNodes2B);
+			}
 		}
 
 		public override void SetPoints() {
@@ -177,7 +210,7 @@ namespace Circuit.Symbol.Active {
 
 			setTextPos();
 
-			mElm.SetNodePos(Post.A, mPosS[0], mPosD[0]);
+			SetNodePos(Post.A, mPosS[0], mPosD[0]);
 		}
 
 		void setTextPos() {
@@ -222,7 +255,7 @@ namespace Circuit.Symbol.Active {
 			FillPolygon(mArrowPoly);
 
 			/* draw current */
-			UpdateDotCount(-mElm.Current, ref mCurCount);
+			UpdateDotCount(-mElm.I[0], ref mCurCount);
 			UpdateDotCount(mElm.DiodeCurrent1, ref mCurcountBody1);
 			UpdateDotCount(mElm.DiodeCurrent2, ref mCurcountBody2);
 			DrawCurrent(mPosS[0], mPosB[0], mCurCount - mCurcountBody1);
@@ -246,8 +279,8 @@ namespace Circuit.Symbol.Active {
 			arr[2] = "Vgs：" + TextUtils.Voltage(mElm.Vg - (mElm.Nch == -1 ? mElm.Vd : mElm.Vs));
 			var vds = mElm.Vd - mElm.Vs;
 			arr[3] = ((mElm.Nch == 1) ? "Vds：" : "Vsd：") + TextUtils.Voltage(vds);
-			arr[4] = ((mElm.Nch == 1) ? "Ids：" : "Isd：") + TextUtils.Current(mElm.Current);
-			arr[5] = "Rds：" + TextUtils.Unit(vds / mElm.Current, "Ω");
+			arr[4] = ((mElm.Nch == 1) ? "Ids：" : "Isd：") + TextUtils.Current(mElm.I[0]);
+			arr[5] = "Rds：" + TextUtils.Unit(vds / mElm.I[0], "Ω");
 			arr[6] = "gm：" + TextUtils.Unit(mElm.Gm, "A/V");
 		}
 

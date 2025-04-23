@@ -1,4 +1,5 @@
 ﻿using Circuit.Elements.Passive;
+using Circuit.Elements;
 
 namespace Circuit.Symbol.Passive {
 	class Ground : BaseSymbol {
@@ -7,19 +8,28 @@ namespace Circuit.Symbol.Passive {
 		PointF[][] mLine;
 		ElmGround mElm;
 
-		public override BaseElement Element { get { return mElm; } }
+		public override int VoltageSourceCount { get { return 1; } }
+		public override bool HasGroundConnection(int nodeIndex) { return true; }
 
 		public Ground(Point pos) : base(pos) {
-			mElm = new ElmGround();
+			mElm = (ElmGround)Element;
 			Post.B.Y = pos.Y + GRID_SIZE;
 			SetPoints();
 		}
 
 		public Ground(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmGround();
+			mElm = (ElmGround)Element;
+		}
+
+		protected override BaseElement Create() {
+			return new ElmGround();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.GROUND; } }
+
+		public override void Stamp() {
+			StampVoltageSource(0, mElm.Nodes[0], mElm.VoltSource, 0);
+		}
 
 		public override void SetPoints() {
 			base.SetPoints();
@@ -45,7 +55,7 @@ namespace Circuit.Symbol.Passive {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "接地";
-			arr[1] = "電流：" + TextUtils.Current(mElm.Current);
+			arr[1] = "電流：" + TextUtils.Current(mElm.I[0]);
 		}
 	}
 }

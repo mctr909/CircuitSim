@@ -1,5 +1,7 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Input;
+﻿using Circuit.Elements.Input;
+using Circuit.Elements;
+using Circuit.Elements.Custom;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Input {
 	class AM : BaseSymbol {
@@ -8,14 +10,15 @@ namespace Circuit.Symbol.Input {
 
 		ElmAM mElm;
 
-		public override BaseElement Element { get { return mElm; } }
+		public override int VoltageSourceCount { get { return 1; } }
+		public override bool HasGroundConnection(int nodeIndex) { return true; }
 
 		public AM(Point pos) : base(pos) {
-			mElm = new ElmAM();
+			mElm = (ElmAM)Element;
 		}
 
 		public AM(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmAM();
+			mElm = (ElmAM)Element;
 			mElm.CarrierFreq = st.nextTokenDouble(1000);
 			mElm.SignalFreq = st.nextTokenDouble(50);
 			mElm.MaxVoltage = st.nextTokenDouble(5);
@@ -24,7 +27,11 @@ namespace Circuit.Symbol.Input {
 			if ((mFlags & FLAG_COS) != 0) {
 				mFlags &= ~FLAG_COS;
 			}
-			mElm.Reset();
+			Reset();
+		}
+
+		protected override BaseElement Create() {
+			return new ElmAM();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.AM; } }
@@ -35,6 +42,14 @@ namespace Circuit.Symbol.Input {
 			optionList.Add(mElm.MaxVoltage);
 			optionList.Add(mElm.Phase);
 			optionList.Add(mElm.Depth);
+		}
+
+		public override void Reset() {
+			mElm.mFreqTimeZero = 0;
+		}
+
+		public override void Stamp() {
+			StampVoltageSource(0, mElm.Nodes[0], mElm.VoltSource);
 		}
 
 		public override void SetPoints() {
@@ -48,7 +63,7 @@ namespace Circuit.Symbol.Input {
 			DrawLeadA();
 			DrawCircle(Post.B, SIZE / 2);
 			DrawCenteredText(ReferenceName, mNamePos);
-			UpdateDotCount(-mElm.Current, ref mCurCount);
+			UpdateDotCount(-mElm.I[0], ref mCurCount);
 			if (ConstructItem != this) {
 				DrawCurrentA(mCurCount);
 			}

@@ -1,5 +1,6 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Active;
+﻿using Circuit.Elements.Active;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Active {
 	class AnalogSwitch : BaseSymbol {
@@ -14,25 +15,33 @@ namespace Circuit.Symbol.Active {
 		PointF mOpen;
 		PointF mClose;
 
-        public override BaseElement Element { get { return mElm; } }
+		public override bool HasConnection(int n1, int n2) { return !(n1 == 2 || n2 == 2); }
 
-        public AnalogSwitch(Point pos) : base(pos) {
-			mElm = new ElmAnalogSwitch();
+		public AnalogSwitch(Point pos) : base(pos) {
+			mElm = (ElmAnalogSwitch)Element;
 		}
 
 		public AnalogSwitch(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-			mElm = new ElmAnalogSwitch {
-				Ron = st.nextTokenDouble(1e-3),
-				Roff = st.nextTokenDouble(1e9)
-			};
+			mElm = (ElmAnalogSwitch)Element;
+			mElm.R_ON = st.nextTokenDouble(1e-3);
+			mElm.R_OFF = st.nextTokenDouble(1e9);
+		}
+
+		protected override BaseElement Create() {
+			return new ElmAnalogSwitch();
 		}
 
 		protected override void dump(List<object> optionList) {
-			optionList.Add(mElm.Ron.ToString("g3"));
-			optionList.Add(mElm.Roff.ToString("g3"));
+			optionList.Add(mElm.R_ON.ToString("g3"));
+			optionList.Add(mElm.R_OFF.ToString("g3"));
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.ANALOG_SW; } }
+
+		public override void Stamp() {
+			StampNonLinear(mElm.Nodes[0]);
+			StampNonLinear(mElm.Nodes[1]);
+		}
 
 		public override void Drag(Point pos) {
 			pos = SnapGrid(pos);
@@ -57,7 +66,7 @@ namespace Circuit.Symbol.Active {
 			InterpolationPost(ref mCtrlLead, 0.5, -OPEN_HS / 3);
 			InterpolationLead(ref mOpen, 1 - 2.0 / BODY_LEN, OPEN_HS - 6);
 			InterpolationLead(ref mClose, 1 - 2.0 / BODY_LEN, 2.5f);
-			mElm.SetNodePos(Post.A, Post.B, mCtrlTerm);
+			SetNodePos(Post.A, Post.B, mCtrlTerm);
 		}
 
 		public override void Draw(CustomGraphics g) {
@@ -65,7 +74,7 @@ namespace Circuit.Symbol.Active {
 			DrawLine(mCtrlTerm, mCtrlLead);
 			FillCircle(mLead1, 2.5f);
 			FillCircle(mLead2, 2.5f);
-			if (mElm.IsOpen || g is PDF.Page) {
+			if (mElm.STATE || g is PDF.Page) {
 				DrawLine(mLead1, mOpen);
 			} else {
 				DrawLine(mLead1, mClose);
@@ -74,10 +83,10 @@ namespace Circuit.Symbol.Active {
 		}
 
 		public override void GetInfo(string[] arr) {
-			arr[0] = "アナログスイッチ(" + (mElm.IsOpen ? "OFF)" : "ON)");
-			arr[1] = "電位差：" + TextUtils.VoltageAbs(mElm.GetVoltageDiff());
-			arr[2] = "電流：" + TextUtils.CurrentAbs(mElm.Current);
-			arr[3] = "制御電圧：" + TextUtils.Voltage(mElm.NodeVolts[2]);
+			arr[0] = "アナログスイッチ(" + (mElm.STATE ? "OFF)" : "ON)");
+			arr[1] = "電位差：" + TextUtils.VoltageAbs(mElm.VoltageDiff);
+			arr[2] = "電流：" + TextUtils.CurrentAbs(mElm.I[0]);
+			arr[3] = "制御電圧：" + TextUtils.Voltage(mElm.V[2]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
@@ -88,10 +97,10 @@ namespace Circuit.Symbol.Active {
 				return new ElementInfo("ノーマリクローズ", (mFlags & FLAG_INVERT) != 0);
 			}
 			if (r == 1) {
-				return new ElementInfo("オン抵抗(Ω)", mElm.Ron);
+				return new ElementInfo("オン抵抗(Ω)", mElm.R_ON);
 			}
 			if (r == 2) {
-				return new ElementInfo("オフ抵抗(Ω)", mElm.Roff);
+				return new ElementInfo("オフ抵抗(Ω)", mElm.R_OFF);
 			}
 			return null;
 		}
@@ -99,13 +108,13 @@ namespace Circuit.Symbol.Active {
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
 			if (n == 0) {
 				mFlags = ei.CheckBox.Checked ? (mFlags | FLAG_INVERT) : (mFlags & ~FLAG_INVERT);
-				mElm.Invert = 0 != (mFlags & FLAG_INVERT);
+				mElm.INVERT = 0 != (mFlags & FLAG_INVERT);
 			}
 			if (n == 1 && 0 < ei.Value) {
-				mElm.Ron = ei.Value;
+				mElm.R_ON = ei.Value;
 			}
 			if (n == 2 && 0 < ei.Value) {
-				mElm.Roff = ei.Value;
+				mElm.R_OFF = ei.Value;
 			}
 		}
 	}

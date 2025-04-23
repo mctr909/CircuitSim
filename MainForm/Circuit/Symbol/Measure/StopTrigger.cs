@@ -1,21 +1,25 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Measure;
+﻿using Circuit.Elements.Measure;
+using Circuit.Elements;
+using Circuit.Symbol.Passive;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Measure {
 	class StopTrigger : BaseSymbol {
 		ElmStopTrigger mElm;
 
-		public override BaseElement Element { get { return mElm; } }
-
 		public StopTrigger(Point pos) : base(pos) {
-			mElm = new ElmStopTrigger();
+			mElm = (ElmStopTrigger)Element;
 		}
 
 		public StopTrigger(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-			mElm = new ElmStopTrigger();
+			mElm = (ElmStopTrigger)Element;
 			mElm.TriggerVoltage = st.nextTokenDouble();
 			mElm.Type = st.nextTokenInt();
 			mElm.Delay = st.nextTokenDouble();
+		}
+
+		protected override BaseElement Create() {
+			return new ElmStopTrigger();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.STOP_TRIGGER; } }
@@ -24,6 +28,10 @@ namespace Circuit.Symbol.Measure {
 			optionList.Add(mElm.TriggerVoltage.ToString("g3"));
 			optionList.Add(mElm.Type);
 			optionList.Add(mElm.Delay.ToString("g3"));
+		}
+
+		public override void Reset() {
+			mElm.Triggered = false;
 		}
 
 		public override void SetPoints() {
@@ -61,7 +69,7 @@ namespace Circuit.Symbol.Measure {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "stop trigger";
-			arr[1] = "V = " + TextUtils.Voltage(mElm.NodeVolts[0]);
+			arr[1] = "V = " + TextUtils.Voltage(mElm.V[0]);
 			arr[2] = "Vtrigger = " + TextUtils.Voltage(mElm.TriggerVoltage);
 			arr[3] = mElm.Triggered ? ("stopping in "
 				+ TextUtils.Time(mElm.TriggerTime + mElm.Delay - CircuitState.Time)) : mElm.Stopped ? "stopped" : "waiting";

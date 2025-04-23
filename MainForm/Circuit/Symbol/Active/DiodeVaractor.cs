@@ -1,5 +1,5 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Active;
+﻿using Circuit.Elements.Active;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Active {
 	class DiodeVaractor : Diode {
@@ -16,8 +16,8 @@ namespace Circuit.Symbol.Active {
 			mElm.VScale = model.VScale;
 			mElm.VdCoef = model.VdCoef;
 			mElm.SeriesResistance = model.SeriesResistance;
-			mElm.Model = model;
-			mElm.Setup();
+			Model = model;
+			Setup();
 		}
 
 		public DiodeVaractor(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
@@ -33,17 +33,32 @@ namespace Circuit.Symbol.Active {
 			mElm.VScale = model.VScale;
 			mElm.VdCoef = model.VdCoef;
 			mElm.SeriesResistance = model.SeriesResistance;
-			mElm.Model = model;
-			mElm.Setup();
+			Model = model;
+			Setup();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.VARACTOR; } }
+
+		public override int VoltageSourceCount { get { return 1; } }
+
+		public override int InternalNodeCount { get { return 1; } }
 
 		protected override void dump(List<object> optionList) {
 			var ce = (ElmDiodeVaractor)mElm;
 			base.dump(optionList);
 			optionList.Add(ce.CapVoltDiff.ToString("g3"));
 			optionList.Add(ce.BaseCapacitance.ToString("g3"));
+		}
+
+		public override void Reset() {
+			base.Reset();
+			((ElmDiodeVaractor)mElm).CapVoltDiff = 0;
+		}
+
+		public override void Stamp() {
+			base.Stamp();
+			StampVoltageSource(mElm.Nodes[0], mElm.Nodes[2], mElm.VoltSource);
+			StampNonLinear(mElm.Nodes[2]);
 		}
 
 		public override void SetPoints() {

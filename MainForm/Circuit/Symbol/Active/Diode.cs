@@ -1,5 +1,6 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Active;
+﻿using Circuit.Elements.Active;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Active {
 	class Diode : BaseSymbol {
@@ -13,30 +14,34 @@ namespace Circuit.Symbol.Active {
 
 		protected List<DiodeModel> mModels;
 		protected bool mCustomModelUI;
+		protected bool mHasResistance;
 
 		public static string LastModelName = "default";
 		public string ModelName = "default";
+		public DiodeModel Model;
 
 		protected ElmDiode mElm;
 
-		public override BaseElement Element { get { return mElm; } }
+		public override int InternalNodeCount { get { return mHasResistance ? 1 : 0; } }
 
 		public Diode(Point pos, string referenceName = "D") : base(pos) {
 			ModelName = LastModelName;
 			ReferenceName = referenceName;
 			var model = DiodeModel.GetModelWithName(ModelName);
-			mElm = new ElmDiode();
+			mElm = (ElmDiode)Element;
 			mElm.VZener = model.BreakdownVoltage;
 			mElm.FwDrop = model.FwDrop;
 			mElm.Leakage = model.SaturationCurrent;
 			mElm.VScale = model.VScale;
 			mElm.VdCoef = model.VdCoef;
 			mElm.SeriesResistance = model.SeriesResistance;
-			mElm.Model = model;
-			mElm.Setup();
+			Model = model;
+			Setup();
 		}
 
-		public Diode(Point p1, Point p2, int f) : base(p1, p2, f) { }
+		public Diode(Point p1, Point p2, int f) : base(p1, p2, f) {
+			mElm = (ElmDiode)Element;
+		}
 
 		public Diode(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
 			const double defaultdrop = 0.805904783;
@@ -53,15 +58,19 @@ namespace Circuit.Symbol.Active {
 				ModelName = DiodeModel.GetModelWithParameters(fwdrop, zvoltage).Name;
 			}
 			var model = DiodeModel.GetModelWithName(ModelName);
-			mElm = new ElmDiode();
+			mElm = (ElmDiode)Element;
 			mElm.VZener = model.BreakdownVoltage;
 			mElm.FwDrop = model.FwDrop;
 			mElm.Leakage = model.SaturationCurrent;
 			mElm.VScale = model.VScale;
 			mElm.VdCoef = model.VdCoef;
 			mElm.SeriesResistance = model.SeriesResistance;
-			mElm.Model = model;
-			mElm.Setup();
+			Model = model;
+			Setup();
+		}
+
+		protected override BaseElement Create() {
+			return new ElmDiode();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.DIODE; } }
@@ -69,6 +78,48 @@ namespace Circuit.Symbol.Active {
 		protected override void dump(List<object> optionList) {
 			mFlags |= FLAG_MODEL;
 			optionList.Add(TextUtils.Escape(ModelName));
+		}
+
+		public override void Stamp() {
+			if (mHasResistance) {
+				/* create diode from node 0 to internal node */
+				mElm.mNodes0 = mElm.Nodes[0];
+				mElm.mNodes1 = mElm.Nodes[2];
+				/* create resistor from internal node to node 1 */
+				StampResistor(mElm.Nodes[1], mElm.Nodes[2], mElm.SeriesResistance);
+			} else {
+				/* don't need any internal nodes if no series resistance */
+				mElm.mNodes0 = mElm.Nodes[0];
+				mElm.mNodes1 = mElm.Nodes[1];
+			}
+			StampNonLinear(mElm.mNodes0);
+			StampNonLinear(mElm.mNodes1);
+		}
+
+		public void Setup() {
+			/* critical voltage for limiting; current is vscale/sqrt(2) at this voltage */
+			mElm.mVCrit = mElm.VScale * Math.Log(mElm.VScale / (Math.Sqrt(2) * mElm.Leakage));
+			/* translated, *positive* critical voltage for limiting in Zener breakdown region;
+             * limitstep() uses this with translated voltages in an analogous fashion to vcrit. */
+			mElm.mVzCrit = ElmDiode.VTH * Math.Log(ElmDiode.VTH / (Math.Sqrt(2) * mElm.Leakage));
+			if (mElm.VZener == 0) {
+				mElm.mVzOffset = 0;
+			} else {
+				/* calculate offset which will give us 5mA at zvoltage */
+				double i = -0.005;
+				mElm.mVzOffset = mElm.VZener - Math.Log(-(1 + i / mElm.Leakage)) / ElmDiode.VZ_COEF;
+			}
+			mHasResistance = 0 < mElm.SeriesResistance;
+			mElm.mDiodeEndNode = mHasResistance ? 2 : 1;
+			AllocateNodes();
+		}
+
+		public override void Reset() {
+			mElm.mLastVoltDiff = 0;
+			mElm.V[0] = mElm.V[1] = 0;
+			if (mHasResistance) {
+				mElm.V[2] = 0;
+			}
 		}
 
 		public override void SetPoints() {
@@ -146,7 +197,7 @@ namespace Circuit.Symbol.Active {
 				for (int i = 0; i != mModels.Count; i++) {
 					var dm = mModels[i];
 					ei.Choice.Items.Add(dm.GetDescription());
-					if (dm == mElm.Model) {
+					if (dm == Model) {
 						ei.Choice.SelectedIndex = i;
 					}
 				}
@@ -172,8 +223,8 @@ namespace Circuit.Symbol.Active {
 				mElm.VScale = model.VScale;
 				mElm.VdCoef = model.VdCoef;
 				mElm.SeriesResistance = model.SeriesResistance;
-				mElm.Model = model;
-				mElm.Setup();
+				Model = model;
+				Setup();
 				return;
 			}
 			base.SetElementValue(n, c, ei);

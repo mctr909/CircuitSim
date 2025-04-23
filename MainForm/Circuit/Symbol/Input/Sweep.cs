@@ -1,5 +1,6 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Input;
+﻿using Circuit.Elements.Input;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Input {
 	class Sweep : BaseSymbol {
@@ -9,24 +10,28 @@ namespace Circuit.Symbol.Input {
 
 		ElmSweep mElm;
 
-		public override BaseElement Element { get { return mElm; } }
+		public override int VoltageSourceCount { get { return 1; } }
+		public override bool HasGroundConnection(int nodeIndex) { return true; }
 
 		public Sweep(Point pos) : base(pos) {
-			mElm = new ElmSweep();
+			mElm = (ElmSweep)Element;
 			mFlags = FLAG_BIDIR;
 			mElm.BothSides = 0 != (mFlags & FLAG_BIDIR);
 		}
 
 		public Sweep(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmSweep() {
-				IsLog = 0 != (mFlags & FLAG_LOG),
-				BothSides = 0 != (mFlags & FLAG_BIDIR),
-				MinF = st.nextTokenDouble(),
-				MaxF = st.nextTokenDouble(),
-				MaxV = st.nextTokenDouble(),
-				SweepTime = st.nextTokenDouble(),
-			};
-			mElm.Reset();
+			mElm = (ElmSweep)Element;
+			mElm.IsLog = 0 != (mFlags & FLAG_LOG);
+			mElm.BothSides = 0 != (mFlags & FLAG_BIDIR);
+			mElm.MinF = st.nextTokenDouble();
+			mElm.MaxF = st.nextTokenDouble();
+			mElm.MaxV = st.nextTokenDouble();
+			mElm.SweepTime = st.nextTokenDouble();
+			Reset();
+		}
+
+		protected override BaseElement Create() {
+			return new ElmSweep();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.SWEEP; } }
@@ -36,6 +41,33 @@ namespace Circuit.Symbol.Input {
 			optionList.Add(mElm.MaxF.ToString("g3"));
 			optionList.Add(mElm.MaxV.ToString("g3"));
 			optionList.Add(mElm.SweepTime.ToString("g3"));
+		}
+
+		public override void Reset() {
+			mElm.Frequency = mElm.MinF;
+			mElm.mFreqTime = 0;
+			mElm.mFdir = 1;
+			SetParams();
+		}
+
+		public void SetParams() {
+			if (mElm.Frequency < mElm.MinF || mElm.Frequency > mElm.MaxF) {
+				mElm.Frequency = mElm.MinF;
+				mElm.mFreqTime = 0;
+				mElm.mFdir = 1;
+			}
+			if (mElm.IsLog) {
+				mElm.mFadd = 0;
+				mElm.mFmul = Math.Pow(mElm.MaxF / mElm.MinF, mElm.mFdir * CircuitState.DeltaTime / mElm.SweepTime);
+			} else {
+				mElm.mFadd = mElm.mFdir * CircuitState.DeltaTime * (mElm.MaxF - mElm.MinF) / mElm.SweepTime;
+				mElm.mFmul = 1;
+			}
+			mElm.mSavedTimeStep = CircuitState.DeltaTime;
+		}
+
+		public override void Stamp() {
+			StampVoltageSource(0, mElm.Nodes[0], mElm.VoltSource);
 		}
 
 		public override void SetPoints() {
@@ -82,7 +114,7 @@ namespace Circuit.Symbol.Input {
 				DrawValues(s, 25, 0);
 			}
 
-			UpdateDotCount(-mElm.Current, ref mCurCount);
+			UpdateDotCount(-mElm.I[0], ref mCurCount);
 			if (ConstructItem != this) {
 				DrawCurrentA(mCurCount);
 			}
@@ -90,8 +122,8 @@ namespace Circuit.Symbol.Input {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "sweep " + (((mFlags & FLAG_LOG) == 0) ? "(linear)" : "(log)");
-			arr[1] = "I = " + TextUtils.CurrentAbs(mElm.Current);
-			arr[2] = "V = " + TextUtils.Voltage(mElm.NodeVolts[0]);
+			arr[1] = "I = " + TextUtils.CurrentAbs(mElm.I[0]);
+			arr[2] = "V = " + TextUtils.Voltage(mElm.V[0]);
 			arr[3] = "f = " + TextUtils.Frequency(mElm.Frequency);
 			arr[4] = "range = " + TextUtils.Frequency(mElm.MinF) + " .. " + TextUtils.Frequency(mElm.MaxF);
 			arr[5] = "time = " + TextUtils.Unit(mElm.SweepTime, "s");
@@ -156,7 +188,7 @@ namespace Circuit.Symbol.Input {
 				}
 				mElm.BothSides = 0 != (mFlags & FLAG_BIDIR);
 			}
-			mElm.SetParams();
+			SetParams();
 		}
 	}
 }

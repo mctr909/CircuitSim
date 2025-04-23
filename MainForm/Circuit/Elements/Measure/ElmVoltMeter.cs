@@ -12,13 +12,9 @@
 		bool mIncreasingV = true;
 		bool mDecreasingV = true;
 
-		public override int TermCount { get { return 2; } }
-
-		public override bool HasConnection(int n1, int n2) { return false; }
-
-		public override void FinishIteration() {
+		protected override void FinishIteration() {
 			mCount++; /*how many counts are in a cycle */
-			var v = GetVoltageDiff();
+			var v = VoltageDiff;
 			mTotal += v * v;
 
 			/* V going up, track maximum value with */

@@ -1,4 +1,4 @@
-﻿using Circuit.Forms;
+﻿using MainForm.Forms;
 
 namespace Circuit.Symbol.Active {
 	class DiodeZener : Diode {
@@ -15,8 +15,8 @@ namespace Circuit.Symbol.Active {
 			mElm.VScale = model.VScale;
 			mElm.VdCoef = model.VdCoef;
 			mElm.SeriesResistance = model.SeriesResistance;
-			mElm.Model = model;
-			mElm.Setup();
+			Model = model;
+			Setup();
 		}
 
 		public DiodeZener(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
@@ -35,8 +35,8 @@ namespace Circuit.Symbol.Active {
 			mElm.VScale = model.VScale;
 			mElm.VdCoef = model.VdCoef;
 			mElm.SeriesResistance = model.SeriesResistance;
-			mElm.Model = model;
-			mElm.Setup();
+			Model = model;
+			Setup();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.ZENER; } }

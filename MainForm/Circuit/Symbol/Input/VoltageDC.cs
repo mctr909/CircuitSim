@@ -1,5 +1,5 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Input;
+﻿using Circuit.Elements.Input;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Input {
 	class VoltageDC : Voltage {
@@ -11,8 +11,8 @@ namespace Circuit.Symbol.Input {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "直流電源";
-			arr[1] = "電圧：" + TextUtils.Voltage(mElm.GetVoltageDiff() + mElm.Bias);
-			arr[2] = "電流：" + TextUtils.Current(mElm.Current);
+			arr[1] = "電圧：" + TextUtils.Voltage(mElm.VoltageDiff + mElm.Bias);
+			arr[2] = "電流：" + TextUtils.Current(mElm.I[0]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
@@ -22,17 +22,6 @@ namespace Circuit.Symbol.Input {
 				}
 				if (r == 1) {
 					return new ElementInfo(VALUE_NAME_BIAS, mElm.Bias);
-				}
-			}
-			if (c == 1) {
-				if (r == 0) {
-					return new ElementInfo("連動グループ", Link.Voltage);
-				}
-				if (r == 1) {
-					return new ElementInfo("連動グループ", Link.Bias);
-				}
-				if (r < 1) {
-					return new ElementInfo();
 				}
 			}
 			return null;
@@ -45,14 +34,6 @@ namespace Circuit.Symbol.Input {
 				}
 				if (r == 1) {
 					mElm.Bias = ei.Value;
-				}
-			}
-			if (c == 1) {
-				if (r == 0) {
-					Link.Voltage = (int)ei.Value;
-				}
-				if (r == 1) {
-					Link.Bias = (int)ei.Value;
 				}
 			}
 			SetTextPos();
@@ -74,10 +55,10 @@ namespace Circuit.Symbol.Input {
 				var val = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
 				switch (ei.Name) {
 				case VALUE_NAME_V:
-					SetLinkedValues<Voltage>(VoltageLink.VOLTAGE, val);
+					mElm.MaxVoltage = val;
 					break;
 				case VALUE_NAME_BIAS:
-					SetLinkedValues<Voltage>(VoltageLink.BIAS, val);
+					mElm.Bias = val;
 					break;
 				}
 			});

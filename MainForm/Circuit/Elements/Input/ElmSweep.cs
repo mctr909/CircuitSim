@@ -8,61 +8,21 @@
 		public bool IsLog = true;
 		public bool BothSides = true;
 
-		double mFadd;
-		double mFmul;
-		double mFreqTime;
-		double mSavedTimeStep;
+		public double mFadd;
+		public double mFmul;
+		public double mFreqTime;
+		public double mSavedTimeStep;
 		double mVolt;
-		int mFdir = 1;
-
-		public override int VoltageSourceCount { get { return 1; } }
+		public int mFdir = 1;
 
 		public override int TermCount { get { return 1; } }
 
-		public ElmSweep() : base() {
-			Reset();
-		}
+		public override double VoltageDiff { get { return V[0]; } }
 
-		public void SetParams() {
-			if (Frequency < MinF || Frequency > MaxF) {
-				Frequency = MinF;
-				mFreqTime = 0;
-				mFdir = 1;
-			}
-			if (IsLog) {
-				mFadd = 0;
-				mFmul = Math.Pow(MaxF / MinF, mFdir * CircuitState.DeltaTime / SweepTime);
-			} else {
-				mFadd = mFdir * CircuitState.DeltaTime * (MaxF - MinF) / SweepTime;
-				mFmul = 1;
-			}
-			mSavedTimeStep = CircuitState.DeltaTime;
-		}
-
-		public override double GetVoltageDiff() {
-			return NodeVolts[0];
-		}
-
-		#region [method(Analyze)]
-		public override bool HasGroundConnection(int nodeIndex) { return true; }
-
-		public override void Reset() {
-			Frequency = MinF;
-			mFreqTime = 0;
-			mFdir = 1;
-			SetParams();
-		}
-
-		public override void Stamp() {
-			StampVoltageSource(0, NodeId[0], mVoltSource);
-		}
-		#endregion
-
-		#region [method(Circuit)]
-		public override void PrepareIteration() {
+		protected override void StartIteration() {
 			/* has timestep been changed? */
 			if (CircuitState.DeltaTime != mSavedTimeStep) {
-				SetParams();
+				//TODO:SetParams();
 			}
 			mVolt = Math.Sin(mFreqTime) * MaxV;
 			mFreqTime += Frequency * 2 * Math.PI * CircuitState.DeltaTime;
@@ -83,9 +43,8 @@
 			}
 		}
 
-		public override void DoIteration() {
-			UpdateVoltage(mVoltSource, mVolt);
+		protected override void DoIteration() {
+			UpdateVoltageSource(VoltSource, mVolt);
 		}
-		#endregion
 	}
 }

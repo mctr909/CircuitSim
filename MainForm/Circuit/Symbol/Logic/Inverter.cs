@@ -1,5 +1,6 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Logic;
+﻿using Circuit.Elements.Logic;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Logic {
 	class Inverter : BaseSymbol {
@@ -9,18 +10,26 @@ namespace Circuit.Symbol.Logic {
 		PointF mCenter;
 		PointF mPcircle;
 
-		public override BaseElement Element { get { return mElm; } }
+		public override int VoltageSourceCount { get { return 1; } }
+		/* there is no current path through the inverter input,
+         * but there is an indirect path through the output to ground. */
+		public override bool HasConnection(int n1, int n2) { return false; }
+		public override bool HasGroundConnection(int nodeIndex) { return nodeIndex == 1; }
 
 		public Inverter(Point pos) : base(pos) {
-			mElm = new ElmInverter();
+			mElm = (ElmInverter)Element;
 			Post.NoDiagonal = true;
 		}
 
 		public Inverter(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmInverter();
+			mElm = (ElmInverter)Element;
 			mElm.SlewRate = st.nextTokenDouble(0.5);
 			mElm.HighVoltage = st.nextTokenDouble(5);
 			Post.NoDiagonal = true;
+		}
+
+		protected override BaseElement Create() {
+			return new ElmInverter();
 		}
 
 		protected override void dump(List<object> optionList) {
@@ -29,6 +38,10 @@ namespace Circuit.Symbol.Logic {
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.INVERT; } }
+
+		public override void Stamp() {
+			StampVoltageSource(0, mElm.Nodes[1], mElm.VoltSource);
+		}
 
 		public override void SetPoints() {
 			base.SetPoints();
@@ -62,14 +75,14 @@ namespace Circuit.Symbol.Logic {
 				DrawCenteredLText("1", mCenter);
 			}
 			DrawCircle(mPcircle, 3);
-			UpdateDotCount(mElm.Current, ref mCurCount);
+			UpdateDotCount(mElm.I[0], ref mCurCount);
 			DrawCurrentB(mCurCount);
 		}
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "inverter";
-			arr[1] = "Vin：" + TextUtils.Voltage(mElm.NodeVolts[0]);
-			arr[2] = "Vout：" + TextUtils.Voltage(mElm.NodeVolts[1]);
+			arr[1] = "Vin：" + TextUtils.Voltage(mElm.V[0]);
+			arr[2] = "Vout：" + TextUtils.Voltage(mElm.V[1]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

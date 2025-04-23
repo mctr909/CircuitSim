@@ -1,27 +1,68 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Passive;
+﻿using Circuit.Elements.Passive;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Passive {
 	class OutputTerminal : BaseSymbol {
 		const int FLAG_INTERNAL = 1;
 
-		protected ElmNamedNode mElm;
+		protected static Dictionary<string, int> mNodeList = [];
+
+		protected ElmLabeledNode mElm;
 		protected PointF[] mTextPoly;
 		protected RectangleF mTextRect;
+		protected int mNodeId;
+		protected bool mIsOutput = true;
+		protected string mName = "Node";
 
-		public override BaseElement Element { get { return mElm; } }
+		public static void ResetNodeList() {
+			mNodeList.Clear();
+		}
+
+		public override int ConnectionNodeCount { get { return 2; } }
+		// this is basically a wire, since it just connects two nodes together
+		public override bool IsWire { get { return true; } }
+		public override int InternalNodeCount {
+			get {
+				// this can happen at startup
+				if (mNodeList == null) {
+					return 0;
+				}
+				var elm = (ElmLabeledNode)Element;
+				// node assigned already?
+				if (null != mName && mNodeList.ContainsKey(mName)) {
+					var nn = mNodeList[mName];
+					mNodeId = nn;
+					return 0;
+				}
+				// allocate a new one
+				return 1;
+			}
+		}
+		public override int VoltageSourceCount { get { return 1; } }
+		// get connection node (which is the same as regular nodes for all elements but this one).
+		// nodeIndex 0 is the terminal, nodeIndex 1 is the internal node shared by all nodes with same name
+		public override int GetConnection(int nodeIndex) {
+			if (nodeIndex == 0) {
+				return mElm.Nodes[0];
+			}
+			return mNodeId;
+		}
 
 		public OutputTerminal(Point pos) : base(pos) {
-			mElm = new ElmNamedNode() {
-				IsOutput = true
-			};
+			mElm = (ElmLabeledNode)Element;
+			mIsOutput = true;
 		}
 
 		public OutputTerminal(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmNamedNode();
-			st.nextToken(out mElm.Name);
-			mElm.Name = TextUtils.UnEscape(mElm.Name);
-			mElm.IsOutput = true;
+			mElm = (ElmLabeledNode)Element;
+			st.nextToken(out mName);
+			mName = TextUtils.UnEscape(mName);
+			mIsOutput = true;
+		}
+
+		protected override BaseElement Create() {
+			return new ElmLabeledNode();
 		}
 
 		public bool IsInternal { get { return (mFlags & FLAG_INTERNAL) != 0; } }
@@ -29,7 +70,20 @@ namespace Circuit.Symbol.Passive {
 		public override DUMP_ID DumpId { get { return DUMP_ID.OUTPUT_TERMINAL; } }
 
 		protected override void dump(List<object> optionList) {
-			optionList.Add(mElm.Name);
+			optionList.Add(mName);
+		}
+
+		public override void Stamp() {
+			StampVoltageSource(mNodeId, mElm.Nodes[0], mElm.VoltSource, 0);
+		}
+
+		public override void SetNode(int index, int id) {
+			base.SetNode(index, id);
+			if (index == 1) {
+				// assign new node
+				mNodeList.Add(mName, id);
+				mNodeId = id;
+			}
 		}
 
 		public override double Distance(Point p) {
@@ -45,7 +99,7 @@ namespace Circuit.Symbol.Passive {
 		}
 
 		protected virtual void SetPolygon() {
-			var txtSize = CustomGraphics.Instance.GetTextSize(mElm.Name);
+			var txtSize = CustomGraphics.Instance.GetTextSize(mName);
 			var txtW = txtSize.Width;
 			var txtH = txtSize.Height;
 			var pw = txtW / Post.Len;
@@ -96,16 +150,16 @@ namespace Circuit.Symbol.Passive {
 
 		public override void Draw(CustomGraphics g) {
 			DrawLeadA();
-			DrawCenteredText(mElm.Name, mNamePos, mTextRot);
+			DrawCenteredText(mName, mNamePos, mTextRot);
 			DrawPolyline(mTextPoly);
-			UpdateDotCount(mElm.Current, ref mCurCount);
+			UpdateDotCount(mElm.I[0], ref mCurCount);
 			DrawCurrentA(mCurCount);
 		}
 
 		public override void GetInfo(string[] arr) {
-			arr[0] = mElm.Name;
-			arr[1] = "電流：" + TextUtils.Current(mElm.Current);
-			arr[2] = "電位：" + TextUtils.Voltage(mElm.NodeVolts[0]);
+			arr[0] = mName;
+			arr[1] = "電流：" + TextUtils.Current(mElm.I[0]);
+			arr[2] = "電位：" + TextUtils.Voltage(mElm.V[0]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
@@ -113,7 +167,7 @@ namespace Circuit.Symbol.Passive {
 				return null;
 			}
 			if (r == 0) {
-				return new ElementInfo("名前", mElm.Name);
+				return new ElementInfo("名前", mName);
 			}
 			if (r == 1) {
 				return new ElementInfo("内部端子", IsInternal);
@@ -123,7 +177,7 @@ namespace Circuit.Symbol.Passive {
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
 			if (n == 0) {
-				mElm.Name = ei.Text;
+				mName = ei.Text;
 			}
 			if (n == 1) {
 				mFlags = ei.ChangeFlag(mFlags, FLAG_INTERNAL);

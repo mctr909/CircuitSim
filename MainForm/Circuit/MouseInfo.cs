@@ -1,4 +1,6 @@
-﻿namespace Circuit {
+﻿using Circuit.Symbol;
+
+namespace Circuit {
 	public static class MouseInfo {
 		public enum MODE {
 			NONE = 0,

@@ -1,5 +1,6 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Logic;
+﻿using Circuit.Elements.Logic;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Logic {
 	class TriState : BaseSymbol {
@@ -10,16 +11,25 @@ namespace Circuit.Symbol.Logic {
 		PointF mCtrlTerm;
 		PointF[] mGatePoly;
 
-		public override BaseElement Element { get { return mElm; } }
+		public override int InternalNodeCount { get { return 1; } }
+		public override int VoltageSourceCount { get { return 1; } }
+		/* there is no current path through the input, but there
+         * is an indirect path through the output to ground. */
+		public override bool HasConnection(int n1, int n2) { return false; }
+		public override bool HasGroundConnection(int nodeIndex) { return nodeIndex == 1; }
 
 		public TriState(Point pos) : base(pos) {
-			mElm = new ElmTriState();
+			mElm = (ElmTriState)Element;
 		}
 
 		public TriState(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmTriState();
+			mElm = (ElmTriState)Element;
 			mElm.Ron = st.nextTokenDouble(0.1);
 			mElm.Roff = st.nextTokenDouble(1e10);
+		}
+
+		protected override BaseElement Create() {
+			return new ElmTriState();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.TRISTATE; } }
@@ -27,6 +37,12 @@ namespace Circuit.Symbol.Logic {
 		protected override void dump(List<object> optionList) {
 			optionList.Add(mElm.Ron.ToString("g3"));
 			optionList.Add(mElm.Roff.ToString("g3"));
+		}
+
+		public override void Stamp() {
+			StampVoltageSource(0, mElm.Nodes[3], mElm.VoltSource);
+			StampNonLinear(mElm.Nodes[3]);
+			StampNonLinear(mElm.Nodes[1]);
 		}
 
 		public override void SetPoints() {
@@ -42,14 +58,14 @@ namespace Circuit.Symbol.Logic {
 			InterpolationPost(ref mGatePoly[2], 0.5 + ww / Post.Len);
 			InterpolationPost(ref mCtrlTerm, 0.5, -hs);
 			InterpolationPost(ref mCtrlLead, 0.5, -hs / 2);
-			mElm.SetNodePos(Post.A, Post.B, mCtrlTerm);
+			SetNodePos(Post.A, Post.B, mCtrlTerm);
 		}
 
 		public override void Draw(CustomGraphics g) {
 			Draw2Leads();
 			DrawPolygon(mGatePoly);
 			DrawLine(mCtrlTerm, mCtrlLead);
-			UpdateDotCount(mElm.Current, ref mCurCount);
+			UpdateDotCount(mElm.I[0], ref mCurCount);
 			DrawCurrentB(mCurCount);
 		}
 
@@ -72,9 +88,9 @@ namespace Circuit.Symbol.Logic {
 		public override void GetInfo(string[] arr) {
 			arr[0] = "tri-state buffer";
 			arr[1] = mElm.Open ? "open" : "closed";
-			arr[2] = "Vd = " + TextUtils.VoltageAbs(mElm.GetVoltageDiff());
-			arr[3] = "I = " + TextUtils.CurrentAbs(mElm.Current);
-			arr[4] = "Vc = " + TextUtils.Voltage(mElm.NodeVolts[2]);
+			arr[2] = "Vd = " + TextUtils.VoltageAbs(mElm.VoltageDiff);
+			arr[3] = "I = " + TextUtils.CurrentAbs(mElm.I[0]);
+			arr[4] = "Vc = " + TextUtils.Voltage(mElm.V[2]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

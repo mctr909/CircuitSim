@@ -1,4 +1,4 @@
-﻿using Circuit.Forms;
+﻿using MainForm.Forms;
 
 namespace Circuit.Symbol.Active {
 	class DiodeLED : Diode {
@@ -25,8 +25,8 @@ namespace Circuit.Symbol.Active {
 			mElm.VScale = model.VScale;
 			mElm.VdCoef = model.VdCoef;
 			mElm.SeriesResistance = model.SeriesResistance;
-			mElm.Model = model;
-			mElm.Setup();
+			Model = model;
+			Setup();
 			mMaxBrightnessCurrent = 0.01;
 			mColorR = 1;
 			mColorG = mColorB = 0;
@@ -43,8 +43,8 @@ namespace Circuit.Symbol.Active {
 				mElm.VScale = model.VScale;
 				mElm.VdCoef = model.VdCoef;
 				mElm.SeriesResistance = model.SeriesResistance;
-				mElm.Model = model;
-				mElm.Setup();
+				Model = model;
+				Setup();
 			}
 			mColorR = st.nextTokenDouble(1.0);
 			mColorG = st.nextTokenDouble();
@@ -73,7 +73,7 @@ namespace Circuit.Symbol.Active {
 			if (g is PDF.Page || NeedsHighlight || this == ConstructItem) {
 				base.Draw(g);
 			} else {
-				var lum = mElm.Current / mMaxBrightnessCurrent;
+				var lum = mElm.I[0] / mMaxBrightnessCurrent;
 				if (0 < lum) {
 					lum = 255 * (1 + .2 * Math.Log(lum));
 				}

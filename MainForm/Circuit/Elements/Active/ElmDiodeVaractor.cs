@@ -8,26 +8,8 @@
 		double mVoltSourceValue;
 		double mCompResistance;
 
-		public override int VoltageSourceCount { get { return 1; } }
-
-		public override int InternalNodeCount { get { return 1; } }
-
-		public ElmDiodeVaractor() : base() { }
-
-		public override void Reset() {
-			base.Reset();
-			CapVoltDiff = 0;
-		}
-
-		public override void Stamp() {
-			base.Stamp();
-			StampVoltageSource(NodeId[0], NodeId[2], mVoltSource);
-			StampNonLinear(NodeId[2]);
-		}
-
-		#region [method(Circuit)]
-		public override void PrepareIteration() {
-			base.PrepareIteration();
+		protected override void StartIteration() {
+			base.StartIteration();
 			// capacitor companion model using trapezoidal approximation
 			// (Thevenin equivalent) consists of a voltage source in
 			// series with a resistor
@@ -40,20 +22,19 @@
 			mVoltSourceValue = -CapVoltDiff - mCapCurrent * mCompResistance;
 		}
 
-		public override void DoIteration() {
+		protected override void DoIteration() {
 			base.DoIteration();
-			UpdateConductance(NodeId[2], NodeId[1], 1.0 / mCompResistance);
-			var vn = CircuitElement.VOLTAGE_SOURCE_BEGIN + mVoltSource;
-			CircuitElement.RIGHT_SIDE[vn] += mVoltSourceValue;
+			UpdateConductance(Nodes[2], Nodes[1], 1.0 / mCompResistance);
+			var vn = VOLTAGE_SOURCE_BEGIN + VoltSource;
+			RIGHTSIDE[vn] += mVoltSourceValue;
 		}
 
-		public override void SetVoltage(int nodeIndex, double v) {
-			base.SetVoltage(nodeIndex, v);
-			CapVoltDiff = NodeVolts[0] - NodeVolts[1];
-			Current += mCapCurrent;
-		}
+		protected override void SetCurrent(int n, double i) { mCapCurrent = i; }
 
-		public override void SetCurrent(int x, double c) { mCapCurrent = c; }
-		#endregion
+		public override void SetVoltage(int n, double v) {
+			base.SetVoltage(n, v);
+			CapVoltDiff = V[0] - V[1];
+			I[0] += mCapCurrent;
+		}
 	}
 }

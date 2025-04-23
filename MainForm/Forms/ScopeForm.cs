@@ -1,4 +1,7 @@
-﻿namespace Circuit.Forms {
+﻿using Circuit.Symbol;
+using MainForm.Forms;
+
+namespace Circuit.Forms {
 	public partial class ScopeForm : Form {
 		public static int PlotCount { get; set; } = 0;
 		public static ScopePlot[] Plots = new ScopePlot[20];

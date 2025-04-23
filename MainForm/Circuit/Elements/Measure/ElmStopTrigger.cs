@@ -10,17 +10,11 @@
 
 		public override int TermCount { get { return 1; } }
 
-		public override double GetVoltageDiff() {
-			return NodeVolts[0];
-		}
+		public override double VoltageDiff { get { return V[0]; } }
 
-		public override void Reset() {
-			Triggered = false;
-		}
-
-		public override void FinishIteration() {
+		protected override void FinishIteration() {
 			Stopped = false;
-			if (!Triggered && ((Type == 0 && NodeVolts[0] >= TriggerVoltage) || (Type == 1 && NodeVolts[0] <= TriggerVoltage))) {
+			if (!Triggered && ((Type == 0 && V[0] >= TriggerVoltage) || (Type == 1 && V[0] <= TriggerVoltage))) {
 				Triggered = true;
 				TriggerTime = CircuitState.Time;
 			}

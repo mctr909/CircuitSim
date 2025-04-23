@@ -1,25 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Compile Update="Circuit\Forms\ElementInfoDialog.cs">
+    <Compile Update="Forms\ElementInfoDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Circuit\Forms\ElementPopupMenu.cs">
+    <Compile Update="Forms\ElementPopupMenu.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="Circuit\Forms\ScopeForm.cs">
+    <Compile Update="Forms\ScopeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Circuit\Forms\ScopeProperties.cs">
+    <Compile Update="Forms\ScopeProperties.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Circuit\Forms\ScrollValuePopup.cs">
+    <Compile Update="Forms\ScrollValuePopup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Circuit\Forms\SliderDialog.cs">
+    <Compile Update="Forms\SliderDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="MainForm.cs">
+    <Compile Update="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>

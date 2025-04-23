@@ -1,10 +1,10 @@
-﻿using Circuit.Forms;
+﻿using MainForm.Forms;
 
 namespace Circuit.Symbol.Passive {
 	class SwitchPushC : SwitchMulti {
 		public SwitchPushC(Point pos) : base(pos) {
 			mElm.Position = 1;
-			mElm.Momentary = true;
+			Momentary = true;
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
@@ -12,14 +12,14 @@ namespace Circuit.Symbol.Passive {
 				return null;
 			}
 			if (r == 0) {
-				return new ElementInfo("連動グループ", mElm.Link);
+				return new ElementInfo("連動グループ", Group);
 			}
 			return null;
 		}
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
 			if (n == 0) {
-				mElm.Link = (int)ei.Value;
+				Group = (int)ei.Value;
 			}
 		}
 	}

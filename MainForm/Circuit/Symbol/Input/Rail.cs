@@ -1,4 +1,5 @@
-﻿using Circuit.Elements.Input;
+﻿using Circuit.Elements;
+using Circuit.Elements.Input;
 using static Circuit.Elements.Input.ElmVoltage;
 
 namespace Circuit.Symbol.Input {
@@ -9,13 +10,15 @@ namespace Circuit.Symbol.Input {
 		PointF mLa;
 		PointF mLb;
 
+		public override bool HasGroundConnection(int nodeIndex) { return true; }
+
 		public Rail(Point pos, WAVEFORM wf) : base(pos, wf) {
-			mElm = new ElmRail();
+			mElm = (ElmRail)Element;
 			mElm.WaveForm = wf;
 		}
 
 		public Rail(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmRail();
+			mElm = (ElmRail)Element;
 			mElm.WaveForm = st.nextTokenEnum(WAVEFORM.SIN);
 			mElm.Frequency = st.nextTokenDouble(100);
 			mElm.MaxVoltage = st.nextTokenDouble(5);
@@ -23,10 +26,21 @@ namespace Circuit.Symbol.Input {
 			mElm.Phase = st.nextTokenDouble() * Math.PI / 180;
 			mElm.PhaseOffset = st.nextTokenDouble() * Math.PI / 180;
 			mElm.DutyCycle = st.nextTokenDouble(0.5);
-			Link.Load(st);
+		}
+
+		protected override BaseElement Create() {
+			return new ElmRail();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.RAIL; } }
+
+		public override void Stamp() {
+			if (mElm.WaveForm == WAVEFORM.DC) {
+				StampVoltageSource(mElm.Nodes[0], mElm.VoltSource, mElm.GetVoltage());
+			} else {
+				StampVoltageSource(mElm.Nodes[0], mElm.VoltSource);
+			}
+		}
 
 		public override void SetPoints() {
 			base.SetPoints();
@@ -57,7 +71,7 @@ namespace Circuit.Symbol.Input {
 		public override void Draw(CustomGraphics g) {
 			DrawLeadA();
 			drawRail();
-			UpdateDotCount(-mElm.Current, ref mCurCount);
+			UpdateDotCount(-mElm.I[0], ref mCurCount);
 			if (ConstructItem != this) {
 				DrawCurrentA(mCurCount);
 			}

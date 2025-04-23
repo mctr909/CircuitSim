@@ -1,5 +1,6 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Measure;
+﻿using Circuit.Elements.Measure;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Measure {
 	class DataRecorder : BaseSymbol {
@@ -8,22 +9,29 @@ namespace Circuit.Symbol.Measure {
 		PointF[] mTextPoly;
 		ElmDataRecorder mElm;
 
-		public override BaseElement Element { get { return mElm; } }
-
 		public DataRecorder(Point pos) : base(pos) {
-			mElm = new ElmDataRecorder();
+			mElm = (ElmDataRecorder)Element;
 			mElm.DataCount = 10000;
 		}
 
 		public DataRecorder(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-			mElm = new ElmDataRecorder();
+			mElm = (ElmDataRecorder)Element;
 			mElm.DataCount = st.nextTokenInt();
+		}
+
+		protected override BaseElement Create() {
+			return new ElmDataRecorder();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.DATA_RECORDER; } }
 
 		protected override void dump(List<object> optionList) {
 			optionList.Add(mElm.DataCount);
+		}
+
+		public override void Reset() {
+			mElm.DataPtr = 0;
+			mElm.DataFull = false;
 		}
 
 		public override void SetPoints() {
@@ -80,7 +88,7 @@ namespace Circuit.Symbol.Measure {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = ReferenceName;
-			arr[1] = "電位：" + TextUtils.Voltage(mElm.NodeVolts[0]);
+			arr[1] = "電位：" + TextUtils.Voltage(mElm.V[0]);
 			arr[2] = (mElm.DataFull ? mElm.DataCount : mElm.DataPtr) + "/" + mElm.DataCount;
 		}
 
