@@ -1,4 +1,5 @@
-﻿using Circuit.Forms;
+﻿using Circuit.Elements.Active;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Active {
 	class DiodeLED : Diode {
@@ -19,14 +20,11 @@ namespace Circuit.Symbol.Active {
 		public DiodeLED(Point pos) : base(pos, "D") {
 			ModelName = mLastLEDModelName;
 			var model = DiodeModel.GetModelWithName(ModelName);
-			mElm.VZener = model.BreakdownVoltage;
-			mElm.FwDrop = model.FwDrop;
-			mElm.Leakage = model.SaturationCurrent;
-			mElm.VScale = model.VScale;
-			mElm.VdCoef = model.VdCoef;
-			mElm.SeriesResistance = model.SeriesResistance;
-			mElm.Model = model;
-			mElm.Setup();
+			Element.Para[ElmDiode.LEAKAGE] = model.SaturationCurrent;
+			Element.Para[ElmDiode.V_SCALE] = model.VScale;
+			Element.Para[ElmDiode.VD_COEF] = model.VdCoef;
+			Model = model;
+			Setup();
 			mMaxBrightnessCurrent = 0.01;
 			mColorR = 1;
 			mColorG = mColorB = 0;
@@ -37,14 +35,11 @@ namespace Circuit.Symbol.Active {
 				const double fwdrop = 2.1024259;
 				ModelName = DiodeModel.GetModelWithParameters(fwdrop, 0).Name;
 				var model = DiodeModel.GetModelWithName(ModelName);
-				mElm.VZener = model.BreakdownVoltage;
-				mElm.FwDrop = model.FwDrop;
-				mElm.Leakage = model.SaturationCurrent;
-				mElm.VScale = model.VScale;
-				mElm.VdCoef = model.VdCoef;
-				mElm.SeriesResistance = model.SeriesResistance;
-				mElm.Model = model;
-				mElm.Setup();
+				Element.Para[ElmDiode.LEAKAGE] = model.SaturationCurrent;
+				Element.Para[ElmDiode.V_SCALE] = model.VScale;
+				Element.Para[ElmDiode.VD_COEF] = model.VdCoef;
+				Model = model;
+				Setup();
 			}
 			mColorR = st.nextTokenDouble(1.0);
 			mColorG = st.nextTokenDouble();
@@ -73,7 +68,7 @@ namespace Circuit.Symbol.Active {
 			if (g is PDF.Page || NeedsHighlight || this == ConstructItem) {
 				base.Draw(g);
 			} else {
-				var lum = mElm.Current / mMaxBrightnessCurrent;
+				var lum = Element.I[0] / mMaxBrightnessCurrent;
 				if (0 < lum) {
 					lum = 255 * (1 + .2 * Math.Log(lum));
 				}

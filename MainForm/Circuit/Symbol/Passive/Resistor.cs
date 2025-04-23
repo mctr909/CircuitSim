@@ -1,5 +1,6 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Passive;
+﻿using Circuit.Elements.Passive;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Passive {
 	class Resistor : BaseSymbol {
@@ -12,7 +13,6 @@ namespace Circuit.Symbol.Passive {
 		const int EU_HEIGHT = 4;
 		const double SEG_F = 1.0 / SEGMENTS;
 
-		ElmResistor mElm;
 		PointF[] mP1;
 		PointF[] mP2;
 		PointF[] mRect1;
@@ -20,25 +20,27 @@ namespace Circuit.Symbol.Passive {
 		PointF[] mRect3;
 		PointF[] mRect4;
 
-		public override BaseElement Element { get { return mElm; } }
-
 		public Resistor(Point pos) : base(pos) {
-			mElm = new ElmResistor() {
-				Resistance = mLastValue
-			};
+			Element.Para[0] = mLastValue;
 			ReferenceName = mLastReferenceName;
 		}
 
 		public Resistor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmResistor() {
-				Resistance = st.nextTokenDouble(mLastValue)
-			};
+			Element.Para[0] = st.nextTokenDouble(mLastValue);
+		}
+
+		protected override BaseElement Create() {
+			return new ElmResistor();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.RESISTOR; } }
 
 		protected override void dump(List<object> optionList) {
-			optionList.Add(mElm.Resistance.ToString("g3"));
+			optionList.Add(Element.Para[0].ToString("g3"));
+		}
+
+		public override void Stamp() {
+			StampResistor(Element.Nodes[0], Element.Nodes[1], Element.Para[0]);
 		}
 
 		public override void SetPoints() {
@@ -140,18 +142,18 @@ namespace Circuit.Symbol.Passive {
 			}
 
 			DrawName();
-			DrawValue(TextUtils.Unit(mElm.Resistance));
+			DrawValue(TextUtils.Unit(Element.Para[0]));
 
 			DoDots();
 		}
 
 		public override void GetInfo(string[] arr) {
 			if (string.IsNullOrEmpty(ReferenceName)) {
-				arr[0] = "抵抗：" + TextUtils.Unit(mElm.Resistance, "Ω");
+				arr[0] = "抵抗：" + TextUtils.Unit(Element.Para[0], "Ω");
 				GetBasicInfo(1, arr);
 			} else {
 				arr[0] = ReferenceName;
-				arr[1] = "抵抗：" + TextUtils.Unit(mElm.Resistance, "Ω");
+				arr[1] = "抵抗：" + TextUtils.Unit(Element.Para[0], "Ω");
 				GetBasicInfo(2, arr);
 			}
 		}
@@ -161,7 +163,7 @@ namespace Circuit.Symbol.Passive {
 				return null;
 			}
 			if (r == 0) {
-				return new ElementInfo("レジスタンス(Ω)", mElm.Resistance);
+				return new ElementInfo("レジスタンス(Ω)", Element.Para[0]);
 			}
 			if (r == 1) {
 				return new ElementInfo("名前", ReferenceName);
@@ -171,7 +173,7 @@ namespace Circuit.Symbol.Passive {
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
 			if (n == 0 && 0 < ei.Value) {
-				mElm.Resistance = ei.Value;
+				Element.Para[0] = ei.Value;
 				mLastValue = ei.Value;
 				SetTextPos();
 			}
@@ -185,7 +187,7 @@ namespace Circuit.Symbol.Passive {
 		public override EventHandler CreateSlider(ElementInfo ei, Slider adj) {
 			return new EventHandler((s, e) => {
 				var trb = adj.Trackbar;
-				mElm.Resistance = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
+				Element.Para[0] = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
 				MainForm.MainForm.NeedAnalyze = true;
 			});
 		}

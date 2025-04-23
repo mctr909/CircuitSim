@@ -1,11 +1,13 @@
 using Circuit;
 using Circuit.Elements.Active;
-using Circuit.Elements.Passive;
 using Circuit.Forms;
 using Circuit.Symbol.Passive;
 using Circuit.Symbol.Measure;
 
 using System.Text;
+using Circuit.Symbol;
+using MainForm.Forms;
+using Circuit.Elements;
 
 namespace MainForm {
 	public partial class MainForm : Form {
@@ -271,7 +273,7 @@ namespace MainForm {
 
 		public static void ResetButton_onClick() {
 			for (int i = 0; i != SymbolCount; i++) {
-				SymbolList[i].Element.Reset();
+				SymbolList[i].Reset();
 			}
 			NeedAnalyze = true;
 			CircuitState.Time = 0;
@@ -774,7 +776,7 @@ namespace MainForm {
 				return false;
 			}
 			se.Toggle();
-			if (((ElmSwitch)se.Element).Momentary) {
+			if (se.Momentary) {
 				mHeldSwitchElm = se;
 			}
 			NeedAnalyze = true;
@@ -1407,7 +1409,7 @@ namespace MainForm {
 					continue;
 				}
 				if (cs == "TransistorElm") {
-					if (((ElmTransistor)e).NPN == -1) {
+					if (e.Para[ElmBJT.NPN] < 0) {
 						cs = "PTransistorElm";
 					} else {
 						cs = "NTransistorElm";
@@ -1415,7 +1417,7 @@ namespace MainForm {
 				}
 				s = cs;
 				for (int j = 0; j < e.TermCount; j++) {
-					s = s + " " + e.NodeId[j];
+					s = s + " " + e.Nodes[j];
 				}
 				Console.WriteLine(s);
 			}
@@ -1429,7 +1431,7 @@ namespace MainForm {
 			}
 
 			if (IsRunning) {
-				CircuitElement.Exec(ref IsRunning, ref NeedAnalyze, ControlPanel.StepRate);
+				BaseElement.DoFrame(ref IsRunning, ref NeedAnalyze, ControlPanel.StepRate);
 			}
 
 			long sysTime = DateTime.Now.ToFileTimeUtc();
@@ -1466,9 +1468,7 @@ namespace MainForm {
 			mScopeForm.Draw(pdfScope);
 
 			var info = new string[10];
-			if (MouseInfo.GrippedElm == null) {
-				ControlPanel.LblSelectInfo.Text = $"反復回数:{CircuitState.IterationCount:f0}";
-			} else {
+			if (MouseInfo.GrippedElm != null) {
 				MouseInfo.GrippedElm.GetInfo(info);
 				ControlPanel.LblSelectInfo.Text = "";
 				foreach (var str in info) {
@@ -1560,8 +1560,8 @@ namespace MainForm {
 				g.DrawColor = CustomGraphics.LineColor;
 				g.FillColor = CustomGraphics.LineColor;
 				BaseSymbol.ConstructItem.Draw(g);
-				var ce = BaseSymbol.ConstructItem.Element;
-				for (int i = ce.TermCount - 1; 0 <= i; i--) {
+				var ce = BaseSymbol.ConstructItem;
+				for (int i = ce.Element.TermCount - 1; 0 <= i; i--) {
 					var p = ce.NodePos[i];
 					g.DrawPost(p);
 				}

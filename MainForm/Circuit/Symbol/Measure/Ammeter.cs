@@ -1,5 +1,7 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Measure;
+﻿using Circuit.Elements.Measure;
+using Circuit.Elements;
+using Circuit.Elements.Logic;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Measure {
 	class Ammeter : BaseSymbol {
@@ -16,18 +18,24 @@ namespace Circuit.Symbol.Measure {
 		EScale mScale;
 		int mMeter = TP_AMP;
 
-		public override BaseElement Element { get { return mElm; } }
+		public override bool IsWire { get { return true; } }
+
+		public override int VoltageSourceCount { get { return 1; } }
 
 		public Ammeter(Point pos) : base(pos) {
-			mElm = new ElmAmmeter();
+			mElm = (ElmAmmeter)Element;
 			mFlags = FLAG_SHOWCURRENT;
 			mScale = EScale.AUTO;
 		}
 
 		public Ammeter(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmAmmeter();
+			mElm = (ElmAmmeter)Element;
 			mMeter = st.nextTokenInt();
 			mScale = st.nextTokenEnum(EScale.AUTO);
+		}
+
+		protected override BaseElement Create() {
+			return new ElmAmmeter();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.AMMETER; } }
@@ -35,6 +43,10 @@ namespace Circuit.Symbol.Measure {
 		protected override void dump(List<object> optionList) {
 			optionList.Add(mMeter);
 			optionList.Add(mScale);
+		}
+
+		public override void Stamp() {
+			StampVoltageSource(mElm.Nodes[0], mElm.Nodes[1], mElm.VoltSource, 0);
 		}
 
 		public override void SetPoints() {
@@ -93,7 +105,7 @@ namespace Circuit.Symbol.Measure {
 		string DrawValues() {
 			switch (mMeter) {
 			case TP_AMP:
-				return TextUtils.UnitWithScale(mElm.Current, "A", mScale);
+				return TextUtils.UnitWithScale(mElm.I[0], "A", mScale);
 			case TP_RMS:
 				return TextUtils.UnitWithScale(mElm.Rms, "A rms", mScale);
 			case TP_MAX:

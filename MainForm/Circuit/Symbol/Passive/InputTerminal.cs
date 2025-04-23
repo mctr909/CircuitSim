@@ -1,17 +1,17 @@
 namespace Circuit.Symbol.Passive {
 	class InputTerminal : OutputTerminal {
 		public InputTerminal(Point pos) : base(pos) {
-			mElm.IsOutput = false;
+			mIsOutput = false;
 		}
 
 		public InputTerminal(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f, st) {
-			mElm.IsOutput = false;
+			mIsOutput = false;
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.INPUT_TERMINAL; } }
 
 		protected override void SetPolygon() {
-			var txtSize = CustomGraphics.Instance.GetTextSize(mElm.Name);
+			var txtSize = CustomGraphics.Instance.GetTextSize(mName);
 			var txtW = txtSize.Width;
 			var txtH = txtSize.Height;
 			var txtOfsX = (txtW * 0.5 + 5.0) / Post.Len;

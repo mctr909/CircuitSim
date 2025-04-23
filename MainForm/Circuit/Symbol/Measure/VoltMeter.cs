@@ -1,5 +1,6 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Measure;
+﻿using Circuit.Elements.Measure;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Measure {
 	class VoltMeter : BaseSymbol {
@@ -18,19 +19,23 @@ namespace Circuit.Symbol.Measure {
 		EScale mScale;
 		int mMeter = TP_VOL;
 
-		public override BaseElement Element { get { return mElm; } }
+		public override bool HasConnection(int n1, int n2) { return false; }
 
 		public VoltMeter(Point pos) : base(pos) {
-			mElm = new ElmVoltMeter();
+			mElm = (ElmVoltMeter)Element;
 			/* default for new elements */
 			mFlags = FLAG_SHOWVOLTAGE;
 			mScale = EScale.AUTO;
 		}
 
 		public VoltMeter(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmVoltMeter();
+			mElm = (ElmVoltMeter)Element;
 			mMeter = st.nextTokenInt(mMeter);
 			mScale = st.nextTokenEnum(EScale.AUTO);
+		}
+
+		protected override BaseElement Create() {
+			return new ElmVoltMeter();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.VOLTMETER; } }
@@ -92,7 +97,7 @@ namespace Circuit.Symbol.Measure {
 		protected string DrawValues() {
 			switch (mMeter) {
 			case TP_VOL:
-				return TextUtils.UnitWithScale(mElm.GetVoltageDiff(), "V", mScale);
+				return TextUtils.UnitWithScale(mElm.VoltageDiff, "V", mScale);
 			case TP_RMS:
 				return TextUtils.UnitWithScale(mElm.Rms, "V rms", mScale);
 			case TP_MAX:

@@ -1,38 +1,19 @@
 ﻿namespace Circuit.Elements.Passive {
 	class ElmInductor : BaseElement {
-		double mCompResistance;
-		double mCurSourceValue;
-
-		public double Inductance = 1e-4;
-
-		public override int TermCount { get { return 2; } }
-
-		#region [method(Analyze)]
-		public override void Reset() {
-			Current = NodeVolts[0] = NodeVolts[1] = mCurSourceValue = 0;
+		protected override void DoIteration() {
+			var n1 = NODE_INFOS[Nodes[0] - 1].Row;
+			var n2 = NODE_INFOS[Nodes[1] - 1].Row;
+			RIGHTSIDE[n1] -= I[1];
+			RIGHTSIDE[n2] += I[1];
 		}
 
-		public override void Stamp() {
-			mCompResistance = 2 * Inductance / CircuitState.DeltaTime;
-			StampResistor(NodeId[0], NodeId[1], mCompResistance);
-			StampRightSide(NodeId[0]);
-			StampRightSide(NodeId[1]);
-		}
-		#endregion
-
-		#region [method(Circuit)]
-		public override void PrepareIteration() {
-			mCurSourceValue = (NodeVolts[0] - NodeVolts[1]) / mCompResistance + Current;
+		protected override void StartIteration() {
+			I[1] = I[0] + (V[0] - V[1]) / Para[0];
 		}
 
-		public override void DoIteration() {
-			UpdateCurrent(NodeId[0], NodeId[1], mCurSourceValue);
+		public override void SetVoltage(int n, double v) {
+			V[n] = v;
+			I[0] = I[1] + (V[0] - V[1]) / Para[0];
 		}
-
-		public override void SetVoltage(int nodeIndex, double v) {
-			NodeVolts[nodeIndex] = v;
-			Current = (NodeVolts[0] - NodeVolts[1]) / mCompResistance + mCurSourceValue;
-		}
-		#endregion
 	}
 }

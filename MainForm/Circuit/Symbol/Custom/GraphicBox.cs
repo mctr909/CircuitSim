@@ -1,4 +1,4 @@
-﻿using Circuit.Forms;
+﻿using MainForm.Forms;
 
 namespace Circuit.Symbol.Custom {
 	class GraphicBox : Graphic {

@@ -1,5 +1,6 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Logic;
+﻿using Circuit.Elements.Logic;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Logic {
 	class InvertingSchmitt : BaseSymbol {
@@ -11,24 +12,34 @@ namespace Circuit.Symbol.Logic {
 		double dlt;
 		double dut;
 
-		public override BaseElement Element { get { return mElm; } }
+		public override int VoltageSourceCount { get { return 1; } }
+		// there is no current path through the InvertingSchmitt input, but there
+		// is an indirect path through the output to ground.
+		public override bool HasConnection(int n1, int n2) { return false; }
+		public override bool HasGroundConnection(int nodeIndex) { return nodeIndex == 1; }
 
 		protected InvertingSchmitt(Point p1, Point p2, int f) : base(p1, p2, f) {
+			mElm = (ElmInvertingSchmitt)Element;
 			Post.NoDiagonal = true;
 		}
 
 		public InvertingSchmitt(Point pos) : base(pos) {
-			mElm = new ElmInvertingSchmitt();
+			mElm = (ElmInvertingSchmitt)Element;
 			Post.NoDiagonal = true;
 		}
+
 		public InvertingSchmitt(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmInvertingSchmitt();
+			mElm = (ElmInvertingSchmitt)Element;
 			mElm.SlewRate = st.nextTokenDouble(0.5);
 			mElm.LowerTrigger = st.nextTokenDouble(1.66);
 			mElm.UpperTrigger = st.nextTokenDouble(3.33);
 			mElm.LogicOnLevel = st.nextTokenDouble(5);
 			mElm.LogicOffLevel = st.nextTokenDouble(0);
 			Post.NoDiagonal = true;
+		}
+
+		protected override BaseElement Create() {
+			return new ElmInvertingSchmitt();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.INVERT_SCHMITT; } }
@@ -41,12 +52,16 @@ namespace Circuit.Symbol.Logic {
 			optionList.Add(mElm.LogicOffLevel);
 		}
 
+		public override void Stamp() {
+			StampVoltageSource(0, mElm.Nodes[1], mElm.VoltSource);
+		}
+
 		public override void Draw(CustomGraphics g) {
 			Draw2Leads();
 			DrawPolygon(gatePoly);
 			DrawPolygon(symbolPoly);
 			DrawCircle(pcircle, 3);
-			UpdateDotCount(mElm.Current, ref mCurCount);
+			UpdateDotCount(mElm.I[0], ref mCurCount);
 			DrawCurrentB(mCurCount);
 		}
 
@@ -70,8 +85,8 @@ namespace Circuit.Symbol.Logic {
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "inverting Schmitt trigger";
-			arr[1] = "Vin：" + TextUtils.Voltage(mElm.NodeVolts[0]);
-			arr[2] = "Vout：" + TextUtils.Voltage(mElm.NodeVolts[1]);
+			arr[1] = "Vin：" + TextUtils.Voltage(mElm.V[0]);
+			arr[2] = "Vout：" + TextUtils.Voltage(mElm.V[1]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {

@@ -1,5 +1,7 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Passive;
+﻿using Circuit.Elements.Passive;
+using Circuit.Elements;
+using Circuit.Symbol.Input;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Passive {
 	class Inductor : BaseSymbol {
@@ -9,29 +11,40 @@ namespace Circuit.Symbol.Passive {
 		const int BODY_LEN = 24;
 		const int COIL_WIDTH = 8;
 
-		ElmInductor mElm;
 		PointF[] mCoilPos;
 		float mCoilAngle;
-
-		public override BaseElement Element { get { return mElm; } }
+		public double Inductance = 1e-4;
 
 		public Inductor(Point pos) : base(pos) {
-			mElm = new ElmInductor();
 			ReferenceName = mLastReferenceName;
-			mElm.Inductance = mLastValue;
+			Inductance = mLastValue;
 		}
 
 		public Inductor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmInductor();
-			mElm.Inductance = st.nextTokenDouble(mLastValue);
-			mElm.SetCurrent(0, st.nextTokenDouble(0));
+			Inductance = st.nextTokenDouble(mLastValue);
+			Element.I[0] = st.nextTokenDouble(0);
+		}
+
+		protected override BaseElement Create() {
+			return new ElmInductor();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.INDUCTOR; } }
 
 		protected override void dump(List<object> optionList) {
-			optionList.Add(mElm.Inductance.ToString("g3"));
-			optionList.Add(mElm.Current.ToString("g3"));
+			optionList.Add(Inductance.ToString("g3"));
+			optionList.Add(Element.I[0].ToString("g3"));
+		}
+
+		public override void Reset() {
+			Element.I[0] = Element.I[1] = Element.V[0] = Element.V[1] = 0;
+		}
+
+		public override void Stamp() {
+			Element.Para[0] = 2 * Inductance / CircuitState.DeltaTime;
+			StampResistor(Element.Nodes[0], Element.Nodes[1], Element.Para[0]);
+			StampRightSide(Element.Nodes[0]);
+			StampRightSide(Element.Nodes[1]);
 		}
 
 		public override void SetPoints() {
@@ -85,17 +98,17 @@ namespace Circuit.Symbol.Passive {
 				DrawArc(p, COIL_WIDTH, mCoilAngle, -180);
 			}
 			DrawName();
-			DrawValue(TextUtils.Unit(mElm.Inductance));
+			DrawValue(TextUtils.Unit(Inductance));
 			DoDots();
 		}
 
 		public override void GetInfo(string[] arr) {
 			if (string.IsNullOrEmpty(ReferenceName)) {
-				arr[0] = "コイル：" + TextUtils.Unit(mElm.Inductance, "H");
+				arr[0] = "コイル：" + TextUtils.Unit(Inductance, "H");
 				GetBasicInfo(1, arr);
 			} else {
 				arr[0] = ReferenceName;
-				arr[1] = "コイル：" + TextUtils.Unit(mElm.Inductance, "H");
+				arr[1] = "コイル：" + TextUtils.Unit(Inductance, "H");
 				GetBasicInfo(2, arr);
 			}
 		}
@@ -105,7 +118,7 @@ namespace Circuit.Symbol.Passive {
 				return null;
 			}
 			if (r == 0) {
-				return new ElementInfo("インダクタンス(H)", mElm.Inductance);
+				return new ElementInfo("インダクタンス(H)", Inductance);
 			}
 			if (r == 1) {
 				return new ElementInfo("名前", ReferenceName);
@@ -115,7 +128,7 @@ namespace Circuit.Symbol.Passive {
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
 			if (n == 0 && ei.Value > 0) {
-				mElm.Inductance = ei.Value;
+				Inductance = ei.Value;
 				mLastValue = ei.Value;
 				SetTextPos();
 			}
@@ -129,7 +142,7 @@ namespace Circuit.Symbol.Passive {
 		public override EventHandler CreateSlider(ElementInfo ei, Slider adj) {
 			return new EventHandler((s, e) => {
 				var trb = adj.Trackbar;
-				mElm.Inductance = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
+				Inductance = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
 				MainForm.MainForm.NeedAnalyze = true;
 			});
 		}

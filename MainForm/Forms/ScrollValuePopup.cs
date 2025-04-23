@@ -1,6 +1,8 @@
 ﻿using Circuit.Symbol.Passive;
+using Circuit.Symbol;
+using Circuit;
 
-namespace Circuit.Forms {
+namespace MainForm.Forms {
 	class ScrollValuePopup : Form {
 		static readonly double[] E6 = {
 			1.0, 1.5,
@@ -125,7 +127,7 @@ namespace Circuit.Forms {
 			mValues = new double[2 + (mMaxPow - mMinPow) * valDiv];
 			int ptr = 0;
 			for (int i = mMinPow; i <= mMaxPow; i++) {
-				for (int j = 0; j < ((i != mMaxPow) ? valDiv : 1); j++, ptr++) {
+				for (int j = 0; j < (i != mMaxPow ? valDiv : 1); j++, ptr++) {
 					mValues[ptr] = Math.Pow(10.0, i) * valArr[j];
 				}
 			}
@@ -171,7 +173,7 @@ namespace Circuit.Forms {
 			mElmInfo.Value = mValues[thissel];
 			mEditElm.SetElementValue(0, 0, mElmInfo);
 			mLabels.Text = TextUtils.Unit(mValues[thissel], mUnit);
-			MainForm.MainForm.NeedAnalyze = true;
+			MainForm.NeedAnalyze = true;
 		}
 
 		void setElmValue(int i) {
@@ -180,7 +182,7 @@ namespace Circuit.Forms {
 				mLastIdx = i;
 				mElmInfo.Value = mValues[i];
 				mEditElm.SetElementValue(0, 0, mElmInfo);
-				MainForm.MainForm.NeedAnalyze = true;
+				MainForm.NeedAnalyze = true;
 			}
 		}
 

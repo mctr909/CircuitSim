@@ -1,4 +1,5 @@
 ﻿using Circuit.Elements.Measure;
+using Circuit.Elements;
 
 namespace Circuit.Symbol.Measure {
 	class Scope : BaseSymbol {
@@ -6,13 +7,10 @@ namespace Circuit.Symbol.Measure {
 
 		public ScopePlot Plot;
 
-		public override BaseElement Element { get { return mElm; } }
-
 		public Scope(Point pos) : base(pos) {
 			Post.B.X = Post.A.X + 128;
 			Post.B.Y = Post.A.Y + 64;
-			Plot = new ScopePlot();
-			mElm = new ElmScope(Plot);
+			mElm = (ElmScope)Element;
 			SetPoints();
 		}
 
@@ -20,11 +18,15 @@ namespace Circuit.Symbol.Measure {
 			string sStr;
 			st.nextToken(out sStr);
 			var sst = new StringTokenizer(sStr, "\t");
-			Plot = new ScopePlot();
-			mElm = new ElmScope(Plot);
+			mElm = (ElmScope)Element;
 			Plot.Undump(sst);
 			SetPoints();
 			Plot.ResetGraph();
+		}
+
+		protected override BaseElement Create() {
+			Plot = new ScopePlot();
+			return new ElmScope(Plot);
 		}
 
 		public override bool CanViewInScope { get { return false; } }
@@ -35,6 +37,11 @@ namespace Circuit.Symbol.Measure {
 			string sStr = Plot.Dump().Replace(' ', '\t');
 			sStr = sStr.Replace("o\t", ""); /* remove unused prefix for embedded Scope */
 			optionList.Add(sStr);
+		}
+
+		public override void Reset() {
+			base.Reset();
+			mElm.mScope.ResetGraph(true);
 		}
 
 		public override void SetPoints() {

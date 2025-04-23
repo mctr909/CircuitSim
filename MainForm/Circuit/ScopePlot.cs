@@ -1,4 +1,7 @@
-﻿namespace Circuit {
+﻿using Circuit.Elements;
+using Circuit.Symbol;
+
+namespace Circuit {
 	public class ScopePlot {
 		const int SCALE_INFO_WIDTH = 45;
 		const int SPEED_MAX = 1024;
@@ -282,10 +285,10 @@
 			}
 			mShowNegative = false;
 			for (int i = 0; i != Waves.Count; i++) {
-				var p = Waves[i];
-				p.Reset(mWaveLength, Speed, full);
-				if (p.Color >= (int)E_COLOR.COUNT) {
-					SetColor(p, E_COLOR.GREEN);
+				var wave = Waves[i];
+				Reset(wave, full);
+				if (wave.Color >= (int)E_COLOR.COUNT) {
+					SetColor(wave, E_COLOR.GREEN);
 				}
 			}
 			mScopeTimeStep = CircuitState.DeltaTime;
@@ -383,6 +386,29 @@
 			ShowVoltage = true;
 			ShowScale = ShowFreq = ManualScale = ShowFFT = false;
 		}
+		void Reset(SCOPE_WAVE wave, bool full) {
+			var oldLength = wave.Length;
+			if (wave.Speed != Speed) {
+				oldLength = 0;
+			}
+			wave.Length = mWaveLength;
+			wave.Speed = Speed;
+			if (full) {
+				wave.Values = new WAVE_VALUE[mWaveLength];
+				wave.Interval = 0;
+			} else {
+				var old = new WAVE_VALUE[wave.Values.Length];
+				Array.Copy(wave.Values, old, wave.Values.Length);
+				wave.Values = new WAVE_VALUE[mWaveLength];
+				for (int i = 0; i != mWaveLength && i != oldLength; i++) {
+					var i1 = (-i) & (mWaveLength - 1);
+					var i2 = (wave.Cursor - i) & (oldLength - 1);
+					wave.Values[i1].Min = old[i2].Min;
+					wave.Values[i1].Max = old[i2].Max;
+				}
+			}
+			wave.Cursor = 0;
+		}
 		void SetPlot(BaseSymbol symbol) {
 			if (null == symbol) {
 				Waves.Clear();
@@ -428,7 +454,7 @@
 			var bestDist = double.MaxValue;
 			int bestWave = -1;
 			for (int i = 0; i != Waves.Count; i++) {
-				var min = Waves[i].Data[index].min;
+				var min = Waves[i].Values[index].Min;
 				var limitVy = mMainGridMult * (mMainGridMid - min);
 				limitVy = Math.Max(-height, limitVy);
 				limitVy = Math.Min(height, limitVy);
@@ -457,12 +483,12 @@
 				var startIndex = GetStartIndex(wave);
 				for (int i = 0; i != BoundingBox.Width; i++) {
 					var index = (i + startIndex) & (mWaveLength - 1);
-					var value = wave.Data[index];
-					if (value.min < mMinValue) {
-						mMinValue = value.min;
+					var value = wave.Values[index];
+					if (value.Min < mMinValue) {
+						mMinValue = value.Min;
 					}
-					if (mMaxValue < value.max) {
-						mMaxValue = value.max;
+					if (mMaxValue < value.Max) {
+						mMaxValue = value.Max;
 					}
 				}
 			}
@@ -476,12 +502,12 @@
 			var gridMax = Scale;
 			for (int i = 0; i != BoundingBox.Width; i++) {
 				var index = (i + startIndex) & (mWaveLength - 1);
-				var value = wave.Data[index];
-				if (value.min < -max) {
-					max = -value.min;
+				var value = wave.Values[index];
+				if (value.Min < -max) {
+					max = -value.Min;
 				}
-				if (max < value.max) {
-					max = value.max;
+				if (max < value.Max) {
+					max = value.Max;
 				}
 			}
 			if (Normarize) {
@@ -520,7 +546,7 @@
 			int skipZeroIndex;
 			for (skipZeroIndex = 0; skipZeroIndex != BoundingBox.Width; skipZeroIndex++) {
 				var index = (skipZeroIndex + beginIndex) & (mWaveLength - 1);
-				var max = wave.Data[index].max;
+				var max = wave.Values[index].Max;
 				if (max != 0) {
 					if (mid < max) {
 						state = 1;
@@ -537,13 +563,13 @@
 			var endSum = 0.0;
 			for (; skipZeroIndex != BoundingBox.Width; skipZeroIndex++) {
 				var index = (skipZeroIndex + beginIndex) & (mWaveLength - 1);
-				var value = wave.Data[index];
+				var value = wave.Values[index];
 				var sw = false;
 				if (state == 1) {
-					if (value.max < mid) {
+					if (value.Max < mid) {
 						sw = true;
 					}
-				} else if (value.min > mid) {
+				} else if (value.Min > mid) {
 					sw = true;
 				}
 				if (sw) {
@@ -560,7 +586,7 @@
 					}
 				}
 				if (0 < cycleCount) {
-					var m = (value.max + value.min) * 0.5;
+					var m = (value.Max + value.Min) * 0.5;
 					sum += m * m;
 				}
 			}
@@ -579,8 +605,8 @@
 			var avg = 0.0;
 			for (posX = 0; posX != BoundingBox.Width; posX++) {
 				var index = (posX + startIndex) & (mWaveLength - 1);
-				var value = wave.Data[index];
-				avg += value.min + value.max;
+				var value = wave.Values[index];
+				avg += value.Min + value.Max;
 			}
 			avg /= posX * 2;
 
@@ -593,7 +619,7 @@
 			var avperiod2 = 0.0;
 			for (posX = 0; posX != BoundingBox.Width; posX++) {
 				var index = (posX + startIndex) & (mWaveLength - 1);
-				var max = wave.Data[index].max;
+				var max = wave.Values[index].Max;
 				var dcCut = max - avg;
 				var lastState = state;
 				if (dcCut < thresh) {
@@ -646,9 +672,9 @@
 				int pointer = (MouseCursorX - BoundingBox.X + ipa) & (mWaveLength - 1);
 				if (SelectedWave >= 0) {
 					var wave = Waves[SelectedWave];
-					var value = wave.Data[pointer];
-					info[ct++] = TextUtils.Voltage(value.max);
-					var maxvy = (int)(mMainGridMult * (value.max - mMainGridMid));
+					var value = wave.Values[pointer];
+					info[ct++] = TextUtils.Voltage(value.Max);
+					var maxvy = (int)(mMainGridMult * (value.Max - mMainGridMid));
 					maxvy = Math.Max(-maxy, maxvy);
 					maxvy = Math.Min(maxy, maxvy);
 					g.FillColor = GetColor(wave);
@@ -817,7 +843,7 @@
 			var rect = new PointF[BoundingBox.Width * 2 + 1];
 			for (int x = 0; x != BoundingBox.Width; x++) {
 				var idx = (x + idxBegin) & (mWaveLength - 1);
-				var max = wave.Data[idx].max;
+				var max = wave.Values[idx].Max;
 				var v = (float)(graphMult * (max - graphMid));
 				var y = centerY - v - 0.5f;
 				y = Math.Max(yMin, y);
@@ -827,7 +853,7 @@
 			}
 			for (int x = BoundingBox.Width - 1, i = BoundingBox.Width; 0 <= x; x--, i++) {
 				var idx = (x + idxBegin) & (mWaveLength - 1);
-				var min = wave.Data[idx].min;
+				var min = wave.Values[idx].Min;
 				var v = (float)(graphMult * (min - graphMid));
 				var y = centerY - v + 0.5f;
 				y = Math.Max(yMin, y);
@@ -899,8 +925,8 @@
 			int ptr = wave.Cursor;
 			for (int i = 0; i < mWaveLength; i++) {
 				var ii = (ptr - i + mWaveLength) % mWaveLength;
-				var value = wave.Data[ii];
-				mReal[i] = 0.5 * (value.max + value.min) * (0.5 - 0.5 * Math.Cos(2.0 * Math.PI * i / mWaveLength));
+				var value = wave.Values[ii];
+				mReal[i] = 0.5 * (value.Max + value.Min) * (0.5 - 0.5 * Math.Cos(2.0 * Math.PI * i / mWaveLength));
 				mImag[i] = 0;
 			}
 			mFft.Exec(mReal, mImag);

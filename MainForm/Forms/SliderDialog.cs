@@ -1,6 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using Circuit;
+using Circuit.Symbol;
+using System.Text.RegularExpressions;
 
-namespace Circuit.Forms {
+namespace MainForm.Forms {
 	public class SliderDialog : Form {
 		BaseSymbol mElm;
 		ElementInfo[] mEInfos;

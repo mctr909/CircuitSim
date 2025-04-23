@@ -1,13 +1,15 @@
-﻿using Circuit.Elements.Input;
-using Circuit.Elements.Passive;
+﻿using Circuit.Elements;
 using Circuit.Forms;
+using Circuit.Symbol;
 using Circuit.Symbol.Measure;
+using Circuit.Symbol.Input;
+using Circuit.Symbol.Passive;
 
 namespace Circuit {
-	static class CircuitAnalizer {
+	public static class CircuitAnalizer {
 		public class Link {
 			public int Node;
-			public BaseElement Elm;
+			public BaseSymbol Sym;
 		}
 
 		public class Node {
@@ -17,8 +19,8 @@ namespace Circuit {
 
 		public class Wire {
 			public int Post;
-			public ElmWire Instance;
-			public List<BaseElement> ConnectedElms = [];
+			public Symbol.Passive.Wire Instance;
+			public List<BaseSymbol> Links = [];
 		}
 
 		public class NodeInfo {
@@ -47,14 +49,14 @@ namespace Circuit {
 
 			TYPE mType;
 			int mDest;
-			BaseElement mFirstElm;
-			List<BaseElement> mElmList;
+			BaseSymbol mFirstElm;
+			List<BaseSymbol> mElmList;
 			bool[] mVisited;
 
 			/* State object to help find loops in circuit subject to various conditions (depending on type)
 			 * elm = source and destination element.
 			 * dest = destination node. */
-			public PathInfo(TYPE type, BaseElement elm, int dest, List<BaseElement> elmList, int nodeCount) {
+			public PathInfo(TYPE type, BaseSymbol elm, int dest, List<BaseSymbol> elmList, int nodeCount) {
 				mDest = dest;
 				mType = type;
 				mFirstElm = elm;
@@ -83,13 +85,13 @@ namespace Circuit {
 					switch (mType) {
 					case TYPE.INDUCTOR:
 						/* inductors need a path free of current sources */
-						if (cee is ElmCurrent) {
+						if (cee is Current) {
 							continue;
 						}
 						break;
 					case TYPE.VOLTAGE:
 						/* when checking for voltage loops, we only care about voltage sources/wires/ground */
-						if (!(cee.IsWire || (cee is ElmVoltage) || (cee is ElmGround))) {
+						if (!(cee.IsWire || (cee is Voltage) || (cee is Ground))) {
 							continue;
 						}
 						break;
@@ -101,7 +103,7 @@ namespace Circuit {
 						break;
 					case TYPE.CAPACITOR:
 						/* checking for capacitor/voltage source loops */
-						if (!(cee.IsWire || (cee is ElmCapacitor) || (cee is ElmVoltage))) {
+						if (!(cee.IsWire || (cee is Capacitor) || (cee is Voltage))) {
 							continue;
 						}
 						break;
@@ -130,13 +132,13 @@ namespace Circuit {
 						return true;
 					}
 
-					if (mType == TYPE.INDUCTOR && (cee is ElmInductor)) {
+					if (mType == TYPE.INDUCTOR && (cee is Inductor)) {
 						/* inductors can use paths with other inductors of matching current */
-						var c = cee.Current;
+						var c = cee.Element.I[0];
 						if (nodeA == 0) {
 							c = -c;
 						}
-						if (Math.Abs(c - mFirstElm.Current) > 1e-10) {
+						if (Math.Abs(c - mFirstElm.Element.I[0]) > 1e-10) {
 							continue;
 						}
 					}
@@ -164,22 +166,23 @@ namespace Circuit {
 		public static NodeInfo[] NodeInfos = [];
 
 		public static void Analyze(List<BaseSymbol> symbolList) {
+			BaseElement.SetElementList([]);
+			BaseElement.SetWireList([]);
+			BaseElement.SetNodeList([], []);
+			BaseElement.SetMatrix([], Matrix, 0);
 			if (0 == symbolList.Count) {
 				DrawPostList = new List<Point>();
 				BadConnectionList = new List<Point>();
-				CircuitElement.SetElements([]);
-				CircuitElement.SetWires([]);
-				CircuitElement.SetNodes([], []);
-				CircuitElement.SetMatrix([], Matrix, 0);
 				return;
 			}
 
 			CircuitState.Stopped = false;
-			var elmList = new List<BaseElement>();
+			var elmList = new List<BaseSymbol>();
 			foreach (var symbol in symbolList) {
-				elmList.Add(symbol.Element);
+				symbol.Element.Broken = false;
+				elmList.Add(symbol);
 			}
-			ElmNamedNode.ResetNodeList();
+			OutputTerminal.ResetNodeList();
 
 			/* allocate nodes */
 			var nodeList = new List<Node>();
@@ -188,17 +191,17 @@ namespace Circuit {
 				/* look for voltage or ground element */
 				var gotGround = false;
 				var gotRail = false;
-				BaseElement volt = null;
+				BaseSymbol volt = null;
 				for (int i = 0; i != elmList.Count; i++) {
 					var ce = elmList[i];
-					if (ce is ElmGround) {
+					if (ce is Ground) {
 						gotGround = true;
 						break;
 					}
-					if (ce is ElmRail) {
+					if (ce is Rail) {
 						gotRail = true;
 					}
-					if (volt == null && (ce is ElmVoltage)) {
+					if (volt == null && (ce is Voltage)) {
 						volt = ce;
 					}
 				}
@@ -228,7 +231,7 @@ namespace Circuit {
 					}
 					var inodes = elm.InternalNodeCount;
 					var ivs = elm.VoltageSourceCount;
-					var posts = elm.TermCount;
+					var posts = elm.Element.TermCount;
 
 					/* allocate a node for each post and match posts to nodes */
 					for (int idxN = 0; idxN < posts; idxN++) {
@@ -254,7 +257,7 @@ namespace Circuit {
 							var cn = new Node();
 							cn.Links.Add(new Link {
 								Node = idxN,
-								Elm = elm
+								Sym = elm
 							});
 							elm.SetNode(idxN, nodeList.Count);
 							if (isKnownNode) {
@@ -266,20 +269,20 @@ namespace Circuit {
 						} else {
 							nodeList[entryNode.Id].Links.Add(new Link {
 								Node = idxN,
-								Elm = elm
+								Sym = elm
 							});
 							elm.SetNode(idxN, entryNode.Id);
 							/* if it's the ground node, make sure the node voltage is 0,
                             /* cause it may not get set later */
 							if (entryNode.Id == NodeMapEntry.GroundNode) {
-								elm.SetVoltage(idxN, 0);
+								elm.Element.SetVoltage(idxN, 0);
 							}
 						}
 					}
 					for (int j = 0; j < inodes; j++) {
 						var cl = new Link {
 							Node = j + posts,
-							Elm = elm
+							Sym = elm
 						};
 						var cn = new Node {
 							IsInternal = true
@@ -293,13 +296,13 @@ namespace Circuit {
 
 				MakeDrawingPostList(elmList, postCountMap);
 			}
+			BaseElement.SetElementList(elmList);
 
 			var wireList = CalcWireInfo(elmList, nodeList);
 			if (null == wireList) {
 				return;
 			}
-			CircuitElement.SetElements(elmList);
-			CircuitElement.SetWires(wireList);
+			BaseElement.SetWireList(wireList);
 
 			NodeCount = nodeList.Count;
 			var matrixSize = NodeCount - 1 + vsCount;
@@ -323,7 +326,7 @@ namespace Circuit {
 				changed = false;
 				for (int idxE = 0; idxE < elmList.Count; idxE++) {
 					var ce = elmList[idxE];
-					if (ce is ElmWire) {
+					if (ce is Symbol.Passive.Wire) {
 						continue;
 					}
 					/* loop through all ce's nodes to see if they are connected
@@ -366,18 +369,18 @@ namespace Circuit {
 				var ce = elmList[idxE];
 
 				/* look for inductors with no current path */
-				if (ce is ElmInductor) {
-					var fpi = new PathInfo(PathInfo.TYPE.INDUCTOR, ce, ce.NodeId[1], elmList, NodeCount);
-					if (!fpi.FindPath(ce.NodeId[0])) {
+				if (ce is Inductor) {
+					var fpi = new PathInfo(PathInfo.TYPE.INDUCTOR, ce, ce.Element.Nodes[1], elmList, NodeCount);
+					if (!fpi.FindPath(ce.Element.Nodes[0])) {
 						ce.Reset();
 					}
 				}
 
 				/* look for current sources with no current path */
-				if (ce is ElmCurrent) {
-					var cur = (ElmCurrent)ce;
-					var fpi = new PathInfo(PathInfo.TYPE.INDUCTOR, ce, ce.NodeId[1], elmList, NodeCount);
-					if (!fpi.FindPath(ce.NodeId[0])) {
+				if (ce is Current) {
+					var cur = (Current)ce;
+					var fpi = new PathInfo(PathInfo.TYPE.INDUCTOR, ce, ce.Element.Nodes[1], elmList, NodeCount);
+					if (!fpi.FindPath(ce.Element.Nodes[0])) {
 						cur.StampCurrentSource(true);
 					} else {
 						cur.StampCurrentSource(false);
@@ -386,18 +389,18 @@ namespace Circuit {
 
 				/* look for voltage source or wire loops.  we do this for voltage sources or wire-like elements (not actual wires
                 /* because those are optimized out, so the findPath won't work) */
-				if (2 == ce.TermCount) {
-					if (ce is ElmVoltage) {
-						var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.NodeId[1], elmList, NodeCount);
-						if (fpi.FindPath(ce.NodeId[0])) {
+				if (2 == ce.Element.TermCount) {
+					if (ce is Voltage) {
+						var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Element.Nodes[1], elmList, NodeCount);
+						if (fpi.FindPath(ce.Element.Nodes[0])) {
 							Stop("Voltage source/wire loop with no resistance!");
 							return;
 						}
 					}
 				} else {
 					/* look for path from rail to ground */
-					if (ce is ElmRail || ce is ElmLogicInput) {
-						var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.NodeId[0], elmList, NodeCount);
+					if (ce is Rail || ce is LogicInput) {
+						var fpi = new PathInfo(PathInfo.TYPE.VOLTAGE, ce, ce.Element.Nodes[0], elmList, NodeCount);
 						if (fpi.FindPath(0)) {
 							Stop("Voltage source/wire loop with no resistance!");
 							return;
@@ -406,9 +409,9 @@ namespace Circuit {
 				}
 
 				/* look for shorted caps, or caps w/ voltage but no R */
-				if (ce is ElmCapacitor) {
-					var fpi = new PathInfo(PathInfo.TYPE.SHORT, ce, ce.NodeId[1], elmList, NodeCount);
-					if (fpi.FindPath(ce.NodeId[0])) {
+				if (ce is Capacitor) {
+					var fpi = new PathInfo(PathInfo.TYPE.SHORT, ce, ce.Element.Nodes[1], elmList, NodeCount);
+					if (fpi.FindPath(ce.Element.Nodes[0])) {
 						Console.WriteLine(ce + " shorted");
 						ce.Shorted();
 					} else {
@@ -417,8 +420,8 @@ namespace Circuit {
                         /* another capacitor with a nonzero voltage; in that case we will get oscillation unless
                         /* we reset both capacitors to have the same voltage. Rather than check for that, we just
                         /* give an error. */
-						fpi = new PathInfo(PathInfo.TYPE.CAPACITOR, ce, ce.NodeId[1], elmList, NodeCount);
-						if (fpi.FindPath(ce.NodeId[0])) {
+						fpi = new PathInfo(PathInfo.TYPE.CAPACITOR, ce, ce.Element.Nodes[1], elmList, NodeCount);
+						if (fpi.FindPath(ce.Element.Nodes[0])) {
 							Stop("Capacitor loop with no resistance!");
 							return;
 						}
@@ -429,34 +432,36 @@ namespace Circuit {
 			if (!SimplifyMatrix(matrixSize)) {
 				return;
 			}
-			CircuitElement.SetNodes(nodeList, NodeInfos);
+			BaseElement.SetNodeList(nodeList, NodeInfos);
 
-			var waveCount = 0;
-			for(var i = 0; i < ScopeForm.PlotCount; i++) {
-				waveCount += ScopeForm.Plots[i].WaveCount;
-			}
-			foreach(var item in symbolList) {
-				if (item is Scope scope) {
-					waveCount += scope.Plot.WaveCount;
+			{
+				var waveCount = 0;
+				for (var i = 0; i < ScopeForm.PlotCount; i++) {
+					waveCount += ScopeForm.Plots[i].WaveCount;
 				}
-			}
-			var waves = new SCOPE_WAVE[waveCount];
-			waveCount = 0;
-			for(var i = 0; i < ScopeForm.PlotCount; i++) {
-				var plot = ScopeForm.Plots[i];
-				for(var j = 0; j < plot.WaveCount; j++) {
-					waves[waveCount++] = plot.Waves[j];
-				}
-			}
-			foreach(var item in symbolList) {
-				if (item is Scope scope) {
-					var plot = scope.Plot;
-					for (var i = 0; i < plot.WaveCount; i++) {
-						waves[waveCount++] = plot.Waves[i];
+				foreach (var item in symbolList) {
+					if (item is Scope scope) {
+						waveCount += scope.Plot.WaveCount;
 					}
 				}
+				var waveList = new SCOPE_WAVE[waveCount];
+				waveCount = 0;
+				for (var i = 0; i < ScopeForm.PlotCount; i++) {
+					var plot = ScopeForm.Plots[i];
+					for (var j = 0; j < plot.WaveCount; j++) {
+						waveList[waveCount++] = plot.Waves[j];
+					}
+				}
+				foreach (var item in symbolList) {
+					if (item is Scope scope) {
+						var plot = scope.Plot;
+						for (var i = 0; i < plot.WaveCount; i++) {
+							waveList[waveCount++] = plot.Waves[i];
+						}
+					}
+				}
+				BaseElement.SetWaveList(waveList);
 			}
-			CircuitElement.SetWaves(waves);
 		}
 
 		#region private method
@@ -550,24 +555,23 @@ namespace Circuit {
 					}
 				}
 			}
-			CircuitElement.SetMatrix(newRightSide, newMatrix, newSize);
+			BaseElement.SetMatrix(newRightSide, newMatrix, newSize);
 			return true;
 		}
 
 		/* find groups of nodes connected by wires and map them to the same node.  this speeds things
         /* up considerably by reducing the size of the matrix */
-		static Dictionary<Point, NodeMapEntry> CalcWireClosure(List<BaseElement> elements) {
+		static Dictionary<Point, NodeMapEntry> CalcWireClosure(List<BaseSymbol> elements) {
 			int mergeCount = 0;
 			var nodeMap = new Dictionary<Point, NodeMapEntry>();
 			for (int i = 0; i < elements.Count; i++) {
 				var ce = elements[i];
-				if (ce is not ElmWire) {
+				if (ce is not Symbol.Passive.Wire) {
 					continue;
 				}
-				var elm = (ElmWire)ce;
-				elm.HasWireInfo = false;
-				var p1 = elm.NodePos[0];
-				var p2 = elm.NodePos[1];
+				((Symbol.Passive.Wire)ce).HasWireInfo = false;
+				var p1 = ce.NodePos[0];
+				var p2 = ce.NodePos[1];
 				var cp1 = nodeMap.ContainsKey(p1);
 				var cp2 = nodeMap.ContainsKey(p2);
 				if (cp1 && cp2) {
@@ -613,11 +617,11 @@ namespace Circuit {
 		/* So we create a list of WireInfo objects instead to help us calculate the wire currents instead,
 		/* so we make the matrix less complex, and we only calculate the wire currents when we need them
 		/* (once per frame, not once per subiteration) */
-		static List<Wire> CalcWireInfo(List<BaseElement> elmList, List<Node> nodeList) {
+		static List<Wire> CalcWireInfo(List<BaseSymbol> elmList, List<Node> nodeList) {
 			var wireList = new List<Wire>();
 			for (int i = 0; i < elmList.Count; i++) {
 				var elm = elmList[i];
-				if (elm is ElmWire wire) {
+				if (elm is Symbol.Passive.Wire wire) {
 					wireList.Add(new Wire() {
 						Instance = wire
 					});
@@ -628,53 +632,53 @@ namespace Circuit {
 			for (wireIdx = 0; wireIdx != wireList.Count; wireIdx++) {
 				var wi = wireList[wireIdx];
 				var wire = wi.Instance;
-				var cn1 = nodeList[wire.NodeId[0]];  /* both ends of wire have same node # */
+				var cn1 = nodeList[wire.Element.Nodes[0]];  /* both ends of wire have same node # */
 				int j;
 
-				var connectedElmsA = new List<BaseElement>();
-				var connectedElmsB = new List<BaseElement>();
-				bool isReady0 = true;
-				bool isReady1 = true;
+				var linkedSymsF = new List<BaseSymbol>();
+				var linkedSymsR = new List<BaseSymbol>();
+				bool isReadyF = true;
+				bool isReadyR = true;
 
 				/* go through elements sharing a node with this wire (may be connected indirectly
                 /* by other wires, but at least it's faster than going through all elements) */
 				for (j = 0; j != cn1.Links.Count; j++) {
 					var cl = cn1.Links[j];
-					var elm = cl.Elm;
+					var elm = cl.Sym;
 					if (elm == wire) {
 						continue;
 					}
 
 					/* is this a wire that doesn't have wire info yet?  If so we can't use it.
                     /* That would create a circular dependency */
-					bool isReady = (elm is ElmWire ew) && !ew.HasWireInfo;
+					bool isReady = (elm is Symbol.Passive.Wire ew) && !ew.HasWireInfo;
 
 					/* which post does this element connect to, if any? */
 					var elmPos = elm.NodePos[cl.Node];
-					var wirePosA = wire.NodePos[0];
-					var wirePosB = wire.NodePos[1];
-					if (elmPos.X == wirePosA.X && elmPos.Y == wirePosA.Y) {
-						connectedElmsA.Add(elm);
+					var wirePosF = wire.NodePos[0];
+					var wirePosR = wire.NodePos[1];
+					if (elmPos.X == wirePosF.X && elmPos.Y == wirePosF.Y) {
+						linkedSymsF.Add(elm);
 						if (isReady) {
-							isReady0 = false;
+							isReadyF = false;
 						}
-					} else if (elmPos.X == wirePosB.X && elmPos.Y == wirePosB.Y) {
-						connectedElmsB.Add(elm);
+					} else if (elmPos.X == wirePosR.X && elmPos.Y == wirePosR.Y) {
+						linkedSymsR.Add(elm);
 						if (isReady) {
-							isReady1 = false;
+							isReadyR = false;
 						}
 					}
 				}
 
 				/* does one of the posts have all information necessary to calculate current */
-				if (isReady0) {
+				if (isReadyF) {
 					wi.Post = 0;
-					wi.ConnectedElms = connectedElmsA;
+					wi.Links = linkedSymsF;
 					wire.HasWireInfo = true;
 					moved = 0;
-				} else if (isReady1) {
+				} else if (isReadyR) {
 					wi.Post = 1;
-					wi.ConnectedElms = connectedElmsB;
+					wi.Links = linkedSymsR;
 					wire.HasWireInfo = true;
 					moved = 0;
 				} else {
@@ -695,7 +699,7 @@ namespace Circuit {
 		/* make list of posts we need to draw.  posts shared by 2 elements should be hidden, all
         /* others should be drawn.  We can't use the node list anymore because wires have the same
         /* node number at both ends. */
-		static void MakeDrawingPostList(List<BaseElement> elements, Dictionary<Point, int> postCountMap) {
+		static void MakeDrawingPostList(List<BaseSymbol> elements, Dictionary<Point, int> postCountMap) {
 			DrawPostList = new List<Point>();
 			BadConnectionList = new List<Point>();
 			foreach (var entry in postCountMap) {
@@ -712,7 +716,7 @@ namespace Circuit {
 						var ce = elements[j];
 						/* does this post belong to the elm? */
 						int k;
-						int pc = ce.TermCount;
+						int pc = ce.Element.TermCount;
 						for (k = 0; k != pc; k++) {
 							if (ce.NodePos[k].Equals(cn)) {
 								break;

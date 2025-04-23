@@ -1,5 +1,6 @@
-﻿using Circuit.Forms;
+﻿using Circuit.Elements;
 using Circuit.Elements.Active;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Active {
 	class DiodeVaractor : Diode {
@@ -7,43 +8,55 @@ namespace Circuit.Symbol.Active {
 		PointF[] mPlate2;
 
 		public DiodeVaractor(Point pos) : base(pos, "Vc") {
-			mElm = new ElmDiodeVaractor();
 			ModelName = LastModelName;
 			var model = DiodeModel.GetModelWithName(ModelName);
-			mElm.VZener = model.BreakdownVoltage;
-			mElm.FwDrop = model.FwDrop;
-			mElm.Leakage = model.SaturationCurrent;
-			mElm.VScale = model.VScale;
-			mElm.VdCoef = model.VdCoef;
-			mElm.SeriesResistance = model.SeriesResistance;
-			mElm.Model = model;
-			mElm.Setup();
+			Element.Para[ElmDiode.LEAKAGE] = model.SaturationCurrent;
+			Element.Para[ElmDiode.V_SCALE] = model.VScale;
+			Element.Para[ElmDiode.VD_COEF] = model.VdCoef;
+			Element.Para[ElmDiode.FW_DROP] = model.FwDrop;
+			Model = model;
+			Setup();
 		}
 
 		public DiodeVaractor(Point a, Point b, int f, StringTokenizer st) : base(a, b, f) {
-			var elm = new ElmDiodeVaractor();
 			st.nextToken(out ModelName, ModelName);
 			var model = DiodeModel.GetModelWithName(ModelName);
-			elm.CapVoltDiff = st.nextTokenDouble();
-			elm.BaseCapacitance = st.nextTokenDouble();
-			mElm = elm;
-			mElm.VZener = model.BreakdownVoltage;
-			mElm.FwDrop = model.FwDrop;
-			mElm.Leakage = model.SaturationCurrent;
-			mElm.VScale = model.VScale;
-			mElm.VdCoef = model.VdCoef;
-			mElm.SeriesResistance = model.SeriesResistance;
-			mElm.Model = model;
-			mElm.Setup();
+			Element.V[ElmDiode.VD_CAP] = st.nextTokenDouble();
+			Element.Para[ElmDiode.CAPACITANCE] = st.nextTokenDouble();
+			Element.Para[ElmDiode.LEAKAGE] = model.SaturationCurrent;
+			Element.Para[ElmDiode.V_SCALE] = model.VScale;
+			Element.Para[ElmDiode.VD_COEF] = model.VdCoef;
+			Element.Para[ElmDiode.FW_DROP] = model.FwDrop;
+			Model = model;
+			Setup();
+		}
+
+		protected override BaseElement Create() {
+			return new ElmDiodeVaractor();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.VARACTOR; } }
 
+		public override int VoltageSourceCount { get { return 1; } }
+
+		public override int InternalNodeCount { get { return 1; } }
+
 		protected override void dump(List<object> optionList) {
-			var ce = (ElmDiodeVaractor)mElm;
+			var ce = (ElmDiodeVaractor)Element;
 			base.dump(optionList);
-			optionList.Add(ce.CapVoltDiff.ToString("g3"));
-			optionList.Add(ce.BaseCapacitance.ToString("g3"));
+			optionList.Add(ce.V[ElmDiode.VD_CAP].ToString("g3"));
+			optionList.Add(ce.Para[ElmDiode.CAPACITANCE].ToString("g3"));
+		}
+
+		public override void Reset() {
+			base.Reset();
+			Element.V[ElmDiode.VD_CAP] = 0;
+		}
+
+		public override void Stamp() {
+			base.Stamp();
+			StampVoltageSource(Element.Nodes[0], Element.Nodes[2], Element.VoltSource);
+			StampNonLinear(Element.Nodes[2]);
 		}
 
 		public override void SetPoints() {
@@ -80,26 +93,26 @@ namespace Circuit.Symbol.Active {
 
 		public override void GetInfo(string[] arr) {
 			base.GetInfo(arr);
-			var ce = (ElmDiodeVaractor)mElm;
+			var ce = (ElmDiodeVaractor)Element;
 			arr[0] = "可変容量ダイオード";
-			arr[5] = "静電容量：" + TextUtils.Unit(ce.Capacitance, "F");
+			arr[5] = "静電容量：" + TextUtils.Unit(ce.Para[ElmDiode.CAPACITANCE], "F");
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
-			var ce = (ElmDiodeVaractor)mElm;
+			var ce = (ElmDiodeVaractor)Element;
 			if (c != 0) {
 				return null;
 			}
 			if (r == 2) {
-				return new ElementInfo("静電容量 @ 0V", ce.BaseCapacitance);
+				return new ElementInfo("静電容量 @ 0V", ce.Para[ElmDiode.CAPACITANCE]);
 			}
 			return base.GetElementInfo(r, c);
 		}
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
-			var ce = (ElmDiodeVaractor)mElm;
+			var ce = (ElmDiodeVaractor)Element;
 			if (n == 2) {
-				ce.BaseCapacitance = ei.Value;
+				ce.Para[ElmDiode.CAPACITANCE] = ei.Value;
 				return;
 			}
 			base.SetElementValue(n, c, ei);

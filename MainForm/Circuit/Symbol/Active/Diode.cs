@@ -1,5 +1,6 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Active;
+﻿using Circuit.Elements.Active;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Active {
 	class Diode : BaseSymbol {
@@ -16,24 +17,19 @@ namespace Circuit.Symbol.Active {
 
 		public static string LastModelName = "default";
 		public string ModelName = "default";
+		public DiodeModel Model;
 
-		protected ElmDiode mElm;
-
-		public override BaseElement Element { get { return mElm; } }
+		public override int InternalNodeCount { get { return 0; } }
 
 		public Diode(Point pos, string referenceName = "D") : base(pos) {
 			ModelName = LastModelName;
 			ReferenceName = referenceName;
 			var model = DiodeModel.GetModelWithName(ModelName);
-			mElm = new ElmDiode();
-			mElm.VZener = model.BreakdownVoltage;
-			mElm.FwDrop = model.FwDrop;
-			mElm.Leakage = model.SaturationCurrent;
-			mElm.VScale = model.VScale;
-			mElm.VdCoef = model.VdCoef;
-			mElm.SeriesResistance = model.SeriesResistance;
-			mElm.Model = model;
-			mElm.Setup();
+			Element.Para[ElmDiode.LEAKAGE] = model.SaturationCurrent;
+			Element.Para[ElmDiode.V_SCALE] = model.VScale;
+			Element.Para[ElmDiode.VD_COEF] = model.VdCoef;
+			Model = model;
+			Setup();
 		}
 
 		public Diode(Point p1, Point p2, int f) : base(p1, p2, f) { }
@@ -53,15 +49,15 @@ namespace Circuit.Symbol.Active {
 				ModelName = DiodeModel.GetModelWithParameters(fwdrop, zvoltage).Name;
 			}
 			var model = DiodeModel.GetModelWithName(ModelName);
-			mElm = new ElmDiode();
-			mElm.VZener = model.BreakdownVoltage;
-			mElm.FwDrop = model.FwDrop;
-			mElm.Leakage = model.SaturationCurrent;
-			mElm.VScale = model.VScale;
-			mElm.VdCoef = model.VdCoef;
-			mElm.SeriesResistance = model.SeriesResistance;
-			mElm.Model = model;
-			mElm.Setup();
+			Element.Para[ElmDiode.LEAKAGE] = model.SaturationCurrent;
+			Element.Para[ElmDiode.V_SCALE] = model.VScale;
+			Element.Para[ElmDiode.VD_COEF] = model.VdCoef;
+			Model = model;
+			Setup();
+		}
+
+		protected override BaseElement Create() {
+			return new ElmDiode();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.DIODE; } }
@@ -69,6 +65,34 @@ namespace Circuit.Symbol.Active {
 		protected override void dump(List<object> optionList) {
 			mFlags |= FLAG_MODEL;
 			optionList.Add(TextUtils.Escape(ModelName));
+		}
+
+		public override void Stamp() {
+			/* don't need any internal nodes if no series resistance */
+			StampNonLinear(Element.Nodes[0]);
+			StampNonLinear(Element.Nodes[1]);
+		}
+
+		public void Setup() {
+			/* critical voltage for limiting; current is vscale/sqrt(2) at this voltage */
+			Element.Para[ElmDiode.V_CRIT] = Element.Para[ElmDiode.V_SCALE] * Math.Log(
+				Element.Para[ElmDiode.V_SCALE] / (Math.Sqrt(2) * Element.Para[ElmDiode.LEAKAGE]));
+			if (Element.Para[ElmDiode.V_ZENER] != 0) {
+				/* translated, *positive* critical voltage for limiting in Zener breakdown region;
+				 * limitstep() uses this with translated voltages in an analogous fashion to vcrit. */
+				Element.Para[ElmDiode.VZ_CRIT] = ElmDiode.VTH * Math.Log(
+					ElmDiode.VTH / (Math.Sqrt(2) * Element.Para[ElmDiode.LEAKAGE]));
+				/* calculate offset which will give us 5mA at zvoltage */
+				double i = -0.005;
+				Element.Para[ElmDiode.VZ_OFFSET] = Element.Para[ElmDiode.V_ZENER]
+					- Math.Log(-(1 + i / Element.Para[ElmDiode.LEAKAGE])) / ElmDiode.VZ_COEF;
+			}
+			AllocateNodes();
+		}
+
+		public override void Reset() {
+			Element.V[0] = Element.V[1] = 0;
+			Element.V[ElmDiode.VD] = 0;
 		}
 
 		public override void SetPoints() {
@@ -146,7 +170,7 @@ namespace Circuit.Symbol.Active {
 				for (int i = 0; i != mModels.Count; i++) {
 					var dm = mModels[i];
 					ei.Choice.Items.Add(dm.GetDescription());
-					if (dm == mElm.Model) {
+					if (dm == Model) {
 						ei.Choice.SelectedIndex = i;
 					}
 				}
@@ -166,14 +190,13 @@ namespace Circuit.Symbol.Active {
 				}
 				ModelName = mModels[ei.Choice.SelectedIndex].Name;
 				var model = DiodeModel.GetModelWithName(ModelName);
-				mElm.VZener = model.BreakdownVoltage;
-				mElm.FwDrop = model.FwDrop;
-				mElm.Leakage = model.SaturationCurrent;
-				mElm.VScale = model.VScale;
-				mElm.VdCoef = model.VdCoef;
-				mElm.SeriesResistance = model.SeriesResistance;
-				mElm.Model = model;
-				mElm.Setup();
+				Element.Para[ElmDiode.LEAKAGE] = model.SaturationCurrent;
+				Element.Para[ElmDiode.V_SCALE] = model.VScale;
+				Element.Para[ElmDiode.VD_COEF] = model.VdCoef;
+				Element.Para[ElmDiode.V_ZENER] = model.BreakdownVoltage;
+				Element.Para[ElmDiode.FW_DROP] = model.FwDrop;
+				Model = model;
+				Setup();
 				return;
 			}
 			base.SetElementValue(n, c, ei);

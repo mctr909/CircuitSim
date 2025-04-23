@@ -1,79 +1,71 @@
 ﻿namespace Circuit.Elements.Active {
 	class ElmFET : BaseElement {
-		protected const int IdxG = 0;
-		protected const int IdxS = 1;
-		protected const int IdxD = 2;
+		public const int G = 0;
+		public const int S = 1;
+		public const int D = 2;
+		public const int G_LAST = 3;
+		public const int S_LAST = 4;
+		public const int D_LAST = 5;
+		public const int VD_D1 = 6;
+		public const int VD_D2 = 7;
+
+		public const int CUR_D1 = 1;
+		public const int CUR_D2 = 2;
+
+		public const int N_CH = 0;
+		public const int V_TH = 1;
+		public const int BETA = 2;
+		public const int GM = 3;
+
+		public const int MOS = 0;
 
 		const double DiodeVScale = 0.05173;
 		const double DiodeVdCoef = 19.331142470520007;
 		const double DiodeLeakage = 1.7143528192808883E-07;
 		const double DiodeVCrit = 6.34767e-01; //DiodeVScale * Math.Log(DiodeVScale / (Math.Sqrt(2) * DiodeLeakage));
 
-		public int Nch;
-		public bool MOS;
-		public double Vth;
-		public double Beta;
-
-		public int Mode;
-		public double Gm;
-		public double DiodeCurrent1;
-		public double DiodeCurrent2;
-
-		public double Vg { get { return NodeVolts[IdxG]; } }
-		public double Vs { get { return NodeVolts[IdxS]; } }
-		public double Vd { get { return NodeVolts[IdxD]; } }
-
-		double mTempVg = 0.0;
-		double mTempVs = 0.0;
-		double mTempVd = 0.0;
-		double mLastVg = 0.0;
-		double mLastVs = 0.0;
-		double mLastVd = 0.0;
-
-		int mBodyTerminal;
-		int mDiodeNodes1A;
-		int mDiodeNodes1B;
-		int mDiodeNodes2A;
-		int mDiodeNodes2B;
-		double mDiodeLastVdiff1 = 0.0;
-		double mDiodeLastVdiff2 = 0.0;
+		public int BODY;
+		public int D1_A;
+		public int D1_B;
+		public int D2_A;
+		public int D2_B;
 
 		public override int TermCount { get { return 3; } }
 
-		public override double GetVoltageDiff() {
-			return NodeVolts[IdxG] - NodeVolts[IdxS];
+		public override double VoltageDiff {
+			get { return V[G] - V[S]; }
 		}
 
-		protected static void DiodeDoIteration(double vnew, ref double vold, int nodeA, int nodeB) {
-			if (Math.Abs(vnew - vold) > 0.01) {
-				CircuitState.Converged = false;
+		protected static void DiodeDoIteration(double vdNew, ref double vdOld, int nodeA, int nodeB) {
+			if (Math.Abs(vdNew - vdOld) > 0.01) {
+				CONVERGED = false;
 			}
-			if (vnew > DiodeVCrit && Math.Abs(vnew - vold) > (DiodeVScale + DiodeVScale)) {
-				if (vold > 0) {
-					var arg = 1 + (vnew - vold) / DiodeVScale;
+			if (vdNew > DiodeVCrit && Math.Abs(vdNew - vdOld) > (DiodeVScale + DiodeVScale)) {
+				if (vdOld > 0) {
+					var arg = 1 + (vdNew - vdOld) / DiodeVScale;
 					if (arg > 0) {
-						vnew = vold + DiodeVScale * Math.Log(arg);
+						vdNew = vdOld + DiodeVScale * Math.Log(arg);
 					} else {
-						vnew = DiodeVCrit;
+						vdNew = DiodeVCrit;
 					}
 				} else {
-					vnew = DiodeVScale * Math.Log(vnew / DiodeVScale);
+					vdNew = DiodeVScale * Math.Log(vdNew / DiodeVScale);
 				}
-				CircuitState.Converged = false;
+				CONVERGED = false;
 			}
-			vold = vnew;
-			var g_min = DiodeLeakage * 0.01;
-			if (CircuitElement.ITER_COUNT > 100) {
-				g_min = Math.Exp(-9 * Math.Log(10) * (1 - CircuitElement.ITER_COUNT / 3000.0));
-				if (g_min > 0.1) {
-					g_min = 0.1;
-				}
-			}
-			var eval = Math.Exp(vnew * DiodeVdCoef);
-			var geq = DiodeVdCoef * DiodeLeakage * eval + g_min;
-			var nc = (eval - 1) * DiodeLeakage - geq * vnew;
+			vdOld = vdNew;
+			var gMin = DiodeLeakage * 0.01;
+			//if (ITER_COUNT > 100) {
+			//	gMin = Math.Exp(-9 * Math.Log(10) * (1 - ITER_COUNT / 3000.0));
+			//	if (gMin > 0.1) {
+			//		gMin = 0.1;
+			//	}
+			//}
+			var vdExp = Math.Exp(vdNew * DiodeVdCoef);
+			var geq = DiodeVdCoef * vdExp * DiodeLeakage + gMin;
+			var nc = (vdExp - 1) * DiodeLeakage - geq * vdNew;
 			UpdateConductance(nodeA, nodeB, geq);
-			UpdateCurrent(nodeA, nodeB, nc);
+			UpdateCurrentSource(nodeA, nodeB, nc);
 		}
 
 		protected static double DiodeCalculateCurrent(double voltdiff) {
@@ -81,36 +73,40 @@
 		}
 
 		void Calc(bool finished) {
-			mTempVg = NodeVolts[IdxG];
-			mTempVs = NodeVolts[IdxS];
-			mTempVd = NodeVolts[IdxD];
+			var vg = V[G];
+			var vs = V[S];
+			var vd = V[D];
 			if (!finished) {
-				if (mTempVg > mLastVg + 0.5) {
-					mTempVg = mLastVg + 0.5;
+				var lg = V[G_LAST];
+				if (vg > lg + 0.5) {
+					vg = lg + 0.5;
 				}
-				if (mTempVg < mLastVg - 0.5) {
-					mTempVg = mLastVg - 0.5;
+				if (vg < lg - 0.5) {
+					vg = lg - 0.5;
 				}
-				if (mTempVs > mLastVs + 0.5) {
-					mTempVs = mLastVs + 0.5;
+				var ls = V[S_LAST];
+				if (vs > ls + 0.5) {
+					vs = ls + 0.5;
 				}
-				if (mTempVs < mLastVs - 0.5) {
-					mTempVs = mLastVs - 0.5;
+				if (vs < ls - 0.5) {
+					vs = ls - 0.5;
 				}
-				if (mTempVd > mLastVd + 0.5) {
-					mTempVd = mLastVd + 0.5;
+				var ld = V[D_LAST];
+				if (vd > ld + 0.5) {
+					vd = ld + 0.5;
 				}
-				if (mTempVd < mLastVd - 0.5) {
-					mTempVd = mLastVd - 0.5;
+				if (vd < ld - 0.5) {
+					vd = ld - 0.5;
 				}
-				if (CircuitState.Converged && (NonConvergence(mLastVs, mTempVs) || NonConvergence(mLastVd, mTempVd) || NonConvergence(mLastVg, mTempVg))) {
-					CircuitState.Converged = false;
+				if (CONVERGED && (NonConvergence(ls, vs) || NonConvergence(ld, vd) || NonConvergence(lg, vg))) {
+					CONVERGED = false;
 				}
 			}
-			mLastVg = mTempVg;
-			mLastVs = mTempVs;
-			mLastVd = mTempVd;
+			V[G_LAST] = vg;
+			V[S_LAST] = vs;
+			V[D_LAST] = vd;
 
+			var nCh = Para[N_CH];
 			double gds;
 			double rs;
 			{
@@ -118,67 +114,67 @@
 				 * ドレインとソースを入れ替える
 				 * (電流の計算を単純化するため) */
 				double vgs, vds;
-				if (Nch * mTempVd < Nch * mTempVs) {
-					vgs = mTempVg - mTempVd;
-					vds = mTempVs - mTempVd;
+				if (nCh * vd < nCh * vs) {
+					vgs = vg - vd;
+					vds = vs - vd;
 				} else {
-					vgs = mTempVg - mTempVs;
-					vds = mTempVd - mTempVs;
+					vgs = vg - vs;
+					vds = vd - vs;
 				}
-				var vgs_n = vgs * Nch;
-				var vds_n = vds * Nch;
-				if (vgs_n < Vth) {
+				var vgs_n = vgs * nCh;
+				var vds_n = vds * nCh;
+				var vth = Para[V_TH];
+				var beta = Para[BETA];
+				if (vgs_n < vth) {
 					/* 遮断領域 */
-					Mode = 0;
-					Gm = 0;
+					Para[GM] = 0;
 					/* 電流を0にするべきだが特異な行列となるため
 					 * 100MΩとした時の電流にする */
 					gds = 1e-8;
-					Current = vds_n * gds;
-				} else if (vds_n < vgs_n - Vth) {
+					I[0] = vds_n * gds;
+				} else if (vds_n < vgs_n - vth) {
 					/* 線形領域 */
-					Mode = 1;
-					Gm = Beta * vds_n;
-					gds = Beta * (vgs_n - vds_n - Vth);
-					Current = Beta * ((vgs_n - Vth) * vds_n - vds_n * vds_n * 0.5);
+					Para[GM] = beta * vds_n;
+					gds = beta * (vgs_n - vds_n - vth);
+					I[0] = beta * ((vgs_n - vth) * vds_n - vds_n * vds_n * 0.5);
 				} else {
 					/* 飽和領域 */
-					Mode = 2;
-					Gm = Beta * (vgs_n - Vth);
+					Para[GM] = beta * (vgs_n - vth);
 					gds = 1e-8;
-					Current = 0.5 * Beta * (vgs_n - Vth) * (vgs_n - Vth) + (vds_n - (vgs_n - Vth)) * gds;
+					I[0] = 0.5 * beta * (vgs_n - vth) * (vgs_n - vth) + (vds_n - (vgs_n - vth)) * gds;
 				}
-				rs = gds * vds + Gm * vgs - Current * Nch;
+				rs = gds * vds + Para[GM] * vgs - I[0] * nCh;
 			}
 
 			/* ドレインとソースを入れ替えている場合、電流を反転 */
-			if (Nch * mTempVd < Nch * mTempVs) {
-				Current = -Current;
+			if (nCh * vd < nCh * vs) {
+				I[0] = -I[0];
 			}
 
-			if (MOS) {
-				DiodeDoIteration(Nch * (NodeVolts[mBodyTerminal] - NodeVolts[IdxS]), ref mDiodeLastVdiff1, mDiodeNodes1A, mDiodeNodes1B);
-				DiodeCurrent1 = DiodeCalculateCurrent(Nch * (NodeVolts[mBodyTerminal] - NodeVolts[IdxS])) * Nch;
-				DiodeDoIteration(Nch * (NodeVolts[mBodyTerminal] - NodeVolts[IdxD]), ref mDiodeLastVdiff2, mDiodeNodes2A, mDiodeNodes2B);
-				DiodeCurrent2 = DiodeCalculateCurrent(Nch * (NodeVolts[mBodyTerminal] - NodeVolts[IdxD])) * Nch;
+			if (State[MOS] != 0) {
+				DiodeDoIteration(nCh * (V[BODY] - V[S]), ref V[VD_D1], Nodes[D1_A], Nodes[D1_B]);
+				I[CUR_D1] = DiodeCalculateCurrent(nCh * (V[BODY] - V[S])) * nCh;
+				DiodeDoIteration(nCh * (V[BODY] - V[D]), ref V[VD_D2], Nodes[D2_A], Nodes[D2_B]);
+				I[CUR_D2] = DiodeCalculateCurrent(nCh * (V[BODY] - V[D])) * nCh;
 			} else {
-				DiodeCurrent1 = DiodeCurrent2 = 0;
+				I[CUR_D1] = I[CUR_D2] = 0;
 			}
 
-			UpdateMatrix(NodeId[IdxD], NodeId[IdxD], gds);
-			UpdateMatrix(NodeId[IdxD], NodeId[IdxS], -gds - Gm);
-			UpdateMatrix(NodeId[IdxD], NodeId[IdxG], Gm);
+			var gm = Para[GM];
+			UpdateMatrix(Nodes[D], Nodes[D], gds);
+			UpdateMatrix(Nodes[D], Nodes[S], -gds - gm);
+			UpdateMatrix(Nodes[D], Nodes[G], gm);
 
-			UpdateMatrix(NodeId[IdxS], NodeId[IdxD], -gds);
-			UpdateMatrix(NodeId[IdxS], NodeId[IdxS], gds + Gm);
-			UpdateMatrix(NodeId[IdxS], NodeId[IdxG], -Gm);
+			UpdateMatrix(Nodes[S], Nodes[D], -gds);
+			UpdateMatrix(Nodes[S], Nodes[S], gds + gm);
+			UpdateMatrix(Nodes[S], Nodes[G], -gm);
 
-			UpdateCurrent(NodeId[IdxS], NodeId[IdxD], rs);
+			UpdateCurrentSource(Nodes[S], Nodes[D], rs);
 		}
 
-		bool NonConvergence(double last, double now) {
-			var diff = Math.Abs(last - now);
-			if (Beta > 1) {
+		bool NonConvergence(double vOld, double vNew) {
+			var diff = Math.Abs(vNew - vOld);
+			if (Para[BETA] > 1) {
 				// high beta MOSFETs are more sensitive to small differences, so we are more strict about convergence testing
 				diff *= 100;
 			}
@@ -186,79 +182,39 @@
 				// difference of less than 10mV is fine
 				return false;
 			}
-			if (CircuitElement.ITER_COUNT > 10 && diff < Math.Abs(now)*0.001) {
+			if (ITER_COUNT > 10 && diff < Math.Abs(vNew) * 0.001) {
 				// larger differences are fine if value is large
 				return false;
 			}
-			if (CircuitElement.ITER_COUNT > 100 && diff < 0.01+(CircuitElement.ITER_COUNT-100)*0.0001) {
+			if (ITER_COUNT > 100 && diff < 0.01 + (ITER_COUNT - 100) * 0.0001) {
 				// if we're having trouble converging, get more lenient
 				return false;
 			}
 			return true;
 		}
 
-		#region [method(Analyze)]
-		public override bool HasConnection(int n1, int n2) { return !(n1 == 0 || n2 == 0); }
-
-		public override void Reset() {
-			NodeVolts[IdxG] = NodeVolts[IdxS] = NodeVolts[IdxD] = 0;
-			mLastVs = 0.0;
-			mLastVd = 0.0;
-			mLastVg = 0.0;
-			mDiodeLastVdiff1 = 0;
-			mDiodeLastVdiff2 = 0;
-			DiodeCurrent1 = 0.0;
-			DiodeCurrent2 = 0.0;
-		}
-
-		public override void Stamp() {
-			StampNonLinear(NodeId[IdxS]);
-			StampNonLinear(NodeId[IdxD]);
-			mBodyTerminal = (Nch < 0) ? IdxD : IdxS;
-			if (MOS) {
-				if (Nch < 0) {
-					mDiodeNodes1A = NodeId[IdxS];
-					mDiodeNodes1B = NodeId[mBodyTerminal];
-					mDiodeNodes2A = NodeId[IdxD];
-					mDiodeNodes2B = NodeId[mBodyTerminal];
-				} else {
-					mDiodeNodes1A = NodeId[mBodyTerminal];
-					mDiodeNodes1B = NodeId[IdxS];
-					mDiodeNodes2A = NodeId[mBodyTerminal];
-					mDiodeNodes2B = NodeId[IdxD];
-				}
-				StampNonLinear(mDiodeNodes1A);
-				StampNonLinear(mDiodeNodes1B);
-				StampNonLinear(mDiodeNodes2A);
-				StampNonLinear(mDiodeNodes2B);
-			}
-		}
-		#endregion
-
-		#region [method(Circuit)]
-		public override void DoIteration() {
+		protected override void DoIteration() {
 			Calc(false);
 		}
 
-		public override void FinishIteration() {
+		protected override void FinishIteration() {
 			Calc(true);
-			if (mBodyTerminal == IdxS) {
-				DiodeCurrent1 = -DiodeCurrent2;
+			if (BODY == S) {
+				I[CUR_D1] = -I[CUR_D2];
 			}
-			if (mBodyTerminal == IdxD) {
-				DiodeCurrent2 = -DiodeCurrent1;
+			if (BODY == D) {
+				I[CUR_D2] = -I[CUR_D1];
 			}
 		}
 
-		public override double GetCurrent(int n) {
+		protected override double GetCurrent(int n) {
 			if (n == 0) {
 				return 0;
 			}
 			if (n == 1) {
-				return Current + DiodeCurrent1;
+				return I[0] + I[CUR_D1];
 			}
-			return -Current + DiodeCurrent2;
+			return -I[0] + I[CUR_D2];
 		}
-		#endregion
 	}
 }

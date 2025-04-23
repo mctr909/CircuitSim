@@ -1,34 +1,29 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Passive;
+﻿using Circuit.Elements.Passive;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Passive {
 	class CapacitorPolar : Capacitor {
 		PointF mPlusPoint;
 
-		ElmPolarCapacitor mElm;
-
 		public CapacitorPolar(Point pos) : base(pos) {
-			mElm = new ElmPolarCapacitor {
-				Capacitance = mLastValue,
-				MaxNegativeVoltage = 5
-			};
+			Element.Para[ElmCapacitor.MAX_NEGATIVE] = 5;
+			Capacitance = mLastValue;
 			ReferenceName = mLastReferenceName;
 		}
 
 		public CapacitorPolar(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmPolarCapacitor {
-				Capacitance = st.nextTokenDouble(),
-				VoltDiff = st.nextTokenDouble(),
-				MaxNegativeVoltage = st.nextTokenDouble()
-			};
+			Capacitance = st.nextTokenDouble();
+			Element.V[2] = st.nextTokenDouble();
+			Element.Para[ElmCapacitor.MAX_VOLTAGE] = 1e12;
+			Element.Para[ElmCapacitor.MAX_NEGATIVE] = st.nextTokenDouble();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.CAPACITOR_POLAR; } }
 
 		protected override void dump(List<object> optionList) {
-			optionList.Add(mElm.Capacitance.ToString("g3"));
-			optionList.Add(mElm.VoltDiff.ToString("g3"));
-			optionList.Add(mElm.MaxNegativeVoltage);
+			optionList.Add(Capacitance.ToString("g3"));
+			optionList.Add(Element.V[2].ToString("g3"));
+			optionList.Add(Element.Para[ElmCapacitor.MAX_NEGATIVE]);
 		}
 
 		public override void SetPoints() {
@@ -54,7 +49,7 @@ namespace Circuit.Symbol.Passive {
 
 		public override void GetInfo(string[] arr) {
 			base.GetInfo(arr);
-			arr[1] = "有極性コンデンサ：" + TextUtils.Unit(mElm.Capacitance, "F");
+			arr[1] = "有極性コンデンサ：" + TextUtils.Unit(Capacitance, "F");
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
@@ -62,14 +57,14 @@ namespace Circuit.Symbol.Passive {
 				return null;
 			}
 			if (r == 2) {
-				return new ElementInfo("耐逆電圧", mElm.MaxNegativeVoltage);
+				return new ElementInfo("耐逆電圧", Element.Para[ElmCapacitor.MAX_NEGATIVE]);
 			}
 			return base.GetElementInfo(r, c);
 		}
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
 			if (n == 2 && ei.Value >= 0) {
-				mElm.MaxNegativeVoltage = ei.Value;
+				Element.Para[ElmCapacitor.MAX_NEGATIVE] = ei.Value;
 			}
 			base.SetElementValue(n, c, ei);
 		}

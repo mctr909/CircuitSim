@@ -1,5 +1,6 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Passive;
+﻿using Circuit.Elements.Passive;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Passive {
 	class Switch : BaseSymbol {
@@ -7,48 +8,66 @@ namespace Circuit.Symbol.Passive {
 		const int BODY_LEN = 24;
 
 		protected ElmSwitch mElm;
+		public bool Momentary = false;
+		public int PosCount = 2;
+		public int Group = 0;
 
-		public override BaseElement Element { get { return mElm; } }
+		public override bool IsWire { get { return mElm.Position == 0; } }
 
-		public Switch(Point pos, int dummy) : base(pos) { }
+		public override int VoltageSourceCount { get { return (1 == mElm.Position) ? 0 : 1; } }
+		public override bool HasConnection(int n1, int n2) { return 0 == mElm.Position; }
 
-		public Switch(Point pos, bool momentary = false, bool isNo = false) : base(pos) {
-			mElm = new ElmSwitch {
-				Momentary = momentary,
-				Position = isNo ? 1 : 0
-			};
+		public Switch(Point pos, bool momentary = false, bool isOff = false) : base(pos) {
+			mElm = (ElmSwitch)Element;
+			Momentary = momentary;
+			mElm.Position = isOff ? 1 : 0;
 		}
 
-		public Switch(Point p1, Point p2, int f) : base(p1, p2, f) { }
-
 		public Switch(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmSwitch {
-				Position = st.nextTokenInt(),
-				Momentary = st.nextTokenBool(false),
-				Link = st.nextTokenInt()
-			};
+			mElm = (ElmSwitch)Element;
+			mElm.Position = st.nextTokenInt();
+			Momentary = st.nextTokenBool(false);
+			Group = st.nextTokenInt();
+		}
+
+		protected Switch(Point pos, int dummy) : base(pos) {
+			mElm = (ElmSwitch)Element;
+		}
+
+		protected Switch(Point p1, Point p2, int f) : base(p1, p2, f) {
+			mElm = (ElmSwitch)Element;
+		}
+
+		protected override BaseElement Create() {
+			return new ElmSwitch();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.SWITCH; } }
 
 		protected override void dump(List<object> optionList) {
 			optionList.Add(mElm.Position);
-			optionList.Add(mElm.Momentary);
-			optionList.Add(mElm.Link);
+			optionList.Add(Momentary);
+			optionList.Add(Group);
+		}
+
+		public override void Stamp() {
+			if (mElm.Position == 0) {
+				StampVoltageSource(mElm.Nodes[0], mElm.Nodes[1], mElm.VoltSource, 0);
+			}
 		}
 
 		public void MouseUp() {
-			if (mElm.Momentary) {
+			if (Momentary) {
 				Toggle();
 			}
 		}
 
 		public void Toggle() {
 			mElm.Position++;
-			if (mElm.PosCount <= mElm.Position) {
+			if (PosCount <= mElm.Position) {
 				mElm.Position = 0;
 			}
-			if (mElm.Link != 0) {
+			if (Group != 0) {
 				int i;
 				for (i = 0; i != MainForm.MainForm.SymbolCount; i++) {
 					var symbol2 = MainForm.MainForm.SymbolList[i];
@@ -57,8 +76,8 @@ namespace Circuit.Symbol.Passive {
 					}
 					if (this is SwitchMulti) {
 						if (symbol2 is SwitchMulti sw2) {
-							var s2 = (ElmSwitchMulti)sw2.mElm;
-							if (s2.Link == mElm.Link) {
+							var s2 = sw2.mElm;
+							if (sw2.Group == Group) {
 								if (mElm.Position < s2.ThrowCount) {
 									s2.Position = mElm.Position;
 								}
@@ -66,7 +85,7 @@ namespace Circuit.Symbol.Passive {
 						}
 					} else {
 						if (symbol2 is Switch sw2) {
-							if (sw2.mElm.Link == mElm.Link) {
+							if (sw2.Group == Group) {
 								sw2.mElm.Position = sw2.mElm.Position == 0 ? 1 : 0;
 							}
 						}
@@ -105,14 +124,14 @@ namespace Circuit.Symbol.Passive {
 		}
 
 		public override void GetInfo(string[] arr) {
-			arr[0] = mElm.Momentary ? "プッシュスイッチ(" : "スイッチ(";
+			arr[0] = Momentary ? "プッシュスイッチ(" : "スイッチ(";
 			if (mElm.Position == 1) {
 				arr[0] += "OFF)";
-				arr[1] = "電位差：" + TextUtils.VoltageAbs(mElm.GetVoltageDiff());
+				arr[1] = "電位差：" + TextUtils.VoltageAbs(mElm.VoltageDiff);
 			} else {
 				arr[0] += "ON)";
-				arr[1] = "電位：" + TextUtils.Voltage(mElm.NodeVolts[0]);
-				arr[2] = "電流：" + TextUtils.CurrentAbs(mElm.Current);
+				arr[1] = "電位：" + TextUtils.Voltage(mElm.V[0]);
+				arr[2] = "電流：" + TextUtils.CurrentAbs(mElm.I[0]);
 			}
 		}
 
@@ -121,14 +140,14 @@ namespace Circuit.Symbol.Passive {
 				return null;
 			}
 			if (r == 0) {
-				return new ElementInfo("連動グループ", mElm.Link);
+				return new ElementInfo("連動グループ", Group);
 			}
 			return null;
 		}
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
 			if (n == 0) {
-				mElm.Link = (int)ei.Value;
+				Group = (int)ei.Value;
 			}
 		}
 	}

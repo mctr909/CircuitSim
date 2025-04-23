@@ -1,5 +1,6 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Active;
+﻿using Circuit.Elements.Active;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Active {
 	class OpAmp : BaseSymbol {
@@ -9,43 +10,55 @@ namespace Circuit.Symbol.Active {
 		const int HEIGHT = 8;
 		const int WIDTH = 16;
 
-		ElmOpAmp mElm;
-
 		PointF[] mTextp;
 		PointF[] mTriangle;
 		Point mPosOut = new();
 		PointF[] mPosIn1 = new PointF[2];
 		PointF[] mPosIn2 = new PointF[2];
 
-		public override BaseElement Element { get { return mElm; } }
+		public override int VoltageSourceCount { get { return 1; } }
+		/* there is no current path through the op-amp inputs,
+         * but there is an indirect path through the output to ground. */
+		public override bool HasConnection(int n1, int n2) { return false; }
+		public override bool HasGroundConnection(int nodeIndex) { return nodeIndex == 2; }
 
 		public OpAmp(Point pos) : base(pos) {
-			Post.NoDiagonal = true;
 			mFlags = FLAG_GAIN; /* need to do this before setSize() */
-			mElm = new ElmOpAmp();
+			Element.Para[ElmOpAmp.OUT_MAX] = 15;
+			Element.Para[ElmOpAmp.OUT_MIN] = -15;
+			Element.Para[ElmOpAmp.GAIN] = 1e3;
+			Post.NoDiagonal = true;
 		}
 
 		public OpAmp(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmOpAmp {
-				MaxOut = st.nextTokenDouble(),
-				MinOut = st.nextTokenDouble(),
-				Gain = st.nextTokenDouble()
-			};
-			mElm.NodeVolts[ElmOpAmp.V_N] = st.nextTokenDouble();
-			mElm.NodeVolts[ElmOpAmp.V_P] = st.nextTokenDouble();
+			Element.Para[ElmOpAmp.OUT_MAX] = st.nextTokenDouble();
+			Element.Para[ElmOpAmp.OUT_MIN] = st.nextTokenDouble();
+			Element.Para[ElmOpAmp.GAIN] = st.nextTokenDouble();
+			Element.V[ElmOpAmp.N] = st.nextTokenDouble();
+			Element.V[ElmOpAmp.P] = st.nextTokenDouble();
 			Post.NoDiagonal = true;
 			SetGain();
+		}
+
+		protected override BaseElement Create() {
+			return new ElmOpAmp();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.OPAMP; } }
 
 		protected override void dump(List<object> optionList) {
 			mFlags |= FLAG_GAIN;
-			optionList.Add(mElm.MaxOut);
-			optionList.Add(mElm.MinOut);
-			optionList.Add(mElm.Gain);
-			optionList.Add(mElm.NodeVolts[ElmOpAmp.V_N].ToString("g3"));
-			optionList.Add(mElm.NodeVolts[ElmOpAmp.V_P].ToString("g3"));
+			optionList.Add(Element.Para[ElmOpAmp.OUT_MAX]);
+			optionList.Add(Element.Para[ElmOpAmp.OUT_MIN]);
+			optionList.Add(Element.Para[ElmOpAmp.GAIN]);
+			optionList.Add(Element.V[ElmOpAmp.N].ToString("g3"));
+			optionList.Add(Element.V[ElmOpAmp.P].ToString("g3"));
+		}
+
+		public override void Stamp() {
+			var vn = CircuitAnalizer.NodeCount + Element.VoltSource;
+			StampMatrix(Element.Nodes[2], vn, 1);
+			StampNonLinear(vn);
 		}
 
 		public override void SetPoints() {
@@ -77,9 +90,9 @@ namespace Circuit.Symbol.Active {
 
 			var tris = new PointF[2];
 			InterpolationLeadAB(ref tris[0], ref tris[1], 0, hs * 2);
-			mTriangle = new PointF[] { tris[0], tris[1], mLead2 };
+			mTriangle = [tris[0], tris[1], mLead2];
 
-			mElm.SetNodePos(mPosIn1[0], mPosIn2[0], mPosOut);
+			SetNodePos(mPosIn1[0], mPosIn2[0], mPosOut);
 		}
 
 		public override void Draw(CustomGraphics g) {
@@ -93,19 +106,22 @@ namespace Circuit.Symbol.Active {
 			DrawLine(mTextp[2], mTextp[3]);
 			DrawLine(mTextp[4], mTextp[5]);
 
-			UpdateDotCount(mElm.Current, ref mCurCount);
+			UpdateDotCount(Element.I[0], ref mCurCount);
 			DrawCurrent(mLead2, mPosOut, -mCurCount);
 		}
 
 		public override void GetInfo(string[] arr) {
 			arr[0] = "オペアンプ";
-			arr[1] = "+電源：" + TextUtils.Voltage(mElm.MaxOut);
-			arr[2] = "-電源：" + TextUtils.Voltage(mElm.MinOut);
-			arr[3] = "Vin(+)：" + TextUtils.Voltage(mElm.NodeVolts[ElmOpAmp.V_P]);
-			arr[4] = "Vin(-)：" + TextUtils.Voltage(mElm.NodeVolts[ElmOpAmp.V_N]);
-			var vo = Math.Max(Math.Min(mElm.NodeVolts[ElmOpAmp.V_O], mElm.MaxOut), mElm.MinOut);
+			arr[1] = "+電源：" + TextUtils.Voltage(Element.Para[ElmOpAmp.OUT_MAX]);
+			arr[2] = "-電源：" + TextUtils.Voltage(Element.Para[ElmOpAmp.OUT_MIN]);
+			arr[3] = "Vin(+)：" + TextUtils.Voltage(Element.V[ElmOpAmp.P]);
+			arr[4] = "Vin(-)：" + TextUtils.Voltage(Element.V[ElmOpAmp.N]);
+			var vo = Math.Max(
+				Math.Min(Element.V[ElmOpAmp.O], Element.Para[ElmOpAmp.OUT_MAX]),
+				Element.Para[ElmOpAmp.OUT_MIN]
+			);
 			arr[5] = "Vout：" + TextUtils.Voltage(vo);
-			arr[6] = "Iout：" + TextUtils.Current(-mElm.Current);
+			arr[6] = "Iout：" + TextUtils.Current(-Element.I[0]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
@@ -113,26 +129,26 @@ namespace Circuit.Symbol.Active {
 				return null;
 			}
 			if (r == 0) {
-				return new ElementInfo("+電源", mElm.MaxOut);
+				return new ElementInfo("+電源", Element.Para[ElmOpAmp.OUT_MAX]);
 			}
 			if (r == 1) {
-				return new ElementInfo("-電源", mElm.MinOut);
+				return new ElementInfo("-電源", Element.Para[ElmOpAmp.OUT_MIN]);
 			}
 			if (r == 2) {
-				return new ElementInfo("ゲイン(db)", 20 * Math.Log10(mElm.Gain));
+				return new ElementInfo("ゲイン(db)", 20 * Math.Log10(Element.Para[ElmOpAmp.GAIN]));
 			}
 			return null;
 		}
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
 			if (n == 0) {
-				mElm.MaxOut = ei.Value;
+				Element.Para[ElmOpAmp.OUT_MAX] = ei.Value;
 			}
 			if (n == 1) {
-				mElm.MinOut = ei.Value;
+				Element.Para[ElmOpAmp.OUT_MIN] = ei.Value;
 			}
 			if (n == 2 && ei.Value > 0) {
-				mElm.Gain = Math.Pow(10.0, ei.Value / 20.0);
+				Element.Para[ElmOpAmp.GAIN] = Math.Pow(10.0, ei.Value / 20.0);
 			}
 		}
 
@@ -140,7 +156,7 @@ namespace Circuit.Symbol.Active {
 			if ((mFlags & FLAG_GAIN) != 0) {
 				return;
 			}
-			mElm.Gain = 1000;
+			Element.Para[ElmOpAmp.GAIN] = 1e3;
 		}
 	}
 }

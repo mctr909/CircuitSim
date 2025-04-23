@@ -1,44 +1,70 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Passive;
+﻿using Circuit.Elements.Passive;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Passive {
 	class Capacitor : BaseSymbol {
 		public static readonly int FLAG_BACK_EULER = 2;
 		protected static string mLastReferenceName = "C";
 		protected static double mLastValue = 1e-5;
+		public double Capacitance = 1e-5;
 
 		const int BODY_LEN = 5;
 		const int HS = 6;
 
-		ElmCapacitor mElm;
 		PointF[] mPlate1;
 		PointF[] mPlate2;
 
-		public override BaseElement Element { get { return mElm; } }
-
 		public Capacitor(Point pos) : base(pos) {
-			mElm = new ElmCapacitor {
-				Capacitance = mLastValue
-			};
-			ReferenceName = mLastReferenceName;
-		}
-
-		public Capacitor(Point p1, Point p2, int f) : base(p1, p2, f) {
+			Element.Para[ElmCapacitor.MAX_VOLTAGE] = 1e12;
+			Element.Para[ElmCapacitor.MAX_NEGATIVE] = 1e12;
+			Capacitance = mLastValue;
 			ReferenceName = mLastReferenceName;
 		}
 
 		public Capacitor(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmCapacitor {
-				Capacitance = st.nextTokenDouble(mLastValue),
-				VoltDiff = st.nextTokenDouble(0)
-			};
+			Element.Para[ElmCapacitor.MAX_VOLTAGE] = 1e12;
+			Element.Para[ElmCapacitor.MAX_NEGATIVE] = 1e12;
+			Capacitance = st.nextTokenDouble(mLastValue);
+			Element.V[2] = st.nextTokenDouble(0);
+		}
+
+		protected Capacitor(Point p1, Point p2, int f) : base(p1, p2, f) {
+			ReferenceName = mLastReferenceName;
+		}
+
+		protected override BaseElement Create() {
+			return new ElmCapacitor();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.CAPACITOR; } }
 
 		protected override void dump(List<object> optionList) {
-			optionList.Add(mElm.Capacitance.ToString("g3"));
-			optionList.Add(mElm.VoltDiff.ToString("g3"));
+			optionList.Add(Capacitance.ToString("g3"));
+			optionList.Add(Element.V[2].ToString("g3"));
+		}
+
+		public override void Reset() {
+			base.Reset();
+			Element.I[0] = Element.I[1] = 0;
+			Element.V[2] = 1e-3;
+		}
+
+		public override void Stamp() {
+			var n0 = Element.Nodes[0] - 1;
+			var n1 = Element.Nodes[1] - 1;
+			if (n0 < 0 || n1 < 0) {
+				return;
+			}
+			Element.Para[0] = 0.5 * CircuitState.DeltaTime / Capacitance;
+			StampResistor(Element.Nodes[0], Element.Nodes[1], Element.Para[0]);
+			StampRightSide(Element.Nodes[0]);
+			StampRightSide(Element.Nodes[1]);
+		}
+
+		public override void Shorted() {
+			base.Reset();
+			Element.V[2] = Element.I[0] = Element.I[1] = 0;
 		}
 
 		public override void SetPoints() {
@@ -103,7 +129,7 @@ namespace Circuit.Symbol.Passive {
 			FillPolygon(mPlate2);
 
 			DrawName();
-			DrawValue(TextUtils.Unit(mElm.Capacitance));
+			DrawValue(TextUtils.Unit(Capacitance));
 
 			UpdateDotCount();
 			if (ConstructItem != this) {
@@ -114,11 +140,11 @@ namespace Circuit.Symbol.Passive {
 
 		public override void GetInfo(string[] arr) {
 			if (string.IsNullOrEmpty(ReferenceName)) {
-				arr[0] = "コンデンサ：" + TextUtils.Unit(mElm.Capacitance, "F");
+				arr[0] = "コンデンサ：" + TextUtils.Unit(Capacitance, "F");
 				GetBasicInfo(1, arr);
 			} else {
 				arr[0] = ReferenceName;
-				arr[1] = "コンデンサ：" + TextUtils.Unit(mElm.Capacitance, "F");
+				arr[1] = "コンデンサ：" + TextUtils.Unit(Capacitance, "F");
 				GetBasicInfo(2, arr);
 			}
 		}
@@ -128,7 +154,7 @@ namespace Circuit.Symbol.Passive {
 				return null;
 			}
 			if (r == 0) {
-				return new ElementInfo("キャパシタンス(F)", mElm.Capacitance);
+				return new ElementInfo("キャパシタンス(F)", Capacitance);
 			}
 			if (r == 1) {
 				return new ElementInfo("名前", ReferenceName);
@@ -138,7 +164,7 @@ namespace Circuit.Symbol.Passive {
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
 			if (n == 0 && ei.Value > 0) {
-				mElm.Capacitance = ei.Value;
+				Capacitance = ei.Value;
 				mLastValue = ei.Value;
 				SetTextPos();
 			}
@@ -152,7 +178,7 @@ namespace Circuit.Symbol.Passive {
 		public override EventHandler CreateSlider(ElementInfo ei, Slider adj) {
 			return new EventHandler((s, e) => {
 				var trb = adj.Trackbar;
-				mElm.Capacitance = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
+				Capacitance = adj.MinValue + (adj.MaxValue - adj.MinValue) * trb.Value / trb.Maximum;
 				MainForm.MainForm.NeedAnalyze = true;
 			});
 		}

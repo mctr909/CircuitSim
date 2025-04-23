@@ -1,5 +1,6 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Passive;
+﻿using Circuit.Elements.Passive;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Passive {
 	class Transformer : BaseSymbol {
@@ -22,40 +23,115 @@ namespace Circuit.Symbol.Passive {
 		PointF[] mCoilSec;
 		float mCoilWidth;
 		float mCoilAngle;
-		ElmTransformer mElm;
 
 		double mCurCounts1 = 0;
 		double mCurCounts2 = 0;
 
-		public override BaseElement Element { get { return mElm; } }
+		public double PInductance = 0.01;
+		public double Ratio = 1.0;
+		public double CouplingCoef = 0.999;
+		public int Polarity = 1;
+
+		public override bool HasConnection(int n1, int n2) {
+			if (ComparePair(n1, n2, 0, 2)) {
+				return true;
+			}
+			if (ComparePair(n1, n2, 1, 3)) {
+				return true;
+			}
+			return false;
+		}
 
 		public Transformer(Point pos) : base(pos) {
-			mElm = new ElmTransformer();
-			mElm.AllocateNodes();
+			AllocateNodes();
 			Post.NoDiagonal = true;
 			ReferenceName = "T";
 		}
 
 		public Transformer(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmTransformer {
-				PInductance = st.nextTokenDouble(1e3),
-				Ratio = st.nextTokenDouble(1)
-			};
-			mElm.Currents[0] = st.nextTokenDouble(0);
-			mElm.Currents[1] = st.nextTokenDouble(0);
-			mElm.CouplingCoef = st.nextTokenDouble(0.999);
-			mElm.AllocateNodes();
+			PInductance = st.nextTokenDouble(1e3);
+			Ratio = st.nextTokenDouble(1);
+			Element.I[ElmTransformer.CUR_PRI] = st.nextTokenDouble(0);
+			Element.I[ElmTransformer.CUR_SEC] = st.nextTokenDouble(0);
+			CouplingCoef = st.nextTokenDouble(0.999);
+			AllocateNodes();
 			Post.NoDiagonal = true;
+		}
+
+		protected override BaseElement Create() {
+			return new ElmTransformer();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.TRANSFORMER; } }
 
 		protected override void dump(List<object> optionList) {
-			optionList.Add(mElm.PInductance.ToString("g3"));
-			optionList.Add(mElm.Ratio);
-			optionList.Add(mElm.Currents[0].ToString("g3"));
-			optionList.Add(mElm.Currents[1].ToString("g3"));
-			optionList.Add(mElm.CouplingCoef);
+			optionList.Add(PInductance.ToString("g3"));
+			optionList.Add(Ratio);
+			optionList.Add(Element.I[ElmTransformer.CUR_PRI].ToString("g3"));
+			optionList.Add(Element.I[ElmTransformer.CUR_SEC].ToString("g3"));
+			optionList.Add(CouplingCoef);
+		}
+
+		public override void Reset() {
+			/* need to set current-source values here in case one of the nodes is node 0.  In that case
+             * calculateCurrent() may get called (from setNodeVoltage()) when analyzing circuit, before
+             * startIteration() gets called */
+			Element.I[ElmTransformer.CUR_PRI] = Element.I[ElmTransformer.CUR_SEC] = 0;
+			Element.I[ElmTransformer.CS_PRI] = Element.I[ElmTransformer.CS_SEC] = 0;
+			Element.V[ElmTransformer.PRI_T] = Element.V[ElmTransformer.PRI_B] = 0;
+			Element.V[ElmTransformer.SEC_T] = Element.V[ElmTransformer.SEC_B] = 0;
+		}
+
+		public override void Stamp() {
+			/* equations for transformer:
+             *   v1 = L1 di1/dt + M  di2/dt
+             *   v2 = M  di1/dt + L2 di2/dt
+             * we invert that to get:
+             *   di1/dt = a1 v1 + a2 v2
+             *   di2/dt = a3 v1 + a4 v2
+             * integrate di1/dt using trapezoidal approx and we get:
+             *   i1(t2) = i1(t1) + dt/2 (i1(t1) + i1(t2))
+             *          = i1(t1) + a1 dt/2 v1(t1) + a2 dt/2 v2(t1) +
+             *                     a1 dt/2 v1(t2) + a2 dt/2 v2(t2)
+             * the norton equivalent of this for i1 is:
+             *  a. current source, I = i1(t1) + a1 dt/2 v1(t1) + a2 dt/2 v2(t1)
+             *  b. resistor, G = a1 dt/2
+             *  c. current source controlled by voltage v2, G = a2 dt/2
+             * and for i2:
+             *  a. current source, I = i2(t1) + a3 dt/2 v1(t1) + a4 dt/2 v2(t1)
+             *  b. resistor, G = a3 dt/2
+             *  c. current source controlled by voltage v2, G = a4 dt/2
+             *
+             * For backward euler,
+             *
+             *   i1(t2) = i1(t1) + a1 dt v1(t2) + a2 dt v2(t2)
+             *
+             * So the current source value is just i1(t1) and we use
+             * dt instead of dt/2 for the resistor and VCCS.
+             *
+             * first winding goes from node 0 to 2, second is from 1 to 3 */
+			var l1 = PInductance;
+			var l2 = PInductance * Ratio * Ratio;
+			var m = CouplingCoef * Math.Sqrt(l1 * l2);
+			// build inverted matrix
+			var deti = 1 / (l1 * l2 - m * m);
+			var hdt = CircuitState.DeltaTime / 2; // we multiply dt/2 into a[0~3] here
+			Element.Para[ElmTransformer.PRI_T] = l2 * deti * hdt;
+			Element.Para[ElmTransformer.PRI_B] = -m * deti * hdt;
+			Element.Para[ElmTransformer.SEC_T] = -m * deti * hdt;
+			Element.Para[ElmTransformer.SEC_B] = l1 * deti * hdt;
+			StampConductance(Element.Nodes[ElmTransformer.PRI_T], Element.Nodes[ElmTransformer.PRI_B], Element.Para[ElmTransformer.PRI_T]);
+			StampConductance(Element.Nodes[ElmTransformer.SEC_T], Element.Nodes[ElmTransformer.SEC_B], Element.Para[ElmTransformer.SEC_B]);
+			StampVCCurrentSource(
+				Element.Nodes[ElmTransformer.SEC_T], Element.Nodes[ElmTransformer.SEC_B],
+				Element.Nodes[ElmTransformer.PRI_T], Element.Nodes[ElmTransformer.PRI_B], Element.Para[ElmTransformer.PRI_B]);
+			StampVCCurrentSource(
+				Element.Nodes[ElmTransformer.PRI_T], Element.Nodes[ElmTransformer.PRI_B],
+				Element.Nodes[ElmTransformer.SEC_T], Element.Nodes[ElmTransformer.SEC_B], Element.Para[ElmTransformer.SEC_T]);
+			StampRightSide(Element.Nodes[ElmTransformer.PRI_T]);
+			StampRightSide(Element.Nodes[ElmTransformer.PRI_B]);
+			StampRightSide(Element.Nodes[ElmTransformer.SEC_T]);
+			StampRightSide(Element.Nodes[ElmTransformer.SEC_B]);
 		}
 
 		public override void Drag(Point pos) {
@@ -95,7 +171,7 @@ namespace Circuit.Symbol.Passive {
 			InterpolationPoint(mTermPri2, mTermSec2, out mCore[2], pcd);
 			InterpolationPoint(mTermPri2, mTermSec2, out mCore[3], 1 - pcd);
 
-			if (-1 == mElm.Polarity) {
+			if (-1 == Polarity) {
 				mDots = new PointF[2];
 				var dotp = Math.Abs(7.0 / height);
 				InterpolationPoint(mCoilPri1, mCoilPri2, out mDots[0], dotp, -7 * Post.Dsign);
@@ -111,14 +187,14 @@ namespace Circuit.Symbol.Passive {
 			}
 
 			SetCoilPos(mCoilPri1, mCoilPri2, 90 * Post.Dsign, out mCoilPri);
-			SetCoilPos(mCoilSec1, mCoilSec2, -90 * Post.Dsign * mElm.Polarity, out mCoilSec);
+			SetCoilPos(mCoilSec1, mCoilSec2, -90 * Post.Dsign * Polarity, out mCoilSec);
 			SetNamePos();
 
-			mElm.SetNodePos(mTermPri1, mTermSec1, mTermPri2, mTermSec2);
+			SetNodePos(mTermPri1, mTermSec1, mTermPri2, mTermSec2);
 		}
 
 		public override double Distance(Point p) {
-			if (mElm.Polarity < 0) {
+			if (Polarity < 0) {
 				return Math.Min(
 					Post.DistanceOnLine(mTermPri1, mCoilPri1, p), Math.Min(
 					Post.DistanceOnLine(mTermSec2, mCoilSec2, p), Math.Min(
@@ -181,8 +257,8 @@ namespace Circuit.Symbol.Passive {
 				DrawCircle(mDots[1], 2.5f);
 			}
 
-			UpdateDotCount(mElm.Currents[0], ref mCurCounts1);
-			UpdateDotCount(mElm.Currents[1], ref mCurCounts2);
+			UpdateDotCount(Element.I[ElmTransformer.CUR_PRI], ref mCurCounts1);
+			UpdateDotCount(Element.I[ElmTransformer.CUR_SEC], ref mCurCounts2);
 			DrawCurrent(mTermPri1, mCoilPri1, mCurCounts1);
 			DrawCurrent(mCoilPri1, mCoilPri2, mCurCounts1);
 			DrawCurrent(mCoilPri2, mTermPri2, mCurCounts1);
@@ -196,12 +272,12 @@ namespace Circuit.Symbol.Passive {
 		}
 
 		public override void GetInfo(string[] arr) {
-			arr[0] = "トランス：" + TextUtils.Unit(mElm.PInductance, "H");
-			arr[1] = "2次側巻数比：" + mElm.Ratio;
-			arr[2] = "電位差(1次)：" + TextUtils.Voltage(mElm.NodeVolts[ElmTransformer.PRI_T] - mElm.NodeVolts[ElmTransformer.PRI_B]);
-			arr[3] = "電位差(2次)：" + TextUtils.Voltage(mElm.NodeVolts[ElmTransformer.SEC_T] - mElm.NodeVolts[ElmTransformer.SEC_B]);
-			arr[4] = "電流(1次)：" + TextUtils.Current(mElm.Currents[0]);
-			arr[5] = "電流(2次)：" + TextUtils.Current(mElm.Currents[1]);
+			arr[0] = "トランス：" + TextUtils.Unit(PInductance, "H");
+			arr[1] = "2次側巻数比：" + Ratio;
+			arr[2] = "電位差(1次)：" + TextUtils.Voltage(Element.V[ElmTransformer.PRI_T] - Element.V[ElmTransformer.PRI_B]);
+			arr[3] = "電位差(2次)：" + TextUtils.Voltage(Element.V[ElmTransformer.SEC_T] - Element.V[ElmTransformer.SEC_B]);
+			arr[4] = "電流(1次)：" + TextUtils.Current(Element.I[ElmTransformer.CUR_PRI]);
+			arr[5] = "電流(2次)：" + TextUtils.Current(Element.I[ElmTransformer.CUR_SEC]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
@@ -209,39 +285,39 @@ namespace Circuit.Symbol.Passive {
 				return null;
 			}
 			if (r == 0) {
-				return new ElementInfo("一次側インダクタンス(H)", mElm.PInductance);
+				return new ElementInfo("一次側インダクタンス(H)", PInductance);
 			}
 			if (r == 1) {
-				return new ElementInfo("二次側巻数比", mElm.Ratio);
+				return new ElementInfo("二次側巻数比", Ratio);
 			}
 			if (r == 2) {
-				return new ElementInfo("結合係数(0～1)", mElm.CouplingCoef);
+				return new ElementInfo("結合係数(0～1)", CouplingCoef);
 			}
 			if (r == 3) {
 				return new ElementInfo("名前", ReferenceName);
 			}
 			if (r == 4) {
-				return new ElementInfo("極性反転", mElm.Polarity == -1);
+				return new ElementInfo("極性反転", Polarity == -1);
 			}
 			return null;
 		}
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
 			if (n == 0 && ei.Value > 0) {
-				mElm.PInductance = ei.Value;
+				PInductance = ei.Value;
 			}
 			if (n == 1 && ei.Value > 0) {
-				mElm.Ratio = ei.Value;
+				Ratio = ei.Value;
 			}
 			if (n == 2 && ei.Value > 0 && ei.Value < 1) {
-				mElm.CouplingCoef = ei.Value;
+				CouplingCoef = ei.Value;
 			}
 			if (n == 3) {
 				ReferenceName = ei.Text;
 				SetNamePos();
 			}
 			if (n == 4) {
-				mElm.Polarity = ei.CheckBox.Checked ? -1 : 1;
+				Polarity = ei.CheckBox.Checked ? -1 : 1;
 				if (ei.CheckBox.Checked) {
 					mFlags |= FLAG_REVERSE;
 				} else {

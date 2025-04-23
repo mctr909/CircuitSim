@@ -1,52 +1,35 @@
 ﻿namespace Circuit.Elements.Passive {
 	class ElmCapacitor : BaseElement {
-		double mCompResistance;
-		double mCurSourceValue;
+		public const int MAX_VOLTAGE = 1;
+		public const int MAX_NEGATIVE = 2;
 
-		public double Capacitance = 1e-5;
-		public double VoltDiff = 1e-3;
-
-		public override int TermCount { get { return 2; } }
-
-		#region [method(Analyze)]
-		public override void Reset() {
-			base.Reset();
-			Current = mCurSourceValue = 0;
-			VoltDiff = 1e-3;
+		protected override void DoIteration() {
+			var n1 = NODE_INFOS[Nodes[0] - 1].Row;
+			var n2 = NODE_INFOS[Nodes[1] - 1].Row;
+			RIGHTSIDE[n1] -= I[1];
+			RIGHTSIDE[n2] += I[1];
 		}
 
-		public override void Shorted() {
-			base.Reset();
-			VoltDiff = Current = mCurSourceValue = 0;
+		protected override void StartIteration() {
+			I[1] = -I[0] - V[2] / Para[0];
 		}
 
-		public override void Stamp() {
-			var n0 = NodeId[0] - 1;
-			var n1 = NodeId[1] - 1;
-			if (n0 < 0 || n1 < 0) {
-				return;
+		protected override void FinishIteration() {
+			var v = VoltageDiff;
+			if (v > Para[MAX_VOLTAGE] || v < -Para[MAX_VOLTAGE]) {
+				Broken = true;
+				CircuitState.Stopped = true;
 			}
-			mCompResistance = 0.5 * CircuitState.DeltaTime / Capacitance;
-			StampResistor(NodeId[0], NodeId[1], mCompResistance);
-			StampRightSide(NodeId[0]);
-			StampRightSide(NodeId[1]);
-		}
-		#endregion
-
-		#region [method(Circuit)]
-		public override void PrepareIteration() {
-			mCurSourceValue = -VoltDiff / mCompResistance - Current;
+			if (v < -Para[MAX_NEGATIVE]) {
+				Broken = true;
+				CircuitState.Stopped = true;
+			}
 		}
 
-		public override void DoIteration() {
-			UpdateCurrent(NodeId[0], NodeId[1], mCurSourceValue);
+		public override void SetVoltage(int n, double v) {
+			V[n] = v;
+			V[2] = V[0] - V[1];
+			I[0] = I[1] + V[2] / Para[0];
 		}
-
-		public override void SetVoltage(int nodeIndex, double v) {
-			NodeVolts[nodeIndex] = v;
-			VoltDiff = NodeVolts[0] - NodeVolts[1];
-			Current = VoltDiff / mCompResistance + mCurSourceValue;
-		}
-		#endregion
 	}
 }

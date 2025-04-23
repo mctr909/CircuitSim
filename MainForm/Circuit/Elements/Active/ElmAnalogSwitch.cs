@@ -1,45 +1,35 @@
 ﻿namespace Circuit.Elements.Active {
 	class ElmAnalogSwitch : BaseElement {
-		public double Ron = 100;
-		public double Roff = 1e8;
-		public bool Invert;
-		public bool IsOpen;
-
-		double mResistance;
+		public const int R_ON = 0;
+		public const int R_OFF = 1;
+		public const int STATE = 0;
+		public const int INVERT = 1;
 
 		public override int TermCount { get { return 3; } }
 
-		public override bool HasConnection(int n1, int n2) { return !(n1 == 2 || n2 == 2); }
-
-		public override void Stamp() {
-			StampNonLinear(NodeId[0]);
-			StampNonLinear(NodeId[1]);
-		}
-
-		#region [method(Circuit)]
-		public override void DoIteration() {
-			IsOpen = NodeVolts[2] < 2.5;
-			if (Invert) {
-				IsOpen = !IsOpen;
+		protected override void DoIteration() {
+			var state = V[2] < 2.5;
+			if (State[INVERT] != 0) {
+				state = !state;
 			}
-			mResistance = IsOpen ? Roff : Ron;
-			UpdateConductance(NodeId[0], NodeId[1], 1.0 / mResistance);
+			State[STATE] = state ? 1 : 0;
+			Para[0] = state ? Para[R_OFF] : Para[R_ON];
+			UpdateConductance(Nodes[0], Nodes[1], 1.0 / Para[0]);
 		}
 
-		public override double GetCurrent(int n) {
+		protected override double GetCurrent(int n) {
 			if (n == 0) {
-				return -Current;
+				return -I[0];
 			}
 			if (n == 2) {
 				return 0;
 			}
-			return Current;
+			return I[0];
 		}
 
-		public override void SetVoltage(int nodeIndex, double v) {
-			NodeVolts[nodeIndex] = v;
-			Current = (NodeVolts[0] - NodeVolts[1]) / mResistance;
+		public override void SetVoltage(int n, double v) {
+			V[n] = v;
+			I[0] = (V[0] - V[1]) / Para[0];
 		}
-		#endregion
 	}
 }

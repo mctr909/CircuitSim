@@ -1,6 +1,8 @@
-﻿using Circuit.Symbol.Measure;
+﻿using Circuit;
+using Circuit.Forms;
+using Circuit.Symbol.Measure;
 
-namespace Circuit.Forms {
+namespace MainForm.Forms {
 	public class ScopePopupMenu {
 		enum SCOPE_MENU_ITEM {
 			REMOVE_SCOPE,

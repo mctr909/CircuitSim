@@ -1,5 +1,6 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Input;
+﻿using Circuit.Elements.Input;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Input {
 	class Current : BaseSymbol {
@@ -12,15 +13,17 @@ namespace Circuit.Symbol.Input {
 		PointF mTextPos;
 		ElmCurrent mElm;
 
-		public override BaseElement Element { get { return mElm; } }
-
 		public Current(Point pos) : base(pos) {
-			mElm = new ElmCurrent();
+			mElm = (ElmCurrent)Element;
 		}
 
 		public Current(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmCurrent();
+			mElm = (ElmCurrent)Element;
 			mElm.CurrentValue = st.nextTokenDouble();
+		}
+
+		protected override BaseElement Create() {
+			return new ElmCurrent();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.CURRENT; } }
@@ -45,6 +48,18 @@ namespace Circuit.Symbol.Input {
 			var p2 = new PointF();
 			InterpolationLead(ref p2, 0.8);
 			CreateArrow(mCenter, p2, out mArrow, 8, 4);
+		}
+
+		public void StampCurrentSource(bool broken) {
+			if (broken) {
+				/* no current path; stamping a current source would cause a matrix error. */
+				StampResistor(mElm.Nodes[0], mElm.Nodes[1], 1e8);
+				mElm.I[0] = 0;
+			} else {
+				/* ok to stamp a current source */
+				StampCurrent(mElm.Nodes[0], mElm.Nodes[1], mElm.CurrentValue);
+				mElm.I[0] = mElm.CurrentValue;
+			}
 		}
 
 		public override void Draw(CustomGraphics g) {

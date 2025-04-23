@@ -1,62 +1,9 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Input;
+﻿using Circuit.Elements.Input;
 using static Circuit.Elements.Input.ElmVoltage;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Input {
-	class VoltageLink : BaseLink {
-		public const int VOLTAGE = 0;
-		public const int BIAS = 1;
-		public const int FREQUENCY = 2;
-		public const int PHASE_OFFSET = 3;
-		public int Voltage = 0;
-		public int Bias = 0;
-		public int Frequency = 0;
-		public int PhaseOffset = 0;
-		public override int GetGroup(int id) {
-			switch (id) {
-			case VOLTAGE:
-				return Voltage;
-			case BIAS:
-				return Bias;
-			case FREQUENCY:
-				return Frequency;
-			case PHASE_OFFSET:
-				return PhaseOffset;
-			default:
-				return 0;
-			}
-		}
-		public override void SetValue(BaseElement element, int linkID, double value) {
-			var elm = (ElmVoltage)element;
-			switch (linkID) {
-			case VOLTAGE:
-				elm.MaxVoltage = value;
-				break;
-			case BIAS:
-				elm.Bias = value;
-				break;
-			case FREQUENCY:
-				elm.Frequency = value;
-				break;
-			case PHASE_OFFSET:
-				elm.PhaseOffset = value * Math.PI / 180;
-				break;
-			}
-		}
-		public override void Load(StringTokenizer st) {
-			Voltage = st.nextTokenInt();
-			Bias = st.nextTokenInt();
-			Frequency = st.nextTokenInt();
-			PhaseOffset = st.nextTokenInt();
-		}
-		public override void Dump(List<object> optionList) {
-			optionList.Add(Voltage);
-			optionList.Add(Bias);
-			optionList.Add(Frequency);
-			optionList.Add(PhaseOffset);
-		}
-	}
-
 	class Voltage : BaseSymbol {
 		const int FLAG_PULSE_DUTY = 4;
 		const double DEFAULT_PULSE_DUTY = 0.5;
@@ -75,12 +22,9 @@ namespace Circuit.Symbol.Input {
 		public const string VALUE_NAME_PHASE_OFS = "オフセット位相";
 		public const string VALUE_NAME_DUTY = "デューティ比";
 
-		protected override BaseLink mLink { get; set; } = new VoltageLink();
-		protected VoltageLink Link { get { return (VoltageLink)mLink; } }
-
 		protected ElmVoltage mElm;
 
-		public override BaseElement Element { get { return mElm; } }
+		public override int VoltageSourceCount { get { return 1; } }
 
 		PointF mPs1;
 		PointF mPs2;
@@ -91,15 +35,18 @@ namespace Circuit.Symbol.Input {
 		double mTextRot;
 		PointF mSignPos;
 
-		protected Voltage(Point p1, Point p2, int f) : base(p1, p2, f) { }
+		protected Voltage(Point p1, Point p2, int f) : base(p1, p2, f) {
+			mElm = (ElmVoltage)Element;
+		}
 
 		public Voltage(Point pos, WAVEFORM wf) : base(pos) {
-			mElm = new ElmVoltage();
+			mElm = (ElmVoltage)Element;
 			mElm.WaveForm = wf;
 			ReferenceName = "";
 		}
+
 		public Voltage(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmVoltage();
+			mElm = (ElmVoltage)Element;
 			mElm.WaveForm = st.nextTokenEnum(WAVEFORM.SIN);
 			mElm.Frequency = st.nextTokenDouble(100);
 			mElm.MaxVoltage = st.nextTokenDouble(5);
@@ -107,7 +54,10 @@ namespace Circuit.Symbol.Input {
 			mElm.Phase = st.nextTokenDouble() * Math.PI / 180;
 			mElm.PhaseOffset = st.nextTokenDouble() * Math.PI / 180;
 			mElm.DutyCycle = st.nextTokenDouble(0.5);
-			Link.Load(st);
+		}
+
+		protected override BaseElement Create() {
+			return new ElmVoltage();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.VOLTAGE; } }
@@ -127,6 +77,16 @@ namespace Circuit.Symbol.Input {
 			optionList.Add((mElm.Phase * 180 / Math.PI).ToString("0"));
 			optionList.Add((mElm.PhaseOffset * 180 / Math.PI).ToString("0"));
 			optionList.Add(mElm.DutyCycle.ToString("0.00"));
+		}
+
+		public override void Reset() { }
+
+		public override void Stamp() {
+			if (mElm.WaveForm == WAVEFORM.DC) {
+				StampVoltageSource(mElm.Nodes[0], mElm.Nodes[1], mElm.VoltSource, mElm.GetVoltage());
+			} else {
+				StampVoltageSource(mElm.Nodes[0], mElm.Nodes[1], mElm.VoltSource);
+			}
 		}
 
 		public override void SetPoints() {
@@ -390,7 +350,7 @@ namespace Circuit.Symbol.Input {
 				arr[0] = mElm.WaveForm.ToString();
 				break;
 			}
-			arr[1] = "電圧：" + TextUtils.Voltage(mElm.GetVoltageDiff());
+			arr[1] = "電圧：" + TextUtils.Voltage(mElm.VoltageDiff);
 			int i = 2;
 			if (mElm.WaveForm != ElmVoltage.WAVEFORM.DC && mElm.WaveForm != ElmVoltage.WAVEFORM.NOISE) {
 				arr[i++] = "振幅：" + TextUtils.Voltage(mElm.MaxVoltage);
@@ -449,23 +409,6 @@ namespace Circuit.Symbol.Input {
 					|| mElm.WaveForm == ElmVoltage.WAVEFORM.PWM_POSITIVE
 					|| mElm.WaveForm == ElmVoltage.WAVEFORM.PWM_NEGATIVE)) {
 					return new ElementInfo(VALUE_NAME_DUTY, mElm.DutyCycle * 100);
-				}
-			}
-			if (c == 1) {
-				if (r == 1) {
-					return new ElementInfo("連動グループ", Link.Voltage);
-				}
-				if (r == 2) {
-					return new ElementInfo("連動グループ", Link.Bias);
-				}
-				if (r == 3) {
-					return new ElementInfo("連動グループ", Link.Frequency);
-				}
-				if (r == 5) {
-					return new ElementInfo("連動グループ", Link.PhaseOffset);
-				}
-				if (r < 5) {
-					return new ElementInfo();
 				}
 			}
 			return null;
@@ -528,20 +471,6 @@ namespace Circuit.Symbol.Input {
 					}
 				}
 			}
-			if (c == 1) {
-				if (r == 1) {
-					Link.Voltage = (int)ei.Value;
-				}
-				if (r == 2) {
-					Link.Bias = (int)ei.Value;
-				}
-				if (r == 3) {
-					Link.Frequency = (int)ei.Value;
-				}
-				if (r == 5) {
-					Link.PhaseOffset = (int)ei.Value;
-				}
-			}
 			SetWaveform();
 			SetTextPos();
 		}
@@ -592,19 +521,19 @@ namespace Circuit.Symbol.Input {
 				switch (ei.Name) {
 				case VALUE_NAME_V:
 				case VALUE_NAME_AMP:
-					SetLinkedValues<Voltage>(VoltageLink.VOLTAGE, val);
+					mElm.MaxVoltage = val;
 					break;
 				case VALUE_NAME_BIAS:
-					SetLinkedValues<Voltage>(VoltageLink.BIAS, val);
+					mElm.Bias = val;
 					break;
 				case VALUE_NAME_HZ:
-					SetLinkedValues<Voltage>(VoltageLink.FREQUENCY, val);
+					mElm.Frequency = val;
 					break;
 				case VALUE_NAME_PHASE:
 					mElm.Phase = val * Math.PI / 180;
 					break;
 				case VALUE_NAME_PHASE_OFS:
-					SetLinkedValues<Voltage>(VoltageLink.PHASE_OFFSET, val);
+					mElm.PhaseOffset = val * Math.PI / 180;
 					break;
 				case VALUE_NAME_DUTY:
 					mElm.DutyCycle = val * 0.01;

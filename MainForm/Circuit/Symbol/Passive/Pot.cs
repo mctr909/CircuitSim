@@ -1,5 +1,6 @@
-﻿using Circuit.Forms;
-using Circuit.Elements.Passive;
+﻿using Circuit.Elements.Passive;
+using Circuit.Elements;
+using MainForm.Forms;
 
 namespace Circuit.Symbol.Passive {
 	class Pot : BaseSymbol {
@@ -26,7 +27,6 @@ namespace Circuit.Symbol.Passive {
 		PointF[] mRect3;
 		PointF[] mRect4;
 
-		ElmPot mElm;
 		TrackBar mSlider;
 		Label mLabel;
 		string mName;
@@ -35,30 +35,40 @@ namespace Circuit.Symbol.Passive {
 		double mCurCount2 = 0;
 		double mCurCount3 = 0;
 
-		public override BaseElement Element { get { return mElm; } }
+		public double Position = 0.5;
+		public double MaxResistance = 1000;
 
 		public Pot(Point pos) : base(pos) {
-			mElm = new ElmPot();
-			mElm.AllocateNodes();
+			AllocateNodes();
 			mFlags = FLAG_SHOW_VALUES;
 			ReferenceName = "VR";
 			CreateSlider();
 		}
 
 		public Pot(Point p1, Point p2, int f, StringTokenizer st) : base(p1, p2, f) {
-			mElm = new ElmPot() {
-				MaxResistance = st.nextTokenDouble(1e3),
-				Position = st.nextTokenDouble(0.5)
-			};
-			mElm.AllocateNodes();
+			MaxResistance = st.nextTokenDouble(1e3);
+			Position = st.nextTokenDouble(0.5);
+			AllocateNodes();
 			CreateSlider();
+		}
+
+		protected override BaseElement Create() {
+			return new ElmPot();
 		}
 
 		public override DUMP_ID DumpId { get { return DUMP_ID.POT; } }
 
 		protected override void dump(List<object> optionList) {
-			optionList.Add(mElm.MaxResistance.ToString("g3"));
-			optionList.Add(mElm.Position);
+			optionList.Add(MaxResistance.ToString("g3"));
+			optionList.Add(Position);
+		}
+
+		public override void Stamp() {
+			var pos = Math.Max(1e-12, Math.Min(1 - 1e-12, Position)); // avoid NaN
+			Element.Para[ElmPot.A] = MaxResistance * pos;
+			Element.Para[ElmPot.B] = MaxResistance * (1 - pos);
+			StampResistor(Element.Nodes[0], Element.Nodes[2], Element.Para[ElmPot.A]);
+			StampResistor(Element.Nodes[2], Element.Nodes[1], Element.Para[ElmPot.B]);
 		}
 
 		public override void Delete() {
@@ -110,10 +120,10 @@ namespace Circuit.Symbol.Passive {
 			InterpolationPoint(mTermA, mTermB, out mLead2, (Post.Len + BODY_LEN) / (2 * Post.Len));
 
 			/* set slider */
-			mElm.Position = mSlider.Value * 0.0099 + 0.0001;
+			Position = mSlider.Value * 0.0099 + 0.0001;
 			var poff = 0.5;
 			var woff = -7.0;
-			int soff = (int)((mElm.Position - poff) * BODY_LEN);
+			int soff = (int)((Position - poff) * BODY_LEN);
 			InterpolationPoint(mTermA, mTermB, out mTermSlider, poff, offset);
 			InterpolationPoint(mTermA, mTermB, out mCorner2, soff / Post.Len + poff, offset);
 			InterpolationPoint(mTermA, mTermB, out mArrowPoint, soff / Post.Len + poff, 7 * Math.Sign(offset));
@@ -125,7 +135,7 @@ namespace Circuit.Symbol.Passive {
 			SetPoly();
 			SetTextPos();
 
-			mElm.SetNodePos(mTermA, mTermB, mTermSlider);
+			SetNodePos(mTermA, mTermB, mTermSlider);
 		}
 
 		public override void Draw(CustomGraphics g) {
@@ -154,9 +164,9 @@ namespace Circuit.Symbol.Passive {
 			DrawLine(mArrow2, mArrowPoint);
 
 			/* draw dot */
-			UpdateDotCount(mElm.Current1, ref mCurCount1);
-			UpdateDotCount(mElm.Current2, ref mCurCount2);
-			UpdateDotCount(mElm.Current3, ref mCurCount3);
+			UpdateDotCount(Element.I[ElmPot.A], ref mCurCount1);
+			UpdateDotCount(Element.I[ElmPot.B], ref mCurCount2);
+			UpdateDotCount(Element.I[ElmPot.S], ref mCurCount3);
 			if (ConstructItem != this) {
 				DrawCurrent(mTermA, mMidPoint, mCurCount1);
 				DrawCurrent(mTermB, mMidPoint, mCurCount2);
@@ -164,7 +174,7 @@ namespace Circuit.Symbol.Passive {
 				DrawCurrent(mCorner2, mMidPoint, mCurCount3 + Distance(mTermSlider, mCorner2));
 			}
 
-			if (ControlPanel.ChkShowValues.Checked && mElm.Resistance1 > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
+			if (ControlPanel.ChkShowValues.Checked && Element.Para[ElmPot.A] > 0 && (mFlags & FLAG_SHOW_VALUES) != 0) {
 				/* check for vertical pot with 3rd terminal on left */
 				bool reverseY = (mTermSlider.X < mLead1.X && mLead1.X == mLead2.X);
 				/* check for horizontal pot with 3rd terminal on top */
@@ -173,8 +183,8 @@ namespace Circuit.Symbol.Passive {
 				bool rev = (mLead1.X == mLead2.X && mLead1.Y < mLead2.Y) || (mLead1.Y == mLead2.Y && mLead1.X > mLead2.X);
 
 				/* draw units */
-				var s1 = TextUtils.Unit(rev ? mElm.Resistance2 : mElm.Resistance1, "");
-				var s2 = TextUtils.Unit(rev ? mElm.Resistance1 : mElm.Resistance2, "");
+				var s1 = TextUtils.Unit(rev ? Element.Para[ElmPot.B] : Element.Para[ElmPot.A], "");
+				var s2 = TextUtils.Unit(rev ? Element.Para[ElmPot.A] : Element.Para[ElmPot.B], "");
 				var txtHeightHalf = g.FontSize * 0.5f;
 				var txtWidth1 = (int)g.GetTextSize(s1).Width;
 				var txtWidth2 = (int)g.GetTextSize(s2).Width;
@@ -196,11 +206,11 @@ namespace Circuit.Symbol.Passive {
 		}
 
 		public override void GetInfo(string[] arr) {
-			arr[0] = "可変抵抗：" + TextUtils.Unit(mElm.MaxResistance, "Ω");
-			arr[2] = "R1：" + TextUtils.Unit(mElm.Resistance1, "Ω");
-			arr[3] = "R2：" + TextUtils.Unit(mElm.Resistance2, "Ω");
-			arr[4] = "I1：" + TextUtils.CurrentAbs(mElm.Current1);
-			arr[5] = "I2：" + TextUtils.CurrentAbs(mElm.Current2);
+			arr[0] = "可変抵抗：" + TextUtils.Unit(MaxResistance, "Ω");
+			arr[2] = "R1：" + TextUtils.Unit(Element.Para[ElmPot.A], "Ω");
+			arr[3] = "R2：" + TextUtils.Unit(Element.Para[ElmPot.B], "Ω");
+			arr[4] = "I1：" + TextUtils.CurrentAbs(Element.I[ElmPot.A]);
+			arr[5] = "I2：" + TextUtils.CurrentAbs(Element.I[ElmPot.B]);
 		}
 
 		public override ElementInfo GetElementInfo(int r, int c) {
@@ -208,7 +218,7 @@ namespace Circuit.Symbol.Passive {
 				return null;
 			}
 			if (r == 0) {
-				return new ElementInfo("レジスタンス(Ω)", mElm.MaxResistance);
+				return new ElementInfo("レジスタンス(Ω)", MaxResistance);
 			}
 			if (r == 1) {
 				return new ElementInfo("名前", ReferenceName);
@@ -221,7 +231,7 @@ namespace Circuit.Symbol.Passive {
 
 		public override void SetElementValue(int n, int c, ElementInfo ei) {
 			if (n == 0) {
-				mElm.MaxResistance = ei.Value;
+				MaxResistance = ei.Value;
 			}
 			if (n == 1) {
 				ReferenceName = ei.Text;
@@ -279,7 +289,7 @@ namespace Circuit.Symbol.Passive {
 				if (!string.IsNullOrEmpty(mName)) {
 					mName += " ";
 				}
-				mName += TextUtils.Unit(mElm.MaxResistance);
+				mName += TextUtils.Unit(MaxResistance);
 			}
 			if (Post.Horizontal) {
 				if (0 < Post.Diff.Y) {
@@ -306,7 +316,7 @@ namespace Circuit.Symbol.Passive {
 				TextAlign = ContentAlignment.BottomLeft,
 				Text = ReferenceName
 			});
-			int value = (int)(mElm.Position * 100);
+			int value = (int)(Position * 100);
 			ControlPanel.AddSlider(mSlider = new TrackBar()
 			{
 				Minimum = 0,

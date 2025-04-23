@@ -1,4 +1,6 @@
-﻿namespace Circuit.Forms {
+﻿using MainForm.Forms;
+
+namespace Circuit.Forms {
 	public partial class ScopeProperties : Form {
 		static ScopeProperties mInstance = null;
 		ScopePlot mPlot;
